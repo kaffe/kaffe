@@ -1,0 +1,580 @@
+#
+# This file contains various macros useful for Kaffe debugging.
+# Most of the macros in this file were either written by or originated from
+# Patrick Tullmann <tullmann@cs.utah.edu>
+#
+# To use it, you need to use gdb's "source" command to source it.  This can
+# be done explicitly, or from your ~/.gdbinit file.
+# Remember that to debug kaffe, you invoke it like so (csh version):
+#
+#	setenv KAFFE_DEBUG gdb
+#	kaffe ...
+# 
+# There's no guarantee that all of these macros work; if you notice 
+# problems, fixes are always welcome.
+#
+# Here's what should definitely work:	pstr, jlstring, pclass, pmeth, intbt
+#
+
+define pStr
+  p (char*)(($arg0).data)
+end
+
+document pStr
+  Print a kaffe utf8 string correctly.  Assumes its all actually ascii chars.
+end
+
+
+define pName
+  pStr (($arg0).name)
+end
+
+document pName
+  Print the name field of arg0 as a kaffe utf8 string.
+end
+
+define pObjCName
+  pName ($arg0)->dtable->class
+end
+
+document pObjCName
+  Print the class name of the given object.
+end
+
+define jthreadInfo
+  set $jth = ($arg0)
+  set $jlth = (Hjava_lang_Thread*)($jth->jlThread)
+  printf "jthread:"
+    p $jth
+  printf "  .status="
+    pjthreadStatus $jth
+  printf ";  .flags=%x", $jth.flags
+  printf ";  .jlThread=%p\n", $jth.jlThread
+  printf "java.lang.Thread:"
+    p $jlth
+  printf "  .PrivateInfo=%x", $jlth.data.PrivateInfo
+  printf ";  .name="
+    jlthreadName $jlth
+  printf "\n"
+end
+document jthreadInfo
+  Print the useful info on a thread, given a jthread pointer.
+end
+
+define pSlotInt
+  p/x ($arg0)->v.tint
+end
+
+# arg0 == class, arg1 == entry
+define pCPool
+  echo Tag: 
+  output/x ($arg0)->constants.tags[$arg1]
+  echo ; Data:  
+  output/x ($arg0)->constants.data[$arg1]
+  echo \n
+end
+
+document pCPool
+pCPool <class> <entry>:
+   Print constant pool entry <entry> for class <class>
+end
+
+define pmeth
+    printf "%s.%s;%s\n", ($arg0).class.name.data, ($arg0).name.data, \
+	($arg0).signature.data
+end
+document pmeth
+    Print full name of a method <meth>
+end
+
+define pmethods
+  set $meths = ($arg0).methods
+  set $nMeths = ($arg0).methods
+  set $i = 0
+  while $i < (($arg0).nmethods)
+    printf "[%d] %s%s (%p %p)\n", $i, (char*)(($meths[$i]).name.data), (char*)(($meths[$i]).signature.data), $nMeths[$i].c.ncode.ncode_start, $nMeths[$i].c.ncode.ncode_end
+    set $i = $i + 1
+  end
+end
+document pmethods
+  Print (the names of) all of the methods assocated with the given shared class object.
+end
+
+define pfields
+  set $fields = ($arg0).fields
+  set $i = 0
+  while $i < (($arg0).nfields)
+    printf "[%d] %s", $i, (char*)(($fields[$i]).name.data)
+
+    ## Print the type 
+    if $fields[$i].accflags & 0x8000
+      # field is unresolved
+      printf " (unresolved %s)", (char*)(((Utf8Const*)($fields[$i].type)).data)
+    else
+      # field is resolved
+      printf " (%s)", $fields[$i].type.name.data
+    end
+
+    ## Print the location
+    if $fields[$i].accflags & 0x8
+      # static
+      printf " @ %p (static)\n", $fields[$i].info.addr
+    else
+      printf " @ +%d\n", $fields[$i].info.boffset
+    end
+
+    set $i = $i + 1
+  end
+end
+document pfields
+  Print the names and locations of the fields associated with the given perspace class.
+end
+
+define pclass
+   set $class = $arg0
+   printf "%s", $class.name.data
+   set $i = $class.total_interface_len
+   if $i > 0
+       printf "\n  implements "
+       while --$i >= 0
+	  printf "%s, ", $class.interfaces[$i].name.data
+       end
+   end
+
+   printf "\n  extends "
+   while $class.superclass != 0
+       set $class = $class.superclass
+       printf "%s, ", $class.name.data
+   end
+   printf "\nwas loaded by loader 0x%x\n", ($arg0).loader
+   printf "state %d\n", $class.state
+end
+document pclass
+Given a class object, print its superclasses and interfaces
+end
+
+define intbt
+    set $i = $arg0
+    while $i < $arg1
+	frame $i++
+	pmeth meth
+    end
+end
+document intbt
+    Show a backtrace for the interpreter from between <B> and (not including) <E>
+end
+
+define gcmem2block
+  p/x *((gc_block*)((uintp)($arg0) & -gc_pgsize))
+end
+document gcmem2block
+  print the gc_block for a given pointer.
+end
+
+define pcolor
+  if ($arg0) == 0
+    printf "GC_COLOUR_FREE "
+  end
+  if $arg0 == 1
+    printf "GC_COLOUR_FIXED "
+  end
+  if $arg0 == 8
+    printf "GC_COLOUR_WHITE "
+  end
+  if $arg0 == 9
+    printf "GC_COLOUR_GREY "
+  end
+  if $arg0 == 10
+    printf "GC_COLOUR_BLACK "
+  end
+end
+
+define pfinalstate
+  if $arg0 == 0
+    printf "GC_STATE_NORMAL "
+  end
+  if $arg0 == 0x10
+    printf "GC_STATE_NEEDFINALIZE "
+  end
+  if $arg0 == 0x20
+    printf "GC_STATE_INFINALIZE "
+  end
+end
+
+define gcstate
+  set $ptr = (uint8*)($arg0)
+  set $gcBlock = ((gc_block*)((uintp)($arg0) & -gc_pgsize))
+
+  if $gcBlock->size <= 0
+    printf "WARNING: block size is <= 0 (%d)\n", $gcBlock->size
+  else
+    set $gcPtr = (((gc_unit*)($ptr)) - 1) 
+    set $idx = ((($ptr) - ($gcBlock->data)) / ($gcBlock->size))
+    printf "Magic: %#x\n", $gcBlock->magic
+    printf "$gcBlock: %p:: blockSize: %d; index: %d\n", $gcBlock, $gcBlock->size, $idx
+
+    if ($gcBlock->funcs[$idx] != 0)
+      set $func = gcFunctions[$gcBlock->funcs[$idx]]
+      printf "Func: "
+      p $func
+    else
+      printf "Func: NULL\n"
+    end
+
+    printf "gcPtr.cnext = %p; gcPtr.cprev = %p\n", $gcPtr.cnext, $gcPtr.cprev
+
+    set $dataPtr = ((void*)&($gcBlock->data[$idx * $gcBlock->size]))
+    # no space around &
+    pcolor (($gcBlock->state[$idx])&0x0F)
+    pfinalstate (($gcBlock->state[$idx])&0xF0)
+    printf "\nADDRS: $gcPtr: %p; $dataPtr: %p; supplied: %p\n", $gcPtr, $dataPtr, $ptr
+
+  end
+end
+document gcstate
+  print the GC state associated with a given pointer.
+end
+
+define curth
+  jthreadInfo currentJThread
+end
+document curth
+ print out info about the current thread in kaffe.
+end
+
+define livethreads
+  __livethreads 0
+end
+
+define livethreadsbt
+  __livethreads 1
+end
+
+define __livethreads
+  set $doBt = $arg0
+
+  printf "Live threads in the system: (jth-current = %p)\n\n", currentJThread
+  set $th = liveThreads
+
+  while $th != 0
+
+    jthreadInfo $th
+    if $doBt
+       btThread $th
+    end
+
+    printf "---- ---- ---- ----\n\n"
+    set $th = $th.nextlive
+  end
+  printf "\n"
+end
+document livethreads
+ Print info on all of the live threads in the system.
+end
+
+define alarmthreads
+  printf "Threads on the alarm queue."
+  set $th = alarmList
+  while $th != 0
+    jthreadInfo $th
+    set $th = $th.nextalarm
+  end
+  printf "\n"
+end
+document alarmthreads
+ Print info on all of the threads on the alarm queue.
+end
+
+define threadInfo
+  set $jlth = (Hjava_lang_Thread*)($arg0)
+  set $jth = (jthread*)($jlth.data.PrivateInfo)
+  if $jth == 0
+     printf "Thread at %p not yet initialized (PrivateInfo == 0)\n", $jlth
+     printf "  State = %d; Name = ", $jlth.data.state
+     jlstring $jlth.data.name
+  else
+    if $jth.jlThread != $jlth
+       printf "threadInfo: ERROR $jth.jlThread (%p) != $jlth (%p)\n", $jth.jlThread, $jlth
+    else
+       jthreadInfo $jth
+    end
+  end
+end
+document threadInfo
+  Print the information in an Hjava_lang_Thread struct.
+end
+
+
+define pjthreadStatus
+  set $stat = ($arg0).status
+  if $stat == 0
+    printf "SUSPENDED"
+  else
+    if $stat == 1
+      printf "RUNNING"
+    else
+      if $stat == 2
+        printf "DEAD"
+      else
+        printf "UNKNOWN(%x)", $stat
+      end
+    end
+  end
+end
+document pjthreadStatus
+  Print a string describing the status field of the given thread
+end
+
+define jlthread
+  p ((Hjava_lang_Thread*)(($arg0)->jlThread))
+end
+document jlthread
+  Print the java-lang-Thread associated with the given JTHREAD ptr.
+end
+
+define jlthreadName
+  set $chararr = ($arg0).data.name
+  set $strcount = $chararr.length
+
+  if $strcount < 1
+    printf "(String is zero length)\n"
+  else
+    set $i = 0
+    while $i < $strcount
+     printf "%c", ($chararr.data.body)[$i]
+     set $i = $i + 1
+    end
+    echo \n
+  end
+end
+document jlthreadName
+  print the name of the given java.lang.Thread object
+end
+
+define printDebugBuffer
+  set $i = 0
+  set $end = bufferBegin
+  set $i = bufferBegin + 1
+
+  printf "Debug Buffer is %d bytes\n", bufferSz
+  #printf "DebugBuffer: beg: %d\n", bufferBegin 
+
+  if ($i == 0) || (bufferSz == 0)
+    printf "(No data in buffer)\n"
+  else
+    printf "%s...\n", debugBuffer + bufferBegin + 1
+    printf "%s...\n", debugBuffer
+  end
+end
+document printDebugBuffer
+  Print the contents of the debug buffer.
+end
+
+define sunjlString
+  set $strcount = ($arg0).data.count
+  set $strstart = ($arg0).data.offset
+  set $chararr = ($arg0).data.value
+  if $strcount < 1
+    printf "(String is zero length)\n"
+  else
+    set $i = 0
+    while $i < $strcount
+     printf "%c", ($chararr.data.body)[$i + $strstart]
+     set $i = $i + 1
+    end
+    echo \n
+  end
+end
+
+define jlString
+  sunjlString $arg0
+end
+document jlString
+  Print a java/lang/String
+end
+
+define rr
+  run
+end
+document rr
+  Re-run the last run, and never prompt.
+end
+
+# FreeBSD's setjmp:
+#	 movl    %edx, 0(%ecx)
+#	 movl    %ebx, 4(%ecx)
+#	 movl    %esp, 8(%ecx)
+#	 movl    %ebp,12(%ecx)
+#	 movl    %esi,16(%ecx)
+#	 movl    %edi,20(%ecx)
+#	 movl    %eax,24(%ecx)
+#        fnstcw  28(%ecx)
+define restoreThread
+echo >
+  set $jb = ($arg0).env._jb
+echo .
+  set $eax = $jb[0]
+echo .
+  set $ebx = $jb[1]
+echo .
+  set $esp = $jb[2]
+echo .
+  set $ebp = $jb[3]
+echo .
+  set $esi = $jb[4]
+echo .
+  set $edi = $jb[5]
+echo .
+  set $eax = $jb[6]
+#echo .
+  #set $eflags = $jb[7]
+echo \ Done.
+echo \n
+end
+document restoreThread
+  Restore a thread (given the jthread*) in FreeBSD.
+end
+
+define findNativeMethod
+  set $addr = $arg0
+  set $pool = classEntryPool
+
+  # Loop through the class pool
+  set $nel = 255
+  while $nel > 0 
+    set $class = $pool[$nel]
+    
+    # Loop thorugh the classes hashed at this index
+    while $class != 0
+      set $shClass = $class.class
+
+      if ($shClass.state == 10)
+        # Loop through all the methods defined in this class
+	set $nmeth = 0
+        while $nmeth < $shClass.nmethods
+          set $nat = $shClass.methods[$nmeth].c.ncode
+	  if (($nat.ncode_start) <= $addr) && (($nat.ncode_end) >= $addr)
+            set $meth = $shClass.methods + $nmeth
+	    printf "%s.%s%s: %p %p\n", $shClass.name.data, $meth.name.data, $meth.signature.data, $nat.ncode_start, $nat.ncode_end
+	  end
+	  set $nmeth = $nmeth + 1
+        end
+      end
+
+      set $class = $class.next
+    end
+    set $nel = $nel - 1
+  end
+  set $nel
+end
+document findNativeMethod
+  Find the native method objet associated with the given address...
+end
+
+define restoreThread
+  set $th = ((jthread*)$arg0)
+  set $jbuf = (int*)($th.env)
+  set $eip = $jbuf[0]
+  set $esp = $jbuf[2]
+  set $ebp = $jbuf[3]
+end
+document restoreThread
+     restore register from a given jthread
+end
+
+define btThread
+  set $th = ((jthread*)$arg0)
+  set $jbuf = (int*)($th.env)
+
+  set $saveEIP = $eip
+  set $saveESP = $esp
+  set $saveEBP = $ebp
+
+  ## jmpbuf[0] = instruction pointer
+  ## jmpbuf[2] = stack pointer
+  ## jmpbuf[3] = base pointer
+  set $eip = $jbuf[0]
+  set $esp = $jbuf[2]
+  set $ebp = $jbuf[3]
+
+  # printf "btThread: .esp=%x .ebp=%x\n", $esp, $ebp
+
+  bt
+
+  set $eip = $saveEIP
+  set $esp = $saveESP
+  set $ebp = $saveEBP
+end
+document btThread
+  Print a backtrace for the given JTHREAD
+end
+
+
+#define plock
+#  echo Holder:
+#  p/x* ($arg0).holder
+#  jlthreadName ((Hjava_lang_Thread*)(($arg0).holder.jlThread))
+#  set $waiting = ($arg0).waiting
+#  while ($waiting != 0)
+#    echo Waiting:
+#    p/x* $waiting
+#    jlthreadName ((Hjava_lang_Thread*)(($waiting)->jlThread))
+#    set $waiting = ($waiting).nextQ
+#  end
+#end
+
+define dumpclasses
+    set $i2 = 0
+    while $i2 < 256
+	# print $i2
+	set $b = classEntryPool[$i2]
+	while $b != 0
+	   pclass $b.class
+	   set $b = $b.next
+	end
+	set $i2 = $i2 + 1
+    end
+end
+document dumpclasses
+    find a class from a pool
+end
+
+define restorelinux
+  set $th = ((jthread*)$arg0)
+  set $jbuf = $th.env.__jmpbuf
+  echo >
+  set $eip = $jbuf[5]
+  echo .
+  set $esp = $jbuf[4]
+  echo .
+  set $ebp = $jbuf[3]
+  echo .
+  set $edi = $jbuf[2]
+  echo .
+  set $esi = $jbuf[1]
+  echo .
+  set $ebx = $jbuf[0]
+  echo .\n
+end
+document restorelinux
+    Restore a thread under Linux, given a jthread pointer
+end
+
+define dumpexcchain
+    set $th = ((jthread*)$arg0)
+    set $jth = (Hjava_lang_Thread*)$th.jlThread
+    set $eptr = (vmException*)$jth.data.exceptPtr
+    while $eptr != 0
+	printf "%p ", $eptr
+	if $eptr.meth == 1
+	    printf "JNI"
+	else
+	    printf "%s.%s", ($eptr.meth).class.name.data, ($eptr.meth).name.data
+	end
+	printf " pc = %p, mobj = %p\n", $eptr.pc, $eptr.mobj
+	set $eptr = $eptr.prev
+    end
+end
+document dumpexcchain
+    Dump exception chain for a given jthread
+end
