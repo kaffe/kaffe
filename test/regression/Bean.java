@@ -9,7 +9,6 @@ public class Bean {
       Class cls = Class.forName("Bean");
 
       BeanInfo info = Introspector.getBeanInfo(cls);
-      System.out.println("BeanDescriptor:");
 
       System.out.println("  Class: " + info.getBeanDescriptor().getBeanClass());
 
@@ -57,29 +56,29 @@ public class Bean {
   public void setArray(String[] val) { }
 }
 
+// Sort output
 /* Expected Output:
-BeanDescriptor:
   Class: class Bean
-  Method: public void Bean.setArray(java.lang.String[])
-  Method: public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
-  Method: public final void java.lang.Object.wait() throws java.lang.InterruptedException
-  Method: public void Bean.setArray(int,java.lang.String)
+  Editor: <unknown>
+  Editor: <unknown>
+  Editor: class kaffe.beans.editors.StringEditor
   Method: public boolean java.lang.Object.equals(java.lang.Object)
-  Method: public final native void java.lang.Object.notifyAll()
-  Method: public void Bean.setValue(java.lang.String)
-  Method: public java.lang.String[] Bean.getArray()
   Method: public final native java.lang.Class java.lang.Object.getClass()
-  Method: public java.lang.String Bean.getValue()
-  Method: public java.lang.String Bean.getArray(int)
+  Method: public final native void java.lang.Object.notify()
+  Method: public final native void java.lang.Object.notifyAll()
+  Method: public final void java.lang.Object.wait() throws java.lang.InterruptedException
   Method: public final void java.lang.Object.wait(long) throws java.lang.InterruptedException
+  Method: public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
+  Method: public java.lang.String Bean.getArray(int)
+  Method: public java.lang.String Bean.getValue()
+  Method: public java.lang.String java.lang.Object.toString()
+  Method: public java.lang.String[] Bean.getArray()
   Method: public native int java.lang.Object.hashCode()
   Method: public static void Bean.main(java.lang.String[])
-  Method: public java.lang.String java.lang.Object.toString()
-  Method: public final native void java.lang.Object.notify()
-  Property: type class java.lang.Class, read public final native java.lang.Class java.lang.Object.getClass(), write <none>
-  Editor: <unknown>
+  Method: public void Bean.setArray(int,java.lang.String)
+  Method: public void Bean.setArray(java.lang.String[])
+  Method: public void Bean.setValue(java.lang.String)
   Property: type class [Ljava.lang.String;, read public java.lang.String[] Bean.getArray(), write public void Bean.setArray(java.lang.String[]), idx read public java.lang.String Bean.getArray(int), idx write public void Bean.setArray(int,java.lang.String)
-  Editor: <unknown>
+  Property: type class java.lang.Class, read public final native java.lang.Class java.lang.Object.getClass(), write <none>
   Property: type class java.lang.String, read public java.lang.String Bean.getValue(), write public void Bean.setValue(java.lang.String)
-  Editor: class kaffe.beans.editors.StringEditor
 */
