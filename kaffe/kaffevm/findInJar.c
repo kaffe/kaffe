@@ -35,6 +35,7 @@
 #include "jsyscall.h"
 #include "jni.h"
 #include "classpath.h"
+#include "stringSupport.h"
 
 #define	MAXBUF		256
 
@@ -94,7 +95,7 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 			return (0);
 		}
 
-		class->name = centry->name;
+		utf8ConstAssign(class->name, centry->name);
 		class->centry = centry;
 		class = readClass(class, &hand, NULL, einfo);
 

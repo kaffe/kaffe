@@ -515,8 +515,7 @@ static
 void
 internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hjava_lang_ClassLoader* loader)
 {
-	cl->name = name;
-	utf8ConstAddRef(name);
+	utf8ConstAssign(cl->name, name);
 	CLASS_METHODS(cl) = NULL;
 	CLASS_NMETHODS(cl) = 0;
 	assert(cl->superclass == 0);
@@ -596,10 +595,8 @@ DBG(CLASSFILE,
     )
 
 	mt = &c->methods[c->nmethods++];
-	mt->name = name;
-	utf8ConstAddRef(name);
-	mt->signature = signature;
-	utf8ConstAddRef(signature);
+	utf8ConstAssign(mt->name, name);
+	utf8ConstAssign(mt->signature, signature);
 	mt->class = c;
 	mt->accflags = m->access_flags;
 	mt->c.bcode.code = 0;
@@ -653,8 +650,7 @@ DBG(CLASSFILE,
 DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		return (0);
 	}
-	ft->name = WORD2UTF(pool->data[nc]);
-	utf8ConstAddRef(ft->name);
+	utf8ConstAssign(ft->name, WORD2UTF(pool->data[nc]));
 	ft->accflags = f->access_flags;
 
 	sig = CLASS_CONST_UTF8(c, sc)->data;

@@ -65,7 +65,14 @@ DBG(CLASSGC,
    )
 
 	assert(!CLASS_IS_PRIMITIVE(clazz));
-	assert(clazz->loader);
+
+	/* Make sure that we don't unload fully loaded classes without
+	 * classloaders.  
+	 * NB: otherwise, this function must destroy any partially
+	 * initialized class.  Class processing may fail at any
+	 * state, and the discarded class objects destroyed.
+	 */
+	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
 
         /* destroy all fields */
         if (CLASS_FIELDS(clazz) != 0) {

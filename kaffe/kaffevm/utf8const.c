@@ -169,6 +169,13 @@ utf8ConstAddRef(Utf8Const *utf8)
 void
 utf8ConstRelease(Utf8Const *utf8)
 {
+	/* NB: we ignore zero utf8s here in order to not having to do it at
+	 * the call sites, such as when destroying half-processed class 
+	 * objects because of error conditions.
+	 */
+	if (utf8 == 0) {
+		return;
+	}
 	assert(staticLockIsInitialized(&utf8Lock));
 	lockStaticMutex(&utf8Lock);
 	assert(utf8->nrefs >= 1);

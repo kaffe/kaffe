@@ -67,6 +67,16 @@ extern void		  utf8ConstAddRef(Utf8Const*);
 /* Release a Utf8Const previously created via utf8ConstNew(). */
 extern void		  utf8ConstRelease(Utf8Const*);
 
+/* Assign a Utf8Const B to A and do proper reference counting */
+#define utf8ConstAssign(A, B) 			\
+	do {					\
+		if ((A) != 0) {			\
+			utf8ConstRelease((A));	\
+		}				\
+		utf8ConstAddRef((B));		\
+		(A) = (B);			\
+	} while (0)
+
 /* Create a String object from a Utf8Const */
 extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
 
