@@ -1,3 +1,9 @@
+Fri Aug 28 09:49:20 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* configure.in, config/config.h.in: 
+	libraries/clib/net/PlainSocketImpl.c: added test for netinet/tcp.h
+	* config/i386/win32/cygnus/*: moved to config/i386/cygwin32/*
+
 Thu Aug 27 13:53:40 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/scripts/kaffe.in: improve CLASSPATH handling in driver 
