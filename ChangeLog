@@ -1,6 +1,11 @@
 2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
 
-	* libraries/javlaib/java/io/ObjectStreamClass.java,
+	* libraries/javalib/java/io/ObjectStreamClass.java
+	(getClassUID): Commented out again GNU security provider.
+
+2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectStreamClass.java,
 	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
 	libraries/javalib/java/net/URLConnection.java,
 	libraries/javalib/java/text/CollationElementIterator.java,

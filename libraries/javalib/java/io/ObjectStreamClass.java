@@ -55,7 +55,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import gnu.java.io.NullOutputStream;
 import gnu.java.lang.reflect.TypeSignature;
-import gnu.java.security.provider.Gnu;
+//import gnu.java.security.provider.Gnu;
 
 
 public class ObjectStreamClass implements Serializable
@@ -598,9 +598,10 @@ public class ObjectStreamClass implements Serializable
 	catch (NoSuchAlgorithmException e)
 	  {
 	    // If a provider already provides SHA, use it; otherwise, use this.
-	    Gnu gnuProvider = new Gnu();
-	    Security.addProvider(gnuProvider);
-	    md = MessageDigest.getInstance("SHA");
+	    //Gnu gnuProvider = new Gnu();
+	    //Security.addProvider(gnuProvider);
+	    //md = MessageDigest.getInstance("SHA");
+	    throw e;
 	  }
 
 	DigestOutputStream digest_out =
