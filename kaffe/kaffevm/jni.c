@@ -46,11 +46,6 @@
 #include "basecode.h"
 #include "icode.h"
 #include "machine.h"
-extern int maxArgs;
-extern int maxLocal;
-extern int isStatic;
-extern int maxTemp;
-extern int maxStack;
 #endif
 
 /*

@@ -29,8 +29,7 @@
 #include "md.h"
 #include "external.h"
 #include "gc.h"
-
-extern Hjava_lang_Class* ThreadClass;
+#include "thread.h"
 
 Hjava_lang_Object*
 newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
