@@ -1,5 +1,15 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/InetAddress.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/InetAddress.java (getCanonicalHostName):
+        Support IPv6 addresses.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/geom/Arc2D.java:
         Resynced with GNU Classpath.
 
