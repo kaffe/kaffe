@@ -74,16 +74,16 @@ public final class DGCImpl_Skel
         switch (opnum) {
         case 0:
         {
-            java.rmi.server.ObjID[] $param_0;
-            long $param_1;
-            java.rmi.dgc.VMID $param_2;
-            boolean $param_3;
+            java.rmi.server.ObjID[] param_0;
+            long param_1;
+            java.rmi.dgc.VMID param_2;
+            boolean param_3;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                $param_0 = (java.rmi.server.ObjID[])in.readObject();
-                $param_1 = (long)in.readLong();
-                $param_2 = (java.rmi.dgc.VMID)in.readObject();
-                $param_3 = (boolean)in.readBoolean();
+                param_0 = (java.rmi.server.ObjID[])in.readObject();
+                param_1 = (long)in.readLong();
+                param_2 = (java.rmi.dgc.VMID)in.readObject();
+                param_3 = (boolean)in.readBoolean();
                 
             }
             catch (java.io.IOException e) {
@@ -95,7 +95,7 @@ public final class DGCImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            server.clean($param_0, $param_1, $param_2, $param_3);
+            server.clean(param_0, param_1, param_2, param_3);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
             }
@@ -107,14 +107,14 @@ public final class DGCImpl_Skel
         
         case 1:
         {
-            java.rmi.server.ObjID[] $param_0;
-            long $param_1;
-            java.rmi.dgc.Lease $param_2;
+            java.rmi.server.ObjID[] param_0;
+            long param_1;
+            java.rmi.dgc.Lease param_2;
             try {
                 java.io.ObjectInput in = call.getInputStream();
-                $param_0 = (java.rmi.server.ObjID[])in.readObject();
-                $param_1 = (long)in.readLong();
-                $param_2 = (java.rmi.dgc.Lease)in.readObject();
+                param_0 = (java.rmi.server.ObjID[])in.readObject();
+                param_1 = (long)in.readLong();
+                param_2 = (java.rmi.dgc.Lease)in.readObject();
                 
             }
             catch (java.io.IOException e) {
@@ -126,10 +126,10 @@ public final class DGCImpl_Skel
             finally {
                 call.releaseInputStream();
             }
-            java.rmi.dgc.Lease $result = server.dirty($param_0, $param_1, $param_2);
+            java.rmi.dgc.Lease result = server.dirty(param_0, param_1, param_2);
             try {
                 java.io.ObjectOutput out = call.getResultStream(true);
-                out.writeObject($result);
+                out.writeObject(result);
             }
             catch (java.io.IOException e) {
                 throw new java.rmi.MarshalException("error marshalling return", e);

@@ -1,5 +1,13 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Skel.java,
+	  libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Stub.java,
+	  libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Skel.java,
+	  libraries/javalib/gnu/java/rmi/registry/RegistryImpl_Stub.java:
+	  Don't use '$' in identifiers.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/debug.c, kaffe/kaffevm/jni/jni-string.c,
 	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
 	  kaffe/kaffevm/jni/jni.c, libraries/clib/math/BigInteger.c,
