@@ -139,12 +139,11 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
  * Allocate an object and execute the constructor.
  */
 Hjava_lang_Object*
-execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, va_list argptr)
 {
 	int args;
 	Hjava_lang_Object* obj;
 	char* sig;
-	va_list argptr;
 	Method* mb;
 	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
@@ -175,8 +174,19 @@ execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...
 	assert(obj != 0);
 
 	/* Make the call */
-	va_start(argptr, signature);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+
+	return (obj);
+}
+
+Hjava_lang_Object*
+execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+{
+	va_list argptr;
+	Hjava_lang_Object* obj;
+
+	va_start(argptr, signature);
+	obj = execute_java_constructor_v(cname, cc, signature, argptr);
 	va_end(argptr);
 
 	return (obj);
