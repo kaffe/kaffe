@@ -1,3 +1,9 @@
+Fri May  5 12:48:22 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/AbstractList.java: fix removeRange()
+	* libraries/javalib/java/util/Vector.java: add some missing methods
+	and increment modCount after each structural change
+
 Wed May  3 11:37:33 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Thread.java: disallow setDaemon()
