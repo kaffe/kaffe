@@ -410,7 +410,15 @@ soft_athrow(Hjava_lang_Object* o)
 		soft_nullpointer();
 	}
 	else {
-		throwExternalException((Hjava_lang_Throwable*)o);
+		/* NB: using throwException instead of throwExternalException
+		 * will override the backtrace of the throwable with a new
+		 * backtrace that corresponds to the site where this athrow
+		 * instruction is executed.
+		 * 
+		 * This is still not quite what Sun does: 
+		 * new Throwable().printStackTrace() gives a different result.
+		 */
+		throwException((Hjava_lang_Throwable*)o);
 	}
 }
 
