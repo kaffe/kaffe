@@ -31,5 +31,6 @@ qnx4.*)		host_os=qnx ;;
 solaris2*)	host_os=solaris2 ;;
 sunos4*)	host_os=sunos4 ;;
 sysv*)		host_os=univel_svr4 ;;
+ultrix4*)	host_os=ultrix4 ;;
 
 esac
