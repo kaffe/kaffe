@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-10  Graydon Hoare  <graydon@redhat.com>
+
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextComponentPeer.c,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c:
+        Release GDK lock during upcalls.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-10  Michael Koch  <konqueror@gmx.de>
 
         * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c:

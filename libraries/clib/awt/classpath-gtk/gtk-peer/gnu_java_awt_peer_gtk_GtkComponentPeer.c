@@ -1054,10 +1054,12 @@ focus_in_cb (GtkWidget *widget __attribute((unused)),
              GdkEventFocus *event __attribute((unused)),
              jobject peer)
 {
+  gdk_threads_leave ();
   (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                               postFocusEventID,
                               AWT_FOCUS_GAINED,
                               JNI_FALSE);
+  gdk_threads_enter ();
   return FALSE;
 }
 
@@ -1066,9 +1068,11 @@ focus_out_cb (GtkWidget *widget __attribute((unused)),
               GdkEventFocus *event __attribute((unused)),
               jobject peer)
 {
+  gdk_threads_leave ();
   (*gdk_env())->CallVoidMethod (gdk_env(), peer,
                               postFocusEventID,
                               AWT_FOCUS_LOST,
                               JNI_FALSE);
+  gdk_threads_enter ();
   return FALSE;
 }
