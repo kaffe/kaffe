@@ -1,3 +1,8 @@
+2004-12-05  Mark Wielaard  <mark@klomp.org>
+
+	* libraries/javalib/gnu/xml/dom/ls/ReaderInputStream.java
+	(ReaderInputStream) Use UTF-8 as the default encoding.
+
 2004-12-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* tools/gjdoc/javalib/Makefile.am:

@@ -57,7 +57,7 @@ class ReaderInputStream
   ReaderInputStream(Reader reader)
   {
     this.reader = reader;
-    encoding = "UTF16";
+    this.encoding = "UTF-8";
   }
 
   void setEncoding(String encoding)
