@@ -1921,6 +1921,12 @@ define_insn(cmp_int, cmpi_xRR)
 	op_cmpl_dd(r2, r1);
 }
 
+#if 0
+/*
+ * Since this function generates an unimplemented instruction, and
+ * tentatively commented out.
+ */
+
 define_insn(cmp_ref_const, cmpr_xRC)
 {
 	int v = const_int(2);
@@ -1933,6 +1939,7 @@ define_insn(cmp_ref_const, cmpr_xRC)
 		op_tst_a(r);
 	}
 }
+#endif
 
 define_insn(cmp_ref, cmpr_xRR)
 {

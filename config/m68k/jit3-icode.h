@@ -137,14 +137,14 @@
 
 #define HAVE_add_ref_const		addr_RRC
 #define HAVE_sub_ref_const		subr_RRC
-#define HAVE_cmp_ref_const		cmpr_xRC
+#undef	HAVE_cmp_ref_const
 #define HAVE_pusharg_ref_const		pushr_xCC
 #define HAVE_load_offset_ref		loadr_RRC
 #define HAVE_store_offset_ref		storer_xRRC
 
 #define HAVE_add_ref_const_rangecheck(v)	(1)
 #define HAVE_sub_ref_const_rangecheck(v)	(1)
-#define HAVE_cmp_ref_const_rangecheck(v)	(1)
+#undef	HAVE_cmp_ref_const_rangecheck(v)
 #define HAVE_pusharg_ref_const_rangecheck(v)	(1)
 #define HAVE_load_offset_ref_rangecheck(v)	m68k_s16_rangecheck(v)
 #define HAVE_store_offset_ref_rangecheck(v)	m68k_s16_rangecheck(v)

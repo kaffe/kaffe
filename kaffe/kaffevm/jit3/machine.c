@@ -832,17 +832,6 @@ SCHK(		sanityCheck();					);
 				if ((m & 1) != 0) {
 					assert(!isGlobal(t->u[i].slot));
 					slot_kill_readonce(t->u[i].slot);
-					/*
-					 * If this sequence is in an exception
-					 * handler we need to spill the slot
-					 * in case its used in a subsequent
-					 * basic block.
-					 */
-					if( t->jflags.ANY )
-					{
-						spillAndUpdate(t->u[i].slot,
-							       true);
-					}
 					slot_invalidate(t->u[i].slot);
 				}
 			}

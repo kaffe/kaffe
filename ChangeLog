@@ -1,3 +1,14 @@
+2004-07-30  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Remove unneeded (and incorrect) code emitted.
+	This mod if suggested by Helmer.
+
+	* config/m68k/jit3-icode.h,
+	config/m68k/jit3-m68k.def:
+	Comment out cmpr_xRC definition. It emits an unimplemented
+	machine code for 68030.
+
 2004-07-29  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
