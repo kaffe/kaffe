@@ -60,8 +60,34 @@ char* dlerror(void);
 		struct mach_header* new_header;				\
 		filenames[0]=(LIB);					\
 		filenames[1]=NULL;					\
-		HAND = rld_load(NULL,&new_header,filenames,NULL);\
+		HAND = rld_load(NULL,&new_header,filenames,NULL);	\
 	}
+/*
+ * The following is for the NeXTStep - I don't like putting this kind
+ * of system dependency here and I'll find an auto way to detect this
+ * later.
+ */
+#if defined(NeXT)
+#undef	LIBRARYLOAD
+#define	LIBRARYLOAD(HAND, LIB)						\
+	{								\
+		const char* filenames[2];				\
+		NXStream* errorStream;					\
+		filenames[0] = (LIB);					\
+		filenames[1] = NULL;					\
+		errorStream = NXOpenMemory(NULL, 0, NX_WRITEONLY);	\
+		HAND = !objc_loadModules(filenames,errorStream,NULL,NULL,NULL);\
+		if (!HAND) {						\
+			char* streamBuf;				\
+			int len, maxLen;				\
+			NXPutc(errorStream, (char)0);			\
+			NXGetMemoryBuffer(errorStream, &streamBuf, &len,\
+				&maxLen);				\
+			printf("LIBRARYLOAD(\"%s\") error: %s\n", LIB,	\
+				streamBuf);				\
+		}							\
+	}
+#endif
 #define	LIBRARYFUNCTION(FUNC, SYM)					\
 	rld_lookup(NULL,SYM,&FUNC)
 #define	LIBRARYHANDLE	long

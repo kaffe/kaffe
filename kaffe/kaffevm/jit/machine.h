@@ -108,7 +108,7 @@ typedef struct {
 
 extern jitflags willcatch;
 
-#define	willCatch(FLAG)	willcatch.##FLAG = true
-#define	canCatch(FLAG)	willcatch.##FLAG
+#define	willCatch(FLAG)	willcatch. FLAG = true
+#define	canCatch(FLAG)	willcatch. FLAG
 
 #endif

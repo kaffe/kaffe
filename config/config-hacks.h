@@ -14,6 +14,7 @@
 #if defined(NeXT)
 #undef  HAVE_SYS_UTSNAME_H
 #define HAVE_DYN_UNDERSTORE 1
+#undef	HAVE_SBRK
 #endif
 
 /* Hack to configure AmigaOS */

@@ -10,11 +10,11 @@
  */
 
 #define	DBG(s)
-#define	LDBG(s)
 
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-io.h"
 #include "gtypes.h"
 #include "access.h"
 #include "object.h"
@@ -180,10 +180,16 @@ loadNativeLibrary(char* lib)
 
 	/* Open the library */
 	open:
+
+	/* If this file doesn't exist, ignore it */
+	if (access(lib, R_OK) != 0) {
+		return (0);
+	}
+
         LIBRARYLOAD(libHandle[i].desc, lib);
 
 	if (libHandle[i].desc == 0) {
-LDBG(		printf("Library load failed: %s\n", LIBRARYERROR());	)
+		printf("Library load failed: %s\n", LIBRARYERROR());
 		return (0);
 	}
 

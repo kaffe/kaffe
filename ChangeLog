@@ -1,3 +1,7 @@
+Mon Oct 12 22:07:24 PDT 1998	 Yasuyui TSUKUI <ytsukui@sf.airnet.ne.jp>
+
+	* Bug fixes for NextStep 3.3.
+
 Fri Oct  9 10:36:19 PDT 1998 Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/external.c: fall back to using LIBRARYPATH if
