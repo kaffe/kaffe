@@ -1,7 +1,6 @@
 #! /bin/sh
 #
 # rebuildLib - rebuild everything in one sweep
-#              (without using any pre-compiled classes)
 #
 # Copyright (c) 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
@@ -15,14 +14,14 @@ LIBDIR=${LIBDIR-`sed -n '/^LIBDIR *= */ s///p' < Makefile`}
 LIBDIR=${LIBDIR-lib}
 TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
 
-# We now rebuild the class library using kjc and Klasses.jar.default 
+# We now rebuild the class library using kjc and Klasses.jar.bootstrap 
 # JIKES=@JIKES@
 JIKES=
 
 rm -rf $LIBDIR
 mkdir $LIBDIR
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
-VERBOSE=-v
+VERBOSE=
 
 if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
@@ -32,6 +31,7 @@ if [ "$JIKES" = "" ] ; then
 	fi
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA at.dms.kjc.Main"
+		VERBOSE=-v
 	fi
 	CPATH="-classpath $LIBDIR${CPATH+@PATHSEP@$CPATH}"
 else
