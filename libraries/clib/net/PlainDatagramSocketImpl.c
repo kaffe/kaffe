@@ -12,7 +12,9 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
 #include <netinet/in.h>
 #include "config-io.h"
 #include <native.h>
