@@ -1,5 +1,15 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/Collections.java:
+        Resynced with GNU Classpath.
+
+	2004-11-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/util/Collections.java (synchronizedSortedMap):
+        Removed some cruft in javadoc.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedReader.java,
 	libraries/javalib/java/io/FileInputStream.java,
 	libraries/javalib/java/io/FileOutputStream.java,

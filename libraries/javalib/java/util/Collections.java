@@ -3606,7 +3606,7 @@ public class Collections
    * Set s2 = m2.keySet(); // safe outside a synchronized block
    * synchronized (m) // synch on m, not m2, s or s2
    *   {
-3~3~   *     Iterator i = s.iterator();
+   *     Iterator i = s.iterator();
    *     while (i.hasNext())
    *       foo(i.next());
    *     i = s2.iterator();
