@@ -169,275 +169,24 @@ public class Collections {
 		return max;
 	}
 
-	private static class UMCollection extends AbstractCollection
-			implements Collection, Serializable {
-		private final Collection c;
-
-		UMCollection(Collection c) {
-			this.c = c;
-		}
-		public Iterator iterator() {
-			return unmodifiableIterator(c.iterator());
-		}
-		public int size() {
-			return c.size();
-		}
-		public boolean contains(Object o) {
-			return c.contains(o);
-		}
-		public Object[] toArray(Object[] a) {
-			return c.toArray(a);
-		}
-		public Object[] toArray() {
-			return c.toArray();
-		}
-		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
-		}
-		public boolean equals(Object o) {
-			return ((Object)this).equals(o);
-		}
-		public int hashCode() {
-			return ((Object)this).hashCode();
-		}
-	}
-
 	public static Collection unmodifiableCollection(Collection c) {
 		return new UMCollection(c);
-	}
-
-	private static class UMSet extends AbstractSet
-			implements Set, Serializable {
-		private final Set s;
-
-		UMSet(Set s) {
-			this.s = s;
-		}
-		public Iterator iterator() {
-			return unmodifiableIterator(s.iterator());
-		}
-		public int size() {
-			return s.size();
-		}
-		public boolean contains(Object o) {
-			return s.contains(o);
-		}
-		public Object[] toArray(Object[] a) {
-			return s.toArray(a);
-		}
-		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	public static Set unmodifiableSet(Set s) {
 		return new UMSet(s);
 	}
 
-	private static class UMSortedSet implements SortedSet, Serializable {
-		private final SortedSet s;
-
-		UMSortedSet(SortedSet s) {
-			this.s = s;
-		}
-		public int size() {
-			return s.size();
-		}
-		public boolean isEmpty() {
-			return s.isEmpty();
-		}
-		public boolean contains(Object o) {
-			return s.contains(o);
-		}
-		public Iterator iterator() {
-			return unmodifiableIterator(s.iterator());
-		}
-		public Object[] toArray() {
-			return s.toArray();
-		}
-		public Object[] toArray(Object[] a) {
-			return s.toArray(a);
-		}
-		public boolean add(Object o) {
-			throw new UnsupportedOperationException();
-		}
-		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
-		}
-		public boolean containsAll(Collection c) {
-			return s.containsAll(c);
-		}
-		public boolean addAll(Collection c) {
-			throw new UnsupportedOperationException();
-		}
-		public boolean removeAll(Collection c) {
-			throw new UnsupportedOperationException();
-		}
-		public boolean retainAll(Collection c) {
-			throw new UnsupportedOperationException();
-		}
-		public void clear() {
-			throw new UnsupportedOperationException();
-		}
-		public boolean equals(Object o) {
-			return s.equals(o);
-		}
-		public int hashCode() {
-			return s.hashCode();
-		}
-		public Comparator comparator() {
-			return s.comparator();
-		}
-		public SortedSet subSet(Object fromElement, Object toElement) {
-			return unmodifiableSortedSet(
-				s.subSet(fromElement, toElement));
-		}
-		public SortedSet headSet(Object toElement) {
-			return unmodifiableSortedSet(s.headSet(toElement));
-		}
-		public SortedSet tailSet(Object fromElement) {
-			return unmodifiableSortedSet(s.tailSet(fromElement));
-		}
-		public Object first() {
-			return s.first();
-		}
-		public Object last() {
-			return s.last();
-		}
-	}
-
 	public static SortedSet unmodifiableSortedSet(SortedSet s) {
 		return new UMSortedSet(s);
-	}
-
-	public static class UMList extends AbstractList
-			implements List, Serializable {
-		private final List list;
-
-		UMList(List list) {
-			this.list = list;
-		}
-		public int size() {
-			return list.size();
-		}
-		public Object get(int index) {
-			return list.get(index);
-		}
-		public int indexOf(Object o) {
-			return list.indexOf(o);
-		}
-		public int lastIndexOf(Object o) {
-			return list.lastIndexOf(o);
-		}
 	}
 
 	public static List unmodifiableList(List list) {
 		return new UMList(list);
 	}
 
-	private static class UMMap extends AbstractMap
-			implements Map, Serializable {
-		private final Map m;
-
-		UMMap(Map m) {
-			this.m = m;
-		}
-		public int size() {
-			return m.size();
-		}
-		public boolean containsValue(Object value) {
-			return m.containsValue(value);
-		}
-		public boolean containsKey(Object key) {
-			return m.containsKey(key);
-		}
-		public Object get(Object key) {
-			return m.get(key);
-		}
-		public Object remove(Object key) {
-			throw new UnsupportedOperationException();
-		}
-		public void putAll(Map t) {
-			throw new UnsupportedOperationException();
-		}
-		public void clear() {
-			throw new UnsupportedOperationException();
-		}
-		public Set keySet() {
-			return unmodifiableSet(m.keySet());
-		}
-		public Collection values() {
-			return unmodifiableCollection(m.values());
-		}
-		public Set entrySet() {
-			return unmodifiableSet(m.entrySet());
-		}
-	}
-
 	public static Map unmodifiableMap(Map m) {
 		return new UMMap(m);
-	}
-
-	private static class UMSortedMap implements SortedMap, Serializable {
-		private final SortedMap m;
-
-		UMSortedMap(SortedMap m) {
-			this.m = m;
-		}
-		public int size() {
-			return m.size();
-		}
-		public boolean isEmpty() {
-			return m.isEmpty();
-		}
-		public boolean containsValue(Object value) {
-			return m.containsValue(value);
-		}
-		public boolean containsKey(Object key) {
-			return m.containsKey(key);
-		}
-		public Object get(Object key) {
-			return m.get(key);
-		}
-		public Object put(Object key, Object value) {
-			throw new UnsupportedOperationException();
-		}
-		public Object remove(Object key) {
-			throw new UnsupportedOperationException();
-		}
-		public void putAll(Map t) {
-			throw new UnsupportedOperationException();
-		}
-		public void clear() {
-			throw new UnsupportedOperationException();
-		}
-		public Set keySet() {
-			return unmodifiableSet(m.keySet());
-		}
-		public Collection values() {
-			return unmodifiableCollection(m.values());
-		}
-		public Set entrySet() {
-			return unmodifiableSet(m.entrySet());
-		}
-		public Comparator comparator() {
-			return m.comparator();
-		}
-		public SortedMap subMap(Object fromKey, Object toKey) {
-			return unmodifiableSortedMap(m.subMap(fromKey, toKey));
-		}
-		public SortedMap headMap(Object toKey) {
-			return unmodifiableSortedMap(m.headMap(toKey));
-		}
-		public SortedMap tailMap(Object fromKey) {
-			return unmodifiableSortedMap(m.tailMap(fromKey));
-		}
-		public Object firstKey() {
-			return m.firstKey();
-		}
-		public Object lastKey() {
-			return m.lastKey();
-		}
 	}
 
 	public static SortedMap unmodifiableSortedMap(SortedMap m) {
@@ -445,33 +194,27 @@ public class Collections {
 	}
 
 	public static Collection synchronizedCollection(Collection c) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedCollection()");
+		return new SyncCollection(c);
 	}
 
 	public static Set synchronizedSet(Set s) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedSet()");
+		return new SyncSet(s);
 	}
 
 	public static SortedSet synchronizedSortedSet(SortedSet s) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedSortedSet()");
+		return new SyncSortedSet(s);
 	}
 
 	public static List synchronizedList(List l) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedList()");
+		return new SyncList(l);
 	}
 
 	public static Map synchronizedMap(Map m) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedMap()");
+		return new SyncMap(m);
 	}
 
 	public static SortedMap synchronizedSortedMap(SortedMap m) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".synchronizedSortedMap()");
+		return new SyncSortedMap(m);
 	}
 
 	public static Set singleton(final Object o) {
@@ -555,18 +298,453 @@ public class Collections {
 		};
 	}
 
-	private static Iterator unmodifiableIterator(final Iterator i) {
-		return new Iterator() {
-			public boolean hasNext() {
-				return i.hasNext();
-			}
-			public Object next() {
-				return i.next();
-			}
-			public void remove() {
-  				throw new UnsupportedOperationException();
-			}
-		};
+	// Synchronized wrapper classes:
+
+	private static class SyncCollection
+			implements Collection, Serializable {
+		protected final Collection c;
+
+		SyncCollection(Collection c) {
+			this.c = c;
+		}
+		public synchronized int size() {
+			return c.size();
+		}
+		public synchronized boolean isEmpty() {
+			return c.isEmpty();
+		}
+		public synchronized boolean contains(Object o) {
+			return c.contains(o);
+		}
+		public synchronized Iterator iterator() {
+			return c.iterator();
+		}
+		public synchronized Object[] toArray() {
+			return c.toArray();
+		}
+		public synchronized Object[] toArray(Object[] a) {
+			return c.toArray(a);
+		}
+		public synchronized boolean add(Object o) {
+			return c.add(o);
+		}
+		public synchronized boolean remove(Object o) {
+			return c.remove(o);
+		}
+		public synchronized boolean containsAll(Collection c2) {
+			return c.containsAll(c2);
+		}
+		public synchronized boolean addAll(Collection c2) {
+			return c.addAll(c2);
+		}
+		public synchronized boolean removeAll(Collection c2) {
+			return c.removeAll(c2);
+		}
+		public synchronized boolean retainAll(Collection c2) {
+			return c.retainAll(c2);
+		}
+		public synchronized void clear() {
+			c.clear();
+		}
+		public synchronized boolean equals(Object o) {
+			return c.equals(o);
+		}
+		public synchronized int hashCode() {
+			return c.hashCode();
+		}
+	}
+
+	private static class SyncSet extends SyncCollection
+			implements Set, Serializable {
+		SyncSet(Set s) {
+			super(s);
+		}
+	}
+
+	private static class SyncSortedSet extends SyncSet
+			implements SortedSet, Serializable {
+		SyncSortedSet(SortedSet s) {
+			super(s);
+		}
+		public synchronized Comparator comparator() {
+			return ((SortedSet)c).comparator();
+		}
+		public synchronized SortedSet
+		    subSet(Object fromElement, Object toElement) {
+			return ((SortedSet)c).subSet(fromElement, toElement);
+		}
+		public synchronized SortedSet headSet(Object toElement) {
+			return ((SortedSet)c).headSet(toElement);
+		}
+		public synchronized SortedSet tailSet(Object fromElement) {
+			return ((SortedSet)c).tailSet(fromElement);
+		}
+		public synchronized Object first() {
+			return ((SortedSet)c).first();
+		}
+		public synchronized Object last() {
+			return ((SortedSet)c).last();
+		}
+	}
+
+	private static class SyncList extends SyncCollection
+			implements List, Serializable {
+		SyncList(List l) {
+			super(l);
+		}
+		public synchronized void add(int index, Object element) {
+			((List)c).add(index, element);
+		}
+		public synchronized boolean addAll(int index, Collection c2) {
+			return ((List)c).addAll(index, c2);
+		}
+		public synchronized Object get(int index) {
+			return ((List)c).get(index);
+		}
+		public synchronized int indexOf(Object o) {
+			return ((List)c).indexOf(o);
+		}
+		public synchronized int lastIndexOf(Object o) {
+			return ((List)c).lastIndexOf(o);
+		}
+		public synchronized ListIterator listIterator() {
+			return ((List)c).listIterator();
+		}
+		public synchronized ListIterator listIterator(int index) {
+			return ((List)c).listIterator(index);
+		}
+		public synchronized Object remove(int index) {
+			return ((List)c).remove(index);
+		}
+		public synchronized Object set(int index, Object element) {
+			return ((List)c).set(index, element);
+		}
+		public synchronized List subList(int fromIndex, int toIndex) {
+			return ((List)c).subList(fromIndex, toIndex);
+		}
+	}
+
+	private static class SyncMap implements Map, Serializable {
+		protected final Map m;
+
+		SyncMap(Map m) {
+			this.m = m;
+		}
+		public synchronized int size() {
+			return m.size();
+		}
+		public synchronized boolean isEmpty() {
+			return m.isEmpty();
+		}
+		public synchronized boolean containsKey(Object o) {
+			return m.containsKey(o);
+		}
+		public synchronized boolean containsValue(Object o) {
+			return m.containsValue(o);
+		}
+		public synchronized Object get(Object key) {
+			return m.get(key);
+		}
+		public synchronized Object put(Object key, Object value) {
+			return m.put(key, value);
+		}
+		public synchronized void putAll(Map m2) {
+			m.putAll(m2);
+		}
+		public synchronized void clear() {
+			m.clear();
+		}
+		public synchronized Set keySet() {
+			return m.keySet();
+		}
+		public synchronized Set entrySet() {
+			return m.entrySet();
+		}
+		public synchronized Collection values() {
+			return m.values();
+		}
+		public synchronized boolean equals(Object o) {
+			return m.equals(o);
+		}
+		public synchronized int hashCode() {
+			return m.hashCode();
+		}
+		public synchronized Object remove(Object o) {
+			return m.remove(o);
+		}
+	}
+
+	private static class SyncSortedMap extends SyncMap
+			implements SortedMap, Serializable {
+		SyncSortedMap(SortedMap m) {
+			super(m);
+		}
+		public synchronized Comparator comparator() {
+			return ((SortedMap)m).comparator();
+		}
+		public synchronized SortedMap
+		    subMap(Object fromKey, Object toKey) {
+			return ((SortedMap)m).subMap(fromKey, toKey);
+		}
+		public synchronized SortedMap headMap(Object toKey) {
+			return ((SortedMap)m).headMap(toKey);
+		}
+		public synchronized SortedMap tailMap(Object fromKey) {
+			return ((SortedMap)m).tailMap(fromKey);
+		}
+		public synchronized Object firstKey() {
+			return ((SortedMap)m).firstKey();
+		}
+		public synchronized Object lastKey() {
+			return ((SortedMap)m).lastKey();
+		}
+	}
+
+	// Unmodifiable wrapper classes
+
+	private static class UMCollection implements Collection, Serializable {
+		protected final Collection c;
+
+		UMCollection(Collection c) {
+			this.c = c;
+		}
+		public int size() {
+			return c.size();
+		}
+		public boolean isEmpty() {
+			return c.isEmpty();
+		}
+		public boolean contains(Object o) {
+			return c.contains(o);
+		}
+		public Iterator iterator() {
+			return new UMIterator(c.iterator());
+		}
+		public Object[] toArray() {
+			return c.toArray();
+		}
+		public Object[] toArray(Object[] a) {
+			return c.toArray(a);
+		}
+		public boolean add(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean containsAll(Collection c2) {
+			return c.containsAll(c2);
+		}
+		public boolean addAll(Collection c2) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean removeAll(Collection c2) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean retainAll(Collection c2) {
+			throw new UnsupportedOperationException();
+		}
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+		public boolean equals(Object o) {
+			return c.equals(o);
+		}
+		public int hashCode() {
+			return c.hashCode();
+		}
+	}
+
+	private static class UMSet extends UMCollection
+			implements Set, Serializable {
+		UMSet(Set s) {
+			super(s);
+		}
+	}
+
+	private static class UMSortedSet extends UMSet
+			implements SortedSet, Serializable {
+		UMSortedSet(SortedSet s) {
+			super(s);
+		}
+		public Comparator comparator() {
+			return ((SortedSet)c).comparator();
+		}
+		public SortedSet subSet(Object fromElement, Object toElement) {
+			return new UMSortedSet(
+				((SortedSet)c).subSet(fromElement, toElement));
+		}
+		public SortedSet headSet(Object toElement) {
+			return new UMSortedSet(
+				((SortedSet)c).headSet(toElement));
+		}
+		public SortedSet tailSet(Object fromElement) {
+			return new UMSortedSet(
+				((SortedSet)c).tailSet(fromElement));
+		}
+		public Object first() {
+			return ((SortedSet)c).first();
+		}
+		public Object last() {
+			return ((SortedSet)c).last();
+		}
+	}
+
+	public static class UMList extends UMCollection
+			implements List, Serializable {
+		UMList(List l) {
+			super(l);
+		}
+		public void add(int index, Object element) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean addAll(int index, Collection c2) {
+			throw new UnsupportedOperationException();
+		}
+		public Object get(int index) {
+			return ((List)c).get(index);
+		}
+		public int indexOf(Object o) {
+			return ((List)c).indexOf(o);
+		}
+		public int lastIndexOf(Object o) {
+			return ((List)c).lastIndexOf(o);
+		}
+		public ListIterator listIterator() {
+			return new UMListIterator(((List)c).listIterator());
+		}
+		public ListIterator listIterator(int index) {
+			return new UMListIterator(
+				((List)c).listIterator(index));
+		}
+		public Object remove(int index) {
+			throw new UnsupportedOperationException();
+		}
+		public Object set(int index, Object element) {
+			throw new UnsupportedOperationException();
+		}
+		public List subList(int fromIndex, int toIndex) {
+			return new UMList(
+				((List)c).subList(fromIndex, toIndex));
+		}
+	}
+
+	private static class UMMap implements Map, Serializable {
+		protected final Map m;
+
+		UMMap(Map m) {
+			this.m = m;
+		}
+		public int size() {
+			return m.size();
+		}
+		public boolean isEmpty() {
+			return m.isEmpty();
+		}
+		public boolean containsKey(Object key) {
+			return m.containsKey(key);
+		}
+		public boolean containsValue(Object value) {
+			return m.containsValue(value);
+		}
+		public Object get(Object key) {
+			return m.get(key);
+		}
+		public Object put(Object key, Object value) {
+			throw new UnsupportedOperationException();
+		}
+		public void putAll(Map m2) {
+			throw new UnsupportedOperationException();
+		}
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+		public Set keySet() {
+			return new UMSet(m.keySet());
+		}
+		public Set entrySet() {
+			return new UMSet(m.entrySet());
+		}
+		public Collection values() {
+			return new UMCollection(m.values());
+		}
+		public boolean equals(Object o) {
+			return m.equals(o);
+		}
+		public int hashCode() {
+			return m.hashCode();
+		}
+		public Object remove(Object key) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private static class UMSortedMap extends UMMap
+			implements SortedMap, Serializable {
+		UMSortedMap(SortedMap m) {
+			super(m);
+		}
+		public Comparator comparator() {
+			return ((SortedMap)m).comparator();
+		}
+		public SortedMap subMap(Object fromKey, Object toKey) {
+			return new UMSortedMap(
+				((SortedMap)m).subMap(fromKey, toKey));
+		}
+		public SortedMap headMap(Object toKey) {
+			return new UMSortedMap(((SortedMap)m).headMap(toKey));
+		}
+		public SortedMap tailMap(Object fromKey) {
+			return new UMSortedMap(((SortedMap)m).tailMap(fromKey));
+		}
+		public Object firstKey() {
+			return ((SortedMap)m).firstKey();
+		}
+		public Object lastKey() {
+			return ((SortedMap)m).lastKey();
+		}
+	}
+
+	private static class UMIterator implements Iterator {
+		protected final Iterator i;
+
+		UMIterator(Iterator i) {
+			this.i = i;
+		}
+		public boolean hasNext() {
+			return i.hasNext();
+		}
+		public Object next() {
+			return i.next();
+		}
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private static class UMListIterator extends UMIterator
+			implements ListIterator {
+		UMListIterator(ListIterator i) {
+			super(i);
+		}
+		public boolean hasPrevious() {
+			return ((ListIterator)i).hasPrevious();
+		}
+		public Object previous() {
+			return ((ListIterator)i).previous();
+		}
+		public int nextIndex() {
+			return ((ListIterator)i).nextIndex();
+		}
+		public int previousIndex() {
+			return ((ListIterator)i).previousIndex();
+		}
+		public void set(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public void add(Object o) {
+			throw new UnsupportedOperationException();
+		}
 	}
 }
 
