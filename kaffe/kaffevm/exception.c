@@ -286,12 +286,7 @@ nextFrame(void* fm)
 #else
         vmException* nfm;
         nfm = ((vmException*)fm)->prev;
-        if (nfm != 0 && nfm->meth != (Method*)1) {
-                return (nfm);
-        }
-        else {
-                return (0);
-        }
+	return (nfm);
 #endif
 }
 

@@ -39,7 +39,8 @@ struct _exceptionFrame {
 #define STACKTRACEPC(S)		((S).frame->pc)
 #define STACKTRACEFP(S)		(0)
 #define STACKTRACEMETHCREATE(S)	((S).frame->meth)
-#define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
+#define STACKTRACEEND(S)	((S).frame == 0)
+#define STACKTRACESKIP(S)	((S).frame->meth == (Method*)1)
 
 #elif defined(TRANSLATOR)
 
@@ -63,6 +64,7 @@ typedef struct _stackTrace {
 #define STACKTRACEFP(S)		(FPFRAME((S).frame))
 #define	STACKTRACEMETHCREATE(S)	(NULL)
 #define	STACKTRACEEND(S)	((S).frame == 0)
+#define STACKTRACESKIP(S)	(0)
 
 #endif
 

@@ -48,8 +48,9 @@ buildStackTrace(struct _exceptionFrame* base)
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
 	while(!STACKTRACEEND(trace)) {
+		if (!STACKTRACESKIP(trace))
+		    cnt++;
 		STACKTRACESTEP(trace);
-		cnt++;
 	}
 
 	/* Build an array of stackTraceInfo */
@@ -63,6 +64,8 @@ buildStackTrace(struct _exceptionFrame* base)
 	STACKTRACEINIT(trace, &orig, base, orig);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
+		if (STACKTRACESKIP(trace))
+			continue;
 		info[cnt].pc = STACKTRACEPC(trace);
 		info[cnt].fp = STACKTRACEFP(trace);
 		info[cnt].meth = STACKTRACEMETHCREATE(trace);
