@@ -1,5 +1,5 @@
 /*
- * $Id: StreamInputStream.java,v 1.2 2004/03/22 11:24:08 dalibor Exp $
+ * $Id: StreamInputStream.java,v 1.5 2004/10/04 19:33:57 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,46 +27,55 @@
 
 package gnu.inet.ftp;
 
-import java.io.IOException;
+import java.io.FilterInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * A DTP input stream that implements the FTP stream data transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:08 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:57 $
  */
 class StreamInputStream extends DTPInputStream
 {
 
-    StreamInputStream(DTP dtp, InputStream in)
+  StreamInputStream (DTP dtp, InputStream in)
     {
-        super(dtp, in);
-    }
-    
-    public int read() throws IOException
-    {
-        if (transferComplete)
-            return -1;
-        int c = in.read();
-        if (c == -1)
-            close();
-        return c;
-    }
-    
-    public int read(byte[] buf) throws IOException
-    {
-        return read(buf, 0, buf.length);
+      super (dtp, in);
     }
 
-    public int read(byte[] buf, int off, int len) throws IOException
+  public int read () throws IOException
     {
-        if (transferComplete)
-            return -1;
-        int l = in.read(buf, off, len);
-        if (l == -1)
-            close();
-        return l;
+      if (transferComplete)
+        {
+          return -1;
+        }
+      int c = in.read ();
+      if (c == -1)
+        {
+          close ();
+        }
+      return c;
+    }
+
+  public int read (byte[] buf) throws IOException
+    {
+      return read (buf, 0, buf.length);
+    }
+
+  public int read (byte[] buf, int off, int len) throws IOException
+    {
+      if (transferComplete)
+        {
+          return -1;
+        }
+      int l = in.read (buf, off, len);
+      if (l == -1)
+        {
+          close ();
+        }
+      return l;
     }
 
 }

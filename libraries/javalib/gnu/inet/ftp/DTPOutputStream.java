@@ -1,5 +1,5 @@
 /*
- * $Id: DTPOutputStream.java,v 1.1 2004/01/10 23:34:31 dalibor Exp $
+ * $Id: DTPOutputStream.java,v 1.4 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -35,47 +35,41 @@ import java.io.OutputStream;
  * An output stream that notifies a DTP on end of stream.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:31 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:33:56 $
  */
 abstract class DTPOutputStream extends FilterOutputStream
 {
 
-    DTP dtp;
-    boolean transferComplete;
-    
-    /**
-     * Constructor.
-     * @param dtp the controlling data transfer process
-	 * @param out the socket output stream
-     */
-    DTPOutputStream(DTP dtp, OutputStream out)
+  DTP dtp;
+  boolean transferComplete;
+
+  /**
+   * Constructor.
+   * @param dtp the controlling data transfer process
+   * @param out the socket output stream
+   */
+  DTPOutputStream (DTP dtp, OutputStream out)
     {
-        super(out);
-        this.dtp = dtp;
-        transferComplete = false;
+      super (out);
+      this.dtp = dtp;
+      transferComplete = false;
     }
-    
-    /**
-     * Tells this stream whether transfer has completed or not.
-     * @param flag true if the process has completed, false otherwise
-     */
-    void setTransferComplete(boolean flag)
+
+  /**
+   * Tells this stream whether transfer has completed or not.
+   * @param flag true if the process has completed, false otherwise
+   */
+  void setTransferComplete (boolean flag)
     {
-        transferComplete = flag;
+      transferComplete = flag;
     }
-    
-    public abstract void write(int c) throws IOException;
-    
-    public abstract void write(byte[]b) throws IOException;
-    
-    public abstract void write(byte[]b, int off, int len) throws IOException;
-    
-    /**
-     * Notifies the controlling DTP that this stream has been terminated.
-     */
-    public void close() throws IOException
+
+  /**
+   * Notifies the controlling DTP that this stream has been terminated.
+   */
+  public void close () throws IOException
     {
-        dtp.transferComplete();
+      dtp.transferComplete ();
     }
-    
+
 }

@@ -1,0 +1,35 @@
+<body>
+
+<p>
+This package contains an HTTP/1.1 client, as described in RFC 2616.
+It supports the following features:
+<ul>
+<li>Persistent connections</li>
+<li>Basic and Digest authentication (RFC 2617)</li>
+<li>HTTPS</li>
+<li>HTTP proxies</li>
+<li>HTTP/1.0 compatibility</li>
+<li>Support for WebDAV methods and other HTTP extensions</li>
+<li>Automatic decoding of the chunked transfer-coding</li>
+<li>Parsing of HTTP date headers</li>
+<li>Support for the 100-continue expectation</li>
+</ul>
+</p>
+
+<p>
+The API is similar to the <a href='http://www.webdav.org/neon/'>neon</a>
+WebDAV/HTTP library. A logical connection to the server is instantiated,
+and multiple requests can be issued for this connection. Each request
+has an atomic <code>dispatch</code> method which returns the response.
+All I/O, authentication, etc is handled by registering callback objects
+with the request prior to dispatch, which are notified during the dispatch
+procedure as necessary. Simple byte-array content callbacks are supplied
+which can manage any request/response content that fits in available memory.
+</p>
+
+<p>
+An URL stream handler is provided, supporting the full HttpURLConnection
+specification.
+</p>
+
+</body>

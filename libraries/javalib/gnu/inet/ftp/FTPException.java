@@ -1,5 +1,5 @@
 /*
- * $Id: FTPException.java,v 1.1 2004/01/10 23:34:31 dalibor Exp $
+ * $Id: FTPException.java,v 1.4 2004/10/04 19:33:57 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -33,32 +33,32 @@ import java.io.IOException;
  * An FTP control exception.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:31 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:33:57 $
  */
 public class FTPException extends IOException
 {
 
-        /**
-	 * The response that provoked this exception.
-	 */
+  /**
+   * The response that provoked this exception.
+   */
   protected final FTPResponse response;
 
-        /**
-	 * Constructs a new FTP exception.
-	 * @param response the response that provoked this exception
-	 */
-  public FTPException(FTPResponse response)
-  {
-    super(response.getMessage());
-    this.response = response;
-  }
+  /**
+   * Constructs a new FTP exception.
+   * @param response the response that provoked this exception
+   */
+  public FTPException (FTPResponse response)
+    {
+      super (response.getMessage ());
+      this.response = response;
+    }
 
-        /**
-	 * Returns the response that provoked this exception.
-	 */
-  public FTPResponse getResponse()
-  {
-    return response;
-  }
+  /**
+   * Returns the response that provoked this exception.
+   */
+  public FTPResponse getResponse ()
+    {
+      return response;
+    }
 
 }

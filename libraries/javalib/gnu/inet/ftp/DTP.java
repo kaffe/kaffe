@@ -1,5 +1,5 @@
 /*
- * $Id: DTP.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
+ * $Id: DTP.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,53 +27,53 @@
 
 package gnu.inet.ftp;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 /**
  * An FTP data transfer process.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
  */
 interface DTP
 {
 
-        /**
-	 * Returns an input stream from which a remote file can be read.
-	 */
-  InputStream getInputStream() throws IOException;
+  /**
+   * Returns an input stream from which a remote file can be read.
+   */
+  InputStream getInputStream () throws IOException;
 
-        /**
-	 * Returns an output stream to which a local file can be written for
-	 * upload.
-	 */
-  OutputStream getOutputStream() throws IOException;
+  /**
+   * Returns an output stream to which a local file can be written for
+   * upload.
+   */
+  OutputStream getOutputStream () throws IOException;
 
-        /**
-	 * Sets the transfer mode to be used with this DTP.
-	 */
-  void setTransferMode(int mode);
+  /**
+   * Sets the transfer mode to be used with this DTP.
+   */
+  void setTransferMode (int mode);
 
-        /**
-	 * Marks this DTP completed.
-	 * When the current transfer has finished, any resources will be released.
-	 */
-  void complete();
+  /**
+   * Marks this DTP completed.
+   * When the current transfer has finished, any resources will be released.
+   */
+  void complete ();
 
-        /**
-	 * Aborts any current transfer and releases all resources held by this
-	 * DTP.
-	 * @return true if a transfer was interrupted, false otherwise
-	 */
-  boolean abort();
+  /**
+   * Aborts any current transfer and releases all resources held by this
+   * DTP.
+   * @return true if a transfer was interrupted, false otherwise
+   */
+  boolean abort ();
 
-        /**
-	 * Used to notify the DTP that its current transfer is complete.
-	 * This occurs either when end-of-stream is reached or a 226 response is
-	 * received.
-	 */
-  void transferComplete();
+  /**
+   * Used to notify the DTP that its current transfer is complete.
+   * This occurs either when end-of-stream is reached or a 226 response is
+   * received.
+   */
+  void transferComplete ();
 
 }

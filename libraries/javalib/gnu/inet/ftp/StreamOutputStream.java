@@ -1,5 +1,5 @@
 /*
- * $Id: StreamOutputStream.java,v 1.2 2004/03/22 11:24:08 dalibor Exp $
+ * $Id: StreamOutputStream.java,v 1.5 2004/10/04 19:33:57 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,6 +27,7 @@
 
 package gnu.inet.ftp;
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -34,33 +35,37 @@ import java.io.OutputStream;
  * A DTP output stream that implements the FTP stream transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:08 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:57 $
  */
 class StreamOutputStream extends DTPOutputStream
 {
 
-    StreamOutputStream(DTP dtp, OutputStream out)
+  StreamOutputStream (DTP dtp, OutputStream out)
     {
-        super(dtp, out);
-    }
-    
-    public void write(int c) throws IOException
-    {
-        if (transferComplete)
-            return;
-        out.write(c);
+      super (dtp, out);
     }
 
-    public void write(byte[] b) throws IOException
+  public void write (int c) throws IOException
     {
-        write(b, 0, b.length);
+      if (transferComplete)
+        {
+          return;
+        }
+      out.write (c);
     }
 
-    public void write(byte[] b, int off, int len) throws IOException
+  public void write (byte[] b) throws IOException
     {
-        if (transferComplete)
-            return;
-        out.write(b, off, len);
+      write (b, 0, b.length);
+    }
+
+  public void write (byte[] b, int off, int len) throws IOException
+    {
+      if (transferComplete)
+        {
+          return;
+        }
+      out.write (b, off, len);
     }
 
 }

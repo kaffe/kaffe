@@ -1,6 +1,6 @@
 /*
- * $Id: FTPURLStreamHandler.java,v 1.1 2004/01/10 23:34:31 dalibor Exp $
- * Copyright (C) 2003 The Free Software Foundation
+ * $Id: StatusResponse.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * As a special exception, if you link this library with other files to
  * produce an executable, this library does not by itself cause the
  * resulting executable to be covered by the GNU General Public License.
@@ -25,28 +25,52 @@
  * executable file might be covered by the GNU General Public License.
  */
 
-package gnu.inet.ftp;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+package gnu.inet.nntp;
 
 /**
- * An FTP URL stream handler.
+ * An NNTP status response.
+ * This represents the status code/message pair sent by the server in
+ * response to client commands.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:31 $
+ * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
  */
-public class FTPURLStreamHandler extends URLStreamHandler
+public class StatusResponse
 {
 
-        /**
-	 * Returns an FTPURLConnection for the given URL.
-	 */
-  public URLConnection openConnection(URL url) throws IOException
-  {
-    return new FTPURLConnection(url);
-  }
+  /*
+   * The status code.
+   */
+  protected short status;
+
+  /*
+   * The message.
+   */
+  protected String message;
+
+  /**
+   * Constructor.
+   */
+  protected StatusResponse (short status, String message)
+    {
+      this.status = status;
+      this.message = message;
+    }
+
+  /**
+   * Returns the status code associated with this response.
+   */
+  public short getStatus ()
+    {
+      return status;
+    }
+
+  /**
+   * Returns the message associated with this response.
+   */
+  public String getMessage ()
+    {
+      return message;
+    }
 
 }

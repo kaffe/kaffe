@@ -413,7 +413,16 @@ Klasses_jar_SRCS = \
 	$(gnu_crypto_tool_keytool_SRCS) \
 	$(gnu_crypto_util_SRCS) \
 	$(gnu_getopt_SRCS) \
+	$(gnu_inet_finger_SRCS) \
 	$(gnu_inet_ftp_SRCS) \
+	$(gnu_inet_gopher_SRCS) \
+	$(gnu_inet_http_SRCS) \
+	$(gnu_inet_http_event_SRCS) \
+	$(gnu_inet_https_SRCS) \
+	$(gnu_inet_imap_SRCS) \
+	$(gnu_inet_nntp_SRCS) \
+	$(gnu_inet_pop3_SRCS) \
+	$(gnu_inet_smtp_SRCS) \
 	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
 	$(gnu_java_awt_image_SRCS) \
@@ -1131,6 +1140,11 @@ gnu_getopt_SRCS = \
 	gnu/getopt/Getopt.java \
 	gnu/getopt/LongOpt.java
 
+gnu_inet_finger_SRCS = \
+	gnu/inet/finger/FingerConnection.java \
+	gnu/inet/finger/FingerURLConnection.java \
+	gnu/inet/finger/Handler.java
+
 gnu_inet_ftp_SRCS = \
 	gnu/inet/ftp/ActiveModeDTP.java \
 	gnu/inet/ftp/BlockInputStream.java \
@@ -1144,15 +1158,106 @@ gnu_inet_ftp_SRCS = \
 	gnu/inet/ftp/FTPException.java \
 	gnu/inet/ftp/FTPResponse.java \
 	gnu/inet/ftp/FTPURLConnection.java \
-	gnu/inet/ftp/FTPURLStreamHandler.java \
 	gnu/inet/ftp/Handler.java \
 	gnu/inet/ftp/PassiveModeDTP.java \
 	gnu/inet/ftp/StreamInputStream.java \
 	gnu/inet/ftp/StreamOutputStream.java
 
+gnu_inet_gopher_SRCS = \
+	gnu/inet/gopher/DirectoryEntry.java \
+	gnu/inet/gopher/DirectoryListing.java \
+	gnu/inet/gopher/GopherConnection.java \
+	gnu/inet/gopher/GopherContentHandler.java \
+	gnu/inet/gopher/GopherURLConnection.java \
+	gnu/inet/gopher/Handler.java
+
+gnu_inet_http_SRCS = \
+	gnu/inet/http/Authenticator.java \
+	gnu/inet/http/ByteArrayRequestBodyWriter.java \
+	gnu/inet/http/ByteArrayResponseBodyReader.java \
+	gnu/inet/http/ChunkedInputStream.java \
+	gnu/inet/http/Credentials.java \
+	gnu/inet/http/Handler.java \
+	gnu/inet/http/Headers.java \
+	gnu/inet/http/HTTPConnection.java \
+	gnu/inet/http/HTTPDateFormat.java \
+	gnu/inet/http/HTTPURLConnection.java \
+	gnu/inet/http/RequestBodyWriter.java \
+	gnu/inet/http/Request.java \
+	gnu/inet/http/ResponseBodyReader.java \
+	gnu/inet/http/ResponseHeaderHandler.java \
+	gnu/inet/http/Response.java
+
+gnu_inet_http_event_SRCS = \
+	gnu/inet/http/event/ConnectionEvent.java \
+	gnu/inet/http/event/ConnectionListener.java \
+	gnu/inet/http/event/RequestEvent.java \
+	gnu/inet/http/event/RequestListener.java
+
+gnu_inet_https_SRCS = \
+	gnu/inet/https/Handler.java
+
+gnu_inet_imap_SRCS = \
+	gnu/inet/imap/IMAPConnection.java \
+	gnu/inet/imap/IMAPConstants.java \
+	gnu/inet/imap/IMAPException.java \
+	gnu/inet/imap/IMAPResponse.java \
+	gnu/inet/imap/IMAPResponseTokenizer.java \
+	gnu/inet/imap/ListEntry.java \
+	gnu/inet/imap/MailboxStatus.java \
+	gnu/inet/imap/MessageStatus.java \
+	gnu/inet/imap/Pair.java \
+	gnu/inet/imap/UTF7imap.java
+
+gnu_inet_nntp_SRCS = \
+	gnu/inet/nntp/ActiveTime.java \
+	gnu/inet/nntp/ActiveTimesIterator.java \
+	gnu/inet/nntp/ArticleNumberIterator.java \
+	gnu/inet/nntp/ArticleResponse.java \
+	gnu/inet/nntp/ArticleStream.java \
+	gnu/inet/nntp/FileNewsrc.java \
+	gnu/inet/nntp/GroupIterator.java \
+	gnu/inet/nntp/Group.java \
+	gnu/inet/nntp/GroupResponse.java \
+	gnu/inet/nntp/HeaderEntry.java \
+	gnu/inet/nntp/HeaderIterator.java \
+	gnu/inet/nntp/LineIterator.java \
+	gnu/inet/nntp/Newsrc.java \
+	gnu/inet/nntp/NNTPConnection.java \
+	gnu/inet/nntp/NNTPConstants.java \
+	gnu/inet/nntp/NNTPException.java \
+	gnu/inet/nntp/OverviewIterator.java \
+	gnu/inet/nntp/Overview.java \
+	gnu/inet/nntp/PairIterator.java \
+	gnu/inet/nntp/Pair.java \
+	gnu/inet/nntp/PendingData.java \
+	gnu/inet/nntp/PostStream.java \
+	gnu/inet/nntp/Range.java \
+	gnu/inet/nntp/StatusResponse.java
+
+gnu_inet_pop3_SRCS = \
+	gnu/inet/pop3/POP3Connection.java
+
+gnu_inet_smtp_SRCS = \
+	gnu/inet/smtp/Parameter.java \
+	gnu/inet/smtp/ParameterList.java \
+	gnu/inet/smtp/SMTPConnection.java
+
 gnu_inet_util_SRCS = \
+	gnu/inet/util/BASE64.java \
 	gnu/inet/util/CRLFInputStream.java \
-	gnu/inet/util/LineInputStream.java
+	gnu/inet/util/CRLFOutputStream.java \
+	gnu/inet/util/EmptyX509TrustManager.java \
+	gnu/inet/util/GetLocalHostAction.java \
+	gnu/inet/util/GetSystemPropertyAction.java \
+	gnu/inet/util/LineInputStream.java \
+	gnu/inet/util/Logger.java \
+	gnu/inet/util/MessageInputStream.java \
+	gnu/inet/util/MessageOutputStream.java \
+	gnu/inet/util/SaslCallbackHandler.java \
+	gnu/inet/util/SaslInputStream.java \
+	gnu/inet/util/SaslOutputStream.java \
+	gnu/inet/util/StderrLogger.java
 
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \

@@ -1,5 +1,5 @@
 /*
- * $Id: DTPInputStream.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
+ * $Id: DTPInputStream.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -28,54 +28,48 @@
 package gnu.inet.ftp;
 
 import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * An input stream that notifies a DTP on completion.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
  */
 abstract class DTPInputStream extends FilterInputStream
 {
 
-    DTP dtp;
-    boolean transferComplete;
-    
-    /**
-     * Constructor.
-     * @param dtp the controlling data transfer process
-     * @param in the underlying socket stream
-     */
-    DTPInputStream(DTP dtp, InputStream in)
+  DTP dtp;
+  boolean transferComplete;
+
+  /**
+   * Constructor.
+   * @param dtp the controlling data transfer process
+   * @param in the underlying socket stream
+   */
+  DTPInputStream (DTP dtp, InputStream in)
     {
-        super(in);
-        this.dtp = dtp;
-        transferComplete = false;
+      super (in);
+      this.dtp = dtp;
+      transferComplete = false;
     }
-    
-    /**
-     * Marks this input stream complete.
-     * This is called by the DTP.
-     */
-    void setTransferComplete(boolean flag)
+
+  /**
+   * Marks this input stream complete.
+   * This is called by the DTP.
+   */
+  void setTransferComplete (boolean flag)
     {
-        transferComplete = flag;
+      transferComplete = flag;
     }
-    
-    public abstract int read() throws IOException;
-    
-    public abstract int read(byte[]buf) throws IOException;
-    
-    public abstract int read(byte[]buf, int off, int len) throws IOException;
-    
-    /**
-     * Notifies the controlling DTP that this stream has completed transfer.
-     */
-    public void close() throws IOException
+
+  /**
+   * Notifies the controlling DTP that this stream has completed transfer.
+   */
+  public void close () throws IOException
     {
-        dtp.transferComplete();
+      dtp.transferComplete ();
     }
-    
+
 }

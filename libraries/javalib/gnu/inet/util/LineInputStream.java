@@ -1,5 +1,5 @@
 /*
- * $Id: LineInputStream.java,v 1.2 2004/03/22 11:24:08 dalibor Exp $
+ * $Id: LineInputStream.java,v 1.3 2004/07/25 22:46:24 dalibor Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -29,14 +29,14 @@ package gnu.inet.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * An input stream that can read lines of input.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:08 $
+ * @version $Revision: 1.3 $ $Date: 2004/07/25 22:46:24 $
  */
 public class LineInputStream extends FilterInputStream
 {
@@ -60,46 +60,49 @@ public class LineInputStream extends FilterInputStream
    * Constructor using the US-ASCII character encoding.
    * @param in the underlying input stream
    */
-  public LineInputStream(InputStream in)
-  {
-    this(in, "US-ASCII");
-  }
+  public LineInputStream (InputStream in)
+    {
+      this (in, "US-ASCII");
+    }
 
   /**
    * Constructor.
    * @param in the underlying input stream
-	 * @param encoding the character encoding to use
+   * @param encoding the character encoding to use
    */
-  public LineInputStream(InputStream in, String encoding)
-  {
-    super(in);
-    buf = new ByteArrayOutputStream();
-    this.encoding = encoding;
-    eof = false;
-  }
+  public LineInputStream (InputStream in, String encoding)
+    {
+      super (in);
+      buf = new ByteArrayOutputStream ();
+      this.encoding = encoding;
+      eof = false;
+    }
 
   /**
    * Read a line of input.
    */
-  public String readLine() throws IOException
-  {
-    if (eof)
-      return null;
-    do
+  public String readLine () throws IOException
     {
-      int c = in.read();
-      switch (c)
-      {
-      case -1:
-        eof = true;
-        case 10:                // LF
-        String ret = buf.toString(encoding);
-        buf.reset();
-        return ret;
-        default:buf.write(c);
-      }
+      if (eof)
+        {
+          return null;
+        }
+      do
+        {
+          int c = in.read ();
+          switch (c)
+            {
+            case -1:
+              eof = true;
+            case 10:                // LF
+              String ret = buf.toString (encoding);
+              buf.reset ();
+              return ret;
+            default:
+              buf.write (c);
+            }
+        }
+      while (true);
     }
-    while (true);
-  }
 
 }

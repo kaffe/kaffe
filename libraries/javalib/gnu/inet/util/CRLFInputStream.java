@@ -1,5 +1,5 @@
 /*
- * $Id: CRLFInputStream.java,v 1.2 2004/03/22 11:24:08 dalibor Exp $
+ * $Id: CRLFInputStream.java,v 1.6 2004/10/04 19:34:03 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -28,14 +28,14 @@
 package gnu.inet.util;
 
 import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * An input stream that filters out CR/LF pairs into LFs.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:08 $
+ * @version $Revision: 1.6 $ $Date: 2004/10/04 19:34:03 $
  */
 public class CRLFInputStream extends FilterInputStream
 {
@@ -50,54 +50,54 @@ public class CRLFInputStream extends FilterInputStream
    */
   public static final int LF = 10;
 
-        /**
-	 * Buffer.
-	 */
+  /**
+   * Buffer.
+   */
   protected int buf = -1;
 
-        /**
-	 * Buffer at time of mark.
-	 */
+  /**
+   * Buffer at time of mark.
+   */
   protected int markBuf = -1;
 
   /**
    * Constructs a CR/LF input stream connected to the specified input
    * stream.
    */
-  public CRLFInputStream(InputStream in)
-  {
-    super(in);
-  }
+  public CRLFInputStream (InputStream in)
+    {
+      super (in);
+    }
 
   /**
    * Reads the next byte of data from this input stream.
    * Returns -1 if the end of the stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read() throws IOException
-  {
-    int c;
-    if (buf != -1)
+  public int read () throws IOException
     {
-      c = buf;
-      buf = -1;
-      return c;
-    }
-    else
-    {
-      c = super.read();
-      if (c == CR)
-      {
-        buf = super.read();
-        if (buf == LF)
+      int c;
+      if (buf != -1)
         {
           c = buf;
           buf = -1;
+          return c;
         }
-      }
+      else
+        {
+          c = super.read ();
+          if (c == CR)
+            {
+              buf = super.read ();
+              if (buf == LF)
+                {
+                  c = buf;
+                  buf = -1;
+                }
+            }
+        }
+      return c;
     }
-    return c;
-  }
 
   /**
    * Reads up to b.length bytes of data from this input stream into
@@ -105,10 +105,10 @@ public class CRLFInputStream extends FilterInputStream
    * Returns -1 if the end of the stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read(byte[]b) throws IOException
-  {
-    return read(b, 0, b.length);
-  }
+  public int read (byte[] b) throws IOException
+    {
+      return read (b, 0, b.length);
+    }
 
   /**
    * Reads up to len bytes of data from this input stream into an
@@ -116,75 +116,77 @@ public class CRLFInputStream extends FilterInputStream
    * Returns -1 if the end of the stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read(byte[]b, int off, int len) throws IOException
-  {
-    int shift = 0;
-    if (buf != -1)
+  public int read (byte[] b, int off, int len) throws IOException
     {
-      // Push buf onto start of byte array
-      b[off] = (byte) buf;
-      off++;
-      len--;
-      buf = -1;
-      shift++;
+      int shift = 0;
+      if (buf != -1)
+        {
+          // Push buf onto start of byte array
+          b[off] = (byte) buf;
+          off++;
+          len--;
+          buf = -1;
+          shift++;
+        }
+      int l = super.read (b, off, len);
+      l = removeCRLF (b, off - shift, l);
+      return l;
     }
-    int l = super.read(b, off, len);
-    l = removeCRLF(b, off - shift, l);
-    return l;
-  }
 
-        /**
-	 * Indicates whether this stream supports the mark and reset methods.
-	 */
-  public boolean markSupported()
-  {
-    return in.markSupported();
-  }
-
-        /**
-	 * Marks the current position in this stream.
-	 */
-  public void mark(int readlimit)
-  {
-    in.mark(readlimit);
-    markBuf = buf;
-  }
-
-        /**
-	 * Repositions this stream to the position at the time the mark method was
-	 * called.
-	 */
-  public void reset() throws IOException
-  {
-    in.reset();
-    buf = markBuf;
-  }
-
-  private int removeCRLF(byte[]b, int off, int len)
-  {
-    int end = off + len;
-    for (int i = off; i < end; i++)
+  /**
+   * Indicates whether this stream supports the mark and reset methods.
+   */
+  public boolean markSupported ()
     {
-      if (b[i] == CR)
-      {
-        if (i + 1 == end)
-        {
-          // This is the last byte, impossible to determine whether CRLF
-          buf = CR;
-          len--;
-        }
-        else if (b[i + 1] == LF)
-        {
-          // Shift left
-          end--;
-          for (int j = i; j < end; j++)
-            b[j] = b[j + 1];
-          len--;
-          end = off + len;
-        }
-      }
+      return in.markSupported ();
     }
-    return len;
-  }
+
+  /**
+   * Marks the current position in this stream.
+   */
+  public void mark (int readlimit)
+    {
+      in.mark (readlimit);
+      markBuf = buf;
+    }
+
+  /**
+   * Repositions this stream to the position at the time the mark method was
+   * called.
+   */
+  public void reset () throws IOException
+    {
+      in.reset ();
+      buf = markBuf;
+    }
+
+  private int removeCRLF (byte[] b, int off, int len)
+    {
+      int end = off + len;
+      for (int i = off; i < end; i++)
+        {
+          if (b[i] == CR)
+            {
+              if (i + 1 == end)
+                {
+                  // This is the last byte, impossible to determine whether CRLF
+                  buf = CR;
+                  len--;
+                }
+              else if (b[i + 1] == LF)
+                {
+                  // Shift left
+                  end--;
+                  for (int j = i; j < end; j++)
+                    {
+                      b[j] = b[j + 1];
+                    }
+                  len--;
+                  end = off + len;
+                }
+            }
+        }
+      return len;
+    }
 
 }

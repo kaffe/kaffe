@@ -1,5 +1,5 @@
 /*
- * $Id: BlockInputStream.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
+ * $Id: BlockInputStream.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,92 +27,109 @@
 
 package gnu.inet.ftp;
 
-import java.io.IOException;
+import java.io.FilterInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * A DTP input stream that implements the FTP block transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
  */
 class BlockInputStream extends DTPInputStream
 {
 
-    static final int EOF = 64;
-    
-    int descriptor;
-    int max = -1;
-    int count = -1;
-    
-    BlockInputStream(DTP dtp, InputStream in)
+  static final int EOF = 64;
+
+  int descriptor;
+  int max = -1;
+  int count = -1;
+
+  BlockInputStream (DTP dtp, InputStream in)
     {
-        super(dtp, in);
-    }
-    
-    public int read() throws IOException
-    {
-        if (transferComplete)
-            return -1;
-        if (count == -1)
-            readHeader();
-        if (max < 1)
-        {
-            close();
-            return -1;
-        }
-        int c = in.read();
-        if (c == -1)
-            dtp.transferComplete();
-        count++;
-        if (count >= max)
-        {
-            count = -1;
-            if (descriptor == EOF)
-                close();
-        }
-        return c;
+      super (dtp, in);
     }
 
-    public int read(byte[] buf) throws IOException
+  public int read () throws IOException
     {
-        return read(buf, 0, buf.length);
-    }
-    
-    public int read(byte[] buf, int off, int len) throws IOException
-    {
-        if (transferComplete)
-            return -1;
-        if (count == -1)
-            readHeader();
-        if (max < 1)
+      if (transferComplete)
         {
-            close();
-            return -1;
+          return -1;
         }
-        int l = in.read(buf, off, len);
-        if (l == -1)
-            dtp.transferComplete();
-        count += l;
-        if (count >= max)
+      if (count == -1)
         {
-            count = -1;
-            if (descriptor == EOF)
-                close();
+          readHeader ();
         }
-        return l;
+      if (max < 1)
+        {
+          close ();
+          return -1;
+        }
+      int c = in.read ();
+      if (c == -1)
+        {
+          dtp.transferComplete ();
+        }
+      count++;
+      if (count >= max)
+        {
+          count = -1;
+          if (descriptor == EOF)
+            {
+              close ();
+            }
+        }
+      return c;
     }
-    
-    /**
-     * Reads the block header.
-     */
-    void readHeader() throws IOException
+
+  public int read (byte[] buf) throws IOException
     {
-        descriptor = in.read();
-        int max_hi = in.read();
-        int max_lo = in.read();
-        max = (max_hi << 8) | max_lo;
-        count = 0;
+      return read (buf, 0, buf.length);
     }
-    
+
+  public int read (byte[] buf, int off, int len) throws IOException
+    {
+      if (transferComplete)
+        {
+          return -1;
+        }
+      if (count == -1)
+        {
+          readHeader ();
+        }
+      if (max < 1)
+        {
+          close ();
+          return -1;
+        }
+      int l = in.read (buf, off, len);
+      if (l == -1)
+        {
+          dtp.transferComplete ();
+        }
+      count += l;
+      if (count >= max)
+        {
+          count = -1;
+          if (descriptor == EOF)
+            {
+              close ();
+            }
+        }
+      return l;
+    }
+
+  /**
+   * Reads the block header.
+   */
+  void readHeader () throws IOException
+    {
+      descriptor = in.read ();
+      int max_hi = in.read ();
+      int max_lo = in.read ();
+      max = (max_hi << 8) | max_lo;
+      count = 0;
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PassiveModeDTP.java,v 1.2 2004/03/22 11:24:08 dalibor Exp $
+ * $Id: PassiveModeDTP.java,v 1.3 2004/07/25 22:46:18 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,8 +27,8 @@
 
 package gnu.inet.ftp;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -39,7 +39,7 @@ import java.net.Socket;
  * input and output streams.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:08 $
+ * @version $Revision: 1.3 $ $Date: 2004/07/25 22:46:18 $
  */
 final class PassiveModeDTP implements DTP
 {
@@ -53,104 +53,118 @@ final class PassiveModeDTP implements DTP
   boolean inProgress;
   int transferMode;
 
-    PassiveModeDTP(String address, int port, InetAddress localhost)
+  PassiveModeDTP (String address, int port, InetAddress localhost)
     throws IOException
-  {
-    this.address = address;
-    this.port = port;
-    completed = false;
-    inProgress = false;
-    socket = new Socket(address, port, localhost, port + 1);
-  }
-
-        /**
-	 * Returns an input stream from which a remote file can be read.
-	 */
-  public InputStream getInputStream() throws IOException
-  {
-    if (inProgress)
-      throw new IOException("Transfer in progress");
-    switch (transferMode)
     {
-    case FTPConnection.MODE_STREAM:
-      in = new StreamInputStream(this, socket.getInputStream());
-      break;
-      case FTPConnection.MODE_BLOCK:in =
-        new BlockInputStream(this, socket.getInputStream());
-      break;
-      case FTPConnection.MODE_COMPRESSED:in =
-        new CompressedInputStream(this, socket.getInputStream());
-      break;
-      default:throw new IllegalStateException("Invalid transfer mode");
+      this.address = address;
+      this.port = port;
+      completed = false;
+      inProgress = false;
+      socket = new Socket (address, port, localhost, port + 1);
     }
-    in.setTransferComplete(false);
+
+  /**
+   * Returns an input stream from which a remote file can be read.
+   */
+  public InputStream getInputStream () throws IOException
+    {
+      if (inProgress)
+        {
+          throw new IOException ("Transfer in progress");
+        }
+      switch (transferMode)
+        {
+        case FTPConnection.MODE_STREAM:
+          in = new StreamInputStream (this, socket.getInputStream ());
+          break;
+        case FTPConnection.MODE_BLOCK:
+          in = new BlockInputStream (this, socket.getInputStream ());
+          break;
+        case FTPConnection.MODE_COMPRESSED:
+          in = new CompressedInputStream (this, socket.getInputStream ());
+          break;
+        default:
+          throw new IllegalStateException ("Invalid transfer mode");
+        }
+      in.setTransferComplete (false);
       return in;
-  }
-
-        /**
-	 * Returns an output stream to which a local file can be written for
-	 * upload.
-	 */
-  public OutputStream getOutputStream() throws IOException
-  {
-    if (inProgress)
-      throw new IOException("Transfer in progress");
-    switch (transferMode)
-    {
-    case FTPConnection.MODE_STREAM:
-      out = new StreamOutputStream(this, socket.getOutputStream());
-      break;
-      case FTPConnection.MODE_BLOCK:out =
-        new BlockOutputStream(this, socket.getOutputStream());
-      break;
-      case FTPConnection.MODE_COMPRESSED:out =
-        new CompressedOutputStream(this, socket.getOutputStream());
-      break;
-      default:throw new IllegalStateException("Invalid transfer mode");
     }
-    out.setTransferComplete(false);
-    return out;
-  }
 
-  public void setTransferMode(int mode)
-  {
-    transferMode = mode;
-  }
+  /**
+   * Returns an output stream to which a local file can be written for
+   * upload.
+   */
+  public OutputStream getOutputStream () throws IOException
+    {
+      if (inProgress)
+        {
+          throw new IOException ("Transfer in progress");
+        }
+      switch (transferMode)
+        {
+        case FTPConnection.MODE_STREAM:
+          out = new StreamOutputStream (this, socket.getOutputStream ());
+          break;
+        case FTPConnection.MODE_BLOCK:
+          out = new BlockOutputStream (this, socket.getOutputStream ());
+          break;
+        case FTPConnection.MODE_COMPRESSED:
+          out = new CompressedOutputStream (this, socket.getOutputStream ());
+          break;
+        default:
+          throw new IllegalStateException("Invalid transfer mode");
+        }
+      out.setTransferComplete (false);
+      return out;
+    }
 
-  public void complete()
-  {
-    completed = true;
-    if (!inProgress)
-      transferComplete();
-  }
+  public void setTransferMode (int mode)
+    {
+      transferMode = mode;
+    }
 
-  public boolean abort()
-  {
-    completed = true;
-    transferComplete();
-    return inProgress;
-  }
+  public void complete ()
+    {
+      completed = true;
+      if (!inProgress)
+        {
+          transferComplete ();
+        }
+    }
+
+  public boolean abort ()
+    {
+      completed = true;
+      transferComplete ();
+      return inProgress;
+    }
 
   /*
    * Called by DTPInputStream or DTPOutputStream when end of
    * stream is reached.
    */
-  public void transferComplete()
-  {
-    in.setTransferComplete(true);
-    out.setTransferComplete(true);
-    inProgress = false;
-    completed = completed || (transferMode == FTPConnection.MODE_STREAM);
-    if (completed)
+  public void transferComplete ()
     {
-      try
-      {
-        socket.close();
-      }
-      catch(IOException e)
-      {
-      }
+      if (in != null)
+        {
+          in.setTransferComplete (true);
+        }
+      if (out != null)
+        {
+          out.setTransferComplete (true);
+        }
+      inProgress = false;
+      completed = completed || (transferMode == FTPConnection.MODE_STREAM);
+      if (completed && socket != null)
+        {
+          try
+            {
+              socket.close ();
+            }
+          catch (IOException e)
+            {
+            }
+        }
     }
-  }
 
 }

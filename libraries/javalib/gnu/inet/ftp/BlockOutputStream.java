@@ -1,5 +1,5 @@
 /*
- * $Id: BlockOutputStream.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
+ * $Id: BlockOutputStream.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,6 +27,7 @@
 
 package gnu.inet.ftp;
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -34,58 +35,62 @@ import java.io.OutputStream;
  * A DTP output stream that implements the FTP block transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
  */
 class BlockOutputStream extends DTPOutputStream
 {
 
-    static final byte RECORD = -128;      // 0x80
-    static final byte EOF = 64;   // 0x40
-    
-    BlockOutputStream(DTP dtp, OutputStream out)
+  static final byte RECORD = -128;      // 0x80
+  static final byte EOF = 64;   // 0x40
+
+  BlockOutputStream (DTP dtp, OutputStream out)
     {
-        super(dtp, out);
-    }
-    
-    public void write(int c) throws IOException
-    {
-        if (transferComplete)
-            return;
-        byte[] buf = new byte[]
-        {
-            RECORD,                   /* record descriptor */
-            0x00, 0x01,             /* one byte */
-            (byte) c                /* the byte */
-        };
-        out.write(buf, 0, 4);
+      super (dtp, out);
     }
 
-    public void write(byte[] b) throws IOException
+  public void write (int c) throws IOException
     {
-        write(b, 0, b.length);
-    }
-    
-    public void write(byte[] b, int off, int len) throws IOException
-    {
-        if (transferComplete)
-            return;
-        byte[] buf = new byte[len + 3];
-        buf[0] = RECORD;            /* record descriptor */
-        buf[1] = (byte) ((len & 0x00ff) >> 8);      /* high byte of bytecount */
-        buf[2] = (byte) (len & 0xff00);     /* low byte of bytecount */
-        System.arraycopy(b, off, buf, 3, len);
-        out.write(buf, 0, len);
-    }
-    
-    public void close() throws IOException
-    {
-        byte[] buf = new byte[]
+      if (transferComplete)
         {
-            EOF,                      /* eof descriptor */
-            0x00, 0x00              /* no bytes */
+          return;
+        }
+      byte[] buf = new byte[]
+        {
+          RECORD,                   /* record descriptor */
+          0x00, 0x01,             /* one byte */
+          (byte) c                /* the byte */
         };
-        out.write(buf, 0, 3);
-        super.close();
+      out.write (buf, 0, 4);
+    }
+
+  public void write (byte[] b) throws IOException
+    {
+      write (b, 0, b.length);
+    }
+
+  public void write (byte[] b, int off, int len) throws IOException
+    {
+      if (transferComplete)
+        {
+          return;
+        }
+      byte[] buf = new byte[len + 3];
+      buf[0] = RECORD;            /* record descriptor */
+      buf[1] = (byte) ((len & 0x00ff) >> 8);      /* high byte of bytecount */
+      buf[2] = (byte) (len & 0xff00);     /* low byte of bytecount */
+      System.arraycopy (b, off, buf, 3, len);
+      out.write (buf, 0, len);
+    }
+
+  public void close () throws IOException
+    {
+      byte[] buf = new byte[]
+        {
+          EOF,                      /* eof descriptor */
+          0x00, 0x00              /* no bytes */
+        };
+      out.write (buf, 0, 3);
+      super.close ();
     }
 
 }

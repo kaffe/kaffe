@@ -6,4 +6,5 @@
 # to be picked up.
 
 security.provider.1=gnu.crypto.jce.GnuCrypto
-security.provider.2=kaffe.security.provider.Kaffe
+security.provider.2=org.metastatic.jessie.provider.Jessie
+security.provider.3=kaffe.security.provider.Kaffe
