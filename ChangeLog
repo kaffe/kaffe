@@ -1,3 +1,11 @@
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU inetlib.
+
+	2005-02-14  Kai Mueller  <kai@faldal.mine.nu>
+
+        * SMTPConnection.java: Define SP as character 0x20.
+
 2005-02-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffe/main.c

@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.6 2004/10/30 12:14:18 robilad Exp $
+ * $Id: SMTPConnection.java,v 1.7 2005/02/16 03:17:53 robilad Exp $
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -81,7 +81,7 @@ import gnu.inet.util.SaslPlain;
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2004/10/30 12:14:18 $
+ * @version $Revision: 1.7 $ $Date: 2005/02/16 03:17:53 $
  */
 public class SMTPConnection
 {
@@ -93,7 +93,7 @@ public class SMTPConnection
 
   protected static final String MAIL_FROM = "MAIL FROM:";
   protected static final String RCPT_TO = "RCPT TO:";
-  protected static final String SP = " SP ";
+  protected static final String SP = " ";
   protected static final String DATA = "DATA";
   protected static final String FINISH_DATA = "\n.";
   protected static final String RSET = "RSET";
