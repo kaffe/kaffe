@@ -1,5 +1,5 @@
 /* URLStreamHandler.java -- Abstract superclass for all protocol handlers
-   Copyright (C) 1998, 1999, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -131,8 +131,12 @@ public abstract class URLStreamHandler
     String query = null;
     
     // On Windows we need to change \ to / for file URLs
-    if (url.getProtocol().equals("file"))
-      spec = spec.replace(File.separatorChar, '/');
+    char separator = File.separatorChar;
+    if (url.getProtocol().equals("file") && separator != '/')
+      {
+	file = file.replace(separator, '/');
+	spec = spec.replace(separator, '/');
+      }
 
     if (spec.regionMatches(start, "//", 0, 2))
       {
@@ -204,9 +208,11 @@ public abstract class URLStreamHandler
       {
 	// Context is available, but only override it if there is a new file.
 	int lastSlash = file.lastIndexOf('/');
-
-	file =
-	  file.substring(0, lastSlash) + '/' + spec.substring(start, end);
+	if (lastSlash < 0)
+	  file = spec.substring(start, end);
+	else
+	  file = (file.substring(0, lastSlash)
+		  + '/' + spec.substring(start, end));
 
 	if (url.getProtocol().equals("file"))
 	  {
@@ -216,7 +222,7 @@ public abstract class URLStreamHandler
 	      {
 		boolean endsWithSlash = file.charAt(file.length() - 1) == '/';
 		file = new File(file).getCanonicalPath();
-		file = file.replace(File.separatorChar, '/');
+		file = file.replace(separator, '/');
 		if (endsWithSlash && file.charAt(file.length() - 1) != '/')
 		  file += '/';
 	      }

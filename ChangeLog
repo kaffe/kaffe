@@ -14,6 +14,22 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/URLStreamHandler.java:
+	Resynced with GNU Classpath.
+
+	2004-07-11  Mohan Embar  <gnustuff@thisiscool.com>
+
+        * java/net/URLStreamHandler.java (parseURL): Canonicalize
+        file portion of URL in addition to spec for file: protocol.
+
+	2004-07-01  Mark Wielaard  <mark@klomp.org>
+
+        Reported by Roman Kennke <roman@ontographics.com> (bug #9331)
+        * java/net/URLStreamHandler.java (parseURL): When url file part
+        doesn't contain a '/' just ignore context.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/FilePermission.java:
 	Resynced with GNU Classpath.
 
