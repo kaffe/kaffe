@@ -12,6 +12,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "jni.h"
 #include <stdarg.h>
 #include "classMethod.h"
 #include "jtypes.h"
@@ -46,6 +47,8 @@ userProperty* userProperties;
 static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
+
+extern struct JNIEnv_ Kaffe_JNIEnv;	/* XXX put in include file??? */
 
 /*
  * Call a Java method from native code.
@@ -216,6 +219,20 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	s = 0;
 
 #if defined(INTERPRETER)
+	/*
+	 * If the method is native, we must find it so that we know whether
+	 * it is a JNI method or not.  If it is one, ACC_JNI will be set
+	 * upon return from native and we will add additional parameters 
+	 * according to the JNI calling convention.
+	 */
+	meth = (Method*)func;
+	if (meth->accflags & ACC_NATIVE) {
+		if (METHOD_NATIVECODE(meth) == 0) {
+			native(meth);
+		}
+		call.function = METHOD_NATIVECODE(meth);
+	}
+
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
@@ -224,17 +241,17 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		s += call.callsize[i];
 		i++;
 		args--; /* because args[i] would be off by one */
-	}
 
-	/* If method is static we must insert the class as an argument */
-	if (meth->accflags & ACC_STATIC) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-		s += call.callsize[i];
-		call.calltype[i] = 'L';
-		in[i].l = meth->class;
-		i++;
-		args--; /* because args[i] would be off by one */
-	}
+		/* If method is static we must insert the class as an argument */
+		if (meth->accflags & ACC_STATIC) {
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			s += call.callsize[i];
+			call.calltype[i] = 'L';
+			in[i].l = meth->class;
+			i++;
+			args--; /* because args[i] would be off by one */
+		}
+	} 
 #endif
 
 	/* If this method isn't static, we must insert the object as
@@ -314,27 +331,21 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	}
 
 	/* Call info and arguments */
-	call.function = func;
 	call.nrargs = i;
 	call.argsize = s;
 	call.args = in;
 	call.ret = ret;
 
 #if defined(TRANSLATOR)
+	call.function = func;
 	/* Make the call - system dependent */
 	sysdepCallMethod(&call);
 #endif
 #if defined(INTERPRETER)
-	meth = (Method*)call.function;
 	if ((meth->accflags & ACC_NATIVE) == 0) {
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
-                if (METHOD_NATIVECODE(meth) == 0) {
-                        native(meth);
-                }
-		call.function = METHOD_NATIVECODE(meth);
-
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
 				sync = &meth->class->head;
@@ -382,6 +393,14 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	s = 0;
 
 #if defined(INTERPRETER)
+	meth = (Method*)call.function;
+	if (meth->accflags & ACC_NATIVE) {
+                if (METHOD_NATIVECODE(meth) == 0) {
+                        native(meth);
+                }
+		call.function = METHOD_NATIVECODE(meth);
+	}
+
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
@@ -389,15 +408,17 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
 		i++;
-	}
 
-	/* If method is static we must insert the class as an argument */
-	if (meth->accflags & ACC_STATIC) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-		s += call.callsize[i];
-		call.calltype[i] = 'L';
-		in[i].l = meth->class;
-		i++;
+		/* If method is static we must insert the class as an 
+		 * argument 
+		 */
+		if (meth->accflags & ACC_STATIC) {
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			s += call.callsize[i];
+			call.calltype[i] = 'L';
+			in[i].l = meth->class;
+			i++;
+		}
 	}
 #endif
 
@@ -485,27 +506,21 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	}
 
 	/* Call info and arguments */
-	call.function = func;
 	call.nrargs = i;
 	call.argsize = s;
 	call.args = in;
 	call.ret = ret;
 
 #if defined(TRANSLATOR)
+	call.function = func;
 	/* Make the call - system dependent */
 	sysdepCallMethod(&call);
 #endif
 #if defined(INTERPRETER)
-	meth = (Method*)call.function;
 	if ((meth->accflags & ACC_NATIVE) == 0) {
 		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
 	}
 	else {
-                if (METHOD_NATIVECODE(meth) == 0) {
-                        native(meth);
-                }
-		call.function = METHOD_NATIVECODE(meth);
-
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
 				sync = &meth->class->head;
