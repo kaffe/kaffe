@@ -45,17 +45,17 @@ class ItemPane
 	int idxFlyOver = -1;
 
 public ItemPane () {
-	addKeyListener( this);
-	addMouseListener( this);
-	addMouseMotionListener( this);
-	addFocusListener( this);
+	this.addKeyListener( this);
+	this.addMouseListener( this);
+	this.addMouseMotionListener( this);
+	this.addFocusListener( this);
 }
 
 public void keyPressed( KeyEvent e) {
 	int nIdx;
 	int mods = e.getModifiers();
 
-	if ( parent.keyListener != null ){
+	if ( this.parent.keyListener != null ){
 		// give our parent a chance to intercept keystrokes
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
@@ -89,7 +89,7 @@ public void keyPressed( KeyEvent e) {
 			break;
 		case e.VK_ESCAPE:
 			clearSelections();
-			repaint();
+			this.repaint();
 			break;
 		default:
 		  return;
@@ -99,7 +99,7 @@ public void keyPressed( KeyEvent e) {
 }
 
 public void keyReleased( KeyEvent e) {
-	if ( parent.keyListener != null ){
+	if ( this.parent.keyListener != null ){
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
 		e.consume();
@@ -113,7 +113,7 @@ public void keyTyped( KeyEvent e) {
 		e.consume();
 	}
 		
-	if ( parent.keyListener != null ){
+	if ( this.parent.keyListener != null ){
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
 	}
@@ -170,7 +170,7 @@ public void mouseClicked( MouseEvent e) {
 }
 
 public void mouseDragged( MouseEvent e) {
-	if ( parent.motionListener != null ){
+	if ( this.parent.motionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}
@@ -193,7 +193,7 @@ public void mouseMoved( MouseEvent e) {
 		updateFlyOver( row );
 	}
 	
-	if ( parent.motionListener != null ){
+	if ( this.parent.motionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}
@@ -204,7 +204,7 @@ public void mousePressed( MouseEvent e) {
 		ip.requestFocus();
 		
 	if ( e.isPopupTrigger() )
-		triggerPopup( e.getX(), e.getY());
+		this.triggerPopup( e.getX(), e.getY());
 		
 	redirectMouseEvent( e);
 }
@@ -215,7 +215,7 @@ public void mouseReleased( MouseEvent e) {
 
 public void paint ( Graphics g ) {
 	repaintRows( g, first, getVisibleRows() );
-	kaffePaintBorder( g);
+	this.kaffePaintBorder( g);
 }
 
 void repaintItem( Graphics g, int idx) {
@@ -231,18 +231,18 @@ void repaintItem( Graphics g, int idx) {
 
 	if ( isIndexSelected( idx) ) {
 		g.setColor( Defaults.ListSelBgClr);
-		g.fill3DRect( d, y0, width-2*d, rowHeight, true);
+		g.fill3DRect( d, y0, this.width-2*d, rowHeight, true);
 		g.setColor( Defaults.ListSelTxtClr);
 	}
 	else if ( idx == idxFlyOver ) {
 		g.setColor( Defaults.ListFlyOverBgClr);
-		g.fill3DRect( d, y0, width-2*d, rowHeight, !Defaults.ListFlyOverInset);
+		g.fill3DRect( d, y0, this.width-2*d, rowHeight, !Defaults.ListFlyOverInset);
 		g.setColor( Defaults.ListFlyOverTxtClr);
 	}
 	else {
-		g.setColor( bgClr );
-		g.fillRect( d, y0, width-2*d, rowHeight);
-		g.setColor( fgClr );
+		g.setColor( this.bgClr );
+		g.fillRect( d, y0, this.width-2*d, rowHeight);
+		g.setColor( this.fgClr );
 	}
 	
 	g.drawString( s, x0, y1);
@@ -258,9 +258,9 @@ void repaintRow( Graphics g, int idx) {
 }
 
 public void setFont( Font fnt) {
-	fm = getFontMetrics( fnt);
+	fm = this.getFontMetrics( fnt);
 	rowHeight = fm.getHeight() + 1;
-	
+
 	super.setFont( fnt);
 }
 
