@@ -1,3 +1,137 @@
+2002-11-28 Dalibor Topic <robilad@yahoo.com>
+
+	Merged in new packages: javax.sound.sampled from PockeLinux,
+	java.nio.charset, java.nio.charset.spi, gnu.java.nio.charset,
+	java.nio.channels, java.nio.channels.spi from GNU Classpath.
+	Added a few new classes from GNU Classpath.
+	
+	* libraries/javalib/Makefile.am: added new classes and packages.
+	* libraries/javalib/Makefile.in: regenerated.
+	
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java,
+	libraries/javalib/gnu/java/nio/FileChannelImpl.java,
+	libraries/javalib/gnu/java/nio/MappedByteFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedCharFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedDoubleFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedFloatFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedIntFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedLongFileBuffer.java,
+	libraries/javalib/gnu/java/nio/MappedShortFileBuffer.java,
+	libraries/javalib/gnu/java/nio/PipeImpl.java,
+	libraries/javalib/gnu/java/nio/SelectionKeyImpl.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/SelectorProviderImpl.java,
+	libraries/javalib/gnu/java/nio/ServerSocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelImpl.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/gnu/java/nio/charset/ISO_8859_1.java,
+	libraries/javalib/gnu/java/nio/charset/Provider.java,
+	libraries/javalib/gnu/java/nio/charset/US_ASCII.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16BE.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16Decoder.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16Encoder.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_16LE.java,
+	libraries/javalib/gnu/java/nio/charset/UTF_8.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/awt/color/ICC_ProfileGray.java,
+	libraries/javalib/java/awt/color/ICC_ProfileRGB.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/lang/Error.java: replaced kaffe's version
+	of file with GNU Classpath's implementation, as it implements the 1.4
+	features.
+	
+	* libraries/javalib/java/net/ServerSocket.java:
+	(ServerSocket) added the empty constructor. It is not implemented yet.
+	
+	* libraries/javalib/java/nio/BufferOverflowException.java,
+	libraries/javalib/java/nio/BufferUnderflowException.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/nio/channels/AlreadyConnectedException.java,
+	libraries/javalib/java/nio/channels/AsynchronousCloseException.java,
+	libraries/javalib/java/nio/channels/ByteChannel.java,
+	libraries/javalib/java/nio/channels/CancelledKeyException.java,
+	libraries/javalib/java/nio/channels/Channel.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/nio/channels/ClosedByInterruptException.java,
+	libraries/javalib/java/nio/channels/ClosedChannelException.java,
+	libraries/javalib/java/nio/channels/ClosedSelectorException.java,
+	libraries/javalib/java/nio/channels/ConnectionPendingException.java,
+	libraries/javalib/java/nio/channels/DatagramChannel.java,
+	libraries/javalib/java/nio/channels/FileChannel.java,
+	libraries/javalib/java/nio/channels/FileLock.java,
+	libraries/javalib/java/nio/channels/FileLockInterruptionException.java,
+	libraries/javalib/java/nio/channels/GatheringByteChannel.java,
+	libraries/javalib/java/nio/channels/IllegalBlockingModeException.java,
+	libraries/javalib/java/nio/channels/IllegalSelectorException.java,
+	libraries/javalib/java/nio/channels/InterruptibleChannel.java,
+	libraries/javalib/java/nio/channels/NoConnectionPendingException.java,
+	libraries/javalib/java/nio/channels/NonReadableChannelException.java,
+	libraries/javalib/java/nio/channels/NonWritableChannelException.java,
+	libraries/javalib/java/nio/channels/NotYetBoundException.java,
+	libraries/javalib/java/nio/channels/NotYetConnectedException.java,
+	libraries/javalib/java/nio/channels/OverlappingFileLockException.java,
+	libraries/javalib/java/nio/channels/Pipe.java,
+	libraries/javalib/java/nio/channels/ReadableByteChannel.java,
+	libraries/javalib/java/nio/channels/ScatteringByteChannel.java,
+	libraries/javalib/java/nio/channels/SelectableChannel.java,
+	libraries/javalib/java/nio/channels/SelectionKey.java,
+	libraries/javalib/java/nio/channels/Selector.java,
+	libraries/javalib/java/nio/channels/ServerSocketChannel.java,
+	libraries/javalib/java/nio/channels/SocketChannel.java,
+	libraries/javalib/java/nio/channels/UnresolvedAddressException.java,
+	libraries/javalib/java/nio/channels/UnsupportedAddressTypeException.java,
+	libraries/javalib/java/nio/channels/WritableByteChannel.java:
+	new files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/nio/channels/spi/AbstractInterruptibleChannel.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelectableChannel.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelectionKey.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelector.java,
+	libraries/javalib/java/nio/channels/spi/SelectorProvider.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/nio/charset/CharacterCodingException.java,
+	libraries/javalib/java/nio/charset/Charset.java,
+	libraries/javalib/java/nio/charset/CharsetDecoder.java,
+	libraries/javalib/java/nio/charset/CharsetEncoder.java,
+	libraries/javalib/java/nio/charset/CoderMalfunctionError.java,
+	libraries/javalib/java/nio/charset/CoderResult.java,
+	libraries/javalib/java/nio/charset/CodingErrorAction.java,
+	libraries/javalib/java/nio/charset/IllegalCharsetNameException.java,
+	libraries/javalib/java/nio/charset/MalformedInputException.java,
+	libraries/javalib/java/nio/charset/UnmappableCharacterException.java,
+	libraries/javalib/java/nio/charset/UnsupportedCharsetException.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/nio/charset/spi/CharsetProvider.java:
+	new files. Taken from GNU Classpath.
+	
+	* libraries/javalib/java/util/RandomAccess.java:
+	new file. Taken from GNU Classpath.
+	
+	* libraries/javalib/javax/sound/sampled/AudioFileFormat.java,
+	libraries/javalib/javax/sound/sampled/AudioFormat.java,
+	libraries/javalib/javax/sound/sampled/AudioInputStream.java,
+	libraries/javalib/javax/sound/sampled/AudioSystem.java,
+	libraries/javalib/javax/sound/sampled/Clip.java,
+	libraries/javalib/javax/sound/sampled/Control.java,
+	libraries/javalib/javax/sound/sampled/DataLine.java,
+	libraries/javalib/javax/sound/sampled/Line.java,
+	libraries/javalib/javax/sound/sampled/LineEvent.java,
+	libraries/javalib/javax/sound/sampled/LineListener.java,
+	libraries/javalib/javax/sound/sampled/LineUnavailableException.java,
+	libraries/javalib/javax/sound/sampled/Mixer.java,
+	libraries/javalib/javax/sound/sampled/Port.java,
+	libraries/javalib/javax/sound/sampled/SourceDataLine.java,
+	libraries/javalib/javax/sound/sampled/TargetDataLine.java,
+	libraries/javalib/javax/sound/sampled/UnsupportedAudioFileException.java:
+	new files. Merged in from PocketLinux kaffe sources.
+	
 2002-11-27 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in LGPL-d java.util.regex and gnu.regexp from
@@ -38,7 +172,7 @@
 	libraries/javalib/gnu/regexp/UncheckedRE.java:
 	new files, merged in from gnu.regexp CVS on Savannah.
 
-	* libraries/javalib/java/util/regex/Matcher.java,
+	* libraries/javalib/libraries/javalib/java/util/regex/Matcher.java,
 	libraries/javalib/java/util/regex/Pattern.java,
 	libraries/javalib/java/util/regex/PatternSyntaxException.java:
 	new files, merged in from gnu-regexp-jdk14.tar.gz on the
