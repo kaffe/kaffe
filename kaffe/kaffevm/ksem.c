@@ -73,7 +73,6 @@ void
 ksemPut(Ksem* sem)
 {
 	jmutex_lock(&sem->mux);
-	/*assert((sem->count == 0) || (sem->count == 1));*/
 	assert(sem->count == 0);
         sem->count = 1;
 	jcondvar_signal(&sem->cv, &sem->mux);

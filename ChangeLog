@@ -1,3 +1,18 @@
+2004-07-10  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/ksem.c: Removed a commented assertion.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(suspend_signal_handler): Use sigwait instead of
+	sigsuspend (needed on SunOS).
+	(jthread_init): Updated suspendSet to match sigwait interface.
+
+	* m4/solarispthread.m4: Define _POSIX_PTHREAD_SEMANTICS on SunOS.
+
+	* configure, libraries/clib/awt/qt/Makefile.in,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-07-10  Jim Huang  <jserv@kaffe.org>
 
 	* FAQ/FAQ.awt:

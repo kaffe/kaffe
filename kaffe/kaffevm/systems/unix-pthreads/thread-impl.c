@@ -435,8 +435,8 @@ jthread_init(int pre,
   tMapPriorities(maxpr+1);
   tInitSignalHandlers();
 
-  sigfillset( &suspendSet);
-  sigdelset( &suspendSet, SIG_RESUME);
+  sigemptyset( &suspendSet);
+  sigaddset( &suspendSet, SIG_RESUME);
 
   tSetupFirstNative();
 
@@ -965,6 +965,7 @@ suspend_signal_handler ( int sig )
 
   if ( cur->suspendState == SS_PENDING_SUSPEND ){
 	JTHREAD_JMPBUF env;
+	int s;
 
 	/*
 	 * Note: We're not gonna do a longjmp to this place, we just want
@@ -981,9 +982,9 @@ suspend_signal_handler ( int sig )
 
 	/* freeze until we get a subsequent SIG_RESUME */
 	while( cur->suspendState == SS_SUSPENDED )
-		sigsuspend( &suspendSet);
+		sigwait( &suspendSet, &s);
 
-	DBG( JTHREADDETAIL, dprintf("sigsuspend return: %p\n", cur))
+	DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur))
 
 	cur->stackCur     = 0;
 	cur->suspendState = 0;
@@ -995,7 +996,7 @@ suspend_signal_handler ( int sig )
 
 /*
  * The resume signal handler, which we mainly need to get the implicit sigreturn
- * call (i.e. to unblock a preceeding sigsuspend).
+ * call (i.e. to unblock a preceeding sigwait).
  */
 void
 resume_signal_handler ( int sig )

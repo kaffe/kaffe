@@ -3,6 +3,14 @@ dnl to get some pthread functions.
 dnl
 dnl Derived from Python 2.3.4 check in their GPL-comaptible configure.in.
 AC_DEFUN([KAFFE_LIB_SOLARIS_PTHREAD],
-	 [AC_SEARCH_LIBS([sem_init],[rt posix4])])
+
+[
+	AC_SEARCH_LIBS([sem_init],[rt posix4])
+	case $Khost_os in
+		sunos*)
+			CPPFLAGS="$CPPFLAGS -D_POSIX_PTHREAD_SEMANTICS"
+			;;
+	esac
+])
 
 

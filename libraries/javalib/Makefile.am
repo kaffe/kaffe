@@ -50,6 +50,7 @@ Klasses_jar_SRCS = \
 	$(gnu_inet_ftp_SRCS) \
 	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
+	$(gnu_java_awt_peer_SRCS) \
 	$(gnu_java_beans_SRCS) \
 	$(gnu_java_beans_editors_SRCS) \
 	$(gnu_java_io_SRCS) \
@@ -244,9 +245,10 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
-	gnu/java/awt/EventModifier.java
 	gnu/java/awt/EmbeddedWindow.java \
 	gnu/java/awt/EmbeddedWindowSupport.java \
+	gnu/java/awt/EventModifier.java
+gnu_java_awt_peer_SRCS = \
 	gnu/java/awt/peer/EmbeddedWindowPeer.java
 gnu_java_beans_SRCS = \
 	gnu/java/beans/BeanInfoEmbryo.java \
