@@ -39,7 +39,7 @@ exception statement from your version. */
 package javax.swing.text.html.parser;
 
 import gnu.javax.swing.text.html.parser.htmlAttributeSet;
-import gnu.javax.swing.text.html.parser.support.Parser;
+import javax.swing.text.html.parser.Parser;
 
 import java.io.IOException;
 import java.io.Reader;

@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-18  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+        * javax/swing/text/html/parser/Entity.java (getType): New method.
+        * javax/swing/text/html/parser/DocumentParser.java:
+        Inherit from javax.swing.text.html.parser.Parser.
+
+2005-03-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-18  Robert Schuster  <thebohemian@gmx>
 
         * native/jni/java-nio/gnu_java_nio_VMSelector.c: Added important
