@@ -39,7 +39,6 @@ static char cwdpath[MAXPATHLEN];
 
 extern jlong currentTime(void);
 extern userProperty* userProperties;
-extern Hjava_lang_Class* SystemClass;
 extern char* realClassPath;
 extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
 
@@ -297,33 +296,6 @@ jlong
 java_lang_System_currentTimeMillis(void)
 {
 	return (currentTime());
-}
-
-/*
- * Set the stdin stream.
- */
-void
-java_lang_System_setIn0(struct Hjava_io_InputStream* stream)
-{
-	*(struct Hjava_io_InputStream**)FIELD_ADDRESS(&CLASS_SFIELDS(SystemClass)[0]) = stream;
-}
-
-/*
- * Set the stdout stream.
- */
-void
-java_lang_System_setOut0(struct Hjava_io_PrintStream* stream)
-{
-	*(struct Hjava_io_PrintStream**)FIELD_ADDRESS(&CLASS_SFIELDS(SystemClass)[1]) = stream;
-}
-
-/*
- * Set the error stream.
- */
-void
-java_lang_System_setErr0(struct Hjava_io_PrintStream* stream)
-{
-	*(struct Hjava_io_PrintStream**)FIELD_ADDRESS(&CLASS_SFIELDS(SystemClass)[2]) = stream;
 }
 
 jint
