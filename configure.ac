@@ -469,13 +469,12 @@ dnl -------------------------------------------------------------------------
 AC_ARG_ENABLE([debug],
 	      AS_HELP_STRING([--disable-debug],
 			     [Disable run-time debugging machinery. It is enabled by default.]),
-[
+			     [],
+	[enable_debug="yes"])
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
-],
-	[enable_debug="yes"])
 
 AC_MSG_CHECKING([whether to enable run-time debugging machinery])
 AC_MSG_RESULT($enable_debug)
