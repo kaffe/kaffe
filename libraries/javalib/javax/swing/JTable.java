@@ -1148,16 +1148,32 @@ public class JTable extends JComponent
    */ 
   public void setModel(TableModel m)
   {
+    // Throw exception is m is null.
     if (m == null)
       throw new IllegalArgumentException();
-    TableModel tmp = dataModel;
-    if (autoCreateColumnsFromModel)
-      createColumnsFromModel();
-    if (tmp != null)
-      tmp.removeTableModelListener(this);
+   
+    // Don't do anything if setting the current model again.
+    if (dataModel == m)
+      return;
+    
+    // Remove table as TableModelListener from old model.
+    if (dataModel != null)
+      dataModel.removeTableModelListener(this);
+    
     if (m != null)
-      m.addTableModelListener(this);
-    dataModel = m;
+      {
+	// Set property.
+        dataModel = m;
+
+	// Add table as TableModelListener to new model.
+	dataModel.addTableModelListener(this);
+
+	// Automatically create columns.
+	if (autoCreateColumnsFromModel)
+	  createColumnsFromModel();
+      }
+    
+    // Repaint table.
     revalidate();
     repaint();
   }
