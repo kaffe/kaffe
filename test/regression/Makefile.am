@@ -89,6 +89,7 @@ TESTS = \
 	CLTestJLock.java \
 	CLTestLie.java \
 	CLTestFindLoaded.java \
+	ClassDeadLock.java \
 	ExceptionTest.java \
 	ExceptionTestClassLoader.java \
 	ExceptionTestClassLoader2.java \
