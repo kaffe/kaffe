@@ -553,7 +553,7 @@ no) ;;
 esac
 ],
 [
-$enable_xdebugging="no"
+enable_xdebugging="no"
 ])
 
 AC_MSG_CHECKING([whether to enable debugging symbol generation for jitted code])

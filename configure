@@ -26425,7 +26425,7 @@ esac
 
 else
 
-$enable_xdebugging="no"
+enable_xdebugging="no"
 
 fi;
 
