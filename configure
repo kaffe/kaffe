@@ -3236,9 +3236,2619 @@ fi
 
 
 
-if test "$GCC" = "yes"; then
-	CFLAGS="$CFLAGS -Wall -Wstrict-prototypes"
+
+# turn on -Wall
+
+echo "$as_me:$LINENO: checking CFLAGS for maximum warnings" >&5
+echo $ECHO_N "checking CFLAGS for maximum warnings... $ECHO_C" >&6
+if test "${ac_cv_cflags_warn_all+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
+  ac_cv_cflags_warn_all="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wall"          "-xstrconst % -v"             "-std1      % -verbose -w0 -warnprotos"    "-qlanglvl=ansi % -qsrcmsg -qinfo=all:noppt:noppc:noobs:nocnd"    "-ansi -ansiE % -fullwarn"    "+ESlit     % +w1"            "-Xc        % -pvctl,fullmsg"    "-h conform % -h msglevel 2"    #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_warn_all=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_warn_all" >&5
+echo "${ECHO_T}$ac_cv_cflags_warn_all" >&6
+case ".$ac_cv_cflags_warn_all" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)
+ ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_warn_all " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_warn_all") >&5
+  (: CFLAGS does contain $ac_cv_cflags_warn_all) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_warn_all\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_warn_all") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_warn_all"
+   fi
+ ;;
+esac
+
+
+# turn on all other gcc warnings for more fixing fun
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -W" >&5
+echo $ECHO_N "checking CFLAGS for gcc -W... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__W+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__W="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -W"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__W=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__W" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__W" >&6
+case ".$ac_cv_cflags_gcc_option__W" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__W " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__W") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__W) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__W\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__W") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__W"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc Wfloat-equal" >&5
+echo $ECHO_N "checking CFLAGS for gcc Wfloat-equal... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option_Wfloat_equal+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option_Wfloat_equal="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % Wfloat-equal"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option_Wfloat_equal=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option_Wfloat_equal" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option_Wfloat_equal" >&6
+case ".$ac_cv_cflags_gcc_option_Wfloat_equal" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option_Wfloat_equal " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option_Wfloat_equal") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option_Wfloat_equal) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option_Wfloat_equal\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option_Wfloat_equal") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option_Wfloat_equal"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wtraditional" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wtraditional... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wtraditional+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wtraditional="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wtraditional"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wtraditional=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wtraditional" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wtraditional" >&6
+case ".$ac_cv_cflags_gcc_option__Wtraditional" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wtraditional " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wtraditional") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wtraditional) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wtraditional\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wtraditional") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wtraditional"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wundef" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wundef... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wundef+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wundef="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wundef"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wundef=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wundef" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wundef" >&6
+case ".$ac_cv_cflags_gcc_option__Wundef" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wundef " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wundef") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wundef) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wundef\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wundef") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wundef"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wendif-labels" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wendif-labels... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wendif_labels+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wendif_labels="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wendif-labels"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wendif_labels=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wendif_labels" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wendif_labels" >&6
+case ".$ac_cv_cflags_gcc_option__Wendif_labels" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wendif_labels " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wendif_labels") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wendif_labels) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wendif_labels\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wendif_labels") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wendif_labels"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wshadow" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wshadow... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wshadow+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wshadow="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wshadow"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wshadow=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wshadow" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wshadow" >&6
+case ".$ac_cv_cflags_gcc_option__Wshadow" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wshadow " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wshadow") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wshadow) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wshadow\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wshadow") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wshadow"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wpointer-arith" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wpointer-arith... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wpointer_arith+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wpointer_arith="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wpointer-arith"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wpointer_arith=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wpointer_arith" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wpointer_arith" >&6
+case ".$ac_cv_cflags_gcc_option__Wpointer_arith" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wpointer_arith " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wpointer_arith") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wpointer_arith) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wpointer_arith\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpointer_arith") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpointer_arith"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wbad-function-cast" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wbad-function-cast... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wbad_function_cast+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wbad_function_cast="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wbad-function-cast"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wbad_function_cast=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wbad_function_cast" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wbad_function_cast" >&6
+case ".$ac_cv_cflags_gcc_option__Wbad_function_cast" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wbad_function_cast " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wbad_function_cast") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wbad_function_cast) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wbad_function_cast\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wbad_function_cast") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wbad_function_cast"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wcast-qual" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wcast-qual... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wcast_qual+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wcast_qual="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wcast-qual"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wcast_qual=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wcast_qual" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wcast_qual" >&6
+case ".$ac_cv_cflags_gcc_option__Wcast_qual" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wcast_qual " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wcast_qual") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wcast_qual) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wcast_qual\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wcast_qual") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wcast_qual"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wcast-align" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wcast-align... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wcast_align+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wcast_align="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wcast-align"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wcast_align=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wcast_align" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wcast_align" >&6
+case ".$ac_cv_cflags_gcc_option__Wcast_align" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wcast_align " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wcast_align") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wcast_align) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wcast_align\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wcast_align") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wcast_align"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wwrite-strings" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wwrite-strings... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wwrite_strings+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wwrite_strings="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wwrite-strings"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wwrite_strings=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wwrite_strings" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wwrite_strings" >&6
+case ".$ac_cv_cflags_gcc_option__Wwrite_strings" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wwrite_strings " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wwrite_strings") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wwrite_strings) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wwrite_strings\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wwrite_strings") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wwrite_strings"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wconversion" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wconversion... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wconversion+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wconversion="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wconversion"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wconversion=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wconversion" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wconversion" >&6
+case ".$ac_cv_cflags_gcc_option__Wconversion" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wconversion " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wconversion") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wconversion) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wconversion\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wconversion") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wconversion"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wsign-compare" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wsign-compare... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wsign_compare+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wsign_compare="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wsign-compare"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wsign_compare=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wsign_compare" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wsign_compare" >&6
+case ".$ac_cv_cflags_gcc_option__Wsign_compare" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wsign_compare " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wsign_compare") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wsign_compare) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wsign_compare\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wsign_compare") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wsign_compare"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Waggregate-return" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Waggregate-return... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Waggregate_return+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Waggregate_return="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Waggregate-return"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Waggregate_return=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Waggregate_return" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Waggregate_return" >&6
+case ".$ac_cv_cflags_gcc_option__Waggregate_return" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Waggregate_return " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Waggregate_return") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Waggregate_return) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Waggregate_return\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Waggregate_return") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Waggregate_return"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wstrict-prototypes" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wstrict-prototypes... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wstrict_prototypes+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wstrict_prototypes="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wstrict-prototypes"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wstrict_prototypes=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wstrict_prototypes" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wstrict_prototypes" >&6
+case ".$ac_cv_cflags_gcc_option__Wstrict_prototypes" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wstrict_prototypes " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wstrict_prototypes") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wstrict_prototypes) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wstrict_prototypes\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wstrict_prototypes") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wstrict_prototypes"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wmissing-prototypes" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wmissing-prototypes... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wmissing_prototypes+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wmissing_prototypes="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wmissing-prototypes"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wmissing_prototypes=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wmissing_prototypes" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wmissing_prototypes" >&6
+case ".$ac_cv_cflags_gcc_option__Wmissing_prototypes" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wmissing_prototypes " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wmissing_prototypes") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wmissing_prototypes) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wmissing_prototypes\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_prototypes") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_prototypes"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wmissing-declarations" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wmissing-declarations... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wmissing_declarations+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wmissing_declarations="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wmissing-declarations"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wmissing_declarations=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wmissing_declarations" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wmissing_declarations" >&6
+case ".$ac_cv_cflags_gcc_option__Wmissing_declarations" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wmissing_declarations " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wmissing_declarations") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wmissing_declarations) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wmissing_declarations\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_declarations") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_declarations"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wmissing-noreturn" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wmissing-noreturn... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wmissing_noreturn+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wmissing_noreturn="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wmissing-noreturn"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wmissing_noreturn=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wmissing_noreturn" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wmissing_noreturn" >&6
+case ".$ac_cv_cflags_gcc_option__Wmissing_noreturn" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wmissing_noreturn " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wmissing_noreturn") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wmissing_noreturn) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wmissing_noreturn\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_noreturn") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_noreturn"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wmissing-format-attribute" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wmissing-format-attribute... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wmissing_format_attribute+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wmissing_format_attribute="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wmissing-format-attribute"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wmissing_format_attribute=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wmissing_format_attribute" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wmissing_format_attribute" >&6
+case ".$ac_cv_cflags_gcc_option__Wmissing_format_attribute" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wmissing_format_attribute " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wmissing_format_attribute") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wmissing_format_attribute) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wmissing_format_attribute\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_format_attribute") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wmissing_format_attribute"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wpacked" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wpacked... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wpacked+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wpacked="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wpacked"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wpacked=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wpacked" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wpacked" >&6
+case ".$ac_cv_cflags_gcc_option__Wpacked" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wpacked " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wpacked") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wpacked) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wpacked\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpacked") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpacked"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wpadded" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wpadded... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wpadded+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wpadded="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wpadded"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wpadded=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wpadded" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wpadded" >&6
+case ".$ac_cv_cflags_gcc_option__Wpadded" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wpadded " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wpadded") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wpadded) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wpadded\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpadded") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wpadded"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wredundant-decls" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wredundant-decls... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wredundant_decls+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wredundant_decls="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wredundant-decls"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wredundant_decls=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wredundant_decls" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wredundant_decls" >&6
+case ".$ac_cv_cflags_gcc_option__Wredundant_decls" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wredundant_decls " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wredundant_decls") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wredundant_decls) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wredundant_decls\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wredundant_decls") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wredundant_decls"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wnested-externs" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wnested-externs... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wnested_externs+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wnested_externs="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wnested-externs"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wnested_externs=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wnested_externs" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wnested_externs" >&6
+case ".$ac_cv_cflags_gcc_option__Wnested_externs" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wnested_externs " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wnested_externs") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wnested_externs) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wnested_externs\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wnested_externs") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wnested_externs"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wunreachable-code" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wunreachable-code... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wunreachable_code+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wunreachable_code="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wunreachable-code"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wunreachable_code=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wunreachable_code" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wunreachable_code" >&6
+case ".$ac_cv_cflags_gcc_option__Wunreachable_code" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wunreachable_code " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wunreachable_code") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wunreachable_code) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wunreachable_code\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wunreachable_code") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wunreachable_code"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Winline" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Winline... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Winline+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Winline="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Winline"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Winline=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Winline" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Winline" >&6
+case ".$ac_cv_cflags_gcc_option__Winline" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Winline " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Winline") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Winline) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Winline\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Winline") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Winline"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wlong-long" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wlong-long... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wlong_long+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wlong_long="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wlong-long"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wlong_long=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wlong_long" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wlong_long" >&6
+case ".$ac_cv_cflags_gcc_option__Wlong_long" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wlong_long " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wlong_long") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wlong_long) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wlong_long\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wlong_long") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wlong_long"
+   fi
+ ;;
+esac
+
+echo "$as_me:$LINENO: checking CFLAGS for gcc -Wdisabled-optimization" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wdisabled-optimization... $ECHO_C" >&6
+if test "${ac_cv_cflags_gcc_option__Wdisabled_optimization+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_cflags_gcc_option__Wdisabled_optimization="no, unknown"
+
+
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_save_CFLAGS="$CFLAGS"
+for ac_arg in "-pedantic  % -Wdisabled-optimization"     #
+do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_cflags_gcc_option__Wdisabled_optimization=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+ CFLAGS="$ac_save_CFLAGS"
+ ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__Wdisabled_optimization" >&5
+echo "${ECHO_T}$ac_cv_cflags_gcc_option__Wdisabled_optimization" >&6
+case ".$ac_cv_cflags_gcc_option__Wdisabled_optimization" in
+     .ok|.ok,*)  ;;
+   .|.no|.no,*)  ;;
+   *)
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wdisabled_optimization " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wdisabled_optimization") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wdisabled_optimization) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wdisabled_optimization\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wdisabled_optimization") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wdisabled_optimization"
+   fi
+ ;;
+esac
+
+
+if test "$GCC" != "yes"; then
 	{ { echo "$as_me:$LINENO: error: Kaffe can only build with GCC" >&5
 echo "$as_me: error: Kaffe can only build with GCC" >&2;}
    { (exit 1); exit 1; }; }
@@ -4376,7 +6986,6 @@ LTCC=${LTCC-"$CC"}
 # Allow CC to be a program name with arguments.
 compiler=$CC
 
-
 # Check whether --enable-libtool-lock or --disable-libtool-lock was given.
 if test "${enable_libtool_lock+set}" = set; then
   enableval="$enable_libtool_lock"
@@ -4408,7 +7017,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4411 "configure"' > conftest.$ac_ext
+  echo '#line 7020 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5758,7 +8367,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5761:" \
+echo "$as_me:8370:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6796,11 +9405,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6799: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9408: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6803: \$? = $ac_status" >&5
+   echo "$as_me:9412: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -7029,11 +9638,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7032: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9641: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7036: \$? = $ac_status" >&5
+   echo "$as_me:9645: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -7089,11 +9698,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7092: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9701: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7096: \$? = $ac_status" >&5
+   echo "$as_me:9705: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9273,7 +11882,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9276 "configure"
+#line 11885 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9371,7 +11980,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9374 "configure"
+#line 11983 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11554,11 +14163,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11557: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14166: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11561: \$? = $ac_status" >&5
+   echo "$as_me:14170: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11614,11 +14223,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11617: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14226: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11621: \$? = $ac_status" >&5
+   echo "$as_me:14230: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12975,7 +15584,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12978 "configure"
+#line 15587 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13073,7 +15682,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 13076 "configure"
+#line 15685 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13900,11 +16509,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13903: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16512: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13907: \$? = $ac_status" >&5
+   echo "$as_me:16516: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13960,11 +16569,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13963: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16572: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13967: \$? = $ac_status" >&5
+   echo "$as_me:16576: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15998,11 +18607,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16001: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18610: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16005: \$? = $ac_status" >&5
+   echo "$as_me:18614: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16231,11 +18840,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16234: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18843: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16238: \$? = $ac_status" >&5
+   echo "$as_me:18847: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16291,11 +18900,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16294: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18903: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16298: \$? = $ac_status" >&5
+   echo "$as_me:18907: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18475,7 +21084,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18478 "configure"
+#line 21087 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18573,7 +21182,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18576 "configure"
+#line 21185 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H

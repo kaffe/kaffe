@@ -81,9 +81,41 @@ dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
-if test "$GCC" = "yes"; then
-	CFLAGS="$CFLAGS -Wall -Wstrict-prototypes"
-else
+
+# turn on -Wall
+AX_CFLAGS_WARN_ALL
+
+# turn on all other gcc warnings for more fixing fun
+
+AX_CFLAGS_GCC_OPTION([-W])
+AX_CFLAGS_GCC_OPTION([Wfloat-equal])
+AX_CFLAGS_GCC_OPTION([-Wtraditional])
+AX_CFLAGS_GCC_OPTION([-Wundef])
+AX_CFLAGS_GCC_OPTION([-Wendif-labels])
+AX_CFLAGS_GCC_OPTION([-Wshadow])
+AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
+AX_CFLAGS_GCC_OPTION([-Wbad-function-cast])
+AX_CFLAGS_GCC_OPTION([-Wcast-qual])
+AX_CFLAGS_GCC_OPTION([-Wcast-align])
+AX_CFLAGS_GCC_OPTION([-Wwrite-strings]) 
+AX_CFLAGS_GCC_OPTION([-Wconversion])
+AX_CFLAGS_GCC_OPTION([-Wsign-compare]) 
+AX_CFLAGS_GCC_OPTION([-Waggregate-return]) 
+AX_CFLAGS_GCC_OPTION([-Wstrict-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
+AX_CFLAGS_GCC_OPTION([-Wmissing-noreturn])
+AX_CFLAGS_GCC_OPTION([-Wmissing-format-attribute]) 
+AX_CFLAGS_GCC_OPTION([-Wpacked])
+AX_CFLAGS_GCC_OPTION([-Wpadded])
+AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
+AX_CFLAGS_GCC_OPTION([-Wnested-externs])
+AX_CFLAGS_GCC_OPTION([-Wunreachable-code])
+AX_CFLAGS_GCC_OPTION([-Winline])
+AX_CFLAGS_GCC_OPTION([-Wlong-long])
+AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
+
+if test "$GCC" != "yes"; then
 	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi
 
