@@ -93,7 +93,7 @@ native private void openAppend(String name) throws IOException;
 
 public void write(byte b[]) throws IOException
 {
-	write(b, 0, b.length);
+	writeBytes(b, 0, b.length);
 }
 
 public void write(byte b[], int off, int len) throws IOException

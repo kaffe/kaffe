@@ -1,3 +1,13 @@
+2003-04-04 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/javalib/java/io/FileInputStream.java:
+	(read) use readBytes method to do the work to avoid circular
+	recursion in overloaded methods.
+
+	* libraries/javalib/java/io/FileOutputStream.java:
+	(write) use writeBytes method to do the work to avoid circular
+	recursion in overloaded methods.
+
 2003-04-04 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/BufferedInputStream.java:

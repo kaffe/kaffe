@@ -80,7 +80,7 @@ native private void open(String name) throws IOException;
 native public int read() throws IOException;
 
 public int read(byte b[]) throws IOException {
-	return read(b, 0, b.length);
+	return readBytes(b, 0, b.length);
 }
 
 public int read(byte b[], int off, int len) throws IOException {
