@@ -1,3 +1,10 @@
+Wed Aug 11 19:41:44 PDT 1999   Archie Cobbs <archie@whistle.com>
+
+	* FAQ.requiredlibraries: add blurb regarding libmd
+	* libraries/javalib/java/security/Security.java: add fallback
+	to the default security provider if none found in java.security
+	* libraries/javalib/Klasses.jar: regen
+
 Mon Aug 10 12:40:55 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java: fix for PR #523
