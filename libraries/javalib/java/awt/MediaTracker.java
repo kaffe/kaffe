@@ -281,7 +281,7 @@ MediaTrackerEntry(Image img, int id, int w, int h)
 	this.h = h;
 }
 
-public boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
+public synchronized boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
 	if ( (infoflags & (ALLBITS | ABORT)) != 0 ) {
 		notify();
 	}
