@@ -49,8 +49,8 @@ import java.util.Vector;
 public class MessageFormat extends Format
 {
   /**
-   * @author Tom Tromey <tromey@cygnus.com>
-   * @author Jorge Aliss <jaliss@hotmail.com>
+   * @author Tom Tromey (tromey@cygnus.com)
+   * @author Jorge Aliss (jaliss@hotmail.com)
    * @date March 3, 1999
    */
   /* Written using "Java Class Libraries", 2nd edition, plus online

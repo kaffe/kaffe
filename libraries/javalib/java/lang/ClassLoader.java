@@ -115,7 +115,7 @@ import java.util.StringTokenizer;
  *
  * @author John Keiser
  * @author Mark Wielaard
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @see Class
  * @since 1.0
  * @status still missing 1.4 functionality

@@ -1,5 +1,5 @@
 /* PrintStream.java -- OutputStream for printing output
-   Copyright (C) 1998, 1999, 2001, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -53,8 +53,8 @@ package java.io;
  * <p>
  * This class converts char's into byte's using the system default encoding.
  *
- * @author Aaron M. Renn <arenn@urbanophile.com>
- * @author Tom Tromey <tromey@cygnus.com>
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Tom Tromey (tromey@cygnus.com)
  */
 public class PrintStream extends FilterOutputStream
 {
