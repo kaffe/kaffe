@@ -1,3 +1,9 @@
+2004-08-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/m68k/openbsd2/md.h
+	(sysdepCallMethod): Imported from netbsd and translated to MIT/GNU as
+	syntax.
+
 2004-08-15  Dalibor Topic  <robilad@kaffe.org>
 
         * include/Makefile.am:
