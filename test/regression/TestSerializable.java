@@ -13,6 +13,7 @@ public class TestSerializable
     public static void main(String av[])
     {
 	Class c = TestSerializable[].class;
+	// in JDK 1.1, this outputs 0, in JDK 1.2 and in Kaffe, this outputs 2
 	System.out.println(c.getInterfaces().length);
 	System.out.println(c.getModifiers());
 	Class s = java.io.Serializable.class;
@@ -26,7 +27,7 @@ public class TestSerializable
 }
 
 /* Expected Output:
-0
+2
 1041
 true
 true

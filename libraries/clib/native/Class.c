@@ -228,11 +228,15 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 	int nr;
 
 	nr = this->interface_len;
+
+#if defined(JDK_1_1_COMPAT)
 	/*
-	 * Do not report java.io.Serializable for array classes
+	 * Do not report java.io.Serializable for array classes in JDK 1.1
 	 */
-	if (CLASS_IS_ARRAY(this))
+	if (CLASS_IS_ARRAY(this)) {
 		nr = 0;
+	}
+#endif
 
 	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class");
 	ifaces = (struct Hjava_lang_Class**)unhand_array(obj)->body;
