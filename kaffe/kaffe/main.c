@@ -674,7 +674,7 @@ options(char** argv, int argc)
 #endif
 		else if (argv[i][1] ==  'D') {
 			/* Set a property */
-			const char *propStr = strdup(&argv[i][2]);
+			char *propStr = strdup(&argv[i][2]);
 			
 			prop = malloc(sizeof(userProperty));
 			assert(prop != 0);

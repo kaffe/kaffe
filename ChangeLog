@@ -1,5 +1,14 @@
 2004-07-06  Dalibor Topic  <robilad@kaffe.org>
 
+        * config/x86_64/linux/sigcontextinfo.h: Cleaned up.
+	(GET_PC, GET_STACK, GET_FRAME) Use fields from sigcontext.
+
+        * kaffe/kaffe/main.c:
+	(options) Removed const from propStr declaration to fix 
+	the build on x86_64-linux.
+
+2004-07-06  Dalibor Topic  <robilad@kaffe.org>
+
         * config/sparc/linux/jit-md.h:
 	(EXCEPTIONFRAME) Use generic GET_PC and 
 	GET_STACK macros from glibc that work on both sparc 
