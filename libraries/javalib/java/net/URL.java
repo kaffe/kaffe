@@ -137,7 +137,8 @@ public boolean equals(Object obj) {
 	    this.host.equals(that.host) &&
 	    this.port == that.port &&
 	    this.file.equals(that.file) &&
-			this.ref.equals(that.ref) ) {
+	    ((this.ref == null && that.ref == null)
+	      || this.ref.equals(that.ref)) ) {
 		return (true);
 	}
 	return (false);
