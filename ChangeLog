@@ -1,3 +1,10 @@
+Wed Feb 17 20:54:28 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gcFuncs.c: don't mark primitive classes, they're now
+	static.  Temporary fix: use markAddress instead of markObject to
+	mark static fields which could be non-gc-allocated.
+	* kaffe/kaffevm/itypes.c: don't gc_add_ref primitive classes
+
 Wed Feb 17 18:34:46 PST 1999 Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/locks.c: remove wrong use of KFREE()
