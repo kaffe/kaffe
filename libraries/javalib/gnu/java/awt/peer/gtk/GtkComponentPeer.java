@@ -217,6 +217,9 @@ public class GtkComponentPeer extends GtkGenericPeer
     else
       g = new GdkGraphics (width, height);
 
+    g.setColor(getBackground());
+    g.fillRect(0, 0, width, height);
+
     return new GtkOffScreenImage (null, g, width, height);
   }
 
