@@ -1,8 +1,7 @@
-#!/usr/local/bin/perl -w
+#!/bin/sh
 #
 # Dump a java .class file to stdout
 #
-
 #
 # Copyright (c) 1999 University of Utah CSL.
 #
@@ -13,6 +12,20 @@
 #
 # Written by Patrick Tullmann <tullmann@cs.utah.edu>
 #
+
+if [ -x /usr/bin/perl ]; then
+	PERL=/usr/bin/perl
+else
+	if [ -x /usr/local/bin/perl ]; then
+		PERL=/usr/local/bin/perl
+	fi
+fi
+
+PERL5INC=`echo "$0" | sed 's,/[^/]*$,,'`  # very portable
+$PERL -I $PERL5INC -x $0 ${1+"$@"}
+exit
+
+#!perl
 
 use JavaClass;
 
