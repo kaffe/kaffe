@@ -452,7 +452,9 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 		{
 			struct in_addr ia;
 			
-			ia.s_addr = htonl(unhand(addrp)->address);
+			memcpy(&ia, unhand_byte_array(unhand(addrp)->addr),
+			       sizeof(ia));
+
 			r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
 					IPPROTO_IP,
 					IP_MULTICAST_IF,
@@ -487,6 +489,8 @@ gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainD
 	int vsize = sizeof(v);
 	struct sockaddr_in addr;
 	int alen = sizeof(addr);
+	struct in_addr ia;
+	int ia_len = sizeof(ia);
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -514,12 +518,12 @@ gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainD
 #if defined(IP_MULTICAST_IF)
 	case java_net_SocketOptions_IP_MULTICAST_IF:
 		r = KGETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
-			IPPROTO_IP, IP_MULTICAST_IF, &addr, &alen);
+			IPPROTO_IP, IP_MULTICAST_IF, &ia, &ia_len);
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
 			return (0);	/* NOT REACHED, avoid warning */
 		}
-		r = ntohl(addr.sin_addr.s_addr);
+		r = ntohl(ia.s_addr);
 		break;
 #endif
 	case java_net_SocketOptions_SO_TIMEOUT: /* JAVA takes care */
@@ -540,8 +544,14 @@ gnu_java_net_PlainDatagramSocketImpl_join(struct Hgnu_java_net_PlainDatagramSock
 	int r;
 	struct ip_mreq ipm;
 
-	ipm.imr_multiaddr.s_addr = htonl(unhand(laddr)->address);
+	memcpy(&ipm.imr_multiaddr, unhand_byte_array(unhand(laddr)->addr),
+	       sizeof(ipm.imr_multiaddr));
 	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+
+DBG(NATIVENET,
+	dprintf("datagram_join (%p, %p) => %s\n",
+		this, laddr, ip2str(ipm.imr_interface.s_addr));
+   )
 
 	r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
 		IPPROTO_IP, IP_ADD_MEMBERSHIP, &ipm, sizeof(ipm));
@@ -564,8 +574,14 @@ gnu_java_net_PlainDatagramSocketImpl_leave(struct Hgnu_java_net_PlainDatagramSoc
 	int r;
 	struct ip_mreq ipm;
 
-	ipm.imr_multiaddr.s_addr = htonl(unhand(laddr)->address);
+	memcpy(&ipm.imr_multiaddr, unhand_byte_array(unhand(laddr)->addr),
+	       sizeof(ipm.imr_multiaddr));
 	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+
+DBG(NATIVENET,
+	dprintf("datagram_leave (%p, %p) => %s\n",
+		this, laddr, ip2str(ipm.imr_interface.s_addr));
+   )
 
 	r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
 		IPPROTO_IP, IP_DROP_MEMBERSHIP, &ipm, sizeof(ipm));
@@ -591,18 +607,26 @@ gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagra
 
 	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
 	
-	ipm.imr_multiaddr.s_addr = htonl(unhand(unhand(jisa)->addr)->address);
+	memcpy(&ipm.imr_multiaddr,
+	       unhand_byte_array(unhand(unhand(jisa)->addr)->addr),
+	       sizeof(ipm.imr_multiaddr));
+
+DBG(NATIVENET,
+	dprintf("  datagram_joinGroup(%p, %p, %p) -> join %s\n",
+		this, jsa, jni, ip2str(ipm.imr_multiaddr.s_addr));
+   )
+
 	if( jni && obj_length(unhand(unhand(jni)->inetAddresses)->elementData) != 0)
 	{
 	  struct Hjava_net_InetAddress* if_addr = (struct Hjava_net_InetAddress *)
 	    unhand_object_array(unhand(unhand(jni)->inetAddresses)->elementData);
 	  
-	  ipm.imr_interface.s_addr =
-	    htonl(unhand(if_addr)->address);
+	  memcpy(&ipm.imr_interface, unhand_byte_array(unhand(if_addr)->addr),
+	  	 sizeof(ipm.imr_interface));;
 	}
 	else
 	{
-		ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+	  ipm.imr_interface.s_addr = htonl(INADDR_ANY);
 	}
 
 	r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
@@ -632,14 +656,17 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
 
 	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
 	
-	ipm.imr_multiaddr.s_addr = htonl(unhand(unhand(jisa)->addr)->address);
+	memcpy(&ipm.imr_multiaddr,
+	       unhand_byte_array(unhand(unhand(jisa)->addr)->addr),
+	       sizeof(ipm.imr_multiaddr));
 	if( jni && obj_length(unhand(unhand(jni)->inetAddresses)->elementData) != 0)
 	{
 	        struct Hjava_net_InetAddress* if_addr = (struct Hjava_net_InetAddress *)
 		  unhand_object_array(unhand(unhand(jni)->inetAddresses)->elementData);
 	  
-		ipm.imr_interface.s_addr =
-		  htonl(unhand(if_addr)->address);
+	  	memcpy(&ipm.imr_interface,
+		       unhand_byte_array(unhand(if_addr)->addr),
+		       sizeof(ipm.imr_interface));;
 	}
 	else
 	{

@@ -1,3 +1,17 @@
+2003-10-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(join, joinGroup, leave, leaveGroup, socketSetOption,
+	socketGetOption) fixed InetAddress access. Added some debug output.
+	(socketGetOption) Use in_addr and not sockaddr_in for IP_MULTICAST_IF.
+
+	* libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/MulticastSocket.java:
+	(DatagramSocket(SocketAddress)) Fixed behaviour according to Java 1.4
+	API
+	(MulticastSocket) Fixed construction to request previously binded
+	address.
+	
 2003-10-30  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/io/AudioPlayer.c:
