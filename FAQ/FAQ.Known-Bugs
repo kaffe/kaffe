@@ -51,3 +51,7 @@ Treat it as an TODO list.
 * If an exception, such as NoSuchField or NoSuchMethod is thrown in the 
   verifier, the system bails.
 
+* Class.getFields() returns Fields in reverse order compared to Sun's jdk.
+  Apparently, this causes some software such Cygnus's kawa to fail in 
+  certain circumstances.  It seems like they should fix that.
+
