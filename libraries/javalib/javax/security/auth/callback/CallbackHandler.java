@@ -1,7 +1,7 @@
 package javax.security.auth.callback;
 
 // ----------------------------------------------------------------------------
-// $Id: CallbackHandler.java,v 1.1 2004/07/21 01:42:13 dalibor Exp $
+// $Id: CallbackHandler.java,v 1.2 2005/02/01 15:31:26 robilad Exp $
 //
 // Copyright (C) 2003, Free Software Foundation, Inc.
 //
@@ -85,7 +85,6 @@ import java.io.IOException;
  * <p>All default handler implementations must provide a public zero-argument
  * constructor.</p>
  *
- * @version $Revision: 1.1 $
  */
 public interface CallbackHandler {
 

@@ -1,3 +1,21 @@
+2005-02-01  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-01  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * javax/security/auth/callback/Callback.java,
+        javax/security/auth/callback/CallbackHandler.java,
+        javax/security/auth/callback/ChoiceCallback.java,
+        javax/security/auth/callback/ConfirmationCallback.java,
+        javax/security/auth/callback/LanguageCallback.java,
+        javax/security/auth/callback/NameCallback.java,
+        javax/security/auth/callback/PasswordCallback.java,
+        javax/security/auth/callback/TextInputCallback.java,
+        javax/security/auth/callback/TextOutputCallback.java,
+        javax/security/auth/callback/UnsupportedCallbackException.java:
+        Removed CVS version tags.
+
 2005-01-31  Patryk Laurent  <patryk@pakl.net>
 
 	* FAQ/FAQ.ps2linux: Updated.

@@ -1,7 +1,7 @@
 package javax.security.auth.callback;
 
 // ----------------------------------------------------------------------------
-// $Id: LanguageCallback.java,v 1.1 2004/07/21 01:42:13 dalibor Exp $
+// $Id: LanguageCallback.java,v 1.2 2005/02/01 15:31:26 robilad Exp $
 //
 // Copyright (C) 2003, Free Software Foundation, Inc.
 //
@@ -52,7 +52,6 @@ import java.util.Locale;
  * the {@link Locale} used for localizing text.
  *
  * @see CallbackHandler
- * @version $Revision: 1.1 $
  */
 public class LanguageCallback implements Callback, Serializable {
 
