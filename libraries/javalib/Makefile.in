@@ -654,6 +654,7 @@ gnu_java_rmi_server_SRCS = \
 	gnu/java/rmi/server/RMIHashes.java \
 	gnu/java/rmi/server/RMIObjectInputStream.java \
 	gnu/java/rmi/server/RMIObjectOutputStream.java \
+	gnu/java/rmi/server/RMIVoidValue.java \
 	gnu/java/rmi/server/UnicastConnection.java \
 	gnu/java/rmi/server/UnicastConnectionManager.java \
 	gnu/java/rmi/server/UnicastRef.java \
@@ -1811,6 +1812,7 @@ java_text_SRCS = \
 	java/text/DecimalFormat.java \
 	java/text/DecimalFormatSymbols.java \
 	java/text/FieldPosition.java \
+	java/text/FormatCharacterIterator.java \
 	java/text/Format.java \
 	java/text/MessageFormat.java \
 	java/text/NumberFormat.java \

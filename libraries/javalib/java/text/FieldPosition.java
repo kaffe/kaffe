@@ -65,6 +65,13 @@ public class FieldPosition
   private int end;
 
   /**
+   *
+   */
+  public FieldPosition (Format.Field field, int attribute)
+  {
+  }
+
+  /**
    * This method initializes a new instance of <code>FieldPosition</code> to
    * have the specified field id.
    *

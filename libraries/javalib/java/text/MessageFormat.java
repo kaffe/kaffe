@@ -41,6 +41,8 @@ package java.text;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+import java.io.InvalidObjectException;
+import java.util.HashMap;
 
 /**
  * @author Tom Tromey <tromey@cygnus.com>
@@ -144,6 +146,41 @@ final class MessageFormatElement
 public class MessageFormat extends Format
 {
   private static final long serialVersionUID = 6479157306784022952L;
+
+  public static class Field extends Format.Field
+  {
+    /**
+     * This is the attribute set for all characters produced
+     * by MessageFormat during a formatting.
+     */
+    public static final MessageFormat.Field ARGUMENT = new Field("argument");
+
+    // For deserialization
+    private Field()
+    {
+      super("");
+    }
+    
+    private Field(String s)
+    {
+      super(s);
+    }
+
+    /**
+     * invoked to resolve the true static constant by
+     * comparing the deserialized object to know name.
+     *
+     * @return object constant
+     */
+    protected Object readResolve() throws InvalidObjectException
+    {
+      if (getName().equals(ARGUMENT.getName()))
+	return ARGUMENT;
+
+      throw new InvalidObjectException("no such MessageFormat field called " + getName());
+    }
+
+  }
 
   // Helper that returns the text up to the next format opener.  The
   // text is put into BUFFER.  Returns index of character after end of
@@ -326,12 +363,28 @@ public class MessageFormat extends Format
    * @param aPattern The pattern used when formatting.
    * @param arguments The array containing the objects to be formatted.
    */
+  public AttributedCharacterIterator formatToCharacterIterator (Object arguments)
+  {
+    Object[] arguments_array = (Object[])arguments;
+    FormatCharacterIterator iterator = new FormatCharacterIterator();
+    
+    formatInternal(arguments_array, new StringBuffer(), null, iterator);
+  
+    return iterator;
+  }
+
+  /**
+   * A convinience method to format patterns.
+   *
+   * @param aPattern The pattern used when formatting.
+   * @param arguments The array containing the objects to be formatted.
+   */
   public static String format (String pattern, Object arguments[])
   {
     MessageFormat mf = new MessageFormat (pattern);
     StringBuffer sb = new StringBuffer ();
     FieldPosition fp = new FieldPosition (NumberFormat.INTEGER_FIELD);
-    return mf.format(arguments, sb, fp).toString();
+    return mf.formatInternal(arguments, sb, fp, null).toString();
   }
 
   /**
@@ -344,6 +397,13 @@ public class MessageFormat extends Format
   public final StringBuffer format (Object arguments[], StringBuffer appendBuf,
 				    FieldPosition ignore)
   {
+    return formatInternal(arguments, appendBuf, ignore, null);
+  }
+
+  protected final StringBuffer formatInternal (Object arguments[], StringBuffer appendBuf,
+					       FieldPosition ignore,
+					       FormatCharacterIterator output_iterator)
+  {
     appendBuf.append(leader);
 
     for (int i = 0; i < elements.length; ++i)
@@ -351,6 +411,7 @@ public class MessageFormat extends Format
 	if (elements[i].argNumber >= arguments.length)
 	  throw new IllegalArgumentException ();
 	Object thisArg = arguments[elements[i].argNumber];
+	AttributedCharacterIterator iterator = null;
 
 	Format formatter = null;
 	if (elements[i].setFormat != null)
@@ -382,12 +443,44 @@ public class MessageFormat extends Format
 		mf.format(arguments, appendBuf, ignore);
 	      }
 	    else
-	      formatter.format(thisArg, appendBuf, ignore);
+	      {
+		if (output_iterator != null)
+		  {
+		    iterator = formatter.formatToCharacterIterator(thisArg);
+		  }
+		else
+		  formatter.format(thisArg, appendBuf, ignore);
+	      }
+	  }
+
+	if (output_iterator != null)
+	  {
+	    HashMap hash_argument = new HashMap();
+	    int position = output_iterator.getEndIndex();
+	    
+	    hash_argument.put (MessageFormat.Field.ARGUMENT,
+			       new Integer(elements[i].argNumber));
+	    
+	    if (iterator != null)
+	      {
+		output_iterator.append(iterator);
+		if (position == 0)
+		  output_iterator.mergeAttributes
+		    (new HashMap[] { hash_argument},
+		     new int[] { output_iterator.getEndIndex() });
+		else 
+		  output_iterator.mergeAttributes
+		    (new HashMap[] {null, hash_argument},
+		     new int[] { position, output_iterator.getEndIndex()});
+	      } else
+	       output_iterator.append(thisArg.toString(), hash_argument);
+
+	    output_iterator.append(elements[i].trailer);
 	  }
 
 	appendBuf.append(elements[i].trailer);
       }
-
+    
     return appendBuf;
   }
 

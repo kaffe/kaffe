@@ -1514,6 +1514,7 @@ java_text_SRCS = \
 	java/text/DecimalFormat.java \
 	java/text/DecimalFormatSymbols.java \
 	java/text/FieldPosition.java \
+	java/text/FormatCharacterIterator.java \
 	java/text/Format.java \
 	java/text/MessageFormat.java \
 	java/text/NumberFormat.java \

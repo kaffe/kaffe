@@ -1,3 +1,34 @@
+2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/i386/openbsd2/md.h: Added signal defines for profiler in
+	jthreads.
+
+	* libraries/javalib/java/text/Format.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/NumberFormat.java,
+	libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/text/FormatCharacterIterator.java:
+	Implemented field description of returned formatted string.
+	Added object constants and constant resolution for all format types.
+	Added an AttributedCharacterIterator implementation called
+	FormatCharacterIterator (package protected).
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,
+	kaffe/kaffevm/systems/unix-jthreads/jqueue.h:
+	Implemented a variable node pool allocator for thread queues. The pool
+	size increase by step of DEFAULT_NUMBER_OF_NODES_IN_POOL.
+	(KaffeCreatePool) allocate one pool
+	(KaffePoolNewNode) build a new pool if the number of free nodes is
+	insufficient
+	(KaffePoolReleaseNode) deleted the assertion which was checking the
+	owner of the node. As nodes may be stored in different pools this may
+	not be achieved quickly.
+	(KaffeDestroyPool) destroy all pools
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
 2003-08-04  Jim Pick  <jim@kaffe.org>
 
 	* include/kaffe/.cvsignore,

@@ -19,6 +19,7 @@
 
 typedef void *(*KaffeAllocator)(size_t s);
 typedef void (*KaffeDeallocator)(void *ptr);
+typedef void *(*KaffeReallocator)(void *ptr, size_t s);
 
 typedef struct _KaffeNodeQueue {
   void *element;
@@ -26,10 +27,11 @@ typedef struct _KaffeNodeQueue {
 } KaffeNodeQueue;
 
 typedef struct {
-  KaffeNodeQueue *pool;
+  KaffeNodeQueue **pools;
   KaffeNodeQueue **free_nodes;
   int num_free_nodes;
   int num_nodes_in_pool;
+  int num_pools;
 
   KaffeAllocator allocator;
   KaffeDeallocator deallocator;

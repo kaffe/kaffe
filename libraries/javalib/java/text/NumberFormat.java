@@ -44,6 +44,7 @@ import java.util.MissingResourceException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 
 /**
  * This is the abstract superclass of all classes which format and 
@@ -78,6 +79,96 @@ public abstract class NumberFormat extends Format implements Cloneable
    * that will return the fractional portion of a formatted number.
    */
   public static final int FRACTION_FIELD = 1;
+
+  public static class Field extends Format.Field
+  {
+    /**
+     * Attribute set to all characters containing digits of the integer
+     * part.
+     */
+    public static final NumberFormat.Field INTEGER = new Field("integer");
+
+    /**
+     * Attribute set to all characters containing digits of the fractional
+     * part.
+     */
+    public static final NumberFormat.Field FRACTION = new Field("fraction");
+
+    /**
+     * Attribute set to all characters containing digits of the exponential
+     * part.
+     */
+    public static final NumberFormat.Field EXPONENT = new Field("exponent");
+
+    /**
+     * Attribute set to all characters containing a decimal separator.
+     */
+    public static final NumberFormat.Field DECIMAL_SEPARATOR = new Field("decimal separator");
+
+    /**
+     * Attribute set to all characters containing a sign (plus or minus).
+     */
+    public static final NumberFormat.Field SIGN = new Field("sign");
+
+    /**
+     * Attribute set to all characters containing a grouping separator (e.g. a comma,
+     * a white space,...).
+     */
+    public static final NumberFormat.Field GROUPING_SEPARATOR = new Field("grouping separator");
+
+    /**
+     * Attribute set to all characters containing an exponential symbol (e.g. 'E')
+     */
+    public static final NumberFormat.Field EXPONENT_SYMBOL = new Field("exponent symbol");
+
+    /**
+     * Attribute set to all characters containing a percent symbol (e.g. '%')
+     */
+    public static final NumberFormat.Field PERCENT = new Field("percent");
+
+    /**
+     * Attribute set to all characters containing a permille symbol.
+     */
+    public static final NumberFormat.Field PERMILLE = new Field("permille");
+
+    /**
+     * Attribute set to all characters containing the currency unit.
+     */
+    public static final NumberFormat.Field CURRENCY = new Field("currency");
+
+    /**
+     * Attribute set to all characters containing the exponent sign.
+     */
+    public static final NumberFormat.Field EXPONENT_SIGN = new Field("exponent sign");
+
+    private static final NumberFormat.Field[] allFields =
+    {
+      INTEGER, FRACTION, EXPONENT, DECIMAL_SEPARATOR, SIGN,
+      GROUPING_SEPARATOR, EXPONENT_SYMBOL, PERCENT,
+      PERMILLE, CURRENCY, EXPONENT_SIGN
+    };
+
+    // For deserialization purpose
+    private Field()
+    {
+      super("");
+    }
+    
+    private Field(String s)
+    {
+      super(s);
+    }
+
+    protected Object readResolve() throws InvalidObjectException
+    {
+      String s = getName();
+      for (int i=0;i<allFields.length;i++)
+	if (s.equals(allFields[i].getName()))
+	  return allFields[i];
+
+      throw new InvalidObjectException("no such NumberFormat field called " + s);
+    }
+  }
 
   /**
    * This method is a specialization of the format method that performs

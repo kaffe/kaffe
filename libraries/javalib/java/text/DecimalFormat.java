@@ -413,7 +413,9 @@ public class DecimalFormat extends NumberFormat
     if (Double.isNaN(number))
       {
 	dest.append(symbols.getNaN());
-	if (fieldPos != null && fieldPos.getField() == INTEGER_FIELD)
+	if (fieldPos != null && 
+	    (fieldPos.getField() == INTEGER_FIELD ||
+	     fieldPos.getFieldAttribute() == NumberFormat.Field.INTEGER))
 	  {
 	    int index = dest.length();
 	    fieldPos.setBeginIndex(index - symbols.getNaN().length());
@@ -523,7 +525,9 @@ public class DecimalFormat extends NumberFormat
 	    || total_digits > 0)
 	  {
 	    dest.insert(decimal_index, symbols.getDecimalSeparator());
-	    if (fieldPos != null && fieldPos.getField() == FRACTION_FIELD)
+	    if (fieldPos != null && 
+		(fieldPos.getField() == FRACTION_FIELD ||
+		 fieldPos.getFieldAttribut() == NumberFormat.Field.FRACTION))
 	      {
 		fieldPos.setBeginIndex(decimal_index + 1);
 		fieldPos.setEndIndex(dest.length());
@@ -551,7 +555,9 @@ public class DecimalFormat extends NumberFormat
 	  }
       }
 
-    if (fieldPos != null && fieldPos.getField() == INTEGER_FIELD)
+    if (fieldPos != null && 
+	(fieldPos.getField() == INTEGER_FIELD ||
+	 fieldPos.getFieldAttribute() == NumberFormat.Field.INTEGER))
       {
 	fieldPos.setBeginIndex(integerBeginIndex);
 	fieldPos.setEndIndex(integerEndIndex);

@@ -38,6 +38,10 @@ exception statement from your version. */
 
 package java.text;
 
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
 import java.io.Serializable;
 
 /**
@@ -61,6 +65,14 @@ public abstract class Format implements Serializable, Cloneable
 {
   static final long serialVersionUID = 4479235611355683992L;
 
+  public static class Field extends AttributedCharacterIterator.Attribute
+  {
+    public Field(String name)
+    {
+      super(name);
+    }
+  }
+  
   /**
    * This method initializes a new instance of <code>Format</code>.
    * It performs no actions, but acts as a default constructor for
@@ -141,6 +153,15 @@ public abstract class Format implements Serializable, Cloneable
    *         case of error.
    */
   public abstract Object parseObject (String str, ParsePosition pos);
+
+  /**
+   *
+   *
+   */
+  public AttributedCharacterIterator formatToCharacterIterator(Object obj)
+  {
+    return new FormatCharacterIterator(format(obj), null, null);
+  }
 
   /**
    * Creates a copy of this object.

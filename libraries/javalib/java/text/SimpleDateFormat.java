@@ -47,6 +47,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.SimpleTimeZone;
 import java.util.Vector;
+import java.util.HashMap;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
@@ -413,11 +414,13 @@ public class SimpleDateFormat extends DateFormat
    * appending to the specified StringBuffer.  The input StringBuffer
    * is returned as output for convenience.
    */
-  public StringBuffer format(Date date, StringBuffer buffer, FieldPosition pos)
+  private StringBuffer formatWithAttribute(Date date, StringBuffer buffer, FieldPosition pos,
+					   Vector attributes, Vector ranges)
   {
     String temp;
+    AttributedCharacterIterator.Attribute attribute;
     calendar.setTime(date);
-    
+
     // go through vector, filling in fields where applicable, else toString
     Enumeration e = tokens.elements();
     while (e.hasMoreElements()) {
@@ -427,11 +430,13 @@ public class SimpleDateFormat extends DateFormat
 	int beginIndex = buffer.length();
 	switch (p.field) {
 	case ERA_FIELD:
+	  attribute = DateFormat.Field.ERA;
 	  buffer.append(formatData.eras[calendar.get(Calendar.ERA)]);
 	  break;
 	case YEAR_FIELD:
 	  // If we have two digits, then we truncate.  Otherwise, we
 	  // use the size of the pattern, and zero pad.
+	  attribute = DateFormat.Field.YEAR;
 	  if (p.size == 2)
 	    {
 	      temp = String.valueOf(calendar.get(Calendar.YEAR));
@@ -441,6 +446,7 @@ public class SimpleDateFormat extends DateFormat
 	    withLeadingZeros(calendar.get(Calendar.YEAR), p.size, buffer);
 	  break;
 	case MONTH_FIELD:
+	  attribute = DateFormat.Field.MONTH;
 	  if (p.size < 3)
 	    withLeadingZeros(calendar.get(Calendar.MONTH)+1,p.size,buffer);
 	  else if (p.size < 4)
@@ -449,51 +455,66 @@ public class SimpleDateFormat extends DateFormat
 	    buffer.append(formatData.months[calendar.get(Calendar.MONTH)]);
 	  break;
 	case DATE_FIELD:
+	  attribute = DateFormat.Field.DAY_OF_MONTH;
 	  withLeadingZeros(calendar.get(Calendar.DATE),p.size,buffer);
 	  break;
 	case HOUR_OF_DAY1_FIELD: // 1-24
+	  attribute = DateFormat.Field.HOUR_OF_DAY1;
 	  withLeadingZeros(((calendar.get(Calendar.HOUR_OF_DAY)+23)%24)+1,p.size,buffer);
 	  break;
 	case HOUR_OF_DAY0_FIELD: // 0-23
+	  attribute = DateFormat.Field.HOUR_OF_DAY0;
 	  withLeadingZeros(calendar.get(Calendar.HOUR_OF_DAY),p.size,buffer);
 	  break;
 	case MINUTE_FIELD:
+	  attribute = DateFormat.Field.MINUTE;
 	  withLeadingZeros(calendar.get(Calendar.MINUTE),p.size,buffer);
 	  break;
 	case SECOND_FIELD:
+	  attribute = DateFormat.Field.SECOND;
 	  withLeadingZeros(calendar.get(Calendar.SECOND),p.size,buffer);
 	  break;
 	case MILLISECOND_FIELD:
+	  attribute = DateFormat.Field.MILLISECOND;
 	  withLeadingZeros(calendar.get(Calendar.MILLISECOND),p.size,buffer);
 	  break;
 	case DAY_OF_WEEK_FIELD:
+	  attribute = DateFormat.Field.DAY_OF_WEEK;
 	  if (p.size < 4)
 	    buffer.append(formatData.shortWeekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
 	  else
 	    buffer.append(formatData.weekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
 	  break;
 	case DAY_OF_YEAR_FIELD:
+	  attribute = DateFormat.Field.DAY_OF_YEAR;
 	  withLeadingZeros(calendar.get(Calendar.DAY_OF_YEAR),p.size,buffer);
 	  break;
 	case DAY_OF_WEEK_IN_MONTH_FIELD:
+	  attribute = DateFormat.Field.DAY_OF_WEEK_IN_MONTH;
 	  withLeadingZeros(calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH),p.size,buffer);
 	  break;
 	case WEEK_OF_YEAR_FIELD:
+	  attribute = DateFormat.Field.WEEK_OF_YEAR;
 	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_YEAR),p.size,buffer);
 	  break;
 	case WEEK_OF_MONTH_FIELD:
+	  attribute = DateFormat.Field.WEEK_OF_MONTH;
 	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_MONTH),p.size,buffer);
 	  break;
 	case AM_PM_FIELD:
+	  attribute = DateFormat.Field.AM_PM;
 	  buffer.append(formatData.ampms[calendar.get(Calendar.AM_PM)]);
 	  break;
 	case HOUR1_FIELD: // 1-12
+	  attribute = DateFormat.Field.HOUR1;
 	  withLeadingZeros(((calendar.get(Calendar.HOUR)+11)%12)+1,p.size,buffer);
 	  break;
 	case HOUR0_FIELD: // 0-11
+	  attribute = DateFormat.Field.HOUR0;
 	  withLeadingZeros(calendar.get(Calendar.HOUR),p.size,buffer);
 	  break;
 	case TIMEZONE_FIELD:
+	  attribute = DateFormat.Field.TIME_ZONE;
 	  TimeZone zone = calendar.getTimeZone();
 	  boolean isDST = calendar.get(Calendar.DST_OFFSET) != 0;
 	  // FIXME: XXX: This should be a localized time zone.
@@ -508,11 +529,45 @@ public class SimpleDateFormat extends DateFormat
 	    pos.setBeginIndex(beginIndex);
 	    pos.setEndIndex(buffer.length());
 	  }
+	if (attributes != null)
+	  {
+	    HashMap map = new HashMap();
+
+	    map.put(attribute, attribute);
+	    attributes.add(map);
+	    ranges.add(new Integer(buffer.length()));
+	  }
       } else {
+	attributes.add(null);
 	buffer.append(o.toString());
+	ranges.add(new Integer(buffer.length()));
       }
     }
     return buffer;
+  }
+
+  public StringBuffer format(Date date, StringBuffer buffer, FieldPosition pos)
+  {
+    return formatWithAttribute(date, buffer, pos, null, null);
+  }
+
+  public AttributedCharacterIterator formatToCharacterIterator(Object date)
+    throws IllegalArgumentException
+  {
+    Vector attributes = new Vector();
+    Vector ranges = new Vector();
+    String s = formatWithAttribute((Date)date, new StringBuffer(),
+				   null, attributes, ranges).toString();
+    Object[] int_ranges = ranges.toArray();
+    Object[] harray = attributes.toArray();
+    HashMap[] hash_array  = new HashMap[harray.length];
+    int[] iranges = new int[int_ranges.length];
+
+    for (int i=0;i<iranges.length;i++)
+      iranges[i] = ((Integer)int_ranges[i]).intValue();
+    System.arraycopy(harray, 0, hash_array, 0, harray.length);
+    return new FormatCharacterIterator(s, iranges,
+				       hash_array);
   }
 
   private void withLeadingZeros(int value, int length, StringBuffer buffer) 

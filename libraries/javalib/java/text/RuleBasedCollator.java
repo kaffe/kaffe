@@ -334,6 +334,8 @@ main_parse_loop:
 	  }
 
 	switch (c) {
+	case '!':
+	  throw new ParseException("Modifier '!' is not yet supported by Classpath", i+base_offset);
 	case '<':
 	  ignoreChars = false;
 	  type = CollationSorter.GREATERP;
@@ -496,6 +498,12 @@ main_parse_loop:
    */
   private int last_primary_value;
 
+  /**
+   * This variable is true if accents need to be sorted
+   * in the other direction.
+   */
+  private boolean inverseAccentComparison;
+
   private void buildCollationVector(Vector parsedElements) throws ParseException
   {
     int primary_seq = 0;
@@ -572,7 +580,9 @@ element_loop:
 
 	v.add(e);
       }
-    
+
+    this.inverseAccentComparison = inverseComparisons; 
+
     ce_table = v.toArray();
 
     last_primary_value = primary_seq+1;
@@ -628,9 +638,22 @@ element_loop:
     return(rules);
   }
 
+  /**
+   * This method builds a default collation element without invoking
+   * the database created from the rules passed to the constructor.
+   */
   CollationElement getDefaultElement(char c)
   {
-    return new CollationElement (""+c, last_primary_value + c, (short)0, (short)0, (short) 0, null);
+    int v;
+
+    // Preliminary support for generic accent sorting inversion (I don't know if all
+    // characters in the range should be sorted backward). This is the place
+    // to fix this if needed.
+    if (inverseAccentComparison && (c >= 0x02B9 && c <= 0x0361))
+      v = 0x0361 - ((int)c - 0x02B9);
+    else
+      v = (short)c;
+    return new CollationElement (""+c, last_primary_value + v, (short)0, (short)0, (short) 0, null);
   }
 
   /**

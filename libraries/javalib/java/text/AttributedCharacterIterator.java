@@ -124,8 +124,7 @@ private String name;
   *
   * @param name The name of this attribute key.
   */
-protected
-Attribute(String name)
+protected Attribute(String name)
 {
   this.name = name;
 }
@@ -141,8 +140,7 @@ Attribute(String name)
   *
   * @return The attribute name
   */
-protected String
-getName()
+protected String getName()
 {
   return(name);
 }
@@ -159,8 +157,7 @@ getName()
   *
   * @exception InvalidObjectException If the object being deserialized cannot be resolved.
   */
-protected Object
-readResolve() throws InvalidObjectException
+protected Object readResolve() throws InvalidObjectException
 {
   if (this.equals(READING))
     return(READING);
@@ -189,8 +186,7 @@ readResolve() throws InvalidObjectException
   *
   * @return <code>true</code> if the specified object is equal to this one, <code>false</code> otherwise.
   */
-public final boolean
-equals(Object obj)
+public final boolean equals(Object obj)
 {
   if (obj == this)
     return(true);
@@ -205,8 +201,7 @@ equals(Object obj)
   *
   * @return A hash value for this object.
   */
-public final int
-hashCode()
+public final int hashCode()
 {
   return(super.hashCode());
 }
@@ -218,8 +213,7 @@ hashCode()
   *
   * @return A <code>String</code> representation of this object.
   */
-public String
-toString()
+public String toString()
 {
   return(getClass().getName() + "(" + getName() + ")");
 }
@@ -238,8 +232,7 @@ toString()
   *
   * @return A list of keys 
   */
-public abstract Set
-getAllAttributeKeys();
+public abstract Set getAllAttributeKeys();
 
 /*************************************************************************/
 
@@ -249,8 +242,7 @@ getAllAttributeKeys();
   *
   * @return A <code>Map</code> of the attributes for the current character.
   */
-public abstract Map
-getAttributes();
+public abstract Map getAttributes();
 
 /*************************************************************************/
 
@@ -263,8 +255,7 @@ getAttributes();
   *
   * @return The value of the specified attribute
   */
-public abstract Object
-getAttribute(AttributedCharacterIterator.Attribute attrib);
+public abstract Object getAttribute(AttributedCharacterIterator.Attribute attrib);
 
 /*************************************************************************/
 
@@ -274,8 +265,7 @@ getAttribute(AttributedCharacterIterator.Attribute attrib);
   *
   * @return The start index of the run
   */
-public abstract int
-getRunStart();
+public abstract int getRunStart();
 
 /*************************************************************************/
 
@@ -288,8 +278,7 @@ getRunStart();
   *
   * @return The start index of the run.
   */
-public abstract int
-getRunStart(Set attribs);
+public abstract int getRunStart(Set attribs);
 
 /*************************************************************************/
 
@@ -301,8 +290,8 @@ getRunStart(Set attribs);
   *
   * @return The start index of the run.
   */
-public abstract int
-getRunStart(AttributedCharacterIterator.Attribute attrib);
+public abstract int getRunStart(AttributedCharacterIterator.Attribute
+				attrib);
 
 /*************************************************************************/
 
@@ -312,8 +301,7 @@ getRunStart(AttributedCharacterIterator.Attribute attrib);
   *
   * @return The end index of the run.
   */
-public abstract int
-getRunLimit();
+public abstract int getRunLimit();
 
 /*************************************************************************/
 
@@ -326,8 +314,7 @@ getRunLimit();
   *
   * @return The end index of the run.
   */
-public abstract int
-getRunLimit(Set attribs);
+public abstract int getRunLimit(Set attribs);
 
 /*************************************************************************/
 
@@ -339,8 +326,8 @@ getRunLimit(Set attribs);
   * 
   * @return The end index of the run.
   */
-public abstract int
-getRunLimit(AttributedCharacterIterator.Attribute attrib);
+public abstract int getRunLimit(AttributedCharacterIterator.Attribute
+				attrib);
 
 } // interface AttributedCharacterIterator
 
