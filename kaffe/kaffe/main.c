@@ -38,7 +38,7 @@ static int isJar = 0;
 static int options(char**);
 static void usage(void);
 static size_t parseSize(char*);
-static void handleErrors(void);
+static int checkException(void);
 static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
 #define	KAFFEHOME	"KAFFEHOME"
@@ -172,40 +172,73 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	}
 
 	mcls = (*env)->FindClass(env, exec);
-	handleErrors();
+	if (checkException())
+		goto done;
 
-	mmth = (*env)->GetStaticMethodID(env, mcls, "main", "([Ljava/lang/String;)V");
-	handleErrors();
+	mmth = (*env)->GetStaticMethodID(env,
+	    mcls, "main", "([Ljava/lang/String;)V");
+	if (checkException())
+		goto done;
 
 	/* Build an array of strings as the arguments */
 	cls = (*env)->FindClass(env, "java/lang/String");
-	handleErrors();
+	if (checkException())
+		goto done;
 	args = (*env)->NewObjectArray(env, argc, cls, 0);
-	handleErrors();
+	if (checkException())
+		goto done;
 	for (i = 0; i < argc; i++) {
 		str = (*env)->NewStringUTF(env, argv[farg+i]);
-		handleErrors();
+		if (checkException())
+			goto done;
 		(*env)->SetObjectArrayElement(env, args, i, str);
-		handleErrors();
+		if (checkException())
+			goto done;
 	}
 
 	/* Call method, check for errors and then exit */
 	(*env)->CallStaticVoidMethod(env, mcls, mmth, args);
-	handleErrors();
+	(void)checkException();
 
-	(*vm)->DetachCurrentThread(vm);
+done:
+	/* We're done. We are the "main thread" and so are required to call
+	   (*vm)->DestroyJavaVM() instead of (*vm)->DetachCurrentThread() */
+	(*vm)->DestroyJavaVM(vm);
 	return (0);
 }
 
-static
-void
-handleErrors(void)
+static int
+checkException(void)
 {
-	if ((*env)->ExceptionOccurred(env)) {
-		(*env)->ExceptionDescribe(env);
+	jobject e;
+	jclass eiic;
+
+	/* Display exception stack trace */
+	if ((e = (*env)->ExceptionOccurred(env)) == NULL)
+		return (0);
+	(*env)->ExceptionDescribe(env);
+	(*env)->ExceptionClear(env);
+
+	/* Display inner exception in ExceptionInInitializerError case */
+	eiic = (*env)->FindClass(env, "java/lang/ExceptionInInitializerError");
+	if ((*env)->ExceptionOccurred(env) != NULL) {
 		(*env)->ExceptionClear(env);
-		(*vm)->DetachCurrentThread(vm);
+		return (1);
 	}
+	if ((*env)->IsInstanceOf(env, e, eiic)) {
+		e = (*env)->CallObjectMethod(env, e,
+		    (*env)->GetMethodID(env, (*env)->GetObjectClass(env, e),
+			"getException", "()Ljava/lang/Throwable;"));
+		if ((*env)->ExceptionOccurred(env) != NULL) {
+			(*env)->ExceptionClear(env);
+			return (1);
+		}
+		if (e != NULL) {
+			(*env)->Throw(env, e);
+			return (checkException());
+		}
+	}
+	return (1);
 }
 
 /*
