@@ -1,3 +1,10 @@
+Wed May 12 09:41:29 1999 Jason Baker  <jbaker@cs.utah.edu>
+
+	* config/i386/oskit/{config.frag,md.c},
+	kaffe/kaffevm/systems/oskit-pthread/{jthread.h,pjthread.c,syscall.c}:
+	updated for current oskit, fixed Thread.stop and added
+	Thread.interrupt.
+
 Mon May 10 14:30:33 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/jar.c: fixed read openJarFile to not ignore the
