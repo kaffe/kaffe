@@ -28,6 +28,11 @@ typedef struct _stackTrace {
 	vmException* frame;
 } stackTrace;
 
+/* Dummy exceptionFrame */
+struct _exceptionFrame {
+	char	dummy;
+};
+
 #define STACKTRACEINIT(S,I,O,R)	((S).frame = (vmException*)unhand(getCurrentThread())->exceptPtr)
 #define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		((S).frame->pc)

@@ -37,7 +37,6 @@
 #include "slots.h"
 
 #if defined(INTERPRETER)
-struct _exceptionFrame { };
 #define	FIRSTFRAME(f, e)	/* Does nothing */
 #elif defined(TRANSLATOR)
 static Method* findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
