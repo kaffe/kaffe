@@ -1,5 +1,10 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Parser.java:
+	  Fix some more access of static fields/methods on instances.
+ 
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/Klasses.jar.bootstrap:
 	  Updated java/math/BigInteger.class, and added
 	  java/math/BigDecimal.class.

@@ -533,7 +533,7 @@ public class Parser {
       }
    }
 
-   static boolean addComments=false;
+   public boolean addComments=false;
 
    public static final String WHITESPACE=" \t\r\n";
 
@@ -552,8 +552,8 @@ public class Parser {
       return result;
    }
 
-   static SourceComponent[] sourceLevelComponents;
-   static SourceComponent[] classLevelComponents;
+   SourceComponent[] sourceLevelComponents;
+   SourceComponent[] classLevelComponents;
 
    public Parser() {
       try {
@@ -584,11 +584,11 @@ public class Parser {
       }
    }
 
-   public static int getNumberOfProcessedFiles() {
+   public int getNumberOfProcessedFiles() {
       return processedFiles.size();
    }
 
-   static Set processedFiles = new HashSet();
+   Set processedFiles = new HashSet();
 
    ClassDocImpl processSourceFile(File file, boolean addComments, String encoding) 
       throws IOException, ParseException
