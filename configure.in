@@ -1,5 +1,5 @@
 AC_INIT(kaffe)
-AM_INIT_AUTOMAKE(kaffe, 1.0.7-rc2)
+AM_INIT_AUTOMAKE(kaffe, 1.0.7)
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 
