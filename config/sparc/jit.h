@@ -77,16 +77,17 @@ do {									\
 
 #define HAVE_TRAMPOLINE
 
-/* The layout of this struct is know by inline assembly.  */
+/* The layout of this struct is know by inline assembly in trampolines.c */
 
 typedef struct _methodTrampoline {
 	unsigned code[3];
 	struct _methods *meth;
+	void **where;
 } methodTrampoline;
 
 extern void sparc_do_fixup_trampoline(void);
 
-#define FILL_IN_TRAMPOLINE(t,m)						\
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
 	do {								\
 		(t)->code[0] = 0x8210000f;	/* mov %o7, %g1 */	\
 		/* call sparc_do_fixup_trampoline */			\
@@ -94,10 +95,11 @@ extern void sparc_do_fixup_trampoline(void);
 				- ((size_t)(t) + 4)) / 4 | 0x40000000;	\
 		(t)->code[2] = 0x01000000;	/* nop */		\
 		(t)->meth = (m);					\
+		(t)->where = (w);					\
 	} while (0)
 
-#define FIXUP_TRAMPOLINE_DECL	Method *_meth
-#define FIXUP_TRAMPOLINE_INIT	(meth = _meth)
+#define FIXUP_TRAMPOLINE_DECL	Method *meth, void **where
+#define FIXUP_TRAMPOLINE_INIT	/* nothing, already in args */
 
 
 /**/

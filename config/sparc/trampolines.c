@@ -36,6 +36,7 @@ asm(
 C_FUNC_NAME(sparc_do_fixup_trampoline) ":			\n
 	save	%sp,-64,%sp					\n
 	ld	[%i7+8],%o0					\n
+	ld	[%i7+12],%o1					\n
 	call	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
 	mov	%g1,%i7						\n
 	jmp	%o0						\n
