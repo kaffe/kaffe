@@ -1,6 +1,15 @@
 2005-01-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-20  Mark Wielaard  <mark@klomp.org>
+
+	* java/awt/BasicStroke.java (hashCode): Implement.
+	(equals): Document.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-20  Michael Koch  <konqueror@gmx.de>
 
