@@ -1,3 +1,11 @@
+Sat Oct  9 13:09:23 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
+
+	* Added support for serilized CharToByte and ByteToChar converts
+	* developers/Encode.java - utility to encode i18n charmap files
+	  (on RH6.0 found in /usr/share/i18n/charmaps) into serilizable
+	  converters for Kaffe.
+	* Added UTF8 converters.
+
 Sat Oct  9 12:45:02 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
 
 	* Added RMI implementation.

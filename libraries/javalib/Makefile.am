@@ -630,9 +630,13 @@ kaffe_io_SRCS = \
 	kaffe/io/ByteToChar8859_1.java \
 	kaffe/io/ByteToCharConverter.java \
 	kaffe/io/ByteToCharDefault.java \
+	kaffe/io/ByteToCharHashBased.java \
+	kaffe/io/ByteToCharUTF8.java \
 	kaffe/io/CharToByte8859_1.java \
 	kaffe/io/CharToByteConverter.java \
 	kaffe/io/CharToByteDefault.java \
+	kaffe/io/CharToByteHashBased.java \
+	kaffe/io/CharToByteUTF8.java \
 	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
 	kaffe/io/DefaultSerializationFactory.java \
@@ -709,6 +713,7 @@ kaffe_util_SRCS = \
 	kaffe/util/DoubleLinkedObject.java \
 	kaffe/util/IdentityHashtable.java \
 	kaffe/util/IntegerHashtable.java \
+	kaffe/util/IntegerIntegerHashtable.java \
 	kaffe/util/LongHashtable.java \
 	kaffe/util/NotImplemented.java \
 	kaffe/util/NotImplementedReport.java \
@@ -726,7 +731,101 @@ kaffe_util_zip_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
+serialized_converters = \
+	kaffe/io/ByteToChar8859_2.ser \
+	kaffe/io/ByteToChar8859_3.ser \
+	kaffe/io/ByteToChar8859_4.ser \
+	kaffe/io/ByteToChar8859_5.ser \
+	kaffe/io/ByteToChar8859_6.ser \
+	kaffe/io/ByteToChar8859_7.ser \
+	kaffe/io/ByteToChar8859_8.ser \
+	kaffe/io/ByteToChar8859_9.ser \
+	kaffe/io/ByteToCharASCII.ser \
+	kaffe/io/ByteToCharCP037.ser \
+	kaffe/io/ByteToCharCP1026.ser \
+	kaffe/io/ByteToCharCP1046.ser \
+	kaffe/io/ByteToCharCP1250.ser \
+	kaffe/io/ByteToCharCP1251.ser \
+	kaffe/io/ByteToCharCP1252.ser \
+	kaffe/io/ByteToCharCP1253.ser \
+	kaffe/io/ByteToCharCP1254.ser \
+	kaffe/io/ByteToCharCP1255.ser \
+	kaffe/io/ByteToCharCP1256.ser \
+	kaffe/io/ByteToCharCP1257.ser \
+	kaffe/io/ByteToCharCP1258.ser \
+	kaffe/io/ByteToCharCP850.ser \
+	kaffe/io/ByteToCharCP852.ser \
+	kaffe/io/ByteToCharCP855.ser \
+	kaffe/io/ByteToCharCP857.ser \
+	kaffe/io/ByteToCharCP860.ser \
+	kaffe/io/ByteToCharCP861.ser \
+	kaffe/io/ByteToCharCP862.ser \
+	kaffe/io/ByteToCharCP863.ser \
+	kaffe/io/ByteToCharCP864.ser \
+	kaffe/io/ByteToCharCP865.ser \
+	kaffe/io/ByteToCharCP866.ser \
+	kaffe/io/ByteToCharCP868.ser \
+	kaffe/io/ByteToCharCP869.ser \
+	kaffe/io/ByteToCharCP870.ser \
+	kaffe/io/ByteToCharCP871.ser \
+	kaffe/io/ByteToCharCP875.ser \
+	kaffe/io/ByteToCharCP918.ser \
+	kaffe/io/ByteToCharEUC_JP.ser \
+	kaffe/io/CharToByte8859_2.ser \
+	kaffe/io/CharToByte8859_3.ser \
+	kaffe/io/CharToByte8859_4.ser \
+	kaffe/io/CharToByte8859_5.ser \
+	kaffe/io/CharToByte8859_6.ser \
+	kaffe/io/CharToByte8859_7.ser \
+	kaffe/io/CharToByte8859_8.ser \
+	kaffe/io/CharToByte8859_9.ser \
+	kaffe/io/CharToByteASCII.ser \
+	kaffe/io/CharToByteCP037.ser \
+	kaffe/io/CharToByteCP1026.ser \
+	kaffe/io/CharToByteCP1046.ser \
+	kaffe/io/CharToByteCP1250.ser \
+	kaffe/io/CharToByteCP1251.ser \
+	kaffe/io/CharToByteCP1252.ser \
+	kaffe/io/CharToByteCP1253.ser \
+	kaffe/io/CharToByteCP1254.ser \
+	kaffe/io/CharToByteCP1255.ser \
+	kaffe/io/CharToByteCP1256.ser \
+	kaffe/io/CharToByteCP1257.ser \
+	kaffe/io/CharToByteCP1258.ser \
+	kaffe/io/CharToByteCP850.ser \
+	kaffe/io/CharToByteCP852.ser \
+	kaffe/io/CharToByteCP855.ser \
+	kaffe/io/CharToByteCP857.ser \
+	kaffe/io/CharToByteCP860.ser \
+	kaffe/io/CharToByteCP861.ser \
+	kaffe/io/CharToByteCP862.ser \
+	kaffe/io/CharToByteCP863.ser \
+	kaffe/io/CharToByteCP864.ser \
+	kaffe/io/CharToByteCP865.ser \
+	kaffe/io/CharToByteCP866.ser \
+	kaffe/io/CharToByteCP868.ser \
+	kaffe/io/CharToByteCP869.ser \
+	kaffe/io/CharToByteCP870.ser \
+	kaffe/io/CharToByteCP871.ser \
+	kaffe/io/CharToByteCP875.ser \
+	kaffe/io/CharToByteCP918.ser \
+	kaffe/io/CharToByteEUC_JP.ser \
+	kaffe/io/CharToByteCP861.ser \
+	kaffe/io/CharToByteCP862.ser \
+	kaffe/io/CharToByteCP863.ser \
+	kaffe/io/CharToByteCP864.ser \
+	kaffe/io/CharToByteCP865.ser \
+	kaffe/io/CharToByteCP866.ser \
+	kaffe/io/CharToByteCP868.ser \
+	kaffe/io/CharToByteCP869.ser \
+	kaffe/io/CharToByteCP870.ser \
+	kaffe/io/CharToByteCP871.ser \
+	kaffe/io/CharToByteCP875.ser \
+	kaffe/io/CharToByteCP918.ser \
+	kaffe/io/CharToByteEUC_JP.ser
+
 EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
+	$(serialized_converters) \
 	kaffe/lang/unicode.idx \
 	kaffe/lang/unicode.tbl
 
@@ -752,6 +851,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
+	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) $(SRCDIRS))
 
 .PHONY: build-classes Klasses
