@@ -26,6 +26,7 @@ public class BeanBug {
 	    System.out.println(events[i].getRemoveListenerMethod());
 	    System.out.println(lsnType);
         }
+	System.out.flush();
     }
 }
 
