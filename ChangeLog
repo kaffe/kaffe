@@ -1,5 +1,12 @@
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/stringParsing.c
+	(skipChars, skipSpace): Changed parameter types to unsigned char
+	to fix compiler warning on sparc-solaris2 due to chars being passed
+	to isspace().
+
+2004-02-08  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/mem/gc-incremental.c
 	(gcClearCounts, gcDumpCounts): Fixed gcc compiler warning
 	about unused functions when user compiled without debugging 
