@@ -1,3 +1,12 @@
+Wed Mar 10 12:18:57 PST 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/zip/InflaterInputStream.java:
+	Fixed constructor so that it throws exceptions like the
+	DeflaterOutputStream.
+	* libraries/javalib/kaffe/util/zip/SwitchInflater.java
+	Fixed problem that caused uncompressed zip streams to be
+	read past the zip entry size.
+
 Tue Mar  9 23:20:15 PST 1999  Aaron Place <beavis@ihug.co.nz>
 
 	* libraries/javalib/java/beans/{FeatureDescriptor,GenericBeanInfo}.java,
