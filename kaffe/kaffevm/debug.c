@@ -307,6 +307,20 @@ debugToBuffer(int size)
 }
 
 /*
+ * The following function is invoked at exit time.
+ * It deliberately caused a trap, to give control to gdb.
+ */
+static void
+debugExitHook(void)
+{
+	/*
+	 * this is a hook for catching exits from GDB.
+	 * make this dependent on the selection of this option
+	 */
+	DBG(BREAKONEXIT, DBGGDBBREAK())
+}
+
+/*
  * initialize debugging system
  */
 static void
@@ -340,20 +354,6 @@ printDebugBuffer(void)
 	i = 0;
 	while(i < end)
 		putc(debugBuffer[i++], stdout);
-}
-
-/*
- * The following function is invoked at exit time.
- * It deliberately caused a trap, to give control to gdb.
- */
-static void
-debugExitHook(void)
-{
-	/*
-	 * this is a hook for catching exits from GDB.
-	 * make this dependent on the selection of this option
-	 */
-	DBG(BREAKONEXIT, DBGGDBBREAK())
 }
 
 #endif /* DEBUG */
