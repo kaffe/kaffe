@@ -1,14 +1,3 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-
-
 package java.io;
 
 
@@ -30,14 +19,16 @@ public class StreamTokenizer
 	private boolean CComments;
 	private boolean CPlusPlusComments;
 	private boolean toLower;
+	private StringBuffer buffer = new StringBuffer();
 
-public StreamTokenizer (InputStream i)
-	{
+/**
+ * @deprecated
+ */
+public StreamTokenizer (InputStream i) {
 	this(new InputStreamReader(i));
 }
 
-public StreamTokenizer(Reader r)
-	{
+public StreamTokenizer(Reader r) {
 	rawIn = r;
 	lineIn = new LineNumberReader(rawIn);
 	pushIn = new PushbackReader(lineIn);
@@ -85,7 +76,6 @@ public int nextToken() throws IOException {
 
 private int nextTokenType() throws IOException {
 	int chr = chrRead();
-
 	if (EOLSignificant && chr=='\n') {
 		ttype = TT_EOL;
 	}
@@ -120,7 +110,7 @@ private int nextTokenType() throws IOException {
 	}
 	else if (lookup[chr].isNumeric) {
 		/* Parse the number and return */
-		StringBuffer buffer = new StringBuffer();
+		buffer.setLength( 0);
 		while (lookup[chr].isNumeric) {
 			buffer.append((char)(chr & 0xFF));
 			chr = chrRead();
@@ -129,17 +119,20 @@ private int nextTokenType() throws IOException {
 		/* For next time */
 		pushIn.unread(chr);
 
-		ttype = TT_NUMBER;
 		try {
 			nval = new Double(buffer.toString()).doubleValue();
+			ttype = TT_NUMBER;
 		}
-		catch (NumberFormatException _) {
-			nval = 0.0;
+		catch ( NumberFormatException x) {
+			ttype = TT_WORD;
+			sval = buffer.toString();
+
+			if (toLower) sval = sval.toLowerCase();
 		}
 	}
 	else if (lookup[chr].isAlphabetic) {
 		/* Parse the word and return */
-		StringBuffer buffer = new StringBuffer();
+		buffer.setLength( 0);
 		while (lookup[chr].isAlphabetic) {
 			buffer.append((char)(chr & 0xFF));
 			chr = chrRead();
@@ -155,17 +148,25 @@ private int nextTokenType() throws IOException {
 	}
 	else if (lookup[chr].isStringQuote) {
 		/* Parse string and return word */
-		StringBuffer buffer = new StringBuffer();
+		int cq = chr;
+
+		buffer.setLength( 0);
 		chr = chrRead();
-		while (!lookup[chr].isStringQuote) {
+		while ( chr != cq) {
 			buffer.append((char)(chr & 0xFF));
+			if ( chr == '\\' ) {
+				chr = chrRead();
+				buffer.append((char)(chr & 0xFF));
+			}
 			chr = chrRead();
+			if ( chr == 256 )
+				break;
 		}
 
-		/* JDK doc says:  When the nextToken method encounters a 
-		 * string constant, the ttype field is set to the string 
-		 * delimiter and the sval field is set to the body of the 
-		 * string. 
+		/* JDK doc says:  When the nextToken method encounters a
+		 * string constant, the ttype field is set to the string
+		 * delimiter and the sval field is set to the body of the
+		 * string.
 		 */
 		ttype = chr;
 		sval = buffer.toString();      
@@ -186,7 +187,7 @@ private int nextTokenType() throws IOException {
 
 public void ordinaryChar(int ch) {
 	lookup[ch].isAlphabetic=false;
-	lookup[ch].isStringQuote=false;
+	lookup[ch].isStringQuote=false;;
 	lookup[ch].isNumeric=false;
 	lookup[ch].isComment=false;
 	lookup[ch].isWhitespace=false;

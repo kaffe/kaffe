@@ -187,6 +187,27 @@ public void setActionCommand( String cmd) {
 	aCmd = cmd;
 }
 
+/**
+ * @deprecated
+ */
+public void enable(boolean on) {
+	setEnabled(on);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void enable() {
+	setEnabled(true);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void disable() {
+	setEnabled(false);
+}
+
 public synchronized void setEnabled( boolean b) {
 	isEnabled = b;
 }

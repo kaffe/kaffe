@@ -318,7 +318,8 @@ struct JavaVMInitArgs {
 
 extern JavaVMInitArgs Kaffe_JavaVMArgs[];
 
-extern jint JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs*);
-extern jint JNI_CreateJavaVM(JavaVM**, JNIEnv**, JavaVMInitArgs*);
+extern jint	JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs*);
+extern jint	JNI_CreateJavaVM(JavaVM**, JNIEnv**, JavaVMInitArgs*);
+extern jint	JNI_GetCreatedJavaVMs(JavaVM**, jsize, jsize*);
 
 #endif
