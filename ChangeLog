@@ -1,5 +1,15 @@
 2003-12-04  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/text/DateFormat.java:
+        Resynced with GNU Classpath.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/text/DateFormat.java:
+        Explicitely import used classes.
+
+2003-12-04  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/nio/channels/spi/AbstractInterruptibleChannel.java:
 	Resynced with GNU Classpath.
 
