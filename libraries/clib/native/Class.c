@@ -302,26 +302,26 @@ java_lang_Class_getPrimitiveClass(struct Hjava_lang_String* name)
 	switch (chrs[0]) {
 	case 'b':
 		if (chrs[1] == 'y') {
-			return (byteClass);
+			return (_Jv_byteClass);
 		}
 		if (chrs[1] == 'o') {
-			return (booleanClass);
+			return (_Jv_booleanClass);
 		}
 		break;
 	case 'c':
-		return (charClass);
+		return (_Jv_charClass);
 	case 'd':
-		return (doubleClass);
+		return (_Jv_doubleClass);
 	case 'f':
-		return (floatClass);
+		return (_Jv_floatClass);
 	case 'i':
-		return (intClass);
+		return (_Jv_intClass);
 	case 'l':
-		return (longClass);
+		return (_Jv_longClass);
 	case 's':
-		return (shortClass);
+		return (_Jv_shortClass);
 	case 'v':
-		return (voidClass);
+		return (_Jv_voidClass);
 	}
 	return(NULL);
 }

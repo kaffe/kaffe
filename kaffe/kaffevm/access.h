@@ -27,6 +27,7 @@
 #define	ACC_MASK		0x07FF
 
 #define	ACC_CONSTRUCTOR		0x0800
+#define	ACC_GCJ			0x1000
 #define ACC_JNI                 0x2000
 #define	ACC_TRANSLATED		0x4000
 #define	ACC_VERIFIED		0x8000

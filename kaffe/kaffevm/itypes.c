@@ -19,25 +19,24 @@
 #include "stringSupport.h"
 #include "object.h"
 
-Hjava_lang_Class* intClass;
-Hjava_lang_Class* longClass;
-Hjava_lang_Class* booleanClass;
-Hjava_lang_Class* charClass;
-Hjava_lang_Class* floatClass; 
-Hjava_lang_Class* doubleClass;
-Hjava_lang_Class* byteClass; 
-Hjava_lang_Class* shortClass;     
-Hjava_lang_Class* voidClass;
+Hjava_lang_Class _Jv_intClass[1];
+Hjava_lang_Class _Jv_longClass[1];
+Hjava_lang_Class _Jv_booleanClass[1];
+Hjava_lang_Class _Jv_charClass[1];
+Hjava_lang_Class _Jv_floatClass[1]; 
+Hjava_lang_Class _Jv_doubleClass[1];
+Hjava_lang_Class _Jv_byteClass[1]; 
+Hjava_lang_Class _Jv_shortClass[1];     
+Hjava_lang_Class _Jv_voidClass[1];
 
 extern gcFuncs gcClassObject;
 
 Hjava_lang_Class* types[MAXTYPES];
 
-static void
-initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
+static
+void
+initPrimClass(Hjava_lang_Class* clazz, char* name, char sig, int len)
 {
-	Hjava_lang_Class* clazz = newClass();
-	(*class) = clazz;
 	gc_add_ref(clazz);
 
 	clazz->dtable = _PRIMITIVE_DTABLE;
@@ -53,24 +52,24 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 void
 initTypes(void)
 {
-	initPrimClass(&byteClass, "byte", 'B', 1);
-	initPrimClass(&shortClass, "short", 'S', 2);
-	initPrimClass(&intClass, "int", 'I', 4);
-	initPrimClass(&longClass, "long", 'J', 8);
-	initPrimClass(&booleanClass, "boolean", 'Z', 1);
-	initPrimClass(&charClass, "char", 'C', 2);
-	initPrimClass(&floatClass, "float", 'F', 4);
-	initPrimClass(&doubleClass, "double", 'D', 8);
-	initPrimClass(&voidClass, "void", 'V', 0);
+	initPrimClass(_Jv_byteClass, "byte", 'B', 1);
+	initPrimClass(_Jv_shortClass, "short", 'S', 2);
+	initPrimClass(_Jv_intClass, "int", 'I', 4);
+	initPrimClass(_Jv_longClass, "long", 'J', 8);
+	initPrimClass(_Jv_booleanClass, "boolean", 'Z', 1);
+	initPrimClass(_Jv_charClass, "char", 'C', 2);
+	initPrimClass(_Jv_floatClass, "float", 'F', 4);
+	initPrimClass(_Jv_doubleClass, "double", 'D', 8);
+	initPrimClass(_Jv_voidClass, "void", 'V', 0);
 
-	TYPE_CLASS(TYPE_Boolean) = booleanClass;
-	TYPE_CLASS(TYPE_Char) = charClass;
-	TYPE_CLASS(TYPE_Float) = floatClass;
-	TYPE_CLASS(TYPE_Double) = doubleClass;
-	TYPE_CLASS(TYPE_Byte) = byteClass;
-	TYPE_CLASS(TYPE_Short) = shortClass;
-	TYPE_CLASS(TYPE_Int) = intClass;
-	TYPE_CLASS(TYPE_Long) = longClass;
+	TYPE_CLASS(TYPE_Boolean) = _Jv_booleanClass;
+	TYPE_CLASS(TYPE_Char) = _Jv_charClass;
+	TYPE_CLASS(TYPE_Float) = _Jv_floatClass;
+	TYPE_CLASS(TYPE_Double) = _Jv_doubleClass;
+	TYPE_CLASS(TYPE_Byte) = _Jv_byteClass;
+	TYPE_CLASS(TYPE_Short) = _Jv_shortClass;
+	TYPE_CLASS(TYPE_Int) = _Jv_intClass;
+	TYPE_CLASS(TYPE_Long) = _Jv_longClass;
 }
 
 /*
@@ -79,15 +78,15 @@ initTypes(void)
 void
 finishTypes(void)
 {
-	byteClass->head.dtable = ClassClass->dtable;
-	shortClass->head.dtable = ClassClass->dtable;
-	intClass->head.dtable = ClassClass->dtable;
-	longClass->head.dtable = ClassClass->dtable;
-	booleanClass->head.dtable = ClassClass->dtable;
-	charClass->head.dtable = ClassClass->dtable;
-	floatClass->head.dtable = ClassClass->dtable;
-	doubleClass->head.dtable = ClassClass->dtable;
-	voidClass->head.dtable = ClassClass->dtable;
+	_Jv_byteClass->head.dtable = ClassClass->dtable;
+	_Jv_shortClass->head.dtable = ClassClass->dtable;
+	_Jv_intClass->head.dtable = ClassClass->dtable;
+	_Jv_longClass->head.dtable = ClassClass->dtable;
+	_Jv_booleanClass->head.dtable = ClassClass->dtable;
+	_Jv_charClass->head.dtable = ClassClass->dtable;
+	_Jv_floatClass->head.dtable = ClassClass->dtable;
+	_Jv_doubleClass->head.dtable = ClassClass->dtable;
+	_Jv_voidClass->head.dtable = ClassClass->dtable;
 }
 
 Hjava_lang_Class*
@@ -105,15 +104,15 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 	const char* end;
 
 	switch (*(*strp)++) {
-	case 'V': return (voidClass);
-	case 'I': return (intClass);
-	case 'Z': return (booleanClass);
-	case 'S': return (shortClass);
-	case 'B': return (byteClass);
-	case 'C': return (charClass);
-	case 'F': return (floatClass);
-	case 'D': return (doubleClass);
-	case 'J': return (longClass);
+	case 'V': return (_Jv_voidClass);
+	case 'I': return (_Jv_intClass);
+	case 'Z': return (_Jv_booleanClass);
+	case 'S': return (_Jv_shortClass);
+	case 'B': return (_Jv_byteClass);
+	case 'C': return (_Jv_charClass);
+	case 'F': return (_Jv_floatClass);
+	case 'D': return (_Jv_doubleClass);
+	case 'J': return (_Jv_longClass);
 	case '[': return (lookupArray(classFromSig(strp, loader, einfo)));
 	case 'L':
 		start = *strp;

@@ -47,7 +47,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == intClass ) {
+	if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -55,7 +55,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",
 						(jint)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == shortClass ) {
+	else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -63,7 +63,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangShortClass,"(S)V",
 						(jint)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == longClass ) {
+	else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -71,7 +71,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangLongClass,"(J)V",
 						(jlong)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == byteClass ) {
+	else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -79,7 +79,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangByteClass,"(B)V",
 						(jint)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == booleanClass ) {
+	else if ( clazz == _Jv_booleanClass ) {
 		HArrayOfBoolean *arr = (HArrayOfBoolean *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -87,7 +87,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangBooleanClass,"(Z)V",
 						(jint)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == charClass ) {
+	else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -95,7 +95,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",
 						(jint)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == floatClass ) {
+	else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -103,7 +103,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		return execute_java_constructor(0,javaLangFloatClass,"(F)V",
 						(jfloat)(unhand_array(arr)->body[elem]));
 	}
-	else if ( clazz == doubleClass ) {
+	else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -134,7 +134,7 @@ java_lang_reflect_Array_getBoolean(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == booleanClass ) {
+	if ( clazz == _Jv_booleanClass ) {
 		HArrayOfBoolean *arr = (HArrayOfBoolean *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -155,7 +155,7 @@ java_lang_reflect_Array_getByte(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == byteClass ) {
+	if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -176,13 +176,13 @@ java_lang_reflect_Array_getChar(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == charClass ) {
+	if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -203,13 +203,13 @@ java_lang_reflect_Array_getShort(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == shortClass ) {
+	if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -230,25 +230,25 @@ java_lang_reflect_Array_getInt(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == intClass ) {
+	if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == shortClass ) {
+	} else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == charClass ) {
+	} else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -269,31 +269,31 @@ java_lang_reflect_Array_getLong(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == longClass ) {
+	if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == shortClass ) {
+	} else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == charClass ) {
+	} else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -314,37 +314,37 @@ java_lang_reflect_Array_getFloat(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == floatClass ) {
+	if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == shortClass ) {
+	} else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == charClass ) {
+	} else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -365,43 +365,43 @@ java_lang_reflect_Array_getDouble(struct Hjava_lang_Object* obj, jint elem)
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == doubleClass ) {
+	if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == shortClass ) {
+	} else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == charClass ) {
+	} else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return unhand_array(arr)->body[elem];
-	} else if ( clazz == byteClass ) {
+	} else if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -473,7 +473,7 @@ java_lang_reflect_Array_setBoolean(struct Hjava_lang_Object* obj, jint elem, jbo
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == booleanClass ) {
+	if ( clazz == _Jv_booleanClass ) {
 		HArrayOfBoolean *arr = (HArrayOfBoolean *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -494,43 +494,43 @@ java_lang_reflect_Array_setByte(struct Hjava_lang_Object* obj, jint elem, jbyte 
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == byteClass ) {
+	if ( clazz == _Jv_byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == shortClass ) {
+	} else if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == charClass ) {
+	} else if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -551,31 +551,31 @@ java_lang_reflect_Array_setChar(struct Hjava_lang_Object* obj, jint elem, jchar 
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == charClass ) {
+	if ( clazz == _Jv_charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -596,31 +596,31 @@ java_lang_reflect_Array_setShort(struct Hjava_lang_Object* obj, jint elem, jshor
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == shortClass ) {
+	if ( clazz == _Jv_shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == intClass ) {
+	} else if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -641,25 +641,25 @@ java_lang_reflect_Array_setInt(struct Hjava_lang_Object* obj, jint elem, jint va
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == intClass ) {
+	if ( clazz == _Jv_intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == longClass ) {
+	} else if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -680,19 +680,19 @@ java_lang_reflect_Array_setLong(struct Hjava_lang_Object* obj, jint elem, jlong 
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == longClass ) {
+	if ( clazz == _Jv_longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == floatClass ) {
+	} else if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -713,13 +713,13 @@ java_lang_reflect_Array_setFloat(struct Hjava_lang_Object* obj, jint elem, jfloa
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == floatClass ) {
+	if ( clazz == _Jv_floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		unhand_array(arr)->body[elem] = val;
-	} else if ( clazz == doubleClass ) {
+	} else if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
@@ -740,7 +740,7 @@ java_lang_reflect_Array_setDouble(struct Hjava_lang_Object* obj, jint elem, jdou
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
 	
-	if ( clazz == doubleClass ) {
+	if ( clazz == _Jv_doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");

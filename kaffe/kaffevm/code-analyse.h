@@ -34,11 +34,11 @@ typedef struct codeinfo {
 #define	TUNSTABLE		((Hjava_lang_Class*)1)
 #define	TADDR			((Hjava_lang_Class*)2)
 #define	TOBJ			((Hjava_lang_Class*)3)
-#define	TVOID			(voidClass)
-#define	TINT			(intClass)
-#define	TLONG			(longClass)
-#define	TFLOAT			(floatClass)
-#define	TDOUBLE			(doubleClass)
+#define	TVOID			(_Jv_voidClass)
+#define	TINT			(_Jv_intClass)
+#define	TLONG			(_Jv_longClass)
+#define	TFLOAT			(_Jv_floatClass)
+#define	TDOUBLE			(_Jv_doubleClass)
 
 #define	CONSTANTTYPE(VAL, LCL)					\
 	switch (CLASS_CONST_TAG(meth->class, (LCL))) {		\

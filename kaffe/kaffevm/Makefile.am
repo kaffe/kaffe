@@ -6,8 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) systems
-DIST_SUBDIRS = intrp jit systems
+SUBDIRS = $(ENGINE_NAME) systems gcj
+DIST_SUBDIRS = intrp jit systems gcj
 
 EXTRA_DIST = \
 	kaffe.def \
@@ -30,6 +30,7 @@ libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_LIBADD = \
 	$(top_builddir)/libltdl/libltdl.la \
 	$(ENGINE_NAME)/libengine.la \
+	gcj/libgcj.la \
 	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
 libkaffevm_la_SOURCES = \
 	baseClasses.c \

@@ -2748,7 +2748,7 @@ Kaffe_NewBooleanArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(booleanClass, len);
+	arr = newArray(_Jv_booleanClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2762,7 +2762,7 @@ Kaffe_NewByteArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(byteClass, len);
+	arr = newArray(_Jv_byteClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2776,7 +2776,7 @@ Kaffe_NewCharArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(charClass, len);
+	arr = newArray(_Jv_charClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2790,7 +2790,7 @@ Kaffe_NewShortArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(shortClass, len);
+	arr = newArray(_Jv_shortClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2804,7 +2804,7 @@ Kaffe_NewIntArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(intClass, len);
+	arr = newArray(_Jv_intClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2818,7 +2818,7 @@ Kaffe_NewLongArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(longClass, len);
+	arr = newArray(_Jv_longClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2832,7 +2832,7 @@ Kaffe_NewFloatArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(floatClass, len);
+	arr = newArray(_Jv_floatClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();
@@ -2846,7 +2846,7 @@ Kaffe_NewDoubleArray(JNIEnv* env, jsize len)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = newArray(doubleClass, len);
+	arr = newArray(_Jv_doubleClass, len);
 
 	ADD_REF(arr);
 	END_EXCEPTION_HANDLING();

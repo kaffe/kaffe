@@ -121,8 +121,8 @@ host_os = @host_os@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-SUBDIRS = $(ENGINE_NAME) systems
-DIST_SUBDIRS = intrp jit systems
+SUBDIRS = $(ENGINE_NAME) systems gcj
+DIST_SUBDIRS = intrp jit systems gcj
 
 EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
 
@@ -132,7 +132,7 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(to
 lib_LTLIBRARIES = libkaffevm.la
 
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
-libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libengine.la 	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
+libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libengine.la 	gcj/libgcj.la 	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
 
 libkaffevm_la_SOURCES =  	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc-mem.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	md.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	gcFuncs.c 	gcRefs.c 	verify.c
 
@@ -154,7 +154,8 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libkaffevm_la_DEPENDENCIES =  $(top_builddir)/libltdl/libltdl.la \
-$(ENGINE_NAME)/libengine.la systems/$(THREAD_SYSTEM)/libkthread.la
+$(ENGINE_NAME)/libengine.la gcj/libgcj.la \
+systems/$(THREAD_SYSTEM)/libkthread.la
 libkaffevm_la_OBJECTS =  baseClasses.lo classMethod.lo code-analyse.lo \
 code.lo constants.lo debug.lo exception.lo external.lo findInJar.lo \
 gc-mem.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo locks.lo \

@@ -4918,7 +4918,7 @@ if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
   cat >> confdefs.h <<\EOF
 #define HAVE_GIF_LIB_H 1
 EOF
-,
+
 fi
 
 have_rusage=no
@@ -7095,7 +7095,7 @@ ac_given_INSTALL="$INSTALL"
 trap 'rm -fr `echo "Makefile \
 config/Makefile include/Makefile kaffe/Makefile 
 libraries/Makefile kaffe/kaffevm/Makefile \
-kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
@@ -7302,7 +7302,7 @@ cat >> $CONFIG_STATUS <<EOF
 CONFIG_FILES=\${CONFIG_FILES-"Makefile \
 config/Makefile include/Makefile kaffe/Makefile 
 libraries/Makefile kaffe/kaffevm/Makefile \
-kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \

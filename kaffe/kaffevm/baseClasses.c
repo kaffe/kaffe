@@ -30,6 +30,7 @@
 #include "itypes.h"
 #include "md.h"
 #include "java_lang_Cloneable.h"
+#include "gcj/gcj.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -126,6 +127,9 @@ initialiseKaffe(void)
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
+
+	/* Init GCJ support */
+	gcjInit();
 
 	/* Read in base classes */
 	initBaseClasses();

@@ -449,7 +449,7 @@ AC_CACHE_CHECK([for gif_lib.h],
 ], [kaffe_cv_gif_lib_version=yes],
    [kaffe_cv_gif_lib_version="no, not found or bad version"])])
 if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
-  AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of giflib]),
+  AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of giflib])
 fi
 
 dnl We need both getrusage and the header containing its decls.
@@ -747,7 +747,7 @@ AM_CONFIG_HEADER(config/config.h include/jtypes.h)
 AC_OUTPUT(Makefile \
 config/Makefile include/Makefile kaffe/Makefile 
 libraries/Makefile kaffe/kaffevm/Makefile \
-kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \

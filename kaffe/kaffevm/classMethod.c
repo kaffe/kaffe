@@ -36,6 +36,7 @@
 #include "locks.h"
 #include "md.h"
 #include "jni.h"
+#include "gcj/gcj.h"
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
 static iLock classHashLock;
@@ -246,6 +247,11 @@ retry:
 
 		resolveObjectFields(class);
 		resolveStaticFields(class);
+
+		if (CLASS_GCJ(class)) {
+			gcjProcessClass(class);
+		}
+
 		/* Build dispatch table.  We must handle interfaces a little
 		 * differently since they only have a <clinit> method.
 		 */
@@ -830,7 +836,11 @@ DBG(VMCLASSLOADER,
 				/* NB: centry->class->centry != centry */
 				centry->class = clazz;
 			}
-		} else {
+		}
+		else if (gcjFindClass(centry) == true) {
+			clazz = centry->class;
+		}
+		else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);
 
@@ -847,8 +857,8 @@ DBG(RESERROR,
 			}
 			centry->class = clazz;
 		}
-
-	} else {
+	}
+	else {
 		/* get the result from some other thread */
 		clazz = centry->class;
 	}
@@ -1181,31 +1191,31 @@ resolveStaticFields(Hjava_lang_Class* class)
 
 			switch (CONST_TAG(idx, pool)) {
 			case CONSTANT_Integer:
-				if (FIELD_TYPE(fld) == booleanClass ||
-				    FIELD_TYPE(fld) == byteClass) {
+				if (FIELD_TYPE(fld) == _Jv_booleanClass ||
+				    FIELD_TYPE(fld) == _Jv_byteClass) {
 					*(jbyte*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(byteClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_byteClass);
 				}
-				else if (FIELD_TYPE(fld) == charClass ||
-					 FIELD_TYPE(fld) == shortClass) {
+				else if (FIELD_TYPE(fld) == _Jv_charClass ||
+					 FIELD_TYPE(fld) == _Jv_shortClass) {
 					*(jshort*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(shortClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_shortClass);
 				}
 				else {
 					*(jint*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(intClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_intClass);
 				}
 				break;
 
 			case CONSTANT_Float:
 				*(jint*)mem = CLASS_CONST_INT(class, idx);
-				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(floatClass);
+				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_floatClass);
 				break;
 
 			case CONSTANT_Long:
 			case CONSTANT_Double:
 				*(jlong*)mem = CLASS_CONST_LONG(class, idx);
-				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(longClass);
+				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_longClass);
 				break;
 
 			case CONSTANT_String:

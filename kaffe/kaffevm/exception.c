@@ -241,6 +241,11 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 				obj = FRAMEOBJECT(frame);
 			}
 
+			/* If this is a GCJ class - dispatch in that */
+			if (einfo.method != 0 && CLASS_GCJ(einfo.method->class)) {
+				gcjDispatchException(frame, &einfo, eobj);
+			}
+
 			/* Handler found - dispatch exception */
 			if (einfo.handler != 0) {
 				unhand(ct)->exceptObj = 0;

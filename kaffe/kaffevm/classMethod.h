@@ -158,11 +158,12 @@ typedef struct _methods {
 
 typedef struct _dispatchTable {
 	Hjava_lang_Class*	class;
+	void*			__dummy0; /* For GCJ/C++ compatibility */
 	void*			method[1];
 } dispatchTable;
 
 #define	DTABLE_CLASS		0
-#define	DTABLE_METHODOFFSET	(sizeof(void*))
+#define	DTABLE_METHODOFFSET	(sizeof(void*)*2)
 #define	DTABLE_METHODSIZE	(sizeof(void*))
 
 typedef struct _fields {
@@ -260,6 +261,9 @@ struct _classFile;
 
 #define	METHOD_IS_STATIC(METH) ((METH)->accflags & ACC_STATIC)
 #define	METHOD_IS_CONSTRUCTOR(METH) ((METH)->accflags & ACC_CONSTRUCTOR)
+
+#define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
+#define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ
 
 /*
  * 'processClass' is the core of the class initialiser and can prepare a
