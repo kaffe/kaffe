@@ -1,5 +1,13 @@
 2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
+	libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	added kaffe/io/*SHIFT_JIS.java and performed autogen.sh
+
+2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
 	kaffe/kaffevm/acces.c:
 	(checkAccess) corrected to avoid java.lang.IllegalAccessError.
 

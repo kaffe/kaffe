@@ -2037,6 +2037,7 @@ kaffe_io_SRCS = \
 	kaffe/io/ByteToCharEUC_JP.java \
 	kaffe/io/ByteToCharHashBased.java \
 	kaffe/io/ByteToCharIconv.java \
+	kaffe/io/ByteToCharSHIFT_JIS.java \
 	kaffe/io/ByteToCharUTF8.java \
 	kaffe/io/CharToByte8859_1.java \
 	kaffe/io/CharToByteConverter.java \
@@ -2044,6 +2045,7 @@ kaffe_io_SRCS = \
 	kaffe/io/CharToByteEUC_JP.java \
 	kaffe/io/CharToByteHashBased.java \
 	kaffe/io/CharToByteIconv.java \
+	kaffe/io/CharToByteSHIFT_JIS.java \
 	kaffe/io/CharToByteUTF8.java \
 	kaffe/io/CircularBuffer.java \
 	kaffe/io/ClassLoaderObjectInputStream.java \
