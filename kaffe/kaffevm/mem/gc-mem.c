@@ -17,6 +17,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "locks.h"
+#include "thread.h"
 #include "gc.h"
 #include "mem/gc-block.h"
 #include "gc-mem.h"
@@ -196,17 +197,6 @@ gc_heap_initialise(void)
 	}
 #endif
 
-DBG(GCSTAT,
-	{
-		int i;
-		for (i = 0; i < max_small_object_size; i++)
-			printf("size %d list %d, list.size %d\n", i,
-				sztable[i].list, freelist[sztable[i].list].sz);
-		printf("max smobjsize %d, max freelist %d\n", 
-			max_small_object_size, max_freelist);
-	}
-    )
-
 DBG(SLACKANAL,
 	atexit(printslack);
     )
@@ -227,7 +217,6 @@ void*
 gc_heap_malloc(size_t sz)
 {
 	static int gc_heap_init = 0;
-	static int gc_current_alloc = 0;
 	size_t lnr;
 	gc_freeobj* mem;
 	gc_block** mptr;
@@ -321,8 +310,6 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 
 	assert(GC_OBJECT_SIZE(mem) >= sz);
 
-	gc_current_alloc += nsz;
-
 	return (mem);
 
 	/* --------------------------------------------------------------- */
@@ -332,17 +319,13 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 	 * memory from somewhere.
 	 */
 
-DBG(GCSTAT,
-	dprintf("Demanding %d ...\n", sz);				)
-
 	switch (times) {
 	case 1:
-		/* Try invoking GC, but only if we've got some heap and
-		 * the GC is available and it's worth doing.
-		 */
-		if (gc_heap_total > 0 && garbageman != 0 && gc_current_alloc > gc_heap_allocation_size/2) {
-			/* Runtime.gc() can't give up this lock on it's
-			 * own, since it does not hold this lock.
+		/* Try invoking GC if it is available */
+		if (garbageman != 0) {
+			/* The other caller of invokeGC,  Runtime.gc() can't 
+			 * give up this lock on its own, since it does not 
+			 * hold this lock.
 			 */
 			unlockStaticMutex(&gc_lock);
 			invokeGC();
@@ -385,7 +368,6 @@ DBG(GCSTAT,
 	}
 
 	/* Try again */
-	gc_current_alloc = 0;
 	goto rerun;
 }
 

@@ -39,6 +39,7 @@ static int finalise = 0;
 static bool gcRunning = false;
 static bool finalRunning = false;
 static timespent gc_time;
+static timespent sweep_time;
 
 #if defined(STATS)
 
@@ -558,10 +559,24 @@ gcMan(void* arg)
 	initStaticLock(&gcman);
 	lockStaticMutex(&gcman);
 
-	for(;;) {
+	/* Wake up anyone waiting for the GC to finish every time we're done */
+	for(;; broadcastStaticCond(&gcman)) {
+
 		gcRunning = false;
 		waitStaticCond(&gcman, 0);
 		assert(gcRunning == true);
+
+		/*
+		 * Since multiple thread can wake us up without 
+		 * coordinating with each other, we must make sure that we
+		 * don't collect multiple times.
+		 */
+                if (gcStats.allocmem == 0) {
+DBG(GCSTAT,
+			dprintf("skipping collection...\n");
+    )
+			continue;
+                }
 
 		startGC();
 
@@ -592,19 +607,32 @@ gcMan(void* arg)
 		finishGC();
 
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
-			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, gcStats.freedmem/1024);
+			/* print out all the info you ever wanted to know */
+			fprintf(stderr, 
+			    "<GC: heap %dK, total before %dK,"
+			    " after %dK (%d/%d objs)\n %2.1f%% free,"
+			    " grown by %dK (#%d), marked %dK, "
+			    "swept %dK (#%d)>\n", 
+			gc_heap_total/1024, 
+			gcStats.totalmem/1024, 
+			(gcStats.totalmem-gcStats.freedmem)/1024, 
+			gcStats.totalobj,
+			gcStats.totalobj-gcStats.freedobj,
+			(1.0 - ((gcStats.totalmem-gcStats.freedmem)/
+				(double)gc_heap_total)) * 100.0,
+			gcStats.allocmem/1024,
+			gcStats.allocobj,
+			gcStats.markedmem/1024, 
+			gcStats.freedmem/1024,
+			gcStats.freedobj);
 		}
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
 		}
-
 		gcStats.totalmem -= gcStats.freedmem;
 		gcStats.totalobj -= gcStats.freedobj;
 		gcStats.allocobj = 0;
 		gcStats.allocmem = 0;
-
-		/* Wake up anyone waiting for the GC to finish */
-		broadcastStaticCond(&gcman);
 	}
 }
 
@@ -629,7 +657,7 @@ startGC(void)
 	LOCK();
 
 	/* measure time */
-	startTiming(&gc_time, "gc");
+	startTiming(&gc_time, "gc-scan");
 
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
@@ -730,9 +758,11 @@ finishGC(void)
 	 * Now free the objects.  We can block here since we're the only
 	 * thread manipulating the "mustfree" list.
 	 */
+	lockStaticMutex(&gc_lock);
+	startTiming(&sweep_time, "gc-sweep");
+
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
 		void (*destroy)(void *);
-		lockStaticMutex(&gc_lock);
 		unit = gclists[mustfree].cnext;
 
 		/* invoke destroy function before freeing the object */
@@ -745,8 +775,9 @@ finishGC(void)
 
 		UREMOVELIST(unit);
 		gc_heap_free(unit);
-		unlockStaticMutex(&gc_lock);
 	}
+	stopTiming(&sweep_time);
+	unlockStaticMutex(&gc_lock);
 
 	/* If there's stuff to be finalised then we'd better do it */
 	if (gclists[finalise].cnext != &gclists[finalise]) {
@@ -861,6 +892,7 @@ gcMalloc(size_t size, int fidx)
 	gc_unit* unit;
 	void * volatile mem;	/* needed on SGI, see comment below */
 	int i;
+	size_t bsz;
 
 	/* Initialise GC */
 	if (gc_init == 0) {
@@ -881,9 +913,10 @@ gcMalloc(size_t size, int fidx)
 	info = GCMEM2BLOCK(mem);
 	i = GCMEM2IDX(info, unit);
 
-	gcStats.totalmem += GCBLOCKSIZE(info);
+	bsz = GCBLOCKSIZE(info);
+	gcStats.totalmem += bsz;
 	gcStats.totalobj += 1;
-	gcStats.allocmem += GCBLOCKSIZE(info);
+	gcStats.allocmem += bsz;
 	gcStats.allocobj += 1;
 
 	GC_SET_FUNCS(info, i, fidx);
