@@ -1,3 +1,8 @@
+2004-11-20  Djordje Nikolic  <dmn@ict-tower.com>
+
+	* config/powerpc/linux/md.h:
+	Disable SA_SIGINFO to get access to the sigcontext structure.
+
 2004-11-20  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Check for the semaphore library.

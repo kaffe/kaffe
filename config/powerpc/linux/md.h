@@ -25,6 +25,14 @@
 #include <asm/sigcontext.h>
 #endif
 
+/*
+ * We don't need a SA_SIGINFO flag to get a proper
+ * sigcontext pointer in a signal handlers.
+ */
+#if defined(SA_SIGINFO)
+#undef SA_SIGINFO
+#endif
+
 /* Linux requires a little initialisation */
 extern void init_md(void);
 #define	INIT_MD()	init_md()
