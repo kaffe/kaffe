@@ -5,18 +5,23 @@ Wed Jul  7 11:21:19 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/clib/native/Arrays.c: new file
 	* libraries/clib/native/Makefile.am: add Arrays.c
 	* libraries/javalib/Makefile.am: add java/util/Arrays.java
+	* libraries/javalib/java/lang/Comparable.java: new file
 	* libraries/javalib/java/lang/Byte.java, Character.java,
 	Double.java, Float.java, Integer.java, Long.java, Short.java,
 	String.java: implement Comparable interface
-	* libraries/javalib/java/lang/Comparable.java: new file
-	* libraries/javalib/java/util/AbstractList.java: add missing remove()
-	method and fix broken equals() method.
+	* libraries/javalib/java/math/BigInteger.java,
+	libraries/javalib/java/math/BigDecimal.java,
+	libraries/javalib/java/io/File.java,
+	libraries/javalib/java/text/CollationKey.java,
+	libraries/javalib/java/util/Date.java: implement Comparable interface
 	* libraries/javalib/java/util/Arrays.java: new file
 	* test/regression/SortTest.java: new test
 	* test/regression/Makefile.am: add SortTest.java
 	* configure, include/Makefile.in, libraries/clib/native/Makefile.in,
 	libraries/javalib/Makefile.in, test/regression/Makefile.in,
 	libraries/javalib/Klasses.jar: regen
+	* libraries/javalib/java/util/AbstractList.java: add missing remove()
+	method and fix broken equals() method.
 	* libraries/clib/native/Double.c: fix warning
 
 Mon Jul  5 16:04:55 PDT 1999  Archie Cobbs <archie@whistle.com>
