@@ -40,7 +40,7 @@ jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 if HAVE_DNSJAVA
-DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+DNSJAVA_InetAddressImpl = gnu/java/net/DNSJavaInetAddressImpl.java
 else
 DNSJAVA_InetAddressImpl =
 endif
@@ -368,6 +368,7 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_zh_SG.java \
 	gnu/java/locale/LocaleInformation_zh_TW.java
 gnu_java_net_SRCS = \
+	gnu/java/net/DNSJavaInetAddressImpl.java \
 	gnu/java/net/HeaderFieldHelper.java \
 	gnu/java/net/InetAddressImpl.java \
 	gnu/java/net/PlainDatagramSocketImpl.java \

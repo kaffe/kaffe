@@ -1,3 +1,38 @@
+2003-12-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated a new KJC
+	with latest Ito's patch applied.
+
+	* libraries/javalib/java/text/RuleBasedCollator.java,
+	libraries/javalib/java/text/CollationElementIterator.java,
+	libraries/gnu/java/net/jar/Handler.java:
+	Fixed indentation, added some extra documentation.
+	Simplified the logic (catching NullPointerException
+	is prevented).
+
+	* libraries/javalib/java/io/ObjectOutputStream.java
+	(writeClassDescriptor): Write descriptor about superclass
+	even when it's "External".
+	(callReadMethod): Reset prereadFields to null after having
+	called the read method.
+
+	* libraries/javalib/gnu/java/net/protocol/http/Connection.java
+	(getHeaderField, getHeaderFieldKey): connect() should be call
+	if the connection was not established.
+
+	* libraries/javalib/java/net/InetSocketAddress.java
+	(InetSocketAddress): Don't call getHostName() if addr is IN_ANY.
+
+	* libraries/javalib/gnu/java/net/DNSJavaInetAddressImpl.java:
+	Implemented DNSJava binding (still buggy).
+
+	* libraries/javalib/Makefile.am.in
+	(DNSJAVA_InetAddressImpl): Changed the location of the DNSJava
+	binding implementation.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
 2003-12-23  Dalibor Topic <robilad@kaffe.org>
 
         * configure.in

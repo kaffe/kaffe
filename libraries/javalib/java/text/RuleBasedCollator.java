@@ -142,11 +142,14 @@ import java.util.Comparator;
  * @author Aaron M. Renn <arenn@urbanophile.com>
  * @author Tom Tromey <tromey@cygnus.com>
  * @author Guilhem Lavaux <guilhem@kaffe.org>
- * @date August 17, 2003
  */
 public class RuleBasedCollator extends Collator
 {
-  class CollationElement
+  /**
+   * This class describes what rank has a character (or a sequence of characters) 
+   * in the lexicographic order. Each element in a rule has a collation element.
+   */
+  final class CollationElement
   {
     String char_seq;
     int primary;
@@ -167,7 +170,7 @@ public class RuleBasedCollator extends Collator
       this.ignore = false;
       this.expansion = expansion;
     }
-
+    
     CollationElement(String char_seq)
     {
       this.char_seq = char_seq;
@@ -181,13 +184,15 @@ public class RuleBasedCollator extends Collator
 
   } // inner class CollationElement
 
-  class CollationBlock
-  {
-    int value;
-    String textBlock;
-  }
-
-  class CollationSorter
+  /**
+   * Basic collation instruction (internal format) to build the series of
+   * collation elements. It contains an instruction which specifies the new
+   * state of the generator. The sequence of instruction should not contain
+   * RESET (it is used by
+   * {@link #mergeRules(int,java.lang.String,java.util.Vector,java.util.Vector)})
+   * as a temporary state while merging two sets of instructions.
+   */
+  final class CollationSorter
   {
     static final int GREATERP = 0;
     static final int GREATERS = 1;
@@ -205,11 +210,20 @@ public class RuleBasedCollator extends Collator
     String expansionOrdering;
   }
 
+  /**
+   * This method returns the number of common characters at the beginning
+   * of the string of the two parameters.
+   *
+   * @param prefix A string considered as a prefix to test against
+   * the other string.
+   * @param s A string to test the prefix against.
+   * @return The number of common characters.
+   */
   static int findPrefixLength(String prefix, String s)
   {
     int i;
 
-    for (i=0;i<prefix.length() && i < s.length();i++)
+    for (i = 0; i < prefix.length() && i < s.length(); i++)
       {
 	if (prefix.charAt(i) != s.charAt(i))
 	  return i;
@@ -217,7 +231,19 @@ public class RuleBasedCollator extends Collator
     return i;
   }
 
-  void mergeRules(int offset, String starter, Vector main, Vector patch)
+  /**
+   * Here we are merging two sets of sorting instructions: 'patch' into 'main'. This methods
+   * checks whether it is possible to find an anchor point for the rules to be merged and
+   * then insert them at that precise point.
+   *
+   * @param offset Offset in the string containing rules of the beginning of the rules
+   * being merged in.
+   * @param starter Text of the rules being merged.
+   * @param main Repository of all already parsed rules.
+   * @param patch Rules to be merged into the repository.
+   * @throws ParseException if it is impossible to find an anchor point for the new rules.
+   */
+  private void mergeRules(int offset, String starter, Vector main, Vector patch)
     throws ParseException 
   {
     Enumeration elements = main.elements();
@@ -292,10 +318,24 @@ public class RuleBasedCollator extends Collator
     // Now insert all elements of patch at the insertion point.
     for (int i=0;i<patch.size();i++)
       main.insertElementAt(patch.elementAt(i), i+insertion_point);
-
   }
 
-  int subParseString(boolean stop_on_reset, Vector v, int base_offset, String rules) throws ParseException
+  /**
+   * This method parses a string and build a set of sorting instructions. The parsing
+   * may only be partial on the case the rules are to be merged sometime later.
+   * 
+   * @param stop_on_reset If this parameter is true then the parser stops when it
+   * encounters a reset instruction. In the other case, it tries to parse the subrules
+   * and merged it in the same repository.
+   * @param v Output vector for the set of instructions.
+   * @param base_offset Offset in the string to begin parsing.
+   * @param rules Rules to be parsed.
+   * @return -1 if the parser reached the end of the string, an integer representing the
+   * offset in the string at which it stopped parsing. 
+   * @throws ParseException if something turned wrong during the parsing. To get details
+   * decode the message.
+   */
+  private int subParseString(boolean stop_on_reset, Vector v, int base_offset, String rules) throws ParseException
   {
     boolean ignoreChars = (base_offset == 0);
     int operator = -1;
@@ -464,6 +504,14 @@ main_parse_loop:
       return i;
   }
 
+  /**
+   * This method completely parses a string 'rules' containing sorting rules.
+   *
+   * @param rules String containing the rules to be parsed. 
+   * @return A set of sorting instructions stored in a Vector.
+   * @throws ParseException if something turned wrong during the parsing. To get details
+   * decode the message.
+   */
   private Vector parseString(String rules) throws ParseException
   {
     Vector v = new Vector();
@@ -503,6 +551,13 @@ main_parse_loop:
    */
   private boolean inverseAccentComparison;
 
+  /**
+   * This method uses the sorting instructions built by {@link #parseString}
+   * to build collation elements which can be directly used to sort strings.
+   *
+   * @param parsedElements Parsed instructions stored in a Vector.
+   * @throws ParseException if the order of the instructions are not valid.
+   */
   private void buildCollationVector(Vector parsedElements) throws ParseException
   {
     int primary_seq = 0;
@@ -517,7 +572,7 @@ main_parse_loop:
 
     // elts is completely sorted.
 element_loop:
-    for (int i=0;i<parsedElements.size();i++)
+    for (int i = 0; i < parsedElements.size(); i++)
       {
 	CollationSorter elt = (CollationSorter)parsedElements.elementAt(i);
 	boolean ignoreChar = false;
@@ -596,7 +651,7 @@ element_loop:
   {
     prefix_tree = new HashMap();
 
-    for (int i=0;i<ce_table.length;i++)
+    for (int i = 0; i < ce_table.length; i++)
       {
 	CollationElement e = (CollationElement)ce_table[i];
 
@@ -634,12 +689,15 @@ element_loop:
    */
   public String getRules()
   {
-    return(rules);
+    return rules;
   }
 
   /**
    * This method builds a default collation element without invoking
    * the database created from the rules passed to the constructor.
+   *
+   * @param c Character which needs a collation element.
+   * @return A valid brand new CollationElement instance.
    */
   CollationElement getDefaultElement(char c)
   {
@@ -717,28 +775,21 @@ element_loop:
 	int ord1;
 	int ord2;
 
-	// Hehehe. What we would do not to use if.
-	try
-	  {
-	    ord1 = ord1block.getValue();
-	  }
-	catch (NullPointerException _)
+	if (ord1block != null)
+	  ord1 = ord1block.getValue();
+	else
 	  {
 	    if (ord2block == null)
 	      return 0;
 	    return -1;
 	  }
 
-	try
-	  {
-	    ord2 = ord2block.getValue();
-	  }
-	catch (NullPointerException _)
-	  {
-	    return 1;
-	  }
+	if (ord2block == null)
+	  return 1;
 	
-       // We know chars are totally equal, so skip
+	ord2 = ord2block.getValue();
+	
+	// We know chars are totally equal, so skip
         if (ord1 == ord2)
 	  {
 	    if (getStrength() == IDENTICAL)

@@ -82,11 +82,16 @@ public class InetSocketAddress extends SocketAddress
       throw new IllegalArgumentException ("Bad port number: " + port);
 
     if (addr == null)
-      addr = InetAddress.ANY_IF;
-  
-    this.addr = addr;
+      {
+	addr = InetAddress.ANY_IF;
+	this.hostname = "";
+      }
+    else
+      {
+	this.addr = addr;
+	this.hostname = addr.getHostName ();
+      }
     this.port = port;
-    this.hostname = addr.getHostName ();
   }
 
   /**

@@ -411,7 +411,7 @@ public class ObjectOutputStream extends OutputStream
     setBlockDataMode (oldmode);
     realOutput.writeByte (TC_ENDBLOCKDATA);
 
-    if (osc.isSerializable ())
+    if (osc.isSerializable () || osc.isExternalizable())
       writeObject (osc.getSuper ());
     else
       writeObject (null);

@@ -1806,6 +1806,9 @@ public class ObjectInputStream extends InputStream
 	throw new IOException ("Failure invoking readObject() on " +
 			       klass + ": " + x.getClass().getName());
       }
+    // Invalidate fields which has been read through readFields.
+    if (prereadFields != null)
+      prereadFields = null;
   }
     
   private native Object allocateObject (Class clazz)

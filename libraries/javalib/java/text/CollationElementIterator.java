@@ -58,6 +58,7 @@ import java.util.SortedMap;
  *
  * @author Aaron M. Renn <arenn@urbanophile.com>
  * @author Tom Tromey <tromey@cygnus.com>
+ * @author Guilhem Lavaux <guilhem.lavaux@free.fr>
  */
 public final class CollationElementIterator
 {
@@ -101,7 +102,7 @@ public final class CollationElementIterator
    * @param collator The <code>RuleBasedCollation</code> used for calculating collation values
    * @param text The <code>String</code> to iterate over.
    */
-  CollationElementIterator (RuleBasedCollator collator, String text)
+  CollationElementIterator(RuleBasedCollator collator, String text)
   {
     this.collator = collator;
     
@@ -143,9 +144,9 @@ public final class CollationElementIterator
    *
    * @return The collation ordering value.
    */
-  public int next ()
+  public int next()
   {
-    RuleBasedCollator.CollationElement e = nextBlock ();
+    RuleBasedCollator.CollationElement e = nextBlock();
 
     if (e == null)
       return NULLORDER;
@@ -160,9 +161,9 @@ public final class CollationElementIterator
    *
    * @return The collation ordering value.
    */
-  public int previous ()
+  public int previous()
   {
-    RuleBasedCollator.CollationElement e = previousBlock ();
+    RuleBasedCollator.CollationElement e = previousBlock();
 
     if (e == null)
       return NULLORDER;
@@ -178,7 +179,7 @@ public final class CollationElementIterator
    *
    * @return The primary order value of the specified collation value.  This is the high 16 bits.
    */
-  public static final int primaryOrder (int order)
+  public static final int primaryOrder(int order)
   {
     // From the JDK 1.2 spec.
     return order >>> 16;
@@ -188,7 +189,7 @@ public final class CollationElementIterator
    * This method resets the internal position pointer to read from the
    * beginning of the <code>String again.
    */
-  public void reset ()
+  public void reset()
   {
     index = 0;
     textIndex = 0;
@@ -202,7 +203,7 @@ public final class CollationElementIterator
    *
    * @return The secondary order value of the specified collation value.  This is the bits 8-15.
    */
-  public static final short secondaryOrder (int order)
+  public static final short secondaryOrder(int order)
   {
     // From the JDK 1.2 spec.
     return (short) ((order >>> 8) & 255);
@@ -216,7 +217,7 @@ public final class CollationElementIterator
    *
    * @return The tertiary order value of the specified collation value.  This is the low eight bits.
    */
-  public static final short tertiaryOrder (int order)
+  public static final short tertiaryOrder(int order)
   {
     // From the JDK 1.2 spec.
     return (short) (order & 255);
@@ -228,7 +229,7 @@ public final class CollationElementIterator
    *
    * @param The new <code>String</code> to iterate over.
    */
-  public void setText (String text)
+  public void setText(String text)
   {
     int idx = 0;
 
@@ -298,7 +299,7 @@ public final class CollationElementIterator
    *
    * @param ci The <code>CharacterIterator</code> containing the new <code>String</code> to iterate over.
    */
-  public void setText (CharacterIterator ci)
+  public void setText(CharacterIterator ci)
   {
     StringBuffer sb = new StringBuffer ("");
 
@@ -319,7 +320,7 @@ public final class CollationElementIterator
    *
    * @return The iteration index position.
    */
-  public int getOffset ()
+  public int getOffset()
   {
     return textIndex;
   }
@@ -334,7 +335,7 @@ public final class CollationElementIterator
    *
    * @exception IllegalArgumentException If the new offset is not valid.
    */
-  public void setOffset (int offset)
+  public void setOffset(int offset)
   {
     if (offset < 0)
       throw new IllegalArgumentException ("Negative offset: " + offset);
@@ -365,7 +366,7 @@ public final class CollationElementIterator
    *
    * @param The maximum length of an expansion sequence.
    */
-  public int getMaxExpansion (int value)
+  public int getMaxExpansion(int value)
   {
     return 1;
   }

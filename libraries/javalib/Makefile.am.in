@@ -40,7 +40,7 @@ jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 if HAVE_DNSJAVA
-DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+DNSJAVA_InetAddressImpl = gnu/java/net/DNSJavaInetAddressImpl.java
 else
 DNSJAVA_InetAddressImpl =
 endif

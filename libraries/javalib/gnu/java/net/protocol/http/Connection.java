@@ -391,6 +391,21 @@ public final class Connection extends HttpURLConnection
    */
   public String getHeaderFieldKey (int n)
   {
+    if (n < 1)
+      return null;
+
+    n--;
+
+    if (!connected)
+      try
+	{
+	  connect();
+	}
+      catch (IOException e)
+	{
+	  return null;
+	}
+
     return headers.getHeaderFieldKeyByIndex (n);
   }
 
@@ -405,6 +420,20 @@ public final class Connection extends HttpURLConnection
    */
   public String getHeaderField (int n)
   {
+    if (n < 1)
+      return null;
+
+    n--;
+    if (!connected)
+      try
+	{
+	  connect();
+	}
+      catch (IOException e)
+	{
+	  return null;
+	}
+
     return headers.getHeaderFieldValueByIndex (n);
   }
 

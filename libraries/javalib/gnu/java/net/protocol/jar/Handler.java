@@ -95,10 +95,7 @@ public class Handler extends URLStreamHandler
             int idx = file.lastIndexOf ("!/");
 	    if (idx < 0)
 	      throw new URLParseError ("no !/ in spec");
-            //if (idx == -1) //context path is weird
-            //    file = file + "!" + url_string; 
-            //else
-                file = file.substring (0, idx + 1) + url_string;
+	    file = file.substring (0, idx + 1) + url_string;
           }
         else
           {
