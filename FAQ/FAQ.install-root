@@ -3,12 +3,12 @@ Setting an "install root" directory
 -----------------------------------
 
 If you want to build and package kaffe on one machine, but actually
-run it on another machine, you may want to use the "install root"
-directory feature.
-
-Setting an install root directory only affects "make install". It causes
-every install target directory to be prefixed with the install root
+run it on another machine, you may want to set an "install root"
 directory.
+
+Setting an install root directory only affects "make install". It
+causes every install target directory to be prefixed with the install
+root directory. The default install root directory is just /.
 
 For example, if you say:
 
@@ -18,97 +18,34 @@ For example, if you say:
 
 this does two things:
 
-  1. Kaffe is compiled in such a way that it expects to live in /usr/local,
-     and this is where it will look for certain files at runtime.
+  1. Kaffe is compiled in such a way that it expects to live in
+     /usr/local, and this is where it will look for certain files
+     at runtime.
 
   2. The "make install" step will install everything under /usr/local.
 
 Setting an install root affects step #2 only -- not step #1.
 
-For example, if your install root is "/tmp/kaffe-build", and you do the
-above steps, then kaffe will still expect to live in /usr/local, but
-"make install" step will install everything under /tmp/kaffe-build/usr/local".
+To set the install root directory to /tmp/kaffe-build, for example,
+add the "--with-installroot=/tmp/kaffe-build" argument to configure:
 
-Then you can tar up the /tmp/kaffe-build directory, take it to your target
-machine and untar it, etc.
+  $ ./configure --prefix=/usr/local --with-installroot=/tmp/kaffe-build
+  $ make
+  $ make install
 
-How to set an "install root" directory
---------------------------------------
+If you do the above steps, then kaffe will still expect to live
+in /usr/local, but "make install" will install everything under
+/tmp/kaffe-build/usr/local instead of just /usr/local.
 
-The "install root" functionality is *disabled* by default in kaffe.
-In order to enable it, you need to acquire the GNU "autoconf" program,
-which lets you recreate the "configure" script from "configure.in"
-(or else see the Notes below).
+Then you can tar up the /tmp/kaffe-build directory, take it to your
+target machine and install it, etc.
 
-Then follow these steps:
+Under FreeBSD, the variable $DESTDIR usually indicates the install
+root directory, so you might do this to insure that it gets used
+consistently with kaffe:
 
-1. Find the lines in "configure.in" that say:
-
-  dnl =========================================================================
-  dnl Set install root directory which prefixes all install target dirs
-  dnl -------------------------------------------------------------------------
-
-  INSTROOT=""
-
-  dnl =========================================================================
-
-2. Change the INSTROOT line to get this:
-
-  dnl =========================================================================
-  dnl Set install root directory which prefixes all install target dirs
-  dnl -------------------------------------------------------------------------
-
-  INSTROOT="$DESTDIR"
-
-  dnl =========================================================================
-
-3. From the top level kaffe directory, run "autoconf" to regenerate
-   the configure script.
-
-4. Set the environment variable "DESTDIR" to whatever you want your
-   install root directory to be:
-
-   $ DESTDIR=/tmp/kaffe-build; export DESTDIR    (for sh/bash users)
-   $ setenv DESTDIR /tmp/kaffe-build             (for csh/tcsh users)
-
-   If you don't want any install root, just unset this variable:
-
-   $ unset DESTDIR                               (for sh/bash users)
-   $ unsetenv DESTDIR                            (for csh/tcsh users)
-
-5. Run ./configure to recreate the kaffe Makefiles
-
-Now when you say "make install", all installations will be prefixed
-with /tmp/kaffe-build (or whatever you set).
-
-Notes
------
-
-  - To set a different install root, revisit steps 4 and 5 above.
-
-  - Be careful if you leave DESTDIR set in your environment;
-    it will be incorporated into any subsequent run of ./configure.
-
-  - If you can't get GNU autoconf, as a substitute you can just modify
-    the corresponding line in "./configure" directly (search for INSTROOT)
-    as a replacement for steps 1 - 3.
-
-  - If you use FreeBSD, this is exactly what the $DESTDIR variable
-    normally does. In FreeBSD, you can build a new (binary) version
-    of the operating system by starting with an older version,
-    setting $DESTDIR, and running "make all install" from the top
-    of the source tree. Then $DESTDIR will contain a complete
-    operating system image which you can install on another machine,
-    put on a CD, etc.
-
-  - Really the install root should be an argument to the configure
-    script, but GNU autoconf doesn't support this yet. E.g:
-
-      ./configure --prefix=/usr/local --install-root=/tmp/kaffe-build
-
-    Our solution is inferior, but still works in the meantime...
-    [ Is there some way to modify configure.in to add new command line
-    arguments? ]
+  $ ./configure --prefix=/usr/local --with-installroot=$DESTDIR
+  $ make
+  $ make install
 
 -Archie Cobbs <archie@whistle.com>
-

@@ -229,7 +229,8 @@ dnl =========================================================================
 dnl Set install root directory which prefixes all install target dirs
 dnl -------------------------------------------------------------------------
 
-INSTROOT=""
+AC_ARG_WITH(installroot,[  --with-installroot=DIR  Install everything under DIR])
+INSTROOT="$with_installroot"
 
 dnl =========================================================================
 
