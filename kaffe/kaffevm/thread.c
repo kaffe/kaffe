@@ -240,10 +240,6 @@ DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 		 */
 		eobj = (*env)->ExceptionOccurred(env);
 		(*env)->ExceptionClear(env);
-		if (eobj == 0) {
-			/* no exception, let this thread die silently. */
-			exitThread();
-		}
 	} else {
 		/* eobj will usually be NoSuchMethodError */
 		eobj = (*env)->ExceptionOccurred(env);
@@ -253,13 +249,14 @@ DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 	 * on this thread's group.  Note we must set a flag so we 
 	 * don't do this again while in the handler.
 	 */
-	if (unhand(tid)->dying == false) {
+	if (eobj != 0 && unhand(tid)->dying == false) {
 		unhand(tid)->dying = true;
 		do_execute_java_method(unhand(tid)->group, 
 			"uncaughtException", 
 			"(Ljava/lang/Thread;Ljava/lang/Throwable;)V",
 			 0, 0, tid, eobj);
 	}
+	exitThread();
 }
 
 /*
