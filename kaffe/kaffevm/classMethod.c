@@ -2864,7 +2864,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	addInterfaces(arr_class, 2, arr_interfaces);
 
 	arr_class->total_interface_len = arr_class->interface_len;
-	arr_class->head.vtable = ClassClass->vtable;
+	arr_class->head.vtable = getClassClass()->vtable;
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 

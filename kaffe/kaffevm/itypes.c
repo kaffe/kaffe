@@ -137,15 +137,15 @@ finishTypes(void)
 {
 	DBG(INIT, dprintf("finishTypes()\n"); );
 
-	byteClass->head.vtable = ClassClass->vtable;
-	shortClass->head.vtable = ClassClass->vtable;
-	intClass->head.vtable = ClassClass->vtable;
-	longClass->head.vtable = ClassClass->vtable;
-	booleanClass->head.vtable = ClassClass->vtable;
-	charClass->head.vtable = ClassClass->vtable;
-	floatClass->head.vtable = ClassClass->vtable;
-	doubleClass->head.vtable = ClassClass->vtable;
-	voidClass->head.vtable = ClassClass->vtable;
+	byteClass->head.vtable = getClassClass()->vtable;
+	shortClass->head.vtable = getClassClass()->vtable;
+	intClass->head.vtable = getClassClass()->vtable;
+	longClass->head.vtable = getClassClass()->vtable;
+	booleanClass->head.vtable = getClassClass()->vtable;
+	charClass->head.vtable = getClassClass()->vtable;
+	floatClass->head.vtable = getClassClass()->vtable;
+	doubleClass->head.vtable = getClassClass()->vtable;
+	voidClass->head.vtable = getClassClass()->vtable;
 
 	DBG(INIT, dprintf("finishTypes() done\n"); );
 }

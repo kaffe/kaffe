@@ -56,7 +56,7 @@ Utf8Const* SourceFile_name;
 Utf8Const* InnerClasses_name;
 
 static Hjava_lang_Class dummyClassClass;
-Hjava_lang_Class* ClassClass = &dummyClassClass;
+static Hjava_lang_Class* ClassClass = &dummyClassClass;
 Hjava_lang_Class* StringClass;
 Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
@@ -107,6 +107,24 @@ Hjava_lang_ClassLoader* appClassLoader;
 void initClasspath(void);
 void initNative(void);
 
+/**
+ * get the java.lang.Class class.
+ * Load it if it is not loaded.
+ */
+Hjava_lang_Class* 
+getClassClass(void)
+{
+  if (ClassClass == NULL) {
+    loadStaticClass(&ClassClass, CLASSCLASS);
+  }
+
+  return ClassClass;
+}
+
+/**
+ * get the java.lang.String class.
+ * Load it if it is not loaded.
+ */
 Hjava_lang_Class* 
 getStringClass(void)
 {
