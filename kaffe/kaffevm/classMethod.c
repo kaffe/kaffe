@@ -2469,7 +2469,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 			goto bail;
 		}
 	}
-	centry->class = arr_class;
+
 	/*
 	 * See JDC Bug: 4208179. The story is that the Spec leaves the
 	 * flags "unspecified" and the JDK actually sets them.... most
@@ -2500,6 +2500,8 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class->head.dtable = ClassClass->dtable;
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
+
+	centry->class = arr_class;
 
 bail:
 	unlockMutex(centry);
