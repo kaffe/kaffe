@@ -1,3 +1,24 @@
+2004-03-12  Dalibor Topic <robilad@kaffe.org>
+
+	* config/sparc/atomicity-sparc32.h,
+	config/sparc/atomicity-sparc32v9.h,
+	config/sparc/atomicity-sparc64.h:
+	New files, taken from glib 2.3.2.
+
+	* THIRDPARTY: Updated.
+
+	* config/Makefile.am
+	(EXTRA_DIST) Added new files.
+
+	* config/Makefile.in
+	Regenerated.
+
+	* config/sparc/common.h
+	(COMPARE_AND_EXCHANGE) Call compare_and_swap inline function
+        from atomicity-<platform>.h.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
 2004-03-12  Riccardo Mottola <zuse@libero.it>
 
 	* config/m68k/jit-m68k.def:

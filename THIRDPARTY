@@ -167,7 +167,7 @@ SUCH DAMAGE.
 
 At the time of writing, Kaffe uses getaddrinfo 1.6.1.
 
-* M68k and ARM atomic compare_and_swap
+* M68k, SPARC and ARM atomic compare_and_swap
 
 Taken from GNU libc 2.3.2, which is licensed under the GNU Lesser General 
 Public License. See file license-lesser.terms for details.

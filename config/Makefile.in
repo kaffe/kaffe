@@ -357,6 +357,7 @@ EXTRA_DIST = \
 	alpha/sysdepCallMethod.h \
 	alpha/threads.h \
 	alpha/trampolines.c \
+	arm/atomicity.h \
 	arm/callKaffeException.h \
 	arm/common.h \
 	arm/jit-arm.def \
@@ -579,6 +580,9 @@ EXTRA_DIST = \
 	s390/linux/md.h \
 	s390/sysdepCallMethod.h \
 	s390/threads.h \
+	sparc/atomicity-sparc32.h \
+	sparc/atomicity-sparc32v9.h \
+	sparc/atomicity-sparc64.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \

@@ -14,6 +14,17 @@
 #ifndef __sparc_common_h
 #define __sparc_common_h
 
+/* Include the right compare_and_swap definition */
+#if defined(__sparcv9)
+#include "atomicity-sparc32v9.h"
+#else /* !defined(__sparcv9) */
+#if defined(__arch64__)
+#include "atomicity-sparc64.h"
+#else /* !defined(__arch64__) */
+#include "atomicity-sparc32.h"
+#endif /* defined(__arch64__) */
+#endif /* defined(__sparcv9) */
+
 #if NEED_sysdepCallMethod
 
 #define LONG_SYSDEP 1
@@ -23,35 +34,12 @@
 
 #endif /* NEED_sysdepCallMethod */
 
-
-/*
- * Do an atomic exchange.  The contents of address 'A' is exchanged
- * with value 'N'.
- */
-#define ATOMIC_EXCHANGE(A,N) \
-	asm volatile("swap [%2],%0" : "=&r" (N) : "0" (N), "r" (A) : "cc", "memory" );
-
-#if 0
-#undef ATOMIC_EXCHANGE
-#warning "jthread COMPARE_AND_EXCHANGE"
-
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
+ * We return '1' if the exchange is successful, otherwise 0.
  */
-#define COMPARE_AND_EXCHANGE(A,O,N)		\
-({						\
-    int ret = 0;				\
-    jthread_suspendall();			\
-						\
-    if (*(A) == (O)) {				\
-	*(A) = (N);				\
-	ret = 1;				\
-    }						\
-    jthread_unsuspendall();			\
-    ret;					\
-})
-#endif
+
+#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
 
 #endif
