@@ -342,7 +342,12 @@ findInternSlot (jchar* data, int len, int hash)
 		}
 		index = (index + step) & (strhash_size - 1);
 		if (index == start_index) {
-			ABORT();
+                        if (deleted_index >= 0) {
+                                return (&strhash[deleted_index]);
+                        }
+                        else {
+                                ABORT();
+                        }
 		}
 	}
 }
@@ -434,7 +439,7 @@ void
 uninternJavaString(Hjava_lang_String* str)
 {
 	Hjava_lang_String** ptr = findInternSlotFromString(str);
-	if (*ptr == NULL || *ptr == DELETED_STRING) {
+	if (*ptr == NULL || *ptr == DELETED_STRING || *ptr != str) {
 		return;
 	}
 	*ptr = DELETED_STRING;
