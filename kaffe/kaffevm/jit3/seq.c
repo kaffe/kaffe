@@ -41,7 +41,8 @@ nextSeq(void)
 	if (ret == 0) {
 		int i;
 		/* Allocate chunk of sequence elements */
-		ret = jmalloc(ALLOCSEQNR * sizeof(sequence));
+		ret = gc_malloc(ALLOCSEQNR * sizeof(sequence),
+				GC_ALLOC_JITTEMP);
 
 		/* Attach to current chain */
 		if (lastSeq == 0) {

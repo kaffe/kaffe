@@ -29,7 +29,7 @@ static label* currLabel;
 
 /* Custom edition */
 #define	kprintf	kaffe_dprintf
-#define	gc_calloc_fixed(A,B)	jmalloc((A)*(B))
+#define	gc_calloc_fixed(A,B)	gc_malloc((A)*(B), GC_ALLOC_JITTEMP)
 #include "debug.h"
 
 void

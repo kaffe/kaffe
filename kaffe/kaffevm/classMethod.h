@@ -108,6 +108,9 @@ struct Hjava_lang_Class {
 	void*			static_data;
 
 	void*			gcjPeer;	/* only needed if GCJ_SUPPORT */
+#ifdef DEBUG
+	int			live_count;
+#endif
 };
 
 #ifndef __DEFINED_CLASS

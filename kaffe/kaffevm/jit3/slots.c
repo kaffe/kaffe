@@ -17,6 +17,7 @@
 #include "registers.h"
 #include "gc.h"
 #include "machine.h"
+#include "debug.h"
 
 int maxslot;
 SlotInfo* basicslots;
@@ -45,8 +46,12 @@ initSlots(int islots)
 
 	/* Make sure we have enough slots space */
 	if (nrslots > lastnrslots) {
-		basicslots = jrealloc(basicslots, nrslots * sizeof(SlotInfo));
-		basicdatas = jrealloc(basicdatas, nrslots * sizeof(SlotData));
+		basicslots = gc_realloc(basicslots,
+					nrslots * sizeof(SlotInfo),
+					GC_ALLOC_JITTEMP);
+		basicdatas = gc_realloc(basicdatas,
+					nrslots * sizeof(SlotData),
+					GC_ALLOC_JITTEMP);
 		lastnrslots = nrslots;
 	}
 	/* Set 'maxslot' to the maximum slot usable (excluding returns) */

@@ -524,7 +524,7 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 	if (codeblock_size < ALLOCCODEBLOCKSZ) {
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
-	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
+	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_JITTEMP);
 	if (codeblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -549,7 +549,7 @@ generateInsnSequence(errorInfo* einfo)
 		/* If we overrun the codeblock, reallocate and continue.  */
 		if (CODEPC >= codeblock_size) {
 			codeblock_size += ALLOCCODEBLOCKSZ;
-			codeblock = gc_realloc(codeblock, codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
+			codeblock = gc_realloc(codeblock, codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_JITTEMP);
 			if (codeblock == 0) {
 				postOutOfMemory(einfo);
 				return (false);

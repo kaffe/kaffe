@@ -376,7 +376,7 @@ options(char** argv)
 #endif
 #if defined(DEBUG)
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
-			extern void dbgSetMaskStr(char *);
+			extern int dbgSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
                                 fprintf(stderr, 
@@ -384,7 +384,8 @@ options(char** argv)
 					"debug flag. Use `list' for a list.\n");
                                 exit(1);
                         }
-                        dbgSetMaskStr(argv[i]);
+                        if (!dbgSetMaskStr(argv[i]))
+				exit(1);
                 }
 #endif
 		else if (argv[i][1] ==  'D') {

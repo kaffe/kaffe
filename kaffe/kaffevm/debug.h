@@ -158,8 +158,10 @@ void dbgSetMask(long long mask);
  * Set the debugging mask to use. (give a string, useful for
  * parsing a command line option.  The string is a comma-separated
  * list of options which combined form the debugging mask.
+ *
+ * Return false if nothing was set
  */
-void dbgSetMaskStr(char *mask_str);
+int dbgSetMaskStr(char *mask_str);
 
 # define DBGIF(statement)  statement
 

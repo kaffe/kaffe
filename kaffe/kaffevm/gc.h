@@ -54,7 +54,8 @@ typedef void (*destroy_func_t)(struct _Collector*, void*);
 #define	GC_ALLOC_LOCK		18
 #define	GC_ALLOC_THREADCTX	19
 #define	GC_ALLOC_REF		20
-#define	GC_ALLOC_MAX_INDEX	21
+#define	GC_ALLOC_JITTEMP	21
+#define	GC_ALLOC_MAX_INDEX	22
 
 /*
  * Define a COM-like GC interface.

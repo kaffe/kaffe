@@ -135,7 +135,8 @@ native_LTLIBRARIES = libmanagement.la
 libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libmanagement_la_SOURCES = \
 	Classpath.c \
-	JIT.c
+	JIT.c \
+	Debug.c
 
 
 CLEANFILES = so_locations
@@ -154,7 +155,7 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libmanagement_la_LIBADD = 
-am_libmanagement_la_OBJECTS =  Classpath.lo JIT.lo
+am_libmanagement_la_OBJECTS =  Classpath.lo JIT.lo Debug.lo
 libmanagement_la_OBJECTS =  $(am_libmanagement_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -168,7 +169,8 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  @AMDEP@ $(DEPDIR)/Classpath.Plo $(DEPDIR)/JIT.Plo
+DEP_FILES =  @AMDEP@ $(DEPDIR)/Classpath.Plo $(DEPDIR)/Debug.Plo \
+$(DEPDIR)/JIT.Plo
 SOURCES = $(libmanagement_la_SOURCES)
 OBJECTS = $(am_libmanagement_la_OBJECTS)
 
@@ -231,6 +233,7 @@ distclean-libtool:
 maintainer-clean-libtool:
 Classpath.lo:
 JIT.lo:
+Debug.lo:
 
 libmanagement.la: $(libmanagement_la_OBJECTS) $(libmanagement_la_DEPENDENCIES)
 	$(LINK) -rpath $(nativedir) $(libmanagement_la_LDFLAGS) $(libmanagement_la_OBJECTS) $(libmanagement_la_LIBADD) $(LIBS)
@@ -281,6 +284,7 @@ distdir: $(DISTFILES)
 	done
 
 @AMDEP@include $(DEPDIR)/Classpath.Plo
+@AMDEP@include $(DEPDIR)/Debug.Plo
 @AMDEP@include $(DEPDIR)/JIT.Plo
 
 mostlyclean-depend:

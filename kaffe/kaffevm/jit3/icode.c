@@ -4276,7 +4276,9 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 	/* Make sure we have enough argument space */
 	if (sp_idx + 2 > sz_args) {
 		sz_args = sp_idx + 2;
-		args = jrealloc(args, sizeof(struct pusharg_info) * sz_args);
+		args = gc_realloc(args,
+				  sizeof(struct pusharg_info) * sz_args,
+				  GC_ALLOC_JITTEMP);
 	}
 
 	/* If we've got an object ... */

@@ -24,6 +24,7 @@
 #include "errors.h"
 #include "md.h"
 #include "stats.h"
+#include "classMethod.h"
 
 /* Avoid recursively allocating OutOfMemoryError */
 #define OOM_ALLOCATING		((void *) -1)
@@ -220,13 +221,25 @@ DBG(GCWALK,
 			describeObject(UTOMEM(unit)));
     )
 
-	/* If we found a new white object, mark it as grey and
-	 * move it into the grey list.
-	 */
-	GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
-	UREMOVELIST(unit);
-	UAPPENDLIST(gclists[grey], unit);
-}
+	DBG(GCSTAT,
+	    switch (GC_GET_FUNCS(info, idx)) {
+	    case GC_ALLOC_NORMALOBJECT:
+	    case GC_ALLOC_FINALIZEOBJECT:
+	    case GC_ALLOC_PRIMARRAY:
+	    case GC_ALLOC_REFARRAY: {
+		    Hjava_lang_Class *c
+			    = OBJECT_CLASS((Hjava_lang_Object *) (unit+1));
+		    c->live_count++;
+	    }});
+	    
+
+	    /* If we found a new white object, mark it as grey and
+	     * move it into the grey list.
+	     */
+	    GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
+	    UREMOVELIST(unit);
+	    UAPPENDLIST(gclists[grey], unit);
+	    }
 
 /*
  * Mark an object.  Argument is assumed to point to a valid object.
@@ -378,6 +391,23 @@ DBG(GCWALK,
 	}
 }
 
+#ifdef DEBUG
+static int
+gcClearCounts(Hjava_lang_Class *c, void *_)
+{
+	c->live_count = 0;
+	return 0;
+}
+
+static int
+gcDumpCounts(Hjava_lang_Class *c, void *_)
+{
+	if (c->live_count)
+		dprintf("%7d %s\n", c->live_count,	c->name->data);
+	return 0;
+}
+#endif
+
 /*
  * The Garbage Collector sits in a loop starting a collection, waiting
  * until it's finished incrementally, then tidying up before starting
@@ -463,7 +493,8 @@ DBG(GCSTAT,
 		}
 
 		lockStaticMutex(&gc_lock);
-
+		DBG(GCSTAT, walkClassPool(gcClearCounts, 0));
+		    
 		startGC(gcif);
 
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
@@ -492,6 +523,14 @@ DBG(GCSTAT,
 
 		finishGC(gcif);
 
+		DBG(GCSTAT,
+		    dprintf("REACHABLE OBJECT HISTOGRAM\n");
+		    dprintf("%-7s %s\n", "COUNT", "CLASS");
+		    dprintf("%-7s %s\n", "-------",
+			    "-----------------------------------"
+			    "-----------------------------------");
+		    walkClassPool(gcDumpCounts, 0));
+		    
 		unlockStaticMutex(&gc_lock);
 
 		startFinalizer();
@@ -957,7 +996,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 	int osize;
 	int iLockRoot;
 
-	assert(fidx == GC_ALLOC_FIXED);
+	assert(gcFunctions[fidx].final == GC_OBJECT_FIXED);
 
 	/* If nothing to realloc from, just allocate */
 	if (mem == NULL) {

@@ -1,6 +1,6 @@
 /*
- * Classpath.java
- * Interface to KVM class path management.
+ * JIT.java
+ * Interface to KVM JIT compiler.
  *
  * Copyright (c) 1998, 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.

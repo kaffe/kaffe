@@ -17,7 +17,7 @@
 
 #include <stdarg.h>
 
-#define	gc_calloc_fixed(A,B)	jmalloc((A)*(B))
+#define	gc_calloc_fixed(A,B)	gc_malloc((A)*(B), GC_ALLOC_JITTEMP)
 
 constpool* firstConst;
 constpool* lastConst;

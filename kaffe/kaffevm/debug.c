@@ -45,6 +45,13 @@ jlong kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 void dbgSetMask(jlong mask)
 {
 	kaffevmDebugMask = mask;
+#if defined(JTHREAD_RESTORE_FD)
+	if (mask) {
+		jthreadRestoreFD(0);
+		jthreadRestoreFD(1);
+		jthreadRestoreFD(2);
+	}
+#endif
 }
 
 /*
@@ -78,7 +85,7 @@ static struct debug_opts
 	D(GCSYSALLOC,   "Show allocations of system memory"),
 	D(GCWALK,   "Show gc walking"),
 	D(GCPRECISE, "Debug precise collection of the heap."),
-	D(GCSTAT,   "Show allocation statistics"),
+	D(GCSTAT,   "count instances of class and array types"),
 	D(GCDIAG,   "Perform diagnostic checks on heap" ),
 	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT, 
 			"All allocation and free operations in gc-mem" },
@@ -155,7 +162,7 @@ void printDebugBuffer(void);
 
 #define NELEMS(a)	(sizeof (a) / sizeof(a[0]))
 
-void dbgSetMaskStr(char *mask_str)
+int dbgSetMaskStr(char *mask_str)
 {
 	int i;
 	char *separators = "|,";
@@ -167,17 +174,17 @@ void dbgSetMaskStr(char *mask_str)
 
 	if (!opt) {
 		kaffevmDebugMask = DEFAULT_DEBUG_MASK;
-		return;
+		return 1;
 	}
 
 	/* Special target 'list' lists all the defined options */
 	if (!strcasecmp(opt, "list")) {
-		printf("Available debug opts: \n");
-		printf("  %-15s\t%16s  %s\n", "Option", "Mask", "Description");
+		dprintf("Available debug opts: \n");
+		dprintf("  %-15s\t%16s  %s\n", "Option", "Mask", "Description");
 		for (i = 0; i < NELEMS(debug_opts); i++)
 			if (debug_opts[i].mask>>32)
 			{
-				printf("  %-15s\t%8X%08X  %s\n", 
+				dprintf("  %-15s\t%8X%08X  %s\n", 
 					debug_opts[i].name,
 				       (int)(debug_opts[i].mask>>32), 
 				       (int)(debug_opts[i].mask),
@@ -185,14 +192,12 @@ void dbgSetMaskStr(char *mask_str)
 			}
 			else
 			{
-				printf("  %-15s\t        %8X  %s\n", 
+				dprintf("  %-15s\t        %8X  %s\n", 
 					debug_opts[i].name,
 				       (int)(debug_opts[i].mask), 
 				       debug_opts[i].desc);
 			}
-		
-		printf("Exiting.\n");
-		exit(0);
+		return 0;
 	}
 	
 
@@ -211,10 +216,12 @@ void dbgSetMaskStr(char *mask_str)
 				}
 		
 			/* Be polite. */
-			if (i == (sizeof debug_opts)/(sizeof(debug_opts[0])))
-				fprintf(stderr, 
+			if (i == (sizeof debug_opts)/(sizeof(debug_opts[0]))){
+				dprintf(
 				    "Unknown flag (%s) passed to -vmdebug\n",
 					opt);
+				return 0;
+			}
 		}
 		
 		/* Get next opt */
@@ -230,6 +237,7 @@ void dbgSetMaskStr(char *mask_str)
 			"You cannot debug the JIT in interpreter mode \n");
 #endif
 	}
+	return 1;
 }
 
 static char *debugBuffer;
@@ -267,10 +275,16 @@ debugExitHook(void)
 static void
 debugSysInit(void)
 {
+	static int once = 0;
+
+	if (once) return;
+	once = 1;
 #if defined(TRANSLATOR)
-	extern int jit_debug;
-	if (getenv("JIT_DEBUG")) 
-		jit_debug = 1;
+	{
+		extern int jit_debug;
+		if (getenv("JIT_DEBUG")) 
+			jit_debug = 1;
+	}
 #endif
 	atexit(debugExitHook);
 }
@@ -326,9 +340,17 @@ kaffe_dprintf(const char *fmt, ...)
 	}
 	else
 	{
+#if 0
+		intsDisable();
+		jthreadRestoreFD(2);
+#endif
 		/* Boring. Print to stderr */
 		n = vfprintf(stderr, fmt, args);
 		fflush(stderr);
+#if 0
+		jthreadedFileDescriptor(2);
+		intsRestore();
+#endif
 	}
 
 	va_end(args);
