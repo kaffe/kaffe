@@ -8,6 +8,18 @@
 
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2004-12-31  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JRootPane.java
+	(setMenuBar): Added @deprecated tag.
+	(getMenuBar): Likewise.
+	* javax/swing/JTable.java
+	(sizeColumnsToFit): Likewise.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Added task for extensions override mechanism.
 
 	Reported by:  Davanum Srinivas  <davanum@gmail.com>

@@ -1633,11 +1633,17 @@ public class JTable extends JComponent
       }
   }
   
+  /**
+   * @deprecated Replaced by <code>doLayout()</code>
+   */
   public void sizeColumnsToFit(boolean lastColumnOnly)
   {
     doLayout();
   }
 
+  /**
+   * Obsolete since JDK 1.4. Please use <code>doLayout()</code>.
+   */
   public void sizeColumnsToFit(int resizingColumn)
   {
     doLayout();

@@ -350,6 +350,9 @@ public class JRootPane extends JComponent
     getLayeredPane().add(menuBar, JLayeredPane.FRAME_CONTENT_LAYER);
   }
 
+  /**
+   * @deprecated Replaced by <code>setJMenuBar()</code>
+   */
   public void setMenuBar(JMenuBar m)
   {
     setJMenuBar(m);
@@ -365,6 +368,9 @@ public class JRootPane extends JComponent
     return menuBar;
   }
 
+  /**
+   * @deprecated Replaced by <code>getJMenuBar()</code>
+   */
   public JMenuBar getMenuBar()
   {
     return getJMenuBar();
