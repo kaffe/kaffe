@@ -95,7 +95,7 @@ public class CLTestJLock extends ClassLoader
 	new Thread() {
 	    public void run() {
 		System.out.println("Success.");
-		System.exit(1);
+		System.exit(0);
 	    }
 	}.start();
     }

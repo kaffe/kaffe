@@ -114,5 +114,5 @@ public class wc {
 
 // java args: wc < $1
 /* Expected Output:
-118	320	2376
+118	321	2379	
 */

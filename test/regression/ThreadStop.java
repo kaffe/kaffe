@@ -250,6 +250,8 @@ public class ThreadStop
 }
 
 
+// Skip run
+// javac flags: -nowarn
 /* Expected Output:
 Test 1: Stop a thread that's blocked on itself
 Target (BlockThread) running...

@@ -121,7 +121,7 @@ host_os = @host_os@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-SETUP_ENVIRONMENT = eval `sed 's/;.*//' < $(top_builddir)/BUILD_ENVIRONMENT`
+SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
