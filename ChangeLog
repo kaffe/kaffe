@@ -1,3 +1,48 @@
+Tue Sep  8 15:57:21 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * kaffe/kaffevm/mem/gc-mem.c: getpagesize() may be declared in
+        unistd.h
+        * libraries/clib/net/InetAddressImpl.c: gethostname() may be
+        declared in unistd.h
+
+        * libraries/clib/native/ByteToCharDefault.c
+        (Java_kaffe_io_ByteToCharDefault_convert): do not assume
+        implicit int
+        * libraries/clib/native/CharToByteDefault.c
+        (Java_kaffe_io_CharToByteDefault_convert): ditto
+        * libraries/clib/awt/X/evt.c (getSourceIdx,
+        Java_java_awt_Toolkit_evtRegisterSource): ditto
+        * libraries/clib/awt/X/fnt.c
+        (Java_java_awt_Toolkit_fntGetWidths): ditto
+        * libraries/clib/awt/X/gra.c (jarray2Points): ditto
+        * libraries/clib/awt/X/img.c
+        (Java_java_awt_Toolkit_imgSetIdxPels): ditto
+        (Java_java_awt_Toolkit_imgSetRGBPels): ditto
+        * libraries/clib/awt/X/toolkit.h (java2CString): ditto
+        (jchar2CString): ditto
+
+        * libraries/clib/awt/X/fnt.c
+        (Java_java_awt_Toolkit_fntStringWidth): `n' is only used
+        #ifndef WORDS_BIGENDIAN, so declare it in a new scope, to
+        avoid warning
+        * libraries/clib/awt/X/gra.c
+        (Java_java_awt_Toolkit_graDrawString): ditto
+
+        * libraries/clib/awt/X/img.c
+        (Java_java_awt_Toolkit_imgSetIdxPels): cast array index from
+        char to int, to avoid warning
+
+        * libraries/clib/awt/X/imggif.c (iOffset, iJumps): define only
+        #ifdef HAVE_GIF_LIB_H, to avoid warning
+
+        * libraries/clib/awt/X/imgjpeg.c (readJpeg): zero-initialize
+        to avoid warning
+
+Tue Sep  8 15:48:29 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* kaffe/kaffevm/string.c: only call unintern for interned strings.
+	Don't abort if strhash is full of DELETED strings.
+
 Mon Sep  7 21:52:32 1998  Steve Ratcliffe <sterat@dial.pipex.com>
 
 	* libraries/javalib/java/lang/Byte.java: add missing byteValue()
