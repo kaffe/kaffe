@@ -1,5 +1,0 @@
-#! /bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ sun.tools.ttydebug.TTY ${1+"$@"}
-

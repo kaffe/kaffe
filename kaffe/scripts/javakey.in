@@ -1,4 +1,0 @@
-#! /bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ sun.security.provider.Main ${1+"$@"}
