@@ -137,9 +137,9 @@ public class SimpleDateFormat extends DateFormat
      */
     public String toString()
     {
-      StringBuilder builder;
+      StringBuffer builder;
 
-      builder = new StringBuilder(getClass().getName());
+      builder = new StringBuffer(getClass().getName());
       builder.append("[field=");
       builder.append(field);
       builder.append(", size=");
@@ -341,7 +341,7 @@ public class SimpleDateFormat extends DateFormat
    */
   public String toString() 
   {
-    StringBuilder output = new StringBuilder(getClass().getName());
+    StringBuffer output = new StringBuffer(getClass().getName());
     output.append("[tokens=");
     output.append(tokens);
     output.append(", formatData=");
