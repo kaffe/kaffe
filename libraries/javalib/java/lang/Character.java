@@ -61,6 +61,11 @@ public final class Character implements Serializable, Comparable {
   /* This is what Sun's JDK1.1 "serialver java.lang.Character" spits out */
   private static final long serialVersionUID = 3786198910865385080L;
 
+  private static final char FULLWIDTH_LATIN_CAPITAL_LETTER_A = '\uff21';
+  private static final char FULLWIDTH_LATIN_CAPITAL_LETTER_Z = '\uff3a';
+  private static final char FULLWIDTH_LATIN_SMALL_LETTER_A = '\uff41';
+  private static final char FULLWIDTH_LATIN_SMALL_LETTER_Z = '\uff5a';
+
   public Character(char value)
   {
     this.value = value;
@@ -287,7 +292,7 @@ public final class Character implements Serializable, Comparable {
     if (isDigit(ch)) {
 	// FIXME: true as long `decimal digit value' == `numeric value'
 	// FIXME: in the Unicode Database.  Add a check in unicode.pl
-	val = getNumericValue(ch);
+	val =  getCharProp(ch).numeric;
 	if (val < 0) {
 	    return -1;
 	}
@@ -299,6 +304,14 @@ public final class Character implements Serializable, Comparable {
     else if (('a' <= ch) && (ch <= 'z')) {
 	// Help the compiler, group constant values !
 	val = (int)ch - ('a' - 10);
+    }
+    else if((FULLWIDTH_LATIN_CAPITAL_LETTER_A <= ch)
+	    && (ch <= FULLWIDTH_LATIN_CAPITAL_LETTER_Z)) {
+	val = (int)ch - (FULLWIDTH_LATIN_CAPITAL_LETTER_A - 10);
+    }
+    else if((FULLWIDTH_LATIN_SMALL_LETTER_A <= ch)
+	    && (ch <= FULLWIDTH_LATIN_SMALL_LETTER_Z)) {
+	val = (int)ch - (FULLWIDTH_LATIN_SMALL_LETTER_A - 10);
     }
 
     return (val < radix) ? val : -1;
@@ -330,7 +343,14 @@ public final class Character implements Serializable, Comparable {
    */
   public static int getNumericValue(char ch)
   {
-      return getCharProp(ch).numeric;
+    int val = getCharProp(ch).numeric;
+
+    if (val == -1) {
+      return digit(ch, Character.MAX_RADIX);
+    }
+    else {
+      return val;
+    }
   }
 
   /**

@@ -1,3 +1,16 @@
+Fri May 24 16:55:49 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Character.java:
+	(FULLWIDTH_LATIN_CAPITAL_LETTER_A),
+	(FULLWIDTH_LATIN_CAPITAL_LETTER_Z),
+	(FULLWIDTH_LATIN_SMALL_LETTER_A),
+	(FULLWIDTH_LATIN_SMALL_LETTER_Z): new private constants.
+	(digit) If char is a digit, use the value in the Unicode database
+	directy. Added support for fullwidth letters.
+	(getNumericValue) Use digit internally when Unicode database does
+	not have a numeric value for a character. This allows us to
+	seamlessly handle fullwidth letters.
+
 Fri May 24 16:50:26 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/jar/Attributes.java:
