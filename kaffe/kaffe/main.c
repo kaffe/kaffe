@@ -508,16 +508,20 @@ options(char** argv, int argc)
 			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
+#ifdef KAFFE_X_AWT_INCLUDED
                 /* Extra option to use kaffe's Xlib AWT backend.
                  */
                 else if (strncmp(argv[i], "-Xkaffe-xlib-awt", (j=16)) == 0) {
 			prop = setKaffeAWT("kaffe.awt.nativelib=xawt");
                 }
+#endif
+#ifdef KAFFE_QT_AWT_INCLUDED
                 /* Extra option to use kaffe's Qt/Embedded AWT backend.
                  */
                 else if (strncmp(argv[i], "-Xkaffe-qt-awt", (j=15)) == 0) {
                         prop = setKaffeAWT("kaffe.awt.nativelib=qtawt");
                 }
+#endif
 #if defined(USE_GMP)
 		/* Extra option to use gmp for native, fast bignums.
 		 * Only available with binreloc, since binreloc is used to
@@ -931,8 +935,12 @@ usage(void)
 #if defined(USE_GMP)
         fprintf(stderr, _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
 #endif /* defined(USE_GMP) */
-	fprintf(stderr, _("	-Xkaffe-xlib-awt	Use Kaffe's Xlib AWT backend\n"));
-	fprintf(stderr, _("	-Xkaffe-qt-awt		Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+#ifdef KAFFE_X_AWT_INCLUDED
+	fprintf(stderr, _("	-Xkaffe-xlib-awt	 Use Kaffe's Xlib AWT backend\n"));
+#endif
+#ifdef KAFFE_QT_AWT_INCLUDED
+	fprintf(stderr, _("	-Xkaffe-qt-awt		 Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+#endif
 
 	fprintf(stderr, _("  * Option currently ignored.\n"
 			  "\n"
