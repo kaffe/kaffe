@@ -1,4 +1,12 @@
-2005-03-25  Antonio Tringali <antonio.tringali@aliceposta.it>
+2005-03-25  Jim Huang  <jserv@kaffe.org>
+
+	* po/kaffe.pot,
+	po/fr.po,
+	po/zh_TW.po,
+	kaffe/kaffe/main.c (usage):
+	Tweak usage messages about Nano-X backend.
+	
+2005-03-25  Antonio Tringali  <antonio.tringali@aliceposta.it>
 
 	* kaffe/kaffevm/soft.c: (soft_cvtfi) Compare float against
 	floating point constants to fix SIGILL on mips-linux.
@@ -26,7 +34,7 @@
 	* kaffe/kaffevm/readClass.c (readAttributes): 
 	Cast len to size_t to avoid new warnings on 64 bit platforms.
 
-2005-03-25  Wolfgang Baer <WBaer@gmx.de>,
+2005-03-25  Wolfgang Baer  <WBaer@gmx.de>,
 	    Arnaud Vandyck  <avdyk@gnu.org>
 
 	* kaffe/man/kaffe.1.xml: New file.
@@ -45,7 +53,7 @@
 2005-03-25  Jim Huang  <jserv@kaffe.org>
 
 	Resynced with GNU Classpath.
-	This change is useful for to get RSSOwl working.
+	This change is useful to get RSSOwl working.
 
 	2005-03-21  Sven de Marothy  <sven@physto.se>
 

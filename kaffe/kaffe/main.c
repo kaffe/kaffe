@@ -957,7 +957,7 @@ usage(void)
 	fprintf(stderr, _("	-Xkaffe-qt-awt		 Use Kaffe's Qt2/3/Embedded AWT backend\n"));
 #endif
 #ifdef KAFFE_NANOX_AWT_INCLUDED
-	fprintf(stderr, _("	-Xkaffe-nanox-awt        Use Kaffe's Nano-X AWT backend\n"));
+	fprintf(stderr, _("	-Xkaffe-nanox-awt	 Use Kaffe's Nano-X AWT backend\n"));
 #endif
 
 	fprintf(stderr, _("  * Option currently ignored.\n"

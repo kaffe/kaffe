@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2005-03-23 17:52+0100\n"
-"PO-Revision-Date: 2005-02-02 18:05+0800\n"
+"POT-Creation-Date: 2005-03-26 07:53+0800\n"
+"PO-Revision-Date: 2005-03-06 07:39+0800\n"
 "Last-Translator: Jim Huang <jserv@kaffe.org>\n"
 "Language-Team: Traditional Chinese <kaffe@kaffe.org>\n"
 "MIME-Version: 1.0\n"
@@ -246,9 +246,9 @@ msgid "\t-Xkaffe-qt-awt\t\t Use Kaffe's Qt2/3/Embedded AWT backend\n"
 msgstr "\t-Xkaffe-qt-awt\t\t 使用 Kaffe 的 Qt2/3/Embedded AWT backend\n"
 
 #: kaffe/kaffe/main.c:960
-#, fuzzy, c-format
-msgid "\t-Xkaffe-nanox-awt        Use Kaffe's Nano-X AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Xlib AWT backend\n"
+#, c-format
+msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
 
 #: kaffe/kaffe/main.c:963
 #, c-format
