@@ -64,6 +64,7 @@ protected void dispatch () {
 }
 
 static synchronized KeyEvt getEvent ( int srcIdx, int id, int keyCode, int keyChar, int modifier ) {
+	KeyEvt    e;
 	Component source = sources[srcIdx];
 	long      when = System.currentTimeMillis();
 	
@@ -74,10 +75,10 @@ static synchronized KeyEvt getEvent ( int srcIdx, int id, int keyCode, int keyCh
 		inputModifier = 0;
 	
 	if ( cache == null ) {
-		return new KeyEvt( source, id, when, inputModifier, keyCode, (char)keyChar);
+		e = new KeyEvt( source, id, when, inputModifier, keyCode, (char)keyChar);
 	}
 	else {
-		KeyEvt e = cache;
+		e = cache;
 		cache = (KeyEvt) e.next;
 		e.next = null;
 	
@@ -88,9 +89,15 @@ static synchronized KeyEvt getEvent ( int srcIdx, int id, int keyCode, int keyCh
 		e.keyCode    = keyCode;
 		e.keyChar    = (char)keyChar;
 		e.consumed	 = false;
-	
-		return e;
 	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+
+	return e;
 }
 
 protected void recycle () {

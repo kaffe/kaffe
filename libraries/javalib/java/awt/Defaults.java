@@ -31,7 +31,7 @@ class Defaults
  * (usually a simple Window displaying scrolled text). If ConsoleClass is null, no
  * io redirection is performed
  */
-	static String ConsoleClass;
+	static String ConsoleClass = /*"kaffe.util.log.SimpleLogViewer" */ null;
 /**
  * If set to 'true', the last Window that is closed will automatically
  * call a System.exit()
@@ -407,7 +407,14 @@ static {
 		FsZapfDingbats = "-adobe-new century schoolbook-%s-%s-*-*-%d-*-*-*-*-*-*-*";
 	}
 	else {
-		throw new AWTError( "unknown native toolkit: "+ version);
+		// no idea, we have to leave it for the native layer
+		FsDefault = "Default";
+		FsMonospaced = "Monospaced";
+		FsSansSerif = "SansSerif";
+		FsSerif = "Serif";
+		FsDialog = "Dialog";
+		FsDialogInput = "DialogInput";
+		FsZapfDingbats = "ZapfDingbats";
 	}
 
 	WndFont = new Font( "Default", Font.BOLD, 12);

@@ -41,6 +41,10 @@ public int getAlignment() {
 	return align;
 }
 
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
+}
+
 public String getText() {
 	return label;
 }

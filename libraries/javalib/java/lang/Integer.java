@@ -1,6 +1,3 @@
-package java.lang;
-
-
 /*
  * Java core library component.
  *
@@ -10,18 +7,19 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.lang;
+
 final public class Integer
   extends Number
 {
-	private final int value;
-	public static final Class TYPE = Class.getPrimitiveClass("int");
-	public static final int MIN_VALUE = 0x80000000;
-	public static final int MAX_VALUE = 0x7fffffff;
+	private int value;
+	final public static Class TYPE = Class.getPrimitiveClass("int");
+	final public static int MIN_VALUE = 0x80000000;
+	final public static int MAX_VALUE = 0x7fffffff;
+	final private static long serialVersionUID = 1360826667806852920L;
 
-	/* This is what Sun's JDK1.1 "serialver java.lang.Integer" spits out */
-	private static final long serialVersionUID = 1360826667806852920L;
-
-public Integer(String s) throws NumberFormatException
+public Integer ( String s ) throws NumberFormatException
 {
 	this.value = parseInt(s);
 }
@@ -39,6 +37,10 @@ public static Integer decode(String nm) throws NumberFormatException
 		sign = -1;
 		nm = nm.substring(1);
 	}
+	if (nm.equals("0")) {
+		return (new Integer(0));
+	}
+
 	/* Strip off base indicator, if any */
 	int base = 10;
 	if (nm.equals("0")) {
@@ -60,11 +62,11 @@ public static Integer decode(String nm) throws NumberFormatException
 	if (nm.startsWith("-")) {
 		throw new NumberFormatException();
 	}
-	return new Integer(sign * parseInt(nm, base));
+	return (new Integer(parseUnsignedInt(nm, base, sign)));
 }
 
 public double doubleValue() {
-	return (double )value;
+	return ((double)value);
 }
 
 public boolean equals(Object obj) {
@@ -78,25 +80,19 @@ public float floatValue() {
 }
 
 public static Integer getInteger(String nm) {
-	return getInteger(nm, (Integer) null);
+	return getInteger(nm, (Integer)null);
 }
 
 public static Integer getInteger(String nm, Integer val) {
-	String arg;
-
 	String prop = System.getProperty(nm);
-	if (prop == null) {
-		if (val == null) {
-			return (null);
+	if (prop != null) {
+		try {
+			return (decode(prop));
 		}
-		prop = val.toString();
+		catch (NumberFormatException e) {
+		}
 	}
-	try {
-		return (decode(prop));
-	}
-	catch (NumberFormatException e) {
-		return (val);
-	}
+	return (val);
 }
 
 public static Integer getInteger(String nm, int val) {
@@ -122,25 +118,40 @@ public static int parseInt(String s) throws NumberFormatException
 
 public static int parseInt(String s, int radix) throws NumberFormatException
 {
-	if (s==null || s.length()<=0) throw new NumberFormatException();
+	if (s == null || s.length() <= 0) {
+		throw new NumberFormatException();
+	}
 
 	/* Check for negativity */
 	if (s.charAt(0)=='-') {
-		return -parseInt(s.substring(1), radix);
+		return (parseUnsignedInt(s.substring(1), radix, -1));
 	}
 	else {
-		int result=0;
-		int position;
-
-		for (position=0; position<s.length(); position++) {
-			int digit=Character.digit(s.charAt(position), radix);
-			if (digit==-1) throw new NumberFormatException();
-
-			result=(result*radix)+digit;
-		}
-
-		return result;
+		return (parseUnsignedInt(s, radix, 1));
 	}
+}
+
+private static int parseUnsignedInt(String s, int radix, int sign) throws NumberFormatException
+{
+	if (s == null || s.length() <= 0) {
+		throw new NumberFormatException();
+	}
+	int result = 0;
+	for (int pos = 0; pos < s.length(); pos++) {
+		int digit = Character.digit(s.charAt(pos), radix);
+		if (digit == -1) {
+			throw new NumberFormatException();
+		}
+		int nresult = (result * radix) + (sign * digit);
+		if (nresult < 0 && sign == 1) {
+			throw new NumberFormatException();
+		}
+		else if (nresult > 0 && sign == -1) {
+			throw new NumberFormatException();
+		}
+		result = nresult;
+	}
+	return (result);
 }
 
 public static String toBinaryString(int i) {
@@ -186,16 +197,6 @@ public static String toString(int i, int radix) {
 	return (buf.toString());
 }
 
-public static Integer valueOf(String s) throws NumberFormatException
-{
-	return valueOf(s, 10);
-}
-
-public static Integer valueOf(String s, int radix) throws NumberFormatException
-{
-	return new Integer(parseInt(s, radix));
-}
-
 private static String toUnsignedString(int i, int bits) {
 	if (i == 0) {
 		return ("0");
@@ -212,4 +213,13 @@ private static String toUnsignedString(int i, int bits) {
 	return (buf.toString());
 }
 
+public static Integer valueOf(String s) throws NumberFormatException
+{
+	return valueOf(s, 10);
+}
+
+public static Integer valueOf(String s, int radix) throws NumberFormatException
+{
+	return new Integer(parseInt(s, radix));
+}
 }

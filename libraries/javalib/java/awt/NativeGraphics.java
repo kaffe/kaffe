@@ -430,10 +430,12 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 
 	while ( true ) {
 		if ( c.parent == null ) {
-			// compensate the artificial Frame decoration offsets (NOT insets)
-			// note that this requires the graphics offset to be private
-			xOff -= c.deco.x;
-			yOff -= c.deco.y;
+			if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+				// compensate the artificial Frame decoration offsets (NOT insets)
+				// note that this requires the graphics offset to be private
+				xOff -= c.deco.x;
+				yOff -= c.deco.y;
+			}
 
 			if ( g == null ){
 				return getGraphics( c, ((Window)c).nativeData, TGT_TYPE_WINDOW,

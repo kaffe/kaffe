@@ -298,7 +298,7 @@ public void keyTyped( KeyEvent e) {
 	}
 	
 	if ( textListener != null ) {
-		tEvt.setSource( this);
+		AWTEvent.setSource( tEvt, this);
 		processTextEvent( tEvt);
 	}
 }

@@ -39,22 +39,29 @@ public void close() throws IOException {
 }
 
 public void connect(PipedOutputStream src) throws IOException {
-	if (this.src == null) {
-		this.src = src;
-		closed = false;
-		src.connect(this);
+	if (this.src != null) {
+		throw new IOException("already connected");
 	}
+	src.connect(this);
+	this.src = src;
+	closed = false;
 }
 
 public synchronized int read() throws IOException {
+
+	if (closed) {
+		throw new IOException("stream closed");
+	}
+
 	while (out == in) {
-		if (closed) {
-			return (-1);
-		}
 		try {
 			this.wait();
 		}
-		catch (InterruptedException e) {}
+		catch (InterruptedException e) {
+		}
+		if (closed) {
+			return (-1);
+		}
 	}
 
 	/* Should be Ok now */

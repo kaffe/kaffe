@@ -39,7 +39,7 @@ public int read() throws IOException {
 			buf = new byte[1];
 		}
 		if (impl.read(buf, 0, 1) == 1) {
-			return (buf[0]);
+			return (buf[0] & 0xFF);
 		}
 		return (-1);
 	}

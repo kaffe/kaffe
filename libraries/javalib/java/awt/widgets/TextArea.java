@@ -516,8 +516,8 @@ public void keyTyped( KeyEvent e) {
 		insertChar( c );
 		
 	if ( textListener != null) {
-		tEvt.setSource( parent);
-		processTextEvent( tEvt);
+		AWTEvent.setSource( tEvt, parent);
+		TextArea.this.processTextEvent( tEvt);
 	}
 }
 

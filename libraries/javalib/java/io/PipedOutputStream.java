@@ -23,17 +23,17 @@ public PipedOutputStream(PipedInputStream snk) throws IOException {
 }
 
 public void close() throws IOException {
-	if (sink == null) {
-		throw new IOException();
+	if (sink != null) {
+		sink.receivedLast();
 	}
-	sink.receivedLast();
 }
 
 public void connect(PipedInputStream snk) throws IOException {
-	if (sink == null) {
-		sink = snk;
-		sink.connect(this);
+	if (sink != null) {
+		throw new IOException("already connected");
 	}
+	sink = snk;
+	sink.connect(this);
 }
 
 public void write(byte b[], int off, int len) throws IOException {

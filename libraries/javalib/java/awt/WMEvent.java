@@ -81,23 +81,30 @@ static synchronized WMEvent getEvent ( Window source, int id ) {
 }
 
 static synchronized WMEvent getEvent ( int srcIdx, int id ) {
-	Window source = (Window) sources[srcIdx];
+	WMEvent e;
+	Window  source = (Window) sources[srcIdx];
 
 	if ( source == null ) return null;
 
 	if ( cache == null ){
-		return new WMEvent( source, id);
+		e = new WMEvent( source, id);
 	}
 	else {
-		WMEvent e = cache;
+		e = cache;
 		cache = (WMEvent) e.next;
 		e.next = null;
 		
 		e.id = id;
 		e.source = source;
-		
-		return e;
 	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+	
+	return e;
 }
 
 protected void recycle () {

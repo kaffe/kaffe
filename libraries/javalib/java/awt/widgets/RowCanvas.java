@@ -216,7 +216,7 @@ void paintBorder () {
 
 void redirectFocusEvent( FocusEvent e) {
 	if ( hasToNotify( parent, AWTEvent.FOCUS_EVENT_MASK, parent.focusListener) ){
-		e.setSource( parent);
+		AWTEvent.setSource( e, parent);
 		parent.processFocusEvent( e);
 	}
 }
@@ -351,7 +351,7 @@ void updateVScroll() {
 	if (v1 != v2 ){
 		Graphics g = parent.getGraphics();
 		if ( g != null ) {
-			g.setColor( parent.getBackground() );
+			g.setColor( parent.bgClr );
 			g.fillRect( 0, 0, parent.width, parent.height);
 			g.dispose();
 		}

@@ -11,6 +11,7 @@
 package java.lang;
 
 public final class Double extends Number {
+
   public static final double POSITIVE_INFINITY = 1.0 / 0.0;
   public static final double NEGATIVE_INFINITY = -1.0 / 0.0;
   public static final double NaN = 0.0 / 0.0;
@@ -22,7 +23,6 @@ public final class Double extends Number {
 
   private final double value;
 
-  public static native Double valueOf(String s) throws NumberFormatException;
   public static native long doubleToLongBits(double value);
   public static native double longBitsToDouble(long bits);
 
@@ -115,5 +115,12 @@ public final class Double extends Number {
   public long longValue() {
     return (long) value;
   }
-}
 
+  public static Double valueOf(String s) throws NumberFormatException {
+    if (s == null) {
+      throw new NullPointerException();
+    }
+    return (new Double(valueOf0(s)));
+  }
+
+}

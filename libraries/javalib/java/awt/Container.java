@@ -201,29 +201,34 @@ void dump ( String prefix ) {
 void emitRepaints ( int ux, int uy, int uw, int uh ) {
 	// This looks too similiar to NativeGraphics.paintChild(), but we can't
 	// move that one (because of clip bounds access). On the other hand, we
-	// don't want to give up precise clipping here (flicker)
+	// don't want to give up precise clipping, here (flicker).
+	// It also does a lot of redundant computation compared to markRepaints, and
+	// that is why it should be called after checking "hasDirties()". It's a petty
+	// we have to go through all of this because of embedded, app-specific IS_NATIVE_LIKE
+	// components (Panels, Canvases), which get their repaints by the native windowing system
+	// (and that is NOT specified!!)
+
+	int uxw = ux + uw;
+	int uyh = uy + uh;
 
 	for ( int i=0; i<nChildren; i++ ) {
 		Component c = children[i];
 		
-		if ( (c.flags & (IS_VISIBLE|IS_DIRTY)) == (IS_VISIBLE|IS_DIRTY) ) {
-			int xw = c.x + c.width;
-			int yh = c.y + c.height;
-			int uxw = ux + uw;
-			int uyh = uy + uh;
+		if ( (c.flags & IS_VISIBLE) != 0 ) {
+			int cxw = c.x + c.width;
+			int cyh = c.y + c.height;
 
-			int clx = (c.x > ux) ? c.x : ux;
-			int cly = (c.y > uy) ? c.y : uy;
-			int clw = ((xw > uxw) ? uxw : xw) - clx;
-			int clh = ((yh > uyh) ? uyh : yh) - cly;
-
-			clx -= c.x;
-			cly -= c.y;
-
-			c.repaint( clx, cly, clw, clh);
+			int uxx = (ux < c.x ) ? 0 : ux - c.x;
+			int uyy = (uy < c.y ) ? 0 : uy - c.y;
+			int uww = (uxw < cxw) ? (uxw - c.x - uxx) : c.width;
+			int uhh = (uyh < cyh) ? (uyh - c.y - uyy) : c.height;
+			
+			if ( (c.flags & IS_DIRTY) != 0 ) {
+				c.repaint( uxx, uyy, uww, uhh);
+			}
 		
 			if ( c instanceof Container )
-				((Container)c).emitRepaints( clx, cly, clw, clh);
+				((Container)c).emitRepaints( uxx, uyy, uww, uhh);
 		}
 	}
 }
@@ -398,20 +403,30 @@ public Component locate ( int x, int y ) {
 }
 
 void markRepaints ( int ux, int uy, int uw, int uh ) {
+	int uxw = ux + uw;
+	int uyh = uy + uh;
+
 	for ( int i=0; i<nChildren; i++ ) {
 		Component c = children[i];
-		
+
 		if ( (c.flags & IS_VISIBLE) != 0 ){
-			if ( ((c.flags & IS_NATIVE_LIKE) != 0) &&
-			  	 (ux < (c.x + c.width)) &&
-			     (uy < (c.y + c.height)) &&
-			     (c.x < (ux + uw)) &&
-			     (c.y < (uy + uh)) ){
-				c.flags |= IS_DIRTY;
-			}
+			int cxw = c.x + c.width;
+			int cyh = c.y + c.height;
+			
+			if ( (ux < cxw) && (uy < cyh) && (c.x < uxw) && (c.y < uyh) ){
+				if ( (c.flags & IS_NATIVE_LIKE) != 0) {
+					c.flags |= IS_DIRTY;
+				}
 		
-			if ( c instanceof Container )
-				((Container)c).markRepaints( ux+ x, uy+ y, uw, uh);
+				if ( c instanceof Container ) {
+					int uxx = (ux < c.x ) ? 0 : ux - c.x;
+					int uyy = (uy < c.y ) ? 0 : uy - c.y;
+					int uww = (uxw < cxw) ? (uxw - c.x - uxx) : c.width;
+					int uhh = (uyh < cyh) ? (uyh - c.y - uyy) : c.height;
+				
+					((Container)c).markRepaints( uxx, uyy, uww, uhh);
+				}
+			}
 		}
 	}
 }

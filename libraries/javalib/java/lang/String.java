@@ -10,9 +10,6 @@
 
 package java.lang;
 
-/* NB: The garbage collector knows about strings and will automatically
- * unintern them if they are freed.
- */
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Serializable;
@@ -80,11 +77,16 @@ public String( byte[] bytes, int offset, int length, String enc) throws Unsuppor
  * @deprecated
  */
 public String( byte ascii[], int hibyte, int offset, int count) {
+	// Test needed to conform to the spec. - TIM
+	if (ascii == null) {
+		throw new NullPointerException();
+	}
 	value = new char[count];
 	this.count = count;
 
-	for (int pos=0; pos<count; pos++) {
-		value[pos]=(char )(((hibyte & 0xFF) << 8) | (ascii[pos+offset] & 0xFF));	
+	hibyte = (hibyte & 0xFF) << 8;
+	for (int pos = 0; pos < count; pos++) {
+		value[pos]=(char)(hibyte | (ascii[pos+offset] & 0xFF));	
 	}
 }
 
@@ -130,12 +132,13 @@ public int compareTo( String s1) {
 }
 
 public String concat(String str) {
-	if ( (str == null) || (str.count == 0) )
-		return this; 
-	char buf[]=new char[count+str.count];
+	if (str.count == 0) {
+		return (this);
+	}
+	char buf[] = new char[count + str.count];
 	getChars(0, count, buf, 0);
 	str.getChars(0, str.count, buf, count);
-	return new String(0, buf.length, buf); 
+	return (new String(0, buf.length, buf));
 }
 
 public static String copyValueOf( char data[]) {
@@ -143,11 +146,17 @@ public static String copyValueOf( char data[]) {
 }
 
 public static String copyValueOf(char data[], int offset, int count) {
+	if (offset < 0 || offset >= data.length) {
+		throw new IndexOutOfBoundsException();
+	}
+	if (count < 0 || offset + count > data.length) {
+		throw new IndexOutOfBoundsException();
+	}
 	char buf[]=new char[count];
-	if ( count > 0)
+	if ( count > 0) {
 		System.arraycopy( data, offset, buf, 0, count);
-
-	return new String( 0, count, buf);
+	}
+	return (new String( 0, count, buf));
 }
 
 public boolean endsWith( String suffix) {
@@ -221,6 +230,9 @@ public byte[] getBytes( String enc) throws UnsupportedEncodingException
  * @deprecated
  */
 public void getBytes( int srcBegin, int srcEnd, byte dst[], int dstBegin) {
+	if (srcBegin < 0 || srcEnd > offset + count) {
+		throw new IndexOutOfBoundsException("");
+	}
 	int len = srcEnd-srcBegin;
 	for (int pos = 0; pos < len; pos++) {
 		dst[dstBegin+pos] = (byte)value[offset+srcBegin+pos];
@@ -332,21 +344,27 @@ public int lastIndexOf( String str, int eIdx) {
 	return -1;
 }
 
-public int lastIndexOf( int ch) {
+public int lastIndexOf(int ch) {
 	return lastIndexOf( ch, count-1);
 }
 
-public int lastIndexOf( int ch, int eIdx) {
+public int lastIndexOf(int ch, int eIdx) {
+	// The spec claims that eIdx is inclusive, but Java implements
+	// it as exclusive - so do we.
 	char c = (char)ch;
-	if ( eIdx >= count) {
-		eIdx = count-1;
+	/* If the character is out of range we'll never find it */
+	if ((int)c != c) {
+		return (-1);
 	}
-	for (int pos=eIdx; pos>=0; pos--) {
-		if ( value[offset+pos] == c)
-			return pos;
+	if ( eIdx < 0 || eIdx > count) {
+		return (-1);
 	}
-
-	return -1;
+	for (int pos = eIdx - 1; pos >= 0; pos--) {
+		if ( value[offset+pos] == c) {
+			return (pos);
+		}
+	}
+	return (-1);
 }
 
 public int length() {
@@ -381,16 +399,25 @@ public boolean regionMatches( int toffset, String other, int ooffset, int len) {
 
 public String replace(char oldChar, char newChar) {
 	char buf[] = new char[count];
+	boolean replaced = false;
 
-	for (int pos=0; pos<count; pos++) {
+	for (int pos = 0; pos < count; pos++) {
 		char cc = value[offset+pos];
-		if ( cc == oldChar)
+		if ( cc == oldChar) {
+			replaced = true;
 			buf[pos] = newChar;
-		else
+		}
+		else {
 			buf[pos] = cc;
+		}
 	}
 
-	return new String( 0, count, buf);
+	if (replaced == false) {
+		return (this);
+	}
+	else {
+		return (new String( 0, count, buf));
+	}
 }
 
 public boolean startsWith( String prefix) {

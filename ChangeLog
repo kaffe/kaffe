@@ -1,3 +1,7 @@
+Thu Mar 11 12:04:02 PST 1999 Transvirtual Technologies Inc. <info@transvirtual.com>
+
+	* Merged of TVT's current library source base.
+
 Wed Mar 10 12:18:57 PST 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/util/zip/InflaterInputStream.java:

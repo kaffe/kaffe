@@ -16,11 +16,11 @@ final public class Short
 	final public static short MIN_VALUE = -0x8000;
 	final public static short MAX_VALUE = 0x7FFF;
 	final public static Class TYPE = Class.getPrimitiveClass("short");
-	private final short value;
+	final private short value;
 
 public Short(String s) throws NumberFormatException
 {
-	this(parseShort(s));
+	value = parseShort(s);
 }
 
 public Short(short value)

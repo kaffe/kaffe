@@ -84,8 +84,9 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 
 			if ( c.contains( u, v) ){  // contains() might be reimplemented
 				xm += c.x; ym += c.y;
+
 				if ( ((c.flags & Component.IS_NATIVE_LIKE) != 0) ||   // oh, these Panels..
-				     (c.mouseListener != null) || (c.motionListener != null) ) {
+				      ((c.mouseListener != null) || (c.motionListener != null)) ) {
 					tgt = c;
 					xMouseTgt = xm; yMouseTgt = ym;
 				}
@@ -99,12 +100,11 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 				else {
 					return tgt;
 				}
-			}
-			
+			}	
 		}
 		i++;
 	}
-
+	
 	return tgt;
 }
 
@@ -266,10 +266,12 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 	MouseEvt    e;
 	Component   source = sources[srcIdx];
 	long        when = System.currentTimeMillis();
-	Rectangle   d = source.deco;
-
-	x += d.x;
-	y += d.y;
+	
+	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+		Rectangle   d = source.deco;
+		x += d.x;
+		y += d.y;
+	}
 
 	nativeSource = source;
 	nativePos.x = x;
@@ -295,6 +297,12 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 	}
 
 	e.button = button;
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
 
 	return e;
 }

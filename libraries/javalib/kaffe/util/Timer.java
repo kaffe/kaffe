@@ -97,7 +97,7 @@ public synchronized boolean removeClient ( TimerClient tc ) {
 			clients[--nClients] = tce;
 			
 			// adapt the timer resolution to the lowest remaining interval
-			if ( resolution == tce.interval ) {
+			if ( (resolution == tce.interval) && (nClients > 0) ) {
 				for ( i=0, newres=Integer.MAX_VALUE; i<nClients; i++ ){
 					if ( clients[i].interval < newres )
 						newres = clients[i].interval;
@@ -125,7 +125,9 @@ public void run () {
 		try {
 			while ( !stop ) {
 				synchronized ( this ) {
-					if ( nClients == 0 ) wait();
+					if ( nClients == 0 ){
+						wait();
+					}
 
 					t = System.currentTimeMillis();
 					for ( i=0; i<nClients; i++ ) {

@@ -268,11 +268,14 @@ final public int size() {
 final public synchronized String toString() {
 	StringBuffer result = new StringBuffer();
 
+	result.append("[");
 	for (int pos = 0; pos < elementCount; pos++) {
+		if (pos > 0) {
+			result.append(", ");
+		}
 		result.append(elementData[pos].toString());
-		result.append( " ");
 	}
-
+	result.append("]");
 	return (result.toString());
 }
 

@@ -117,7 +117,7 @@ public AppletViewer ( File html) {
 	}
 	catch ( Exception e) {
 		e.printStackTrace();
-		showStatus( "cannot start applet");
+		showStatus( "Cannot start applet");
 	}
 }
 
@@ -134,12 +134,12 @@ public void actionPerformed ( ActionEvent e ) {
 		if (app != null) {
 			app.stop();
 		}
-		showStatus( "applet stopped");
+		showStatus( "Applet stopped");
 	}
 	else if ( "Start".equals( cmd)) {
 		if (app != null)
 			app.start();
-		showStatus( "applet started");
+		showStatus( "Applet started");
 	}
 }
 
@@ -214,13 +214,13 @@ public boolean isActive () {
 
 public static void main ( String[] args) {
 	if ( args.length == 0)
-		System.out.println( "usage: AppletViewer <html file>");
+		System.out.println( "Usage: AppletViewer <html file>");
 	else {
 		File f = new File( args[0] );
 		if ( f.exists() )
 			new AppletViewer( f);
 		else
-			System.out.println( "file " + f + " does not exist");
+			System.out.println( "File " + f + " does not exist");
 	}
 }
 

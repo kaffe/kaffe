@@ -16,13 +16,11 @@ public class PushbackInputStream
 	protected byte[] buf;
 	protected int pos;
 
-public PushbackInputStream(InputStream in)
-	{
+public PushbackInputStream(InputStream in) {
 	this(in, 1);
 }
 
-public PushbackInputStream(InputStream in, int size)
-	{
+public PushbackInputStream(InputStream in, int size) {
 	super(in);
 	buf = new byte[size];
 	pos = buf.length;
@@ -33,21 +31,22 @@ public int available() throws IOException
 	return (super.available() + (buf.length - pos));
 }
 
-public boolean markSupported()
-	{
+public boolean markSupported() {
 	return (false);
 }
 
-public int read() throws IOException
-{
+public int read() throws IOException {
+	int b;
 	if (pos < buf.length) {
-		return ((int)buf[pos++]);
+		b = (int)buf[pos++];
 	}
-	return (super.read());
+	else {
+		b = super.read();
+	}
+	return (b & 0xFF);
 }
 
-public int read(byte cbuf[], int off, int len) throws IOException
-{
+public int read(byte cbuf[], int off, int len) throws IOException {
 	int cnt = 0;
 	while (pos < buf.length && len > 0) {
 		cbuf[off++] = buf[pos++];
@@ -68,22 +67,19 @@ public int read(byte cbuf[], int off, int len) throws IOException
 	return (cnt);
 }
 
-public void unread(byte cbuf[]) throws IOException
-{
+public void unread(byte cbuf[]) throws IOException {
 	unread(cbuf, 0, cbuf.length);
 }
 
-public void unread(byte cbuf[], int off, int len) throws IOException
-{
+public void unread(byte cbuf[], int off, int len) throws IOException {
 	if (pos < len) {
-		throw new IOException("pushback buffer is too full");
+		throw new IOException("pushback buffer is full");
 	}
 	pos -= len;
 	System.arraycopy(cbuf, off, buf, pos, len);
 }
 
-public void unread(int c) throws IOException
-{
+public void unread(int c) throws IOException {
 	if (pos == 0) {
 		throw new IOException("pushback buffer is full");
 	}

@@ -15,19 +15,52 @@ public class Color
 {
 	int rgbValue;
 	int nativeValue = 0xffffffff;
-	final public static Color gray = new Color( 128, 128, 128);
-	final public static Color darkGray = new Color( 64, 64, 64);
-	final public static Color black = new Color( 0, 0, 0);
-	final public static Color red = new Color( 255, 0, 0);
-	final public static Color pink = new Color( 255, 175, 175);
-	final public static Color orange = new Color( 255, 200, 0);
-	final public static Color yellow = new Color( 255, 255, 0);
-	final public static Color green = new Color( 0, 255, 0);
-	final public static Color magenta = new Color( 255, 0, 255);
-	final public static Color cyan = new Color( 0, 255, 255);
-	final public static Color blue = new Color( 0, 0, 255);
-	final public static Color white = new Color( 255, 255, 255);
-	final public static Color lightGray = new Color( 192, 192, 192);
+	final public static Color darkGray = new Color( (byte)64, (byte)64, (byte)64);
+	final public static Color black = new Color( (byte)0, (byte)0, (byte)0);
+	final public static Color red = new Color( (byte)255, (byte)0, (byte)0);
+	final public static Color pink = new Color( (byte)255, (byte)175, (byte)175);
+	final public static Color orange = new Color( (byte)255, (byte)200, (byte)0);
+	final public static Color yellow = new Color( (byte)255, (byte)255, (byte)0);
+	final public static Color green = new Color( (byte)0, (byte)255, (byte)0);
+	final public static Color magenta = new Color( (byte)255, (byte)0, (byte)255);
+	final public static Color cyan = new Color( (byte)0, (byte)255, (byte)255);
+	final public static Color blue = new Color( (byte)0, (byte)0, (byte)255);
+	final public static Color white = new Color( (byte)255, (byte)255, (byte)255);
+	final public static Color lightGray = new Color( (byte)192, (byte)192, (byte)192);
+	final public static Color gray = new Color( (byte)128, (byte)128, (byte)128);
+
+static {
+	// Make sure all the static fields which have not been initialized completely
+	// (because of the Color->Toolkit->Defaults cyclic classinit problem) now get their
+	// native values
+
+	gray.setNativeValue();
+	darkGray.setNativeValue();
+	black.setNativeValue();
+	red.setNativeValue();
+	pink.setNativeValue();
+	orange.setNativeValue();
+	yellow.setNativeValue();
+	green.setNativeValue();
+	magenta.setNativeValue();
+	cyan.setNativeValue();
+	blue.setNativeValue();
+	white.setNativeValue();
+	lightGray.setNativeValue();	
+}
+
+private Color ( byte r, byte g, byte b ) {
+	// This is a iplementation quirk to overcome the Color->Toolkit->Defaults->Color
+	// cyclic class init problem, which would end up in Defaults colors being still null
+	// (all static Color field refs) because Color hasn't been initialized yet. This should
+	// NOT be used outside of the Color initialization!! We accept this temp. inconsistency
+	// of color objects only because it would be worse to keep  RgbRequests (which are
+	// subsequently used throughout - and only in - Defaults) outside Defaults.
+	// Make sure all objects initialized with this ctor are 'finished' with setNativeValue()
+	// before they are used (e.g. in the static block)
+
+	rgbValue = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8)  | (b & 0xff);
+}
 
 public Color ( float r, float g, float b ) {
 	rgbValue = 0xff000000 |                      // const alpha channel
@@ -46,7 +79,7 @@ public Color ( int rgb ) {
 
 public Color ( int r, int g, int b ) {
 	rgbValue = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8)  | (b & 0xff);
-	
+
 	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
 }
 
@@ -216,7 +249,7 @@ public int hashCode() {
 	return rgbValue;
 }
 
-void setNativeValue() {
+void setNativeValue () {
 	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
 }
 

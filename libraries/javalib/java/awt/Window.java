@@ -49,11 +49,11 @@ public void addNotify () {
 	// AWTs), slowing down the startup time
 	Toolkit.startDispatch();
 
-	if ( nativeData == null ) {
+	if ( nativeData == null ) {	
 		// Some native windowing systems require windows to be created in
 		// the thread that does the event dispatching. We force a context
 		// switch by means of a WMEvent in this case
-		if ( Toolkit.isDispatchExclusive &&
+		if ( ((Toolkit.flags & Toolkit.IS_DISPATCH_EXCLUSIVE) != 0) &&
 		     (Thread.currentThread() != Toolkit.eventThread) ){
 			WMEvent e =  WMEvent.getEvent( this, WMEvent.WM_CREATE);
 			Toolkit.eventQueue.postEvent( e);
@@ -135,12 +135,18 @@ public Component getFocusOwner () {
 
 public Graphics getGraphics () {
 	if ( nativeData != null ){
+		int u = 0, v = 0;
+
+		if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+			u -= deco.x;
+			v -= deco.y;
+		}
+	
 		// note that we have to clip against possible Frame menubars, too
 		// (hence we partly have to use insets, not completely relying on deco)
 		return NativeGraphics.getGraphics( this, nativeData,
 		                                   NativeGraphics.TGT_TYPE_WINDOW,
-		                                   -deco.x, -deco.y,
-		                                   insets.left, insets.top,
+		                                   u, v, insets.left, insets.top,
 		                                   width - deco.width,
 		                                   height - (insets.top + insets.bottom),
 		                                   fgClr, bgClr, font, false);
@@ -231,7 +237,7 @@ public void removeNotify () {
 		// the thread which created them. Even though this should be ensured
 		// by calling removeNotify via the WindowEvt.dispatch(), it is more safe
 		// to check (since this is a public method)
-		if ( Toolkit.isDispatchExclusive &&
+		if ( ((Toolkit.flags & Toolkit.IS_DISPATCH_EXCLUSIVE) != 0) &&
 		     (Thread.currentThread() != Toolkit.eventThread) ){
 			WMEvent e = WMEvent.getEvent( this, WMEvent.WM_DESTROY);
 			Toolkit.eventQueue.postEvent( e);
@@ -292,10 +298,18 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 	width  = wNew;
 	height = hNew;
 
-	if ( nativeData != null )
-		Toolkit.wndSetBounds( nativeData, xNew +deco.x, yNew +deco.y,
-		                      wNew -deco.width, hNew -deco.height,
-		                      ((flags & IS_RESIZABLE) != 0) );
+	if ( nativeData != null ) {
+		if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ){
+			// we have to fake a bit with native coordinates, since we pretend to own the
+			// whole real estate of the toplevel (including the deco), but we don't in reality
+			xNew += deco.x;
+			yNew += deco.y;
+			wNew -= deco.width;
+			hNew -= deco.height;
+		}
+	
+		Toolkit.wndSetBounds( nativeData, xNew, yNew, wNew, hNew, ((flags & IS_RESIZABLE) != 0));
+	}
 }
 
 public void setBackground ( Color clr ) {

@@ -46,11 +46,9 @@ import kaffe.awt.OpaqueComponent;
  */
 abstract public class Component
   extends Object
-  implements ImageObserver, MenuContainer {
-
-
-	static final long serialVersionUID = -7644114512714619750L;
-
+  implements ImageObserver, MenuContainer
+{
+	final static long serialVersionUID = -7644114512714619750L;
 	Container parent;
 	int x;
 	int y;
@@ -96,6 +94,92 @@ abstract public class Component
 	final static int IS_ASYNC_UPDATED = 0x4000;
 	final static int IS_DIRTY = 0x8000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
+
+/*
+ * JDK serialization.
+ *  While this is serializing something like what JDK expects, we don't handle the more complex
+ *  things like Properties or popupMenus yet (because I'm not sure how to convert what we do
+ *  into what they expect).
+ */
+class DefaultSerialization
+{
+	private Color bgColor;
+	private java.beans.PropertyChangeSupport changeSupport;
+	private int componentSerializedDataVersion;
+	private Cursor cursor;
+	private boolean enabled;
+	private long eventMask;
+	private Font font;
+	private Color foreground;
+	private boolean hasFocus;
+	private int height;
+	private boolean isPacked;
+	private Locale locale;
+	private Dimension minSize;
+	private String name;
+	private boolean nameExplicitlySet;
+	private boolean newEventsOnly;
+	private Font peerFont;
+	private Vector popups;
+	private Dimension prefSize;
+	private boolean valid;
+	private boolean visible;
+	private int width;
+	private int x;
+	private int y;
+
+private void readDefaultObject() {
+	setBackground(bgColor);
+	setCursor(cursor);
+	setEnabled(enabled);
+	enableEvents(eventMask);
+	setFont(font);
+	setForeground(foreground);
+	setSize(width, height);
+	setLocale(locale);
+	setName(name);
+	setLocation(x, y);
+	if (valid) {
+		validate();
+	}
+	else {
+		invalidate();
+	}
+	if (visible) {
+		show();
+	}
+	else {
+		hide();
+	}
+}
+
+private void writeDefaultObject() {
+	bgColor = Component.this.bgClr;
+	changeSupport = null;
+	componentSerializedDataVersion = 0;
+	cursor = Component.this.cursor;
+	enabled = isEnabled();
+	eventMask = Component.this.eventMask;
+	font = Component.this.font;
+	foreground = Component.this.fgClr;
+	hasFocus = false;
+	height = Component.this.height;
+	isPacked = false;
+	locale = Component.this.locale;
+	minSize = getMinimumSize();
+	name = Component.this.name;
+	nameExplicitlySet = true;
+	newEventsOnly = !getClassProperties().useOldEvents;
+	peerFont = Component.this.font;
+	popups = null;
+	prefSize = getPreferredSize();
+	valid = isValid();
+	visible = isVisible();
+	width = Component.this.width;
+	x = Component.this.x;
+	y = Component.this.y;
+}
+}
 
 protected Component () {
 	cursor = Cursor.defaultCursor;
@@ -313,7 +397,7 @@ public Rectangle getBounds () {
 ClassProperties getClassProperties () {
 	// direct Component / Container derived classes can't use old events
 	// (they had no protected ctor in 1.0.2)
-	return ClassAnalyzer.analyzeProcessEvent( getClass(), true);
+	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
 }
 
 public Component getComponentAt ( Point pt ) {
@@ -595,7 +679,7 @@ public boolean isFocusTraversable() {
 
 public boolean isShowing () {
 	// compare the costs of this with the standard upward iteration
- return ((flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED)) ==
+ return  ((flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED)) ==
 	                 (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED));
 }
 
@@ -1208,6 +1292,9 @@ public void resize ( int wNew, int hNew ) {
 }
 
 public void setBackground ( Color clr ) {
+	if ( clr == bgClr )
+		return;
+
 	if ( clr != null ){
 		flags |= IS_BG_COLORED;
 	}
@@ -1219,8 +1306,13 @@ public void setBackground ( Color clr ) {
 
 	propagateBgClr( clr);
 
-	if ( isShowing() )
+	// we follow the "Java class libraries" description here (in favor of the Sun class docu), i.e.
+	// clients have to explicitly force a repaint after changing colors. But - since many apps
+	// rely in this unspec. behavior - we have to repaint automatically for native-likes
+	if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED | IS_NATIVE_LIKE))
+	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
 		repaint();
+	}
 }
 
 public void setBounds ( Rectangle r ) {
@@ -1249,6 +1341,9 @@ public void setEnabled ( boolean isEnabled ) {
 }
 
 public void setFont ( Font fnt ) {
+	if ( fnt == font )
+		return;
+
 	if ( fnt != null ){
 		flags |= IS_FONTIFIED;
 	}
@@ -1260,11 +1355,17 @@ public void setFont ( Font fnt ) {
 
 	propagateFont( fnt);
 
-	if ( isShowing() )
+	// see setBackground for further details about why to repaint just visible native-likes
+	if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED | IS_NATIVE_LIKE))
+	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
 		repaint();
+	}
 }
 
 public void setForeground ( Color clr ) {
+	if ( clr == fgClr )
+		return;
+
 	if ( clr != null ){
 		flags |= IS_FG_COLORED;
 	}
@@ -1276,8 +1377,11 @@ public void setForeground ( Color clr ) {
 
 	propagateFgClr( clr);
 
-	if ( isShowing() )
+	// see setBackground for further details about why to repaint just visible native-likes
+	if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED | IS_NATIVE_LIKE))
+	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
 		repaint();
+	}
 }
 
 public void setLocale(Locale loc) {
@@ -1432,92 +1536,4 @@ public void validate () {
 		flags |= IS_VALID;
 	}
 }
-
-/*
- * JDK serialization.
- *  While this is serializing something like what JDK expects, we don't handle the more complex
- *  things like Properties or popupMenus yet (because I'm not sure how to convert what we do
- *  into what they expect).
- */
-class DefaultSerialization {
-
-private Color bgColor;
-private java.beans.PropertyChangeSupport changeSupport;
-private int componentSerializedDataVersion;
-private Cursor cursor;
-private boolean enabled;
-private long eventMask;
-private Font font;
-private Color foreground;
-private boolean hasFocus;
-private int height;
-private boolean isPacked;
-private Locale locale;
-private Dimension minSize;
-private String name;
-private boolean nameExplicitlySet;
-private boolean newEventsOnly;
-private Font peerFont;
-private Vector popups;
-private Dimension prefSize;
-private boolean valid;
-private boolean visible;
-private int width;
-private int x;
-private int y;
-
-private void readDefaultObject() {
-	setBackground(bgColor);
-	setCursor(cursor);
-	setEnabled(enabled);
-	enableEvents(eventMask);
-	setFont(font);
-	setForeground(foreground);
-	setSize(width, height);
-	setLocale(locale);
-	setName(name);
-	setLocation(x, y);
-	if (valid) {
-		validate();
-	}
-	else {
-		invalidate();
-	}
-	if (visible) {
-		show();
-	}
-	else {
-		hide();
-	}
-}
-
-private void writeDefaultObject() {
-	bgColor = Component.this.bgClr;
-	changeSupport = null;
-	componentSerializedDataVersion = 0;
-	cursor = Component.this.cursor;
-	enabled = isEnabled();
-	eventMask = Component.this.eventMask;
-	font = Component.this.font;
-	foreground = Component.this.fgClr;
-	hasFocus = false;
-	height = Component.this.height;
-	isPacked = false;
-	locale = Component.this.locale;
-	minSize = getMinimumSize();
-	name = Component.this.name;
-	nameExplicitlySet = true;
-	newEventsOnly = !getClassProperties().useOldEvents;
-	peerFont = Component.this.font;
-	popups = null;
-	prefSize = getPreferredSize();
-	valid = isValid();
-	visible = isVisible();
-	width = Component.this.width;
-	x = Component.this.x;
-	y = Component.this.y;
-}
-
-}
-
 }

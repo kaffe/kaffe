@@ -53,18 +53,26 @@ public Dialog ( Frame owner, boolean isModal ) {
 }
 
 Ptr createNativeWindow () {
-	// this is the terminal class addNotify() part
+	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
+	int u = x;
+	int v = y;
+	int w = width;
+	int h = height;
 
 	// insets seem to be set by the JDK during addNotify
 	// (no need to create fresh objects since they are insets()-copied anyway <sigh>)
 	insets = dialogInsets;
 
-	return Toolkit.wndCreateDialog( owner.nativeData, title,
-	                                x + deco.x, y + deco.y,
-	                                width - deco.width,
-	                                height - deco.height,
-	                                cursor.type, bgClr.nativeValue,
-	                                ((flags & IS_RESIZABLE) != 0) );
+	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+		// we just pretend to own the deco space, subtract it before going native
+		u += deco.x;
+		v += deco.y;
+		w -= deco.width;
+		h -= deco.height;
+	}
+
+	return Toolkit.wndCreateDialog( owner.nativeData, title, u, v, w, h,
+	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
 }
 
 public boolean isModal() {

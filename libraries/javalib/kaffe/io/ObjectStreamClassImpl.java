@@ -42,7 +42,7 @@ public ObjectStreamClassImpl(Class cl, int meth) {
 	name = cl.getName();
 	clazz = cl;
 	method = meth;
-	serialVersionUID = getSerialVersionUID();
+	serialVersionUID = getSerialVersionUID0(cl);
 	superstream = (ObjectStreamClassImpl)lookup(cl.getSuperclass());
 	iclazz = null;
 }
@@ -347,16 +347,10 @@ private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundE
 
 	// Resolve the class
 	clazz = in.resolveClassInternal(this);
-
-/*
+	// Check for matching serial version UIDs
 	if (serialVersionUID != getSerialVersionUID0(clazz)) {
-		throw new StreamCorruptedException("serial verion uid mismatch");
+		throw new StreamCorruptedException("mismatched serial version UIDs");
 	}
- */
-}
-
-public long getSerialVersionUID() {
-	return (getSerialVersionUID0(clazz));
 }
 
 private void writeObject(ObjectOutputStream out) throws IOException {
@@ -370,6 +364,10 @@ private void writeObject(ObjectOutputStream out) throws IOException {
 //System.out.println("...writeFields");
 	outputClassFieldInfo(out);
 //System.out.println("...Done");
+}
+
+public long getSerialVersionUID() {
+	return (getSerialVersionUID0(clazz));
 }
 
 private native static void init();

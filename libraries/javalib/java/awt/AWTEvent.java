@@ -128,8 +128,9 @@ static void registerSource ( Component c, Ptr nativeData ) {
 	int idx = Toolkit.evtRegisterSource( nativeData);
 	sources[idx] = c;
 
-	if ( ++nSources	== 1 )
+	if ( ++nSources	== 1 ) {
 		Toolkit.startDispatch();
+	}
 }
 
 MouseEvent retarget ( Component target, int dx, int dy ) {
@@ -143,8 +144,8 @@ protected static void sendEvent ( AWTEvent e, boolean sync ) {
       Toolkit.eventQueue.postEvent( e);
 }
 
-public void setSource ( Object newSource ) {
-	source = newSource;
+static void setSource ( AWTEvent evt, Object newSource ) {
+	evt.source = newSource;
 }
 
 public String toString () {

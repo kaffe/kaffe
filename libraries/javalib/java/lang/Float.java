@@ -11,6 +11,7 @@
 package java.lang;
 
 public final class Float extends Number {
+
   public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
   public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
   public static final float NaN = 0.0f / 0.0f;
@@ -22,7 +23,6 @@ public final class Float extends Number {
 
   private final float value;
 
-  public static native Float valueOf(String s) throws NumberFormatException;
   public static native int floatToIntBits(float value);
   public static native float intBitsToFloat(int bits);
 
@@ -119,5 +119,12 @@ public final class Float extends Number {
   
   public boolean isInfinite() {
     return isInfinite(value);
+  }
+
+  public static Float valueOf(String s) throws NumberFormatException {
+    if (s == null) {
+      throw new NullPointerException();
+    }
+    return (new Float(Double.valueOf0(s)));
   }
 }

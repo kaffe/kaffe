@@ -62,17 +62,20 @@ static synchronized PaintEvt getEvent ( Component source, int id,
 }
 
 static synchronized PaintEvt getEvent ( int srcIdx, int id, int x, int y, int width, int height ) {
+	PaintEvt e;
 	Component source = sources[srcIdx];
 	Rectangle r;
 
-	x += source.deco.x;
-	y += source.deco.y;
+	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+		x += source.deco.x;
+		y += source.deco.y;
+	}
 
 	if ( cache == null ) {
-		return new PaintEvt( source, id, 0, x, y, width, height);
+		e = new PaintEvt( source, id, 0, x, y, width, height);
 	}
 	else {
-		PaintEvt e = cache;
+		e = cache;
 		cache = (PaintEvt) e.next;
 		e.next = null;
 	
@@ -84,9 +87,15 @@ static synchronized PaintEvt getEvent ( int srcIdx, int id, int x, int y, int wi
 		e.y = y;
 		e.width = width;
 		e.height = height;
-
-		return e;
 	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+
+	return e;
 }
 
 public Rectangle getUpdateRect () {

@@ -1,6 +1,3 @@
-package java.lang;
-
-
 /*
  * Java core library component.
  *
@@ -10,6 +7,9 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.lang;
+
 public class AbstractMethodError
   extends IncompatibleClassChangeError
 {

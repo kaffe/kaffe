@@ -575,7 +575,8 @@ kaffe_io_SRCS = \
 	kaffe/io/ObjectOutputStreamImpl.java \
 	kaffe/io/ObjectStreamClassImpl.java \
 	kaffe/io/SerializationFactory.java \
-	kaffe/io/TmpFile.java
+	kaffe/io/TmpFile.java \
+	kaffe/io/NullOutputStream.java
 kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
@@ -584,6 +585,7 @@ kaffe_lang_SRCS = \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/SystemClassLoader.java \
 	kaffe/lang/UNIXProcess.java
+	kaffe/lang/DummyClassLoader.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java
 kaffe_net_SRCS = \
@@ -629,6 +631,7 @@ kaffe_util_SRCS = \
 kaffe_util_log_SRCS = \
 	kaffe/util/log/LogClient.java \
 	kaffe/util/log/LogStream.java
+	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
 

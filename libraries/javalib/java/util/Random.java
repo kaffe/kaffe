@@ -11,6 +11,7 @@
 package java.util;
 
 import java.lang.System;
+import java.io.Serializable;
 
 /**
  * This is implemented as described on pages 646 and up in the JLS
@@ -18,7 +19,7 @@ import java.lang.System;
  * shown here for the class Random, for the sake of absolute portability
  * of Java code."
  */
-public class Random implements java.io.Serializable
+public class Random implements Serializable
 {
 	protected long seed;
 	protected boolean haveNextNextGaussian;

@@ -22,8 +22,7 @@ public class OutputStreamWriter
 	private byte[] outbuf = new byte[BUFDEFAULT];
 	private int buflen;
 
-public OutputStreamWriter(OutputStream out)
-{
+public OutputStreamWriter(OutputStream out) {
 	strm = out;
 	encoding = CharToByteConverter.getDefault();
 }
@@ -37,22 +36,32 @@ public OutputStreamWriter(OutputStream out, String enc) throws UnsupportedEncodi
 public void close() throws IOException
 {
 	flush();
-	strm.close();
+	try {
+		strm.close();
+		strm = null;
+	}
+	catch (NullPointerException _) {
+		throw new IOException("stream closed");
+	}
 }
 
 public void flush() throws IOException
 {
-	synchronized (lock) {
-		if (buflen > 0) {
-			strm.write(outbuf, 0, buflen);
-			buflen = 0;
+	try {
+		synchronized (lock) {
+			if (buflen > 0) {
+				strm.write(outbuf, 0, buflen);
+				buflen = 0;
+			}
 		}
+		strm.flush();
 	}
-	strm.flush();
+	catch (NullPointerException _) {
+		throw new IOException("stream closed");
+	}
 }
 
-public String getEncoding()
-{
+public String getEncoding() {
 	return (encoding.toString());
 }
 
@@ -63,13 +72,18 @@ public void write(String str, int off, int len) throws IOException
 
 public void write(char cbuf[], int off, int len) throws IOException
 {
+	if (strm == null) {
+		throw new IOException("stream closed");
+	}
+
 	synchronized (lock) {
 		while (len > 0) {
 			int outlen = encoding.convert(cbuf, off, len,
 				outbuf, buflen, outbuf.length - buflen);
 			buflen += outlen;
-			if (outlen == 0 || outbuf.length - buflen < MINMARGIN)
+			if (outlen == 0 || outbuf.length - buflen < MINMARGIN) {
 				flush();
+			}
 			off += outlen;
 			len -= outlen;
 		}

@@ -165,7 +165,6 @@ native private Class defineClass0(String name, byte data[], int offset, int leng
 native private Class findSystemClass0(String name);
 native private Class findLoadedClass0(String name);
 native private void resolveClass0(Class cls);
-
 native static byte[] getSystemResourceAsBytes0(String name);
 
 final native private void finalize0();
@@ -175,4 +174,5 @@ private Object finalizeHelper = new Object() {
         finalize0();
     }
 };
+
 }

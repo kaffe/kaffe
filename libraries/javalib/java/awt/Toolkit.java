@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
+import kaffe.io.NullOutputStream;
 import kaffe.util.Ptr;
 import kaffe.util.log.LogClient;
 import kaffe.util.log.LogStream;
@@ -63,6 +64,29 @@ void stopFlushing () {
 }
 }
 
+class NativeCollector
+  extends Thread
+{
+NativeCollector () {
+	super( "AWT-native");
+}
+
+public void run () {
+  // this does not return until the we shut down the system, since it
+  // consititutes the native dispatcher loop. Don't be confused about
+	// tlkInit being a sync method. It gives up the lock in the native
+	// layer before falling into its dispatcher loop
+
+  try {
+		if ( !Toolkit.tlkInit( System.getProperty( "display")) ) {
+			throw new AWTError( "native layer init failed");
+		}
+  } catch ( Exception x ) {
+		x.printStackTrace();
+  }
+}
+}
+
 public class Toolkit
 {
 	static Toolkit singleton;
@@ -73,39 +97,41 @@ public class Toolkit
 	static NativeClipboard clipboard;
 	static LightweightPeer lightweightPeer = new LightweightPeer() {};
 	static WindowPeer windowPeer = new WindowPeer() {};
-	static boolean isBlocking;
-	static boolean isDispatchExclusive;
 	static FlushThread flushThread;
-	static boolean needsFlush;
+	static int flags;
+	final static int FAILED = -1;
+	final static int IS_BLOCKING = 1;
+	final static int IS_DISPATCH_EXCLUSIVE = 2;
+	final static int NEEDS_FLUSH = 4;
+	final static int NATIVE_DISPATCHER_LOOP = 8;
+	final static int EXTERNAL_DECO = 16;
 
 static {
-	Insets in;
-	int ret;
-
 	System.loadLibrary( "awt");
+	flags = tlkProperties();
 
-	String tkName = System.getProperty( "display");
-	tlkInit( tkName );
+	if ( (flags & NATIVE_DISPATCHER_LOOP) == 0 ) {
+		if ( !tlkInit( System.getProperty( "display")) ) {
+			throw new AWTError( "native layer initialization failed");
+		}
+		initToolkit();
+	}
+	else {
+		// Not much we can do here, we have to delegate the native init
+		// to a own thread since tlkInit() doesn't return. Wait for this
+		// thread to flag that initialization has been completed
+		NativeCollector nc = new NativeCollector();
+		nc.start();
 
-	screenSize = new Dimension( tlkGetScreenWidth(), tlkGetScreenHeight());
-	resolution = tlkGetResolution();
-	
-	isBlocking = tlkIsBlocking();
-	isDispatchExclusive = tlkIsDispatchExclusive();
-	needsFlush = tlkNeedsFlush();
-
-	// we do this here to keep the getDefaultToolkit() method as simple
-	// as possible (since it might be called frequently). This is a
-	// deviation from the normal Singleton (which initializes the singleton
-	// instance upon request)
-	singleton = new Toolkit();
-	
-	eventQueue = new EventQueue();
-
-	// we should refer to Defaults as late as possible (since it may
-	// directly or indirectly refer to Toolkit.singleton)
-	if ( Defaults.ConsoleClass != null ) {
-		redirectStreams();
+		try {
+			synchronized ( Toolkit.class ) {
+				while ( singleton == null )
+					Toolkit.class.wait();
+			}
+		}
+		catch ( Exception x ) {
+			x.printStackTrace();
+		}
 	}
 }
 
@@ -374,6 +400,37 @@ native static synchronized void imgSetIdxPels( Ptr imgData, int x, int y, int w,
 
 native static synchronized void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
 
+static void initToolkit () {
+	// this is called when the native layer has been initialized, and it is safe
+	// to query native settings / rely on native functionality
+
+	screenSize = new Dimension( tlkGetScreenWidth(), tlkGetScreenHeight());
+	resolution = tlkGetResolution();
+
+	// we do this here to keep the getDefaultToolkit() method as simple
+	// as possible (since it might be called frequently). This is a
+	// deviation from the normal Singleton (which initializes the singleton
+	// instance upon request)
+	singleton = new Toolkit();
+	
+	eventQueue = new EventQueue();
+
+/**
+	if ( Defaults.ConsoleClass != null ){
+		// since we have to defer the ConsoleWindow until the native Toolkit is propperly
+		// initialized, it seems to be a good idea to defuse any output to the standard streams
+		// (which might cause SEGFAULTS on some systems (e.g. DOS)
+		System.setOut( new PrintStream( NullOutputStream.singleton));
+		System.setErr( System.out);
+	}
+**/
+
+	if ( (flags & NATIVE_DISPATCHER_LOOP)	!= 0 ) {
+		// let the world know we are ready to take over, native-wise
+		Toolkit.class.notify();
+	}
+}
+
 protected void loadSystemColors ( int[] sysColors ) {
 	clrSetSystemColors( sysColors);
 }
@@ -385,11 +442,13 @@ public boolean prepareImage ( Image image, int width, int height, ImageObserver 
 static void redirectStreams () {
 	try {
 		LogClient lv = (LogClient) Class.forName( Defaults.ConsoleClass).newInstance();
-		LogStream ls = new LogStream( 1, lv);
+		LogStream ls = new LogStream( 30, lv);
 		lv.enable();
 	
 		System.setOut( new PrintStream( ls) );
 		System.setErr( System.out);
+		
+		System.out.println( "Java console enabled");
 	}
 	catch ( Exception x ) {
 		System.err.println( "unable to redirect out, err");
@@ -401,9 +460,14 @@ static void startDispatch () {
 	if ( eventThread == null ) {
 		eventThread = new EventDispatchThread( eventQueue);
 		eventThread.start();
+		
+		// we defer the Console creation / output redirection up to this point, since we otherwise
+		// might get all sort of trouble because of a incompletely initialized native layer / Toolkit
+		if ( Defaults.ConsoleClass != null )
+			redirectStreams();
 	}
 
-	if ( needsFlush && (flushThread == null) ){
+	if ( ((flags & NEEDS_FLUSH) != 0) && (flushThread == null) ){
 		flushThread = new FlushThread( Defaults.GraFlushRate);
 		flushThread.start();
 	}
@@ -445,13 +509,9 @@ native static synchronized int tlkGetScreenHeight ();
 
 native static synchronized int tlkGetScreenWidth ();
 
-native static synchronized void tlkInit ( String displayName );
+native static synchronized boolean tlkInit ( String displayName );
 
-native static synchronized boolean tlkIsBlocking();
-
-native static synchronized boolean tlkIsDispatchExclusive();
-
-native static synchronized boolean tlkNeedsFlush();
+native static synchronized int tlkProperties();
 
 native static synchronized void tlkSync ();
 

@@ -66,6 +66,10 @@ public int countComponents() {
 
 Ptr createNativeWindow () {
 	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
+	int u = x;
+	int v = y;
+	int w = width;
+	int h = height;
 
 	// Insets seem to be set by the JDK during addNotify
 	// (no need to create fresh objects since they are insets()-copied anyway <sigh>).
@@ -73,11 +77,16 @@ Ptr createNativeWindow () {
 	// has to compute the real deco offsets during window creation
 	insets = (bMenu != null) ? menuFrameInsets : frameInsets;
 
-	return Toolkit.wndCreateFrame( title, x + deco.x, y + deco.y,
-                                 width - deco.width,
-                                 height - deco.height,
-	                               cursor.type, bgClr.nativeValue,
-	                               ((flags & IS_RESIZABLE) != 0));
+	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
+		// we just pretend to own the deco space, subtract it before going native
+		u += deco.x;
+		v += deco.y;
+		w -= deco.width;
+		h -= deco.height;
+	}
+
+	return Toolkit.wndCreateFrame( title, u, v, w, h,
+	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
 }
 
 public Component getComponent( int index) {
@@ -262,16 +271,19 @@ public void setTitle ( String newTitle ) {
 }
 
 public void update ( Graphics g ) {
+	int w = width - deco.width;
+	int h = height - (insets.top + insets.bottom);
+	
 	flags |= IS_IN_UPDATE;
 
 	// we should treat the bMenu special because (a) it avoids flicker, and (b)
 	// some careless apps have components painting over the menu (we have to clip)
 	if ( bMenu != null ) {
 		g.paintChild( bMenu, false);
-		g.clipRect( deco.x, insets.top, width - (deco.width), height - (deco.height));
+		g.clipRect( deco.x, insets.top, w, h);
 	}
 
-	g.clearRect( deco.x, insets.top, width, height);
+	g.clearRect( deco.x, insets.top, w, h);
 	paint( g);
 
 	flags &= ~IS_IN_UPDATE;

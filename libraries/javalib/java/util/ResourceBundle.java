@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.System;
+import kaffe.lang.DummyClassLoader;
 
 abstract public class ResourceBundle {
 
@@ -30,10 +31,33 @@ final public static ResourceBundle getBundle(String baseName) throws MissingReso
 }
 
 final public static ResourceBundle getBundle(String baseName, Locale locale) throws MissingResourceException {
+	ResourceBundle bundle = getBundleWithLocale(baseName, locale);
+	/* It would appear that if we fail to load a resource bundle for
+	 * a given locale, we just load the default one instead.
+	 */
+	if (bundle == null && locale != Locale.getDefault()) {
+		bundle = getBundleWithLocale(baseName, Locale.getDefault());
+	}
+	if (bundle == null) {
+		throw new MissingResourceException("no bundles found: " + baseName, "ResourceBundle", baseName);
+	}
+	return (bundle);
+}
+
+final private static ResourceBundle getBundleWithLocale(String baseName, Locale locale) {
 
 	String lang = locale.getLanguage();
 	String cntry = locale.getCountry();
-	String var = locale.getVariant();
+	String var1 = locale.getVariant();
+	String var2 = null;
+
+	if (var1 != null) {
+		int idx = var1.lastIndexOf('_');
+		if (idx != -1) {
+			var2 = var1.substring(idx + 1);
+			var1 = var1.substring(0, idx);
+		}
+	}
 	if (lang != null) {
 		lang = lang.toLowerCase();
 	}
@@ -68,9 +92,9 @@ final public static ResourceBundle getBundle(String baseName, Locale locale) thr
 		}
 	}
 
-	if (lang != null && cntry != null && var != null) {
+	if (lang != null && cntry != null && var1 != null) {
 		try {
-			ResourceBundle nbundle = getSpecificBundle(baseName + "_" + lang + "_" + cntry + "_" + var);
+			ResourceBundle nbundle = getSpecificBundle(baseName + "_" + lang + "_" + cntry + "_" + var1);
 			nbundle.setParent(bundle);
 			bundle = nbundle;
 		}
@@ -78,8 +102,14 @@ final public static ResourceBundle getBundle(String baseName, Locale locale) thr
 		}
 	}
 
-	if (bundle == null) {
-		throw new MissingResourceException("no bundles found: " + baseName, "ResourceBundle", baseName);
+	if (lang != null && cntry != null && var1 != null && var2 != null) {
+		try {
+			ResourceBundle nbundle = getSpecificBundle(baseName + "_" + lang + "_" + cntry + "_" + var1 + "_" + var2);
+			nbundle.setParent(bundle);
+			bundle = nbundle;
+		}
+		catch (MissingResourceException _) {
+		}
 	}
 	return (bundle);
 }
@@ -117,15 +147,8 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 	}
 
 	// Okay, failed to load bundle - so attempt to load properties as bundle.
-	ClassLoader sysclassloader = System.class.getClassLoader();
-	InputStream strm = null;
-
-	if (sysclassloader != null) {
-		strm = sysclassloader.getResourceAsStream(baseName + ".properties");
-	}
-	else {
-		strm = ClassLoader.getSystemResourceAsStream(baseName + ".properties");
-	}
+	InputStream strm;
+	strm = DummyClassLoader.getCurrentClassLoader().getResourceAsStream(baseName + ".properties");
 	if (strm != null) {
 		try {
 			return (new PropertyResourceBundle(strm));

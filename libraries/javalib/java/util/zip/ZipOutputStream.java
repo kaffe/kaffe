@@ -17,12 +17,9 @@ import java.util.Enumeration;
 
 public class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
 
-public static final int DEFLATED = 8;
-public static final int STORED = 0;
-
 private static final int ZIPVER = 0x000a;
 
-private int method = DEFLATED;
+private int method = Deflater.DEFLATED;
 private int level = Deflater.DEFAULT_COMPRESSION;
 private byte[] lh = new byte[LOC_RECSZ];
 private byte[] ch = new byte[CEN_RECSZ];

@@ -1,6 +1,3 @@
-package java.lang;
-
-
 /*
  * Java core library component.
  *
@@ -10,7 +7,12 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class Boolean implements java.io.Serializable {
+
+package java.lang;
+
+import java.io.Serializable;
+
+final public class Boolean implements Serializable {
 
 public static final Boolean TRUE = new Boolean(true);
 public static final Boolean FALSE = new Boolean(false);
@@ -36,8 +38,13 @@ public boolean equals(Object obj) {
 }
 
 public static boolean getBoolean(String name) {
-	String s = System.getProperty(name);
-	return (s != null) && s.toLowerCase().equals("true");
+	String value = System.getProperty(name);
+	if (value == null) {
+		return (false);
+	}
+	else {
+		return (value.equalsIgnoreCase("true"));
+	}
 }
 
 public int hashCode() {

@@ -129,24 +129,31 @@ static synchronized FocusEvt getEvent ( Component source, int id ) {
 }
 
 static synchronized FocusEvt getEvent ( int srcIdx, int id ) {
+	FocusEvt  e;
 	Component source = sources[srcIdx];
 
 	if ( source == null ) return null;
 
 	if ( cache == null ){
-		return new FocusEvt( source, id);
+		e = new FocusEvt( source, id);
 	}
 	else {
-		FocusEvt e = cache;
+		e = cache;
 		cache = (FocusEvt) e.next;
 		e.next = null;
 		
 		e.id = id;
 		e.source = source;
 		e.isTemporary = false;
-
-		return e;
 	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+	
+	return e;
 }
 
 protected boolean isLiveEventFor ( Object src ) {

@@ -62,13 +62,20 @@ void disposeCurrent () {
 }
 
 public Graphics getGraphics () {
+	int u = x;
+	int v = y;
+	
+	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ){
+		u -= parent.deco.x;
+		v -= parent.deco.y;
+	}
+
 	// we can't use Component.getGraphics() here, because this is clipped on the
 	// insetted parents. Since Frame insets include the BarMenu, we need to bypass
 	// this (to avoid getting clipped away)
 	return NativeGraphics.getGraphics( parent, ((Window)parent).nativeData,
 	                                   NativeGraphics.TGT_TYPE_WINDOW,
-	                                   x - parent.deco.x, y - parent.deco.y,
-	                                   0, 0, width, height,
+	                                   u, v, 0, 0, width, height,
 	                                   parent.fgClr, parent.bgClr, parent.font, false);
 }
 

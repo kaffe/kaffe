@@ -66,81 +66,54 @@ public synchronized boolean checkID ( int id, boolean load ) {
 	return true;
 }
 
-public synchronized Object[] getErrorsAny()
-{
-	int used = 0;
-	int size = 1;
-	int ic;	
-	Object[] array;
-	final boolean load = false;
-
-	array = new Object[size];
-
-	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		ic = e.img.checkImage( e.w, e.h, e, load);
-			
-		if ( (ic & ImageObserver.ERROR) != 0 ) {
-		        // Expand the byte array if we need to make more room
-		        if (used >= size) {
-			    Object[] oldArray = array;
-			    int new_size = size * 2;
-			    
-			    array = new Object[new_size];
-			    System.arraycopy(oldArray, 0, array, 0, used);
-			    oldArray = null;
-			    
-			    size = new_size;
-			}
-		        // Add this object to our object array
-			array[used++] = e.img;
+public synchronized Object[] getErrorsAny() {
+	MediaTrackerEntry   e;
+	int                 n = 0, i;
+	Object[]            a = null;
+	
+	// most MediaTrackers are used for a small number of images, iterating twice is less
+	// expensive than creating temp. object arrays
+	for ( e = images; e != null; e = e.next) {
+		if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+			n++;
+	}
+	
+	if ( n > 0 ) {
+		a = new Object[n];
+		
+		for ( e = images, i=0; (i < n); e = e.next) {
+			if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+				a[i++] = e.img;
 		}
 	}
-
-	if (used == 0)
-	    return null;
-	
-	Object[] ret = new Object[used];
-	System.arraycopy(ret, 0, array, 0, used);
-	return ret;
+		
+	return a;
 }
 
-public synchronized Object[] getErrorsID(int id)
-{
-    	int used = 0;
-	int size = 1;
-	int ic;	
-	Object[] array;
-	final boolean load = false;
-
-	array = new Object[size];
+public synchronized Object[] getErrorsID ( int id ) {
+	MediaTrackerEntry   e;
+	int                 n = 0, i;
+	Object[]            a = null;
 	
-	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		ic = e.img.checkImage( e.w, e.h, e, load);
-			
-		if ( (ic & ImageObserver.ERROR) != 0 ) {
-		        // Expand the byte array if we need to make more room
-		        if (used >= size) {
-			    Object[] oldArray = array;
-			    int new_size = size * 2;
-			    
-			    array = new Object[new_size];
-			    System.arraycopy(oldArray, 0, array, 0, used);
-			    oldArray = null;
-			    
-			    size = new_size;
-			}
-
-			// Add this object to our object array
-			array[used++] = e.img;
+	// would be nice if we could use a certain id value as "don't care" so that we can unify this
+	// with getErrorsAny()
+	for ( e = images; e != null; e = e.next) {
+		if ( (e.id == id) && 
+		     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+			n++;
+	}
+	
+	if ( n > 0 ) {
+		a = new Object[n];
+		
+		for ( e = images, i=0; (i < n); e = e.next) {
+			if ( (e.id == id) &&
+			     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+				a[i++] = e.img;
 		}
 	}
-
-	if (used == 0)
-	    return null;
-	
-	Object[] ret = new Object[used];
-	System.arraycopy(ret, 0, array, 0, used);
-	return ret;
+		
+	return a;
 }
 
 MediaTrackerEntry getNextEntry ( int id, MediaTrackerEntry prev ) {
@@ -154,14 +127,23 @@ MediaTrackerEntry getNextEntry ( int id, MediaTrackerEntry prev ) {
 	return null;
 }
 
-public synchronized boolean isErrorAny()
-{
-	return ((statusAll(false) & ERRORED) != 0);
+public synchronized boolean isErrorAny() {
+	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
+		if ((e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+			return true;
+	}
+
+	return (false);
 }
 
-public synchronized boolean isErrorID(int id)
-{
-	return ((statusID(id,false) & ERRORED) != 0);	
+public synchronized boolean isErrorID ( int id ) {
+	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
+		if ( (e.id == id) &&
+		     (e.img.checkImage( e.w, e.h, e, false) & (ImageObserver.ERROR|ImageObserver.ABORT)) != 0)
+			return true;
+	}
+	
+	return false;
 }
 
 public synchronized void removeImage(Image image)
@@ -345,16 +327,19 @@ MediaTrackerEntry(Image img, int id, int w, int h)
 	this.h = h;
 }
 
-public synchronized boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
-	if ( (infoflags & (ImageObserver.WIDTH | ImageObserver.HEIGHT )) != 0 ) {
-		w = width;
-		h = height;
-	}
-	if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT)) != 0 ) {
-		notify();
-		return (false);
-	}
+public boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
+	/* sync moved from method for GCJ */
+	synchronized (this) {
+		if ( (infoflags & (ImageObserver.WIDTH | ImageObserver.HEIGHT )) != 0 ) {
+			w = width;
+			h = height;
+		}
+		if ( (infoflags & (ALLBITS | FRAMEBITS | ABORT)) != 0 ) {
+			notify();
+			return (false);
+		}
 	
-	return (true);
+		return (true);
+	}
 }
 }

@@ -1,3 +1,15 @@
+/**
+ * LogStream - a simple OutputStream to implement logging (with multiple
+ *             clients like console windows etc.)
+ *
+ * Copyright (c) 1999
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ */
+
 package kaffe.util.log;
 
 import java.io.OutputStream;
@@ -83,14 +95,14 @@ public void write ( int b ) {
 			first = last = newLine;
 		}
 		else {
-			last.next = newLine;
+			last = newLine;
 		}
 		
 		current.setLength( 0);
 		nLines++;
 		notifyClient();
 	}
-	else {
+	else if ( (b == '\t') || (b >= ' ') ){
 		current.append( (char)b);
 	}
 }

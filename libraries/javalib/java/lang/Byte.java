@@ -10,12 +10,13 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
 public final class Byte extends Number
 {
-	public static final byte MIN_VALUE = -0x80;
-	public static final byte MAX_VALUE = 0x7F;
-	public static final Class TYPE = Class.getPrimitiveClass("byte");
-	private final byte value;
+	final public static byte MIN_VALUE = -0x80;
+	final public static byte MAX_VALUE = 0x7F;
+	final public static Class TYPE = Class.getPrimitiveClass("byte");
+	final private byte value;
 
 public Byte(String s) throws NumberFormatException {
 	this.value = parseByte(s);
@@ -23,6 +24,10 @@ public Byte(String s) throws NumberFormatException {
 
 public Byte(byte value) {
 	this.value = value;
+}
+
+public byte byteValue() {
+	return (value);
 }
 
 public static Byte decode(String nm) throws NumberFormatException {
@@ -50,14 +55,6 @@ public int hashCode() {
 	return (value);
 }
 
-public byte byteValue() {
-	return (value);
-}
-
-public short shortValue() {
-	return ((short)value);
-}
-
 public int intValue() {
 	return ((int)value);
 }
@@ -72,8 +69,9 @@ public static byte parseByte(String s) throws NumberFormatException {
 
 public static byte parseByte(String s, int radix) throws NumberFormatException {
 	int val = Integer.parseInt(s, radix);
-	if (val < MIN_VALUE || val > MAX_VALUE)
-	    throw new NumberFormatException();
+	if (val < MIN_VALUE || val > MAX_VALUE) {
+		throw new NumberFormatException();
+	}
 	return (byte) val;
 }
 

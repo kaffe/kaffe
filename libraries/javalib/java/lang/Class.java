@@ -33,9 +33,6 @@ private String fullResourceName(String name) {
 		if (tail != -1) {
 			buf.append(cname.substring(0, tail+1).replace('.', '/'));
 		}
-		else {
-			buf.append('/');
-		}
 		buf.append(name);
 		name = buf.toString();
 	}
@@ -235,4 +232,5 @@ native public Object newInstance() throws InstantiationException, IllegalAccessE
 public String toString() {
 	return (isInterface() ? "interface " : "class ") + getName();
 }
+
 }

@@ -16,63 +16,73 @@ public class SequenceInputStream
   extends InputStream
 {
 	Vector streams = new Vector();
-	int currentStream = 0;
+	int currentStreamIdx;
+	InputStream currentStream;
 
-public SequenceInputStream(Enumeration e)
-	{
+public SequenceInputStream(Enumeration e) {
 	while (e.hasMoreElements()) {
 		streams.addElement(e.nextElement());
 	}
+	currentStream = (InputStream)streams.elementAt(0);
 }
 
-public SequenceInputStream(InputStream s1, InputStream s2)
-	{
+public SequenceInputStream(InputStream s1, InputStream s2) {
 	streams.addElement(s1);
 	streams.addElement(s2);
+	currentStream = s1;
 }
 
-public int available() throws IOException
-{
-	if (currentStream >= streams.size()) {
+public int available() throws IOException {
+	if (currentStreamIdx >= streams.size()) {
 		return (0);
 	}
 	else {
-		return (((InputStream)streams.elementAt(currentStream)).available());
+		return (currentStream.available());
 	}
 }
 
-public void close() throws IOException
-{
-	for (int stream = currentStream; stream < streams.size(); stream++) {
+public void close() throws IOException {
+	for (int stream = currentStreamIdx; stream < streams.size(); stream++) {
 		((InputStream)streams.elementAt(stream)).close();
 	}
+	currentStreamIdx = 0;
+	currentStream = null;
+	streams = new Vector();
 }
 
-public int read() throws IOException
-{
-	if (currentStream >= streams.size()) {
+public int read() throws IOException {
+	if (currentStreamIdx >= streams.size()) {
 		return -1;
 	}
-
-	int data = ((InputStream)streams.elementAt(currentStream)).read();
-	if (data == -1) {
-		currentStream++;
-		return (read());
+	for (;;) {
+		int data = currentStream.read();
+		if (data != -1) {
+			return (data);
+		}
+		currentStream.close();
+		currentStreamIdx++;
+		if (currentStreamIdx >= streams.size()) {
+			return -1;
+		}
+		currentStream = (InputStream)streams.elementAt(currentStreamIdx);
 	}
-	return (data);
 }
 
-public int read(byte buf[], int pos, int len) throws IOException
-{
-	if (currentStream >= streams.size()) {
+public int read(byte buf[], int pos, int len) throws IOException {
+	if (currentStreamIdx >= streams.size()) {
 		return -1;
 	}
-
-	int data = ((InputStream)streams.elementAt(currentStream)).read(buf, pos, len);
-	if (data == -1) {
-		currentStream++;
-		return (read(buf, pos, len));
+	for (;;) {
+		int nr = currentStream.read(buf, pos, len);
+		if (nr != -1) {
+			return (nr);
+		}
+		currentStream.close();
+		currentStreamIdx++;
+		if (currentStreamIdx >= streams.size()) {
+			return -1;
+		}
+		currentStream = (InputStream)streams.elementAt(currentStreamIdx);
 	}
-	return (data);
 }
 }

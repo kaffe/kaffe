@@ -448,13 +448,6 @@ public synchronized void imageComplete ( int status ) {
 		notify();     // in case we had an async producer
 }
 
-static void loadSync( Image img ) {
-	synchronized ( syncLoader ) {
-		syncLoader.img = img;
-		img.producer.startProduction(syncLoader);
-	}
-}
-
 static synchronized void load ( Image img ) {
 	if ( asyncLoader == null ){
 		asyncLoader = new ImageLoader();
@@ -474,6 +467,13 @@ static synchronized void load ( Image img ) {
 		}
 		
 		ImageLoader.class.notify();
+	}
+}
+
+static void loadSync( Image img ) {
+	synchronized ( syncLoader ) {
+		syncLoader.img = img;
+		img.producer.startProduction(syncLoader);
 	}
 }
 
@@ -748,7 +748,7 @@ void produceFrom ( URL url ) {
 		}
 	}
 	catch ( Exception x ) {}
-	
+
 	imageComplete( ImageConsumer.IMAGEERROR|ImageConsumer.IMAGEABORTED);
 }
 

@@ -96,73 +96,110 @@ synchronized void dropPaintEvents ( Object source, int x, int y, int w, int h ) 
 
 public AWTEvent getNextEvent () {
 	AWTEvent e;
-	while ( true ) {
-		synchronized ( this ) {
-			if ( localQueue != null ) {
-				e = localQueue;
-				localQueue = e.next;
-				e.next = null;
-				if ( e == localEnd ) localEnd = null; // just to avoid a temp mem leak
-				return e;
-			}
-		}
 
-		// this is the sync point in case we have a blocking AWT (suspending
-		// the dispatcher thread until the next event becomes available)
-		if ( (e = Toolkit.evtGetNextEvent()) != null ) {
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// We only have one source of Java events - our localQueue (every
+		// native event is posted to this queue by the native layer). If
+		// it is empty, we can't do anything else than go sleeping
+		synchronized ( this) {
+			// block until we get something in
+			while ( localQueue == null ) {
+				try {
+					wait();
+				} catch ( InterruptedException xx ) {}
+			}
+
+			e = localQueue;
+			localQueue = e.next;
 			e.next = null;
+			if ( e == localEnd )
+				localEnd = null; // just to avoid a temp mem leak
+
 			return e;
 		}
+	}
+	else {
+		// Slightly more complex - we have two sources of events: our local queue
+		// and some native mechanism accessed via evtGetNextEvent(). We start with
+		// our local queue, but don't block in case it is empty. Blocking (if any) is done
+		// in evtGetNextEvent(), which means we have to create some native event traffic
+		// (getting back as a null event) in case we subsequently post a event to
+		// the localQueue
+		while ( true ) {
+			synchronized ( this ) {
+				if ( localQueue != null ) {
+					e = localQueue;
+					localQueue = e.next;
+					e.next = null;
+					if ( e == localEnd )
+						localEnd = null; // just to avoid a temp mem leak
 
-		// we don't have to check Toolkit.isBlocking here, since we reach
-		// this point only in case it is not blocked, or evtGetNextEvent()
-		// returned 'null'
-		if ( !AWTEvent.accelHint ) {
-			try {
-				Thread.sleep( Defaults.EventPollingRate);
+					return e;
+				}
 			}
-			catch ( InterruptedException x ) {
+
+			// this is the sync point in case we have a blocking AWT (suspending
+			// the dispatcher thread until the next event becomes available)
+			if ( (e = Toolkit.evtGetNextEvent()) != null ) {
+				e.next = null;
+				return e;
+			}
+
+			// we don't have to check Toolkit.IS_BLOCKING here, since we reach
+			// this point only in case it is not blocked, or evtGetNextEvent()
+			// returned 'null'
+			if ( !AWTEvent.accelHint ) {
+				try {
+					Thread.sleep( Defaults.EventPollingRate);
+				} catch ( InterruptedException xx ) {}
 			}
 		}
 	}
 }
 
 public synchronized AWTEvent peekEvent () {
-	if ( localQueue != null )
+	if ( localQueue != null ){
 		return localQueue;
-	else
+	}
+	else if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) == 0 ) {
 		return Toolkit.evtPeekEvent();
+	}
+
+	return null;
 }
 
 public synchronized AWTEvent peekEvent ( int id ) {
-	AWTEvent e = null;
-
-	if ( localQueue != null ) {
-		for ( e=localQueue; (e != null) && (e.id != id); e = e.next );
+	for ( AWTEvent e=localQueue; e != null; e = e.next ) {
+		if ( e.id == id )
+			return e;
 	}
 	
-	if ( e == null )
-		e = Toolkit.evtPeekEventId( id);
-
-	return e;
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) == 0 )
+		return Toolkit.evtPeekEventId( id);
+		
+	return null;
 }
 
 public synchronized void postEvent ( AWTEvent e ) {
 	if ( localQueue == null ) {
 		localQueue = localEnd = e;
 
-		// if we use blocked IO, and this is not the eventThread, wake it
-		// by creating some IO traffic
-		if ( Toolkit.isBlocking && (Thread.currentThread() != Toolkit.eventThread) )
-			Toolkit.evtWakeup();
+		if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+			notify();  // wake up any waiter
+		}
+		else {
+			// If we use blocked IO, and this is not the eventThread, wake it up by creating
+			// some IO traffic. No need to do that if we have a native dispatcher loop
+			if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0)
+		        && (Thread.currentThread() != Toolkit.eventThread) ){
+				Toolkit.evtWakeup();
+			}
+		}
 	}
 	else {
 		localEnd.next = e;
 		localEnd = e;
-		//AWTEvent q;
-		//for ( q=localQueue; q.next != null; q = q.next );
-		//q.next = e;
-		
+				
 		// there is no need to wakeup the eventThread, since local events are
 		// always processed *before* blocking on a native event inquiry (and
 		// the localQueue isn't empty)
@@ -191,7 +228,8 @@ synchronized void repaint ( Component c, int x, int y, int width, int height ) {
 	else {
 		localQueue = localEnd = PaintEvt.getEvent( c, PaintEvt.UPDATE, 0, x, y, width, height);
 
-		if ( Toolkit.isBlocking && (Thread.currentThread() != Toolkit.eventThread) )
+		if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0) &&
+		     (Thread.currentThread() != Toolkit.eventThread) )
 			Toolkit.evtWakeup();
 	}
 }

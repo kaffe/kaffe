@@ -44,6 +44,7 @@ static synchronized WindowEvt getEvent ( Window source, int id ) {
 }
 
 static synchronized WindowEvt getEvent ( int srcIdx, int id ) {
+	WindowEvt e;
 	Component source = sources[srcIdx];
 
 	// this protects us from "normal" window destruction triggered by removeNotify()
@@ -53,18 +54,24 @@ static synchronized WindowEvt getEvent ( int srcIdx, int id ) {
 		PopupWindow.checkPopup( source); // close any open popups
 
 	if ( cache == null ){
-		return new WindowEvt( (Window)source, id);
+		e = new WindowEvt( (Window)source, id);
 	}
 	else {
-		WindowEvt e = cache;
+		e = cache;
 		cache = (WindowEvt) e.next;
 		e.next = null;
 		
 		e.id = id;
 		e.source = source;
-		
-		return e;
 	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+	
+	return e;
 }
 
 protected void recycle () {

@@ -14,10 +14,10 @@ package java.lang;
 final public class Long
   extends Number
 {
-	private final long value;
-	public static final long MIN_VALUE = 0x8000000000000000L;
-	public static final long MAX_VALUE = 0x7fffffffffffffffL;
-	public static final Class TYPE = Class.getPrimitiveClass("long");
+	final private long value;
+	final public static long MIN_VALUE = 0x8000000000000000L;
+	final public static long MAX_VALUE = 0x7fffffffffffffffL;
+	final public static Class TYPE = Class.getPrimitiveClass("long");
 
 public Long(String s) throws NumberFormatException {
 	this.value = valueOf(s).value;
@@ -46,49 +46,36 @@ public static Long getLong(String nm) {
 }
 
 public static Long getLong(String nm, Long val) {
-	String arg = (val != null) ? val.toString() : null;
-
-	String property=System.getProperty(nm, arg);
-	if (property==null) return val;
-	else {
-		String toParse;
-		int radixToParse;
-
-		/* Exception rules in the definition */
-
-		if (property.startsWith("0x-")) return val;
-		if (property.startsWith("#-")) return val;
-		if (property.endsWith("l") || property.endsWith("L")) return val;
-
+	String property = System.getProperty(nm);
+	if (property != null) {
+		long sign = 1L;
+		if (property.startsWith("-")) {
+			sign = -1L;
+			property = property.substring(1);
+		}
+		if (property.equals("0")) {
+			return (new Long(0L));
+		}
+		int base = 10;
 		if (property.startsWith("0x")) {
-			toParse=property.substring(2);
-			radixToParse=16;
+			base = 16;
+			property = property.substring(2);
 		}
 		else if (property.startsWith("#")) {
-			toParse=property.substring(1);
-			radixToParse=16;
+			base = 16;
+			property = property.substring(1);
 		}
 		else if (property.startsWith("0")) {
-			toParse=property.substring(1);
-			radixToParse=8;
+			base = 8;
+			property = property.substring(1);
 		}
-		else {
-			toParse=property;
-			radixToParse=10;
+		try {
+			return (new Long(Long.parseUnsignedLong(property, base, sign)));
 		}
-
-		if (toParse.length()==0) {
-			return val;
-		}
-		else {
-			try {
-				return Long.valueOf(toParse, radixToParse);
-			}
-			catch (NumberFormatException e) {
-				return val;
-			}
+		catch (NumberFormatException e1) {
 		}
 	}
+	return (val);
 }
 
 public static Long getLong(String nm, long val) {
@@ -111,26 +98,37 @@ public static long parseLong(String s) throws NumberFormatException {
 	return parseLong(s, 10);
 }
 
-public static long parseLong(String s, int radix) throws NumberFormatException {
-	if (s.length()<=0) throw new NumberFormatException();
+public static long parseLong(String s, int radix) {
+	if (s.length() <= 0) {
+		throw new NumberFormatException();
+	}
 
 	/* Check for negativity */
-	if (s.charAt(0)=='-') {
-		return -parseLong(s.substring(1));
+	if (s.charAt(0) == '-') {
+		return (parseUnsignedLong(s.substring(1), radix, -1L));
 	}
 	else {
-		long result=0;
-		int position;
+		return (parseUnsignedLong(s, radix, 1L));
+	}
+}
 
-		for (position=0; position<s.length(); position++) {
-			int digit=Character.digit(s.charAt(position), radix);
-			if (digit==-1) throw new NumberFormatException();
-
-			result=(result*radix)+digit;
+private static long parseUnsignedLong(String s, int radix, long sign) throws NumberFormatException {
+	long result = 0;
+	for (int pos = 0; pos < s.length(); pos++) {
+		int digit = Character.digit(s.charAt(pos), radix);
+		if (digit == -1) {
+			throw new NumberFormatException();
 		}
-
-		return result;
-	}			
+		long nresult = (result * radix) + (sign * digit);
+		if (nresult < 0 && sign == 1) {
+			throw new NumberFormatException();
+		}
+		else if (nresult > 0 && sign == -1) {
+			throw new NumberFormatException();
+		}
+		result = nresult;
+	}
+	return (result);
 }
 
 public static String toBinaryString ( long i ) {
