@@ -12,6 +12,8 @@
 #ifndef __gc_block_h
 #define	__gc_block_h
 
+/* allow for machine-specific definitions of gc_heap_base */
+#include "md.h"
 #include "mem/gc-incremental.h"
 
 #ifndef gc_heap_base
