@@ -58,6 +58,7 @@ struct _methodRing {
 	const char* name;
 	const char* sig;
 	u2 access_flags;
+	bool needs_mangled_sig;
 } *methodRing;
 
 static int 
@@ -595,6 +596,7 @@ addMethod(Hjava_lang_Class* this,
         list->name = name;
         list->sig  = sig;
 	list->access_flags = access_flags;
+	list->needs_mangled_sig = false;
 
 	if (methodRing == NULL) {
 		methodRing = list;
@@ -606,13 +608,18 @@ addMethod(Hjava_lang_Class* this,
 		do {
 			
 			if (!strcmp (list->name, i->name)) {
+				/* iff the names are equal, both need a mangled sig */
+				list->needs_mangled_sig = true;
+				i->needs_mangled_sig = true;
 			  
+				/* insert list */
 				i->next->prev = list;
 				list->next = i->next;
 
 				i->next = list;
 				list->prev = i;
 
+				/* return success */
 				return (Method*)1;	
 			}
 	
@@ -674,8 +681,8 @@ finishMethods (Hjava_lang_Class *this)
 			
 			fprintfJni(jni_include, i->name);
 
-			/* if there are other methods with the same name, we have to append the mangled signature */
-			if (i != i->next && (!strcmp (i->name, i->prev->name) || !strcmp (i->name, i->next->name))) {
+			/* append mangled sig if necessary */
+			if (i->needs_mangled_sig) {
 				fprintf(jni_include, "__");
 				
 				fprintfJni(jni_include, i->sig+1);

@@ -432,7 +432,7 @@ dnl =========================================================================
 dnl Use jikes instead of kjc?
 dnl =========================================================================
 
-AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler [default=no]])
+AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler [default=no]],[JIKES="$withval"],[JIKES=""])
 AC_MSG_CHECKING([whether to use jikes])
 if test x"$with_jikes" = x"" ; then
 	use_jikes=no
@@ -1310,14 +1310,16 @@ dnl  Otherwise use pure java implementation.
 if test x$pure_java_math = xtrue ; then
 	java_math_SRCS="pure_java_math_SRCS"
 	NATIVE_MATH_DIR=""
+	MATH_LIB=""
 else
 	java_math_SRCS="native_java_math_SRCS"
 	NATIVE_MATH_DIR="math"
+	MATH_LIB=$(top_builddir)/libraries/clib/math/libmath.la
 fi
 
 AC_SUBST(java_math_SRCS)
 AC_SUBST(NATIVE_MATH_DIR)
-
+AC_SUBST(MATH_LIB)
 dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
 dnl -----------------------------------------------------------------------
@@ -1330,7 +1332,7 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/net/libnet.la \
 \$(top_builddir)/libraries/clib/io/libio.la \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
-\$(top_builddir)/libraries/clib/math/libmath.la \
+$MATH_LIB \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 \$(top_builddir)/libraries/extensions/microsoft/clib/libmicrosoft.la \

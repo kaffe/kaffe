@@ -67,31 +67,10 @@ public static Class forName(String className, boolean initialize, ClassLoader lo
 		}
 	}
 
-	/* The only checked exception that Class.forName() throws
-	 * is ClassNotFoundException.  This is an exception, not an
-	 * Error, which users often catch.
-	 *
-	 * However, Class.forName() can also throw errors, such as
-	 * NoClassDefFoundError, if for instance a superclass for
-	 * a class couldn't be found.
-	 *
-	 * When it throws which, we don't really know.  We try to be
-	 * compatible, so we upgrade the error to an exception if it's
-	 * (NoClassDefFoundError, this_class_name), or if it's a
-	 * VerifyError.
-	 * NB: 1.2 seems to be more consistent and throws
-	 * ClassNotFoundException in most cases.
-	 */
-
 	Class cls = loader.findLoadedClass(className);
 
 	if (cls == null) {
-		try {
-			cls = loader.loadClass(className, initialize);
-		}
-		catch (VerifyError error) {
-			throw new ClassNotFoundException(error.getMessage());
-		}
+		cls = loader.loadClass(className, initialize);
 	}
 
 	return cls;
