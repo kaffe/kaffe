@@ -186,8 +186,7 @@ public Object getOption(int option) throws SocketException {
 	}
 }
 
-protected synchronized int read(byte[] buf, int offset, int len)
-		throws IOException {
+protected int read(byte[] buf, int offset, int len) throws IOException {
 	if (closed)
 		return -1;
 	int r = socketRead(buf, offset, len);
@@ -199,8 +198,7 @@ protected synchronized int read(byte[] buf, int offset, int len)
 	}
 }
 
-protected synchronized void write(byte[] buf, int offset, int len)
-		throws IOException {
+protected void write(byte[] buf, int offset, int len) throws IOException {
 	if (closed)
 		throw new IOException("socket closed");
 	socketWrite(buf, offset, len);
