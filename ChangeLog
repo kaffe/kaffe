@@ -1,3 +1,11 @@
+Sun Jan 10 16:58:12 1999  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/hashtab.[ch], kaffe/kaffevm/string.c, 
+	kaffe/kaffevm/utf8const.c: removed flags from hashtable.
+	kaffe/kaffevm/mem/gc-mem.c: round gc_heap_initial_size up to
+	a multiple of pagesize.
+	* libraries/clib/awt/X/imggif.c: removed -Wall warnings.
+
 Sun Jan 10 20:13:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.automake: note about the snapshot of automake 1.3e I've
