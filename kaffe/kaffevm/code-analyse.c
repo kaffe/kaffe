@@ -1911,7 +1911,6 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done;
 				}
 			}
-			/* SET_INSN(pc, CHECKCAST_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1924,7 +1923,6 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done;
 				}
 			}
-			/* SET_INSN(pc, INSTANCEOF_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TINT);
 			INCPC(3);

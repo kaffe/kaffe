@@ -217,16 +217,4 @@ typedef unsigned char bytecode;
 #define JSR_W 201
 #define BREAKPOINT 202
 
-#if 0
-/*
- * These optimised instructions are only used within the interpreter.
- *  Instructions are converted during the code analysis phase rather than
- *  during execution.  This means we must always verify our code (not a bad
- *  thing anyhow).  However, it allow us increase the interpreters execution
- *  speed by removing symbolic constants without infringing Sun's patent.
- */
-#define	CHECKCAST_FAST 254
-#define	INSTANCEOF_FAST 255
-#endif
-
 #endif

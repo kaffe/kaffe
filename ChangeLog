@@ -1,3 +1,8 @@
+Mon Jul 29 18:27:32 CEST 2002 Robert N. Gonzalez <Robert.N.Gonzalez@williams.edu>
+
+	* kaffe/kaffevm/bytecode.h, kaffe/kaffevm/code-analyse.c:
+	Removed dead code.
+
 Mon Jul 29 15:03:28 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/ClassLoader.c:
