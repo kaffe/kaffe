@@ -11,7 +11,7 @@
 #include "config.h"
 #include "java_math_BigInteger.h"
 
-#if defined(HAVE_GMP_H)
+#if defined(HAVE_GMP_H) && defined(HAVE_LIBGMP)
 
 #include <gmp.h>
 #include <stdlib.h>
