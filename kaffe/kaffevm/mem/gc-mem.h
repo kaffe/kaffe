@@ -40,9 +40,28 @@ typedef struct _gc_freeobj {
 #define	NR_FREELISTS		20
 #define	GC_SMALL_OBJECT(S)	((S) <= max_small_object_size)
 
+/**
+ * Alignment for gc_blocks
+ *
+ */
 #define	MEMALIGN		8
+
+/**
+ * rounds @V up to the next MEMALIGN boundary. 
+ *
+ */
 #define	ROUNDUPALIGN(V)		(((uintp)(V) + MEMALIGN - 1) & -MEMALIGN)
+
+/**
+ * rounds @V down to the previous MEMALIGN boundary.
+ *
+ */
 #define	ROUNDDOWNALIGN(V)	((uintp)(V) & -MEMALIGN)
+
+/**
+ * rounds @V up to the next page size.
+ *
+ */
 #define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
 
 /* ------------------------------------------------------------------------ */
@@ -50,8 +69,17 @@ typedef struct _gc_freeobj {
 extern void*	gc_heap_malloc(size_t);    
 extern void	gc_heap_free(void*);
 
+/**
+ * Evaluates to the size of the object that contains address @M.
+ *
+ */
 #define	GC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
 
+/**
+ * One block of the heap managed by kaffe's gc.
+ *
+ * It is basically one page of objects that are of the same size. 
+ */
 typedef struct _gc_block {
 #ifdef KAFFE_VMDEBUG
 	uint32			magic;	/* Magic number */
@@ -74,19 +102,58 @@ extern void	gc_primitive_free(gc_block* mem);
 /* ------------------------------------------------------------------------ */
 
 #define	GC_MAGIC		0xD0DECADE
+
 #define GCBLOCK_LIVE		((gc_block *) -1) /* block->next when alloced*/
+
 #define GC_BLOCKS		((gc_block *) gc_block_base)
 
+/**
+ * Evaluates to the array that contains the states of the objects contained in @B.
+ *
+ */
 #define	GCBLOCK2STATE(B, N)	(&(B)->state[(N)])
+
+/**
+ * Evaluates to a gc_unit* of the @Nth object stored in gc_block @B
+ *
+ */
 #define	GCBLOCK2MEM(B, N)	((gc_unit*)(&(B)->data[(N)*(B)->size]))
+
+/**
+ * Evaluates to a gc_freeobj* of the @Nth object stored in gc_block @B.
+ *
+ */
 #define	GCBLOCK2FREE(B, N)	((gc_freeobj*)GCBLOCK2MEM(B, N))
+
+/**
+ * Evaluates to the size of the objects stored in gc_block @B
+ *
+ */
 #define	GCBLOCKSIZE(B)		(B)->size
 
+/** 
+ * Evaluates to a gc_freeobj* equal to address @M. 
+ *
+ */
 #define	GCMEM2FREE(M)		((gc_freeobj*)(M))
+
+/**
+ * Evaluates to the index of the object in gc_block @B that contains address @M.
+ *
+ */
 #define	GCMEM2IDX(B, M)		(((uint8*)(M) - (B)->data) / (B)->size)
+
+/**
+ * Evaluates to the gc_block that contains address @M.
+ *
+ */
 #define GCMEM2BLOCK(M)		(GC_BLOCKS + ((((uintp) M) - gc_heap_base) \
 					      >> gc_pgbits))
-/* find first usable address in block */ 
+
+/**
+ * Evaluates to the first usable address in gc_block @B.
+ *
+ */ 
 #define GCBLOCK2BASE(B)	(((char *)gc_heap_base)		\
 			 + gc_pgsize * ((B) - GC_BLOCKS))
 

@@ -251,6 +251,17 @@ createInitialThread(const char* nm)
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;
 
+        /*
+	 * set context class loader of primordial thread to app classloader
+	 * must not be done earlier, since getCurrentThread() won't work
+         * before the jthread_createfirst and the PrivateInfo assignment
+	 */
+        unhand(tid)->context = do_execute_java_class_method ("kaffe/lang/AppClassLoader",
+                                                             NULL,
+                                                             "getSingleton",
+                                                             "()Ljava/lang/ClassLoader;").l;
+
+	
 	/* Attach thread to threadGroup */
 	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
 }
@@ -485,6 +496,7 @@ getCurrentThread(void)
 	Hjava_lang_Thread* tid;
 	
 	tid = jthread_getcookie(jthread_current());
+
 #ifdef JIT3
 	assert(tid);
 #endif

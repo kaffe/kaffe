@@ -31,7 +31,7 @@
 #include <sys/mman.h>
 #endif
 
-extern iLock* gc_lock;
+iLock* gc_heap_lock;
 
 #if defined(KAFFE_STATS)
 static counter gcpages;
@@ -47,11 +47,21 @@ uintp gc_heap_base;
 uintp gc_block_base;
 uintp gc_heap_range;
 
+/**
+ * A preallocated block for small objects.
+ *
+ * @list list of gc_blocks available for objects of the same size
+ * @sz   the size of the objects that can be stored in @list. 
+ */
 typedef struct {
 	gc_block* list;
 	uint16	  sz;
 } gc_freelist;
 
+/**
+ * Array of preallocated blocks.
+ *  
+ */
 static gc_freelist freelist[NR_FREELISTS+1]
 #ifdef PREDEFINED_NUMBER_OF_TILES
 	= {
@@ -80,6 +90,10 @@ static gc_freelist freelist[NR_FREELISTS+1]
 #endif /* PREDEFINED_NUMBER_OF_TILES */
 ;
 
+/**
+ * Maps a given size to a freelist entry. 
+ *
+ */
 static struct {
 	uint16	list;
 } sztable[MAX_SMALL_OBJECT_SIZE+1];
@@ -293,7 +307,7 @@ gc_heap_malloc(size_t sz)
 		gc_heap_init = 1;
 	}
 
-	lockStaticMutex(&gc_lock);
+	lockStaticMutex(&gc_heap_lock);
 
 	times = 0;
 
@@ -381,7 +395,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n",
 
 	assert(GC_OBJECT_SIZE(mem) >= sz);
 
-	unlockStaticMutex(&gc_lock);
+	unlockStaticMutex(&gc_heap_lock);
 
 	return (mem);
 
@@ -400,9 +414,9 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n",
 			 * give up this lock on its own, since it does not 
 			 * hold this lock.
 			 */
-			unlockStaticMutex(&gc_lock);
+			unlockStaticMutex(&gc_heap_lock);
 			adviseGC();
-			lockStaticMutex(&gc_lock);
+			lockStaticMutex(&gc_heap_lock);
 		}
 		break;
 
@@ -426,7 +440,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n",
 			assert (ranout++ == 0 || !!!"Ran out of memory!");
 		}
 		/* Guess we've really run out */
-		unlockStaticMutex(&gc_lock);
+		unlockStaticMutex(&gc_heap_lock);
 		return (0);
 	}
 
@@ -445,7 +459,7 @@ gc_heap_free(void* mem)
 	int lnr;
 	int msz;
 	int idx;
-
+	int iLockRoot;
 
 	info = GCMEM2BLOCK(mem);
 	idx = GCMEM2IDX(info, mem);
@@ -460,15 +474,11 @@ gc_heap_free(void* mem)
 DBG(GCFREE,
 	dprintf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
 
+	lockStaticMutex(&gc_heap_lock);
+
 	if (GC_SMALL_OBJECT(info->size)) {
 		lnr = sztable[info->size].list;
-		/* If this block contains no free sub-blocks yet, attach
-		 * it to freelist.
-		 */
-		if (info->avail == 0) {
-			info->next = freelist[lnr].list;
-			freelist[lnr].list = info;
-		}
+	
 		info->avail++;
 		DBG(GCDIAG,
 		    /* write pattern in memory to see when live objects were
@@ -484,8 +494,13 @@ DBG(GCFREE,
 		/* If we free all sub-blocks, free the block */
 		assert(info->avail <= info->nr);
 		if (info->avail == info->nr) {
+			/*
+			 * note that *finfo==0 is ok if we free a block
+			 * whose small object is so large that it can
+			 * only contain one object.
+			 */
 			gc_block** finfo = &freelist[lnr].list;
-			for (;;) {
+			for (;*finfo;) {
 				if (*finfo == info) {
 					(*finfo) = info->next;
 					info->size = gc_pgsize;
@@ -493,9 +508,18 @@ DBG(GCFREE,
 					break;
 				}
 				finfo = &(*finfo)->next;
-				assert(*finfo != 0);
 			}
+		} else if (info->avail==1) {
+			/*
+			 * If this block contains no free sub-blocks yet, attach
+			 * it to freelist. 
+			 */
+			gc_block **finfo = &freelist[lnr].list;
+
+			info->next = *finfo; 
+			*finfo = info;
 		}
+
 	}
 	else {
 		/* Calculate true size of block */
@@ -504,9 +528,13 @@ DBG(GCFREE,
 		info->size = msz;
 		gc_primitive_free(info);
 	}
+
+	unlockStaticMutex(&gc_heap_lock);
+
 DBG(GCDIAG,
 	gc_heap_check();
     )
+
 }
 
 /*

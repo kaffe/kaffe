@@ -61,6 +61,7 @@
  * I'm not proud of this - it's a hack waiting for a better idea - TIM.
  */
 extern iLock* gc_lock;
+extern iLock* gc_heap_lock;
 extern iLock* gcman;
 extern iLock* finman;
 static struct {
@@ -68,6 +69,7 @@ static struct {
 	iLock	lock;
 } specialLocks[] = {
 	{ &gc_lock,	{ 0, 0, 0 } },
+	{ &gc_heap_lock,{ 0, 0, 0 } },
 	{ &gcman,	{ 0, 0, 0 } },
 	{ &finman,	{ 0, 0, 0 } },
 	{ &stringLock,	{ 0, 0, 0 } },

@@ -1,3 +1,18 @@
+2003-06-02  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/thread.c
+	(createInitialThread): properly initialize the context class
+	loader of the initial thread
+
+	* kaffe/kaffevm/mem/gc-mem.h: added some docs
+	
+	* kaffe/kaffevm/mem/gc-mem.c
+	(gc_heap_malloc, gc_heap_free): use new gc_heap_lock to
+	protect data structures for heap management
+
+	* kaffe/kaffevm/locks.c: added gc_heap_lock to the
+	array of special locks
+
 2003-06-01  Jim Pick  <jim@kaffe.org>
 
 	* configure.in:
