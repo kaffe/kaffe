@@ -1,3 +1,13 @@
+2005-02-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(finaliserMan): Splitted into finaliserMan and finaliserJob.
+	(clearStack): Removed.
+	(gcMarkAddress): Removed debug printf.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(jthread_condwait): Removed debug printf.
+	
 2005-02-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/sparc/sysdepCallMethod.h

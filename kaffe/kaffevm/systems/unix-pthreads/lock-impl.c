@@ -136,8 +136,6 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 
   if ( timeout == NOTIMEOUT )
     {
-	    if ((void *)0x827e6dc == cur)
-		    dprintf("stack ptr=%p\n", &status);
       /* we handle this as "wait forever" */
       status = ThreadCondWait(cur, cv, mux);
     }

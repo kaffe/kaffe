@@ -46,6 +46,7 @@ static struct _gcStats {
 /* Avoid recursively allocating OutOfMemoryError */
 #define OOM_ALLOCATING		((void *) -1)
 
+#define STACK_SWEEP_MARGIN      1024
 #define GCSTACKSIZE		16384
 #define FINALIZERSTACKSIZE	THREADSTACKSIZE
 
@@ -305,8 +306,6 @@ gcMarkAddress(Collector* gcif UNUSED, void *gc_info UNUSED, const void* mem)
 	/* Get block info for this memory - if it exists */
 	info = gc_mem2block(mem);
 	unit = UTOUNIT(mem);
-	if (mem == 0x832e3b4)
-		dprintf("marked bad mem\n");
 	if (gc_heap_isobject(info, unit)) {
 		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 	}
@@ -868,90 +867,96 @@ startFinalizer(void)
  * the objects in turn.  An object is only finalised once after which
  * it is deleted.
  */
-
-static void clearStack(void *stackMin, void *stackMax)
+static void finaliserJob(Collector *gcif, int *where)
 {
-	void *p = alloca(1024);
-	
-	memset(p, 0, 1024);
+  gc_block* info = NULL;
+  gc_unit* unit = NULL;
+  int idx = 0;
+  void *stack;
+#define iLockRoot (*where)
+
+  /*
+   * Loop until the list of objects whose finaliser needs to be run is empty
+   * [ checking the condition without holding a lock is ok, since we're the only
+   * thread removing elements from the list (the list can never shrink during
+   * a gc pass) ].
+   *
+   * According to the spec, the finalisers have to be run without any user
+   * visible locks held. Therefore, we must temporarily release the finman
+   * lock and may not hold the gc_lock while running the finalisers as they
+   * are exposed to the user by java.lang.Runtime.
+   * 
+   * In addition, we must prevent an object and everything it references from
+   * being collected while the finaliser is run (since we can't hold the gc_lock,
+   * there may be several gc passes in the meantime). To do so, we keep the
+   * object in the finalise list and only remove it from there when its
+   * finaliser is done (simply adding the object to the grey list while its
+   * finaliser is run only works as long as there's at most one gc pass).
+   *
+   * In order to determine the finaliser of an object, we have to access the
+   * gc_block that contains it and its index. Doing this without holding a
+   * lock only works as long as both, the gc_blocks and the indices of the
+   * objects in a gc_block, are constant.
+   */
+  while (gclists[finalise].cnext != &gclists[finalise]) {
+    unit = gclists[finalise].cnext;
+    info = gc_mem2block(unit);
+    idx = GCMEM2IDX(info, unit);
+    
+    /* Call finaliser */
+    unlockStaticMutex(&finman);
+    (*gcFunctions[KGC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
+    lockStaticMutex(&finman);
+    
+    /* and remove unit from the finaliser list */
+    lockStaticMutex(&gc_lock);
+    UREMOVELIST(unit);
+    UAPPENDLIST(gclists[nofin_white], unit);
+    
+    gcStats.finalmem -= GCBLOCKSIZE(info);
+    gcStats.finalobj -= 1;
+    
+    assert(KGC_GET_STATE(info,idx) == KGC_STATE_INFINALIZE);
+    /* Objects are only finalised once */
+    KGC_SET_STATE(info, idx, KGC_STATE_FINALIZED);
+    KGC_SET_COLOUR(info, idx, KGC_COLOUR_WHITE);
+    unlockStaticMutex(&gc_lock);
+  }
+  info = NULL;
+  unit = NULL;
+  idx = 0;
+
+  /* This cleans STACK_SWEEP_MARGIN bytes on the stack. This is needed
+   * because some objects may still lie on our stack.
+   */
+  stack = alloca(STACK_SWEEP_MARGIN);
+
+  memset((void *)((uintp)stack), 0, STACK_SWEEP_MARGIN);
+#undef iLockRoot
 }
 
 static void NONRETURNING
 finaliserMan(void* arg)
 {
-	gc_block* info;
-	gc_unit* unit;
-	int idx;
-	Collector *gcif = (Collector*)arg;
-	int iLockRoot;
-
-
-	lockStaticMutex(&finman);
-	for (;;) {
-
-		finalRunning = false;
-		while (finalRunning == false) {
-			waitStaticCond(&finman, (jlong)0);
-		}
-		assert(finalRunning == true);
-
-		/*
-		 * Loop until the list of objects whose finaliser needs to be run is empty
-		 * [ checking the condition without holding a lock is ok, since we're the only
-		 * thread removing elements from the list (the list can never shrink during
-		 * a gc pass) ].
-		 *
-		 * According to the spec, the finalisers have to be run without any user
-		 * visible locks held. Therefore, we must temporarily release the finman
-		 * lock and may not hold the gc_lock while running the finalisers as they
-		 * are exposed to the user by java.lang.Runtime.
-		 * 
-		 * In addition, we must prevent an object and everything it references from
-		 * being collected while the finaliser is run (since we can't hold the gc_lock,
-		 * there may be several gc passes in the meantime). To do so, we keep the
-		 * object in the finalise list and only remove it from there when its
-		 * finaliser is done (simply adding the object to the grey list while its
-		 * finaliser is run only works as long as there's at most one gc pass).
-		 *
-		 * In order to determine the finaliser of an object, we have to access the
-		 * gc_block that contains it and its index. Doing this without holding a
-		 * lock only works as long as both, the gc_blocks and the indices of the
-		 * objects in a gc_block, are constant.
-		 */
-		while (gclists[finalise].cnext != &gclists[finalise]) {
-			unit = gclists[finalise].cnext;
-			info = gc_mem2block(unit);
-			idx = GCMEM2IDX(info, unit);
-
-			/* Call finaliser */
-			unlockStaticMutex(&finman);
-			(*gcFunctions[KGC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
-			lockStaticMutex(&finman);
-
-			/* and remove unit from the finaliser list */
-			lockStaticMutex(&gc_lock);
-			UREMOVELIST(unit);
-			UAPPENDLIST(gclists[nofin_white], unit);
-
-			gcStats.finalmem -= GCBLOCKSIZE(info);
-			gcStats.finalobj -= 1;
-			
-			assert(KGC_GET_STATE(info,idx) == KGC_STATE_INFINALIZE);
-			/* Objects are only finalised once */
-			KGC_SET_STATE(info, idx, KGC_STATE_FINALIZED);
-			KGC_SET_COLOUR(info, idx, KGC_COLOUR_WHITE);
-			unlockStaticMutex(&gc_lock);
-		}
-
-		/* Wake up anyone waiting for the finalizer to finish */
-		{
-			clearStack(NULL, NULL);
-		}
-		lockStaticMutex(&finmanend);
-		broadcastStaticCond(&finmanend);
-		unlockStaticMutex(&finmanend);
-	}
-	unlockStaticMutex(&finman);
+  Collector *gcif = (Collector*)arg;
+  int iLockRoot;
+    
+  lockStaticMutex(&finman);
+  for (;;) {
+    finalRunning = false;
+    while (finalRunning == false) {
+      waitStaticCond(&finman, (jlong)0);
+    }
+    assert(finalRunning == true);
+    
+    finaliserJob(gcif, &iLockRoot);
+    
+    /* Wake up anyone waiting for the finalizer to finish */
+    lockStaticMutex(&finmanend);
+    broadcastStaticCond(&finmanend);
+    unlockStaticMutex(&finmanend);
+  }
+  unlockStaticMutex(&finman);
 }
 
 static
