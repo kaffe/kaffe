@@ -1,0 +1,4 @@
+
+sed '/#ifdef L_eh/,/#endif \/\* L_eh \*\//p; d' \
+    < "$1" | sed '1d;$d' 
+

@@ -20,3 +20,10 @@ autogen.sh:	script to run all of the various auto* programs
 
 unicode.pl:	Perl script to generate unicode.idx and unicode.tbl
 
+geteh_from_libgcc2:	how to extract eh.c from libgcc2.c
+		See kaffe/kaffevm/gcj/eh.c
+
+alignment_of_size.c:	determine alignments used by a given compiler.
+
+mangleNative.pl:	create linker scripts for native methods for GCJ.
+
