@@ -1,3 +1,73 @@
+2004-05-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/beans/Introspector.java,
+        libraries/javalib/java/beans/PropertyEditor.java,
+        libraries/javalib/java/beans/PropertyEditorManager.java,
+        libraries/javalib/java/beans/beancontext/BeanContextServiceProvider.java,
+        libraries/javalib/java/lang/Throwable.java,
+        libraries/javalib/java/security/SignedObject.java,
+        libraries/javalib/java/security/UnresolvedPermission.java,
+        libraries/javalib/java/text/AttributedString.java,
+        libraries/javalib/java/util/Calendar.java,
+        libraries/javalib/java/util/Date.java,
+        libraries/javalib/java/util/HashMap.java,
+        libraries/javalib/java/util/logging/Level.java,
+        libraries/javalib/java/util/zip/GZIPOutputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-04-23  Tom Tromey  <tromey@redhat.com>
+
+	* java/security/UnresolvedPermission.java: Cleaned up imports.
+	* java/util/Date.java (parse): Removed unused variable.
+	
+	2004-04-17  Michael Koch  <konqueror@gmx.de>
+
+	* java/security/SignedObject.java:
+	Fixed HTML tags in javadoc comments all over.
+
+	2004-04-17  Michael Koch  <konqueror@gmx.de>
+
+	* java/beans/Introspector.java,
+	java/beans/PropertyEditor.java,
+	java/beans/PropertyEditorManager.java,
+	java/beans/beancontext/BeanContextServiceProvider.java:
+	Fixed HTML tags in javadocs.
+
+	2004-04-29  Mark Wielaard  <mark@klomp.org>
+
+	Reported by f.haeglsperger@gmx.de [patch #2485]
+	* java/util/HashMap.java (rehash): Add entry at start of bucket.
+
+	2004-05-07  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/util/Calendar.java (getActualMinimum,
+	getActualMaximum):  Remove abstract.  Implement.
+
+	2004-05-06  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/logging/Level.java:
+	Explicitly import java.io.Serializable.
+
+	2004-05-05  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/zip/GZIPOutputStream.java
+	(GZIPOutputStream): Initialize crc.
+
+	2004-04-29  Tom Tromey  <tromey@redhat.com>
+
+	* java/text/AttributedString.java: Cleaned up imports.
+
+	2004-04-17  Michael Koch  <konqueror@gmx.de>
+
+	* java/lang/CharSequence.java
+	(subSequence): Fixed <code> tag in javadoc.
+
+	2004-04-30  Grzegorz B. Prokopski <gadek@debian.org>
+
+	* java/lang/Throwable.java (nl): Remove static field.
+	(StaticData): New private static inner class.
+	(stackTraceStringBuffer): Use StaticData.nl.
+
 2004-05-16  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/CollationElementIterator.java

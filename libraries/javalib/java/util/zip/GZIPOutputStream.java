@@ -82,6 +82,7 @@ public class GZIPOutputStream extends DeflaterOutputStream
   {
     super(out, new Deflater(Deflater.DEFAULT_COMPRESSION, true), size);
     
+    crc = new CRC32();
     int mod_time = (int) (System.currentTimeMillis() / 1000L);
     byte[] gzipHeader =
       {

@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package java.security;
 
+// All uses of Certificate in this file refer to the one in the listed
+// package, not this one.
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
