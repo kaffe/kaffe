@@ -1,3 +1,7 @@
+Fri Apr 16 11:48:54 EDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* libraries/javalib/java/net/URL.java: fix equals() when ref == null
+
 1999-04-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Test whether we get an unexpected arithmetic
