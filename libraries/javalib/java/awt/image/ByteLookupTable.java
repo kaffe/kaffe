@@ -61,7 +61,7 @@ public class ByteLookupTable extends LookupTable
    * 
    * @param offset Offset to be subtracted.
    * @param data Array of lookup tables.
-   * @exception IllegalArgumentException if offset < 0 or data.length < 1.
+   * @exception IllegalArgumentException if offset &lt; 0 or data.length &lt; 1.
    */
   public ByteLookupTable(int offset, byte[][] data)
     throws IllegalArgumentException
@@ -78,7 +78,7 @@ public class ByteLookupTable extends LookupTable
    * 
    * @param offset Offset to be subtracted.
    * @param data Lookup table for all components.
-   * @exception IllegalArgumentException if offset < 0.
+   * @exception IllegalArgumentException if offset &lt; 0.
    */
   public ByteLookupTable(int offset, byte[] data)
     throws IllegalArgumentException
@@ -114,7 +114,7 @@ public class ByteLookupTable extends LookupTable
     throws ArrayIndexOutOfBoundsException
   {
     if (dst == null)
-      dst = new int[numComponents];
+      dst = new int[src.length];
 
     if (data.length == 1)
       for (int i=0; i < src.length; i++)
@@ -147,7 +147,7 @@ public class ByteLookupTable extends LookupTable
     throws ArrayIndexOutOfBoundsException
   {
     if (dst == null)
-      dst = new byte[numComponents];
+      dst = new byte[src.length];
 
     if (data.length == 1)
       for (int i=0; i < src.length; i++)

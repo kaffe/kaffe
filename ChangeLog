@@ -1,5 +1,20 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/ByteLookupTable.java,
+	libraries/javalib/java/awt/image/ShortLookupTable.java:
+	Resynced with GNU Classpath.
+
+	2004-10-13  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/ByteLookupTable.java
+        (ByteLookupTable) :Fixed HTML entities in javadocs.
+        (lookupPixel): Fix case when dst is null.
+        * java/awt/image/ShortLookupTable.java
+        (ShortLookupTable) :Fixed HTML entities in javadocs.
+        (lookupPixel): Fix case when dst is null.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/awt/BitwiseXORComposite.java,
 	libraries/javalib/gnu/java/awt/ClasspathToolkit.java,
 	libraries/javalib/gnu/java/awt/image/XBMDecoder.java,
