@@ -12,6 +12,18 @@
 
 	2004-12-31  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/DefaultBoundedRangeModel.java:
+	Fixed javadocs all over.
+	(fireStateChanged): Simplified.
+	* javax/swing/BoundedRangeModel.java:
+	Reformatted.
+
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-31  Michael Koch  <konqueror@gmx.de>
+
 	* javax/swing/JTree.java
 	(hasChildren): New instance field.
 
