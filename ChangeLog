@@ -1,3 +1,7 @@
+Thu May 28 13:57:47 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/jar.[ch]: removed use of stdio.
+
 Thu May 28 11:31:43 PDT 1998	Tim Wilkinson	<tim@transvirtual.com>
 
 	* Merged in Transvirtual's implementation of Java Native Interface
