@@ -1,3 +1,26 @@
+2005-03-10  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/nio/channels/FileChannelImpl.java
+	(FileChannelImpl(Sting, int)): Removed.
+	(FileChannelImpl(File, int)) Added. Check if opened file is a directory.
+
+	* libraries/javalib/java/io/FileInputStream.java (FileInputStream):
+	Fixed javadocs. Call FileChannelImpl(File, int).
+
+	* libraries/javalib/java/io/FileOutputStream.java (FileInputStream):
+	Call FileChannelImpl(File, int).
+
+	* libraries/javalib/java/io/RandomAccessFile.java (RandomAccessFile):
+	Call FileChannelImpl(File, int). Switched constructors around.
+
+	Resynced with GNU Classpath.
+
+	2005-03-03  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/FileInputStream.java (FileInputStream(File)),
+        java/io/FileOutputStream.java (FileOutputStream(File)):
+        Removed unnecessary File.isDirectory() check.
+
 2005-03-09  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
