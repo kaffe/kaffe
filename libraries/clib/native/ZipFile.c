@@ -39,6 +39,12 @@ java_util_zip_ZipFile_closeZipFile0(struct Hkaffe_util_Ptr* zip)
 	closeJarFile((jarFile*)zip);
 }
 
+int
+java_util_zip_ZipFile_getZipFileSize0(struct Hkaffe_util_Ptr* zip)
+{
+	return ((jarFile*)zip)->count;
+}
+
 struct Hjava_util_zip_ZipEntry*
 java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_String* zname)
 {

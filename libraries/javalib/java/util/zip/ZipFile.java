@@ -71,6 +71,11 @@ public String getName()
 	return (name);
 }
 
+public int size()
+{
+	return getZipFileSize0(zip);
+}
+
 protected void finalize()
 {
 	try {
@@ -85,5 +90,6 @@ private static native void closeZipFile0(Ptr zip);
 private static native ZipEntry getZipEntry0(Ptr zip, String zname);
 private static native Vector getZipEntries0(Ptr zip);
 private static native byte[] getZipData0(Ptr zip, ZipEntry ze);
+private static native int getZipFileSize0(Ptr zip);
 
 }
