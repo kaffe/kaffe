@@ -36,6 +36,7 @@ public class ConverterAlias {
 	alias.put("ISO-2022-JP",	"EUC_JP");
 	alias.put("EBCDIC",		"CP1046");
 	alias.put("UTF-8",		"UTF8");
+	alias.put("KOI8-R",		"KOI8_R");
 	/* add more here */
     }
 
