@@ -184,12 +184,14 @@ public class Timer implements Serializable
   /**
    * Creates a new Timer object.
    *
-   * @param d DOCUMENT ME!
-   * @param listener DOCUMENT ME!
+   * @param d the default value for both initial and between event delay, in
+   * milliseconds.
+   * @param listener the first action listener, can be <code>null</code>.
    */
   public Timer(int d, ActionListener listener)
   {
     delay = d;
+	initialDelay = d;
 
     if (listener != null)
       addActionListener(listener);
