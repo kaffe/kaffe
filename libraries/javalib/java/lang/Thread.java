@@ -75,7 +75,6 @@ public Thread(ThreadGroup group, Runnable target) {
 }
 
 public Thread(ThreadGroup group, Runnable target, String name) {
-	Application.addResource(this);
 	final Thread parent = Thread.currentThread();
 
 	if (group == null) {
@@ -87,7 +86,9 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 	this.group.checkAccess();
 	this.group.add(this);
 
+	// make sure this.name is non-zero before calling addResource
 	this.name = name.toCharArray();
+	Application.addResource(this);
 	this.target = target;
 	this.interrupting = false;
 
@@ -184,7 +185,16 @@ private void finish() {
 }
 
 public void freeResource() {
-	if (isAlive()) {
+	// NB:
+	// Each thread is associated with the application that created it
+	// as an ApplicationResource.
+	// If an application exits, it frees all its resources, thereby
+	// destroying all its threads.
+	// To make sure we free all threads, we must make sure that the
+	// invoking thread is not killed prematurely before it can finish
+	// that task.
+	// See also Runtime.exit()
+        if (isAlive() && currentThread() != this) {
 		destroy();
 	}
 }

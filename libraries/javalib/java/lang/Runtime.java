@@ -84,6 +84,9 @@ public void exit(int status) {
 	if (kaffe.lang.Application.exit(status) == false) {
 		exitInternal(status);
 	}
+	// kaffe.lang.Application.exit does not destroy the thread
+	// that invoked exit().  We stop that thread now.
+	Thread.currentThread().destroy();
 }
 
 native private void exitInternal(int status);
