@@ -1,3 +1,9 @@
+Wed May 12 17:36:23 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/stats.c: eliminate compiler warning
+	* kaffe/kaffevm/jni.c: minor optimization
+	* libraries/clib/native/sha-1.[ch]: repair copyright
+
 Wed May 12 09:41:29 1999 Jason Baker  <jbaker@cs.utah.edu>
 
 	* config/i386/oskit/{config.frag,md.c},
