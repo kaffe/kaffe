@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2004-01-06  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/net/protocol/file/Connection.java
+        (Connection): Don't re-initialize doOutput with the default value.
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/nio/SocketChannelImpl.java

@@ -85,7 +85,7 @@ public class Connection extends URLConnection
    * OutputStream if we are writing to the file
    */
   private OutputStream outputStream;
-
+  
   /**
    * FilePermission to read the file
    */
@@ -97,9 +97,6 @@ public class Connection extends URLConnection
   public Connection(URL url)
   {
     super (url);
-    
-    /* Set up some variables */
-    doOutput = false;
 
     permission = new FilePermission(getURL().getFile(), DEFAULT_PERMISSION);
   }
@@ -316,5 +313,4 @@ public class Connection extends URLConnection
 	}
       };
   }
-
-} // class FileURLConnection
+}
