@@ -55,13 +55,13 @@ void printCodeLabels(void)
 #define	WOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
 #define	LOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
 #define	QOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
-#else
+#else /* !  defined(KAFFE_VMDEBUG) */
 #undef OUT
 #define	OUT(v)	do { codeblock[CODEPC] = v; CODEPC++; } while (0)
 #define	BOUT(v)	do { *(uint8*)&codeblock[CODEPC] = v; CODEPC++; } while (0)
 #define	WOUT(v)	do { *(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
 #define	LOUT(v)	do { *(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
 #define	QOUT(v)	do { *(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
-#endif
+#endif /* defined(KAFFE_VMDEBUG) */
 
 #include "jit.def"

@@ -35,12 +35,13 @@
 typedef struct _exceptionFrame {
 	char*	return_frame;
 	char*	return_pc;
+	char*	return_sp;
 } exceptionFrame;
 
 extern void __mipsGetNextFrame(struct _exceptionFrame*);
 
 #define	STACK_NEXT_FRAME(F)	__mipsGetNextFrame(F)
-#define	FIRSTFRAME(F,O)		(F).return_frame = 0; \
+#define	FIRSTFRAME(F,O)		(F).return_frame = (F).return_sp = 0; \
 				__mipsGetNextFrame(&F)
 #define	NEXTFRAME(F)		((F)->return_frame)
 #define	PCFRAME(F)		((F)->return_pc)

@@ -50,7 +50,11 @@
 #define	HAVE_move_int_const		move_RxC
 #define	HAVE_move_int			move_RxR
 #define	HAVE_move_float			fmove_RxR
+#ifdef PS2LINUX
+#undef	HAVE_move_double
+#else
 #define	HAVE_move_double		fmovel_RxR
+#endif
 #define	HAVE_move_label_const		move_RxL
 #define	HAVE_move_ref			move_RxR
 #define	HAVE_move_any			move_RxR
@@ -79,9 +83,15 @@
 #define	HAVE_mul_float			fmul_RRR
 #undef	HAVE_div_float
 
+#ifdef PS2LINUX
+#undef	HAVE_add_double
+#undef	HAVE_sub_double
+#undef	HAVE_mul_double
+#else
 #define	HAVE_add_double			faddl_RRR
 #define	HAVE_sub_double			fsubl_RRR
 #define	HAVE_mul_double			fmull_RRR
+#endif
 #undef	HAVE_div_double
 
 #define	HAVE_add_ref			addu_RRR /* new */
@@ -94,20 +104,29 @@
 
 #define	HAVE_load_float			fload_RRx
 #define	HAVE_store_float		fstore_RRx
+#ifdef PS2LINUX
+#undef	HAVE_load_double
+#undef	HAVE_store_double
+#else
 #define	HAVE_load_double		floadl_RRx
 #define	HAVE_store_double		fstorel_RRx
+#endif
 
 #define	HAVE_pusharg_int		push_xRC
 #define	HAVE_pusharg_float		fpush_xRC
+#ifdef PS2LINUX
+#undef	HAVE_pusharg_double
+#else
 #define	HAVE_pusharg_double		fpushl_xRC
+#endif
 #define	HAVE_pusharg_ref		push_xRC
 #define	HAVE_pusharg_long		pushl_xRC
 #define	HAVE_popargs			popargs_xxC
 
-#undef	HAVE_cmp_int			cmp_RRR
-#undef	HAVE_cmp_int_const		cmp_RRC
-#undef	HAVE_cmp_ref			cmp_RRR
-#undef	HAVE_cmp_ref_const		cmp_RRC
+#undef	HAVE_cmp_int
+#undef	HAVE_cmp_int_const
+#undef	HAVE_cmp_ref
+#undef	HAVE_cmp_ref_const
 
 #define	HAVE_branch			branch_xCC
 #define	HAVE_branch_indirect		branch_indirect_xRC
@@ -119,20 +138,28 @@
 #define	HAVE_return_int			return_Rxx
 #define	HAVE_return_long		returnl_Rxx
 #define	HAVE_return_float		freturn_Rxx
+#ifdef PS2LINUX
+#undef	HAVE_return_double
+#else
 #define	HAVE_return_double		freturnl_Rxx
+#endif
 #define	HAVE_return_ref			return_Rxx
 #define	HAVE_returnarg_int		returnarg_xxR
 #define	HAVE_returnarg_long		returnargl_xxR
 #define	HAVE_returnarg_float		freturnarg_xxR
+#ifdef PS2LINUX
+#undef	HAVE_returnarg_double
+#else
 #define	HAVE_returnarg_double		freturnargl_xxR
+#endif
 #define	HAVE_returnarg_ref		returnarg_xxR
 
 #define	HAVE_set_label			set_label_xxC
 #define	HAVE_build_key			set_word_xxC
 #define	HAVE_build_code_ref		set_wordpc_xxC
 
-#undef	HAVE_cvt_int_double		cvtid_RRx
-#undef	HAVE_cvt_int_float		cvtif_RRx
+#undef	HAVE_cvt_int_double
+#undef	HAVE_cvt_int_float
 /* MIPS cannot handle the NaN conditions so we do these by hand */
 #undef	HAVE_cvt_double_float
 #undef	HAVE_cvt_float_double
@@ -163,7 +190,7 @@
 #define	HAVE_add_int_const_rangecheck(v)	__intconst_rangecheck(v)
 #define	HAVE_add_ref_const_rangecheck(v)	__intconst_rangecheck(v)
 #define	HAVE_sub_int_const_rangecheck(v)        ((v) >= -32767  && (v) <= 327678) /*swapped -67,68*/
-#undef	HAVE_cmp_int_const_rangecheck(v)	__intconst_rangecheck(v)
+#undef	HAVE_cmp_int_const_rangecheck
 #define	HAVE_load_offset_int_rangecheck(v)	__intconst_rangecheck(v)
 #define	HAVE_load_offset_ref_rangecheck(v)	__intconst_rangecheck(v) /* new */
 #define	HAVE_store_offset_int_rangecheck(v)	__intconst_rangecheck(v)
@@ -251,7 +278,11 @@
 #undef	HAVE_cmp_long			/* no */
 
 #define	HAVE_neg_float			fneg_RRR
+#ifdef PS2LINUX
+#undef	HAVE_neg_double	
+#else
 #define	HAVE_neg_double			fnegl_RRR
+#endif
 #undef	HAVE_rem_float			/* no */
 #undef	HAVE_rem_double			/* no */
 

@@ -907,7 +907,7 @@ move_double(SlotInfo* dst, SlotInfo* src)
 	else if (isGlobal(dst->slot)) {
 #if defined(HAVE_move_double)
 		lslot_lslot_lslot(dst, 0, src, HAVE_move_double, Tcopy);
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 		move_long(dst, src);
 #else
 		ABORT();
@@ -2325,7 +2325,7 @@ load_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_load_double)
 	lslot_lslot_slot(dst, 0, src, HAVE_load_double, Tload);
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	load_long(dst, src);
 #else
 	ABORT();
@@ -2934,7 +2934,7 @@ store_double(SlotInfo* dst, SlotInfo* src)
 {
 #if defined(HAVE_store_double)
 	slot_slot_lslot(0, dst, src, HAVE_store_double, Tstore);
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	store_long(dst, src);
 #else
 	ABORT();
@@ -3498,7 +3498,7 @@ pusharg_double(SlotInfo* src, int idx)
 #if defined(HAVE_pusharg_double)
 	lslot_lslot_const(0, src, idx, HAVE_pusharg_double, Tnull);
 	argcount += pusharg_long_idx_inc;
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	pusharg_long(src, idx);
 #else
 	ABORT();
@@ -3800,7 +3800,7 @@ return_double(SlotInfo* dst)
 	begin_sync();
 	end_sync();
 #endif
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	return_long(dst);
 #else
 	ABORT();
@@ -3868,7 +3868,7 @@ returnarg_double(SlotInfo* src)
 
 #if defined(HAVE_returnarg_double)
 	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_double, Tcopy);
-#elif defined(HAVE_NO_FLOATING_POINT)
+#elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	returnarg_long(src);
 #else
 	ABORT();

@@ -50,6 +50,7 @@ __mipsGetNextFrame(exceptionFrame* fm)
 	int* fp;
 	int* ppc;
 	int* pfp;
+	int* stackp = 0;
 
 	if (fm->return_frame == 0) {
 here:;
@@ -57,8 +58,9 @@ here:;
 		asm("move %0,$fp" : "=r" (fp));
 	}
 	else {
-		fp = (int*)fm->return_frame;
-		spc = (int*)fm->return_pc;
+		spc    = (int*)fm->return_pc;
+		fp	   = (int*)fm->return_frame;
+		stackp = (int*)fm->return_sp;
 	}
 
 #if 0
@@ -96,12 +98,15 @@ here:;
 	/* Walk backwards down the code looking for where the return
 	 * pc is stored.
 	 */
-	TDBG(kprintf("starting search at %p\n", spc);)
+	TDBG(kprintf("[1] starting search at %p\n", spc);)
 	for (pc = spc;; pc--) {
 		unsigned short high = (unsigned short)((*pc) >> 16);
 		short low = (short)*pc;
 		switch (high) {
 		case 0xafbf:	/* sw $ra,i($sp) */
+		if( stackp != (int*)0) {
+			 fp = stackp;
+		}
 			TDBG(kprintf(" &ra = %p\n", pc);)
 			ppc = (int*)fp[low / sizeof(int)];
 			TDBG(kprintf(" prev pc = %p\n", ppc);)
@@ -141,7 +146,7 @@ here:;
 	/* Walk backwards down the code looking for where we stored the
 	 * previous frame pointer.
 	 */
-	TDBG(kprintf("starting search at %p\n", spc);)
+	TDBG(kprintf("[2] starting search at %p\n", spc);)
 	for (pc = spc;; pc--) {
 		unsigned short high = (unsigned short)((*pc) >> 16);
 		short low = (short)*pc;
@@ -172,6 +177,7 @@ end:;
 	else {
 		fm->return_pc = (char*)ppc;
 		fm->return_frame = (char*)pfp;
+		fm->return_sp = (char*)0;
 	}
 }
 

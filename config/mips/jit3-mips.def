@@ -27,7 +27,6 @@
 #endif
 
 #ifdef KAFFE_VMDEBUG
-extern uint pc;
 int jit_debug = 0;
 /* int dbmsg = 0; */
 #define	debug_name(x)	debug(x)
@@ -178,40 +177,40 @@ float f0,f1;
 /* MIPS Instruction formats						*/
 
 #define	insn_RRR(op, rd, rs, rt)			\
-	LOUT = 0x00000000 | ((rs) << 21) |		\
-	    ((rt) << 16) | ((rd) << 11) | (op)
+	LOUT(0x00000000 | ((rs) << 21) |		\
+	    ((rt) << 16) | ((rd) << 11) | (op))
 
 #define	insn_sRRC(op, rd, rt, sa)			\
-	LOUT = 0x00000000 | ((rt) << 16) |		\
-	    ((rd) << 11) | (((sa) & MASKL5BITS  ) << 6 ) | (op)
+	LOUT(0x00000000 | ((rt) << 16) |		\
+	    ((rd) << 11) | (((sa) & MASKL5BITS  ) << 6 ) | (op))
 
 #define	insn_RRC(op, rt, rs, cnst)			\
-	LOUT = 0x00000000 | ((op) << 26)  |		\
-	    ((rs) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS) 
+	LOUT(0x00000000 | ((op) << 26)  |		\
+	    ((rs) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS))
 
 #define	ldst_RRC(op, rt, base, cnst)			\
-	LOUT = 0x00000000 | ((op) << 26)  |		\
-     	     ((base) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS) 
+	LOUT(0x00000000 | ((op) << 26)  |		\
+     	     ((base) << 21) | ((rt) << 16) | ((cnst) & MASKL16BITS))
 
 #define	finsn_RRR(op, fmt, fd, fs, ft, copn)	\
-	LOUT = 0x00000000 | ((copn) << 26) |	\
+	LOUT(0x00000000 | ((copn) << 26) |	\
 	    ((fmt) << 21) | ((ft) << 16)    |  	\
-	     ((fs) << 11) | ((fd) << 6)     | (op)
+	     ((fs) << 11) | ((fd) << 6)     | (op))
 
 #define insn_babranch(op, target)		\
-	LOUT = 0x00000000 | ((op) << 26) | ((target) &  MASKL26BITS)	
+	LOUT(0x00000000 | ((op) << 26) | ((target) &  MASKL26BITS))
 
 #define	insn_cbr(op, rs, rt, offset)			\
-	LOUT = 0x00000000 | ((op) << 26) |		\
-     	      ((rs) << 21) | ((rt) << 16) | ((offset) & MASKL16BITS) 
+	LOUT(0x00000000 | ((op) << 26) |		\
+     	      ((rs) << 21) | ((rt) << 16) | ((offset) & MASKL16BITS))
 
 #define	insn_czbr(op, rs, offset)			\
-	LOUT = 0x00000000 | ((op) << 26) |		\
-     	      ((rs) << 21) | ((0x0) << 16) | ((offset) & MASKL16BITS) 
+	LOUT(0x00000000 | ((op) << 26) |		\
+     	      ((rs) << 21) | ((0x0) << 16) | ((offset) & MASKL16BITS))
 
 #define	insn_czbr_ri(regimm_op, rs, offset)		\
-	LOUT = 0x00000000 | ((REGIMM) << 26) |		\
-     	      ((rs) << 21) | ((regimm_op) << 16)    | ((offset) & MASKL16BITS) 
+	LOUT(0x00000000 | ((REGIMM) << 26) |		\
+     	      ((rs) << 21) | ((regimm_op) << 16)    | ((offset) & MASKL16BITS))
 
 /* --------------------------------------------------------------------- */
 
@@ -337,6 +336,7 @@ define_insn(prologue, prologue_xxC) {
 		}
                 switch (ch) {
 		case 'D':
+#ifndef PS2LINUX
 			if (haveint == 0 && fi < 2) {
 				preloadRegister(slot_data(localinfo[i]), Rdouble, REG_f12+2*fi);
 				i += 2;
@@ -344,6 +344,7 @@ define_insn(prologue, prologue_xxC) {
 				fi++;
 				break;
 			}
+#endif
 			/* Fall through ... */
 		case 'J':
 	/* dbmsg = 1; */
@@ -1445,7 +1446,7 @@ define_insn(build_key, set_word_xxC) {
 
 	debug_name(("build_key:\n"));
 
-	LOUT = val;
+	LOUT(val);
 
 	debug(("	.word	%08x\n", val));
 }
@@ -1458,7 +1459,7 @@ define_insn(build_code_ref, set_wordpc_xxC) {
 
 	l->type |= Llong|Labsolute;
 	l->at = (uintp)CODEPC;
-	LOUT = 0;
+	LOUT(0);
 	l->from = (uintp)CODEPC;
 	debug(("	.word	?\n"));
 }
@@ -1950,8 +1951,8 @@ define_insn(push_float, fpush_xRC) {
 	/* Else we actually put the value in a float point register f12-f14.
 	 */
 	else {
-		r = rreg_ideal_float(1, REG_f12+2*fp_idx);
-		assert(r == 12+2*fp_idx);
+		r = rreg_ideal_float(1, REG_f12+2*fp_idx) + REG_f0;
+		assert(r == REG_f12+2*fp_idx);
 		register_reserve(r);
 		resreg[res_idx++] = r;
 	}
@@ -2004,8 +2005,8 @@ define_insn(push_double, fpushl_xRC) {
 	/* Else we actually put the value in a float point register f12-f14.
 	 */
 	else {
-		r = rreg_ideal_double(1, REG_f12+2*fp_idx);
-		assert(r == 12+2*fp_idx);
+		r = rreg_ideal_double(1, REG_f12+2*fp_idx) + REG_f0;
+		assert(r == REG_f12+2*fp_idx);
 		register_reserve(r);
 		register_reserve(r+1);
 		resreg[res_idx++] = r;
