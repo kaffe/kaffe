@@ -987,7 +987,7 @@ soft_cvtdl(jdouble v)
 jint
 soft_cvtfi(jfloat v)
 {
-        jint vbits;
+    jint vbits;
 
 	vbits = floatToInt(v);
         if (FISNAN(vbits)) {
@@ -1000,17 +1000,18 @@ soft_cvtfi(jfloat v)
 	else {
 		v = floor(v);
 	}
+
 	/* If too small return smallest int */
-	if (v <= -2147483648.0) {
+	if (v <= -2147483648.0f) {
 		return (-2147483647-1);
 	}
+
 	/* If too big return biggest int */
-	else if (v >= 2147483647.0) {
+	if (v >= 2147483647.0f) {
 		return (2147483647);
 	}
-	else {
-		return ((jint)v);
-	}
+
+	return ((jint)v);
 }
 
 jint

@@ -1,3 +1,8 @@
+2005-03-25  Antonio Tringali <antonio.tringali@aliceposta.it>
+
+	* kaffe/kaffevm/soft.c: (soft_cvtfi) Compare float against
+	floating point constants to fix SIGILL on mips-linux.
+	
 2005-03-25  Bryan Østergaard  <kloeri@gentoo.org>
 
 	Warning fixes for alpha-linux.
