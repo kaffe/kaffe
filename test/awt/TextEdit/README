@@ -1,7 +1,0 @@
-This is a simple TextEditor written by John Jensen.
-
-To run simply type:
-
-	sh TextEdit.sh
-or
-	kaffe -jar TextEdit.jar

@@ -1,5 +1,24 @@
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/awt/Calc/Calc.java,
+	test/awt/Calc/Calc.sh,
+	test/awt/TextEdit/README,
+	test/awt/TextEdit/TextEdit.jar,
+	test/awt/TextEdit/TextEdit.sh,
+	test/awt/TextEdit/copyright.txt,
+	test/awt/Unico/README,
+	test/awt/Unico/Unico.class,
+	test/awt/Unico/readme.txt,
+	test/awt/Unico/unico.jar,
+	test/awt/Unico/unico.sh:
+	Removed tests without included source code.
+
+	* test/awt/WidgetsDemo/DemoImageDict.java: Removed unused file.
+
+	* test/Makefile.am (EXTRA_DIST) Removed deleted files.
+
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/extensions/comm/javalib/Makefile.am,
 	libraries/extensions/microsoft/javalib/Makefile.am,
 	libraries/extensions/pjava/javalib/Makefile.am,

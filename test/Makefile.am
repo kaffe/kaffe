@@ -15,18 +15,6 @@ SUBDIRS = $(INTERNAL_TEST) regression jni
 DIST_SUBDIRS = internal regression jni
 
 EXTRA_DIST = \
-	awt/Calc/Calc.java \
-	awt/Calc/Calc.sh \
-	awt/TextEdit/README \
-	awt/TextEdit/TextEdit.jar \
-	awt/TextEdit/TextEdit.sh \
-	awt/TextEdit/copyright.txt \
-	awt/Unico/README \
-	awt/Unico/Unico.class \
-	awt/Unico/readme.txt \
-	awt/Unico/unico.jar \
-	awt/Unico/unico.sh \
-	awt/WidgetsDemo/DemoImageDict.java \
 	awt/WidgetsDemo/README \
 	awt/WidgetsDemo/WidgetsDemo.java \
 	awt/WidgetsDemo/WidgetsDemo.sh \
