@@ -25,7 +25,7 @@ init_md(void)
 	ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
 #endif
 
-#if 1 /* This doesn't seem to make any difference, but let's keep it.  */
+#if 0 /* This doesn't seem to make any difference, but let's keep it.  */
 	/* Set the bits in the hw fpcr for cpu's that do.  */
 	__asm__ __volatile__(
 		"excb\n\t"
