@@ -18,9 +18,12 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile
+		rm -f Makefile .depend
 
 install:
 		test -d $(mandir) || $(MKDIR) $(mandir)
 		test -d $(mandir)/man1 || $(MKDIR) $(mandir)/man1
 		$(INSTALL_DATA) $(srcdir)/kaffe.1 $(mandir)/man1/kaffe.1
+
+depend:
+

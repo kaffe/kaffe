@@ -24,7 +24,7 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile
+		rm -f Makefile .depend
 
 install:
 		test -d $(bindir) || $(MKDIR) $(bindir)
@@ -32,3 +32,6 @@ install:
 		do \
 			$(INSTALL_SCRIPT) $(srcdir)/$$i$(SCREXT) $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
+
+depend:
+

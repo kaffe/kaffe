@@ -40,6 +40,9 @@ clean:
 		rm -f *.class kaffe.core core
 
 distclean:
-		rm -f *.class Makefile kaffe.core core
+		rm -f *.class Makefile kaffe.core core .depend
 
 install:
+
+depend:
+

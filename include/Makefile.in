@@ -33,7 +33,7 @@ all: $(BUILT_INCLUDEFILES)
 clean:
 
 distclean:
-		rm -f Makefile $(BUILT_INCLUDEFILES)
+		rm -f Makefile $(BUILT_INCLUDEFILES) .depend
 
 install:
 		test -d $(incdir) || $(MKDIR) $(incdir)
@@ -45,3 +45,6 @@ install:
 		do \
 			$(INSTALL_DATA) $(srcdir)/$$i $(incdir)/$$i ;\
 		done
+
+depend:
+

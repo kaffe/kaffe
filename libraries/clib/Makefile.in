@@ -18,8 +18,11 @@ clean:
 
 distclean:
 	for i in $(subdirs); do (cd $$i && $(MAKE) distclean) ; done
-	rm -f Makefile
+	rm -f Makefile .depend
 	-rmdir $(subdirs)
 
 install:
 	for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done
+
+depend:
+	for i in $(subdirs); do (cd $$i && $(MAKE) depend) || exit 1 ; done

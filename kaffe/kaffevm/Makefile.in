@@ -20,6 +20,7 @@ LD=		@LD@
 AR=		@AR@
 RANLIB=		@RANLIB@
 DLLTOOL=	@DLLTOOL@
+DEPTOOL=	@DEPTOOL@
 PIC=		@PICVM@
 LDFLAGS=	@LIBSHARE@
 LIBS=		@LIBS@
@@ -73,6 +74,8 @@ all:		mkkaffevm
 
 OBJECT=		$(COMMON) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
 
+DEPENDS=       $(OBJECT:@OBJEXT@=.d)
+
 mkkaffevm:	$(LLIB)
 
 $(LLIB):	$(LIB)
@@ -85,17 +88,21 @@ $(LIB):		$(OBJECT) lib.exp
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $@
 
-gc.o:		gc.h gc.c gc-incremental.c gc-incremental.h
+.SUFFIXES: .d
 
-external.o:	external.c external.h ../../libraries/clib/external_wrappers.h
+.c.d: 
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 clean:
 		rm -f $(LIB) $(LLIB) $(OBJECT) lib.exp
+		rm -f $(DEPENDS)
+		rm -f .depend
+		touch .depend
 
 distclean:	clean
 		rm -f md.c jit.def icode.h trampolines.c
 		rm -f thread-native.h locks-native.h
-		rm -f Makefile
+		rm -f Makefile .depend
 
 install:
 		test -d $(libdir) || $(MKDIR) $(libdir)
@@ -103,6 +110,12 @@ install:
 		rm -f $(libdir)/$(LLIB)
 		$(LN) $(LIB) $(libdir)/$(LLIB)
 
+depend:         $(DEPENDS)
+		rm -f .depend
+		cat $(DEPENDS) > .depend
+
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LLIB)
 		touch lib.exp
+
+@INC_DEPEND@

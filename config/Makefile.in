@@ -18,6 +18,9 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile md.h config.h jit-md.h
+		rm -f Makefile md.h config.h jit-md.h .depend
 
 install:
+
+depend:
+

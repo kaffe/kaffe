@@ -205,6 +205,27 @@ fi
 dnl =========================================================================
 
 dnl =========================================================================
+dnl Setup for generating a depend make target
+dnl -------------------------------------------------------------------------
+
+AC_MSG_CHECKING(how to generate depend files)
+if test "$DEPTOOL" = ""; then
+	dnl This should just generate harmless
+	dnl .d files
+	DEPTOOL="true"
+	INC_DEPEND="# automatic dependency generation not enabled in configure"
+
+	dnl If DEPTOOL is undefined, we can use gcc,
+	dnl otherwise, I'm at a loss, as the switch is
+	dnl very compiler specific (if avail, at all.)
+        if test "$ac_cv_prog_gcc" = "yes" ; then
+		DEPTOOL="$CC -MM"
+		INC_DEPEND="include .depend"
+	fi
+fi
+AC_MSG_RESULT($DEPTOOL)
+
+dnl =========================================================================
 dnl Make the necessary substitutions
 dnl -------------------------------------------------------------------------
 
@@ -232,6 +253,8 @@ AC_SUBST(LINKLIB)
 AC_SUBST(LINKVMLIB)
 AC_SUBST(LD)
 AC_SUBST(THREAD_SYSTEM)
+AC_SUBST(DEPTOOL)
+AC_SUBST(INC_DEPEND)
 AC_DEFINE_UNQUOTED(LIBRARYSUFFIX, "$LIBEXT")
 AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER")
 if test "$program_prefix" = "NONE" ; then
@@ -582,8 +605,10 @@ dnl If we have share libraries, cancel all the non-shared ones.
 dnl  Otherwise, add on the machine again to help linking.
 if test "$dynamic_libraries" = "yes" ; then
 	NOSHAREDLIBS="-L../kaffevm -lkaffevm $VM_LIBRARIES $STD_LIBRARIES"
+	KAFFE_LIBDEP=""
 else
 	NOSHAREDLIBS="../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES $STD_LIBRARIES $ZIP_LIBRARIES $NET_LIBRARIES $X_LIBRARIES"
+	KAFFE_LIBDEP="$KAFFE_LIBDEP ../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES"
 	PIC=""
 	PICVM=""
 	LIBSHARE=""
@@ -595,6 +620,7 @@ if test "$vm_dynamic_library" = "no" -a "$dynamic_libraries" = "yes"; then
 	PICVM=""
 	LIBVMEXT=.o
 	NOSHAREDLIBS="../kaffevm/libkaffevm.o $VM_LIBRARIES $STD_LIBRARIES"
+	KAFFE_LIBDEP="$KAFFE_LIBDEP ../kaffevm/libkaffevm.o"
 else
 	LINKVMLIB=$LINKLIB
 	PICVM=$PIC
@@ -608,9 +634,25 @@ fi
 
 AC_SUBST(subdirs)
 AC_SUBST(packages)
+AC_SUBST(KAFFE_LIBDEP)
 
 AC_CONFIG_HEADER(config/config.h include/jtypes.h)
 AC_OUTPUT($make_output)
+
+dnl =========================================================================
+dnl Create empty .depend files to ensure that make works even 
+dnl when the depend target is not executed.
+dnl -------------------------------------------------------------------------
+
+changequote(<<, >>)dnl
+for makefile in $make_output
+do
+	makepath=`echo "$makefile" | sed 's,[^/]*$,,'`
+	dependfile=$makepath.depend
+	echo creating $dependfile
+	touch $dependfile
+done
+changequote([, ])dnl
 
 dnl =========================================================================
 dnl Generate example environment
