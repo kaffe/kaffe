@@ -80,6 +80,8 @@ final class LongBufferImpl extends LongBuffer
   
   public LongBuffer compact ()
   {
+    checkIfReadOnly();
+    mark = -1;
     int copied = 0;
     
     while (remaining () > 0)

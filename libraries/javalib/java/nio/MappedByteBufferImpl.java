@@ -118,6 +118,8 @@ final class MappedByteBufferImpl extends MappedByteBuffer
 
   public ByteBuffer compact()
   {
+    checkIfReadOnly();
+    mark = -1;
     int pos = position();
     if (pos > 0)
       {

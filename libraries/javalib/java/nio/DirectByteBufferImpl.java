@@ -186,6 +186,8 @@ abstract class DirectByteBufferImpl extends ByteBuffer
   
   public ByteBuffer compact()
   {
+    checkIfReadOnly();
+    mark = -1;
     int pos = position();
     if (pos > 0)
       {

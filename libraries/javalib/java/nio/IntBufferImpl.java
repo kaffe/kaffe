@@ -80,6 +80,8 @@ final class IntBufferImpl extends IntBuffer
   
   public IntBuffer compact ()
   {
+    checkIfReadOnly();
+    mark = -1;
     int copied = 0;
     
     while (remaining () > 0)

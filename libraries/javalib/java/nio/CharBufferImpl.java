@@ -87,6 +87,8 @@ final class CharBufferImpl extends CharBuffer
   
   public CharBuffer compact ()
   {
+    checkIfReadOnly();
+    mark = -1;
     int copied = 0;
     
     while (remaining () > 0)
