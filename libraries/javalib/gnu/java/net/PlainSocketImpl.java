@@ -257,4 +257,209 @@ protected native void socketWrite(byte[] buf, int offset, int len) throws IOExce
 protected native void waitForConnection() throws IOException;
 protected native void setBlocking(boolean blocking);
 
+/* Taken from GNU Classpath. */
+
+  /**
+   * This class contains an implementation of <code>InputStream</code> for
+   * sockets.  It in an internal only class used by <code>PlainSocketImpl</code>.
+   */
+  class SocketInputStream extends InputStream
+  {
+    /**
+     * The PlainSocketImpl object this stream is associated with
+     */
+    private PlainSocketImpl impl;
+
+    /**
+     * Builds an instance of this class from a PlainSocketImpl object
+     */
+    protected SocketInputStream (PlainSocketImpl impl)
+    {
+      this.impl = impl;
+    }
+
+    /**
+     * Returns the number of bytes available to be read before blocking
+     */
+    public int available() throws IOException
+    {
+      return impl.available();
+    }
+
+    /**
+     * Determines if "mark" functionality is supported on this stream.  For
+     * sockets, this is always false.  Note that the superclass default is
+     * false, but it is overridden out of safety concerns and/or paranoia.
+     */
+    public boolean markSupported()
+    {
+      return false;
+    }
+
+    /**
+     * Do nothing mark method since we don't support this functionality.  Again,
+     * overriding out of paranoia.
+     *
+     * @param readlimit In theory, the number of bytes we can read before the mark becomes invalid
+     */
+    public void mark (int readlimit)
+    {
+    }
+
+    /**
+     * Since we don't support mark, this method always throws an exception
+     *
+     * @exception IOException Everytime since we don't support this functionality
+     */
+    public void reset() throws IOException
+    {
+      throw new IOException ("Socket InputStreams do not support mark/reset");
+    }
+
+    /**
+     * This method not only closes the stream, it closes the underlying socket
+     * (and thus any connection) and invalidates any other Input/Output streams
+     * for the underlying impl object
+     */
+    public void close() throws IOException
+    {
+      impl.close();
+    }
+
+    /**
+     * Reads the next byte of data and returns it as an int.
+     *
+     * @return The byte read (as an int) or -1 if end of stream);
+     *
+     * @exception IOException If an error occurs.
+     */
+    public int read() throws IOException
+    {
+      byte buf[] = new byte [1];
+      int bytes_read = read (buf, 0, buf.length);
+
+      if (bytes_read != -1)
+        return buf[0] & 0xFF;
+      else
+        return -1;
+    }
+
+    /**
+     * Reads up to buf.length bytes of data into the caller supplied buffer.
+     *
+     * @return The actual number of bytes read or -1 if end of stream
+     *
+     * @exception IOException If an error occurs.
+     */
+    public int read (byte[] buf) throws IOException
+    {
+      return read (buf, 0, buf.length);
+    }
+
+    /**
+     * Reads up to len bytes of data into the caller supplied buffer starting
+     * at offset bytes from the start of the buffer
+     *
+     * @return The number of bytes actually read or -1 if end of stream
+     *
+     * @exception IOException If an error occurs.
+     */
+    public int read (byte[] buf, int offset, int len) throws IOException
+    {
+      int bytes_read = impl.read (buf, offset, len);
+
+      if (bytes_read == 0)
+        return -1;
+
+      return bytes_read;
+    }
+
+  } // class SocketInputStream
+
+  /**
+   * This class is used internally by <code>PlainSocketImpl</code> to be the
+   * <code>OutputStream</code> subclass returned by its
+   * <code>getOutputStream method</code>.  It expects only to  be used in that
+   * context.
+   */
+  class SocketOutputStream extends OutputStream
+  {
+    /**
+     * The PlainSocketImpl object this stream is associated with
+     */
+    private PlainSocketImpl impl;
+
+    /**
+     * Build an instance of this class from a PlainSocketImpl object
+     */
+    protected SocketOutputStream (PlainSocketImpl impl)
+    {
+      this.impl = impl;
+    }
+
+    /**
+     * This method closes the stream and the underlying socket connection. This
+     * action also effectively closes any other InputStream or OutputStream
+     * object associated with the connection.
+     *
+     * @exception IOException If an error occurs
+     */
+    public void close() throws IOException
+    {
+      impl.close();
+    }
+
+    /**
+     * Hmmm, we don't seem to have a flush() method in Socket impl, so just
+     * return for now, but this might need to be looked at later.
+     *
+     * @exception IOException Can't happen
+     */
+    public void flush() throws IOException
+    {
+    }
+
+    /**
+     * Writes a byte (passed in as an int) to the given output stream
+     *
+     * @param b The byte to write
+     *
+     * @exception IOException If an error occurs
+     */
+    public void write (int b) throws IOException
+    {
+      byte buf[] = new byte [1];
+      Integer i = new Integer (b);
+
+      buf [0] = i.byteValue();
+      write (buf, 0, buf.length);
+    }
+
+    /**
+     * Write an array of bytes to the output stream
+     *
+     * @param buf The array of bytes to write
+     *
+     * @exception IOException If an error occurs
+     */
+    public void write (byte[] buf) throws IOException
+    {
+      write (buf, 0, buf.length);
+    }
+
+    /**
+     * Writes len number of bytes from the array buf to the stream starting
+     * at offset bytes into the buffer.
+     *
+     * @param buf The buffer
+     * @param offset Offset into the buffer to start writing from
+     * @param len The number of bytes to write
+     */
+    public void write (byte[] buf, int offset, int len) throws IOException
+    {
+      impl.write (buf, offset, len);
+    }
+
+  } // class SocketOutputStream
+
 }
