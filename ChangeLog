@@ -1,5 +1,10 @@
 2003-10-05  Dalibor Topic <robilad@kaffe.org>
 
+	* config/powerpc/netbsd1/md.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
 	* config/mips/jit.h,
 	config/mips/trampolines.c:
 	Changed multi-line strings to single line strings.
