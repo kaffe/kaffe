@@ -475,7 +475,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
    * which should cover all gc-relevant stack locations
    */
 #if defined(STACK_GROWS_UP)
-  nt->stackMin  = (void*) ((uintp)&nt & -0x1000)
+  nt->stackMin  = (void*) ((uintp)&nt & -0x1000);
   nt->stackMax  = (void*) ((uintp) nt->stackMin + mainThreadStackSize);
 #else
   nt->stackMax  = (void*) (((uintp)&nt + 0x1000 - 1) & -0x1000);

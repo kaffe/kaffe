@@ -1,9 +1,15 @@
 2003-05-15 Dalibor Topic <robilad@yahoo.com>
 
+	* kaffe/kaffevm/systems/unix-pthread/thread-impl.c:
+	(jthread_createfirst) added missing semicolon, hopefully fixing
+	compilation on hppa-linux with pthreads.
+	
+2003-05-15 Dalibor Topic <robilad@yahoo.com>
+
 	Started to merge in the Collection classes implementation from GNU
 	Classpath, replacing kaffe's implementation.
 	
-        libraries/javalib/java/util/AbstractCollection.java,
+        * libraries/javalib/java/util/AbstractCollection.java,
         libraries/javalib/java/util/AbstractList.java,
         libraries/javalib/java/util/Collection.java,
         libraries/javalib/java/util/Comparator.java,
