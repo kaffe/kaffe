@@ -59,7 +59,7 @@ public Enumeration findResources(String name) throws IOException {
 			file = new File(file, name);
 			if (file.isFile()) {
 				try {
-				    v.addElement(new URL("file", "", file.toString()));
+				    v.addElement(new URL("file", "", file.getCanonicalPath()));
 				} catch (MalformedURLException e) {
 				}
 			}
@@ -72,7 +72,7 @@ public Enumeration findResources(String name) throws IOException {
 				ZipEntry entry = zip.getEntry(name);
 				if (entry != null && !entry.isDirectory()) {
 				    URL ju = new URL("jar:file:"
-					+ file + "!/" + entry.getName());
+					+ file.getCanonicalPath() + "!/" + entry.getName());
 				    v.addElement(ju);
 				}
 			} catch (IOException e) {

@@ -5,6 +5,7 @@ import java.lang.String;
 import java.util.Random;
 import java.util.Vector;
 import java.lang.Comparable;
+import java.util.StringTokenizer;
 
 /*
  * Java core library component.
@@ -160,14 +161,33 @@ public String getAbsolutePath() {
 }
 
 public String getCanonicalPath() throws IOException {
-	String str = getAbsolutePath();
-	// The only processing at the moment is to remove any appended file
-	// seperator.
-	int len = str.length();
-	if (len > 1 && str.charAt(len-1) == separatorChar) {
-		str = str.substring(0, len-1);
+        StringTokenizer tok = new StringTokenizer(getAbsolutePath(), separator);
+        int len = tok.countTokens();
+        String[] array = new String[len+2];
+        int j = 0;
+        for (int i = 0; i < len; i++) {
+                String str = tok.nextToken();
+                if (str.equals("..")) {
+                        j--;
+                }
+                else {
+                        array[j] = str;
+                        j++;
+                }
+        }
+
+	// If the length is 0 then just return the base.
+	if (j == 0) {
+		return (separator);
 	}
-	return (str);
+
+        // Build a string of the remaining elements.
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < j; i++) {
+		buf.append(separatorChar);
+                buf.append(array[i]);
+        }
+        return (buf.toString());
 }
 
 public String getName() {
