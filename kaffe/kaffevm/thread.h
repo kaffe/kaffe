@@ -42,6 +42,7 @@ void	interruptThread(Hjava_lang_VMThread*);
 void	finalizeThread(Hjava_lang_VMThread*);
 char*	nameThread(Hjava_lang_VMThread*);
 char*	nameNativeThread(void*);
+void	KaffeVM_unlinkNativeAndJavaThread(void);
 
 
 

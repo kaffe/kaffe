@@ -1895,6 +1895,7 @@ DBG(JTHREAD,
 	if (currentJThread->daemon) {
 		tdaemon--;
 	}
+	KaffeVM_unlinkNativeAndJavaThread();
 
 	assert(!(currentJThread->flags & THREAD_FLAGS_EXITING));
 	currentJThread->flags |= THREAD_FLAGS_EXITING;

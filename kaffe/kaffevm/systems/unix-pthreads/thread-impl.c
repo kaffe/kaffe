@@ -707,6 +707,9 @@ void* tRun ( void* p )
 
 	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
 
+	/* we are done using locks now. ok to destroy ksem */
+	KaffeVM_unlinkNativeAndJavaThread();
+
 	if ( nCached >= MAX_CACHED_THREADS ){
 	  break;
 	}

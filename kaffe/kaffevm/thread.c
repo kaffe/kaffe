@@ -101,9 +101,14 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 	thread_data->needOnStack = STACK_HIGH; 
 }
 
-static void
-unlinkNativeAndJavaThread(jthread_t thread)
+/*
+ * Destroys current thread's heavy lock and resets jniEnv. Called from
+ * the threading implementation before a thread is destroyed or reused.
+ */
+void
+KaffeVM_unlinkNativeAndJavaThread()
 {
+	jthread_t thread = jthread_current();
 	threadData *thread_data = jthread_get_data(thread);
 
 	thread_data->jniEnv = 0;
@@ -460,10 +465,14 @@ DBG(VMTHREAD,
 	}
 #endif
 
-	/* Destroy this thread's heavy lock */
-	unlinkNativeAndJavaThread(jthread_current());
-
-	/* This never returns */
+	/*
+	 * This may never return. If it does return, control is returned to
+	 * the threading implementation where firstStartThread() is called.
+	 *
+	 * The threading implementation is responsible for calling
+	 * KaffeVM_unlinkNativeAndJavaThread() before killing or
+	 * reusing the thread.
+	 */
 	jthread_exit();
 }
 

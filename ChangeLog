@@ -1,5 +1,19 @@
 2004-09-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h
+	(unlinkNativeAndJavaThread): Renamed to
+	KaffeVM_unlinkNativeAndJavaThread.
+
+2004-09-29  Noa Resare  <noa@resare.com>
+ 
+	* kaffe/kaffevm/thread.h, 
+	kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+ 	Delay ksem destruction until after lockStaticMutex invocations
+ 
+2004-09-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffe/main.c
 	(main): Added a call to MAIN_MD if available.
 
