@@ -81,9 +81,17 @@ typedef uint64_t uatomic_fast64_t;
 
 typedef intptr_t atomicptr_t;
 typedef uintptr_t uatomicptr_t;
-typedef intmax_t atomic_max_t;
+#if defined(HAVE_UINTMAX_T)
 typedef uintmax_t uatomic_max_t;
+#else
+typedef uint64_t uatomic_max_t;
+#endif
 
+#if defined(HAVE_INTMAX_T)
+typedef intmax_t atomic_max_t;
+#else
+typedef int64_t atomic_max_t;
+#endif
 
 #ifndef LOCK_PREFIX
 # ifdef UP

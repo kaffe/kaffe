@@ -1,3 +1,10 @@
+2005-04-01  Supreet Sethi  <supreet@linux-delhi.org>
+
+	* configure.ac: Check for uintmax_t and intmax_t.
+
+	* config/i386/atomic.h: Only use uintmax_t and intmax_t if
+	the types are available.
+
 2005-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c

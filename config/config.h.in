@@ -242,6 +242,9 @@
 /* Define to 1 if the system has the type `int8'. */
 #undef HAVE_INT8
 
+/* Define to 1 if the system has the type `intmax_t'. */
+#undef HAVE_INTMAX_T
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -668,6 +671,9 @@
 
 /* Define to 1 if the system has the type `uint8'. */
 #undef HAVE_UINT8
+
+/* Define to 1 if the system has the type `uintmax_t'. */
+#undef HAVE_UINTMAX_T
 
 /* Define to 1 if the system has the type `uint_fast16_t'. */
 #undef HAVE_UINT_FAST16_T
