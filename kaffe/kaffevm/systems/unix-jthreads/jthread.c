@@ -2365,11 +2365,18 @@ DBG(JTHREAD,
 
 	intsDisable();
 	for (;;) {
+	        int procStatus;
+
 		wouldlosewakeup = 1;
-		npid = waitpid(wpid, status, options|WNOHANG);
-		/* XXX what return codes should cause us to return an error? */
+		npid = waitpid(wpid, &procStatus, options|WNOHANG);
 		if (npid > 0) {
 			*outpid = npid;
+			if (WIFEXITED(procStatus))
+			  *status = WEXITSTATUS(procStatus);
+			else if (WIFSIGNALED(procStatus))
+			  *status=128+WTERMSIG(procStatus);
+			else
+			  *status = -1;		/* shouldn't happen */
 			break;
 		}
 		if ((npid == -1) && (errno == ECHILD)) {
