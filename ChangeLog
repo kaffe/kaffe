@@ -1,3 +1,37 @@
+2004-03-08  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
+	2004-02-12  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/MulticastSocket.java
+        (setLoopbackMode): Use Boolean.valueOf() instead of creating a new
+        Boolean object.
+
+	2004-02-27  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/URLConnection.java
+        (dateFormat1, dateformat2, dateformat3): New fields.
+        (dateformats_initialized): New field for lazy initialization of date
+        format fields.
+        (getHeaderFieldDate): Rewritten to use DateFormat.parse() instead of
+        the deprecated Date(String) constructor. This implementation
+        (initializeDateFormats): New method,
+
+	2004-02-27  Michael Koch  <konqueror@gmx.de>
+
+        * java/nio/channels/FileChannel.java
+        (MapMode.READ_ONLY): Made final.
+        (MapMode.READ_WRITE): Made final.
+        (MapMode.PRIVATE): Made final.
+        * java/nio/channels/SocketChannel.java
+        (open): Simplified code.
+        * java/nio/channels/spi/AbstractSelectableChannel.java
+        (registered): Unused, removed.
+        (keyFor): Check channel is open, only locate key
+        and not add a new one.
+        (register): Don't delete attachments.
+
 2004-03-07  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with GNU Classpath
