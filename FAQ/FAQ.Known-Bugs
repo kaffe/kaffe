@@ -1,11 +1,6 @@
 This file is a list of known bugs, short-comings and oddities.  
 Treat it as an TODO list.
 
-
-* java/lang/Class.getClassLoader() is broken for classes that were not loaded
-  with a class loader.  Easy to fix; Tim must say if there was a reason to 
-  introduce that bug in the first place.
-
 * java/net/ServerSocket.<init>(IILjava/net/InetAddress;)V
   is not implemented.  Should be easy and quick to fix.
 
@@ -49,13 +44,13 @@ Treat it as an TODO list.
 	    exit 0 ;;
 
 * Object serialization and RMI are broken.
-  Class UID are not computed.
+  Class UIDs are not computed.
 
 * When making test in the test dir, GCTest.java is flagged as failing
   because output gets on one line:
     [13]:  Success[43]:  Success[11]:  Success
   Investigate whether a println("text") is supposed to be atomic or not;
-  if so, added needed synchronized statements.
+  if so, add needed synchronized statements.
 
 * Automatically generate the external_wrappers.h files in native, net, 
   math, and zip with a sed script or equivalent.  This might require moving 
