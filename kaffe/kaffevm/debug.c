@@ -37,7 +37,6 @@
 
 void dbgSetMask(debugmask_t m) { }
 int dbgSetMaskStr(const char *s) { return 0; }
-int kaffe_dprintf(const char *fmt, ...){ return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */
@@ -290,6 +289,8 @@ dbgSetMaskStr(const char *orig_mask_str)
 	return 1;
 }
 
+#endif /* DEBUG */
+
 static char *debugBuffer;
 static int bufferBegin = 0;
 static int bufferSz = 16 * 1024;
@@ -413,4 +414,3 @@ kaffe_dprintf(const char *fmt, ...)
 	return n;
 }
 
-#endif /* DEBUG */

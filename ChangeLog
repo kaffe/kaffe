@@ -1,3 +1,9 @@
+Sat Jun  1 10:33:35 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffevm/debug.c: Rearranged #ifdef DEBUG so that
+	kaffe_dprintf is still defined even when DEBUG is not set (undoing
+	previous compile fix, reverting part of previous patch).
+
 Fri May 31 21:52:39 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* Configure.in: Revert patch from Mariusz, I didn't realize that
