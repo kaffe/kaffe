@@ -328,6 +328,9 @@
 /* Define if you have the <signal.h> header file.  */
 #undef HAVE_SIGNAL_H
 
+/* Define if you have the <stdlib.h> header file.  */
+#undef HAVE_STDLIB_H
+
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H
 
@@ -513,6 +516,9 @@
 
 /* Is function select declared */
 #undef HAVE_DECLARED_SELECT
+
+/* Is function swab declared */
+#undef HAVE_DECLARED_SWAB
 
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME

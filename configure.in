@@ -627,7 +627,7 @@ dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h poll.h sys/poll.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h png.h gmp.h kernel/OS.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h stdlib.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h poll.h sys/poll.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h png.h gmp.h kernel/OS.h)
 AC_HEADER_DIRENT
 
 dnl We need both getrusage and the header containing its decls.
@@ -856,7 +856,7 @@ fi
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
-dnl Work out if select is defined
+dnl Work out if select is declared
 dnl -------------------------------------------------------------------------
 
 AC_CACHE_CHECK([for declaration of select],
@@ -873,6 +873,23 @@ AC_CACHE_CHECK([for declaration of select],
 #endif
 ], [ void *foo = select; ],
   ac_cv_declared_select=yes; AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared]), ac_cv_declared_select=no)
+])
+
+dnl =========================================================================
+dnl Work out if swab is declared
+dnl -------------------------------------------------------------------------
+
+AC_CACHE_CHECK([for declaration of swab],
+  ac_cv_declared_swab,
+[AC_TRY_COMPILE([
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+], [ void *foo = swab; ],
+  ac_cv_declared_swab=yes; AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared]), ac_cv_declared_swab=no)
 ])
 
 dnl -------------------------------------------------------------------------

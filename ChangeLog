@@ -1,3 +1,8 @@
+Fri Oct 15 10:29:10 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/awt/X/toolkit.h, configure.in: added check for
+	declaration of swab.
+
 Thu Oct 14 16:59:56 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/security/
