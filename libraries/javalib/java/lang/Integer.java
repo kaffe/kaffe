@@ -41,7 +41,10 @@ public static Integer decode(String nm) throws NumberFormatException
 	}
 	/* Strip off base indicator, if any */
 	int base = 10;
-	if (nm.startsWith("0x")) {
+	if (nm.equals("0")) {
+		return new Integer(0);
+	}
+	else if (nm.startsWith("0x")) {
 		base = 16;
 		nm = nm.substring(2);
 	}
