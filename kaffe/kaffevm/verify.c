@@ -4082,6 +4082,29 @@ verifyErrorInCheckMethodCall(errorInfo* einfo,
 	return(false);
 }
 
+/*
+ * Helper function for error reporting in checkMethodCall.
+ */
+static inline
+bool
+typeErrorInCheckMethodCall(errorInfo* einfo,
+			   const Method* method,
+			   char* argbuf,
+			   uint32 pc,
+			   const uint32 idx,
+			   const constants* pool,
+			   const char* methSig)
+{
+	return verifyErrorInCheckMethodCall(einfo,
+					    method,
+					    argbuf,
+					    pc,
+					    idx,
+					    pool,
+					    methSig,
+					    "parameters fail type checking in method invocation");
+}
+
 /* 
  * checkMethodCall()
  *    verify an invoke instruction.  this includes making sure that the types
@@ -4101,8 +4124,6 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		BlockInfo* binfo, uint32 pc,
 		SigStack** sigs, UninitializedType** uninits)
 {
-#define TYPE_ERROR return verifyErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig, "parameters fail type checking in method invocation")
-	
 	const unsigned char* code        = METHOD_BYTECODE_CODE(method);
 	const uint32 opcode              = code[pc];
 	
@@ -4226,7 +4247,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			t->data.sig = argbuf;
 			
 			if (!typecheck(einfo, method->class, t, &binfo->opstack[paramIndex])) {
-				TYPE_ERROR;
+				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -4236,7 +4257,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'Z': case 'S': case 'B': case 'C':
 		case 'I':
 			if (binfo->opstack[paramIndex].data.class != TINT->data.class) {
-				TYPE_ERROR;
+				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -4245,7 +4266,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			
 		case 'F':
 			if (binfo->opstack[paramIndex].data.class != TFLOAT->data.class) {
-				TYPE_ERROR;
+				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex] = *TUNSTABLE;
@@ -4255,7 +4276,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'J':
 			if (binfo->opstack[paramIndex].data.class != TLONG->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
-				TYPE_ERROR;
+				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex]    = *TUNSTABLE;
@@ -4266,7 +4287,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		case 'D':
 			if (binfo->opstack[paramIndex].data.class != TDOUBLE->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
-				TYPE_ERROR;
+				return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 			}
 			
 			binfo->opstack[paramIndex]     = *TUNSTABLE;
@@ -4275,7 +4296,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			break;
 			
 		default:
-			TYPE_ERROR;
+			return typeErrorInCheckMethodCall(einfo, method, argbuf, pc, idx, pool, methSig);
 		}
 	}
 	binfo->stacksz -= nargs;
@@ -4352,8 +4373,6 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	
 	KFREE(argbuf);
 	return(true);
-#undef TYPE_ERROR
-#undef VERIFY_ERROR
 }
 
 
