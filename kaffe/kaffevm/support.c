@@ -704,7 +704,9 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 	Method *meth;
 	Utf8Const *name_utf8, *sig_utf8;
 
-	assert(cls != 0 && name != 0 && sig != 0);
+	assert(cls != NULL);
+	assert(name != NULL);
+	assert(sig != NULL);
 
 	name_utf8 = utf8ConstNew(name, -1);
 	if (!name_utf8) {
