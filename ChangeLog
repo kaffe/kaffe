@@ -1,3 +1,10 @@
+2004-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/i386/freebsd2/md.[ch]
+	(mdGetStackBase,mdGetStackEnd,
+	KAFFEMD_STACKBASE,KAFFEMD_STACKEND): Updated to the latest
+	change in name semantics.
+
 2004-07-14  Jim Huang  <jserv@kaffe.org>
 
 	* FAQ/FAQ.awt:

@@ -69,8 +69,8 @@
 #include "kaffe-unix-stack.h"
 
 #if defined(HAVE_SYS_SYSCTL_H)
-#define KAFFEMD_STACKBASE
-extern void *mdGetStackBase(void);
+#define KAFFEMD_STACKEND
+extern void *mdGetStackEnd(void);
 #endif
 
 #endif

@@ -16,7 +16,7 @@
 #if defined(HAVE_SYS_SYSCTL_H)
 #include <sys/sysctl.h>
 
-void *mdGetStackBase(void)
+void *mdGetStackEnd(void)
 {
     int control_name[2] =
       { CTL_KERN, KERN_USRSTACK};
