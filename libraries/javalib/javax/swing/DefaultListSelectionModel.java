@@ -118,7 +118,7 @@ public class DefaultListSelectionModel implements Cloneable,
    * @see #isLeadAnchorNotificationEnabled
    * @see #setLeadAnchorNotificationEnabled
    */
-  boolean leadAnchorNotificationEnabled = true;
+  protected boolean leadAnchorNotificationEnabled = true;
 
 
   /**
