@@ -245,6 +245,7 @@ tDump (void)
  * On demand debug signal to dump the current thread state(s) (requested
  * by a external "kill -s <sigDump> <proc-id>"
  */
+static
 void
 dump_signal_handler ( UNUSED int sig )
 {
