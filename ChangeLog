@@ -1,4 +1,13 @@
 2003-09-16  Dalibor Topic <robilad@kaffe.org>
+	
+	* test/regression/run_time/Makefile.am:
+	Don't use GNU make extensions to avoid build problems on platforms
+	using a BSD make.
+	
+	* test/regression/run_time/Makefile.in:
+	Regenerated.
+	
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
 	libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,

@@ -25,8 +25,41 @@ CLASS_FILES = \
 
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
-%.class: %.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $<
+## We have to list the dependencies explicitely for those make programs
+## that don't support GNU make's %.suffix target extension.
+
+ClassToInterface.class: ClassToInterface.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/ClassToInterface.java
+
+DefinedToAbstract.class: DefinedToAbstract.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToAbstract.java
+
+DefinedToUndefined.class: DefinedToUndefined.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToUndefined.java
+
+InterfaceToClass.class: InterfaceToClass.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InterfaceToClass.java
+
+IntToFloat.class: IntToFloat.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/IntToFloat.java
+
+InstToStatic.class: InstToStatic.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InstToStatic.java
+
+a/ProtectedToPrivate.class: a/ProtectedToPrivate.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/ProtectedToPrivate.java
+
+a/PublicToPackage.class: a/PublicToPackage.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToPackage.java
+
+a/PublicToProtected.class: a/PublicToProtected.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToProtected.java
+
+PublicToPrivate.class: PublicToPrivate.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/PublicToPrivate.java
+
+StaticToInst.class: StaticToInst.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
 
 all-am: CompileScript $(CLASS_FILES)
 
