@@ -41,15 +41,23 @@ Java_kaffe_management_Debug_setTracing
 }
 
 void
-Java_kaffe_management_Debug_enableStags
+Java_kaffe_management_Debug_enableStats
 	(JNIEnv *env, jclass thisClass, jobject list)
 {
+#ifdef KAFFE_STATS
+	static char *curStats;	/* kaffe expects this string to be
+				 * around at exit.
+				 */
 	const char *real_list = (*env)->GetStringUTFChars(env, list, 0);
-	/* do we always have alloca? */
-	char *copy = alloca(strlen(real_list) + 1);
 
-	strcpy(copy, real_list);
-	statsSetMaskStr(copy);
+	if (curStats) jfree(curStats);
+	curStats = jmalloc(strlen(real_list) + 1);
+
+	strcpy(curStats, real_list);
+	statsSetMaskStr(curStats);
 	(*env)->ReleaseStringUTFChars(env, list, real_list);
+#else
+	fputs("Kaffe is not configured for stats\n", stderr);
+#endif
 }
 
