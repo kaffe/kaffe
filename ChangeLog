@@ -1,3 +1,31 @@
+Sun Feb  7 00:24:20 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c,
+	kaffe/kaffevm/external.c: block/unblock signals during native
+	library loading.
+
+	* include/files.h, include/jsyscall.h, include/nets.h
+	kaffe/kaffevm/findInJar.c, kaffe/kaffevm/jar.c
+	kaffe/kaffevm/systems/unix-jthreads/jsignal.h, kaffe/kaffeh/support.c 
+	kaffe/kaffevm/systems/unix-jthreads/jthread.[ch],
+	kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	libraries/clib/io/AudioPlayer.c, libraries/clib/io/File.c
+	libraries/clib/io/FileDescriptor.c, libraries/clib/io/FileInputStream.c
+	libraries/clib/io/FileOutputStream.c,
+	libraries/clib/io/RandomAccessFile.c,
+	libraries/clib/native/UNIXProcess.c, 
+	libraries/clib/net/InetAddressImpl.c:
+	    made jsyscall interface more thread-safe.  This breaks
+	    linux-threads, beos-threads, and oskit-pthreads for now.
+
+	* libraries/javalib/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/java/net/PlainSocketImpl.java
+	libraries/clib/net/PlainDatagramSocketImpl.[ch]
+	libraries/clib/net/PlainSocketImpl.[ch]: implemented socket timeouts
+
+	* test/regression/TestScript.in, test/regression/SoTimeout.java|out: 
+	new tests for socket timeouts
+
 Fri Feb  5 23:14:42 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: eliminated static classLock

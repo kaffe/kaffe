@@ -29,14 +29,11 @@ MISSING OR BROKEN FEATURES
 
 * java.net.Socket:
 
-  +  getSoTimeout() 
-     setSoTimeout(int) 	are not implemented.
- 
   Gerhard Paulus <gpaulus@stud.uni-frankfurt.de> reports:
   +  a host name "" is not taken as local host (as in JDK)
   +  if a socket is closed and a thread is reading from the socket's input
   stream then this thread should be able to catch the SocketException
-  "Socket closed" (as in JDK)
+  "Socket closed" (as in JDK)  This might be fixed now.
 
 * Kaffe does not currently provide its own implementation of RMI.
 
@@ -70,6 +67,7 @@ MISSING OR BROKEN FEATURES
   See http://rufus.w3.org/tools/Kaffe/messages/3785.html,
 	http://rufus.w3.org/tools/Kaffe/messages/3784.html
 
+
 ARCHITECTURE-SPECIFIC PROBLEMS
 ---------------------------------------------------------------------------
 
@@ -94,19 +92,6 @@ ARCHITECTURE-SPECIFIC PROBLEMS
   mostly due to a bug in __moddi3.  FreeBSD <=2.2.8 and <=3.0 have
   the same problem, but there it's only in libc, not in libgcc, so
   we instruct configure to explicitly link with libgcc.
-
-* On some linux systems, dlopening libnative fails occasionally.
-  This leads to messages like:
-
-    Failed to locate native library "libnative" in path:
-        /tmp/k/obj/libraries/clib/native:/tmp/k/obj/libraries/clib/net:...
-
-  Even worse, sometimes dlopen opens the library, but screws up its relocation
-  information.  In this case, you may see messages like:
-
-      Internal error.
-      Please check your CLASSPATH and your installation.
-      Exception thrown was of type `java.lang.NullPointerException'
 
 
 THINGS WHERE KAFFE'S BEHAVIOR DIFFERS
@@ -160,4 +145,6 @@ MISCELLANEOUS & TODO
   allows us to get rid of the loadedClasses hashtable in 
   java/lang/ClassLoader.java.
 
+* kaffeh leaves incomplete output files around if it bails because it cannot
+  find the class file.
 
