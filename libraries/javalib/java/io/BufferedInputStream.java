@@ -328,10 +328,7 @@ public class BufferedInputStream extends FilterInputStream
     while (n > 0L)
       {
 	if (pos >= count && !refill())
-	  if (n < origN)
-	    break;
-	  else
-	    return -1;	// No bytes were read before EOF.
+          break;
 
 	int numread = (int) Math.min((long) (count - pos), n);
 	pos += numread;

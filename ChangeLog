@@ -1,5 +1,15 @@
 2004-12-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/BufferedInputStream.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-07  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/BufferedInputStream.java
+	(skip): Don't return -1 on EOF.
+	
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/net/LineInputStream.java,
 	libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java:
 	Resynced with GNU Classpath.
