@@ -41,7 +41,6 @@ typedef struct _iLock {
 } iLock;
 
 extern iLock*	getLock(void*);
-static void	freeLock(iLock*);
 extern void	__lockMutex(iLock*);
 extern void	__unlockMutex(iLock*);
 extern int	__waitCond(iLock*, jlong);
