@@ -142,6 +142,7 @@ error_stub(void)
 	return (0);
 }
 
+#ifdef ENABLE_BINRELOC
 static
 const char *discoverLibraryHome()
 {
@@ -165,6 +166,7 @@ const char *discoverLibraryHome()
   
   return libraryHome;
 }
+#endif
 
 void
 initNative(void)

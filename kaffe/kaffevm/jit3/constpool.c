@@ -111,7 +111,7 @@ newConstant(int type, ...)
 	return (c);
 }
 
-char *constpoolTypeNames[] = {
+const char *constpoolTypeNames[] = {
 	"<invalid>",
 	"int",
 	"long",

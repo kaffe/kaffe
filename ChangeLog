@@ -1,3 +1,18 @@
+2004-07-09  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/external.c
+	(discoverLibraryHome): Embrace between ENABLE_BINRELOC.
+
+	* kaffe/kaffevm/jit3/constpool.c
+	(constPoolTypeNames): Added 'const' (fix a warning).
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(detectStackBoundaries): Check whether the previous handler
+	was NULL for SIGSEGV and SIGBUS before reregistering it.
+
+	* config/i386/jit3-i386.def
+	(rnames): Added 'const' (fix a warning).
+
 2004-07-09  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/javalib/profiles/default/coreawt.files,

@@ -486,10 +486,12 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 #endif
 
 #if defined(SIGSEGV)
-	registerSyncSignalHandler(SIGSEGV, handler_segv);
+	if (handler_segv != NULL)
+	  registerSyncSignalHandler(SIGSEGV, handler_segv);
 #endif
 #if defined(SIGBUS)
-	registerSyncSignalHandler(SIGBUS, handler_bus);
+	if (handler_bus != NULL)
+	  registerSyncSignalHandler(SIGBUS, handler_bus);
 #endif
 }
 
