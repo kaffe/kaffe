@@ -643,6 +643,12 @@ public class JarFile extends ZipFile
             else
               return;
           }
+        else
+          {
+            if (DEBUG)
+              debug("unsupported signature algorithm: " + alg);
+            return;
+          }
       }
     catch (NoSuchAlgorithmException nsae)
       {

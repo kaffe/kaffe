@@ -1,5 +1,15 @@
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/jar/JarFile.java:
+        Resynced with GNU Classpath.
+
+	2004-11-08  Casey Marshall  <csm@gnu.org>
+
+        * java/util/jar/JarFile.java (verify): return if the jar is signed
+        with an unsupported algorithm.
+
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	*  libraries/javalib/java/util/GregorianCalendar.java,
 	libraries/javalib/java/util/Vector.java,
 	libraries/javalib/java/io/PrintStream.java:
