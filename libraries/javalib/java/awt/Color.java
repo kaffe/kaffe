@@ -47,7 +47,7 @@ static {
 	// i.e. before it finishes color mapping. This would cause recursive
 	// native color init 
 	try {
-		Class.forName("java/awt/Defaults");
+		Class.forName("java.awt.Defaults");
 	} catch (Exception _) {
 	}
 
