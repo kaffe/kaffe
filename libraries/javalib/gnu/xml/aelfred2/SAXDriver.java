@@ -1,5 +1,5 @@
 /*
- * $Id: SAXDriver.java,v 1.2 2003/02/06 21:35:08 dalibor Exp $
+ * $Id: SAXDriver.java,v 1.3 2003/10/18 00:15:48 kaz Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -66,7 +66,7 @@ import org.xml.sax.ext.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
 
-// $Id: SAXDriver.java,v 1.2 2003/02/06 21:35:08 dalibor Exp $
+// $Id: SAXDriver.java,v 1.3 2003/10/18 00:15:48 kaz Exp $
 
 /**
  * An enhanced SAX2 version of Microstar's &AElig;lfred XML parser.
@@ -123,7 +123,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  * @author Written by David Megginson (version 1.2a from Microstar)
  * @author Updated by David Brownell &lt;dbrownell@users.sourceforge.net&gt;
- * @version $Date: 2003/02/06 21:35:08 $
+ * @version $Date: 2003/10/18 00:15:48 $
  * @see org.xml.sax.Parser
  */
 final public class SAXDriver
@@ -596,6 +596,8 @@ final public class SAXDriver
 			in.getSystemId ());
 	    if (source == null)
 		source = in;
+	    else if (source.getSystemId () == null)
+		source.setSystemId (in.getSystemId ());
 	}
 	startExternalEntity (name, source.getSystemId (), true);
 	return source;

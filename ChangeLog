@@ -1,3 +1,8 @@
+2003-10-18  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java:
+	Do setSystemId() if an EntityResolver didn't do it.
+	
 2003-10-16  Dalibor Topic <robilad@kaffe.org>
 
 	* AUTHORS:
