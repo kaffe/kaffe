@@ -1083,18 +1083,18 @@ AC_MSG_RESULT($enable_mips2)
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
-dnl Do we enable XScale(PXA)
+dnl Do we enable XScale
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE([pxa],
-              AS_HELP_STRING([--enable-pxa],
-                             [Enable PXA/XScale support]))
+AC_ARG_ENABLE([xscale],
+              AS_HELP_STRING([--enable-xscale],
+                             [Enable XScale support]))
 
-AC_MSG_CHECKING([whether to enable PXA/XScale support])
-if test x"$enable_pxa" != x"no"; then
-    AC_DEFINE([HAVE_XSCALE], 1, [Enable PXA/XScale support])
+AC_MSG_CHECKING([whether to enable XScale support])
+if test x"$enable_xscale" != x"no"; then
+    AC_DEFINE([HAVE_XSCALE], 1, [Enable XScale support])
 fi
-AC_MSG_RESULT($enable_pxa)
+AC_MSG_RESULT($enable_xscale)
 
 dnl -------------------------------------------------------------------------
 

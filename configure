@@ -1077,7 +1077,7 @@ Optional Features:
   --enable-feedback       Enable generation of feedback data
   --enable-gcj            Enable GCJ support
   --disable-mips2         Disable MIPS II instructions
-  --enable-pxa            Enable PXA/XScale support
+  --enable-xscale         Enable XScale support
   --disable-alsatest      Do not try to compile and run a test Alsa program
   --disable-esdtest       Do not try to compile and run a test ESD program
   --disable-sound         Disable javax.sound support
@@ -43000,23 +43000,23 @@ echo "${ECHO_T}$enable_mips2" >&6
 
 
 
-# Check whether --enable-pxa or --disable-pxa was given.
-if test "${enable_pxa+set}" = set; then
-  enableval="$enable_pxa"
+# Check whether --enable-xscale or --disable-xscale was given.
+if test "${enable_xscale+set}" = set; then
+  enableval="$enable_xscale"
 
 fi;
 
-echo "$as_me:$LINENO: checking whether to enable PXA/XScale support" >&5
-echo $ECHO_N "checking whether to enable PXA/XScale support... $ECHO_C" >&6
-if test x"$enable_pxa" != x"no"; then
+echo "$as_me:$LINENO: checking whether to enable XScale support" >&5
+echo $ECHO_N "checking whether to enable XScale support... $ECHO_C" >&6
+if test x"$enable_xscale" != x"no"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_XSCALE 1
 _ACEOF
 
 fi
-echo "$as_me:$LINENO: result: $enable_pxa" >&5
-echo "${ECHO_T}$enable_pxa" >&6
+echo "$as_me:$LINENO: result: $enable_xscale" >&5
+echo "${ECHO_T}$enable_xscale" >&6
 
 
 
