@@ -1,3 +1,8 @@
+Tue Dec  8 09:20:16 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.c: don't print warnings for unreached
+	basic blocks, as suggested by Edouard.
+
 Tue Dec  8 09:10:20 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* libraries/javalib/java/lang/Long.java, Integer.java: fixes to

@@ -10,7 +10,7 @@
 
 #define	CDBG(s)
 #define	DBG(s)
-#define	VDBG(s) s
+#define	VDBG(s)
 
 #include "config.h"
 #include "config-std.h"
@@ -333,11 +333,16 @@ CDBG(	fprintf(stderr, __FUNCTION__"codeInfo = %p\n", codeInfo);		)
 	} while (rerun == true);
 
 	/* Check we've processed each block at least once */
+	/* Note that it is perfectly legal for code to contain unreachable
+	 * basic blocks;  There's no need to complain.
+	 */
+#if VDBG(1) - 1 == 0
 	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
 			VDBG(printf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
 		}
 	}
+#endif
 	return (true);
 }
 
