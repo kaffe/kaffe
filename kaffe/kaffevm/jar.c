@@ -1058,7 +1058,9 @@ jarFile *openJarFile(char *name)
 		retval->fd = -1;
 		retval->table = 0;
 		retval->tableSize = 0;
-		retval->data = MAP_FAILED;
+#ifdef HAVE_MMAP
+ 		retval->data = MAP_FAILED;
+#endif /* HAVE_MMAP */
 		if( (rc = KOPEN(name, O_RDONLY|O_BINARY, 0, &retval->fd)) )
 		{
 			/* Error opening the file */

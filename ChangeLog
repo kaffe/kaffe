@@ -1,3 +1,8 @@
+Sat Nov  9 21:21:10 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffevm/jar.c:
+	(openJarFile) fixed compilation on platforms without mmap.
+
 Thu Nov  7 19:52:53 CET 2002 Herve Roussain <roussain@univ-ubs.fr>
 
 	* kaffe/scripts/compat/javac.in: fixed the script to not append an empty
