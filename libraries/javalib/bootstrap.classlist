@@ -1,4 +1,4 @@
-# Used when kjc runs (while compiling classes)
+# Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
 gnu/java/lang/CharData.class
 java/io/BufferedInputStream.class
@@ -84,6 +84,7 @@ java/lang/SecurityException.class
 java/lang/SecurityManager.class
 java/lang/Short.class
 java/lang/StackOverflowError.class
+java/lang/StackTraceElement.class
 java/lang/String.class
 java/lang/String$ICComp.class
 java/lang/StringBuffer.class
@@ -96,6 +97,7 @@ java/lang/UnsatisfiedLinkError.class
 java/lang/UnsupportedOperationException.class
 java/lang/VerifyError.class
 java/lang/VirtualMachineError.class
+java/lang/VMThrowable.class
 java/lang/Void.class
 java/lang/reflect/AccessibleObject.class
 java/lang/reflect/Array.class

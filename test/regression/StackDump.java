@@ -17,16 +17,16 @@ public class StackDump {
 
 /* Expected Output:
 java.lang.NullPointerException
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.f(StackDump.java:8)
-	at StackDump.main(StackDump.java:14)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.f (StackDump.java:8)
+   at StackDump.main (StackDump.java:14)
 */

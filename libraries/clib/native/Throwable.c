@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2003
+ *	Mark J. Wielaard <mark@klomp.org>
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -12,30 +14,28 @@
 #include "config-io.h"
 #include <assert.h>
 #include <native.h>
-#include "java_io_FileDescriptor.h"
-#include "java_io_FileOutputStream.h"
-#include "java_io_PrintStream.h"
+#include "java_lang_StackTraceElement.h"
 #include "java_lang_Throwable.h"
-#include "../../../kaffe/kaffevm/support.h"
+#include "java_lang_VMThrowable.h"
 
 extern Hjava_lang_Object* buildStackTrace(void*);
-extern void printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
+extern HArrayOfObject* getStackTraceElements(struct Hjava_lang_VMThrowable*,
+					     struct Hjava_lang_Throwable*);
 
 /*
  * Fill in stack trace information - don't know what thought.
  */
-struct Hjava_lang_Throwable*
-java_lang_Throwable_fillInStackTrace(struct Hjava_lang_Throwable* o)
+void
+java_lang_VMThrowable_fillInStackTrace(struct Hjava_lang_VMThrowable* o)
 {
 	unhand(o)->backtrace = buildStackTrace(0);
-	return (o);
 }
 
 /*
- * Dump the stack trace to the given stream.
+ * Returns a array of StackTraceElements for the given VMThrowable state.
  */
-void
-java_lang_Throwable_printStackTrace0(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
+HArrayOfObject*
+java_lang_VMThrowable_getStackTrace(struct Hjava_lang_VMThrowable* state, struct Hjava_lang_Throwable* throwable)
 {
-	printStackTrace(o, p, 0);
+	return getStackTraceElements(state, throwable);
 }

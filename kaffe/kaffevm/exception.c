@@ -4,6 +4,8 @@
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2003
+ * 	Mark J. Wielaard <mark@klomp.org>
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -235,13 +237,22 @@ throwError(errorInfo* einfo)
 void
 throwException(Hjava_lang_Throwable* eobj)
 {
+	Hjava_lang_VMThrowable* vmstate;
+	Hjava_lang_Object* backtrace;
+
 	if (eobj == 0) {
 		dprintf("Exception thrown on null object ... aborting\n");
 		ABORT();
 		EXIT(1);
 	}
-	unhand(eobj)->backtrace = buildStackTrace(0);
-	dispatchException(eobj, (stackTraceInfo*)unhand(eobj)->backtrace);
+	vmstate = unhand(eobj)->vmState;
+	if (vmstate == 0) {
+		vmstate =
+		  (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
+	}
+	backtrace = buildStackTrace(0);
+	unhand(vmstate)->backtrace = backtrace;
+	dispatchException(eobj, (stackTraceInfo*)backtrace);
 }
 
 /*
@@ -413,7 +424,7 @@ unhandledException(Hjava_lang_Throwable *eobj)
 	 */
 	{
 		Hjava_lang_String *msg;
-		msg = unhand((Hjava_lang_Throwable*)eobj)->message;
+		msg = unhand((Hjava_lang_Throwable*)eobj)->detailMessage;
 		if (msg) {
 			dprintf("%s: %s\n", cname, stringJava2C(msg));
 		} else {
@@ -444,13 +455,18 @@ static void
 nullException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* npe;
+	Hjava_lang_VMThrowable* vmstate;
+	Hjava_lang_Object* backtrace;
 
 	npe = (Hjava_lang_Throwable*)newObject(javaLangNullPointerException);
-	unhand(npe)->backtrace = buildStackTrace(frame);
+	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
+	backtrace = buildStackTrace(frame);
+	unhand(vmstate)->backtrace = backtrace;
+	unhand(npe)->vmState = vmstate;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
 #endif /* defined(HAVE_GCJ_SUPPORT) */
-	dispatchException(npe, (stackTraceInfo*)unhand(npe)->backtrace);
+	dispatchException(npe, (stackTraceInfo*)backtrace);
 }
 
 /*
@@ -460,13 +476,19 @@ static void
 floatingException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* ae;
+	Hjava_lang_VMThrowable* vmstate;
+	Hjava_lang_Object* backtrace;
 
 	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
-	unhand(ae)->backtrace = buildStackTrace(frame);
+	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
+	backtrace = buildStackTrace(frame);
+	backtrace = buildStackTrace(frame);
+	unhand(vmstate)->backtrace = backtrace;
+	unhand(ae)->vmState = vmstate;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
 #endif /* defined(HAVE_GCJ_SUPPORT) */
-	dispatchException(ae, (stackTraceInfo*)unhand(ae)->backtrace);
+	dispatchException(ae, (stackTraceInfo*)backtrace);
 }
 
 /*

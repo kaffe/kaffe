@@ -153,6 +153,7 @@ java/lang/Throwable.java
 java/lang/UnsatisfiedLinkError.java
 java/lang/UnsupportedOperationException.java
 java/lang/VirtualMachineError.java
+java/lang/VMThrowable.java
 java/lang/Void.java
 java/net/ContentHandler.java
 java/net/ContentHandlerFactory.java

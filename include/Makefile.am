@@ -2,6 +2,8 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
+# Copyright (c) 2003
+#	Mark Wielaard <mark@klomp.org>
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -31,9 +33,11 @@ EXTRA_DIST = distclean-hack \
 INSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_String.h \
+	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
 	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h
+	java_lang_Throwable.h \
+	java_lang_VMThrowable.h
 
 NOINSTALL_DERIVED_HDRS = \
 	java_io_File.h \

@@ -52,6 +52,7 @@ extern int internal_test(parsedString *ps);
 #define TEST_CLASSES	"TEST_CLASSES"
 
 extern Hjava_lang_Class* ObjectClass;
+extern Hjava_lang_Class* StringClass;
 extern Hjava_lang_Class* javaLangThrowable;
 extern Hjava_lang_Class* javaLangNullPointerException;
 extern Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
@@ -148,6 +149,7 @@ int main(int argc, char *argv[])
 		
 		initTypes();
 		loadStaticClass(&ObjectClass, "java/lang/Object");
+		loadStaticClass(&StringClass, "java/lang/String");
 		loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
 		loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 		loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");

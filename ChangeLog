@@ -1,3 +1,131 @@
+2003-07-27  Helmer Kraemer <hkraemer@freenet.de>
+
+	* test/internal/jit_stub.c:
+	(main) loadStaticClass StringClass
+
+	* test/regression/IndexText.java,
+	test/regression/StackDump.java,
+	test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java,
+	test/regression/ProhibitedClass.java:
+	adapted expected output
+
+2003-07-27  Mark Wielaard  <mark@klomp.org>
+
+        * include/Makefile.am (INSTALL_DERIVED_HDRS): Add
+        java_lang_VMThrowable.h and java_lang_StackTraceElement.h.
+        * include/Makefile.in: Regenerated.
+        * kaffe/kaffevm/baseClasses.h (javaLangVMThrowable): New extern
+        struct.
+        (javaLangStackTraceElement): Likewise.
+        * kaffe/kaffevm/baseClasses.c (javaLangVMThrowable): New base class.
+        (javaLangVMThrowable): Likewise.
+        (initBaseClasses): loadStaticClass new base classes.
+        * kaffe/kaffevm/exception.c (throwException): Get and initialize
+        vmstate.
+        (nullException): Create vmstate for exception.
+        (unhandledException): Use new Throwable->detailedMessage field name.
+        (floatingException): Create vmstate for exception.
+        * kaffe/kaffevm/stackTrace.c (getLineNumber): New method.
+        (getStackTraceElements): New method.
+        (printStackTrace): Get backtrace from vmState.
+        * libraries/clib/native/System.c (java_lang_System_debugE): Use new
+        Throwable->detailedMessage field name.
+        * libraries/clib/native/Throwable.c
+        (java_lang_Throwable_fillInStackTrace): Removed.
+        (java_lang_Throwable_printStackTrace0): Likewise.
+        (java_lang_VMThrowable_fillInStackTrace): New method.
+        (java_lang_VMThrowable_getStackTrace): Likewise.
+        * libraries/javalib/java/lang/Throwable.java: Replaced with Classpath
+        version.
+        * libraries/javalib/java/lang/VMThrowable.java: New class.
+        * libraries/javalib/bootstrap.classlist: Add VMThrowable.
+        * libraries/javalib/essential.files: Add StackTaceElement and
+        VMThrowable.
+        * libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+2003-07-27  Helmer Kraemer <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/machine.c:
+	(initInsnSequence) insert the translated method as the
+	first entry into the constant pool, so it can easily be
+	retrieved when creating stack traces
+
+	* kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/classPool.c:
+	removed calls to makeMethodActive and makeMethodInactive,
+	as they are no longer necessary
+
+	* kaffe/kaffevm/methodCache.h, kaffe/kaffevm/methodCache.c,
+	kaffe/kaffevm/classMethod.h, kaffe/kaffevm/classPool.c:
+	wrapped findMethodFromPC and related stuff into #if 0, since
+	its not needed at the moment
+
+	* kaffe/kaffevm/intrp/stackTrace-impl.h,
+	kaffe/kaffevm/jit/stackTrace-impl.h,
+	kaffe/kaffevm/jit3/stackTrace-impl.h:
+	new files containing the engine specific part of stack trace
+	creation
+
+	* kaffe/kaffevm/stackTrace.c:
+	(stackTraceFindMethod) rewrote the translator version
+	assuming that the struct methods* of the translated
+	method is the first entry in the constant pool; made it
+	static
+	(buildStackTrace) directly initialize meth field using stackTraceFindMethod
+	(printStackTrace) updated accordingly
+
+	* libraries/clib/native/ThreadStack.c:
+	(kaffe_lang_ThreadStack_getClassStack) likewise
+	
+	* kaffe/kaffevm/intrp/Makefile.am,
+	kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am:
+	(EXTRA_DIST) added stackTrace-impl.h
+
+	* kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in:
+	regenerated
+
+	* kaffe/kaffevm/exception.c:
+	(nextFrame) splitted and moved into the different
+	stackTrace-impl headers
+	(dispatchException) rewritten so it works for both, the
+	interpreter and the translator
+
+	* kaffe/kaffevm/exception.h:
+	(VmExceptHandler) renamed struct jit to struct jni
+	(vmExcept_setSyncobj, vmExcept_getSyncobj) renamed to
+	vmExcept_setSyncObj and vmExcept_getSyncObj
+	(vmExcept_JNIContains) made available for intrp
+	removed some unnecessary declarations that don't belong here
+
+	* kaffe/kaffevm/jni.c:
+	(KAFFE_JNI_SETEXCEPTFP) use vmExceptPtr as fp of jni frame,
+	so there's no need to special case handling of jni frames
+	when dispatching exceptions in intrp mode
+	
+	* kaffe/kaffevm/support.c:
+	adapted interpreter specific part to per-thread JNIEnv
+
+	* kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/jit/icode_internal.h,
+	kaffe/kaffevm/jit/icode.c:
+	added softcall_incompatibleclasschange
+
+	* kaffe/kaffevm/soft.c:
+	(soft_checkcast) include class loaders into the message if
+	they are different
+
+	* configure.in:
+	add $abssrcdir/kaffe/kaffevm/$with_engine to CPPFLAGS
+
+	* configure:
+	regenerated
+	
 2003-07-27  Dalibor Topic <robilad@kaffe.org>,
 
 	Fixes for 'make dist'

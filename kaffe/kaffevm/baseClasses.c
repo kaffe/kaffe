@@ -71,6 +71,8 @@ Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
 Hjava_lang_Class* javaLangThrowable;
+Hjava_lang_Class* javaLangVMThrowable;
+Hjava_lang_Class* javaLangStackTraceElement;
 Hjava_lang_Class* javaLangException;
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 Hjava_lang_Class* javaLangNullPointerException;
@@ -279,6 +281,8 @@ initBaseClasses(void)
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
+	loadStaticClass(&javaLangVMThrowable, "java/lang/VMThrowable");
+	loadStaticClass(&javaLangStackTraceElement, "java/lang/StackTraceElement");
 	loadStaticClass(&javaLangException, "java/lang/Exception");
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");

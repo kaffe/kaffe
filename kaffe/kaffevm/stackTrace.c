@@ -4,6 +4,8 @@
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2003
+ *	Mark J. Wielaard <mark@klomp.org>
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -32,6 +34,7 @@
 #include "md.h"
 #include "stackTrace.h"
 #include "support.h"
+#include "stringSupport.h"
 
 static Method*
 stacktraceFindMethod (uintp fp, uintp pc);
@@ -108,16 +111,103 @@ stacktraceFindMethod(uintp fp, uintp pc)
 }
 #endif
 
+static inline int32
+getLineNumber(Method* meth, uintp pc)
+{
+	int i;
+	int32 linenr;
+	uintp linepc;
+
+	linenr = -1;
+	if (meth->lines != 0) {
+		linepc = 0;
+		for (i = 0; i < meth->lines->length; i++) {
+			if (pc >= meth->lines->entry[i].start_pc
+			    && linepc <= meth->lines->entry[i].start_pc) {
+				linenr = meth->lines->entry[i].line_nr;
+				linepc = meth->lines->entry[i].start_pc;
+			}
+		}
+	}
+	return linenr;
+}
+
+HArrayOfObject*
+getStackTraceElements(struct Hjava_lang_VMThrowable* state,
+		      struct Hjava_lang_Throwable* throwable)
+{
+	int i;
+	int frame;
+	int first_frame;
+	stackTraceInfo* stack;
+	HArrayOfObject* result;
+	Method* meth;
+	Hjava_lang_Class* throwable_class;
+	Hjava_lang_StackTraceElement* element;
+
+	if (state == 0) {
+		dprintf("VMState for exception is null ... aborting\n");
+		ABORT();
+		EXIT(1);
+	}
+
+	frame = 0;
+	first_frame = 0;
+	stack = (stackTraceInfo*)unhand(state)->backtrace;
+	throwable_class = ((Hjava_lang_Object*)throwable)->dtable->class;
+
+	for (i = 0; stack[i].meth != ENDOFSTACK; i++) {
+		meth = stack[i].meth;
+		if (meth != 0 && meth->class != NULL) {
+			frame++;
+			if (meth->class == throwable_class) {
+			  	first_frame = frame;
+			}
+		}
+	}
+
+	result = (HArrayOfObject*)newArray(javaLangStackTraceElement,
+					   frame - first_frame);
+
+	frame = 0;
+	for(i = 0; stack[i].meth != ENDOFSTACK; i++) {
+		meth = stack[i].meth;
+		if (meth != 0 && meth->class != NULL) {
+			if (frame >= first_frame) {
+				element = (Hjava_lang_StackTraceElement*)
+					newObject(javaLangStackTraceElement);
+				unhand(element)->fileName
+					= stringC2Java
+					(CLASS_SOURCEFILE(meth->class));
+				unhand(element)->lineNumber
+					= getLineNumber(meth, stack[i].pc);
+				unhand(element)->className
+					= utf8Const2JavaReplace
+					(meth->class->name, '/', '.');
+				unhand(element)->methodName
+					= utf8Const2Java(meth->name);
+				unhand(element)->isNative
+					= meth->accflags & ACC_NATIVE;
+				unhand_array(result)->body[frame - first_frame]
+					= (Hjava_lang_Object*)element;
+			}
+			frame++;
+		}
+	}
+
+	return result;
+}
+
 void
 printStackTrace(struct Hjava_lang_Throwable* o,
 		struct Hjava_lang_Object* p, int nullOK)
 {
 	int i;
+	Hjava_lang_VMThrowable* vmstate;
 	stackTraceInfo* info;
 	Method* meth;
 	uintp pc;
 	int32 linenr;
-	uintp linepc;
 	char *buf;
 	int len;
 	int j;
@@ -126,7 +216,11 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	char* class_dot_name;
 	errorInfo einfo;
 
-	info = (stackTraceInfo*)unhand(o)->backtrace;
+	vmstate = (Hjava_lang_VMThrowable*)unhand(o)->vmState;
+	if (vmstate == 0) {
+		return;
+	}
+	info = (stackTraceInfo*)unhand(vmstate)->backtrace;
 	if (info == 0) {
 		return;
 	}
@@ -134,16 +228,8 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 		pc = info[i].pc;
 		meth = info[i].meth; 
 		if (meth != 0) {
-			linepc = 0;
-			linenr = -1;
-			if (meth->lines != 0) {
-				for (j = 0; j < meth->lines->length; j++) {
-					if (pc >= meth->lines->entry[j].start_pc && linepc <= meth->lines->entry[j].start_pc) {
-						linenr = meth->lines->entry[j].line_nr;
-						linepc = meth->lines->entry[j].start_pc;
-					}
-				}
-			}
+			linenr = getLineNumber (meth, pc);
+			
 			/* Even if we are reporting an out of memory and
 			   checkPtr fails, this is ok.  If we can't allocate
 			   a new one, the vm will die in an orderly manner.

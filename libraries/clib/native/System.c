@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2003
+ *	Mark J. Wielaard <mark@klomp.org>
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -426,7 +428,7 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 	char *s;
 
 	cname = CLASS_CNAME(OBJECT_CLASS(&t->base));
-	msg = unhand(t)->message;
+	msg = unhand(t)->detailMessage;
 
 	if (msg) {
 		s = checkPtr(stringJava2C(msg));
@@ -482,7 +484,7 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 	in = &((char*)ARRAY_DATA(src))[srcpos]; 	 
 	out = &((char*)ARRAY_DATA(dst))[dstpos];
 
-	if (sclass == dclass) { 	 
+	if (sclass == dclass) {
 #if defined(HAVE_MEMMOVE) 	 
 		memmove((void*)out, (void*)in, len); 	 
 #else 	 
@@ -515,10 +517,10 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 			Hjava_lang_Object* val = *(Hjava_lang_Object**)in; 	 
 			if (val != 0 && !instanceof(dclass, OBJECT_CLASS(val))) { 	 
 				throwException (ArrayStoreException);
-			} 	 
+			}
 			*(Hjava_lang_Object**)out = val; 	 
 			in += sizeof(Hjava_lang_Object*); 	 
 			out += sizeof(Hjava_lang_Object*); 	 
-		}    
+		}
 	}
 }
