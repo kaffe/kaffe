@@ -248,12 +248,12 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 jrebin_PROGRAMS = kaffe-bin
-
-@NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
 @NEED_LIBXPROF_FALSE@libxprof = #
 
-@ENABLE_JVMPI_TRUE@libjvmpi = ../jvmpi/libkaffejvmpi.la
+@NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
 @ENABLE_JVMPI_FALSE@libjvmpi = #
+
+@ENABLE_JVMPI_TRUE@libjvmpi = ../jvmpi/libkaffejvmpi.la
 
 AM_CPPFLAGS = \
 	-I../kaffevm \

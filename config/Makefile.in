@@ -246,9 +246,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@USE_JIT_FALSE@ENGINE_GEN_HDRS = 
 
 @USE_JIT_TRUE@ENGINE_GEN_HDRS = jit-md.h
-@USE_JIT_FALSE@ENGINE_GEN_HDRS = 
 
 @ENABLE_XPROF_TRUE@XPROF_HDRS = xprofile-md.h
 @ENABLE_XPROF_FALSE@XPROF_HDRS = 

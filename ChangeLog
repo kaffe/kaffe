@@ -1,3 +1,20 @@
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
+	* test/regression/compile_time/Makefile.am:
+	Don't use GNU make extensions to avoid build problems on platforms
+	using a BSD make.
+
+	* config/Makefile.in,
+	include/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/javalib/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/compile_time/Makefile.in:
+	Regenerated.
+
 2003-09-14  Dalibor Topic <robilad@kaffe.org>,
             Helmer Kraemer  <hkraemer@freenet.de>
 
