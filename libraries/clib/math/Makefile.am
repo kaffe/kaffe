@@ -16,7 +16,7 @@ libmath_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libmath_la_LIBADD = $(MATH_LIBS) $(M_LIBS)
+libmath_la_LIBADD = $(LIBADD_GMP) $(M_LIBS)
 
 libmath_la_SOURCES = BigInteger.c
 

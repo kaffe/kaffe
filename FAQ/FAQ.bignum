@@ -1,0 +1,43 @@
+Using BigIntegers and BigDecimal on Kaffe
+=========================================
+
+Author: Dalibor Topic <robilad@kaffe.org>
+
+Implementations
+---------------
+
+  Kaffe comes with two implementations of java.math package. The default one, 
+  from GNU Classpath, is written in Java. It is available on all platforms.
+
+  The other implementation uses GNU MP for the actual calculations on 
+  BigInteger. Using the very fast GNU MP library makes it much faster than the
+  default implementation.
+
+Configuration
+-------------
+
+  When Kaffe's configure script detects the presence of GNU MP library, it 
+  automatically takes care of building kaffe with GNU MP support enabled.
+
+  Support for GNU MP can be explicitely turned off using the --without-gmp 
+  configure script option.
+
+Usage
+-----
+
+  Kaffe uses the pure java implementation by default. If you want to use the 
+  fast java.math implementation, you need to run kaffe with the 
+  -Xnative-big-math option.
+
+Performance
+-----------
+
+  Running the NativeBigInteger benchmark from i2p [1] shows that kaffe on i686 
+  on GNU/Linux with jit3 and jthreads is about 4 times slower than JDK 1.4.2 
+  using the default, pure java implementation of java.math.
+
+  Using the native implementation, the tables turn, and kaffe is 5 times faster
+  than JDK 1.4.2.
+
+[1] I2P is available at http://www.i2p.net. The benchmark is in the net.i2p.util 
+    package.

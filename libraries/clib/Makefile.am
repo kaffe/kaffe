@@ -6,13 +6,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-# Build math library only if native implementation of java.math should be used.
-if COND_PURE_JAVA_MATH
-  MAYBE_NATIVE_MATH =
-else
-  MAYBE_NATIVE_MATH = math
-endif
-
 # Build libxmlj only desired
 if COND_LIBXMLJ
   MAYBE_LIBXMLJ = libxmlj
@@ -22,4 +15,4 @@ endif
 
 DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
 
-SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) security management
+SUBDIRS = native io nio net zip math security management

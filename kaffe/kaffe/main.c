@@ -48,6 +48,10 @@
 #include <locale.h>
 #endif
 
+#ifdef ENABLE_BINRELOC
+#include "prefix.h"
+#endif
+
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
 #endif
@@ -411,6 +415,41 @@ options(char** argv, int argc)
 			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
+#if defined(ENABLE_BINRELOC) && defined(USE_GMP)
+		/* Extra option to use gmp for native, fast bignums.
+		 * Only available with binreloc, since binreloc is used to
+		 * find the gmpjavamath.jar file.
+		 */
+                else if (strncmp(argv[i], "-Xnative-big-math", (j=17)) == 0) {
+                        char    *newbootcpath;
+                        unsigned int      bootcpathlength;
+			const char *prefix = LIBDIR;
+ 			const char *suffix = file_separator "gmpjavamath.jar";
+
+                        bootcpathlength = strlen(prefix)
+				+ strlen(suffix)
+				+ strlen(path_separator)
+                                + ((vmargs.bootClasspath != NULL) ?
+                                        strlen(vmargs.bootClasspath) : 0)
+                                + 1;
+
+                        /* Get longer buffer FIXME:  free the old one */
+                        if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
+                                fprintf(stderr,  _("Error: out of memory.\n"));
+                                exit(1);
+                        }
+
+                        /* Construct new boot classpath */
+                        strcpy(newbootcpath, prefix);
+			strcat(newbootcpath, suffix);
+                        strcat(newbootcpath, path_separator);
+                        if( vmargs.bootClasspath != 0 )
+                                strcat(newbootcpath, vmargs.bootClasspath);
+
+                        /* set the new boot classpath */
+                        vmargs.bootClasspath = newbootcpath;
+                }
+#endif /* defined(ENABLE_BINRELOC) && defined(USE_GMP) */
 		else if (strncmp(argv[i], "-Xbootclasspath/p:", (j=18)) == 0) {
 			char	*newbootcpath;
 			unsigned int      bootcpathlength;
@@ -775,6 +814,9 @@ usage(void)
 #ifdef KAFFE_STATS
         fprintf(stderr, _("	-vmstats <flag{,flag}>	 Print VM statistics.  Set flag=all for all\n"));
 #endif
+#if defined(ENABLE_BINRELOC) && defined(USE_GMP)
+        fprintf(stderr, _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
+#endif /* defined(ENABLE_BINRELOC) && defined(USE_GMP) */
 	fprintf(stderr, _("  * Option currently ignored.\n"
 			  "\n"
 			  "Compatibility options:\n"

@@ -55,14 +55,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
-	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libxml.m4 \
+	$(top_srcdir)/m4/libxslt.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -215,6 +216,7 @@ KPREFIX = @KPREFIX@
 KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
+LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBLTDL = @LIBLTDL@
@@ -232,7 +234,6 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH = @MAKE_KAFFEH@
 MATH_LIB = @MATH_LIB@
-MATH_LIBS = @MATH_LIBS@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
 MOC = @MOC@
@@ -278,6 +279,7 @@ USER_WANT_GNU_CRYPTO_FALSE = @USER_WANT_GNU_CRYPTO_FALSE@
 USER_WANT_GNU_CRYPTO_TRUE = @USER_WANT_GNU_CRYPTO_TRUE@
 USE_COMPAT_IFADDRS_FALSE = @USE_COMPAT_IFADDRS_FALSE@
 USE_COMPAT_IFADDRS_TRUE = @USE_COMPAT_IFADDRS_TRUE@
+USE_GMP = @USE_GMP@
 USE_JIT_FALSE = @USE_JIT_FALSE@
 USE_JIT_TRUE = @USE_JIT_TRUE@
 USE_NLS = @USE_NLS@

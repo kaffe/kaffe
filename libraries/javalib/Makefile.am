@@ -21,6 +21,8 @@
 #
 #   Makefile.am.in -> Makefile.am -> Makefile.in -> Makefile
 
+SUBDIRS = . gmp-math
+
 SRCDIRS = gnu java javax kaffe org
 
 ## Pick source of java math implementation
@@ -59,6 +61,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
 	$(gnu_java_locale_SRCS) \
+	$(gnu_java_math_SRCS) \
 	$(gnu_java_net_SRCS) \
 	$(gnu_java_net_content_text_SRCS) \
 	$(gnu_java_net_protocol_file_SRCS) \
@@ -424,6 +427,8 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_zh_HK.java \
 	gnu/java/locale/LocaleInformation_zh_SG.java \
 	gnu/java/locale/LocaleInformation_zh_TW.java
+gnu_java_math_SRCS = \
+	gnu/java/math/MPN.java
 gnu_java_net_SRCS = \
 	gnu/java/net/DNSJavaInetAddressImpl.java \
 	gnu/java/net/HeaderFieldHelper.java \
@@ -2873,10 +2878,8 @@ EXTRA_DIST = \
 	kaffe \
 	org \
 	pure-java \
-	essential.files \
-	pure_java_math.files \
+	all.files \
 	native_java_math.files \
-	profiles \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -2903,12 +2906,11 @@ rebuildLib = ./rebuildLib
 compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
-	$(SHELL) $(rebuildLib) @essential.files
-	$(SHELL) $(rebuildLib) $(DNSJAVA_InetAddressImpl)
-	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
-	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
-		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i || exit $$? ; \
-	done
+	if test "$(PROFILE)" = default; then \
+		$(SHELL) $(rebuildLib) @$(srcdir)/all.files; \
+	else \
+		$(SHELL) $(rebuildLib) @$(PROFILE); \
+	fi
 	echo timestamp > $(LIBDIR)/stamp
 
 bootstrap: $(srcdir)/Klasses.jar.bootstrap rt.jar

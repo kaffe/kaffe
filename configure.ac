@@ -967,14 +967,7 @@ AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
 ZIP_LIBS="$CTLIBS $ZIP_LIBS"
 AC_SUBST(ZIP_LIBS)
 
-dnl Check for libraries for math library.
-AC_CHECK_LIBRARY(gmp,mpz_get_d,MATH_LIBS)
-if test $ac_cv_lib_gmp_mpz_get_d = no; then
-  dnl with gmp3 it's a #define, use real function name
-  AC_CHECK_LIBRARY(gmp,__gmpz_get_d,MATH_LIBS)
-fi
-MATH_LIBS="$CTLIBS $MATH_LIBS"
-AC_SUBST(MATH_LIBS)
+m4_LIB_GMP
 
 dnl Check for libraries for security library.
 AC_CHECK_FUNCS(MD2Init MD4Init MD5Init)
@@ -1792,7 +1785,7 @@ dnl -----------------------------------------------------------------------
 dnl                    Support for different class library profiles
 dnl -----------------------------------------------------------------------
 AC_ARG_WITH([class_library_profile],
-	    AS_HELP_STRING([--with-class-library-profile=PROFILE],
+	    AS_HELP_STRING([--with-class-library-profile=ABS.PATH],
 			   [specify class library profile]))
 
 if test x"$with_class_library_profile" = x"" ; then
@@ -2076,6 +2069,7 @@ AC_CONFIG_FILES([kaffe/scripts/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/bat/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
 AC_CONFIG_FILES([libraries/javalib/Makefile])
+AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])
 AC_CONFIG_FILES([libraries/clib/io/Makefile])

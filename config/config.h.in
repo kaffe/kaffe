@@ -269,9 +269,6 @@
 /* Define to 1 if you have the `gcc' library (-lgcc). */
 #undef HAVE_LIBGCC
 
-/* Define to 1 if you have the `gmp' library (-lgmp). */
-#undef HAVE_LIBGMP
-
 /* Define to 1 if you have the `jpeg' library (-ljpeg). */
 #undef HAVE_LIBJPEG
 
@@ -774,6 +771,9 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
+
+/* Define to 1 if using the GNU multiple precision library. */
+#undef USE_GMP
 
 /* Define if va_list is an array */
 #undef VA_LIST_IS_ARRAY

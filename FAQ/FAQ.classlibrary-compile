@@ -133,28 +133,24 @@ example, you may not need JAXP or AWT on your system. So you shouldn't
 have to waste space on the device by including classes you are not
 going to use.
 
-Kaffe supports user defined class library profiles. It works on two
-levels of indirection: a profile file tells the build process where to
-find lists of files to be compiled in a single compiler run. The
-compiler then compiles the listed files.
+Kaffe supports user defined class library profiles. A profile file 
+tells the build process where to find a list of files to be compiled 
+into the class library.
 
-Let's take a look at the default profile in
-libraries/javalib/profiles/default/profile . It lists a few sets of
-files needed to compile the class library. Among them there is a set
-of files needed for AWT support, another for JAXP support etc.
+The default profile in libraries/javalib/all.files lists all files 
+that are included into the class library. It is a simple list of 
+java source files that should be compiled together in a compiler run. 
+They are passed to the compiler using the 
+@file-containing-a-list-of-sources option, so that it works on systems 
+with a small maximal command line length.
 
-Each of these sets is a simple list of java source files that should
-be compiled together in a compiler run. They are passed to the
-compiler using the @file-containing-a-list-of-sources option, so that
-it works on systems with small maximal command line length.
+For example, in order to remove the AWT classes from your class 
+library, you can simply remove the lines with files from java.awt package 
+from the profile. You can also remove single classes in the same fashion.
 
-In order to remove the AWT classes from your class library, you can
-simply remove the line with awt.files from the profile.
-
-In order to remove single classes from your class library, you can
-remove them from the respective lists of files they are in. This may
-cause the compilation of other classes to fail, so check the compiler
-output to make sure the compilation still worked.
+If you work with your own profiles, it is recommended to use Jikes. Jikes
+takes care about compiling the dependencies of files included in your 
+profile automatically.
 
 How do I add classes to a class library profile?
 ------------------------------------------------
@@ -163,44 +159,8 @@ If you want to add a class to specific compiler run, just add the path
 to its source to the file listing the classes to be compiled in that
 run.
 
-If you want to add a set of classes, you should add a new compiler run
-in the profile, and list paths to the sources in a separate file.
-
-You should still consider adding the classes to Klasses_jar_SRCS in
-order to have the changes automatically picked up by the build system.
-
-How do I add my own class library profile?
+How do I use own class library profile?
 ------------------------------------------
-
-Just make a new directory with your profile's name in
-libraries/javalib/profiles and create a file named 'profile' in the
-new directory.
-
-In order to make your life easier, kaffe automatically compiles all
-essential files needed for java.lang.Object using the list of files in
-libraries/javalib/essential.files . So you don't have to re-list those
-files, but doing so won't hurt. It just helps you to get started by
-allowing you to focus on creating your library profile instead of
-getting java.lang.Object to compile.
-
-Kaffe also automatically takes care about picking the java.math
-implementation.
-
-You can use the minimal profile as your starting point. It compiles no
-further files, beside those automatically compiled in. You can either
-add the classes at once, and add more tofix any compiler error, or you
-can use a tool like jakarta BCEL's transitive hull verifier on the
-root class of your application and add all the classes it
-traverses. That's what I did to get the list of essential files. I
-started with java.lang.Object. If you are using BCEL's verifier, you
-may need to add some interfaces by hand.
-
-If you create some profiles that you consider to be of value for
-others, please consider sending them to the Kaffe mailing list on
-kaffe@kaffe.org .
-
-How do I pick which class library profile to use?
--------------------------------------------------
 
 The configure script has the option --with-class-library-profile,
 which allows you to specify a profile to use for the class library.
@@ -208,25 +168,11 @@ which allows you to specify a profile to use for the class library.
 Which profiles are available?
 -----------------------------
 
-Currently, there are three profiles available.
+Currently, there is only the default profile available.
 
 * default:
 
-  Builds the whole class library. This profile is optimized for low
-  memory consumption. The memory requirement to build the class
-  library with this profile is about 20M using kjc.
-
-* minimal:
-
-  Builds only the classes required to compile java.lang.Object. It is
-  useful as a starting point for adapting the class library to your
-  needs.
-
-* allatonce:
-
-  Builds the whole class library in a single pass. This profile is
-  optimized for speed, so it only invokes the compiler once on all
-  source files. It uses more then 50M of memory with kjc.
+  Builds the whole class library at once. 
 
 If you write your own profiles, send them to the kaffe mailing list
 kaffe@kaffe.org.

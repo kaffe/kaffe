@@ -39,6 +39,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.automake \
 	FAQ/FAQ.awt \
 	FAQ/FAQ.benchmarking \
+	FAQ/FAQ.bignum \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
 	FAQ/FAQ.code-layout \

@@ -11,7 +11,7 @@
 #include "config.h"
 #include "java_math_BigInteger.h"
 
-#if defined(HAVE_GMP_H) && defined(HAVE_LIBGMP)
+#if defined(HAVE_GMP_H) && defined(USE_GMP)
 
 #include <gmp.h>
 #include <stdlib.h>
@@ -551,7 +551,7 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 	return (mpz_hamdist(src1, src2));
 }
 
-#else /* !defined(HAVE_GMP_H) || !defined(HAVE_LIBGMP) */
+#else /* !defined(HAVE_GMP_H) || !defined(USE_GMP) */
 
 /* throw a kaffe.util.SupportDisabled exception */
 static void
@@ -776,4 +776,4 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 	return 0;
 }
 
-#endif /* defined(HAVE_GMP_H) && defined(HAVE_LIBGMP) */
+#endif /* defined(HAVE_GMP_H) && defined(USE_GMP) */

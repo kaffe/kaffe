@@ -1,0 +1,63 @@
+#
+# Kaffe GNU MP-based BigInteger and BigDecimal implementation.
+#
+# Copyright (c) 2004
+# 	Kaffe.org contributors. All rights reserved. See ChangeLog for details.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+
+## taken from top level Makefile.am
+JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
+KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
+BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar
+JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
+
+CLASSFILE = gmpjavamath.jar
+SRCDIRS = java
+
+jrelib_DATA = $(CLASSFILE)
+
+gmpjavamath_jar_SRCS = \
+        $(java_math_SRCS)
+java_math_SRCS = \
+        java/math/BigDecimal.java \
+        java/math/BigInteger.java
+
+## Do not delete the previous blank line; update-class-list depends on it
+
+EXTRA_DIST = \
+	$(jrelib_DATA) \
+	$(gmpjavamath_jar_SRCS)
+
+if HAVE_ZIP
+JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
+else
+JAR_CMD1 = $(JAR) -cvf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS)
+endif
+
+LIBDIR = lib
+
+clean-hook:
+	rm -rf $(LIBDIR)
+
+.PHONY: new-classes
+new-classes: $(top_srcdir)/developers/update-class-list
+	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
+
+rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
+Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+
+.PHONY: compile-classes classes
+## classes is provided for backward compatibility; use compile-classes
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gmpjavamath_jar_SRCS)
+	rm -rf $(LIBDIR)
+	mkdir $(LIBDIR)
+	echo $(SHELL) $(rebuildLib)
+	CLASSPATH=$(Klasses_jar) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap $(SHELL) $(rebuildLib) $(gmpjavamath_jar_SRCS)
+	echo timestamp > $(LIBDIR)/stamp
+
+.PHONY: jar-classes
+jar-classes $(CLASSFILE): $(LIBDIR)/stamp
+	rm -f $(CLASSFILE)
+	$(JAR_CMD1)
