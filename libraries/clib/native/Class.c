@@ -44,11 +44,27 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 	errorInfo einfo;
 	Hjava_lang_Class* clazz;
 	Utf8Const *utf8buf;
-	char buf[MAXNAMELEN];
+	const char *buf;
+	int jlen;
+	jchar *js;
 
-	/* Get string and convert '.' to '/' */
-	stringJava2CBuf(str, buf, sizeof(buf));
-	classname2pathname(buf, buf);
+	/*
+	 * NB: internally, we store class names as path names (with slashes
+	 *     instead of dots.  However, we must also prevent calls to
+	 *     "java/lang/Object" or "[[Ljava/lang/Object;" from succeeding.
+	 *	Since class names cannot have slashes, we reject all attempts
+	 *	to look up names that do.  Awkward.  Inefficient.
+	 */
+	js = STRING_DATA(str);
+	jlen = STRING_SIZE(str);
+	while (--jlen > 0) {
+		if (*js++ == '/') {
+			postExceptionMessage(&einfo, 
+				JAVA_LANG(ClassNotFoundException), 
+				"Cannot have slashes - use dots instead.");
+			throwError(&einfo);
+		}
+	}
 
 	/*
 	 * Note the following oddity: 
@@ -67,7 +83,11 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
-	utf8buf = checkPtr(utf8ConstNew(buf, -1));
+
+	/* Convert string to utf8, converting '.' to '/' */
+	utf8buf = checkPtr(stringJava2Utf8ConstReplace(str, '.', '/'));
+	buf = utf8buf->data;
+
 	if (buf[0] == '[') {
 		clazz = loadArray(utf8buf, loader, &einfo);
 	}
@@ -221,7 +241,7 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 	}
 #endif
 
-	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class");
+	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
 	ifaces = (struct Hjava_lang_Class**)unhand_array(obj)->body;
 	for (i = 0; i < nr; i++) {
 		ifaces[i] = this->interfaces[i];
@@ -351,7 +371,7 @@ makeParameters(Method* meth)
 
 	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
 	for (i = 0; i < METHOD_NARGS(meth); ++i) {
-		clazz = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					      meth->class->loader, &info);
 		if (clazz == 0) {
 			throwError(&info);
@@ -369,7 +389,7 @@ makeReturn(Method* meth)
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	clazz = getClassFromSignature(METHOD_RET_TYPE(meth), meth->class->loader, &info);
+	clazz = getClassFromSignaturePart(METHOD_RET_TYPE(meth), meth->class->loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
 	}
@@ -694,7 +714,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
 		Hjava_lang_Class* sigclass;
-		sigclass = getClassFromSignature(METHOD_ARG_TYPE(mth, i), mth->class->loader, &info);
+		sigclass = getClassFromSignaturePart(METHOD_ARG_TYPE(mth, i), mth->class->loader, &info);
 		if (sigclass == 0) {
 			discardErrorInfo(&info);
 			return 0;

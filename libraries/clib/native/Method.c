@@ -101,7 +101,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 
 	body = argobj ? OBJARRAY_DATA(argobj) : 0;
 	for (i = j = 0; i < len; ++i, ++j) {
-		t = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+		t = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					  meth->class->loader, &info);
 		if (t == 0) {
 			throwError(&info);
