@@ -591,6 +591,7 @@ public abstract class DateFormat extends Format implements Cloneable
   /**
    * This method parses the specified date/time string.
    *
+   * @param source The string to parse.
    * @return The resultant date.
    *
    * @exception ParseException If the specified string cannot be parsed.
@@ -604,7 +605,7 @@ public abstract class DateFormat extends Format implements Cloneable
 	int index = pos.getErrorIndex();
 	if (index < 0)
 	  index = pos.getIndex();
-	throw new ParseException("invalid Date syntax", index);
+	throw new ParseException("invalid Date syntax in string \"" + source + '\"', index);
       }
     return result;
   }

@@ -2,6 +2,7 @@
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class DateFormatTest
@@ -17,13 +18,20 @@ public class DateFormatTest
 	sdf = new SimpleDateFormat("yyMMddHHmmssSSS");
 	date = new Date();
 	str = sdf.format(date);
-	if( !date.equals(sdf.parse(str)) )
-	{
-	    System.out.println("Dates don't match? "
-			       + date
-			       + " != "
-			       + sdf.parse(str));
-	}
+
+	try {
+		if( !date.equals(sdf.parse(str)) )
+		{
+		    System.out.println("Dates don't match? "
+				       + date
+				       + " != "
+				       + sdf.parse(str));
+		}
+        }
+        catch (ParseException e) {
+                System.err.println("Parse error at position " + e.getErrorOffset());
+                e.printStackTrace();
+        }
 
 	SimpleTimeZone tz = new SimpleTimeZone(0, "Z");
 	SimpleDateFormat sdf2;
@@ -33,12 +41,19 @@ public class DateFormatTest
 	str = sdf.format(date);
 	str += "GMT+00:00";
 	sdf2 = new SimpleDateFormat("yyMMddHHmmssSSSz");
-	if( !date.equals(sdf2.parse(str)) )
-	{
-	    System.out.println("Dates don't match? "
-			       + date
-			       + " != "
-			       + sdf2.parse(str));
+
+	try {
+		if( !date.equals(sdf2.parse(str)) )
+		{
+		    System.out.println("Dates don't match? "
+				       + date
+				       + " != "
+				       + sdf2.parse(str));
+		}
+	}
+	catch (ParseException e) {
+		System.err.println("Parse error at position " + e.getErrorOffset());
+		e.printStackTrace();
 	}
     }
 }
