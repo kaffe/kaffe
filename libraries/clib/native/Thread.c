@@ -35,7 +35,7 @@ java_lang_Thread_yield0(void)
  * Start this thread running.
  */
 void
-java_lang_Thread_start(struct Hjava_lang_Thread* this)
+java_lang_Thread_start0(struct Hjava_lang_Thread* this)
 {
 	startThread(this);
 }
