@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.lang;
 
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * "The Java Language Specification", ISBN 0-201-63451-1
@@ -130,6 +132,11 @@ public class Thread implements Runnable
 
   /** The next thread number to use. */
   private static int numAnonymousThreadsCreated;
+
+  /** Thread local storage. Package accessible for use by
+    * InheritableThreadLocal.
+    */
+  WeakHashMap locals;
 
   /**
    * Allocates a new <code>Thread</code> object. This constructor has
@@ -976,5 +983,20 @@ public class Thread implements Runnable
   {
     group.removeThread(this);
     vmThread = null;
+    locals = null;
+  }
+
+  /**
+   * Returns the map used by ThreadLocal to store the thread local values.
+   */
+  static Map getThreadLocals()
+  {
+    Thread thread = currentThread();
+    Map locals = thread.locals;
+    if (locals == null)
+      {
+        locals = thread.locals = new WeakHashMap();
+      }
+    return locals;
   }
 }

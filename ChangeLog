@@ -2,6 +2,25 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-03  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/lang/InheritableThreadLocal.java
+        (threadMap): Removed.
+        (InheritableThreadLocal): Removed code.
+        (newChildThread): Changed to use locals map in Thread.
+        * java/lang/Thread.java
+        (locals): New field.
+        (die): Clear locals field.
+        (getThreadLocals): New method.
+        * java/lang/ThreadLocal.java
+        (value): Removed.
+        (valueMap): Removed.
+        (get,set): Changed to use locals map in Thread.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-02  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/security/OID.java,

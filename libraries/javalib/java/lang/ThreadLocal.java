@@ -37,7 +37,6 @@ exception statement from your version. */
 
 package java.lang;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -98,18 +97,20 @@ public class ThreadLocal
   static final Object NULL = new Object();
 
   /**
-   * The stored value. Package visible for use by InheritableThreadLocal. */
-  Object value;
-	
-  /**
-   * Maps Threads to values. Uses a WeakHashMap so if a Thread is garbage
-   * collected the reference to the Value will disappear. A null value means
-   * uninitialized, while NULL means a user-specified null. Only the
-   * <code>set(Thread, Object)</code> and <code>get(Thread)</code> methods
-   * access it. Package visible for use by InheritableThreadLocal.
+   * Serves as a key for the Thread.locals WeakHashMap.
+   * We can't use "this", because a subclass may override equals/hashCode
+   * and we need to use object identity for the map.
    */
-  final Map valueMap = Collections.synchronizedMap(new WeakHashMap());
-	
+  final Key key = new Key();
+
+  class Key
+  {
+    ThreadLocal get()
+    {
+      return ThreadLocal.this;
+    }
+  }
+
   /**
    * Creates a ThreadLocal object without associating any value to it yet.
    */
@@ -140,14 +141,14 @@ public class ThreadLocal
    */
   public Object get()
   {
-    Thread currentThread = Thread.currentThread();
+    Map map = Thread.getThreadLocals();
     // Note that we don't have to synchronize, as only this thread will
-    // ever modify the returned value and valueMap is a synchronizedMap.
-    Object value = valueMap.get(currentThread);
+    // ever modify the map.
+    Object value = map.get(key);
     if (value == null)
       {
         value = initialValue();
-        valueMap.put(currentThread, value == null ? NULL : value);
+        map.put(key, value == null ? NULL : value);
       }
     return value == NULL ? null : value;
   }
@@ -162,8 +163,9 @@ public class ThreadLocal
    */
   public void set(Object value)
   {
+    Map map = Thread.getThreadLocals();
     // Note that we don't have to synchronize, as only this thread will
-    // ever modify the returned value and valueMap is a synchronizedMap.
-    valueMap.put(Thread.currentThread(), value == null ? NULL : value);
+    // ever modify the map.
+    map.put(key, value == null ? NULL : value);
   }
 }
