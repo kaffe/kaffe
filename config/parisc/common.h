@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
@@ -14,54 +17,8 @@
 #ifndef __parisc_common_h
 #define __parisc_common_h
 
-typedef jdouble d4int_f (int, int, int, int);
-typedef jfloat f4int_f (int, int, int, int);
-typedef jlong j4int_f (int, int, int, int);
-
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
-
-#if NEED_sysdepCallMethod
-/* FIXME: this doesn't work for parisc-linux, because on parisc-linux
- * there is no fparg relocation, so we cannot just pass everything in
- * general purpose registers
- */
-
-#define sysdepCallMethod(CALL)						\
-do {									\
-  int argidx;								\
-  int *sa;								\
-  int *stackx;								\
-  int st_reserve[(CALL)->nrargs];					\
-  asm volatile ("ldo -36(%%r30),%0" : "=r" (sa) : "r" (st_reserve));	\
-  for (argidx = 0, stackx = sa; argidx < (CALL)->nrargs; argidx++)	\
-    switch ((CALL)->callsize[argidx])					\
-      {									\
-      case 1:								\
-	*stackx-- = (CALL)->args[argidx].i;				\
-	break;								\
-      case 2:								\
-	if (!((int)stackx & 4)) stackx--;				\
-	*stackx-- = (int) ((CALL)->args[argidx].j);			\
-	*stackx-- = (CALL)->args[argidx].i;				\
-	argidx++;							\
-      default:								\
-	break;								\
-      }									\
-  if ((CALL)->rettype == 'F') {						\
-    (CALL)->ret->f =							\
-      ((f4int_f *) ((CALL)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);	\
-    break;								\
-  }									\
-  if ((CALL)->rettype == 'D') {						\
-    (CALL)->ret->d =							\
-      ((d4int_f *) ((CALL)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);	\
-    break;								\
-  }									\
-  (CALL)->ret->j =							\
-    ((j4int_f *) ((CALL)->function)) (sa[0], sa[-1], sa[-2], sa[-3]);	\
-} while (0);
-#endif
 
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against

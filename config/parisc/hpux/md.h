@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -13,6 +16,7 @@
 #define __parisc_hpux_md_h
  
 #include "parisc/common.h"
+#include "parisc/sysdepCallMethod.h"
 #include "parisc/threads.h"
 
 #define	LIBRARYPATH	"SHLIB_PATH"

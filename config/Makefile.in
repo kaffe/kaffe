@@ -486,6 +486,7 @@ EXTRA_DIST = \
 	parisc/hpux/md.h \
 	parisc/linux/config.frag \
 	parisc/linux/md.h \
+	parisc/sysdepCallMethod.h \
 	parisc/threads.h \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \

@@ -16,6 +16,7 @@
 #define __parisc_linux_md_h
  
 #include "parisc/common.h"
+#include "parisc/sysdepCallMethod.h"
 #include "parisc/threads.h"
 
 #define        LIBRARYPATH     "SHLIB_PATH"

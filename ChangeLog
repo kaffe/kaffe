@@ -1,3 +1,22 @@
+2003-12-12  Dalibor Topic <robilad@kaffe.org>
+
+	* config/parisc/sysdepCallMethod.h: New file.
+
+	* config/Makefile.am
+	(EXTRA_DIST): Added config/m68k/sysdepCallMethod.h.
+
+	* aclocal.m4,
+	config/Makefile.in:
+	Regenerated.
+
+	* config/parisc/common.h
+	(sysdepCallMethod): Moved into its own file,
+        config/parisc/sysdepCallMethod.h.
+
+	* config/parisc/hpux/md.h,
+	config/parisc/linux/md.h:
+	Include config/m68k/sysdepCallMethod.h.
+
 2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/Makefile.am,
