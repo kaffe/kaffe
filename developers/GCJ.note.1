@@ -1,0 +1,42 @@
+#
+# Note: this files must not be compiled with optimization turned on
+# in order to avoid that private methods are excluded from the
+# method table.
+#
+# See also GCJ bug report GCJ/110
+# http://sourceware.cygnus.com/cgi-bin/gnatsweb.pl?cmd=view&pr=110&database=java
+# and
+# http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00364.html
+#
+
+J='
+java/lang/Thread.class
+java/lang/SecurityManager.class
+java/lang/ClassLoader.class
+java/lang/reflect/Array.class
+java/lang/System.class
+java/lang/String.class
+java/lang/Class.class
+java/lang/Throwable.class
+java/lang/Runtime.class
+java/util/zip/ZipFile.class
+java/util/zip/Deflater.class
+java/util/zip/Inflater.class
+java/util/zip/CRC32.class
+java/util/zip/Adler32.class
+java/util/Arrays.class
+java/net/PlainDatagramSocketImpl.class
+java/net/PlainSocketImpl.class
+java/io/FileDescriptor.class
+java/io/FileOutputStream.class
+java/io/File.class
+java/io/FileInputStream.class
+java/io/RandomAccessFile.class
+java/math/BigInteger.class
+kaffe/io/ObjectStreamClassImpl.class
+kaffe/lang/Application.class
+kaffe/lang/SystemClassLoader.class
+kaffe/lang/MemoryAdvice.class
+kaffe/lang/UNIXProcess.class
+'
+
