@@ -45,8 +45,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * "The Java Language Specification", ISBN 0-201-63451-1
@@ -1184,37 +1182,6 @@ public class File implements Serializable, Comparable
       s.checkRead(path);
   }
 
-  static class DeleteFileHelper extends Thread
-  {
-    LinkedList filesToDelete = new LinkedList();
-
-    public DeleteFileHelper()
-    {
-      Runtime.getRuntime().addShutdownHook (this);
-    }
-    
-    public void run()
-    {
-      Iterator fileIterator = filesToDelete.iterator();
-
-      while (fileIterator.hasNext())
-	{
-	  String path = (String)fileIterator.next();
-	  try
-	    {
-	      File f = new File(path);
-
-	      f.delete();
-	    }
-	  catch (Throwable _)
-	    {
-	    }
-	}
-    }
-  }
-
-  private static DeleteFileHelper deleteHelper = new DeleteFileHelper();
-
   /** 
    * Calling this method requests that the file represented by this object
    * be deleted when the virtual machine exits.  Note that this request cannot
@@ -1232,7 +1199,7 @@ public class File implements Serializable, Comparable
     if (sm != null)
       sm.checkDelete(path);
 
-    deleteHelper.filesToDelete.add(getAbsolutePath());
+    DeleteFileHelper.add(this);
   }
 
   private void writeObject(ObjectOutputStream oos) throws IOException

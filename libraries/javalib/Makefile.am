@@ -1090,6 +1090,7 @@ java_io_SRCS = \
 	java/io/DataInputStream.java \
 	java/io/DataOutput.java \
 	java/io/DataOutputStream.java \
+	java/io/DeleteFileHelper.java \
 	java/io/EOFException.java \
 	java/io/Externalizable.java \
 	java/io/FileDescriptor.java \

@@ -84,6 +84,7 @@ java/io/DataOutput.java
 java/io/DataOutputStream.java
 java/io/EOFException.java
 java/io/Externalizable.java
+java/io/DeleteFileHelper.java
 java/io/File.java
 java/io/FileDescriptor.java
 java/io/FileFilter.java
