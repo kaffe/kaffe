@@ -6,6 +6,7 @@ Fri Jul  3 18:33:44 1998  Godmar Back  <gback@marker.cs.utah.edu>
 	  classes, include static fields in ObjectStreamField arrays
 	* libraries/clib/native/ObjectInputStream.c: fixes to loadClass0
 	  kaffe/kaffevm/classMethod.c: set array flags and interfaces right.
+	* test/regression/TestSerializable.java: new file.
 
 Wed Jul  1 19:20:23 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
