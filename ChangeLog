@@ -1,3 +1,10 @@
+Mon Jan 18 18:33:08 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/Makefile.am (KAFFEH_FOR_BUILD): ditto
+	* kaffe/kaffevm/Makefile.am (KAFFEH_FOR_BUILD): renamed from
+	KAFFEH_FOR_HOST
+	* include/Makefile.in, kaffe/kaffevm/Makefile.in: regen
+
 Mon Jan 18 18:10:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: use M_LIBS to look for math functions

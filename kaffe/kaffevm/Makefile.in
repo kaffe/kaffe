@@ -502,8 +502,8 @@ mostlyclean distclean maintainer-clean
 baseClasses.lo: java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
-	if test -x $(KAFFEH_FOR_HOST); then \
-	    $(KAFFEH_FOR_HOST) \
+	if test -x $(KAFFEH_FOR_BUILD); then \
+	    $(KAFFEH_FOR_BUILD) \
 		-classpath $(top_srcdir)/libraries/javalib/Klasses.jar \
 		java.lang.Cloneable; \
 	fi

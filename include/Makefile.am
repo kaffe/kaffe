@@ -31,8 +31,8 @@ include_HEADERS = $(KAFFEH_HDRS) \
 	java_lang_String.h
 
 $(KAFFEH_HDRS): $(KLASSES_JAR)
-	if test -x $(KAFFEH_FOR_HOST); then \
-	  $(KAFFEH_FOR_HOST) -d @srcdir@ -classpath $(KLASSES_JAR) \
+	if test -x $(KAFFEH_FOR_BUILD); then \
+	  $(KAFFEH_FOR_BUILD) -d @srcdir@ -classpath $(KLASSES_JAR) \
 	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	fi
 
