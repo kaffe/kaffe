@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -12,29 +13,28 @@ package java.util;
 
 public interface Map {
 
-public static interface Entry {
+	public static interface Entry {
+		public Object getKey();
+		public Object getValue();
+		public Object setValue(Object value);
+		public boolean equals(Object o);
+		public int hashCode();
+	}
 
-public Object getKey();
-public Object getValue();
-public Object setValue(Object value);
-public boolean equals(Object o);
-public int hashCode();
-
-}
-
-public int size();
-public boolean isEmpty();
-public boolean containsKey(Object o);
-public boolean containsValue(Object o);
-public Object get(Object key);
-public Object put(Object key, Object value);
-public void putAll(Map m);
-public void clear();
-public Set keySet();
-public Set entrySet();
-public Collection values();
-public boolean equals(Object o);
-public int hashCode();
-public Object remove(Object o);
+	public int size();
+	public boolean isEmpty();
+	public boolean containsKey(Object o);
+	public boolean containsValue(Object o);
+	public Object get(Object key);
+	public Object put(Object key, Object value);
+	public void putAll(Map m);
+	public void clear();
+	public Set keySet();
+	public Set entrySet();
+	public Collection values();
+	public boolean equals(Object o);
+	public int hashCode();
+	public Object remove(Object o);
 
 }
+
