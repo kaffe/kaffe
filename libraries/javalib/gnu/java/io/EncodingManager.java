@@ -72,7 +72,7 @@ public class EncodingManager
 /**
   * This is the system default character encoding
   */
-private static String default_encoding;
+private static String default_encoding = "Default";
 
 /**
   * This is the default instance of the default <code>Decoder</code>, put
@@ -97,6 +97,7 @@ private static Hashtable decoder_instances;
 private static Hashtable encoder_instances;
 
 
+/*
 static 
 {
   // Initialize hashtables
@@ -104,7 +105,9 @@ static
   encoder_instances = new Hashtable();
 
   // Find the system default encoding name
-  String default_encoding = System.getProperty("file.encoding","8859_1");
+  // String default_encoding = System.getProperty("file.encoding","8859_1");
+  // I am not sure whether System has already been initialized.
+  String default_encoding = "Default";
 
   // Load the class
   try
@@ -128,7 +131,8 @@ static
       throw new Error("Cannot load system default encoding '" + 
                      default_encoding + "': " + e.getMessage());
     }
-}  
+}
+*/  
 
 /*************************************************************************/
 
@@ -147,9 +151,11 @@ static
   * @return An instance of the default <code>Decoder</code>.
   */
 public static Decoder
-getDecoder()
+getDecoder() throws UnsupportedEncodingException
 {
-  return(default_decoder_instance);
+  // return(default_decoder_instance);
+  // return(new KaffeDecoder(null, default_encoding));
+  return(new KaffeDecoder(null, "Default"));
 }
 
 /*************************************************************************/
@@ -196,6 +202,7 @@ getDecoder(String encoding) throws UnsupportedEncodingException
 public static Decoder
 getDecoder(String encoding, boolean cache) throws UnsupportedEncodingException
 {
+  if (decoder_instances == null) decoder_instances = new Hashtable();
   Decoder dec = (Decoder)decoder_instances.get(encoding);
   if (dec != null)
     return(dec);
@@ -222,7 +229,8 @@ getDecoder(InputStream in)
 {
   try
     {
-      return(getDecoder(in, default_encoding, false));
+      // return(getDecoder(in, default_encoding, false));
+      return(getDecoder(in, "Default", false));
     }
   catch(Exception e)
     {
@@ -295,7 +303,8 @@ getDecoder(InputStream in, String encoding, boolean cache)
 public static Encoder
 getEncoder()
 {
-  return(default_encoder_instance);
+  // return(default_encoder_instance);
+  return(new KaffeEncoder(null, "Default"));
 }
 
 /*************************************************************************/
@@ -342,6 +351,7 @@ getEncoder(String encoding) throws UnsupportedEncodingException
 public static Encoder
 getEncoder(String encoding, boolean cache) throws UnsupportedEncodingException
 {
+  if (encoder_instances == null) encoder_instances = new Hashtable();
   Encoder enc = (Encoder)encoder_instances.get(encoding);
   if (enc != null)
     return(enc);
@@ -369,7 +379,8 @@ getEncoder(OutputStream out)
   Encoder enc = null;
   try
     {
-      enc = getEncoder(out, default_encoding, false);
+      // enc = getEncoder(out, default_encoding, false);
+      enc = getEncoder(out, "Default", false);
     }
   catch(Exception e)
     {

@@ -4,6 +4,11 @@ gnu/java/lang/CharData.java
 gnu/java/lang/reflect/TypeSignature.java
 gnu/java/util/EmptyEnumeration.java
 gnu/java/io/PlatformHelper.java
+gnu/java/io/EncodingManager.java
+gnu/java/io/decode/Decoder.java
+gnu/java/io/decode/KaffeDecoder.java
+gnu/java/io/encode/Encoder.java
+gnu/java/io/encode/KaffeEncoder.java
 gnu/java/net/PlainDatagramSocketImpl.java
 gnu/java/net/PlainSocketImpl.java
 gnu/java/net/InetAddressImpl.java
@@ -62,6 +67,7 @@ gnu/regexp/RETokenRange.java
 gnu/regexp/RETokenRepeated.java
 gnu/regexp/RETokenStart.java
 gnu/regexp/RETokenWordBoundary.java
+java/io/CharConversionException.java
 java/io/WriteAbortedException.java
 java/io/BufferedInputStream.java
 java/io/BufferedOutputStream.java

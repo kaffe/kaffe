@@ -1,3 +1,22 @@
+2004-01-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/InputStreamReader.java,
+	javalib/java/io/OutputStreamWriter.java:
+	Imported from GNU Classpath.
+
+	* libraries/javalib/gnu/java/io/EncodingManager.java:
+	Don't use static initializers because it causes stack overflow.
+
+	* libraries/javalib/gnu/java/io/decode/KaffeDecoder.java:
+	Constructor throws java.io.UnsupportedEncodingException.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files:
+	Added new files to compile files newly imported from GNU Classpath.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated.
+
 2004-01-28  Dalibor Topic <robilad@kaffe.org>
 
         * configure.in:

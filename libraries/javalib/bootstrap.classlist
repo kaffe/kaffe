@@ -1,6 +1,11 @@
 # Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
 gnu/java/io/PlatformHelper.class
+gnu/java/io/EncodingManager.class
+gnu/java/io/decode/Decoder.class
+gnu/java/io/decode/KaffeDecoder.class
+gnu/java/io/encode/Encoder.class
+gnu/java/io/encode/KaffeEncoder.class
 gnu/java/lang/CharData.class
 gnu/java/lang/reflect/TypeSignature.class
 gnu/java/net/protocol/file/Handler.class
@@ -9,6 +14,7 @@ gnu/java/net/protocol/jar/Connection.class
 gnu/java/net/protocol/jar/Connection$JarFileCache.class
 gnu/java/net/protocol/jar/Handler.class
 gnu/java/net/URLParseError.class
+java/io/CharConversionException.class
 java/io/BufferedInputStream.class
 java/io/BufferedOutputStream.class
 java/io/BufferedReader.class

@@ -38,14 +38,15 @@ public class KaffeDecoder extends Decoder
  */
 public
 KaffeDecoder(InputStream in, String enc)
+   throws java.io.UnsupportedEncodingException
 {
   super(in);
-  try {
+  // try {
       converter = ByteToCharConverter.getConverter(enc);
-  }
-  catch (java.io.UnsupportedEncodingException _) {
-      converter = null;
-  }
+  // }
+  // catch (java.io.UnsupportedEncodingException _) {
+  //     converter = null;
+  // }
 }
 
 /*
