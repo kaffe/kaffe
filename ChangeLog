@@ -1,8 +1,18 @@
 2005-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c
+	(jvmpiFillThreadStart): Updated to follow the new threadData
+	structure.
+
+	Reported by Jim Huang <jserv@linux2.cc.ntu.edu.tw>
+
+2005-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/clib/native/Object.c
 	(VMThread.wait): Use vmThread and not sleeper to check whether we are
 	sleeping.
+
+	Reported by Jim Huang <jserv@linux2.cc.ntu.edu.tw>
 
 2005-01-13  Dalibor Topic  <robilad@kaffe.org>
 

@@ -195,7 +195,7 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
 	ev->u.thread_start.parent_name = NULL;
 	ev->u.thread_start.thread_id = tid;
 	ev->u.thread_start.thread_env_id =
-		&KTHREAD(get_data)((jthread_t)tid->PrivateInfo)->jniEnv;
+		&KTHREAD(get_data)->jniEnv;
 }
 
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
