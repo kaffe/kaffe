@@ -37,6 +37,51 @@ static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
 
 /*
+ * Setup a signal handler.
+ */
+void
+catchSignal(int sig, void* handler)
+{
+	sigset_t nsig;
+
+#if defined(HAVE_SIGACTION)
+
+	struct sigaction newact;
+
+	newact.sa_handler = (SIG_T)handler;
+	sigemptyset(&newact.sa_mask);
+	/* we cannot afford to have our signal handlers preempted before
+	 * they are able to disable interrupts.
+	 */
+	sigaddset(&newact.sa_mask, SIGIO);
+	sigaddset(&newact.sa_mask, SIGALRM);
+#if defined(SIGVTALRM)
+	sigaddset(&newact.sa_mask, SIGVTALRM);
+#endif
+#if defined(SIGUNUSED)
+	sigaddset(&newact.sa_mask, SIGUNUSED);
+#endif
+	newact.sa_flags = 0;
+#if defined(SA_SIGINFO)
+	newact.sa_flags |= SA_SIGINFO;
+#endif
+	sigaction(sig, &newact, NULL);
+
+#elif defined(HAVE_SIGNAL)
+
+	signal(sig, (SIG_T)handler);
+
+#else
+	ABORT();
+#endif
+
+	/* Unblock this signal */
+	sigemptyset(&nsig);
+	sigaddset(&nsig, sig);
+	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+}
+
+/*
  * Setup the internal exceptions.
  */
 void
@@ -95,51 +140,6 @@ floatingException(EXCEPTIONPROTO)
 
 	EXCEPTIONFRAME(frame, ctx);
 	floatingHandler(EXCEPTIONFRAMEPTR);
-}
-
-/*
- * Setup a signal handler.
- */
-void
-catchSignal(int sig, void* handler)
-{
-	sigset_t nsig;
-
-#if defined(HAVE_SIGACTION)
-
-	struct sigaction newact;
-
-	newact.sa_handler = (SIG_T)handler;
-	sigemptyset(&newact.sa_mask);
-	/* we cannot afford to have our signal handlers preempted before
-	 * they are able to disable interrupts.
-	 */
-	sigaddset(&newact.sa_mask, SIGIO);
-	sigaddset(&newact.sa_mask, SIGALRM);
-#if defined(SIGVTALRM)
-	sigaddset(&newact.sa_mask, SIGVTALRM);
-#endif
-#if defined(SIGUNUSED)
-	sigaddset(&newact.sa_mask, SIGUNUSED);
-#endif
-	newact.sa_flags = 0;
-#if defined(SA_SIGINFO)
-	newact.sa_flags |= SA_SIGINFO;
-#endif
-	sigaction(sig, &newact, NULL);
-
-#elif defined(HAVE_SIGNAL)
-
-	signal(sig, (SIG_T)handler);
-
-#else
-	ABORT();
-#endif
-
-	/* Unblock this signal */
-	sigemptyset(&nsig);
-	sigaddset(&nsig, sig);
-	sigprocmask(SIG_UNBLOCK, &nsig, 0);
 }
 
 /*

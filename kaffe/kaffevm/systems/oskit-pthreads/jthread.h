@@ -11,7 +11,12 @@
 #ifndef __jthread_h
 #define __jthread_h
 
-#include <pthread.h>
+#include <oskit/error.h>
+#include <oskit/threads/pthread.h>
+#ifdef CPU_INHERIT
+#include <oskit/threads/cpuinherit.h>
+#endif
+
 #include "config.h"
 #include "config-setjmp.h"
 #include "config-std.h"
@@ -38,11 +43,7 @@ typedef struct jthread {
 	void*			jlThread;         /* java_lang_thread ptr */
 	pthread_t		native_thread;    /* pthread tid */
 	unsigned char		status;		  /* Thread status */
-	/* these four are for linux only */
-	unsigned char		saved_status;	  /* Saved status */
-	void*			base;		  /* approximate stack base */
-	void*			end;		  /* approximate stack end */
-	void*			sp;		  /* stack pointer */
+	unsigned char		flags; 		  /* Thread flags */
 } *jthread_t;
 
 /*
@@ -146,7 +147,7 @@ void	jthread_setpriority(jthread_t jtid, int prio);
 /*
  * yield to another thread
  */
-static void 	
+static inline void 	
 jthread_yield(void)
 { 
 	sched_yield();

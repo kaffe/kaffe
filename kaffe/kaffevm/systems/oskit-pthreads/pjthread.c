@@ -16,12 +16,28 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <oskit/dev/dev.h>
+#include <signal.h>
+
+#ifdef CPU_INHERIT
+#include <jcpuinherit.h>
+#endif
+
+/*
+ * This idea stolen from gc/linux_threads.c in Ferguson & Boehm's pthreads
+ * port.
+ */
+#define SIG_STOP 	SIGUSR1
+#define SIG_INT		SIGUSR2
 
 /* thread status */
 #define THREAD_NEWBORN                	0
 #define THREAD_RUNNING                  1
 #define THREAD_DYING                    2
 #define THREAD_DEAD                     3
+#define THREAD_STOPPED                  4
+#define THREAD_CONTINUE                 5
+
+#define THREAD_FLAG_DONTSTOP			1
 
 /*
  * Variables.
@@ -39,7 +55,6 @@ static pthread_mutex_t threadLock;
 static void remove_thread(jthread_t tid);
 static void mark_thread_dead(void);
 void dumpLiveThreads(int);
-static void deathcallback(void *arg);
 
 /*
  * the following variables are set by jthread_init, and show how the
@@ -59,12 +74,35 @@ pthread_key_t	jthread_key;	/* key to map pthread -> jthread */
  * Function declarations.
  */
 
-
 /*============================================================================
  *
  * Functions related to interrupt handling
  *
  */
+
+/*
+ * Handle the stop signal to effect a Thread.stop().  This handler is
+ * called when that thread is killed.
+ */
+static void
+catch_death(void)
+{
+	jthread_t tid = pthread_getspecific(jthread_key);
+
+	tid->status = THREAD_DYING;
+	if (!(tid->flags & THREAD_FLAG_DONTSTOP)) {
+		onstop();
+		jthread_exit();
+	}
+}
+
+static void 
+catch_int(void)
+{
+    /* do nothing, we will get a spurious wakeup out of cond_wait or
+       sleep, and the java code will magically throw
+       InterruptedException */
+}
 
 #if !defined(SMP)
 /*
@@ -124,28 +162,22 @@ jthread_extract_stack(jthread_t jtid, void **from, unsigned *len)
 {
 	struct pthread_state ps;
 
-	if (pthread_getstate(jtid->native_thread, &ps))
+	if (oskit_pthread_getstate(jtid->native_thread, &ps))
 		panic("jthread_extract_stack: tid(%d)", jtid->native_thread);
 	
 #if defined(STACK_GROWS_UP)
 #error FIXME
 #else
-#if notyet
 	*from = (void *)ps.stackptr;
 	*len = ps.stackbase + ps.stacksize - ps.stackptr;
-#else
-	*from = (void *)ps.stackptr;
-	*len = ps.stackbase - ps.stackptr;	/* base is top XXX */
-
 	if (*len < 0 || *len > (256*1024)) {
-	    panic("(%d) pthread_getstate(%d) reported obscene numbers: "
+	    panic("(%d) oskit_pthread_getstate(%d) reported obscene numbers: "
 		  "base = 0x%x, sp = 0x%x\n", 
 		  pthread_self(),
 		  jtid->native_thread,
 		  ps.stackbase, ps.stackptr);
 	    exit(-1);
 	}
-#endif
 #endif
 DBG(JTHREAD,
 	dprintf("extract_stack(%) base=%p size=%d sp=%p; from=%p len=%d\n", 
@@ -164,15 +196,11 @@ jthread_on_current_stack(void *bp)
 	struct pthread_state ps;
 	int rc;
 
-	if (pthread_getstate(pthread_self(), &ps))
-		panic("jthread_on_current_stack: pthread_getstate(%d)",
+	if (oskit_pthread_getstate(pthread_self(), &ps))
+		panic("jthread_on_current_stack: oskit_pthread_getstate(%d)",
 		      pthread_self());
-#if notyet
         rc = (uint32)bp >= ps.stackbase && 
 	     (uint32)bp < ps.stackbase + ps.stacksize;
-#else
-	rc = (uint32)bp < ps.stackbase;		/* base is top XXX */
-#endif
 DBG(JTHREAD,
 	dprintf("on current stack(%d) base=%p size=%d bp=%p %s\n",
 		pthread_self(),
@@ -190,14 +218,14 @@ jthread_stackcheck(int need)
 	struct pthread_state ps;
 	int room;
 
-	if (pthread_getstate(pthread_self(), &ps))
-		panic("jthread_stackcheck: pthread_getstate(%d)",
+	if (oskit_pthread_getstate(pthread_self(), &ps))
+		panic("jthread_stackcheck: oskit_pthread_getstate(%d)",
 		      pthread_self());
 	
 #if defined(STACK_GROWS_UP)
 #	error FIXME
 #else
-	room = ps.stacksize - (ps.stackbase - ps.stackptr);
+	room = (ps.stackptr - ps.stackbase);
 #endif
 	
 DBG(JTHREAD,
@@ -221,15 +249,14 @@ void
 jthread_destroy(jthread_t tid)
 {
 	void *status;
-	int oldstate;
 
 	assert(tid);
 DBG(JTHREAD, 
 	dprintf("destroying tid %d\n", tid->native_thread);	
     )
-	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
+	jthread_disable_stop();
 	pthread_join(tid->native_thread, &status);
-	pthread_setcancelstate(oldstate, 0);
+	jthread_enable_stop();
 	deallocator(tid);
 }
 
@@ -297,6 +324,7 @@ jthread_init(int pre,
 {
 	pthread_t	pmain;
 	jthread_t	jtid;
+	struct sigaction act;
 
 	max_priority = maxpr;
 	min_priority = minpr;
@@ -307,27 +335,35 @@ jthread_init(int pre,
 
 	pmain = pthread_self();
 
+	/* establish SIG_STOP handler */
+	act.sa_handler = catch_death;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIG_STOP);
+	sigaction(SIG_STOP, &act, 0);
+
+	act.sa_handler = catch_int;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIG_INT);
+	sigaction(SIG_INT, &act, 0);
+	
         /*
          * XXX: ignore mapping of min/max priority for now and assume
          * pthread priorities include java priorities.
          */
 	/* XXX: use pthread_setschedparam here */
-        pthread_setprio(pmain, mainthreadpr);
+        oskit_pthread_setprio(pmain, mainthreadpr);
 
         pthread_key_create(&jthread_key, 0 /* destructor */);
         pthread_key_create(&cookie_key, 0 /* destructor */);
 	pthread_mutex_init(&threadLock, (const pthread_mutexattr_t *)0);
 
         jtid = allocator(sizeof (*jtid));
+
         SET_JTHREAD(jtid);
 
 	jtid->native_thread = pmain;
-	/*
-	 * pthreads says that pthread_cleanup_push/pop must occur in pairs.
-	 * OSKit does not require this and allows to add handlers randomly.
-	 * This is not POSIX use!
-	 */
-	pthread_cleanup_push(deathcallback, jtid);
 
         jtid->nextlive = liveThreads;
         liveThreads = jtid;
@@ -336,6 +372,7 @@ jthread_init(int pre,
 DBG(JTHREAD,
 	dprintf("main thread has id %d\n", jtid->native_thread);
     )
+
 	return (jtid);
 }
 
@@ -354,8 +391,9 @@ jthread_atexit(void (*f)(void))
 void 
 jthread_disable_stop(void)
 {
-	int oldstate;
-	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
+	jthread_t tid = pthread_getspecific(jthread_key);
+
+	tid->flags |= THREAD_FLAG_DONTSTOP;
 }
 
 /*
@@ -364,8 +402,13 @@ jthread_disable_stop(void)
 void 
 jthread_enable_stop(void)
 {
-	int oldstate;
-	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldstate);
+	jthread_t tid = pthread_getspecific(jthread_key);
+
+	tid->flags &= ~THREAD_FLAG_DONTSTOP;
+	if (tid->status == THREAD_DYING) {
+		onstop();
+		jthread_exit();
+	}
 }
 
 /*
@@ -374,32 +417,8 @@ jthread_enable_stop(void)
 void
 jthread_interrupt(jthread_t tid)
 {
-#if 1
-	fprintf(stderr, "jthread_interrupt is not yet implemented\n");
-	/* ignore */
-#else
-	panic("jthread_interrupt");
-#endif
-}
-
-/*
- * cleanup handler for a given thread.  This handler is called when that
- * thread is killed.
- * Note that the pthreads standard says that
- *   "The behaviour of pthread_exit() is undefined if called from a 
- *   cancellation cleanup handler or destructor function that was invoked as 
- *   a result of either an implicit or explicit call to pthread_exit()."
- *
- * Fortunately, it's okay in the OSKit.
- */
-static void
-deathcallback(void *arg)
-{
-	jthread_t tid = (jthread_t)arg;
-	tid->status = THREAD_DYING;
-	onstop();
-	mark_thread_dead();
-	/* by returning, we proceed with the cancel and exit that thread */
+	if (tid->native_thread != pthread_self())
+		pthread_kill(tid->native_thread, SIG_INT);
 }
 
 /*
@@ -407,7 +426,7 @@ deathcallback(void *arg)
  * This function install the cleanup handler, sets jthread-specific 
  * data and calls the actual work function.
  */
-void*
+void
 start_me_up(void *arg)
 {
 	jthread_t tid = (jthread_t)arg;
@@ -416,7 +435,6 @@ DBG(JTHREAD,
 	dprintf("starting thread %p\n", tid); 
     )
 	pthread_mutex_lock(&threadLock);
-	pthread_cleanup_push(deathcallback, tid);
 	SET_JTHREAD(tid);
 	SET_COOKIE(tid->jlThread);
         tid->status = THREAD_RUNNING;
@@ -425,6 +443,9 @@ DBG(JTHREAD,
 DBG(JTHREAD, 
 	dprintf("calling thread %p, %d\n", tid, tid->native_thread); )
 	tid->func(tid->jlThread);
+
+	assert(!"firstStartThread has returned");
+#if 0
 DBG(JTHREAD, 
 	dprintf("thread %d returned, calling jthread_exit\n", 
 		tid->native_thread); 
@@ -432,11 +453,10 @@ DBG(JTHREAD,
 
 	/* drop onstop handler if that thread is exiting by itself */
 	assert (tid->status != THREAD_DYING);
-	pthread_cleanup_pop(0);
 
 	mark_thread_dead();
 	/* by returning, we exit this thread */
-	return (0);
+#endif
 }
 
 /*
@@ -444,23 +464,33 @@ DBG(JTHREAD,
  */
 jthread_t
 jthread_create(unsigned int pri, void (*func)(void *), int daemon,
-        void *jlThread, size_t threadStackSize)
+	       void *jlThread, size_t threadStackSize)
 {
 	int err;
 	pthread_t new;
 	jthread_t tid;
 	pthread_attr_t attr;
+#ifdef CPU_INHERIT
+	extern struct JNINativeInterface Kaffe_JNINativeInterface;
+	JNIEnv env = &Kaffe_JNINativeInterface;
+	pthread_t scheduler = cpui_thread_scheduler(&env, jlThread);
+#endif
 
 	pthread_attr_init(&attr);
 	/* XXX use setschedparam here */
 	pthread_attr_setstacksize(&attr, threadStackSize);
-	pthread_attr_setprio(&attr, pri);
+	oskit_pthread_attr_setprio(&attr, pri);
 
 	/* 
 	 * Note that we create the thread in a joinable state, which is the
 	 * default.  Our finalizer will join the threads, allowing the
 	 * pthread system to free its resources.
 	 */
+
+#ifdef  CPU_INHERIT
+	pthread_attr_setscheduler(&attr, (pthread_t) scheduler);
+	pthread_attr_setopaque(&attr, pri);
+#endif
 
         tid = allocator(sizeof (*tid));
         assert(tid != 0);      /* XXX */
@@ -483,7 +513,10 @@ jthread_create(unsigned int pri, void (*func)(void *), int daemon,
 	pthread_mutex_unlock(&threadLock);
 DBG(JTHREAD,
 	dprintf("created thread %d, daemon=%d\n", new, daemon); )
-
+#ifdef CPU_INHERIT
+DBG(JTHREAD,
+        dprintf("scheduler=%d, pri=%d\n", scheduler, pri); )
+#endif
         return (tid);
 }
 
@@ -500,7 +533,7 @@ void
 jthread_sleep(jlong time)
 {
 	/* pthread_sleep is an oskit extension */
-	pthread_sleep((oskit_s64_t)time);
+	oskit_pthread_sleep((oskit_s64_t)time);
 }
 
 /* 
@@ -523,7 +556,7 @@ void
 jthread_setpriority(jthread_t jtid, int prio)
 {
 	/* XXX use setschedparam here */
-	pthread_setprio(jtid->native_thread, prio);
+	oskit_pthread_setprio(jtid->native_thread, prio);
 }
 
 /*
@@ -534,7 +567,7 @@ jthread_stop(jthread_t jtid)
 {
 	/* can I cancel myself safely??? */
 	/* NB: jthread_stop should never be invoked on the current thread */
-	pthread_cancel(jtid->native_thread);
+	pthread_kill(jtid->native_thread, SIG_STOP);
 }
 
 static void
@@ -576,7 +609,7 @@ DBG(JTHREAD,
 			if (destructor1) {
 				(*destructor1)(tid->jlThread);
 			}
-			pthread_cancel(tid->native_thread);
+			jthread_stop(tid);
 		}
 
 		/* Am I suppose to close things down nicely ?? */
@@ -627,7 +660,7 @@ void
 jthread_dumpthreadinfo(jthread_t tid)
 {
 	fprintf(stderr, "jthread %p native %ld status %s\n", 
-		tid, tid->native_thread,
+		tid, (long) tid->native_thread,
 		tid->status == THREAD_NEWBORN ? "NEWBORN" :
 		tid->status == THREAD_RUNNING ? "RUNNING" :
 		tid->status == THREAD_DYING   ? "DYING"   :
