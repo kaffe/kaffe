@@ -9,14 +9,14 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
-#define trace_jcode(x)	DBG(MOREJIT, dprintf ("@%ld:\t", (long) pc); dprintf x;)
+#define trace_jcode(x,...)	DBG(MOREJIT, dprintf ("@%ld:\t", (long) pc); dprintf(x))
 
 define_insn(NOP)
 {
         /*
          * No operation.
          */
-	trace_jcode (("nop\n"));
+	trace_jcode ("nop\n");
 }
 
 define_insn(ACONST_NULL)
@@ -24,7 +24,7 @@ define_insn(ACONST_NULL)
 	/*
 	 * ... -> ..., 0
 	 */
-	trace_jcode (("aconst 0\n"));
+	trace_jcode ("aconst 0\n");
 
 	push(1);
 	move_ref_const(stack(0), NULL);
@@ -41,7 +41,7 @@ define_insn_alias(ICONST_5)
 	/*
 	 * ... -> ..., [-1 .. 5]
 	 */
-	trace_jcode (("iconst %d\n", getopcode() - ICONST_0));	
+	trace_jcode ("iconst %d\n", getopcode() - ICONST_0);	
 
 	push(1);
 	move_int_const(stack(0), getopcode() - ICONST_0);
@@ -53,7 +53,7 @@ define_insn_alias(LCONST_1)
 	/*
 	 * ... -> ..., 0, [0 .. 1]
 	 */
-	trace_jcode (("lconst %d\n", getopcode() - LCONST_0));	
+	trace_jcode ("lconst %d\n", getopcode() - LCONST_0);	
 
 	push(2);
 	move_long_const(stack_long(0), getopcode() - LCONST_0);
@@ -66,7 +66,7 @@ define_insn_alias(FCONST_2)
 	/*
 	 * ... -> ..., [0.0 .. 2.0]
 	 */
-	trace_jcode (("fconst %f\n", (double)(jfloat)(getopcode() - FCONST_0)));	
+	trace_jcode ("fconst %f\n", (double)(jfloat)(getopcode() - FCONST_0));	
 
 	push(1);
 	move_float_const(stack(0), (jfloat)(getopcode() - FCONST_0));
@@ -78,7 +78,7 @@ define_insn_alias(DCONST_1)
 	/*
 	 * ... -> ..., [0.0 .. 1.0]
 	 */
-	trace_jcode (("dconst %f\n", (double)(jdouble)(getopcode() - DCONST_0)));	
+	trace_jcode ("dconst %f\n", (double)(jdouble)(getopcode() - DCONST_0));	
 
 	push(2);
 	move_double_const(stack_double(0), (jdouble)(getopcode() - DCONST_0));
@@ -92,7 +92,7 @@ define_insn(BIPUSH)
 	check_pc (0);
 
 	low = (int8)getpc(0);
-	trace_jcode (("bipush %d\n", low));
+	trace_jcode ("bipush %d\n", low);
 
 	push(1);
 	move_int_const(stack(0), low);
@@ -106,7 +106,7 @@ define_insn(SIPUSH)
 	check_pcidx (0);
 
 	low = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("sipush %d\n", low));
+	trace_jcode ("sipush %d\n", low);
 
 	push(1);
 	move_int_const(stack(0), low);
@@ -120,7 +120,7 @@ define_insn(LDC1)
 	check_pc (0);
 
 	idx = (uint8)getpc(0);
-	trace_jcode (("ldc1 %d\n", idx));
+	trace_jcode ("ldc1 %d\n", idx);
 
 	push(1);
 	low = CLASS_CONST_TAG(current_class(), idx);
@@ -159,7 +159,7 @@ define_insn(LDC2)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ldc2 %d\n", idx));
+	trace_jcode ("ldc2 %d\n", idx);
 
 	push(1);
 	low = CLASS_CONST_TAG(current_class(), idx);
@@ -198,7 +198,7 @@ define_insn(LDC2W)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ldc2w %d\n", idx));
+	trace_jcode ("ldc2w %d\n", idx);
 
 	push(2);
 	switch (CLASS_CONST_TAG(current_class(), idx)) {
@@ -222,7 +222,7 @@ define_insn(ILOAD)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("iload %d\n", idx));
+	trace_jcode ("iload %d\n", idx);
 
 	check_local_int(idx);
 
@@ -237,7 +237,7 @@ define_insn(LLOAD)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("lload %d\n", idx));
+	trace_jcode ("lload %d\n", idx);
 
 	check_local_long(idx);
 
@@ -252,7 +252,7 @@ define_insn(FLOAD)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("fload %d\n", idx));
+	trace_jcode ("fload %d\n", idx);
 
 	check_local_float(idx);
 
@@ -267,7 +267,7 @@ define_insn(DLOAD)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("dload %d\n", idx));
+	trace_jcode ("dload %d\n", idx);
 
 	check_local_double(idx);
 
@@ -282,7 +282,7 @@ define_insn(ALOAD)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("aload %d\n", idx));
+	trace_jcode ("aload %d\n", idx);
 
 	check_local_ref(idx);
 
@@ -298,7 +298,7 @@ define_insn_alias(ILOAD_3)
 	/*
 	 * ..., -> ..., local variable
 	 */
-	trace_jcode (("iload %d\n", getopcode() - ILOAD_0));
+	trace_jcode ("iload %d\n", getopcode() - ILOAD_0);
 
 	check_local_int(getopcode() - ILOAD_0);
 
@@ -314,7 +314,7 @@ define_insn_alias(LLOAD_3)
 	/*
 	 * ..., -> ..., local variable
 	 */
-	trace_jcode (("lload %d\n", getopcode() - LLOAD_0));
+	trace_jcode ("lload %d\n", getopcode() - LLOAD_0);
 
 	check_local_long((getopcode() - LLOAD_0));
 
@@ -330,7 +330,7 @@ define_insn_alias(FLOAD_3)
 	/*
 	 * ..., -> ..., local variable
 	 */
-	trace_jcode (("fload %d\n", getopcode() - FLOAD_0));
+	trace_jcode ("fload %d\n", getopcode() - FLOAD_0);
 
 	check_local_float(getopcode() - FLOAD_0);
 
@@ -346,7 +346,7 @@ define_insn_alias(DLOAD_3)
 	/*
 	 * ..., -> ..., local variable
 	 */
-	trace_jcode (("dload %d\n", getopcode() - DLOAD_0));
+	trace_jcode ("dload %d\n", getopcode() - DLOAD_0);
 
 	check_local_double((getopcode() - DLOAD_0));
 
@@ -362,7 +362,7 @@ define_insn_alias(ALOAD_3)
 	/*
 	 * ..., -> ..., local variable
 	 */
-	trace_jcode (("aload %d\n", getopcode() - ALOAD_0));
+	trace_jcode ("aload %d\n", getopcode() - ALOAD_0);
 
 	check_local_ref(getopcode() - ALOAD_0);
 
@@ -375,7 +375,7 @@ define_insn(IALOAD)
 	/*
 	 * ..., array ref, index -> ..., value
 	 */
-	trace_jcode (("iaload\n"));
+	trace_jcode ("iaload\n");
 
 	check_stack_int(0);
 	check_stack_intarray(1);
@@ -394,7 +394,7 @@ define_insn(LALOAD)
 	/*
 	 * ..., array ref, index -> ..., long value
 	 */
-	trace_jcode (("laload\n"));
+	trace_jcode ("laload\n");
 
 	check_stack_int(0);
 	check_stack_longarray(1);
@@ -412,7 +412,7 @@ define_insn(FALOAD)
 	/*
 	 * ..., array ref, index -> ..., float value
 	 */
-	trace_jcode (("faload\n"));
+	trace_jcode ("faload\n");
 
 	check_stack_int(0);
 	check_stack_floatarray(1);
@@ -432,7 +432,7 @@ define_insn(DALOAD)
 	/*
 	 * ..., array ref, index -> ..., double value
 	 */
-	trace_jcode (("daload\n"));
+	trace_jcode ("daload\n");
 
 	check_stack_int(0);
 	check_stack_doublearray(1);
@@ -450,7 +450,7 @@ define_insn(AALOAD)
 	/*
 	 * ..., array ref, index -> ..., ref value
 	 */
-	trace_jcode (("aaload\n"));
+	trace_jcode ("aaload\n");
 
 	check_stack_int(0);
 	check_stack_refarray(1);
@@ -469,7 +469,7 @@ define_insn(BALOAD)
 	/*
 	 * ..., array ref, index -> ..., byte value
 	 */
-	trace_jcode (("baload\n"));
+	trace_jcode ("baload\n");
 
 	check_stack_int(0);
 	check_stack_bytearray(1);
@@ -488,7 +488,7 @@ define_insn(CALOAD)
 	/*
 	 * ..., array ref, index -> ..., char value
 	 */
-	trace_jcode (("caload\n"));
+	trace_jcode ("caload\n");
 
 	check_stack_int(0);
 	check_stack_chararray(1);
@@ -507,7 +507,7 @@ define_insn(SALOAD)
 	/*
 	 * ..., array ref, index -> ..., short value
 	 */
-	trace_jcode (("saload\n"));
+	trace_jcode ("saload\n");
 
 	check_stack_int(0);
 	check_stack_shortarray(1);
@@ -528,7 +528,7 @@ define_insn(ISTORE)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("istore %d\n", idx));
+	trace_jcode ("istore %d\n", idx);
 
 	check_stack_int(0);
 
@@ -543,7 +543,7 @@ define_insn(LSTORE)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("lstore %d\n", idx));
+	trace_jcode ("lstore %d\n", idx);
 
 	check_stack_long(0);
 
@@ -558,7 +558,7 @@ define_insn(FSTORE)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("fstore %d\n", idx));
+	trace_jcode ("fstore %d\n", idx);
 
 	check_stack_float(0);
 
@@ -573,7 +573,7 @@ define_insn(DSTORE)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("dstore %d\n", idx));
+	trace_jcode ("dstore %d\n", idx);
 
 	check_stack_double(0);
 
@@ -588,7 +588,7 @@ define_insn(ASTORE)
 	 */
 	check_pc (0);
 	idx = (uint8)getpc(0);
-	trace_jcode (("astore %d\n", idx));
+	trace_jcode ("astore %d\n", idx);
 
 	check_stack_ref(0);
 
@@ -604,7 +604,7 @@ define_insn_alias(ISTORE_3)
 	/*
 	 * ..., val -> ...
 	 */
-	trace_jcode (("istore %d\n", getopcode() - ISTORE_0));
+	trace_jcode ("istore %d\n", getopcode() - ISTORE_0);
 
 	check_stack_int(0);
 
@@ -620,7 +620,7 @@ define_insn_alias(LSTORE_3)
 	/*
 	 * ..., long val -> ...
 	 */
-	trace_jcode (("lstore %d\n", getopcode() - LSTORE_0));
+	trace_jcode ("lstore %d\n", getopcode() - LSTORE_0);
 
 	check_stack_long(0);
 
@@ -636,7 +636,7 @@ define_insn_alias(FSTORE_3)
 	/*
 	 * ..., val -> ...
 	 */
-	trace_jcode (("fstore %d\n", getopcode() - FSTORE_0));
+	trace_jcode ("fstore %d\n", getopcode() - FSTORE_0);
 
 	check_stack_float(0);
 
@@ -652,7 +652,7 @@ define_insn_alias(DSTORE_3)
 	/*
 	 * ..., double val -> ...
 	 */
-	trace_jcode (("dstore %d\n", getopcode() - DSTORE_0));
+	trace_jcode ("dstore %d\n", getopcode() - DSTORE_0);
 
 	check_stack_double(0);
 
@@ -668,7 +668,7 @@ define_insn_alias(ASTORE_3)
 	/*
 	 * ..., val -> ...
 	 */
-	trace_jcode (("astore %d\n", getopcode() - ASTORE_0));
+	trace_jcode ("astore %d\n", getopcode() - ASTORE_0);
 
 	check_stack_ref(0);
 
@@ -681,7 +681,7 @@ define_insn(IASTORE)
 	/*
 	 * ..., array ref, index, val -> ...
 	 */
-	trace_jcode (("iastore\n"));
+	trace_jcode ("iastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -701,7 +701,7 @@ define_insn(LASTORE)
 	/*
 	 * ..., array ref, index, long val -> ...
 	 */
-	trace_jcode (("lastore\n"));
+	trace_jcode ("lastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -721,7 +721,7 @@ define_insn(FASTORE)
 	/*
 	 * ..., array ref, index, float val -> ...
 	 */
-	trace_jcode (("fastore\n"));
+	trace_jcode ("fastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -741,7 +741,7 @@ define_insn(DASTORE)
 	/*
 	 * ..., array ref, index, double val -> ...
 	 */
-	trace_jcode (("dastore\n"));
+	trace_jcode ("dastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -762,7 +762,7 @@ define_insn(AASTORE)
 	/*
 	 * ..., array ref, index, val -> ...
 	 */
-	trace_jcode (("aastore\n"));
+	trace_jcode ("aastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -786,7 +786,7 @@ define_insn(BASTORE)
 	/*
 	 * ..., array ref, index, byte value  -> ...
 	 */
-	trace_jcode (("bastore\n"));
+	trace_jcode ("bastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -806,7 +806,7 @@ define_insn(CASTORE)
 	/*
 	 * ..., array ref, index, char value  -> ...
 	 */
-	trace_jcode (("castore\n"));
+	trace_jcode ("castore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -826,7 +826,7 @@ define_insn(SASTORE)
 	/*
 	 * ..., array ref, index, short value  -> ...
 	 */
-	trace_jcode (("sastore\n"));
+	trace_jcode ("sastore\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -846,7 +846,7 @@ define_insn(POP)
     	/*
 	 * ..., slot -> ...
 	 */
-	trace_jcode (("pop\n"));
+	trace_jcode ("pop\n");
 
 	pop(1);
 }
@@ -856,14 +856,14 @@ define_insn(POP2)
     	/*
 	 * ..., slot, slot -> ...
 	 */
-	trace_jcode (("pop2\n"));
+	trace_jcode ("pop2\n");
 
 	pop(2);
 }
 
 define_insn(DUP)
 {
-	trace_jcode (("dup\n"));
+	trace_jcode ("dup\n");
 
 	push(1);
 	move_any(stack(0), stack(1));
@@ -871,7 +871,7 @@ define_insn(DUP)
 
 define_insn(DUP_X1)
 {
-	trace_jcode (("dup_x1\n"));
+	trace_jcode ("dup_x1\n");
 
 	push(1);
 	move_any(stack(0), stack(1));
@@ -881,7 +881,7 @@ define_insn(DUP_X1)
 
 define_insn(DUP_X2)
 {
-	trace_jcode (("dup_x2\n"));
+	trace_jcode ("dup_x2\n");
 
 	push(1);
 	move_any(stack(0), stack(1));
@@ -892,7 +892,7 @@ define_insn(DUP_X2)
 
 define_insn(DUP2)
 {
-	trace_jcode (("dup2\n"));
+	trace_jcode ("dup2\n");
 
 	push(2);
 	move_any(stack(0), stack(2));
@@ -901,7 +901,7 @@ define_insn(DUP2)
 
 define_insn(DUP2_X1)
 {
-	trace_jcode (("dup2_x1\n"));
+	trace_jcode ("dup2_x1\n");
 
 	push(2);
 	move_any(stack(0), stack(2));
@@ -913,7 +913,7 @@ define_insn(DUP2_X1)
 
 define_insn(DUP2_X2)
 {
-	trace_jcode (("dup2_x2\n"));
+	trace_jcode ("dup2_x2\n");
 
 	push(2);
 	move_any(stack(0), stack(2));
@@ -929,7 +929,7 @@ define_insn(SWAP)
         /*
          * ..., val1, val2 -> ..., val2, val1
          */
-	trace_jcode (("swap\n"));
+	trace_jcode ("swap\n");
 
 	swap_any(stack(0), stack(1));
 }
@@ -939,7 +939,7 @@ define_insn(IADD)
         /*
          * ..., val1, val2 -> ..., val1+val2
          */
-	trace_jcode (("iadd\n"));
+	trace_jcode ("iadd\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -953,7 +953,7 @@ define_insn(LADD)
         /*
          * ..., long val1, long val2 -> ..., long val1+val2
          */
-	trace_jcode (("ladd\n"));
+	trace_jcode ("ladd\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -970,7 +970,7 @@ define_insn(FADD)
         /*
          * ..., val1, val2 -> ..., val1+val2
          */
-	trace_jcode (("fadd\n"));
+	trace_jcode ("fadd\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -984,7 +984,7 @@ define_insn(DADD)
         /*
          * ..., double val1, long val2 -> ..., double val1+val2
          */
-	trace_jcode (("dadd\n"));
+	trace_jcode ("dadd\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -998,7 +998,7 @@ define_insn(ISUB)
         /*
          * ..., val1, val2 -> ..., val1-val2
          */
-	trace_jcode (("isub\n"));
+	trace_jcode ("isub\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1012,7 +1012,7 @@ define_insn(LSUB)
         /*
          * ..., long val1, long val2 -> ..., long val1-val2
          */
-	trace_jcode (("lsub\n"));
+	trace_jcode ("lsub\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1029,7 +1029,7 @@ define_insn(FSUB)
         /*
          * ..., val1, val2 -> ..., val1-val2
          */
-	trace_jcode (("fsub\n"));
+	trace_jcode ("fsub\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1043,7 +1043,7 @@ define_insn(DSUB)
         /*
          * ..., double val1, long val2 -> ..., double val1-val2
          */
-	trace_jcode (("dsub\n"));
+	trace_jcode ("dsub\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1057,7 +1057,7 @@ define_insn(IMUL)
         /*
          * ..., val1, val2 -> ..., val1*val2
          */
-	trace_jcode (("imul\n"));
+	trace_jcode ("imul\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1071,7 +1071,7 @@ define_insn(LMUL)
         /*
          * ..., long val1, long val2 -> ..., long val1*val2
          */
-	trace_jcode (("lmul\n"));
+	trace_jcode ("lmul\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1088,7 +1088,7 @@ define_insn(FMUL)
         /*
          * ..., val1, val2 -> ..., val1*val2
          */
-	trace_jcode (("fmul\n"));
+	trace_jcode ("fmul\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1102,7 +1102,7 @@ define_insn(DMUL)
         /*
          * ..., double val1, long val2 -> ..., double val1*val2
          */
-	trace_jcode (("dmul\n"));
+	trace_jcode ("dmul\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1116,7 +1116,7 @@ define_insn(IDIV)
         /*
          * ..., val1, val2 -> ..., val1/val2
          */
-	trace_jcode (("idiv\n"));
+	trace_jcode ("idiv\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1132,7 +1132,7 @@ define_insn(LDIV)
         /*
          * ..., long val1, long val2 -> ..., long val1/val2
          */
-	trace_jcode (("ldiv\n"));
+	trace_jcode ("ldiv\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1151,7 +1151,7 @@ define_insn(FDIV)
         /*
          * ..., val1, val2 -> ..., val1/val2
          */
-	trace_jcode (("fdiv\n"));
+	trace_jcode ("fdiv\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1165,7 +1165,7 @@ define_insn(DDIV)
         /*
          * ..., val1, val2 -> ..., val1/val2
          */
-	trace_jcode (("ddiv\n"));
+	trace_jcode ("ddiv\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1179,7 +1179,7 @@ define_insn(IREM)
         /*
          * ..., val1, val2 -> ..., val1%val2
          */
-	trace_jcode (("irem\n"));
+	trace_jcode ("irem\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1195,7 +1195,7 @@ define_insn(LREM)
         /*
          * ..., long val1, long val2 -> ..., long val1%val2
          */
-	trace_jcode (("lrem\n"));
+	trace_jcode ("lrem\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1214,7 +1214,7 @@ define_insn(FREM)
         /*
          * ..., val1, val2 -> ..., val1%val2
          */
-	trace_jcode (("frem\n"));
+	trace_jcode ("frem\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1228,7 +1228,7 @@ define_insn(DREM)
         /*
          * ..., val1, val2 -> ..., val1%val2
          */
-	trace_jcode (("drem\n"));
+	trace_jcode ("drem\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1239,7 +1239,7 @@ define_insn(DREM)
 
 define_insn(INEG)
 {
-	trace_jcode (("ineg\n"));
+	trace_jcode ("ineg\n");
 
 	check_stack_int(0);
 
@@ -1248,7 +1248,7 @@ define_insn(INEG)
 
 define_insn(LNEG)
 {
-	trace_jcode (("lneg\n"));
+	trace_jcode ("lneg\n");
 
 	check_stack_long(0);
 
@@ -1259,7 +1259,7 @@ define_insn(LNEG)
 
 define_insn(FNEG)
 {
-	trace_jcode (("fneg\n"));
+	trace_jcode ("fneg\n");
 
 	check_stack_float(0);
 
@@ -1268,7 +1268,7 @@ define_insn(FNEG)
 
 define_insn(DNEG)
 {
-	trace_jcode (("dneg\n"));
+	trace_jcode ("dneg\n");
 
 	check_stack_double(0);
 
@@ -1280,7 +1280,7 @@ define_insn(ISHL)
 	/*
 	 * ..., val1, val2 -> ... val1 << val2
 	 */
-	trace_jcode (("ishl\n"));
+	trace_jcode ("ishl\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1294,7 +1294,7 @@ define_insn(LSHL)
 	/*
 	 * ..., long val1, val2 -> ... long val1 << val2
 	 */
-	trace_jcode (("lshl\n"));
+	trace_jcode ("lshl\n");
 
 	check_stack_int(0);
 	check_stack_long(1);
@@ -1311,7 +1311,7 @@ define_insn(ISHR)
 	/*
 	 * ..., val1, val2 -> ... val1 >> val2
 	 */
-	trace_jcode (("ishr\n"));
+	trace_jcode ("ishr\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1325,7 +1325,7 @@ define_insn(LSHR)
 	/*
 	 * ..., long val1, val2 -> ... long val1 >> val2
 	 */
-	trace_jcode (("lshr\n"));
+	trace_jcode ("lshr\n");
 
 	check_stack_int(0);
 	check_stack_long(1);
@@ -1342,7 +1342,7 @@ define_insn(IUSHR)
 	/*
 	 * ..., val1, val2 -> ... val1 >> val2
 	 */
-	trace_jcode (("iushr\n"));
+	trace_jcode ("iushr\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1356,7 +1356,7 @@ define_insn(LUSHR)
 	/*
 	 * ..., long val1, val2 -> ... long val1 >> val2
 	 */
-	trace_jcode (("lushr\n"));
+	trace_jcode ("lushr\n");
 
 	check_stack_int(0);
 	check_stack_long(1);
@@ -1373,7 +1373,7 @@ define_insn(IAND)
         /*
          * ..., val1, val2 -> ..., val1 & val2
          */
-	trace_jcode (("iand\n"));
+	trace_jcode ("iand\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1387,7 +1387,7 @@ define_insn(LAND)
         /*
          * ..., long val1, long val2 -> ..., long val1 & val2
          */
-	trace_jcode (("land\n"));
+	trace_jcode ("land\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1404,7 +1404,7 @@ define_insn(IOR)
         /*
          * ..., val1, val2 -> ..., val1 | val2
          */
-	trace_jcode (("ior\n"));
+	trace_jcode ("ior\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1418,7 +1418,7 @@ define_insn(LOR)
         /*
          * ..., long val1, long val2 -> ..., long val1 | val2
          */
-	trace_jcode (("lor\n"));
+	trace_jcode ("lor\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1435,7 +1435,7 @@ define_insn(IXOR)
         /*
          * ..., val1, val2 -> ..., val1 ^ val2
          */
-	trace_jcode (("ixor\n"));
+	trace_jcode ("ixor\n");
 
 	check_stack_int(0);
 	check_stack_int(1);
@@ -1449,7 +1449,7 @@ define_insn(LXOR)
         /*
          * ..., long val1, long val2 -> ..., long val1 ^ val2
          */
-	trace_jcode (("lxor\n"));
+	trace_jcode ("lxor\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1467,7 +1467,7 @@ define_insn(IINC)
 	check_pc (1);
 	idx = (uint8)getpc(0);
 	low = (int8)getpc(1);
-	trace_jcode (("iinc %d %d\n", idx, low));
+	trace_jcode ("iinc %d %d\n", idx, low);
 
 	check_local_int(idx);
 
@@ -1476,7 +1476,7 @@ define_insn(IINC)
 
 define_insn(I2L)
 {
-	trace_jcode (("i2l\n"));
+	trace_jcode ("i2l\n");
 
 	check_stack_int(0);
 
@@ -1486,7 +1486,7 @@ define_insn(I2L)
 
 define_insn(I2F)
 {
-	trace_jcode (("i2f\n"));
+	trace_jcode ("i2f\n");
 
 	check_stack_int(0);
 
@@ -1495,7 +1495,7 @@ define_insn(I2F)
 
 define_insn(I2D)
 {
-	trace_jcode (("i2d\n"));
+	trace_jcode ("i2d\n");
 
 	check_stack_int(0);
 
@@ -1505,7 +1505,7 @@ define_insn(I2D)
 
 define_insn(L2I)
 {
-	trace_jcode (("l2i\n"));
+	trace_jcode ("l2i\n");
 
 	check_stack_long(0);
 
@@ -1515,7 +1515,7 @@ define_insn(L2I)
 
 define_insn(L2F)
 {
-	trace_jcode (("l2f\n"));
+	trace_jcode ("l2f\n");
 
 	check_stack_long(0);
 
@@ -1525,7 +1525,7 @@ define_insn(L2F)
 
 define_insn(L2D)
 {
-	trace_jcode (("l2d\n"));
+	trace_jcode ("l2d\n");
 
 	check_stack_long(0);
 
@@ -1534,7 +1534,7 @@ define_insn(L2D)
 
 define_insn(F2I)
 {
-	trace_jcode (("f2i\n"));
+	trace_jcode ("f2i\n");
 
 	check_stack_float(0);
 
@@ -1543,7 +1543,7 @@ define_insn(F2I)
 
 define_insn(F2L)
 {
-	trace_jcode (("f2l\n"));
+	trace_jcode ("f2l\n");
 
 	check_stack_float(0);
 
@@ -1553,7 +1553,7 @@ define_insn(F2L)
 
 define_insn(F2D)
 {
-	trace_jcode (("f2d\n"));
+	trace_jcode ("f2d\n");
 
 	check_stack_float(0);
 
@@ -1563,7 +1563,7 @@ define_insn(F2D)
 
 define_insn(D2I)
 {
-	trace_jcode (("d2i\n"));
+	trace_jcode ("d2i\n");
 
 	check_stack_double(0);
 
@@ -1573,7 +1573,7 @@ define_insn(D2I)
 
 define_insn(D2L)
 {
-	trace_jcode (("d2l\n"));
+	trace_jcode ("d2l\n");
 
 	check_stack_double(0);
 
@@ -1582,7 +1582,7 @@ define_insn(D2L)
 
 define_insn(D2F)
 {
-	trace_jcode (("d2f\n"));
+	trace_jcode ("d2f\n");
 
 	check_stack_double(0);
 
@@ -1592,7 +1592,7 @@ define_insn(D2F)
 
 define_insn(INT2BYTE)
 {
-	trace_jcode (("int2byte\n"));
+	trace_jcode ("int2byte\n");
 
 	check_stack_int(0);
 
@@ -1601,7 +1601,7 @@ define_insn(INT2BYTE)
 
 define_insn(INT2CHAR)
 {
-	trace_jcode (("int2char\n"));
+	trace_jcode ("int2char\n");
 
 	check_stack_int(0);
 
@@ -1610,7 +1610,7 @@ define_insn(INT2CHAR)
 
 define_insn(INT2SHORT)
 {
-	trace_jcode (("int2short\n"));
+	trace_jcode ("int2short\n");
 
 	check_stack_int(0);
 
@@ -1622,7 +1622,7 @@ define_insn(LCMP)
 	/*
 	 * ..., long val1, long val2 -> ..., result
 	 */
-	trace_jcode (("lcmp\n"));
+	trace_jcode ("lcmp\n");
 
 	check_stack_long(0);
 	check_stack_long(2);
@@ -1639,7 +1639,7 @@ define_insn(FCMPL)
 	/*
 	 * ..., float val1, float val2 -> ..., result
 	 */
-	trace_jcode (("fcmpl\n"));
+	trace_jcode ("fcmpl\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1653,7 +1653,7 @@ define_insn(FCMPG)
 	/*
 	 * ..., float val1, float val2 -> ..., result
 	 */
-	trace_jcode (("fcmpg\n"));
+	trace_jcode ("fcmpg\n");
 
 	check_stack_float(0);
 	check_stack_float(1);
@@ -1667,7 +1667,7 @@ define_insn(DCMPL)
 	/*
 	 * ..., double val1, double val2 -> ..., result
 	 */
-	trace_jcode (("dcmpl\n"));
+	trace_jcode ("dcmpl\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1681,7 +1681,7 @@ define_insn(DCMPG)
 	/*
 	 * ..., double val1, double val2 -> ..., result
 	 */
-	trace_jcode (("dcmpg\n"));
+	trace_jcode ("dcmpg\n");
 
 	check_stack_double(0);
 	check_stack_double(2);
@@ -1696,7 +1696,7 @@ define_insn(IFEQ)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifeq %ld\n", (long) (pc + idx) ));
+	trace_jcode ("ifeq %ld\n", (long) (pc + idx) );
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1713,7 +1713,7 @@ define_insn(IFNE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifne %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifne %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1730,7 +1730,7 @@ define_insn(IFLT)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("iflt %ld\n", (long) (pc + idx)));
+	trace_jcode ("iflt %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1747,7 +1747,7 @@ define_insn(IFGE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifge %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifge %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1764,7 +1764,7 @@ define_insn(IFGT)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifgt %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifgt %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1781,7 +1781,7 @@ define_insn(IFLE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifle %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifle %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1799,7 +1799,7 @@ define_insn(IF_ICMPEQ)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpeq %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmpeq %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1818,7 +1818,7 @@ define_insn(IF_ICMPNE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpne %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmpne %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1837,7 +1837,7 @@ define_insn(IF_ICMPLT)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmplt %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmplt %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1856,7 +1856,7 @@ define_insn(IF_ICMPGE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpge %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmpge %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1875,7 +1875,7 @@ define_insn(IF_ICMPGT)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpgt %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmpgt %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1894,7 +1894,7 @@ define_insn(IF_ICMPLE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmple %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_icmple %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1913,7 +1913,7 @@ define_insn(IF_ACMPEQ)
 	check_stack_ref(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_acmpeq %ld\n", (long) (pc + idx)));
+	trace_jcode ("if_acmpeq %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1932,7 +1932,7 @@ define_insn(IF_ACMPNE)
 	check_stack_ref(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_acmpne %ld\n", (long)(pc + idx)));
+	trace_jcode ("if_acmpne %ld\n", (long)(pc + idx));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1949,7 +1949,7 @@ define_insn(GOTO)
 	check_pcidx (0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("goto %ld\n", (long) (pc + idx)));
+	trace_jcode ("goto %ld\n", (long) (pc + idx));
 
 	begin_sync();
 	branch_a(reference_code_label(pc+idx));
@@ -1964,7 +1964,7 @@ define_insn(JSR)
 	check_pcidx (0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("jsr %ld\n", (long) (pc + idx)));
+	trace_jcode ("jsr %ld\n", (long) (pc + idx));
 
 	push(1);
 	move_label_const(stack(0), reference_code_label(npc));
@@ -1978,7 +1978,7 @@ define_insn(RET)
 	check_pc (0);
 
 	idx = (uint8)getpc(0);
-	trace_jcode (("ret %d\n", idx));
+	trace_jcode ("ret %d\n", idx);
 
 	check_local_ref(idx);
 
@@ -2001,7 +2001,7 @@ define_insn(TABLESWITCH)
 				(getcode(npc+10) << 8) | getcode(npc+11));
 	npc = npc + 12;
 
-	trace_jcode (("tableswitch %d %d\n", low, high));
+	trace_jcode ("tableswitch %d %d\n", low, high);
 
 	end_sub_block();
 	cbranch_int_const_lt(stack(0), low, reference_label(TABLESWITCH, 8));
@@ -2054,7 +2054,7 @@ define_insn(LOOKUPSWITCH)
 	idx = (int32)((getcode(npc+4) << 24) | (getcode(npc+5) << 16) |
 				(getcode(npc+6) << 8) | getcode(npc+7));
 
-	trace_jcode (("lookupswitch %d\n", idx));
+	trace_jcode ("lookupswitch %d\n", idx);
 
 	slot_alloctmp(mtable);
 	slot_alloctmp(tmp);
@@ -2110,7 +2110,7 @@ define_insn(LOOKUPSWITCH)
 
 define_insn(IRETURN)
 {
-	trace_jcode (("ireturn\n"));
+	trace_jcode ("ireturn\n");
 
 	check_stack_int(0);
 
@@ -2121,7 +2121,7 @@ define_insn(IRETURN)
 
 define_insn(LRETURN)
 {
-	trace_jcode (("lreturn\n"));
+	trace_jcode ("lreturn\n");
 
 	check_stack_long(0);
 
@@ -2132,7 +2132,7 @@ define_insn(LRETURN)
 
 define_insn(FRETURN)
 {
-	trace_jcode (("freturn\n"));
+	trace_jcode ("freturn\n");
 
 	check_stack_float(0);
 
@@ -2143,7 +2143,7 @@ define_insn(FRETURN)
 
 define_insn(DRETURN)
 {
-	trace_jcode (("dreturn\n"));
+	trace_jcode ("dreturn\n");
 
 	check_stack_double(0);
 
@@ -2154,7 +2154,7 @@ define_insn(DRETURN)
 
 define_insn(ARETURN)
 {
-	trace_jcode (("areturn\n"));
+	trace_jcode ("areturn\n");
 
 	check_stack_ref(0);
 
@@ -2165,7 +2165,7 @@ define_insn(ARETURN)
 
 define_insn(RETURN)
 {
-	trace_jcode (("return\n"));
+	trace_jcode ("return\n");
 
 	monitor_exit();
 #if defined(ENABLE_JVMPI)
@@ -2194,7 +2194,7 @@ define_insn(GETSTATIC)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	trace_jcode (("getstatic %d\n", idx));
+	trace_jcode ("getstatic %d\n", idx);
 
 	get_static_field_info_noerror(idx);
 	if (field_class() == 0) {
@@ -2332,7 +2332,7 @@ define_insn(PUTSTATIC)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("putstatic %d\n", idx));
+	trace_jcode ("putstatic %d\n", idx);
 
 	get_static_field_info_noerror(idx);
 	if (field_class() == 0) {
@@ -2442,7 +2442,7 @@ define_insn(GETFIELD)
 	check_null(GETFIELD, stack(0), 34);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("getfield %d\n", idx));
+	trace_jcode ("getfield %d\n", idx);
 
 	get_field_info(idx);
 
@@ -2526,7 +2526,7 @@ define_insn(PUTFIELD)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("putfield %d\n", idx));
+	trace_jcode ("putfield %d\n", idx);
 
 	get_field_info(idx);
 
@@ -2672,7 +2672,7 @@ define_insn(INVOKEVIRTUAL)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("invokevirtual %d\n", idx));
+	trace_jcode ("invokevirtual %d\n", idx);
 
 	get_method_info_noerror(idx);
 
@@ -2800,7 +2800,7 @@ define_insn(INVOKESPECIAL)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("invokespecial %d\n", idx));
+	trace_jcode ("invokespecial %d\n", idx);
 
 	get_special_method_info_noerror(idx);
 
@@ -2898,7 +2898,7 @@ define_insn(INVOKESTATIC)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("invokestatic %d\n", idx));
+	trace_jcode ("invokestatic %d\n", idx);
 
 	get_method_info_noerror(idx);
 
@@ -2971,7 +2971,7 @@ define_insn(INVOKEINTERFACE)
 	check_pc (2);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("invokeinterface %d\n", idx));
+	trace_jcode ("invokeinterface %d\n", idx);
 
 	get_interface_method_info_noerror(idx);
 
@@ -3055,7 +3055,7 @@ define_insn(NEW)
 	check_pcidx (0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("new %d\n", idx));
+	trace_jcode ("new %d\n", idx);
 
 	get_class_info_noerror(idx);
 	push(1);
@@ -3076,7 +3076,7 @@ define_insn(NEWARRAY)
 	check_stack_int(0);
 
 	low = (uint8)getpc(0);
-	trace_jcode (("newarray %d\n", low));
+	trace_jcode ("newarray %d\n", low);
 
 	softcall_newarray(stack(0), stack(0), low);
 }
@@ -3090,7 +3090,7 @@ define_insn(ANEWARRAY)
 	check_stack_int(0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("anewarray %d\n", idx));
+	trace_jcode ("anewarray %d\n", idx);
 
 	get_class_info_noerror(idx);
 	if (class_object() == 0) {
@@ -3106,7 +3106,7 @@ define_insn(ARRAYLENGTH)
 	/*
 	 * ..., obj -> ..., length
 	 */
-	trace_jcode (("arraylength\n"));
+	trace_jcode ("arraylength\n");
 
 	check_null(ARRAYLENGTH, rstack(0), 34);
 
@@ -3120,7 +3120,7 @@ define_insn(ATHROW)
 	/*
 	 * ..., obj -> undefined
 	 */
-	trace_jcode (("athrow\n"));
+	trace_jcode ("athrow\n");
 
 	check_null(ATHROW, rstack(0), 34);
 
@@ -3138,7 +3138,7 @@ define_insn(CHECKCAST)
 	check_stack_ref(0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("checkcast %d\n", idx));
+	trace_jcode ("checkcast %d\n", idx);
 
 	get_class_info_noerror(idx);
 	if (class_object() == 0) {
@@ -3158,7 +3158,7 @@ define_insn(INSTANCEOF)
 	check_stack_ref(0);
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("instanceof %d\n", idx));
+	trace_jcode ("instanceof %d\n", idx);
 
 	get_class_info_noerror(idx);
 	if (class_object() == 0) {
@@ -3174,7 +3174,7 @@ define_insn(MONITORENTER)
 	/*
 	 * ... obj -> ...
 	 */
-	trace_jcode (("monitorenter\n"));
+	trace_jcode ("monitorenter\n");
 
 	check_null(MONITORENTER, rstack(0), 34);
 
@@ -3192,7 +3192,7 @@ define_insn(MONITOREXIT)
 	/*
 	 * ... obj -> ...
 	 */
-	trace_jcode (("monitorexit\n"));
+	trace_jcode ("monitorexit\n");
 
 	check_null(MONITOREXIT, rstack(0), 34);
 
@@ -3222,7 +3222,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide iload %d\n", idx));
+		trace_jcode ("wide iload %d\n", idx);
 
 		check_local_int(idx);
  
@@ -3236,7 +3236,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide fload %d\n", idx));
+		trace_jcode ("wide fload %d\n", idx);
 
 		check_local_float(idx);
  
@@ -3250,7 +3250,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide aload %d\n", idx));
+		trace_jcode ("wide aload %d\n", idx);
                 
 		check_local_ref(idx);  
  
@@ -3264,7 +3264,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide lload %d\n", idx));
+		trace_jcode ("wide lload %d\n", idx);
                 
 		check_local_long(idx);
 
@@ -3278,7 +3278,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide dload %d\n", idx));
+		trace_jcode ("wide dload %d\n", idx);
                 
 		check_local_double(idx);
 
@@ -3292,7 +3292,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide istore %d\n", idx));
+		trace_jcode ("wide istore %d\n", idx);
 
 		check_stack_int(0);
          
@@ -3306,7 +3306,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide fstore %d\n", idx));
+		trace_jcode ("wide fstore %d\n", idx);
  
 		check_stack_float(0);
          
@@ -3320,7 +3320,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide astore %d\n", idx));
+		trace_jcode ("wide astore %d\n", idx);
 
 		check_stack_ref(0);
 
@@ -3334,7 +3334,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide lstore %d\n", idx));
+		trace_jcode ("wide lstore %d\n", idx);
 
 		check_stack_long(0);
  
@@ -3348,7 +3348,7 @@ define_insn(WIDE)
 		 */
 		check_pcidx (0);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
-		trace_jcode (("wide dstore %d\n", idx));
+		trace_jcode ("wide dstore %d\n", idx);
 
 		check_stack_double(0);
  
@@ -3361,7 +3361,7 @@ define_insn(WIDE)
 		check_pcidx (2);
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
 		low = (int16)((getpc(2) << 8) | getpc(3));
-		trace_jcode (("wide iinc %d %d\n", idx, low));
+		trace_jcode ("wide iinc %d %d\n", idx, low);
 
 		check_local_int(idx);
 
@@ -3382,7 +3382,7 @@ define_insn(MULTIANEWARRAY)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 	low = (uint8)getpc(2);
-	trace_jcode (("multinewarray %d %d\n", idx, low));
+	trace_jcode ("multinewarray %d %d\n", idx, low);
 
 	for (high = 0; high < low; high++) {
 		check_stack_int(high);
@@ -3400,7 +3400,7 @@ define_insn(IFNULL)
 	check_stack_ref(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifnull %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifnull %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -3417,7 +3417,7 @@ define_insn(IFNONNULL)
 	check_stack_ref(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifnonnull %ld\n", (long) (pc + idx)));
+	trace_jcode ("ifnonnull %ld\n", (long) (pc + idx));
 
 	slot_nowriteback(stack(0));
 
@@ -3436,7 +3436,7 @@ define_insn(GOTO_W)
 	idx = (int32)((getpc(0) << 24) | (getpc(1) << 16) |
 				(getpc(2) << 8) | getpc(3));
 
-	trace_jcode (("goto_w %ld\n", (long) (pc + idx)));
+	trace_jcode ("goto_w %ld\n", (long) (pc + idx));
 
 	begin_sync();
 	branch_a(reference_code_label(pc+idx));
@@ -3453,7 +3453,7 @@ define_insn(JSR_W)
 	idx = (int32)((getpc(0) << 24) | (getpc(1) << 16) |
 				(getpc(2) << 8) | getpc(3));
 
-	trace_jcode (("jsr_w %ld\n", (long) (pc + idx)));
+	trace_jcode ("jsr_w %ld\n", (long) (pc + idx));
 
 	push(1);
 	move_label_const(stack(0), reference_code_label(npc));
@@ -3464,7 +3464,7 @@ define_insn(JSR_W)
 
 define_insn(BREAKPOINT)
 {
-	trace_jcode (("breakpoint\n"));
+	trace_jcode ("breakpoint\n");
 
 	softcall_breakpoint();
 }

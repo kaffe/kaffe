@@ -1,5 +1,10 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/kaffe.def:
+	  Make the trace_jcode macro take variable args.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* TODO:
 	  Added.
 
