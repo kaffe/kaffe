@@ -24,9 +24,6 @@
 #include <exec/exec.h>
 #include <proto/exec.h>
 
-#define DBG(x)
-
-
 struct Task *AmigaThisTask = NULL;
 
 /*
@@ -35,4 +32,11 @@ struct Task *AmigaThisTask = NULL;
 void md_init (void)
 {
     AmigaThisTask = FindTask (NULL);
+	
+	// Initialise FPU to round properly
+	asm	volatile	(				\
+	"fmove.l	fpcr,-(sp)		\n"	\
+	"and.l		#0xffffff00,sp@	\n"	\
+	"fmove.l	(sp)+,fpcr		\n"	\
+	);
 }

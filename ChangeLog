@@ -1,3 +1,18 @@
+2003-04-10 Tony Wyatt <wyattaw@optushome.com.au>
+
+	* config/m68k/amigaos/md-c.diff:
+	The FPU rounding mode register was not initialised, so I have
+	added some assembler to md_init() to fix it.	
+
+	* config/m68k/amigaos/README:
+	A new file describing the configuration of the Amiga port.
+
+	* FAQ/FAQ.amigaos:
+	Re-written faq file.
+
+	* config/m68k/common-h.diff:
+	Updated to latest version.
+	
 2003-04-10 Herve Roussain <roussain@univ-ubs.fr>
 
 	* libraries/javalib/java/lang/ThreadGroup.java:

@@ -36,7 +36,7 @@
  *	Still I do not understand 'asm' statement well, and the
  *	statement below is a 'because it works' version.
  */
-#if defined(__linux__)
+#if defined(__linux__)		// try forcing linux sysdepCallMethod()
 #ifdef	USE_ASM		/* Old and obsolete... */
 #define	sysdepCallMethod(CALL)					       \
                asm volatile ("                                       \n\
@@ -80,7 +80,8 @@
                asm volatile ("                                       \n\
                add.w %0,%/sp                                         \n\
         " : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
-#else	/* USE_ASM */
+#else	/* undef USE_ASM */
+//	Linux version
 #define sysdepCallMethod(CALL) do {				\
 	int extraargs[(CALL)->nrargs];				\
 	register int d0 asm ("d0");				\
@@ -121,16 +122,20 @@
 	}							\
 } while (0)
 #endif	/* USE_ASM */
-#else	/* defined(__linux__) */
+#else	/* not defined(__linux__) */
 
-#define sysdepCallMethod(CALL) do {				\
+#define sysdepCallMethod(CALL) do				\
+{												\
 	int extraargs[(CALL)->nrargs];				\
 	register int d0 asm ("d0");				\
 	register int d1 asm ("d1");				\
+	register double f0d asm ("fp0");			\
+	register float f0f asm ("fp0");				\
 	int *res;						\
 	int *args = extraargs;					\
 	int argidx;						\
-	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx) {	\
+	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx)	\
+	{											\
 		if ((CALL)->callsize[argidx])			\
 			*args++ = (CALL)->args[argidx].i;	\
 		else						\
@@ -140,40 +145,44 @@
 	 : "=r" (d0), "=r" (d1)					\
 	 : "a" ((CALL)->function)				\
 	 : "cc", "memory");					\
-	if ((CALL)->retsize != 0) {				\
+	if ((CALL)->retsize >= 1 )					\
+	{											\
 		res = (int *)(CALL)->ret;			\
-		res[1] = d1;					\
 		res[0] = d0;					\
+  		if((CALL)->retsize > 1)	/* >= 2 */		\
+			res[1] = d1;						\
 	}							\
 } while (0)
 
 #endif	/* defined(__linux__) */
 
-
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
+ * We return '1' if the exchange is successful, otherwise 0.
+ *
+ *	Modified by tony wyatt March 2003 - change register assignments
+ *	to force use of data registers in 'casl' instruction.
+ *	Also initialise return value by clearing at start.
  */
 #define COMPARE_AND_EXCHANGE(A,O,N)		\
 ({						\
 	unsigned int tmp, ret = 0;		\
 						\
 	asm volatile(				\
-	"	clrl	%1\n"			\
+	"	clr		%1 \n"						\
 	"1:	movel	%2, %0\n"		\
 	"	cmpl	%4, %0\n"		\
 	"	bne	2f\n"			\
 	"	casl	%0, %5, %2\n"		\
 	"	bne	1b\n"			\
-	"	movq	#1, %1\n"		\
+	"	movq	#1, %1\n"					\
 	"2:\n"					\
 	: "=&r" (tmp), "=&d" (ret), "=m" (*(A))	\
-	: "m" (*(A)), "d" (O), "d" (N)		\
+	: "m" (*(A)), "d" (O), "d" (N)			\
 	: "memory");				\
 						\
 	ret;					\
 })
-
 
 #endif

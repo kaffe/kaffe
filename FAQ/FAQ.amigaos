@@ -3,7 +3,18 @@ KAFFE                                                       COMMON PROBLEMS
 Written by Tim Wilkinson <tim@tjwassoc.demon.co.uk>, 1996-97.
 Ported to AmigaOS by Matthias Hopf <mshopf@informatik.uni-erlangen.de>
 
+Rewritten by tony wyatt <wyattaw@optushome.com.au>, April 2003. New 
+material is indicated by *** new *** and *** end new *** strings before and
+after the new text.
 
+
+*** new ***
+This kaffe system  is not suitable for the trusty old  Amiga 500+  that you
+bought from the second hand shop. It needs power, and even on my 68060,  it
+is as slow as green slime. You will find more excitement watching wet paint
+become dry. However, for me at least it is a stepping-stone to the AmigaOne
+where kaffe should run at a more "normal" speed.
+*** end new ***
                      NOTES ABOUT THE AMIGAOS PORT
                      ============================
 
@@ -13,33 +24,157 @@ formerly known as ADE (Amiga Developer Environment). Thus to work  properly
 it  needs  at  least  version 45.0 of ixemul.library, available from any GG
 mirror.
 
-The needed Sun java classes are not included due to legal reasons. They are
-available  as  a  seperate archive, e.g. kaffe-0.9.0-sun.tgz. If you get an
-'Cannot find essential class 'java/lang/Object' in class library ...',  you
-probably  do  not  have  the  Sun  classes  included in your CLASSPATH (see
-below). Note that begining with kaffe-0.9.0 you  will  need  the  JDK-1.1.1
-version of classes.zip.
+*** new ***
+kaffe comes as a source distribution only. You must compile it,  using gcc.
+No, you can't compile it with SAS/C, or Aztec, or StormC, it is written for
+gcc only.  You could go through and make a non-portable version that  could
+be compiled with any other compiler, but the amount of assembler and binary
+code contained in the release makes it too much bother.
 
-To set up kaffe, do 'make  install'  in  an  GG  environment,  set  up  the
-environment  variables as stated in the file ENVIRONMENT and make sure that
-kaffe can be found in your path as well as in  the  sh  'PATH'  environment
-variable.
+Installing GeekGadgets on an Amiga system is non-trivial, and for those who
+know   little  or  nothing  about  Linux,  is  difficult.  The GG files are 
+scattered over several websites,  and I had great  troubles trying to get a 
+set of GG programs that would work together. I can recommend the set of CDs
+from Schatztruhe, labelled "The Amiga Unix Compendium".  My set,  purchased
+in late 2002, is labelled "V1.2". Using the installation programs on the CD
+will  install a  working GG  environment for you.  You can then go to other
+websites to get the latest versions of applications like gcc, gmp,  ixemul,
+if you feel the need. You'll have to compile them yourself, but you've just
+done that with the installation, so you should be right by now. Right?
 
-Try 'kaffe HelloWorldApp' in the test/ directory. Guess what it does :-)
+					FOR THOSE WHO DON'T KNOW ABOUT GG
+					+++++++++++++++++++++++++++++++++
+					
+The GG environment  uses "ixemul.library",  which must be installed in your
+LIBS: directory (or on the path).  This library  emulates Unix system calls 
+into  Amiga system calls,  by emulating a copy of BSD on your Amiga system.
+Naturally,  it is slow,  and I have found that kaffe on native  m68k  Linux
+runs about 3-5 times as fast as under ixemul on the Amiga OS.
 
-Try 'javac HelloWorldApp.java' in the  test/  directory.  But  be  prepared
-- the javac compiler class is relatively slow...
+You can try compiling kaffe with the "-noixemul" option in gcc. There is an
+alternative library called "libnix", which offers SOME of the ixemul calls.
+You will then get lots of undefined system calls, and you will have to find
+a work-around for that. I haven't managed it yet.
 
-Try 'make test' in the main directory. This  will  run  a  number  of  test
-suites. Most tests should work by now. This test takes a lot of time...
+							INSTALLING KAFFE
+							++++++++++++++++
 
-When kaffe does not work properly, please  read  the  COMMON  CONFIGURATION
-PROBLEMS  and  KNOWN  BUGS sections below before sending any bug reports to
-me, or even better to the mailing list gg-java@ninemoons.com.  When  I  ask
-you  to,  please  fill  out the system configuration report you can find in
-config/m68k/amigaos/REPORT.amiga and send it to me. It will help debugging.
+Firstly, install your GG environment, and check that you can perform  basic
+operations such as list, etc. The GG uses a startup-script that assigns the
+paths and names that *nix needs. Names like /usr, /etc are assigns from the
+GG: installation  home directory.  In a *nix shell, you can refer to  Amiga
+volumes as /Sys, /Libs, etc. In general, *nix is case sensitive,  but there
+are  areas where it doesn't  matter.  If you assume that all  filenames and
+paths are case-sensitive, you won't go wrong.
 
+Get the latest kaffe build from www.kaffe.org. Don't waste time with any of
+the versions on  Aminet or the GeekGadgets sites, they're all too old.  The
+version that I have been playing with is 1.0.7,  released in July 2002.  It
+comes as a  ".tar.gz"  file, about 4 MB.  Download  it and put it where you
+want the base of kaffe to be - I suggest in the GG: directory. Then use the
+shell to unpack it and the source tree is formed automatically. This set of
+commands might do the trick, but don't blame me if it doesn't:
 
+cd /gg
+cp <wherever>/kaffe-1.0.7.tar.gx .
+tar -xzf kaffe-1.0.7.tar.gz
+
+Now  you will find a new source tree,  under the name of "kaffe-1.0.7".  Cd
+into that directory and you are ready to start. Read the "INSTALL" document
+for directions on how to compile and install kaffe.
+
+You must configure kaffe first. This is carried out by the "configure" file
+which performs lots of test operations on your system and makes up a header
+file called "config.h", which describes your system. The compiler and other
+applications all refer to this config file, so it must be right. The config
+directory  has sub-directories for all supported platforms - Amiga is under
+config/m68k/amigaos. In this directory is a file called "config.frag".  You
+will have to edit this file for your hardware, eg 68020, 040, 060.  You can
+do it in other ways, but this is the easiest. This config.frag file is used
+throughout the configure process, so it must be set up BEFORE the configure
+script is run.
+
+Once you have gcc installed, config.frag edited, you are ready to start. In
+the base directory, type:
+./configure --host=m68k-amigaos --build=m68k-amigaos --target=m68k-amigaos
+
+Later you can add debugging assistance with --enable-debug and other things
+like --with-engine=jit if you wish. The default build uses the interpreter.
+
+The configure process takes over an hour on my 68060 @50 MHz.  If you wish,
+you can inspect the results in config/config.h. Don't edit this file, it is
+regenerated each time you run configure.
+
+Now you can build kaffe. Type "make" in the base directory, and go and find
+something to do for the next hour or so (my timing). If it falls over,  you
+will have to find out why and fix it. It is bound to be dependent on the GG
+installation - missing header files, etc.  I can only be general here.  The
+kaffe sources  DO NOT NEED TO BE EDITED - EVER.  They compile without error
+on every one of the supported platforms.  If it won't compile,  it's NOT an
+error in a source file, it's more likely to be in a header or script file.
+
+Once you've got kaffe to compile, install it with "make install". This then
+copies all the runtime libraries and executables into the right places.  It
+will take another half hour or so (on my system).
+
+							RUNNING KAFFE
+							+++++++++++++
+							
+Kaffe needs some environment variables to be set up so that it can find the
+classes required to run your program.  For instance,  just to run the tests
+in the test/regression directory, it needs:
+
+PATH /kaffe/kaffe/kaffe:/usr/local/kaffe/bin:/bin:/usr/bin
+KAFFECLASSPATH "/usr/local/kaffe/jre/lib/rt.jar;/usr/local/kaffe/lib/kjc.jar;."
+KAFFELIBRARYPATH /usr/local/kaffe/jre/lib/m68k
+
+I have a file that I run from an Amiga shell before I run the *nix shell. It
+contains the following lines:
+
+path add kaffe:kaffe/kaffe
+path add GG:local/kaffe/bin
+setenv PATH /kaffe/kaffe/kaffe:/usr/local/kaffe/bin:/bin:/usr/bin
+setenv KAFFECLASSPATH "/usr/local/kaffe/jre/lib/rt.jar;
+			/usr/local/kaffe/lib/kjc.jar;."
+setenv KAFFELIBRARYPATH /usr/local/kaffe/jre/lib/m68k
+
+I have split up the KAFFECLASSPATH line into two so that you can read it. 
+it should read ".../lib/rt.jar;/usr/local..." all as one line.  Don't leave
+out the "" and don't mix up the ":" and the ";".
+
+If  you execute this script file *On the Amiga side*,  all the  environment
+variables are copied over to the  *nix shell when you type "sh".  Note that
+the PATH does not affect the Amiga path, but becomes a *nix path later.
+
+Cd to the  test/regression directory to test your kaffe installation.  Here
+are all the test programs that people have written to check kaffe's perfor-
+mance. There are (or were) about 115 tests here, and on some platforms, not
+all tests pass. The Amiga platform currently passes about 105 out of 115.
+
+You can compile and run a java program with this sequence:
+
+javac <progname.java>		// compiles the program into a ".class" file
+kaffe-bin <progname>		// runs the compiled "progname.class" file
+
+You can also use the "kaffe"  script file - it just does the same as above,
+but sets up the paths first, and calls kaffe-bin.  Read the script files in
+the directory /usr/local/kaffe/bin to see how it works.
+
+The first one to try is the old favourite, HelloWorldApp. I call it HWA.
+
+Try 'kaffe HelloWorldApp' to run the compiled HWA program.
+
+Try 'javac HelloWorldApp.java' to compile the java source. On my 68060/50
+it takes about 4 min - the javac compiler class is relatively slow.
+
+Try 'make test' or 'make check'. This  will  run  the  test suite. On my
+system, it takes about 12 hours to complete. You should get no more than 10
+failures.
+
+The place to go for help with kaffe is the mailing list, accessible from
+www.kaffe.org. There may not be anyone around working on your platform at 
+the time, but you should be directed to some assistance.
+*** end new ***
 
                      COMMON CONFIGURATION PROBLEMS
                      =============================
@@ -48,13 +183,6 @@ config/m68k/amigaos/REPORT.amiga and send it to me. It will help debugging.
   You will need at least V44.0 of ixemul.library. The kaffe binaries that
   can be fetched from ftp.ninemoons.com need at least V45.0 of
   ixemul.library.
-
-- Sun's classes.zip file.
-  For kaffe to work properly you will need the JDK 1.1.1 classes.zip file
-  from Sun, available from Sunsoft or from any kaffe-sun-* archive from
-  ftp.ninemoons.com.
-  *NOTE* The JDK classes.zip files from earlier releases will not work with
-  kaffe! Guavac seems to be shipped with the old Sun classes.
 
 - 'echo "$CLASSPATH"'
   The classpath has to include at least '.' (the current directory) and
@@ -72,27 +200,49 @@ config/m68k/amigaos/REPORT.amiga and send it to me. It will help debugging.
     set CLASSPATH="$CLASSPATH"
   Again, don't forget the doublequotes.
 
-- 'EMT Trap.'
-  When kaffe simply aborts with 'EMT Trap', then you have probably an
-  executable compiled for Amigas with coprozessors (versions before 0.7.1
-  from GG were compiled with -m68881 by accident).
-  It is possible, that you have the wrong ixemul.library installed, too.
-  If you do not get this problem regulary, it may well be that you just
-  encountered a problem inherrited to several IDE drives which cannot
-  handle high MaxTransfer settings (if any is set up at all...).
-  If you run kaffe from a SCSI drive, it can also be a drive and/or host
-  adaptor with reselection problems. In that case disable reselection.
-
+*** new ***
+- 'EMT Trap', Illegal Instruction', or "Abort"
+  When kaffe aborts without an error message, it is probably because of
+  your configuration. Do you have the hardware to support the software?
+  See the file config/m68k/amigaos/README for description of the hardware
+  requirements.
 
 
                               KNOWN BUGS
                               ==========
 
-KNOWN BUGS of the current version
+KNOWN BUGS of the current version (1.0.7)
 
 - Not all pointer access are checked for null pointer accesses. However,
   kaffe should work better now than in the last few versions.
 
+- Some regression tests rely on *nix-style filenames and paths. Tests such
+  as "FileTest.java" and "FileChecks.java" will fail on an Amiga.
+  
+- Some tests (like UDPTest.java) require a working TCP/IP stack for 
+  execution.
+  
+- Some tests will time out and "fail" because no Amiga is fast enough to
+  complete the test before the allotted time is up. On my 68060/50 I find
+  it necessary to double or triple the timeout delays. See the sources for
+  suggestions on which values to change.
+  
+REGRESSION TESTS KNOWN TO FAIL UNDER AMIGAOS (APRIL 2003)
+
+System: Amiga 4000 with Cyberstorm 68060 @ 50 MHz, 140 MB RAM.
+Tester: Tony Wyatt <wyattaw@optushome.com.au>
+
+	Test Name					Error Message
+	+++++++++					+++++++++++++
+TestSerializable2.java		Error messages missing from output
+ProcessTest.java			IOException - Function not implemented
+SoTimeout.java				IOException - Invalid argument, then timeout
+SoInterrupt.java			IOException - Invalid argument, then timeout
+FileTest.java				Unix-specific pathnames fail on Amiga
+FileChecks.java				Unix-specific pathnames fail on Amiga
+BufferedReaderTest.java		NoSuchFieldError: closeCounter
+GCTest.java					Fails in any of several places intermittently
+ExecTest.java				IOException - Function not implemented
 
 
 KNOWN BUGS of former versions

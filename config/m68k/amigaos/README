@@ -1,0 +1,28 @@
+PECULIARITIES OF THIS INSTALLATION
+==================================
+
+This version of kaffe was built on my Amiga 4000, which contains
+a Cyberstorm II with 68060 at 50 MHz. The 68060, like the 68040,
+has a built-in FPU. This kaffe build depends on the presence of 
+such an FPU. I have not tested, and can not guarantee, that it 
+will work on an Amiga 1200, with a 68030.
+
+The file config/m68k/common.h contains assembler code for the 
+function sysdepCallMethod() and the macro COMPARE_AND_EXCHANGE.
+These functions depend on at least a 68020 CPU for the op-codes
+"casl".
+
+The function config/m68k/amigaos/md.c:md_init() contains code to
+initialise the FPU to "round to nearest". This code may not work
+on a CPU/FPU combination less than a 68040 or 68060.
+
+The "configure" script contains a test for the integer divide
+unit. The code tests whether the most negative number can be
+divided by -1 and the result. If this "long modulo" is "broken",
+the configure script ensures that kaffe is built with a work-
+around for the problem. This code works on a 68060, but has not
+been tested on other CPUs.
+
+tony wyatt
+
+April 2003
