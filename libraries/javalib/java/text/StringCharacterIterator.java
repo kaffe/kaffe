@@ -1,7 +1,3 @@
-package java.text;
-
-import java.lang.String;
-
 /*
  * Java core library component.
  *
@@ -11,9 +7,12 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class StringCharacterIterator
-  implements CharacterIterator
-{
+
+package java.text;
+
+import java.lang.String;
+
+public final class StringCharacterIterator implements CharacterIterator {
 	private String text;
 	private int pos;
 	private int begin;
@@ -28,15 +27,25 @@ public StringCharacterIterator(String text, int pos) {
 }
 
 public StringCharacterIterator(String text, int begin, int end, int pos) {
+	if (begin < 0 || end > text.length() || begin > end
+	    || pos < begin || pos > end) {
+		throw new StringIndexOutOfBoundsException();
+	}
 	this.text = text;
 	this.pos = pos;
 	this.begin = begin;
 	this.end = end;
 }
 
+/*public ?? */ void setText(String text) {
+	this.text = text;
+	this.pos = 0;
+	this.begin = 0;
+	this.end = text.length();
+}
+
 public Object clone() {
-	StringCharacterIterator obj = new StringCharacterIterator(this.text, this.begin, this.end, this.pos);
-	return (obj);
+	return new StringCharacterIterator(text, begin, end, pos);
 }
 
 public char current() {
@@ -51,7 +60,9 @@ public char current() {
 public boolean equals(Object obj) {
 	if (obj instanceof StringCharacterIterator) {
 		StringCharacterIterator other = (StringCharacterIterator)obj;
-		if (text.equals(other.text) && pos == other.pos && begin == other.begin && end == other.end) {
+		if (text.equals(other.text)
+		    && pos == other.pos && begin == other.begin
+		    && end == other.end) {
 			return (true);
 		}
 	}
@@ -60,7 +71,12 @@ public boolean equals(Object obj) {
 
 public char first() {
 	pos = begin;
-	return (current());
+	return (text.charAt(pos));
+}
+
+public char last() {
+	pos = end - 1;
+	return (text.charAt(pos));
 }
 
 public int getBeginIndex() {
@@ -79,37 +95,25 @@ public int hashCode() {
 	return (super.hashCode());
 }
 
-public char last() {
-	pos = end - 1;
-	return (current());
-}
-
 public char next() {
 	if ( pos < end ) {
-		pos++;
-		return (current());
+		return (text.charAt(pos++));
 	}
 	return (DONE);
 }
 
 public char previous() {
 	if ( pos > begin ) {
-		pos--;
-		return (current());
+		return (text.charAt(--pos));
 	}
 	return (DONE);
 }
 
 public char setIndex(int pos) {
-        if ( pos < getBeginIndex() || pos > getEndIndex() ) {
+        if ( pos < begin || pos > end ) {
 	        throw new IllegalArgumentException("Invalid index: "+pos);
 	}
-	    
 	this.pos = pos;
-
-	if ( pos == getEndIndex() )
-	    return DONE;
-	else
-	    return text.charAt(pos);
+	return (text.charAt(pos));
 }
 }
