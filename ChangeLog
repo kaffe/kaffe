@@ -1,3 +1,10 @@
+Tue Nov 24 18:11:50 1998  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/DataInputStream.java: catch
+	uncaught IOException
+	* libraries/javalib/java/lang/Boolean.java: allow uppercase
+	letters in Boolean(String s) constructor
+
 Wed Nov 18 18:14:05 1998  Luciane Lamour Ferreira <972311@dcc.unicamp.br>, Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/java/io/StreamTokenizer.java (skipLine): unread
