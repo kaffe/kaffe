@@ -21,9 +21,9 @@ public class ScrollPane
   extends Container
   implements AdjustmentListener, FocusListener
 {
-	final static int SCROLLBARS_AS_NEEDED = 0;
-	final static int SCROLLBARS_ALWAYS = 1;
-	final static int SCROLLBARS_NEVER = 2;
+	public final static int SCROLLBARS_AS_NEEDED = 0;
+	public final static int SCROLLBARS_ALWAYS = 1;
+	public final static int SCROLLBARS_NEVER = 2;
 	int policy;
 	SPAdjustable hScroll;
 	SPAdjustable vScroll;

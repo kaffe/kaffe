@@ -1,5 +1,15 @@
-Thu Dec 10 23:43:33 1998  Mark Lentczner <markl@glyphic.com>
+Fri Dec 11 07:26:29 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
+	* libraries/javalib/java/awt/Window.java: changed == to != in 
+	removeNotify
+
+Fri Dec 11 07:16:14 1998  Mark Huizer <xaa@xaa.iae.nl>
+
+	* libraries/javalib/java/awt/ScrollPane.java: made SCROLLBARS_ 
+	constants public.
+
+Thu Dec 10 23:43:33 1998  Mark Lentczner <markl@glyphic.com>
+ 
 	* libraries/javalib/java/io/DataInputStream.java: fixed typo in read
 
 Thu Dec 10 23:33:39 1998  Godmar Back  <gback@cs.utah.edu>

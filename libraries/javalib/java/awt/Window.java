@@ -225,7 +225,7 @@ public void removeNotify () {
 		     (Thread.currentThread() != Toolkit.eventThread) ){
 			WMEvent e = WMEvent.getEvent( this, WMEvent.WM_DESTROY);
 			Toolkit.eventQueue.postEvent( e);
-			while ( nativeData == null ) {
+			while ( nativeData != null ) {
 				try { e.wait(); } catch ( InterruptedException x ) {}
 			}
 		}
