@@ -126,6 +126,9 @@ public class ConverterAlias {
 	alias.put("CP367",	        "ASCII");
 	alias.put("CPASCII",	        "ASCII");
 
+	alias.put("UNICODEBIGUNMARKED",	"UTF-16BE");
+	alias.put("UNICODELITTLEUNMARKED",	"UTF-16LE");
+
 	/* add more here */
     }
 
