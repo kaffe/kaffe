@@ -5,7 +5,9 @@
  * Copyright (c) 2001 University of Utah and the Flux Group.
  * All rights reserved.
  *
- * @JANOSVM_CONFIG_I386_LINUX_LICENSE@
+ * This file is licensed under the terms of the GNU Public License.  
+ * See the file "license.terms" for restrictions on redistribution 
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
 
 #ifndef __i386_linux_xprofile_md_h

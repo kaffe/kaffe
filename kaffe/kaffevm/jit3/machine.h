@@ -74,8 +74,8 @@
 		success = false ; goto done; \
 	}
 
-#define	get_static_field_info_noerror(IDX) \
-	getField((constIndex)(IDX), xmeth->class, true, &finfo, einfo)
+#define get_static_field_info_noerror(IDX) \
+        getField((constIndex)(IDX), xmeth->class, true, &finfo, einfo)
 
 #define	get_static_field_info(IDX) \
 	if (getField((constIndex)(IDX), xmeth->class, true, &finfo, einfo) == false) { \
@@ -88,6 +88,7 @@
 #define field_classname()	(finfo.cname)
 #define field_sig()		(finfo.signature)
 #define field_static_data()	((finfo.class)->sdata)
+#define field_statics()	(finfo.class->static_data)
 
 /* -------------------------------------------------------------------- */
 /* Classes */

@@ -233,6 +233,7 @@ allocRegister(int idealreg, int type)
 	uint32 used;
 	int creg;
 	kregs* regi;
+	int vreg = 0;
 
 	reg = idealreg;
 	if (reg == NOREG) {
@@ -240,11 +241,33 @@ allocRegister(int idealreg, int type)
 		used = 0xFFFFFFFF;
 		for (creg = 0; creg < MAXREG; creg++) {
 			regi = &reginfo[creg];
-			if ((regi->type & (Rglobal|Reserved)) == 0
-			    && (regi->type & type) == type
-			    && regi->used < used) {
-				used = regi->used;
-				reg = creg;
+			if( regi->type & (Rglobal | Reserved) )
+			{
+				/* Not available. */
+			}
+			else if( (regi->type & type) == type )
+			{
+				/* Right type. */
+#if defined(ALLOC_REGISTERS_SEQUENTIALLY)
+				if( regi->used < used )
+				{
+					used = regi->used;
+					reg = creg;
+				}
+#else
+				if( (!vreg &&
+				     (regi->flags & Rnosaveoncall) &&
+				     (regi->used == used)) ||
+				    (regi->used < used) )
+				{
+					if( !(regi->flags & Rnosaveoncall) )
+						vreg = 1;
+					else
+						vreg = 0;
+					used = regi->used;
+					reg = creg;
+				}
+#endif
 			}
 		}
 	}

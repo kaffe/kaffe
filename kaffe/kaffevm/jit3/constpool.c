@@ -14,6 +14,9 @@
 #include "gtypes.h"
 #include "constpool.h"
 #include "gc.h"
+#include "thread.h"
+#include "jthread.h"
+#include "debug.h"
 
 #include <stdarg.h>
 
@@ -24,17 +27,17 @@ constpool* lastConst;
 constpool* currConst;
 uint32 nConst;
 
-/*
- * Allocate a new constant.
- */
 constpool*
 newConstant(int type, ...)
 {
-	constpool *c;
 	union _constpoolval val;
+	constpool *c;
 	va_list arg;
 
-	memset(&val, 0, sizeof(val));
+	assert(type > CP_min);
+	assert(type < CP_max);
+
+	bzero(&val, sizeof(val));
 	va_start(arg, type);
 	switch (type) {
 	case CPint:
@@ -75,8 +78,10 @@ newConstant(int type, ...)
 	if (!c) {
 		int i;
 
-		/* Allocate chunk of label elements */
+		/* Allocate chunk of constpool elements */
 		c = gc_calloc_fixed(ALLOCCONSTNR, sizeof(constpool));
+		/* XXX Ack! */
+		assert(c != 0);
 
 		/* Attach to current chain */
 		if (lastConst == 0) {
@@ -102,17 +107,70 @@ newConstant(int type, ...)
 	return (c);
 }
 
+char *constpoolTypeNames[] = {
+	"<invalid>",
+	"int",
+	"long",
+	"ref",
+	"float",
+	"double",
+	"string",
+	"label",
+};
+
+void
+printConstant(FILE *file, constpool *cp)
+{
+	fprintf(file, "%08x: (%s) ", cp->at, constpoolTypeNames[cp->type]);
+	switch( cp->type )
+	{
+	case CPint:
+		fprintf(file, "%d\t0x%x\n", cp->val.i, cp->val.i);
+		break;
+	case CPlong:
+		fprintf(file, "%qd\t0x%qx\n", cp->val.l, cp->val.l);
+		break;
+	case CPref:
+		fprintf(file, "%p\t%p\n", cp->val.r, cp->val.r);
+		break;
+	case CPfloat:
+		fprintf(file, "%f\t0x%x\n", cp->val.f, (int)cp->val.f);
+		break;
+	case CPdouble:
+		fprintf(file, "%f\t0x%qx\n", cp->val.d, (long long)cp->val.d);
+		break;
+	case CPstring:
+		fprintf(file, "%s\t%p\n",
+			(char *)cp->val.r, cp->val.r);
+		break;
+	case CPlabel:
+		fprintf(file, "%p\t%p\n", cp->val.r, cp->val.r);
+		break;
+	default:
+		assert(0);
+		break;
+	}
+}
+
 void
 establishConstants(void *at)
 {
 	constpool *c;
 
+	assert(at != 0);
+
+DBG(MOREJIT, fprintf(stderr, "Method Constant Pool:\n"));
 	for (c = firstConst; c != currConst; c = c->next) {
 		c->at = (uintp)at;
 		*(union _constpoolval*)at = c->val;
+DBG(MOREJIT,	printConstant(stderr, c));
 		at = (void*)(((uintp)at) + sizeof(c->val));
 	}
+}
 
+void
+resetConstants(void)
+{
 	currConst = firstConst;
 	nConst = 0;
 }

@@ -33,7 +33,7 @@ enum {
 	bindirect		= 8,	/* Indirect */
 	bult			= 9,	/* Unsigned less than */
 	buge			= 10,	/* Unsigned greater than or equal */
-	bugt			= 11	/* Unsigned greater than */
+	bugt			= 11,	/* Unsigned greater than */
 };
 
 #define branch_a(l)			branch(l, ba)
@@ -136,6 +136,13 @@ void _lslot_lslot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
 		_lslot_lslot_lconst((dst), (src), (src2), (func), (t));	\
 	}
 void _lslot_lslot_lconst(SlotInfo*, SlotInfo*, jlong, ifunc, int);
+
+#define	lslot_slot_const(dst, src, src2, func, t)			\
+	{								\
+		void func(sequence*);					\
+		_lslot_slot_const((dst), (src), (src2), (func), (t));	\
+	}
+void _lslot_slot_const(SlotInfo*, SlotInfo*, jword, ifunc, int);
 
 #define	lslot_slot_lconst(dst, src, src2, func, t)			\
 	{								\

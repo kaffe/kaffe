@@ -394,7 +394,6 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
 		i++;
-		args--; /* because args[i] would be off by one */
 
 		/* If method is static we must insert the class as an argument */
 		if (meth->accflags & ACC_STATIC) {
@@ -403,7 +402,6 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			call.calltype[i] = 'L';
 			in[i].l = meth->class;
 			i++;
-			args--; /* because args[i] would be off by one */
 		}
 	} 
 #endif
@@ -417,7 +415,6 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		call.calltype[i] = 'L';
 		in[i].l = obj;
 		i++;
-		args--; /* because args[i] would be off by one */
 	}
 
 	for (j = 0; j < METHOD_NARGS(meth); i++, j++) {
@@ -426,30 +423,30 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		case 'Z':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[i].z;
+			in[i].PROM_i = args[j].z;
 			break;
 
 		case 'S':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[i].s;
+			in[i].PROM_i = args[j].s;
 			break;
 
 		case 'B':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[i].b;
+			in[i].PROM_i = args[j].b;
 			break;
 
 		case 'C':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[i].c;
+			in[i].PROM_i = args[j].c;
 			break;
 
 		case 'F':
 			call.callsize[i] = 1;
-			in[i].PROM_f = args[i].f;
+			in[i].PROM_f = args[j].f;
 #if PROMOTE_jfloat2jdouble
 			call.calltype[i] = 'D';
 #endif
@@ -457,19 +454,17 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		case 'I':
 		use_int:
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[i].i;
+			in[i].PROM_i = args[j].i;
 			break;
 		case 'D':
 		case 'J':
 			call.callsize[i] = 2;
-			ENSURE_ALIGN64(--args);
-			in[i] = args[i];
-#if NO_HOLES
-			++args; /* Since we'll not be incrementing i */
-#else
+			ENSURE_ALIGN64({});
+			in[i] = args[j];
+#if ! NO_HOLES
 			s += call.callsize[i];
-			in[i+1].i = (&args[i].i)[1];
-			i++;
+			in[i+1].i = (&in[i].i)[1];
+			i++; 
 			call.calltype[i] = 0;
 			call.callsize[i] = 0;
 #endif
@@ -479,7 +474,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			in[i] = args[i];
+			in[i] = args[j];
 			break;
 		default:
 			ABORT();
@@ -668,7 +663,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'F':
 			call.callsize[i] = 1;
 			in[i].PROM_f = (jfloat)va_arg(args, jdouble);
-#if PROMOTE_TO_64bits
+#if PROMOTE_jfloat2jdouble
 			call.calltype[i] = 'D';
 #endif
 			break;
@@ -738,8 +733,6 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	call.ret = ret;
 
 #if defined(TRANSLATOR)
-	assert((func == (METHOD_NATIVECODE(meth)))
-	       || (func == (((Hjava_lang_Object*)obj)->dtable->method[meth->idx])));
 	call.function = func;
 
 	/* GCDIAG wipes free memory with 0xf4... */

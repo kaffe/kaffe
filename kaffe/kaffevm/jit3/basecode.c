@@ -379,6 +379,23 @@ _lslot_lslot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 }
 
 void
+_lslot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
+{
+	sequence* seq = nextSeq();
+
+	ASSIGNSLOT_R(seq, 1, s1);
+	seq->u[2].value.i = s2;
+	if( type == Tstore ) {
+	    LASSIGNSLOT_R(seq, 0, dst);
+	} else {
+	    LASSIGNSLOT_W(seq, 0, dst);
+	}
+
+	SEQ_TYPE(type);
+	seq->func = f;
+}
+
+void
 _lslot_slot_lconst(SlotInfo* dst, SlotInfo* s1, jlong s2, ifunc f, int type)
 {
 	sequence* seq = nextSeq();

@@ -68,6 +68,8 @@ What's New since Kaffe OpenVM 1.0.7
 
 * New build system.
 
+* Support for user defined class library profiles
+
 * New version of KJC (2.1B).
 
 * Many improvements to serialization, localization,

@@ -100,14 +100,17 @@ struct {
 
 static jboolean generateInsnSequence(errorInfo*);
 static void nullCall(void);
+static void initFakeCalls(void);
 static void makeFakeCalls(void);
+static void relinkFakeCalls(void);
 
 /* Desktop edition */
 #include "debug.h"
 
+Method *globalMethod;
+
 #if defined(KAFFE_PROFILER)
 int profFlag;
-Method *globalMethod;
 
 static void printProfilerStats(void);
 #endif
@@ -204,9 +207,6 @@ DBG(MOREJIT,
 
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
-		/* 'nc' is a Workaround for KFREE ? : bug in gcc 2.7.2 */
-		void *nc = METHOD_NATIVECODE(xmeth);
-		KFREE(nc);
 		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
 		goto done;
 	}
@@ -262,6 +262,7 @@ DBG(MOREJIT,
 	/*
 	 * Initialise the translator.
 	 */
+	initFakeCalls();
 	success = initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz, einfo);
 	if (success == false) {
 		goto done;
@@ -356,8 +357,14 @@ SCHK(			sanityCheck();				)
 
 	assert(maxTemp < MAXTEMPS);
 
-	finishInsnSequence(0, &ncode, einfo);
-	installMethodCode(0, xmeth, &ncode);
+	if( finishInsnSequence(0, &ncode, einfo) )
+	{
+		installMethodCode(0, xmeth, &ncode);
+	}
+	else
+	{
+		success = false;
+	}
 
 done:;
 	tidyAnalyzeMethod(&codeInfo);
@@ -419,6 +426,8 @@ finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo* einfo)
 	if (success == false) {
 		return (false);
 	}
+
+	relinkFakeCalls();
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
@@ -494,34 +503,29 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	if (bytecode_processed > 0) {
 		codeperbytecode = code_generated / bytecode_processed;
 	}
-
-	GC_WRITE(meth, code->mem);
-	{
-		/* Workaround for KFREE() ? : bug on gcc 2.7.2 */
-		void *nc = METHOD_NATIVECODE(meth);
-		KFREE(nc);
-	}
+	//GC_WRITE(meth, code->mem);
 	SET_METHOD_JITCODE(meth, code->code);
 	if( meth->c.bcode.code )
 		gc_free(meth->c.bcode.code);
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
-
+	
 #if defined(KAFFE_FEEDBACK)
 	if( kaffe_feedback_file && !meth->class->loader )
 	{
-		sym = KMALLOC(strlen(CLASS_CNAME(meth->class)) +
-			      1 + /* '/' */
-			      strlen(meth->name->data) +
-			      strlen(METHOD_SIGD(meth)) +
-			      1);
+		sym = gc_malloc(strlen(CLASS_CNAME(meth->class)) +
+				1 + /* '/' */
+				strlen(meth->name->data) +
+				strlen(METHOD_SIGD(meth)) +
+				1,
+				GC_ALLOC_JITTEMP);
 		sprintf(sym,
 			"%s/%s%s",
 			CLASS_CNAME(meth->class),
 			meth->name->data,
 			METHOD_SIGD(meth));
 		feedbackJITMethod(sym, code->code, code->codelen, true);
-		KFREE(sym);
+		gc_free(sym);
 	}
 #endif
 #if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
@@ -532,11 +536,12 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	     0 ||
 #endif
 #if defined(KAFFE_XDEBUGGING)
-	     machine_debug_file) &&
+	     machine_debug_file
 #else
-	     0) &&
+	    0
 #endif
-		(mm = createMangledMethod()) )
+	     ) &&
+	    (mm = createMangledMethod()) )
 	{
 		mangleMethod(mm, meth);
 	}
@@ -661,9 +666,11 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 	initRegisters();
 	initSlots(stackno);
 	resetLabels();
+	resetConstants();
 
 	/* Before generating code, try to guess how much space we'll need. */
-	codeblock_size = codesize;
+	if (codeblock_size < codesize)
+		codeblock_size = codesize;
 	if (codeblock_size < ALLOCCODEBLOCKSZ) {
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
@@ -673,6 +680,7 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo
 		return (false);
 	}
 	CODEPC = 0;
+	
 	return (true);
 }
 
@@ -699,7 +707,7 @@ generateInsnSequence(errorInfo* einfo)
 			}
 		}
 
-SCHK(		sanityCheck();					)
+SCHK(		sanityCheck();					);
 
 		/* Generate sequences */
 		assert(t->func != 0);
@@ -1035,7 +1043,7 @@ setupGlobalRegisters(void)
 	/* If we don't have any code info we can't do any global
 	 * optimization
 	 */
-	if (codeInfo == 0) {
+	if ((codeInfo == 0) || (codeInfo->localuse == 0)) {
 		return;
 	}
 
@@ -1177,14 +1185,40 @@ nullCall(void)
 
 typedef struct _fakeCall {
 	struct _fakeCall*	next;
+	struct _fakeCall*	parent;
 	label*			from;
 	label*			to;
 	void*			func;
 } fakeCall;
 
+/* XXX These are globally shared */
 static fakeCall* firstFake;
-static fakeCall* lastFake;
-static fakeCall* currFake;
+static fakeCall** lastFake = &firstFake;
+static fakeCall* fakePool;
+static fakeCall* redundantFake;
+
+static
+void
+initFakeCalls(void)
+{
+	*lastFake = redundantFake;
+	redundantFake = 0;
+	fakePool = firstFake;
+	firstFake = 0;
+	lastFake = &firstFake;
+}
+
+fakeCall *findFakeCall(void *func)
+{
+	fakeCall *fc, *retval = 0;
+
+	for( fc = firstFake; fc && !retval; fc = fc->next )
+	{
+		if( fc->func == func )
+			retval = fc;
+	}
+	return( retval );
+}
 
 /*
  * Build a fake call to a function.
@@ -1194,6 +1228,7 @@ static fakeCall* currFake;
 label*
 newFakeCall(void* func, uintp currpc)
 {
+	fakeCall *fc;
 	label* from;
 	label* to;
 
@@ -1207,23 +1242,35 @@ newFakeCall(void* func, uintp currpc)
 	to->to = 0;
 	to->from = 0;
 
-	if (currFake == 0) {
-		currFake = gc_malloc(sizeof(fakeCall), GC_ALLOC_JITCODE);
-		if (lastFake == 0) {
-			firstFake = currFake;
-		}
-		else {
-			lastFake->next = currFake;
-		}
-		lastFake = currFake;
+	/* XXX This isn't safe, but noone checks the return value :( */
+	if( fakePool )
+	{
+		fc = fakePool;
+		fakePool = fakePool->next;
+		fc->next = 0;
 	}
-
-	currFake->from = from;
-	currFake->to = to;
-	currFake->func = func;
-
-	currFake = currFake->next;
-
+	else
+	{
+		fc = GC_malloc(main_collector,
+			       sizeof(fakeCall),
+			       GC_ALLOC_JITCODE);
+	}
+#if defined(HAVE_branch_and_link)
+	fc->parent = findFakeCall(func);
+#endif
+	fc->from = from;
+	fc->to = to;
+	fc->func = func;
+	if( fc->parent )
+	{
+		fc->next = redundantFake;
+		redundantFake = fc;
+	}
+	else
+	{
+		*lastFake = fc;
+		lastFake = &fc->next;
+	}
 	return (to);
 }
 
@@ -1233,11 +1280,26 @@ makeFakeCalls(void)
 {
 	fakeCall* c;
 
-	for (c = firstFake; c != currFake; c = c->next) {
+	for (c = firstFake; c; c = c->next) {
 		softcall_fakecall(c->from, c->to, c->func);
 	}
+}
 
-	currFake = firstFake;
+static
+void relinkFakeCalls(void)
+{
+	fakeCall *fc;
+	
+	for( fc = redundantFake; fc; fc = fc->next )
+	{
+		fc->to->to = fc->parent->to->to;
+		fc->to->type = fc->parent->to->type;
+		
+		fc->from->at = fc->parent->from->at;
+		fc->from->type = fc->parent->from->type;
+
+		assert(fc->to->from != 0);
+	}
 }
 
 /*

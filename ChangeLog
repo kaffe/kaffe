@@ -1,3 +1,73 @@
+2003-02-10 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffevm/jar.c:
+	(hashName) modified to return an unsigned int.
+	(addJarEntry, lookupJarFile) adapted to use new hashName.
+
+	* WHATSNEW:
+	Added support for user defined class library profiles.
+
+	* config/i386/freebsd2/xprofile-md.h,
+	config/i386/linux/xprofile-md.h:
+	Synced with JanosVM 0.8.0, fixing license information.
+
+	* kaffe/kaffevm/jit3/basecode.c,
+	kaffe/kaffevm/jit3/basecode.h,
+	kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/constpool.h,
+	kaffe/kaffevm/jit3/funcs.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit3/registers.c:
+	Synced with JanosVM 0.8.0
+	
+	2002-07-27 Saturday 16:03  stack
+
+        * kaffe/kaffevm/jit3/: basecode.c, basecode.h: added missing
+        lslot_slot_const function
+
+	2002-07-27 Saturday 16:03  stack
+
+        * kaffe/kaffevm/jit3/: constpool.c, constpool.h: better printfs and
+        comments
+
+	2002-07-27 Saturday 16:04  stack
+
+        * kaffe/kaffevm/jit3/funcs.c: try to print out labels corresponding
+        to the current pc
+
+	2002-07-27 Saturday 16:07  stack
+
+        * kaffe/kaffevm/jit3/icode.c: added branch and link optimization
+        for fake calls on architectures that support branch and link, added
+        long version of copyslots, pay attention to leaf flag to avoid
+        check_stack_limit, switch ordering of moving longs to get "better"
+        register allocation, added HAVE_move_float/double_const function
+
+	2002-07-27 Saturday 16:09  stack
+
+        * kaffe/kaffevm/jit3/machine.c: support for branch and link fake
+        calls and added call to resetConstants
+
+	2002-07-27 Saturday 16:11  stack
+
+        * kaffe/kaffevm/jit3/registers.c: modified allocRegister to support
+        allocation of Rnosaveoncall registers in reverse order.  this makes
+        it easier for architectures that have instructions that save
+        regsters in a high to low fashion.
+
+	* FAQ/FAQ.jit3:
+	New file, taken from JanosVM 0.8.0.
+
+2003-02-10  Helmer Kraemer  <hkraemer@freenet.de>
+ 
+       * kaffe/kaffevm/support.c (callMethodA): Fixed passing of longs and
+       doubles, small code clean up
+       (callMethodV): Changed PROMOTE_TO_64bits to PROMOTE_jfloat2jdouble
+       in order to match callMethodA
+       (callMethodV): Removed bogus assertion
+ 
 2003-02-09 Dalibor Topic <robilad@yahoo.com>
 
 	* FAQ/FAQ.requiredlibraries:

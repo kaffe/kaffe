@@ -30,6 +30,16 @@
 #include "locks.h"
 #include "machine.h"
 #include "codeproto.h"
+#include "thread.h"
+#include "jthread.h"
+#include "support.h"
+#include "code-analyse.h"
+
+#if defined(HAVE_branch_and_link)
+#define blink 0x8000000
+#else
+#define blink 0
+#endif
 
 /*
  * This flag can turn off array bounds checking.
@@ -183,6 +193,13 @@ void
 copyslots(SlotInfo* dst, SlotInfo* src, int type)
 {
 	slot_slot_slot(dst, 0, src, slotAlias, Tcopy);
+	activeSeq->u[1].value.i = type;
+}
+
+void
+copylslots(SlotInfo* dst, SlotInfo* src, int type)
+{
+	lslot_lslot_lslot(dst, 0, src, slotAlias, Tcopy);
 	activeSeq->u[1].value.i = type;
 }
 
@@ -676,8 +693,19 @@ move_long_const(SlotInfo* dst, jlong val)
 #endif
 	}
 #else
+
+#if defined(WORDS_BIGENDIAN)
+	/*
+	 * Switch the ordering so that we get a better register allocation
+	 * ordering and don't have to swap immediately afterwards.  (sigh)
+	 */
+	move_int_const(HSLOT(dst), (jint)((val >> 32) & 0xFFFFFFFF));
+	move_int_const(LSLOT(dst), (jint)(val & 0xFFFFFFFF));
+#else
 	move_int_const(LSLOT(dst), (jint)(val & 0xFFFFFFFF));
 	move_int_const(HSLOT(dst), (jint)((val >> 32) & 0xFFFFFFFF));
+#endif
+	
 #endif
 }
 
@@ -829,25 +857,49 @@ move_long(SlotInfo* dst, SlotInfo* src)
 void
 move_float(SlotInfo* dst, SlotInfo* src)
 {
+	if (dst == src) {
+	}
+#if defined(HAVE_move_float_const)
+	else if (slot_type(src) == Tconst) {
+		move_float_const(dst, slot_value(src).f);
+	}
+#endif
+	else if (isGlobal(dst->slot)) {
 #if defined(HAVE_move_float)
-	slot_slot_slot(dst, 0, src, HAVE_move_float, Tcopy);
+		slot_slot_slot(dst, 0, src, HAVE_move_float, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
-	move_int(dst, src);
+		move_int(dst, src);
 #else
 	ABORT();
 #endif
+	}
+	else {
+		copyslots(dst, src, Rfloat);
+	}
 }
 
 void
 move_double(SlotInfo* dst, SlotInfo* src)
 {
-#if defined(HAVE_move_double)
-	lslot_lslot_lslot(dst, 0, src, HAVE_move_double, Tcopy);
-#elif defined(HAVE_NO_FLOATING_POINT)
-	move_long(dst, src);
-#else
-	ABORT();
+	if (dst == src) {
+	}
+#if defined(HAVE_move_double_const)
+	else if (slot_type(src) == Tconst) {
+		move_double_const(dst, slot_value(src).d);
+	}
 #endif
+	else if (isGlobal(dst->slot)) {
+#if defined(HAVE_move_double)
+		lslot_lslot_lslot(dst, 0, src, HAVE_move_double, Tcopy);
+#elif defined(HAVE_NO_FLOATING_POINT)
+		move_long(dst, src);
+#else
+		ABORT();
+#endif
+	}
+	else {
+		copylslots(dst, src, Rdouble);
+	}
 }
 
 #if defined(HAVE_move_label_const)
@@ -3438,11 +3490,28 @@ popargs(void)
 /* Control flow changes.						   */
 /*									   */
 
+#if defined(HAVE_branch_and_link)
+void
+branch_and_link(label* dst, int type)
+{
+	slot_const_const(0, (jword)dst, type & ~blink, HAVE_branch_and_link, Tnull);
+}
+#endif
+
 #if defined(HAVE_branch)
 void
 branch(label* dst, int type)
 {
-	slot_const_const(0, (jword)dst, type, HAVE_branch, Tnull);
+#if defined(HAVE_branch_and_link)
+	if( type & blink )
+	{
+		branch_and_link(dst, type);
+	}
+	else
+#endif
+	{
+		slot_const_const(0, (jword)dst, type & ~blink, HAVE_branch, Tnull);
+	}
 }
 #endif
 
@@ -3892,6 +3961,12 @@ cmp_offset_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2, jint off)
 {
 #if defined(HAVE_cmp_offset_int)
 	slot_slot_slot_const_const(dst, src, src2, off, 0, HAVE_cmp_offset_int, Tcomplex);
+#elif defined(HAVE_cmpl_int)
+	SlotInfo* tmp;
+	slot_alloctmp(tmp);
+	load_offset_int(tmp, src2, off);
+	slot_slot_slot(dst, src, tmp, HAVE_cmpl_int, Tcomplex);
+	slot_freetmp(tmp);
 #elif defined(HAVE_cmp_int)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -4283,9 +4358,15 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 	/* Make sure we have enough argument space */
 	if (sp_idx + 2 > sz_args) {
 		sz_args = sp_idx + 2;
+
 		args = gc_realloc(args,
 				  sizeof(struct pusharg_info) * sz_args,
 				  GC_ALLOC_JITTEMP);
+		if( !args )
+		{
+			/* XXX We should be a little more graceful */
+			ABORT();
+		}
 	}
 
 	/* If we've got an object ... */
@@ -4459,7 +4540,7 @@ check_array_index(SlotInfo* obj, SlotInfo* idx)
 #else
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(BADARRAYINDEX)) {
-		cbranch_offset_int_uge(idx, obj, object_array_length, newFakeCall(soft_badarrayindex, pc));
+		cbranch_offset_int(idx, obj, object_array_length, newFakeCall(soft_badarrayindex, pc), buge | blink);
 	}
 	else
 #endif
@@ -4492,11 +4573,13 @@ check_array_store(SlotInfo* array, SlotInfo* obj)
 void
 explicit_check_null(int x, SlotInfo* obj, int y)
 {
+#if 0
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
-		cbranch_ref_const_eq(obj, 0, newFakeCall(soft_nullpointer, pc));
+		cbranch_ref_const(obj, 0, newFakeCall(soft_nullpointer, pc), eq | blink);
 	}
 	else
+#endif
 #endif
 	{
 		end_sub_block();
@@ -4526,7 +4609,7 @@ check_div(int x, SlotInfo* obj, int y)
 #if defined(CREATE_DIVZERO_CHECKS)
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
-		cbranch_int_const_eq(obj, 0, newFakeCall(soft_divzero, pc));
+		cbranch_int_const(obj, 0, newFakeCall(soft_divzero, pc), eq | blink);
 	}
 	else
 #endif
@@ -4553,8 +4636,8 @@ check_div_long(int x, SlotInfo* obj, int y)
 	THE CODE BELOW DOES NOT WORK - !!! FIX ME !!!
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
-		cbranch_int_const_eq(LSLOT(obj), 0, newFakeCall(soft_divzero, pc));
-		cbranch_int_const_eq(HSLOT(obj), 0, newFakeCall(soft_divzero, pc));
+		cbranch_int_const(LSLOT(obj), 0, newFakeCall(soft_divzero, pc), eq | blink);
+		cbranch_int_const(HSLOT(obj), 0, newFakeCall(soft_divzero, pc), eq | blink);
 	}
 	else
 #endif

@@ -78,13 +78,16 @@ static struct _jarCache {
 /*
  * Hash a file name, the hash value is stored in what `hash' points to.
  */
-static void hashName(const char *name, unsigned int *hash)
+static unsigned int hashName(const char *name)
 {
+	unsigned int hash = 0;
+
 	assert(name != 0);
-	assert(hash != 0);
 	
-	for( (*hash) = 0; *name; name++ )
-		(*hash) = (31 * (*hash)) + (*name);
+	for( hash = 0; *name; name++ )
+		hash = (31 * hash) + (*name);
+
+	return hash;
 }
 
 /*
@@ -666,7 +669,7 @@ static void addJarEntry(jarFile *jf, jarEntry *je)
 	assert(je != 0);
 	assert(je->fileName != 0);
 	
-	hashName(je->fileName, &hash);
+	hash = hashName(je->fileName);
 	hash = hash % jf->tableSize;
 	je->next = jf->table[hash];
 	jf->table[hash] = je;
@@ -1232,7 +1235,7 @@ jarEntry *lookupJarFile(jarFile *jf, char *entry_name)
 		unsigned int hash;
 		jarEntry *je;
 
-		hashName(entry_name, &hash);
+		hash = hashName(entry_name);
 		hash = hash % jf->tableSize;
 		je = jf->table[hash];
 		while( je && !retval )
