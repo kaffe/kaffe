@@ -1,5 +1,19 @@
 2004-04-17  Dalibor Topic <robilad@kaffe.org>
 
+	* Makefile.am: (EXTRA_DIST) 
+	Added developers/patch-libtool-quote-sys_search_path.diff.
+
+	* Makefile.in,
+	libltdl/acinclude.m4,
+	libltdl/configure,
+	m4/libtool.m4:
+	Regenerated.
+
+	* developers/autogen.sh:
+	Removed developers/patch-libtool-use-internal-argz_create_sep.diff.
+
+2004-04-17  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c:
 	(LIBRARYINIT) Don't bend libtool memory management functions
 	anymore over to kaffe's gc. The lt_dlmalloc/free/realloc 
