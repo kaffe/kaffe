@@ -1,3 +1,17 @@
+2001-08-06  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/config-setjmp.h: Use alternate JTHREAD_SETJMP() based on
+	JTHREAD_JBLEN or JTHREAD_USE_SIGSETJMP defined in config.frag.
+	Default to setjmp().
+
+	* config/powerpc/netbsd1/config.frag, config/powerpc/netbsd1/md.c,
+	config/powerpc/netbsd1/md.h: Don't inline COMPARE_AND_EXCHANGE
+	with egcs-1.1.2.  Import setjmp()/longjmp() from glibc-2.2.2 (not
+	used yet).
+
+	* config/powerpc/common.h, config/powerpc/aix/md.c:
+	(COMPARE_AND_EXCHANGE): fix register usage.
+
 2001-08-03  Edouard G. Parmelan  <egp@free.fr>
 
 	* acinclude.m4, config.guess, config.sub, ltmain.sh,
