@@ -2,11 +2,12 @@
  * jar.c
  * Handle JAR input files.
  *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2000, 2001, 2002 The University of Utah and the Flux Group.
+ * All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
+ * This file is licensed under the terms of the GNU Public License.  
+ * See the file "license.terms" for restrictions on redistribution 
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
 
 #include "config.h"
@@ -22,327 +23,1210 @@
 #include "stats.h"
 #include "files.h"
 
-static inline int
-jar_read(jarFile* file, char *buf, off_t len)
-{
-#ifdef HAVE_MMAP
-    if (file->data != (char*)-1) {
-        if (file->offset + len > file->size)
-	    len = file->size - file->offset;
-	if (len <= 0)
-	    return 0;
-	memcpy(buf, file->data + file->offset, len);
-	file->offset += len;
-	return len;
-    }
-    else
-#endif
-    {
-	int rc;
-	ssize_t bread;
-	rc = KREAD(file->fd, buf, len, &bread);
-	if (rc) {
-	    file->error = SYS_ERROR(rc);
-	}
-	return (rc == 0 ? bread : -1);
-    }
-}
+/* Undefine this to make jar files mutable during the vm lifetime */
+// #define STATIC_JAR_FILES
 
-static inline off_t
-jar_lseek(jarFile* file, off_t offset, int whence)
-{
-#ifdef HAVE_MMAP
-    if (file->data != (char*)-1) {
-	off_t pos;
-
-	switch (whence) {
-	    case SEEK_CUR:
-	        pos = file->offset + offset;
-		break;
-	    case SEEK_SET:
-		pos = offset;
-		break;
-	    case SEEK_END:
-	        pos = file->size + offset;
-		break;
-	    default:
-		return (off_t)-1;
-	}
-	if (pos < 0)
-	    return (off_t)-1;
-	else if (pos > file->size)
-	    return (off_t)-1;
-	file->offset = pos;
-	return pos;
-    }
-    else
+#if defined(KAFFEH)
+#undef ABORT
+#define ABORT() abort()
+#undef  initStaticLock
+#define initStaticLock(x)
+#undef  staticLockIsInitialized
+#define staticLockIsInitialized(x)	1
+#undef  lockStaticMutex
+#undef  unlockStaticMutex
+#define unlockStaticMutex(x)
+#define lockStaticMutex(x)
+#undef  lockMutex
+#undef  unlockMutex
+#define lockMutex(x)
+#define unlockMutex(x)
 #endif
-    {
-	off_t off;
-	int rc = KLSEEK(file->fd, offset, whence, &off);
-	return (rc == 0 ? off : -1);
-    }
+
+/*
+ * The jarCache keeps a list of all the jarFiles cached in the system.
+ * However, since some JAR files are opened and closed frequently we don't
+ * actively flush unused files from the system unless there are more than
+ * JAR_FILE_CACHE_MAX jarFiles in the system.  This means we'll keep some
+ * jarFiles in memory longer than we should but it helps to avoid the
+ * constant opening/closing some java code does.
+ */
+static struct _jarCache {
+#if !defined(KAFFEH)
+	iLock *lock;
+#endif
+	jarFile *files;
+#define JAR_FILE_CACHE_MAX 12
+	unsigned int count;
+} jarCache;
+
+/*
+ * Hash a file name, the hash value is stored in what `hash' points to.
+ */
+static void hashName(const char *name, unsigned int *hash)
+{
+	assert(name != 0);
+	assert(hash != 0);
+	
+	for( (*hash) = 0; *name; name++ )
+		(*hash) = (31 * (*hash)) + (*name);
 }
 
 /*
- * Read in a central directory record.
+ * Find a cached jarFile object.  If the file is found, it is returned and its
+ * user count is incremented.
+ *
+ * XXX rename findCachedJarFile()
  */
-static
-jarEntry*
-readCentralDirRecord(jarFile* file)
+static jarFile *findJarFile(char *name)
 {
-	INITREADS();
-	jarCentralDirectoryRecord head;
-	jarEntry* ret;
-	int len, extra;
-	off_t pos;
-
-	head.signature = READ32(file);
-	head.versionMade = READ16(file);
-	head.versionExtract = READ16(file);
-	head.flags = READ16(file);
-	head.compressionMethod = READ16(file);
-	head.lastModifiedTime = READ16(file);
-	head.lastModifiedDate = READ16(file);
-	head.crc = READ32(file);
-	head.compressedSize = READ32(file);
-	head.uncompressedSize = READ32(file);
-	head.fileNameLength = READ16(file);
-	head.extraFieldLength = READ16(file);
-	head.fileCommentLength = READ16(file);
-	head.diskNumberStart = READ16(file);
-	head.internalFileAttribute = READ16(file);
-	head.externalFileAttribute = READ32(file);
-	head.relativeLocalHeaderOffset = READ32(file);
-
-	if (head.signature != CENTRALHEADERSIGNATURE) {
-		file->error = "Bad central record signature";
-		return (0);
-	}
-
-	len = sizeof(jarEntry) + (head.fileNameLength + 1);
-	ret = KMALLOC(len);
-	if (!ret) {
-		file->error = "out of memory";
-		return 0;
-	}
-	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(ret));
-DBG(JARFILES,	
-	dprintf("Entry at: %p/len=%d usize%d\n", ret, len, 
-	    head.uncompressedSize);	
-    )
-
-	ret->next = 0;
-	ret->fileName = (char*)((uintp)ret + sizeof(jarEntry));
-	ret->compressionMethod  = head.compressionMethod;
-        ret->compressedSize = head.compressedSize;
-        ret->uncompressedSize = head.uncompressedSize;
-	ret->dosTime = ((head.lastModifiedDate << 16)
-			| head.lastModifiedTime);
-
-	READBYTES(file, head.fileNameLength, ret->fileName);
-	SKIPBYTES(file, head.extraFieldLength + head.fileCommentLength);
-
-DBG(JARFILES,	
-	dprintf("Central record filename: %s\n", ret->fileName);	)
-
-	/* Compute file data location using local header info */
-	pos = jar_lseek(file, (off_t)0, SEEK_CUR);
-	(void)jar_lseek(file, (off_t)(head.relativeLocalHeaderOffset + 28), SEEK_SET);
-	extra = READ16(file);
-	ret->dataPos = head.relativeLocalHeaderOffset
-		+ SIZEOFLOCALHEADER + head.fileNameLength + extra;
-
-	/* Jump back to original central directory position */
-	(void)jar_lseek(file, pos, SEEK_SET);
-	return (ret);
-}
-
-/*
- * Find first central directory record and return nr of actual records.
- * NB. We assume there's not comments in JARs.
- */
-static
-int
-findFirstCentralDirRecord(jarFile* file)
-{
-	INITREADS();
-	uint32 signature;
-	uint32 ign;
-	uint16 sz;
-	uint32 off;
-
-	if (jar_lseek(file, -SIZEOFCENTRALEND, SEEK_END) == -1) {
-		file->error = "Failed to seek into JAR file";
-		return (0);
-	}
-
-	signature = READ32(file);
-	if (signature != CENTRALENDSIGNATURE) {
-		file->error = "Failed to find end of JAR record";
-		return (0);
-	}
-
-	ign = READ16(file);	/* Nr of disk */
-	ign = READ16(file);	/* Nr of disk with central directory */
-	ign = READ16(file);	/* Nr of entries in central directory on this disk */
-	sz = READ16(file);	/* Nr of entries in central directory */
-	ign = READ32(file);	/* Size of central directory */
-	off = READ32(file);	/* Offset of central directory */
-
-	if (jar_lseek(file, (off_t)off, SEEK_SET) == -1) {
-		file->error = "Failed to seek into central directory offset";
-		return (0);
-	}
-
-	return (sz);
-}
-
-jarFile*
-openJarFile(char* name)
-{
-#define read_checked(file, ent)					\
-	{							\
-		(ent) = readCentralDirRecord(file);		\
-		if (!(ent)) {					\
-			closeJarFile(file);			\
-			return 0;				\
-		}						\
-		addToCounter(&jarmem, "vmmem-jar files", 1,	\
-			     (jlong)GCSIZEOF((ent)));		\
-	}
-	jarFile* file;
-	jarEntry* curr;
-	int i;
-	int rc;
-
-	file = KMALLOC(sizeof(jarFile));
-	if (!file) {
-		return 0;
-	}
-
-	rc = KOPEN(name, O_RDONLY|O_BINARY, 0, &file->fd);
-	if (rc) {
-		KFREE(file);
-		return (0);
-	}
-#ifdef HAVE_MMAP
-	rc = KLSEEK(file->fd, 0, SEEK_END, &file->size);
-	if (rc) {
-		KCLOSE(file->fd);
-		KFREE(file);
-		return (0);
-	}
-	/* XXX unprotected -> make part of jsyscall interface! */
-	file->data = mmap(NULL, file->size, PROT_READ, MAP_SHARED, file->fd, 0);
-	if (file->data != (char*)-1) {
-		KCLOSE(file->fd);
-		file->offset = 0;
-	}
+	jarFile *curr, **prev, *retval = 0;
+#if !defined(KAFFEH)
+	int iLockRoot;
 #endif
-	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
-	i = findFirstCentralDirRecord(file);
-	file->count = i;
-	if (i > 0) {
-		read_checked(file, curr);
-		file->head = curr;
-		for (i--; i > 0; i--) {
-			read_checked(file, curr->next);
-			curr = curr->next;
+
+	assert(name != 0);
+	
+	lockStaticMutex(&jarCache.lock);
+	curr = jarCache.files;
+	prev = &jarCache.files;
+	while( curr && !retval )
+	{
+		assert(curr != NULL);
+		assert(curr->fileName != 0);
+		assert(curr->users >= 0);
+		
+		if( !strcmp(curr->fileName, name) )
+		{
+			/* unlink it... */
+			*prev = curr->next;
+			/* and move it to the front */
+			curr->next = jarCache.files;
+			jarCache.files = curr;
+			/* Return this node and increment the user count */
+			retval = curr;
+			retval->users++;
+
+			assert(retval->users >= 1);
 		}
-	}
-
-	return (file);
-#undef read_checked
-}
-
-jarEntry*
-lookupJarFile(jarFile* file, char* entry)
-{
-	jarEntry* curr;
-
-	curr = file->head;
-	while (curr != 0) {
-		if (strcmp(entry, curr->fileName) == 0) {
-			return (curr);
-		}
+		prev = &curr->next;
 		curr = curr->next;
 	}
-	return (0);
+	unlockStaticMutex(&jarCache.lock);
+	return( retval );
 }
 
-uint8*
-getDataJarFile(jarFile* file, jarEntry* entry)
+/*
+ * Free the contents of the entry table.
+ */
+static void collectEntryTable(jarFile *jf)
 {
-	uint8* buf;
-	uint8* nbuf;
-
-	if (jar_lseek(file, (off_t)entry->dataPos, SEEK_SET) == -1) {
-		file->error = "Failed to seek into JAR file";
-		return (0);
-	}
-	if (entry->compressedSize == 0)
-		return KMALLOC(4); // XXX Send something back
-	buf = KMALLOC(entry->compressedSize);
-	if (!buf) {
-		file->error = "Out of memory";
-		return (0);
-	}
-	if (jar_read(file, buf, entry->compressedSize) != entry->compressedSize) {
-		KFREE(buf);
-		return (0);
-	}
-	/* Decompress data */
-	switch (entry->compressionMethod) {
-	case COMPRESSION_STORED:
-		return (buf);
-
-	case COMPRESSION_DEFLATED:
-		nbuf = KMALLOC(entry->uncompressedSize);
-		if (nbuf && inflate_oneshot(buf, entry->compressedSize, nbuf, entry->uncompressedSize) == 0) {
-			addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(nbuf));
-			KFREE(buf);
-			return (nbuf);
-		}
-		file->error = "Decompression failed";
-		KFREE(buf);
-		KFREE(nbuf);
-		return (0);
-
-	/* These are not supported yet */
-	case COMPRESSION_SHRUNK:
-	case COMPRESSION_REDUCED1:
-	case COMPRESSION_REDUCED2:
-	case COMPRESSION_REDUCED3:
-	case COMPRESSION_REDUCED4:
-	case COMPRESSION_IMPLODED:
-	case COMPRESSION_TOKENIZED:
-	default:
-		file->error = "Unsupported compression in JAR file";
-		KFREE(buf);
-		return (0);
+	assert(jf != 0);
+	assert(jf->users == 0);
+	
+	if( jf->table )
+	{
+		addToCounter(&jarmem, "vmmem-jar files",
+			     1, -(jlong)GCSIZEOF(jf->table));
+		gc_free(jf->table);
+		jf->table = 0;
 	}
 }
 
-void
-closeJarFile(jarFile* file)
+/*
+ * Free a jarFile structure and its child objects.
+ */
+static void collectJarFile(jarFile *jf)
 {
-	jarEntry* curr;
-	jarEntry* next;
-
-	for (curr = file->head; curr != 0; curr = next) {
-		next = curr->next;
-		addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(curr));
-		KFREE(curr);
+	assert(jf != 0);
+	assert(jf->users == 0);
+	assert(!(jf->flags & JFF_CACHED));
+	
+	collectEntryTable(jf);
+	/* Make sure we free everything */
+	if( jf->fd != -1 )
+	{
+		/* Close the file */
+		KCLOSE(jf->fd);
+		jf->fd = -1;
 	}
-
 #ifdef HAVE_MMAP
-	if (file->data != (char*)-1)
-		munmap(file->data, file->size);
+	if( jf->data != MAP_FAILED )
+	{
+		int rc = munmap(jf->data, jf->size);
+
+		assert(rc == 0);
+	}
+#endif
+	addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(jf));
+	gc_free(jf);
+}
+
+/*
+ * Cache a jarFile object, if the passed in object matches one in the cache
+ * it will be thrown away, and the cached one is returned, with its user
+ * count incremented.
+ */
+static jarFile *cacheJarFile(jarFile *jf)
+{
+	jarFile *curr, **prev, **lru = 0, *dead_jar = 0, *retval = jf;
+	int already_cached = 0;
+#if !defined(KAFFEH)
+	int iLockRoot;
+#endif
+
+	assert(jf != 0);
+	assert(!(jf->flags & JFF_CACHED));
+	
+	lockStaticMutex(&jarCache.lock);
+	/*
+	 * Walk the cache, if the file we're trying to cache already matches
+	 * one in the cache then we can just use it.  Otherwise, we need to
+	 * make room in the cache and continue.
+	 */
+	curr = jarCache.files;
+	prev = &jarCache.files;
+	while( curr && !already_cached )
+	{
+		assert(curr != NULL);
+		assert(curr->fileName != 0);
+		assert(curr->users >= 0);
+		
+		/* Look for a matching JAR file */
+		if( !strcmp(curr->fileName, jf->fileName) )
+		{
+			/* Names match, check the dates */
+			if( curr->lastModified == jf->lastModified )
+			{
+				/*
+				 * They're the same, unlink it from the cache
+				 * so we can put it at the front later on.
+				 */
+				*prev = curr->next;
+				retval = curr;
+				retval->users++;
+			}
+			else
+			{
+				/*
+				 * The modified time is different, purge our
+				 * cached version and proclaim this one the
+				 * canonical version.
+				 *
+				 * XXX Hmm...  Do we care how the two dates
+				 * relate?  Since this is the one now being
+				 * loaded from disk it "must" be the one
+				 * the user wants.  Bleh, too bad the
+				 * semantics don't seem to have been defined.
+				 */
+				*prev = curr->next;
+				curr->flags &= ~JFF_CACHED;
+				dead_jar = curr;
+			}
+			/*
+			 * `jf' is redundant so the number of cached files
+			 * isn't going to change.
+			 */
+			already_cached = 1;
+
+			assert(retval->users >= 1);
+		}
+		else if( curr->users == 0 )
+		{
+			/*
+			 * Record the least recently used file in case we need
+			 * to eject someone.
+			 */
+			lru = prev;
+		}
+		prev = &curr->next;
+		curr = curr->next;
+	}
+	if( !already_cached )
+	{
+		/*
+		 * Cache the file if theres still room rather than ejecting
+		 * the lru or if theres no room and no lru.
+		 */
+		if( (jarCache.count < JAR_FILE_CACHE_MAX) || !lru )
+		{
+			/* Adding a new cache node */
+			jarCache.count++;
+		}
+		else
+		{
+			/*
+			 * Theres an unused jarFile, unlink the least
+			 * recently used one.
+			 */
+			dead_jar = *lru;
+			*lru = dead_jar->next;
+			dead_jar->flags &= ~JFF_CACHED;
+		}
+	}
+	/* Put the file at the start of the cache */
+	retval->next = jarCache.files;
+	jarCache.files = retval;
+	retval->flags |= JFF_CACHED;
+	unlockStaticMutex(&jarCache.lock);
+	/*
+	 * Free the redundant/excess files outside of the lock.
+	 *
+	 * NOTE: The dead_jar test must come first since the file could
+	 * already be cached and get superceded by a newer version of the
+	 * file.
+	 */
+	if( dead_jar )
+		collectJarFile(dead_jar);
+	else if( already_cached )
+		collectJarFile(jf);
+
+	assert(retval != 0);
+	
+	return( retval );
+}
+
+/*
+ * Remove a JAR file from the cache.
+ */
+static void removeJarFile(jarFile *jf)
+{
+	jarFile *curr, **prev;
+#if !defined(KAFFEH)
+	int iLockRoot;
+#endif
+
+	assert(jf != 0);
+
+	/* Make sure its actually in the cache. */
+	if( jf->flags & JFF_CACHED )
+	{
+		lockStaticMutex(&jarCache.lock);
+		{
+			curr = jarCache.files;
+			prev = &jarCache.files;
+			/* Find `jf' on the list and... */
+			while( curr != jf )
+			{
+				assert(curr != 0);
+				
+				prev = &curr->next;
+				curr = curr->next;
+			}
+			/* unlink it */
+			*prev = curr->next;
+			jf->next = 0;
+			jf->flags &= ~JFF_CACHED;
+			jarCache.count--;
+			
+			assert(jarCache.count >= 0);
+		}
+		unlockStaticMutex(&jarCache.lock);
+	}
+}
+
+void flushJarCache(void)
+{
+	jarFile **prev, *curr, *next;
+#if !defined(KAFFEH)
+	int iLockRoot;
+#endif
+
+	lockStaticMutex(&jarCache.lock);
+	curr = jarCache.files;
+	prev = &jarCache.files;
+	while( curr )
+	{
+		next = curr->next;
+		if( curr->users == 0 )
+		{
+			*prev = next;
+			curr->flags &= ~JFF_CACHED;
+			collectJarFile(curr);
+		}
+		else
+		{
+			prev = &curr->next;
+		}
+		curr = next;
+	}
+	unlockStaticMutex(&jarCache.lock);
+}
+
+/*
+ * Convenient read function that operates on regular or mmap'ed files.
+ * This also takes an `instantiation' function which is used to convert
+ * any data into the proper byte order and alignment.
+ */
+static inline int jarRead(jarFile *jf, char *buf, off_t len,
+			  int (*ins_func)(uint8 *dest, uint8 *src))
+{
+	int retval = -1;
+
+	assert(jf != 0);
+	assert(buf != 0);
+	
+#ifdef HAVE_MMAP
+	if( jf->data != MAP_FAILED )
+	{
+		if( (jf->offset + len) > jf->size )
+		{
+			jf->error = "Truncated file";
+		}
+		else if( ins_func )
+		{
+			/*
+			 * We optimize this to use the instantiation function
+			 * to do the copying instead of doing a memcpy and then
+			 * moving stuff around.
+			 */
+			jf->offset += ins_func(buf, jf->data + jf->offset);
+			retval = len;
+		}
+		else
+		{
+			/* Just copy the bits */
+			memcpy(buf, jf->data + jf->offset, len);
+			jf->offset += len;
+			retval = len;
+		}
+	}
 	else
 #endif
-	KCLOSE(file->fd);
-	addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(file));
-	KFREE(file);
+	{
+		ssize_t bytes_left, bytes_read;
+		int rc = 0;
+
+		bytes_left = len;
+		/* XXX is this loop necessary? */
+		while( bytes_left &&
+!(rc = KREAD(jf->fd,
+				    &buf[len - bytes_left],
+				    bytes_left,
+				    &bytes_read)) &&
+bytes_read )
+		{
+			bytes_left -= bytes_read;
+		}
+		if( rc )
+		{
+			jf->error = SYS_ERROR(rc);
+		}
+		else if( bytes_left )
+		{
+			jf->error = "Truncated file";
+		}
+		else
+		{
+			/* Instantiate the memory */
+			if( ins_func )
+				ins_func(buf, buf);
+			retval = len;
+		}
+	}
+	return( retval );
 }
 
+/*
+ * Instantiate a structure that was encoded in a flat file.  We use a define
+ * to make sure the instantiation function is inlined.
+ */
+#ifdef HAVE_MMAP
+#define jarInstantiate(jf, buf, ins_func) \
+{ \
+	if( jf->data != MAP_FAILED ) \
+	{ \
+		jf->offset += ins_func(buf, jf->data + jf->offset); \
+	} \
+	else \
+	{ \
+		ins_func(buf, buf); \
+	} \
+}
+#else
+#define jarInstantiate(jf, buf, ins_func) \
+{ \
+	ins_func(buf, buf); \
+}
+#endif
+
+/*
+ * Convenient seek function that operates on regular or mmap'ed files.
+ */
+static inline off_t jarSeek(jarFile *jf, off_t offset, int whence)
+{
+	off_t retval = (off_t)-1;
+
+	assert(jf != 0);
+	
+#ifdef HAVE_MMAP
+	if( jf->data != (char*)-1 )
+	{
+		off_t pos;
+		
+		switch( whence )
+		{
+		case SEEK_CUR:
+			pos = jf->offset + offset;
+			break;
+		case SEEK_SET:
+			pos = offset;
+			break;
+		case SEEK_END:
+			pos = jf->size + offset;
+			break;
+		default:
+			ABORT();
+			break;
+		}
+		if( (pos >= 0) && (pos < jf->size) )
+		{
+			jf->offset = pos;
+			retval = pos;
+		}
+	}
+	else
+#endif
+	{
+		off_t off;
+		int rc;
+		
+		rc = KLSEEK(jf->fd, offset, whence, &off);
+		if( rc )
+			jf->error = SYS_ERROR(rc);
+		else
+			retval = off;
+	}
+	return( retval );
+}
+
+/* Macro used below to create a 32 bit value from a uint8 buffer */
+#define copy32le(dest, buf, index) \
+do { \
+	register uint32 tmp; \
+	\
+	tmp = (((buf)[(index) + 3] << 24) | \
+	       ((buf)[(index) + 2] << 16) | \
+	       ((buf)[(index) + 1] << 8) | \
+	       ((buf)[(index) + 0])); \
+	dest = tmp; \
+} while(0);
+
+/* Macro used below to create a 16 bit value from a uint8 buffer */
+#define copy16le(dest, buf, index) \
+do { \
+	register uint16 tmp; \
+	\
+	tmp = (((buf)[(index) + 1] << 8) | \
+	       ((buf)[(index) + 0])); \
+	dest = tmp; \
+} while(0);
+
+/*
+ * Unfortunately, the data members of the zip headers aren't aligned properly
+ * so we can't just blast the data into a structure.  So we have to use these
+ * instantiation functions to copy the data and do any byte swapping.
+ *
+ * Note 1: These functions work from high to low memory so that we're
+ * basically just shuffling the bits around and not using extra storage.
+ *
+ * Note 2: We're hoping that the compiler is smart enough to drop the unused
+ * data members when inlining...
+ */
+static inline int
+instantiateCentralDir(uint8 *dest, uint8 *buf)
+{
+	jarCentralDirectoryRecord *cdr = (jarCentralDirectoryRecord *)dest;
+
+	assert(dest != 0);
+	assert(buf != 0);
+	
+	copy32le(cdr->relativeLocalHeaderOffset, buf, 42);
+	copy32le(cdr->externalFileAttribute, buf, 38); /* Not used */
+	copy16le(cdr->internalFileAttribute, buf, 36); /* Not used */
+	copy16le(cdr->diskNumberStart, buf, 34); /* Not used */
+	copy16le(cdr->fileCommentLength, buf, 32);
+	copy16le(cdr->extraFieldLength, buf, 30);
+	copy16le(cdr->fileNameLength, buf, 28);
+	copy32le(cdr->uncompressedSize, buf, 24);
+	copy32le(cdr->compressedSize, buf, 20);
+	copy32le(cdr->crc, buf, 16); /* Not used */
+	copy16le(cdr->lastModifiedDate, buf, 14);
+	copy16le(cdr->lastModifiedTime, buf, 12);
+	copy32le(cdr->compressionMethod, buf, 10);
+	copy16le(cdr->flags, buf, 8); /* Not used */
+	copy16le(cdr->versionExtract, buf, 6); /* Not used */
+	copy16le(cdr->versionMade, buf, 4); /* Not Used */
+	return( FILE_SIZEOF_CENTRALDIR );
+}
+
+static inline int
+instantiateLocalHeader(uint8 *dest, uint8 *buf)
+{
+	jarLocalHeader *lh = (jarLocalHeader *)dest;
+
+	assert(dest != 0);
+	assert(buf != 0);
+	
+	copy16le(lh->extraFieldLength, buf, 28);
+	copy16le(lh->fileNameLength, buf, 26);
+	copy32le(lh->uncompressedSize, buf, 22); /* Not used */
+	copy32le(lh->compressedSize, buf, 18); /* Not used */
+	copy32le(lh->crc, buf, 14); /* Not used */
+	copy16le(lh->lastModifiedDate, buf, 12); /* Not used */
+	copy16le(lh->lastModifiedTime, buf, 10); /* Not used */
+	copy16le(lh->compressionMethod, buf, 8); /* Not used */
+	copy16le(lh->flags, buf, 6); /* Not used */
+	copy16le(lh->versionExtract, buf, 4); /* Not used */
+	return( FILE_SIZEOF_LOCALHEADER );
+}
+
+static inline int
+instantiateCentralDirEnd(uint8 *dest, uint8 *buf)
+{
+	jarCentralDirectoryEnd *cde = (jarCentralDirectoryEnd *)dest;
+
+	assert(dest != 0);
+	assert(buf != 0);
+	
+	copy16le(cde->commentLength, buf, 18); /* Not used */
+	copy32le(cde->offsetOfDirectory, buf, 16);
+	copy32le(cde->sizeOfDirectory, buf, 12); /* Not used */
+	copy16le(cde->nrOfEntriesInDirectory, buf, 10);
+	copy16le(cde->nrOfEntriesInThisDirectory, buf, 8); /* Not used */
+	copy16le(cde->numberOfDiskWithDirectory, buf, 6); /* Not used */
+	copy16le(cde->numberOfDisk, buf, 4); /* Not used */
+	return( FILE_SIZEOF_CENTRALEND );
+}
+
+static inline int instantiateSignature(uint8 *dest, uint8 *buf)
+{
+	uint32 *sig = (uint32 *)dest;
+
+	assert(dest != 0);
+	assert(buf != 0);
+	
+	copy32le(sig[0], buf, 0);
+	/*
+	 * We're instantiating this structure in multiple stages so we don't
+	 * move the file pointer.
+	 */
+	return( 0 );
+}
+
+/*
+ * Read a JAR header from the file and check it's signature.
+ */
+static int readJarHeader(jarFile *jf, uint32 sig, void *buf, int len)
+{
+	int retval = 0;
+
+	assert(jf != 0);
+	assert((sig == CENTRAL_HEADER_SIGNATURE) ||
+		(sig == LOCAL_HEADER_SIGNATURE) ||
+		(sig == CENTRAL_END_SIGNATURE));
+	assert(buf != 0);
+	assert(len >= 0);
+	
+	if( jarRead(jf, buf, len, instantiateSignature) == len )
+	{
+		/* Check the signature */
+		if( sig == ((uint32 *)buf)[0] )
+		{
+			retval = 1;
+		}
+		else
+		{
+			jf->error = "Bad signature";
+		}
+	}
+	return( retval );
+}
+
+/*
+ * Add a jarEntry to the given jarFile.
+ */
+static void addJarEntry(jarFile *jf, jarEntry *je)
+{
+	unsigned int hash;
+
+	assert(jf != 0);
+	assert(jf->table != 0);
+	assert(je != 0);
+	assert(je->fileName != 0);
+	
+	hashName(je->fileName, &hash);
+	hash = hash % jf->tableSize;
+	je->next = jf->table[hash];
+	jf->table[hash] = je;
+}
+
+/*
+ * Create a jarEntry structure for the current central directory record in
+ * the file.
+ */
+static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
+{
+	jarCentralDirectoryRecord cdr;
+	int retval = 0;
+
+	assert(jf != 0);
+	assert(je != 0);
+	assert(name_strings != 0);
+	assert(*name_strings != 0);
+
+	/* Read the header */
+	if( readJarHeader(jf, CENTRAL_HEADER_SIGNATURE, &cdr,
+			  FILE_SIZEOF_CENTRALDIR) )
+	{
+		int read_size;
+
+		/* Instantiate the header */
+		jarInstantiate(jf, (uint8 *)&cdr, instantiateCentralDir);
+		je->next = 0;
+		/* Allocate space for our name */
+		(*name_strings) -= cdr.fileNameLength + 1;
+		je->fileName = *name_strings;
+		/* Copy whatever we care about from the file record */
+		je->dosTime = (cdr.lastModifiedDate << 16) |
+			cdr.lastModifiedTime;
+		je->localHeaderOffset = cdr.relativeLocalHeaderOffset;
+		je->uncompressedSize = cdr.uncompressedSize;
+		je->compressedSize = cdr.compressedSize;
+		je->compressionMethod = cdr.compressionMethod;
+		/* Read the file name */
+		if( (read_size = jarRead(jf,
+					 je->fileName,
+					 cdr.fileNameLength,
+					 0)) >= 0 )
+		{
+			/* Make sure its terminated */
+			je->fileName[cdr.fileNameLength] = 0;
+			/*
+			 * Skip the extra field and comment, we should
+			 * now be positioned at the next directory
+			 * record, if there is one.
+			 */
+			if( jarSeek(jf,
+				    cdr.extraFieldLength +
+				    cdr.fileCommentLength,
+				    SEEK_CUR) > 0 )
+			{
+				retval = 1;
+
+				assert(strlen(je->fileName) ==
+				       cdr.fileNameLength);
+			}
+		}
+
+	}
+	else
+	{
+		jf->error = "Bad central record signature";
+	}
+	return( retval );
+}
+
+/*
+ * Find the central directory end, find out the number of central directory
+ * entries and seek to the start of them.
+ */
+static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
+{
+	int pos, retval = -1;
+
+	assert(jf != 0);
+	assert(out_dir_size != 0);
+	
+	/* The central directory end is at the end of the file */
+	if( (pos = jarSeek(jf, -FILE_SIZEOF_CENTRALEND, SEEK_END)) > 0 )
+	{
+		jarCentralDirectoryEnd cde;
+
+		if( readJarHeader(jf, CENTRAL_END_SIGNATURE,
+				  &cde, FILE_SIZEOF_CENTRALEND) )
+		{
+			jarInstantiate(jf, (uint8 *)&cde,
+				       instantiateCentralDirEnd);
+			if( cde.nrOfEntriesInDirectory >
+			    (cde.sizeOfDirectory / FILE_SIZEOF_CENTRALDIR) )
+			{
+				jf->error = "Entry count doesn't match directory size";
+			}
+			else if( cde.sizeOfDirectory > pos )
+			{
+				jf->error = "Impossibly large directory size";
+			}
+			else if( jarSeek(jf,
+					 cde.offsetOfDirectory,
+					 SEEK_SET) >= 0 )
+			{
+				*out_dir_size = cde.sizeOfDirectory;
+				retval = cde.nrOfEntriesInDirectory;
+			}
+		}
+		else
+		{
+			jf->error = "Failed to find end of JAR record";
+		}
+	}
+	return( retval );
+}
+
+/*
+ * Read the central directory records from the file
+ */
+static int readJarEntries(jarFile *jf)
+{
+	unsigned int dir_size;
+	int retval = 0;
+
+	assert(jf != 0);
+	
+	if( (jf->count = getCentralDirCount(jf, &dir_size)) >= 0 )
+	{
+		unsigned int table_size;
+
+		/*
+		 * Compute a sensible size for the hash table base on the
+		 * number of entries in the jar.
+		 */
+		jf->tableSize = (jf->count + 3) / 4;
+		/*
+		 * We want a single block of memory for all jarEntry's and
+		 * their names.
+		 */
+		/* Hash table buckets */
+		table_size = sizeof(jarEntry *) * jf->tableSize;
+		/* Add the total size of the central directory records */
+		table_size += dir_size;
+		/* ... however, we don't read the whole central dir struct */
+		table_size -= jf->count * FILE_SIZEOF_CENTRALDIR;
+		/* ... we use jarEntry's */
+		table_size += jf->count * sizeof(jarEntry);
+		/* ... with NULL terminated name strings. */
+		table_size += jf->count * 1;
+		if( (jf->table = gc_malloc(table_size, GC_ALLOC_JAR)) )
+		{
+			char *name_strings;
+			jarEntry *je;
+			int lpc;
+
+			/* jarEntry's are right after the table */
+			je = (jarEntry *)(jf->table + jf->tableSize);
+			/* names are at the end of the memory block */
+			name_strings = ((char *)jf->table) + table_size;
+			retval = 1;
+			/*
+			 * Read in the central directory records and add them
+			 * to the hash table.
+			 */
+			for( lpc = 0; (lpc < jf->count) && retval; lpc++ )
+			{
+				if( initJarEntry(jf, je, &name_strings) )
+				{
+					addJarEntry(jf, je);
+					je++;
+				}
+				else
+				{
+					retval = 0;
+				}
+			}
+			
+		}
+		else
+		{
+			jf->error = "Out of memory";
+		}
+	}
+	else if( jf->error )
+	{
+	}
+	else
+	{
+		retval = 1;
+	}
+	return( retval );
+}
+
+/*
+ * Simple function to handle uncompressing the file data.
+ */
+static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
+			     jarLocalHeader *lh, uint8 *buf)
+{
+	uint8 *retval = 0;
+
+	assert(jf != 0);
+	assert(je != 0);
+	assert(lh != 0);
+	assert(buf != 0);
+	
+	switch( je->compressionMethod )
+	{
+	case COMPRESSION_STORED:
+		retval = buf;
+		break;
+	case COMPRESSION_DEFLATED:
+		if( je->uncompressedSize == 0 )
+		{
+			/* XXX What to do? */
+			retval = gc_malloc(8, GC_ALLOC_JAR);
+		}
+		else if( (retval = gc_malloc(je->uncompressedSize,
+					     GC_ALLOC_JAR)) )
+		{
+			if( inflate_oneshot(buf,
+					    je->compressedSize,
+					    retval,
+					    je->uncompressedSize) == 0 )
+			{
+				addToCounter(&jarmem, "vmmem-jar files",
+					     1, GCSIZEOF(retval));
+
+			}
+			else
+			{
+				jf->error = "Decompression failed";
+				gc_free(retval);
+				retval = 0;
+			}
+		}
+		else
+		{
+			jf->error = "Out of memory";
+		}
+		gc_free(buf);
+		break;
+	default:
+		jf->error = "Unsupported compression in JAR file";
+		gc_free(buf);
+		break;
+	}
+	return( retval );
+}
+
+uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
+{
+	uint8 *buf = 0, *retval = 0;
+	jarLocalHeader lh;
+#if !defined(KAFFEH)
+	int iLockRoot;
+#endif
+
+	assert(jf != 0);
+	assert(je != 0);
+
+	lockMutex(jf);
+	/* Move to the local header in the file and read it. */
+	if( !jf->error &&
+	    (jarSeek(jf, je->localHeaderOffset, SEEK_SET) >= 0) &&
+	    readJarHeader(jf, LOCAL_HEADER_SIGNATURE, &lh,
+			  FILE_SIZEOF_LOCALHEADER) )
+	{
+		jarInstantiate(jf, (uint8 *)&lh, instantiateLocalHeader);
+		/* Skip the local file name and extra fields */
+		jarSeek(jf,
+			lh.fileNameLength + lh.extraFieldLength,
+			SEEK_CUR);
+		/* Allocate some memory and read in the file data */
+		if( (buf = (uint8 *)gc_malloc(je->compressedSize,
+					      GC_ALLOC_JAR)) )
+		{
+			if( jarRead(jf, buf, je->compressedSize, 0) < 0 )
+			{
+				gc_free(buf);
+				buf = 0;
+				jf->error = "I/O error";
+			}
+		}
+		else
+		{
+			jf->error = "Out of memory";
+		}
+	}
+ done:
+	unlockMutex(jf);
+	if( buf )
+	{
+	        /* Try to decompress it */
+	        retval = inflateJarData(jf, je, &lh, buf);
+	}
+	return( retval );
+}
+
+/*
+ * If a jarFile is cached it may be closed before it is used again so we might
+ * have to reopen the file.
+ */
+static jarFile *delayedOpenJarFile(jarFile *jf)
+{
+	jarFile *retval = 0;
+	int fd, rc;
+
+	assert(jf != 0);
+
+	/* Open the file and check for a different modified time */
+	if( !(rc = KOPEN(jf->fileName, O_RDONLY|O_BINARY, 0, &fd)) )
+	{
+#if !defined(STATIC_JAR_FILES)
+		struct stat jar_stat;
+
+		if( !(rc = KFSTAT(fd, &jar_stat)) )
+		{
+			if( jar_stat.st_mtime == jf->lastModified )
+			{
+#endif /* !defined(STATIC_JAR_FILES) */
+#if !defined(KAFFEH)
+				int iLockRoot;
+#endif
+				
+				/* Only set the fd in the structure here */
+				lockMutex(jf);
+				if( jf->fd == -1 )
+					jf->fd = fd; /* We're first */
+				else
+					KCLOSE(fd); /* Someone else set it */
+				unlockMutex(jf);
+				retval = jf;
+#if !defined(STATIC_JAR_FILES)
+			}
+			else
+			{
+				KCLOSE(fd);
+				/* The file was changed, reopen it. */
+				removeJarFile(jf);
+				retval = openJarFile(jf->fileName);
+			}
+		}
+		else
+		{
+			KCLOSE(fd);
+		}
+#endif /* !defined(STATIC_JAR_FILES) */
+	}
+	/*
+	 * The file either disappeared, or a new one was made, get rid of the
+	 * old one.
+	 */
+	if( retval != jf )
+	{
+		removeJarFile(jf);
+		closeJarFile(jf);
+	}
+	return( retval );
+}
+
+jarFile *openJarFile(char *name)
+{
+	jarFile *retval = 0;
+
+	assert(name != 0);
+	
+	/* Look for it in the cache first */
+	if( (retval = findJarFile(name)) )
+	{
+		/* Check if we need to reopen the file */
+		if( (retval->fd == -1)
+#ifdef HAVE_MMAP
+		    && (retval->data == MAP_FAILED)
+#endif
+		    )
+		{
+			retval = delayedOpenJarFile(retval);
+		}
+	}
+	/*
+	 * If a cached file wasn't found or its broken then try to make a new
+	 * one.
+	 */
+	if( !retval &&
+	    (retval = (jarFile *)gc_malloc(sizeof(jarFile) +
+					   strlen(name) +
+					   1,
+					   GC_ALLOC_JAR)) )
+	{
+		int rc, error = 0;
+
+		retval->fileName = (char *)(retval + 1);
+		strcpy(retval->fileName, name);
+		retval->users = 1;
+		retval->lastModified = 0;
+		retval->count = 0;
+		retval->error = 0;
+		retval->fd = -1;
+		retval->table = 0;
+		retval->tableSize = 0;
+		retval->data = MAP_FAILED;
+		if( (rc = KOPEN(name, O_RDONLY|O_BINARY, 0, &retval->fd)) )
+		{
+			/* Error opening the file */
+			error = 1;
+		}
+		else
+		{
+			struct stat jar_stat;
+			
+			if( KFSTAT(retval->fd, &jar_stat) == 0 )
+ 			{
+				if( (jar_stat.st_mode & S_IFDIR) )
+				{
+					/* Its a directory! */
+					error = 1;
+				}
+				else
+				{
+					retval->lastModified =
+						jar_stat.st_mtime;
+#ifdef HAVE_MMAP
+					/*
+					 * Setup the mmap members in the
+					 * jarFile structure
+					 */
+					retval->size = jar_stat.st_size;
+					retval->data = mmap(NULL,
+							    retval->size,
+							    PROT_READ,
+							    MAP_SHARED,
+							    retval->fd,
+							    0);
+					if( retval->data == MAP_FAILED )
+					{
+						/*
+						 * Unsuccessful mmap, fallback
+						 * to the FD for now.
+						 */
+					}
+					else
+					{
+						/*
+						 * Successful mmap, close the
+						 * FD
+						 */
+						KCLOSE(retval->fd);
+						retval->fd = -1;
+						retval->offset = 0;
+					}
+#endif
+				}
+			}
+			else
+			{
+				error = 1;
+			}
+			/*
+			 * If everythings a go, figure out how many directory
+			 * entries there are and read them in.
+			 */
+			if( !error && !readJarEntries(retval) )
+			{
+				error = 1;
+			}
+		}
+		if( !error )
+		{
+			addToCounter(&jarmem, "vmmem-jar files",
+				     1, GCSIZEOF(retval));
+			if( retval->table )
+				addToCounter(&jarmem, "vmmem-jar files",
+					     1, GCSIZEOF(retval->table));
+			/*
+			 * No errors, so we cache the file.  If someone else
+			 * beat us to the cache we'll use theirs instead.
+			 */
+			retval = cacheJarFile(retval);
+		}
+		else
+		{
+			/* Something went wrong, cleanup our mess */
+			retval->users = 0;
+			collectJarFile(retval);
+			retval = 0;
+		}
+	}
+
+	return( retval );
+}
+
+void closeJarFile(jarFile *jf)
+{
+	if( jf )
+	{
+#if !defined(KAFFEH)
+		int iLockRoot;
+#endif
+
+		lockStaticMutex(&jarCache.lock);
+		jf->users--;
+		if( jf->users == 0 )
+		{
+			if( jarCache.count <= JAR_FILE_CACHE_MAX )
+			{
+				/*
+				 * The cache isn't full so if its in there
+				 * we can leave it.
+				 */
+#ifdef HAVE_MMAP
+				if( jf->data != MAP_FAILED )
+				{
+					/*
+					 * Unmap the object and force FD I/O
+					 * from now on.
+					 */
+					munmap(jf->data, jf->size);
+					jf->data = MAP_FAILED;
+				}
+				else
+#endif
+				{
+					KCLOSE(jf->fd);
+				}
+				jf->fd = -1;
+			}
+			else
+			{
+				/* Too many files in the cache, remove it */
+				removeJarFile(jf);
+			}
+			if( !(jf->flags & JFF_CACHED) )
+			{
+				/*
+				 * Not cached anymore and this was the last
+				 * reference so collect the file.
+				 */
+				collectJarFile(jf);
+			}
+		}
+		unlockStaticMutex(&jarCache.lock);
+	}
+}
+
+jarEntry *lookupJarFile(jarFile *jf, char *entry_name)
+{
+	jarEntry *retval = 0;
+
+	assert(jf != 0);
+	assert(entry_name != 0);
+	
+	/*
+	 * No need to visit the kernel here since we're just walking the
+	 * structure.
+	 */
+	if( jf->tableSize )
+	{
+		unsigned int hash;
+		jarEntry *je;
+
+		hashName(entry_name, &hash);
+		hash = hash % jf->tableSize;
+		je = jf->table[hash];
+		while( je && !retval )
+		{
+			if( !strcmp(je->fileName, entry_name) )
+				retval = je;
+			je = je->next;
+		}
+	}
+	return( retval );
+}

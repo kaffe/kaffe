@@ -16,8 +16,10 @@
 #include "java_util_zip_ZipFile.h"
 #include "../../../kaffe/kaffevm/jar.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/gc.h"
 #include "java_util_zip_ZipEntry.h"
 #include "java_util_Vector.h"
+#include <errors.h>
 
 static Hjava_util_zip_ZipEntry* makeZipEntry(jarEntry*);
 
@@ -29,7 +31,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 
 	str = checkPtr(stringJava2C(fname));
 	zip = openJarFile(str);
-	KFREE(str);
+	gc_free(str);
 	return ((struct Hkaffe_util_Ptr*)zip);
 }
 
@@ -54,7 +56,7 @@ java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_Strin
 
 	str = checkPtr(stringJava2C(zname));
 	entry = lookupJarFile((jarFile*)zip, str);
-	KFREE(str);
+	gc_free(str);
 	if (entry == 0) {
 		return (0);
 	}
@@ -75,7 +77,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 		entry.uncompressedSize = unhand(zentry)->size;
 		entry.compressionMethod = unhand(zentry)->method;
 		entry.compressedSize = unhand(zentry)->csize;
-		entry.dataPos = unhand(zentry)->offset;
+		entry.localHeaderOffset = unhand(zentry)->offset;
 		
 		buf = getDataJarFile((jarFile*)zip, &entry);
 		if (buf == 0) {
@@ -86,7 +88,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 	if( buf )
 	{
 		memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
-		KFREE(buf);
+		gc_free(buf);
 	}
 	return (array);
 }
@@ -98,15 +100,20 @@ java_util_zip_ZipFile_getZipEntries0(struct Hkaffe_util_Ptr* zip)
 	jarFile* zfile;
 	jarEntry* entry;
 	HObject** elems;
-	int i;
+	int i = 0, j;
 
 	zfile = (jarFile*)zip;
 	vec = (Hjava_util_Vector*)execute_java_constructor("java.util.Vector",
 	    0, 0, "(I)V", zfile->count);
 	elems = unhand_array(unhand(vec)->elementData)->body;
-	for (i = 0, entry = zfile->head;
-	    i < zfile->count; i++, entry = entry->next) {
-		elems[i] = (HObject*)makeZipEntry(entry);
+	for (j = 0; j < zfile->tableSize; j++) {
+		entry = zfile->table[j];
+		while( entry )
+		{
+			elems[i] = (HObject*)makeZipEntry(entry);
+			i++;
+			entry = entry->next;
+		}
 	}
 	unhand(vec)->elementCount = zfile->count;
 
@@ -121,7 +128,8 @@ makeZipEntry(jarEntry* entry)
 
 	zentry = (Hjava_util_zip_ZipEntry*)
 	    execute_java_constructor("java.util.zip.ZipEntry", 0, 0, "()V");
-	unhand(zentry)->name = checkPtr(stringC2Java(entry->fileName));
+	unhand(zentry)->name =
+	    checkPtr(stringC2Java(entry->fileName));
 	unhand(zentry)->crc = 0;
 	unhand(zentry)->size = entry->uncompressedSize;
 	unhand(zentry)->method = entry->compressionMethod;
@@ -130,7 +138,8 @@ makeZipEntry(jarEntry* entry)
 	unhand(zentry)->flag = 0;
 	unhand(zentry)->version = 0;
 	unhand(zentry)->csize = entry->compressedSize;
-	unhand(zentry)->offset = entry->dataPos;
+	unhand(zentry)->offset = entry->localHeaderOffset;
 	unhand(zentry)->dosTime = entry->dosTime;
+
 	return (zentry);
 }

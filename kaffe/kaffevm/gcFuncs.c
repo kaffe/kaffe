@@ -613,5 +613,6 @@ initCollector(void)
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_THREADCTX, "thread-ctxts");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_REF, "gc-refs");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_JITTEMP, "jit-temp-data");
+        GC_registerFixedTypeByIndex(gc, GC_ALLOC_JAR, "jar");
 	return (gc);
 }

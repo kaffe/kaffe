@@ -1,3 +1,70 @@
+Thu Sep  5 01:08:56 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* kaffe/kaffevm/gc.h:
+	(GC_ALLOC_JAR) added.
+	(GC_ALLOC_MAX_INDEX) increased.
+	* kaffe/kaffevm/gcFuncs.c:
+	(initCollector) register GC_ALLOC_JAR with gc.
+	* kaffe/kaffevm/jar.c, kaffe/kaffevm/jar.h,
+	libraries/clib/native/ZipFile.c:
+	merged with JanosVM 0.8.0.
+
+	2002-07-22 Monday 12:56  tullmann
+
+	* kaffe/kaffevm/jar.c: completely initialize jarFile when created
+	(data should be MAP_FAILED)
+
+	2002-05-20 Monday 10:44  stack
+
+	* kaffe/kaffevm/jar.c, libraries/clib/native/ZipFile.c: handle zero
+	sized files in jars
+
+	2002-03-13 Wednesday 16:03  stack
+
+	* kaffe/kaffevm/: classMethod.c, jar.c: put junk at the end of an
+	#endif in comments
+
+	2002-03-02 Saturday 14:27  stack
+
+	* kaffe/kaffevm/jar.c: reposition an #endif
+
+	2002-02-07 Thursday 13:21  stack
+
+	* kaffe/kaffevm/jar.h: minor tweaks
+
+	2002-02-07 Thursday 13:21  stack
+
+	* kaffe/kaffevm/jar.c: add some more checks on the central
+	directory data read from the file, and refactored some code
+
+	2001-10-09 Tuesday 13:52  stack
+
+	* kaffe/kaffevm/jar.c: fix a bug when caching files, give a proper
+	error if unable to read the main directory entries, fail faster
+	when its a directory, snapshot fixups
+
+	2001-03-15 Thursday 16:05  stack
+
+	* kaffe/kaffevm/: jar.c, jar.h, lockPool.c, lockPool.h: some
+	cleanup, name changes, and docs
+
+	2000-10-19 Thursday 06:36  stack
+
+	* kaffe/kaffevm/jar.c: Fixed to just get the size of the file from
+	the fstat
+
+	2000-09-26 Tuesday 17:36  tullmann
+
+	* kaffe/kaffevm/jar.c: shut up warnings
+
+	2000-08-30 Wednesday 17:56  stack
+
+	* kaffe/kaffevm/jar.c: doh! don't put side effect functions in a
+	require(), im such a twink
+
+	2000-08-30 Wednesday 16:14  stack
+
+	* kaffe/kaffevm/: jar.c, jar.h: Completely rewritten jar code
+
 Wed Sep  4 18:43:12 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
