@@ -15,6 +15,9 @@
 #ifndef __superh_common_h
 #define __superh_common_h
 
+/* The SuperH never aligns to more than a 4 byte boundary. */
+#define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
+
 #include <stddef.h>
 
 /*

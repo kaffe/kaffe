@@ -15,7 +15,7 @@
 #ifndef __superh_linux_md_h
 #define __superh_linux_md_h
  
-#include "superh/common.h
+#include "superh/common.h"
 #include "superh/sysdepCallMethod.h"
 #include "superh/threads.h"
 

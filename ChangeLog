@@ -1,3 +1,11 @@
+2004-04-06  Tomo, Sasaki  <tomo@livedoor.jp>
+
+	* config/superh/common.h:
+	Added ALIGNMENT_OF_SIZE.
+
+	* config/superh/linux/md.h:
+	Fixed include.
+
 2004-04-05  Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 
 	* kaffe/kaffevm/{classMethod,exception,jni,soft,stackTrace,
