@@ -1,3 +1,14 @@
+Fri Mar 12 01:52:01 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: let getObjectIndex return -1
+	for non-allocated pointers.
+	* kaffe/kaffevm/gcFuncs.c: free trampoline ncode in destroyClass, 
+	don't attempt to walk it anymore.
+	* kaffe/kaffevm/jit/machine.c: free trampoline before installing
+	new code if necessary.
+	* test/regression/IntfTest.java, test/regression/Makefile.am,
+	test/regression/Makefile.in: test with an interface <clinit> method.
+
 Thu Mar 11 13:54:19 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/soft.c, libraries/clib/native/Float.c, Double.c:
