@@ -64,7 +64,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
       readFully(extra, 0, extra.length);
   
       ZipEntry entry = new ZipEntry(new String(name));
-      entry.time = -1;
+      entry.setDosTime((int)get32(zheader, LOC_TIME));
       entry.crc = get32(zheader, LOC_CRC);
       entry.size = (int)get32(zheader, LOC_UNCOMPRESSEDSIZE);
       entry.method = get16(zheader, LOC_METHOD);
