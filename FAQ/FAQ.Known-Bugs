@@ -4,22 +4,13 @@ Treat it as an TODO list.
 * java/net/ServerSocket.<init>(IILjava/net/InetAddress;)V
   is not implemented.  Should be easy and quick to fix.
 
-* UDP sockets are broken:
-  Failed to locate native function:
-	java/net/DatagramSocket.datagramSocketCreate()V
-  This requires converting DatagramSocket.java to use PlainDatagramSocketImpl.
-
 * javap java.lang.ThreadGroup outputs 'NUL' characters when used with
   Klasses.jar.
 
-* java.net.Socket is missing several methods:
+* java.net.Socket:
 
-     getSoLinger() 
      getSoTimeout() 
-     setSoLinger(boolean, int) 
-     setSoTimeout(int) 
-     getTcpNoDelay() 
-     setTcpNoDelay(boolean) 
+     setSoTimeout(int) 	are not implemented.
 
 * Win32/Cygnus stuff:
 
@@ -45,12 +36,6 @@ Treat it as an TODO list.
 	    echo i386-unknown-win32/cygnus
 	    exit 0 ;;
 
-* Object serialization and RMI are broken.
-  Class UIDs are not computed.
-
-* Several classes do not have serialVersionUIDs hard-coded in them. This
-  makes these classes not interoperable with Sun's classes.
-
 * When making test in the test dir, GCTest.java is flagged as failing
   because output gets on one line:
     [13]:  Success[43]:  Success[11]:  Success
@@ -73,10 +58,15 @@ Treat it as an TODO list.
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
   mechanisms on this system.  Check the mailing list archive for more info.
 
+* Object serialization and RMI are broken because  Class UIDs are not computed.
+
+* Several classes do not have serialVersionUIDs hard-coded in them. This
+  makes these classes not interoperable with Sun's classes.
+
 * Object serialization is buggy.  For the JKernel, the system goes in an
   infinite loop.  When we use Sun's java.io.* classes, it will work fine,
   except that non-transient floating point fields are not properly saved
-  and restored using defaultWriteObject and defaultReadObject.  More
+  and restored using defaultWriteObject and defaultReadObject.  Weird. More
   investigation is needed.  (This is why java.util.Hashtable manually
   saves and restores its loadFactor.)  This is valid as of Jul 23, 1998.
 
