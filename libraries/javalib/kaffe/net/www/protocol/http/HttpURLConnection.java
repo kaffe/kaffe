@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
-import java.util.StringTokenizer;
+import java.util.Vector;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.Socket;
@@ -27,31 +27,12 @@ import java.awt.Toolkit;
 public class HttpURLConnection
   extends java.net.HttpURLConnection {
 
-final private static String[] headers = {
-	"content-encoding",
-	"content-length",
-	"content-type",
-	"content-location",
-	"date",
-	"expiration",
-	"If-Modified-Since",
-	"lastModified",
-	"location",
-	"server"
-};
-final private static int ContentEncoding = 0;
-final private static int ContentLength = 1;
-final private static int ContentType = 2;
-final private static int Date = 3;
-final private static int Expiration = 4;
-final private static int IfModifiedSince = 5;
-final private static int LastModified = 6;
-
 private static String proxyHost;
 private static int proxyPort = -1;
 private static boolean useProxy = false;
 
-private String[] headersValue = new String[headers.length];
+// store header fields as (key, value) pairs
+private Vector headerFields = new Vector(0);
 
 private Socket sock;
 private InputStream in;
@@ -61,7 +42,6 @@ private boolean redir = getFollowRedirects();
 static {
 	// How these properties are undocumented in the API doc.  We know
 	// about them from www.icesoft.no's webpage
-	//
 	proxyHost = System.getProperty("http.proxyHost");
 	if (proxyHost != null) {
 		// Sun also supports a http.nonProxyHosts property to
@@ -87,6 +67,11 @@ public HttpURLConnection(URL url) {
 
 public void connect() throws IOException {
 	for (;;) {
+	    	// reset response data
+		responseCode = -1;
+		responseMessage = null;
+		headerFields = new Vector();
+		
 		int port;
 		String host;
 		if (useProxy) {
@@ -116,44 +101,78 @@ public void connect() throws IOException {
 				file = "/";
 			}
 		}
-		out.writeBytes(method + " " + file + " HTTP/1.0\r\n\r\n");
+		// HTTP/1.0 request line
+		out.writeBytes(method + " " + file + " HTTP/1.0\r\n");
+		// HTTP/1.1 Host header field, required for virtual server name
+		port = url.getPort();
+		if ((port == -1) || (port == 80)) {
+			out.writeBytes("Host: " + url.getHost() + "\r\n");
+		}
+		else {
+			out.writeBytes("Host: " + url.getHost() + ":" + port + "\r\n");
+		}
+		// TODO: emit all RequestHeaders see setRequestProperty
+		// header end
+		out.writeBytes("\r\n");
 		out.flush();
 
 		DataInputStream inp = new DataInputStream(in);
+		String line;
+
+		// there *must* be a Status-Line
+		// Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+		line = inp.readLine();
+		if ((line == null) || !line.startsWith("HTTP/")) {
+			// It will be better to throw an error,
+			// but Sun API does not
+			break;
+		}
+		int versionPos = line.indexOf('/');
+		int responsePos = line.indexOf(' ');
+		// for the length of the version num we could use 3 but
+		// computing the value is probably safer; W3C might introduce
+		// HTTP/1.12 for example
+		String httpResponseVersion = line.substring(versionPos + 1, responsePos);
+		int messagePos = line.indexOf(' ', ++responsePos);
+		try {
+			// get the Status-Code
+			responseCode = Integer.parseInt(line.substring(responsePos, messagePos));
+		}
+		catch (NumberFormatException _) {
+			// It will be better to throw an error,
+			// but Sun API does not
+			break;
+		}
+		// the last thing to do is to save the Reason-Phrase
+		responseMessage = line.substring(messagePos + 1);
+
+		// save the Status-Line as field 0 as Sun API does
+		headerFields.addElement(null, 0);
+		headerFields.addElement(line, 1);
+		    
+		// now read header fields
 		for (;;) {
-			String line = inp.readLine();
-			if (line == null || line.equals("")) {
+			line = inp.readLine();
+			if ((line == null) || line.equals("")) {
 				break;
 			}
-			// This is the page response 
-			else if (line.startsWith("HTTP")) {
-				responseMessage = line;
-				StringTokenizer tok = new StringTokenizer(line);
-				if (tok.countTokens() >= 3) {
-					tok.nextToken();
-					try {
-						responseCode = Integer.parseInt(tok.nextToken());
-					}
-					catch (NumberFormatException _) {
-						responseCode = HTTP_SERVER_ERROR;
-					}
-				}
-			}
-			// Everything else is a colon seperated header and value.
-			else {
-				int pos = line.indexOf(':');
-				if (pos > 0) {
-					String key = line.substring(0, pos);
-					for (pos++; Character.isWhitespace(line.charAt(pos)); pos++)
-						;
-					String val = line.substring(pos);
-					setHeaderField(key, val);
-				}
+			int pos = line.indexOf(':');
+			if (pos > 0) {
+				String key = line.substring(0, pos);
+				for (pos++; Character.isWhitespace(line.charAt(pos)); pos++)
+					;
+				String val = line.substring(pos);
+				setHeaderField(key, val);
 			}
 		}
+		// when we get here the header has been read, what's on the
+		// stream now is an entity or multiple entities
+
+		// IF WE WANT HTTP/1.1 NOW IS THE TIME TO HANDLE CHUNKED
+		// ENCODING!
 
 		// Handle redirection
-		String location = getHeaderField("location");
+		String location = getHeaderField("Location");
 		if (redir == false || responseCode < HTTP_MULT_CHOICE || responseCode > HTTP_USE_PROXY || location == null) {
 			break;
 		}
@@ -166,45 +185,50 @@ public InputStream getInputStream() throws IOException {
 }
 
 public String getHeaderField(String name) {
-	for (int i = 0; i < headers.length; i++) {
-		if (headers[i].equalsIgnoreCase( name)) {
-			return (getHeaderField(i));
+	// Ignore field 0, it's the Status-Line
+	for (int i = headerFields.size() - 2; i > 0; i -= 2) {
+		if (((String)headerFields.elementAt(i)).equalsIgnoreCase(name)) {
+			return (String)headerFields.elementAt(i + 1);
 		}
 	}
 	return (null);
 }
 
 public String getHeaderField(int pos) {
-	if (pos < 0 || pos >= headersValue.length) {
+	if (pos < 0 || pos >= (headerFields.size() >> 1)) {
 		return (null);
 	}
-	return (headersValue[pos]);
+	return (String)headerFields.elementAt((pos << 1) + 1);
 }
 
 public String getHeaderFieldKey(int pos) {
-	if (pos < 0 || pos >= headers.length) {
+	if (pos < 0 || pos >= (headerFields.size() >> 1)) {
 		return (null);
 	}
-	return (headers[pos]);
+	return (String)headerFields.elementAt(pos << 1);
 }
 
-protected void setHeaderField( String key, String value) {
-	for ( int i=0; i<headers.length; i++ ) {
-		if ( headers[i].equalsIgnoreCase( key) ) {
-			headersValue[i] = value;
-			break;
+protected void setHeaderField(String key, String value) {
+	// Ignore field 0, it's the Status-Line
+	for (int i = headerFields.size() - 2; i > 0; i -= 2) {
+		if (((String)headerFields.elementAt(i)).equalsIgnoreCase(key)) {
+			headerFields.setElementAt(value, i + 1);
+			return;
 		}
 	}
+	// if the key did not exist in the header then add it now
+	headerFields.addElement(key);
+	headerFields.addElement(value);
 }
 
 public Object getContent() throws IOException {
-	if (headersValue[ContentEncoding] == null) {
+    	String ct = getContentType();
+	if (ct == null) {
 		return (in);
 	}
-	/*
-	 * We only understand a limited number of things so far
-	 */
-	if (headersValue[ContentEncoding].startsWith("image/")) {
+	
+	// We only understand a limited number of things so far
+	if (ct.startsWith("image/")) {
 		return (Toolkit.getDefaultToolkit().getImage(url).getSource());
 	}
 
@@ -213,9 +237,8 @@ public Object getContent() throws IOException {
 }
 
 protected void setContentTypeFromName() {
-	String ct = getFileNameMap().getContentTypeFor( url.getFile());
-	headersValue[ContentType] = ct;
-	headersValue[ContentEncoding] = ct;
+	String ct = getFileNameMap().getContentTypeFor(url.getFile());
+	setHeaderField ("Content-Type", ct);
 }
 
 public void disconnect() {
