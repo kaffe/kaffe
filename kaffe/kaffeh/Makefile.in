@@ -55,6 +55,9 @@ jar$(OBJEXT):		$(srcdir)/../kaffevm/jar.c
 inflate$(OBJEXT):	$(srcdir)/../kaffevm/inflate.c
 		$(CC) $(ALL_CFLAGS) -c $<
 
+utf8const$(OBJEXT):	$(srcdir)/../kaffevm/utf8const.c
+		$(CC) $(ALL_CFLAGS) -c $<
+
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $<
 
@@ -62,7 +65,7 @@ inflate$(OBJEXT):	$(srcdir)/../kaffevm/inflate.c
 # Use kaffeh to create java_lang_Cloneable from the current Klasses.jar
 #
 $(HEADERFILES):  $(KPREFIX)kaffeh$(EXEEXT)
-	 $(KPREFIX)kaffeh$(EXEEXT) \
+	 ./$(KPREFIX)kaffeh$(EXEEXT) \
 	 -classpath $(srcdir)/../../libraries/javalib/Klasses.jar \
 	 -d ../kaffevm java.lang.Cloneable
 		
