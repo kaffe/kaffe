@@ -28,7 +28,7 @@ if [ "$JIKES" = "" ] ; then
 	fi
 	CPATH="lib"
 else
-	JAVAC="jikes"
+	JAVAC="$JIKES"
 	CPATH="lib:$SRCDIR/Klasses.jar"
 fi
 
