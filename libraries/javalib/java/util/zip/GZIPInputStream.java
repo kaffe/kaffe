@@ -35,7 +35,21 @@ public GZIPInputStream(InputStream in, int readsize) throws IOException {
         checkByte(31);  // GZIP identifier
         checkByte(139); //  "
         checkByte(8);   // Deflating
-        checkByte(0);   // No extra bits
+	int flags = strm.read();
+	if ((flags & 4) != 0) {
+		int len = strm.read();
+		len |= strm.read() << 8;
+		ignoreBytes(len);
+	}
+	if ((flags & 8) != 0) {
+		ignoreString();
+	}
+	if ((flags & 16) != 0) {
+		ignoreString();
+	}
+	if ((flags & 2) != 0) {
+		ignoreBytes(2);	// CRC16
+	}
         ignoreBytes(6); // Time stamp, compression and OS
 }
 
@@ -49,6 +63,11 @@ private void ignoreBytes(int nr) throws IOException {
 	for (; nr > 0; nr--) {
 		strm.read();
 	}
+}
+
+private void ignoreString() throws IOException {
+	while(strm.read() != 0)
+		;
 }
 
 public void close() throws IOException {

@@ -46,8 +46,12 @@ public void close() throws IOException {
 
 public void finish() throws IOException {
 	super.finish();
-	writeInt((int)crc.getValue());
-	writeInt(count);
+	// Make sure we only do this once.
+	if (count > -1) {
+		writeInt((int)crc.getValue());
+		writeInt(count);
+		count = -1;
+	}
 }
 
 private void writeInt(int v) throws IOException {
