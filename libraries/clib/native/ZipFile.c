@@ -73,7 +73,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 
 	if( unhand(zentry)->size > 0 )
 	{
-		entry.fileName = "";
+		entry.fileName = '\0';
 		entry.uncompressedSize = unhand(zentry)->size;
 		entry.compressionMethod = unhand(zentry)->method;
 		entry.compressedSize = unhand(zentry)->csize;

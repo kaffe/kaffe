@@ -1,5 +1,11 @@
 2004-10-12  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/native/ZipFile.c
+	(java_util_zip_ZipFile_getZipData0):
+	Use '\0' for an empty string to fix compiler warning.
+
+2004-10-12  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
 	(jthread_on_current_stack): De-inlined to fix compiler
 	warnings.
