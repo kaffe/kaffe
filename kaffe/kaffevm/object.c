@@ -113,7 +113,7 @@ newMultiArray(Hjava_lang_Class* clazz, int* dims)
 	int i;
 	
 	obj = newArray(CLASS_ELEMENT_TYPE(clazz), dims[0]);
-	if (dims[1] > 0) {
+	if (dims[1] >= 0) {
 		array = OBJARRAY_DATA(obj);
 		for (i = 0; i < dims[0]; i++) {
 			array[i] = newMultiArray(CLASS_ELEMENT_TYPE(clazz), &dims[1]);

@@ -128,7 +128,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 		}
                 arraydims[i] = arg;
         }
-        arraydims[i] = 0;
+        arraydims[i] = -1;
 
         /* Mmm, okay now build the array using the wonders of recursion */
         obj = newMultiArray(class, arraydims);
