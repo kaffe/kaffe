@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include "config-hacks.h"
 #include <math.h>
+#include <ctype.h>
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/locks.h"
