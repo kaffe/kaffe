@@ -292,6 +292,6 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 		}
 	}
 	if (p != 0 || !nullOK) {
-		do_execute_java_method(p, "flush", "()V", 0, 0);
+		do_execute_java_method(NULL, p, "flush", "()V", 0, 0);
 	}
 }

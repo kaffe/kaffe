@@ -207,6 +207,7 @@ void
 attachFakedThreadInstance(const char* nm, int isDaemon)
 {
 	Hjava_lang_Thread* tid;
+	jvalue retval;
 	int i;
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); )
@@ -250,14 +251,14 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 	 * must not be done earlier, since getCurrentThread() won't work
          * before the jthread_createfirst and the jthreadID assignment
 	 */
-        unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *)
-	  do_execute_java_class_method ("kaffe/lang/AppClassLoader",
+	  do_execute_java_class_method (&retval, "kaffe/lang/AppClassLoader",
 					NULL,
 					"getSingleton",
-					"()Ljava/lang/ClassLoader;").l;
+					"()Ljava/lang/ClassLoader;");
+        unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *) retval.l;
 
 	/* Attach thread to threadGroup */
-	do_execute_java_method(unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", 0, 0, tid);
+	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", 0, 0, tid);
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); )
 }
@@ -313,6 +314,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   jthread_t nativeTid;
   Hjava_lang_String* name;
   void *specialArgument[3];
+  jvalue retval;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   
@@ -332,11 +334,11 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   unhand(vmtid)->thread = tid;
   unhand(vmtid)->running = true;
 
-  unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *)
-    do_execute_java_class_method ("java/lang/ClassLoader",
+    do_execute_java_class_method (&retval, "java/lang/ClassLoader",
 				  NULL,
 				  "getSystemClassLoader",
-				  "()Ljava/lang/ClassLoader;").l;
+				  "()Ljava/lang/ClassLoader;");
+  unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *) retval.l;
   
   specialArgument[0] = func;
   specialArgument[1] = arg;
@@ -568,7 +570,7 @@ runfinalizer(void)
 	}
 
 	/* Do java-land cleanup */
-	do_execute_java_method(SystemClass, "exitJavaCleanup",
+	do_execute_java_method(NULL, SystemClass, "exitJavaCleanup",
 			       "()V", NULL, true);
 	if (runFinalizerOnExit) {
 		invokeFinalizer();

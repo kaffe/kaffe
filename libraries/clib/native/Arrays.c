@@ -157,7 +157,7 @@ cmpObject(const void *p1, const void *p2)
 	const struct objcmpinfo	*const o2 = (const struct objcmpinfo *) p2;
 	jvalue rtn;
 
-	rtn = do_execute_java_method(o1->cmp, "compare",
+	do_execute_java_method(&rtn, o1->cmp, "compare",
 		"(Ljava/lang/Object;Ljava/lang/Object;)I",
 		0, false, o1->obj, o2->obj);
 	return rtn.i;

@@ -78,6 +78,7 @@ static struct Hjava_net_InetAddress *
 getInetAddress(struct ifaddrs *ifa)
 {
   struct Hjava_lang_String *address_string = NULL;
+  jvalue jvalue;
   struct Hjava_net_InetAddress *retval = NULL;
 
   if( ifa )
@@ -113,10 +114,12 @@ getInetAddress(struct ifaddrs *ifa)
 	    }
 	}
     }
-  if (address_string)
-    retval = (struct Hjava_net_InetAddress *)do_execute_java_class_method
-      ("java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
-       address_string).l;
+  if (address_string) {
+    do_execute_java_class_method
+      (&jvalue, "java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
+       address_string);
+    retval = (struct Hjava_net_InetAddress *)jvalue.l;
+  }
   return( retval );
 }
 
@@ -142,7 +145,8 @@ java_net_NetworkInterface_getRealNetworkInterfaces(void)
       if (addr != NULL)
 	{
 	  do_execute_java_method
-	    (vector,
+	    (NULL,
+	     vector,
 	     "add",
 	     "(Ljava/lang/Object;)Z",
 	     0,

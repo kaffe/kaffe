@@ -221,7 +221,7 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 {
 	jstring nameString;
 	Utf8Const* utf8;
-	jobject retval;
+	jvalue retval;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -231,12 +231,12 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 	utf8ConstRelease(utf8);
 	checkPtr(nameString);
 
-	retval = do_execute_java_class_method("java.lang.Class", NULL,
-		"forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString).l;
-	ADD_REF(retval);
+	do_execute_java_class_method(&retval, "java.lang.Class", NULL,
+		"forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
+	ADD_REF(retval.l);
 
 	END_EXCEPTION_HANDLING();
-	return (retval);
+	return (retval.l);
 }
 
 static jclass
@@ -337,7 +337,7 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (thread_data->exceptObj != 0) {
-		do_execute_java_method(thread_data->exceptObj, "printStackTrace", "()V",
+		do_execute_java_method(NULL, thread_data->exceptObj, "printStackTrace", "()V",
 				       0, 0, thread_data->exceptObj); 
 	}
 	END_EXCEPTION_HANDLING();

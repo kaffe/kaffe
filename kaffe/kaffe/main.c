@@ -287,14 +287,14 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	cls = (*env)->FindClass(env, "java/lang/String");
 	if (checkException())
 		goto done;
-	args = (*env)->NewObjectArray(env, (unsigned)argc, cls, 0);
+	args = (*env)->NewObjectArray(env, argc, cls, 0);
 	if (checkException())
 		goto done;
 	for (i = 0; i < argc; i++) {
 		str = (*env)->NewStringUTF(env, argv[farg+i]);
 		if (checkException())
 			goto done;
-		(*env)->SetObjectArrayElement(env, args, (unsigned)i, str);
+		(*env)->SetObjectArrayElement(env, args, i, str);
 		if (checkException())
 			goto done;
 	}
@@ -382,7 +382,7 @@ setUserProperty(char * propStr)
  */
 static 
 userProperty*
-setKaffeAWT(char * propStr)
+setKaffeAWT(const char * propStr)
 {
 	char    *newbootcpath;
 	unsigned int      bootcpathlength;

@@ -65,10 +65,9 @@ userProperty* userProperties = NULL;
  *
  * @return the return value of the method to be called
  */
-jvalue
-do_execute_java_method_v(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, va_list argptr)
+void
+do_execute_java_method_v(jvalue *retval, void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
-	jvalue retval;
 	errorInfo info;
 
 	if (obj == 0 && (! isStaticCall || ! mb)) {
@@ -76,7 +75,8 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	}
 
 	if (mb == 0) {
-		assert(method_name != 0 && signature != 0);
+		assert(method_name != NULL);
+		assert(signature != NULL);
 		if (isStaticCall) {
 			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature, &info);
 		}
@@ -96,9 +96,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 		throwException(NoSuchMethodError(method_name));
 	}
 
-	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, &retval);
-
-	return (retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, retval);
 }
 
 /**
@@ -113,19 +111,16 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
  *
  * @return the return value of the method to be called
  */
-jvalue
-do_execute_java_method(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, ...)
+void
+do_execute_java_method(jvalue *retval, void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, ...)
 {
 	va_list argptr;
-	jvalue retval;
 
 	assert(method_name != 0 || mb != 0);
 
 	va_start(argptr, isStaticCall);
-	retval = do_execute_java_method_v(obj, method_name, signature, mb, isStaticCall, argptr);
+	do_execute_java_method_v(retval, obj, method_name, signature, mb, isStaticCall, argptr);
 	va_end(argptr);
-
-	return (retval);
 }
 
 /**
@@ -141,15 +136,14 @@ do_execute_java_method(void* obj, const char* method_name, const char* signature
  * 
  * @return the return value of the method
  */
-jvalue
-do_execute_java_class_method_v(const char* cname,
+void
+do_execute_java_class_method_v(jvalue *retval, const char* cname,
 	Hjava_lang_ClassLoader* loader, const char* method_name,
 	const char* signature, va_list argptr)
 {
 	Hjava_lang_Class* clazz;
 	errorInfo info;
 	Method* mb = 0;
-	jvalue retval;
 	char *buf;
 
 	/* Convert "." to "/" and lookup class */
@@ -172,9 +166,7 @@ do_execute_java_class_method_v(const char* cname,
 	}
 
 	/* Make the call */
-	callMethodV(mb, METHOD_NATIVECODE(mb), 0, argptr, &retval);
-
-	return (retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), 0, argptr, retval);
 }
 
 /**
@@ -188,18 +180,15 @@ do_execute_java_class_method_v(const char* cname,
  *
  * @return the return value of the method
  */
-jvalue
-do_execute_java_class_method(const char* cname, Hjava_lang_ClassLoader*loader,
+void
+do_execute_java_class_method(jvalue *retval, const char* cname, Hjava_lang_ClassLoader*loader,
 	const char* method_name, const char* signature, ...)
 {
 	va_list argptr;
-	jvalue retval;
 
 	va_start(argptr, signature);
-	retval = do_execute_java_class_method_v(cname, loader, method_name, signature, argptr);
+	do_execute_java_class_method_v(retval, cname, loader, method_name, signature, argptr);
 	va_end(argptr);
-
-	return (retval);
 }
 
 /**

@@ -33,7 +33,7 @@ extern "C" {
  * --> expands br_locate to foobar_br_locate
  */
 #undef BR_NAMESPACE
-#define BR_NAMESPACE(funcName) funcName
+#define BR_NAMESPACE(funcName) _kf_ ## funcName
 
 
 #ifdef ENABLE_BINRELOC
@@ -59,18 +59,18 @@ extern "C" {
 	#undef CONFDIR
 	#undef LOCALEDIR
 
-	#define SELFPATH	(br_thread_local_store (br_locate ((void *) "")))
-	#define PREFIX		(br_thread_local_store (br_locate_prefix ((void *) "")))
-	#define PREFIXDIR	(br_thread_local_store (br_locate_prefix ((void *) "")))
-	#define BINDIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/bin")))
-	#define SBINDIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/sbin")))
-	#define DATADIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/share")))
-	#define LIBDIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/lib")))
-	#define LIBEXECDIR	(br_thread_local_store (br_prepend_prefix ((void *) "", "/libexec")))
-	#define ETCDIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/etc")))
-	#define SYSCONFDIR	(br_thread_local_store (br_prepend_prefix ((void *) "", "/etc")))
-	#define CONFDIR		(br_thread_local_store (br_prepend_prefix ((void *) "", "/etc")))
-	#define LOCALEDIR	(br_thread_local_store (br_prepend_prefix ((void *) "", "/share/locale")))
+	#define SELFPATH	(br_thread_local_store (br_locate ("")))
+	#define PREFIX		(br_thread_local_store (br_locate_prefix ("")))
+	#define PREFIXDIR	(br_thread_local_store (br_locate_prefix ("")))
+	#define BINDIR		(br_thread_local_store (br_prepend_prefix ("", "/bin")))
+	#define SBINDIR		(br_thread_local_store (br_prepend_prefix ("", "/sbin")))
+	#define DATADIR		(br_thread_local_store (br_prepend_prefix ("", "/share")))
+	#define LIBDIR		(br_thread_local_store (br_prepend_prefix ("", "/lib")))
+	#define LIBEXECDIR	(br_thread_local_store (br_prepend_prefix ("", "/libexec")))
+	#define ETCDIR		(br_thread_local_store (br_prepend_prefix ("", "/etc")))
+	#define SYSCONFDIR	(br_thread_local_store (br_prepend_prefix ("", "/etc")))
+	#define CONFDIR		(br_thread_local_store (br_prepend_prefix ("", "/etc")))
+	#define LOCALEDIR	(br_thread_local_store (br_prepend_prefix ("", "/share/locale")))
 #endif /* BR_NO_MACROS */
 
 
@@ -78,9 +78,9 @@ extern "C" {
    and shouldn't be used directly in applications. */
 
 const char *br_thread_local_store (char *str);
-char *br_locate		(void *symbol);
-char *br_locate_prefix	(void *symbol);
-char *br_prepend_prefix	(void *symbol, char *path);
+char *br_locate		(const char *symbol);
+char *br_locate_prefix	(const char *symbol);
+char *br_prepend_prefix	(const char *symbol, const char *path);
 
 
 #endif /* ENABLE_BINRELOC */

@@ -92,7 +92,7 @@ extern "C" {
  * }
  */
 char *
-br_locate (void *symbol)
+br_locate (const char *symbol)
 {
 	char line[5000];
 	FILE *f;
@@ -158,7 +158,7 @@ br_locate (void *symbol)
  * br_locate_prefix (&argc);   --> returns: "/usr"
  */
 char *
-br_locate_prefix (void *symbol)
+br_locate_prefix (const char *symbol)
 {
 	char *path, *prefix;
 
@@ -188,7 +188,7 @@ br_locate_prefix (void *symbol)
  * br_prepend_prefix (&argc, "/share/foo/data.png");   --> Returns "/usr/share/foo/data.png"
  */
 char *
-br_prepend_prefix (void *symbol, char *path)
+br_prepend_prefix (const char *symbol, const char *path)
 {
 	char *tmp, *newpath;
 
@@ -221,7 +221,7 @@ static pthread_once_t br_thread_key_once = PTHREAD_ONCE_INIT;
 
 
 static void
-br_thread_local_store_fini ()
+br_thread_local_store_fini (void)
 {
 	char *specific;
 
@@ -237,7 +237,7 @@ br_thread_local_store_fini ()
 
 
 static void
-br_str_free (void *str)
+br_str_free (char *str)
 {
 	if (str)
 		free (str);
@@ -245,9 +245,9 @@ br_str_free (void *str)
 
 
 static void
-br_thread_local_store_init ()
+br_thread_local_store_init (void)
 {
-	if (pthread_key_create (&br_thread_key, br_str_free) == 0)
+	if (pthread_key_create (&br_thread_key, (void (*)(void *))br_str_free) == 0)
 		atexit (br_thread_local_store_fini);
 }
 
@@ -335,7 +335,7 @@ br_strcat (const char *str1, const char *str2)
 
 /* Emulates glibc's strndup() */
 static char *
-br_strndup (char *str, size_t size)
+br_strndup (const char *str, size_t size)
 {
 	char *result = NULL;
 	size_t len;
@@ -374,7 +374,7 @@ br_extract_dir (const char *path)
 
 	while (end > path && *end == '/')
 		end--;
-	result = br_strndup ((char *) path, end - path + 1);
+	result = br_strndup (path, (size_t)(end - path + 1));
 	if (!*result)
 	{
 		free (result);
@@ -407,7 +407,7 @@ br_extract_prefix (const char *path)
 	end = strrchr (path, '/');
 	if (!end) return strdup (path);
 
-	tmp = br_strndup ((char *) path, end - path);
+	tmp = br_strndup (path, (size_t)(end - path));
 	if (!*tmp)
 	{
 		free (tmp);
@@ -416,7 +416,7 @@ br_extract_prefix (const char *path)
 	end = strrchr (tmp, '/');
 	if (!end) return tmp;
 
-	result = br_strndup (tmp, end - tmp);
+	result = br_strndup (tmp, (size_t)(end - tmp));
 	free (tmp);
 
 	if (!*result)

@@ -108,10 +108,10 @@ struct Hjava_lang_Throwable;
 struct Hjava_lang_ClassLoader;
 
 extern const char*		getEngine(void);
-extern jvalue		do_execute_java_method(void*, const char*, const char*, struct _methods*, int, ...);
-extern jvalue		do_execute_java_method_v(void*, const char*, const char*, struct _methods*, int, va_list);
-extern jvalue		do_execute_java_class_method(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
-extern jvalue		do_execute_java_class_method_v(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, va_list);
+extern void		do_execute_java_method(jvalue *retval, void*, const char*, const char*, struct _methods*, int, ...);
+extern void		do_execute_java_method_v(jvalue *retval, void*, const char*, const char*, struct _methods*, int, va_list);
+extern void		do_execute_java_class_method(jvalue *retval, const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
+extern void		do_execute_java_class_method_v(jvalue *retval, const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, va_list);
 
 extern struct Hjava_lang_Object* execute_java_constructor(const char*, struct Hjava_lang_ClassLoader*, struct Hjava_lang_Class*, const char*, ...);
 extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct Hjava_lang_ClassLoader*, struct Hjava_lang_Class*, const char*, va_list);

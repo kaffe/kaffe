@@ -1,5 +1,17 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
 
+	* binreloc/prefix.c, binreloc/prefix.h, kaffe/kaffe/main.c,
+	  kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/support.c,
+	  kaffe/kaffevm/support.h, kaffe/kaffevm/thread.c,
+	  kaffe/kaffevm/jni/jni.c, libraries/clib/native/Arrays.c,
+	  libraries/clib/net/NetworkInterface.c,
+	  libraries/clib/net/PlainSocketImpl.c:
+	  Fix several gcc warnings.  725 -> 691, on my machine.
+	  Note, that do_execute_java_class_method and do_execute_java_method
+	  (and the _v counterparts) have changed their signatures.
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/jit3/basecode.c, kaffe/kaffevm/jit3/basecode.h,
 	  kaffe/kaffevm/jit3/icode.c:
 	  Fix 'function returns an aggretate type' warning.
