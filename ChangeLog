@@ -1,5 +1,10 @@
 2004-09-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/AlgorithmParameterGenerator.java:
+        Replaced by implementation from GNU Classpath.
+
+2004-09-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/AlgorithmParameters.java:
         Replaced by implementation from GNU Classpath.
 
