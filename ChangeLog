@@ -1,3 +1,19 @@
+2001-05-15  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/io/InputStreamReader.java (read): read
+	all possibles characters without blocking.
+	(ready): use encoding.havePending().
+
+	* libraries/javalib/Klasses.jar: regen with Jikes 1.12-20012116.
+
+2001-05-14  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* libraries/javalib/java/util/zip/Deflater.java:
+	Fixes Deflater.setLevel(DEFAULT_COMPRESSION).
+	Submitted by Takashi Okamoto <toraneko@kun.ne.jp>.
+
+	* libraries/javalib/java/Klasses.jar: regen
+
 2001-05-14  Edouard G. Parmelan  <egp@free.fr>
 
 	* configure.in: add definition of NO_SHARED_VMLIBRARY as does in
@@ -243,7 +259,7 @@ Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 	* libraries/javalib/java/io/PrintStream.java: synchronized println
 	methods to ensure that lines are written as a whole.
 
-	* libraries/javalib/Klasses.jar: regen with Jiles 1.12-20012116.
+	* libraries/javalib/Klasses.jar: regen with Jikes 1.12-20012116.
 
 2001-03-09  Edouard G. Parmelan  <egp@free.fr>
 
