@@ -20,11 +20,11 @@ What systems does Kaffe support?
 -------------------------------
 
 Most of the porting issues of Kaffe are in the virtual machine itself
-(after all the rests in Java an inherently portable) so we may not
-support all the platforms you might want, but we support an amazing number
-and we'll add more as we can.  Take a look at the list below to see if
-Kaffe will run on your system ('J' means 'just-in-time' while 'I' means
-'interpreter'):
+(after all, the rest is in Java and is therefore inherently portable)
+so we may not support all the platforms you might want, but we support
+an amazing number and we'll add more as we can.  Take a look at the list
+below to see if Kaffe will run on your system ('J' means 'just-in-time'
+while 'I' means 'interpreter'):
 
   ========================================================================
   uProc     | Mode |    Systems
