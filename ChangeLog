@@ -1,3 +1,13 @@
+2004-08-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(SIG_*): Removed and replaced by static variables.
+	(sig*): New static variables.
+	(tInitSignals): Initialize static variables concerning signal
+	number to use.
+	(tInitSignalHandlers): Renamed sigaction variables sig* to sa*.
+	Fixed a few warnings.
+	
 2004-08-17  Kiyo Inaba  <inaba@src.ricoh.co.jp>
 
 	* config/m68k/jit3-m68k.def:

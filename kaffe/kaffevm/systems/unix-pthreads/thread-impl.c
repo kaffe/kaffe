@@ -69,52 +69,32 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 /* our upper limit for cached threads (0 = no caching at all) */
 #define MAX_CACHED_THREADS 0
 
-/*
- * Now it starts to get hackish - we have to pick some signals
- * for suspend/resume (enter/exitCritSect) which don't interfere
- * with pthread implementations. Note that we can't rely on when
- * a suspend signal is delivered, and it's therefore not safe
- * to mulitplex a sinle signal for both suspend & resume purposes
- */
-#if !defined(__SIGRTMIN) || (__SIGRTMAX - __SIGRTMIN < 7)
-
-#  if defined(OLD_LINUXTHREADS)
-
-#    define	SIG_SUSPEND   SIGURG
-#    define	SIG_RESUME    SIGTSTP
-#    define	SIG_DUMP      SIGXCPU
 
 /*
- * Sneak these signal in from the thread library.
+ * Signal to use to suspend all threads.
  */
-#    define	PSIG_RESTART	SIGUSR1
-#    define	PSIG_CANCEL	SIGUSR2
-
-#  else // OLD_LINUXTHREADS
-
-#    define	SIG_SUSPEND	SIGUSR1
-#    define	SIG_RESUME	SIGUSR2
-#    define	SIG_DUMP	SIGXCPU
-
-// PSIG_RESTART and PSIG_CANCEL are left undefined.
-
-#  endif
-
-#else
-
-#  define	SIG_SUSPEND   (__SIGRTMIN+6)
-#  define	SIG_RESUME    (__SIGRTMIN+5)
-#  define	SIG_DUMP      SIGXCPU
+static int sigSuspend;
 
 /*
- * Sneak these signal in from the thread library.
+ * Signal to use to resume all threads.
  */
-#  define	PSIG_RESTART	(__SIGRTMIN)
-#  define	PSIG_CANCEL	(__SIGRTMIN+1)
+static int sigResume;
 
-#endif
+/*
+ * Signal to use to dump thread internal state.
+ */
+static int sigDump;
 
-#define SIG_INTERRUPT (__SIGRTMIN+2)
+/*
+ * Signal to use to produce an interrupt.
+ */
+static int sigInterrupt;
+
+/*
+ * Signals used by the thread system to restard/cancel threads.
+ */
+static int psigRestart;
+static int psigCancel;
 
 
 /***********************************************************************
@@ -195,7 +175,7 @@ static void (*thread_free)(void*);
 /*
  * dump a thread list, marking the supposed to be current thread
  */
-void
+static void
 tDumpList ( jthread_t cur, jthread_t list )
 {
   int		i;
@@ -223,7 +203,7 @@ tDumpList ( jthread_t cur, jthread_t list )
 /*
  * dump the state of the threading system
  */
-void
+static void
 tDump (void)
 {
   DBG(JTHREAD, {
@@ -263,10 +243,10 @@ tDump (void)
 
 /*
  * On demand debug signal to dump the current thread state(s) (requested
- * by a external "kill -s <SIG_DUMP> <proc-id>"
+ * by a external "kill -s <sigDump> <proc-id>"
  */
 void
-dump_signal_handler ( int sig )
+dump_signal_handler ( UNUSED int sig )
 {
   tDump();
 }
@@ -327,55 +307,115 @@ void tStartDeadlockWatchdog (void)
 /*
  * static init of signal handlers
  */
-void
+static void
 tInitSignalHandlers (void)
 {
-  struct sigaction sigSuspend, sigResume, sigInterrupt, sigDump;
+  struct sigaction saSuspend, saResume, saInterrupt, saDump;
   unsigned int flags = 0;
 
 #if defined(SA_RESTART)
   flags |= SA_RESTART;
 #endif
 
-  sigSuspend.sa_flags = flags;
-  sigSuspend.sa_handler = suspend_signal_handler;
-  sigemptyset( &sigSuspend.sa_mask);
-  sigaddset( &sigSuspend.sa_mask, SIG_SUSPEND);
-  sigaddset( &sigSuspend.sa_mask, SIG_RESUME);
-#if defined(PSIG_RESTART)
-  sigaddset( &sigSuspend.sa_mask, PSIG_RESTART);
-#endif
-#if defined(PSIG_RESTART)
-  sigaddset( &sigSuspend.sa_mask, PSIG_CANCEL);
-#endif
+  saSuspend.sa_flags = flags;
+  saSuspend.sa_handler = suspend_signal_handler;
+  sigemptyset( &saSuspend.sa_mask);
+  sigaddset( &saSuspend.sa_mask, sigSuspend);
+  sigaddset( &saSuspend.sa_mask, sigResume);
+  if (psigRestart > 0)
+    sigaddset( &saSuspend.sa_mask, psigRestart);
 
-  sigaddset( &sigSuspend.sa_mask, SIGSTOP);
-  sigaddset( &sigSuspend.sa_mask, SIGCONT);
-  sigaddset( &sigSuspend.sa_mask, SIGWINCH);
+  if (psigCancel > 0)
+    sigaddset( &saSuspend.sa_mask, psigCancel);
+
+  sigaddset( &saSuspend.sa_mask, SIGSTOP);
+  sigaddset( &saSuspend.sa_mask, SIGCONT);
+  sigaddset( &saSuspend.sa_mask, SIGWINCH);
 
 #ifndef KAFFE_BOEHM_GC
-  sigaction( SIG_SUSPEND, &sigSuspend, NULL);
+  sigaction( sigSuspend, &saSuspend, NULL);
 #endif
 
-  sigResume.sa_flags = 0; /* Note that we do not want restart here. */
-  sigResume.sa_handler = resume_signal_handler;
-  sigResume.sa_mask = sigSuspend.sa_mask;
+  saResume.sa_flags = 0; /* Note that we do not want restart here. */
+  saResume.sa_handler = resume_signal_handler;
+  saResume.sa_mask = saSuspend.sa_mask;
 #ifndef KAFFE_BOEHM_GC
-  sigaction( SIG_RESUME, &sigResume, NULL);
+  sigaction( sigResume, &saResume, NULL);
 #endif
 
-  sigInterrupt.sa_flags = flags;
-  sigInterrupt.sa_handler = SIG_IGN;
-  sigemptyset(&sigInterrupt.sa_mask);
-  sigaction( SIG_INTERRUPT, &sigInterrupt, NULL);
+  saInterrupt.sa_flags = flags;
+  saInterrupt.sa_handler = SIG_IGN;
+  sigemptyset(&saInterrupt.sa_mask);
+  sigaction( sigInterrupt, &saInterrupt, NULL);
 
-#if defined(SIG_DUMP)
-  sigDump.sa_flags = flags;
-  sigDump.sa_handler = dump_signal_handler;
-  sigemptyset( &sigDump.sa_mask);
-  sigaction( SIG_DUMP, &sigDump, NULL);
-#endif
+  saDump.sa_flags = flags;
+  saDump.sa_handler = dump_signal_handler;
+  sigemptyset( &saDump.sa_mask);
+  sigaction( sigDump, &saDump, NULL);
 }
+
+/*
+ * Initialize signal numbers to use depending of realtime signal availabilities.
+ *
+ * ORIGINAL NOTE:
+ *
+ * Now it starts to get hackish - we have to pick some signals
+ * for suspend/resume (enter/exitCritSect) which don't interfere
+ * with pthread implementations. Note that we can't rely on when
+ * a suspend signal is delivered, and it's therefore not safe
+ * to mulitplex a sinle signal for both suspend & resume purposes
+ */
+static void
+tInitSignals(void)
+{
+#if !defined(SIGRTMIN)
+#define SIGRTMIN -1
+#define SIGRTMAX -1
+#endif
+
+  if (SIGRTMAX - SIGRTMIN < 7)
+    {
+#if defined(OLD_LINUXTHREADS)
+      sigSuspend = SIGURG;
+      sigResume  = SIGTSTP;
+      sigDump    = SIGXCPU;
+/*
+ * Sneak these signal in from the thread library.
+ */
+      psigRestart = SIGUSR1;
+      psigCancel  = SIGUSR2;
+
+
+#else // OLD_LINUXTHREADS
+
+      sigSuspend  = SIGUSR1;
+      sigResume   = SIGUSR2;
+      sigDump     = SIGURG;
+
+// PSIG_RESTART and PSIG_CANCEL are left undefined.
+      psigRestart = -1;
+      psigCancel  = -1;
+
+#endif
+
+      if (SIGRTMIN < 0)
+	sigInterrupt = SIGCONT;
+    }
+  else
+    {
+      sigSuspend = SIGRTMIN+6;
+      sigResume  = SIGRTMIN+5;
+      sigDump    = SIGURG;
+/*
+ * Sneak these signal in from the thread library.
+ */
+      psigRestart = SIGRTMIN;
+      psigCancel  = SIGRTMIN+1;
+
+      sigInterrupt = SIGRTMIN+2;
+    }
+}
+
 
 /*
  * static init set up of Java-to-pthread priority mapping (pthread prioritiy levels
@@ -444,7 +484,7 @@ tSetupFirstNative(void)
  * alternative to scattered pthread_once() calls
  */
 void
-jthread_init(int pre,
+jthread_init(UNUSED int pre,
         int maxpr, int minpr,
         void *(*_allocator)(size_t),
         void (*_deallocator)(void*),
@@ -458,6 +498,8 @@ jthread_init(int pre,
   thread_malloc = _allocator;
   thread_free = _deallocator;
 
+  tInitSignals();
+
   pthread_key_create( &ntKey, NULL);
   sem_init( &critSem, 0, 0);
 
@@ -467,7 +509,7 @@ jthread_init(int pre,
   tInitSignalHandlers();
 
   sigemptyset( &suspendSet);
-  sigaddset( &suspendSet, SIG_RESUME);
+  sigaddset( &suspendSet, sigResume);
 
   tSetupFirstNative();
 
@@ -475,7 +517,7 @@ jthread_init(int pre,
 }
 
 jthread_t
-jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThread)
+jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned char pri, void* jlThread)
 {
   jthread_t      nt;
   int            oldCancelType;
@@ -524,7 +566,7 @@ void jthread_interrupt(jthread_t tid)
 {
   tid->interrupting = 1;
   /* We need to send some signal to interrupt syscalls. */
-  pthread_kill(tid->tid, SIG_INTERRUPT);
+  pthread_kill(tid->tid, sigInterrupt);
 }
 
 int jthread_is_interrupted(jthread_t jt)
@@ -540,7 +582,7 @@ int jthread_interrupted(jthread_t jt)
   return i;
 }
 
-bool jthread_attach_current_thread (bool daemon)
+bool jthread_attach_current_thread (bool isDaemon)
 {
   jthread_t		nt;
   rlim_t		stackSize;
@@ -569,7 +611,7 @@ bool jthread_attach_current_thread (bool daemon)
 #endif
   detectStackBoundaries(nt, stackSize);
   nt->stackCur     = 0; 
-  nt->daemon       = daemon;
+  nt->daemon       = isDaemon;
 
   /* link everything together */
   nt->tid = pthread_self();
@@ -705,7 +747,7 @@ void* tRun ( void* p )
  */
 
 jthread_t
-jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size_t threadStackSize )
+jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, size_t threadStackSize )
 {
   jthread_t		cur = jthread_current();
   jthread_t		nt;
@@ -728,7 +770,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 
   sp.sched_priority = priorities[pri];
 
-  if ( !daemon ) 
+  if ( !isDaemon ) 
 	nonDaemons++;
 
   if ( cache ) {
@@ -743,7 +785,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	activeThreads = nt;
 
 	nt->data.jlThread = jlThread;
-	nt->daemon = daemon;
+	nt->daemon = isDaemon;
 	nt->func = func;
 	nt->stackCur = 0;
 
@@ -775,7 +817,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	nt->stackMin     = 0;
 	nt->stackMax     = 0;
 	nt->stackCur     = 0;
-	nt->daemon	 = daemon;
+	nt->daemon	 = isDaemon;
 
 	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
 
@@ -947,7 +989,7 @@ jthread_exit ( void )
  * Thread is being finalized - free any held resource.
  */
 void
-jthread_destroy (jthread_t cur)
+jthread_destroy (UNUSED jthread_t cur)
 {
   DBG( JTHREAD, TMSG_SHORT( "finalize ", cur))
 }
@@ -956,12 +998,12 @@ jthread_destroy (jthread_t cur)
 void 
 jthread_sleep (jlong timeout) 
 {
-	struct timespec time;
+	struct timespec ts;
 
-	time.tv_sec  = timeout / 1000;
-	time.tv_nsec = (timeout % 1000) * 1000000;
+	ts.tv_sec  = timeout / 1000;
+	ts.tv_nsec = (timeout % 1000) * 1000000;
 
-	nanosleep (&time, NULL);
+	nanosleep (&ts, NULL);
 }
 
 /***********************************************************************
@@ -1000,7 +1042,7 @@ jthread_setpriority (jthread_t cur, jint prio)
  * SA_ONSTACK / signalstack() in effect
  */
 void
-suspend_signal_handler ( int sig )
+suspend_signal_handler ( UNUSED int sig )
 {
   volatile jthread_t   cur = jthread_current();
 
@@ -1027,7 +1069,7 @@ suspend_signal_handler ( int sig )
 	/* notify the critSect owner that we are now suspending in the handler */
 	sem_post( &critSem);
 
-	/* freeze until we get a subsequent SIG_RESUME */
+	/* freeze until we get a subsequent sigResume */
 	while( cur->suspendState == SS_SUSPENDED )
 		sigwait( &suspendSet, &s);
 
@@ -1046,7 +1088,7 @@ suspend_signal_handler ( int sig )
  * call (i.e. to unblock a preceeding sigwait).
  */
 void
-resume_signal_handler ( int sig )
+resume_signal_handler ( UNUSED int sig )
 {
   /* we don't do anything, here - all the action is in the suspend handler */
 }
@@ -1064,7 +1106,7 @@ resume_signal_handler ( int sig )
 void
 jthread_suspendall (void)
 {
-  int		stat;
+  int		status;
   jthread_t	cur = jthread_current();
   jthread_t	t;
   int		iLockRoot;
@@ -1089,8 +1131,8 @@ jthread_suspendall (void)
 					    t, t->suspendState, t->blockState))
 		t->suspendState = SS_PENDING_SUSPEND;
 
-		if ( (stat = pthread_kill( t->tid, SIG_SUSPEND)) ){
-		  DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, stat))
+		if ( (status = pthread_kill( t->tid, sigSuspend)) ){
+		  DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, status))
 		}
 		else {
 		  /* BAD: Empirical workaround for lost signals (with accumulative syncing)
@@ -1132,7 +1174,7 @@ jthread_unsuspendall (void)
 {
   jthread_t	cur = jthread_current();
   jthread_t	t;
-  int		stat;
+  int		status;
   int		iLockRoot;
 
   if ( !critSection )
@@ -1152,9 +1194,9 @@ jthread_unsuspendall (void)
 				      t, t->suspendState, t->blockState))
 
 		t->suspendState = SS_PENDING_RESUME;
-		stat = pthread_kill( t->tid, SIG_RESUME);
-		if ( stat ) {
-		  DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, stat))
+		status = pthread_kill( t->tid, sigResume);
+		if ( status ) {
+		  DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
 		}
 
 		/* ack wait workaround, see TentercritSect remarks */
@@ -1257,20 +1299,20 @@ jthread_set_blocking (int fd, int blocking)
  */
 void jthread_relaxstack(int yes)
 {
-        if( yes )
-        {
+  if( yes )
+    {
 #if defined(STACK_GROWS_UP)
-                (uintp)jthread_current()->stackMax += STACKREDZONE;
+      (uintp)jthread_current()->stackMax += STACKREDZONE;
 #else
-                (uintp)jthread_current()->stackMin -= STACKREDZONE;
+      (uintp)jthread_current()->stackMin -= STACKREDZONE;
 #endif
-        }
-        else
-        {
+    }
+  else
+    {
 #if defined(STACK_GROWS_UP)
-                (uintp)jthread_current()->stackMax -= STACKREDZONE;
+      (uintp)jthread_current()->stackMax -= STACKREDZONE;
 #else
-                (uintp)jthread_current()->stackMin += STACKREDZONE;
+      (uintp)jthread_current()->stackMin += STACKREDZONE;
 #endif
-        }
+    }
 }
