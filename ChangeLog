@@ -1,5 +1,10 @@
 2004-05-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	Moved UNUSED in front of variables for g++.
+
+2004-05-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/support.h:
 	Fixed compilation problems with g++.
 
