@@ -153,10 +153,10 @@ define_insn(exception_prologue, eprologue_xxx)
 	label* l;
 
 	OUT = 0x89;
-	OUT = 0xC0|(REG_ebp<<3)|REG_esp;
+	OUT = 0xC0|(REG_ebp<<3)|REG_ebx;
 
 	OUT = 0x81;
-	OUT = 0xE8|REG_esp;
+	OUT = 0xE8|REG_ebx;
 
 	/* Remember where the framesize is to go */
 	l = (label*)const_int(1);
@@ -165,12 +165,16 @@ define_insn(exception_prologue, eprologue_xxx)
 	LOUT = 0;
 
 	OUT = 0x81;
-	OUT = 0xE8|REG_esp;
+	OUT = 0xE8|REG_ebx;
 	LOUT = 3*SLOTSIZE;
 
-	debug(("movl ebp,esp\n"));
-	debug(("subl #?,esp\n"));
-	debug(("subl #3*SLOTSIZE,esp\n"));
+	OUT = 0x89;
+	OUT = 0xC0|(REG_ebx<<3)|REG_esp;
+
+	debug(("movl ebp,ebx\n"));
+	debug(("subl #?,ebx\n"));
+	debug(("subl #3*SLOTSIZE,ebx\n"));
+	debug(("movl ebx,esp\n"));
 
 	if (used_ieee_division == true && 0) {
 		OUT = 0x81;
