@@ -170,7 +170,13 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 		break;
 
 	default:
-		postException(einfo, JAVA_LANG(ClassFormatError));
+		postExceptionMessage(einfo,
+				     JAVA_LANG(ClassFormatError),
+				     "%s (Invalid constant reference, %d, "
+				     "expecting class, likely an internal "
+				     "error)",
+				     this->name->data,
+				     tag);
 		return NULL;
 	}
 

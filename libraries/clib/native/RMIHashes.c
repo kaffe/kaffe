@@ -143,6 +143,8 @@ kaffe_rmi_server_RMIHashes_getInterfaceHash(struct Hjava_lang_Class* clazz)
 	SHA1Update(&c, (char*)&one, sizeof(one));
 
 	for (i = 0; i < nm; i++) {
+		Method *emeth;
+		
 		m = base[i];
 		if (m == 0) {
 			continue;
@@ -153,10 +155,15 @@ kaffe_rmi_server_RMIHashes_getInterfaceHash(struct Hjava_lang_Class* clazz)
 		if (m->ndeclared_exceptions == 0) {
 			continue;
 		}
-		en = m->ndeclared_exceptions;
+		if (m->ndeclared_exceptions == -1) {
+			emeth = m->declared_exceptions_u.remote_exceptions;
+		} else {
+			emeth = m;
+		}
+		en = emeth->ndeclared_exceptions;
 		ebase = KMALLOC(sizeof(Hjava_lang_Class*) * en);
 		for (j = 0; j < en; j++) {
-			ebase[j] = getClass(m->declared_exceptions[j], clazz, &einfo);
+			ebase[j] = getClass(emeth->declared_exceptions[j], clazz, &einfo);
 		}
 		qsort(ebase, en, sizeof(Hjava_lang_Class*), compareClasses);
 

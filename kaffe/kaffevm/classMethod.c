@@ -588,6 +588,9 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 		utf8ConstAddRef(imeth->name);
 		utf8ConstAddRef(imeth->parsed_sig->signature);
 		new_methods[index] = *imeth;
+		new_methods[index].ndeclared_exceptions = -1;
+		new_methods[index].declared_exceptions_u.remote_exceptions =
+			imeth;
 		new_methods[index].class = cl;
 		retval = 1;
 	}

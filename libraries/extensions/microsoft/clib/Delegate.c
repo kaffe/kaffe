@@ -68,6 +68,10 @@ makeExceptions(Method* meth)
 	HArrayOfObject* array;
 	Hjava_lang_Class** ptr;
 
+	if( meth->ndeclared_exceptions == -1 )
+	{
+		meth = meth->declared_exceptions_u.remote_exceptions;
+	}
 	nr = meth->ndeclared_exceptions;
 	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];

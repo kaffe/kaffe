@@ -219,8 +219,12 @@ typedef struct _methods {
 	Hjava_lang_Class*	class;
 	struct _lineNumbers*	lines;
 	struct _jexception*	exception_table;
-	u2			ndeclared_exceptions;
-	constIndex*		declared_exceptions;
+	int			ndeclared_exceptions;
+	union {
+		constIndex*		local_exceptions;
+		struct _methods*	remote_exceptions;
+	} declared_exceptions_u;
+#define declared_exceptions declared_exceptions_u.local_exceptions
 	int			framesize;	/* JIT only: size of frame */
 
 #if defined(KAFFE_PROFILER)

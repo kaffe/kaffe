@@ -122,7 +122,8 @@ DBG(CLASSGC,
                         utf8ConstRelease(METHOD_SIG(m));
                         KFREE(METHOD_PSIG(m));
                         KFREE(m->lines);
-                        KFREE(m->declared_exceptions);
+			if( m->ndeclared_exceptions != -1 )
+				KFREE(m->declared_exceptions);
                         KFREE(m->exception_table);
                         KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
 
