@@ -65,11 +65,11 @@ main(int argc, char* argv[])
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
 		cp = getenv(CLASSPATH2);
-		if (cp == 0) {
 #if defined(DEFAULT_CLASSPATH)
+		if (cp == 0) {
 			cp = DEFAULT_CLASSPATH;
-#endif
 		}
+#endif
 	}
 	vmargs.classpath = cp;
 
