@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-20  Mark Wielaard  <mark@klomp.org>
+
+        * java/text/SimpleDateFormat.java
+        (SimpleDateFormat(String, DateFormatSymbols)): Throw
+        NullPointerException when formatData is null.
+
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-19  Archie Cobbs  <archie@dellroad.org>
 
         * java/lang/Throwable.java: simplify initializing cause in constructor

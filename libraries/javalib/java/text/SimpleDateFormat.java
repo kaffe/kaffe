@@ -430,7 +430,7 @@ public class SimpleDateFormat extends DateFormat
    *
    * @param pattern the non-localized pattern to use.
    * @param formatData the formatting symbols to use.
-   * @throws NullPointerException if the pattern is null.
+   * @throws NullPointerException if the pattern or formatData is null.
    * @throws IllegalArgumentException if the pattern is invalid.
    */
   public SimpleDateFormat(String pattern, DateFormatSymbols formatData)
@@ -439,6 +439,8 @@ public class SimpleDateFormat extends DateFormat
     calendar = new GregorianCalendar();
     computeCenturyStart ();
     tokens = new ArrayList();
+    if (formatData == null)
+      throw new NullPointerException("formatData");
     this.formatData = formatData;
     compileFormat(pattern);
     this.pattern = pattern;
