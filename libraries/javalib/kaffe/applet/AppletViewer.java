@@ -1,3 +1,38 @@
+package kaffe.applet;
+
+import java.applet.Applet;
+import java.applet.AppletContext;
+import java.applet.AppletStub;
+import java.applet.AudioClip;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import kaffe.management.Classpath;
+
 /**
  * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -7,62 +42,27 @@
  *
  * @author J.Mehlitz
  */
-
-package kaffe.applet;
-
-import java.applet.Applet;
-import java.applet.AppletContext;
-import java.applet.AppletStub;
-import java.applet.AudioClip;
-import java.awt.Frame;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Label;
-import java.awt.Insets;
-import java.awt.Panel;
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileReader;
-import java.io.StreamTokenizer;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.Hashtable;
-
 public class AppletViewer
   extends Frame
   implements AppletStub, AppletContext, ActionListener, WindowListener
 {
 	Applet app;
 	Vector apps = new Vector();
-	URL base;
-	String codebase;
+	String codebase = "";
+	String archive = "";
 	String code;
 	Hashtable paramDict = new Hashtable();
 	Panel client = new Panel();
 	Label state = new Label();
+	Dimension appletSize = new Dimension( 200, 200);
 
 public AppletViewer ( File html) {
-	
 	super( "AppletViewer: " + html);
+	
 	setLayout( null);
-
 	setMenus();
-	add( state);
+	add( "South", state);
 	addWindowListener(this);
-
-	Dimension dim = new Dimension( 200, 200);	
 
 	try {
 		int ttype;
@@ -70,29 +70,47 @@ public AppletViewer ( File html) {
 		StreamTokenizer st = new StreamTokenizer( fs);
 
 		st.lowerCaseMode( true);
+		st.ordinaryChar('/');
 
 		while ( (ttype = st.nextToken()) != st.TT_EOF ) {
 			if ( ttype == '<' ){
 				ttype = st.nextToken();
 				if ( ttype == st.TT_WORD ) {
-					if ( st.sval.equals( "applet") )
-						parseApplet( st, dim);
-					else if ( st.sval.equals( "param") )
-						parseParam( st);
+					if ( st.sval.equals("applet") ) {
+						parseApplet( st);
+					}
+					else if ( st.sval.equals( "param") ) {
+						parseParam(st);
+					}
 				}
 			}
 		}
 
+		// Add both the codebase and archive into the classpath.
+		if (!codebase.equals("")) {
+			Classpath.add(codebase);
+		}
+		if (!archive.equals("")) {
+			Classpath.add(archive);
+		}
+
 		fs.close();
-// System.out.println( code + " " + dim);
-
-		Class c = Class.forName( code);
-
+		Class c = Class.forName(code);
 		app = (Applet) c.newInstance();
 		app.setStub( this);
 		apps.addElement( app);
+
 		add( app);
 
+		appletResize( appletSize.width, appletSize.height);
+		addNotify(); // a hack, in case the applet creates Graphics during init (no joke)
+
+		app.init();
+		app.validate();
+		
+		app.start();
+
+		setVisible( true);		
 		showStatus( "applet started");
 	}
 	catch ( Exception e) {
@@ -100,67 +118,153 @@ public AppletViewer ( File html) {
 		showStatus( "cannot start applet");
 		e.printStackTrace();
 	}
-
-	getFrameDim( dim);
-	setBounds( 0, 0, dim.width, dim.height);
-
-	init();
-	setVisible( true);
 }
 
-public void doLayout() {
+public void actionPerformed ( ActionEvent e ) {
+	String cmd = e.getActionCommand();
+	if ( "Quit".equals( cmd)) {
+		app.stop();
+		app.destroy();
+		dispose();
+	}
+	else if ( "Stop".equals( cmd)) {
+		app.stop();
+		showStatus( "applet stopped");
+	}
+	else if ( "Start".equals( cmd)) {
+		app.start();
+		showStatus( "applet started");
+	}
+}
+
+public void appletResize ( int width, int height ) {
 	Insets in = getInsets();
-	Dimension d = getSize();
-	int sh = getStateHeight();
+	int w, h;
+	
+	w = width + in.left + in.right + 20;
+	h = height + in.top + in.bottom + getStateHeight() + 40;
 
-	if ( app != null )
-		app.setBounds( in.left, in.top, d.width - in.left - in.right, d.height - in.top - in.bottom - sh);
-	state.setBounds( in.left, d.height - in.bottom - sh, d.width - in.left - in.right, sh);
+	appletSize.setSize( width, height);
 
+	setBounds( 100, 100, w, h);
+}
+
+public void doLayout () {
+	Insets     in = getInsets();
+	Dimension  d = getSize();
+	int        sh = getStateHeight();
+	
 	super.doLayout();
+	app.setBounds( in.left + 10, in.top + 10, appletSize.width, appletSize.height);
+	
+	state.setBounds( in.left, d.height - in.bottom - sh, d.width - (in.left+in.right), sh);
 }
 
-int getStateHeight() {
-	return 2 * state.getFontMetrics( state.getFont()).getHeight();
+public Applet getApplet ( String name) {
+	return app;
 }
 
-void getFrameDim( Dimension appDim) {
-	Insets in = getInsets();
-	appDim.width += in.left + in.right;
-	appDim.height += in.top + in.bottom + getStateHeight();
+public AppletContext getAppletContext () {
+	return this;
 }
 
-void parseApplet( StreamTokenizer st, Dimension dim) throws IOException {
+public Enumeration getApplets () {
+	return apps.elements();
+}
+
+public AudioClip getAudioClip ( URL url) {
+	return null;
+}
+
+public URL getCodeBase () {
+	try {
+		return (new URL(codebase));
+	}
+	catch ( MalformedURLException _ ) {
+		return (null);
+	}
+}
+
+public URL getDocumentBase () {
+	return (getCodeBase());
+}
+
+public Image getImage ( URL url) {
+	return Toolkit.getDefaultToolkit().getImage( url );
+}
+
+public String getParameter ( String name) {
+	String key = name.toLowerCase();
+	String val = (String)paramDict.get( key);
+//System.out.println( "get: " + key + " " + val);
+	return val;
+}
+
+private int getStateHeight() {
+        return 2 * state.getFontMetrics( state.getFont()).getHeight();
+}
+
+public boolean isActive () {
+	return true;
+}
+
+public static void main ( String[] args) {
+	if ( args.length == 0)
+		System.out.println( "usage: AppletViewer <html file>");
+	else {
+		File f = new File( args[0] );
+		if ( f.exists() )
+			new AppletViewer( f);
+		else
+			System.out.println( "file " + f + " does not exist");
+	}
+}
+
+void parseApplet( StreamTokenizer st ) throws IOException {
 
 	while ( st.nextToken() != '>' ) {
-		if ( st.sval.equals( "codebase") ) {
-			st.lowerCaseMode( false);
-			st.nextToken();
-			st.nextToken();
-			codebase = new String( st.sval);
-			st.lowerCaseMode( true);
-		}
-		else if ( st.sval.equals( "code") ) {
-			st.lowerCaseMode( false);
-			st.nextToken();
-			st.nextToken();
-			code = new String( st.sval);
-			if ( code.endsWith( ".class") )
-				code = code.substring( 0, code.length() - 6);
-			st.lowerCaseMode( true);
-		}
-		else if ( st.sval.equals( "height") ) {
-			st.nextToken();
-			st.nextToken();
-			dim.height = (int)st.nval;
-		}
-		else if ( st.sval.equals( "width") ) {
-			st.nextToken();
-			st.nextToken();
-			dim.width = (int)st.nval;
+		switch (st.ttype) {
+		case StreamTokenizer.TT_WORD:
+			if ( st.sval.equals("codebase") ) {
+				st.lowerCaseMode( false);
+				st.nextToken();
+				st.nextToken();
+				codebase = new String( st.sval);
+				st.lowerCaseMode( true);
+			}
+			else if ( st.sval.equals("archive") ) {
+				st.lowerCaseMode(false);
+				st.nextToken();
+				st.nextToken();
+				archive = new String( st.sval);
+				st.lowerCaseMode( true);
+			}
+			else if ( st.sval.equals( "code") ) {
+				st.lowerCaseMode( false);
+				st.nextToken();
+				st.nextToken();
+				code = new String( st.sval);
+				if (code.endsWith( ".class")) {
+					code = code.substring(0, code.length() - 6);
+				}
+				st.lowerCaseMode( true);
+			}
+			else if ( st.sval.equals( "height") ) {
+				st.nextToken();
+				st.nextToken();
+				appletSize.height = (int)st.nval;
+			}
+			else if ( st.sval.equals( "width") ) {
+				st.nextToken();
+				st.nextToken();
+				appletSize.width = (int)st.nval;
+			}
+			break;
+
+		default:
+			break;
 		}
 	}
-
 }
 
 void parseParam( StreamTokenizer st) throws IOException {
@@ -190,88 +294,6 @@ void parseParam( StreamTokenizer st) throws IOException {
 		paramDict.put( key, val);
 	}
 }
-
-public void appletResize ( int width, int height) {
-	Dimension d = new Dimension( width, height);
-	getFrameDim( d);
-	setSize( d);
-}
-
-public Applet getApplet ( String name) {
-	return app;
-}
-
-public AppletContext getAppletContext () {
-	return this;
-}
-
-public Enumeration getApplets () {
-	return apps.elements();
-}
-
-public AudioClip getAudioClip ( URL url) {
-	return null;
-}
-
-public URL getCodeBase () {
-	return base;
-}
-
-public URL getDocumentBase () {
-	return base;
-}
-
-public Image getImage ( URL url) {
-	return Toolkit.getDefaultToolkit().getImage( url );
-}
-
-public String getParameter ( String name) {
-	String key = name.toLowerCase();
-	String val = (String)paramDict.get( key);
-//System.out.println( "get: " + key + " " + val);
-	return val;
-}
-
-void init(){
-	try {
-		if ( (codebase == null) || (codebase.equals( ".") ) ){
-			String curDir = System.getProperty( "user.dir");
-			base = new URL( "file", "localhost", curDir + File.separator );
-		}
-		else {
-			base = new URL( codebase);
-		}
-	}
-	catch ( MalformedURLException _ ) {
-		showStatus( "invalid codebase: " + codebase);
-	}
-
-	try {
-		app.init();
-		app.start();
-	}
-	catch( NullPointerException _) {
-		showStatus( "invalid code");
-	}
-
-}
-
-public boolean isActive () {
-	return true;
-}
-
-public static void main ( String[] args) {
-	if ( args.length == 0)
-		System.out.println( "usage: AppletViewer <html file>");
-	else {
-		File f = new File( args[0] );
-		if ( f.exists() )
-			new AppletViewer( f);
-		else
-			System.out.println( "file " + f + " does not exist");
-	}
-}	
-
 
 void setMenus () {
 	MenuBar mb = new MenuBar();
@@ -313,27 +335,19 @@ public void showStatus ( String str) {
 	state.setText( " " + str + " " );
 }
 
-public void actionPerformed ( ActionEvent e ) {
-	String cmd = e.getActionCommand();
-	if ( "Quit".equals( cmd)) {
-		app.stop();
-		app.destroy();
-		dispose();
-	}
-	else if ( "Stop".equals( cmd)) {
-		app.stop();
-		showStatus( "applet stopped");
-	}
-	else if ( "Start".equals( cmd)) {
-		app.start();
-		showStatus( "applet started");
-	}
+void start() {
 }
 
 public void windowActivated ( WindowEvent evt ) {
 }
 
 public void windowClosed ( WindowEvent evt ) {
+}
+
+public void windowClosing(WindowEvent e) {
+	app.stop();
+	app.destroy();
+	dispose();
 }
 
 public void windowDeactivated ( WindowEvent evt ) {
@@ -347,11 +361,4 @@ public void windowIconified ( WindowEvent evt ) {
 
 public void windowOpened ( WindowEvent evt ) {
 }
-
-public void windowClosing(WindowEvent e) {
-	app.stop();
-	app.destroy();
-	dispose();
-}
-
 }
