@@ -22,6 +22,23 @@
 
 #define	CONTEXT_SWITCH(F,T)	sparcLinuxContextSwitch(F, T)
 
+/**/
+/* Extra exception handling information. */
+/**/
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif 
+#if defined(HAVE_SIGCONTEXT_H)
+#include <sigcontext.h> 
+#endif
+#include <asm/ptrace.h>
+
+/* Function prototype for signal handlers */
+#define	SIGNAL_ARGS(sig, sc) int sig, struct sigcontext* sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#define SIGNAL_PC(scp) ((scp)->si_regs.pc)
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -1,5 +1,20 @@
 2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/sparc/bsdi3/md.h, config/sparc/linux/md.h,
+	config/sparc/netbsd1/md.h, config/sparc/nextstep3/md.h,
+	config/sparc/openbsd2/md.h, config/sparc/solaris2/md.h,
+	config/sparc/sunos4/md.h, config/sparc/uxpds/md.h,
+	config/sparc/bsdi3/jit-md.h, config/sparc/linux/jit-md.h,
+	config/sparc/netbsd1/jit-md.h, config/sparc/nextstep3/jit-md.h,
+	config/sparc/openbsd2/jit-md.h, config/sparc/solaris2/jit-md.h,
+	config/sparc/sunos4/jit-md.h, config/sparc/uxpds/jit-md.h:
+	Defined SIGNAL_ARGS using informations from EXCEPTIONPROTO.
+	Redefined EXCEPTIONPROTO as SIGNAL_ARGS(sig, ctx)
+	Moved some code from jit-md.h to md.h and defined
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC.
+
+2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/i386/beos/md.h, config/i386/bsdi/md.h,
 	config/i386/cygwin32/md.h, config/i386/dgux/md.h,
 	config/i386/freebsd2/md.h, config/i386/gnu/md.h,
