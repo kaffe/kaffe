@@ -408,6 +408,7 @@ Klasses_jar_SRCS = \
 	$(gnu_classpath_tools_SRCS) \
 	$(gnu_classpath_tools_javap_SRCS) \
 	$(gnu_classpath_tools_native2ascii_SRCS) \
+	$(gnu_classpath_tools_rmi_rmic_SRCS) \
 	$(gnu_crypto_SRCS) \
 	$(gnu_crypto_assembly_SRCS) \
 	$(gnu_crypto_auth_SRCS) \
@@ -490,7 +491,6 @@ Klasses_jar_SRCS = \
 	$(gnu_java_rmi_SRCS) \
 	$(gnu_java_rmi_dgc_SRCS) \
 	$(gnu_java_rmi_registry_SRCS) \
-	$(gnu_java_rmi_rmic_SRCS) \
 	$(gnu_java_rmi_server_SRCS) \
 	$(gnu_java_security_SRCS) \
 	$(gnu_java_security_action_SRCS) \
@@ -761,6 +761,16 @@ gnu_classpath_tools_javap_SRCS = \
 
 gnu_classpath_tools_native2ascii_SRCS = \
 	gnu/classpath/tools/native2ascii/Native2ASCII.java
+
+gnu_classpath_tools_rmi_rmic_SRCS = \
+	gnu/classpath/tools/rmi/rmic/Compile_gcj.java \
+	gnu/classpath/tools/rmi/rmic/Compile_jikes.java \
+	gnu/classpath/tools/rmi/rmic/Compile_kjc.java \
+	gnu/classpath/tools/rmi/rmic/Compiler.java \
+	gnu/classpath/tools/rmi/rmic/CompilerProcess.java \
+	gnu/classpath/tools/rmi/rmic/RMIC.java \
+	gnu/classpath/tools/rmi/rmic/RMICException.java \
+	gnu/classpath/tools/rmi/rmic/TabbedWriter.java
 
 gnu_crypto_SRCS = \
 	gnu/crypto/Properties.java \
@@ -1978,16 +1988,6 @@ gnu_java_rmi_registry_SRCS = \
 	gnu/java/rmi/registry/RegistryImpl.java \
 	gnu/java/rmi/registry/RegistryImpl_Skel.java \
 	gnu/java/rmi/registry/RegistryImpl_Stub.java
-
-gnu_java_rmi_rmic_SRCS = \
-	gnu/java/rmi/rmic/Compile_gcj.java \
-	gnu/java/rmi/rmic/Compile_jikes.java \
-	gnu/java/rmi/rmic/Compile_kjc.java \
-	gnu/java/rmi/rmic/Compiler.java \
-	gnu/java/rmi/rmic/CompilerProcess.java \
-	gnu/java/rmi/rmic/RMIC.java \
-	gnu/java/rmi/rmic/RMICException.java \
-	gnu/java/rmi/rmic/TabbedWriter.java
 
 gnu_java_rmi_server_SRCS = \
 	gnu/java/rmi/server/ConnectionRunnerPool.java \

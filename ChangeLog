@@ -1,3 +1,33 @@
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+        * kaffe/scripts/rmic.in:
+	Use gnu.classpath.tools.rmi.rmic.RMIC.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * libraries/javalib/gnu/classpath/tools/rmi/rmic/Compile_gcj.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/Compile_jikes.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/Compile_kjc.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/Compiler.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/CompilerProcess.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/RMIC.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/RMICException.java,
+        libraries/javalib/gnu/classpath/tools/rmi/rmic/TabbedWriter.java:
+	New files, taken from GNU Classpath tools project.
+
+        * libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compile_kjc.java,
+        libraries/javalib/gnu/java/rmi/rmic/Compiler.java,
+        libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+        libraries/javalib/gnu/java/rmi/rmic/RMICException.java,
+        libraries/javalib/gnu/java/rmi/rmic/TabbedWriter.java:
+	Removed.
+
 2005-03-08  Jim Huang  <jserv@kaffe.org>
 
 	* WHATSNEW:
