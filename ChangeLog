@@ -1,5 +1,8 @@
 1999-06-01  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* Makefile.am (BUILD_ENVIRONMENT-make): Quote PATHSEP in
+	KAFFELIBRARYPATH.
+
 	* FAQ/FAQ.automake: New automake snapshot, that supports disabling 
 	dependency tracking.
 	* aclocal.m4, configure, */Makefile: Rebuilt.
