@@ -50,7 +50,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.263 1999/02/08 22:01:29)"
+TIMESTAMP=" (1.270 1999/02/13 15:42:34)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -431,14 +431,14 @@ compiler."
       # All platforms use -DPIC, to notify preprocessed assembler code.
       command="$base_compile $pic_flag -DPIC $srcfile"
       if test "$build_old_libs" = yes; then
-        lo_libobj="$libobj"
+	lo_libobj="$libobj"
 	dir=`$echo "X$libobj" | $Xsed -e 's%/[^/]*$%%'`
 	if test "X$dir" = "X$libobj"; then
 	  dir="$objdir"
 	else
 	  dir="$dir/$objdir"
 	fi
-        libobj="$dir/"`$echo "X$libobj" | $Xsed -e 's%^.*/%%'`
+	libobj="$dir/"`$echo "X$libobj" | $Xsed -e 's%^.*/%%'`
 
 	if test -d "$dir"; then
 	  $show "$rm $libobj"
@@ -501,7 +501,7 @@ compiler."
       # If we have no pic_flag, then copy the object into place and finish.
       if test -z "$pic_flag" && test "$build_old_libs" = yes; then
 	# Rename the .lo from within objdir to obj
-        if test -f $obj; then
+	if test -f $obj; then
 	  $show $rm $obj
 	  $run $rm $obj
 	fi
@@ -580,8 +580,8 @@ compiler."
       # Create an invalid libtool object if no PIC, so that we do not
       # accidentally link it into a program.
       if test "$build_libtool_libs" != yes; then
-        $show "echo timestamp > $libobj"
-        $run eval "echo timestamp > \$libobj" || exit $?
+	$show "echo timestamp > $libobj"
+	$run eval "echo timestamp > \$libobj" || exit $?
       else
 	# Move the .lo from within objdir
 	$show "$mv $libobj $lo_libobj"
@@ -748,6 +748,7 @@ compiler."
 	    exit 1
 	  fi
 	  prev=
+	  continue
 	  ;;
 	release)
 	  release="-$arg"
@@ -1292,11 +1293,6 @@ compiler."
       exit 1
     fi
 
-    if test -n "$export_symbols" && test "$module" = yes; then
-      $echo "$modename: \`-export-symbols' is not supported for modules"
-      exit 1
-    fi
-    
     oldlibs=
     # calculate the name of the file, without its directory
     outputname=`$echo "X$output" | $Xsed -e 's%^.*/%%'`
@@ -1390,8 +1386,8 @@ compiler."
 
       # How the heck are we supposed to write a wrapper for a shared library?
       if test -n "$link_against_libtool_libs"; then
-      	 $echo "$modename: error: cannot link shared libraries into libtool libraries" 1>&2
-      	 exit 1
+	 $echo "$modename: error: cannot link shared libraries into libtool libraries" 1>&2
+	 exit 1
       fi
 
       if test -n "$dlfiles$dlprefiles"; then
@@ -1716,14 +1712,14 @@ EOF
 		      # but so what?
 		      potlib="$potent_lib"
 		      while test -h "$potlib" 2>/dev/null; do
-		        potliblink=`ls -ld $potlib | sed 's/.* -> //'`
+			potliblink=`ls -ld $potlib | sed 's/.* -> //'`
 			case "$potliblink" in
 			/*) potlib="$potliblink";;
 			*) potlib=`$echo "X$potlib" \
 				   | $Xsed -e 's,[^/]*$,,'`"$potliblink";;
 			esac
 		      done
-		      if eval $file_magic_command \"\$potlib\" \
+		      if eval $file_magic_cmd \"\$potlib\" \
 			 | sed '11,$d' \
 			 | egrep "$file_magic_regex" > /dev/null; then
 			newdeplibs="$newdeplibs $a_deplib"
@@ -1822,13 +1818,13 @@ EOF
 
 	# Ensure that we have .o objects for linkers which dislike .lo
 	# (e.g. aix) incase we are running --disable-static
-        for obj in $libobjs; do
-          oldobj=`echo $obj | $Xsed -e "$lo2o"`
-          test -f $oldobj || ${LN_S} $obj $oldobj
-        done
+	for obj in $libobjs; do
+	  oldobj=`echo $obj | $Xsed -e "$lo2o"`
+	  test -f $oldobj || ${LN_S} $obj $oldobj
+	done
 
 	# Use standard objects if they are pic
-        test -z "$pic_flag" && libobjs=`$echo "X$libobjs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
+	test -z "$pic_flag" && libobjs=`$echo "X$libobjs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 
 	if test -n "$whole_archive_flag_spec"; then
 	  if test -n "$convenience"; then
@@ -1856,9 +1852,25 @@ EOF
 	  done
 	fi
 
+	if test "$thread_safe" = yes && test -n "$thread_safe_flag_spec"; then
+	  eval flag=\"$thread_safe_flag_spec\"
+
+	  linkopts="$linkopts $flag"
+	fi
+        
+	# Prepare the list of exported symbols
+	if test "$always_export_symbols" = yes && test -z "$export_symbols"; then
+	  export_symbols="$objdir/$libname.exp"
+	  $run $rm $export_symbols
+	  $run eval "$export_symbols_cmd"
+	fi
+	if test -n "$include_expsyms"; then
+	  $run $echo "X$include_expsyms" | $SP2NL >> $export_symbols
+	fi
+
 	# Do each of the archive commands.
-	if test -n "$export_symbols" && test -n "$archive_sym_cmds"; then
-	  eval cmds=\"$archive_sym_cmds\"
+	if test -n "$export_symbols" && test -n "$archive_expsym_cmds"; then
+	  eval cmds=\"$archive_expsym_cmds\"
 	else
 	  eval cmds=\"$archive_cmds\"
 	fi
@@ -2086,11 +2098,6 @@ EOF
 	case "$dlsyms" in
 	"") ;;
 	*.c)
-	  if test "$export_dynamic" = yes && test -z "$export_symbols"; then
-	    # Add our own program objects to the preloaded list.
-	    dlprefiles=`$echo "X$objs $dlprefiles" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
-	  fi
-
 	  # Discover the nlist of each of the dlfiles.
 	  nlist="$objdir/${output}.nm"
 
@@ -2123,14 +2130,27 @@ extern \"C\" {
 /* External symbol declarations for the compiler. */\
 "
 
-	  if test "$export_dynamic" = yes && test -n "$export_symbols"; then
-	    sed -e 's/^\(.*\)/\1 \1/' < "$export_symbols" > "$nlist"
+	  if test "$export_dynamic" = yes; then
+	    if test -n "$export_symbols"; then
+	      $run eval 'sed -e "s/^\(.*\)/\1 \1/" < "$export_symbols" > "$nlist"'
+	    else
+	      # Add our own program objects to the preloaded list.
+	      progfiles=`$echo "X$objs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
+	      for arg in $progfiles; do
+		$show "extracting global C symbols from \`$arg'"
+		$run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
+	      done
+	    fi
 	  fi
 
 	  for arg in $dlprefiles; do
 	    $show "extracting global C symbols from \`$arg'"
 	    $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
 	  done
+
+	  if test -n "$exclude_expsyms"; then
+	    : # TODO: remove symbols from $nlist
+	  fi
 
 	  if test -z "$run"; then
 	    # Make sure we have at least an empty file.
@@ -2169,10 +2189,27 @@ lt_preloaded_symbols[] =
 {\
 "
 
-	    if test "$export_dynamic" = yes && test -n "$export_symbols"; then
-	      echo >> "$output_objdir/$dlsyms" "\
+	    # First entry is always the program itself
+	    echo >> "$output_objdir/$dlsyms" "\
   {\"${output}\", (lt_ptr_t) 0},"
-	      sed 's/^\(.*\)/  {"\1", (lt_ptr_t) \&\1},/' < "$export_symbols" >> "$output_objdir/$dlsyms"
+
+	    if test "$export_dynamic" = yes; then
+	      if test -n "$export_symbols"; then
+		sed 's/^\(.*\)/  {"\1", (lt_ptr_t) \&\1},/' < "$export_symbols" >> "$output_objdir/$dlsyms"
+	      else
+		$rm "$nlist"
+		for arg in $progfiles; do
+		  eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
+		done
+		if test -n "$exclude_expsyms"; then
+		  : # TODO: remove symbols from $nlist
+		fi
+		if test -f "$nlist"; then
+		  sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$nlist" >> "$output_objdir/$dlsyms"
+		else
+		  echo '/* NONE */' >> "$output_objdir/$dlsyms"
+		fi
+	      fi
 	    fi
 
 	    for arg in $dlprefiles; do
@@ -2181,6 +2218,9 @@ lt_preloaded_symbols[] =
   {\"$name\", (lt_ptr_t) 0},"
 	      eval "$NM $arg | $global_symbol_pipe > '$nlist'"
 
+	      if test -n "$exclude_expsyms"; then
+	        : # TODO: remove symbols from $nlist
+	      fi
 	      if test -f "$nlist"; then
 		sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$nlist" >> "$output_objdir/$dlsyms"
 	      else
@@ -2284,7 +2324,7 @@ static const void *lt_preloaded_setup() {
       fi
 
       if test -n "$runpath_var"; then
-        if test -n "$perm_rpath"; then
+	if test -n "$perm_rpath"; then
 	  # We should set the runpath_var.
 	  rpath=
 	  for dir in $perm_rpath; do
@@ -2292,7 +2332,7 @@ static const void *lt_preloaded_setup() {
 	  done
 	  compile_command="$runpath_var=\"$rpath\$$runpath_var\" $compile_command"
 	fi
-        if test -n "$finalize_perm_rpath"; then
+	if test -n "$finalize_perm_rpath"; then
 	  # We should set the runpath_var.
 	  rpath=
 	  for dir in $finalize_perm_rpath; do
@@ -2579,6 +2619,10 @@ installed=no
 # Directory that this library needs to be installed in:
 libdir='$install_libdir'\
 "
+
+	$rm "$output_objdir/$outputname"i
+	sed 's/^installed=no$/installed=yes/' \
+	  < "$output" > "$output_objdir/$outputname"i || exit 1
       fi
 
       # Do a symbolic link so that the libtool archive can be found in
@@ -2826,13 +2870,14 @@ libdir='$install_libdir'\
 	# Install the pseudo-library for information purposes.
 	name=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
 	instname="$dir/$name"i
-	$show "Creating $instname"
-	$rm "$instname"
-	sed 's/^installed=no$/installed=yes/' "$file" > "$instname"
+	if test ! -f "$instname"; then
+	  # Just in case it was removed...
+	  $show "Creating $instname"
+	  $rm "$instname"
+	  sed 's/^installed=no$/installed=yes/' "$file" > "$instname"
+	fi
 	$show "$install_prog $instname $destdir/$name"
 	$run eval "$install_prog $instname $destdir/$name" || exit $?
-	$show "$rm $instname"
-	$rm "$instname"
 
 	# Maybe install the static library, too.
 	test -n "$old_library" && staticlibs="$staticlibs $dir/$old_library"

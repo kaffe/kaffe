@@ -2,6 +2,7 @@ dnl Process this file with autoconf to create configure.
 dnl Initialize the libltdl package.
 AC_INIT(ltdl.c)
 AM_INIT_AUTOMAKE(libltdl,1.0,-)
+AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE
 
@@ -43,7 +44,8 @@ libltdl_cv_shlibext=`cat conftest`
 rm -f conftest
 ])
 if test -n "$libltdl_cv_shlibext"; then
-  AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext")
+  AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext",
+    [Define to the extension used for shared libraries, say, ".so". ])
 fi
 
 AC_CACHE_CHECK([which variable specifies run-time library path],
@@ -59,7 +61,8 @@ libltdl_cv_shlibpath_var=`cat conftest`
 rm -f conftest
 ])
 if test -n "$libltdl_cv_shlibpath_var"; then
-  AC_DEFINE_UNQUOTED(LTDL_SHLIBPATH_VAR, "$libltdl_cv_shlibpath_var")
+  AC_DEFINE_UNQUOTED(LTDL_SHLIBPATH_VAR, "$libltdl_cv_shlibpath_var",
+    [Define to the name of the environment variable that determines the dynamic library search path. ])
 fi
 
 AC_CACHE_CHECK([for objdir],
@@ -75,7 +78,8 @@ libltdl_cv_objdir=`cat conftest`
 rm -f conftest
 ])
 test -z "$libltdl_cv_objdir" && libltdl_cv_objdir=".libs"
-AC_DEFINE_UNQUOTED(LTDL_OBJDIR, "$libltdl_cv_objdir/")
+AC_DEFINE_UNQUOTED(LTDL_OBJDIR, "$libltdl_cv_objdir/",
+  [Define to the sub-directory in which libtool stores uninstalled libraries. ])
 
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h)
@@ -99,15 +103,22 @@ AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
   rm -f conftest
 ])
 if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
-  AC_DEFINE(HAVE_PRELOADED_SYMBOLS)
+  AC_DEFINE(HAVE_PRELOADED_SYMBOLS, 1,
+    [Define if libtool can extract symbol lists from object files. ])
 fi
 
 test_dlerror=no
 LIBADD_DL=
-AC_CHECK_FUNCS(dlopen, [AC_DEFINE(HAVE_LIBDL) test_dlerror=yes],
-  [AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL) LIBADD_DL="-ldl" test_dlerror=yes],
-    [AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD) LIBADD_DL="-ldld"],
-      [AC_CHECK_FUNCS(shl_load, AC_DEFINE(HAVE_SHL_LOAD))]
+AC_CHECK_FUNCS(dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
+			  [Define if you have the libdl library or equivalent. ]) test_dlerror=yes],
+  [AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
+			       [Define if you have the libdl library. ]) dnl
+			     LIBADD_DL="-ldl" test_dlerror=yes],
+    [AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1,
+				    [Define if you have the GNU dld library. ]) dnl
+				  LIBADD_DL="-ldld"],
+      [AC_CHECK_FUNCS(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1,
+				   [Define if you have the shl_load function. ])])]
     )]
   )]
 )
@@ -140,7 +151,8 @@ main() { void *self, *ptr1, *ptr2; self=dlopen(0,RTLD_LAZY);
 fi
 
 if test x"$libltdl_cv_need_uscore" = xyes; then
-  AC_DEFINE(NEED_USCORE)
+  AC_DEFINE(NEED_USCORE, 1,
+    [Define if dlsym() requires a leading underscode in symbol names. ])
 fi
 
 dnl Output the makefile
