@@ -1,3 +1,13 @@
+2004-02-09  Jim Pick  <jim@kaffe.org>
+
+        (On Release 1.1.4 Branch)
+
+	* README,
+	RELEASE-NOTES,
+	WHATSNEW:
+	Updated version number in docs.  Update WHATSNEW
+	(still working on it)
+	
 2004-02-09  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/io/ObjectInputStream.java

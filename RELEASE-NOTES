@@ -1,6 +1,26 @@
-Release Notes for 1.1.x-CVS
-===========================
+Release Notes for 1.1.4
+=======================
 
-This is a placeholder for the RELEASE-NOTES file that will be shipped
-with every production release.  It will contain a list of tested
-ports, and known problems with the release.
+Release 1.1.4 of Kaffe is a "development" release.
+
+It has been tested, but not as thoroughly as a
+production release would be.
+
+Please check the WHATSNEW file to see what has
+been added in this release.
+
+Even though this is not a production release, it
+contains a lot of improvements over 1.0.7, which
+was release over half a year ago.  I anticipate
+that most people will have less trouble with
+this release.
+
+Bug reports, comments and patches are always
+welcome -- send them to the team at kaffe@kaffe.org.
+
+Have fun!
+
+Cheers,
+
+ - Jim
+

@@ -1,5 +1,67 @@
-What's New in CVS
+What's New in Kaffe 1.1.4
 ------------------------------------------------------
+* Support for security policy files
+* AttachCurrentThread jni function for posix threads
+* Bug fixes:
+  * jar tool and jar file fixes
+  * URL context handling
+  * EUC-JP support rewritten to use libiconv
+  * HTTP fixes
+  * MulticastSocket
+  * DNSJava binding
+  * ARM jit
+  * ServerSocket.bind
+  * java.math.BigDecimal - fix rounding operations
+  * JNI fixes
+  * FTP handler from GNU Inetlib
+  * SHA1PRNG randomness fixes (can use /dev/urandom if
+    available)
+  * java.security.SecureClassLoader fix
+* GNU Classpath merges and updates:
+  * Object serialization
+  * almost all of java.io from Classpath
+  * java.nio, java.net
+  * java.util, java.util.regex
+  * java.math, javax.naming
+  * java.text, java.beans
+  * java.net.protocol.file.Handler
+  * java.util.Random
+  * java.awt.GridBadLayout
+  * java.awt.geom
+  * javax.swing.event.EventListenerList
+  * javax.swing.text.AttributeSet
+* Updated sound code from Tritonus.org
+* Updated javax.net.ssl/javax.security code
+  from Jessie
+* kjc bug fixes:
+  * .this expressions
+  * extra generated <clinit> methods
+  * temporary fix for static initializers
+* Build fixes:
+  * m68k atomic compare and exchange
+  * m68k-netbsd
+  * ALSA 1.0
+  * mipsel-linux / jit3
+  * Cygwin
+  * FreeBSD networking
+  * parisc and HP-UX
+* New DocBook documentation:
+  * "Porting Kaffe to a new platform"
+* Support for debugging using cgdb
+* Build system:
+  * updated to automake 1.8.2, autoconf 1.59 and
+    libtool 1.5.2
+  * moved automake scripts and m4 files out of top
+    directory
+  * new regression tests for kjc
+* Code cleanup:
+  * some macros (sysdepCallMethod, CALL_KAFFE_EXCEPTION)
+    converted to inline functions
+  * moved vm specific part of java.lang.Thread into
+    threadData
+* More compiler warnings fixes
+* Some successes: JSPWiki, Babylon chat server (without
+  graphics), Ant 1.6.0.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
