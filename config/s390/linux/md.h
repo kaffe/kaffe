@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -13,6 +16,7 @@
 #define __ks390_linux_md_h
 
 #include "s390/common.h"
+#include "s390/sysdepCallMethod.h"
 #include "s390/threads.h"
 
 #if defined(TRANSLATOR)
