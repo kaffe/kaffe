@@ -1,3 +1,8 @@
+Sun May 14 15:53:49 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/itypes.c: supply message for NoClassDefFoundError
+	* kaffe/kaffevm/jni.c: fix misspelling
+
 Thu May 11 15:11:22 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/jni.c, kaffe/kaffe/main.c: JNI methods
