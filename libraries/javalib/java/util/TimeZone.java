@@ -12,7 +12,6 @@
 package java.util;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import kaffe.util.UNIXTimeZone;
@@ -94,34 +93,20 @@ private static void addSimple(int off, String id, int i1,
 
 // Recurse through a directory tree adding any UNIX zone files found
 private static void addZoneFiles(String prefix, File dir) {
-
-	// Get directory listing of normal files and directories
-	String[] files = dir.list(new FilenameFilter() {
-		public boolean accept(File dir0, String name) {
-			return new File(dir0, name).isFile();
-		}
-	});
-	String[] dirs = dir.list(new FilenameFilter() {
-		public boolean accept(File dir0, String name) {
-			return new File(dir0, name).isDirectory();
-		}
-	});
-
-	// Add zone files
+	String[] files = dir.list();
 	for (int i = 0; i < files.length; i++) {
-		try {
-			zones.put(prefix == null ?
-			    files[i] : prefix + "/" + files[i],
-			    new UNIXTimeZone(new File(dir, files[i])));
-		} catch (IOException e) {
+		File file = new File(dir, files[i]);
+		String filePrefix = (prefix == null) ?
+		    files[i] : prefix + "/" + files[i];
+		if (file.isFile()) {
+			try {
+				zones.put(filePrefix,
+				    new UNIXTimeZone(filePrefix, file));
+			} catch (IOException e) {
+			}
+		} else if (file.isDirectory()) {
+			addZoneFiles(filePrefix, file);
 		}
-	}
-
-	// Recurse
-	for (int i = 0; i < dirs.length; i++) {
-		addZoneFiles(prefix == null ?
-		    dirs[i] : prefix + "/" + dirs[i],
-		    new File(dir, dirs[i]));
 	}
 }
 
