@@ -164,7 +164,7 @@ extern jitflags willcatch;
 #define	canCatch(FLAG)	willcatch. FLAG
 
 #include "locks.h"
-extern iLock* translatorlock;
+extern iStaticLock	translatorlock;
 
 #define	enterTranslator()	lockStaticMutex(&translatorlock)
 #define	leaveTranslator()	unlockStaticMutex(&translatorlock)

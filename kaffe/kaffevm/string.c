@@ -23,7 +23,7 @@
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
-iLock* stringLock;		        /* mutex on all intern operations */
+static iStaticLock	stringLock;	/* mutex on all intern operations */
 static int *            stringLockRoot;	/* the string lock is not a monitor */
 
 /* Internal functions */
@@ -278,9 +278,9 @@ stringAlloc(size_t sz)
 	int *myRoot = stringLockRoot;
 
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
-	_unlockMutex(&stringLock, myRoot);
+	locks_internal_unlockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
 	p = KCALLOC(1, sz);
-	_lockMutex(&stringLock, myRoot);
+	locks_internal_lockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
 	stringLockRoot = myRoot;
 	return (p);
 }
@@ -291,9 +291,9 @@ stringFree(const void *ptr)
 	int *myRoot = stringLockRoot;
 
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
-	_unlockMutex(&stringLock, myRoot);
+	locks_internal_unlockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
 	KFREE(ptr);
-	_lockMutex(&stringLock, myRoot);
+	locks_internal_lockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
 	stringLockRoot = myRoot;
 }
 

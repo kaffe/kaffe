@@ -133,7 +133,7 @@ typedef struct {
 } jitflags;
 
 #include "locks.h"
-extern iLock* translatorlock;
+extern iStaticLock	translatorlock;
 
 #define	enterTranslator()	lockStaticMutex(&translatorlock)
 #define	leaveTranslator()	unlockStaticMutex(&translatorlock)

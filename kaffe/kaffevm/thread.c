@@ -59,7 +59,8 @@ Hjava_lang_ThreadGroup* standardGroup;
 static void firstStartThread(void*);
 static void createInitialThread(const char*);
 static void runfinalizer(void);
-static iLock* thread_start_lock;
+
+static iStaticLock	thread_start_lock;
 
 /*
  * How do I get memory?
@@ -256,7 +257,7 @@ createInitialThread(const char* nm)
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;
-
+        
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
@@ -267,7 +268,6 @@ createInitialThread(const char* nm)
                                                              "getSingleton",
                                                              "()Ljava/lang/ClassLoader;").l;
 
-	
 	/* Attach thread to threadGroup */
 	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
 

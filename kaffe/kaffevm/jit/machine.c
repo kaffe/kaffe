@@ -53,7 +53,7 @@
 char* engine_name = "Just-in-time";
 char* engine_version = KVER;
 
-iLock* translatorlock;		/* lock to protect the variables below */
+iStaticLock	translatorlock;		/* lock to protect the variables below */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -513,14 +513,14 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 {
 	int i;
 	jexceptionEntry* e;
+	void *tramp;
 
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
 	bytecode_processed += meth->c.bcode.codelen;
 	codeperbytecode = code_generated / bytecode_processed;
 
-	/* don't forget to free the trampoline before overwriting it */ 
-	gc_free(METHOD_NATIVECODE(meth));
+	tramp = METHOD_NATIVECODE(meth);
 
 	/* install the jitted code */
 	SET_METHOD_JITCODE(meth, code->code);
@@ -534,6 +534,8 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 
 	/* Flush code out of cache */
 	FLUSH_DCACHE(METHOD_NATIVECODE(meth), meth->c.ncode.ncode_end);
+
+	gc_free(tramp);
 
 #if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
 	MD_REGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,

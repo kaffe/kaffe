@@ -180,7 +180,7 @@ findClassInJar(char* cname, classFile* hand, errorInfo *einfo)
 {
 	char *buf;
 	int fp;
-	static iLock* jarlock;
+	static iStaticLock	jarlock;
 	classpathEntry* ptr;
 	int i;
 	int rc;

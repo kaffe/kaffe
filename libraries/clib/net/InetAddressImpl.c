@@ -77,7 +77,7 @@ struct Hjava_lang_String*
 java_net_InetAddressImpl_getLocalHostName(void)
 {
 	static char hostname[HOSTNMSZ] = "localhost";
-	static iLock *hostLock = 0;
+	static iStaticLock	hostLock;
 	
 	struct Hjava_lang_String *retval = 0;
 	int iLockRoot;
@@ -140,7 +140,7 @@ java_net_InetAddressImpl_stringToBits(Hjava_lang_String *jStr)
 	return( retval );
 }
 
-static iLock *nsLock = 0;
+static iStaticLock	nsLock;
 
 /*
  * Convert a hostname to an array of host addresses.

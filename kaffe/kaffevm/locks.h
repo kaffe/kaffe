@@ -22,18 +22,17 @@
 struct _iLock;
 
 #define	LOCKOBJECT			struct _iLock**
-#define	lockMutex(O)			(jthread_disable_stop(), _lockMutex(&(O)->lock, &iLockRoot))
-#define	unlockMutex(O)			do { _unlockMutex(&(O)->lock, &iLockRoot); jthread_enable_stop(); } while (0)
-#define	waitCond(O,T)			_waitCond(&(O)->lock, (T))
-#define	signalCond(O)			_signalCond(&(O)->lock)
-#define	broadcastCond(O)		_broadcastCond(&(O)->lock)
-#define	holdMutex(O)			_holdMutex(&(O)->lock)
+#define	lockMutex(O)			(jthread_disable_stop(), locks_internal_lockMutex(&(O)->lock, &iLockRoot, 0))
+#define	unlockMutex(O)			do { locks_internal_unlockMutex(&(O)->lock, &iLockRoot, 0); jthread_enable_stop(); } while (0)
+#define	waitCond(O,T)			locks_internal_waitCond(&(O)->lock, (T), 0)
+#define	signalCond(O)			locks_internal_signalCond(&(O)->lock, 0)
+#define	broadcastCond(O)		locks_internal_broadcastCond(&(O)->lock, 0)
 
-#define	lockStaticMutex(THING)		(jthread_disable_stop(), _lockMutex((THING), &iLockRoot))
-#define	unlockStaticMutex(THING)	do { _unlockMutex((THING), &iLockRoot); jthread_enable_stop(); } while(0)
-#define	waitStaticCond(THING, TIME)	_waitCond((THING), (TIME))
-#define	signalStaticCond(THING)		_signalCond((THING))
-#define	broadcastStaticCond(THING)	_broadcastCond((THING))
+#define	lockStaticMutex(THING)		(jthread_disable_stop(), locks_internal_lockMutex(&(THING)->lock, &iLockRoot, &(THING)->heavyLock))
+#define	unlockStaticMutex(THING)	do { locks_internal_unlockMutex(&(THING)->lock, &iLockRoot, &(THING)->heavyLock); jthread_enable_stop(); } while(0)
+#define	waitStaticCond(THING, TIME)	locks_internal_waitCond(&(THING)->lock, (TIME), &(THING)->heavyLock)
+#define	signalStaticCond(THING)		locks_internal_signalCond(&(THING)->lock, &(THING)->heavyLock)
+#define	broadcastStaticCond(THING)	locks_internal_broadcastCond(&(THING)->lock, &(THING)->heavyLock)
 
 struct Hjava_lang_Thread;
 struct Hjava_lang_Object;
@@ -52,6 +51,11 @@ typedef struct _iLock {
 	struct Hjava_lang_Thread*	cv;
 } iLock;
 
+typedef struct _iStaticLock {
+	iLock	*lock;
+	iLock	heavyLock; 
+} iStaticLock;
+
 #define	LOCKINPROGRESS	((iLock*)-1)
 #define	LOCKFREE	((iLock*)0)
 
@@ -65,28 +69,13 @@ extern void	unlockObject(struct Hjava_lang_Object*);
 extern void 	slowLockObject(struct Hjava_lang_Object*, void*);
 extern void 	slowUnlockObject(struct Hjava_lang_Object*, void*);
 
-extern void	_lockMutex(LOCKOBJECT, void*);
-extern void	_unlockMutex(LOCKOBJECT, void*);
-extern jboolean	_waitCond(LOCKOBJECT, jlong);
-extern void	_signalCond(LOCKOBJECT);
-extern void	_broadcastCond(LOCKOBJECT);
-extern void	_slowUnlockMutexIfHeld(LOCKOBJECT, void*);
-extern void* 	_releaseLock(iLock**);
-extern void 	_acquireLock(iLock**, void*);
+extern void	locks_internal_lockMutex(LOCKOBJECT, void*, iLock *heavyLock);
+extern void	locks_internal_unlockMutex(LOCKOBJECT, void*, iLock *heavyLock);
+extern jboolean	locks_internal_waitCond(LOCKOBJECT, jlong, iLock *heavyLock);
+extern void	locks_internal_signalCond(LOCKOBJECT, iLock *heavyLock);
+extern void	locks_internal_broadcastCond(LOCKOBJECT, iLock *heavyLock);
+extern void	locks_internal_slowUnlockMutexIfHeld(LOCKOBJECT, void*, iLock *heavyLock);
 
 extern void	dumpLocks(void);
-
-/*
- * Unblock an object and call a function. When the function returns reclaim
- * the object.
- */
-#define	UNBLOCK_EXECUTE(OBJ, FUNC) { \
-		void* st = _releaseLock(&((Hjava_lang_Object*)(OBJ))->lock); \
-		FUNC; \
-		_acquireLock(&((Hjava_lang_Object*)(OBJ))->lock, st); \
-	}
-
-extern struct _iLock* stringLock;
-extern struct _iLock* utf8Lock;
 
 #endif

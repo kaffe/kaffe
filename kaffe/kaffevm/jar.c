@@ -68,7 +68,7 @@ static const char * JAR_ERROR_UNSUPPORTED_COMPRESSION      = "Unsupported compre
  */
 static struct _jarCache {
 #if !defined(KAFFEH)
-	iLock *lock;
+	iStaticLock	lock;
 #endif
 	jarFile *files;
 #define JAR_FILE_CACHE_MAX 12

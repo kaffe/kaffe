@@ -37,7 +37,7 @@
 /* Internal variables */
 #ifndef KAFFEH				/* Yuk! */
 static hashtab_t	hashTable;
-iLock*		utf8Lock;	/* mutex on all intern operations */
+static iStaticLock	utf8Lock;	/* mutex on all intern operations */
 
 /*
  * Used to keep track of the current utf8Lock holder's stack
@@ -53,7 +53,7 @@ static int *utfLockRoot;
 static inline void do_lockUTF(int *where)
 {
 	jthread_disable_stop();
-	_lockMutex(&utf8Lock, where);
+	locks_internal_lockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
 	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = where;
 }
@@ -62,7 +62,7 @@ static inline void do_unlockUTF(int *where)
 {
 	DBGIF(assert(utfLockRoot != NULL));
 	DBGIF(utfLockRoot = NULL);
-	_unlockMutex(&utf8Lock, where);
+	locks_internal_unlockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
 	jthread_enable_stop();
 }
 
@@ -78,11 +78,11 @@ static inline void *UTFmalloc(size_t size)
 	DBGIF(assert(utfLockRoot != NULL));
 	myRoot = utfLockRoot;
 	DBGIF(utfLockRoot = NULL);
-	_unlockMutex(&utf8Lock, myRoot);
+	locks_internal_unlockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 
 	ret = gc_malloc(size, GC_ALLOC_UTF8CONST);
 
-	_lockMutex(&utf8Lock, myRoot);
+	locks_internal_lockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = myRoot;
 
@@ -96,11 +96,11 @@ static inline void UTFfree(const void *mem)
 	DBGIF(assert(utfLockRoot != NULL));
 	myRoot = utfLockRoot;
 	DBGIF(utfLockRoot = NULL);
-	_unlockMutex(&utf8Lock, myRoot);
+	locks_internal_unlockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 
 	gc_free((void *)mem);
 
-	_lockMutex(&utf8Lock, myRoot);
+	locks_internal_lockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
 	DBGIF(assert(utfLockRoot == NULL));
 	utfLockRoot = myRoot;
 }

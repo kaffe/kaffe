@@ -368,7 +368,7 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 
 	/* If method found and synchronised, unlock the lock */
 	if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
-		_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp);
+		locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp, 0);
 	}
 
 	/* If method found and profiler enable, fix self+children time */
@@ -452,7 +452,7 @@ DBG(ELOOKUP,
 
 			/* If not here, exit monitor if synchronised. */
 			if (obj != 0 && (einfo.method->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf);
+				locks_internal_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf, 0);
 			}
 		}
 	}

@@ -1,3 +1,23 @@
+2003-07-08 Helmer Kraemer <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/locks.h, kaffe/kaffevm/locks.c:
+	(iStaticLock) new struct for static locks
+	(_lockMutex, _unlockMutex, _waitCond, _signalCond,
+	_broadcastCond, _slowUnlockMutexIfHeld) prefixed with
+	locks_internal, added second parameter for preallocated
+	heavy lock
+	(getHeavyLock, putHeavyLock) support preallocated heavy locks
+	(locks_internal_slowUnlockMutexIfHeld) only allocate a heavy
+	lock if that's really necessary
+	(locks_internal_lockMutex) use jthread_on_current_stack to
+	detect recursive invocations
+	(locks_internal_slowUnlockMutex) add support for stacks that
+	grow upwards
+	(specialLocks, acquireLock, releaseLock, UNBLOCK_EXECUTE) removed
+	
+	Changed type of all static locks from iLock** to iStaticLock.
+	Updated all calls to the locking functions.
+	
 2003-07-07  Mark Wielaard <mark@klomp.org>
 
 	* include/jni.h (JNINativeInterface): Mark reserved words which

@@ -22,14 +22,7 @@
 #include "md.h"
 #include "jthread.h"
 #include "debug.h"
-
-#ifndef STACKREDZONE
-# ifdef REDZONE
-#  define STACKREDZONE	REDZONE
-# else
-#  define STACKREDZONE	1024
-# endif
-#endif
+#include "gc.h"
 
 /*
  * If we don't have an atomic compare and exchange defined then make
@@ -56,27 +49,6 @@
 #endif
 #endif
 
-/* We need to treat the gc locks special since they guard memory allocation
- * and cannot be acquired by the gc thread otherwise.
- * I'm not proud of this - it's a hack waiting for a better idea - TIM.
- */
-extern iLock* gc_lock;
-extern iLock* gc_heap_lock;
-extern iLock* gcman;
-extern iLock* finman;
-static struct {
-	iLock**	key;
-	iLock	lock;
-} specialLocks[] = {
-	{ &gc_lock,	{ 0, 0, 0 } },
-	{ &gc_heap_lock,{ 0, 0, 0 } },
-	{ &gcman,	{ 0, 0, 0 } },
-	{ &finman,	{ 0, 0, 0 } },
-	{ &stringLock,	{ 0, 0, 0 } },
-	{ &utf8Lock,	{ 0, 0, 0 } },
-};
-#define	NR_SPECIAL_LOCKS	(sizeof(specialLocks)/sizeof(specialLocks[0]))
-
 /* Count number of backoffs.  XXX move into the STAT infrastructure. */
 int backoffcount = 0;
 
@@ -101,20 +73,19 @@ dumpObjectLocks(void)
  */
 static
 iLock*
-getHeavyLock(iLock** lkp)
+getHeavyLock(iLock** lkp, iLock *heavyLock)
 {
 	iLock* old;
 	iLock* lk;
 	Hjava_lang_Thread* tid;
 	jlong timeout;
-	int i;
 
 DBG(SLOWLOCKS,
     	dprintf("  getHeavyLock(**lkp=%p, *lk=%p, th=%p)\n",
 		lkp, *lkp, jthread_current());
 )
  
-	lk = 0;
+	lk = heavyLock;
 	timeout = 1;
 	for (;;) {
 		/* Get the current lock and replace it with LOCKINPROGRESS to indicate
@@ -136,33 +107,26 @@ DBG(SLOWLOCKS,
 DBG(SLOWLOCKS,
     			dprintf("    got cached lock\n");
 )
+			/* XXX is it possible to leak a heavyLock here ? */
+
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
 			if (lk == 0) {
-				/* Create a heavy lock object for others to find. */
-				for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
-					if (specialLocks[i].key == lkp) {
-						lk = &specialLocks[i].lock;
-						break;
-					}
-				}
-DBG(SLOWLOCKS,
-				dprintf("    got %s lock\n",
-					(lk == 0) ? "new" : "special");
-)
-				if (lk == 0) {
-					/* Release the lock before we go into malloc.
-					 * We have to reclaim the lock afterwards (at beginning
-					 * of loop)
-					 */
-					*lkp = old;
-					lk = (iLock*)jmalloc(sizeof(iLock));
-					/* if that fails we're in trouble!! */
-					assert(lk != 0);
-					continue;
-				}
+				/* Release the lock before we go into malloc.
+				 * We have to reclaim the lock afterwards (at beginning
+				 * of loop)
+				 */
+				*lkp = old;
+				lk = (iLock*)gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
+				/* if that fails we're in trouble!! */
+				assert(lk != 0);
+				continue;
 			}
+DBG(SLOWLOCKS,
+			dprintf("    got %s lock\n",
+				(lk != heavyLock) ? "new" : "special");
+)
 			lk->holder = (void*)old;
 			lk->mux = 0;
 			lk->cv = 0;
@@ -199,7 +163,7 @@ DBG(SLOWLOCKS,
  * If we can't lock it we suspend until we can.
  */
 static void
-slowLockMutex(iLock** lkp, void* where)
+slowLockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
@@ -211,7 +175,7 @@ DBG(SLOWLOCKS,
 	jthread_disable_stop(); /* protect the heavy lock, and its queues */
 
 	for (;;) {
-		lk = getHeavyLock(lkp);
+		lk = getHeavyLock(lkp, heavyLock);
 
 		/* If I hold the heavy lock then just keep on going */
 		if (jthread_on_current_stack(lk->holder)) {
@@ -243,18 +207,17 @@ DBG(SLOWLOCKS,
  * a fast thin lock.
  */
 static void
-slowUnlockMutex(iLock** lkp, void* where)
+slowUnlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
-	int i;
 
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, jthread_current());
 )
 	jthread_disable_stop(); /* protect the heavy lock, and its queues */
-	lk = getHeavyLock(lkp);
+	lk = getHeavyLock(lkp, heavyLock);
 
 	/* Only the lock holder can be doing an unlock */
 	if (!jthread_on_current_stack(lk->holder)) {
@@ -264,7 +227,11 @@ DBG(SLOWLOCKS,
 	}
 
 	/* If holder isn't where we are now then this isn't the final unlock */
+#if defined(STACK_GROWS_UP)
+	if (lk->holder < where) {
+#else
 	if (lk->holder > where) {
+#endif
 		putHeavyLock(lkp, lk);
 		jthread_enable_stop();
 		return;
@@ -287,14 +254,8 @@ DBG(SLOWLOCKS,
 		putHeavyLock(lkp, lk);
 	}
 	else {
-		for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
-			if (specialLocks[i].key == lkp) {
-				lk = 0;
-				break;
-			}
-		}
-		if (lk != 0) {
-			jfree(lk);
+		if (lk != heavyLock) {
+			gc_free(lk);
 		}
 		putHeavyLock(lkp, LOCKFREE);
 	}
@@ -302,7 +263,7 @@ DBG(SLOWLOCKS,
 }
 
 void
-_slowUnlockMutexIfHeld(iLock** lkp, void* where)
+locks_internal_slowUnlockMutexIfHeld(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
 	void* holder;
@@ -311,50 +272,33 @@ DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutexIfHeld(**lkp=%p, where=%p, th=%p)\n",
 	       lkp, where, jthread_current());
 )
+	holder = *lkp;
 
-	lk = getHeavyLock(lkp);
+	/* nothing to do if the lock is free */
+	if (holder == LOCKFREE) {
+		return;
+	}
+
+	/* if it's a thin lock and this thread owns it,
+	 * try to free it the easy way
+	 */
+	if (jthread_on_current_stack(holder) &&
+	    COMPARE_AND_EXCHANGE(lkp, holder, LOCKFREE)) {
+		return;
+	}
+
+	/* ok, it is a heavy lock */
+	lk = getHeavyLock(lkp, heavyLock);
 	holder = lk->holder;
 	putHeavyLock(lkp, lk);
 
 	if (jthread_on_current_stack(holder)) {
-		slowUnlockMutex(lkp, where);
+		slowUnlockMutex(lkp, where, heavyLock);
 	}
-}
-
-void*
-_releaseLock(iLock** lkp)
-{
-	iLock* lk;
-	void* holder;
-
-DBG(SLOWLOCKS,
-    	dprintf("_releaseLock(**lkp=%p, th=%p)\n",
-	       lkp, jthread_current());
-)
-
-	lk = getHeavyLock(lkp);
-	holder = lk->holder;
-
-	/* I must be holding the damn thing */
-	if (!jthread_on_current_stack(holder)) {
-		putHeavyLock(lkp, holder);
-		throwException(IllegalMonitorStateException);
-	}
-
-	putHeavyLock(lkp, lk);
-	slowUnlockMutex(lkp, holder);
-
-	return (holder);
-}
-
-void
-_acquireLock(iLock** lkp, void* holder)
-{
-	slowLockMutex(lkp, holder);
 }
 
 jboolean
-_waitCond(iLock** lkp, jlong timeout)
+locks_internal_waitCond(iLock** lkp, jlong timeout, iLock *heavyLock)
 {
 	iLock* lk;
 	void* holder;
@@ -367,7 +311,7 @@ DBG(SLOWLOCKS,
 	       lkp, (long)timeout, jthread_current());
 )
 
-	lk = getHeavyLock(lkp);
+	lk = getHeavyLock(lkp, heavyLock);
 	holder = lk->holder;
 
 	/* I must be holding the damn thing */
@@ -380,12 +324,12 @@ DBG(SLOWLOCKS,
 	unhand(tid)->nextlk = lk->cv;
 	lk->cv = tid;
 	putHeavyLock(lkp, lk);
-	slowUnlockMutex(lkp, holder);
+	slowUnlockMutex(lkp, holder, heavyLock);
 	r = ksemGet((Ksem*)unhand(tid)->sem, timeout);
 
 	/* Timeout */
 	if (r == false) {
-		lk = getHeavyLock(lkp);
+		lk = getHeavyLock(lkp, heavyLock);
 		/* Remove myself from CV or MUX queue - if I'm * not on either
 		 * then I should wait on myself to remove any pending signal.
 		 */
@@ -410,13 +354,13 @@ DBG(SLOWLOCKS,
 		putHeavyLock(lkp, lk);
 	}
 
-	slowLockMutex(lkp, holder);
+	slowLockMutex(lkp, holder, heavyLock);
 
 	return (r);
 }
 
 void
-_signalCond(iLock** lkp)
+locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
@@ -426,7 +370,7 @@ DBG(SLOWLOCKS,
 	       lkp, jthread_current());
 )
 
-	lk = getHeavyLock(lkp);
+	lk = getHeavyLock(lkp, heavyLock);
 
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
@@ -445,7 +389,7 @@ DBG(SLOWLOCKS,
 }
 
 void
-_broadcastCond(iLock** lkp)
+locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
@@ -455,7 +399,7 @@ DBG(SLOWLOCKS,
 	       lkp, jthread_current());
 )
 
-	lk = getHeavyLock(lkp);
+	lk = getHeavyLock(lkp, heavyLock);
 
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
@@ -479,7 +423,7 @@ DBG(SLOWLOCKS,
  * contention then fall back on a slow lock.
  */
 void
-_lockMutex(iLock** lkp, void* where)
+locks_internal_lockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	uintp val;
 
@@ -487,12 +431,12 @@ _lockMutex(iLock** lkp, void* where)
 
 	if (val == 0) {
 		if (!COMPARE_AND_EXCHANGE(lkp, 0, (iLock*)where)) {
-			slowLockMutex(lkp, where);
+			slowLockMutex(lkp, where, heavyLock);
 		}
 	}
-	else if ((val - (uintp)where) > (STACKREDZONE / 2)) {
+	else if (!jthread_on_current_stack((void *)val)) {
 		/* XXX count this in the stats area */
-		slowLockMutex(lkp, where);
+		slowLockMutex(lkp, where, heavyLock);
 	}
 }
 
@@ -501,43 +445,43 @@ _lockMutex(iLock** lkp, void* where)
  * we've got contention so fall back on a slow lock.
  */
 void
-_unlockMutex(iLock** lkp, void* where)
+locks_internal_unlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	uintp val;
 
 	val = (uintp)*lkp;
 
 	if ((val & 1) != 0) {
-		slowUnlockMutex(lkp, where);
+		slowUnlockMutex(lkp, where, heavyLock);
 	}
 	else if ((val == (uintp)where) /* XXX squirrely bit */
 		&& !COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
-		slowUnlockMutex(lkp, where);
+		slowUnlockMutex(lkp, where, heavyLock);
 	}
 }
 
 void
 lockObject(Hjava_lang_Object* obj)
 {
-	_lockMutex(&obj->lock, &obj);
+	locks_internal_lockMutex(&obj->lock, &obj, 0);
 }
 
 void
 unlockObject(Hjava_lang_Object* obj)
 {
-	_unlockMutex(&obj->lock, &obj);
+	locks_internal_unlockMutex(&obj->lock, &obj, 0);
 }
 
 void
 slowLockObject(Hjava_lang_Object* obj, void* where)
 {
-	slowLockMutex(&obj->lock, where);
+	slowLockMutex(&obj->lock, where, 0);
 }
 
 void
 slowUnlockObject(Hjava_lang_Object* obj, void* where)
 {
-	slowUnlockMutex(&obj->lock, where);
+	slowUnlockMutex(&obj->lock, where, 0);
 }
 
 void

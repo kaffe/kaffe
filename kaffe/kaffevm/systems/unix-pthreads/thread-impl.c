@@ -128,7 +128,7 @@ static int		*priorities;
 pthread_key_t		ntKey;
 
 /* our lock to protect list manipulation/iteration */
-static iLock		*tLock;
+static iStaticLock	tLock;
 
 /* a hint to avoid unnecessary pthread_creates (with pending exits) */
 static volatile int	pendingExits;
@@ -205,12 +205,12 @@ tDump (void)
 {
   DBG(JTHREAD, {
 	jthread_t	cur = jthread_current();
-	void		*lock   = tLock;
-	void		*holder = tLock->holder;
-	void		*mux    = tLock->mux;
-	//void		*muxNat = tLock->mux ? unhand(tLock->mux)->PrivateInfo : 0;
-	void		*cv     = tLock->cv;
-	//void		*cvNat  = tLock->cv ? unhand(tLock->cv)->PrivateInfo : 0;
+	void		*lock   = tLock.lock;
+	void		*holder = tLock.heavyLock.holder;
+	void		*mux    = tLock.heavyLock.mux;
+	//void		*muxNat = tLock.heavyLock.mux ? unhand(tLock.heavyLock.mux)->PrivateInfo : 0;
+	void		*cv     = tLock.heavyLock.cv;
+	//void		*cvNat  = tLock.heavyLock.cv ? unhand(tLock.heavyLock.cv)->PrivateInfo : 0;
 	int		iLockRoot;	
 
 	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */

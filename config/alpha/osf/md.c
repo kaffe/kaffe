@@ -83,7 +83,7 @@ void alpha_disable_uac(void)
 #include "locks.h"
 
 /* libexc is not thread safe :-( */
-static iLock *excLock;
+static iStaticLock excLock;
 
 void __alpha_osf_firstFrame (exceptionFrame *frame)
 {

@@ -31,7 +31,7 @@
 #include <sys/mman.h>
 #endif
 
-iLock* gc_heap_lock;
+static iStaticLock	gc_heap_lock;
 
 #if defined(KAFFE_STATS)
 static counter gcpages;

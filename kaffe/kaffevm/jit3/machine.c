@@ -98,7 +98,7 @@ int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
-iLock *translatorlock;
+iStaticLock	translatorlock;
 
 struct {
 	int time;
@@ -494,6 +494,8 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	uint32 i;
 	bool res;
 	jexceptionEntry* e;
+	void *tramp;
+
 #if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
 	struct mangled_method *mm = 0;
 #endif
@@ -513,10 +515,10 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	}
 	//GC_WRITE(meth, code->mem);
 
-	/* free the trampoline before setting the native code */
-	gc_free (METHOD_NATIVECODE(meth));
-	
+	tramp = METHOD_NATIVECODE(meth);
+
 	SET_METHOD_JITCODE(meth, code->code);
+
 	if( meth->c.bcode.code )
 		gc_free(meth->c.bcode.code);
 	meth->c.ncode.ncode_start = code->mem;
@@ -566,6 +568,8 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 #if defined(FLUSH_DCACHE)
 	FLUSH_DCACHE(code->code, (void*)((uintp)code->code + code->codelen));
 #endif
+
+	gc_free(tramp);
 
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {
