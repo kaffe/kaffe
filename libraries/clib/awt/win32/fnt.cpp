@@ -136,7 +136,7 @@ extern "C" {
 	jobject
 		Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, Font* pFont )
 	{
-		jarray    widths;
+		jintArray widths;
 		jint      *jw;
 		jboolean isCopy;
 		
@@ -160,7 +160,7 @@ extern "C" {
 	
 	jint
 		Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz, Font* pFont,
-		jarray jBytes, jint off, jint len )
+		jbyteArray jBytes, jint off, jint len )
 	{
 		SIZE sz;
 		jboolean  isCopy;
@@ -189,7 +189,7 @@ extern "C" {
 	
 	jint
 		Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz, Font* pFont,
-		jarray jChars, jint off, jint len )
+		jcharArray jChars, jint off, jint len )
 	{
 		SIZE      sz;
 		jboolean  isCopy;

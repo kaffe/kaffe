@@ -227,7 +227,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 {
   jclass   clazz;
   jfieldID fid;
-  jarray   rgbRequests = 0;
+  jintArray rgbRequests = 0;
   jboolean isCopy;
   jint     *jrgbs = 0;
   int      nReq = 0;
@@ -658,7 +658,7 @@ Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
 }
 
 void
-Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jarray sysClrs )
+Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jintArray sysClrs )
 {
 #ifdef NEVER /* maybe this could be initialized via X resources */
   jboolean isCopy;

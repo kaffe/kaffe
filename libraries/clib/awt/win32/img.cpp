@@ -123,7 +123,7 @@ extern "C" {
 	void
 		Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 		jint x, jint y, jint w, jint h,
-		jarray clrMap, jarray idxPels, jint trans,
+		jintArray clrMap, jbyteArray idxPels, jint trans,
 		jint off, jint scan)
 	{
 		register int    row, col;
@@ -164,7 +164,7 @@ extern "C" {
 	void
 		Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 		jint x, jint y, jint w, jint h,
-		jarray rgbPels, jint off, jint scan)
+		jintArray rgbPels, jint off, jint scan)
 	{
 		register int    row, col;
 		COLORREF		   pix;
@@ -253,7 +253,7 @@ extern "C" {
 		jobject   model = env->CallStaticObjectMethod( modelClazz, modelCtor);
 		
 		/* for JDK compat, the pixel buffer has to be large enough to hold the *complete* image */
-		jarray    pelArray  = env->NewIntArray( img->width * img->height);
+		jintArray pelArray  = env->NewIntArray( img->width * img->height);
 		jint*     pels = env->GetIntArrayElements( pelArray, &isCopy);
 		
 		env->CallVoidMethod( producer, setDim, img->width, img->height);
@@ -344,7 +344,7 @@ extern "C" {
 	
 	void*
 		Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
-		jarray jbuffer, jint off, jint len )
+		jbyteArray jbuffer, jint off, jint len )
 	{
 		Image *img = 0;
 		jboolean isCopy;

@@ -23,7 +23,7 @@ extern "C" {
 	}
 	
 	void __cdecl
-		Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jarray sysClrs )
+		Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jintArray sysClrs )
 	{
 #ifdef NEVER /* maybe this could be initialized via X resources */
 		jboolean isCopy;

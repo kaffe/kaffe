@@ -2759,7 +2759,7 @@ Kaffe_GetArrayLength(JNIEnv* env, jarray arr)
 	return (ret);
 }
 
-static jarray
+static jobjectArray
 Kaffe_NewObjectArray(JNIEnv* env, jsize len, jclass cls, jobject init)
 {
 	HArrayOfObject* obj;
@@ -2780,7 +2780,7 @@ Kaffe_NewObjectArray(JNIEnv* env, jsize len, jclass cls, jobject init)
 }
 
 static jobject
-Kaffe_GetObjectArrayElement(JNIEnv* env, jarray arr, jsize elem)
+Kaffe_GetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem)
 {
 	jobject obj;
 
@@ -2797,7 +2797,7 @@ Kaffe_GetObjectArrayElement(JNIEnv* env, jarray arr, jsize elem)
 }
 
 static void
-Kaffe_SetObjectArrayElement(JNIEnv* env, jarray arr, jsize elem, jobject val)
+Kaffe_SetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem, jobject val)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -2809,10 +2809,10 @@ Kaffe_SetObjectArrayElement(JNIEnv* env, jarray arr, jsize elem, jobject val)
 	END_EXCEPTION_HANDLING();
 }
 
-static jarray
+static jbooleanArray
 Kaffe_NewBooleanArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jbooleanArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2823,10 +2823,10 @@ Kaffe_NewBooleanArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jbyteArray
 Kaffe_NewByteArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jbyteArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2837,10 +2837,10 @@ Kaffe_NewByteArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jcharArray
 Kaffe_NewCharArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jcharArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2851,10 +2851,10 @@ Kaffe_NewCharArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jshortArray
 Kaffe_NewShortArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jshortArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2865,10 +2865,10 @@ Kaffe_NewShortArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jintArray
 Kaffe_NewIntArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jintArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2879,10 +2879,10 @@ Kaffe_NewIntArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jlongArray
 Kaffe_NewLongArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jlongArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2893,10 +2893,10 @@ Kaffe_NewLongArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jfloatArray
 Kaffe_NewFloatArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jfloatArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2907,10 +2907,10 @@ Kaffe_NewFloatArray(JNIEnv* env, jsize len)
 	return (arr);
 }
 
-static jarray
+static jdoubleArray
 Kaffe_NewDoubleArray(JNIEnv* env, jsize len)
 {
-	jarray arr;
+	jdoubleArray arr;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -2922,7 +2922,7 @@ Kaffe_NewDoubleArray(JNIEnv* env, jsize len)
 }
 
 static jboolean*
-Kaffe_GetBooleanArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetBooleanArrayElements(JNIEnv* env, jbooleanArray arr, jbool* iscopy)
 {
 	jboolean* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -2937,7 +2937,7 @@ Kaffe_GetBooleanArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jbyte*
-Kaffe_GetByteArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetByteArrayElements(JNIEnv* env, jbyteArray arr, jbool* iscopy)
 {
 	jbyte* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -2952,7 +2952,7 @@ Kaffe_GetByteArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jchar*
-Kaffe_GetCharArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetCharArrayElements(JNIEnv* env, jcharArray arr, jbool* iscopy)
 {
 	jchar* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -2967,7 +2967,7 @@ Kaffe_GetCharArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jshort*
-Kaffe_GetShortArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetShortArrayElements(JNIEnv* env, jshortArray arr, jbool* iscopy)
 {
 	jshort* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -2982,7 +2982,7 @@ Kaffe_GetShortArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jint*
-Kaffe_GetIntArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetIntArrayElements(JNIEnv* env, jintArray arr, jbool* iscopy)
 {
 	jint* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -2997,7 +2997,7 @@ Kaffe_GetIntArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jlong*
-Kaffe_GetLongArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetLongArrayElements(JNIEnv* env, jlongArray arr, jbool* iscopy)
 {
 	jlong* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -3012,7 +3012,7 @@ Kaffe_GetLongArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jfloat*
-Kaffe_GetFloatArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetFloatArrayElements(JNIEnv* env, jfloatArray arr, jbool* iscopy)
 {
 	jfloat* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -3027,7 +3027,7 @@ Kaffe_GetFloatArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static jdouble*
-Kaffe_GetDoubleArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
+Kaffe_GetDoubleArrayElements(JNIEnv* env, jdoubleArray arr, jbool* iscopy)
 {
 	jdouble* ret;
 	BEGIN_EXCEPTION_HANDLING(0);
@@ -3042,7 +3042,7 @@ Kaffe_GetDoubleArrayElements(JNIEnv* env, jarray arr, jbool* iscopy)
 }
 
 static void
-Kaffe_ReleaseBooleanArrayElements(JNIEnv* env, jarray arr, jbool* elems, jint mode)
+Kaffe_ReleaseBooleanArrayElements(JNIEnv* env, jbooleanArray arr, jbool* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3064,7 +3064,7 @@ Kaffe_ReleaseBooleanArrayElements(JNIEnv* env, jarray arr, jbool* elems, jint mo
 }
 
 static void
-Kaffe_ReleaseByteArrayElements(JNIEnv* env, jarray arr, jbyte* elems, jint mode)
+Kaffe_ReleaseByteArrayElements(JNIEnv* env, jbyteArray arr, jbyte* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3086,7 +3086,7 @@ Kaffe_ReleaseByteArrayElements(JNIEnv* env, jarray arr, jbyte* elems, jint mode)
 }
 
 static void
-Kaffe_ReleaseCharArrayElements(JNIEnv* env, jarray arr, jchar* elems, jint mode)
+Kaffe_ReleaseCharArrayElements(JNIEnv* env, jcharArray arr, jchar* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3108,7 +3108,7 @@ Kaffe_ReleaseCharArrayElements(JNIEnv* env, jarray arr, jchar* elems, jint mode)
 }
 
 static void
-Kaffe_ReleaseShortArrayElements(JNIEnv* env, jarray arr, jshort* elems, jint mode)
+Kaffe_ReleaseShortArrayElements(JNIEnv* env, jshortArray arr, jshort* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3130,7 +3130,7 @@ Kaffe_ReleaseShortArrayElements(JNIEnv* env, jarray arr, jshort* elems, jint mod
 }
 
 static void
-Kaffe_ReleaseIntArrayElements(JNIEnv* env, jarray arr, jint* elems, jint mode)
+Kaffe_ReleaseIntArrayElements(JNIEnv* env, jintArray arr, jint* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3152,7 +3152,7 @@ Kaffe_ReleaseIntArrayElements(JNIEnv* env, jarray arr, jint* elems, jint mode)
 }
 
 static void
-Kaffe_ReleaseLongArrayElements(JNIEnv* env, jarray arr, jlong* elems, jint mode)
+Kaffe_ReleaseLongArrayElements(JNIEnv* env, jlongArray arr, jlong* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3174,7 +3174,7 @@ Kaffe_ReleaseLongArrayElements(JNIEnv* env, jarray arr, jlong* elems, jint mode)
 }
 
 static void
-Kaffe_ReleaseFloatArrayElements(JNIEnv* env, jarray arr, jfloat* elems, jint mode)
+Kaffe_ReleaseFloatArrayElements(JNIEnv* env, jfloatArray arr, jfloat* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3196,7 +3196,7 @@ Kaffe_ReleaseFloatArrayElements(JNIEnv* env, jarray arr, jfloat* elems, jint mod
 }
 
 static void
-Kaffe_ReleaseDoubleArrayElements(JNIEnv* env, jarray arr, jdouble* elems, jint mode)
+Kaffe_ReleaseDoubleArrayElements(JNIEnv* env, jdoubleArray arr, jdouble* elems, jint mode)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3218,7 +3218,7 @@ Kaffe_ReleaseDoubleArrayElements(JNIEnv* env, jarray arr, jdouble* elems, jint m
 }
 
 static void
-Kaffe_GetBooleanArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbool* data)
+Kaffe_GetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize len, jbool* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3231,7 +3231,7 @@ Kaffe_GetBooleanArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbo
 }
 
 static void
-Kaffe_GetByteArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbyte* data)
+Kaffe_GetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jbyte* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3244,7 +3244,7 @@ Kaffe_GetByteArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbyte*
 }
 
 static void
-Kaffe_GetCharArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jchar* data)
+Kaffe_GetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jchar* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3257,7 +3257,7 @@ Kaffe_GetCharArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jchar*
 }
 
 static void
-Kaffe_GetShortArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jshort* data)
+Kaffe_GetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, jshort* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3270,7 +3270,7 @@ Kaffe_GetShortArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jshor
 }
 
 static void
-Kaffe_GetIntArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jint* data)
+Kaffe_GetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3283,7 +3283,7 @@ Kaffe_GetIntArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jint* d
 }
 
 static void
-Kaffe_GetLongArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jlong* data)
+Kaffe_GetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jlong* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3296,7 +3296,7 @@ Kaffe_GetLongArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jlong*
 }
 
 static void
-Kaffe_GetFloatArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jfloat* data)
+Kaffe_GetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, jfloat* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3309,7 +3309,7 @@ Kaffe_GetFloatArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jfloa
 }
 
 static void
-Kaffe_GetDoubleArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jdouble* data)
+Kaffe_GetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len, jdouble* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3322,7 +3322,7 @@ Kaffe_GetDoubleArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jdou
 }
 
 static void
-Kaffe_SetBooleanArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbool* data)
+Kaffe_SetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize len, jbool* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3335,7 +3335,7 @@ Kaffe_SetBooleanArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbo
 }
 
 static void
-Kaffe_SetByteArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbyte* data)
+Kaffe_SetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jbyte* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3348,7 +3348,7 @@ Kaffe_SetByteArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jbyte*
 }
 
 static void
-Kaffe_SetCharArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jchar* data)
+Kaffe_SetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jchar* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3361,7 +3361,7 @@ Kaffe_SetCharArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jchar*
 }
 
 static void
-Kaffe_SetShortArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jshort* data)
+Kaffe_SetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, jshort* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3374,7 +3374,7 @@ Kaffe_SetShortArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jshor
 }
 
 static void
-Kaffe_SetIntArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jint* data)
+Kaffe_SetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3387,7 +3387,7 @@ Kaffe_SetIntArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jint* d
 }
 
 static void
-Kaffe_SetLongArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jlong* data)
+Kaffe_SetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jlong* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3400,7 +3400,7 @@ Kaffe_SetLongArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jlong*
 }
 
 static void
-Kaffe_SetFloatArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jfloat* data)
+Kaffe_SetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, jfloat* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -3413,7 +3413,7 @@ Kaffe_SetFloatArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jfloa
 }
 
 static void
-Kaffe_SetDoubleArrayRegion(JNIEnv* env, jarray arr, jsize start, jsize len, jdouble* data)
+Kaffe_SetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len, jdouble* data)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 

@@ -16,8 +16,8 @@
 
 jint
 Java_kaffe_io_CharToByteDefault_convert( JNIEnv* env, jobject _this, 
-										  jarray fromChars, jint fromPos, jint fromLen,
-										  jarray toBytes, jint toPos, jint toLen )
+										  jcharArray fromChars, jint fromPos, jint fromLen,
+										  jbyteArray toBytes, jint toPos, jint toLen )
 {
   register jint i, j;
   jboolean  isCopy;

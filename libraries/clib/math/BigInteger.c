@@ -94,7 +94,7 @@ Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
 }
 
 void
-Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jarray magnitude)
+Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteArray magnitude)
 {
 	mpz_ptr res;
 	jbyte* data;

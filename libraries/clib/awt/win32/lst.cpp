@@ -86,7 +86,7 @@ public:
 	jobject KList::getSelectionIdxs() {
 		//for multiple-selection lists
 		jboolean	isCopy;
-		jarray		selArray;
+		jintArray	selArray;
 		jint*		sels;
 		int			numSel = (int)SendMessage( hwnd, LB_GETSELCOUNT, 0, 0);
 		

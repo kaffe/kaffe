@@ -370,6 +370,67 @@ FDBG(		printf("Field: %s %s\n", arg, (char*)cpool->data[f.name_index]);			)
 }
 
 /*
+ * Return the JNI type
+ */
+static const char *
+jniType(const char *sig)
+{
+	switch (sig[0]) {
+	case '[':
+		switch (sig[1]) {
+		case 'Z':
+			return "jbooleanArray";
+		case 'B':
+			return "jbyteArray";
+		case 'C':
+			return "jcharArray";
+		case 'S':
+			return "jshortArray";
+		case 'I':
+			return "jintArray";
+		case 'J':
+			return "jlongArray";
+		case 'F':
+			return "jfloatArray";
+		case 'D':
+			return "jdoubleArray";
+		case 'L':
+			return "jobjectArray";
+		default:
+			fprintf(stderr, "bogus array type `%c'", sig[1]);
+			exit(1);
+		}
+	case 'L':
+		if (strncmp(sig, "Ljava/lang/Class;", 17) == 0)
+			return "jclass";
+		if (strncmp(sig, "Ljava/lang/String;", 18) == 0)
+			return "jstring";
+		return "jobject";
+	case 'I':
+		return "jint";
+	case 'Z':
+		return "jboolean";
+	case 'S':
+		return "jshort";
+	case 'B':
+		return "jbyte";
+	case 'C':
+		return "jchar";
+	case 'F':
+		return "jfloat";
+	case 'J':
+		return "jlong";
+	case 'D':
+		return "jdouble";
+	case 'V':
+		return "void";
+	default:
+		fprintf(stderr, "bogus signature type `%c'", sig[0]);
+		exit(1);
+	}
+}
+
+/*
  * Read and process a method.
  */
 void
@@ -420,56 +481,8 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 	}
 
 	if (jni_include != 0) {
-		fprintf(jni_include, "JNIEXPORT ");
-		switch (*ret) {
-		case '[':
-			fprintf(jni_include, "jarray");
-			break;
-		case 'L':
-			if (strncmp(ret, "Ljava/lang/Class;", 17) == 0) {
-				fprintf(jni_include, "jclass");
-			}
-			else if (strncmp(ret, "Ljava/lang/String;", 18) == 0) {
-				fprintf(jni_include, "jstring");
-			}
-			else {
-				fprintf(jni_include, "jobject");
-			}
-			break;
-		case 'I':
-			fprintf(jni_include, "jint");
-			break;
-		case 'Z':
-			fprintf(jni_include, "jboolean");
-			break;
-		case 'S':
-			fprintf(jni_include, "jshort");
-			break;
-		case 'B':
-			fprintf(jni_include, "jbyte");
-			break;
-		case 'C':
-			fprintf(jni_include, "jchar");
-			break;
-		case 'F':
-			fprintf(jni_include, "jfloat");
-			break;
-		case 'J':
-			fprintf(jni_include, "jlong");
-			break;
-		case 'D':
-			fprintf(jni_include, "jdouble");
-			break;
-		case 'V':
-			fprintf(jni_include, "void");
-			break;
-		default:
-			fprintf(stderr, "unknown return type `%c' for "
-				"method %s.%s, bailing out.\n", *ret,
-				className, name);
-			exit(0);
-		}
-		fprintf(jni_include, " JNICALL Java_%s_%s(JNIEnv*", className, name);
+		fprintf(jni_include, "JNIEXPORT %s JNICALL Java_%s_%s(JNIEnv*",
+			jniType(ret), className, name);
 		if ((m.access_flags & ACC_STATIC)) {
 			fprintf(jni_include, ", jclass");
 		}
@@ -481,48 +494,8 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 	str = sig + 1;
 	args++;
 	while (str[0] != ')') {
-		if (jni_include != 0) {
-			switch (str[0]) {
-			case '[':
-				fprintf(jni_include, ", jarray");
-				break;
-			case 'L':
-				if (strncmp(str, "Ljava/lang/Class;", 17) == 0) {
-					fprintf(jni_include, ", jclass");
-				}
-				else if (strncmp(str, "Ljava/lang/String;", 18) == 0) {
-					fprintf(jni_include, ", jstring");
-				}
-				else {
-					fprintf(jni_include, ", jobject");
-				}
-				break;
-			case 'I':
-				fprintf(jni_include, ", jint");
-				break;
-			case 'Z':
-				fprintf(jni_include, ", jboolean");
-				break;
-			case 'S':
-				fprintf(jni_include, ", jshort");
-				break;
-			case 'B':
-				fprintf(jni_include, ", jbyte");
-				break;
-			case 'C':
-				fprintf(jni_include, ", jchar");
-				break;
-			case 'F':
-				fprintf(jni_include, ", jfloat");
-				break;
-			case 'J':
-				fprintf(jni_include, ", jlong");
-				break;
-			case 'D':
-				fprintf(jni_include, ", jdouble");
-				break;
-			}
-		}
+		if (jni_include != 0)
+			fprintf(jni_include, ", %s", jniType(str));
 		tsig = translateSig(str, &str, &args);
 		if (include != 0) {
 			fprintf(include, "%s", tsig);

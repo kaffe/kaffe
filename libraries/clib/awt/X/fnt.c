@@ -195,7 +195,7 @@ jobject
 Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs )
 {
   int       n = 256;
-  jarray    widths;
+  jintArray widths;
   jint      *jw;
   jboolean isCopy;
   register  int i, j;
@@ -221,8 +221,8 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
 
 
 jint
-Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs,
-									  jarray jBytes, jint off, jint len )
+Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
+	XFontStruct* fs, jbyteArray jBytes, jint off, jint len )
 {
   jboolean  isCopy;
   jbyte    *jb = (*env)->GetByteArrayElements( env, jBytes, &isCopy);
@@ -248,8 +248,8 @@ Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs,
 }
 
 jint
-Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz, XFontStruct* fs,
-									  jarray jChars, jint off, jint len )
+Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
+	XFontStruct* fs, jcharArray jChars, jint off, jint len )
 {
   jboolean  isCopy;
   jchar    *jc = (*env)->GetCharArrayElements( env, jChars, &isCopy);

@@ -34,7 +34,7 @@ freevec(char **v)
 
 jint
 Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env,
-	jobject proc, jarray args, jarray envs, jstring dir)
+	jobject proc, jobjectArray args, jobjectArray envs, jstring dir)
 {
 	jint pid;
 	char** argv;

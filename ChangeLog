@@ -1,3 +1,18 @@
+Mon Feb 28 21:29:32 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* include/jni.h kaffe/kaffeh/support.c kaffe/kaffevm/jni.c
+	libraries/clib/awt/X/cbd.c libraries/clib/awt/X/clr.c
+	libraries/clib/awt/X/fnt.c libraries/clib/awt/X/gra.c
+	libraries/clib/awt/X/img.c libraries/clib/awt/win32/clr.cpp
+	libraries/clib/awt/win32/fnt.cpp libraries/clib/awt/win32/gra.cpp
+	libraries/clib/awt/win32/img.cpp libraries/clib/awt/win32/lst.cpp
+	libraries/clib/math/BigInteger.c libraries/clib/security/digest.c
+	libraries/clib/native/ByteToCharDefault.c
+	libraries/clib/native/CharToByteDefault.c
+	libraries/clib/native/Constructor.c libraries/clib/native/Method.c
+	libraries/clib/native/UNIXProcess.c: fix JNI prototypes to use
+	"jbooleanArray", etc. instead of "jarray".
+
 Thu Feb 24 10:28:53 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/TimerTask.java,

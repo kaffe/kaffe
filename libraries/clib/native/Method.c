@@ -49,7 +49,7 @@ java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 }
 
 jobject
-Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, jarray _argobj)
+Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, jobjectArray _argobj)
 {
 	Hjava_lang_Class* clazz;
 	Hjava_lang_Object* robj;

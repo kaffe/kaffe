@@ -142,8 +142,8 @@ Java_java_awt_Toolkit_graClearRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 
 
 void
-Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz, Graphics* gr,
-									 jarray jBytes, jint offset, jint len, jint x, jint y )
+Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz,
+	Graphics* gr, jbyteArray jBytes, jint offset, jint len, jint x, jint y )
 {
   jboolean isCopy;
   int      n;
@@ -169,8 +169,8 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz, Graphics* gr,
 
 
 void
-Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz, Graphics* gr,
-									 jarray jChars, jint offset, jint len, jint x, jint y )
+Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
+	Graphics* gr, jcharArray jChars, jint offset, jint len, jint x, jint y )
 {
   jboolean isCopy;
   int      n;
@@ -302,7 +302,7 @@ Java_java_awt_Toolkit_graFillOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 
 
 int jarray2Points ( JNIEnv* env, Toolkit* X, XPoint** pp, int x0, int y0,
-					jarray xPoints, jarray yPoints, int nPoints )
+			jintArray xPoints, jintArray yPoints, int nPoints )
 {
   register int i;
   int      n;
@@ -328,8 +328,8 @@ int jarray2Points ( JNIEnv* env, Toolkit* X, XPoint** pp, int x0, int y0,
 
 
 void
-Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
-									   jarray xPoints, jarray yPoints, jint nPoints )
+Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz,
+	Graphics* gr, jintArray xPoints, jintArray yPoints, jint nPoints )
 {
   int n;
   XPoint   *p;
@@ -354,7 +354,7 @@ Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
 
 void
 Java_java_awt_Toolkit_graDrawPolyline ( JNIEnv* env, jclass clazz, Graphics* gr,
-										jarray xPoints, jarray yPoints, jint nPoints )
+										jintArray xPoints, jintArray yPoints, jint nPoints )
 {
   XPoint   *p;
 
@@ -369,8 +369,8 @@ Java_java_awt_Toolkit_graDrawPolyline ( JNIEnv* env, jclass clazz, Graphics* gr,
 
 
 void
-Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
-									   jarray xPoints, jarray yPoints, jint nPoints )
+Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz,
+	Graphics* gr, jintArray xPoints, jintArray yPoints, jint nPoints )
 {
   XPoint   *p;
 

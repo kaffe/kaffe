@@ -28,7 +28,7 @@
 /* XXX move in header file */
 jobject
 Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, 
-	jobject _obj, jarray _argobj);
+	jobject _obj, jobjectArray _argobj);
 
 jint
 java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor* this)
@@ -45,13 +45,13 @@ java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor
 }
 
 jobject
-Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jarray argobj)
+Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jobjectArray argobj)
 {
 	/* 
 	 * We fake a java.lang.reflect.Method Object so that we can call
 	 * Java_java_lang_reflect_Method_invoke from here.
 	 *
-	 * The main task Method_invoke does is converting the jarray of
+	 * The main task Method_invoke does is converting the jobjectArray of
 	 * arguments into a jvalue * array.  Method.invoke will invoke the
 	 * right JNI function when it detects that the method is a constructor
 	 */

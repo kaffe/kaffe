@@ -41,7 +41,7 @@ selectionRequest ( JNIEnv* env, Toolkit* X )
   XEvent     e;
   char       *mime;
   jstring    jMimeType;
-  jarray     jData;
+  jbyteArray jData;
   jbyte      *data;
   jboolean   isCopy;
   int        len;
@@ -189,7 +189,7 @@ Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz, ClipBoard* cbd
   int             ret;
   unsigned char   *data = 0;
   char            *mime = 0;
-  jarray          jdata;
+  jbyteArray      jdata;
   jstring         jMimeType;
 
   if ( (ret = getRawData( X, JAVA_OBJECT, &data)) ){

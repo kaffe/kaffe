@@ -62,7 +62,7 @@ Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
 
 void JNICALL
 Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
-	jarray buf, jint off, jint len)
+	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -70,7 +70,7 @@ Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
 	const jfieldID	contextField = (*env)->GetFieldID(env,
 				class, "context", "[B");
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -97,7 +97,7 @@ Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
 
 void JNICALL
 Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
-	jarray buf, jint off)
+	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -109,7 +109,7 @@ Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
 	jint		digestLen = (*env)->GetStaticIntField(env,
 				this, diglenField);
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -167,7 +167,7 @@ Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
 
 void JNICALL
 Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
-	jarray buf, jint off, jint len)
+	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -175,7 +175,7 @@ Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
 	const jfieldID	contextField = (*env)->GetFieldID(env,
 				class, "context", "[B");
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -202,7 +202,7 @@ Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
 
 void JNICALL
 Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
-	jarray buf, jint off)
+	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -214,7 +214,7 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 	jint		digestLen = (*env)->GetStaticIntField(env,
 				this, diglenField);
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -282,7 +282,7 @@ Java_kaffe_security_provider_MD5_Init(JNIEnv *env, jobject this)
 
 void JNICALL
 Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
-	jarray buf, jint off, jint len)
+	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -290,7 +290,7 @@ Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 	const jfieldID	contextField = (*env)->GetFieldID(env,
 				class, "context", "[B");
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -317,7 +317,7 @@ Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 
 void JNICALL
 Java_kaffe_security_provider_MD5_Final(JNIEnv *env, jobject this,
-	jarray buf, jint off)
+	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -329,7 +329,7 @@ Java_kaffe_security_provider_MD5_Final(JNIEnv *env, jobject this,
 	jint		digestLen = (*env)->GetStaticIntField(env,
 				this, diglenField);
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -381,7 +381,7 @@ Java_kaffe_security_provider_SHA_Init(JNIEnv *env, jobject this)
 
 void JNICALL
 Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
-	jarray buf, jint off, jint len)
+	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -389,7 +389,7 @@ Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 	const jfieldID	contextField = (*env)->GetFieldID(env,
 				class, "context", "[B");
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);
@@ -416,7 +416,7 @@ Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 
 void JNICALL
 Java_kaffe_security_provider_SHA_Final(JNIEnv *env, jobject this,
-	jarray buf, jint off)
+	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jclass	aiobClass = (*env)->FindClass(env,
@@ -428,7 +428,7 @@ Java_kaffe_security_provider_SHA_Final(JNIEnv *env, jobject this,
 	jint		digestLen = (*env)->GetStaticIntField(env,
 				this, diglenField);
 	jbyte		*ctxBytes, *bufBytes;
-	jarray		ctxArray;
+	jbyteArray	ctxArray;
 
 	/* Get context byte array data */
 	ctxArray = (*env)->GetObjectField(env, this, contextField);

@@ -38,7 +38,7 @@ void _cdecl getArcPoints( int x, int y, int width, int height,
 }
 
 int __cdecl jarray2Points ( POINT** pp, int x0, int y0,
-						   jarray xPoints, jarray yPoints, int nPoints )
+						   jintArray xPoints, jintArray yPoints, int nPoints )
 {
 	register int i;
 	int      n;
@@ -395,7 +395,7 @@ extern "C" {
 	
 	void __cdecl
 		Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz, Graphics* gr,
-		jarray jBytes, jint offset, jint len, jint x, jint y )
+		jbyteArray jBytes, jint offset, jint len, jint x, jint y )
 	{
 		jboolean isCopy;
 		int      n;
@@ -422,7 +422,7 @@ extern "C" {
 	
 	void __cdecl
 		Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz, Graphics* gr,
-		jarray jChars, jint offset, jint len, jint x, jint y )
+		jcharArray jChars, jint offset, jint len, jint x, jint y )
 	{
 		jboolean isCopy;
 		int      n;
@@ -530,7 +530,7 @@ extern "C" {
 	
 	void __cdecl
 		Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
-		jarray xPoints, jarray yPoints, jint nPoints )
+		jintArray xPoints, jintArray yPoints, jint nPoints )
 	{
 		int n;
 		POINT *p;
@@ -557,7 +557,7 @@ extern "C" {
 	
 	void __cdecl
 		Java_java_awt_Toolkit_graDrawPolyline ( JNIEnv* env, jclass clazz, Graphics* gr,
-		jarray xPoints, jarray yPoints, jint nPoints )
+		jintArray xPoints, jintArray yPoints, jint nPoints )
 	{
 		POINT *p;
 		DBG( awt_gra, ("drawPolyline: %x, %x,%x  %d\n", gr, xPoints, yPoints, nPoints));
@@ -575,7 +575,7 @@ extern "C" {
 	
 	void __cdecl
 		Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
-		jarray xPoints, jarray yPoints, jint nPoints )
+		jintArray xPoints, jintArray yPoints, jint nPoints )
 	{
 		int n;
 		POINT *p;

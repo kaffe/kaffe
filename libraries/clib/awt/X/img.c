@@ -404,9 +404,9 @@ Java_java_awt_Toolkit_imgCreateScreenImage ( JNIEnv* env, jclass clazz, jint wid
 
 void
 Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
-									  jint x, jint y, jint w, jint h,
-									  jarray clrMap, jarray idxPels, jint trans,
-									  jint off, jint scan)
+		jint x, jint y, jint w, jint h,
+		jintArray clrMap, jbyteArray idxPels, jint trans,
+		jint off, jint scan)
 {
   register int    row, col;
   unsigned long   pix;
@@ -445,7 +445,7 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 void
 Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jint x, jint y, jint w, jint h,
-									  jarray rgbPels, jint off, jint scan)
+									  jintArray rgbPels, jint off, jint scan)
 {
   register int    row, col;
   unsigned long   pix = 0;
@@ -596,7 +596,7 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject produ
   jclass         prodClazz, modelClazz;
   jmethodID      modelCtor, setDim, setCM, setHints, setPix, imgCompl;
   jobject        model;
-  jarray         pelArray;
+  jintArray      pelArray;
   jint           *pels;
   jboolean       isCopy;
 
@@ -712,7 +712,7 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
 
 void*
 Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
-										  jarray jbuffer, jint off, jint len )
+										  jbyteArray jbuffer, jint off, jint len )
 {
   Image *img = 0;
   jboolean isCopy;
