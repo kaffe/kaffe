@@ -437,13 +437,33 @@ public Object newInstance() throws InstantiationException, IllegalAccessExceptio
     }
 }
 
-/*
- * toString()
- */
-public String toString() {
-	return (isInterface() ? "interface " : isPrimitive() ? "" : "class ")
-	    + getName();
-}
+  /**
+   * Strip the last portion of the name (after the last dot).
+   *
+   * @param name the name to get package of
+   * @return the package name, or "" if no package
+   */
+  private static String getPackagePortion(String name)
+  {
+    int lastInd = name.lastIndexOf('.');
+    if (lastInd == -1)
+      return "";
+    return name.substring(0, lastInd);
+  }
+
+  /**
+   * Return the human-readable form of this Object.  For an object, this
+   * is either "interface " or "class " followed by <code>getName()</code>,
+   * for primitive types and void it is just <code>getName()</code>.
+   *
+   * @return the human-readable form of this Object
+   */
+  public String toString()
+  {
+    if (isPrimitive())
+      return getName();
+    return (isInterface() ? "interface " : "class ") + getName();
+  }
 
 /**
  * Returns the desired assertion status of this class, if it were to be
@@ -505,19 +525,5 @@ public boolean desiredAssertionStatus() {
 			return status.equals(Boolean.TRUE);
 	}
 	return c.defaultAssertionStatus;
-}
-
-/**
- * Strip the last portion of the name (after the last dot).
- *
- * @param name the name to get package of
- * @return the package name, or "" if no package
- */
-private static String getPackagePortion(String name)
-{
-	int lastInd = name.lastIndexOf('.');
-	if (lastInd == -1)
-		return "";
-	return name.substring(0, lastInd);
 }
 }

@@ -1,5 +1,18 @@
 2004-02-02  Dalibor Topic <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2004-01-25  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/lang/ClassHelper.java
+        (getPackagePortion): Moved to java.lang.Class.
+        * java/lang/Class.java: Merged more with libgcj, renamed some
+        variables.
+        (toString): Moved.
+        (getPackagePortion): New method.
+
+2004-02-02  Dalibor Topic <robilad@kaffe.org>
+
 	* Makefile.am:
 	(SUBDIRS) Removed intl.
 
