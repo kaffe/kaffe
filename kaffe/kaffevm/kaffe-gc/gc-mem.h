@@ -71,12 +71,6 @@ extern void	gc_heap_free(void*);
 extern void*	gc_heap_grow(size_t);
 
 /**
- * Evaluates to the size of the object that contains address @M.
- *
- */
-#define	KGC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
-
-/**
  * One block of the heap managed by kaffe's gc.
  *
  * It is basically one page of objects that are of the same size. 

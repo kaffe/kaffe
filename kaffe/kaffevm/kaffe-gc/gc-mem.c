@@ -133,6 +133,12 @@ int gc_system_alloc_cnt;
 #define GCBLOCK2BASE(B)		(((char *)gc_heap_base) \
 					 + gc_pgsize * ((B) - KGC_BLOCKS))
 
+/**
+ * Evaluates to the size of the object that contains address @M.
+ *
+ */
+#define	KGC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
+
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */
 static const uint32 gc_magic = 0xD0DECADE;
