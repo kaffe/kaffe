@@ -36,6 +36,7 @@
 #define HAVE_exception_prologue		eprologue_xxx
 
 #define	HAVE_move_int_const_rangecheck(v)        (1)
+#define	HAVE_move_ref_const_rangecheck(v)        (1)
 
 #define	HAVE_move_int_const		move_RxC
 #define	HAVE_move_int			move_RxR
@@ -43,6 +44,7 @@
 #define	HAVE_move_double		fmovel_RxR
 #define	HAVE_move_label_const		move_RxL
 #define	HAVE_move_ref			move_RxR
+#define HAVE_move_ref_const		move_RxC
 #define	HAVE_move_any			move_RxR
 
 #define	HAVE_add_int			add_RRR
