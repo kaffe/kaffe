@@ -144,18 +144,19 @@ initialiseKaffe(void)
 		fprintf(stderr, "not enough memory to run kaffe\n");
 		ABORT();
 	}
+
 #if defined(HAVE_GCJ_SUPPORT)
 	/* Init GCJ support */
 	gcjInit();
-#else
-#warning No GCJ Support
 #endif
 
 	/* Read in base classes */
 	initBaseClasses();
 
+#if defined(HAVE_GCJ_SUPPORT)
 	/* tell gcj where primitive classes are */
 	gcjInitPrimitiveClasses();
+#endif
 
 	/* Setup exceptions */
 	initExceptions();

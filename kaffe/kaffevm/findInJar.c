@@ -312,6 +312,7 @@ initClasspath(void)
 void
 gcjInit(void)
 {
+#if defined(HAVE_GCJ_SUPPORT)
         classpathEntry* entry;
 
         /* Load any shared objects into VM now */
@@ -320,6 +321,7 @@ gcjInit(void)
 			gcjLoadSharedObject(entry->path);
 		}
 	}
+#endif
 }
 
 /*
