@@ -166,7 +166,7 @@ runtest SignedShort
 runtest CharCvt
 runtest BadFloatTest
 runtest ExecTest
-runtest ProcessTest
+runtest ProcessTest $JAVA
 runtest UDPTest
 runtest wc < $SRCDIR/wc.java
 

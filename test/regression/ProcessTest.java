@@ -13,21 +13,21 @@ import java.io.*;
 public class ProcessTest {
 
     // note that this will only work if we have execvp()
-    public static String kaffe_exe = "Kaffe";
     public static final String childmsg = "Hi, mom";
 
     public static void main(String args[])
     {
-	if (args.length > 0) {
+	if (args.length > 1) {
 	    // child
-	    System.out.println(args[0]);
+	    System.out.println(args[1]);
 	} else {
+	    String kaffe_exe = args[0];
 
 	    // parent
 	    try {
 		Process process = Runtime.getRuntime().exec(
 		    new String [] {
-			kaffe_exe, "ProcessTest", childmsg
+			kaffe_exe, "ProcessTest", "-child", childmsg
 		    });
 		InputStream is = process.getInputStream();
 		if (is == null)
