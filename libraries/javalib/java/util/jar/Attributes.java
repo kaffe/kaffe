@@ -65,13 +65,11 @@ public class Attributes implements Map, Cloneable {
     }
 
     public Object put(Object name, Object value)
-	throws ClassCastException
     {
 	return map.put(name,value);
     }
 
     public String putValue(String name, String value)
-	throws IllegalArgumentException
     {
 	return (String) put(new Attributes.Name(name), value);
     }
@@ -138,7 +136,6 @@ public class Attributes implements Map, Cloneable {
 	public static final Name SPECIFICATION_VENDOR = null;
 
 	public Name(String name)
-	    throws IllegalArgumentException, NullPointerException
 	{
 	    if (name == null) {
 		throw new NullPointerException("name");
@@ -174,7 +171,6 @@ public class Attributes implements Map, Cloneable {
 	}
 
 	private static void checkName(String name)
-	    throws IllegalArgumentException
 	{
 	    // valid chars [0-9a-zA-Z_-].
 
