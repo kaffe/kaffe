@@ -7,8 +7,8 @@ What's New in Kaffe OpenVM 1.0.5
 
 * New JIT3 - increases performance of JIT code by a factor of 3 over the
   old JIT system.
-	- Supports: x86, MIPS
-	- Coming soon: StrongARM, m68k, Sparc.
+	- Supports: x86, MIPS, StrongARM, M68K
+	- Coming soon: Sparc, Alpha
 
 * RMI implementation (released under the Lesser GPL in conjuntion with
   the Classpath project)
@@ -20,6 +20,12 @@ What's New in Kaffe OpenVM 1.0.5
 * SuperFast locking implementation.
 
 * Pthreads implementation (currently for GLIBC 2.1.2 LinuxThreads only)
+
+* Resurrected M68K JIT.
+
+* New JDK 1.2 style class loading.
+
+* Improved i18n support.
 
 * ....
 
