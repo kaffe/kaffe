@@ -712,7 +712,7 @@ newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
 
 	n = CLASS_NMETHODS(clazz);
 	for (mptr = CLASS_METHODS(clazz); --n >= 0; ++mptr) {
-		if (utf8ConstEqual(mptr->name, init_name) && !utf8ConstEqual(METHOD_SIG(mptr), void_signature)) {
+		if (utf8ConstEqual(mptr->name, constructor_name) && !utf8ConstEqual(METHOD_SIG(mptr), void_signature)) {
 			/* XXX !!! */
 			return ((Hjava_lang_Object*)Kaffe_NewObject(0, clazz, (jmethodID)mptr, obj));
 		}
