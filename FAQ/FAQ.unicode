@@ -1,0 +1,76 @@
+Kaffe Unicode Database.
+
+Kaffe use a compressed form of the Unicode 2.1 database for
+the java.lang.Character class.
+
+The Unicode 2.1 database, have lot of usefull compression properties.
+
+The class java.lang.Character uses a subset of the the Unicode properties:
+. The category [getType()]
+. The decimal digit value [digit()]
+. The numeric value [getNumericValue()]
+. The uppercase, lowercase and titlecase equivalent [toUpperCase(),
+  toLowerCase(), toTitleCase()]
+
+Unicode compression properties:
+. few characters have a titlecase equivalent different than the uppercase.
+  [uppercase and titlecase of true titlecase character, category "Lt"]
+. few characters have a numeric value and a case equivalent.
+  [roman numeric letters, category "Nl"]
+. all digit number "Nd" have the same decimal digit value than the numeric
+  value.
+
+Then, we define two character properties format, small and extended.
+
+Small character proteries format:
+. the category
+. whitch field (none, numeric value, uppercase, lowercase)
+. the generic value
+
+xFFCCCCC GGGGGGGG GGGGGGGG
+
+Extended character properties format:
+. the category
+. the numeric value
+. the uppercase equivalent
+. the lowercase equivalent
+. the titlecase equivalent
+
+xxxCCCCC NNNNNNNN NNNNNNNN UUUUUUUU UUUUUUUU
+LLLLLLLL LLLLLLLL TTTTTTTT TTTTTTTT
+
+Consecutives entries in the Unicode 2.1 database could be grouped with
+the following rules:
+. not compressed
+  consecutive entries don't have the same category or the same field
+  or the same value nor one increment.
+  [U+0028 - U+002D]
+. compressed same value:
+  consecutive entries have the same category, the same field and the
+  same generic value.
+  [U+0000 - U+001F, control, no field]
+. compressed one increment:
+  consecutive entries have the same category, the same field and the
+  same increment (one) for the generic value.
+  [U+0041 - U+005A (A-Z) uppercase letter, one increment for lowercase]
+. not compressed, extended entry:
+  consecutive entried that have more than one field.
+  [U+2160 - U+216F (Roman number)]
+
+
+To handle all these range, we create an index with the format:
+SSSSSSSS SSSSSSSS EEEEEEEE EEEEEEEE xxMMOOOO OOOOOOOO OOOOOOOO
+
+S: start unicode value for this range
+E: end unicode value for this range
+M: compression method
+O: offset in the properties table.
+
+
+The Perl script unicode.pl creates two files
+. unicode.idx the ranges index
+. unicode.tbl the properties tables
+
+
+Edouard G. Parmelan <egp@quadratec.fr>
+March 27, 1999

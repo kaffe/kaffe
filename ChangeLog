@@ -1,3 +1,17 @@
+Tue Mar 30 22:18:53 PST 1999  Edouard G. Parmelan <egp@quadratec.fr>
+
+	* libraries/javalib/java/lang/Character.java: use new Unicode tables
+	* libraries/javalib/kaffe/lang/unicode.idx, unicode.tbl: new tables
+	* FAQ/FAQ.unicode, developers/README.unicode, developers/unicode.pl:
+	new documentation/tools for Unicode database
+	* developers/README: add blurb for unicode.pl
+	* libraries/javalib/Makefile.am: add unicode files to Klasses.jar
+	* libraries/javalib/Makefile.in, libraries/javalib/Klasses.jar: regen
+
+Tue Mar 30 21:01:56 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.[ch]: fix warning
+
 Sun Mar 28 13:37:51 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* config/m68k/netbsd1/jit.h: remove empty file

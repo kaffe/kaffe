@@ -378,6 +378,7 @@ compile-classes $(LIBDIR)/stamp classes: rebuildLib $(Klasses_jar_SRCS)
 .PHONY: jar-classes
 jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
+	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
 
 .PHONY: build-classes Klasses
