@@ -112,8 +112,20 @@ do {									\
 } while (0);
 #endif /* HAVE_LIBFFI */
 
-/*
+/**
  * Call a Java method from native code.
+ *
+ * @param obj the obj or 0 if the method is static
+ * @param method_name the name of the method to be called
+ * @param signature the signature of the method to be called
+ * @param mb pointer to the struct _methods of the method to be called
+ * @param isStaticCall true if the call is static, otherwise false
+ * @param argptr va_list of the arguments to be passed to the method
+ *
+ * @throws NoSuchMethodError method was not found
+ * @throws NullPointerException if obj is 0 but method is not static
+ *
+ * @return the return value of the method to be called
  */
 jvalue
 do_execute_java_method_v(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, va_list argptr)
@@ -151,6 +163,18 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	return (retval);
 }
 
+/**
+ * Call a Java method from native code.
+ *
+ * @param obj the obj or 0 if the method is static
+ * @param method_name the name of the method to be called
+ * @param signature the signature of the method to be called
+ * @param mb pointer to the struct _methods of the method to be called
+ * @param isStaticCall true if the call is static, otherwise false
+ * @param ... the arguments to be passed to the method
+ *
+ * @return the return value of the method to be called
+ */
 jvalue
 do_execute_java_method(void* obj, const char* method_name, const char* signature, Method* mb, int isStaticCall, ...)
 {
@@ -166,8 +190,18 @@ do_execute_java_method(void* obj, const char* method_name, const char* signature
 	return (retval);
 }
 
-/*
+/**
  * Call a Java static method on a class from native code.
+ *
+ * @param cname name of the class whose method is to be called
+ * @param loader the class loader that's to be used to lookup the class
+ * @param method_name the name of the method to be called
+ * @param signature the signature of the method to be called
+ * @param argptr the arguments to be passed to the method
+ *
+ * @throws NuSuchMethodError if method cannot be found
+ * 
+ * @return the return value of the method
  */
 jvalue
 do_execute_java_class_method_v(const char* cname,
@@ -205,6 +239,17 @@ do_execute_java_class_method_v(const char* cname,
 	return (retval);
 }
 
+/**
+ * Call a Java static method on a class from native code.
+ *
+ * @param cname name of the class whose method is to be called
+ * @param loader the class loader that's to be used to lookup the class
+ * @param method_name the name of the method to be called
+ * @param signature the signature of the method to be called
+ * @param ... the arguments to be passed to the method
+ *
+ * @return the return value of the method
+ */
 jvalue
 do_execute_java_class_method(const char* cname, Hjava_lang_ClassLoader*loader,
 	const char* method_name, const char* signature, ...)
@@ -219,8 +264,19 @@ do_execute_java_class_method(const char* cname, Hjava_lang_ClassLoader*loader,
 	return (retval);
 }
 
-/*
+/**
  * Allocate an object and execute the constructor.
+ *
+ * @param cname the name of the class to be instantiated (may be 0 if cc is != 0)
+ * @param loader the class loader that's to be used to lookup the class
+ * @param cc the class to be instantiated (may be 0 if cname is != 0)
+ * @param signature the signature of the constructor to be executed
+ * @param argptr arguments to be passed to the constructor
+ *
+ * @throws InstantiationException if class is an interface or abstract
+ * @throws NoSuchMethodError if the specified constructor cannot be found
+ *
+ * @return the newly allocated object
  */
 Hjava_lang_Object*
 execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
@@ -272,6 +328,17 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 	return (obj);
 }
 
+/**
+ * Allocate an object and execute the constructor.
+ *
+ * @param cname the name of the class to be instantiated
+ * @param loader the class loader that's to be used to lookup the class
+ * @param cc the class to be instantiated
+ * @param signature the signature of the constructor to be executed
+ * @param ... arguments to be passed to the constructor
+ *
+ * @return the new allocated object
+ */
 Hjava_lang_Object*
 execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 	Hjava_lang_Class* cc, const char* signature, ...)
@@ -347,8 +414,15 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 # define ENSURE_ALIGN64(DO) do {} while (0)
 #endif
 
-/*
+/**
  * Generic routine to call a native or Java method (array style).
+ *
+ * @param meth the struct _methods of the method to be executed
+ * @param func the code that's to be executed
+ * @param obj  the object whose method is to be called (my be 0 iff method is static)
+ * @param args the arguments to be passed to the method
+ * @param ret  buffer for the return value of the method (may be 0 iff return type is void)
+ * @param promoted true iff 64 bit values occupy two entries in args, otherwise false
  */
 void
 callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
@@ -461,6 +535,9 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			call.callsize[i] = 2;
 			ENSURE_ALIGN64({});
 			in[i] = args[j];
+			if (promoted) { /* compensate for the second array element by incrementing args */
+			  args++;
+			}
 #if ! NO_HOLES
 			s += call.callsize[i];
 			in[i+1].i = (&in[i].i)[1];
@@ -583,8 +660,14 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	}
 }
 
-/*
+/**
  * Generic routine to call a native or Java method (varargs style).
+ *
+ * @param meth the struct _methods of the method to be executed
+ * @param func the code that's to be executed
+ * @param obj  the object whose method is to be called (my be 0 iff method is static)
+ * @param args the arguments to be passed to the method
+ * @param ret  buffer for the return value of the method (may be 0 iff return type is void)
  */
 void
 callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
@@ -781,8 +864,17 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #endif
 }
 
-/*
+/**
  * Lookup a method given class, name and signature.
+ *
+ * @param cls the class where to start search
+ * @param name name of the method being searched
+ * @param sig signature of the method being searched
+ * @param einfo struct errorInfo
+ *
+ * @throws OutOfMemoryError 
+ *
+ * @return struct _methods of the method being searched or 0 in case of an error
  */
 Method*
 lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, errorInfo *einfo)
@@ -809,8 +901,15 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 	return(meth);
 }
 
-/*
+/**
  * Lookup a method given object, name and signature.
+ *
+ * @param obj the object where to start search
+ * @param name name of the method being searched
+ * @param sig signature of the method being searched
+ * @param einfo struct errorInfo
+ *
+ * @return struct _methods of the method being searched or 0 in case of an error
  */
 Method*
 lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)
@@ -819,9 +918,12 @@ lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, er
 	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
 }
 
-/*
+/**
  * Signal an error by creating the object and throwing the exception.
  * See also SignalErrorf
+ *
+ * @param cname the name of the class of the exception object to be created
+ * @param str the message to be passed to the constructor of the exception object
  */
 void
 SignalError(const char* cname, const char* str)
@@ -838,9 +940,13 @@ SignalError(const char* cname, const char* str)
 	throwException(obj);
 }
 
-/*
+/**
  * Signal an error by creating the object and throwing the exception.
  * allows for printf-like msg format with additional parameters.
+ *
+ * @param cname the name of the class of the exception object to be created
+ * @param fmt the printf like format of the message
+ * @param ... the parameters necessary for the message format denoted by fmt
  */
 void
 SignalErrorf(const char* cname, const char* fmt, ...)
@@ -871,8 +977,11 @@ replacechar(const char* from, char* to, char old, char new)
 	to[i] = 0;
 }
 
-/*
+/**
  * Convert a class name to a path name.
+ *
+ * @param from points to the class name
+ * @param to points to path name
  */
 void
 classname2pathname(const char* from, char* to)
@@ -880,8 +989,11 @@ classname2pathname(const char* from, char* to)
 	replacechar(from, to, '.', '/');
 }
 
-/*
+/**
  * Convert a path name to a class name.
+ *
+ * @param from points to the path name
+ * @param to points to the class name
  */
 void
 pathname2classname(const char* from, char* to)
@@ -889,7 +1001,7 @@ pathname2classname(const char* from, char* to)
 	replacechar(from, to, '/', '.');
 }
 
-/*
+/**
  * Return current time in milliseconds.
  */
 jlong
@@ -917,8 +1029,12 @@ currentTime(void)
 	return (tme);
 }
 
-/*
+/**
  * Set a property to a value.
+ *
+ * @param properties pointer to the properties object whose contents are to be modified
+ * @param key the key of the property to be set
+ * @param value the value of the property to be set
  */
 void
 setProperty(void* properties, char* key, char* value)
@@ -934,8 +1050,13 @@ setProperty(void* properties, char* key, char* value)
 		0, false, jkey, jvalue);
 }
 
-/*
+/**
  * Allocate a new object of the given class name.
+ *
+ * @param classname the name of the class to be instantiated
+ * @param loader the loader to be used to lookup the class
+ *
+ * @return the newly allocated object
  */
 Hjava_lang_Object*
 AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
@@ -950,8 +1071,13 @@ AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
 	return (newObject(clazz));
 }
 
-/*
+/**
  * Allocate a new array of a given size and type.
+ *
+ * @param len the size of the array
+ * @param type the type of the elements of the array.
+ *
+ * @return the new allocated array
  */
 Hjava_lang_Object*
 AllocArray(int len, int type)
@@ -959,8 +1085,16 @@ AllocArray(int len, int type)
 	return (newArray(TYPE_CLASS(type), len));
 }
 
-/*
+/**
  * Allocate a new array of the given size and class name.
+ *
+ * @param sz the size of the array
+ * @param classname name of the class of the elements
+ * @param loader the class loader to be used to lookup the class
+ *
+ * @return the newly allocated array
+ *
+ * @throws NegativeArraySizeException iff the size<0
  */
 Hjava_lang_Object*
 AllocObjectArray(int sz, const char* classname, Hjava_lang_ClassLoader* loader)
@@ -979,8 +1113,12 @@ AllocObjectArray(int sz, const char* classname, Hjava_lang_ClassLoader* loader)
 
 }
 
-/*
+/**
  * Used to generate exception for unimplemented features.
+ *
+ * @param mess the message to be displayed
+ *
+ * @throws an InternalError
  */
 void
 unimp(const char* mess)
@@ -988,8 +1126,12 @@ unimp(const char* mess)
 	SignalError("java.lang.InternalError", mess);
 }
 
-/*
+/**
  * Print messages.
+ *
+ * @param out the FILE* to write the message to
+ * @param mess the printf like format of the message
+ * @param ... the parameters needed for the format
  */
 void
 kprintf(FILE* out, const char* mess, ...)
@@ -1001,7 +1143,7 @@ kprintf(FILE* out, const char* mess, ...)
 	va_end(argptr);
 }
 
-/*
+/**
  * Enter/leave critical region.  This interface is exported to 
  * native libraries to protect calls to non-reentrant functions.
  * It works as a global masterlock for C libraries that are not
@@ -1020,7 +1162,7 @@ leaveUnsafeRegion(void)
 }
 
 #if defined(NO_SHARED_LIBRARIES)
-/*
+/**
  * Register an user function statically linked in the binary.
  */
 void

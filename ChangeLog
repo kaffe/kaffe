@@ -1,3 +1,9 @@
+2003-02-18 Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/support.c:
+	Added doxygen comments.
+	(callMethodA) fixed regression test crash in interpreter mode.
+	
 2003-02-14 Dalibor Topic <robilad@yahoo.com>
 
 	* configure: regenerated.
