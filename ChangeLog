@@ -1,3 +1,17 @@
+Mon Sep 20 17:33:33 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/forNameTest.java: revert to previous version;
+	it should work.
+	* test/regression/URLTest.java: add a couple more tests
+	* libraries/javalib/kaffe/net/www/protocol/jar/JarURLConnection.java:
+	support jar: URLs that refer to the entire file
+	* libraries/javalib/java/lang/ClassLoader.javaa: findResources()
+	should be protected
+	* libraries/javalib/java/net/URL.java: add missing constructor
+	* libraries/javalib/java/net/URLClassLoader.java: finish implementation
+	* libraries/javalib/kaffe/applet/AppletViewer.java: rewrite
+	AppletClassLoader to extend URLClassLoader
+
 1999-09-20  Edouard G. Parmelan  <Edouard.Parmelan@quadratec.fr>
 
 	* config/alpha/jit-alpha.def config/alpha/jit.h
