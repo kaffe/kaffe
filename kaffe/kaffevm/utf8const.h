@@ -60,29 +60,7 @@ extern char * utf8ConstEncode(const jchar *chars, int clength);
  */
 extern void utf8ConstEncodeTo(const jchar *chars, int clength, char *buf);
 
-static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b) __UNUSED__;
-static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b)
-{
-	assert(a != NULL);
-	assert(a->nrefs >= 1);
-	assert(b != NULL);
-	assert(b->nrefs >= 1);
-
-#ifdef KAFFEH
-	/* Do the full compare (Kaffeh doesn't intern Utf8s) */
-	return (0 == strcmp(a->data, b->data));
-#else
-#ifdef KAFFE_VMDEBUG
-	/* If they're different pointers, double check that they're different strings... */
-	if ((a != b) && (a->hash == b->hash))
-	{
-		assert(strcmp(a->data,b->data));
-	}
-#endif
-	/* Since we intern all UTF-8 constants, we can do this: */
-	return (a == b);
-#endif
-}
+extern bool utf8ConstEqual(Utf8Const* a, Utf8Const* b);
 
 /* Since we compute hash values at creation time, we can do this: */
 static inline int32 utf8ConstHashValue(Utf8Const* a) __UNUSED__;

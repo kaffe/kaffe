@@ -299,7 +299,6 @@ kaffe/security/provider/MD2.class
 kaffe/security/provider/MD4.class
 kaffe/security/provider/MD5.class
 kaffe/security/provider/SHA.class
-java/lang/Compiler.class
 java/lang/reflect/Field.class
 kaffe/lang/UNIXProcess.class
 java/net/DatagramSocketImpl.class

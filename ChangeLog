@@ -1,3 +1,43 @@
+2004-04-22  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/Compiler.c:
+	Removed. The class is pure java now, and it still does
+	nothing.
+
+        * libraries/clib/native/Makefile.am:
+	(LANG_SRCS): Remove Compiler.c.
+	
+        * libraries/clib/native/Makefile.in:
+	Regenerated.
+
+        * libraries/javalib/bootstrap.classlist:
+	Removed java/lang/Compiler.class.
+
+        * include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS): Remove java_lang_Compiler.h.
+
+        * include/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffeh/sigs.c:
+	(translateSigType): removed unused function.
+
+        * kaffe/kaffeh/support.c:
+	(constValueToString) Removed unused parameter cvalsize.
+	
+        * kaffe/kaffevm/constants.c,
+        kaffe/kaffevm/debug.c:
+	Fixed signed-unsigned comparison warnings.	
+	
+        * kaffe/kaffevm/gtypes.h:
+	(strconst) Removed const qualifier from data char array to fix
+	compiler warnings.
+
+        * kaffe/kaffevm/utf8const.c,
+        kaffe/kaffevm/utf8const.h:
+	(utf8ConstEqual) Deinlined due to compiler warnings, and moved
+	into utf8const.c.
+
 2004-04-22  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h

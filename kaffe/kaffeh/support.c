@@ -445,7 +445,7 @@ addField(Hjava_lang_Class* this,
 
 static void
 constValueToString(Hjava_lang_Class* this, u2 idx,
-		   char *cval, int cvalsize UNUSED)
+		   char *cval)
 {
 	/* XXX use snprintf() */
 
@@ -482,7 +482,6 @@ constValueToString(Hjava_lang_Class* this, u2 idx,
 		break;
 	default:
 		sprintf(cval, "?unsupported type tag %d?", CLASS_CONST_TAG(this, idx));
-		break;
 	}
 }
 
@@ -494,8 +493,8 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 
 	if ((f->accflags & (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) == (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) {
 		char cval[512];
-			
-		constValueToString(this, idx, cval, sizeof(cval));
+
+		constValueToString(this, idx, cval);
 
 		if (cval[0] != '\0') {
 			if (include != NULL) {

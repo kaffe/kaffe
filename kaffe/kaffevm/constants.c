@@ -38,8 +38,8 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 	constants* info = CLASS_CONSTANTS (this);
 	ConstSlot* pool;
 	u1* tags;
-	int i;
-	int j;
+	unsigned int i;
+	unsigned int j;
 	u1 type;
 	u2 len;
 	u2 d2, d2b;
@@ -193,9 +193,9 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 					     type);
 fail:
 			info->size = 0;
-			while (--i >= 0) {
-				if (tags[i] == CONSTANT_Utf8) {
-					utf8ConstRelease((Utf8Const*)pool[i]);
+			for (j = 0 ; j < i; ++j) {
+				if (tags[j] == CONSTANT_Utf8) {
+					utf8ConstRelease((Utf8Const*)pool[j]);
 				}
 			}
 			return false;

@@ -138,7 +138,7 @@ struct _strconst {
 	int32		hash;		/* Hash code (== String.hashCode()) */
 	int32		nrefs;		/* Number of references */
 	int32		length;
-	const char	data[sizeof(int32)];	/* In UTF-8 format, with final '\0' */
+	char	data[sizeof(int32)];	/* In UTF-8 format, with final '\0' */
 };
 
 #define	SHIFT_jchar		1

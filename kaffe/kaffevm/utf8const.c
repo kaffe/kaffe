@@ -417,3 +417,27 @@ utf8ConstInit(void)
 
 	DBG(INIT, dprintf("utf8ConstInit() done\n"); )
 }
+
+bool
+utf8ConstEqual(Utf8Const* a, Utf8Const* b)
+{
+	assert(a != NULL);
+	assert(a->nrefs >= 1);
+	assert(b != NULL);
+	assert(b->nrefs >= 1);
+
+#ifdef KAFFEH
+	/* Do the full compare (Kaffeh doesn't intern Utf8s) */
+	return (0 == strcmp(a->data, b->data));
+#else
+#ifdef KAFFE_VMDEBUG
+	/* If they're different pointers, double check that they're different strings... */
+	if ((a != b) && (a->hash == b->hash))
+	{
+		assert(strcmp(a->data,b->data));
+	}
+#endif
+	/* Since we intern all UTF-8 constants, we can do this: */
+	return (a == b);
+#endif
+}

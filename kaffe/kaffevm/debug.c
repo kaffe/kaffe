@@ -186,7 +186,7 @@ static void printDebugBuffer(void);
 int
 dbgSetMaskStr(const char *orig_mask_str)
 {
-	int i;
+	unsigned int i;
 	char *mask_str;
 	const char *separators = "|,";
 	char *opt;
@@ -357,8 +357,8 @@ debugSysInit(void)
 static void
 printDebugBuffer(void)
 {
-	int i = 0;
-	int end = bufferBegin;
+	unsigned int i = 0;
+	unsigned int end = bufferBegin;
 
 	i = bufferBegin;
 	assert(i != 0);

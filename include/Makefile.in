@@ -20,6 +20,8 @@
 #	Transvirtual Technologies, Inc.  All rights reserved.
 # Copyright (c) 2003
 #	Mark Wielaard <mark@klomp.org>
+# Copyright (c) 2004
+#	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -369,7 +371,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Class.h \
 	java_lang_ClassLoader.h \
 	java_lang_Cloneable.h \
-	java_lang_Compiler.h \
 	java_lang_Double.h \
 	java_lang_Float.h \
 	java_lang_Integer.h \

@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors. All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -75,8 +78,8 @@ libnative_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
 	CharToByteDefault.lo CharToByteIconv.lo
-am__objects_2 = Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
-	Math.lo MemoryAdvice.lo NativeLibrary.lo Object.lo \
+am__objects_2 = Class.lo ClassLoader.lo Double.lo Float.lo Math.lo \
+	MemoryAdvice.lo NativeLibrary.lo Object.lo \
 	PrimordialClassLoader.lo Runtime.lo String.lo System.lo \
 	Thread.lo ThreadStack.lo Throwable.lo UNIXProcess.lo \
 	ZipFile.lo
@@ -97,7 +100,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/CharToByteDefault.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/CharToByteIconv.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Class.Plo ./$(DEPDIR)/ClassLoader.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Compiler.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Constructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DateFormat.Plo ./$(DEPDIR)/Double.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Field.Plo ./$(DEPDIR)/Float.Plo \
@@ -374,7 +376,6 @@ IO_SRCS = \
 LANG_SRCS = \
 		Class.c \
 		ClassLoader.c \
-		Compiler.c \
 		Double.c \
 		Float.c \
 		Math.c \
@@ -493,7 +494,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CharToByteIconv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassLoader.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Compiler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Constructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateFormat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Double.Plo@am__quote@
