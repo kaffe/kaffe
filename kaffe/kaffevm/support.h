@@ -107,6 +107,7 @@ extern jvalue		do_execute_java_class_method(char*, char*, char*, ...);
 extern jvalue		do_execute_java_class_method_v(char*, char*, char*, va_list);
 
 extern Hjava_lang_Object* execute_java_constructor(char*, struct Hjava_lang_Class*, char*, ...);
+extern Hjava_lang_Object* execute_java_constructor_v(char*, struct Hjava_lang_Class*, char*, va_list);
 extern jlong		currentTime(void);
 extern void		addNativeMethod(char*, void*);
 
