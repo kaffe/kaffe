@@ -212,7 +212,7 @@ static bool isMethodVoid(Method* method)
 /*
  * For debugging purposes.  Prints out the value of the specified constant pool entry.
  */
-#ifdef KAFFE_VMDEBUG
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 const char* indent  = "                ";
 const char* indent2 = "                        ";
 
@@ -302,7 +302,7 @@ printConstantPool(const Hjava_lang_Class* class)
 		DBG(VERIFY2, dprintf("\n"); );
 	}
 }
-#endif
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 
 
 /*
@@ -4921,7 +4921,7 @@ freeUninits(UninitializedType* uninits)
 
 
 /* for debugging */
-#ifdef KAFFE_VMDEBUG
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 
 /*
  * printInstruction()
@@ -5337,4 +5337,4 @@ printBlock(const Method* method, const BlockInfo* binfo, const char* indent)
 }
 
 
-#endif /* ifdef KAFFE_VMDEBUG */
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
