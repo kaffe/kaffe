@@ -2,6 +2,59 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-10  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+        * javax/swing/text/ChangedCharSetException.java,
+        javax/swing/text/html/HTMLEditorKit.java,
+        javax/swing/text/html/HTMLFrameHyperlinkEvent.java,
+        javax/swing/text/html/parser/AttributeList.java,
+        javax/swing/text/html/parser/ContentModel.java,
+        javax/swing/text/html/parser/DocumentParser.java,
+        javax/swing/text/html/parser/DTD.java,
+        javax/swing/text/html/parser/DTDConstants.java,
+        javax/swing/text/html/parser/Element.java,
+        javax/swing/text/html/parser/Entity.java,
+        javax/swing/text/html/parser/Parser.java,
+        javax/swing/text/html/parser/TagElement.java,
+        gnu/javax/swing/text/html/package.html,
+        gnu/javax/swing/text/html/parser/gnuDTD.java,
+        gnu/javax/swing/text/html/parser/HTML_401F.java,
+        gnu/javax/swing/text/html/parser/htmlAttributeSet.java,
+        gnu/javax/swing/text/html/parser/htmlValidator.java,
+        gnu/javax/swing/text/html/parser/package.html,
+        gnu/javax/swing/text/html/parser/models/list.java,
+        gnu/javax/swing/text/html/parser/models/node.java,
+        gnu/javax/swing/text/html/parser/models/noTagModel.java,
+        gnu/javax/swing/text/html/parser/models/package.html,
+        gnu/javax/swing/text/html/parser/models/PCDATAonly_model.java,
+        gnu/javax/swing/text/html/parser/models/TableRowContentModel.java,
+        gnu/javax/swing/text/html/parser/models/transformer.java,
+        gnu/javax/swing/text/html/parser/support/gnuStringIntMapper.java,
+        gnu/javax/swing/text/html/parser/support/package.html,
+        gnu/javax/swing/text/html/parser/support/parameterDefaulter.java,
+        gnu/javax/swing/text/html/parser/support/Parser.java,
+        gnu/javax/swing/text/html/parser/support/textPreProcessor.java,
+        gnu/javax/swing/text/html/parser/support/low/Buffer.java,
+        gnu/javax/swing/text/html/parser/support/low/Constants.java,
+        gnu/javax/swing/text/html/parser/support/low/Location.java,
+        gnu/javax/swing/text/html/parser/support/low/node.java,
+        gnu/javax/swing/text/html/parser/support/low/package.html,
+        gnu/javax/swing/text/html/parser/support/low/ParseException.java,
+        gnu/javax/swing/text/html/parser/support/low/pattern.java,
+        gnu/javax/swing/text/html/parser/support/low/Queue.java,
+        gnu/javax/swing/text/html/parser/support/low/ReaderTokenizer.java:
+        New files.
+        * javax/swing/text/html/HTML.java,
+        javax/swing/text/html/parser/ParserDelegator.java:
+        New files (replacing).
+        * javax/swing/text/html/package.html,
+        javax/swing/text/html/parser/package.html: Documenting the
+        packages.
+
+2005-03-11 Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-09  Chris Burdess  <dog@gnu.org>
 
         * gnu/xml/dom/html2/DomHTMLAnchorElement.java,

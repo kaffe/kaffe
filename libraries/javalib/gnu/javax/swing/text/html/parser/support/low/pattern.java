@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* pattern.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,73 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package gnu.javax.swing.text.html.parser.support.low;
 
-</body>
-</html>
+
+/**
+ * The simple pattern, consisting from the sequence of tokens that
+ * may have the unary modifier '?'. Choices and grouping
+ * are not required here.
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public class pattern
+{
+  /**
+   * The nodes of this pattern.
+   */
+  public final node[] nodes;
+
+  /**
+   * Create a pattern, containing the given list of nodes.
+   * @param a_nodes
+   */
+  public pattern(node[] a_nodes)
+  {
+    nodes = a_nodes;
+  }
+
+  /**
+   * Checks if the pattern can match the tokens in this
+   * tokenizer. Does not change the state of tokenizer.
+   * @param stream The tokenizer to read data from
+   * @return True if the pattern sequence matches the
+   * beginning of the tokenizer content.
+   */
+  public boolean matches(ReaderTokenizer stream)
+  {
+    try
+      {
+        int pt = 0;
+        int pn = 0;
+        Token t;
+        node n;
+
+        while (pn < nodes.length)
+          {
+            n = nodes [ pn ];
+            t = stream.getTokenAhead(pt);
+
+            if (t.kind == n.kind)
+              {
+                pn++;
+                pt++;
+              }
+            else
+              {
+                if (!n.optional)
+                  return false;
+                else
+                  pn++;
+              }
+          }
+        return true;
+      }
+    catch (Exception ex)
+      {
+        throw new ParseException("Exception", ex);
+      }
+  }
+}

@@ -1,5 +1,5 @@
-/* ParserDelegator - Delegator for ParserDocument.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* ParserDelegator.java -- Delegator for ParserDocument.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,12 +35,172 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package javax.swing.text.html.parser;
 
+import gnu.javax.swing.text.html.parser.HTML_401F;
+import gnu.javax.swing.text.html.parser.htmlAttributeSet;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
+
 /**
- * Stub implementeation to get gjdoc working.
+ * This class instantiates and starts the working instance of
+ * html parser, being responsible for providing the default DTD.
+ *
+ * TODO Later this class must be derived from the totally abstract class
+ * HTMLEditorKit.Parser. HTMLEditorKit that does not yet exist.
+ *
+ * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-//public class ParserDelegator extends HTMLEditorKit.Parser
 public class ParserDelegator
+  extends javax.swing.text.html.HTMLEditorKit.Parser
+  implements Serializable
 {
+  private class gnuParser
+    extends gnu.javax.swing.text.html.parser.support.Parser
+  {
+    private final static long serialVersionUID = 1;
+
+    private gnuParser(DTD d)
+    {
+      super(d);
+    }
+
+    protected final void handleComment(char[] comment)
+    {
+      callBack.handleComment(comment, hTag.where.startPosition);
+    }
+
+    protected final void handleEmptyTag(TagElement tag)
+      throws javax.swing.text.ChangedCharSetException
+    {
+      callBack.handleSimpleTag(tag.getHTMLTag(), getAttributes(),
+                               hTag.where.startPosition
+                              );
+    }
+
+    protected final void handleEndTag(TagElement tag)
+    {
+      callBack.handleEndTag(tag.getHTMLTag(), hTag.where.startPosition);
+    }
+
+    protected final void handleError(int line, String message)
+    {
+      callBack.handleError(message, hTag.where.startPosition);
+    }
+
+    protected final void handleStartTag(TagElement tag)
+    {
+      htmlAttributeSet attributes = gnu.getAttributes();
+
+      if (tag.fictional())
+        attributes.addAttribute(ParserCallback.IMPLIED, Boolean.TRUE);
+
+      callBack.handleStartTag(tag.getHTMLTag(), attributes,
+                              hTag.where.startPosition
+                             );
+    }
+
+    protected final void handleText(char[] text)
+    {
+      callBack.handleText(text, hTag.where.startPosition);
+    }
+
+    DTD getDTD()
+    {
+      return dtd;
+    }
+  }
+
+  /**
+   * Use serialVersionUID for interoperability.
+   */
+  private final static long serialVersionUID = -1276686502624777206L;
+  private static DTD dtd = HTML_401F.getInstance();
+
+  /**
+   * The callback.
+   */
+  private HTMLEditorKit.ParserCallback callBack;
+
+  /**
+   * The reference to the working class of HTML parser that is
+   * actually used to parse the document.
+   */
+  private gnuParser gnu;
+
+  /**
+   * Parses the HTML document, calling methods of the provided
+   * callback. This method must be multithread - safe.
+   * @param reader The reader to read the HTML document from
+   * @param callback The callback that is notifyed about the presence
+   * of HTML elements in the document.
+   * @param ignoreCharSet If thrue, any charset changes during parsing
+   * are ignored.
+   * @throws java.io.IOException
+   */
+  public void parse(Reader reader, HTMLEditorKit.ParserCallback a_callback,
+                    boolean ignoreCharSet
+                   )
+             throws IOException
+  {
+    callBack = a_callback;
+
+    if (gnu == null || !dtd.equals(gnu.getDTD()))
+      {
+        gnu = new gnuParser(dtd);
+      }
+
+    gnu.parse(reader);
+
+    callBack.handleEndOfLineString(gnu.getEndOfLineSequence());
+    try
+      {
+        callBack.flush();
+      }
+    catch (BadLocationException ex)
+      {
+        // Convert this into the supported type of exception.
+        throw new IOException(ex.getMessage());
+      }
+  }
+
+  /**
+   * Calling this method instructs that, if not specified directly,
+   * the documents will be parsed using the default
+   * DTD of the implementation.
+   */
+  protected static void setDefaultDTD()
+  {
+    dtd = HTML_401F.getInstance();
+  }
+
+  /**
+   * Registers the user - written DTD under the given name, also
+   * making it default for the subsequent parsings. This has effect on
+   * all subsequent calls to the parse(...) . If you need to specify
+   * your DTD locally, simply {@link javax.swing.text.html.parser.Parser}
+   * instead.
+   * @param dtd The DTD that will be used to parse documents by this class.
+   * @param name The name of this DTD.
+   * @return No standard is specified on which instance of DTD must be
+   * returned by this method, and it is recommended to leave the returned
+   * value without consideration. This implementation returns the DTD
+   * that was previously set as the default DTD, or the implementations
+   * default DTD if none was set.
+   */
+  protected static DTD createDTD(DTD a_dtd, String name)
+  {
+    DTD.putDTDHash(name, a_dtd);
+
+    DTD dtd_prev = dtd;
+    dtd = a_dtd;
+    return dtd_prev;
+  }
 }

@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Location.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,51 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package gnu.javax.swing.text.html.parser.support.low;
 
-</body>
-</html>
+/**
+ * Defines a region in the text: its bounding positions and the line number.
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public class Location
+{
+  /**
+   * The line number, where the token starts.
+   */
+  public int beginLine;
+
+  /**
+   * The line, where the token ends.
+   */
+  public int endLine;
+
+  /**
+   * The absolute token end position in the input stream,
+   * exclusive.
+   */
+  public int endPosition;
+
+  /**
+   * The absolute token start position in the input stream,
+   * inclusive.
+   */
+  public int startPosition;
+
+  public Location()
+  {
+  }
+
+  /**
+   * Special case, used to mark EOF.
+   * @param p The total stream length.
+   */
+  public Location(int p)
+  {
+    startPosition = p;
+    endPosition = p + 1;
+    beginLine = endLine = -1;
+  }
+}

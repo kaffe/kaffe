@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* TableRowContentModel.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,45 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package gnu.javax.swing.text.html.parser.models;
 
-</body>
-</html>
+import java.io.Serializable;
+
+import javax.swing.text.html.parser.DTD;
+import javax.swing.text.html.parser.Element;
+
+/**
+ * Table row content model.
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public class TableRowContentModel
+  extends node
+  implements Serializable
+{
+  private static final long serialVersionUID = 1;
+  final Element TD;
+
+  public TableRowContentModel(DTD dtd)
+  {
+    super((char) 0, (char) 0, null);
+    TD = dtd.getElement("TD");
+  }
+
+  public Object show(Object x)
+  {
+    // Always accept TD and TH
+    String s = x.toString();
+    if (s.equalsIgnoreCase("TD") || s.equalsIgnoreCase("TH"))
+      return Boolean.TRUE;
+
+    // Suggest closing in response to TR:
+    if (s.equalsIgnoreCase("TR"))
+      return Boolean.FALSE;
+
+    // Recommend TD for other cases:
+    return TD;
+  }
+}

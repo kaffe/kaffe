@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* node.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,46 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package gnu.javax.swing.text.html.parser.support.low;
 
-</body>
-</html>
+/**
+ * A text level content model node. The only required unary operations
+ * here are "appears" and "optionally appears" ('?').
+ * <p>@author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)</p>
+ */
+public class node
+{
+  /**
+   * True for node that is optional for the given position.
+   */
+  public boolean optional;
+
+  /**
+   * The kind of the token to match.
+   */
+  public int kind;
+
+  /**
+   * Creates the new node for matching a given kind of the token.
+   * @param kind The kind of the token to match.
+   * @param modifier The modifier (*?+).
+   */
+  public node(int kind, boolean _optional)
+  {
+    this.kind = kind;
+    optional = _optional;
+  }
+
+  /**
+   * Creates the node, indicating that token must match exactluy one time.
+   * @param kind The kind of token to match.
+   */
+  public node(int kind)
+  {
+    this.kind = kind;
+    optional = false;
+  }
+}

@@ -157,6 +157,10 @@ Klasses_jar_SRCS = \
 	$(gnu_java_util_prefs_SRCS) \
 	$(gnu_javax_rmi_SRCS) \
 	$(gnu_javax_rmi_CORBA_SRCS) \
+	$(gnu_javax_swing_text_html_parser_SRCS) \
+	$(gnu_javax_swing_text_html_parser_models_SRCS) \
+	$(gnu_javax_swing_text_html_parser_support_SRCS) \
+	$(gnu_javax_swing_text_html_parser_support_low_SRCS) \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
@@ -1679,6 +1683,33 @@ gnu_javax_rmi_CORBA_SRCS = \
 	gnu/javax/rmi/CORBA/StubDelegateImpl.java \
 	gnu/javax/rmi/CORBA/UtilDelegateImpl.java \
 	gnu/javax/rmi/CORBA/ValueHandlerImpl.java
+gnu_javax_swing_text_html_parser_SRCS = \
+	gnu/javax/swing/text/html/parser/HTML_401F.java \
+	gnu/javax/swing/text/html/parser/gnuDTD.java \
+	gnu/javax/swing/text/html/parser/htmlAttributeSet.java \
+	gnu/javax/swing/text/html/parser/htmlValidator.java
+gnu_javax_swing_text_html_parser_models_SRCS = \
+	gnu/javax/swing/text/html/parser/models/PCDATAonly_model.java \
+	gnu/javax/swing/text/html/parser/models/TableRowContentModel.java \
+	gnu/javax/swing/text/html/parser/models/list.java \
+	gnu/javax/swing/text/html/parser/models/noTagModel.java \
+	gnu/javax/swing/text/html/parser/models/node.java \
+	gnu/javax/swing/text/html/parser/models/transformer.java
+gnu_javax_swing_text_html_parser_support_SRCS = \
+	gnu/javax/swing/text/html/parser/support/Parser.java \
+	gnu/javax/swing/text/html/parser/support/gnuStringIntMapper.java \
+	gnu/javax/swing/text/html/parser/support/parameterDefaulter.java \
+	gnu/javax/swing/text/html/parser/support/textPreProcessor.java
+gnu_javax_swing_text_html_parser_support_low_SRCS = \
+	gnu/javax/swing/text/html/parser/support/low/Buffer.java \
+	gnu/javax/swing/text/html/parser/support/low/Constants.java \
+	gnu/javax/swing/text/html/parser/support/low/Location.java \
+	gnu/javax/swing/text/html/parser/support/low/ParseException.java \
+	gnu/javax/swing/text/html/parser/support/low/Queue.java \
+	gnu/javax/swing/text/html/parser/support/low/ReaderTokenizer.java \
+	gnu/javax/swing/text/html/parser/support/low/Token.java \
+	gnu/javax/swing/text/html/parser/support/low/node.java \
+	gnu/javax/swing/text/html/parser/support/low/pattern.java
 gnu_regexp_SRCS = \
 	gnu/regexp/CharIndexed.java \
 	gnu/regexp/CharIndexedCharArray.java \
@@ -3898,6 +3929,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/AttributeSet.java \
 	javax/swing/text/BadLocationException.java \
 	javax/swing/text/Caret.java \
+	javax/swing/text/ChangedCharSetException.java \
 	javax/swing/text/ComponentView.java \
 	javax/swing/text/DefaultCaret.java \
 	javax/swing/text/DefaultEditorKit.java \
@@ -3936,9 +3968,20 @@ javax_swing_text_SRCS = \
 	javax/swing/text/View.java \
 	javax/swing/text/ViewFactory.java
 javax_swing_text_html_SRCS = \
-	javax/swing/text/html/HTML.java
+	javax/swing/text/html/HTML.java \
+	javax/swing/text/html/HTMLEditorKit.java \
+	javax/swing/text/html/HTMLFrameHyperlinkEvent.java
 javax_swing_text_html_parser_SRCS = \
-	javax/swing/text/html/parser/ParserDelegator.java
+	javax/swing/text/html/parser/AttributeList.java \
+	javax/swing/text/html/parser/ContentModel.java \
+	javax/swing/text/html/parser/DTD.java \
+	javax/swing/text/html/parser/DTDConstants.java \
+	javax/swing/text/html/parser/DocumentParser.java \
+	javax/swing/text/html/parser/Element.java \
+	javax/swing/text/html/parser/Entity.java \
+	javax/swing/text/html/parser/Parser.java \
+	javax/swing/text/html/parser/ParserDelegator.java \
+	javax/swing/text/html/parser/TagElement.java
 javax_swing_text_rtf_SRCS = \
 	javax/swing/text/rtf/ControlWordToken.java \
 	javax/swing/text/rtf/RTFEditorKit.java \

@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* ChangedCharSetException.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,68 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package javax.swing.text;
 
-</body>
-</html>
+import java.io.IOException;
+import java.io.Serializable;
+
+/**
+ * The exception is thrown when the document charset is changed.
+ *
+ * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ */
+public class ChangedCharSetException
+  extends IOException
+  implements Serializable
+{
+  /**
+   * Use serialVersionUID for interoperability.
+   * This value corresponds the version 1.4.
+   */
+  private static final long serialVersionUID = 9119851554465432389L;
+
+  /**
+   * The char set specification.
+   */
+  private final String m_charSetSpec;
+
+  /**
+   * The char set key.
+   */
+  private final boolean m_charSetKey;
+
+  /**
+   * Constructs a new char set exception with two additional parameters,
+   * defining the circumstances under that the exception was raised.
+   */
+  public ChangedCharSetException(String charSetSpec, boolean charSetKey)
+  {
+    m_charSetSpec = charSetSpec;
+    m_charSetKey = charSetKey;
+  }
+
+  /**
+   * Get the value of the first parameter, previously passed to the
+   * constructor.
+   *
+   * @return the value of the first parameter
+   */
+  public String getCharSetSpec()
+  {
+    return m_charSetSpec;
+  }
+
+  /**
+   * Get the value of the second parameter, previously passed to the
+   * constructor.
+   *
+   * @return the value of the second parameter
+   */
+  public boolean keyEqualsCharSet()
+  {
+    return m_charSetKey;
+  }
+}

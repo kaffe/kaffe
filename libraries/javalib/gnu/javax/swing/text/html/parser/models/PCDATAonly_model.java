@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!-- package.html - describes classes in javax.swing.text.html package.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* PCDATAonly_model.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,17 +33,30 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. -->
+exception statement from your version. */
 
-<html>
-<head><title>GNU Classpath - javax.swing.text.html</title></head>
 
-<body>
-<p> Provides supporting classes for web browsers,
- web robots, web page content analysers, web editors and
- other applications applications working with Hypertext
- Markup Language (HTML).
-</p>
+package gnu.javax.swing.text.html.parser.models;
 
-</body>
-</html>
+import java.io.Serializable;
+
+/**
+ * The model, allowing only PCDATA in it (like for element OPTION).
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public class PCDATAonly_model
+  extends node
+  implements Serializable
+{
+  private static final long serialVersionUID = 1;
+
+  public PCDATAonly_model()
+  {
+    super((char) 0, (char) 0, null);
+  }
+
+  public Object show(Object x)
+  {
+    return x.toString().equalsIgnoreCase("#pcdata") ? Boolean.TRUE : Boolean.FALSE;
+  }
+}
