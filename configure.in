@@ -448,7 +448,7 @@ no)
 	;;
 *)
 	use_jikes="yes ($JIKES)"
-	JIKES="$withval"
+	JIKES="$with_jikes"
 	;;
 esac
 
