@@ -1,3 +1,9 @@
+2005-01-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_block_alloc): Fixed incorrect pointer arithmetic when adjusting
+	blocks.
+
 2005-01-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffeh/sigs.c (translateSig): Added missing default case.

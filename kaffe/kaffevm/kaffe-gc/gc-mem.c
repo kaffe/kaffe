@@ -1136,27 +1136,27 @@ gc_block_alloc(size_t size)
 			int i;
 			gc_block *b = (gc_block *) gc_block_base;
 			uintp delta = gc_block_base - old_blocks;
-#define R(X) if (X) X = X + delta
+#define R(type,X) if (X) X = (type*)((uintp)X + delta)
 
 			DBG(GCSYSALLOC,
 			    dprintf("relocating gc_block array\n"));
 			for (i = 0; i < onb; i++) 
 			  {
-			    R(b[i].next);
-			    R(b[i].pprev);
-			    R(b[i].pnext);
+			    R(gc_block, b[i].next);
+			    R(gc_block, b[i].pprev);
+			    R(gc_block, b[i].pnext);
                             if (inside(b[i].free, (gc_block*)old_blocks, onb))
-				R(b[i].free);
+				R(gc_freeobj, b[i].free);
 			  }
 
 			memset(b + onb, 0,
 			       (nblocks - onb) * sizeof(gc_block));
 
 			for (i = 0; i<=KGC_PRIM_LIST_COUNT; i++)
-				R(gc_prim_freelist[i]);
+				R(gc_block, gc_prim_freelist[i]);
 
 			for (i = 0; freelist[i].list != (void*)-1; i++) 
-				R(freelist[i].list);
+				R(gc_block, freelist[i].list);
 #undef R
 		}
 		KTHREAD(spinoff)(NULL);
