@@ -1,3 +1,25 @@
+2003-09-28  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	(startGC, finaliserMan) properly deal with objects on the finaliser
+	list when starting a gc pass (fixes endless loop)
+	(createGC) initialise the heap and reserve primitive pages for OOM
+	handling
+	
+	* kaffe/kaffevm/gc-mem.h: (struct gc_block) added pnext and pprev
+	fields for management of primitive blocks; removed inuse field
+	(GCBLOCKINUSE) new macro to test whether a gc_block is used
+
+	replaced all uses of the inuse field by calls to the GCBLOCKINUSE
+	macro
+
+	* kaffe/kaffevm/gc-mem.c: (gc_get_prim_freelist, gc_add_to_prim_freelist,
+	gc_remove_from_prim_freelist, gc_merge_with_successor) new helper
+	methods for management of primitive blocks
+	(gc_primitive_alloc, gc_primitive_free) manage primitive blocks
+	using a best fit algorithm
+	(gc_heap_grow) don't forget to lock the gc_heap_lock 
+	
 2003-09-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Fix for path method invocation.

@@ -228,7 +228,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 	uintp p = (uintp) UTOMEM(unit) - gc_heap_base;
 	int idx;
 
-	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range && info->inuse) {
+	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range && GCBLOCKINUSE(info)) {
 		/* Make sure 'unit' refers to the beginning of an
 		 * object.  We do this by making sure it is correctly
 		 * aligned within the block.
@@ -246,7 +246,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 static inline void
 markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 {
-	/* If object's been traced before, don't do it again */
+	/* If the object has been traced before, don't do it again. */
 	if (GC_GET_COLOUR(info, idx) != GC_COLOUR_WHITE) {
 		return;
 	}
@@ -382,15 +382,15 @@ gcGetObjectBase(Collector *gcif, const void* mem)
 	}
 
 	info = GCMEM2BLOCK(mem);
-	if (!info->inuse) {
+	if (!GCBLOCKINUSE(info)) {
 		/* go down block list to find out whether we were hitting
 		 * in a large object
 		 */
-		while (!info->inuse && (uintp)info > (uintp)gc_block_base) {
+		while (!GCBLOCKINUSE(info) && (uintp)info > (uintp)gc_block_base) {
 			info--;
 		}
 		/* must be a large block, hence nr must be 1 */
-		if (!info->inuse || info->nr != 1) {
+		if (!GCBLOCKINUSE(info) || info->nr != 1) {
 			return (0);
 		}
 	}
@@ -663,6 +663,8 @@ void
 startGC(Collector *gcif)
 {
 	gc_unit* unit;
+	gc_block* info;
+	int idx;
 
 	gcStats.freedmem = 0;
 	gcStats.freedobj = 0;
@@ -685,10 +687,25 @@ startGC(Collector *gcif)
 	/* measure time */
 	startTiming(&gc_time, "gctime-scan");
 
-	/* Walk all objects on the finalizer list */
+	/*
+	 * Since objects whose finaliser has to be run need to
+	 * be kept alive, we have to mark them here. They will
+	 * be put back into the finalise list later on during
+	 * the gc pass.
+	 *
+	 * Since these objects are treated like garbage, we have
+	 * to set their colour to white before marking them.
+	 */
 	while (gclists[finalise].cnext != &gclists[finalise]) {
 		unit = gclists[finalise].cnext;
-		gcMarkObject(gcif, UTOMEM(unit));
+		info = GCMEM2BLOCK(unit);
+		idx = GCMEM2IDX(info, unit);
+
+		GC_SET_COLOUR (info, idx, GC_COLOUR_WHITE);
+		gcStats.finalobj -= 1;
+		gcStats.finalmem -= GCBLOCKSIZE(info);
+
+		markObjectDontCheck(unit, info, idx); 
 	}
 
 	(*walkRootSet)(gcif);
@@ -851,27 +868,52 @@ finaliserMan(void* arg)
 		}
 		assert(finalRunning == true);
 
+		/*
+		 * Loop until the list of objects whose finaliser needs to be run is empty
+		 * [ checking the condition without holding a lock is ok, since we're the only
+		 * thread removing elements from the list (the list can never shrink during
+		 * a gc pass) ].
+		 *
+		 * According to the spec, the finalisers have to be run without any user
+		 * visible locks held. Therefore, we must temporarily release the finman
+		 * lock and may not hold the gc_lock while running the finalisers as they
+		 * are exposed to the user by java.lang.Runtime.
+		 * 
+		 * In addition, we must prevent an object and everything it references from
+		 * being collected while the finaliser is run (since we can't hold the gc_lock,
+		 * there may be several gc passes in the meantime). To do so, we keep the
+		 * object in the finalise list and only remove it from there when its
+		 * finaliser is done (simply adding the object to the grey list while its
+		 * finaliser is run only works as long as there's at most one gc pass).
+		 *
+		 * In order to determine the finaliser of an object, we have to access the
+		 * gc_block that contains it and its index. Doing this without holding a
+		 * lock only works as long as both, the gc_blocks and the indices of the
+		 * objects in a gc_block, are constant.
+		 */
 		while (gclists[finalise].cnext != &gclists[finalise]) {
-			lockStaticMutex(&gc_lock);
 			unit = gclists[finalise].cnext;
-			UREMOVELIST(unit);
-			UAPPENDLIST(gclists[grey], unit);
-
 			info = GCMEM2BLOCK(unit);
 			idx = GCMEM2IDX(info, unit);
+
+			/* Call finaliser */
+			unlockStaticMutex(&finman);
+			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
+			lockStaticMutex(&finman);
+
+			/* and remove unit from the finaliser list */
+			lockStaticMutex(&gc_lock);
+			UREMOVELIST(unit);
+			UAPPENDLIST(gclists[nofin_white], unit);
+
 			gcStats.finalmem -= GCBLOCKSIZE(info);
 			gcStats.finalobj -= 1;
 
 			assert(GC_GET_STATE(info,idx) == GC_STATE_INFINALIZE);
 			/* Objects are only finalised once */
 			GC_SET_STATE(info, idx, GC_STATE_FINALIZED);
-			GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
+			GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
 			unlockStaticMutex(&gc_lock);
-
-			/* Call finaliser */
-			unlockStaticMutex(&finman);
-			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
-			lockStaticMutex(&finman);
 		}
 
 		/* Wake up anyone waiting for the finalizer to finish */
@@ -999,6 +1041,10 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 
 			case 2:
 				/* Grow the heap */
+				DBG (GCSYSALLOC, dprintf ("growing heap by %u bytes of type %s (%2.1f%% free)\n", 
+							  size, gcFunctions[fidx].description,
+							  (1.0 - (gcStats.totalmem / (double)gc_heap_total)) * 100.0); )
+				
 				gc_heap_grow(size);
 				break;
 
@@ -1067,9 +1113,6 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 		} else {
 			UAPPENDLIST(gclists[nofin_white], unit);
 		}
-	}
-	if (!reserve) {
-		reserve = gc_primitive_reserve();
 	}
 
 	/* It is not safe to allocate java objects the first time
@@ -1162,6 +1205,8 @@ gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 	info = GCMEM2BLOCK(unit);
 	idx = GCMEM2IDX(info, unit);
 	osize = GCBLOCKSIZE(info) - sizeof(gc_unit);
+
+	assert(GC_GET_FUNCS(info, idx) == fidx);
 
 	/* Can only handled fixed objects at the moment */
 	assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_FIXED);
@@ -1398,6 +1443,10 @@ createGC(void (*_walkRootSet)(Collector*))
 	URESETLIST(gclists[fin_black]);
 	URESETLIST(gclists[finalise]);
 	gc_obj.collector.ops = &GC_Ops;
+
+	gc_heap_initialise ();
+	reserve = gc_primitive_reserve ();
+
 	return (&gc_obj.collector);
 }
 

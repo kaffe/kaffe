@@ -72,6 +72,7 @@ typedef struct _gc_freeobj {
 
 /* ------------------------------------------------------------------------ */
 
+extern void	gc_heap_initialise (void);
 extern void*	gc_heap_malloc(size_t);    
 extern void	gc_heap_free(void*);
 
@@ -94,8 +95,8 @@ typedef struct _gc_block {
 #endif
 	struct _gc_freeobj*	free;	/* Next free sub-block */
 	struct _gc_block*	next;	/* Next block in prim/small freelist */
-	struct _gc_block*	nfree;	/* Next block on sub-freelist */
-	uint32			inuse;	/* 1bit! Is block allocated? */
+	struct _gc_block*	pnext;	/* next primitive block */
+	struct _gc_block*	pprev;	/* previous primitive block */
 	uint32			size;	/* Size of objects in this block */
 	uint16			nr;	/* Nr of objects in block */
 	uint16			avail;	/* Nr of objects available in block */
@@ -111,9 +112,13 @@ extern void	gc_primitive_free(gc_block* mem);
 
 #define	GC_MAGIC		0xD0DECADE
 
-#define GCBLOCK_LIVE		((gc_block *) -1) /* block->next when alloced*/
-
 #define GC_BLOCKS		((gc_block *) gc_block_base)
+
+/**
+ * Tests whether a block is in use.
+ *
+ */
+#define GCBLOCKINUSE(B)		((B)->nr > 0)
 
 /**
  * Evaluates to the array that contains the states of the objects contained in @B.

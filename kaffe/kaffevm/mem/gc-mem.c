@@ -42,10 +42,6 @@ static gc_block* gc_large_block(size_t);
 static gc_block* gc_primitive_alloc(size_t);
 void gc_primitive_free(gc_block*);
 
-uintp gc_heap_base;
-uintp gc_block_base;
-uintp gc_heap_range;
-
 /**
  * A preallocated block for small objects.
  *
@@ -98,13 +94,14 @@ static struct {
 } sztable[MAX_SMALL_OBJECT_SIZE+1];
 static int max_freelist;
 
-static gc_block* gc_prim_freelist;
 static size_t max_small_object_size;
 
 size_t gc_heap_total;		/* current size of the heap */
 size_t gc_heap_allocation_size;	/* amount of memory by which to grow heap */
 size_t gc_heap_initial_size;	/* amount of memory to initially allocate */
 size_t gc_heap_limit;		/* maximum size to which heap should grow */
+uintp gc_heap_base;
+uintp gc_heap_range;
 
 #ifndef gc_pgsize
 size_t gc_pgsize;
@@ -133,6 +130,7 @@ printslack(void)
 		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
 }
 
+
 /*
  * check whether the heap is still in a consistent state
  */
@@ -148,7 +146,7 @@ gc_heap_check(void)
 		} else {
 			gc_freeobj* mem = blk->free;
 
-			assert(blk->inuse);
+			assert(GCBLOCKINUSE(blk));
 			assert(blk->avail < blk->nr);
 			assert(blk->funcs == (uint8*)GCBLOCK2BASE(blk));
 			assert(blk->state == (uint8*)(blk->funcs + blk->nr));
@@ -167,7 +165,6 @@ gc_heap_check(void)
 /*
  * Initialise allocator.
  */
-static
 void
 gc_heap_initialise(void)
 {
@@ -288,21 +285,12 @@ DBG(SLACKANAL,
 void*
 gc_heap_malloc(size_t sz)
 {
-	static int gc_heap_init = 0;
 	size_t lnr;
 	gc_freeobj* mem = 0;
 	gc_block** mptr;
 	gc_block* blk;
 	size_t nsz;
 	int iLockRoot;
-
-	/* Initialise GC heap first time in - we must assume single threaded
-	 * operation here so we can do the lock initialising.
-	 */
-	if (gc_heap_init == 0) {
-		gc_heap_initialise();
-		gc_heap_init = 1;
-	}
 
 	lockStaticMutex(&gc_heap_lock);
 
@@ -466,7 +454,7 @@ DBG(GCFREE,
 	}
 	else {
 		/* Calculate true size of block */
-		msz = info->size + ROUNDUPALIGN(1);
+		msz = info->size + 2 + ROUNDUPALIGN(1);
 		msz = ROUNDUPPAGESIZE(msz);
 		info->size = msz;
 		gc_primitive_free(info);
@@ -578,9 +566,30 @@ gc_large_block(size_t sz)
 /*
  * Primitive block management:  Allocating and freeing whole pages.
  *
- * Unused pages may be marked unreadable.  This is only done when
- * compiled with KAFFE_VMDEBUG.
- */ 
+ * Each primitive block of the heap consists of one or more contiguous
+ * pages. Pages of unused primitive blocks are marked unreadable when
+ * kaffe is compiled with debugging enabled. Whether a block is in use
+ * can be determined by its nr field: when it's in use, its nr field
+ * will be > 0.
+ *
+ * All primitive blocks are chained through their pnext / pprev fields,
+ * no matter whether or not they are in use. This makes the necessary
+ * check for mergable blocks as cheap as possible. Merging small blocks
+ * is necessary so that single unused primitive blocks in the heap are
+ * always as large as possible. The first block in the list is stored
+ * in gc_block_base, the last block in the list is gc_last_block.
+ *
+ * In order to speed up the search for the primitive block that fits
+ * a given allocation request best, small primitive blocks are stored
+ * in several lists (one per size). If no primitive blocks of a given
+ * size are left, a larger one is splitted instead. 
+ */
+#define GC_PRIM_LIST_COUNT 20
+
+uintp gc_block_base;
+static gc_block *gc_last_block;
+static gc_block *gc_prim_freelist[GC_PRIM_LIST_COUNT+1];
+
 
 #ifndef PROT_NONE
 #define PROT_NONE 0
@@ -596,22 +605,68 @@ gc_large_block(size_t sz)
 #define NO_PROT  PROT_NONE
 #endif
 
-/* Mark this block as in-use */
+/* Mark a primitive block as used */
 static inline void 
 gc_block_add(gc_block *b)
 {
-	b->inuse = 1;
+	b->nr = 1;
 	mprotect(GCBLOCK2BASE(b), b->size, ALL_PROT);
 }
 
-/* Mark this block as free */
+/* Mark a primitive block as unused */
 static inline void 
 gc_block_rm(gc_block *b)
 {
-	b->inuse = 0;
+	b->nr = 0;
 	mprotect(GCBLOCK2BASE(b), b->size, NO_PROT);
 }
 
+/* return the prim list blk belongs to */
+static inline gc_block **
+gc_get_prim_freelist (gc_block *blk)
+{
+	size_t sz = blk->size >> gc_pgbits;
+
+	if (sz <= GC_PRIM_LIST_COUNT)
+	{
+		return &gc_prim_freelist[sz-1];
+	}
+
+	return &gc_prim_freelist[GC_PRIM_LIST_COUNT];
+}
+
+/* add a primitive block to the correct freelist */
+static inline void
+gc_add_to_prim_freelist(gc_block *blk)
+{
+	gc_block **list = gc_get_prim_freelist (blk);
+
+	/* insert the block int the list, sorting by ascending addresses */
+	while (*list && blk > *list)
+	{
+		list = &(*list)->next;
+	}
+
+	if (*list) {
+		(*list)->free = (gc_freeobj *)&blk->next;
+	}
+
+	blk->next = *list;
+	*list = blk;
+	blk->free = (gc_freeobj *)list;
+}
+
+/* remove a primitive block from its freelist */
+static inline void
+gc_remove_from_prim_freelist(gc_block *blk)
+{
+	*( (gc_block **) blk->free ) = blk->next;
+
+	if (blk->next) {
+		blk->next->free = blk->free;
+	}
+}
+ 
 /*
  * Allocate a block of memory from the free list or, failing that, the
  * system pool.
@@ -620,40 +675,118 @@ static
 gc_block*
 gc_primitive_alloc(size_t sz)
 {
-	gc_block* ptr;
-	gc_block** pptr;
+	size_t diff = 0;
+	gc_block* best_fit = NULL;
+	size_t i = sz >> gc_pgbits;
 
 	assert(sz % gc_pgsize == 0);
 
-	for (pptr = &gc_prim_freelist; *pptr != 0; pptr = &ptr->next) {
-		ptr = *pptr;
-		/* First fit */
-		if (sz <= ptr->size) {
-			size_t left;
-			/* If there's more than a page left, split it */
-			left = ptr->size - sz;
-			if (left >= gc_pgsize) {
-				gc_block* nptr;
+	DBG(GCPRIM, dprintf("\ngc_primitive_alloc: got to allocate 0x%x bytes\n", sz); )
 
-				ptr->size = sz;
-				nptr = GCBLOCKEND(ptr);
-				nptr->size = left;
-
-				DBG(GCDIAG, nptr->magic = GC_MAGIC);
-
-				nptr->next = ptr->next;
-				ptr->next = nptr;
+	/* try freelists for small primitive blocks first */
+	if (i <= GC_PRIM_LIST_COUNT) {
+		for (i-=1; i<GC_PRIM_LIST_COUNT; i++) {
+			if (gc_prim_freelist[i]) {
+				best_fit = gc_prim_freelist[i]; 
+				diff = gc_prim_freelist[i]->size - sz;
+				break;
 			}
-			*pptr = ptr->next;
-DBG(GCPRIM,		dprintf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->size, ptr); )
-			gc_block_add(ptr);
-			return (ptr);
 		}
 	}
+
+	/* if that fails, try the big remaining list */
+	if (!best_fit) {
+		gc_block *ptr;
+		for (ptr = gc_prim_freelist[GC_PRIM_LIST_COUNT]; ptr != 0; ptr=ptr->next) {
+
+			/* Best fit */
+			if (sz == ptr->size) {
+				diff = 0;
+				best_fit = ptr;
+				break;
+			} else if (sz < ptr->size) {
+				size_t left = ptr->size - sz;
+		
+				if (best_fit==NULL || left<diff) {
+					diff = left;
+					best_fit = ptr;
+				}		
+			}
+		}
+	}
+
+	/* if we found a block, remove it from the list and check if splitting is necessary */
+	if (best_fit) {
+		gc_remove_from_prim_freelist (best_fit);
+
+		DBG(GCPRIM, dprintf ("gc_primitive_alloc: found best_fit %p diff 0x%x (0x%x - 0x%x)\n",
+				     best_fit, diff, best_fit->size, sz); )
+		assert ( diff % gc_pgsize == 0 );
+
+		if (diff > 0) {
+			gc_block *nptr;
+
+			best_fit->size = sz;
+		
+			nptr = GCBLOCKEND(best_fit);
+			nptr->size = diff;
+			gc_block_rm (nptr);
+
+			DBG(GCPRIM, dprintf ("gc_primitive_alloc: splitted remaining 0x%x bytes @ %p\n", diff, nptr); )
+
+			DBG(GCDIAG, nptr->magic = GC_MAGIC);
+
+			/* maintain list of primitive blocks */
+			nptr->pnext = best_fit->pnext;
+			nptr->pprev = best_fit;
+
+			best_fit->pnext = nptr;
+
+			if (nptr->pnext) {
+				nptr->pnext->pprev = nptr;
+			} else {
+				gc_last_block = nptr;
+			}
+
+			/* and add nptr to one of the freelists */
+			gc_add_to_prim_freelist (nptr);
+		}
+
+DBG(GCPRIM,	dprintf("gc_primitive_alloc: 0x%x bytes from freelist @ %p\n", best_fit->size, best_fit); )
+		gc_block_add(best_fit);
+		return (best_fit);
+	}
+DBG(GCPRIM,	dprintf("gc_primitive_alloc: no suitable block found!\n"); )
 
 	/* Nothing found on free list */
 	return (0);
 }
+
+/*
+ * merge a primitive block with its successor.
+ */
+static inline void
+gc_merge_with_successor (gc_block *blk)
+{
+	gc_block *next_blk = blk->pnext;
+
+	assert (next_blk);
+
+	blk->size += next_blk->size;
+	blk->pnext = next_blk->pnext;
+
+	/*
+	 * if the merged block has a successor, update its pprev field.
+	 * otherwise, the merged block is the last block in the primitive
+	 * chain.
+	 */
+	if (blk->pnext) {
+		blk->pnext->pprev = blk;
+	} else {
+		gc_last_block = blk;
+	}
+}
+
 
 /*
  * Return a block of memory to the free list.
@@ -661,86 +794,46 @@ DBG(GCPRIM,		dprintf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->s
 void
 gc_primitive_free(gc_block* mem)
 {
-	gc_block* lptr;
-	gc_block* nptr;
+	gc_block *blk;
 
 	assert(mem->size % gc_pgsize == 0);
 
 	/* Remove from object hash */
 	gc_block_rm(mem);
-	mem->next = 0;
 
-	if(mem < gc_prim_freelist || gc_prim_freelist == 0) {
-		/* If this block is directly before the first block on the
-		 * freelist, merge it into that block.  Otherwise just
-		 * attached it to the beginning.
-		 */
-		if (GCBLOCKEND(mem) == gc_prim_freelist) {
-DBG(GCPRIM,	dprintf("gc_primitive_free: Merging (%d,%p) beginning of freelist\n", mem->size, mem); )
-			mem->size += gc_prim_freelist->size;
-			mem->next = gc_prim_freelist->next;
-		}
-		else {
-DBG(GCPRIM,	dprintf("gc_primitive_free: Prepending (%d,%p) beginning of freelist\n", mem->size, mem); )
-			mem->next = gc_prim_freelist;
-		}
-		gc_prim_freelist = mem;
-		return;
-	}
+	DBG(GCPRIM, dprintf ("\ngc_primitive_free: freeing block %p (%x bytes, %x)\n", mem, mem->size, mem->size >> gc_pgbits); )
 
-	/* Search the freelist for the logical place to put this block */
-	lptr = gc_prim_freelist;
-	while (lptr->next != 0) {
-		nptr = lptr->next;
-		if (mem > lptr && mem < nptr) {
-			/* Block goes here in the logical scheme of things.
-			 * Work out how to merge it with those which come
-			 * before and after.
-			 */
-			if (GCBLOCKEND(lptr) == mem) {
-				if (GCBLOCKEND(mem) == nptr) {
-					/* Merge with last and next */
-DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) into list\n", mem->size, mem); )
-					lptr->size += mem->size + nptr->size;
-					lptr->next = nptr->next;
-				}
-				else {
-					/* Merge with last but not next */
-DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) with last in list\n", mem->size, mem); )
-					lptr->size += mem->size;
-				}
-			}
-			else {
-				if (GCBLOCKEND(mem) == nptr) {
-					/* Merge with next but not last */
-DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) with next in list\n", mem->size, mem); )
-					mem->size += nptr->size;
-					mem->next = nptr->next;
-					lptr->next = mem;
-				}
-				else {
-					/* Wont merge with either */
-DBG(GCPRIM,				dprintf("gc_primitive_free: Inserting (%d,%p) into list\n", mem->size, mem); )
-					mem->next = nptr;
-					lptr->next = mem;
-				}
-			}
-			return;
-		}
-		lptr = nptr;
-	}
-
-	/* If 'mem' goes directly after the last block, merge it in.
-	 * Otherwise, just add in onto the list at the end.
+	/*
+	 * Test whether this block is mergable with its successor.
+	 * We need to do the GCBLOCKEND check, since the heap may not be a continuous
+	 * memory area and thus two consecutive blocks need not be mergable. 
 	 */
-	if (GCBLOCKEND(lptr) == mem) {
-DBG(GCPRIM,	dprintf("gc_primitive_free: Merge (%d,%p) onto last in list\n", mem->size, mem); )
-		lptr->size += mem->size;
+	if ((blk=mem->pnext) &&
+	    !GCBLOCKINUSE(blk) &&
+	    GCBLOCKEND(mem)==blk) {
+		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its successor (%p, %u)\n", mem, blk, blk->size);)
+
+		gc_remove_from_prim_freelist(blk);
+
+		gc_merge_with_successor (mem);
 	}
-	else {
-DBG(GCPRIM,	dprintf("gc_primitive_free: Append (%d,%p) onto last in list\n", mem->size, mem); )
-		lptr->next = mem;
+
+	if ((blk=mem->pprev) &&
+	    !GCBLOCKINUSE(blk) &&
+	    GCBLOCKEND(blk)==mem) {
+		DBG(GCPRIM, dprintf ("gc_primitive_free: merging %p with its predecessor (%p, %u)\n", mem, blk, blk->size); )
+
+		gc_remove_from_prim_freelist(blk);
+
+		mem = blk;
+
+		gc_merge_with_successor (mem);
 	}
+
+	gc_add_to_prim_freelist (mem);
+
+	DBG(GCPRIM, dprintf ("gc_primitive_free: added 0x%x bytes @ %p to freelist %u @ %p\n", mem->size, mem,
+			     gc_get_prim_freelist(mem)-&gc_prim_freelist[0], gc_get_prim_freelist(mem)); )
 }
 
 /*
@@ -851,9 +944,8 @@ gc_block_alloc(size_t size)
 	static uintp last_addr;
 
 	if (!gc_block_base) {
-		nblocks = (gc_heap_limit>>gc_pgbits);
+		nblocks = (gc_heap_limit+gc_pgsize-1)>>gc_pgbits;
 
-		nblocks += nblocks/4;
 		gc_block_base = (uintp) malloc(nblocks * sizeof(gc_block));
 		if (!gc_block_base) return 0;
 		memset((void *)gc_block_base, 0, nblocks * sizeof(gc_block));
@@ -920,7 +1012,6 @@ gc_block_alloc(size_t size)
 		   There should be no gc_block *'s on any stack
 		   now. */ 
 		if (gc_block_base != old_blocks) {
-			extern gc_block *gc_prim_freelist;
 			int i;
 			gc_block *b = (void *) gc_block_base;
 			uintp delta = gc_block_base - old_blocks;
@@ -932,7 +1023,8 @@ gc_block_alloc(size_t size)
 			memset(b + onb, 0,
 			       (nblocks - onb) * sizeof(gc_block));
 
-			R(gc_prim_freelist);
+			for (i = 0; i<=GC_PRIM_LIST_COUNT; i++)
+				R(gc_prim_freelist[i]);
 
 			for (i = 0; freelist[i].list != (void*)-1; i++) 
 				R(freelist[i].list);
@@ -960,6 +1052,7 @@ void *
 gc_heap_grow(size_t sz)
 {
 	gc_block* blk;
+	int iLockRoot;
 
 	if (GC_SMALL_OBJECT(sz)) {
 		sz = gc_pgsize;
@@ -973,6 +1066,8 @@ gc_heap_grow(size_t sz)
 	}
 
 	assert(sz % gc_pgsize == 0);
+
+	lockStaticMutex(&gc_heap_lock);
 
 	if (gc_heap_total == gc_heap_limit) {
 		return (0);
@@ -1002,11 +1097,18 @@ gc_heap_grow(size_t sz)
 	DBG(GCDIAG, blk->magic = GC_MAGIC);
 	blk->size = sz;
 
-	/* Attach block to object hash */
-	gc_block_add(blk);
+	/* maintain list of primitive blocks */
+	if (gc_last_block) {
+		gc_last_block->pnext = blk;
+		blk->pprev = gc_last_block;
+	} else {
+		gc_last_block = blk;
+	}
 
 	/* Free block into the system */
 	gc_primitive_free(blk);
+
+	unlockStaticMutex(&gc_heap_lock);
 
 	return (blk);
 }
