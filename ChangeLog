@@ -1,3 +1,21 @@
+Fri Aug  6 16:51:01 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* java/util/SimpleTimeZone.java: add DST aliases
+	java/security/CodeSource.java, java/security/SecureClassLoader.java,
+	java/security/PermissionCollection.java,
+	java/net/URLClassLoader.java: new files
+	* java/text/CollationElementIterator.java,
+	java/text/StringCharacterIterator.java,
+	java/text/RuleBasedCollator.java, java/text/CollationKey.java,
+	java/text/Collator.java: misc fixes & updates
+	* java/lang/Thread.java: add missing method
+	* kaffe/util/UTF8.java: new helper class
+	* java/lang/ProcessInputStream.java,
+	java/io/DataInputStream.java, java/io/DataOutputStream.java,
+	java/io/RandomAccessFile.java: use UTF8 helper
+	* developers/update-class-list: omit java/awt/win32 in build
+	* libraries/javalib/Makefile.{am,in}, Klasses.jar: regen
+
 Tue Aug  3 18:06:40 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URL.java: make URL scheme non-optional
