@@ -557,6 +557,9 @@ dnl If there is no native sysdepCallMethod, let's use libffi
 AC_ARG_WITH(libffi,[  --with-libffi           Use libffi for sysdepCallMethod])
 if test x"$with_libffi" = x"yes" ; then
 	AC_CHECK_LIBRARY(ffi,ffi_call,VM_LIBS)
+	if test $ac_cv_lib_ffi_ffi_call = no; then
+		AC_MSG_ERROR([Missing library libffi, read FAQ/FAQ.libffi])
+	fi
 fi
 
 dnl Checks for libraries for vm library.
@@ -605,14 +608,12 @@ fi
 SECURITY_LIBS="$CTLIBS $SECURITY_LIBS"
 AC_SUBST(SECURITY_LIBS)
 
-dnl Check for libraries for zip library.
-AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
-ZIP_LIBS="$CTLIBS $ZIP_LIBS"
-AC_SUBST(ZIP_LIBS)
-
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	AC_CHECK_LIBRARY(pthread,pthread_create,VM_LIBS)
+	if test $ac_cv_lib_pthread_pthread_create = no; then
+		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
+	fi
 fi
 
 dnl Checks for libraries for X related libraries.
