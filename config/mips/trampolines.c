@@ -31,50 +31,50 @@ TRAMPOLINE_FUNCTION()
 #define C_FUNC_NAME(FUNC) #FUNC
 #endif
 
-asm("
-	.text							\n
-	.align	4						\n
-	sw	$31, 0($sp)					\n
-l1:	.word	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
-	.globl 	mips_do_fixup_trampoline			\n
-	.ent	mips_do_fixup_trampoline			\n
-mips_do_fixup_trampoline:					\n
-	addi	$sp, $sp, -48					\n
-	# needed by the backtracer 				\n
-	sw	$31, 0($sp)					\n
-	sw	$2, 0($sp)					\n
-	sw	$4, 8($sp)					\n
-	sw	$5, 12($sp)					\n
-	sw	$6, 16($sp)					\n
-	sw	$7, 20($sp)					\n
-	swc1	$f13, 24($sp)					\n
-	swc1	$f12, 28($sp)					\n
-	swc1	$f15, 32($sp)					\n
-	swc1	$f14, 36($sp)					\n
-	sw	$30, 40($sp)					\n
-        sw      $gp, 4($sp)                                     \n
-        # $fp = $sp                                             \n
-	move	$30, $sp					\n
-	lw	$4, 0($31)					\n
-	lw	$5, 4($31)					\n
-	lw	$25, -4($25)					\n
-	jalr	$25						\n
-	nop							\n
-	lw	$30, 40($sp)					\n
-	lwc1	$f14, 36($sp)					\n
-	lwc1	$f15, 32($sp)					\n
-	lwc1	$f12, 28($sp)					\n
-	lwc1	$f13, 24($sp)					\n
-	lw	$7, 20($sp)					\n
-	lw	$6, 16($sp)					\n
-	lw	$5, 12($sp)					\n
-	lw	$4, 8($sp)					\n
-	lw	$gp, 4($sp)					\n
-	lw	$31, 0($sp)					\n
-	addi	$sp, $sp, 48					\n
-	move	$25, $2						\n
-	jr	$2						\n
-	.end	mips_do_fixup_trampoline"
+asm(" \n"
+"	.text \n"						\
+"	.align	4 \n"						\
+"	sw	$31, 0($sp) \n"					\
+"l1:	.word	" C_FUNC_NAME(soft_fixup_trampoline) " \n"	\
+"	.globl 	mips_do_fixup_trampoline \n"			\
+"	.ent	mips_do_fixup_trampoline \n"			\
+"mips_do_fixup_trampoline: \n"					\
+"	addi	$sp, $sp, -48 \n"				\
+"	# needed by the backtracer \n"				\
+"	sw	$31, 0($sp) \n"					\
+"	sw	$2, 0($sp) \n"					\
+"	sw	$4, 8($sp) \n"					\
+"	sw	$5, 12($sp) \n"					\
+"	sw	$6, 16($sp) \n"					\
+"	sw	$7, 20($sp) \n"					\
+"	swc1	$f13, 24($sp) \n"				\
+"	swc1	$f12, 28($sp) \n"				\
+"	swc1	$f15, 32($sp) \n"				\
+"	swc1	$f14, 36($sp) \n"				\
+"	sw	$30, 40($sp) \n"				\
+"       sw      $gp, 4($sp) \n"					\
+"        # $fp = $sp \n"					\
+"	move	$30, $sp \n"					\
+"	lw	$4, 0($31) \n"					\
+"	lw	$5, 4($31) \n"					\
+"	lw	$25, -4($25) \n"				\
+"	jalr	$25 \n"						\
+"	nop \n"							\
+"	lw	$30, 40($sp) \n"				\
+"	lwc1	$f14, 36($sp) \n"				\
+"	lwc1	$f15, 32($sp) \n"				\
+"	lwc1	$f12, 28($sp) \n"				\
+"	lwc1	$f13, 24($sp) \n"				\
+"	lw	$7, 20($sp) \n"					\
+"	lw	$6, 16($sp) \n"					\
+"	lw	$5, 12($sp) \n"					\
+"	lw	$4, 8($sp) \n"					\
+"	lw	$gp, 4($sp) \n"					\
+"	lw	$31, 0($sp) \n"					\
+"	addi	$sp, $sp, 48 \n"				\
+"	move	$25, $2	\n"					\
+"	jr	$2 \n"						\
+"	.end	mips_do_fixup_trampoline"
 );
 
 #endif
