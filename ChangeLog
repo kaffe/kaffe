@@ -1,3 +1,16 @@
+Wed Aug  7 11:14:33 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	Merged in fixes for code-analyse.[ch] fron JanosVM 0.6.0
+
+	2001-10-23 Tuesday 12:23  Timothy S Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.c: make sure there is code associated
+	with the method
+
+	2000-08-30 Wednesday 16:12  Timothy S Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.h: added postOutOfMemory if a frame
+	couldn't be allocated
+
 Tue Aug  6 19:07:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in fixes for StackOverflowError from JanosVM 0.6.0

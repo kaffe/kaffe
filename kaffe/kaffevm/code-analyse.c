@@ -79,6 +79,16 @@ DBG(CODEANALYSE,
 	dprintf(__FUNCTION__ " %p: %s.%s\n", THREAD_NATIVE(), 
 		meth->class->name->data, meth->name->data);
     )
+
+	if( meth->c.bcode.code == 0 )
+	{
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "No code attribute for %s.%s.",
+				     meth->class->name->data,
+				     meth->name->data);
+		return false;
+	}
+
 	codeInfo = KMALLOC(sizeof(codeinfo) + (meth->c.bcode.codelen *
 					       sizeof(perPCInfo)));
 	*pcodeinfo = codeInfo;
@@ -334,6 +344,7 @@ DBG(CODEANALYSE,
 							    pc, einfo);
 
 				if (failed) {
+					tidyVerifyMethod(pcodeinfo);
 					return (false);
 				}
 				rerun = true;

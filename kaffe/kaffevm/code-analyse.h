@@ -162,6 +162,7 @@ typedef struct codeinfo {
 		if (!FRAME(pc)) {				\
 			meth->accflags &= ~ACC_VERIFIED;	\
 			tidyVerifyMethod(&codeInfo);		\
+			postOutOfMemory(einfo);			\
 			return false;				\
 		}						\
 	}
