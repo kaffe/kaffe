@@ -28,7 +28,7 @@
 #define	kaffe_specification_name	"Java Platform API Specification"
 #define	kaffe_class_version		"46.0"
 
-#if defined(unix) || defined(__BEOS__) || defined(__NetBSD__)
+#if defined(unix) || defined(__unix__) || defined(__BEOS__) || defined(__NetBSD__)
 #define	file_separator		"/"
 #define	path_separator		":"
 #define	line_separator		"\n"
