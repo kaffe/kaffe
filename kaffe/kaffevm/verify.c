@@ -2554,6 +2554,19 @@ ensureOpstackSizeErrorInVerifyBasicBlock(errorInfo* einfo,
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ *
+ * @return nth item on the operand stack from the top.
+ */
+static inline
+Type *
+getOpstackItem(BlockInfo* block,
+	       unsigned int n)
+{
+	return (&block->opstack[block->stacksz - n]);
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2636,12 +2649,8 @@ verifyBasicBlock(errorInfo* einfo,
 	}
 	
 	
-	/* the nth item on the operand stack from the top */
-#define OPSTACK_ITEM(_N) \
-	(&block->opstack[block->stacksz - _N])
-	
-#define OPSTACK_TOP  OPSTACK_ITEM(1)
-#define OPSTACK_WTOP OPSTACK_ITEM(2)
+#define OPSTACK_TOP  getOpstackItem(block, 1)
+#define OPSTACK_WTOP getOpstackItem(block, 2)
 
 #define OPSTACK_INFO(_N) \
         (block->opstack[block->stacksz - _N].tinfo)
@@ -3106,12 +3115,12 @@ verifyBasicBlock(errorInfo* einfo,
 			 */
 			ENSURE_OPSTACK_SIZE(3);
 			
-			if (OPSTACK_ITEM(2)->data.class != TINT->data.class) {
+			if (getOpstackItem(block, 2)->data.class != TINT->data.class) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aastore: array index is not an integer");
 			}
 			
-			type      = OPSTACK_ITEM(1);
-			arrayType = OPSTACK_ITEM(3);
+			type      = getOpstackItem(block, 1);
+			arrayType = getOpstackItem(block, 3);
 			
 			DBG(VERIFY3,
 			    dprintf("%sarrayType: ", indent); printType(arrayType);
@@ -3332,7 +3341,7 @@ verifyBasicBlock(errorInfo* einfo,
 			 **************************************************************/
 		case INSTANCEOF:
 			ENSURE_OPSTACK_SIZE(1);
-			if (!isReference(OPSTACK_ITEM(1))) {
+			if (!isReference(getOpstackItem(block, 1))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "instanceof: top of stack is not a reference type");
 			}
 			*OPSTACK_TOP = *TINT;
@@ -3644,7 +3653,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case IFNONNULL:
 		case IFNULL:
 			ENSURE_OPSTACK_SIZE(1);
-			if (!isReference(OPSTACK_ITEM(1))) {
+			if (!isReference(getOpstackItem(block, 1))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if[non]null: thing on top of stack is not a reference");
 			}
 			OPSTACK_POP_BLIND;
@@ -3781,8 +3790,8 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			OPSTACK_PUSH(OPSTACK_TOP);
 			
-			*OPSTACK_ITEM(2) = *OPSTACK_ITEM(3);
-			*OPSTACK_ITEM(3) = *OPSTACK_ITEM(1);
+			*getOpstackItem(block, 2) = *getOpstackItem(block, 3);
+			*getOpstackItem(block, 3) = *getOpstackItem(block, 1);
 			break;
 			
 		case DUP_X2:
@@ -3793,9 +3802,9 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			OPSTACK_PUSH(OPSTACK_TOP);
 			
-			*OPSTACK_ITEM(2) = *OPSTACK_ITEM(3);
-			*OPSTACK_ITEM(3) = *OPSTACK_ITEM(4);
-			*OPSTACK_ITEM(4) = *OPSTACK_ITEM(1);
+			*getOpstackItem(block, 2) = *getOpstackItem(block, 3);
+			*getOpstackItem(block, 3) = *getOpstackItem(block, 4);
+			*getOpstackItem(block, 4) = *getOpstackItem(block, 1);
 			break;
 			
 		case DUP2:
@@ -3807,33 +3816,33 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP2_X1:
 			ENSURE_OPSTACK_SIZE(2);
-			if (isWide(OPSTACK_ITEM(2))) {
+			if (isWide(getOpstackItem(block, 2))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1 requires top 2 bytes on operand stack to be single bytes items");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
-			OPSTACK_PUSH_BLIND(OPSTACK_ITEM(2));
-			OPSTACK_PUSH_BLIND(OPSTACK_ITEM(2));
+			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
+			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
 			
-			*OPSTACK_ITEM(3) = *OPSTACK_ITEM(5);
-			*OPSTACK_ITEM(4) = *OPSTACK_ITEM(1);
-			*OPSTACK_ITEM(5) = *OPSTACK_ITEM(2);
+			*getOpstackItem(block, 3) = *getOpstackItem(block, 5);
+			*getOpstackItem(block, 4) = *getOpstackItem(block, 1);
+			*getOpstackItem(block, 5) = *getOpstackItem(block, 2);
 			break;
 			
 		case DUP2_X2:
 			ENSURE_OPSTACK_SIZE(4);
-			if (isWide(OPSTACK_ITEM(2)) || isWide(OPSTACK_ITEM(4))) {
+			if (isWide(getOpstackItem(block, 2)) || isWide(getOpstackItem(block, 4))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup2_x2 where either 2nd or 4th byte is 2nd half of a 2 byte item");
 			}
 			CHECK_STACK_OVERFLOW(2);
 			
-			OPSTACK_PUSH_BLIND(OPSTACK_ITEM(2));
-			OPSTACK_PUSH_BLIND(OPSTACK_ITEM(2));
+			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
+			OPSTACK_PUSH_BLIND(getOpstackItem(block, 2));
 			
-			*OPSTACK_ITEM(3) = *OPSTACK_ITEM(5);
-			*OPSTACK_ITEM(4) = *OPSTACK_ITEM(6);
-			*OPSTACK_ITEM(5) = *OPSTACK_ITEM(1);
-			*OPSTACK_ITEM(6) = *OPSTACK_ITEM(2);
+			*getOpstackItem(block, 3) = *getOpstackItem(block, 5);
+			*getOpstackItem(block, 4) = *getOpstackItem(block, 6);
+			*getOpstackItem(block, 5) = *getOpstackItem(block, 1);
+			*getOpstackItem(block, 6) = *getOpstackItem(block, 2);
 			break;
 			
 			
