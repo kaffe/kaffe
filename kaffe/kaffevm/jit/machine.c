@@ -66,6 +66,7 @@ uint32 npc;
 
 /* Various exception related things */
 extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
+extern Hjava_lang_Class javaLangNullPointerException;
 
 jitflags willcatch;
 
@@ -77,7 +78,16 @@ jitflags willcatch;
       softcall_nullpointer();                                 \
       set_label(_i, _n)
 #else
-#define CHECK_NULL(_i, _s, _n)
+/*
+ * If we rely on the MMU to catch null pointer accesses, we must spill
+ * the registers to their home locations if that exception can be caught,
+ * since the exception handler will load its registers from there.
+ * For now, we use prepare_function_call() to do that. (Tim?)
+ */
+#define CHECK_NULL(_i, _s, _n)	\
+	if (canCatch(NULLPOINTER)) {		\
+		prepare_function_call();  	\
+	}
 #endif
 
 /* Unit in which code block is increased when overrun */
@@ -103,6 +113,7 @@ void	initInsnSequence(int, int, int);
 void	finishInsnSequence(nativeCodeInfo*);
 static void generateInsnSequence(void);
 static void installMethodCode(Method*, nativeCodeInfo*);
+static void checkCaughtExceptions(Method* meth, int pc);
 
 void	endBlock(sequence*);
 void	startBlock(sequence*);
@@ -192,24 +203,6 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 	base = (bytecode*)meth->c.bcode.code;
 	len = meth->c.bcode.codelen;
 
-	willcatch.BADARRAYINDEX = false;
-
-	/* Deterimine various exception conditions */
-	if (meth->exception_table != 0) {
-		for (i = 0; i < meth->exception_table->length; i++) {
-			Hjava_lang_Class* etype;
-			etype = meth->exception_table->entry[i].catch_type;
-			if (etype == 0) {
-				willCatch(BADARRAYINDEX);
-			}
-			else {
-				if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
-					willCatch(BADARRAYINDEX);
-				}
-			}
-		}
-	}
-
 	/* Scan the code and determine the basic blocks */
 	verifyMethod(meth);
 
@@ -232,6 +225,12 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 		assert(stackno <= maxStack+maxLocal);
 
 		npc = pc + insnLen[base[pc]];
+
+		if (getenv("JIT_DEBUG"))
+		    printf("[%d-%d]\n", pc, npc);
+
+		/* Determine various exception conditions */
+		checkCaughtExceptions(meth, pc);
 
 		start_instruction();
 
@@ -640,3 +639,42 @@ cancelNoWriteback(void)
 	}
 }
 
+/*
+ * check what synchronous exceptions are caught for a given instruction
+ */
+static
+void 
+checkCaughtExceptions(Method* meth, int pc)
+{
+	int i;
+
+	willcatch.BADARRAYINDEX = false;
+	willcatch.NULLPOINTER = false;
+
+	if (meth->exception_table == 0) 
+		return;
+
+	/* Determine various exception conditions */
+	for (i = 0; i < meth->exception_table->length; i++) {
+		Hjava_lang_Class* etype;
+
+		/* include only if exception handler range matches pc */
+		if (meth->exception_table->entry[i].start_pc > pc ||
+		    meth->exception_table->entry[i].end_pc <= pc)
+			continue;
+
+		etype = meth->exception_table->entry[i].catch_type;
+		if (etype == 0) {
+			willCatch(BADARRAYINDEX);
+			willCatch(NULLPOINTER);
+		}
+		else {
+			if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
+				willCatch(BADARRAYINDEX);
+			}
+			if (instanceof(&javaLangNullPointerException, etype)) {
+				willCatch(NULLPOINTER);
+			}
+		}
+	}
+}
