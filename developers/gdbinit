@@ -60,13 +60,12 @@ end
 
 define jthreadInfo
   set $jth = ($arg0)
-  set $jlth = (Hjava_lang_Thread*)($jth->jlThread)
+  set $jlth = (Hjava_lang_Thread*)($jth->localData.jlThread)
   printf "jthread:"
     p $jth
   printf "  .status="
     pjthreadStatus $jth
-  printf ";  .flags=%x", $jth.flags
-  printf ";  .jlThread=%p\n", $jth.jlThread
+  printf ";  .flags=%x\n", $jth.flags
   printf "java.lang.Thread:"
     p $jlth
   printf "  .PrivateInfo=%x", $jlth.PrivateInfo
@@ -284,17 +283,18 @@ define __livethreads
   set $doBt = $arg0
 
   printf "Live threads in the system: (jth-current = %p)\n\n", currentJThread
-  set $th = liveThreads
+  set $liveQ = liveThreads
 
-  while $th != 0
+  while $liveQ != 0
 
+    set $th = ((jthread *)$liveQ->element)
     jthreadInfo $th
     if $doBt
        btThread $th
     end
 
     printf "---- ---- ---- ----\n\n"
-    set $th = $th.nextlive
+    set $liveQ = $liveQ.next
   end
   printf "\n"
 end
@@ -323,8 +323,8 @@ define threadInfo
      printf "  State = %d; Name = ", $jlth.state
      jlstring $jlth.name
   else
-    if $jth.jlThread != $jlth
-       printf "threadInfo: ERROR $jth.jlThread (%p) != $jlth (%p)\n", $jth.jlThread, $jlth
+    if $jth->localData.jlThread != $jlth
+       printf "threadInfo: ERROR $jth->localData.jlThread (%p) != $jlth (%p)\n", $jth->localData.jlThread, $jlth
     else
        jthreadInfo $jth
     end
@@ -356,7 +356,7 @@ document pjthreadStatus
 end
 
 define jlthread
-  p ((Hjava_lang_Thread*)(($arg0)->jlThread))
+  p ((Hjava_lang_Thread*)(($arg0)->localData.jlThread))
 end
 document jlthread
   Print the java-lang-Thread associated with the given JTHREAD ptr.
@@ -506,8 +506,8 @@ define btThread
   set $th = ((jthread_t)$arg0)
   set $jbuf = (int*)($th.env)
 
-  btThreadBSDjmpbuf $jbuf
-  #btThreadLinuxjmpbuf $jbuf
+  #btThreadBSDjmpbuf $jbuf
+  btThreadLinuxjmpbuf $jbuf
   #btThreadOSKitUnixjmpbuf $jbuf
 end
 document btThread
@@ -663,17 +663,19 @@ document restorelinux
 end
 
 define dumpexcchain
-    set $th = ((jthread*)$arg0)
-    set $jth = (Hjava_lang_Thread*)$th.jlThread
-    set $eptr = (vmException*)$jth.exceptPtr
+    set $th = ((jthread *) $arg0)
+    set $jth = (Hjava_lang_Thread *) $th->localData.jlThread
+    set $eptr = (struct VmExceptHandler *) $jth.exceptPtr
     while $eptr != 0
-	printf "%p ", $eptr
+	printf "VmExceptionHandler: %p ", $eptr
 	if $eptr.meth == 1
-	    printf "JNI"
+	    # VMEXCEPTHANDLER_KAFFEJNI_HANDLER
+	    printf "  JNI frame.jni.fp = %p\n", $eptr->frame.jni.fp
 	else
-	    printf "%s.%s", ($eptr.meth).class.name.data, ($eptr.meth).name.data
+	    printf "  %s.%s", ($eptr.meth).class.name.data, ($eptr.meth).name.data
+	    printf "  frame.intrp.pc = %p, frame.intrp.syncobj = %p\n", \
+		$eptr->intrp.pc, $eptr->syncobj
 	end
-	printf " pc = %p, mobj = %p\n", $eptr.pc, $eptr.mobj
 	set $eptr = $eptr.prev
     end
 end
