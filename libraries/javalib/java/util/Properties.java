@@ -120,24 +120,24 @@ public void list(PrintWriter out) {
 }
 
 public Enumeration propertyNames() {
-	final Vector result = new Vector();
+	SortedSet nameSet = new TreeSet();	// sort keys just for fun
 
 	// Add main properties
 	for (Enumeration e = keys(); e.hasMoreElements(); ) {
-		result.addElement(e.nextElement());
+		nameSet.add(e.nextElement());
 	}
 
 	// Add non-overridden default properties
 	if (defaults != null) {
 		for (Enumeration e = defaults.keys(); e.hasMoreElements(); ) {
 			Object def = e.nextElement();
-			if (!result.contains(def))
-				result.addElement(def);
+			if (!nameSet.contains(def))
+				nameSet.add(def);
 		}
 	}
 
 	// Return enumeration of vector
-	return result.elements();
+	return Collections.enumeration(nameSet);
 }
 
 public synchronized void load(InputStream in) throws IOException {
