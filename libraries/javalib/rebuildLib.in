@@ -47,5 +47,5 @@ fi
 
 cd $SRCDIR
 
-echo "Compiling classes from ${1+"$@"} using " $JAVAC
+echo "Compiling classes from " ${1+"$@"} " using " $JAVAC
 $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}
