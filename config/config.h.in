@@ -79,7 +79,7 @@
 /* Define to 1 if you have the <features.h> header file. */
 #undef HAVE_FEATURES_H
 
-/* Define to 1 if you have the `finite' function. */
+/* finite */
 #undef HAVE_FINITE
 
 /* Define to 1 if you have the `floor' function. */
@@ -181,10 +181,10 @@
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
 
-/* Define to 1 if you have the `isinf' function. */
+/* isinf */
 #undef HAVE_ISINF
 
-/* Define to 1 if you have the `isnan' function. */
+/* isnan */
 #undef HAVE_ISNAN
 
 /* Define to 1 if you have the <jpeglib.h> header file. */

@@ -1013,8 +1013,59 @@ AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_sc
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
-AC_CHECK_FUNCS([rint floor ceil finite isinf isnan strtod mergesort])
+AC_CHECK_FUNCS([rint floor ceil strtod mergesort])
 AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul])
+
+dnl isinf, isnan, finite checking code taken from Sablotron 1.0,
+dnl dually licensed licensed under MPL 1.1 and GPL
+dnl available from http://www.gingerall.cz/charlie/ga/xml/p_sab.xml
+
+dnl check for isnan etc...in the std. way and try link if not found
+dnl this is due HPUX, where isnan & Co. are defined as macros
+
+AC_CHECK_FUNC( isnan, [has_isnan=1; AC_DEFINE(HAVE_ISNAN, 1, isnan)], has_isnan=0)
+AC_CHECK_FUNC( isinf, [has_isinf=1; AC_DEFINE(HAVE_ISINF, 1, isinf)], has_isinf=0)
+AC_CHECK_FUNC( finite,[has_finite=1;AC_DEFINE(HAVE_FINITE, 1, finite)], has_finite=0)
+
+dnl check for macro isnan in math
+if test $has_isnan = 0; then
+  AC_MSG_CHECKING(for macro isnan)
+  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = isnan(0); },
+              has_isnan=1, has_isnan=0 )
+  if test $has_isnan = 1; then
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_ISNAN, 1, isnan)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+dnl check for macro isinf in math
+if test $has_isinf = 0; then
+  AC_MSG_CHECKING(for macro isinf)
+  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = isinf(0); },
+              has_isinf=1, has_isinf=0 )
+  if test $has_isinf = 1; then
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_ISINF, 1, isinf)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+dnl check for macro finite in math
+if test $has_finite = 0; then
+  AC_MSG_CHECKING(for macro finite)
+  AC_TRY_LINK( [#include <math.h>],  { int foo; foo = finite(0); },
+              has_finite=1, has_finite=0 )
+  if test $has_finite = 1; then
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_FINITE, 1, finite)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
 LIBS="$KSAVE_LIBS"
 
 dnl Test whether strtod("-0.0") is broken

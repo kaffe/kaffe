@@ -68,3 +68,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 At the time of writing, Kaffe uses getaddrinfo 1.6.1.
+
+* Configure.in tests for isinf, isnan, finite
+
+Taken from Sablotron 1.0, which is dually licensed licensed under MPL 1.1 
+and GPL. It is available from http://www.gingerall.cz/charlie/ga/xml/p_sab.xml

@@ -1,5 +1,17 @@
 2003-09-25  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.in:
+	Merged in ininf, isnan and finite checking code from 
+	Sablotron 1.0, licensed under MPL 1.1 and GPL.
+	
+	* THIRDPARTY:
+	Updated to reflect the inclusion of Sablotron's code.
+
+	* config/config.h.in, configure:
+	Regenerated.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
 	Fix for jit and intrp engine compilation breakage.
 	
 	* kaffe/kaffevm/jni.c:
