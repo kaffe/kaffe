@@ -37,15 +37,16 @@ public static BeanInfo getBeanInfo(Class beanClass) throws IntrospectionExceptio
 	return (getBeanInfo(beanClass, null));
 }
 
-public static BeanInfo getBeanInfo(Class beanClass, Class stopClass) throws IntrospectionException {
+public static BeanInfo getBeanInfo(Class beanClass, Class stopClass)
+		throws IntrospectionException {
 	BeanInfo bean = loadBeanInfo(beanClass);
 
-	// Okay, we must now introspect to fill in the blanks.
-	if (stopClass != null) {
-		stopClass = stopClass.getSuperclass();
-	}
-	if (stopClass != null && !beanClass.isInstance(stopClass)) {
-		throw new IntrospectionException("Illegal stop class");
+	// Check stop class is really a superclass of bean class
+	if (stopClass != null
+	    && (!stopClass.isAssignableFrom(beanClass)
+	      || beanClass.isInterface())) {
+		throw new IntrospectionException(stopClass.getName()
+		    + " not superclass of " + beanClass.getName());
 	}
 
 	BeanDescriptor desc = null;
