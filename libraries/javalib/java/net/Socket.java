@@ -91,7 +91,8 @@ public class Socket
   /**
    * True if the socket is bound.
    */
-  private boolean bound;
+  // package-private because ServerSocket.implAccept() needs to access it.
+  boolean bound;
 
   /**
    * True if input is shutdown.

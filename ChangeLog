@@ -1,3 +1,20 @@
+2004-09-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/ServerSocket.java
+	(implAccept): Set bound to true.
+
+	* libraries/javalib/java/net/Socket.java
+	(bound): Make bound package-private.
+
+	Patch from: Ito Kazumitsu  <kaz@maczuka.gcd.org>
+	
+	* libraries/clib/net/PlainSocketImpl.c
+	(socketAccept): Init localport.
+	(socketBind): Fixed localport reporting when using IPV6.
+	(socketSetOption): Fixed some warnings.
+	(socketGetOption): Fixed some warnings.
+	Use *_ADDRESS_SIZE instead of raw values.
+	
 2004-09-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/naming/CompoundName.java:

@@ -30,6 +30,9 @@
 
 #include "dummyin6.h"
 
+#define IPV4_ADDRESS_SIZE 4
+#define IPV6_ADDRESS_SIZE 16
+
 #if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
 #include "getaddrinfo.h"
 #endif /* !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO) */
@@ -188,7 +191,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 	int alen;
 
 	memset(&addr, 0, sizeof(addr));
-	if (obj_length(unhand(daddr)->addr) == 4) {
+	if (obj_length(unhand(daddr)->addr) == IPV4_ADDRESS_SIZE) {
 	        alen = sizeof(addr.addr4); 
 
 #if defined(BSD44)
@@ -201,7 +204,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr4.sin_addr));
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
-	} else if (obj_length(unhand(daddr)->addr) == 16) {
+	} else if (obj_length(unhand(daddr)->addr) == IPV6_ADDRESS_SIZE) {
 	        alen = sizeof(addr.addr6);
 
 #if defined(BSD44)
@@ -280,7 +283,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	    )
 
 	memset(&addr, 0, sizeof(addr));
-	if (obj_length(unhand(laddr)->addr) == 4) {
+	if (obj_length(unhand(laddr)->addr) == IPV4_ADDRESS_SIZE) {
 	        alen = sizeof(addr.addr4);
 
 #if defined(BSD44)
@@ -298,7 +301,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		    );
 
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
-	} else if (obj_length(unhand(laddr)->addr) == 16) {
+	} else if (obj_length(unhand(laddr)->addr) == IPV6_ADDRESS_SIZE) {
 	        alen = sizeof(addr.addr6);
 
 #if defined(BSD44)
@@ -346,7 +349,14 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		if (r) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
-		lport = ntohs(addr.addr4.sin_port);
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+		if (obj_length(unhand(laddr)->addr) == IPV6_ADDRESS_SIZE) {
+		  lport = ntohs(addr.addr6.sin6_port);
+		} else
+#endif
+		{
+		  lport = ntohs(addr.addr4.sin_port);
+		}
 	}
 	unhand(this)->localport = lport;
 }
@@ -380,7 +390,9 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	int alen;
 	struct sockaddr_in addr;
 	HArrayOfByte *remote_addr;
-	
+	struct Hgnu_java_net_PlainSocketImpl* accepted_socket =
+	  (struct Hgnu_java_net_PlainSocketImpl *)sock;
+
 	remote_addr = NULL;
 	memset(&addr, 0, sizeof(addr));
 
@@ -413,14 +425,14 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
-	if (unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd != -1) {
+	if (unhand(accepted_socket)->native_fd != -1) {
 		rc1 = KSOCKCLOSE(unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd);
 		if (rc1) {
 			SignalError("java.io.IOException", SYS_ERROR(rc1));
 		}
 	}
 
-	unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd = r;
+	unhand(accepted_socket)->native_fd = r;
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
@@ -462,6 +474,13 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 							      remote_addr).l;
 	unhand(sock)->port = ntohs(addr.sin_port);
 
+	alen = sizeof(addr);
+	r = KGETSOCKNAME(unhand(accepted_socket)->native_fd, (struct sockaddr*)&addr, &alen);
+	if (r) {
+	  SignalError("java.io.IOException", SYS_ERROR(r));
+	}
+	unhand(accepted_socket)->localport = ntohs(addr.sin_port);
+	
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=-, addr=-) -> (sock: %p; addr: %s; port:%d)\n", 
 		    this, sock, ip2str(addr.sin_addr.s_addr), ntohs(addr.sin_port));
@@ -547,7 +566,8 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 					     jint opt, 
 					     struct Hjava_lang_Object* arg)
 {
-	int k, r, v;
+	int r, v;
+	unsigned int k;
 
 	DBG(NATIVENET,
 	    char *optstr = "UNKNOWN";
@@ -605,8 +625,9 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 {
 	struct sockaddr_in addr;
 	int alen = sizeof(addr);
-	int k, r, v;
+	int r, v;
 	int vsize = sizeof(v);
+	unsigned int k;
 
 	DBG(NATIVENET,
 	    char *optstr = "UNKNOWN";
