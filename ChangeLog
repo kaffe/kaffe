@@ -1,3 +1,9 @@
+2003-10-06  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/kaffe/util/zip/SwitchInflater.java:
+	Classpath version of InflaterInputStream expects a zero result
+	to be returned if the buffer hasn't been filled yet.
+
 2003-10-06  Helmer Kraemer <hkraemer@kaffe.org>
 
 	* config/superh/linux/md.h:

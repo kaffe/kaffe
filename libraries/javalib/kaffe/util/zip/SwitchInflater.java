@@ -56,6 +56,10 @@ public class SwitchInflater extends Inflater {
 
   public synchronized int inflate(byte b[], int o, int l) throws DataFormatException {
 	if (stored) {
+		/* Special case: len may be zero */
+		if (len == 0)
+		        return 0;
+
 		if (l >= maxlen) {
 			l = maxlen;
 		}
