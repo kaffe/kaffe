@@ -1,3 +1,9 @@
+Mon Mar 20 19:56:24 CET 2000  Edouard G. Parmelan <egp@free.fr>
+
+	* configure.in: enclose AC_PROG_CXX in push and pop AC_MSG_ERROR to
+	avoid configure failure if not found as suggested by Alexandre.
+	* configure: regen
+
 Thu Mar 16 11:38:26 PST 2000  Maurizio DE CECCO <maurizio@mandrakesoft.com>
 
 	* kaffevm/systems/unix-jthreads/jthread.c: use macros to
