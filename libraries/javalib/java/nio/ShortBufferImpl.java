@@ -102,12 +102,11 @@ final class ShortBufferImpl extends ShortBuffer
    * and then increments the position.
    *
    * @exception BufferUnderflowException If there are no remaining
-   * <code>shorts</code> in this buffer.
+   * <code>short</code>s in this buffer.
    */
   public short get ()
   {
-    if (!hasRemaining())
-      throw new BufferUnderflowException();
+    checkForUnderflow();
 
     short result = backing_buffer [position ()];
     position (position () + 1);
@@ -117,14 +116,16 @@ final class ShortBufferImpl extends ShortBuffer
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
-   * 
+   *
+   * @exception BufferOverflowException If there no remaining 
+   * space in this buffer.
    * @exception ReadOnlyBufferException If this buffer is read-only.
    */
   public ShortBuffer put (short value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-	  	    
+    checkIfReadOnly();
+    checkForOverflow();
+
     backing_buffer [position ()] = value;
     position (position () + 1);
     return this;
@@ -139,6 +140,8 @@ final class ShortBufferImpl extends ShortBuffer
    */
   public short get (int index)
   {
+    checkIndex(index);
+
     return backing_buffer [index];
   }
   
@@ -152,9 +155,9 @@ final class ShortBufferImpl extends ShortBuffer
    */
   public ShortBuffer put (int index, short value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-    	    
+    checkIfReadOnly();
+    checkIndex(index);
+
     backing_buffer [index] = value;
     return this;
   }

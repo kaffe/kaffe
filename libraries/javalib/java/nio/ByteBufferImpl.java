@@ -137,8 +137,7 @@ final class ByteBufferImpl extends ByteBuffer
    */
   public byte get ()
   {
-    if (!hasRemaining())
-	throw new BufferUnderflowException();
+    checkForUnderflow();
 
     byte result = backing_buffer [position () + array_offset];
     position (position () + 1);
@@ -148,13 +147,15 @@ final class ByteBufferImpl extends ByteBuffer
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
-   * 
+   *
+   * @exception BufferOverflowException If there is no remaining
+   * space in this buffer.
    * @exception ReadOnlyBufferException If this buffer is read-only.
    */
   public ByteBuffer put (byte value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
+    checkIfReadOnly();
+    checkForOverflow();
 
     int pos = position();
     backing_buffer [pos + array_offset] = value;
@@ -171,6 +172,8 @@ final class ByteBufferImpl extends ByteBuffer
    */
   public byte get (int index)
   {
+    checkIndex(index);
+
     return backing_buffer [index + array_offset];
   }
   
@@ -184,9 +187,9 @@ final class ByteBufferImpl extends ByteBuffer
    */
   public ByteBuffer put (int index, byte value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-    	    
+    checkIfReadOnly();
+    checkIndex(index);
+
     backing_buffer [index + array_offset] = value;
     return this;
   }

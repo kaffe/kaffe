@@ -102,12 +102,11 @@ final class DoubleBufferImpl extends DoubleBuffer
    * and then increments the position.
    *
    * @exception BufferUnderflowException If there are no remaining
-   * <code>doubles</code> in this buffer.
+   * <code>double</code>s in this buffer.
    */
   public double get ()
   {
-    if (!hasRemaining())
-      throw new BufferUnderflowException();
+    checkForUnderflow();
 
     double result = backing_buffer [position ()];
     position (position () + 1);
@@ -117,13 +116,15 @@ final class DoubleBufferImpl extends DoubleBuffer
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
-   * 
+   *
+   * @exception BufferOverflowException If there no remaining 
+   * space in this buffer.
    * @exception ReadOnlyBufferException If this buffer is read-only.
    */
   public DoubleBuffer put (double value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
+    checkIfReadOnly();
+    checkForOverflow();
 	  	    
     backing_buffer [position ()] = value;
     position (position () + 1);
@@ -139,6 +140,8 @@ final class DoubleBufferImpl extends DoubleBuffer
    */
   public double get (int index)
   {
+    checkIndex(index);
+
     return backing_buffer [index];
   }
   
@@ -152,9 +155,9 @@ final class DoubleBufferImpl extends DoubleBuffer
    */
   public DoubleBuffer put (int index, double value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-    	    
+    checkIfReadOnly();
+    checkIndex(index);
+
     backing_buffer [index] = value;
     return this;
   }

@@ -1,3 +1,42 @@
+2003-06-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/nio/Buffer.java,
+	libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/ByteBufferHelper.java,
+	libraries/javalib/java/nio/ByteBufferImpl.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/CharBufferImpl.java,
+	libraries/javalib/java/nio/CharViewBufferImpl.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/java/nio/DoubleViewBufferImpl.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/FloatBufferImpl.java,
+	libraries/javalib/java/nio/FloatViewBufferImpl.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/IntBufferImpl.java,
+	libraries/javalib/java/nio/IntViewBufferImpl.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/LongBufferImpl.java,
+	libraries/javalib/java/nio/LongViewBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/ShortBuffer.java,
+	libraries/javalib/java/nio/ShortBufferImpl.java,
+	libraries/javalib/java/nio/ShortViewBufferImpl.java:
+	Fixed javadocs all over. Improved input error 
+	checking.
+
+	* libraries/javalib/java/nio/Buffer.java:
+	(checkForUnderflow, checkForOverflow, checkIndex,
+	checkIfReadOnly, checkArraySize) New helper methods
+	for error checking.
+	
+	* libraries/javalib/java/nio/ByteBufferHelper.java:
+	(checkRemainingForRead, checkRemainingForWrite,
+	checkAvailableForRead, checkAvailableForWrite) Removed
+	no longer needed methods.
+
 2004-06-15  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/text/MessageFormat.java

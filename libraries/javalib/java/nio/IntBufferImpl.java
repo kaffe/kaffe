@@ -106,8 +106,7 @@ final class IntBufferImpl extends IntBuffer
    */
   public int get ()
   {
-    if (!hasRemaining())
-      throw new BufferUnderflowException();
+    checkForUnderflow();
 
     int result = backing_buffer [position ()];
     position (position () + 1);
@@ -117,14 +116,16 @@ final class IntBufferImpl extends IntBuffer
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
-   * 
+   *
+   * @exception BufferOverflowException If there no remaining 
+   * space in this buffer.
    * @exception ReadOnlyBufferException If this buffer is read-only.
    */
   public IntBuffer put (int value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-	  	    
+    checkIfReadOnly();
+    checkForOverflow();
+
     backing_buffer [position ()] = value;
     position (position () + 1);
     return this;
@@ -139,6 +140,8 @@ final class IntBufferImpl extends IntBuffer
    */
   public int get (int index)
   {
+    checkIndex(index);
+
     return backing_buffer [index];
   }
   
@@ -152,9 +155,9 @@ final class IntBufferImpl extends IntBuffer
    */
   public IntBuffer put (int index, int value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-    	    
+    checkIfReadOnly();
+    checkIndex(index);
+
     backing_buffer [index] = value;
     return this;
   }

@@ -106,8 +106,7 @@ final class LongBufferImpl extends LongBuffer
    */
   public long get ()
   {
-    if (!hasRemaining())
-      throw new BufferUnderflowException();
+    checkForUnderflow();
 
     long result = backing_buffer [position ()];
     position (position () + 1);
@@ -117,14 +116,16 @@ final class LongBufferImpl extends LongBuffer
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
-   * 
+   *
+   * @exception BufferOverflowException If there is insufficient space in this
+   * buffer.
    * @exception ReadOnlyBufferException If this buffer is read-only.
    */
   public LongBuffer put (long value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-	  	    
+    checkIfReadOnly();
+    checkForOverflow();
+
     backing_buffer [position ()] = value;
     position (position () + 1);
     return this;
@@ -139,6 +140,8 @@ final class LongBufferImpl extends LongBuffer
    */
   public long get (int index)
   {
+    checkIndex(index);
+
     return backing_buffer [index];
   }
   
@@ -152,9 +155,9 @@ final class LongBufferImpl extends LongBuffer
    */
   public LongBuffer put (int index, long value)
   {
-    if (readOnly)
-      throw new ReadOnlyBufferException ();
-    	    
+    checkIfReadOnly();
+    checkIndex(index);
+
     backing_buffer [index] = value;
     return this;
   }
