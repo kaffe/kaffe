@@ -40,13 +40,16 @@ package java.awt;
 
 import java.awt.peer.LabelPeer;
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 
 /**
   * This component is used for displaying simple text strings that cannot
-  * be edited.
+  * be edited by the user.
   *
   * @author Aaron M. Renn (arenn@urbanophile.com)
   * @author Tom Tromey <tromey@cygnus.com>
+  * @author Andrew John Hughes  <gnu_andrew@member.fsf.org>
   */
 public class Label extends Component implements Accessible
 {
@@ -247,6 +250,61 @@ paramString()
 {
   return ("text=" + getText() + ",alignment=" +
 	  getAlignment() + "," + super.paramString());
+}
+
+/**
+ * This class provides accessibility support for the label.
+ */
+protected class AccessibleAWTLabel
+  extends AccessibleAWTComponent
+{
+  /**
+   * Constructor for the accessible label.
+   */
+  public AccessibleAWTLabel()
+  {
+  }
+
+  /**
+   * Returns the accessible name for the label.  This is
+   * the text used in the label.
+   *
+   * @return a <code>String</code> containing the accessible
+   *         name for this label.
+   */
+  public String getAccessibleName()
+  {
+    return getText();
+  }
+
+  /**
+   * Returns the accessible role for the label.
+   *
+   * @return an instance of <code>AccessibleRole</code>, describing
+   *         the role of the label.
+   */
+  public AccessibleRole getAccessibleRole()
+  {
+    return AccessibleRole.LABEL;
+  }
+
+}
+
+/**
+ * Gets the AccessibleContext associated with this <code>Label</code>.
+ * The context is created, if necessary.
+ *
+ * @return the associated context
+ */
+public AccessibleContext getAccessibleContext()
+{
+  /* Create the context if this is the first request */
+  if (accessibleContext == null)
+    {
+      /* Create the context */
+      accessibleContext = new AccessibleAWTLabel();
+    }
+  return accessibleContext;
 }
 
 } // class Label

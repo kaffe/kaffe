@@ -1,5 +1,23 @@
 2004-08-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Label.java,
+	libraries/javalib/java/awt/Canvas.java,
+	libraries/javalib/java/awt/KeyboardFocusManager.java:
+	Resynced with GNU Classpath.
+
+	2004-08-24  Andrew John Hughes <gnu_andrew@member.fsf.org>
+
+        * java/awt/Label.java, java/awt/Canvas.java
+        Added accessibility classes to AWT Label and Canvas,
+        as well as additional documentation for Canvas.
+
+	2004-08-24  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/awt/KeyboardFocusManager.java
+        Added missing documentation.
+
+2004-08-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/cert/X509CRLSelector.java:
 	Resynced with GNU Classpath.
 
