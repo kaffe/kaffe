@@ -307,6 +307,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 	miscfixed += SIZE_IFNONZERO(clazz->itable2dtable);
 	miscfixed += SIZE_IFNONZERO(clazz->gc_layout);
 	miscfixed += SIZE_IFNONZERO(clazz->sourcefile);
+	miscfixed += SIZE_IFNONZERO(clazz->implementors);
 	if (!CLASS_IS_ARRAY(clazz)) {
 		misc += SIZE_IFNONZERO(clazz->interfaces);
 	}

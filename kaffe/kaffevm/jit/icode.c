@@ -3311,7 +3311,7 @@ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 	pusharg_ref_const((void*)(int)meth->idx, 2);		
 	pusharg_class_const(meth->class, 1);
 	pusharg_ref(obj, 0);
-	call_soft(soft_lookupmethod);
+	call_soft(soft_lookupinterfacemethod);
 	popargs();
 	fixup_function_call();
 	return_ref(dst);

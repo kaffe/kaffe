@@ -208,44 +208,35 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 #endif
 
 /*
- * soft_lookupmethod.
+ * soft_lookupinterfacemethod.
  */
 void*
-soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
+soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 {
 	Hjava_lang_Class* cls;
-	Hjava_lang_Class** c;
 	Method* meth;
 	void*	ncode;
-	int i;
+	register int i;
 	int dtableidx;
-	errorInfo info;
-
-	if (obj == 0) {
-		throwException(NullPointerException);
-	}
+	register short* implementors;
 
 	cls = OBJECT_CLASS(obj);
+	implementors = ifclass->implementors;
+	i = cls->impl_index;
+
 	/* initialize class if necessary */
         if (cls->state < CSTATE_USABLE) {
+		errorInfo info;
 		if (processClass(cls, CSTATE_COMPLETE, &info) == false) {
 			throwError(&info);
 		}
 	}
 
-	c = cls->interfaces;
-	i = 0;
-	while (*c != ifclass) {
-		c++;
-		/* do this check inside the loop to avoid loading 
-		 * total_interface_len from memory if we hit the first one. 
-		 */
-		if (++i == cls->total_interface_len) {
-			goto notfound;
-		}
+	if (implementors == 0 || i > implementors[0]) {
+		goto notfound;
 	}
 
-	dtableidx = cls->itable2dtable[cls->if2itable[i] + idx];
+	dtableidx = cls->itable2dtable[implementors[i] + idx];
 	if (dtableidx == -1) {
 		goto notfound;
 	}
@@ -272,6 +263,7 @@ notfound:
 	 */
 	if (ifclass == ObjectClass) {
 		Method* objm = CLASS_METHODS(ifclass) + idx;
+		errorInfo info;
 		
 		meth = findMethod(cls, objm->name, METHOD_SIG(objm), &info);
 		if (meth == 0) {
@@ -283,39 +275,6 @@ notfound:
 	soft_nosuchmethod(cls, meth->name, METHOD_SIG(meth));
 	return (0);
 }
-
-#if 0
-/*
- * soft_lookupinterfacemethod
- * Lookup an interface method, given its name and signature.  Throw exceptions
- * if the method found doesn't fit with wht invokeinterface is expecting.
- */
-void*
-soft_lookupinterfacemethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
-{
-	processClass(class, CSTATE_LINKED);
-	for (; class != 0; class = class->superclass) {
-		Method* mptr = findMethodLocal(class, name, signature);
-		if (mptr != NULL) {
-			if (mptr->accflags & ACC_STATIC) {
-				throwException(IncompatibleClassChangeError);
-			}
-			if (mptr->accflags & ACC_ABSTRACT) {
-				throwException(AbstractMethodError);
-			}
-			if (!(mptr->accflags & ACC_PUBLIC)) {
-				throwException(IllegalAccessError);
-			}
-#if defined(TRANSLATOR)
-			return (METHOD_NATIVECODE(mptr));
-#else
-			return (mptr);
-#endif
-		}
-	}
-	throwException(IncompatibleClassChangeError);
-}
-#endif
 
 inline
 jint

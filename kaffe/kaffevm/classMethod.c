@@ -62,6 +62,7 @@ static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, Hjava_la
 static bool buildDispatchTable(Hjava_lang_Class*, errorInfo *info);
 static bool checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo);
 static bool buildInterfaceDispatchTable(Hjava_lang_Class*, errorInfo*);
+static bool computeInterfaceImplementationIndex(Hjava_lang_Class*, errorInfo*);
 static bool allocStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static void resolveObjectFields(Hjava_lang_Class*);
 static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
@@ -250,6 +251,7 @@ retry:
 			}
 			class->interfaces = newifaces;
 		}
+
 		/* don't set total_interface_len before interfaces to avoid
 		 * having walkClass attempting to walk interfaces
 		 */
@@ -272,6 +274,9 @@ retry:
 			success = buildDispatchTable(class, einfo);
 			if (success == true) {
 				success = checkForAbstractMethods(class, einfo);
+			}
+			if (success == true) {
+				success = computeInterfaceImplementationIndex(class, einfo);
 			}
 		}
 		else {
@@ -1446,7 +1451,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	 * method.  If a class does not implement an interface it declared,
 	 * or if it attempts to implement it with improper methods, the second 
 	 * table will have a -1 index.  This will cause a NoSuchMethodError
-	 * to be thrown later, in soft_lookupmethod.
+	 * to be thrown later, in soft_lookupinterfacemethod.
 	 */
 	/* don't bother if we don't implement any interfaces */
 	if (class->total_interface_len == 0) {
@@ -1519,6 +1524,109 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			/* store method table index of real method */
 			class->itable2dtable[j++] = idx;
 		}
+	}
+	return (true);
+}
+
+/*
+ * Compute the interface implementation index for this class.
+ * The impl_index is an index for each class that is used to index the
+ * implementor table of the interface when dispatching an interface
+ * method.  See soft_lookupinterfacemethod in soft.c
+ * It points directly at the first itable2dtable index for section
+ * that describes the interface (which is what's now redundantly stored
+ * in if2itable[x].
+ *
+ * This allows interface lookup in constant time.
+ */
+static bool
+computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
+{
+	int i, j, k;
+	int found_i;
+
+	/* find an impl_index for this class 
+	 * Note that we only find a suitable impl_index with regard to the
+	 * interfaces this class implements, not a globally unique one.
+	 *
+	 * In other words, two classes implementing disjoint sets of
+	 * interfaces may end up with the same impl_index.  For this reason,
+	 * the impl_index at this point cannot be used to implement the
+	 * equivalent of instanceof <interface>
+	 *
+	 * We assume that a verifier design is possible that will ensure 
+	 * that a run-time object indeed implements an interface at the
+	 * time when soft_lookupinterfacemethod is invoked.  We do not have
+	 * such verifier at this point.
+	 */
+	i = 0;
+	do {
+		found_i = 1;
+		for (j = 0; j < clazz->total_interface_len; j++) {
+			Hjava_lang_Class* iface = clazz->interfaces[j];
+	    		int len = 0;
+			
+			if (iface->implementors != 0) {
+				/* This is how many entries follow, so the 
+				 * array has a[0] + 1 elements
+				 */
+				len = iface->implementors[0];
+			}
+			if (i >= len || iface->implementors[i+1] == -1) {
+				continue;	/* this one would work */
+			} else {
+				found_i = 0;
+				break;
+			}
+		}
+		i++;
+	} while (!found_i);
+
+	/* 'i' is a suitable index --- note we incremented i before leaving
+	 * the loop above.
+	 */
+	clazz->impl_index = i;
+
+	/* Now patch all interfaces to point back to their itable2dtable
+	 * regions in the dispatch table of this implementing class.
+	 */
+	for (j = 0; j < clazz->total_interface_len; j++) {
+		Hjava_lang_Class* iface = clazz->interfaces[j];
+		short len;
+
+		/* make sure the implementor table is big enough */
+		if (iface->implementors == NULL || i > iface->implementors[0]) {
+			short firstnewentry;
+			if (iface->implementors == NULL) {
+				len = (i + 1) + 4; /* 4 is slack only */
+				iface->implementors = KMALLOC(len * sizeof(short));
+			} else {
+				/* double in size */
+				len = iface->implementors[0] * 2;
+				if (len <= i) {
+					len = i + 4;
+				}
+				iface->implementors = KREALLOC(
+					iface->implementors, 
+					len * sizeof(short));
+			}
+
+			if (iface->implementors == 0) {
+				postOutOfMemory(einfo);
+				return (false);
+			}
+			/* NB: we assume KMALLOC/KREALLOC zero memory out */
+			firstnewentry = iface->implementors[0] + 1;
+			iface->implementors[0] = len - 1;
+
+			/* mark new entries as unused */
+			for (k = firstnewentry; k < len; k++) {
+				iface->implementors[k] = -1;
+			}
+		}
+
+		assert(i < iface->implementors[0] + 1);
+		iface->implementors[i] = clazz->if2itable[j];
 	}
 	return (true);
 }
@@ -1933,7 +2041,11 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	}
 	else {
 		const char* cname = CLASS_CNAME (c);
-		sprintf (sig, cname[0] == '[' ? "[%s" : "[L%s;", cname);
+		if (cname[0] == '[') {
+			sprintf (sig, "[%s", cname);
+		} else {
+			sprintf (sig, "[L%s;", cname);
+		}
 	}
 	arr_name = utf8ConstNew(sig, -1);	/* release before returning */
 	if (!arr_name) {

@@ -91,6 +91,10 @@ struct Hjava_lang_Class {
 	short*			itable2dtable;
 	short			interface_len;
 	short			total_interface_len;
+	/* indices for all classes implementing this interface */
+	short*			implementors;	/* interfaces only */
+	int			impl_index;
+
 	Hjava_lang_ClassLoader*	loader;
 
 	/* A bitmap describing the layout of instances of that class.

@@ -161,6 +161,7 @@ DBG(CLASSGC,
         KFREE(clazz->itable2dtable);
         KFREE(clazz->gc_layout);
 	KFREE(clazz->sourcefile);
+	KFREE(clazz->implementors);
 
         /* The interface table for array classes points to static memory */
         if (!CLASS_IS_ARRAY(clazz)) {
