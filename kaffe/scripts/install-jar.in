@@ -1,0 +1,18 @@
+#! /bin/sh
+#  Copy the given jar file into the standard kaffe installation.  This is
+#  here to help install useful JAR's and cut down on installation bugs.
+
+prefix=@prefix@
+classdir=@datadir@/kaffe
+
+if test "$1" = "" ; then
+	echo "usage: install-jar <jarfile> ..."
+	exit 1
+fi
+
+for i in $*
+do
+	echo -n "Installing $i in $classdir ... "
+	cp $i $classdir/$i
+	echo "done"
+done

@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# rebuildLib - rebuild everything in one sweep
+#              (without using any pre-compiled classes)
+#
+# Copyright (c) 1998
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+
+SRCDIR=@srcdir@
+
+if [ -z "$JAVA" ]; then
+	JAVA="kaffe -ms 8M -mx 64M"
+fi
+if [ -z "$JAVAC" ]; then
+	JAVAC="$JAVA pizza.compiler.Main"
+fi
+
+rm -rf lib
+mkdir lib
+
+CLASSES="\
+ $SRCDIR/java/applet/*.java \
+ $SRCDIR/java/awt/*.java \
+ $SRCDIR/java/awt/datatransfer/*.java \
+ $SRCDIR/java/awt/event/*.java \
+ $SRCDIR/java/awt/image/*.java \
+ $SRCDIR/java/awt/peer/*.java \
+ $SRCDIR/java/awt/widgets/*.java \
+ $SRCDIR/java/beans/*.java \
+ $SRCDIR/java/io/*.java \
+ $SRCDIR/java/lang/*.java \
+ $SRCDIR/java/lang/reflect/*.java \
+ $SRCDIR/java/net/*.java \
+ $SRCDIR/java/text/*.java \
+ $SRCDIR/java/util/*.java \
+ $SRCDIR/java/util/mime/*.java \
+ $SRCDIR/java/util/zip/*.java \
+ $SRCDIR/kaffe/awt/*.java \
+ $SRCDIR/kaffe/beans/editors/*.java \
+ $SRCDIR/kaffe/io/*.java \
+ $SRCDIR/kaffe/jar/*.java \
+ $SRCDIR/kaffe/lang/*.java \
+ $SRCDIR/kaffe/management/*.java \
+ $SRCDIR/kaffe/net/*.java \
+ $SRCDIR/kaffe/net/www/protocol/file/*.java \
+ $SRCDIR/kaffe/net/www/protocol/system/*.java \
+ $SRCDIR/kaffe/util/*.java \
+ $SRCDIR/kaffe/text/dateformat/*.java \
+ $SRCDIR/kaffe/text/numberformat/*.java \
+"
+
+echo "Compiling classes ..."
+$JAVAC -verbose -d lib -classpath lib $CLASSES

@@ -1,0 +1,7 @@
+This is a simple Widget tester written by Joerg Mehlitz.
+
+To run simply type:
+
+	sh WidgetsDemo.sh
+or
+	kaffe WidgetsDemo
