@@ -475,19 +475,49 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	return (field);
 }
  
+/* 
+ * Return true if there is method defined in any subclass of 'cls'
+ * that overrides 'meth'.
+ *
+ * Assumes that base is a subclass of cls
+ */
+static int
+isOverridden(Hjava_lang_Class *base, Hjava_lang_Class *cls, Method *meth)
+{
+	/* XXX for interfaces for now */
+	if (base == 0) 
+		return (false);
+
+	/* Search superclasses for equivalent method name.
+	 * If found extract its index nr.
+	 */
+	for (; base != cls;  base = base->superclass) {
+		int j = CLASS_NMETHODS(base);
+		Method* mt = CLASS_METHODS(base);
+		for (; --j >= 0;  ++mt) {
+			if (utf8ConstEqual (mt->name, meth->name) &&
+			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)))
+			{
+				return (true);
+			}
+		}
+	}
+	return (false);
+}
+
 /*
  * count the number of methods in a class that are not constructors.
  * If declared is not set, count only public methods.
  */
 static int
-countMethods(struct Hjava_lang_Class* clas, jint declared)
+countMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared)
 {
 	Method* mth = CLASS_METHODS(clas);
 	int i;
 	int count = 0;
 
 	for (i = CLASS_NMETHODS(clas)-1 ; i >= 0; i--) {
-		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR) && !isOverridden(base, clas, mth + i)) {
 			count++;
 		}
 	}
@@ -499,14 +529,14 @@ countMethods(struct Hjava_lang_Class* clas, jint declared)
  * not constructors.  If declared is not set, include only public methods.
  */
 static void
-addMethods(struct Hjava_lang_Class* clas, jint declared, 
+addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared, 
 	Hjava_lang_reflect_Method*** ptr)
 {
 	Method* mth = CLASS_METHODS(clas);
 	int i;
 
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0; i--) {
-		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR)) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR) && !isOverridden(base, clas, mth + i)) {
 			**ptr = makeMethod(clas, i);
 			(*ptr)++;
 		}
@@ -536,10 +566,10 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 	int i;
 
 	count = 0;
-	count += countMethods(this, declared);
+	count += countMethods(0, this, declared);
 	if (!declared) {
 		for (i = 0; i < this->total_interface_len; i++) {
-			count += countMethods(this->interfaces[i], declared);
+			count += countMethods(0, this->interfaces[i], declared);
 		}
 	}
 
@@ -547,10 +577,10 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", 0);
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 
-	addMethods(this, declared, &ptr);
+	addMethods(0, this, declared, &ptr);
 	if (!declared) {
 		for (i = 0; i < this->total_interface_len; i++) {
-			addMethods(this->interfaces[i], declared, &ptr);
+			addMethods(0, this->interfaces[i], declared, &ptr);
 		}
 	}
 
@@ -578,7 +608,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 	count = 0;
 	for (clas = this; clas != NULL; clas = clas->superclass) {
 
-		count += countMethods(clas, declared);
+		count += countMethods(this, clas, declared);
 
 		if (declared) {
 			break;
@@ -589,7 +619,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 	for (clas = this; clas != NULL; clas = clas->superclass) {
 
-		addMethods(clas, declared, &ptr);
+		addMethods(this, clas, declared, &ptr);
 
 		if (declared) {
 			break;

@@ -1,3 +1,8 @@
+Wed Jun 14 16:12:53 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c: fix getMethods0 to not report
+	overridden methods twice.
+
 Tue Jun 13 22:17:51 MDT 2000  Tim Stack  <stack@cs.utah.edu>
 	
 	* kaffe/kaffevm/baseClasses.[ch]: statically load and reference
