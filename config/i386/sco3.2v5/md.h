@@ -21,6 +21,14 @@
 
 #define	POSIX_SIGNALS
 
+/**/
+/* Extra exception handling information. */
+/**/
+#include <siginfo.h>
+#include <sys/regset.h>		/* Bug in ucontext.h requires this */
+#include <signal.h>		/* Bug in ucontext.h requires this */
+#include <ucontext.h>
+
 #define SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* ctx
 #define SIGNAL_CONTEXT_POINTER(scp) ucontext_t* ctx
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)

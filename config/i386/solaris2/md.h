@@ -19,6 +19,12 @@
 #include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
+/**/
+/* Extra exception handling information. */
+/**/
+#include <siginfo.h>
+#include <ucontext.h>
+
 #define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct ucontext_t * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)

@@ -17,12 +17,6 @@
 /**/
 #include "sparc/jit.h"
 
-/**/
-/* Extra exception handling information. */
-/**/
-#include <siginfo.h>
-#include <ucontext.h>
-
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 

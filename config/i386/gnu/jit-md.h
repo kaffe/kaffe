@@ -17,30 +17,6 @@
 /**/
 #include "i386/jit.h"
 
-/**/
-/* Extra exception handling information. */
-/**/
-#if defined(HAVE_FEATURES_H)
-#include <features.h>
-#endif
-#if defined(HAVE_SIGNAL_H)
-#include <signal.h>
-#endif
-#if defined(HAVE_SIGCONTEXT_H)
-#include <sigcontext.h>
-#endif
-
-/*
- * newer Linux kernel actually implement SA_SIGINFO.
- * But we don't need it, so let's turn it off
- *
- * [Don't know if it has any realtion to the HURD, but it
- * doesn't hurt, su just leave it.]
- */
-#if defined(SA_SIGINFO)
-#undef SA_SIGINFO
-#endif
-
 #define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */

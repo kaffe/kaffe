@@ -1,5 +1,15 @@
 2004-04-23  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/i386/gnu/jit-md.h, config/i386/gnu/md.h,
+	config/i386/linux/jit-md.h, config/i386/linux/md.h,
+	config/i386/sco3.2v5/jit-md.h, config/i386/sco3.2v5/md.h,
+	config/i386/solaris2/jit-md.h, config/i386/solaris2/md.h,
+	config/i386/univel_svr4/jit-md.h, config/i386/univel_svr4/md.h,
+	config/sparc/solaris2/jit-md.h: Moved some code from jit-md.h
+	to md.h to enable sigcontext support in signal handlers.
+
+2004-04-23  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c
 	(nullException): Fixed the prototype.
 

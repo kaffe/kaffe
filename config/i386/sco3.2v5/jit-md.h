@@ -17,14 +17,6 @@
 /**/
 #include "i386/jit.h"
 
-/**/
-/* Extra exception handling information. */
-/**/
-#include <siginfo.h>
-#include <sys/regset.h>		/* Bug in ucontext.h requires this */
-#include <signal.h>		/* Bug in ucontext.h requires this */
-#include <ucontext.h>
-
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
