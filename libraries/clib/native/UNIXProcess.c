@@ -18,6 +18,7 @@
 #include <jni.h>
 #include <jsyscall.h>
 #include <native.h>
+#include <files.h>
 #include "UNIXProcess.h"
 
 typedef struct _child {
@@ -38,6 +39,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	int arglen;
 	int envlen;
 	int i;
+	int rc;
 	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
 	jclass proc_class;
 	/* the names given to the stream in Java */
@@ -83,7 +85,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
 
-	pid = KFORKEXEC(argv, arge, ioes);
+	rc = KFORKEXEC(argv, arge, ioes, &pid);
 
 	/* free before returning on error */
 	for (i = 0; i < arglen; i++) {
@@ -96,8 +98,8 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	}
 	KFREE(arge);
 
-	if (pid == -1) {
-		(*env)->ThrowNew(env, ioexc_class, "Fork&Exec failed");
+	if (rc) {
+		(*env)->ThrowNew(env, ioexc_class, SYS_ERROR(rc));
 		return (-1);
 	}
 
@@ -155,6 +157,7 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 {
 	int npid;
 	int status;
+	int rc;
 	child* p;
 	child** pp;
 	jmethodID notify_method = (*env)->GetMethodID(env, 
@@ -162,7 +165,11 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 			"notifyAll", "()V");
 
 	for (;;) {
-		npid = KWAITPID(-1, &status, 0);
+		rc = KWAITPID(-1, &status, 0, &npid);
+		if (rc) {
+			/* don't bother if waitpid failed */
+			continue;
+		}
 		for (pp = &children; *pp != 0; pp = &p->next) {
 			p = *pp;
 			if (p->pid == npid) {

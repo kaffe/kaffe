@@ -179,3 +179,9 @@ java_lang_Runtime_runFinalizersOnExit(jbool on)
 {
 	runFinalizerOnExit = on;
 }
+
+jint
+Java_sun_misc_VM_getState(JNIEnv* env, jobject vm)
+{
+	return (0);
+}
