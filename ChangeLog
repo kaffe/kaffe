@@ -1,5 +1,21 @@
 2004-07-09  Jim Huang  <jserv@kaffe.org>
 
+	* libraries/javalib/profiles/default/coreawt.files,
+	* libraries/javalib/profiles/allatonce/all.files,
+	* libraries/javalib/Makefile.in,
+	* libraries/javalib/Makefile.am:
+	add entry to GNU EmbbededWindow extension
+
+	* libraries/javalib/gnu/java/awt/EmbeddedWindow.java,
+	* libraries/javalib/gnu/java/awt/EmbeddedWindowSupport.java,
+	* libraries/javalib/gnu/java/awt/peer/EmbeddedWindowPeer.java:
+	GNU EmbbededWindow extension from GNU Classpath. This is necessary
+	for making use of gcjwebplugin.
+	Note: java-awt loading mechanism is disabled because of not importing
+	to Kaffe yet.
+	
+2004-07-09  Jim Huang  <jserv@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c
 	(registerSignalHandler): Add missing declaration of oldact.
 

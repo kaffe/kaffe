@@ -553,7 +553,10 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
-	gnu/java/awt/EventModifier.java
+	gnu/java/awt/EventModifier.java \
+	gnu/java/awt/EmbeddedWindow.java \
+	gnu/java/awt/EmbeddedWindowSupport.java \
+	gnu/java/awt/peer/EmbeddedWindowPeer.java
 
 gnu_java_beans_SRCS = \
 	gnu/java/beans/BeanInfoEmbryo.java \
