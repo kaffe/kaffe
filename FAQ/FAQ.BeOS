@@ -9,31 +9,24 @@ of which are absent on BeOS R4.
 beos-native was modeled upon the oskit-pthreads system, which relies
 on mutexes and condition variables.  BeOS has the former, but not the
 latter, so I defined a condition variable type based upon an article I
-found posted on the Web [1].  The implementation currently ignores the
-'timeout' parameter passed to jcondvar_wait().
+found posted on the Web [1].
 
 To build Kaffe for BeOS, you must configure Kaffe as follows:
 
-	./configure --with-staticlib --with-staticvm --disable-shared
+	./configure --disable-shared --prefix=<insert-your-prefix-here>
 
 as there is a known problem with building shared libs on R4 (yes, I
 realize that the fix is documented in the R4 release notes, but I'll
 let someone else muck with the Makefiles accordingly).
 
-As of 08 February 1999, Kaffe has not been built or tested with AWT at all.
-Also, the following entry points in the jthread interface have been stubbed
-but not fleshed out:
+As of 19 March 1999, Kaffe has not been built or tested with AWT at all.
+Also, the following entry points in the jthread interface have yet to be
+implemented:
 
 	jthread_suspendall
 	jthread_unsuspendall
 	jthread_spinon
 	jthread_spinoff
-
-Unfortunately, although BeOS exposes the functions acquire_spinlock() and
-release_spinlock() to user programs, it doesn't do the same for the crucial
-disable_interrupts() and restore_interrupts() functions, making spinlocks
-unusable from user programs.  A feature request sent to Be dev support
-to address this deficiency has been declined :(
 
 KNOWN PROBLEMS
 ==============
@@ -46,18 +39,18 @@ successive calls to spawn_thread (invoked by jthread_create) will not
 necessarily yield contiguous thread ids, the maximum number of jthreads
 that can be successfully created will be somewhat less than MAX_THREADS.
 
+The implementation of forkexec() in beos-native/syscalls.c makes use of
+fork() instead of the recommended technique that uses load_image().
+
 The following tests in the regression test suite currently fail:
 
-	Alias:			throws NullPointerException
-	CLTestConc:		apparent deadlock*
-	ExecTest:		requires fork/execvp (incomp. with Be threads)
-	ProcessTest:		requires fork/execvp (incomp. with Be threads)
-	SoTimeout:		blocks in server-read
-	ThreadInterrupt:	apparent deadlock*
-	UDPTest:		throws ExceptionInInitializerError
+	BeanBug:		requires AWT
+	ProcessTest:		readline returns null (a)
+	SoTimeout:		SO_TIMEOUT socket option unsupported in R4
 
-*    Probably owing to a defective jcondvar implementation on my part.
-     I'm looking into it.
+(a) I suspect that this is due to a shell problem, because the test passes
+    if you run it from command-line after substituting "<yourpath>/kaffe"
+    for "$JAVA" (see test invocation).
 
 REFERENCES
 ==========
@@ -68,3 +61,7 @@ REV HISTORY
 ===========
 27 Jan 99 -- Submitted for inclusion into Kaffe, alanlb@cs.vt.edu
 08 Feb 99 -- Fixed various segmentation violations
+18 Mar 99 -- Implemented jcondvar_wait timeout, forkexec;
+		fixed jthread_interrupt
+22 Mar 99 -- Fixed socket read/write in beos-native/syscalls.c, redid
+		thread cancellation (i.e., stoppage)

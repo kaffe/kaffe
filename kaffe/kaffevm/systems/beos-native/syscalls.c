@@ -14,7 +14,10 @@
  * Author: Godmar Back
  */
 
-/* Derived for BeOS R4 from oskit-pthreads/syscalls.c */
+/*
+ * Derived for BeOS R4 from oskit-pthreads/syscalls.c
+ * Please report problems to alanlb@cs.vt.edu.
+ */
 
 /*
  * Syscall definitions for BeOS with native threads port.
@@ -31,6 +34,7 @@
 #include "jthread.h"
 #include "jsyscall.h"
 
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -142,7 +146,9 @@ beos_native_accept(int fd, struct sockaddr* a, size_t *l, int timeout,
 	int* outfd)
 {
 	/* XXX implement timeout!!! */
-	*outfd = accept(fd, a, l);
+	int cli_size = *l;
+	*outfd = accept(fd, a, &cli_size);
+	*l = cli_size;
 	return (*outfd < 0) ? errno : 0;
 }
 
@@ -150,7 +156,7 @@ static int
 beos_native_sock_read(int f, void* b, size_t l, int timeout, ssize_t *out)
 {
 	/* XXX implement timeout!!! */
-	*out = read(f, b, l);
+	*out = recv(f, b, l, 0);
 	return (*out < 0) ? errno : 0;
 }
 
@@ -166,6 +172,13 @@ beos_native_recvfrom(int a, void* b, size_t c, int d, struct sockaddr* e,
 		/* XXX implement timeout!!! */
 		*out = recvfrom(a, b, c, d, e, f);
 	}
+	return (*out < 0) ? errno : 0;
+}
+
+static int
+beos_native_sock_write(int f, const void* b, size_t l, ssize_t *out)
+{
+	*out = send(f, b, l, 0);
 	return (*out < 0) ? errno : 0;
 }
 
@@ -212,6 +225,7 @@ beos_native_sockclose(int f)
 static int
 beos_native_gethostbyname(const char*n, struct hostent**out)
 {
+	/* XXX gethostbyname is not thread-safe! */
 	*out = gethostbyname(n);
 	return (*out == 0) ? h_errno : 0;
 }
@@ -219,6 +233,7 @@ beos_native_gethostbyname(const char*n, struct hostent**out)
 static int
 beos_native_gethostbyaddr(const char*n, int a, int b, struct hostent**out)
 {
+	/* XXX gethostbyaddr is not thread-safe! */
 	*out = gethostbyaddr(n, a, b);
 	return (*out == 0) ? h_errno : 0;
 }
@@ -231,29 +246,162 @@ beos_native_select(int a, fd_set* b, fd_set* c, fd_set* d, struct timeval* e,
 	return (*out < 0) ? errno : 0;
 }
 
-static int
-beos_native_forkexec(char *argv[], char *env[], int fd[4], int *outpid)
+/* helper function for forkexec, close fd[0..n-1] */
+static void
+close_fds(int fd[], int n)
 {
-	unimp("forkexec() not implemented in beos-native system");
-	return (B_UNSUPPORTED);
+	int i = 0;
+	while (i < n) {
+		close(fd[i++]);
+	}
+}
+
+static int
+beos_native_forkexec(char *argv[], char *env[], int ioes[4], int *outpid)
+{
+/* Adapted from unix-jthreads/jthread.c */
+/* these defines are indices in ioes */
+#define IN_IN		0
+#define IN_OUT		1
+#define OUT_IN		2
+#define OUT_OUT		3
+#define ERR_IN		4
+#define ERR_OUT		5
+#define SYNC_IN		6
+#define SYNC_OUT	7
+
+	int fds[8];
+	int nfd;		/* number of fds in `fds' that are valid */
+	sigset_t nsig;
+	char b[1];
+	int pid, i, err;
+
+	extern char** environ;
+
+	/* 
+	 * we need execve() and fork() for this to work.  Don't bother if
+	 * we don't have them.
+	 */
+#if !defined(HAVE_EXECVE) && !defined(HAVE_EXECVP)
+	unimp("neither execve() nor execvp() not provided");
+#endif
+#if !defined(HAVE_FORK)
+	unimp("fork() not provided");
+#endif
+
+DBG(JTHREAD,	
+	{
+		char **d = argv;
+		dprintf("argv = [`%s ", *d++); 
+		while (*d)
+			dprintf(", `%s'", *d++);
+		dprintf("]\n");
+	}
+    )
+	/* Create the pipes to communicate with the child */
+	/* Make sure fds get closed if we can't create all pipes */
+	for (nfd = 0; nfd < 8; nfd += 2) {
+		int e;
+		err = pipe(fds + nfd);
+		e = errno;
+		if (err == -1) {
+			close_fds(fds, nfd);
+			return (e);
+		}
+	}
+
+	/* 
+	 * We must avoid that the child dies because of SIGVTALRM or
+	 * other signals.  We disable interrupts before forking and then
+	 * reenable signals in the child after we cleaned up.
+	 */
+	sigfillset(&nsig);
+	sigprocmask(SIG_BLOCK, &nsig, 0);
+
+	pid = fork();
+
+	switch (pid) {
+	case 0:
+		/* Child */
+		/* set all signals back to their default state */
+		for (i = 0; i < NSIG; i++) {
+			signal(i, SIG_DFL);
+		}
+
+		/* now reenable interrupts */
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+
+		/* set stdin, stdout, and stderr up from the pipes */
+		dup2(fds[IN_IN], 0);
+		dup2(fds[OUT_OUT], 1);
+		dup2(fds[ERR_OUT], 2);
+
+		/* What is sync about anyhow?  Well my current guess is that
+		 * the parent writes a single byte to it when it's ready to
+		 * proceed.  So here I wait until I get it before doing
+		 * anything.
+		 */
+		/* note that this is a blocking read */
+		read(fds[SYNC_IN], b, sizeof(b));
+
+		/* now close all pipe fds */
+		close_fds(fds, 8);
+
+		/*
+		 * If no environment was given and we have execvp, we use it.
+		 * If an environment was given, we use execve.
+		 * This is roughly was the linux jdk seems to do.
+		 */
+
+		/* execute program */
+#if defined(HAVE_EXECVP)
+		if (environ == NULL)
+			execvp(argv[0], argv);
+		else
+#endif
+			execve(argv[0], argv, environ);
+		break;
+
+	case -1:
+		/* Error */
+		/* Close all pipe fds */
+		close_fds(fds, 8);
+		return (errno);		/* XXX unprotected! */
+
+	default:
+		/* Parent */
+		/* close the fds we won't need */
+		close(fds[IN_IN]);
+		close(fds[OUT_OUT]);
+		close(fds[ERR_OUT]);
+		close(fds[SYNC_IN]);
+
+		/* copy and fix up the fds we do need */
+		ioes[0] = fds[IN_OUT];
+		ioes[1] = fds[OUT_IN];
+		ioes[2] = fds[ERR_IN];
+		ioes[3] = fds[SYNC_OUT];
+
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		*outpid = pid;
+		return (0);
+	}
+
+	exit(-1);
+	/* NEVER REACHED */	
 }
 
 static int
 beos_native_waitpid(int a, int* b, int c, int* out)
 {
-	unimp("waitpid() not implemented in beos-native system");
-	return (B_UNSUPPORTED);
+	*out = waitpid(a, b, 0);
+	return (*out < 0) ? errno : 0;
 }
 
 static int
 beos_native_kill(int a, int b)
 {
-#if notyet
-	return (kill(a, b) < 0) ? errno : 0;
-#else
-	unimp("kill() not implemented in beos-native system");
-	return (B_UNSUPPORTED);
-#endif
+	return (send_signal(a, b) < 0) ? errno : 0;
 }
 
 SystemCallInterface Kaffe_SystemCallInterface = {
@@ -275,7 +423,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_accept, 
 	beos_native_sock_read,	
 	beos_native_recvfrom,
-	beos_native_write, 
+	beos_native_sock_write, 
 	beos_native_sendto,	
 	beos_native_setsockopt,
 	beos_native_getsockopt,

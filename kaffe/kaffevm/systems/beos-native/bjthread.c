@@ -11,6 +11,8 @@
 /*
  * This file implements jthreads on top of BeOS native threads and
  * was derived from oskit-pthreads/pjthread.c.
+ *
+ * Please address BeOS-related questions to alanlb@vt.edu.
  */
 
 #include "debug.h"
@@ -25,13 +27,10 @@
 #define THREAD_RUNNING                  1
 #define THREAD_DYING                    2
 #define THREAD_DEAD                     3
-#define THREAD_STOPPED			4
-#define THREAD_CONTINUE			5
 
 /*
  * We use this as a stop signal instead of SIGSTOP, because an apparent
  * bug in R4 prevents a custom SIGSTOP handler from ever being called.
- * Kaffe already uses SIGUSR1 elsewhere, I think.
  */
 #define STOP_SIGNAL			SIGUSR2
 
@@ -39,14 +38,12 @@
  * Variables.
  * These should be kept static to ensure encapsulation.
  */
-static int talive; 		/* number of threads alive */
-static int tdaemon;		/* number of daemons alive */
-static void (*runOnExit)(void);	/* function to run when all non-daemon die */
+static int talive; 			/* number of threads alive */
+static int tdaemon;			/* number of daemons alive */
+static void (*runOnExit)(void);		/* run when all non-daemons die */
 
 static struct jthread* liveThreads;	/* list of all live threads */
-
-/* static lock to protect liveThreads etc. */
-static sem_id threadLock;
+static sem_id threadLock;		/* static lock to protect liveThreads */
 
 static void remove_thread(jthread_t tid);
 static void mark_thread_dead(void);
@@ -66,13 +63,35 @@ static void (*onstop)(void);		/* call when a thread is stopped */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
-/* this is where the cookies are kept */
-per_thread_info_t*	per_thread_info;
-static area_id		pti_area;
+/*
+ * This is used to track the id of the main thread, so that we can
+ * prevent it from exiting while there are daemon threads still
+ * running.  otherwise, the environ ptr would become invalid, and
+ * any remaining non-daemon thread that called getenv() either directly
+ * or indirectly via, say, gethostbyname(), would fail with a
+ * NullPointerException.
+ *
+ * This scenario revealed itself with the UDPTest program in the
+ * regression suite.
+ */
+static thread_id		the_main_thread;
 
 /*
- * Function declarations.
+ * This is where the cookies are kept
  */
+per_thread_info_t*		per_thread_info;
+static area_id			pti_area;
+
+/*
+ * This is used to prevent multiple STOP_SIGNALs from being sent to the
+ * daemon threads during final shutdown.
+ */
+static int32			isShuttingDown = 0;
+
+/*
+ * Helpers
+ */
+#define THREAD_NAME(jtid)	nameThread(jtid->jlThread)
 
 
 /*============================================================================
@@ -117,11 +136,19 @@ jthread_spinoff(void *arg)
 	/* Unimplemented */
 }
 
+/*============================================================================
+ *
+ * Functions related to interrupt handling
+ *
+ *
+ * It has been pointed out that I could use _kget_thread_stacks_ to
+ * get a more accurate snapshot of the thread stack.  I tried it,
+ * and Kaffe/BeOS promptly failed a number of tests in the regression
+ * suite.  Since the stuff below works, I'm going to let it Be for now.
+ */
+
 /*
  * determine the interesting stack range for a conservative gc
- *
- * XXX BeOS doesn't provide a way to get the SP for a specific thread
- *     other than the one currently running :(
  */
 int
 jthread_extract_stack(jthread_t jtid, void **from, unsigned *len)
@@ -146,9 +173,13 @@ jthread_extract_stack(jthread_t jtid, void **from, unsigned *len)
 	}
 
 DBG(JTHREADDETAIL,
-	dprintf("extract_stack(%) base=%p size=%d sp=%p; from=%p len=%d\n", 
-		jtid->native_thread,
-		tinfo.stack_base, tinfo.stack_end-tinfo.stack_base, tinfo.stack_base, *from, *len);
+	dprintf("%s: extract_stack: base=%p size=%d sp=%p; from=%p len=%d\n", 
+		THREAD_NAME(jtid),
+		tinfo.stack_base,
+		tinfo.stack_end-tinfo.stack_base,
+		tinfo.stack_base,
+		*from,
+		*len);
     )
 
 	return (1);
@@ -172,10 +203,14 @@ jthread_on_current_stack(void *bp)
 	rc = (bp >= curr_sp && bp < tinfo.stack_end);
 
 DBG(JTHREADDETAIL,
-	dprintf("on current stack(%x) base=%p size=%d bp=%p %s\n",
-		find_thread(NULL),
-		tinfo.stack_base, tinfo.stack_end-tinfo.stack_base, bp, (rc ? "yes" : "no"));
+	dprintf("%s: on current stack: base=%p size=%d bp=%p %s\n",
+		THREAD_NAME(GET_JTHREAD()),
+		tinfo.stack_base,
+		tinfo.stack_end-tinfo.stack_base,
+		bp,
+		(rc ? "yes" : "no"));
     )
+
 	return rc;
 }       
 
@@ -198,10 +233,15 @@ jthread_stackcheck(int need)
 	room = curr_sp - tinfo.stack_base;
 
 DBG(JTHREADDETAIL,
-	dprintf("stackcheck(%x) need=%d base=%p size=%d sp=%p room=%d\n",
-		find_thread(NULL),
-		need, tinfo.stack_base, tinfo.stack_end-tinfo.stack_base, curr_sp, room);
+	dprintf("%s: stackcheck: need=%d base=%p size=%d sp=%p room=%d\n",
+		THREAD_NAME(GET_JTHREAD()),
+		need,
+		tinfo.stack_base,
+		tinfo.stack_end-tinfo.stack_base,
+		curr_sp,
+		room);
     )
+
 	return (room >= need);
 }
 
@@ -222,7 +262,7 @@ jthread_destroy(jthread_t tid)
 
 	assert(tid);
 DBG(JTHREAD, 
-	dprintf("destroying tid %x\n", tid->native_thread);	
+	dprintf("destroying %s\n", THREAD_NAME(tid));	
     )
 	old_stop_handler = signal(STOP_SIGNAL, undeathcallback);
 	wait_for_thread(tid->native_thread, &status);
@@ -314,6 +354,11 @@ jthread_init(int pre,
 	pmain = find_thread(NULL);
 	rename_thread(pmain, "Kaffe main thread");
 
+	/*
+	 * Record the id of the main thread, for use by jthread_exit
+	 */
+	the_main_thread = pmain;
+
         /*
          * XXX: ignore mapping of min/max priority for now and assume
          * BeOS priorities include java priorities.
@@ -337,6 +382,7 @@ jthread_init(int pre,
         liveThreads = jtid;
 	jtid->status = THREAD_RUNNING;
         talive++;
+
 DBG(JTHREAD,
 	dprintf("main thread has id %x\n", jtid->native_thread);
     )
@@ -381,9 +427,34 @@ jthread_enable_stop(void)
 void
 jthread_interrupt(jthread_t tid)
 {
+	thread_info tinfo;
+
 DBG(JTHREAD,
-        dprintf("interrupting thread %p, %x\n", tid, tid->native_thread); )
-	resume_thread(tid->native_thread);
+        dprintf("interrupting thread %p, %s\n", tid, THREAD_NAME(tid)); )
+
+	if (THREAD_DYING != tid->status && THREAD_DEAD != tid->status) {
+		get_thread_info(tid->native_thread, &tinfo);
+
+		if (B_THREAD_SUSPENDED != tinfo.state &&
+		    B_THREAD_RUNNING != tinfo.state) {
+			/*
+			 * This thread is asleep, waiting on I/O or
+			 * blocked on a semaphore, so resume_thread won't
+			 * work without a preceding suspend_thread, and
+			 * since these amount to signalling the targeted
+			 * thread, we need to snooze a bit, as described
+			 * in the Be Book section on the "snooze" function.
+			 */
+			suspend_thread(tid->native_thread);
+			snooze(1000);   /* microseconds */
+		}
+
+		/*
+		 * At this point, the targeted thread is either already
+		 * running, or is in a resumable state.
+		 */
+		resume_thread(tid->native_thread);
+	}
 }
 
 /*
@@ -419,9 +490,10 @@ int32
 start_me_up(void *arg)
 {
 	jthread_t tid = (jthread_t)arg;
+	extern void initExceptions(void);
 
 DBG(JTHREAD, 
-	dprintf("starting thread %p\n", tid); 
+	dprintf("start_me_up: setting up for %s\n", THREAD_NAME(tid)); 
     )
 	acquire_sem(threadLock);
 
@@ -442,11 +514,11 @@ DBG(JTHREAD,
 	release_sem(threadLock);
 
 DBG(JTHREAD, 
-	dprintf("calling thread %p, %x\n", tid, tid->native_thread); )
+	dprintf("start_me_up: calling t-func for %s\n", THREAD_NAME(tid)); )
 	tid->func(tid->jlThread);
 DBG(JTHREAD, 
-	dprintf("thread %x returned, calling jthread_exit\n", 
-		tid->native_thread); 
+	dprintf("start_me_up: thread %s returned\n", 
+		THREAD_NAME(tid)); 
     )
 
 	assert (tid->status != THREAD_DYING);
@@ -483,7 +555,7 @@ jthread_create(unsigned int pri, void (*func)(void *), int daemon,
         liveThreads = tid;
         tid->status = THREAD_NEWBORN;
 
-	ntid = spawn_thread(start_me_up, "", pri, tid);
+	ntid = spawn_thread(start_me_up, nameThread(jlThread), pri, tid);
 	tid->native_thread = ntid;
 
         talive++;       
@@ -498,7 +570,7 @@ jthread_create(unsigned int pri, void (*func)(void *), int daemon,
 	 */
 	if (NULL == per_thread_info[ntid % MAX_THREADS].jtid) {
 DBG(JTHREAD,
-	dprintf("created thread %x, daemon=%d\n", ntid, daemon); )
+	dprintf("created thread %s, daemon=%d\n", nameThread(jlThread), daemon); )
 
 		resume_thread(ntid);
         	return (tid);
@@ -525,12 +597,14 @@ DBG(JTHREAD,
 void
 jthread_sleep(jlong time)
 {
-	/* snooze_until takes an arg in usecs */
 DBG(JTHREAD,
-        dprintf("thread %x: sleeping for %g second(s)...",
-                find_thread(NULL), (double)time/1000.0);
+        dprintf("thread %s: sleeping for %g second(s)...",
+                THREAD_NAME(GET_JTHREAD()), (double)time/1000.0);
     )
-	snooze_until(system_time() + (time*1000), B_SYSTEM_TIMEBASE);
+
+	/* snooze_until takes an arg in usecs */
+	snooze_until(system_time() + (time*1000L), B_SYSTEM_TIMEBASE);
+
 DBG(JTHREAD,
         dprintf("OK, I'm awake!\n");
     )
@@ -566,6 +640,10 @@ jthread_stop(jthread_t jtid)
 {
 	/* can I cancel myself safely??? */
 	/* NB: jthread_stop should never be invoked on the current thread */
+
+DBG(JTHREAD,
+	dprintf("stopping %s...\n", THREAD_NAME(jtid));
+    )
 	send_signal(jtid->native_thread, STOP_SIGNAL);
 }
 
@@ -574,6 +652,10 @@ remove_thread(jthread_t tid)
 {
 	jthread_t* ntid;
 	int found = 0;
+
+DBG(JTHREAD,
+	dprintf("Removing entry for thread %s\n", THREAD_NAME(tid));
+    )
 
 	acquire_sem(threadLock);
 
@@ -597,8 +679,17 @@ remove_thread(jthread_t tid)
 
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
+
+		/* Make sure this section doesn't get executed
+		 * more than once.
+		 */
+		if (isShuttingDown) {
+			return;
+		}
+		atomic_or(&isShuttingDown, 1);
+
 DBG(JTHREAD,
-		dprintf("all done, closing shop\n");
+		dprintf("%s: all done, closing shop\n", THREAD_NAME(tid));
     )
 		if (runOnExit != 0) {
 		    runOnExit();
@@ -606,18 +697,31 @@ DBG(JTHREAD,
 
 		/* does that really make sense??? */
 		for (tid = liveThreads; tid != 0; tid = tid->nextlive) {
+			int32 tstat;
 			if (destructor1) {
 				(*destructor1)(tid->jlThread);
 			}
 			send_signal(tid->native_thread, STOP_SIGNAL);
+			wait_for_thread(tid->native_thread, &tstat);
+DBG(JTHREAD,
+			dprintf("waited for %s, which returned %d\n",
+				THREAD_NAME(tid), tstat);
+    )
 		}
 
-		/* Am I suppose to close things down nicely ?? */
-		EXIT(0);
+		/* Shut down this thread */
+DBG(JTHREAD,
+		dprintf("%s: Goodbye!\n", THREAD_NAME(GET_JTHREAD()));
+    )
+		exit_thread(0);
+
 	} else {
 		if (destructor1) {
 			(*destructor1)(tid->jlThread);
 		}
+		/* This thread will now return to mark_thread_dead, and
+		 * then call exit_thread() from that function's caller.
+		 */
 	}
 }
 
@@ -644,10 +748,35 @@ jthread_exit(void)
 	jthread_t currentJThread = GET_JTHREAD();
 
 DBG(JTHREAD,
-	dprintf("jthread_exit called by %x\n", currentJThread->native_thread);
+	dprintf("jthread_exit called by %s\n", THREAD_NAME(currentJThread));
     )
 
 	mark_thread_dead();
+
+	/*
+	 * If this is the main thread, wait for all daemons to finish.
+	 * At this point, the main jthread is no longer part of the
+	 * live list.
+	 */
+	if (the_main_thread == currentJThread->native_thread) {
+		while (talive > tdaemon) {
+		        jthread_t tid = NULL;
+			int32 rc;
+
+			jmutex_lock(&threadLock);
+		        for (tid = liveThreads; tid != NULL; tid = tid->nextlive) {
+				if (tid->daemon) break;
+			}
+			jmutex_unlock(&threadLock);
+			if (NULL != tid) {
+				wait_for_thread(tid->native_thread, &rc);
+			}
+		}
+	}
+
+	/*
+	 * OK, now it's safe to exit
+	 */
 	exit_thread(0);
 	while (1)
 		assert(!"This better not return.");
@@ -664,9 +793,7 @@ jthread_dumpthreadinfo(jthread_t tid)
 		tid->status == THREAD_NEWBORN ? "NEWBORN" :
 		tid->status == THREAD_RUNNING ? "RUNNING" :
 		tid->status == THREAD_DYING   ? "DYING"   :
-		tid->status == THREAD_DEAD    ? "DEAD"    :
-		tid->status == THREAD_CONTINUE? "CONTINUE":
-		tid->status == THREAD_STOPPED ? "STOPPED" : "???");
+		tid->status == THREAD_DEAD    ? "DEAD"    : "???");
 }
 
 /*
@@ -734,12 +861,41 @@ jcondvar_initialise(jcondvar *cv)
 void
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
-	acquire_sem(cv->mutex);
-	++cv->num_sleeping;
-	jmutex_unlock(lock);
-	release_sem(cv->mutex);
-	acquire_sem(cv->cond);
-	jmutex_lock(lock);
+	status_t rc;
+
+	if (0 == timeout) {
+		rc = acquire_sem(cv->mutex);
+		if (B_OK != rc) return;
+
+		atomic_add(&cv->num_sleeping, 1);
+		jmutex_unlock(lock);
+		release_sem(cv->mutex);
+
+		rc = acquire_sem(cv->cond);
+		if (B_OK != rc) {
+			atomic_add(&cv->num_sleeping, -1);
+		}
+		jmutex_lock(lock);
+	}
+	else   /* non-zero timeout */
+	{
+		bigtime_t timeoutUSecs = timeout * 1000L;
+		bigtime_t startTime = system_time();
+
+		rc = acquire_sem_etc(cv->mutex, 1, B_TIMEOUT, timeoutUSecs);
+		if (B_OK != rc) return;
+
+		atomic_add(&cv->num_sleeping, 1);
+		jmutex_unlock(lock);
+		release_sem(cv->mutex);
+
+		timeoutUSecs -= (system_time() - startTime);
+		rc = acquire_sem_etc(cv->cond, 1, B_TIMEOUT, timeoutUSecs);
+		if (B_OK != rc) {
+			atomic_add(&cv->num_sleeping, -1);
+		}
+		jmutex_lock(lock);
+	}
 }
 
 void
@@ -748,7 +904,7 @@ jcondvar_signal(jcondvar *cv, jmutex *lock)
 	acquire_sem(cv->mutex);
 	if (cv->num_sleeping > 0) {
 		release_sem(cv->cond);
-		--cv->num_sleeping;
+		atomic_add(&cv->num_sleeping, -1);
 	}
 	release_sem(cv->mutex);
 }
@@ -759,7 +915,7 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 	acquire_sem(cv->mutex);
 	while (cv->num_sleeping > 0) {
 		release_sem(cv->cond);
-		--cv->num_sleeping;
+		atomic_add(&cv->num_sleeping, -1);
 	}
 	release_sem(cv->mutex);
 }
