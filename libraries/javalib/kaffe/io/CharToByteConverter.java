@@ -100,19 +100,14 @@ private static CharToByteConverter getConverterInternal(String enc)
 			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
 			if (in != null) {
 				ObjectInputStream oin = new ObjectInputStream(in);
-				cls = oin.readObject().getClass();
+				Object obj = oin.readObject();
 				oin.close();
-				cache.put(enc, cls);
-				return (CharToByteConverter)cls.newInstance();
+				return (CharToByteConverter)obj;
 			}
 		}
 		catch (IOException __) {
 		}
 		catch (ClassNotFoundException __) {
-		}
-		catch (InstantiationException __) {
-		}
-		catch (IllegalAccessException __) {
 		}
 	}
 	catch (ClassCastException _) {
