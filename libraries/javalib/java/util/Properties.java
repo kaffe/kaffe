@@ -65,7 +65,7 @@ private static String escape(String str, boolean isKey) {
 			sb.append("\\r");
 			break;
 		default:
-			if (ch > 0x7e) {
+			if (ch < 0x20 || ch > 0x7e) {
 				sb.append("\\u");
 				sb.append(Character.forDigit((ch >> 12) & 0xf, 16));
 				sb.append(Character.forDigit((ch >> 8) & 0xf, 16));
