@@ -16,9 +16,12 @@ JIKES=@JIKES@
 if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
 # use this if you have the memory
+# this should not cause any gc and is fastest.
 		JAVA="kaffe -ms64M -mx64M"
-# else use this:
-#		JAVA="kaffe -ms32M -mx32M"
+# else use this.  ca. 36M seems to be the minimum at this point.
+# note that kaffe doesn't always throw out-of-memory exception may just 
+# silently deadlock if it runs out of memory.
+#		JAVA="kaffe -ms40M -mx40M"
 	fi
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA pizza.compiler.Main"
