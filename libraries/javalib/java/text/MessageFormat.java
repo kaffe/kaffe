@@ -416,7 +416,7 @@ public class MessageFormat extends Format
       {
 	Object thisArg = null;
 	boolean unavailable = false;
-	if (elements[i].argNumber >= arguments.length)
+	if (arguments == null || elements[i].argNumber >= arguments.length)
 	  unavailable = true;
 	else
 	  thisArg = arguments[elements[i].argNumber];
