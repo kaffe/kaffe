@@ -29,6 +29,7 @@ extern jboolean runFinalizerOnExit;
  * Exit this VM
  */
 void
+NONRETURNING
 java_lang_Runtime_exit0(struct Hjava_lang_Runtime* r UNUSED, jint v)
 {
 	EXIT (v);

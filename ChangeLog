@@ -1,5 +1,11 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* config/i386/jit3-i386.def, kaffe/kaffevm/jit3/basecode.c,
+	  libraries/clib/native/Runtime.c:
+	  Add NONRETURNING annotation.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Parser.java:
 	  Fix some more access of static fields/methods on instances.
  
