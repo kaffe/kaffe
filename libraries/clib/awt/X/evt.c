@@ -175,7 +175,7 @@ jmethodID  getWMEvent;
 
 #define    WM_KILLED           1905
 
-#if defined(KAFFE_VMDEBUG)
+#if defined(KAFFE_VMDEBUG) && !defined(NDEBUG)
 static char *eventStr ( int evtId )
 {
   switch (evtId) {
@@ -206,7 +206,7 @@ static char *eventStr ( int evtId )
   default: return "<unknown>";
   }
 };
-#endif
+#endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
 
 static jobject
 skip ( JNIEnv* env, Toolkit* X )
