@@ -47,17 +47,17 @@ import java.io.Writer;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class WriterOutputStream
+public class WriterOutputStream
   extends OutputStream
 {
 
   private Writer writer;
   private String encoding;
 
-  WriterOutputStream(Writer writer)
+  public WriterOutputStream(Writer writer)
   {
     this.writer = writer;
-    this.encoding = "UTF16";
+    this.encoding = "UTF-8";
   }
 
   void setEncoding(String encoding)

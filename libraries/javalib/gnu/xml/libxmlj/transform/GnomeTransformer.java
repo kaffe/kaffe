@@ -1,5 +1,5 @@
 /* 
- * $Id: GnomeTransformer.java,v 1.8 2004/12/04 21:12:27 robilad Exp $
+ * $Id: GnomeTransformer.java,v 1.9 2004/12/06 09:02:52 robilad Exp $
  * Copyright (C) 2003, 2004 Free Software Foundation, Inc.
  * 
  * This file is part of GNU Classpathx/jaxp.
@@ -141,7 +141,7 @@ public class GnomeTransformer
       {
         stylesheet = newStylesheet ();
       } 
-    if (source instanceof StreamSource)
+    else if (source instanceof StreamSource)
       {
         try
           {
@@ -180,7 +180,7 @@ public class GnomeTransformer
       }
     else
       {
-        String msg = "Source type not supported";
+        String msg = "Source type not supported (" + source + ")";
         throw new TransformerConfigurationException (msg);
       }
   }
@@ -344,7 +344,7 @@ public class GnomeTransformer
               }
             else
               {
-                String msg = "Result type not supported";
+                String msg = "Result type not supported (" + result + ")";
                 throw new TransformerConfigurationException (msg);
               }
           }
@@ -359,7 +359,7 @@ public class GnomeTransformer
         Node node = ds.getNode ();
         if (!(node instanceof GnomeDocument))
           {
-            String msg = "Node is not a GnomeDocument";
+            String msg = "Node is not a GnomeDocument (" + node + ")";
             throw new TransformerException (msg);
           }
         GnomeDocument doc = (GnomeDocument) node;

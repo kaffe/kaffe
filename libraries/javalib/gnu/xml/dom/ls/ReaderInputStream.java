@@ -47,17 +47,17 @@ import java.io.Reader;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class ReaderInputStream
+public class ReaderInputStream
   extends InputStream
 {
 
   private Reader reader;
   private String encoding;
 
-  ReaderInputStream(Reader reader)
+  public ReaderInputStream(Reader reader)
   {
     this.reader = reader;
-    this.encoding = "UTF-8";
+    encoding = "UTF-8";
   }
 
   void setEncoding(String encoding)

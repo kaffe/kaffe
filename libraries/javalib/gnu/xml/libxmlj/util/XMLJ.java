@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -56,6 +58,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.xml.sax.InputSource;
 
 import gnu.xml.libxmlj.transform.GnomeTransformerFactory;
+
+import gnu.xml.dom.ls.ReaderInputStream;
+import gnu.xml.dom.ls.WriterOutputStream;
 
 /**
  * Utility functions for libxmlj.
@@ -105,6 +110,12 @@ public final class XMLJ
   {
     InputStream in = input.getByteStream ();
     String systemId = input.getSystemId ();
+    if (in == null)
+      {
+       Reader r = input.getCharacterStream();
+       if (r != null)
+         in = new ReaderInputStream(r);
+      }
     if (in == null)
       {
         in = getInputStream(systemId);
@@ -199,6 +210,12 @@ public final class XMLJ
       }
     if (out == null)
       {
+       Writer w = ((StreamResult) result).getWriter ();
+       if (w != null)
+         out = new WriterOutputStream (w);
+      }
+    if (out == null)
+      {
         String systemId = result.getSystemId ();
         if (systemId == null)
           {
@@ -216,6 +233,7 @@ public final class XMLJ
             out = new FileOutputStream (systemId);
           }
       }
+
     return out;
   }
 
