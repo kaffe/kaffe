@@ -64,4 +64,5 @@ public interface ZipConstants {
   public final static int LOC_RECSZ = 30;
 
   public final static long LOC_HEADSIG = 0x04034b50;
+
 }

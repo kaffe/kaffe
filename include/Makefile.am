@@ -21,8 +21,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_io_InputStream.h \
 	java_io_ObjectInputStream.h \
 	java_io_ObjectOutputStream.h \
-	java_io_ObjectStreamClass.h \
-	java_io_ObjectStreamField.h \
+	kaffe_io_ObjectStreamClassImpl.h \
 	java_io_PrintStream.h \
 	java_io_RandomAccessFile.h \
 	java_lang_Boolean.h \

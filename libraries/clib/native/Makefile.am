@@ -9,9 +9,7 @@
 native_LTLIBRARIES = libnative.la
 
 IO_SRCS = \
-		ObjectInputStream.c \
-		ObjectOutputStream.c \
-		ObjectStreamClass.c
+		ObjectStreamClassImpl.c
 
 LANG_SRCS = \
 		ClassLoader.c \

@@ -23,11 +23,11 @@ import java.util.Collection;
 /* Hashtable (NOT tree) with simple clustering */
 
 public class Hashtable extends Dictionary implements Map, Cloneable, Serializable {
-  transient private Object keys[];
-  transient private Object elements[];
-  transient private float loadFactor;
+  private Object keys[];
+  private Object elements[];
+  private float loadFactor;
   private int numberOfKeys;
-  transient private int rehashLimit;
+  private int rehashLimit;
 
   private static final int DEFAULTCAPACITY = 101;
   private static final float DEFAULTLOADFACTOR = (float)0.75;
@@ -294,26 +294,24 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
    * read this hashtable from a stream
    */
   private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-    // read all non-transient fields
+    // read all default fields
     stream.defaultReadObject();
 
-    // read load factor
-    loadFactor = stream.readFloat();
-
     // create buckets
-    int len = stream.readInt();
-    keys = new Object[len];
-    elements = new Object[len];
+    int capacity = stream.readInt();
+    int size = stream.readInt();
 
-    // Set rehashLimit
-    rehashLimit = (int)(loadFactor * (float)len);
+    // We ignore the capacity
+    capacity = (int)(rehashLimit / loadFactor);
+
+    keys = new Object[capacity];
+    elements = new Object[capacity];
 
     // clear table, but remember how many entries are in the stream
-    int nkeys = numberOfKeys;
     numberOfKeys = 0;
 
     // read entries
-    for (int i = 0; i < nkeys; i++) {
+    for (int i = 0; i < size; i++) {
       Object k = stream.readObject();
       Object o = stream.readObject();
       put(k, o);
@@ -324,14 +322,12 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
    * write this hashtable into a stream
    */
   private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-    // write all non-transient fields
+    // write all default fields
     stream.defaultWriteObject();
-
-    // write load factor
-    stream.writeFloat(loadFactor);
 
     // remember how many buckets there were
     stream.writeInt(keys.length);
+    stream.writeInt(numberOfKeys);
 
     for (int pos = 0; pos < keys.length; pos++) {
       if (keys[pos] != free && keys[pos] != removed) {
@@ -388,6 +384,26 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 
   public Collection values() {
     throw new kaffe.util.NotImplemented();
+  }
+
+  /*
+   * JDK compatible serialization
+   */
+  class DefaultSerialization {
+  
+  private float loadFactor;
+  private int threshold;
+  
+  private void readDefaultObject() {
+          Hashtable.this.loadFactor = loadFactor;
+          Hashtable.this.rehashLimit = threshold;
+  }
+  
+  private void writeDefaultObject() {
+          loadFactor = Hashtable.this.loadFactor;
+          threshold = Hashtable.this.rehashLimit;
+  }
+
   }
 
 }

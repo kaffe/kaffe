@@ -1,7 +1,7 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1997, 1998
+ * Copyright (c) 1997, 1998, 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -14,171 +14,93 @@ import java.lang.String;
 import java.io.Serializable;
 import java.io.Externalizable;
 import java.util.Hashtable;
+import java.io.ObjectStreamConstants;
+import java.io.StreamCorruptedException;
+import java.io.IOException;
+import java.io.OptionalDataException;
+import kaffe.io.ObjectInputStreamImpl;
+import kaffe.io.ObjectOutputStreamImpl;
+import kaffe.io.ObjectStreamClassImpl;
+import kaffe.io.SerializationFactory;
+import kaffe.io.DefaultSerializationFactory;
 
-class ObjectStreamField {
-	String	name;
-	char	type;
-	int	offset;
-	String	typeString;
-}
+public class ObjectStreamClass implements Serializable {
 
-public class ObjectStreamClass
-  implements Serializable
-{
+public static SerializationFactory factory = new DefaultSerializationFactory();
 
-static private Hashtable streamClasses = new Hashtable();
+private static Hashtable streamClasses = new Hashtable();
 
-String name;
-Class clazz;
-ObjectStreamClass superclazzStream;
-int method;
-long serialVersionUID;
-ObjectStreamField[] fieldInfo;
-int[] fieldRdWr;
+protected String name;
+protected Class clazz;
 
-public Class forClass()
-{
+public Class forClass() {
 	return (clazz);
 }
 
-public String getName()
-{
+public String getName() {
 	return (name);
 }
 
-public static ObjectStreamClass lookup(Class cl)
-{
-	// First check hash table for match.
-	ObjectStreamClass osc = (ObjectStreamClass)streamClasses.get(cl);
-	if (osc != null) {
-		return (osc);
-	}
+public String toString() {
+	return (name + ": static final long serialVersionUID = " + Long.toString(getSerialVersionUID()));
+}
 
-	// Otherwise we build a new one.
-	int method;
-	if (cl == String.class) {
-		method = ObjectStreamConstants.SC_STRING;
-	}
-	else if (Externalizable.class.isAssignableFrom(cl)) {
-		method = ObjectStreamConstants.SC_SERIALIZABLE | ObjectStreamConstants.SC_EXTERNALIZABLE;
-	}
-	else if (Serializable.class.isAssignableFrom(cl)) {
-		method = ObjectStreamConstants.SC_SERIALIZABLE;
-		if (hasWriteObject(cl)) {
-			method |= ObjectStreamConstants.SC_WRRD_METHODS;
-		}
-	}
-	else {
+public static ObjectStreamClass lookup(Class cl) {
+
+	if (cl == null) {
 		return (null);
 	}
 
-	osc = new ObjectStreamClass();
-	osc.name = cl.getName();
-	osc.clazz = cl;
-	osc.method = method;
-
-	// Get StreamClass for superclass
-	osc.superclazzStream = lookup(cl.getSuperclass());
-
-	if (!cl.isArray()) {
-		osc.buildFieldsAndOffset();
-	}
-	else {
-		osc.fieldInfo = new ObjectStreamField[0];
-		osc.fieldRdWr = new int[0];
+//System.out.println("Looking up " + cl);
+	// First check hash table for match - return what's found
+	ObjectStreamClass osc = (ObjectStreamClass)streamClasses.get(cl);
+	if (osc != null) {
+//System.out.println("Found in cache");
+		return (osc);
 	}
 
-	// Insert into hash table for later.
+	// Otherwise we work out how the class should be serialized and
+	// make an entry for it.  If the class can't be serialized we
+	// make a null entry.
+	int method;
+	if (Externalizable.class.isAssignableFrom(cl)) {
+		method = ObjectStreamConstants.SC_SERIALIZABLE | ObjectStreamConstants.SC_EXTERNALIZABLE;
+//System.out.println(" is externalizable");
+	}
+	else if (Serializable.class.isAssignableFrom(cl)) {
+		method = ObjectStreamConstants.SC_SERIALIZABLE;
+		if (factory.hasRdWrMethods(cl)) {
+			method |= ObjectStreamConstants.SC_WRRD_METHODS;
+//System.out.println(" has read/write");
+                }
+		osc = factory.newObjectStreamClass(cl, method);
+//System.out.println(" is serializable");
+        }
+        else {
+//System.out.println("Cannot be serialized");
+		// Cannot be serialized
+        }
+
 	streamClasses.put(cl, osc);
 
 	return (osc);
 }
 
-void buildFieldsAndOffset()
-{
-	fieldInfo = getFields0(clazz);
-	int len = fieldInfo.length;
-	fieldRdWr = new int[len*2];
-	for (int i = 0; i < len; i++) {
-		fieldRdWr[i*2] = fieldInfo[i].type;
-		fieldRdWr[i*2+1] = fieldInfo[i].offset;
-	}
+/**
+ * The following functions are overridden by the implementation.
+ */
+
+public void defaultReadObject(Object obj, ObjectInputStream in) {
+	// These are redefined by the implementation
 }
 
-public String toString()
-{
-	return (getName() + ": static final long serialVersionUID = " + Long.toString(getSerialVersionUID(clazz)));
+public void defaultWriteObject(Object obj, ObjectOutputStream out) {
+	// These are redefined by the implementation
 }
 
-// -------------------------------------------------------------------
-
-private void writeObject(ObjectOutputStream out) throws IOException
-{
-        out.writeUTF(name);
-        out.writeLong(serialVersionUID);
-	out.writeByte(method);
-	int len = fieldInfo.length;
-        out.writeShort(len);
-        for (int i = 0; i < len; i++) {
-                out.writeByte(fieldInfo[i].type);
-                out.writeUTF(fieldInfo[i].name);
-                if (fieldInfo[i].typeString != null) {
-                        out.writeObject(fieldInfo[i].typeString);
-                }
-        }
-	out.writeByte(ObjectStreamConstants.TC_ENDBLOCKDATA);
-
-	// And now the superclass
-	out.writeObject(superclazzStream);
+public long getSerialVersionUID() {
+	// These are redefined by the implementation
+	return (0);
 }
-
-private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-{
-	name = in.readUTF();
-	serialVersionUID = in.readLong();
-        method = in.readUnsignedByte();
-
-        int len = in.readShort();
-        fieldInfo = new ObjectStreamField[len];
-
-        for (int i = 0; i < len; i++) {
-                fieldInfo[i] = new ObjectStreamField();
-                int type = in.readUnsignedByte();
-                fieldInfo[i].type = (char)type;
-                fieldInfo[i].name = in.readUTF();
-                if (type == 'L' || type == '[') {
-			try {
-				fieldInfo[i].typeString = (String)in.readObject();
-			}
-			catch (ClassCastException _) {
-				throw new StreamCorruptedException("expected string");
-			}
-                }
-                else {
-                        fieldInfo[i].typeString = null;
-                }
-                fieldInfo[i].offset = 0;
-        }
-	in.expectByte(ObjectStreamConstants.TC_ENDBLOCKDATA, "missing endblockdata");
-
-	// And now the superclass
-	try {
-		superclazzStream = (ObjectStreamClass)in.readObject();
-	}
-	catch (ClassCastException _) {
-		throw new StreamCorruptedException("expected class desc");
-	}
-}
-
-// -------------------------------------------------------------------
-
-private native static int getClassAccess(Class cls);
-private native static String[] getMethodSignatures(Class cls);
-private native static int getMethodAccess(Class cls, String str);
-private native static String[] getFieldSignatures(Class cls);
-private native static int getFieldAccess(Class cls, String str);
-private native ObjectStreamField[] getFields0(Class cls);
-public native static long getSerialVersionUID(Class cls);
-private native static boolean hasWriteObject(Class cls);
 
 }
