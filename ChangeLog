@@ -1,5 +1,24 @@
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/security/provider/GnuDSAPrivateKey.java,
+	libraries/javalib/gnu/java/security/provider/GnuDSAPublicKey.java:
+	Resynced with GNU Classpath.
+
+	2004-11-07  Casey Marshall  <csm@gnu.org>
+
+        * gnu/java/security/provider/GnuDSAPrivateKey.java
+        (encodedKey): new field.
+        (getFormat): return "PKCS#8".
+        (getEncoded): implemented.
+        (toString): check for 'null' values.
+        * gnu/java/security/provider/GnuDSAPublicKey.java
+        (encodedKey): new field.
+        (getFormat): return "X.509".
+        (getEncoded): implemented.
+        (toString): check for 'null' values.
+
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/jar/JarFile.java
 	(manifest, verified): Made package-private.
 
