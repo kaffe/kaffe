@@ -1,3 +1,9 @@
+2004-08-15  Jeroen Frijters  <jeroen@frijters.net>
+
+	* libraries/javalib/java/io/File.java:
+	prevent to accidental forming of a UNC path prefix (\\) by 
+	trimming the leading separators from name.
+
 2004-08-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/swing/AbstractSpinnerModel.java,
