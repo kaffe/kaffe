@@ -5028,6 +5028,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ARG_OUT.java \
 	org/omg/CORBA/Any.java \
 	org/omg/CORBA/AnyHolder.java \
+	org/omg/CORBA/AnySeqHelper.java \
+	org/omg/CORBA/AnySeqHolder.java \
 	org/omg/CORBA/BAD_CONTEXT.java \
 	org/omg/CORBA/BAD_INV_ORDER.java \
 	org/omg/CORBA/BAD_OPERATION.java \
@@ -5043,6 +5045,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/CharSeqHelper.java \
 	org/omg/CORBA/CharSeqHolder.java \
 	org/omg/CORBA/CompletionStatus.java \
+	org/omg/CORBA/CompletionStatusHelper.java \
 	org/omg/CORBA/Context.java \
 	org/omg/CORBA/ContextList.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
