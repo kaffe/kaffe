@@ -32,6 +32,7 @@
 #include "gc.h"
 #include "machine.h"
 #include "lookup.h"
+#include "code-analyse.h"
 #include "soft.h"
 #include "exception.h"
 #include "external.h"
@@ -47,8 +48,6 @@
  */
 char* engine_name = "Interpreter";
 char* engine_version = KVER;
-
-extern uint8 insnLen[];
 
 #define	define_insn(code)	break;					\
 				case code:				\
@@ -68,9 +67,9 @@ extern uint8 insnLen[];
 #endif
 
 void
-virtualMachine(methods* meth, slots* arg, slots* retval, Hjava_lang_Thread* tid)
+virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thread* tid)
 {
-	Hjava_lang_Object* mobj;
+	Hjava_lang_Object* volatile mobj;
 	vmException mjbuf;
 	accessFlags methaccflags;
 	char* str;
@@ -82,10 +81,9 @@ virtualMachine(methods* meth, slots* arg, slots* retval, Hjava_lang_Thread* tid)
 	register slots* lcl;
 	register slots* sp;
 	register uintp pc;
-	register uintp npc;
+	register uintp volatile npc;
 
 	/* Misc machine variables */
-	jint cc;
 	jlong lcc;
 	jlong tmpl;
 	slots tmp[1];
@@ -100,9 +98,7 @@ virtualMachine(methods* meth, slots* arg, slots* retval, Hjava_lang_Thread* tid)
 	/* Call, field and creation information */
 	callInfo cinfo;
 	fieldInfo finfo;
-	Field* field;
 	Hjava_lang_Class* crinfo;
-	exceptionInfo info;
 
 CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
 
