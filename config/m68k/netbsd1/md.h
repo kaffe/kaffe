@@ -13,6 +13,9 @@
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
+ *
+ * SP_OFFSET, ALIGNMENT_OF_SIZE, and sysdepCallMethod macro were
+ * written by Kiyo Inaba <inaba@src.ricoh.co.jp>, 1998;
  */
 
 #ifndef __m68k_netbsd_md_h
