@@ -1,0 +1,2261 @@
+/* This is -*- C -*- */
+/*
+ * jit3-powerpc.def
+ *
+ * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * All rights reserved.
+ *
+ * @JANOSVM_KAFFE_JANOSVM_LICENSE@
+ */
+
+#include "jit.h"
+#include "icode.h"
+#include "ppc_isa.h"
+#include "code-analyse.h"
+#include "constpool.h"
+#include "ppc_macros.h"
+
+
+/*
+ * I just stole the arm jit3 files edited them, so some of that cruft is left
+ * over.
+ */
+
+/*
+ * debugging stuff.
+ * XXX clean me.
+ */
+#if 0
+#undef ppc_op_ctxt
+#define ppc_op_ctxt CODEPC
+#undef ppc_op_debug
+#define ppc_op_debug(args) my_op_debug args
+int my_op_debug(int ctxt, char *fmt, ...)
+{
+    va_list args;
+    
+    va_start(args, fmt);
+    fprintf(stderr, "%x\t", ctxt - 4);
+    vfprintf(stderr, fmt, args);
+    fprintf(stderr, "\n");
+    va_end(args);
+
+    return( 0 );
+}
+#define DBOUT stderr
+
+#define debug(x) fprintf##x
+#else
+#define debug(x)
+#endif
+
+int jit_debug;
+
+
+/* --------------------------------------------------------------------- */
+
+define_insn(unimplemented, unimplemented)
+{
+	abort();
+}
+
+define_insn(nop, nop)
+{
+	LOUT (ppc_op_nop());
+}
+
+/* --------------------------------------------------------------------- */
+
+/* XXX */
+int r31FunctionStartOffset;
+
+define_insn(prologue, prologue_xxx)
+{
+	int has_pool = 0;
+	Method* meth;
+	label *pl;
+
+	pl = const_label(1);
+	meth = const_method(2);
+	/*
+	 * Either, this method is not a leaf or we have a constpool and need
+	 * to overwrite LR to get at it.
+	 */
+	if( (firstConst != currConst) ||
+	    maxLocal ||
+	    maxTemp )
+	{
+		has_pool = 1;
+	}
+	if( has_pool )
+	{
+		int localRegs;
+
+		/*
+		 * We'll be overwriting the LR in a bit, move it out so we can
+		 * save it later.
+		 */
+		LOUT(ppc_op_mflr(PPC_R0));
+
+		localRegs = maxLocal + maxTemp + 1;
+		/*
+		 * We atleast need to save R31 because its used to hold the
+		 * function base and thus the base for the constpool.
+		 */
+		if( localRegs == 1 )
+		{
+			LOUT(ppc_op_stw(PPC_R31, PPC_RSP, -SLOTSIZE));
+		}
+		else
+		{
+			label *l;
+
+			l = newLabel();
+			l->type = Lsavedregs | Labsolute | Lgeneral;
+			l->at = CODEPC;
+			l->to = 0;
+			l = newLabel();
+			l->type = Lreg_s | Labsolute | Lgeneral;
+			l->at = CODEPC;
+			LOUT(ppc_op_stmw(0, PPC_RSP, 0));
+		}
+
+		/* Stuff the LR in the caller's linkage area. */
+		LOUT(ppc_op_stw(PPC_R0, PPC_RSP, PPC_FRAME_LR));		
+	}
+	if( has_pool )
+	{
+		/* Branch to the next instruction (no cost... i think) */
+		LOUT(ppc_op_bc(PPC_BO_ALWAYS,
+				 0,
+				 ppc_bd16(sizeof(ppc_code_t))) |
+			PPC_OPTION_LK);
+		/*
+		 * The link register points to the internals of this method
+		 * save it and the offset from the start of the function.
+		 */
+		r31FunctionStartOffset = CODEPC;
+		LOUT(ppc_op_mflr(PPC_RFUNCTION_BASE));
+	}
+	else
+	{
+		r31FunctionStartOffset = -1;
+	}
+
+	/* If we have arguments we need to tell the register allocator. */
+	if( maxArgs )
+	{
+		int dbl_skip = 0, limit = PPC_ARG_REGISTER_COUNT;
+		int lpc, gpr_off = 0, fpr_off;
+
+		if( !isStatic )
+		{
+			/* Prepend "this" argument. */
+			gpr_off += 1;
+			dbl_skip += 1;
+			limit -= 1;
+			preloadRegister(localinfo[0].slot, Rref, PPC_RARG0);
+		}
+		/* Figure out the number of arguments in registers. */
+		if( METHOD_NARGS(meth) < limit )
+			limit = METHOD_NARGS(meth);
+		/*
+		 * Force argument slots to correspond to the appropriate
+		 * registers.  On darwin, this means we skip gpr's when floats
+		 * and doubles are also passed in.
+		 */
+		for( lpc = 0, fpr_off = 0;
+		     lpc < limit;
+		     gpr_off++, lpc++ )
+		{
+			switch( *METHOD_ARG_TYPE(meth, lpc) )
+			{
+			case 'D':
+				/* Double's correspond to two gpr's. */
+				gpr_off++;
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rdouble,
+						PPC_FPRARG0 + fpr_off);
+				dbl_skip++;
+				fpr_off++;
+				break;
+			case 'F':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rfloat,
+						PPC_FPRARG0 + fpr_off);
+				fpr_off++;
+				break;
+			case 'L':
+			case '[':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rref,
+						PPC_RARG0 + gpr_off);
+				break;
+			case 'J':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rint,
+						PPC_RARG0 + gpr_off);
+				gpr_off++;
+				dbl_skip++;
+				/* FALLTHROUGH */
+			default:
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rint,
+						PPC_RARG0 + gpr_off);
+				break;
+			}
+		}
+	}
+}
+
+define_insn(exception_prologue, eprologue_xxx)
+{
+	if( r31FunctionStartOffset > 0 )
+	{
+		label *l = const_label(1);
+
+		l->type = Linternal | Labsolute | Llong16x16;
+		l->from = 0;
+		l->at = CODEPC;
+		l->to = r31FunctionStartOffset;
+		LOUT(ppc_op_li(PPC_RCONST_POOL, 0));
+		LOUT(ppc_op_addis(PPC_RCONST_POOL, PPC_RCONST_POOL, 0));
+
+		debug((DBOUT,"epilogue %s\n",getLabelName(l)));
+	}
+}
+
+define_insn(epilogue, epilogue_xxx)
+{
+	extern label *getLastEpilogueLabel(void);
+	
+	label *el;
+
+	if( (el = getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
+	{
+		/*
+		 * Nothing to jump over to get to the epilogue...  Replace
+		 * the jump code with regular epilogue.
+		 */
+		el->type = Lnull;
+		CODEPC -= 4;
+	}
+	else if( el && (el->at != (CODEPC - 4)) )
+	{
+		/* The function ends with a throw, not a return. */
+	}
+	setEpilogueLabel(CODEPC);
+	
+	/* Branch back to the caller. */
+	LOUT(ppc_op_blr());
+}
+
+#if defined(STACK_LIMIT)
+define_insn(check_stack_limit, check_stack_limit_xRC)
+{
+        int r = rreg_int(1);
+        label* l = const_label(2);
+
+#if 1
+#else
+	op_cmp(SP, r);
+	op_branch(CC_HI, 8);
+
+	l->type = Lconstant | Labsolute | Loffset12;
+        l->at = CODEPC;
+
+	op_load_offset(r, CONSTPOOL_BASE, -128);
+	debug((DBOUT,"load_label_const r%d, ?\n", r));
+
+	op_mov(LR, PC);
+	op_mov(PC, r);
+#endif
+	debug((DBOUT,"load_label_const r%d, ?\n", r));
+}
+#endif
+
+/* --------------------------------------------------------------------- */
+
+define_insn(spill_int, spill_Rxx)
+{
+	int r = sreg_int(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	LOUT(ppc_op_stw(r, PPC_RSP, 0));
+
+	debug((DBOUT,"spill_int %d, [FP, %d(%p)]\n", r, o,
+	       seq_slot(s, 1)));
+}
+
+define_insn(spill_float, fspill_Rxx)
+{
+	int r = sreg_float(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	LOUT(ppc_op_stfs(r, PPC_RSP, 0));
+
+	debug((DBOUT,"spill_float %d, [FP, %d]\n", r, o));
+}
+
+define_insn(spill_double, fspilll_Rxx)
+{
+	int r = sreg_double(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	/* XXX Alignment needed here?  e.g. o >> 2 */
+	LOUT(ppc_op_stfd(r, PPC_RSP, 0));
+
+	debug((DBOUT,"spill_double %d, [FP, %d]\n", r, o));
+}
+
+define_insn(reload_int, reload_Rxx)
+{
+	int r = lreg_int(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	LOUT(ppc_op_lwz(r, PPC_RSP, 0));
+	
+	debug((DBOUT,"reload_int %d, [FP, %d(%p)]\n", r, o,
+	       seq_slot(s, 1)));
+}
+
+define_insn(reload_float, freload_Rxx)
+{
+	int r = lreg_float(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	LOUT(ppc_op_lfs(r, PPC_RSP, 0));
+
+	debug((DBOUT,"reload_float %d, [FP, %d]\n", r, o));
+}
+
+define_insn(reload_double, freloadl_Rxx)
+{
+	int r = lreg_double(0);
+	int o = const_int(1);
+	label *l;
+
+	l = newLabel();
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->to = 0;
+	l->from = o;
+	LOUT(ppc_op_lfd(r, PPC_RSP, 0));
+	
+	debug((DBOUT,"reload_double %d, [FP, %d]\n", r, o));
+}
+
+void
+movereg_RR(int toreg, int fromreg)
+{
+	if( toreg != fromreg )
+		LOUT(ppc_op_mr(toreg, fromreg));
+}
+
+void
+fmovereg_RR(int toreg, int fromreg)
+{
+	if( toreg != fromreg )
+		LOUT(ppc_op_fmr(toreg, fromreg));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(move_int_const, move_RxC)
+{
+	int val = const_int(2);
+	int w = wreg_int(0);
+
+	/* cwg 3.2.3.1 */
+	switch( val & 0xffff8000 )
+	{
+	case 0xffff8000:	/* Its a negative 16 bit number. */
+	case 0x00000000:	/* Its a positive 16 bit number. */
+		LOUT(ppc_op_li(w, val));
+		break;
+	default:
+		/* Its a full 32 bit number. */
+		/*
+		 * In reality, this won't get used at the moment, but its nice
+		 * to have as a reference.
+		 */
+		LOUT(ppc_op_li(w, ppc_lo16(val)));
+		LOUT(ppc_op_addis(w, w,
+				    (val & 0x00008000) ?
+				    ppc_ha16(val) :
+				    ppc_hi16(val)));
+		break;
+	}
+}
+
+//
+// This doesn't get used as much as it used to
+// since most constants are stored in the
+// constant pool and referenced via load_constpool_<type>
+//
+// However, this is still needed to assemble a 32-bit
+// constant inline.
+//
+define_insn(move_label_const, move_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_int(0);
+
+	l->type |= Llong16x16|Labsolute;
+	l->at = CODEPC;
+	LOUT(ppc_op_li(w, 0));
+	LOUT(ppc_op_addis(w, w, 0));
+	
+	debug((DBOUT,"move_label_const %d, ?\n", w));
+}
+
+define_insn(load_constpool_int, ld_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_int(0);
+	
+	l->type = Lconstant | Lrelative | Llong16noalign;
+	l->from = r31FunctionStartOffset;
+	l->at = CODEPC;
+	LOUT(ppc_op_lwz(w, PPC_RCONST_POOL, 0));
+	
+	debug((DBOUT,"load_label_const %d, ?\n", w));
+}
+
+define_insn(load_constpool_float, fld_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_float(0);
+	
+	l->type = Lconstant | Lrelative | Llong16noalign;
+	l->from = r31FunctionStartOffset;
+	l->at = CODEPC;
+	LOUT(ppc_op_lfs(w, PPC_RCONST_POOL, 0));
+	
+	debug((DBOUT,"load_label_const %d, ?\n", w));
+}
+
+define_insn(load_constpool_double, fldl_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_double(0);
+	
+	l->type = Lconstant | Lrelative | Llong16noalign;
+	l->from = r31FunctionStartOffset;
+	l->at = CODEPC;
+	LOUT(ppc_op_lfd(w, PPC_RCONST_POOL, 0));
+	
+	debug((DBOUT,"load_label_const %d, ?\n", w));
+}
+
+define_insn(move_int, move_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_mr(w, r));
+
+	debug((DBOUT,"move_int %d, %d\n", w, r));
+}
+
+define_insn(move_float, fmove_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fmr(w, r));
+
+	debug((DBOUT,"move_float %d, %d\n", w, r));
+}
+
+define_insn(move_float_const, fmove_RxC)
+{
+	float o = const_float(2);
+	int w = wreg_float(0);
+	int r = 0;
+	
+#if 1
+#else
+	if ( o == 0.0 ) {
+	    r = 0x8 | 0;
+	} else if (o == 1.0) {
+	    r = 0x8 | 1;
+	} else if (o == 2.0) {
+	    r = 0x8 | 2;
+	} else if (o == 3.0) {
+	    r = 0x8 | 3;
+	} else if (o == 4.0) {
+	    r = 0x8 | 4;
+	} else if (o == 5.0) {
+	    r = 0x8 | 5;
+	} else if (o == 0.5) {
+	    r = 0x8 | 6;
+	} else if (o == 10.0) {
+	    r = 0x8 | 7;
+	} else {
+	    ABORT();
+	}
+
+	op_fmov(w, r);
+
+#endif
+	debug((DBOUT,"move_float_const %d, %f(0x%x)\n", w, o, r));
+}
+
+define_insn(move_double, fmovel_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+	
+	LOUT(ppc_op_fmr(w, r));
+
+	debug((DBOUT,"move_double %d, %d\n", w, r));
+}
+
+define_insn(move_double_const, fmovel_RxC)
+{
+	double o = const_double(2);
+	int w = wreg_double(0);
+
+	int r = 0;
+
+#if 1
+#else
+	if ( o == 0.0 ) {
+	    r = 0x8 | 0;
+	} else if (o == 1.0) {
+	    r = 0x8 | 1;
+	} else if (o == 2.0) {
+	    r = 0x8 | 2;
+	} else if (o == 3.0) {
+	    r = 0x8 | 3;
+	} else if (o == 4.0) {
+	    r = 0x8 | 4;
+	} else if (o == 5.0) {
+	    r = 0x8 | 5;
+	} else if (o == 0.5) {
+	    r = 0x8 | 6;
+	} else if (o == 10.0) {
+	    r = 0x8 | 7;
+	} else {
+	    ABORT();
+	}
+
+	op_fmovl(w, r);
+
+#endif
+	debug((DBOUT,"move_double_const %d, %f(0x%x)\n", w, o,r ));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+define_insn(neg_int, neg_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_neg(w, r));
+
+	debug((DBOUT,"neg_int %d, %d\n", w, r));
+}
+
+define_insn(neg_float, fneg_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fneg(w, r));
+
+	debug((DBOUT,"neg_float %d, %d\n", w, r));
+}
+
+define_insn(neg_double, fnegl_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_fneg(w, r));
+
+	debug((DBOUT,"neg_double %d, %d\n", w, r));
+}
+
+define_insn(add_int, add_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_add(w, r1, r2));
+
+	debug((DBOUT,"add_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_int_const, add_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	if ( o < 0 ) {
+		debug((DBOUT,"sub_int_const %d, %d, %d\n", w, r1, -o));
+	} else {
+		debug((DBOUT,"add_int_const %d, %d, %d\n", w, r1, o));
+	}
+	LOUT(ppc_op_addi(w, r1, o));
+}
+
+define_insn(adc_int, adc_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_addc(w, r1, r2));
+
+	debug((DBOUT,"adc_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_float, fadd_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fadds(w, r1, r2));
+
+	debug((DBOUT,"add_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_double, faddl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_fadd(w, r1, r2));
+
+	debug((DBOUT,"add_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_int, sub_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_subfc(w, r2, r1));
+
+	debug((DBOUT,"sub_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_int_const, sub_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	if ( o < 0 ) {
+		debug((DBOUT,"add_int_const %d, %d, %d\n", w, r1, -o));
+	} else {
+		debug((DBOUT,"sub_int_const %d, %d, %d\n", w, r1, o));
+	}
+	LOUT(ppc_op_addi(w, r1, -o));
+}
+
+define_insn(sbc_int, sbc_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_subfe(w, r2, r1));
+
+	debug((DBOUT,"sbc_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_float, fsub_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fsubs(w, r1, r2));
+
+	debug((DBOUT,"sub_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_double, fsubl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_fsub(w, r1, r2));
+
+	debug((DBOUT,"sub_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(mul_int, mul_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_mullw(w, r1, r2));
+
+	debug((DBOUT,"mul_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(div_int, div_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_divw(w, r1, r2));
+
+	debug((DBOUT,"div_int %d, %d, %d\n", w, r1, r2));
+}
+
+/* XXX Add rem_int? */
+
+define_insn(mul_float, fmul_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fmuls(w, r1, r2));
+
+	debug((DBOUT,"mul_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(mul_double, fmull_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_fmul(w, r1, r2));
+
+	debug((DBOUT,"mul_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(div_float, fdiv_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_fdivs(w, r1, r2));
+
+	debug((DBOUT,"div_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(div_double, fdivl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_fdiv(w, r1, r2));
+
+	debug((DBOUT,"div_double %d, %d, %d\n", w, r1, r2));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(and_int, and_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_and(w, r1, r2));
+
+	debug((DBOUT,"and_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(and_int_const, and_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_andi(w, r1, o));
+
+	debug((DBOUT,"and_int_const %d, %d, %d\n", w, r1, 0));
+}
+
+
+define_insn(or_int, or_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_or(w, r1, r2));
+
+	debug((DBOUT,"or_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(xor_int, xor_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_xor(w, r1, r2));
+	
+	debug((DBOUT,"xor_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(ashr_int, ashr_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_sraw(w, r1, r2));
+	debug((DBOUT,"ashr_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(ashr_int_const, ashr_RRC)
+{
+	int v = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_srawi(w, r, v));
+	
+	debug((DBOUT,"ashr_int_const %d, %d, %d\n", w, r, v));
+}
+
+define_insn(lshr_int, lshr_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_srw(w, r1, r2));
+	debug((DBOUT,"lshr_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(lshr_int_const, lshr_RRC)
+{
+	int v = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_rlwinm(w, r, 32 - v, v, 31));
+
+	debug((DBOUT,"lshr_int_const %d, %d, %d\n", w, r, v));
+}
+
+define_insn(lshl_int, lshl_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_slw(w, r1, r2));
+
+	debug((DBOUT,"lshl_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(lshl_int_const, lshl_RRC)
+{
+	/*
+	 * XXX Oh, for fucks sake, if you reverse the order of these
+	 * assignments you get bad code in the form of a bad destination
+	 * register.
+	 */
+	int v = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_slwi(w, r, v));
+	debug((DBOUT,"shll %d, %d, LSL %d\n", w, r, v));
+}
+
+
+/* --------------------------------------------------------------------- */
+//
+// Load/store offset
+
+/* XXX define the HAVE_'s */
+define_insn(load_offset_int, load_RRC)
+{
+	int v = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_lwz(w, r, v));
+
+	debug((DBOUT,"ld %d, [%d+%d]\n", w, r, v));
+}
+
+define_insn(store_offset_int, store_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int r = rreg_int(0);
+
+	LOUT(ppc_op_stw(r, a, o));
+
+	debug((DBOUT,"st %d, [%d+%d]\n", r, a, o));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+/* XXX Are there load_TYPE_offset versions? */
+define_insn(load_byte, loadb_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_lbz(w, r, 0));
+
+	debug((DBOUT,"load_byte %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_byte, loadb_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_lbz(w, a, o));
+
+	debug((DBOUT,"load_offset_byte %d, [%d]\n", w, a));
+}
+
+define_insn(load_char, loadc_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	/* XXX lhz? */
+	LOUT(ppc_op_lhz(w, r, 0));
+
+	debug((DBOUT,"load_char %d, [%d]\n", w, r));
+}
+
+define_insn(load_short, loads_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	/* XXX lhz? */
+	LOUT(ppc_op_lhz(w, r, 0));
+
+	debug((DBOUT,"load_short %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_short, loads_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_lhz(w, a, o));
+
+	debug((DBOUT,"load_offset_short %d, [%d]\n", w, a));
+}
+
+define_insn(load_int, load_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	LOUT(ppc_op_lwz(w, r, 0));
+
+	debug((DBOUT,"ld %d, [%d]\n", w, r));
+}
+
+define_insn(load_float, fload_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_lfs(w, r, 0));
+
+	debug((DBOUT,"load_float %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_float, fload_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int w = wreg_float(0);
+
+	LOUT(ppc_op_lfs(w, a, o));
+
+	debug((DBOUT,"load_offset_float %d, [%d]\n", w, a));
+}
+
+define_insn(load_double, floadl_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_lfd(w, r, 0));
+
+	debug((DBOUT,"load_double %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_double, floadl_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int w = wreg_double(0);
+
+	LOUT(ppc_op_lfd(w, a, o));
+
+	debug((DBOUT,"load_offset_double %d, [%d]\n", w, a));
+}
+
+define_insn(store_byte, storeb_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	LOUT(ppc_op_stb(r, w, 0));
+
+	debug((DBOUT,"store_byte %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_byte, storeb_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int r = rreg_int(0);
+
+	LOUT(ppc_op_stb(r, a, o));
+
+	debug((DBOUT,"store_offset_byte %d, [%d]\n", r, a));
+}
+
+define_insn(store_short, stores_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	LOUT(ppc_op_sth(r, w, 0));
+
+	debug((DBOUT,"store_short %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_short, stores_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int r = rreg_int(0);
+
+	LOUT(ppc_op_sth(r, a, o));
+
+	debug((DBOUT,"store_byte %d, [%d]\n", r, a));
+}
+
+define_insn(store_int, store_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	/* XXX swapped? */
+	LOUT(ppc_op_stw(r, w, 0));
+
+	debug((DBOUT,"store_int %d, [%d]\n", r, w));
+}
+
+define_insn(store_float, fstore_RxR)
+{
+	int r = rreg_float(2);
+	int w = rreg_int(1);
+
+	LOUT(ppc_op_stfs(r, w, 0));
+
+	debug((DBOUT,"store_float %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_float, fstore_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int r = rreg_float(0);
+
+	LOUT(ppc_op_stfs(r, a, o));
+
+	debug((DBOUT,"store_offset_float %d, [%d]\n", r, a));
+}
+
+define_insn(store_double, fstorel_RxR)
+{
+	int r = rreg_double(2);
+	int w = rreg_int(1);
+
+	LOUT(ppc_op_stfd(r, w, 0));
+
+	debug((DBOUT,"store_double %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_double, fstorel_RRC)
+{
+	int o = const_int(2);
+	int a = rreg_ref(1);
+	int r = rreg_double(0);
+
+	LOUT(ppc_op_stfd(r, a, o));
+
+	debug((DBOUT,"store_offset_double %d, [%d]\n", r, a));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cmp_int, cmp_xRR)
+{
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+
+	LOUT(ppc_op_cmp(PPC_CR_0, r1, r2));
+
+	debug((DBOUT,"cmp_int r%d, r%d\n", r1, r2));
+}
+
+define_insn(cmpl_int, cmpl_xRR)
+{
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+
+	LOUT(ppc_op_cmpl(PPC_CR_0, r1, r2));
+
+	debug((DBOUT,"cmpl_int r%d, r%d\n", r1, r2));
+}
+
+define_insn(cmp_int_const, cmp_xRC)
+{
+	int r = rreg_int(1);
+	int o = const_int(2);
+
+	LOUT(ppc_op_cmpi(PPC_CR_0, r, o));
+
+	debug((DBOUT,"cmp_int_const r%d, #%d\n", r, o));
+}
+
+define_insn(cmp_offset_int, cmpl_xRRC)
+{
+	int r = rreg_int(1);
+	int a = rreg_ref(2);
+	int o = const_int(3);
+
+	LOUT(ppc_op_lwz(a, a, o));
+	LOUT(ppc_op_cmpl(PPC_CR_0, r, a));
+
+	debug((DBOUT,"cmp_offset_int r%d, #%d\n", r, o));
+}
+
+define_insn(cmp_ref, cmpref_xRR)
+{
+	int r1 = rreg_ref(1);
+	int r2 = rreg_ref(2);
+
+	LOUT(ppc_op_cmpl(PPC_CR_0, r1, r2));
+
+	debug((DBOUT,"cmp_ref r%d, r%d\n", r1, r2));
+}
+
+define_insn(cmp_ref_const, cmpref_xRC)
+{
+	int r = rreg_ref(1);
+	int o = const_int(2);
+
+	LOUT(ppc_op_cmpi(PPC_CR_0, r, o));
+
+	debug((DBOUT,"cmp_ref_const r%d, #%d\n", r, o));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+static long long cvt_int_float_value = 0x4330000080000000LL;
+
+/* XXX update have's */
+define_insn(cvt_int_float, cvtif_RxR)
+{
+	int r = rreg_int(2); /* CHECKME */
+	int i, j; // intermediate
+	int w = wreg_float(0);
+	SlotInfo *tmp_si_gpr, *tmp_si_fpr;
+	SlotData *tmp_gpr, *tmp_fpr;
+	int hi_offset, lo_offset;
+
+	/* cwg 3.3.8.2 */
+	
+	/*
+	 * Allocate two temporaries, one in gpr (holds the sign flipped version
+	 * of the input) and one in fpr (for the 0x4330000080000000 constant).
+	 */
+	slot_alloctmp(tmp_si_gpr);
+	tmp_gpr = tmp_si_gpr->slot;
+	slot_alloc2tmp(tmp_si_fpr);
+	tmp_fpr = tmp_si_fpr->slot;
+	hi_offset = 0;
+	lo_offset = 0;
+	/* Build the most significant bits. */
+	LOUT(ppc_op_lis(PPC_R0, 0x4330));
+	/* Store them as if making a double. */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stw(PPC_R0, PPC_RSP, hi_offset));
+	i = slotRegister(tmp_gpr, Rint, rwrite, NOREG);
+	/* Flip the sign bit and put it in our temporary. */
+	LOUT(ppc_op_xoris(i, r, 0x8000));
+	/* Spill the temporary, just the low bits of the double this time. */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -4;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stw(i, PPC_RSP, lo_offset));
+	/* XXX Load the cvs_int_float_value above. */
+	LOUT(ppc_op_lis(i, ppc_ha16(&cvt_int_float_value)));
+	/* Get our float temporary. */
+	j = slotRegister(tmp_fpr, Rdouble, rwrite, NOREG);
+	/* Load our constant. */
+	LOUT(ppc_op_lfd(j, i, ppc_lo16(&cvt_int_float_value)));
+	/* Load our constructed double. */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_lfd(w, PPC_RSP, hi_offset));
+	/* Subtract the constant to get our result. */
+	LOUT(ppc_op_fsub(w, w, j));
+	LOUT(ppc_op_frsp(w, w));
+	slot_freetmp(tmp_si_gpr);
+	slot_free2tmp(tmp_si_fpr);
+
+	debug((DBOUT,"cvt_int_float %d, %d\n", w, r));
+}
+
+define_insn(cvt_int_double, cvtid_RxR)
+{
+	int r = rreg_int(2);
+	int i, j; // intermediate
+	int w = wreg_double(0);
+	SlotInfo *tmp_si_gpr, *tmp_si_fpr;
+	SlotData *tmp_gpr, *tmp_fpr;
+	int hi_offset, lo_offset;
+
+	slot_alloc2tmp(tmp_si_gpr);
+	tmp_gpr = tmp_si_gpr->slot;
+	slot_alloc2tmp(tmp_si_fpr);
+	tmp_fpr = tmp_si_fpr->slot;
+	hi_offset = 0;
+	lo_offset = 0;
+	LOUT(ppc_op_lis(PPC_R0, 0x4330));
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stw(PPC_R0, PPC_RSP, hi_offset));
+	i = slotRegister(tmp_gpr, Rint, rwrite, NOREG);
+	LOUT(ppc_op_xoris(i, r, 0x8000));
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -4;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stw(i, PPC_RSP, lo_offset));
+	LOUT(ppc_op_lis(i, ppc_hi16(&cvt_int_float_value)));
+	LOUT(ppc_op_ori(i, i, ppc_lo16(&cvt_int_float_value)));
+	j = slotRegister(tmp_fpr, Rdouble, rwrite, NOREG);
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_lfd(w, PPC_RSP, hi_offset));
+	LOUT(ppc_op_lfd(j, i, 0));
+	LOUT(ppc_op_fsub(w, w, j));
+	slot_free2tmp(tmp_si_gpr);
+	slot_free2tmp(tmp_si_fpr);
+	
+	debug((DBOUT,"cvt_int_double %d, %d\n", w, r));
+}
+
+define_insn(cvt_float_int, cvtfi_RxR)
+{
+	int r = rreg_float(2);
+	int i; // intermediate
+	int w = wreg_int(0);
+	SlotInfo *tmp_si;
+	SlotData *tmp;
+	int hi_offset, lo_offset;
+
+	/* cwg 3.3.8.1 */
+	
+	/* Allocate a temporary float to store the converted number. */
+	slot_alloc2tmp(tmp_si);
+	tmp = tmp_si->slot;
+	hi_offset = 0;
+	lo_offset = 0;
+
+	/* Bind to a register. */
+	i = slotRegister(tmp, Rdouble, rwrite, NOREG);
+	LOUT(ppc_op_frsp(i, r));
+	/* Convert the float and put it in our intermediate register. */
+	LOUT(ppc_op_fctiw(i, i));
+	/* Trigger a spill to the stack so that we can load it into a gpr. */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stfd(i, PPC_RSP, hi_offset));
+	/*
+	 * Load least significant 32 bits of the number. (use Rint instead of
+	 * Rdouble)
+	 */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -4;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_lwz(w, PPC_RSP, lo_offset));
+	/* Free our temp. */
+	slot_free2tmp(tmp_si);
+	
+	debug((DBOUT,"cvt_float_int r%d, f%d\n", w, r));
+}
+
+define_insn(cvt_double_int, cvtdi_RxR)
+{
+	int r = rreg_double(2);
+	int i; // intermediate
+	int w = wreg_int(0);
+	SlotInfo *tmp_si;
+	SlotData *tmp;
+	int hi_offset, lo_offset;
+
+	/* Allocate a temporary float to store the converted number. */
+	slot_alloc2tmp(tmp_si);
+	tmp = tmp_si->slot;
+	hi_offset = 0;
+	lo_offset = 0;
+
+	/* Bind to a register. */
+	i = slotRegister(tmp, Rdouble, rwrite, NOREG);
+	/* Convert the float and put it in our intermediate register. */
+	LOUT(ppc_op_fctiw(i, r));
+	/* Trigger a spill to the stack so that we can load it into a gpr. */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -8;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_stfd(i, PPC_RSP, hi_offset));
+	/*
+	 * Load least significant 32 bits of the number. (use Rint instead of
+	 * Rdouble)
+	 */
+	if( !hi_offset )
+	{
+		label *l;
+
+		l = newLabel();
+		l->type = Lsavedregs | Lrelative | Lgeneral;
+		l->from = -4;
+		l->to = 0;
+		l->at = CODEPC;
+	}
+	LOUT(ppc_op_lwz(w, PPC_RSP, lo_offset));
+	/* Free our temp. */
+	slot_free2tmp(tmp_si);
+	
+	debug((DBOUT,"cvt_double_int %d, %d\n", w, r));
+}
+
+/* these aren't being used */
+define_insn(cvt_long_float, cvtlf_RxR)
+{
+	/* Is a long a 64-bit quantity? */
+	debug((DBOUT,"NOT IMPLEMENTED: cvt_long_float\n"));
+}
+
+define_insn(cvt_long_double, cvtld_RxR)
+{
+	debug((DBOUT,"NOT IMPLEMENTED: cvt_long_double\n"));
+}
+
+define_insn(cvt_float_double, cvtfd_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_double(0);
+
+	if( w != r )
+		LOUT(ppc_op_fmr(w, r));
+	
+	debug((DBOUT,"cvt_float_double f%d, f%d\n",w,r));
+}
+
+define_insn(cvt_double_float, cvtdf_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_float(0);
+	
+	LOUT(ppc_op_frsp(w, r));
+	
+	debug((DBOUT,"cvt_double_float f%d, f%d\n",w,r));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(build_key, set_word_xxC)
+{
+	jint val = const_int(2);
+
+	LOUT(val);
+
+	debug((DBOUT,"build_key %d", val));
+}
+
+define_insn(build_code_ref, set_wordpc_xxC)
+{
+	label* l = const_label(2);
+
+	l->type |= Llong|Labsolute;
+	l->at = CODEPC;
+	l->from = CODEPC;
+	LOUT(0);
+
+	debug((DBOUT,"build_code_ref (@0x%x to 0x%x)\n", l->at, getLabelName(l)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(set_label, set_label_xxC)
+{
+	label* l = const_label(2);
+
+	l->to = CODEPC;
+
+	debug((DBOUT,"set_label (@0x%x to 0x%x)\n", l->at, l->to));
+}
+
+define_insn(branch, branch_xCC)
+{
+	label* l = const_label(1);
+	int bt = const_int(2);
+
+	l->type |= Llong16 | Lrelative;
+	l->at = CODEPC;
+	l->from = CODEPC;
+	switch( bt )
+	{
+	case ba:
+		l->type &= ~Llong16;
+		l->type |= Llong26;
+		LOUT(ppc_op_b(0));
+		break;
+	case beq:
+		LOUT(ppc_op_bc(PPC_BO_TRUE(1),
+				 PPC_BI_CR_0 | PPC_BI_EQ,
+				 0));
+		break;
+	case bne:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(1),
+				 PPC_BI_CR_0 | PPC_BI_EQ,
+				 0));
+		break;
+	case blt:
+	case bult:
+		LOUT(ppc_op_bc(PPC_BO_TRUE(1),
+				 PPC_BI_CR_0 | PPC_BI_LT,
+				 0));
+		break;
+	case ble:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(1),
+				 PPC_BI_CR_0 | PPC_BI_GT,
+				 0));
+		break;
+	case bgt:
+	case bugt:
+		LOUT(ppc_op_bc(PPC_BO_TRUE(1),
+				 PPC_BI_CR_0 | PPC_BI_GT,
+				 0));
+		break;
+	case bge:
+	case buge:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(1),
+				 PPC_BI_CR_0 | PPC_BI_LT,
+				 0));
+		break;
+	default:
+		ABORT();
+		break;
+	}
+	
+	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, getLabelName(l)));
+}
+
+define_insn(branch_and_link, branchl_xCC)
+{
+	label* l = const_label(1);
+	int bt = const_int(2);
+
+	l->type |= Llong16 | Lrelative;
+	l->at = CODEPC;
+	l->from = CODEPC;
+	switch( bt )
+	{
+	case ba:
+		l->type &= ~Llong16;
+		l->type |= Llong26;
+		LOUT(ppc_op_b(0) | PPC_OPTION_LK);
+		break;
+	case beq:
+		/*
+		 * XXX We change the branch likely to be taken flag here
+		 * assuming this is a fake call branch.  That may not always
+		 * be the case.
+		 */
+		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
+				 PPC_BI_CR_0 | PPC_BI_EQ,
+				 0) | PPC_OPTION_LK);
+		break;
+	case bne:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
+				 PPC_BI_CR_0 | PPC_BI_EQ,
+				 0) | PPC_OPTION_LK);
+		break;
+	case blt:
+	case bult:
+		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
+				 PPC_BI_CR_0 | PPC_BI_LT,
+				 0) | PPC_OPTION_LK);
+		break;
+	case ble:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
+				 PPC_BI_CR_0 | PPC_BI_GT,
+				 0) | PPC_OPTION_LK);
+		break;
+	case bgt:
+	case bugt:
+		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
+				 PPC_BI_CR_0 | PPC_BI_GT,
+				 0) | PPC_OPTION_LK);
+		break;
+	case bge:
+	case buge:
+		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
+				 PPC_BI_CR_0 | PPC_BI_LT,
+				 0) | PPC_OPTION_LK);
+		break;
+	default:
+		ABORT();
+		break;
+	}
+	
+	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, getLabelName(l)));
+}
+
+//
+// This is currently not used..
+//
+define_insn(call_ref, call_xCC)
+{
+#if 1
+#else
+	label* l = const_label(1);
+	unsigned long dest = 0;
+	long relative = CODEPC-dest;
+	long highpart = relative & 0xffffff;
+	
+	assert(const_int(2) == dest);
+
+	//
+	// Determine if the relative address will fit in a 24-bit displacement
+	//
+	if (  highpart == 0xff000000 || highpart == 0 ) {
+	  //
+	  // Yes, it's likely to fit
+	  //
+	  l->type |= Llong26|Lrelative;
+	  l->at = CODEPC;
+	  l->from = CODEPC + 8;
+	  op_branch_linked(CC_AL, 0);
+	} else {
+	  int w = 0;
+	  assert("Should not happen");
+	  //
+	  // No, it's not going to fit..
+	  //
+	  op_mov_c(w, dest & 0x000000FF, 0);
+	  op_add_c(w, w, (dest >> 8) & 0x000000FF, 24);
+	  op_add_c(w, w, (dest >> 16) & 0x000000FF, 16);
+	  op_add_c(w, w, (dest >> 24) & 0x000000FF, 8);
+	}
+#endif
+	debug((DBOUT,"call_ref\n"));
+}
+
+define_insn(call, call_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	LOUT(ppc_op_mtctr(r));
+	LOUT(ppc_op_bctrl());
+
+	debug((DBOUT,"call [%d]\n", r));
+}
+
+define_insn(branch_indirect, branch_indirect_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	LOUT(ppc_op_mtctr(r));
+	LOUT(ppc_op_bctr());
+	
+	debug((DBOUT,"branch_indirect [r%d]\n", r));
+}
+
+struct _ppc_args {
+	int next_register;
+	int next_fregister;
+	/* XXX */
+#define PPC_MAX_ARGS 32
+	int map[PPC_MAX_ARGS];
+	SlotData *source[PPC_MAX_ARGS];
+	int count;
+} ppc_args;
+
+int next_arg_register(int arg_index, int type, int *out_reserve_count)
+{
+	int retval = -1;
+
+	if( arg_index == 0 )
+	{
+		ppc_args.next_register = PPC_RARG0;
+		ppc_args.next_fregister = PPC_FPRARG0;
+	}
+	if( (ppc_args.next_register < (PPC_RARG0 + PPC_ARG_REGISTER_COUNT)) &&
+	    (ppc_args.next_fregister <
+	     (PPC_FPRARG0 + PPC_FARG_REGISTER_COUNT)) )
+	{
+		switch( type )
+		{
+		case Rint:
+			retval = ppc_args.next_register;
+			ppc_args.next_register += 1;
+			(*out_reserve_count) = 0;
+			break;
+		case Rfloat:
+			retval = ppc_args.next_fregister;
+			ppc_args.next_fregister++;
+			(*out_reserve_count) = 1;
+			break;
+		case Rdouble:
+			retval = ppc_args.next_fregister;
+			ppc_args.next_fregister++;
+			(*out_reserve_count) = 2;
+			break;
+		}
+	}
+	return( retval );
+}
+
+void ppc_push_arg(int type, SlotData *source)
+{
+	int slot;
+
+	slot = ppc_args.count++;
+	ppc_args.map[slot] = type;
+	ppc_args.source[slot] = source;
+}
+
+void ppc_finalize_args(void)
+{
+	int lpc;
+
+	ppc_args.next_register = PPC_RARG0;
+	ppc_args.next_fregister = PPC_FPRARG0;
+	for( lpc = (ppc_args.count - 1); lpc >= 0; lpc-- )
+	{
+		int r, w, r_count;
+
+		r = slotRegister(ppc_args.source[lpc],
+				 ppc_args.map[lpc],
+				 rread,
+				 NOREG);
+		if( (w = next_arg_register(1,
+					   ppc_args.map[lpc],
+					   &r_count)) != -1 )
+		{
+			int skip;
+
+			if( r != w )
+			{
+				clobberRegister(w);
+				switch( ppc_args.map[lpc] )
+				{
+				case Rint:
+					LOUT(ppc_op_mr(w, r));
+					break;
+				default:
+					LOUT(ppc_op_fmr(w, r));
+					break;
+				}
+			}
+			for( skip = 0; skip < r_count; skip++ )
+			{
+				ppc_args.next_register += 1;
+				register_reserve(w);
+			}
+		}
+		else
+		{
+			/* XXX */
+		}
+	}
+	ppc_args.count = 0;
+}
+
+define_insn(pusharg_int, push_xRC)
+{
+	int a = const_int(2);
+	
+#if 0
+	ppc_push_arg(Rint, seq_slot(s, 1));
+	if( a == 0 )
+	{
+		ppc_finalize_args();
+	}
+#else
+	int r, w, r_count;
+
+	if( (w = next_arg_register(a, Rint, &r_count)) != -1 )
+	{
+#if 0
+		/*
+		 * We can pass the arg in a register.  Ask for the register
+		 * we were given (rreg_int(1)) to be mapped to the one we
+		 * want (w).
+		 */
+		r = rreg_ideal_int(1, w);
+		if( r != w )
+		{
+			/* They weren't the same, flush whatever is in "w" */
+			clobberRegister(w);
+			/* and move the data into it. */
+			LOUT(ppc_op_mr(w, r));
+			/* XXX Why isn't there a register swap? */
+		}
+		/* Pin the register. */
+		register_reserve(w);
+#else
+		/*
+		 * can't use rreg_ideal_int because of brokeness.  its possible
+		 * for this to create a move between a callee saved register
+		 * and a caller saved regsiter.  And, since the pushargs are
+		 * run after the function_sync that does the spill, we can lose
+		 * the data in the register.
+		 */
+		r = rreg_int(1);
+		if( r != w )
+		{
+		    clobberRegister(w);
+		    LOUT(ppc_op_mr(w, r));
+		}
+		register_reserve(w);
+#endif
+		
+		debug((DBOUT,"pusharg_int %d, %d\n", w, r));
+	}
+	else
+	{
+		/* Out of argument registers, need to use the stack. */
+		r = rreg_int(1);
+		LOUT(ppc_op_stw(r,
+				  PPC_RSP,
+				  PPC_FRAME_ARGS +
+				  (a * sizeof(register_storage_t))));
+	}
+#endif
+}
+
+define_insn(push_float, fpush_xRC)
+{
+	int a = const_int(2);
+	
+#if 0
+	ppc_push_arg(Rint, seq_slot(s, 1));
+	if( a == 0 )
+	{
+		ppc_finalize_args();
+	}
+#else
+#if 1
+	int r_count, r, w;
+	
+	if( (w = next_arg_register(a, Rfloat, &r_count)) != -1 )
+	{
+		int lpc;
+		
+		r = rreg_float(1);
+		if( r != w )
+		{
+			clobberRegister(w);
+			LOUT(ppc_op_fmr(w, r));
+		}
+		for( lpc = 0; lpc < r_count; lpc++ )
+		{
+			ppc_args.next_register += 1;
+		}
+		register_reserve(w);
+	}
+	else
+	{
+		r = rreg_float(1);
+		LOUT(ppc_op_stfs(r,
+				   PPC_RSP,
+				   PPC_FRAME_ARGS +
+				   (a * sizeof(register_storage_t))));
+	}
+#else
+	int r;
+	int w;
+	int a = const_int(2);
+
+	switch (a) {
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+		w = R0 + a;
+		clobberRegister(w);
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_float(1);
+		op_fpush(SP, r);
+		/*
+		 * Now pop it into the register pair
+		 */
+		op_pop_m(SP, (1 << w));
+		register_reserve(w);
+		debug((DBOUT,"push_float via elaborate mov r(%d) := f%d\n", w, r));
+		break;
+
+	default:
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_float(1);
+		op_fpush(SP, r);
+		debug((DBOUT,"push_float via SP, f%d\n", r));
+		break;
+	}
+#endif
+#endif
+}
+
+
+define_insn(push_double, fpushl_xRC)
+{
+	int a = const_int(2);
+	
+#if 0
+	ppc_push_arg(Rint, seq_slot(s, 1));
+	if( a == 0 )
+	{
+		ppc_finalize_args();
+	}
+#else
+#if 1
+	int r_count, r, w;
+	
+	if( (w = next_arg_register(a, Rdouble, &r_count)) != -1 )
+	{
+		int lpc;
+		
+		r = rreg_double(1);
+		if( r != w )
+		{
+			clobberRegister(w);
+			LOUT(ppc_op_fmr(w, r));
+		}
+		for( lpc = 0; lpc < r_count; lpc++ )
+		{
+			ppc_args.next_register += 1;
+		}
+		register_reserve(w);
+	}
+	else
+	{
+		r = rreg_double(1);
+		LOUT(ppc_op_stfd(r,
+				   PPC_RSP,
+				   PPC_FRAME_ARGS +
+				   (a * sizeof(register_storage_t))));
+	}
+#else
+	int r;
+	int w;
+	int a = const_int(2);
+
+
+	switch (a) {
+	case 0:
+	case 1:
+	case 2:
+		w = R0 + a;
+		clobberRegister(w);
+		clobberRegister(w+1);
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+		/*
+		 * Now pop it into the register pair
+		 */
+		op_pop_m(SP, (1 << w) | (1 << (w+1)));
+		register_reserve(w);
+		register_reserve(w+1);
+		debug((DBOUT,"push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
+		break;
+
+	case 3:
+		/*
+		 * Pass half of the double in R3, half on the stack
+		 */
+		w = R3;
+		clobberRegister(w);
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+
+		/* Pop the first word */
+		op_pop_m(SP, (1 << w));
+		register_reserve(w);
+		debug((DBOUT,"push_double via partial register, partial stack SP, f%d\n", r));
+		break;
+
+	default:
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+		debug((DBOUT,"push_double via SP, f%d\n", r));
+		break;
+	}
+#endif
+#endif
+}
+
+define_insn(popargs, popargs_xxC)
+{
+	int o = const_int(2);
+	int lpc;
+
+	/* Reset reserve bit for all register arguments */
+	for (lpc = 0; lpc < 4 && lpc < o; lpc++) {
+		register_unreserve(PPC_RARG0 + lpc);
+	}
+}
+
+define_insn(returnarg_int, returnarg_xxR)
+{
+	int r = rreg_int(2);
+
+	if( r != PPC_RRET )
+		LOUT(ppc_op_mr(PPC_RRET, r));
+
+	debug((DBOUT,"returnarg_int PPC_RRET,%d\n", r));
+}
+
+define_insn(returnarg_long, returnargl_xxR)
+{
+#if 1
+	int rhi, rlo;
+	REGSLOT* r;
+
+	r = seq_slot(s, 2);
+	rhi = _slowSlotRegister(r, Rint, rread);
+	rlo = _slowSlotRegister(r+1, Rint, rread);
+
+	debug((DBOUT,"returnarg_long R0,%d,%d\n", rhi, rlo));
+
+	/*
+	 * Return long is a bit complicated since part of the source may
+	 * be the destination.
+	 *
+	 * First we get the hi value in position.
+	 */
+	if( PPC_RRETHI != rhi )
+	{
+		if( PPC_RRETHI == rlo )
+		{
+			/*
+			 * Bah, the lo value occupies our destination, do a
+			 * quick register value exchange.
+			 */
+			LOUT(ppc_op_xor(rhi, rhi, rlo));
+			LOUT(ppc_op_xor(rlo, rlo, rhi));
+			LOUT(ppc_op_xor(rhi, rhi, rlo));
+			rlo = rhi;
+		}
+		else
+		{
+			/* Its garbage, overwrite it. */
+			LOUT(ppc_op_mr(PPC_RRETHI, rhi));
+		}
+	}
+	if( PPC_RRETLO != rlo )
+	{
+		/* Finally, move the lo register into place. */
+		LOUT(ppc_op_mr(PPC_RRETLO, rlo));
+	}
+#else
+	REGSLOT* r;
+	int r1;  
+	int r2;
+
+	r = seq_slot(s, 2);
+	r1 = _slowSlotRegister(r, Rint, rread);
+	r2 = _slowSlotRegister(r+1, Rint, rread);
+
+	debug((DBOUT,"returnarg_long R0,%d,%d\n", r1, r2));
+
+	/* Return long is a bit complicated since part of the source may
+	 * be the destination.
+	 */ 
+	if (R0 != r2) {
+		op_mov(R0, r1);
+		op_mov(R1, r2);
+	}
+	else if (R1 != r1) {
+		op_mov(R1, r2);
+		op_mov(R0, r1);
+	}
+	else {
+		/* Need to swap R0 and R1.  Force R0 into R2 (writing back
+		 * R2 if necessary) and then move things about until the
+		 * swap is done.
+		 */
+		forceRegister(r, R2, Rint);
+		op_mov(R2, R0);
+		op_mov(R0, R1);
+		op_mov(R1, R2);
+	}
+#endif
+}
+
+define_insn(returnarg_float, freturnarg_xxR)
+{
+	int r = rreg_float(2);
+
+	if( PPC_FPRRET != r )
+		LOUT(ppc_op_fmr(PPC_FPRRET, r));
+
+	debug((DBOUT,"returnarg_float PPC_FPRRET,%d\n", r));
+}
+
+define_insn(returnarg_double, freturnargl_xxR)
+{
+	int r = rreg_double(2);
+
+	if( PPC_FPRRET != r )
+		LOUT(ppc_op_fmr(PPC_FPRRET, r));
+
+	debug((DBOUT,"returnarg_double R0,%d\n", r));
+}
+
+define_insn(return_int, return_Rxx)
+{
+	forceRegister(seq_dst(s), PPC_RRET, Rint);
+
+	debug((DBOUT,"return_int R0\n"));
+}
+
+define_insn(return_long, returnl_Rxx)
+{
+	forceRegister(seq_dst(s), PPC_RRETHI, Rint);
+	forceRegister(seq_dst(s)+1, PPC_RRETLO, Rint);
+
+	debug((DBOUT,"return_long R0,R1\n"));
+}
+
+define_insn(return_float, freturn_Rxx)
+{
+	forceRegister(seq_dst(s), PPC_FPRRET, Rfloat);
+
+	debug((DBOUT,"return_float F0\n"));
+}
+
+define_insn(return_double, freturnl_Rxx)
+{
+	forceRegister(seq_dst(s), PPC_FPRRET, Rdouble);
+
+	debug((DBOUT,"return_double F0\n"));
+}
+
+/* --------------------------------------------------------------------- */
+
+#if 0
+/*
+ * We use to use this version of the fakecall system but it uses way
+ * to many constant pool entries.  Since it's not time critical we
+ * use the new lower version which doesn't use the constant pool but
+ * instead constructs the relevant addresses byte by byte.
+ */
+define_insn(fake_call_constpool, fakecall_xCC)
+{
+#if 1
+#else
+        label* tol = const_label(2);
+        label* froml = const_label(1);
+
+	froml->type = Lconstant | Labsolute | Loffset12;
+        froml->at = CODEPC;
+
+	op_load_offset(LR, CONSTPOOL_BASE, -128);
+	debug((DBOUT,"load_label_const lr, ?\n"));
+
+        tol->type = Lconstant | Labsolute | Loffset12;
+        tol->at = CODEPC;
+
+	op_load_offset(R0, CONSTPOOL_BASE, -128);
+	debug((DBOUT,"load_label_const r0, ?\n"));
+
+	op_mov(PC, R0);
+#endif
+}
+
+#endif
+
+define_insn(fake_call, fakecall_xCC)
+{
+#if 1
+	label *tol = const_label(2);
+	label *froml = const_label(1);
+
+	froml->type = Lnull;
+	tol->type |= Llong16x16 | Labsolute;
+	tol->at = CODEPC;
+	tol->from = 0;
+	LOUT(ppc_op_li(PPC_R3, 0));
+	LOUT(ppc_op_addis(PPC_R3, PPC_R3, 0));
+	LOUT(ppc_op_mtctr(PPC_R3));
+	LOUT(ppc_op_bctr());
+#else
+        label* tol = const_label(2);
+        label* froml = const_label(1);
+
+	froml->type |= Labsolute | Llong8x8x8x8;
+        froml->at = CODEPC;
+
+	op_mov_c(LR, 0, 0);
+	op_add_c(LR, LR, 0, 24);
+	op_add_c(LR, LR, 0, 16);
+	op_add_c(LR, LR, 0, 8);
+	debug((DBOUT,"move_label_const lr, ?\n"));
+
+        tol->type |= Labsolute | Llong8x8x8x8;
+        tol->at = CODEPC;
+
+	op_mov_c(R0, 0, 0);
+	op_add_c(R0, R0, 0, 24);
+	op_add_c(R0, R0, 0, 16);
+	op_add_c(R0, R0, 0, 8);
+	debug((DBOUT,"move_label_const r0, ?\n"));
+
+	op_mov(PC, R0);
+#endif
+	debug((DBOUT,"fake_call\n"));
+}

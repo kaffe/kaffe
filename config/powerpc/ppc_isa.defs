@@ -1,0 +1,319 @@
+#
+# The PowerPC defs file to be run through developers/mnemonicizer.awk
+#
+# Copyright (c) 2002 The University of Utah and the Flux Group.
+# All rights reserved.
+#
+# @JANOSVM_KAFFE_JANOSVM_LICENSE@
+#
+
+# File/define prefix
+prefix ppc
+
+opcode_type unsigned long
+
+#
+# Registers and their attributes
+#
+registers 32
+float_registers 32
+
+# Prologue temporary and zero register
+register_attribute 0 0 Reserved
+# Stack pointer
+register_attribute 1 1 Reserved
+# Reserved
+register_attribute 2 2 Reserved
+# Locals
+register_attribute 11 30 Rint|Rref Rglobal|Rnosaveoncall
+register_attribute 31 31 Reserved
+
+# Zero register (?)
+float_register_attribute 0 0 Reserved
+# Locals
+float_register_attribute 14 31 Rfloat|Rdouble Rnosaveoncall
+
+#
+# ABI register conventions
+#
+register_alias sp 1
+register_alias toc 2
+register_alias arg0 3
+register_alias arg1 4
+register_alias arg2 5
+register_alias arg3 6
+register_alias arg4 7
+register_alias arg5 8
+register_alias arg6 9
+register_alias arg7 10
+
+register_alias const_pool 31
+register_alias function_base 31
+
+register_alias ret 3
+register_alias rethi 3
+register_alias retlo 4
+
+float_register_alias arg0 1
+float_register_alias arg1 2
+float_register_alias arg2 3
+float_register_alias arg3 4
+float_register_alias arg4 5
+float_register_alias arg5 6
+float_register_alias arg6 7
+float_register_alias arg7 8
+float_register_alias arg8 9
+float_register_alias arg9 10
+float_register_alias arg10 11
+float_register_alias arg11 12
+float_register_alias arg12 13
+
+float_register_alias ret 1
+float_register_alias rethi 1
+float_register_alias retlo 2
+
+#
+# Opcode fields:name	start	end
+#
+op_field	bd	16	29
+op_field	bi	11	15
+op_field	bo	6	10
+op_field	crba	11	15
+op_field	crbb	16	20
+op_field	crbd	6	10
+op_field	crfd	6	8
+op_field	crfs	11	13
+op_field	crm	12	19
+op_field	d	16	31
+op_field	fm	7	14
+op_field	fra	11	15
+op_field	frb	16	20
+op_field	frc	21	25
+op_field	frd	6	10
+op_field	frs	6	10
+op_field	imm	16	19
+op_field	li	6	29
+op_field	mb	21	25
+op_field	me	26	30
+op_field	nb	16	20
+op_field	opcd	0	5
+op_field	ra	11	15
+op_field	rb	16	20
+op_field	rd	6	10
+op_field	rs	6	10
+op_field	sh	16	20
+op_field	simm	16	31
+op_field	sr	12	15
+op_field	to	6	10
+op_field	uimm	16	31
+
+#
+# Single bit opcode options
+#
+op_option	aa	30
+op_option	l	10
+op_option	lk	31
+op_option	oe	21
+op_option	rc	31
+
+#
+# Reserved bits
+#
+op_option	res31	31
+
+#
+# Bit sequences for branch options
+#
+bits	bo_decr_ne_false	0000y
+bits	bo_decr_eq_false	0001y
+bits	bo_false		001zy
+bits	bo_decr_ne_true		0100y
+bits	bo_decr_eq_true		0101y
+bits	bo_true			011zy
+bits	bo_decr_ne		1z00y
+bits	bo_decr_eq		1z01y
+bits	bo_always		1z1zz
+
+#
+# Bit sequences for branch conditions
+#
+bits	bi_lt	00000
+bits	bi_gt	00001
+bits	bi_eq	00010
+bits	bi_so	00011
+
+bits	bi_cr_0	00000
+bits	bi_cr_1	00100
+bits	bi_cr_2	01000
+
+bits	cr_0	000
+bits	cr_1	001
+bits	cr_2	010
+bits	cr_3	011
+bits	cr_4	100
+bits	cr_5	101
+bits	cr_6	110
+bits	cr_7	111
+
+bits	spr_xer	00001
+bits	spr_lr	01000
+bits	spr_ctr	01001
+
+#
+# Opcode definitions
+#
+// rd = ra + rb
+op add opcd(31) rd ra rb oe 266 rc
+op addc opcd(31) rd ra rb oe 10 rc
+op adde opcd(31) rd ra rb oe 138 rc
+op addi opcd(14) rd ra simm
+op addic opcd(12) rd ra simm
+# op addic. opcd(13) rd ra simm
+op addis opcd(15) rd ra simm
+op addme opcd(31) rd ra 0 oe 234 rc
+op addze opcd(31) rd ra 0 oe 202 rc
+
+# Note the reversal of ra/rs, I'd like to use the mnemonic ordering
+# instead of the instruction ordering.  Everything is fine though, the
+# field locations are defined above and not here and this is
+# "somewhat" independent of the ordering here anyways.  This same
+# thing is also done for slw, or, and xor.
+
+op and opcd(31) ra rs rb 28 rc
+op andc opcd(31) ra rs rb 60 rc
+op andi opcd(28) ra rs uimm
+op andis opcd(29) ra rs uimm
+
+op b opcd(18) li aa lk
+op bc opcd(16) bo bi bd aa lk
+op bcctr opcd(19) bo bi 528 lk
+op bctr opcd(19) bo(bo_always) bi(0) 528 lk
+op bctrl opcd(19) bo(bo_always) bi(0) 528 lk(1)
+op bclr opcd(19) bo bi 16 lk
+op blr opcd(19) bo(bo_always) bi(0) 16 lk
+
+op cmp opcd(31) crfd 0 l ra rb 0
+op cmpi opcd(11) crfd 0 l ra simm
+op cmpl opcd(31) crfd 0 l ra rb 32 res31
+op cmpli opcd(10) crfd 0 l ra uimm
+
+op divw opcd(31) rd ra rb oe 491 rc
+op divwu opcd(31) rd ra rb oe 459 rc
+
+op fabs opcd(63) frd 0 frb 264 rc
+op fadd opcd(63) frd fra frb 21 rc
+op fadds opcd(59) frd fra frb 21 rc
+op fctiw opcd(63) frd 0 frb 14 rc
+op fctiwz opcd(63) frd 0 frb 15 rc
+op fdiv opcd(63) frd fra frb 18 rc
+op fdivs opcd(59) frd fra frb 18 rc
+op fmul opcd(63) frd fra 0 frc 25 rc
+op fmuls opcd(59) frd fra 0 frc 25 rc
+op fneg opcd(63) frd 0 frb 40 rc
+op frsp opcd(63) frd 0 frb 12 rc
+op fsub opcd(63) frd fra frb 20 rc
+op fsubs opcd(59) frd fra frb 20 rc
+op fmr opcd(63) frd 0 frb 72 rc
+
+op lbz opcd(34) rd ra d
+op lbzu opcd(35) rd ra d
+op lbzux opcd(31) rd ra rb 119 res31
+op lbzx opcd(31) rd ra rb 87 res31
+
+op lfd opcd(50) rd ra d
+op lfdu opcd(51) rd ra d
+op lfdux opcd(31) rd ra rb 631 res31
+op lfdx opcd(31) rd ra rb 599 res31
+op lfs opcd(48) rd ra d
+op lfsu opcd(49) rd ra d
+op lfsux opcd(31) rd ra rb 567 res31
+op lfsx opcd(31) rd ra rb 535 res31
+
+op lha opcd(42) rd ra d
+op lhau opcd(43) rd ra d
+op lhaux opcd(31) rd ra rb 375 res31
+op lhax opcd(31) rd ra rb 343 res31
+op lhbrx opcd(31) rd ra rb 790 res31
+op lhz opcd(40) rd ra d
+op lhzu opcd(40) rd ra d
+op lhzux opcd(31) rd ra rb 311 res31
+op lhzx opcd(31) rd ra rb 279 res31
+
+op lmw opcd(46) rd ra d
+op lwz opcd(32) rd ra d
+op lwzu opcd(33) rd ra d
+op lwzux opcd(31) rd ra rb 55 res31
+op lwzx opcd(31) rd ra rb 23 res31
+
+op mfspr opcd(31) rd ra rb 339 res31
+op mflr opcd(31) rd ra(spr_lr) rb(0) 339 res31
+
+# or ra, rs, rs
+op mr opcd(31) ra rs rb(rs) 444 rc
+
+op mtspr opcd(31) rs ra rb 467 res31
+op mtctr opcd(31) rs ra(spr_ctr) rb(0) 467 res31
+op mtlr opcd(31) rs ra(spr_lr) rb(0) 467 res31
+
+op mulhw opcd(31) rd ra rb 75 rc
+op mulhwu opcd(31) rd ra rb 11 rc
+op mulli opcd(7) rd ra simm
+op mullw opcd(31) rd ra rb oe 235 rc
+
+op neg opcd(31) rd ra oe 104 rc
+
+# nop -> ori r0, r0, 0
+op nop opcd(24) ra(PPC_R0) rs(PPC_R0) 0
+
+op or opcd(31) ra rs rb 444 rc
+op orc opcd(31) ra rs rb 412 rc
+op ori opcd(24) ra rs uimm
+op oris opcd(24) ra rs uimm
+
+op rlwimi opcd(20) ra rs sh mb me rc
+op rlwinm opcd(21) ra rs sh mb me rc
+
+op slwi opcd(21) ra rs sh mb(0) me(31-sh) rc
+
+op slw opcd(31) ra rs rb 24 rc
+op sraw opcd(31) ra rs rb 792 rc
+op srawi opcd(31) ra rs sh 824 rc
+op srw opcd(31) ra rs rb 536 rc
+
+op stb opcd(38) rs ra d
+op stbu opcd(39) rs ra d
+op stbux opcd(31) rs ra rb 247 res31
+op stbx opcd(31) rs ra rb 215 res31
+
+op stfd opcd(54) rs ra d
+op stfdu opcd(55) rs ra d
+op stfdux opcd(31) rs ra rb 759 res31
+op stfdx opcd(31) rs ra rb 727 res31
+op stfs opcd(52) rs ra d
+op stfsu opcd(53) rs ra d
+op stfsux opcd(31) rs ra rb 695 res31
+op stfsx opcd(31) rs ra rb 663 res31
+
+op sth opcd(44) rs ra d
+op sthbrx opcd(31) rs ra rb 918 res31
+op sthu opcd(45) rs ra d
+op sthux opcd(31) rs ra rb 439 res31
+op sthx opcd(31) rs ra rb 407 res31
+
+op stmw opcd(47) rs ra d
+op stw opcd(36) rs ra d
+op stwu opcd(37) rs ra d
+
+op subf opcd(31) rd ra rb oe 40 rc
+op subfc opcd(31) rd ra rb oe 8 rc
+op subfe opcd(31) rd ra rb oe 136 rc
+op subfic opcd(8) rd ra simm
+op subfme opcd(31) rd ra 0 oe 232 rc
+op subfze opcd(31) rd ra 0 oe 200 rc
+
+op li opcd(14) rd ra(PPC_R0) simm
+op lis opcd(15) rd ra(PPC_R0) simm
+
+op xor opcd(31) ra rs rb 316 rc
+op xori opcd(26) ra rs uimm
+op xoris opcd(27) ra rs uimm

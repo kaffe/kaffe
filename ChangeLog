@@ -1,3 +1,74 @@
+2004-09-17  Michael Franz <mvfranz@gmail.com>,
+	    Timothy S. Stack <stack@cs.utah.edu>
+
+	* config/powerpc/jit.h:
+	merged in from JanOSVM with CIF optimizations removed
+
+	* config/powerpc/jit3-icode.h:
+	copy from JanOSVM with HAVE_move_int_const 
+	& HAVE_move_ref_const removed 
+
+	* config/powerpc/jit3-powerpc.def:
+	copy from JanOSVM with janosvm/nameSpace.h include removed 
+	and update LOUT macro usage to conform with current Kaffe 
+	implementation and removed CIF optimizations.
+
+	* config/powerpc/callmethod_ppc.h,
+	config/powerpc/ppc_isa.defs,
+	config/powerpc/ppc_isa.h,
+	config/powerpc/ppc_macros.h,
+	config/powerpc/ppc_stack_frame.h,
+	config/powerpc/trampolines.c,
+	config/powerpc/darwin/jit3-md.h:
+	Merged in from JanosVM.
+
+	2002-07-31 Wednesday 09:08  stack
+
+        * config/powerpc/: jit.h, jit3-icode.h, jit3-powerpc.def,
+        ppc_isa.defs: tweaks
+
+	2002-07-31 Wednesday 08:30  stack
+
+        * config/powerpc/ppc_stack_frame.h: add floating point argument
+        register count
+
+	2002-07-31 Wednesday 08:29  stack
+
+        * config/powerpc/: ppc_isa.defs, ppc_isa.h: add frsp opcode
+
+	2002-07-31 Wednesday 08:28  stack
+
+        * config/powerpc/jit3-powerpc.def: fixes for floats/doubles and
+        argument pushing
+
+	2002-07-31 Wednesday 08:28  stack
+
+        * config/powerpc/jit3-icode.h: define HAVE_div_int
+
+	2002-07-31 Wednesday 08:28  stack
+
+        * config/powerpc/jit.h: define PUSHARG_FORWARDS
+
+	2002-07-27 Saturday 16:17  stack
+
+        * config/powerpc/darwin/: jit3-md.h, md.h: first checkin of ppc
+        jitter stuff
+
+	2002-07-27 Saturday 15:51  stack
+
+        * config/powerpc/: jit.h, jit3-icode.h, jit3-powerpc.def,
+        ppc_isa.defs, ppc_isa.h, ppc_macros.h, ppc_stack_frame.h,
+        trampolines.c: initial checkin of powerpc jitter back end, works a
+        bit, but still fails quite a few tests
+
+2004-09-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/Makefile.am:
+	(EXTRA_DIST) Added new files.
+
+	* config/Makefile.in:
+	Regenerated.
+
 2004-09-17  Noa Resare  <noa@resare.com>
 	Guilhem Lavaux  <guilhem@kaffe.org>
 

@@ -294,6 +294,7 @@ EXTRA_DIST = \
 	powerpc/darwin/config.frag \
 	powerpc/darwin/md.c \
 	powerpc/darwin/md.h \
+	powerpc/darwin/jit3-md.h \
 	powerpc/linux/config.frag \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
@@ -303,8 +304,17 @@ EXTRA_DIST = \
 	powerpc/netbsd1/config.frag \
 	powerpc/netbsd1/md.c \
 	powerpc/netbsd1/md.h \
+	powerpc/callmethod_ppc.h \
+	powerpc/jit.h \
+	powerpc/jit3-icode.h \
+	powerpc/jit3-powerpc.def \
+	powerpc/ppc_isa.defs \
+	powerpc/ppc_isa.h \
+	powerpc/ppc_macros.h \
+	powerpc/ppc_stack_frame.h \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
+	powerpc/trampolines.c \
 	s390/atomicity32.h \
 	s390/atomicity64.h \
 	s390/common.h \
