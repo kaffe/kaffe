@@ -1,3 +1,10 @@
+2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLStreamHandler.java:
+	Implemented authority string generation and fixed toExternalForm()
+	to use authority directly.
+
 2003-12-31  Mark Huizer <xaa+kaffe@timewasters.nl>
 
 	* libraries/clib/net/InetAddressImpl.c

@@ -136,9 +136,13 @@ public final class URL implements Serializable
 
   /**
    * The hostname or IP address of this protocol.
-   * This includes a possible user. For example <code>joe@some.host.net</code>.
    */
   private String host;
+
+  /**
+   * The user information necessary to establish the connection.
+   */
+  private String userInfo;
 
   /**
    * The port number of this protocol or -1 if the port number used is
@@ -279,7 +283,9 @@ public final class URL implements Serializable
 
     this.host = host;
     this.port = port;
-    this.authority = null;
+    this.authority = (host != null) ? host : "";
+    if (port >= 0)
+      this.authority += ":" + port;
 
     int hashAt = file.indexOf('#');
     if (hashAt < 0)
@@ -696,14 +702,20 @@ public final class URL implements Serializable
     // be aware of this.
     this.ph = getURLStreamHandler(protocol);
     this.protocol = protocol.toLowerCase();
-    this.authority = null;
+    this.authority = "";
     this.port = port;
     this.host = host;
     this.file = file;
+
+    if (host != null)
+      this.authority += host;
+    if (port >= 0)
+      this.authority += ":" + port;
+
     this.ref = ref;
     hashCode = hashCode();			// Used for serialization.
   }
-
+  
   /**
    * Sets the specified fields of the URL. This is not a public method so
    * that only URLStreamHandlers can modify URL fields. URLs are otherwise
@@ -730,15 +742,15 @@ public final class URL implements Serializable
     // be aware of this.
     this.ph = getURLStreamHandler(protocol);
     this.protocol = protocol.toLowerCase();
-    if (userInfo == null)
-      this.host = host;
-    else
-      this.host = userInfo + "@" + host;
+    this.host = host;
+    this.userInfo = userInfo;
     this.port = port;
+    this.file = path;
+    this.authority = authority;
     if (query == null)
-      this.file = path;
+      this.file = file;
     else
-      this.file = path + "?" + query;
+      this.file = file + "?" + query;
     this.ref = ref;
     hashCode = hashCode();			// Used for serialization.
   }

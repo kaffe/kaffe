@@ -126,6 +126,9 @@ public abstract class URLStreamHandler
     int port = url.getPort();
     String file = url.getFile();
     String ref = url.getRef();
+    String userInfo = url.getUserInfo();
+    String authority = url.getAuthority();
+    String query = null;
 
     if (spec.regionMatches (start, "//", 0, 2))
       {
@@ -140,17 +143,20 @@ public abstract class URLStreamHandler
         else
 	  hostEnd = end;
 
-	host = spec.substring (start, hostEnd);
+	authority = host = spec.substring (start, hostEnd);
 	
 	// We first need a genuine host name (with userinfo).
 	// So we check for '@': if it's present check the port in the
 	// section after '@' in the other case check it in the full string.
 	// P.S.: We don't care having '@' at the beginning of the string.
 	if ((at_host = host.indexOf ('@')) >= 0)
-	  genuineHost = host.substring (at_host);
+	  {
+	    genuineHost = host.substring (at_host);
+	    userInfo = host.substring(0, at_host);
+	  }
 	else
 	  genuineHost = host;
-
+	  
 	// Look for optional port number.  It is valid for the non-port
 	// part of the host name to be null (e.g. a URL "http://:80").
 	// TBD: JDK 1.2 in this case sets host to null rather than "";
@@ -235,13 +241,25 @@ public abstract class URLStreamHandler
 	    ref = file.substring(hash + 1, file.length());
 	    file = file.substring(0, hash);
 	  }
+      }    
+
+    // We care about the query tag only if there is no reference at all.
+    if (ref == null)
+      {
+	int queryTag = file.indexOf('?');
+	if (queryTag != -1)
+	  {
+	    query = file.substring(queryTag + 1);
+	    file = file.substring(0, queryTag);
+	  }
       }
 
     // XXX - Classpath used to call PlatformHelper.toCanonicalForm() on
     // the file part. It seems like overhead, but supposedly there is some
     // benefit in windows based systems (it also lowercased the string).
 
-    setURL(url, url.getProtocol(), host, port, file, ref);
+    setURL(url, url.getProtocol(), host, port, authority, userInfo, file, query,
+	   ref);
   }
   
   /*
@@ -490,25 +508,21 @@ public abstract class URLStreamHandler
    */
   protected String toExternalForm(URL u)
   {
-    String protocol, host, file, ref, user;
+    String protocol, authority, file, ref;
     int port;
 
     protocol = u.getProtocol();
 
-    // JDK 1.2 online doc infers that host could be null because it
-    // explicitly states that file cannot be null, but is silent on host.
-    host = u.getHost();
-    if (host == null)
-      host = "";
+    authority = u.getAuthority();
+    if (authority == null)
+      authority = "";
 
-    port = u.getPort();
     file = u.getFile();
     ref = u.getRef();
-    user = u.getUserInfo();
 
     // Guess a reasonable size for the string buffer so we have to resize
     // at most once.
-    int size = protocol.length() + host.length() + file.length() + 24;
+    int size = protocol.length() + authority.length() + file.length() + 24;
     StringBuffer sb = new StringBuffer(size);
 
     if (protocol != null && protocol.length() > 0)
@@ -517,16 +531,9 @@ public abstract class URLStreamHandler
 	sb.append(":");
       }
 
-    if (host.length() != 0)
+    if (authority.length() != 0)
       {
-	sb.append("//");
-	if (user != null && !"".equals(user))
-	  sb.append(user).append('@');
-	sb.append(host);
-
-        // Append port if port was in URL spec.
-        if (port >= 0)
-          sb.append(':').append(port);
+	sb.append("//").append(authority);
       }
 
     sb.append(file);
