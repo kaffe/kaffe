@@ -1,6 +1,7 @@
 * Create test cases for:
  * symlink deletion(already fixed)
  * writer.close() flushing the internal buffer on encoder(already fixed)
+ * Calendar.getInstance().get(YEAR) returning non-zero
 
 * Make threading model runtime selectable.
 * Figure out deadlock issues with System.gc() on smp(finalexc, ClassGC,
