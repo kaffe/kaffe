@@ -1,0 +1,265 @@
+Index: configure
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/configure,v
+retrieving revision 1.96
+diff -c -r1.96 configure
+*** configure	1998/10/27 12:19:25	1.96
+--- configure	1998/12/18 16:13:38
+***************
+*** 1515,1521 ****
+  #
+  gcc_spec_source=gcc-driver-script.specs
+  if test "${enable_unixexamples-no}" != no; then
+! 	gcc_spec_source=gcc-driver-script-unix-pthreads.specs
+  fi
+  
+  
+--- 1515,1521 ----
+  #
+  gcc_spec_source=gcc-driver-script.specs
+  if test "${enable_unixexamples-no}" != no; then
+! 	gcc_spec_source=gcc-driver-script-unix.specs
+  fi
+  
+  
+Index: configure.in
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/configure.in,v
+retrieving revision 1.93
+diff -c -r1.93 configure.in
+*** configure.in	1998/10/27 12:19:25	1.93
+--- configure.in	1998/12/18 16:13:38
+***************
+*** 319,325 ****
+  #
+  gcc_spec_source=gcc-driver-script.specs
+  if test "${enable_unixexamples-no}" != no; then
+! 	gcc_spec_source=gcc-driver-script-unix-pthreads.specs
+  fi
+  
+  AC_SUBST(gcc_spec_source)
+--- 319,325 ----
+  #
+  gcc_spec_source=gcc-driver-script.specs
+  if test "${enable_unixexamples-no}" != no; then
+! 	gcc_spec_source=gcc-driver-script-unix.specs
+  fi
+  
+  AC_SUBST(gcc_spec_source)
+Index: boot/multiboot/mkmbimage.in
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/boot/multiboot/mkmbimage.in,v
+retrieving revision 1.2
+diff -c -r1.2 mkmbimage.in
+*** mkmbimage.in	1998/04/08 22:42:12	1.2
+--- mkmbimage.in	1998/12/18 16:13:38
+***************
+*** 32,41 ****
+--- 32,51 ----
+  		-x ) bb="$2"; shift; shift;;
+  		-o ) outfile="$2"; shift; shift;;
+  		-c ) cmdline="$2"; shift; shift;;
++ 		-stdin) fromstdin="yes"; shift;;
+  		-save-temps) savetemps="$1"; shift;;
+  		* ) modules="$modules $1"; shift;;
+  	esac
+  done
++ 
++ if [ "X${fromstdin}" != "X" ]; then
++ 	read mod
++ 	while [ "X${mod}" != "X" ];
++ 	do
++ 		modules="$modules $mod"
++ 		read mod
++ 	done
++ fi
+  
+  # Stick the command line bootmod into the image file.
+  if [ "X${cmdline}" != "X" ]; then
+Index: oskit/x86/pc/base_irq.h
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/oskit/x86/pc/base_irq.h,v
+retrieving revision 1.10
+diff -c -r1.10 base_irq.h
+*** base_irq.h	1998/04/08 22:47:41	1.10
+--- base_irq.h	1998/12/18 16:13:41
+***************
+*** 42,48 ****
+   * On entry, the processor's IDT interrupt vector number is in ts->trapno
+   * and the hardware IRQ number that caused the interrupt is in ts->err.
+   */
+! void (*base_irq_handlers[BASE_IRQ_COUNT])(struct trap_state *ts);
+  
+  
+  /* Fill an IRQ gate in the base IDT.
+--- 42,48 ----
+   * On entry, the processor's IDT interrupt vector number is in ts->trapno
+   * and the hardware IRQ number that caused the interrupt is in ts->err.
+   */
+! extern void (*base_irq_handlers[])(struct trap_state *ts);
+  
+  
+  /* Fill an IRQ gate in the base IDT.
+Index: threads/pthread_destroy.c
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/threads/pthread_destroy.c,v
+retrieving revision 1.5
+diff -c -r1.5 pthread_destroy.c
+*** pthread_destroy.c	1998/08/30 19:56:03	1.5
+--- pthread_destroy.c	1998/12/18 16:13:41
+***************
+*** 9,14 ****
+--- 9,16 ----
+   */
+  #include <threads/pthread_internal.h>
+  
++ extern pthread_thread_t        threads_mainthread;
++ 
+  /*
+   * Internal routine. 
+   */
+***************
+*** 19,24 ****
+--- 21,36 ----
+  	int		p;
+  
+  	p = splpreempt();
++ 
++ 	/*
++ 	 * The main thread is mostly statically allocated, so just
++ 	 * release the tid but leave everything else alone.
++ 	 */
++ 	if (pthread == &threads_mainthread) {
++ 		threads_tidtothread[tid] = 0;
++ 		splx(p);
++ 		return;
++ 	}
+  
+  	/* machine dependent destroy */
+  	thread_destroy(pthread);
+Index: threads/pthread_exit.c
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/threads/pthread_exit.c,v
+retrieving revision 1.7
+diff -c -r1.7 pthread_exit.c
+*** pthread_exit.c	1998/08/30 19:56:03	1.7
+--- pthread_exit.c	1998/12/18 16:13:41
+***************
+*** 84,89 ****
+--- 84,90 ----
+  	/*
+  	 * Stick this thread on the reaperq and fire up the reaper thread.
+  	 */
++ 	splhigh();
+  	pthread_mutex_lock(&threads_reaperq_mutex);
+  	queue_enter(&threads_reaperq, pthread, pthread_thread_t *, chain);
+  	pthread_cond_signal(&threads_reaperq_cond);
+***************
+*** 92,98 ****
+  	/*
+  	 * and block ...
+  	 */
+- 	splhigh();
+  	pthread_lock(&pthread->lock);
+  	pthread_sched_reschedule(RESCHED_BLOCK, &pthread->lock);
+  #endif
+--- 93,98 ----
+Index: unsupported/scripts/gcc-driver-script.specs
+===================================================================
+RCS file: /usr/lsrc/flux/CVS/oskit/unsupported/scripts/gcc-driver-script.specs,v
+retrieving revision 1.5
+diff -c -r1.5 gcc-driver-script.specs
+*** gcc-driver-script.specs	1998/12/01 18:39:31	1.5
+--- gcc-driver-script.specs	1998/12/18 16:13:41
+***************
+*** 5,11 ****
+  %{pipe:-}
+  
+  *cpp:
+! %(cpp_cpu) %[cpp_cpu] %{posix:-D_POSIX_SOURCE} -nostdinc %{posix-oskit:-I include/oskit/freebsd%s} -I include%s -I include/oskit/c%s -I include/oskit/threads%s
+  
+  *cc1:
+  
+--- 5,11 ----
+  %{pipe:-}
+  
+  *cpp:
+! %(cpp_cpu) %[cpp_cpu] %{posix:-D_POSIX_SOURCE} -nostdinc %{posix-oskit:-I include/oskit/freebsd%s} -I include%s -I include/oskit/c%s %{pthread:-I include/oskit/threads%s}
+  
+  *cc1:
+  
+***************
+*** 17,26 ****
+  lib/oskit/crtn.o%s
+  
+  *link:
+! -Ttext 100000
+  
+  *lib:
+! -L lib%s -loskit_kern -loskit_freebsd_m %{posix-oskit:-loskit_freebsd_c} %{!posix-oskit:-loskit_c} -loskit_lmm
+  
+  *libgcc:
+  %{!shared:-lgcc}
+--- 17,26 ----
+  lib/oskit/crtn.o%s
+  
+  *link:
+! -Ttext 100000 %{pthread:-u pthread_init} 
+  
+  *lib:
+! -L lib%s %{pthread:-loskit_threads -loskit_svm -loskit_amm} -loskit_dev -loskit_freebsd_m %{posix-oskit:%{pthread:-loskit_freebsd_c_r} %{!pthread:-loskit_freebsd_c} -loskit_com} %{!posix-oskit:-loskit_c} -loskit_kern %{posix-oskit:%{pthread:-loskit_freebsd_c_r} %{!pthread:-loskit_freebsd_c} -loskit_com} %{!posix-oskit:-loskit_c} %{pthread:-loskit_threads -loskit_svm -loskit_amm} -loskit_lmm
+  
+  *libgcc:
+  %{!shared:-lgcc}
+Index: unsupported/scripts/gcc-driver-script-unix.specs
+===================================================================
+*** /dev/null	Fri Dec 18 14:07:58 1998
+--- gcc-driver-script-unix.specs	Thu Dec 10 11:19:24 1998
+***************
+*** 0 ****
+--- 1,45 ----
++ *asm:
++  %| %{fpic:-k} %{fPIC:-k}
++ 
++ *asm_final:
++ 
++ 
++ *cpp:
++ %{posix:-D_POSIX_SOURCE} -I include%s %{posix-oskit:-I include/oskit/freebsd%s} -I include/oskit/c%s %{pthread:-I include/oskit/threads%s}
++ 
++ *cc1:
++ %{maout:-munderscores}
++ 
++ *cc1plus:
++ 
++ 
++ *endfile:
++ lib/libfreebsdsys.a%s
++ 
++ *link:
++ %{p:%e`-p' not supported; use `-pg' and gprof(1)}    %{shared:-Bshareable}    %{!shared:%{!nostdlib:%{!r:%{!e*:-e start}}} -dc -dp %{static:-Bstatic}    %{pg:-Bstatic} %{Z}}    %{assert*} %{R*}
++ 
++ *lib:
++ -nostdlib -L lib%s -loskit_startup %{pthread:-loskit_threads} -loskit_dev -loskit_freebsd_m %{posix-oskit:%{pthread:-loskit_freebsd_c_r} %{!pthread:-loskit_freebsd_c} -loskit_com} %{!posix-oskit:-loskit_c}  -loskit_kern  %{posix-oskit:%{pthread:-loskit_freebsd_c_r} %{!pthread:-loskit_freebsd_c} -loskit_com} %{!posix-oskit:-loskit_c} %{pthread:-loskit_threads} -loskit_lmm
++ 
++ *libgcc:
++ %{!shared:%{maout:/usr/lib/aout/libgcc.a}%{!maout:libgcc.a%s}}
++ 
++ *startfile:
++ %{shared:c++rt0.o%s}    %{!shared:%{pg:gcrt0.o%s}%{!pg:%{static:scrt0.o%s}%{!static:lib/crt0.o%s}}} %{pthread:lib/unix_support_pthreads.o%s} %{!pthread:lib/unix_support.o%s}
++ 
++ *switches_need_spaces:
++ 
++ 
++ *signed_char:
++ %{funsigned-char:-D__CHAR_UNSIGNED__}
++ 
++ *predefines:
++ -DOSKIT_UNIX -DOSKIT -Dunix -Di386 -D__FreeBSD__=2 -Asystem(unix) -Asystem(FreeBSD) -Acpu(i386) -Amachine(i386)
++ 
++ *cross_compile:
++ 0
++ 
++ *multilib:
++ . ;
++ 
