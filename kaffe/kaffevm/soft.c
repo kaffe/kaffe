@@ -207,6 +207,10 @@ soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 	int dtableidx;
 	errorInfo info;
 
+	if (obj == 0) {
+		throwException(NullPointerException);
+	}
+
 	cls = OBJECT_CLASS(obj);
 	/* initialize class if necessary */
         if (cls->state < CSTATE_USABLE) {

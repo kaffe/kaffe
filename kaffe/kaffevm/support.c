@@ -64,6 +64,10 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	jvalue retval;
 	errorInfo info;
 
+	if (obj == 0) {
+		throwException(NullPointerException);
+	}
+
 	if (mb == 0) {
 		assert(method_name != 0 && signature != 0);
 		if (isStaticCall) {
