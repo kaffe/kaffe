@@ -2,7 +2,6 @@
 # Script to run javadoc
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-export CLASSPATH=$CLASSPATH:@ANTLR_JAR@:@prefix@/lib/gjdoc.jar
-exec @bindir@/@kaffe_TRANSF@ -Xmx512M $JAVA_OPTS gnu.classpath.tools.gjdoc.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ -Xmx512M -Xbootclasspath/a:@ANTLR_JAR@ $JAVA_OPTS gnu.classpath.tools.gjdoc.Main ${1+"$@"}
 exit $?
 

@@ -1,3 +1,10 @@
+2005-03-23  Dalibor Topic  <robilad@kaffe.org>
+
+        * kaffe/scripts/javadoc.in,
+        kaffe/scripts/compat/javadoc.in: Append installed antlr to
+	bootclasspath. Now gjdoccing all of Kaffe's class library
+	works out of the box.
+
 2005-03-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/mips/common.h: Really include generic atomic primitives.
