@@ -24,8 +24,14 @@
 #include "gc.h"
 #include "gc-mem.h"
 #include "jni.h"
-#ifdef HAVE_UNISTD_H
+#if defined(HAVE_UNISTD_H)
 #include <unistd.h>
+#endif
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+#if defined(HAVE_SYS_MMAN_H)
+#include <sys/mman.h>
 #endif
 
 #ifndef MAX

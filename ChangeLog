@@ -1,3 +1,10 @@
+2004-06-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	Added includes for mprotect on NetBSD 1.5.x.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2004-06-27  Jim Huang  <jserv@kaffe.org>
 
 	* test/internal/Makefile.am:
