@@ -190,7 +190,6 @@ protected void dispatch () {
 			else
 				clicks = 1;
 
-			accelHint = true;
 			clickCount = clicks;
 			lastPressed = when;
 
@@ -201,7 +200,6 @@ protected void dispatch () {
 		  break;
 		
 		case MOUSE_RELEASED:
-			accelHint = false;
 			clickCount = clicks;
 			buttonPressed = false;
 

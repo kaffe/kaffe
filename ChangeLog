@@ -1,3 +1,13 @@
+2004-05-23  Kero van Gelder <kero@d4050.upc-d.chello.nl>
+
+        * libraries/javalib/java/awt/AWTEvent.java:
+	(accelHint) Removed.
+        * libraries/javalib/java/awt/EventQueue.java:
+	(getNextEvent) Remove check for accelHint.
+        * libraries/javalib/java/awt/KeyEvt.java,
+        libraries/javalib/java/awt/MouseEvt.java:
+	(dispatch) Removed handling of accelHint.
+
 2004-05-23  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/profiles/default/coreawt.files,

@@ -44,7 +44,6 @@ public class AWTEvent
 	static Window activeWindow;
 	static Component mouseTgt;
 	protected static int inputModifier;
-	protected static boolean accelHint;
 	protected static Component[] sources;
 	private static int nSources;
 	protected static Object evtLock = new Object();

@@ -178,9 +178,7 @@ public AWTEvent getNextEvent () throws InterruptedException {
 			// we don't have to check Toolkit.IS_BLOCKING here, since we reach
 			// this point only in case it is not blocked, or evtGetNextEvent()
 			// returned 'null'
-			if ( !AWTEvent.accelHint ) {
-				Thread.sleep( Defaults.EventPollingRate);
-			}
+			Thread.sleep( Defaults.EventPollingRate);
 		}
 	}
 }

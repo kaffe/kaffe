@@ -21,7 +21,6 @@ protected void dispatch () {
 	}
 
 	if ( id == KEY_PRESSED ) {
-		accelHint = true;
 		if ( keyChar == 0 ){
 			// update modifiers for function keys
 			switch ( keyCode ) {
@@ -47,8 +46,6 @@ protected void dispatch () {
 		}	
 	}
 	else if ( id == KEY_RELEASED ) {	
-		accelHint = false;
-
 		if ( (AWTEvent.keyTgt.eventMask & AWTEvent.DISABLED_MASK) == 0 ) {
 			AWTEvent.keyTgt.process( this);
 		}
