@@ -60,10 +60,10 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 /* The layout of this struct is know by inline assembly.  */
 
 typedef struct _methodTrampoline {
-	unsigned code[5];
+	unsigned code[4];
 	struct _methods *meth;
 	void** where;
-	unsigned pad[1];
+	unsigned pad[2];
 } methodTrampoline;
 
 extern void mips_do_fixup_trampoline(void);
@@ -72,11 +72,10 @@ extern void mips_do_fixup_trampoline(void);
 #define FILL_IN_TRAMPOLINE(t,m,w)					\
 	do {								\
 		uint32 pc = (unsigned int)mips_do_fixup_trampoline;	\
-		(t)->code[0] = 0x001f1021;	/* addu $2,$31,$0 */	\
-		(t)->code[1] = 0x3c190000 | (pc >> 16);	/* lui $25,addr(high) */ \
-		(t)->code[2] = 0x37390000 | (pc & 0xffff);/* ori $25,$25,addr(low) */ \
-		(t)->code[3] = 0x0320f809;	/* jalr $31,$25 */		\
-		(t)->code[4] = 0x00000000;	/* nop */		\
+		(t)->code[0] = 0x3c190000 | (pc >> 16);	/* lui $25,addr(high) */ \
+		(t)->code[1] = 0x37390000 | (pc & 0xffff);/* ori $25,$25,addr(low) */ \
+		(t)->code[2] = 0x0320f809;	/* jalr $31,$25 */		\
+		(t)->code[3] = 0x001f1021;	/* addu $2,$31,$0 */	\
 		(t)->meth = (m);					\
 		(t)->where = (w);					\
 	} while (0)
@@ -92,7 +91,7 @@ extern void mips_do_fixup_trampoline(void);
 #define	RFD	(Rfloat|Rdouble)
 #define	RG	(Rglobal|Rnosaveoncall)
 
-/* Define the register set, bereits an mips angepasst*/
+/* Define the register set, already adapted for MIPS. */
 #define	REGISTER_SET							\
 	{ /* i0 */	0, 0, Reserved,		0, 0, 0   },		\
 	{ /* i1 */	0, 0, Reserved,		0, 0, 1   },		\
@@ -208,13 +207,13 @@ extern void mips_do_fixup_trampoline(void);
 #define	LABEL_Lframe(P,V,L) \
 	{ \
 		int framesize = FRAMESIZE; \
-		assert((framesize & 0xFFFFF000) == 0); \
+		assert((framesize & 0xFFFF0000) == 0); \
 		*(P) = (*(P) & 0xFFFF0000) | ((-framesize) & 0xFFFF); \
 	}
 #define	LABEL_Lnegframe(P,V,L) \
 	{ \
 		int framesize = FRAMESIZE; \
-		assert((framesize & 0xFFFFF000) == 0); \
+		assert((framesize & 0xFFFF0000) == 0); \
 		*(P) = (*(P) & 0xFFFF0000) | ((framesize) & 0xFFFF); \
 	}
 #define	LABEL_Llong16b(P,V,L)	(P)[0]=((P)[0]&0xFFFF0000)|((((V)-4)>>2)&0xFFFF)

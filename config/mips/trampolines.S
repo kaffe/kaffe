@@ -36,7 +36,7 @@ l1:	.word	C_FUNC_NAME(soft_fixup_trampoline)
 	.globl 	mips_do_fixup_trampoline
 	.ent	mips_do_fixup_trampoline
 mips_do_fixup_trampoline:
-	addi	$sp, $sp, -48
+	addiu	$sp, $sp, -48
 	# needed by the backtracer
 	sw	$31, 0($sp)
 	sw	$2, 0($sp)
@@ -68,7 +68,7 @@ mips_do_fixup_trampoline:
 	lw	$4, 8($sp)
 	lw	$gp, 4($sp)
 	lw	$31, 0($sp)
-	addi	$sp, $sp, 48
+	addiu	$sp, $sp, 48
 	move	$25, $2
 	jr	$2
 	.end	mips_do_fixup_trampoline

@@ -1,4 +1,4 @@
-/* mips/jit-icode.h
+/* mips/jit3-icode.h
  * Define the instructions which are present on the MIPS.
  *
  * Copyright (c) 1996 T. J. Wilkinson & Associates, London, UK.
@@ -189,7 +189,7 @@
 
 #define	HAVE_add_int_const_rangecheck(v)	__intconst_rangecheck(v)
 #define	HAVE_add_ref_const_rangecheck(v)	__intconst_rangecheck(v)
-#define	HAVE_sub_int_const_rangecheck(v)        ((v) >= -32767  && (v) <= 327678) /*swapped -67,68*/
+#define	HAVE_sub_int_const_rangecheck(v)        ((v) >= -32767  && (v) <= 32768) /*swapped -67,68*/
 #undef	HAVE_cmp_int_const_rangecheck
 #define	HAVE_load_offset_int_rangecheck(v)	__intconst_rangecheck(v)
 #define	HAVE_load_offset_ref_rangecheck(v)	__intconst_rangecheck(v) /* new */

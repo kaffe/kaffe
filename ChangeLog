@@ -1,3 +1,12 @@
+2005-03-24  Thiemo Seufer <ths@networkno.de>
+
+	* config/mips/atomic.h: New glibc-style implementation.
+	* config/mips/atomicity.h: Removed.
+	* config/mips/common.h: Include atomic.h rather than atomicity.h.
+	* config/mips/callKaffeException.h, config/mips/trampolines.S,
+	config/mips/jit.h, config/mips/jit3-icode.h, config/mips/jit3-icode.h:
+	Fixed some minor typos and inefficiencies.
+
 2005-03-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Removed all nasty bugs, as they were all fixed. Wow!

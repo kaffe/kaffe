@@ -28,12 +28,14 @@ struct Hjava_lang_Throwable;
 static inline void callKaffeException(uintp fp, 
 				      uintp handler, 
 				      struct Hjava_lang_Throwable* eobj) {
-	asm volatile("	\n"
-		     "		move $2,%2 \n"
-		     "		move $fp,%0 \n"
-		     "		jr %1 \n"
-		     "		nop \n"
-		     "	" : : "r" (fp), "r" (handler), "r" (eobj) : "$2");
+	asm volatile("\n"
+		"	.set push	\n"
+		"	.set noreorder	\n"
+		"	move $2,%2	\n"
+		"	jr %1		\n"
+		"	 move $fp,%0	\n"
+		"	.set pop	\n"
+		: : "r" (fp), "r" (handler), "r" (eobj));
 }
 
 #endif /* __mips_callKaffeException_h */

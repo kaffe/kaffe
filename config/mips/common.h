@@ -34,7 +34,7 @@
  * do not return the right value. Use the generic one instead.
  */
 #if defined(HAVE_MIPSII_INSTRUCTIONS) && 0
-#include "atomicity.h"
+#include "atomic.h"
 #else
 
 #include "generic/genatomic.h"
