@@ -261,8 +261,13 @@ Java_kaffe_lang_UNIXProcess_forkAndExec
 	    {
 	      rc = 0;
 	      nptr = NULL;
+	      KFREE (argv[0]);
+	      argv[0] = file;
 	    }
-	  KFREE (file);
+	  else
+	    {
+	      KFREE (file);
+	    }
 	}
     }
   else if (access (argv[0], X_OK) != -1)

@@ -1,5 +1,11 @@
 2004-04-15  Jim Pick <jim@kaffe.org>
 
+	* libraries/clib/native/UNIXProcess.c:
+	Fix bug where the exec code would search the path for
+	a binary, but then didn't use the found file.
+
+2004-04-15  Jim Pick <jim@kaffe.org>
+
 	* configure.ac:
 	Removed stray "HEADER" in file that broke
 	--with-staticlib.
