@@ -4,6 +4,8 @@ Wed Feb 17 20:54:28 1999  Godmar Back  <gback@cs.utah.edu>
 	static.  Temporary fix: use markAddress instead of markObject to
 	mark static fields which could be non-gc-allocated.
 	* kaffe/kaffevm/itypes.c: don't gc_add_ref primitive classes
+	* kaffe/kaffevm/mem/gc-incremental.c: added test in DEBUG mode that 
+	we don't try to mark addresses that do not point to heap objects.
 
 Wed Feb 17 18:34:46 PST 1999 Archie Cobbs <archie@whistle.com>
 
