@@ -100,8 +100,8 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return execute_java_constructor(0,javaLangFloatClass,"(D)V",
-						(jdouble)(unhand(arr)->body[elem]));
+		return execute_java_constructor(0,javaLangFloatClass,"(F)V",
+						(jfloat)(unhand(arr)->body[elem]));
 	}
 	else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;

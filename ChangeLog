@@ -29,12 +29,8 @@ Tue Jan 26 00:04:27 1999  Godmar Back  <gback@cs.utah.edu>
 
 Mon Jan 25 12:25:05 1999  Maxim Kizub <max@immsp.kiev.ua>
 
-	* libraries/clib/native/Float.c, Array.c, Field.c, Method.c:
-	don't call new Float(float x) constructor from C because in
-	C float elipsis args are promoted to double; instead use the
-	new Float(double d) constructor.
-	* kaffe/kaffevm/support.c: make the above changes redundant
-	by pulling va_arg() floats as the doubles they really are
+	* kaffe/kaffevm/support.c: In C floats are passed as doubles,
+	so when pulling a va_arg() float really pull a double.
 
 Mon Jan 25 12:23:28 1999  Moses DeJong <dejong@cs.umn.edu>
 

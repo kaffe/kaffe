@@ -107,7 +107,7 @@ java_lang_reflect_Field_get(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
 		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",*(jchar*)base);
 	}
 	else if ( fld->type == floatClass ) {
-		return execute_java_constructor(0,javaLangFloatClass,"(D)V",(jdouble)(*(jfloat*)base));
+		return execute_java_constructor(0,javaLangFloatClass,"(F)V",*(jfloat*)base);
 	}
 	else if ( fld->type == doubleClass ) {
 		return execute_java_constructor(0,javaLangDoubleClass,"(D)V",*(jdouble*)base);
