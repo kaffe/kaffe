@@ -13,6 +13,7 @@
 srcdir=         @srcdir@
 prefix=		@prefix@
 classdir=	@datadir@/kaffe
+INSTROOT=	@INSTROOT@
 
 INSTALL=        @INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
@@ -30,10 +31,10 @@ LIBDIR=		lib
 all:
 
 install:
-		test -d $(classdir) || $(MKDIR) $(classdir)
+		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
 		for i in $(JARS) ;\
 		do \
-			if test -f $(srcdir)/$$i ; then $(INSTALL_DATA) $(srcdir)/$$i $(classdir)/$$i ; fi ;\
+			if test -f $(srcdir)/$$i ; then $(INSTALL_DATA) $(srcdir)/$$i $(INSTROOT)$(classdir)/$$i ; fi ;\
 		done
 
 clean:
@@ -55,8 +56,8 @@ build-classes:
 		(cd $(LIBDIR) && $(ZIP) -r ../$(CLASSFILE) java kaffe)
 
 install-classes:
-		test -d $(classdir) || $(MKDIR) $(classdir)
-		$(INSTALL_DATA) $(CLASSFILE) $(classdir)/$(CLASSFILE)
+		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
+		$(INSTALL_DATA) $(CLASSFILE) $(INSTROOT)$(classdir)/$(CLASSFILE)
 
 # not yet implemented, but must stay to not break make depend
 depend:

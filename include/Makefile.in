@@ -9,6 +9,7 @@
 prefix=		@prefix@
 srcdir=		@srcdir@
 incdir=		@includedir@/kaffe
+INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
@@ -38,14 +39,14 @@ distclean:
 		rm -f Makefile $(BUILT_INCLUDEFILES) .depend
 
 install:
-		test -d $(incdir) || $(MKDIR) $(incdir)
+		test -d $(INSTROOT)$(incdir) || $(MKDIR) $(INSTROOT)$(incdir)
 		for i in $(BUILT_INCLUDEFILES) ;\
 		do \
-			$(INSTALL_DATA) $$i $(incdir)/$$i ;\
+			$(INSTALL_DATA) $$i $(INSTROOT)$(incdir)/$$i ;\
 		done
 		for i in $(INCLUDEFILES) ;\
 		do \
-			$(INSTALL_DATA) $(srcdir)/$$i $(incdir)/$$i ;\
+			$(INSTALL_DATA) $(srcdir)/$$i $(INSTROOT)$(incdir)/$$i ;\
 		done
 
 depend:

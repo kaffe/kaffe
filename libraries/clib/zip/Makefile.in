@@ -11,6 +11,7 @@ srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 libdir=		@libdir@
+INSTROOT=	@INSTROOT@
 CC=		@CC@
 LD=		@LD@
 AR=		@AR@
@@ -78,10 +79,10 @@ distclean:	clean
 		rm -f Makefile .depend
 
 install:
-		test -d $(libdir) || $(MKDIR) $(libdir)
-		$(INSTALL_DATA) $(LIB) $(libdir)/$(LIB)
-		rm -f $(libdir)/$(LLIB)
-		$(LN) $(LIB) $(libdir)/$(LLIB)
+		test -d $(INSTROOT)$(libdir) || $(MKDIR) $(INSTROOT)$(libdir)
+		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(libdir)/$(LIB)
+		rm -f $(INSTROOT)$(libdir)/$(LLIB)
+		$(LN) $(LIB) $(INSTROOT)$(libdir)/$(LLIB)
 
 depend:         $(DEPENDS)
 		rm -f .depend

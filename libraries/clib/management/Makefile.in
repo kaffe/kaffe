@@ -11,6 +11,7 @@ srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 nativedir=	@libdir@
+INSTROOT=	@INSTROOT@
 CC=		@CC@
 LD=		@LD@
 AR=		@AR@
@@ -72,10 +73,10 @@ distclean:	clean
 		rm -f Makefile .depend
 
 install:
-		test -d $(nativedir) || $(MKDIR) $(nativedir)
-		rm -f $(nativedir)/$(LIB) $(nativedir)/$(LIBV)
-		$(INSTALL_DATA) $(LIB) $(nativedir)/$(LIBV)
-		$(LN) $(LIBV) $(nativedir)/$(LIB)
+		test -d $(INSTROOT)$(nativedir) || $(MKDIR) $(INSTROOT)$(nativedir)
+		rm -f $(INSTROOT)$(nativedir)/$(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
+		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
+		$(LN) $(LIBV) $(INSTROOT)$(nativedir)/$(LIB)
 
 depend:         $(DEPENDS) external_wrappers.h
 		rm -f .depend
