@@ -1057,39 +1057,39 @@ initVerifierPrimTypes(void)
 	TNULL->tinfo = TINFO_CLASS;
 	TNULL->data.class = (Hjava_lang_Class*)TNULL;
 	
-	TOBJ->tinfo = TINFO_SIGSTR;
+	TOBJ->tinfo = TINFO_SIG;
 	TOBJ->data.sig = OBJECT_SIG;
 	
-	TOBJARR->tinfo = TINFO_SIGSTR;	
+	TOBJARR->tinfo = TINFO_SIG;	
 	TOBJARR->data.sig = OBJARR_SIG;
 	
 	
 	TSTRING->data.sig = STRING_SIG;
-	TSTRING->tinfo = TINFO_SIGSTR;
+	TSTRING->tinfo = TINFO_SIG;
 	
 	
-	TCHARARR->tinfo = TINFO_SIGSTR;
+	TCHARARR->tinfo = TINFO_SIG;
 	TCHARARR->data.sig = CHARARR_SIG;
 	
-	TBYTEARR->tinfo = TINFO_SIGSTR;
+	TBYTEARR->tinfo = TINFO_SIG;
 	TBYTEARR->data.sig = BYTEARR_SIG;
 	
-	TBOOLARR->tinfo = TINFO_SIGSTR;
+	TBOOLARR->tinfo = TINFO_SIG;
 	TBOOLARR->data.sig = BOOLARR_SIG;
 	
-	TSHORTARR->tinfo = TINFO_SIGSTR;
+	TSHORTARR->tinfo = TINFO_SIG;
 	TSHORTARR->data.sig = SHORTARR_SIG;
 	
-	TINTARR->tinfo = TINFO_SIGSTR;
+	TINTARR->tinfo = TINFO_SIG;
 	TINTARR->data.sig = INTARR_SIG;
 	
-	TLONGARR->tinfo = TINFO_SIGSTR;
+	TLONGARR->tinfo = TINFO_SIG;
 	TLONGARR->data.sig = LONGARR_SIG;
 	
-	TFLOATARR->tinfo = TINFO_SIGSTR;
+	TFLOATARR->tinfo = TINFO_SIG;
 	TFLOATARR->data.sig = FLOATARR_SIG;
 	
-	TDOUBLEARR->tinfo = TINFO_SIGSTR;	
+	TDOUBLEARR->tinfo = TINFO_SIG;	
 	TDOUBLEARR->data.sig = DOUBLEARR_SIG;
 }
 
@@ -2321,12 +2321,12 @@ merge(errorInfo* einfo,
 	// or on the operand stack during a backwards branch
 	if (toBlock->startAddr < fromBlock->startAddr) {
 		for (n = 0; n < method->localsz; n++) {
-			if (fromBlock->locals[n].tinfo & UNINIT) {
+			if (fromBlock->locals[n].tinfo & TINFO_UNINIT) {
 				VERIFY_ERROR("uninitialized object reference in a local variable during a backwards branch");
 			}
 		}
 		for (n = 0; n < fromBlock->stacksz; n++) {
-			if (fromBlock->opstack[n].tinfo & UNINIT) {
+			if (fromBlock->opstack[n].tinfo & TINFO_UNINIT) {
 				VERIFY_ERROR("uninitialized object reference on operand stack during a backwards branch");
 			}
 		}
@@ -2910,12 +2910,12 @@ verifyBasicBlock(errorInfo* einfo,
 				VERIFY_ERROR("aaload: top of operand stack is not an array");
 			}
 			
-			if (type->tinfo & TINFO_NAMESTR || type->tinfo & TINFO_SIGSTR) {
-				type->tinfo = TINFO_SIGSTR;
+			if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
+				type->tinfo = TINFO_SIG;
 				(type->data.sig)++;
 			}
 			else if (type->data.class != TNULL->data.class) {
-				type->tinfo = TINFO_SIGSTR;
+				type->tinfo = TINFO_SIG;
 				type->data.sig = CLASS_CNAME(type->data.class) + 1;
 			}
 			DBG(VERIFY3, dprintf("%sarray type: ", indent); printType(type); dprintf("\n"); );
@@ -2972,15 +2972,15 @@ verifyBasicBlock(errorInfo* einfo,
 				VERIFY_ERROR("aastore: top of operand stack is not an array");
 			}
 			
-			if (arrayType->tinfo & TINFO_NAMESTR || arrayType->tinfo & TINFO_SIGSTR) {
-				arrayType->tinfo = TINFO_SIGSTR;
+			if (arrayType->tinfo & TINFO_NAME || arrayType->tinfo & TINFO_SIG) {
+				arrayType->tinfo = TINFO_SIG;
 				(arrayType->data.sig)++;
 			}
 			else {
 				if (arrayType->data.class == TOBJARR->data.class) {
 					*arrayType = *TOBJ;
 				} else if (arrayType->data.class != TNULL->data.class) {
-					arrayType->tinfo = TINFO_SIGSTR;
+					arrayType->tinfo = TINFO_SIG;
 					arrayType->data.sig = CLASS_CNAME(arrayType->data.class) + 1;
 				}
 			}
@@ -3219,10 +3219,10 @@ verifyBasicBlock(errorInfo* einfo,
 				namestr = CLASS_NAMED(idx, pool);
 				
 				if (*namestr == '[') {
-					type->tinfo = TINFO_SIGSTR;
+					type->tinfo = TINFO_SIG;
 					type->data.sig = namestr;
 				} else {
-					type->tinfo = TINFO_NAMESTR;
+					type->tinfo = TINFO_NAME;
 					type->data.sig = namestr;
 				}
 			}
@@ -3249,12 +3249,12 @@ verifyBasicBlock(errorInfo* einfo,
 					VERIFY_ERROR("new: used to create an array");
 				}
 				
-				type->tinfo = TINFO_NAMESTR;				
+				type->tinfo = TINFO_NAME;				
 				type->data.name = namestr;
 			}
 			
 			*uninits = pushUninit(*uninits, type);
-			type->tinfo = UNINIT;
+			type->tinfo = TINFO_UNINIT;
 			type->data.uninit  = *uninits;
 			
 			DBG(VERIFY3,
@@ -3291,7 +3291,7 @@ verifyBasicBlock(errorInfo* einfo,
 					sprintf(namestr, "[L%s;", sig);
 				}
 				
-				type->tinfo = TINFO_SIGSTR;
+				type->tinfo = TINFO_SIG;
 				type->data.sig  = namestr;
 			}
 			
@@ -3315,7 +3315,7 @@ verifyBasicBlock(errorInfo* einfo,
 				t->tinfo = TINFO_CLASS;
 				t->data.class = CLASS_CLASS(n, pool);
 			} else {
-				t->tinfo = TINFO_NAMESTR;
+				t->tinfo = TINFO_NAME;
 				t->data.name = CLASS_NAMED(n, pool);
 			}
 			
@@ -3345,7 +3345,7 @@ verifyBasicBlock(errorInfo* einfo,
 				CHECK_STACK_OVERFLOW(1);
 				block->stacksz++;
 				type = OPSTACK_TOP;
-				type->tinfo = TINFO_SIGSTR;
+				type->tinfo = TINFO_SIG;
 				type->data.name = sig;
 				break;
 				
@@ -3382,7 +3382,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			case '[':
 			case 'L':
-				t->tinfo = TINFO_SIGSTR;
+				t->tinfo = TINFO_SIG;
 				t->data.sig = sig;
 				OPSTACK_POP_T_BLIND(t);
 				break;
@@ -3399,7 +3399,7 @@ verifyBasicBlock(errorInfo* einfo,
 				t->tinfo = TINFO_CLASS;
 				t->data.class = CLASS_CLASS(n, pool);
 			} else {
-				t->tinfo = TINFO_NAMESTR;
+				t->tinfo = TINFO_NAME;
 				t->data.name = CLASS_NAMED(n, pool);
 			}
 			
@@ -3429,7 +3429,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			case '[':
 			case 'L':
-				t->tinfo = TINFO_SIGSTR;
+				t->tinfo = TINFO_SIG;
 				t->data.sig = sig;
 				OPSTACK_POP_T_BLIND(t);
 				break;
@@ -3559,7 +3559,7 @@ verifyBasicBlock(errorInfo* einfo,
 			break;
 		case ARETURN:
 			ENSURE_OPSTACK_SIZE(1);
-			t->tinfo = TINFO_SIGSTR;
+			t->tinfo = TINFO_SIG;
 			t->data.sig  = getReturnSig(method);
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
 				VERIFY_ERROR("areturn: top of stack is not type compatible with method return type");
@@ -3581,7 +3581,7 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			
 			for (n = 0; n < method->localsz; n++) {
-				if (block->locals[n].tinfo & UNINIT) {
+				if (block->locals[n].tinfo & TINFO_UNINIT) {
 					VERIFY_ERROR("athrow: uninitialized class instance in a local variable");
 				}
 			}
@@ -3887,12 +3887,12 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		
 		
 		receiver = &binfo->opstack[binfo->stacksz - (nargs + 1)];
-		if (!(receiver->tinfo & UNINIT) && !isReference(receiver)) {
+		if (!(receiver->tinfo & TINFO_UNINIT) && !isReference(receiver)) {
 			VERIFY_ERROR("invoking a method on something that is not a reference");
 		}
 		
 		if (pool->tags[classIdx] == CONSTANT_Class) {
-			methodRefClass->tinfo = TINFO_NAMESTR;
+			methodRefClass->tinfo = TINFO_NAME;
 			methodRefClass->data.name = UNRESOLVED_CLASS_NAMED(classIdx, pool);
 		} else {
 			methodRefClass->tinfo = TINFO_CLASS;
@@ -3901,10 +3901,10 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		
 		
 		if (!strcmp(METHODREF_NAMED(idx,pool), constructor_name->data)) {
-			if (receiver->tinfo & UNINIT) {
+			if (receiver->tinfo & TINFO_UNINIT) {
 				UninitializedType* uninit = receiver->data.uninit;
 				
-				if (receiver->tinfo & UNINIT_SUPER) {
+				if (receiver->tinfo & TINFO_UNINIT_SUPER) {
 					Type t;
 					t.tinfo = TINFO_CLASS;
 					t.data.class = uninit->type.data.class->superclass;
@@ -3937,7 +3937,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			}
 		}
 		else if (!typecheck(einfo, method->class, methodRefClass, receiver)) {
-			if (receiver->tinfo & UNINIT) {
+			if (receiver->tinfo & TINFO_UNINIT) {
 				VERIFY_ERROR("invoking a method on an uninitialized object reference");
 			}
 			
@@ -3969,7 +3969,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		switch (*argbuf) {
 		case '[':
 		case 'L':
-			t->tinfo = TINFO_SIGSTR;
+			t->tinfo = TINFO_SIG;
 			t->data.sig = argbuf;
 			
 			if (!typecheck(einfo, method->class, t, &binfo->opstack[paramIndex])) {
@@ -4082,7 +4082,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		*sigs = pushSig(*sigs, argbuf);
 		
 		binfo->opstack[binfo->stacksz].data.class = (Hjava_lang_Class*)argbuf;
-		binfo->opstack[binfo->stacksz].tinfo = TINFO_SIGSTR;
+		binfo->opstack[binfo->stacksz].tinfo = TINFO_SIG;
 		binfo->stacksz++;
 		
 		// no freeing of the argbuf here...
@@ -4150,7 +4150,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 		if (!strcmp(METHOD_NAMED(method), constructor_name->data)) {
 			// the local reference in a constructor is uninitialized
 			*uninits = pushUninit(*uninits, &locals[0]);
-			locals[0].tinfo = UNINIT_SUPER;
+			locals[0].tinfo = TINFO_UNINIT_SUPER;
 			locals[0].data.uninit = *uninits;
 		}
 	}
@@ -4188,7 +4188,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 			newsig = checkPtr(KMALLOC((strlen(argbuf) + 1) * sizeof(char)));
 			*sigs = pushSig(*sigs, newsig);
 			sprintf(newsig, "%s", argbuf);
-			locals[paramCount].tinfo = TINFO_SIGSTR;
+			locals[paramCount].tinfo = TINFO_SIG;
 			locals[paramCount].data.sig = newsig;
 			paramCount++;
 			break;
@@ -4243,7 +4243,7 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 	const char* sig;
 	char* tmp;
 
-	if (type->tinfo & TINFO_NAMESTR) {
+	if (type->tinfo & TINFO_NAME) {
 		sig = type->data.sig;
 		
 		if (*sig != '[') {
@@ -4259,7 +4259,7 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 			KFREE(tmp);
 		}
 	}
-	else if (type->tinfo & TINFO_SIGSTR) {
+	else if (type->tinfo & TINFO_SIG) {
 		type->tinfo = TINFO_CLASS;
 		type->data.class = getClassFromSignature(type->data.sig, this->loader, einfo);
 	}
@@ -4276,8 +4276,8 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
  *
  * note: the precedence of merged types goes (from highest to lowest):
  *     actual pointer to Hjava_lang_Class*
- *     TINFO_SIGSTR
- *     TINFO_NAMESTR
+ *     TINFO_SIG
+ *     TINFO_NAME
  *
  * TODO: right now the priority is to be a common superclass, as stated in
  *       the JVML2 specs.  a better verification technique might check this first,
@@ -4306,7 +4306,7 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	else if (t2->data.class == TUNSTABLE->data.class || sameType(t1, t2)) {
 		return false;
 	}
-	else if (t1->tinfo & UNINIT || t2->tinfo & UNINIT ||
+	else if (t1->tinfo & TINFO_UNINIT || t2->tinfo & TINFO_UNINIT ||
 		 !isReference(t1) || !isReference(t2)) {
 		
 		*t2 = *TUNSTABLE;
@@ -4397,10 +4397,10 @@ static
 bool
 isReference(const Type* type)
 {
-	return (type->tinfo & TINFO_NAMESTR ||
-		type->tinfo & TINFO_SIGSTR ||
+	return (type->tinfo & TINFO_NAME ||
+		type->tinfo & TINFO_SIG ||
 		type->tinfo & TINFO_CLASS ||
-		type->tinfo & UNINIT);
+		type->tinfo & TINFO_UNINIT);
 }
 
 /*
@@ -4414,7 +4414,7 @@ isArray(const Type* type)
 	if (!isReference(type)) {
 		return false;
 	}
-	else if (type->tinfo & TINFO_NAMESTR || type->tinfo & TINFO_SIGSTR) {
+	else if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
 		return (*(type->data.sig) == '[');
 	}
 	else if (type->tinfo != TINFO_CLASS) {
@@ -4447,9 +4447,9 @@ sameType(Type* t1, Type* t2)
 		return (t2->tinfo == TINFO_PRIMITIVE &&
 			t1->data.class == t2->data.class);
 		
-	case UNINIT:
-	case UNINIT_SUPER:
-		return (t2->tinfo & UNINIT &&
+	case TINFO_UNINIT:
+	case TINFO_UNINIT_SUPER:
+		return (t2->tinfo & TINFO_UNINIT &&
 			(t1->data.uninit == t2->data.uninit ||
 			 sameRefType(&(t1->data.uninit->type),
 				     &(t2->data.uninit->type))));
@@ -4458,11 +4458,11 @@ sameType(Type* t1, Type* t2)
 		DBG(VERIFY3, dprintf("%ssameType(): unrecognized tinfo (%d)\n", indent, t1->tinfo); );
 		return false;
 		
-	case TINFO_SIGSTR:
-	case TINFO_NAMESTR:
+	case TINFO_SIG:
+	case TINFO_NAME:
 	case TINFO_CLASS:
-		return ((t2->tinfo == TINFO_SIGSTR ||
-			 t2->tinfo == TINFO_NAMESTR || 
+		return ((t2->tinfo == TINFO_SIG ||
+			 t2->tinfo == TINFO_NAME || 
 			 t2->tinfo == TINFO_CLASS) &&
 			sameRefType(t1,t2));
 	}
@@ -4486,13 +4486,13 @@ sameRefType(Type* t1, Type* t2)
 		return true;
 	}
 	
-	if (t1->tinfo & TINFO_NAMESTR) {
+	if (t1->tinfo & TINFO_NAME) {
 		sig1 = t1->data.name;
 		
-		if (t2->tinfo & TINFO_NAMESTR) {
+		if (t2->tinfo & TINFO_NAME) {
 			return (!strcmp(sig1, t2->data.name));
 		}
-		else if (t2->tinfo & TINFO_SIGSTR) {
+		else if (t2->tinfo & TINFO_SIG) {
 			sig2 = t2->data.sig;
 			
 			len1 = strlen(sig1);
@@ -4510,13 +4510,13 @@ sameRefType(Type* t1, Type* t2)
 		*t1 = *t2;
 		return true;
 	}
-	else if (t1->tinfo & TINFO_SIGSTR) {
+	else if (t1->tinfo & TINFO_SIG) {
 		sig1 = t1->data.sig;
 		
-		if (t2->tinfo & TINFO_SIGSTR) {
+		if (t2->tinfo & TINFO_SIG) {
 			return (!strcmp(sig1, t2->data.sig));
 		}
-		else if (t2->tinfo & TINFO_NAMESTR) {
+		else if (t2->tinfo & TINFO_NAME) {
 			sig2 = t2->data.name;
 			
 			len1 = strlen(sig1);
@@ -4546,7 +4546,7 @@ sameRefType(Type* t1, Type* t2)
 	else {
 		sig1 = CLASS_CNAME(t1->data.class);
 		
-		if (t2->tinfo & TINFO_SIGSTR) {
+		if (t2->tinfo & TINFO_SIG) {
 			sig2 = t2->data.sig;
 			
 			len1 = strlen(sig1);
@@ -4558,7 +4558,7 @@ sameRefType(Type* t1, Type* t2)
 			*t2 = *t1;
 			return true;
 		}
-		else if (t2->tinfo & TINFO_NAMESTR) {
+		else if (t2->tinfo & TINFO_NAME) {
 			sig2 = t2->data.name;
 			
 			if (strcmp(sig1, sig2))
@@ -4588,7 +4588,7 @@ typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
 	if (sameType(t1, t2)) {
 		return true;
 	}
-	else if (t1->tinfo & UNINIT || t2->tinfo & UNINIT) {
+	else if (t1->tinfo & TINFO_UNINIT || t2->tinfo & TINFO_UNINIT) {
 		return false;
 	}
 	else if (!isReference(t1) || !isReference(t2)) {
@@ -4762,8 +4762,8 @@ static
 bool
 checkUninit(Hjava_lang_Class* this, Type* type)
 {
-	if (type->tinfo & UNINIT) {
-		if (type->tinfo & UNINIT_SUPER) {
+	if (type->tinfo & TINFO_UNINIT) {
+		if (type->tinfo & TINFO_UNINIT_SUPER) {
 			UninitializedType* uninit = type->data.uninit;
 			Type t;
 			t.tinfo = TINFO_CLASS;
@@ -4817,14 +4817,14 @@ popUninit(const Method* method, UninitializedType* uninit, BlockInfo* binfo)
 	uint32 n;
 	
 	for (n = 0; n < method->localsz; n++) {
-		if (binfo->locals[n].tinfo & UNINIT &&
+		if (binfo->locals[n].tinfo & TINFO_UNINIT &&
 		    ((UninitializedType*)binfo->locals[n].data.class) == uninit) {
 			binfo->locals[n] = uninit->type;
 		}
 	}
 	
 	for (n = 0; n < binfo->stacksz; n++) {
-		if (binfo->opstack[n].tinfo & UNINIT &&
+		if (binfo->opstack[n].tinfo & TINFO_UNINIT &&
 		    ((UninitializedType*)binfo->opstack[n].data.class) == uninit) {
 			binfo->opstack[n] = uninit->type;
 		}
@@ -5186,11 +5186,11 @@ printType(const Type* t)
 		}
 		break;
 		
-	case TINFO_SIGSTR:
+	case TINFO_SIG:
 		dprintf("%s", t->data.sig);
 		break;
 		
-	case TINFO_NAMESTR:
+	case TINFO_NAME:
 		dprintf("%s", t->data.name);
 		break;
 		
@@ -5238,8 +5238,8 @@ printType(const Type* t)
 		}
 		break;
 		
-	case UNINIT:
-	case UNINIT_SUPER:
+	case TINFO_UNINIT:
+	case TINFO_UNINIT_SUPER:
 		printType(&(t->data.uninit->type));
 		break;
 		

@@ -1,3 +1,17 @@
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/verify.h
+	* kaffe/kaffevm/verify.c
+	(TINFO_SIGSTR) renamed TINFO_SIG
+	(TINFO_NAMESTR) renamed TINFO_NAME
+	(UNINIT) renamed TINFO_UNINIT
+	(UNINIT_SUPER) renamed TINFO_UNINIT_SUPER
+	
+	(TINFO_SUPERLIST) added.
+	
+	(type_info) renamed Type.
+	(Type.data) Hjava_langClass** supertypes added to union.
+
 2003-08-14  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: New KJC with fixed protected field
