@@ -1,3 +1,9 @@
+2003-08-13  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated and included the
+	new patch to fix the access in nested class of protected
+	inherited methods.
+	
 2003-08-13  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/Klasses.jar.bootstrap:
@@ -111,6 +117,7 @@
 	Made $JAVA dependent upon $KAFFEHOME to ensure that the
 	correct kaffe binary is used during make check.
 
+>>>>>>> 1.1543
 2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/native/RMIHashes.c: copied back
