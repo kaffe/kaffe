@@ -1,5 +1,18 @@
 2004-12-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/beans/PropertyChangeSupport.java,
+	libraries/javalib/java/beans/VetoableChangeSupport.java:
+        Resynced with GNU Classpath.
+
+	2004-11-21  Michael Koch  <konqueror@gmx.de>
+
+	* java/beans/PropertyChangeSupport.java
+	(propertyChangeSupportSerializedDataVersion): Made static.
+	* java/beans/VetoableChangeSupport.java
+	(propertyChangeSupportSerializedDataVersion): Likewise.
+
+2004-12-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/CardLayout.java,
 	libraries/javalib/java/awt/event/InputEvent.java,
 	libraries/javalib/java/awt/image/RGBImageFilter.java:
