@@ -127,7 +127,25 @@ public final class Character extends Object {
     }
   }
 
-  public static boolean isIdentiferIgnored(char ch)
+  /**
+   * Determines if a character has a defined meaning in Unicode. 
+   * A character is defined if at least one of the following is true:  <br>
+   *   It has an entry in the Unicode attribute table.  <br>
+   *   Its value is in the range '\u3040' <= ch <= '\u9FA5'.  <br>
+   *   Its value is in the range '\uF900' <= ch <= '\uFA2D'.  <br>
+   */
+  public static boolean isDefined(char ch) {
+	if ('\u3040' <= ch && ch <= '\u9FA5' ||
+	    '\uF900' <= ch && ch <= '\uFA2D') {
+		return (true);
+	}
+	/* FIXME: we do not check for entry in Unicode attribute table.
+	 * See comment at beginning of file that this impl is partial.
+	 */
+	return (ch < 256);
+  }
+
+  public static boolean isIdentifierIgnorable(char ch)
   {
     if ((ch >= '\u0000' && ch <= '\u0008') ||
         (ch >= '\u000E' && ch <= '\u001B') ||

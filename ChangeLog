@@ -1,3 +1,10 @@
+Thu Dec  3 22:58:25 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/StringBuffer.java: redid setLength
+	as pointed out by Johannes Deisenhofer <joe@dillingen.baynet.de>
+	* libraries/javalib/java/lang/Character.java: added partial isDefined
+	and fixed typo in isIdentifierIgnorable.
+
 Thu Dec  3 21:00:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.gcblock: renamed `old' to `hash' and `new' to `mmap'

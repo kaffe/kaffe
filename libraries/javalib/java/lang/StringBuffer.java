@@ -223,15 +223,21 @@ public synchronized void setCharAt(int index, char ch)
 
 public synchronized void setLength(int newLength)
 	{
-	char oldBuffer[] = buffer;
-	buffer = new char[newLength];
+	if (newLength < 0)
+		throw new StringIndexOutOfBoundsException();
 
-	System.arraycopy(oldBuffer, 0, buffer, 0, newLength);
-
-	/* Pad buffer */
 	if (newLength > used) {
-		for (int pos = used; pos < newLength; pos++) {
-			buffer[pos]='\u0000';
+		/* buffer expands */
+		if (newLength > buffer.length) {
+			/* Need new buffer */
+			char oldBuffer[] = buffer;
+			buffer = new char[newLength];
+			System.arraycopy(oldBuffer, 0, buffer, 0, used);
+		} else {
+			/* Pad buffer */
+			for (int pos = used; pos < newLength; pos++) {
+				buffer[pos]='\u0000';
+			}
 		}
 	}
 
