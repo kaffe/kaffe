@@ -1,5 +1,61 @@
 2004-10-11  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/IdentityScope.java:
+	Replaced by implementation from GNU Classpath.
+
+	* libraries/javalib/java/awt/Button.java,
+	libraries/javalib/java/awt/EventDispatchThread.java,
+	libraries/javalib/java/awt/Frame.java,
+	libraries/javalib/java/awt/Scrollbar.java,
+	libraries/javalib/java/awt/TextArea.java,
+	libraries/javalib/java/net/HttpURLConnection.java,
+	libraries/javalib/java/security/Policy.java,
+	libraries/javalib/java/util/Timer.java,
+	libraries/javalib/java/util/logging/LogRecord.java,
+	libraries/javalib/javax/naming/spi/NamingManager.java,
+	libraries/javalib/javax/swing/JDialog.java,
+	libraries/javalib/javax/swing/JFrame.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicScrollBarUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicToolBarUI.java:
+	Resynced with GNU Classpath.
+
+	2004-10-11  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/awt/EventDispatchThread.java
+        (dispatchThreadNum): Removed initializer.
+        (EventDispatchThread): Pre-increment dispatchThreadNum.
+        * java/awt/Button.java
+        (next_button_number): Removed useless initializer.
+        * java/awt/Frame.java
+        (next_frame_number): Likewise.
+        * java/awt/Scrollbar.java
+        (next_scrollbar_number): Likewise.
+        * java/awt/TextArea.java
+        (next_text_number): Likewise.
+        * java/io/ObjectInputStream.java
+        (dump): Likewise.
+        * java/security/Policy.java
+        (currentPolicy): Likewise.
+        * java/util/Timer.java
+        (nr): Likewise.
+        * java/util/logging/LogRecord.java
+        (lastSeqNum): Likewise.
+        * javax/naming/spi/NamingManager.java
+        (icfb, ofb): Likewise.
+        * javax/swing/JDialog.java
+        (decorated): Likewise.
+        * javax/swing/JFrame.java
+        (defaultLookAndFeelDecorated): Likewise.
+        * javax/swing/plaf/basic/BasicToolBarUI.java
+        (offset, regular): Made final.
+        * javax/swing/plaf/basic/BasicScrollBarUI.java
+        (DECREASE_HIGHLIGHT, INCREASE_HIGHLIGHT, NO_HIGHLIGHT,
+        POSITIVE_SCROLL, NEGATIVE_SCROLL): Made final.
+        * java/net/HttpURLConnection.java
+        (valid_methods): Made final.
+
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/DataInputStream.java,
 	libraries/javalib/java/io/DataOutputStream.java,
 	libraries/javalib/java/io/InputStreamReader.java,

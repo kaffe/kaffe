@@ -435,19 +435,19 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   protected Rectangle thumbRect;
 
   /** Indicates that the decrease highlight should be painted. */
-  protected static int DECREASE_HIGHLIGHT = 1;
+  protected static final int DECREASE_HIGHLIGHT = 1;
 
   /** Indicates that the increase highlight should be painted. */
-  protected static int INCREASE_HIGHLIGHT = 2;
+  protected static final int INCREASE_HIGHLIGHT = 2;
 
   /** Indicates that no highlight should be painted. */
-  protected static int NO_HIGHLIGHT = 0;
+  protected static final int NO_HIGHLIGHT = 0;
 
   /** Indicates that the scrolling direction is positive. */
-  private static int POSITIVE_SCROLL = 1;
+  private static final int POSITIVE_SCROLL = 1;
 
   /** Indicates that the scrolling direction is negative. */
-  private static int NEGATIVE_SCROLL = -1;
+  private static final int NEGATIVE_SCROLL = -1;
 
   /** The cached preferred size for the scrollbar. */
   private transient Dimension preferredSize;

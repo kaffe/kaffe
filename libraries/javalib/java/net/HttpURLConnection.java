@@ -291,7 +291,7 @@ public abstract class HttpURLConnection extends URLConnection
   /**
    * This is a list of valid request methods, separated by "|" characters.
    */
-  private static String valid_methods =
+  private static final String valid_methods =
     "|GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE|";
 
   // Instance Variables

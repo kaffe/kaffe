@@ -43,14 +43,14 @@ package java.awt;
  */
 class EventDispatchThread extends Thread
 {
-  private static int dispatchThreadNum = 1;
+  private static int dispatchThreadNum;
 
   private EventQueue queue;
 
   EventDispatchThread(EventQueue queue)
   {
     super();
-    setName("AWT-EventQueue-" + dispatchThreadNum++);
+    setName("AWT-EventQueue-" + ++dispatchThreadNum);
     this.queue = queue;
     setPriority(NORM_PRIORITY + 1);
     start();

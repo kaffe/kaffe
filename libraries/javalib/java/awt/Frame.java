@@ -199,7 +199,7 @@ private String title = "";
   /*
    * The number used to generate the name returned by getName.
    */
-  private static transient long next_frame_number = 0;
+  private static transient long next_frame_number;
 
 /**
   * Initializes a new instance of <code>Frame</code> that is not visible

@@ -77,7 +77,7 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   private int close_action = HIDE_ON_CLOSE;
   
   /** Whether JDialogs are decorated by the Look and Feel. */
-  private static boolean decorated = false;
+  private static boolean decorated;
 
   /**
    * Creates a new non-modal JDialog with no title 

@@ -84,7 +84,7 @@ private transient ActionListener action_listeners;
   /*
    * The number used to generate the name returned by getName.
    */
-  private static transient long next_button_number = 0;
+  private static transient long next_button_number;
 
 /*************************************************************************/
 

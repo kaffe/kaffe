@@ -101,7 +101,7 @@ public class TextArea extends TextComponent implements java.io.Serializable
   /*
    * The number used to generate the name returned by getName.
    */
-  private static transient long next_text_number = 0;
+  private static transient long next_text_number;
 
   /**
    * Initialize a new instance of <code>TextArea</code> that is empty.

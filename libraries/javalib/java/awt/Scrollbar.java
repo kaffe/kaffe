@@ -125,7 +125,7 @@ private transient boolean valueIsAdjusting = false;
   /*
    * The number used to generate the name returned by getName.
    */
-  private static transient long next_scrollbar_number = 0;
+  private static transient long next_scrollbar_number;
 
 /*************************************************************************/
 

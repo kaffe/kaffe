@@ -1331,10 +1331,10 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
   private static class ToolBarBorder implements Border
   {
     /** The size of the larger, draggable side of the border. */
-    private static int offset = 10;
+    private static final int offset = 10;
 
     /** The other sides. */
-    private static int regular = 2;
+    private static final int regular = 2;
 
     /**
      * This method returns the border insets for the JToolBar.
