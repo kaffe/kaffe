@@ -1,5 +1,15 @@
 2004-11-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c:
+	Resynced with GNU Classpath.
+
+	2004-11-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c (setFont):
+        Set pango context's description and language.
+
+2004-11-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/plaf/basic/BasicTextPaneUI.java:
 	Added missing file form last commit.
 

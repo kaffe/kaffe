@@ -172,6 +172,8 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
       pfont->font = NULL;
     }
   
+  pango_context_set_font_description (pfont->ctx, pfont->desc);
+  pango_context_set_language (pfont->ctx, gtk_get_default_language());
   pfont->font = pango_context_load_font (pfont->ctx, pfont->desc);
   g_assert (pfont->font != NULL);
 
