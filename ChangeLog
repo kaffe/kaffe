@@ -1,3 +1,14 @@
+Sat Jul 17 16:57:33 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/TreeMap.java: new file
+	* libraries/javalib/java/util/AbstractMap.java: fix bug in values()
+	* libraries/javalib/java/util/HashMap.java: no need to override
+	the AbstractMap's version of keySet() and values() methods;
+	reimplement entrySet() using new AbstractMapEntrySet class;
+	fix bug in clone() method
+	* libraries/javalib/java/util/AbstractMapEntrySet.java: new file
+	* libraries/javalib/Makefile.{am,in}: add new files
+
 Thu Jul 15 16:32:12 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/HashMap.java: implement/replace
@@ -7,6 +18,7 @@ Thu Jul 15 16:32:12 PDT 1999  Archie Cobbs <archie@whistle.com>
 	exceptions in unimplemented routines instead of returning null
 	* libraries/javalib/java/util/Map.java: whitespace adjustment
 	* libraries/extensions/javalib/Makefile.{am,in}: add AbstractMap.java
+	* libraries/javalib/java/util/SystemClassLoader.java: remove, unused
 
 Tue Jul 13 17:36:51 PDT 1999  Archie Cobbs <archie@whistle.com>
 
