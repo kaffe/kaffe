@@ -149,7 +149,7 @@ final public long readLong() throws IOException {
 	int i1=readInt(); /* b1-4 */
 	int i2=readInt(); /* b5-8 */
 
-	return ((long)i1 << 32) | (((long)i2) & 0xFFFFFFFF);
+	return ((long)i1 << 32) + (((long)i2) & 0xffffffffL);
 }
 
 final public short readShort() throws IOException {
