@@ -42,13 +42,14 @@ public int next() {
 	if (iterator.current() == CharacterIterator.DONE)
 		return DONE;
 
-	for (char c = iterator.next();
-	    c != CharacterIterator.DONE;
-	    c = iterator.next()) {
+	for (char c = iterator.next(); c != CharacterIterator.DONE; ) {
 		if (c == '.') {
-			iterator.next();
+			c = iterator.next();
+			if (c != CharacterIterator.DONE && c != ' ')
+				continue;
 			break;
 		}
+	    	c = iterator.next();
 	}
 	return iterator.getIndex();
 }
