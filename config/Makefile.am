@@ -283,7 +283,7 @@ stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_MD_H) md.h $@
 
 xprofile-md.h: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h02; \
+	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_XPROFILE_MD_H) xprofile-md.h $@

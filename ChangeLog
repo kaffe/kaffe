@@ -1,3 +1,10 @@
+Wed May 29 12:04:47 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* configure.in,
+	config/Makefile.am: patch from Tim Stack fixes the
+	compilation problems with --with-profiling and
+	--with-xprofiling --with-staticvm --with-staticlib.
+
 Fri May 24 11:17:43 PDT 2002  Godmar Back <gback@stanford.edu>
 
 	* kaffe/kaffevm/baseClasses.c: fix check for foreign classpath

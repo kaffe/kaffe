@@ -346,6 +346,15 @@ esac
 dnl ENABLE_XPROF controls installation of xprof scripts in kaffe/scripts/Makefile.am
 AM_CONDITIONAL(ENABLE_XPROF, test x"$enable_xprofiling" = x"yes")
 
+if test x"$enable_xprofiling" = x"yes"; then
+  if test -f "$srcdir/config/$Khost_cpu/$Khost_os/xprofile-md.h"; then
+    CONFIG_XPROFILE_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/xprofile-md.h"
+    AC_SUBST(CONFIG_XPROFILE_MD_H)
+  else
+    AC_MSG_ERROR(Profiling not supported in $Khost_cpu-$Khost_os)
+  fi
+fi
+
 dnl =========================================================================
 dnl Allow support for debugging of C/jitted code
 dnl -------------------------------------------------------------------------
