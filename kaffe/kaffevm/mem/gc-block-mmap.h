@@ -12,14 +12,10 @@
 #ifndef __gc_block_h
 #define	__gc_block_h
 
-/* allow for machine-specific definitions of gc_heap_base */
-#include "md.h"
 #include "mem/gc-incremental.h"
 
-#ifndef gc_heap_base
 extern size_t gc_heap_base;
 extern size_t gc_block_base;
-#endif
 
 typedef struct _gc_block {
 #ifdef DEBUG
@@ -61,13 +57,15 @@ typedef struct _gc_block {
 #define GCBLOCKEND(B)		((B) + (((B)->size+gc_pgsize-1)>>gc_pgbits))
 #define GCBLOCK_OVH		0
 
+extern uintp gc_heap_range;	/* last gcable address - gc_heap_base */
+
 static inline int
 gc_heap_isobject(gc_block *info, gc_unit *unit)
 {
 	uintp p = (uintp) UTOMEM(unit) - gc_heap_base;
 	int idx;
 
-	if (!(p & (MEMALIGN - 1)) && p < gc_heap_total
+	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range
 	    && info->next == GCBLOCK_LIVE) {
 		/* Make sure 'unit' refers to the beginning of an
 		 * object.  We do this by making sure it is correctly

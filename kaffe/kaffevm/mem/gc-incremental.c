@@ -108,6 +108,7 @@ static void objectStatsPrint(void);
 
 static iLock gcman;
 static iLock finman;
+iLock gc_lock;			/* allocator mutex */
 
 int gc_mode = GC_DISABLED;	/* GC will be enabled after the first
 				 * thread is setup.
@@ -227,6 +228,7 @@ static
 void
 initGc(void)
 {
+	initStaticLock(&gc_lock);
 	URESETLIST(gclists[white]);
 	URESETLIST(gclists[grey]);
 	URESETLIST(gclists[black]);
@@ -572,6 +574,9 @@ gcMan(void* arg)
 			info = GCMEM2BLOCK(unit);
 			idx = GCMEM2IDX(info, unit);
 			if (GC_GET_STATE(info, idx) == GC_STATE_NEEDFINALIZE) {
+				/* this assert is somewhat expensive */
+				DBG(GCDIAG,
+				    assert(gc_heap_isobject(info, unit)));
 				GC_SET_STATE(info, idx, GC_STATE_INFINALIZE);
 				markObject(UTOMEM(unit));
 			}
@@ -674,7 +679,10 @@ finishGC(void)
 
 		assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_WHITE);
 		assert(GC_GET_STATE(info, idx) == GC_STATE_NORMAL);
+		gcStats.freedmem += GCBLOCKSIZE(info);
+		gcStats.freedobj += 1;
 		UAPPENDLIST(gclists[mustfree], unit);
+		OBJECTSTATSREMOVE(unit);
 	}
 
 	/* 
@@ -720,13 +728,11 @@ finishGC(void)
 	 * thread manipulating the "mustfree" list.
 	 */
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
+		lockStaticMutex(&gc_lock);
 		unit = gclists[mustfree].cnext;
-		info = GCMEM2BLOCK(unit);
 		UREMOVELIST(unit);
-		gcStats.freedmem += GCBLOCKSIZE(info);
-		gcStats.freedobj += 1;
-		OBJECTSTATSREMOVE(unit);
 		gc_heap_free(unit);
+		unlockStaticMutex(&gc_lock);
 	}
 
 	/* If there's stuff to be finalised then we'd better do it */
@@ -850,6 +856,7 @@ gcMalloc(size_t size, int fidx)
 	}
 
 	assert(size != 0);
+	lockStaticMutex(&gc_lock);
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
 
 	/* keep pointer to object */
@@ -900,6 +907,7 @@ gcMalloc(size_t size, int fidx)
 		UAPPENDLIST(gclists[white], unit);
 		UNLOCK();
 	}
+	unlockStaticMutex(&gc_lock);
 	return (mem);
 }
 
@@ -914,6 +922,7 @@ gcRealloc(void* mem, size_t size, int fidx)
 	int idx;
 	void* newmem;
 	gc_unit* unit;
+	int osize;
 
 	assert(fidx == GC_ALLOC_FIXED);
 
@@ -922,21 +931,25 @@ gcRealloc(void* mem, size_t size, int fidx)
 		return (gcMalloc(size, fidx));
 	}
 
+	lockStaticMutex(&gc_lock);
 	unit = UTOUNIT(mem);
 	info = GCMEM2BLOCK(unit);
 	idx = GCMEM2IDX(info, unit);
+	osize = GCBLOCKSIZE(info);
 
 	/* Can only handled fixed objects at the moment */
 	assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_FIXED);
+	info = 0;
+	unlockStaticMutex(&gc_lock);
 
 	/* If we'll fit into the current space, just send it back */
-	if (info->size >= size + sizeof(gc_unit)) {
+	if (osize >= size + sizeof(gc_unit)) {
 		return (mem);
 	}
 
 	/* Allocate new memory, copy data, and free the old */
 	newmem = gcMalloc(size, fidx);
-	memcpy(newmem, mem, info->size);
+	memcpy(newmem, mem, osize);
 	gcFree(mem);
 
 	return (newmem);
@@ -954,6 +967,7 @@ gcFree(void* mem)
 	gc_unit* unit;
 
 	if (mem != 0) {
+		lockStaticMutex(&gc_lock);
 		unit = UTOUNIT(mem);
 		info = GCMEM2BLOCK(unit);
 		idx = GCMEM2IDX(info, unit);
@@ -972,6 +986,7 @@ gcFree(void* mem)
 			/* We just ignore this - it'll get GCed */
 			assert(!!!"Attempt to explicitly free nonfixed object");
 		}
+		unlockStaticMutex(&gc_lock);
 	}
 }
 

@@ -170,27 +170,17 @@ AC_MSG_RESULT($with_engine)
 AC_SUBST_FILE(engine_frag)dnl
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
+AC_CHECK_FUNCS(getpagesize)
+
 dnl -------------------------------------------------------------------------
 dnl Choose a gc_block allocation scheme
 dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH(gcblock, [  --with-gcblock=(hash|mmap)	Choose gc_block allocation])
 
-dnl default to old scheme
-if test x"$with_gcblock" != x"mmap"; then
-	with_gcblock=hash
-fi
-
-dnl This is not a very good test.  AC_FUNC_MMAP may decide that mmap is 
-dnl present but broken.  The only way to check this is to look at 
-dnl ac_func_mmap_fixed_mapped.
-
-AC_FUNC_MMAP			dnl keep out of conditional
-if test "$with_gcblock" = "mmap"; then
-	if test "$ac_cv_func_mmap_fixed_mapped" != "yes"; then
-		echo "can't use gcblock-mmap without mmap"
-		with_gcblock=hash
-	fi
+dnl default to new scheme
+if test x"$with_gcblock" != x"hash"; then
+	with_gcblock=mmap
 fi
 
 AC_MSG_CHECKING(garbage collection heap layout)
@@ -611,6 +601,7 @@ AC_CHECK_FUNCS(fcntl ioctl)
 AC_CHECK_FUNCS(alarm setitimer)
 AC_CHECK_FUNCS(sigprocmask sigsetmask sigemptyset sigaddset signal sigaction)
 AC_CHECK_FUNCS(sbrk valloc memalign mallopt)
+AC_CHECK_FUNCS(mprotect madvise)
 AC_CHECK_FUNCS(waitpid kill fork execve execvp)
 AC_CHECK_FUNCS(rld_load shl_load LoadLibrary dld_link)
 AC_CHECK_FUNCS(sync fsync)

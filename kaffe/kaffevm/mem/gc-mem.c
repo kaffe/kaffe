@@ -17,13 +17,15 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "locks.h"
-#include "gc-mem.h"
 #include "gc.h"
 #include "mem/gc-block.h"
+#include "gc-mem.h"
 #include "jni.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
+extern iLock gc_lock;
 
 static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
@@ -32,10 +34,7 @@ static gc_block* gc_primitive_alloc(size_t);
 static void gc_primitive_free(gc_block*);
 static void* gc_system_alloc(size_t);
 
-static struct {
-	gc_block*	list;
-	uint16		sz;
-} freelist[NR_FREELISTS+1] 
+gc_freelist freelist[NR_FREELISTS+1]
 #ifdef PREDEFINED_NUMBER_OF_TILES
 	= {
 #define	S(sz)	{ 0, sz }
@@ -68,9 +67,8 @@ static struct {
 } sztable[MAX_SMALL_OBJECT_SIZE+1];
 static int max_freelist;
 
-static gc_block* gc_prim_freelist;
+gc_block* gc_prim_freelist;
 static size_t max_small_object_size;
-static iLock gc_lock;
 
 size_t gc_heap_total;
 size_t gc_heap_allocation_size;
@@ -243,10 +241,7 @@ gc_heap_malloc(size_t sz)
 	if (gc_heap_init == 0) {
 		gc_heap_init = 1;
 		gc_heap_initialise();
-		initStaticLock(&gc_lock);
 	}
-
-	lockStaticMutex(&gc_lock);
 
 	times = 0;
 
@@ -328,8 +323,6 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 
 	gc_current_alloc += nsz;
 
-	unlockStaticMutex(&gc_lock);
-
 	return (mem);
 
 	/* --------------------------------------------------------------- */
@@ -348,6 +341,9 @@ DBG(GCSTAT,
 		 * the GC is available and it's worth doing.
 		 */
 		if (gc_heap_total > 0 && garbageman != 0 && gc_current_alloc > gc_heap_allocation_size/2) {
+			/* Runtime.gc() can't give up this lock on it's
+			 * own, since it does not hold this lock.
+			 */
 			unlockStaticMutex(&gc_lock);
 			invokeGC();
 			lockStaticMutex(&gc_lock);
@@ -385,7 +381,6 @@ DBG(GCSTAT,
 			assert (ranout++ == 0 || !!!"Ran out of memory!");
 		}
 		/* Guess we've really run out */
-		unlockStaticMutex(&gc_lock);
 		return (0);
 	}
 
@@ -406,7 +401,6 @@ gc_heap_free(void* mem)
 	int msz;
 	int idx;
 
-	lockStaticMutex(&gc_lock);
 
 	info = GCMEM2BLOCK(mem);
 	idx = GCMEM2IDX(info, mem);
@@ -465,7 +459,6 @@ DBG(GCFREE,
 		gc_primitive_free(info);
 	}
 
-	unlockStaticMutex(&gc_lock);
 }
 
 /*

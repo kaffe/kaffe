@@ -24,6 +24,13 @@ extern size_t gc_heap_total;
 extern size_t gc_heap_allocation_size;
 extern size_t gc_heap_limit;
 
+typedef struct {
+	struct _gc_block* list;
+	uint16		sz;
+} gc_freelist;
+
+extern gc_freelist freelist[];
+
 #ifdef DEBUG
 extern int gc_system_alloc_cnt;
 #endif

@@ -283,6 +283,12 @@
 /* Do we have valloc */
 #undef	HAVE_VALLOC
 
+/* Do we have mprotect */
+#undef HAVE_MPROTECT
+
+/* Do we have madvise */
+#undef HAVE_MADVISE
+
 /* Do we have dlerror */
 #undef	HAVE_DLERROR
 
