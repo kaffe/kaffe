@@ -1,6 +1,12 @@
 What's New since Kaffe OpenVM 1.0.5
 -----------------------------------
 
+* New cross language debugging support for JIT3 engine.
+
+* New cross language profiling support for JIT3 engine.
+
+* Support of libffi.
+
 * Port to i386 GNU Hurd.
 
 * Port i386 hardware profiler from JIT engine to JIT3 engine.
