@@ -132,7 +132,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 		for (frame = (vmException*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
 
-			if (frame->method == (Method*)1) {
+			if (frame->meth == (Method*)1) {
                                 /* Don't allow JNI to catch thread death
                                  * exceptions.  Might be bad but its going
                                  * 1.2 anyway.
