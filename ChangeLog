@@ -1,5 +1,10 @@
 2003-04-16 Dalibor Topic <robilad@yahoo.com>
 
+	* libraries/javalib/java/io/ObjectOutputStream.java:
+	(writeStreamHeader) made protected according to API spec.
+
+2003-04-16 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/java/io/ObjectStreamClass.java:
 	(getEndOfDataBlock) improved exception handling.
 	

@@ -327,18 +327,18 @@ public class ObjectOutputStream
 		this.out.enableBuffering(restore);
 	}
 
+	protected void writeStreamHeader() throws IOException {
+		writeShort(ObjectStreamConstants.STREAM_MAGIC);
+		writeShort(ObjectStreamConstants.STREAM_VERSION);
+		out.flush();
+	}
+
 	// --- Internal implementation methods
 
 	/*package*/ boolean enableBuffering(boolean enable)
 		throws IOException
 	{
 		return this.out.enableBuffering(enable);
-	}
-
-	private void writeStreamHeader() throws IOException {
-		writeShort(ObjectStreamConstants.STREAM_MAGIC);
-		writeShort(ObjectStreamConstants.STREAM_VERSION);
-		out.flush();
 	}
 
 	/*package*/ void makeObjectReference(Object obj) {
