@@ -27,6 +27,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#if defined(HAVE_MPROTECT) && defined(DEBUG)
+#include <sys/mman.h>
+#endif
 
 extern iLock* gc_lock;
 
