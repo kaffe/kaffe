@@ -1,3 +1,7 @@
+Sun Mar 28 00:45:54 1999  YAMAGUCHI Yuji  <yamag@distribution.co.jp>
+
+	* libraries/javalib/java/util/Date.java: fixed getYear()
+
 Sat Mar 27 14:18:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/thread.c,
