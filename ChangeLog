@@ -1,3 +1,9 @@
+Mon May 18 18:00:00 1998  Stephen Crane <jsc@brillig.cs.city.ac.uk>
+
+	* kaffe/kaffevm/support.c: separated most of execute_java_constructor()
+	out into execute_java_constructor_v() which is easier to call from
+	native code.
+
 Sat May 16 23:27:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/system/unix-jthreads/jthread.c: fixed bug in
