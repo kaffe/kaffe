@@ -3,10 +3,17 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
 noinst_LTLIBRARIES = libkthread.la
+
+libkthread_la_LIBADD = \
+	$(NET_LIBS)
+
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
 

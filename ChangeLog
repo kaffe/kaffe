@@ -1,3 +1,14 @@
+2004-06-01  Dalibor Topic  <robilad@kaffe.org>
+
+        * kaffe/kaffevm/systems/unix-pthreads/Makefile.am:
+	(libkthread_la_LIBADD) Added NET_LIBS to fix build problems
+	on sparc-solaris.
+
+        * kaffe/kaffevm/systems/unix-pthreads/Makefile.in:
+	Regenerated.
+
+	Reported by: Riccardo Mottola  <zuse@libero.it>
+
 2004-06-01  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* test/regression/DeleteFile.java: Fixed 'java args'.

@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -68,7 +71,8 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libkthread_la_LIBADD =
+am__DEPENDENCIES_1 =
+libkthread_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libkthread_la_OBJECTS = lock-impl.lo signal.lo syscalls.lo \
 	thread-impl.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
@@ -330,6 +334,9 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 noinst_LTLIBRARIES = libkthread.la
+libkthread_la_LIBADD = \
+	$(NET_LIBS)
+
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
 
