@@ -16,9 +16,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.SystemClassLoader;
 
 final public class Class
 {
+
+private static ClassLoader systemLoader = new SystemClassLoader();
 
 native public static Class forName(String className) throws ClassNotFoundException;
 
@@ -148,12 +151,49 @@ native public String getName();
 
 native public static Class getPrimitiveClass(String name);
 
+/**
+ * Finds a resource with the specified name.  
+ * The rules for searching for resources associated with a given class 
+ * are implemented by the class loader of the class. 
+ * <p>
+ * The Class methods delegate to ClassLoader methods, after applying a 
+ * naming convention: if the resource name starts with "/", it is used as 
+ * is. Otherwise, the name of the package is prepended, after converting 
+ * "." to "/". 
+ *
+ * @param 	name the string representing the resource to be found. 
+ * @return 	the URL object having the specified name, or null if no 
+ *		resource with the specified name is found. 
+ */
 public URL getResource(String name) {
-	return (getClassLoader().getResource(fullResourceName(name)));
+	ClassLoader loader = getClassLoader();
+	if (loader != null) 
+		return (loader.getResource(fullResourceName(name)));
+	else
+		return (systemLoader.getResource(fullResourceName(name)));
 }
 
+/**
+ * Finds a resource with a given name.  
+ * Will return null if no resource with this name is found. The rules
+ * for searching a resources associated with a given class are implemented 
+ * by the ClassLoader of the class.
+ *
+ * The Class methods delegate to ClassLoader methods, after applying a 
+ * naming convention: if the resource name starts with "/", it is used 
+ * as is. Otherwise, the name of the package is prepended, after 
+ * converting "." to "/". 
+ *
+ * @param 	name the string representing the resource to be found 
+ * @return 	the InputStream object having the specified name, or null 
+ *		if no resource with the specified name is found. 
+ */
 public InputStream getResourceAsStream(String name) {
-	return (getClassLoader().getResourceAsStream(fullResourceName(name)));
+	ClassLoader loader = getClassLoader();
+	if (loader != null) 
+		return (loader.getResourceAsStream(fullResourceName(name)));
+	else
+		return (systemLoader.getResourceAsStream(fullResourceName(name)));
 }
 
 private String fullResourceName(String name) {

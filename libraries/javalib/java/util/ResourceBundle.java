@@ -111,7 +111,13 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 	}
 
 	// Okay, failed to load bundle - so attempt to load properties as bundle.
-	InputStream strm = System.class.getClassLoader().getResourceAsStream(baseName + ".properties");
+	ClassLoader sysclassloader = System.class.getClassLoader();
+	InputStream strm = null;
+
+	if (sysclassloader != null)
+		strm = sysclassloader.getResourceAsStream(baseName + ".properties");
+	else
+		strm = ClassLoader.getSystemResourceAsStream(baseName + ".properties");
 	if (strm != null) {
 		try {
 			return (new PropertyResourceBundle(strm));
