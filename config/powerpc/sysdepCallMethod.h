@@ -16,13 +16,6 @@
 /* Needed for callMethodInfo declaration */
 #include "support.h"
 
-/* This define will cause callMethodV and callMethodA to avoid
-   introducing unused slots after jlongs and jdoubles.  */
-#ifndef NO_HOLES
-# define NO_HOLES 1
-#endif
-
-
 /* ARG_TYPE is the type of a register used for passing arguments.  */
 #define ARG_TYPE	long
 

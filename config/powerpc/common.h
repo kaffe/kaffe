@@ -18,6 +18,12 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
+/* This define will cause callMethodV and callMethodA to avoid
+   introducing unused slots after jlongs and jdoubles.  */
+#ifndef NO_HOLES
+# define NO_HOLES 1
+#endif
+
 #if defined(NEED_sysdepCallMethod)
 #include "sysdepCallMethod.h"
 #endif /* defined(NEED_sysdepCallMethod) */

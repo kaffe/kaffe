@@ -1,3 +1,9 @@
+2004-10-28  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* config/powerpc/sysdepCallMethod.h,
+	config/powerpc/common.h: moved defintion of NO_HOLES to common.h,
+	since support.c doesn't include sysdepCallMethod.h
+
 2004-10-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/security/cert/X509Certificate.java:
