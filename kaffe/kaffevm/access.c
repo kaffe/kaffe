@@ -97,7 +97,7 @@ int checkAccess(struct Hjava_lang_Class *context,
 		accessFlags target_flags)
 {
 	int class_acc = 0, slot_acc = 0, same_package = 0;
-
+	
 	assert(context);
 	assert(target);
 	
@@ -145,11 +145,44 @@ int checkAccess(struct Hjava_lang_Class *context,
 	}
 	else if( (target->name->data[0] != '[') &&
 		 same_package &&
-		 target->this_inner_index )
+		 (target->this_inner_index >= 0) )
 	{
 		slot_acc = 1;
 	}
+	else if( context->this_inner_index >= 0 )
+	{
+		innerClass *ic;
 
+		/*
+		 * Check for an inner class accessing something in the outer.
+		 */
+		ic = &context->inner_classes[context->this_inner_index];
+		if( ic->outer_class )
+		{
+			Hjava_lang_Class *outer;
+			errorInfo einfo;
+			
+			outer = getClass(ic->outer_class, context, &einfo);
+			if( outer != NULL )
+			{
+				if( (target_flags & ACC_PRIVATE) &&
+				    (target == outer) )
+				{
+					/* XXX Not sure about this. */
+					slot_acc = 1;
+				}
+				else if( (target_flags & ACC_PROTECTED) &&
+					 instanceof(target, outer) )
+				{
+					slot_acc = 1;
+				}
+			}
+			else
+			{
+				discardErrorInfo(&einfo);
+			}
+		}
+	}
 	return( class_acc && slot_acc );
 }
 

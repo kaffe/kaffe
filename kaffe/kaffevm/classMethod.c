@@ -974,6 +974,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 	cl->this_index = this_index;
 	cl->inner_classes = 0;
 	cl->nr_inner_classes = 0;
+	cl->this_inner_index = -1;
 	return 1;
 }
 
@@ -1073,7 +1074,7 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
 
 		if (c->this_index && ic->inner_class == c->this_index) {
 		    c->accflags = (c->accflags & ~ACC_MASK) | (ic->inner_class_accflags & ACC_MASK);
-		    c->this_inner_index = nr;
+		    c->this_inner_index = i;
 		}
 	}
 	return true;

@@ -1,3 +1,11 @@
+2003-08-31  Timothy S. Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/access.c:
+	Allow inner classes to access members in the outer class.
+
+	* kaffe/kaffevm/classMethod.c:
+	Fix initial value of this_inner_index in the class struct.
+
 2003-08-31  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/text/SimpleDateFormat.java:
