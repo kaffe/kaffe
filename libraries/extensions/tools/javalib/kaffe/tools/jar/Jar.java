@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.jar.*;
 import java.util.zip.*;
 import kaffe.io.*;
+import kaffe.util.Base64;
 
 public class Jar {
 
@@ -928,7 +929,8 @@ public class Jar {
 		    byte[] buf = new byte[1024];
 		    while (dis.read(buf, 0, buf.length) != -1);
 		    byte[] digest = dis.getMessageDigest().digest();
-		    attr.putValue(algs[j] + "-Digest", "[base64 goes here]");
+		    attr.putValue(algs[j] + "-Digest",
+			new String(Base64.encode(digest)));
 		    if (alglist.length() != 0) {
 			alglist.append(' ');
 		    }
