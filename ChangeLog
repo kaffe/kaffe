@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-04  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/aelfred2/SAXDriver.java: Corrected implementation of
+        isDeclared methods. Improved performance of isSpecified methods.
+
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-04  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/SortingFocusTraversalPolicy.java

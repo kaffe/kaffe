@@ -150,10 +150,7 @@ final public class SAXDriver
     private Stack			entityStack;
 
     // one vector (of object/struct): faster, smaller
-    private List			attributesList = Collections.synchronizedList(new ArrayList());
-  
-    private boolean			attributeSpecified [] = new boolean[10];
-    private boolean			attributeDeclared [] = new boolean[10];
+    private List			attributesList;
 
     private boolean			namespaces = true;
     private boolean			xmlNames = false;
@@ -183,8 +180,6 @@ final public class SAXDriver
       elementName = null;
       entityStack = new Stack ();
       attributesList = Collections.synchronizedList(new ArrayList());
-      attributeSpecified = new boolean[10];
-      attributeDeclared = new boolean[10];
       attributeCount = 0;
       attributes = false;
       nsTemp = new String[3];
@@ -849,17 +844,10 @@ final public class SAXDriver
   }
 	// remember this attribute ...
 
-	if (attributeCount == attributeSpecified.length) { 	// grow array?
-	    boolean temp [] = new boolean [attributeSpecified.length + 5];
-	    System.arraycopy (attributeSpecified, 0, temp, 0, attributeCount);
-	    attributeSpecified = temp;
-	}
-	attributeSpecified [attributeCount] = isSpecified;
-
 	attributeCount++;
 	
 	// attribute type comes from querying parser's DTD records
-	attributesList.add(new Attribute(qname, value));
+	attributesList.add(new Attribute(qname, value, isSpecified));
 
     }
 
@@ -1212,31 +1200,31 @@ final public class SAXDriver
     {
 	if (index < 0 || index >= attributeCount) 
 	    throw new ArrayIndexOutOfBoundsException ();
-	return attributeDeclared [index];
+        String type = parser.getAttributeType(elementName, getQName(index));
+        return (type != null);
     }
 
     /** @return false unless the attribute was declared in the DTD.
      * @throws java.lang.IllegalArgumentException
      *   When the supplied names do not identify an attribute.
      */
-    public boolean isDeclared (java.lang.String qName)
+    public boolean isDeclared (String qName)
     {
 	int index = getIndex (qName);
 	if (index < 0)
 	    throw new IllegalArgumentException ();
-	return attributeDeclared [index];
+        String type = parser.getAttributeType(elementName, qName);
+        return (type != null);
     }
 
     /** @return false unless the attribute was declared in the DTD.
      * @throws java.lang.IllegalArgumentException
      *   When the supplied names do not identify an attribute.
      */
-    public boolean isDeclared (java.lang.String uri, java.lang.String localName)
+    public boolean isDeclared (String uri, String localName)
     {
 	int index = getIndex (uri, localName);
-	if (index < 0)
-	    throw new IllegalArgumentException ();
-	return attributeDeclared [index];
+        return isDeclared(index);
     }
 
 
@@ -1245,9 +1233,7 @@ final public class SAXDriver
      */
     public boolean isSpecified (int index)
     {
-	if (index < 0 || index >= attributeCount) 
-	    throw new ArrayIndexOutOfBoundsException ();
-	return attributeSpecified [index];
+	return ((Attribute) attributesList.get(index)).specified;
     }
 
     /**
@@ -1256,10 +1242,7 @@ final public class SAXDriver
     public boolean isSpecified (String uri, String local)
     {
 	int index = getIndex (uri, local);
-
-	if (index < 0)
-	    throw new IllegalArgumentException ();
-	return attributeSpecified [index];
+        return isSpecified(index);
     }
 
     /**
@@ -1268,10 +1251,7 @@ final public class SAXDriver
     public boolean isSpecified (String xmlName)
     {
 	int index = getIndex (xmlName);
-
-	if (index < 0)
-	    throw new IllegalArgumentException ();
-	return attributeSpecified [index];
+        return isSpecified(index);
     }
 
 
@@ -1374,12 +1354,14 @@ class Attribute
     String value;
     String nameSpace;
     String localName;
+    boolean specified;
 
-    Attribute(String name, String value)
+    Attribute(String name, String value, boolean specified)
     {
         this.name = name;
         this.value = value;
         this.nameSpace = "";
+        this.specified = specified;
     }
 }
 
