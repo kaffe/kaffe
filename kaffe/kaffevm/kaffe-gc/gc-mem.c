@@ -1039,6 +1039,19 @@ static void pagefree(uintp base, size_t size UNUSED)
 #endif
 
 /*
+ * Determine if ptr points inside the array of gc_block structures.
+ *
+ * @param ptr the pointer to check for
+ * @param base a pointer to the start of the array
+ * @param count the number of elements in the array
+ */
+static int
+inside(void* ptr, gc_block* base, int count) {
+        return ((gc_block*)ptr >= base && (gc_block*)ptr < base + count);
+}
+
+
+/*
  * Allocate size bytes of heap memory, and return the corresponding
  * gc_block *.
  */
@@ -1132,6 +1145,8 @@ gc_block_alloc(size_t size)
 			    R(b[i].next);
 			    R(b[i].pprev);
 			    R(b[i].pnext);
+                            if (inside(b[i].free, (gc_block*)old_blocks, onb))
+				R(b[i].free);
 			  }
 
 			memset(b + onb, 0,

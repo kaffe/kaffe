@@ -1,3 +1,8 @@
+2004-09-16  Noa Resare  <noa@resare.com>
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_block_alloc):
+        Fix freelist corruption when the gc_block array is moved.
+
 2004-09-16  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:
