@@ -2954,7 +2954,6 @@ javax/swing/DebugGraphics.java
 javax/swing/DefaultBoundedRangeModel.java
 javax/swing/DefaultButtonModel.java
 javax/swing/DefaultCellEditor.java
-javax/swing/DefaultCellRenderer.java
 javax/swing/DefaultComboBoxModel.java
 javax/swing/DefaultDesktopManager.java
 javax/swing/DefaultFocusManager.java

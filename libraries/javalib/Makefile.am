@@ -3480,7 +3480,6 @@ javax_swing_SRCS = \
 	javax/swing/DefaultBoundedRangeModel.java \
 	javax/swing/DefaultButtonModel.java \
 	javax/swing/DefaultCellEditor.java \
-	javax/swing/DefaultCellRenderer.java \
 	javax/swing/DefaultComboBoxModel.java \
 	javax/swing/DefaultDesktopManager.java \
 	javax/swing/DefaultFocusManager.java \
@@ -3542,6 +3541,7 @@ javax_swing_SRCS = \
 	javax/swing/JViewport.java \
 	javax/swing/JWindow.java \
 	javax/swing/KeyStroke.java \
+	javax/swing/LayoutFocusTraversalPolicy.java \
 	javax/swing/ListCellRenderer.java \
 	javax/swing/ListModel.java \
 	javax/swing/ListSelectionModel.java \
@@ -3563,6 +3563,7 @@ javax_swing_SRCS = \
 	javax/swing/SingleSelectionModel.java \
 	javax/swing/SizeRequirements.java \
 	javax/swing/SizeSequence.java \
+	javax/swing/SortingFocusTraversalPolicy.java \
 	javax/swing/SpinnerListModel.java \
 	javax/swing/SpinnerModel.java \
 	javax/swing/SpinnerNumberModel.java \
