@@ -26,10 +26,6 @@
 #include "kaffeh-support.h"
 #include "utf8const.h"
 
-#if !defined(S_ISDIR)
-#define	S_ISDIR(m)	((m) & S_IFDIR)
-#endif
-
 #if defined(__WIN32__) || defined (__amigaos__)
 #define	PATHSEP	';'
 #else
