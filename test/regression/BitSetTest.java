@@ -97,37 +97,37 @@ public class BitSetTest {
 }
 
 /* Expected Output:
-a = {1, 13}    length 14
-b = {1, 13}    length 14
+a = {1, 13}	length 14
+b = {1, 13}	length 14
 a == b true == true
 hashCode() a 24d0 b 24d0
 
-a = {0, 1, 66} length 67
-a.clone() = {0, 1, 66} length 67
-b = {1, 2, 63} length 64
-b.clone() = {1, 2, 63} length 64
+a = {0, 1, 66}	length 67
+a.clone() = {0, 1, 66}	length 67
+b = {1, 2, 63}	length 64
+b.clone() = {1, 2, 63}	length 64
 
-c = {} length 0
+c = {}	length 0
 a == b false == false
 
-a or b = {0, 1, 2, 63, 66}     length 67
-clone() = {0, 1, 2, 63, 66}    length 67
-{} or d = {0, 1, 2, 63, 66}    length 67
+a or b = {0, 1, 2, 63, 66}	length 67
+clone() = {0, 1, 2, 63, 66}	length 67
+{} or d = {0, 1, 2, 63, 66}	length 67
 d == d.clone() true == true
 
-a and b = {1}  length 2
-clone() = {1}  length 2
-{} or d = {1}  length 2
+a and b = {1}	length 2
+clone() = {1}	length 2
+{} or d = {1}	length 2
 d == d.clone() true == true
 
-a xor b = {0, 2, 63, 66}       length 67
-clone() = {0, 2, 63, 66}       length 67
-{} or d = {0, 2, 63, 66}       length 67
+a xor b = {0, 2, 63, 66}	length 67
+clone() = {0, 2, 63, 66}	length 67
+{} or d = {0, 2, 63, 66}	length 67
 d == d.clone() true == true
 
-a andNot b =  = {0, 66}        length 67
-clone() = {0, 66}      length 67
-{} or d = {0, 66}      length 67
+a andNot b =  = {0, 66}	length 67
+clone() = {0, 66}	length 67
+{} or d = {0, 66}	length 67
 d == d.clone() true == true
 
 */

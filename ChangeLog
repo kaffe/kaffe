@@ -1,3 +1,8 @@
+2003-07-15  Rob Gonzalez <rob@kaffe.org>
+
+	* test/regression/BitSetTest.java
+	Expected output changed to use tabs instead of spaces.
+
 2003-07-15  Dalibor Topic <robilad@kaffe.org>
 	
 	* test/regression/BitSetTest.java:
