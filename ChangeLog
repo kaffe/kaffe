@@ -1,3 +1,318 @@
+2004-04-14  Dalibor Topic <robilad@kaffe.org>
+
+        * Makefile.am:
+	Added tools directory.
+
+        * Makefile.in,
+        aclocal.m4,
+        config/Makefile.in,
+        config/config.h.in:
+	Regenerated.
+	
+        * config/i386/jit.h:
+	Added preliminary support for valgrind.
+
+        * configure:
+	Regenerated.
+
+        * configure.ac:
+	Added checks for valgrind, libxml2, libxslt, and a switch
+	to enable libxmlj support.
+
+        * include/Makefile.am,
+	Added include files for libxmlj.
+
+        * include/Makefile.in,
+        kaffe/Makefile.in,
+        kaffe/jvmpi/Makefile.in,
+        kaffe/kaffe/Makefile.in,
+        kaffe/kaffeh/Makefile.in,
+        kaffe/kaffevm/Makefile.in,
+        kaffe/kaffevm/gcj/Makefile.in,
+        kaffe/kaffevm/intrp/Makefile.in,
+        kaffe/kaffevm/jit/Makefile.in,
+        kaffe/kaffevm/jit3/Makefile.in,
+        kaffe/kaffevm/systems/Makefile.in,
+        kaffe/kaffevm/systems/beos-native/Makefile.in,
+        kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+        kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+        kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+        kaffe/man/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        kaffe/scripts/bat/Makefile.in,
+        kaffe/scripts/compat/Makefile.in,
+        kaffe/scripts/compat/javadoc.in,
+        kaffe/scripts/javadoc.in,
+        kaffe/scripts/kaffe.in,
+        kaffe/xprof/Makefile.in,
+        libltdl/config-h.in,
+        libraries/Makefile.in,
+	Regenerated.
+
+        * libraries/clib/Makefile.am,
+	Added libxmlj.
+
+        * libraries/clib/Makefile.in,
+        libraries/clib/awt/Makefile.in,
+        libraries/clib/awt/X/Makefile.in,
+        libraries/clib/awt/qt/Makefile.in,
+        libraries/clib/io/Makefile.in,
+        libraries/clib/libxmlj/Makefile.am,
+        libraries/clib/libxmlj/Makefile.in:
+	Regenerated.
+
+        * libraries/clib/libxmlj/libxsltj.c,
+        libraries/clib/libxmlj/xmlj_error.c,
+        libraries/clib/libxmlj/xmlj_error.h,
+        libraries/clib/libxmlj/xmlj_io.c,
+        libraries/clib/libxmlj/xmlj_io.h:
+	New files from libxmlj. Libxmlj is licensed under
+        GNU General Public License.
+
+        * libraries/clib/management/Makefile.in,
+        libraries/clib/math/Makefile.in,
+        libraries/clib/native/Makefile.in,
+        libraries/clib/net/Makefile.in,
+        libraries/clib/nio/Makefile.in,
+        libraries/clib/security/Makefile.in,
+        libraries/clib/zip/Makefile.in,
+        libraries/extensions/Makefile.in,
+        libraries/extensions/comm/Makefile.in,
+        libraries/extensions/comm/javalib/Makefile.in,
+        libraries/extensions/microsoft/Makefile.in,
+        libraries/extensions/microsoft/clib/Makefile.in,
+        libraries/extensions/microsoft/javalib/Makefile.in,
+        libraries/extensions/pjava/Makefile.in,
+        libraries/extensions/pjava/javalib/Makefile.in,
+        libraries/extensions/servlet/Makefile.in,
+        libraries/extensions/servlet/javalib/Makefile.in,
+        libraries/extensions/sound/Makefile.in,
+        libraries/extensions/sound/alsa/Makefile.in,
+        libraries/extensions/sound/common/Makefile.in,
+        libraries/extensions/sound/esd/Makefile.in,
+        libraries/javalib/Klasses.jar.bootstrap,
+	Regenerated.
+
+        * libraries/javalib/META-INF/MANIFEST.MF:
+	Taken from GNU JAXP.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/bootstrap.classlist:
+	Updated for libxmlj.
+
+        * libraries/javalib/gnu/xml/libxmlj/transform/DefaultErrorListenerImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/DefaultURIResolverImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/ErrorListenerProxy.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/IOToolkit.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/JavaContext.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/LibxmlDocument.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/LibxsltStylesheet.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/SourceLocatorImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/SourceWrapper.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TemplatesImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformerFactoryImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformerImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/URIResolverProxy.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/package.html:
+	New files, taken from libxmlj. Libxmlj is licensed under
+	GNU General Public License.
+
+        * libraries/javalib/java/applet/package.html,
+        libraries/javalib/java/awt/color/package.html,
+        libraries/javalib/java/awt/datatransfer/package.html,
+        libraries/javalib/java/awt/dnd/package.html,
+        libraries/javalib/java/awt/dnd/peer/package.html,
+        libraries/javalib/java/awt/event/package.html,
+        libraries/javalib/java/awt/font/package.html,
+        libraries/javalib/java/awt/geom/package.html,
+        libraries/javalib/java/awt/im/package.html,
+        libraries/javalib/java/awt/image/package.html,
+        libraries/javalib/java/awt/image/renderable/package.html,
+        libraries/javalib/java/awt/package.html,
+        libraries/javalib/java/awt/peer/package.html,
+        libraries/javalib/java/awt/print/package.html,
+        libraries/javalib/java/beans/beancontext/package.html,
+        libraries/javalib/java/beans/package.html,
+        libraries/javalib/java/io/package.html,
+        libraries/javalib/java/lang/package.html,
+        libraries/javalib/java/lang/ref/package.html,
+        libraries/javalib/java/lang/reflect/package.html,
+        libraries/javalib/java/math/package.html,
+        libraries/javalib/java/net/package.html,
+        libraries/javalib/java/nio/channels/package.html,
+        libraries/javalib/java/nio/channels/spi/package.html,
+        libraries/javalib/java/nio/charset/package.html,
+        libraries/javalib/java/nio/charset/spi/package.html,
+        libraries/javalib/java/nio/package.html,
+        libraries/javalib/java/rmi/activation/package.html,
+        libraries/javalib/java/rmi/dgc/package.html,
+        libraries/javalib/java/rmi/package.html,
+        libraries/javalib/java/rmi/registry/package.html,
+        libraries/javalib/java/rmi/server/package.html,
+        libraries/javalib/java/security/acl/package.html,
+        libraries/javalib/java/security/cert/package.html,
+        libraries/javalib/java/security/interfaces/package.html,
+        libraries/javalib/java/security/package.html,
+        libraries/javalib/java/security/spec/package.html,
+        libraries/javalib/java/sql/package.html,
+        libraries/javalib/java/text/package.html,
+        libraries/javalib/java/util/jar/package.html,
+        libraries/javalib/java/util/logging/package.html,
+        libraries/javalib/java/util/package.html,
+        libraries/javalib/java/util/prefs/package.html,
+        libraries/javalib/java/util/regex/package.html,
+        libraries/javalib/java/util/zip/package.html,
+        libraries/javalib/javax/accessibility/package.html,
+        libraries/javalib/javax/naming/directory/package.html,
+        libraries/javalib/javax/naming/event/package.html,
+        libraries/javalib/javax/naming/ldap/package.html,
+        libraries/javalib/javax/naming/package.html,
+        libraries/javalib/javax/naming/spi/package.html,
+        libraries/javalib/javax/rmi/CORBA/package.html,
+        libraries/javalib/javax/rmi/package.html,
+        libraries/javalib/javax/security/auth/x500/package.html,
+        libraries/javalib/javax/sql/package.html,
+        libraries/javalib/javax/swing/event/package.html,
+        libraries/javalib/javax/swing/text/package.html,
+        libraries/javalib/javax/transaction/package.html,
+        libraries/javalib/javax/transaction/xa/package.html:
+	New javadoc files, taken from GNU Classpath.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/jaxp.files:
+	Updated for libxmlj.
+
+        * m4/libxml.m4:
+	Taken from libxml2 2.6.8, licensed under MIT license.
+
+        * m4/libxslt.m4,
+	Taken from libxslt 1.1.5, licensed under MIT license.
+
+        replace/Makefile.in,
+        scripts/compile,
+        test/Makefile.in,
+        test/internal/Makefile.in,
+        test/regression/Makefile.in,
+        test/regression/compile_time/Makefile.in,
+        test/regression/compiler/Makefile.in,
+        test/regression/run_time/Makefile.in,
+
+        * tools/Makefile.am,
+        tools/Makefile.in,
+        tools/gjdoc/Makefile.am,
+        tools/gjdoc/Makefile.in,
+        tools/gjdoc/javalib/Makefile.am,
+        tools/gjdoc/javalib/Makefile.in:
+	New files.
+
+        tools/gjdoc/javalib/com/sun/javadoc/ClassDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/ConstructorDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/Doc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/DocErrorReporter.java,
+        tools/gjdoc/javalib/com/sun/javadoc/Doclet.java,
+        tools/gjdoc/javalib/com/sun/javadoc/ExecutableMemberDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/FieldDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/MemberDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/MethodDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/PackageDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/ParamTag.java,
+        tools/gjdoc/javalib/com/sun/javadoc/Parameter.java,
+        tools/gjdoc/javalib/com/sun/javadoc/ProgramElementDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/RootDoc.java,
+        tools/gjdoc/javalib/com/sun/javadoc/SeeTag.java,
+        tools/gjdoc/javalib/com/sun/javadoc/SerialFieldTag.java,
+        tools/gjdoc/javalib/com/sun/javadoc/Tag.java,
+        tools/gjdoc/javalib/com/sun/javadoc/ThrowsTag.java,
+        tools/gjdoc/javalib/com/sun/javadoc/Type.java,
+        tools/gjdoc/javalib/com/sun/tools/doclets/Taglet.java,
+        tools/gjdoc/javalib/doctranslets/gjdoc_common.xsl,
+        tools/gjdoc/javalib/doctranslets/html/allclasses.xsl,
+        tools/gjdoc/javalib/doctranslets/html/allpackages.xsl,
+        tools/gjdoc/javalib/doctranslets/html/classdoc.xsl,
+        tools/gjdoc/javalib/doctranslets/html/descriptor.xsl,
+        tools/gjdoc/javalib/doctranslets/html/doctranslet.xsl,
+        tools/gjdoc/javalib/doctranslets/html/fulltree.xsl,
+        tools/gjdoc/javalib/doctranslets/html/gjdoc.xsl,
+        tools/gjdoc/javalib/doctranslets/html/html_common.xsl,
+        tools/gjdoc/javalib/doctranslets/html/index.xsl,
+        tools/gjdoc/javalib/doctranslets/html/index_noframes.xsl,
+        tools/gjdoc/javalib/doctranslets/html/packageclasses.xsl,
+        tools/gjdoc/javalib/doctranslets/html/packagedoc.xsl,
+        tools/gjdoc/javalib/doctranslets/html/res/gjdochtml.css,
+        tools/gjdoc/javalib/dtd/dbcentx.mod,
+        tools/gjdoc/javalib/dtd/ent/iso-amsa.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-amsb.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-amsc.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-amsn.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-amso.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-amsr.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-box.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-cyr1.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-cyr2.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-dia.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-grk1.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-grk2.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-grk3.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-grk4.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-lat1.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-lat2.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-num.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-pub.ent,
+        tools/gjdoc/javalib/dtd/ent/iso-tech.ent,
+        tools/gjdoc/javalib/dtd/gjdoc.dtd,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/Driver.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/Driver1_4.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/FileSystemClassLoader.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/TargetContext.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTranslet.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletConfigurationException.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletException.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/JarClassLoader.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/OutputFileInfo.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/AbstractTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ArrayCharacterIterator.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ClassDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ClassDocProxy.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ConstructorDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Debug.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/DirectoryTree.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/DocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ErrorReporter.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/FieldDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/JavadocWrapper.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/LinkTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/MemberDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/MethodDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/PackageDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ParamTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ParameterImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ParseException.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Parser.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ProgramElementDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/RootDocImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/SeeTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/SerialFieldTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TemporaryStore.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TextTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ThrowsTagImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Timer.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TimerDoclet.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TypeImpl.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/WritableType.java,
+        tools/gjdoc/javalib/gnu/classpath/tools/taglets/CopyrightTaglet.java,
+        tools/gjdoc/javalib/rng/gjdoc-classdoc.rng,
+        tools/gjdoc/javalib/rng/gjdoc-common.rng,
+        tools/gjdoc/javalib/rng/gjdoc-index.rng:
+	New files. Taken from gjdoc, licensed under 
+	GNU General Public License (GPL).
+
 2004-04-13  Jim Pick <jim@kaffe.org>
 
 	* libraries/clib/native/System.c:

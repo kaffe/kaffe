@@ -103,6 +103,10 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
+	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
+	gnu_xml_libxmlj_transform_TransformerFactoryImpl.h \
+	gnu_xml_libxmlj_transform_JavaContext.h \
+	gnu_xml_libxmlj_transform_LibxmlDocument.h \
 	java_math_BigInteger.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_NIOServerSocket.h \

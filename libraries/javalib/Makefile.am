@@ -83,6 +83,7 @@ Klasses_jar_SRCS = \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_libxmlj_transform_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
 	$(gnu_xml_util_SRCS) \
 	$(java_applet_SRCS) \
@@ -588,6 +589,21 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomPI.java \
 	gnu/xml/dom/DomText.java \
 	gnu/xml/dom/JAXPFactory.java
+gnu_xml_libxmlj_transform_SRCS = \
+	gnu/xml/libxmlj/transform/DefaultErrorListenerImpl.java \
+	gnu/xml/libxmlj/transform/DefaultURIResolverImpl.java \
+	gnu/xml/libxmlj/transform/ErrorListenerProxy.java \
+	gnu/xml/libxmlj/transform/IOToolkit.java \
+	gnu/xml/libxmlj/transform/JavaContext.java \
+	gnu/xml/libxmlj/transform/LibxmlDocument.java \
+	gnu/xml/libxmlj/transform/LibxsltStylesheet.java \
+	gnu/xml/libxmlj/transform/SourceLocatorImpl.java \
+	gnu/xml/libxmlj/transform/SourceWrapper.java \
+	gnu/xml/libxmlj/transform/TemplatesImpl.java \
+	gnu/xml/libxmlj/transform/TransformerFactoryImpl.java \
+	gnu/xml/libxmlj/transform/TransformerImpl.java \
+	gnu/xml/libxmlj/transform/TransformTest.java \
+	gnu/xml/libxmlj/transform/URIResolverProxy.java
 gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/CallFilter.java \
 	gnu/xml/pipeline/DomConsumer.java \
@@ -1167,6 +1183,7 @@ java_lang_SRCS = \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
+	java/lang/VMSecurityManager.java \
 	java/lang/VMThrowable.java \
 	java/lang/Void.java
 java_lang_ref_SRCS = \

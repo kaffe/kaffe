@@ -318,6 +318,7 @@ java/nio/channels/Channels.class
 java/nio/DirectByteBufferImpl.class
 java/nio/ByteBuffer.class
 java/nio/Buffer.class
+java/io/VMObjectStreamClass.class
 java/nio/MappedByteBufferImpl.class
 java/nio/MappedByteBuffer.class
 
@@ -346,3 +347,11 @@ org/tritonus/lowlevel/alsa/AlsaSeqQueueTempo.class
 org/tritonus/lowlevel/alsa/AlsaSeqQueueTimer.class
 org/tritonus/lowlevel/alsa/AlsaSeqRemoveEvents.class
 org/tritonus/lowlevel/alsa/AlsaSeqSystemInfo.class
+
+# needed for libxmlj
+gnu/xml/libxmlj/transform/LibxsltStylesheet.class
+gnu/xml/libxmlj/transform/TransformerFactoryImpl.class
+gnu/xml/libxmlj/transform/JavaContext.class
+gnu/xml/libxmlj/transform/LibxmlDocument.class
+javax/xml/transform/TransformerFactory.class
+

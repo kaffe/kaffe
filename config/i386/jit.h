@@ -150,7 +150,11 @@ typedef struct _methodTrampoline {
 #define KAFFEJIT_TO_NATIVE(_m)
 
 /* We don't have to flush the code out of cache on the i386 */
+#if defined(HAVE_VALGRIND_MEMCHECK_H)
+#define FLUSH_DCACHE(beg, end)  VALGRIND_DISCARD_TRANSLATIONS(beg, end)
+#else
 #define	FLUSH_DCACHE(beg, end)	/* Do nothing */
+#endif
 
 /* The Pentium optimization manual recommends these */
 #define CALLTARGET_ALIGNMENT	16

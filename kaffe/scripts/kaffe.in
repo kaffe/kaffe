@@ -141,7 +141,10 @@ else
 	} > $KAFFE_DEBUG_TEMPFILE
 	exec "$KAFFE_DEBUG" -x $KAFFE_DEBUG_TEMPFILE $KAFFE_JREBINDIR/kaffe-bin
 	rm -f $KAFFE_DEBUG_TEMPFILE ;;
-    *) echo you must set KAFFE_DEBUG to either emacs, gdb, ddd or cgdb >&2;;
+    valgrind*)
+	# Start kaffe in valgrind
+	exec "$KAFFE_DEBUG" $KAFFE_JREBINDIR/kaffe-bin ${1+"$@"} ;;
+    *) echo you must set KAFFE_DEBUG to either emacs, gdb, ddd, cgdb or valgrind >&2;;
     esac
 fi
 exit 1

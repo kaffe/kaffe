@@ -13,4 +13,11 @@ else
   MAYBE_NATIVE_MATH = math
 endif
 
-SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) security management awt
+# Build libxmlj only desired
+if COND_LIBXMLJ
+  MAYBE_LIBXMLJ = libxmlj
+else
+  MAYBE_LIBXMLJ =
+endif
+
+SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt

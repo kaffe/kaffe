@@ -172,7 +172,7 @@ AC_ARG_WITH([staticlib],
                            [Force the use of static libraries rather than shared]))
 
 if test x"$with_staticlib" = x"yes" ; then
-	dynamic_libraries=no
+HEADER	dynamic_libraries=no
 	if test x"${with_staticvm+set}" != x"set"; then
 		with_staticvm=yes
 	fi
@@ -1010,6 +1010,9 @@ if test x"$have_resource_h" = x"yes"; then
    AC_CHECK_FUNCS(getrusage, have_rusage=yes)
 fi
 
+dnl needed for valgrind
+AC_CHECK_HEADERS([valgrind/memcheck.h])
+
 dnl =========================================================================
 dnl Do we build a vm that collects statistics?
 dnl -------------------------------------------------------------------------
@@ -1664,6 +1667,25 @@ fi
 
 AC_SUBST(PROFILE)
 
+dnl -----------------------------------------------------------------------
+dnl                    Support for libxmlj
+dnl -----------------------------------------------------------------------
+AC_ARG_ENABLE([libxmlj],
+            AS_HELP_STRING([--enable-libxmlj],
+                           [Enable building of libxmlj]))
+
+if test x"$enable_libxmlj" = x"yes" ; then
+  if test x"$with_threads" = x"unix-pthreads" ; then
+    AM_PATH_XML2([2.5.1],[CFLAGS="${CFLAGS}"] [CPPFLAGS="${CPPFLAGS}"] [LIBS="${XML_LIBS} ${LIBS}"] ,
+      AC_MSG_ERROR([unable to locate libxml.]))
+    AM_PATH_XSLT([1.0.24],[CFLAGS="${XSLT_CFLAGS} ${CFLAGS}"] [CPPFLAGS="${XSLT_CFLAGS} ${CPPFLAGS}"] [LIBS="${XSLT_LIBS} ${LIBS}"] ,
+      AC_MSG_ERROR([unable to locate libxslt.]))
+  else
+    AC_MSG_ERROR([Not building libxmlj - only available with pthreads.])
+  fi
+fi
+
+AM_CONDITIONAL([COND_LIBXMLJ], [test x"$enable_libxmlj" = x"yes"])
 
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
@@ -1878,6 +1900,7 @@ AC_CONFIG_FILES([libraries/javalib/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])
 AC_CONFIG_FILES([libraries/clib/io/Makefile])
+AC_CONFIG_FILES([libraries/clib/libxmlj/Makefile])
 AC_CONFIG_FILES([libraries/clib/nio/Makefile])
 AC_CONFIG_FILES([libraries/clib/net/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
@@ -1887,6 +1910,7 @@ AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
+AC_CONFIG_FILES([libraries/javalib/rebuildLib])
 AC_CONFIG_FILES([libraries/extensions/Makefile])
 AC_CONFIG_FILES([libraries/extensions/comm/Makefile])
 AC_CONFIG_FILES([libraries/extensions/comm/javalib/Makefile])
@@ -1902,7 +1926,6 @@ AC_CONFIG_FILES([libraries/extensions/sound/alsa/Makefile])
 AC_CONFIG_FILES([libraries/extensions/sound/common/Makefile])
 AC_CONFIG_FILES([libraries/extensions/sound/esd/Makefile])
 AC_CONFIG_FILES([kaffe/man/kaffe.1])
-AC_CONFIG_FILES([libraries/javalib/rebuildLib])
 AC_CONFIG_FILES([kaffe/scripts/install-jar])
 AC_CONFIG_FILES([kaffe/scripts/kaffe])
 AC_CONFIG_FILES([kaffe/scripts/kaffexprof])
@@ -1925,6 +1948,9 @@ AC_CONFIG_FILES([kaffe/scripts/compat/javac])
 AC_CONFIG_FILES([kaffe/scripts/compat/appletviewer])
 AC_CONFIG_FILES([kaffe/scripts/compat/javadoc])
 AC_CONFIG_FILES([po/Makefile.in])
+AC_CONFIG_FILES([tools/Makefile])
+AC_CONFIG_FILES([tools/gjdoc/Makefile])
+AC_CONFIG_FILES([tools/gjdoc/javalib/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])
 AC_CONFIG_FILES([test/regression/Makefile])

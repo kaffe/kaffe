@@ -56,6 +56,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
@@ -108,6 +109,8 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
+COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
 COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
 COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
 COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
@@ -257,6 +260,12 @@ USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
+XML2_CONFIG = @XML2_CONFIG@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
+XSLT_CFLAGS = @XSLT_CFLAGS@
+XSLT_CONFIG = @XSLT_CONFIG@
+XSLT_LIBS = @XSLT_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@

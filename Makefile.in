@@ -50,9 +50,10 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
 	$(top_srcdir)/include/kaffe/jtypes.h.in ABOUT-NLS AUTHORS \
-	ChangeLog INSTALL scripts/config.guess scripts/config.rpath \
-	scripts/config.sub scripts/depcomp scripts/install-sh \
-	scripts/ltmain.sh scripts/missing scripts/mkinstalldirs
+	ChangeLog INSTALL scripts/compile scripts/config.guess \
+	scripts/config.rpath scripts/config.sub scripts/depcomp \
+	scripts/install-sh scripts/ltmain.sh scripts/missing \
+	scripts/mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
@@ -63,6 +64,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
@@ -117,6 +119,8 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
+COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
 COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
 COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
 COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
@@ -266,6 +270,12 @@ USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
+XML2_CONFIG = @XML2_CONFIG@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
+XSLT_CFLAGS = @XSLT_CFLAGS@
+XSLT_CONFIG = @XSLT_CONFIG@
+XSLT_LIBS = @XSLT_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -330,7 +340,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign 1.3e
-SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test po
+SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib tools test po
 DIST_SUBDIRS = . config include replace libltdl kaffe libraries test po
 EXTRA_DIST = \
 	ChangeLog.1 \
