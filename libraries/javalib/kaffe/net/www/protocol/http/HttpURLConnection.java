@@ -21,10 +21,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.Socket;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+// import java.io.IOException;
+// import java.io.InputStream;
+// import java.net.URL;
+// import java.net.URLConnection;
 import java.awt.Toolkit;
 
 public class HttpURLConnection
