@@ -533,6 +533,7 @@ alarmException(void)
 		 */
 		jtid = alarmList;
 		alarmList = alarmList->nextalarm;
+		jtid->flags |= THREAD_FLAGS_INTERRUPTED;
 		resumeThread(jtid);
 	}
 

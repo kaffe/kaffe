@@ -105,10 +105,13 @@ getHeavyLock(iLock** lkp)
 			if (lkp == &gc_lock) {
 				lk = &_gc_lock;
 			}
+#if 0
+			/* We don't protect these yet - so dont use them */
 			else if (freeLocks != 0) {
 				lk = freeLocks;
 				freeLocks = (iLock*)lk->holder;
 			}
+#endif
 			else {
 				lk = (iLock*)jmalloc(sizeof(iLock));
 			}
@@ -219,8 +222,11 @@ LDBG(	printf("Slow unlock\n");					)
 	}
 	else {
 		if (lk != &_gc_lock) {
+#if 0
 			lk->holder = (void*)freeLocks;
 			freeLocks = lk;
+#endif
+			jfree(lk);
 		}
 		putHeavyLock(lkp, LOCKFREE);
 	}
@@ -452,8 +458,11 @@ _SemGet(void* sem, jlong timeout)
 	lk = (sem2posixLock*)sem;
 
 	LOCK(lk);
+	assert(lk->count == 0 || lk->count == 1);
 	if (lk->count == 0) {
 		r = WAIT(lk, timeout);
+		assert((lk->count == 0 && r == false) ||
+		       (lk->count == 1 && r == true));
 	}
 	if (r == true) {
 		lk->count--;
@@ -471,6 +480,7 @@ _SemPut(void* sem)
 	lk = (sem2posixLock*)sem;
 
 	LOCK(lk);
+	assert(lk->count == 0);
         lk->count++;
 	SIGNAL(lk);
 	UNLOCK(lk);

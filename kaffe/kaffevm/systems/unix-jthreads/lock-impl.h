@@ -22,6 +22,6 @@
 #define LOCK(L)         jmutex_lock((L)->mux)
 #define UNLOCK(L)       jmutex_unlock((L)->mux)
 #define SIGNAL(L)       jcondvar_signal((L)->cv, (L)->mux)
-#define WAIT(L,T)       jcondvar_wait((L)->cv, (L)->mux, (T))
+#define WAIT(L,T)       (!jcondvar_wait((L)->cv, (L)->mux, (T)))
 
 #endif /* __lock_impl_h */
