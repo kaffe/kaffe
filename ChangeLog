@@ -1,3 +1,8 @@
+2004-10-07  Noa Resare  <noa@resare.com>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c:
+	Fix for weird locale handling in kaffe.
+
 2004-10-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:
