@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 
 /**
  * class PopupMenu -

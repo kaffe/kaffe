@@ -10,6 +10,7 @@
 
 package java.text;
 
+import java.lang.String;
 import java.io.Serializable;
 import java.io.File;
 import java.util.ResourceBundle;

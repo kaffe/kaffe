@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public class BufferedWriter extends Writer {
 
   private static final int DEFAULTBUFFERSIZE = 1024;

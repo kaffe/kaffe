@@ -11,6 +11,7 @@
 package java.util;
 
 import java.util.NoSuchElementException;
+import java.lang.String;
 
 public class StringTokenizer
   implements Enumeration

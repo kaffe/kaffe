@@ -17,6 +17,7 @@
 package kaffe.io;
 
 import java.io.File;
+import java.lang.String;
 
 public class TmpFile
   extends File

@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.event.ActionEvent;
 
 class ActionEvt

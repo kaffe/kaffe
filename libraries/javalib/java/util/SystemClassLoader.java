@@ -12,6 +12,9 @@ package java.util;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.lang.String;
+import java.lang.ClassLoader;
+import java.lang.System;
 
 public class SystemClassLoader
   extends ClassLoader

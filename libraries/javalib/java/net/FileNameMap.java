@@ -10,6 +10,8 @@
 
 package java.net;
 
+import java.lang.String;
+
 public interface FileNameMap {
 
   public abstract String getContentTypeFor(String filename);

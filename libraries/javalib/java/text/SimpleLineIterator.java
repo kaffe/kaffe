@@ -10,6 +10,8 @@
 
 package java.text;
 
+import java.lang.String;
+
 class SimpleLineIterator
   extends BreakIterator
 {

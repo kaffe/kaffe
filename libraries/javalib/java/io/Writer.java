@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public abstract class Writer {
 
   protected Object lock;

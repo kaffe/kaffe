@@ -33,6 +33,7 @@ import java.util.Observer;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import kaffe.management.Classpath;
+import java.lang.String;
 
 /**
  * Copyright (c) 1998

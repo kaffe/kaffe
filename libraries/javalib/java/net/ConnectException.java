@@ -10,6 +10,8 @@
 
 package java.net;
 
+import java.lang.String;
+
 public class ConnectException extends SocketException {
 
   public ConnectException()

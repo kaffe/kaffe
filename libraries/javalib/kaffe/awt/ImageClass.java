@@ -9,6 +9,7 @@
 
 package kaffe.awt;
 
+import java.lang.String;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;

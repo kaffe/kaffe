@@ -11,6 +11,7 @@
 package java.io;
 
 import java.util.Vector;
+import java.lang.String;
 
 public class File {
 

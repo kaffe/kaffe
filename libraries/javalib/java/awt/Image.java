@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.ImageDataProducer;
 import java.awt.ImageFileProducer;
 import java.awt.ImageURLProducer;

@@ -1,5 +1,6 @@
 package java.awt.event;
 
+import java.lang.String;
 import java.awt.AWTEvent;
 import java.awt.Component;
 

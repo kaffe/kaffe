@@ -10,6 +10,7 @@
 package java.io;
 
 import kaffe.io.ByteToCharConverter;
+import java.lang.String;
 
 public class InputStreamReader
   extends Reader

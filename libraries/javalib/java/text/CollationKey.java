@@ -10,6 +10,8 @@
 
 package java.text;
 
+import java.lang.String;
+
 public final class CollationKey {
 
 private String str;

@@ -1,6 +1,7 @@
 package java.io;
 
 import kaffe.io.ByteToCharConverter;
+import java.lang.String;
 
 /*
  * Java core library component.

@@ -279,7 +279,7 @@ public int indexOf( int ch) {
 
 public int indexOf( int ch, int sIdx) {
 	char c = (char)ch;
-	if (sIdx < 0) {	// calling indexOf with sIdx < 0 is apparently okay
+	if (sIdx < 0) { // calling indexOf with sIdx < 0 is apparently okay
 		sIdx = 0;
 	}
 	for (int pos=sIdx; pos<count; pos++) {
@@ -311,27 +311,28 @@ public int lastIndexOf( String str) {
 }
 
 public int lastIndexOf( String str, int eIdx) {
-	int ic = str.offset+str.count-1;
-	int it = offset+eIdx+ic;
+	int it = offset+eIdx-1;
+	int ic = str.value.length-1;
 	int ma = 0;
 
-	if (it >= offset+count) {	// clip index
+	if (it >= offset+count) {       // clip index
 		it = offset+count-1;
 	}
 
 	for ( ; it>=offset; it--) {
 		if ( value[it] == str.value[ic] ) {
 			ic--;
-			if ( ++ma == str.count) {
+			if ( ++ma == str.count)
 				return (it-offset);
-			}
 		}
-		else if (ma > 0) {
+		else if ( ma > 0) {
+			//	it += ma;
 			it++;
-			ma = 0;
-			ic = str.offset+str.count-1;
+			ma  = 0;
+			ic  = str.value.length-1;
 		}
 	}
+
 	return -1;
 }
 

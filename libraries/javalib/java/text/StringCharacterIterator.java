@@ -10,6 +10,8 @@
 
 package java.text;
 
+import java.lang.String;
+
 public final class StringCharacterIterator implements CharacterIterator {
 
 private String text;

@@ -10,6 +10,7 @@
 package java.awt;
 
 import java.awt.peer.MenuComponentPeer;
+import java.lang.String;
 
 abstract public class MenuComponent
 {

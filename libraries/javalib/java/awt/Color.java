@@ -11,6 +11,9 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
+
+import java.lang.String;
+
 public class Color
 {
 	int rgbValue;

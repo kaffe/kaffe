@@ -12,6 +12,8 @@
 
 package java.awt;
 
+import java.lang.String;
+
 public class BorderLayout
   implements LayoutManager2
 {

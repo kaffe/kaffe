@@ -1,6 +1,3 @@
-package java.lang.reflect;
-
-
 /*
  * Java core library component.
  *
@@ -10,10 +7,16 @@ package java.lang.reflect;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public interface Member
-{
-	final public static int PUBLIC = 1;
-	final public static int DECLARED = 2;
+
+package java.lang.reflect;
+
+import java.lang.Class;
+import java.lang.String;
+
+public interface Member {
+
+final public static int PUBLIC = 1;
+final public static int DECLARED = 2;
 
 abstract public Class getDeclaringClass();
 

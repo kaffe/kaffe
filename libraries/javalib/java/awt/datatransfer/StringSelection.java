@@ -12,6 +12,7 @@
 
 package java.awt.datatransfer;
 
+import java.lang.String;
 import java.io.StringReader;
 import kaffe.awt.ExportTransferable;
 import kaffe.awt.FlavorConverter;

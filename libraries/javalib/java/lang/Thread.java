@@ -13,9 +13,13 @@ package java.lang;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.lang.Throwable;
+//if defined(DIST_application)
+import kaffe.lang.Application;
+import kaffe.lang.ApplicationResource;
+//endif
 
 public class Thread
-  implements Runnable {
+  implements Runnable, ApplicationResource {
 
 	final public static int MIN_PRIORITY = 1;
 	final public static int NORM_PRIORITY = 5;
@@ -32,8 +36,8 @@ public class Thread
 	private kaffe.util.Ptr exceptPtr;
 	private Throwable exceptObj;
 	private kaffe.util.Ptr jnireferences;
-	private Throwable stackOverflowError;
-	private int needOnStack;
+	// private Throwable stackOverflowError;
+	// private int needOnStack;
 	private boolean dying;
 	private Hashtable threadLocals;
 	private Object suspendResume;
@@ -59,6 +63,9 @@ public Thread(ThreadGroup group, Runnable target) {
 }
 
 public Thread(ThreadGroup group, Runnable target, String name) {
+//if defined(DIST_application)
+	Application.addResource(this);
+//endif
 	final Thread parent = Thread.currentThread();
 
 	if (group == null) {
@@ -137,6 +144,16 @@ public static int enumerate(Thread tarray[]) {
 	return (Thread.currentThread().getThreadGroup().enumerate(tarray));
 }
 
+/*
+ * This isn't infact a good idea since the Thread class isn't final and we can't
+ * guarantee this is ever called - which seems like dumb semantics to me but there
+ * you go.
+ */
+protected void finalize() throws Throwable { 
+	finalize0();
+	super.finalize();
+}
+
 final native private void finalize0();
 
 /*
@@ -145,6 +162,16 @@ final native private void finalize0();
 private void finish() {
 	if (group != null) {
 		group.remove(this);
+	}
+//if defined(DIST_application)
+	Application.removeResource(this);
+//endif
+}
+
+//if defined(DIST_application)
+public void freeResource() {
+	if (isAlive()) {
+		destroy();
 	}
 }
 
@@ -261,9 +288,6 @@ native private void setPriority0(int prio);
 
 public static void sleep(long millis) throws InterruptedException
 {
-	if (Thread.interrupted()) {
-		throw new InterruptedException();
-	}
 	sleep0(millis);
 	if (Thread.interrupted()) {
 		throw new InterruptedException();

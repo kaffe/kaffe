@@ -1,5 +1,6 @@
 package java.awt.datatransfer;
 
+import java.lang.String;
 import java.io.IOException;
 import java.util.mime.MimeType;
 import java.util.mime.MimeTypeParameterList;

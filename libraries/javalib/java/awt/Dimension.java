@@ -12,6 +12,9 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
+
+import java.lang.String;
+
 public class Dimension
 {
 	public int width;

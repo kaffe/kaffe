@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
@@ -43,9 +44,9 @@ public class AWTEvent
 	final public static int TEXT_EVENT_MASK = 0x400;
 	final public static int RESERVED_ID_MAX = 1999;
 	final static int DISABLED_MASK = 0x80000000;
-	static Component keyTgt;
-	static Window activeWindow;
-	static Component mouseTgt;
+	protected static Component keyTgt;
+	protected static Window activeWindow;
+	protected static Component mouseTgt;
 	protected static int inputModifier;
 	protected static boolean accelHint;
 	protected static Component[] sources;

@@ -10,6 +10,7 @@
 
 package java.util;
 
+import java.lang.String;
 import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -10,6 +10,8 @@
 
 package java.net;
 
+import java.lang.String;
+
 public class URLEncoder
 {
 public static String encode(String s) {

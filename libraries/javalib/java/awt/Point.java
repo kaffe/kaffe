@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 
 /**
  * class Point - represent (x,y) locations

@@ -10,6 +10,8 @@
 
 package java.util;
 
+import java.lang.String;
+import java.lang.System;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

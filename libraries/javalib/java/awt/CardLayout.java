@@ -2,6 +2,7 @@ package java.awt;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.lang.String;
 
 public class CardLayout
   implements LayoutManager2

@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public interface FilenameFilter {
 
 abstract public boolean accept(File dir, String name);

@@ -10,6 +10,8 @@
 
 package java.util;
 
+import java.lang.String;
+
 public class MissingResourceException extends RuntimeException {
 
   private String clsnm;

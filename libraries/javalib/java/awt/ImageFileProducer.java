@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.Toolkit;
 import java.awt.image.ImageConsumer;
 import java.io.File;

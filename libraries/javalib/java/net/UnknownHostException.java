@@ -1,5 +1,6 @@
 package java.net;
 
+import java.lang.String;
 
 /*
  * Java core library component.

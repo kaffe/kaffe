@@ -10,6 +10,7 @@
 
 package java.text;
 
+import java.lang.String;
 import java.util.Date;
 import java.util.Locale;
 import java.util.GregorianCalendar;

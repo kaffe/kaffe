@@ -1,6 +1,3 @@
-package java.util;
-
-
 /*
  * Java core library component.
  *
@@ -10,6 +7,11 @@ package java.util;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.util;
+
+import java.lang.String;
+
 public class NoSuchElementException
   extends RuntimeException
 {

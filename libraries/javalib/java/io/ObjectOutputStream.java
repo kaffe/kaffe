@@ -10,6 +10,7 @@
 
 package java.io;
 
+import java.lang.String;
 import java.io.Serializable;
 import java.util.Hashtable;
 import kaffe.util.NotImplemented;

@@ -13,6 +13,7 @@
 package java.awt;
 
 import java.util.Hashtable;
+import java.lang.String;
 
 public class GridBagLayout
   implements LayoutManager2

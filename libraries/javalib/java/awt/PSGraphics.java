@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;

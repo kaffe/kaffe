@@ -32,7 +32,7 @@ final native public void   notify();
 final native public void   notifyAll();
 
 public String toString() {
-	return ("@" + Integer.toString(hashCode()));
+	return getClass().getName()+'@'+Integer.toHexString(hashCode());
 }
 
 final public void wait() throws InterruptedException {

@@ -10,6 +10,7 @@
 
 package kaffe.io;
 
+import java.lang.String;
 import java.io.UnsupportedEncodingException;
 import kaffe.util.Assert;
 

@@ -10,6 +10,8 @@
 
 package java.util;
 
+import java.lang.String;
+
 public class SimpleTimeZone extends TimeZone {
 
   // Install the standard SimpleTimeZones

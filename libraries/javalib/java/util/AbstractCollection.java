@@ -10,6 +10,8 @@
 
 package java.util;
 
+import java.lang.String;
+
 public abstract class AbstractCollection implements Collection {
 
 public AbstractCollection() {

@@ -1,5 +1,6 @@
 package java.io;
 
+import java.lang.String;
 
 /*
  * Java core library component.
@@ -16,10 +17,16 @@ public class PrintStream
 	private PrintWriter strm;
 	private boolean error;
 
+/**
+ * @deprecated - replaced by PrintWriter
+ */
 public PrintStream(OutputStream out) {
 	this(out, false);
 }
 
+/**
+ * @deprecated - replaced by PrintWriter
+ */
 public PrintStream(OutputStream out, boolean autoflush) {
 	super(out);
 	strm = new PrintWriter(out, autoflush);

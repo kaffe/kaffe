@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public class StreamTokenizer {
 
 final public static int TT_EOF = -1;

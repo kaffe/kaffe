@@ -2,6 +2,7 @@ package java.awt.event;
 
 import java.awt.AWTEvent;
 import java.awt.Event;
+import java.lang.String;
 
 /**
  * class ActionEvent - 

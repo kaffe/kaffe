@@ -13,6 +13,9 @@
  */
 package java.util;
 
+import java.lang.String;
+import java.lang.System;
+
 final public class BitSet
     implements Cloneable, java.io.Serializable
 {

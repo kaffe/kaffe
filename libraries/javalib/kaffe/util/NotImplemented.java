@@ -10,6 +10,8 @@
 
 package kaffe.util;
 
+import java.lang.String;
+
 public class NotImplemented extends Error {
 
 public NotImplemented () {

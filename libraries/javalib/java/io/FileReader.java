@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public class FileReader extends InputStreamReader {
 
   public FileReader(String fileName) throws FileNotFoundException

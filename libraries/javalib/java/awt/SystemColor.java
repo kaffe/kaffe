@@ -12,6 +12,7 @@
 
 package java.awt;
 
+import java.lang.String;
 
 final public class SystemColor
   extends Color

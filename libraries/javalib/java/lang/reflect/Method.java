@@ -1,6 +1,3 @@
-package java.lang.reflect;
-
-
 /*
  * Java core library component.
  *
@@ -10,6 +7,12 @@ package java.lang.reflect;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.lang.reflect;
+
+import java.lang.Class;
+import java.lang.String;
+
 public class Method
   implements Member
 {

@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public class CharArrayWriter extends Writer {
 
   private static final int DEFAULTBUFFERSIZE = 64;

@@ -3,6 +3,7 @@ package java.awt;
 import java.awt.event.InputEvent;
 import java.util.Enumeration;
 import kaffe.util.Ptr;
+import java.lang.String;
 
 /**
  * Frame - 

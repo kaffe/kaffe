@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.ImageObserver;

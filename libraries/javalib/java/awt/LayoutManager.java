@@ -12,6 +12,8 @@
 
 package java.awt;
 
+import java.lang.String;
+
 public interface LayoutManager {
 
 void addLayoutComponent ( String name, Component child );

@@ -12,6 +12,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import java.util.Hashtable;
 import kaffe.util.Ptr;
 

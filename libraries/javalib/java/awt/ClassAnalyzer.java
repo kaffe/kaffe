@@ -2,6 +2,7 @@ package java.awt;
 
 import java.lang.reflect.Method;
 import java.util.Hashtable;
+import java.lang.String;
 
 class ClassAnalyzer
 {
@@ -144,12 +145,4 @@ static boolean checkProcessEvent ( Class clazz ) {
 		return false; // no Component subclass!
 	}
 }
-}
-
-class ClassProperties
-{
-	boolean useOldEvents;
-	boolean hasProcessEvent;
-	boolean isNativeLike;
-
 }

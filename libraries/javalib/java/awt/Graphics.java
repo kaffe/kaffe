@@ -16,6 +16,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import java.awt.image.ImageObserver;
 
 abstract public class Graphics

@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

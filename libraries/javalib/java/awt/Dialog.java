@@ -12,6 +12,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import kaffe.util.Ptr;
 
 public class Dialog

@@ -11,6 +11,8 @@
 package java.util;
 
 import java.io.Serializable;
+import java.lang.String;
+import java.lang.System;
 
 final public class Locale
   implements Cloneable, Serializable

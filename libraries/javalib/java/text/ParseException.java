@@ -10,6 +10,8 @@
 
 package java.text;
 
+import java.lang.String;
+
 public class ParseException extends Exception {
 
 private int offset;

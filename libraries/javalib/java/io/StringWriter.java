@@ -10,6 +10,8 @@
 
 package java.io;
 
+import java.lang.String;
+
 public class StringWriter extends Writer {
 
   private final static int DEFAULT = 128;

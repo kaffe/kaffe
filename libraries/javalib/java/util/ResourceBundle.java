@@ -14,6 +14,8 @@ package java.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Class;
+import java.lang.String;
+import java.lang.System;
 
 abstract public class ResourceBundle {
 

@@ -10,6 +10,8 @@
 
 package kaffe.util;
 
+import java.lang.String;
+
 /**
  * This class consists of static methods that perform assertion checks.
  * If a check fails, we throw an error with a descriptive message.

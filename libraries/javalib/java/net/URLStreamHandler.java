@@ -1,6 +1,3 @@
-package java.net;
-
-
 /*
  * Java core library component.
  *
@@ -10,8 +7,13 @@ package java.net;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class URLStreamHandler
-{
+
+package java.net;
+
+import java.lang.String;
+
+abstract public class URLStreamHandler {
+
 public URLStreamHandler() {}
 
 abstract protected URLConnection openConnection(URL u);

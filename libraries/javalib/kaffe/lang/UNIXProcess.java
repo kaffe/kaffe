@@ -11,6 +11,7 @@
 
 package kaffe.lang;
 
+import java.lang.String;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;

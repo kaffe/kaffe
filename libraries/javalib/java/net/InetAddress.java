@@ -10,6 +10,7 @@
 
 package java.net;
 
+import java.lang.String;
 import java.io.Serializable;
 import java.util.StringTokenizer;
 
@@ -172,7 +173,7 @@ public String toString() {
 	result.append("/");
 	result.append(getHostAddress());
 
-	return (result.toString());;
+	return (result.toString());
 }
 
 static InetAddress getLoopback() {

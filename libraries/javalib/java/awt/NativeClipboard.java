@@ -12,6 +12,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;

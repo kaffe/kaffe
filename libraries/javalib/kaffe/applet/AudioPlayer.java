@@ -1,5 +1,6 @@
 package kaffe.applet;
 
+import java.lang.String;
 import java.applet.AudioClip;
 import java.io.File;
 import java.io.FileInputStream;

@@ -10,6 +10,7 @@
 
 package java.text;
 
+import java.lang.String;
 import java.util.Locale;
 import kaffe.util.NotImplemented;
 

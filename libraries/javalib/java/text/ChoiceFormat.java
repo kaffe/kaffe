@@ -10,6 +10,7 @@
 
 package java.text;
 
+import java.lang.String;
 import kaffe.util.NotImplemented;
 
 public class ChoiceFormat extends NumberFormat {

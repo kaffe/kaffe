@@ -18,6 +18,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 

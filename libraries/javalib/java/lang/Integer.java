@@ -146,15 +146,15 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 }
 
 public static String toBinaryString(int i) {
-	return toUnsignedString(i, 1);
+	return toUnsignedString(i, 2);
 }
 
 public static String toHexString(int i) {
-	return toUnsignedString(i, 4);
+	return toUnsignedString(i, 16);
 }
 
 public static String toOctalString(int i) {
-	return toUnsignedString(i, 3);
+	return toUnsignedString(i, 8);
 }
 
 public String toString() {

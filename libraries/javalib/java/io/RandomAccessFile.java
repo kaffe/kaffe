@@ -10,6 +10,7 @@
 
 package java.io;
 
+import java.lang.String;
 
 public class RandomAccessFile
   implements DataOutput, DataInput

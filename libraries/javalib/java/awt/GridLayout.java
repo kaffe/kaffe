@@ -11,6 +11,8 @@
 
 package java.awt;
 
+import java.lang.String;
+
 public class GridLayout
   implements LayoutManager
 {

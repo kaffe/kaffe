@@ -15,6 +15,7 @@
 
 package java.awt;
 
+import java.lang.String;
 import java.awt.ImageNativeProducer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;

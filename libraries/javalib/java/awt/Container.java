@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.lang.String;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import kaffe.awt.OpaqueComponent;
@@ -525,7 +526,7 @@ public void setLayout ( LayoutManager newLayout ) {
 }
 
 public void validate() {
-	synchronized(getTreeLock()) {
+	synchronized (getTreeLock()) {
 		if ( !isValid && (peer != null) ){
 			// we have to descent before validating ourself
 			validateTree();

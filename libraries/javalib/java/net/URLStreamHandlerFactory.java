@@ -10,6 +10,8 @@
 
 package java.net;
 
+import java.lang.String;
+
 public interface URLStreamHandlerFactory {
 
 public URLStreamHandler createURLStreamHandler(String protocol);

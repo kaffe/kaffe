@@ -11,6 +11,7 @@
 
 package kaffe.jar;
 
+import java.lang.String;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.io.DataInputStream;

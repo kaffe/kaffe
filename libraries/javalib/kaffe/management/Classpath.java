@@ -11,6 +11,8 @@
 
 package kaffe.management;
 
+import java.lang.String;
+
 public class Classpath {
 
 static {
