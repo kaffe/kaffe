@@ -85,7 +85,7 @@ __compareAndExchange PROC NEAR
 	mov ecx,dword ptr [esp+4]	; addr
 	mov eax,dword ptr [esp+8]	; old
 	mov edx,dword ptr [esp+12]	; new
-	cmpxchg dword ptr [ecx],edx
+	lock cmpxchg dword ptr [ecx],edx
 	je l7
 	mov eax,0
 	ret
