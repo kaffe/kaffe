@@ -17,37 +17,26 @@ private int length;
 private InetAddress address;
 private int port;
 
+private static final int DEFAULT_PORT = -1;
+ 
 /**
  * Receive buffer.
  */
 public DatagramPacket(byte ibuf[], int ilength) {
-	buf = ibuf;
-	if (ilength < buf.length) {
-		length = ilength;
-	}
-	else {
-		length = buf.length;
-	}
-	try {
-		address = InetAddress.getLocalHost();
-	}
-	catch (UnknownHostException _) {
-		address = InetAddress.getLoopback();
-	}
-	port = -1;
+
+	this(ibuf, ilength, getDefaultAddress(), DEFAULT_PORT);
 }
 
 /**
  * Send buffer.
  */
 public DatagramPacket(byte ibuf[], int ilength, InetAddress iaddr, int iport) {
+	if (ilength < 0 || ilength > ibuf.length) {
+		throw new IllegalArgumentException("illegal length or offset");
+	}
+
 	buf = ibuf;
-	if (ilength < buf.length) {
-		length = ilength;
-	}
-	else {
-		length = buf.length;
-	}
+	length = Math.min(ilength, ibuf.length);
 	address = iaddr;
 	port = iport;
 }
@@ -60,13 +49,21 @@ public synchronized byte[] getData() {
 	return (buf);
 }
 
+private static InetAddress getDefaultAddress() {
+	InetAddress addr;
+
+	try {
+		addr = InetAddress.getLocalHost();
+	}
+	catch (UnknownHostException e) {
+		addr = InetAddress.getLoopback();
+	}
+
+	return addr;
+}
+
 public synchronized int getLength() {
-	if (port == -1) {
-		return (0);
-	}
-	else {
-		return (length);
-	}
+        return (length);
 }
 
 public synchronized int getPort() {
@@ -78,14 +75,15 @@ public synchronized void setAddress(InetAddress addr) {
 }
 
 public synchronized void setData(byte[] newbuf) {
-	if (buf == null) {
+	if (newbuf == null) {
 		throw new NullPointerException();
 	}
 	buf = newbuf;
+	length = Math.min(length, buf.length);
 }
 
 public synchronized void setLength(int newlen) {
-	if (newlen > buf.length) {
+	if (newlen < 0 || newlen > buf.length) {
 		throw new IllegalArgumentException();
 	}
 	length = newlen;

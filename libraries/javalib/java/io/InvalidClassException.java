@@ -32,7 +32,7 @@ public InvalidClassException(String c, String s)
 
 public String getMessage()
 	{
-	if (classname != null) {
+	if (classname != null && !classname.equals("")) {
 	        return (classname + SEPARATOR + super.getMessage());
 	}
 	else {

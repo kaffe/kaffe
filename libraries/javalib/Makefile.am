@@ -516,6 +516,7 @@ java_sql_SRCS = \
 	java/sql/Timestamp.java \
 	java/sql/Types.java
 java_text_SRCS = \
+	java/text/AttributedCharacterIterator.java \
 	java/text/BreakIterator.java \
 	java/text/CharacterIterator.java \
 	java/text/ChoiceFormat.java \

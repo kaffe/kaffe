@@ -280,7 +280,11 @@ public byte[] getBytes( String enc) throws UnsupportedEncodingException
  * @deprecated
  */
 public void getBytes( int srcBegin, int srcEnd, byte dst[], int dstBegin) {
-	if (srcBegin < 0 || srcEnd > offset + count) {
+	if (srcBegin < 0 
+	    || srcBegin > srcEnd
+	    ||  dstBegin < 0
+	    ||  dstBegin + (srcEnd - srcBegin) >  dst.length
+	    || srcEnd > offset + count) {
 		throw new IndexOutOfBoundsException("");
 	}
 	int len = srcEnd-srcBegin;

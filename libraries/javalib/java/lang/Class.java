@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -330,7 +331,29 @@ native public boolean isInterface();
 
 native public boolean isPrimitive();
 
-native public Object newInstance() throws InstantiationException, IllegalAccessException;
+public Object newInstance() throws InstantiationException, IllegalAccessException {
+    if (Modifier.isAbstract(getModifiers()) || isInterface() || isPrimitive()) {
+	throw new InstantiationException(getName());
+    }
+    else {
+	try {
+	    return getDeclaredConstructor(null).newInstance(null);
+	}
+	catch (InvocationTargetException e) {
+	    // we rethrow runtime exceptions thrown by constructors, in order to
+	    // pass on exceptions like NullPointerException to the caller.
+	    if (e.getTargetException() instanceof RuntimeException) {
+		throw (RuntimeException) e.getTargetException();
+	    }
+	    else {
+		throw new InstantiationException(e.getTargetException().getMessage());
+	    }
+	}
+	catch (NoSuchMethodException e) {
+	    throw new InstantiationException(e.getMessage());
+	}
+    }
+}
 
 /*
  * toString()

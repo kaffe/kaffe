@@ -58,6 +58,6 @@ public void setSize ( int w, int h ) {
 }
 
 public String toString() {
-	return getClass().getName() + " [" + width + ',' + height + ']';
+	return getClass().getName() + "[width=" + width + ",height=" + height + ']';
 }
 }

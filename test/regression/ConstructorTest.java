@@ -1,7 +1,7 @@
 /**
  * test that a class whose objects are instantiated via newInstance
  * do in fact have a default, no-arg constructor.  If they don't,
- * a NoSuchMethodError must be thrown.
+ * an InstantiationException must be thrown.
  */
 public class ConstructorTest {
   public ConstructorTest(int i) {}
@@ -10,7 +10,7 @@ public class ConstructorTest {
   {
     try {
 	Object o = ConstructorTest.class.newInstance();
-    } catch (NoSuchMethodError e) {
+    } catch (InstantiationException e) {
 	System.out.println("Success.");
 	return;
     }

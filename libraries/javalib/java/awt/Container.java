@@ -463,6 +463,10 @@ public void paint ( Graphics g ) {
 	}
 }
 
+protected String paramString() {
+    return super.paramString() + ",layout=" + getLayout().getClass().getName();
+}
+
 /**
  * @deprecated, use getPreferredSize().
  */

@@ -19,6 +19,7 @@ public class CheckboxMenuItem
 {
 	private boolean isChecked;
 	private ItemListener iListener;
+	private static int counter;
 	final private static long serialVersionUID = 6190621106981774043L;
 
 public CheckboxMenuItem () {
@@ -33,6 +34,7 @@ public CheckboxMenuItem ( String label, boolean isChecked ) {
 	super( label);
 
 	this.isChecked = isChecked;
+	setName("chkmenuitem" + counter++);
 }
 
 public void addItemListener( ItemListener newListener) {
@@ -85,7 +87,7 @@ int paint ( Graphics g, int x, int xoff, int y, int width, int height, Color bac
 }
 
 public String paramString() {
-	return super.paramString() + ", " + (isChecked ? "checked" : "unchecked");
+	return super.paramString() + ",state=" + getState();
 }
 
 void process ( ItemEvent ie ) {

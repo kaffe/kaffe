@@ -24,6 +24,7 @@ public class Window
 	WindowListener wndListener;
 	Frame owner;
 	static Window dummy = new Window();
+	private static int counter;
 	final private static long serialVersionUID = 4497834738069338734L;
 
 Window () {
@@ -35,6 +36,7 @@ Window () {
 	font  = Defaults.WndFont;
 
 	setLayout(new BorderLayout());
+	setName("win" + counter++);
 }
 
 public Window ( Frame owner ) {

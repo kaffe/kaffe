@@ -216,6 +216,7 @@ public String toString() {
 		if ( (style & ITALIC) != 0 ) s += "italic";
 	}
 
-	return getClass().getName() + " [" + name + ',' +	s + ',' + size + ']';
+	return getClass().getName() + "[family=" +getFamily() + ",name=" + name
+	    + ",style=" + s + ",size=" + size + ']';
 }
 }

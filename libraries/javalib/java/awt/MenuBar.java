@@ -20,9 +20,11 @@ public class MenuBar
 {
 	Vector menus = new Vector();
 	Menu helpMenu;
+	private static int counter;
 	private static final long serialVersionUID = -4930327919388951260L;
 
 public MenuBar() {
+	setName("menubar" + counter++);
 }
 
 public Menu add( Menu m) {
@@ -127,6 +129,11 @@ public void removeNotify() {
 }
 
 public synchronized void setHelpMenu( Menu m) {
+	// update help menu status.
+	if (helpMenu != null) {
+		remove(helpMenu);
+	}
+
 	helpMenu = m;
 	updateView();
 }

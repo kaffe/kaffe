@@ -105,6 +105,6 @@ public void setName( String name) {
 }
 
 public String toString() {
-	return paramString();
+	return getClass().getName() + '[' + paramString() + ']';
 }
 }

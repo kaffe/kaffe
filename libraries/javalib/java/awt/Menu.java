@@ -20,6 +20,7 @@ public class Menu
 	private static final long serialVersionUID = -8809584163345499784L;
 	Vector items = new Vector( 5);
 	boolean isTearOff;
+	private static int counter;
 
 public Menu() {
 	this( null, false);
@@ -32,6 +33,7 @@ public Menu( String label) {
 public Menu( String label, boolean tearOff) {
 	super( label);
 	isTearOff = tearOff;
+	setName("menu" + counter++);
 }
 
 public synchronized MenuItem add( MenuItem mi) {
@@ -106,6 +108,23 @@ public int getItemCount() {
 	return (countItems());
 }
 
+private MenuBar getMenuBar() {
+	MenuContainer root = this;
+
+	try {
+		while (((Menu) root).getParent() != null) {
+			root = ((Menu) root).getParent();
+		}
+	}
+	catch (ClassCastException e) {
+		if (root instanceof MenuBar) {
+			return (MenuBar) root;
+		}
+	}
+
+	return null;
+}
+
 MenuItem getShortcutMenuItem( MenuShortcut s) {
 	int sz = items.size();
 
@@ -138,12 +157,25 @@ public void insertSeparator( int idx) {
 	insert( MenuItem.separator, idx);
 }
 
+private boolean isHelpMenu() {
+	// find the menu bar, if it exists
+	MenuBar bar = getMenuBar();
+
+	// if there is a menu bar for this menu, and its help menu is
+	// this menu, then return true.
+	if (bar != null) {
+		return bar.getHelpMenu() == this;
+	}
+
+	return false;
+}
+
 public boolean isTearOff() {
 	return isTearOff;
 }
 
 public String paramString() {
-	return super.paramString();
+	return super.paramString() + ",tearOff=" + isTearOff() + ",isHelpMenu=" + isHelpMenu();
 }
 
 protected void propagateOldEvents ( boolean isOldEventClient ) {

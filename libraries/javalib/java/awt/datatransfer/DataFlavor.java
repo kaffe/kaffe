@@ -111,6 +111,9 @@ public void setHumanPresentableName( String humanPresentableName) {
 }
 
 public String toString() {
-	return "DataFlavor [" + name + ',' + type + ',' + repClass.getName() + ']';
+	return getClass().getName()
+	    + "[representationclass=" + getRepresentationClass().getName()
+	    + ",mimetype=" + getMimeType()
+	    + ']';
 }
 }

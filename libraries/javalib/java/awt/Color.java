@@ -286,8 +286,8 @@ void setNativeValue () {
 }
 
 public String toString() {
-	return "Color [r=" + getRed() + 
+	return "java.awt.Color[r=" + getRed() + 
 	             ",g=" + getGreen() +
-	             ",b=" + getBlue() + "]";
+	             ",b=" + getBlue() + ']';
 }
 }

@@ -27,6 +27,8 @@ public class Checkbox
 	int state;
 	String label;
 	ItemListener iListener;
+
+	public static int counter;
 	static int CHECKED = 1;
 	static int HILIGHTED = 2;
 
@@ -50,7 +52,8 @@ public Checkbox ( String label, boolean state, CheckboxGroup group) {
 	this.label = (label == null) ? "" : label;
 	setCheckboxGroup( group);
 	setState( state);
-	
+	setName("checkbox" + counter++);
+
 	setForeground( Color.black);
 	setFont( Defaults.TextFont);
 	addMouseListener( this);
@@ -207,7 +210,7 @@ public void paint ( Graphics g) {
 }
 
 protected String paramString() {
-	return super.paramString();
+	return super.paramString() + ",label=" + label + ",state=" + getState();
 }
 
 /** 

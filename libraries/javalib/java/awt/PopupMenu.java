@@ -16,6 +16,7 @@ public class PopupMenu
   extends Menu
 {
 	final private static long serialVersionUID = -4620452533522760060L;
+	private static int counter;
 	PopupWindow wnd;
 
 public PopupMenu() {
@@ -23,12 +24,14 @@ public PopupMenu() {
 }
 
 PopupMenu ( Menu m) {
-	super(m.label);
+	this(m.getLabel());
 	items = m.items;
 }
 
 public PopupMenu( String label) {
 	super( label);
+
+	setName("popup" + counter++);
 }
 
 void dispose() {

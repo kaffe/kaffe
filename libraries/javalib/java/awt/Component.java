@@ -913,9 +913,9 @@ void kaffePaintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 protected String paramString () {
 	String s = name + ',' + x + ',' + y + ',' + width + 'x' + height;
 	
-	if ( !isValid() )   s += " invalid";	
-	if ( !isVisible() ) s += " hidden";
-	if ( !isEnabled() ) s += " disabled";
+	if ( !isValid() )   s += ",invalid";	
+	if ( !isVisible() ) s += ",hidden";
+	if ( !isEnabled() ) s += ",disabled";
 	
 	return s;
 }

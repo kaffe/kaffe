@@ -49,23 +49,11 @@ public synchronized byte[] toByteArray() {
 }
 
 public String toString () {
-	return (toString(ByteToCharConverter.getDefault()));
-}
-
-private String toString ( ByteToCharConverter encoding ) {
-	// this is still bad - preferrably, we should be able to create a 
-	// String (just internally) without any temporary buffer. Otherwise,
-	// the buffer should be a least static
-
-	final int     n = encoding.getNumberOfChars( buf, 0, count);
-	final char[]  cBuf = new char[n];
-	
-	encoding.convert( buf, 0, count, cBuf, 0, cBuf.length);
-	return new String( cBuf);
+	return (new String(buf, 0, count));
 }
 
 public String toString(String enc) throws UnsupportedEncodingException {
-	return (toString(ByteToCharConverter.getConverter(enc)));
+	return (new String(buf, 0, count, enc));
 }
 
 /**

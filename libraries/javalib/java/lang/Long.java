@@ -91,7 +91,7 @@ public static Long getLong(String nm, long val) {
 }
 
 public int hashCode() {
-	return this.intValue();
+	return (int) (longValue()^(longValue()>>>32));
 }
 
 public int intValue() {

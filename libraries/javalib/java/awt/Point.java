@@ -75,7 +75,7 @@ public void setLocation ( int xNew, int yNew ) {
 }
 
 public String toString() {
-	return getClass().getName() + " [" + x + ',' + y + ']';
+	return getClass().getName() + "[x=" + x + ",y=" + y + ']';
 }
 
 public void translate ( int xDelta, int yDelta ) {

@@ -25,6 +25,7 @@ public class MenuItem
 	String aCmd;
 	int eventMask;
 	static MenuItem separator = new MenuItem( "-");
+	private static int counter;
 	final private static long serialVersionUID = -21757335363267194L;
 
 public MenuItem() {
@@ -39,6 +40,7 @@ public MenuItem( String label, MenuShortcut s) {
 	setShortcut( s);
 	setLabel( label);
 	setFont( defFnt);
+	setName("menuitem" + counter++);
 }
 
 public synchronized void addActionListener( ActionListener l) {
@@ -199,7 +201,7 @@ int paint ( Graphics g, int x, int xoff, int y, int width, int height,
 }
 
 public String paramString() {
-	return getClass().getName() + "[Label: " + label + "]";
+	return super.paramString() + ",label=" + label;
 }
 
 void process ( ActionEvent e ) {

@@ -240,8 +240,8 @@ public void setSize ( int width, int height ) {
 }
 
 public String toString() {
-	return getClass().getName() + " [" + x + ',' + y +
-	                              " "  + width + ',' + height + ']';
+	return getClass().getName() + "[x=" + x + ",y=" + y +
+	                              ",width="  + width + ",height=" + height + ']';
 }
 
 public void translate ( int xDelta, int yDelta ) {

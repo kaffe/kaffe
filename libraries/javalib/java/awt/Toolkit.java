@@ -384,6 +384,10 @@ public static String getProperty ( String key, String defaultValue ) {
 	return null;
 }
 
+public int getScreenResolution() {
+	return resolution;
+}
+
 public Dimension getScreenSize () {
 	return screenSize;
 }

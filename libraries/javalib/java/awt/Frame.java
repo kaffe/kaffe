@@ -22,6 +22,7 @@ public class Frame
 	static Insets frameInsets;
 	static Insets menuFrameInsets;
 	static Rectangle frameDeco;
+	private static int counter;
 	final private static long serialVersionUID = 2673458971256075116L;
 	final public static int CROSSHAIR_CURSOR = Cursor.CROSSHAIR_CURSOR;
 	final public static int DEFAULT_CURSOR = Cursor.DEFAULT_CURSOR;
@@ -61,6 +62,7 @@ Frame ( Frame owner, String title ) {
 	flags |= IS_RESIZABLE;
 	this.title = (title == null) ? "" : title;	
 	deco = frameDeco;
+	setName("frame" + counter++);
 }
 
 public Frame ( String title ) {
@@ -177,6 +179,10 @@ public void paint ( Graphics g ) {
 			}
 		}
 //}
+}
+
+protected String paramString() {
+	return super.paramString() + (isResizable() ? ",resizable" : ",fixed") + ",title=" + getTitle();
 }
 
 /**
