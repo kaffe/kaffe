@@ -41,6 +41,7 @@ package java.net;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.AllPermission;
 import java.security.Permission;
 import java.util.Collections;
 import java.util.Date;
@@ -305,7 +306,7 @@ public abstract class URLConnection
   public Map getHeaderFields()
   {
     // Subclasses for specific protocols override this.
-    return null;
+    return Collections.EMPTY_MAP;
   }
 
   /**
@@ -413,11 +414,12 @@ public abstract class URLConnection
 
     // First try the factory
     ContentHandler ch = null;
+    
     if (factory != null)
       ch = factory.createContentHandler(type);
 
     if (ch != null)
-      return(ch.getContent(this));
+      return ch.getContent(this);
 
     // Then try our default class
     try
@@ -426,11 +428,12 @@ public abstract class URLConnection
                                   type.replace('/', '.'));
      
         Object obj = cls.newInstance();
-        if (!(obj instanceof ContentHandler))
+        
+	if (! (obj instanceof ContentHandler))
           throw new UnknownServiceException(type);
 
-        ch = (ContentHandler)obj;
-        return(ch.getContent(this));
+        ch = (ContentHandler) obj;
+        return ch.getContent(this);
       }
     catch (ClassNotFoundException e)
       {
@@ -477,7 +480,7 @@ public abstract class URLConnection
   public Permission getPermission() throws IOException
   {
     // Subclasses may override this.
-    return new java.security.AllPermission();
+    return new AllPermission();
   }
 
   /**
