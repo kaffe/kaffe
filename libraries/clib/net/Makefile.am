@@ -8,10 +8,13 @@
 
 native_LTLIBRARIES = libnet.la
 
+INCLUDES = -I$(top_srcdir)/kaffe
+
 libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
-libnet_la_LIBADD = $(NET_LIBS)
+libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
 libnet_la_SOURCES = \
 	InetAddressImpl.c \
+	NetworkInterface.c \
 	PlainDatagramSocketImpl.c \
 	PlainSocketImpl.c
 

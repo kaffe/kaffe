@@ -25,18 +25,27 @@ class Throw {
  */
 public class ExceptionInInitializerTest
 {
+    private static boolean success = false;
+    
     public static void main(String av[]) {
+	Thread watchdog;
+	
 	// start watchdog.  If this thread times out, we've most 
 	// likely deadlocked.
-	new Thread(
+	(watchdog = new Thread(
 	    new Runnable() {
 		public void run()
 		{
-		    try { Thread.sleep(5000); } catch (Exception _) {}
-		    System.out.println("Failure due to timeout, exiting");
-		    System.exit(-1);
+		    try {
+			    Thread.sleep(5000);
+			    System.out.println("Failure due to timeout, exiting");
+			    System.exit(-1);
+		    }
+		    catch (Exception _)
+		    {
+		    }
 		}
-	    }).start();
+	    })).start();
 
 	System.out.println("Static initializer test");
 	try {
@@ -82,7 +91,8 @@ public class ExceptionInInitializerTest
 			    System.out.println(Throw.activeUse);
 			} catch (NoClassDefFoundError _) {
 			    System.out.println("Success 2.");
-			    System.exit(0);
+			    ExceptionInInitializerTest.success = true;
+			    //System.exit(0);
 			}
 		    }
 		};
@@ -91,11 +101,15 @@ public class ExceptionInInitializerTest
 		    System.out.println(ire2);
 		}
 
-		System.out.println("Failed, class was loaded.");
+		if( !success )
+		    System.out.println("Failed, class was loaded.");
 	    }
-	    System.out.println(e);
+	    if( !success )
+		System.out.println(e);
 	}
-	System.out.println("Failed, exception wasn't caught");
+	if( !success )
+	    System.out.println("Failed, exception wasn't caught");
+	watchdog.interrupt();
     }
 }
 

@@ -35,7 +35,7 @@ java_io_FileOutputStream_open(struct Hjava_io_FileOutputStream* fh, struct Hjava
 	rc = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_TRUNC, 0666, &fd);
 	if (rc) {
 		unhand(unhand(fh)->fd)->fd = -1;
-		SignalError("java.io.IOException", SYS_ERROR(rc));
+		SignalError("java.io.FileNotFoundException", SYS_ERROR(rc));
 	}
 	unhand(unhand(fh)->fd)->fd = fd;
 }
@@ -55,7 +55,7 @@ java_io_FileOutputStream_openAppend(struct Hjava_io_FileOutputStream* fh, struct
 	rc = KOPEN(str, O_WRONLY|O_CREAT|O_BINARY|O_APPEND, 0666, &fd);
 	if (rc) {
 		unhand(unhand(fh)->fd)->fd = -1;
-		SignalError("java.io.IOException", SYS_ERROR(rc));
+		SignalError("java.io.FileNotFoundException", SYS_ERROR(rc));
 	}
 	unhand(unhand(fh)->fd)->fd = fd;
 }

@@ -26,6 +26,9 @@ public class ClassGC extends ClassLoader {
         return cb;
     }
 
+    /**
+     * Set to true if any arguments are passed main().
+     */
     static boolean verbose = false;
 
     public Class loadClass(String name, boolean resolve) 
@@ -68,14 +71,39 @@ public class ClassGC extends ClassLoader {
 	String testclass = "ClassGCTest";
 
 	for (int i = 0; i < 10; i++) {
+	    if (verbose)
+		System.out.println(i+ "] loading " +testclass);
 	    ClassLoader l = doit(testclass);
 	    cleanup();
 	    /* this class refers to the former to which we didn't keep
 	     * a ref.  If our class gc is too eager, it will have freed it
 	     * and bad things will happen.
 	     */
+	    if (verbose)
+		System.out.println(i+ "] loading ClassGCTestLater");
 	    Class c = l.loadClass("ClassGCTestLater");
+
+	    if (verbose)
+		System.out.println(i+ "] creating new instance.");
 	    c.newInstance();
+
+	    l = null;
+	    c = null;
+	}
+	if( gotOneForF )
+	{
+		/*
+		 * XXX Do the println here since it doesn't seem to come
+		 * out sometimes.  Why?  I don't know, so lets just blame
+		 * the OSKit and move on...
+		 */
+		System.out.println("F Success.");
+		System.out.flush();
+	}
+	if( gotOneForG )
+	{
+		System.out.println("G Success.");
+		System.out.flush();
 	}
     }
     public static boolean gotOneForF;
@@ -84,6 +112,6 @@ public class ClassGC extends ClassLoader {
 
 // Sources: ClassGCTest.java ClassGCTestLater.java
 /* Expected Output:
-Success.
-Success.
+F Success.
+G Success.
 */

@@ -320,6 +320,21 @@ final public synchronized void setMaxPriority(int pri) {
 	maxPriority = pri;
 }
 
+final public synchronized void interrupt() {
+	checkAccess();
+	for (int i = 0; i < threads.length; i++) {
+		if (threads[i] != null) {
+			threads[i].interrupt();
+		}
+	}
+	for (int i = 0; i < groups.length; i++) {
+		if (groups[i] != null) {
+			groups[i].interrupt();
+		}
+	}
+}
+
+/*
 /**
  * @deprecated
  */

@@ -1,0 +1,18 @@
+# Makefile.in for libreplace - Replacement missing OS functions
+#
+# Copyright (c) 2002, 2003 University of Utah and the Flux Group.
+# All rights reserved.
+#
+# This file is licensed under the terms of the GNU Public License.
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# Contributed by the Flux Research Group, Department of Computer Science,
+# University of Utah, http://www.cs.utah.edu/flux/
+
+INCLUDES = -I$(top_builddir) -I$(top_srcdir)
+noinst_LTLIBRARIES = libreplace.la
+libreplace_la_SOURCES = getifaddrs.c
+#libreplace_la_LIBADD = @LTLIBOBJS@
+
+EXTRA_DIST = ifaddrs_linux.c

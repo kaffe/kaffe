@@ -19,7 +19,7 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
   private Class myLoadClass( String name ) throws ClassNotFoundException {
     try {
       if ( name.equals( "ExceptionTest" ) ) {
-	File file = new File( "ExceptionTest" );
+	File file = new File( "ExceptionTest.class" );
 	FileInputStream fis = new FileInputStream( file );
 	byte buffer[] = new byte[(int)file.length()];
 	int size = 0;
@@ -41,11 +41,15 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
     }
     Class theclass = findLoadedClass( name );
     if ( theclass == null ) {
-      try {
-	theclass = findSystemClass( name );
-      } catch( Exception e ) { // Yes Exception is a bit too general
-	theclass = myLoadClass( name );
-      }
+       if( name.equals("ExceptionTest") ) {
+	  theclass = myLoadClass( name );
+       } else {
+	  try {
+	     theclass = findSystemClass( name );
+	  } catch( Exception e ) { // Yes Exception is a bit too general
+	     theclass = myLoadClass( name );
+	  }
+       }
     }
     if ( theclass != null && resolve ) {
       resolveClass( theclass );
@@ -54,7 +58,6 @@ public class ExceptionTestClassLoader2 extends ClassLoader {
   }
 
   public static void main( String args[] ) {
-    new File("ExceptionTest.class").renameTo(new File("ExceptionTest"));
     Vector v = new Vector();
     ClassLoader cl = new ExceptionTestClassLoader2();
 

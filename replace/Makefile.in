@@ -10,13 +10,17 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Net support for standard Java libraries
+# Makefile.in for libreplace - Replacement missing OS functions
 #
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
+# Copyright (c) 2002, 2003 University of Utah and the Flux Group.
+# All rights reserved.
 #
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
+# This file is licensed under the terms of the GNU Public License.
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# Contributed by the Flux Research Group, Department of Computer Science,
+# University of Utah, http://www.cs.utah.edu/flux/
 
 
 SHELL = @SHELL@
@@ -46,7 +50,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ../../..
+top_builddir = ..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -149,23 +153,19 @@ securitydir = @securitydir@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-native_LTLIBRARIES = libnet.la
+INCLUDES = -I$(top_builddir) -I$(top_srcdir)
+noinst_LTLIBRARIES = libreplace.la
+libreplace_la_SOURCES = getifaddrs.c
+#libreplace_la_LIBADD = @LTLIBOBJS@
 
-INCLUDES = -I$(top_srcdir)/kaffe
-
-libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
-libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
-libnet_la_SOURCES =  	InetAddressImpl.c 	NetworkInterface.c 	PlainDatagramSocketImpl.c 	PlainSocketImpl.c
-
-
-CLEANFILES = so_locations
+EXTRA_DIST = ifaddrs_linux.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
+CONFIG_HEADER = ../config/config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
-LTLIBRARIES =  $(native_LTLIBRARIES)
+LTLIBRARIES =  $(noinst_LTLIBRARIES)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I../../../config -I../../../include
+DEFS = @DEFS@ -I. -I$(srcdir) -I../config -I../include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -173,9 +173,9 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-libnet_la_DEPENDENCIES =  $(top_builddir)/replace/libreplace.la
-libnet_la_OBJECTS =  InetAddressImpl.lo NetworkInterface.lo \
-PlainDatagramSocketImpl.lo PlainSocketImpl.lo
+libreplace_la_LDFLAGS = 
+libreplace_la_LIBADD = 
+libreplace_la_OBJECTS =  getifaddrs.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -187,46 +187,29 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/InetAddressImpl.P .deps/NetworkInterface.P \
-.deps/PlainDatagramSocketImpl.P .deps/PlainSocketImpl.P
-SOURCES = $(libnet_la_SOURCES)
-OBJECTS = $(libnet_la_OBJECTS)
+DEP_FILES =  .deps/getifaddrs.P
+SOURCES = $(libreplace_la_SOURCES)
+OBJECTS = $(libreplace_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .lo .o .obj .s
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/clib/net/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu replace/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-nativeLTLIBRARIES:
+mostlyclean-noinstLTLIBRARIES:
 
-clean-nativeLTLIBRARIES:
-	-test -z "$(native_LTLIBRARIES)" || rm -f $(native_LTLIBRARIES)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
 
-distclean-nativeLTLIBRARIES:
+distclean-noinstLTLIBRARIES:
 
-maintainer-clean-nativeLTLIBRARIES:
-
-install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(nativedir)
-	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(nativedir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(nativedir)/$$p; \
-	  else :; fi; \
-	done
-
-uninstall-nativeLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	list='$(native_LTLIBRARIES)'; for p in $$list; do \
-	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p; \
-	done
+maintainer-clean-noinstLTLIBRARIES:
 
 # FIXME: We should only use cygpath when building on Windows,
 # and only if it is available.
@@ -266,8 +249,8 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-libnet.la: $(libnet_la_OBJECTS) $(libnet_la_DEPENDENCIES)
-	$(LINK) -rpath $(nativedir) $(libnet_la_LDFLAGS) $(libnet_la_OBJECTS) $(libnet_la_LIBADD) $(LIBS)
+libreplace.la: $(libreplace_la_OBJECTS) $(libreplace_la_DEPENDENCIES)
+	$(LINK)  $(libreplace_la_LDFLAGS) $(libreplace_la_OBJECTS) $(libreplace_la_LIBADD) $(LIBS)
 
 tags: TAGS
 
@@ -300,14 +283,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = libraries/clib/net
+subdir = replace
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/clib/net/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu replace/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -361,51 +344,49 @@ installcheck: installcheck-am
 install-exec-am:
 install-exec: install-exec-am
 
-install-data-am: install-nativeLTLIBRARIES
+install-data-am:
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-nativeLTLIBRARIES
+uninstall-am:
 uninstall: uninstall-am
 all-am: Makefile $(LTLIBRARIES)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(nativedir)
 
 
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-nativeLTLIBRARIES mostlyclean-compile \
+mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-nativeLTLIBRARIES clean-compile clean-libtool \
+clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
 		clean-tags clean-depend clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-nativeLTLIBRARIES distclean-compile \
+distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-tags distclean-depend \
 		distclean-generic clean-am
 	-rm -f libtool
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-nativeLTLIBRARIES \
+maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-tags maintainer-clean-depend \
 		maintainer-clean-generic distclean-am
@@ -414,9 +395,8 @@ maintainer-clean-am:  maintainer-clean-nativeLTLIBRARIES \
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-nativeLTLIBRARIES distclean-nativeLTLIBRARIES \
-clean-nativeLTLIBRARIES maintainer-clean-nativeLTLIBRARIES \
-uninstall-nativeLTLIBRARIES install-nativeLTLIBRARIES \
+.PHONY: mostlyclean-noinstLTLIBRARIES distclean-noinstLTLIBRARIES \
+clean-noinstLTLIBRARIES maintainer-clean-noinstLTLIBRARIES \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile mostlyclean-libtool distclean-libtool \
 clean-libtool maintainer-clean-libtool tags mostlyclean-tags \

@@ -12,7 +12,6 @@ public class ClassGCTest
 		protected void finalize() throws Throwable {
 			if (!ClassGC.gotOneForF) {
 				ClassGC.gotOneForF = true;
-				System.out.println("Success.");
 			}
 		}
 	}
@@ -32,7 +31,6 @@ public class ClassGCTest
 		protected void finalize() throws Throwable {
 			if (!ClassGC.gotOneForG) {
 				ClassGC.gotOneForG = true;
-				System.out.println("Success.");
 			}
 		}
 	}

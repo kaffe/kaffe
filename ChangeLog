@@ -1,3 +1,157 @@
+2003-02-21 Dalibor Topic <robilad@yahoo.com>
+
+	Merged more fixes from JanosVM 1.0.
+
+	2002-11-25 Monday 15:57  stack
+
+        * libraries/clib/native/Method.c: need to process the class if
+        invoke is being called on a static method
+
+	2003-01-02 Thursday 16:12  stack
+
+        * libraries/clib/io/FileInputStream.c: ops, don't dereference null
+        fd
+
+	2002-11-25 Monday 15:57  stack
+
+        * libraries/clib/io/: FileInputStream.c, FileOutputStream.c:
+        IOException -> FileNotFoundException
+
+	2000-10-13 Friday 11:09  stack
+
+        * test/regression/: BadFloatTest.java,
+        ExceptionInInitializerTest.java, IndexTest.java,
+        InvTarExcTest.java, StackDump.java, TestCasts.java,
+        TestClassRef.java, burford.java, tname.java: Minor changes to make
+        them work better when run inside a team.
+
+	2003-01-29 Wednesday 16:57  stack
+
+        * test/regression/ClassGC.java: be specific about which part of the
+        test was successful
+
+	2002-07-05 Friday 16:25  stack
+
+        * test/regression/: ExceptionTestClassLoader.java,
+        ExceptionTestClassLoader2.java: alas, rename doesn't work on
+        oskit/moab...  therefore, we redo the loader so that it doesn't
+        rely on rename
+
+	2001-02-14 Wednesday 15:52  stack
+
+        * test/regression/ExceptionTestClassLoader.java: Rename the
+        ExceptionTest file back to its old name so that the test can be run
+        multiple times
+
+	2000-10-04 Wednesday 14:28  tullmann
+
+        * test/regression/: CLTestJLock.java, DieAfter.java, GCTest.java,
+        IndexTest.java, InvTarExcTest.java, Makefile.am, Makefile.in,
+        Preempt.java, ProcessClassLockTest.java, StackDump.java,
+        ThreadLocalTest.java, UDPTest.java: remove tests that won't work on
+        JanosVM; make all tests main threads wait for test to end; update
+        stack traces to include DieAfter frames
+
+	2001-02-14 Wednesday 15:52  stack
+
+        * test/regression/PipeTest.java: Flush stdout and wait for the
+        thread so that the test runs consistently
+
+	2000-10-29 Sunday 15:33  tullmann
+
+        * test/regression/ProcessClassLockTest.java: make more verbose
+
+	2002-03-17 Sunday 08:16  stack
+
+        * test/regression/ThreadInterrupt.java: fix an inner class
+
+	2001-03-05 Monday 14:47  tullmann
+
+        * test/regression/ThreadInterrupt.java: Remove the
+        dead-thread-interrupt tests.  They no good.
+
+	2000-10-29 Sunday 15:35  tullmann
+
+        * test/regression/ThreadInterrupt.java: test for interrupt on dead
+        threads
+
+	2002-02-20 Wednesday 15:27  stack
+
+        * test/regression/ThreadLocalTest.java: don't lock a global dangit
+
+	2003-01-29 Wednesday 16:56  stack
+
+        * test/regression/: CLInitThrow.java, SensorsTest.java: first cut
+
+	2001-10-10 Wednesday 11:23  stack
+
+        * test/regression/: DateFormatTest.java, Makefile.am, Makefile.in:
+        date format test
+
+	2002-10-02 Wednesday 09:34  stack
+
+        * test/regression/: InetSocketAddressTest.java, Makefile.am,
+        Makefile.in: add InetSocketAddress test
+
+	2003-01-31 Friday 14:13  stack
+
+        * test/regression/NetworkInterfaceTest.java: If NetworkInterface
+        fails to initialize return the special 'skip' code (77), so the
+        test suite can tell the user that it was skipped.
+
+	2002-09-14 Saturday 14:57  stack
+
+        * test/regression/NetworkInterfaceTest.java: simple test of
+        java.net.NetworkInterface class
+
+	2002-06-03 Monday 15:07  stack
+
+        * test/regression/: Makefile.am, Makefile.in,
+        SecureRandomTest.java, WaitTest.java: add SecureRandomTest and
+        WaitTest
+
+2003-02-20 Dalibor Topic <robilad@yahoo.com>
+
+	More merges with JanosVM 1.0.
+	
+	2002-10-02 Wednesday 09:31  stack
+
+        * libraries/javalib/java/lang/ThreadGroup.java: add interrupt
+        method.
+
+	2003-02-06 Thursday 11:08  stack
+
+        * libraries/javalib/java/net/NetworkInterface.java: minor changes
+        to satisfy kjc
+
+	2003-01-24 Friday 17:50  stack
+
+        * libraries/javalib/java/net/: InetSocketAddress.java,
+        NetworkInterface.java: need to prime the static objects so they
+        work in janosvm mode
+
+	2002-10-02 Wednesday 09:31  stack
+
+        * libraries/javalib/java/net/: InetAddress.java,
+        InetSocketAddress.java, MulticastSocket.java,
+        NetworkInterface.java, PlainDatagramSocketImpl.java,
+        SocketAddress.java: add some jdk1.4 things
+
+	2002-10-02 Wednesday 09:31  stack
+
+        * libraries/javalib/java/net/DatagramSocketImpl.java: add
+        joinGroup/leaveGroup for multicast
+
+	2002-09-14 Saturday 14:56  stack
+
+        * libraries/javalib/java/net/NetworkInterface.java: basic
+        implementation of java.net.NetworkInterface
+
+	2002-09-14 Saturday 14:56  stack
+
+        * libraries/javalib/: Makefile.am, Makefile.in: add
+        java/net/NetworkInterface.java
+	
 2003-02-20 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/awt/X/evt.c:

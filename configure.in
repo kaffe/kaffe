@@ -985,6 +985,10 @@ AC_CHECK_FUNCS([localtime])
 AM_ICONV
 LIBS="$LIBS $LIBICONV"
 
+AC_REPLACE_FUNCS(getifaddrs)
+AC_CHECK_HEADERS(ifaddrs.h,use_compat_ifaddrs="no",use_compat_ifaddrs="yes")
+AM_CONDITIONAL(USE_COMPAT_IFADDRS, test "$use_compat_ifaddrs" = "yes")
+
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
@@ -1513,6 +1517,7 @@ AM_CONFIG_HEADER(config/config.h include/jtypes.h)
 AC_OUTPUT([Makefile \
 config/Makefile \
 include/Makefile \
+replace/Makefile \
 kaffe/Makefile \
 libraries/Makefile \
 kaffe/kaffevm/Makefile \

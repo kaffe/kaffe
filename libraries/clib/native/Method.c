@@ -148,7 +148,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	 * initialize the class object.  (XXX: check whether that's true.)
 	 */
 	/* XXX use JNI here XXX */
-	if (clazz->state < CSTATE_USABLE) {
+	if (clazz->state < CSTATE_USABLE || (_this == NULL)) {
 		if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
 			throwError(&info);
 		}

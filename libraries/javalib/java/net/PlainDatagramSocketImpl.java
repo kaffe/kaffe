@@ -107,6 +107,10 @@ protected native void setTTL(byte ttl) throws IOException;
 protected native byte getTTL() throws IOException;
 protected native void join(InetAddress inetaddr) throws IOException;
 protected native void leave(InetAddress inetaddr) throws IOException;
+protected native void joinGroup(SocketAddress inetaddr,
+				NetworkInterface netIf) throws IOException;
+protected native void leaveGroup(SocketAddress inetaddr,
+				 NetworkInterface netIf) throws IOException;
 protected native void socketSetOption(int option, Object value);
 protected native int socketGetOption(int option);
 private native void datagramSocketCreate();

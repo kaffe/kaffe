@@ -53,8 +53,11 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_DatagramPacket.h \
 	java_net_InetAddress.h \
 	java_net_InetAddressImpl.h \
+	java_net_InetSocketAddress.h \
+	java_net_NetworkInterface.h \
 	java_net_PlainDatagramSocketImpl.h \
 	java_net_PlainSocketImpl.h \
+	java_net_SocketAddress.h \
 	java_net_SocketImpl.h \
 	java_net_SocketOptions.h \
 	java_text_DateFormat.h \
@@ -121,7 +124,17 @@ JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 
+if USE_COMPAT_IFADDRS
+ifaddrs_compat = ifaddrs.h
+ifaddrs.h: ifaddrs_compat.h
+	$(LN_S) $< $@
+else
+ifaddrs_compat = #
+endif
+
 noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS) \
+	ifaddrs_compat.h \
+	$(ifaddrs_compat) \
 	defs.h \
 	files.h \
 	nets.h \

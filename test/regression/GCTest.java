@@ -9,7 +9,7 @@
  * Courtesy Pat Tullmann (tullmann@cs.utah.edu)
  */
 public class GCTest 
-	implements Runnable
+	extends Thread
 {
 	class GCTest_Object
 	{
@@ -39,10 +39,8 @@ public class GCTest
 
 	public GCTest(int id)
 	{
+		super();
 		id_ = id;
-		
-		Thread th = new Thread(this);
-		th.start();
 	}
 	
 
@@ -70,8 +68,32 @@ public class GCTest
 
 		}
 		
+		Thread[] threads = new Thread[thCt];
+
 		for (i = 0; i < thCt; i++)
-			new GCTest(i);
+		{
+			threads[i] = new GCTest(i);
+			threads[i].start();
+		}
+		
+		// XXX start a watchdog thread
+
+		// Make sure they all finish
+		for (i = 0; i < thCt; i++)
+		{
+			if (threads[i] != null)
+			{
+				try
+				{
+					threads[i].join();
+					threads[i] = null;
+				}
+				catch (InterruptedException ie)
+				{
+					System.out.println("interrupted");
+				}
+			}
+		}
 	}
 
 	public void run()

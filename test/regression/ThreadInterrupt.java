@@ -8,6 +8,29 @@ import java.io.*;
 import java.net.ServerSocket;
 
 public class ThreadInterrupt {
+   
+    /*
+     * See if interrupt flag is cleared when a thread dies.
+     */
+    static class ThreadWithField extends Thread {
+	int field = 0;
+	
+	public void run() {
+			infiniteLoop:
+	    for(;;)
+	    {
+		synchronized(this) 
+		{
+		    if (field != 0)
+			break infiniteLoop;
+		}
+		Thread.yield();
+	    }
+	    
+	    // just exit.
+	}
+    };
+    
     public static void main(String av[]) throws Exception {
 	Thread watchdog = new Thread() {
 	    public void run() {
@@ -21,6 +44,11 @@ public class ThreadInterrupt {
 	watchdog.start();
 
 	Thread t;
+
+	/*
+	 * Create a thread that will wait().  Test that
+	 * throwing InterruptedException clears interrupted bit.
+	 */
 	t = new Thread("Interrupt-in-wait") {
 	    public void run() {
 		synchronized(this) {
@@ -39,6 +67,12 @@ public class ThreadInterrupt {
 	    }
 	};
 	ssij(t);
+
+	
+	/*
+	 * Create a thread that will sleep().  Test that interrupted exception
+	 * will clear interrupted bit.
+	 */
 	t = new Thread("Interrupt-in-sleep") {
 	    public void run() {
 		try {
@@ -55,6 +89,50 @@ public class ThreadInterrupt {
 	    }
 	};
 	ssij(t);
+
+	/*
+	 * XXX JanosVM Change: we don't think its worth supporting the interrupt
+	 * semantics for dead threads (that their interrupt flag is cleared).
+	 * Not part of the spec, that we can see.  Not a good practice
+	 * either (relying on the interrupt state of some other thread).
+	 */
+	if (false)
+	{
+		/*
+		 * Try interrupting a dead thread.
+		 */
+		t = new Thread() {
+			public void run() {
+				// just exit.
+			}
+		};
+		t.start();
+		while(t.isAlive())
+			Thread.yield(); // let t get going and die
+		t.interrupt();
+		if (t.isInterrupted())
+			System.out.println("FAIL: dead thread has interrupt flag set.");
+		else
+			System.out.println("Success: dead thread interrupt.");
+		
+		ThreadWithField twf = new ThreadWithField();
+		twf.start();
+		Thread.sleep(500); // let t get going
+		twf.interrupt();
+		twf.field = 1;
+		while(twf.isAlive())
+			Thread.yield();
+		if (twf.isInterrupted())
+			System.out.println("FAIL: dead thread has interrupt flag set.");
+		else
+			System.out.println("Success: dead thread interrupt flag clear.");
+	}
+	
+	/*
+	 * Create a thread that will wait().  Test that interrupted
+	 * exception will clear interrupted bit.  Test that subsequent
+	 * sleeps do not get interrupted.
+	 */
 	t = new Thread("Test-interrupt-post catch") {
 	    public void run() {
 		synchronized (this) {
@@ -102,6 +180,10 @@ public class ThreadInterrupt {
 	}
 	t.join();
 
+	/*
+	 * Test interrupt on current thread by current thread.
+	 * Test both sleep() and wait()
+	 */
 	Thread me = Thread.currentThread();
 	me.interrupt();
 	synchronized(me) {
@@ -123,6 +205,10 @@ public class ThreadInterrupt {
 	System.exit(0);
     }
 
+    /*
+     * utility funtion to start the given thread, sleep for a bit,
+     * then interrupt and join the given thread.
+     */
     static void ssij(Thread t) {
 	t.start();
 	try {

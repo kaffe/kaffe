@@ -843,6 +843,7 @@ java_net_SRCS = \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
 	java/net/NetPermission.java \
+	java/net/NetworkInterface.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PasswordAuthentication.java \
 	java/net/PlainDatagramSocketImpl.java \

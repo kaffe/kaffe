@@ -34,7 +34,7 @@ java_io_FileInputStream_open(struct Hjava_io_FileInputStream* this, struct Hjava
 	rc = KOPEN(str, O_RDONLY|O_BINARY, 0, &fd);
 	if (rc) {
 		unhand(unhand(this)->fd)->fd = -1;
-		SignalError("java.io.IOException", SYS_ERROR(rc));
+		SignalError("java.io.FileNotFoundException", SYS_ERROR(rc));
 	}
 	unhand(unhand(this)->fd)->fd = fd;
 }
@@ -47,7 +47,8 @@ java_io_FileInputStream_close(struct Hjava_io_FileInputStream* this)
 {
 	int r;
 
-	if (unhand(unhand(this)->fd)->fd >= 0) {
+	if (unhand(this)->fd &&
+	    unhand(unhand(this)->fd)->fd >= 0) {
 		r = KCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
 		if (r) {

@@ -1,6 +1,4 @@
 
-import java.io.*;
-
 public class burford implements Runnable {
     public static void main(String argv[])
     {
@@ -11,6 +9,9 @@ public class burford implements Runnable {
         
         bt.start();
 
+	// XXX Make sure bt has actually started up and hit the wait
+	Thread.yield();
+	
         Thread f1 = new Thread(b.new feeder(b));
         Thread f2 = new Thread(b.new feeder(b));
 
@@ -29,15 +30,16 @@ public class burford implements Runnable {
         b.awaken();
 
         System.out.println("burford awakened -- result = " + b.counter());
-        System.exit(0);
     }
 
     public void run()
     {
         try {
-            synchronized (v_mutex) {
-                v_mutex.wait();
-            }
+	    while( !this.done ) {
+		synchronized (v_mutex) {
+		    v_mutex.wait();
+		}
+	    }
         } catch (InterruptedException exc) {}
     }
 
@@ -54,6 +56,7 @@ public class burford implements Runnable {
     public void awaken()
     {
         synchronized (v_mutex) {
+	    this.done = true;
             v_mutex.notify();
         }
     }
@@ -76,6 +79,7 @@ public class burford implements Runnable {
     
     private Object v_mutex = new Object();
     private int v_counter = 0;
+    private boolean done = false;
 }
 
 /* Expected Output:

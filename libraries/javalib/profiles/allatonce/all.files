@@ -485,6 +485,7 @@ java/net/HttpURLConnection.java
 java/net/InetSocketAddress.java
 java/net/JarURLConnection.java
 java/net/MulticastSocket.java
+java/net/NetworkInterface.java
 java/net/NoRouteToHostException.java
 java/net/PasswordAuthentication.java
 java/net/PlainDatagramSocketImpl.java

@@ -145,6 +145,7 @@ java/util/Map$Entry.class
 java/util/MissingResourceException.class
 java/util/NoSuchElementException.class
 java/util/Properties.class
+java/util/PropertyPermission.class
 java/util/PropertyResourceBundle.class
 java/util/Random.class
 java/util/ResourceBundle.class
@@ -208,8 +209,11 @@ java/io/RandomAccessFile.class
 java/net/DatagramPacket.class
 java/net/InetAddress.class
 java/net/InetAddressImpl.class
+java/net/InetSocketAddress.class
+java/net/NetworkInterface.class
 java/net/PlainDatagramSocketImpl.class
 java/net/PlainSocketImpl.class
+java/net/SocketAddress.class
 java/net/SocketImpl.class
 java/net/SocketOptions.class
 java/text/DateFormat.class

@@ -8,7 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . config include libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
+SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
 
 DIST_SUBDIRS = . config include libltdl kaffe libraries test
 

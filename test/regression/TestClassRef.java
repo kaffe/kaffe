@@ -18,21 +18,21 @@ public class TestClassRef {
 	f.o = Integer.TYPE;
 	cs = f.c;
 	os = f.o;
-	Runtime.getRuntime().gc();
+	System.gc();
 
 	TestClassRef g = new TestClassRef();
 	g.c = java.lang.System.class;
 	g.o = java.lang.System.class;
 	cs = g.c;
 	os = g.o;
-	Runtime.getRuntime().gc();
+	System.gc();
 
 	TestClassRef h = new TestClassRef();
 	h.c = TestClassRef.class;
 	h.o = TestClassRef.class;
 	cs = h.c;
 	os = h.o;
-	Runtime.getRuntime().gc();
+	System.gc();
 
 	System.out.println("Success.");
     }

@@ -32,6 +32,7 @@ class PipeTest extends Thread
            {
                 String line = br.readLine();
                 System.out.println(line);
+		System.out.flush();
            } catch(IOException _) {}
         }
 
@@ -40,7 +41,14 @@ class PipeTest extends Thread
            PipeTest t = new PipeTest();
            t.start();
            t.pw.println("PipeTest");
-        }
+	   try
+	   {
+	       t.join();
+	   }
+	   catch(InterruptedException e)
+	   {
+	   }
+	}
 }
 /* Expected Output:
 PipeTest

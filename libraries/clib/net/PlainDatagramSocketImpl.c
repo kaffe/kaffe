@@ -18,7 +18,10 @@
 #include "java_lang_Integer.h"
 #include "java_io_FileDescriptor.h"
 #include "java_net_DatagramPacket.h"
+#include "java_net_NetworkInterface.h"
+#include "java_net_SocketAddress.h"
 #include "java_net_PlainDatagramSocketImpl.h"
+#include "java_net_InetSocketAddress.h"
 #include "java_net_InetAddress.h"
 #include "java_net_SocketOptions.h"
 #include "nets.h"
@@ -138,8 +141,18 @@ DBG(NATIVENET,
 	addr.sin_addr.s_addr = htonl(unhand(laddr)->address);
 
 	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
-	if (r) {
+	switch( r )
+	{
+	case 0:
+		break;
+	case EADDRNOTAVAIL:
+	case EADDRINUSE:
+	case EACCES:
+		SignalError("java.net.BindException", SYS_ERROR(r));
+		break;
+	default:
 		SignalError("java.net.SocketException", SYS_ERROR(r));
+		break;
 	}
 
 	if (port == 0) {
@@ -239,11 +252,19 @@ DBG(NATIVENET,
 	/* XXX should assert (unhand(pkt)->length <= unhand_array(unhand(pkt)->buf)->length), no? */
 
 	rc = KRECVFROM(unhand(unhand(this)->fd)->fd,
-		unhand_array(unhand(pkt)->buf)->body,
+		&(unhand_array(unhand(pkt)->buf)->body)[unhand(pkt)->offset],
 		unhand(pkt)->length, 0, (struct sockaddr*)&addr,
 		&alen, unhand(this)->timeout, &r);
-	if (rc) {
+	switch( rc )
+	{
+	case 0:
+		break;
+	case EINTR:
+		SignalError("java.io.InterruptedIOException", SYS_ERROR(rc));
+		break;
+	default:
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
+		break;
 	}
 
 	unhand(pkt)->length = r;
@@ -287,7 +308,6 @@ void
 java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
 {
 	struct Hjava_net_InetAddress* addrp;
-	struct sockaddr_in addr;
 	int k, v, r;
 
 	/* Do easy cases */
@@ -309,21 +329,24 @@ java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramS
 	case java_net_SocketOptions_IP_MULTICAST_IF:
 #if defined(IP_MULTICAST_IF)
 		addrp = (struct Hjava_net_InetAddress*)arg;
-		memset(&addr, 0, sizeof(addr));
-#if defined(BSD44)
-		addr.sin_len = sizeof(addr);
-#endif
-		addr.sin_family = AF_INET;
-		addr.sin_addr.s_addr = htonl(unhand(addrp)->address);
-		r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
-			IPPROTO_IP, IP_MULTICAST_IF, &addr, sizeof(addr));
-		if (r) {
-			SignalError("java.net.SocketException", SYS_ERROR(r));
-		}
+		{
+			struct in_addr ia;
+			
+			ia.s_addr = htonl(unhand(addrp)->address);
+			r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+					IPPROTO_IP,
+					IP_MULTICAST_IF,
+					&ia,
+					sizeof(ia));
+			if (r) {
+				SignalError("java.net.SocketException",
+					    SYS_ERROR(r));
+			}
 #else
-		SignalError("java.net.SocketException",
-			"IP_MULTICAST_IF is not supported");
+			SignalError("java.net.SocketException",
+				    "IP_MULTICAST_IF is not supported");
 #endif
+		}
 		break;
 
 	case java_net_SocketOptions_SO_BINDADDR:
@@ -432,6 +455,82 @@ java_net_PlainDatagramSocketImpl_leave(struct Hjava_net_PlainDatagramSocketImpl*
 #else
 	SignalError("java.net.SocketException",
 		"IP_DROP_MEMBERSHIP not supported");
+#endif
+}
+
+/*
+ * Join multicast group
+ */
+void
+java_net_PlainDatagramSocketImpl_joinGroup(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
+{
+#if defined(IP_ADD_MEMBERSHIP)
+	struct Hjava_net_InetSocketAddress *jisa;
+	struct ip_mreq ipm;
+	int r;
+
+	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
+	
+	ipm.imr_multiaddr.s_addr = htonl(unhand(unhand(jisa)->addr)->address);
+	if( jni )
+	{
+		ipm.imr_interface.s_addr =
+			htonl(unhand(unhand(jni)->primaryAddress)->address);
+	}
+	else
+	{
+		ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+	}
+
+	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+			IPPROTO_IP,
+			IP_ADD_MEMBERSHIP,
+			&ipm,
+			sizeof(ipm));
+	if (r) {
+		SignalError("java.io.IOException", SYS_ERROR(r));
+	}
+#else
+	SignalError("java.net.SocketException",
+		"IP_ADD_MEMBERSHIP not supported");
+#endif
+}
+
+/*
+ * Leave multicast group
+ */
+void
+java_net_PlainDatagramSocketImpl_leaveGroup(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
+{
+#if defined(IP_ADD_MEMBERSHIP)
+	struct Hjava_net_InetSocketAddress *jisa;
+	struct ip_mreq ipm;
+	int r;
+
+	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
+	
+	ipm.imr_multiaddr.s_addr = htonl(unhand(unhand(jisa)->addr)->address);
+	if( jni )
+	{
+		ipm.imr_interface.s_addr =
+			htonl(unhand(unhand(jni)->primaryAddress)->address);
+	}
+	else
+	{
+		ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+	}
+
+	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+			IPPROTO_IP,
+			IP_DROP_MEMBERSHIP,
+			&ipm,
+			sizeof(ipm));
+	if (r) {
+		SignalError("java.io.IOException", SYS_ERROR(r));
+	}
+#else
+	SignalError("java.net.SocketException",
+		"IP_ADD_MEMBERSHIP not supported");
 #endif
 }
 

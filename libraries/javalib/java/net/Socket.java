@@ -114,6 +114,9 @@ public InetAddress getLocalAddress() {
 }
 
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {
+	SecurityManager sm = System.getSecurityManager();
+	if( sm != null )
+		sm.checkSetFactory();
 	factory = fac;
 }
 

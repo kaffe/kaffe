@@ -35,30 +35,25 @@ private InetAddress(String name, int addr) {
 }
 
 InetAddress() {
+	family = impl.getInetFamily();
 }
 
 public boolean equals(Object obj) {
+	try
+	{
+		InetAddress ia;
 
-	if (this == obj) {
-		return (true);
-	}
-	if (!(obj instanceof InetAddress)) {
-		return (false);
-	}
-
-	InetAddress that = (InetAddress)obj;
-	byte[] thatAddr = that.getAddress();
-	byte[] thisAddr = getAddress();
-
-	for (int pos = thisAddr.length; pos-- > 0; ) {
-		if (thisAddr[pos] != thatAddr[pos]) {
-			return (false);
+		ia = (InetAddress)obj;
+		if( (this.family == ia.family) &&
+		    (this.address == ia.address) )
+		{
+			return true;
 		}
 	}
-	if (!getHostName().equals(that.getHostName())) {
-		return (false);
+	catch(ClassCastException e)
+	{
 	}
-	return (true);
+	return false;
 }
 
 public byte[] getAddress() {
@@ -109,7 +104,7 @@ public static InetAddress getByAddress(byte[] addr) throws UnknownHostException 
 
     return new InetAddress(null, address);
 }
-    
+
 public static synchronized InetAddress getByName(String host) throws UnknownHostException {
 	if (host == null || host.equals("")) {
 		return (InetAddress.getLoopback());
@@ -184,6 +179,10 @@ public boolean isMulticastAddress() {
 	else {
 		return (false);
 	}
+}
+
+public boolean isAnyLocalAddress() {
+	return this.address == 0;
 }
 
 public String toString() {

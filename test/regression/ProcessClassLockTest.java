@@ -49,7 +49,8 @@ public class ProcessClassLockTest
 	/* this thread should be unaffected by the fact that thread 2
 	 * sleeps in the static initializer of Base
 	 */
-	new Thread() {
+	Thread th;
+	th = new Thread() {
 	    public void run() {
 		try {
 		    Class.forName("this_class_does_not_exist");
@@ -58,7 +59,16 @@ public class ProcessClassLockTest
 		}
 		System.exit(0);
 	    }
-	}.start();
+	};
+	th.start();
+	try
+	{
+	    th.join();
+	}
+	catch (InterruptedException ie)
+	{
+	    System.out.println("interrupted");
+	}
     }
 }
 

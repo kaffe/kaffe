@@ -86,12 +86,14 @@ public synchronized int getOffset() {
 public synchronized int getPort() {
 	return (port);
 }
-
+ 
 synchronized void prime() {
 	this.address = new InetAddress();
 }
- 
+
 public synchronized void setAddress(InetAddress addr) {
+	if( addr == null )
+		throw new NullPointerException("null address");
 	address = addr;
 }
 

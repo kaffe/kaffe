@@ -1,12 +1,7 @@
-import java.io.*;
-
 class BadFloatTest {
-    public static void main(String[] args)
-           throws FileNotFoundException, IOException {
+    public static void main(String[] args) {
         float x = 1.2545f;
         double y = 9.8544;
-
-        File inputFile = new File("example");
         
         System.out.println(x + " " + y);
     }   

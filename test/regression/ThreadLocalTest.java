@@ -1,6 +1,8 @@
 
 public class ThreadLocalTest {
 
+  private static final Object ioLock = new Object();
+	
   private static ThreadLocal tl = new ThreadLocal() {
     protected Object initialValue() {
       return " TL initial";
@@ -26,7 +28,7 @@ public class ThreadLocalTest {
     public void run() {
       for (int k = 0; k < 4; k++) {
 
-	synchronized (System.out) {
+	synchronized (ioLock) {
 	  System.out.println(getName()+ " I" +k+ "\t TL: "
 	    + ThreadLocalTest.tl.get());
 	  System.out.println(getName()+ " I" +k+ "\tITL: "
@@ -38,6 +40,16 @@ public class ThreadLocalTest {
 	  t1.start();
 	  TestThread t2 = new TestThread(false, getName() + "y");
 	  t2.start();
+	  
+	  try
+	  {
+	    t1.join();
+	    t2.join();
+	  }
+	  catch (InterruptedException ie)
+	  {
+	    System.err.println("INTERRUPTED, try again.");
+	  }
 	}
 
 	tl.set(tl.get() + " changed by " + getName() + " at k == " + k);
@@ -47,8 +59,28 @@ public class ThreadLocalTest {
   }
 
   public static void main(String[] args) {
-    new TestThread(true, "x").start();
-    new TestThread(true, "y").start();
+    Thread t1, t2;
+    t1 = new TestThread(true, "x");
+    t2 = new TestThread(true, "y");
+
+    t1.start();
+    t2.start();
+
+    // XXX janosvm hack
+    int tries = 0;
+    while (tries < 10)
+    {
+      try
+      {
+	tries++;
+	t1.join();
+	t2.join();
+	tries = 20;
+      }
+      catch (InterruptedException ie)
+      {
+      }
+    }
   }
 }
 
@@ -135,3 +167,4 @@ yy I3	 TL:  TL initial changed by yy at k == 0 changed by yy at k == 1 changed b
 yy I3	ITL: null
 yy I3	ITL: null
 */
+

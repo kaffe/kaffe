@@ -70,6 +70,7 @@ TEST_THREADS = \
 	ThreadState.java \
 	UncaughtException.java \
 	IllegalWait.java \
+        WaitTest.java \
 	Preempt.java 
 
 ## Serialization tests
@@ -121,6 +122,7 @@ TEST_MISC = \
 	Bean.java \
 	SortTest.java \
 	HashTest.java \
+        SecureRandomTest.java \
 	MapTest.java \
 	URLTest.java \
 	PropertiesTest.java \
@@ -131,8 +133,11 @@ TEST_MISC = \
 	ReaderReadVoidTest.java \
 	InputStreamTest.java \
 	PipeTest.java \
+        DateFormatTest.java \
 	GetField.java \
-	LostTrampolineFrame.java 
+	LostTrampolineFrame.java \
+        NetworkInterfaceTest.java \
+        InetSocketAddressTest.java 
 
 TEST_REFLECTION = \
 	ReflectInvoke.java \
@@ -159,6 +164,7 @@ TEST_CLASS_LOADING = \
 	BitSetTest.java \
 	ExceptionInInitializerTest.java \
 	InitTest.java \
+        CLInitThrow.java \
 	ProcessClassTest.java \
 	ProcessClassInst.java \
 	ProcessClassStop.java \

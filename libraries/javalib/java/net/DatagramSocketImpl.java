@@ -39,6 +39,12 @@ abstract protected byte getTTL() throws IOException;
 abstract protected byte getTimeToLive() throws IOException;
 abstract protected void join(InetAddress inetaddr) throws IOException;
 abstract protected void leave(InetAddress inetaddr) throws IOException;
+abstract protected void joinGroup(SocketAddress inetaddr,
+				  NetworkInterface netIf)
+	throws IOException;
+abstract protected void leaveGroup(SocketAddress inetaddr,
+				   NetworkInterface netIf)
+	throws IOException;
 abstract protected int peek(InetAddress i) throws IOException;
 abstract protected void receive(DatagramPacket p) throws IOException;
 abstract protected void send(DatagramPacket p) throws IOException;
