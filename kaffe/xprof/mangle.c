@@ -13,6 +13,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#if defined(KAFFE_XDEBUGGING) || defined(KAFFE_XPROFILER)
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -141,7 +143,7 @@ int mangleMethodClass(struct mangled_method *mm, void *cl, char *name)
 int mangleMethodArgCount(struct mangled_method *mm, int count)
 {
 	int retval = 0;
-	
+
 	if( !count ||
 	    (mm->mm_args = (char **)KMALLOC(sizeof(char *) * count)) )
 	{
@@ -212,7 +214,7 @@ static int duplicateParameter(Method *meth, int curr_param)
 int mangleMethodArgs(struct mangled_method *mm, Method *meth)
 {
 	int retval = 1, lpc, ref;
-	
+
 	for( lpc = 1; lpc <= mm->mm_nargs; lpc++ )
 	{
 		if( (ref = duplicateParameter(meth, lpc)) >= 0 )
@@ -271,7 +273,7 @@ int printMangledMethod(struct mangled_method *mm, FILE *file)
 	    mm->mm_class )
 	{
 		int lpc;
-		
+
 		retval = 1;
 		fprintf(file, "%s__%s", mm->mm_method, mm->mm_class);
 		for( lpc = 0; (lpc < mm->mm_nargs) && retval; lpc++ )
@@ -313,7 +315,7 @@ char *manglePrimitiveType(char type)
 {
 	char *retval = 0;
 	int lpc;
-	
+
 	for( lpc = 0; primitive_type_map[lpc] && !retval; lpc += 2 )
 	{
 		if( type == primitive_type_map[lpc][0] )
@@ -428,7 +430,7 @@ char *mangleClassType(int prepend, void *cl, char *name)
 		if( cl )
 		{
 			int cl_len;
-			
+
 			sprintf(dest + 3, "l%p", cl);
 			cl_len = strlen(dest + 3) + 1;
 			sprintf(dest, "%d", cl_len);
@@ -472,7 +474,7 @@ char *mangleClassType(int prepend, void *cl, char *name)
 char *mangleType(int prepend, char *type)
 {
 	char *retval = 0;
-	
+
 	switch(type[0])
 	{
 	case 'L':
@@ -489,7 +491,7 @@ char *mangleType(int prepend, char *type)
 		/* Most likely a primitive */
 		{
 			char *prim;
-			
+
 			if( (prim = manglePrimitiveType(type[0])) )
 			{
 				if( (retval = (char *)KMALLOC(prepend + 2)) )
@@ -543,7 +545,7 @@ int mangleLength(char *string, int len, char term, int *out_len)
 #endif
 		}
 		else if( ((ch < 'a') || (ch > 'z')) &&
-			 ((ch < 'A') || (ch > 'Z')) && 
+			 ((ch < 'A') || (ch > 'Z')) &&
 			 (ch != '_') )
 		{
 			/* Special character, we'll need an escape */
@@ -627,3 +629,6 @@ int mangleString(char *dest, char *src, int slen, int unicode)
 		retval = dest - start + 1;
 	return( retval );
 }
+
+#endif /* defined(KAFFE_XDEBUGGING) || defined(KAFFE_XPROFILER) */
+
