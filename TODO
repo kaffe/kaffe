@@ -9,8 +9,10 @@
  * Make gc backend runtime selectable
 
 * Nasty bugs:
- * Figure out deadlock issues with System.gc() on smp(finalexc, ClassGC,
-   GCTest all fail on smp).
+ * Fix FreeBSD -posix CFLAGS breakage
+ * Hope for someone to regenerate the Classpath locale data soon enough
+   to include collator information necessary fot gjdoc.
+ * Make javac wrap jikes with appropriate bootclasspath setting for now.
 
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
@@ -18,17 +20,12 @@
 
 * Merging work:
   * From GNU Classpath:
-    java.util.zip, java.lang.ref, java.lang.reflect, java.lang
+    java.util.zip, java.lang.reflect, java.lang
   * gcjwebplugin
   * verifier from gcj (rob gonzalez)
 
 * Build system: (dalibor)
   * Explicit support to use an installed javac/jikes/gcjx/kjc for bootstrap
-  * Build java libs first, then run kaffeh on them to generate the
-  native headers, and then build the rest of kaffe. That should get rid of 
-  Klasses.jar.bootstrap.
-  * Make make dist and make distclean work without hickups.
-  * Fix GNU Make dependencies.
   * Non-recursive build, single Makefile.am for kaffe.
 
 * Pending patches (dalibor)

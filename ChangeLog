@@ -1,5 +1,9 @@
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
 	Fixed make distcheck. Removed remaining jar files from tarball.
 
 	N.B. We should ship kaffe-1.1.5-rt.jar separately for people that
