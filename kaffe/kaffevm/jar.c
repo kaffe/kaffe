@@ -200,22 +200,14 @@ jarFile*
 openJarFile(char* name)
 {
 #define read_checked(file, ent)				\
-	{						\
+	do {						\
 		(ent) = readCentralDirRecord(file);	\
 		if (!(ent)) {				\
-		  	jarEntry *e = file->head;	\
-			jarEntry *d;			\
-							\
-			KCLOSE((file)->fd);		\
-			while (e) {			\
-				d = e;			\
-				e = e->next;		\
-				KFREE(d);		\
-			}				\
-			KFREE(file);			\
+			closeJarFile(file);		\
 			return 0;			\
 		}					\
-	}
+	} while (0)
+
 	jarFile* file;
 	jarEntry* curr;
 	int i;
