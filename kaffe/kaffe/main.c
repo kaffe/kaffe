@@ -27,7 +27,7 @@
 
 extern char* engine_name;
 extern char* engine_version;
-extern char* java_version;
+static char* java_version;
 
 #include "jni.h"
 
@@ -58,7 +58,9 @@ main(int argc, char* argv[])
 	int farg;
 	char* cp;
 
+	java_version = "1.1";
 	vmargs.version = 0x00010001;
+
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
 
 	cp = getenv(CLASSPATH1);
