@@ -1,3 +1,8 @@
+2004-12-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(KaffeJNI_ParseArgs): Fixed parsing of the '-D' option.
+	
 2004-12-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/Makefile.am (AM_CPPFLAGS): 

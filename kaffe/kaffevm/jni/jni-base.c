@@ -112,20 +112,23 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	{
 	  userProperty *prop = (userProperty *)malloc(sizeof(userProperty)); 
 	  int sz;
-	  char *internalOpt = strdup(opt);
+	  char *internalOpt = strdup(&opt[2]);
 
 	  assert (prop != 0);
 
 	  prop->next = userProperties;
 	  userProperties = prop;
 
-	  for (sz = 2; internalOpt[sz] != 0; sz++)
+	  for (sz = 0; internalOpt[sz] != 0; sz++)
 	    {
-	      internalOpt[sz] = 0;
-	      sz++;
-	      break;
+	      if (internalOpt[sz] == '=')
+		{
+		  internalOpt[sz] = 0;
+		  sz++;
+		  break;
+		}
 	    }
-	  prop->key = &internalOpt[2];
+	  prop->key = internalOpt;
 	  prop->value = &internalOpt[sz];
 	}
       else if (!strncmp(opt, "-Xbootclasspath:", 16))
