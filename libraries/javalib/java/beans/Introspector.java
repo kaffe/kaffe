@@ -68,6 +68,7 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 	Hashtable addMethods = new Hashtable();
 	Hashtable removeMethods = new Hashtable();
 	Hashtable keys = new Hashtable();
+	Hashtable listenerClasses = new Hashtable();
 
 	for (Class cls = startClass; cls != stopClass; cls = cls.getSuperclass()) {
 		Method[] meths = cls.getDeclaredMethods();
@@ -77,6 +78,10 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 				if (mname.startsWith("add") && mname.endsWith("Listener")) {
 					mname = mname.substring(3, mname.length() - 8);
 					keys.put(mname, mname);
+					/* XXX: Do we need to check that
+					 * there's only one parameter?
+					 */
+					listenerClasses.put(mname, meths[i].getParameterTypes()[0]);
 					if (addMethods.get(mname) == null) {
 						addMethods.put(mname, meths[i]);
 					}
@@ -99,8 +104,9 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 		String key = (String)k.nextElement();
 		Method add = (Method)addMethods.get(key);
 		Method remove = (Method)removeMethods.get(key);
+		Class listenerType = (Class)listenerClasses.get(key);
 		if (add != null && remove != null) {
-			props[i] = new EventSetDescriptor(decapitalize(key), (Class)null, new Method[]{}, add, remove);
+			props[i] = new EventSetDescriptor(decapitalize(key), listenerType, new Method[]{}, add, remove);
 			Class except[] = add.getExceptionTypes();
 			if (except != null) {
 				for (int j = 0; j < except.length; j++) {
