@@ -2,6 +2,7 @@ package java.io;
 
 import java.io.Serializable;
 import java.lang.String;
+import java.util.Random;
 import java.util.Vector;
 
 /*
@@ -17,10 +18,12 @@ import java.util.Vector;
 public class File implements Serializable, Comparable {
 
 	private static final long serialVersionUID = 301077366599181567L;
-	final public static String separator = System.getProperty("file.separator");
-	final public static char separatorChar = separator.charAt(0);
-	final public static String pathSeparator = System.getProperty("path.separator");
-	final public static char pathSeparatorChar = pathSeparator.charAt(0);
+	public final static String separator = System.getProperty("file.separator");
+	public final static char separatorChar = separator.charAt(0);
+	public final static String pathSeparator = System.getProperty("path.separator");
+	public final static char pathSeparatorChar = pathSeparator.charAt(0);
+
+	private final static Random random = new Random();
 	private String path;
 
 static {
@@ -78,6 +81,32 @@ private void checkWriteAccess() {
 	System.getSecurityManager().checkWrite(getPath());
 }
 
+public static File createTempFile(String prefix, String suffix)
+		throws IOException {
+	return createTempFile(prefix, suffix, null);
+}
+
+public static File createTempFile(String prefix, String suffix, File dir)
+		throws IOException {
+	if (prefix.length() < 3) {
+		throw new IllegalArgumentException(prefix);
+	}
+	if (suffix == null) {
+		suffix = ".tmp";
+	}
+	if (dir == null) {
+		dir = new File(System.getProperties().getProperty(
+			"java.io.tmpdir"));
+	}
+	while (true) {
+		File f = new File(dir, prefix
+		    + Integer.toHexString(random.nextInt(0x100000)) + suffix);
+		if (!f.exists()) {
+			return f;
+		}
+	}
+}
+
 public boolean delete() {
 	System.getSecurityManager().checkDelete(getPath());
 
@@ -86,6 +115,12 @@ public boolean delete() {
 
 native private boolean delete0();
 native private boolean rmdir0();
+
+public void deleteOnExit() {
+	// XXX FIXME implement me .. using Godmar's Application stuff ..
+	throw new kaffe.util.NotImplemented(
+	    File.class.getName() + ".deleteOnExit()");
+}
 
 public int compareTo(Object that) {
 	return compareTo((File)that);
