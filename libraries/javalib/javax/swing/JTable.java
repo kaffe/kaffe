@@ -1864,4 +1864,14 @@ public class JTable extends JComponent
   {
     return dataModel.getValueAt(row, convertColumnIndexToModel(column));
   }
+
+  public void setValueAt(Object value, int row, int column)
+  {
+    dataModel.setValueAt(value, row, convertColumnIndexToModel(column));
+  }
+
+  public TableColumn getColumn(Object identifier)
+  {
+    return columnModel.getColumn(columnModel.getColumnIndex(identifier));
+  }
 }

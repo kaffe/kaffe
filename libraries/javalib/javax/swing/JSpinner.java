@@ -1,5 +1,5 @@
 /* JSpinner.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -59,7 +59,8 @@ import javax.swing.plaf.SpinnerUI;
  * way to manipulate the value.
  *
  * @author Ka-Hing Cheung
- * @version 1.0
+ * 
+ * @since 1.4
  */
 public class JSpinner extends JComponent
 {
@@ -284,9 +285,6 @@ public class JSpinner extends JComponent
 
   /** DOCUMENT ME! */
   private JComponent editor;
-
-  /** DOCUMENT ME! */
-  private EventListenerList listenerList = new EventListenerList();
 
   /** DOCUMENT ME! */
   private ChangeListener listener = new ChangeListener()

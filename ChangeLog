@@ -4,6 +4,23 @@
 
 	2005-01-24  Michael Koch  <konqueror@gmx.de>
 
+        * javax/swing/JScrollPane.java
+        (ScrollBar): Made class protected.
+        * javax/swing/JSpinner.java
+        (JSpinner): Added @since tag.
+        (listenerList): Removed.
+        * javax/swing/JTable.java
+        (setValueAt): New method.
+        (getColumn): Likewise.
+        * javax/swing/JWindow.java
+        (rootPaneCheckingEnabled): Renamed from checking.
+
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-01-24  Michael Koch  <konqueror@gmx.de>
+
         * javax/swing/plaf/basic/BasicTextUI.java
         (RootView.modelToView): Made it public and return a java.awt.Shape.
         Handle null subview.

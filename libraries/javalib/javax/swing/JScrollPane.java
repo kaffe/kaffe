@@ -1,5 +1,5 @@
 /* JScrollPane.java -- 
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -624,7 +624,7 @@ public class JScrollPane
     super.setUI(ui);
   }
 
-  class ScrollBar 
+  protected class ScrollBar 
     extends JScrollBar
     implements UIResource
   {
@@ -660,8 +660,5 @@ public class JScrollPane
                                               direction);
         }
     }
-
-
   }
-  
 }
