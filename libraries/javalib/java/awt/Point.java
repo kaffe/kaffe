@@ -12,10 +12,18 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
-public class Point
+public class Point implements java.io.Serializable
 {
 	private static final long serialVersionUID = -5276940640259749850L;
+	/**
+	 * @serial 
+	 *  The x coordinate. If no x coordinate is set it will default to '0'.
+	 */
 	public int x;
+	/**
+	 * @serial 
+	 *  The y coordinate. If no y coordinate is set it will default to '0'.
+	 */
 	public int y;
 
 public Point () {

@@ -14,9 +14,13 @@ package java.awt;
 
 import java.awt.peer.FontPeer;
 import java.util.Hashtable;
+import java.io.Serializable;
 import kaffe.util.Ptr;
 
-public class Font
+/**
+ * XXX: implement serial form! 
+ */
+public class Font implements Serializable
 {
 	Ptr nativeData;
 	protected String name;

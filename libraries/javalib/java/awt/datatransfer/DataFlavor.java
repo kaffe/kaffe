@@ -1,6 +1,9 @@
 package java.awt.datatransfer;
 
 import java.io.IOException;
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.mime.MimeType;
 import java.util.mime.MimeTypeParameterList;
 import java.util.mime.MimeTypeParseException;
@@ -16,7 +19,7 @@ import java.util.mime.MimeTypeParseException;
  *
  * @author P. Mehlitz
  */
-public class DataFlavor
+public class DataFlavor implements Externalizable
 {
 	String type;
 	String name;
@@ -26,6 +29,21 @@ public class DataFlavor
 	static Class defaultRepClass;
 	static String defaultMimeType;
 	private static final long serialVersionUID = 8367026044764648243L;
+
+/**
+ * Serialize this DataFlavor
+ */
+public void writeExternal(ObjectOutput os) throws IOException {
+	/* XXX */
+}
+
+/**
+ * Sun says: restore this DataFlavor from an Serialized state
+ */
+public void readExternal(ObjectInput is) 
+	throws IOException, ClassNotFoundException {
+	/* XXX */
+}
 
 static {
 	try {
