@@ -1,3 +1,8 @@
+Sun Apr  4 19:02:17 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java: month values
+	are zero-based, so we need to add one
+
 Sun Apr  4 03:43:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/gcFuncs.c
