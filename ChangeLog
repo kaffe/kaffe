@@ -1,3 +1,33 @@
+2004-08-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/VMSelector.java:
+	Resynchronized with GNU Classpath.
+
+	004-07-31  Patrik Reali  <reali@acm.org>
+
+        * gnu/java/nio/SelectorImpl.java,
+        include/Makefile.am,
+        include/gnu_java_nio_SelectorImpl.h,
+        include/gnu_java_nio_VMSelector.h,
+        native/jni/java-nio/Makefile.am,
+        native/jni/java-nio/gnu_java_nio_SelectorImpl.c,
+        native/jni/java-nio/gnu_java_nio_VMSelector.c,
+        vm/reference/gnu/java/nio/VMSelector.java: native method moved from
+        gnu/java/nio/SelectorImpl to vm/reference/gnu/java/nio/VMSelector
+
+	* libraries/javalib/all.files,
+	libraries/javalib/bootstrap.classlist:
+	Added gnu/java/nio/VMSelector.
+	
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
+	include/Makefile.in, Klasses.jar.bootstrap: Regenerated.
+
+	* include/Makefile.am: Use VMSelector instead of SelectorImpl.
+
+	* libraries/clib/nio/SelectorImpl.c: The method is owned by
+	VMSelector now.
+	
 2004-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/gcFuncs.c

@@ -1,7 +1,8 @@
 /*
  * SelectorImpl.c
  *
- * Copyright (c) 2003 Kaffe's team.
+ * Copyright (c) 2003, 2004.
+ *    The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -46,8 +47,8 @@ static void checkOutSelectTable(HArrayOfInt* fdArray, fd_set *set, int *num_fd)
 } 
 
 jint
-gnu_java_nio_SelectorImpl_implSelect(HArrayOfInt* readA, HArrayOfInt* writeA,
-				     HArrayOfInt* exceptA, jlong timeout)
+gnu_java_nio_VMSelector_select(HArrayOfInt* readA, HArrayOfInt* writeA,
+			       HArrayOfInt* exceptA, jlong timeout)
 {
   fd_set read_set, write_set, except_set;
   int num_fd = 0;

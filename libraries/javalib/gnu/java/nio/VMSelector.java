@@ -1,5 +1,5 @@
-/* VMPipe.java -- Reference implementation for VM hooks used by PipeImpl
-   Copyright (C) 2004 Free Software Foundation
+/* VMSelector.java -- 
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,19 +37,11 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
-import java.io.IOException;
-import java.nio.channels.spi.SelectorProvider;
 import gnu.classpath.Configuration;
+import java.io.IOException;
 
-/**
- * This class contains the native methods for gnu.java.nio.PipeImpl
- * As such, it needs help from the VM.
- *
- * @author Patrik Reali
- */
-final class VMPipe
+public final class VMSelector
 {
-
   static
   {
     // load the shared library needed for native methods.
@@ -58,10 +50,10 @@ final class VMPipe
         System.loadLibrary ("nio");
       }
   }
+  
+  // A timeout value of 0 means block forever.
+  static native int select (int[] read, int[] write,
+                                        int[] except, long timeout)
+    throws IOException;
 
-  static void init(PipeImpl self, SelectorProvider provider)
-    throws IOException
-	{
-		throw new IOException("gnu.java.nio.VMPipe.init(): not implemented");
-	}
 }

@@ -788,6 +788,7 @@ gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
 gnu/java/nio/VMPipe.java
+gnu/java/nio/VMSelector.java
 gnu/java/rmi/dgc/DGCImpl.java
 gnu/java/rmi/dgc/DGCImpl_Skel.java
 gnu/java/rmi/dgc/DGCImpl_Stub.java

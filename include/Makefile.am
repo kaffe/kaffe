@@ -100,7 +100,7 @@ NOINSTALL_DERIVED_HDRS = \
 	kaffe_lang_PrimordialClassLoader.h \
 	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h \
-	gnu_java_nio_SelectorImpl.h
+	gnu_java_nio_VMSelector.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 

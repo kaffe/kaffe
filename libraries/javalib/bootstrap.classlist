@@ -334,7 +334,7 @@ java/lang/Process.class
 kaffe/security/provider/UpdateDigest.class
 java/security/MessageDigest.class
 java/security/MessageDigestSpi.class
-gnu/java/nio/SelectorImpl.class
+gnu/java/nio/VMSelector.class
 gnu/java/nio/NIOServerSocket.class
 gnu/java/nio/channels/FileChannelImpl.class
 java/nio/channels/FileChannel.class
