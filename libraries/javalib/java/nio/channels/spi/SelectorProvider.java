@@ -1,5 +1,5 @@
-/* Error.java -- Indication of fatal abnormal conditions
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+/* SelectorProvider.java
+   Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,73 +35,69 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package java.nio.channels.spi;
 
-package java.lang;
+import gnu.java.nio.SelectorProviderImpl;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.Pipe;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
- * Applications should not try to catch errors since they indicate
- * abnormal conditions.  An abnormal condition is something which should not
- * occur, or which should not be recovered from.  This latter category
- * includes <code>ThreadDeath</code> and <code>AssertionError</code>.
- *
- * <p>A method is not required to declare any subclass of <code>Error</code> in
- * its <code>throws</code> clause which might be thrown but not caught while
- * executing the method.
- *
- * @author Brian Jones
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
- * @status updated to 1.4
+ * @author Michael Koch
+ * @since 1.4
  */
-public class Error extends Throwable
+public abstract class SelectorProvider
 {
+  static SelectorProvider pr;
+    
   /**
-   * Compatible with JDK 1.0+.
-   */
-  private static final long serialVersionUID = 4980196508277280342L;
-
-  /**
-   * Create an error without a message. The cause remains uninitialized.
+   * Initializes the selector provider.
    *
-   * @see #initCause(Throwable)
+   * @exception SecurityException If a security manager has been installed and
+   * it denies @see RuntimePermission ("selectorProvider").
    */
-  public Error()
+  protected SelectorProvider ()
   {
+    SecurityManager sm = System.getSecurityManager ();
+    if (sm != null)
+      sm.checkPermission (new RuntimePermission ("selectorProvider"));
   }
-
+  
   /**
-   * Create an error with a message. The cause remains uninitialized.
-   *
-   * @param s the message string
-   * @see #initCause(Throwable)
+   * Opens a datagram channel.
    */
-  public Error(String s)
-  {
-    super(s);
-  }
-
+  public abstract DatagramChannel openDatagramChannel ();
+  
   /**
-   * Create an error with a message and a cause.
-   *
-   * @param s the message string
-   * @param cause the cause of this error
-   * @since 1.4
+   * Opens a pipe.
    */
-  public Error(String s, Throwable cause)
-  {
-    super(s, cause);
-  }
-
+  public abstract Pipe openPipe ();
+  
   /**
-   * Create an error with a given cause, and a message of
-   * <code>cause == null ? null : cause.toString()</code>.
-   *
-   * @param cause the cause of this error
-   * @since 1.4
+   * Opens a selector.
    */
-  public Error(Throwable cause)
+  public abstract AbstractSelector openSelector ();
+  
+  /**
+   * Opens a server socket channel.
+   */
+  public abstract ServerSocketChannel openServerSocketChannel ();
+  
+  /**
+   * Opens a socket channel.
+   */
+  public abstract SocketChannel openSocketChannel ();
+    
+  /**
+   * Returns the system-wide default selector provider for this invocation
+   * of the Java virtual machine.
+   */
+  public static SelectorProvider provider ()
   {
-    super(cause);
+    if (pr == null)
+      pr = new SelectorProviderImpl ();
+    
+    return pr;
   }
 }

@@ -1,5 +1,5 @@
-/* Error.java -- Indication of fatal abnormal conditions
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+/* AbstractInterruptibleChannel.java -- 
+   Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,73 +35,70 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package java.nio.channels.spi;
 
-package java.lang;
+import java.io.IOException;
+import java.nio.channels.Channel;
+import java.nio.channels.InterruptibleChannel;
 
 /**
- * Applications should not try to catch errors since they indicate
- * abnormal conditions.  An abnormal condition is something which should not
- * occur, or which should not be recovered from.  This latter category
- * includes <code>ThreadDeath</code> and <code>AssertionError</code>.
- *
- * <p>A method is not required to declare any subclass of <code>Error</code> in
- * its <code>throws</code> clause which might be thrown but not caught while
- * executing the method.
- *
- * @author Brian Jones
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
- * @status updated to 1.4
+ * @author Michael Koch
+ * @since 1.4
  */
-public class Error extends Throwable
+public abstract class AbstractInterruptibleChannel
+  implements Channel, InterruptibleChannel
 {
-  /**
-   * Compatible with JDK 1.0+.
-   */
-  private static final long serialVersionUID = 4980196508277280342L;
+  boolean opened = true;
 
   /**
-   * Create an error without a message. The cause remains uninitialized.
-   *
-   * @see #initCause(Throwable)
+   * Initializes the channel.
    */
-  public Error()
+  protected AbstractInterruptibleChannel ()
   {
   }
 
   /**
-   * Create an error with a message. The cause remains uninitialized.
-   *
-   * @param s the message string
-   * @see #initCause(Throwable)
+   * Marks the beginning of an I/O operation that might block indefinitely.
    */
-  public Error(String s)
+  protected final void begin ()
   {
-    super(s);
+  }
+    
+  /**
+   * Closes the channel.
+   * 
+   * @exception IOException If an error occurs
+   */
+  public final void close () throws IOException
+  {
+    opened = false;
+    implCloseChannel ();
   }
 
   /**
-   * Create an error with a message and a cause.
-   *
-   * @param s the message string
-   * @param cause the cause of this error
-   * @since 1.4
+   * Marks the end of an I/O operation that might block indefinitely.
+   * 
+   * @exception AsynchronousCloseException If the channel was asynchronously
+   * closed.
+   * @exception ClosedByInterruptException If the thread blocked in the
+   * I/O operation was interrupted.
    */
-  public Error(String s, Throwable cause)
+  protected final void end (boolean completed)
   {
-    super(s, cause);
-  }
+  }   
 
   /**
-   * Create an error with a given cause, and a message of
-   * <code>cause == null ? null : cause.toString()</code>.
-   *
-   * @param cause the cause of this error
-   * @since 1.4
+   * Closes the channel.
+   * 
+   * @exception IOException If an error occurs
    */
-  public Error(Throwable cause)
+  protected abstract void implCloseChannel () throws IOException;
+
+  /**
+   * Tells whether or not this channel is open.
+   */
+  public final boolean isOpen ()
   {
-    super(cause);
+    return opened;
   }
 }

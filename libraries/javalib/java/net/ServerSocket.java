@@ -19,6 +19,10 @@ private static SocketImplFactory factory = new DefaultSocketImplFactory();
 
 private SocketImpl impl;
 
+public ServerSocket () throws IOException {
+	throw new kaffe.util.NotImplemented();
+}
+
 public ServerSocket(int port) throws IOException {
 	this(port, 50);
 }

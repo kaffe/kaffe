@@ -1,5 +1,5 @@
-/* Error.java -- Indication of fatal abnormal conditions
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+/* IllegalCharsetNameException.java -- 
+   Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,73 +35,26 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
-package java.lang;
+package java.nio.charset;
 
 /**
- * Applications should not try to catch errors since they indicate
- * abnormal conditions.  An abnormal condition is something which should not
- * occur, or which should not be recovered from.  This latter category
- * includes <code>ThreadDeath</code> and <code>AssertionError</code>.
- *
- * <p>A method is not required to declare any subclass of <code>Error</code> in
- * its <code>throws</code> clause which might be thrown but not caught while
- * executing the method.
- *
- * @author Brian Jones
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
- * @status updated to 1.4
+ * @since 1.4
  */
-public class Error extends Throwable
+public class IllegalCharsetNameException extends IllegalArgumentException
 {
   /**
-   * Compatible with JDK 1.0+.
+   * Creates the exception
    */
-  private static final long serialVersionUID = 4980196508277280342L;
-
-  /**
-   * Create an error without a message. The cause remains uninitialized.
-   *
-   * @see #initCause(Throwable)
-   */
-  public Error()
+  public IllegalCharsetNameException (String charsetName)
   {
+    super (charsetName);
   }
 
   /**
-   * Create an error with a message. The cause remains uninitialized.
-   *
-   * @param s the message string
-   * @see #initCause(Throwable)
+   * Retrieves the illegal charset name
    */
-  public Error(String s)
+  public String getCharsetName ()
   {
-    super(s);
-  }
-
-  /**
-   * Create an error with a message and a cause.
-   *
-   * @param s the message string
-   * @param cause the cause of this error
-   * @since 1.4
-   */
-  public Error(String s, Throwable cause)
-  {
-    super(s, cause);
-  }
-
-  /**
-   * Create an error with a given cause, and a message of
-   * <code>cause == null ? null : cause.toString()</code>.
-   *
-   * @param cause the cause of this error
-   * @since 1.4
-   */
-  public Error(Throwable cause)
-  {
-    super(cause);
+    return getMessage ();
   }
 }

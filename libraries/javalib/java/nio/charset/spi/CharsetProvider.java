@@ -1,5 +1,5 @@
-/* Error.java -- Indication of fatal abnormal conditions
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+/* CharsetProvider.java -- charset service provider interface
+   Copyright (C) 2002 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -35,73 +35,54 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package java.nio.charset.spi;
 
-package java.lang;
+import java.nio.charset.Charset;
+import java.util.Iterator;
 
 /**
- * Applications should not try to catch errors since they indicate
- * abnormal conditions.  An abnormal condition is something which should not
- * occur, or which should not be recovered from.  This latter category
- * includes <code>ThreadDeath</code> and <code>AssertionError</code>.
+ * This class allows an implementor to provide additional character sets. The
+ * subclass must have a nullary constructor, and be attached to charset
+ * implementation classes. These extensions are loaded via the context class
+ * loader. To provide the charset extension, all files named
+ * <code>META-INF/services/java.nio.charset.spi.CharsetProvider</code> are
+ * read from the classpath. Each one should be a UTF-8 encoded list of
+ * fully-qualified names of concrete subclasses of this class; whitespace is
+ * ignored, and '#' starts comments. Duplicates are ignored. The
+ * implementations must be accessible to the classloader that requests them.
  *
- * <p>A method is not required to declare any subclass of <code>Error</code> in
- * its <code>throws</code> clause which might be thrown but not caught while
- * executing the method.
- *
- * @author Brian Jones
- * @author Tom Tromey <tromey@cygnus.com>
  * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
+ * @see Charset
+ * @since 1.4
  * @status updated to 1.4
  */
-public class Error extends Throwable
+public abstract class CharsetProvider
 {
   /**
-   * Compatible with JDK 1.0+.
-   */
-  private static final long serialVersionUID = 4980196508277280342L;
-
-  /**
-   * Create an error without a message. The cause remains uninitialized.
+   * Initialize a new charset provider. This performs a security check on
+   * RuntimePermission("charsetProvider").
    *
-   * @see #initCause(Throwable)
+   * @throws SecurityException if building a new set is not allowed
    */
-  public Error()
+  protected CharsetProvider()
   {
+    SecurityManager s = System.getSecurityManager();
+    if (s != null)
+      s.checkPermission(new RuntimePermission("charsetProvider"));
   }
 
   /**
-   * Create an error with a message. The cause remains uninitialized.
+   * Returns an iterator over the charsets defined by this provider.
    *
-   * @param s the message string
-   * @see #initCause(Throwable)
+   * @return the iterator
+   * @see Charset#availableCharsets()
    */
-  public Error(String s)
-  {
-    super(s);
-  }
+  public abstract Iterator charsets();
 
   /**
-   * Create an error with a message and a cause.
+   * Returns the named charset, by canonical name or alias.
    *
-   * @param s the message string
-   * @param cause the cause of this error
-   * @since 1.4
+   * @return the charset, or null if not supported
    */
-  public Error(String s, Throwable cause)
-  {
-    super(s, cause);
-  }
-
-  /**
-   * Create an error with a given cause, and a message of
-   * <code>cause == null ? null : cause.toString()</code>.
-   *
-   * @param cause the cause of this error
-   * @since 1.4
-   */
-  public Error(Throwable cause)
-  {
-    super(cause);
-  }
-}
+  public abstract Charset charsetForName(String name);
+} // class CharsetProvider

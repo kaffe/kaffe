@@ -62,11 +62,16 @@ Awt_SRCS = \
 	$(kaffe_util_log_SRCS)
 Rest_SRCS = \
 	$(gnu_java_nio_SRCS) \
+	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
 	$(gnu_regexp_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_nio_SRCS) \
+	$(java_nio_channels_SRCS) \
+	$(java_nio_channels_spi_SRCS) \
+	$(java_nio_charset_SRCS) \
+	$(java_nio_charset_spi_SRCS) \
 	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
@@ -93,6 +98,7 @@ RMI_SRCS = \
 	$(javax_naming_event_SRCS) \
 	$(javax_naming_ldap_SRCS) \
 	$(javax_naming_spi_SRCS) \
+	$(javax_sound_sampled_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
 	$(kaffe_rmi_dgc_SRCS) \
@@ -109,11 +115,36 @@ gnu_java_awt_SRCS = \
 gnu_java_nio_SRCS = \
 	gnu/java/nio/ByteBufferImpl.java \
 	gnu/java/nio/CharBufferImpl.java \
+	gnu/java/nio/DatagramChannelImpl.java \
 	gnu/java/nio/DoubleBufferImpl.java \
+	gnu/java/nio/FileChannelImpl.java \
 	gnu/java/nio/FloatBufferImpl.java \
 	gnu/java/nio/IntBufferImpl.java \
 	gnu/java/nio/LongBufferImpl.java \
-	gnu/java/nio/ShortBufferImpl.java
+	gnu/java/nio/MappedByteFileBuffer.java \
+	gnu/java/nio/MappedCharFileBuffer.java \
+	gnu/java/nio/MappedDoubleFileBuffer.java \
+	gnu/java/nio/MappedFloatFileBuffer.java \
+	gnu/java/nio/MappedIntFileBuffer.java \
+	gnu/java/nio/MappedLongFileBuffer.java \
+	gnu/java/nio/MappedShortFileBuffer.java \
+	gnu/java/nio/PipeImpl.java \
+	gnu/java/nio/SelectionKeyImpl.java \
+	gnu/java/nio/SelectorImpl.java \
+	gnu/java/nio/SelectorProviderImpl.java \
+	gnu/java/nio/ServerSocketChannelImpl.java \
+	gnu/java/nio/ShortBufferImpl.java \
+	gnu/java/nio/SocketChannelImpl.java
+gnu_java_nio_charset_SRCS = \
+	gnu/java/nio/charset/ISO_8859_1.java \
+	gnu/java/nio/charset/Provider.java \
+	gnu/java/nio/charset/US_ASCII.java \
+	gnu/java/nio/charset/UTF_16BE.java \
+	gnu/java/nio/charset/UTF_16Decoder.java \
+	gnu/java/nio/charset/UTF_16Encoder.java \
+	gnu/java/nio/charset/UTF_16.java \
+	gnu/java/nio/charset/UTF_16LE.java \
+	gnu/java/nio/charset/UTF_8.java
 gnu_java_util_SRCS = \
 	gnu/java/util/EmptyEnumeration.java
 gnu_java_util_prefs_SRCS = \
@@ -262,6 +293,8 @@ java_awt_color_SRCS = \
 	java/awt/color/ColorSpace.java \
 	java/awt/color/ICC_ColorSpace.java \
 	java/awt/color/ICC_Profile.java \
+	java/awt/color/ICC_ProfileGray.java \
+	java/awt/color/ICC_ProfileRGB.java \
 	java/awt/color/ProfileDataException.java
 java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
@@ -685,6 +718,8 @@ java_net_SRCS = \
 	java/net/UnknownServiceException.java
 java_nio_SRCS = \
 	java/nio/Buffer.java \
+	java/nio/BufferOverflowException.java \
+	java/nio/BufferUnderflowException.java \
 	java/nio/ByteBuffer.java \
 	java/nio/ByteOrder.java \
 	java/nio/CharBuffer.java \
@@ -696,6 +731,62 @@ java_nio_SRCS = \
 	java/nio/MappedByteBuffer.java \
 	java/nio/ReadOnlyBufferException.java \
 	java/nio/ShortBuffer.java
+java_nio_channels_SRCS = \
+	java/nio/channels/AlreadyConnectedException.java \
+	java/nio/channels/AsynchronousCloseException.java \
+	java/nio/channels/ByteChannel.java \
+	java/nio/channels/CancelledKeyException.java \
+	java/nio/channels/Channel.java \
+	java/nio/channels/Channels.java \
+	java/nio/channels/ClosedByInterruptException.java \
+	java/nio/channels/ClosedChannelException.java \
+	java/nio/channels/ClosedSelectorException.java \
+	java/nio/channels/ConnectionPendingException.java \
+	java/nio/channels/DatagramChannel.java \
+	java/nio/channels/FileChannel.java \
+	java/nio/channels/FileLockInterruptionException.java \
+	java/nio/channels/FileLock.java \
+	java/nio/channels/GatheringByteChannel.java \
+	java/nio/channels/IllegalBlockingModeException.java \
+	java/nio/channels/IllegalSelectorException.java \
+	java/nio/channels/InterruptibleChannel.java \
+	java/nio/channels/NoConnectionPendingException.java \
+	java/nio/channels/NonReadableChannelException.java \
+	java/nio/channels/NonWritableChannelException.java \
+	java/nio/channels/NotYetBoundException.java \
+	java/nio/channels/NotYetConnectedException.java \
+	java/nio/channels/OverlappingFileLockException.java \
+	java/nio/channels/Pipe.java \
+	java/nio/channels/ReadableByteChannel.java \
+	java/nio/channels/ScatteringByteChannel.java \
+	java/nio/channels/SelectableChannel.java \
+	java/nio/channels/SelectionKey.java \
+	java/nio/channels/Selector.java \
+	java/nio/channels/ServerSocketChannel.java \
+	java/nio/channels/SocketChannel.java \
+	java/nio/channels/UnresolvedAddressException.java \
+	java/nio/channels/UnsupportedAddressTypeException.java \
+	java/nio/channels/WritableByteChannel.java
+java_nio_channels_spi_SRCS = \
+	java/nio/channels/spi/AbstractInterruptibleChannel.java \
+	java/nio/channels/spi/AbstractSelectableChannel.java \
+	java/nio/channels/spi/AbstractSelectionKey.java \
+	java/nio/channels/spi/AbstractSelector.java \
+	java/nio/channels/spi/SelectorProvider.java 
+java_nio_charset_SRCS = \
+	java/nio/charset/CharacterCodingException.java \
+	java/nio/charset/CharsetDecoder.java \
+	java/nio/charset/CharsetEncoder.java \
+	java/nio/charset/Charset.java \
+	java/nio/charset/CoderMalfunctionError.java \
+	java/nio/charset/CoderResult.java \
+	java/nio/charset/CodingErrorAction.java \
+	java/nio/charset/IllegalCharsetNameException.java \
+	java/nio/charset/MalformedInputException.java \
+	java/nio/charset/UnmappableCharacterException.java \
+	java/nio/charset/UnsupportedCharsetException.java
+java_nio_charset_spi_SRCS = \
+	java/nio/charset/spi/CharsetProvider.java
 java_rmi_SRCS = \
 	java/rmi/AccessException.java \
 	java/rmi/AlreadyBoundException.java \
@@ -980,6 +1071,7 @@ java_util_SRCS = \
 	java/util/PropertyPermissionCollection.java \
 	java/util/PropertyResourceBundle.java \
 	java/util/Random.java \
+	java/util/RandomAccess.java \
 	java/util/ResourceBundle.java \
 	java/util/Set.java \
 	java/util/SimpleTimeZone.java \
@@ -1149,6 +1241,23 @@ javax_naming_spi_SRCS = \
 	javax/naming/spi/ResolveResult.java \
 	javax/naming/spi/Resolver.java \
 	javax/naming/spi/StateFactory.java
+javax_sound_sampled_SRCS = \
+	javax/sound/sampled/AudioFileFormat.java \
+	javax/sound/sampled/AudioFormat.java \
+	javax/sound/sampled/AudioInputStream.java \
+	javax/sound/sampled/AudioSystem.java \
+	javax/sound/sampled/Clip.java \
+	javax/sound/sampled/Control.java \
+	javax/sound/sampled/DataLine.java \
+	javax/sound/sampled/LineEvent.java \
+	javax/sound/sampled/Line.java \
+	javax/sound/sampled/LineListener.java \
+	javax/sound/sampled/LineUnavailableException.java \
+	javax/sound/sampled/Mixer.java \
+	javax/sound/sampled/Port.java \
+	javax/sound/sampled/SourceDataLine.java \
+	javax/sound/sampled/TargetDataLine.java \
+	javax/sound/sampled/UnsupportedAudioFileException.java
 javax_transaction_SRCS = \
 	javax/transaction/HeuristicCommitException.java \
 	javax/transaction/HeuristicMixedException.java \

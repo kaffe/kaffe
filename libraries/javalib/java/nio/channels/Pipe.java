@@ -1,5 +1,5 @@
-/* Error.java -- Indication of fatal abnormal conditions
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+/* Pipe.java -- 
+   Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,73 +35,87 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package java.nio.channels;
 
-package java.lang;
+import java.nio.channels.spi.AbstractSelectableChannel;
+import java.nio.channels.spi.SelectorProvider;
 
 /**
- * Applications should not try to catch errors since they indicate
- * abnormal conditions.  An abnormal condition is something which should not
- * occur, or which should not be recovered from.  This latter category
- * includes <code>ThreadDeath</code> and <code>AssertionError</code>.
- *
- * <p>A method is not required to declare any subclass of <code>Error</code> in
- * its <code>throws</code> clause which might be thrown but not caught while
- * executing the method.
- *
- * @author Brian Jones
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
- * @status updated to 1.4
+ * @author Michael Koch
+ * @since 1.4
  */
-public class Error extends Throwable
+public abstract class Pipe
 {
-  /**
-   * Compatible with JDK 1.0+.
-   */
-  private static final long serialVersionUID = 4980196508277280342L;
+  public abstract static class SinkChannel
+    extends AbstractSelectableChannel
+    implements WritableByteChannel, GatheringByteChannel
+  {
+    /**
+     * Initializes the channel.
+     */
+    protected SinkChannel (SelectorProvider provider)
+    {
+      super (provider);
+    }
+
+    /**
+     * Returns an operation set that is valid on this channel.
+     *
+     * The only valid operation on this channel is @see SelectionKey.OP_WRITE.
+     */
+    public final int validOps ()
+    {
+      return SelectionKey.OP_WRITE;
+    }
+  }
+
+  public abstract static class SourceChannel
+    extends AbstractSelectableChannel
+    implements ReadableByteChannel, ScatteringByteChannel
+  {
+    /**
+     * Initializes the channel.
+     */
+    protected SourceChannel (SelectorProvider provider)
+    {
+      super (provider);
+    }
+
+    /**
+     * Returns an operation set that is valid on this channel.
+     *
+     * The only valid operation on this channel is @see SelectionKey.OP_READ.
+     */
+    public final int validOps ()
+    {
+      return SelectionKey.OP_READ;
+    }
+  }
 
   /**
-   * Create an error without a message. The cause remains uninitialized.
-   *
-   * @see #initCause(Throwable)
+   * Initializes the pipe.
    */
-  public Error()
+  protected Pipe()
   {
   }
 
   /**
-   * Create an error with a message. The cause remains uninitialized.
-   *
-   * @param s the message string
-   * @see #initCause(Throwable)
+   * Opens a pipe.
+   * 
+   * @exception IOException If an error occurs
    */
-  public Error(String s)
+  public static Pipe open()
   {
-    super(s);
+    return SelectorProvider.provider ().openPipe();
   }
 
   /**
-   * Create an error with a message and a cause.
-   *
-   * @param s the message string
-   * @param cause the cause of this error
-   * @since 1.4
+   * Returns a pipe's sink channel.
    */
-  public Error(String s, Throwable cause)
-  {
-    super(s, cause);
-  }
+  public abstract Pipe.SinkChannel sink();
 
   /**
-   * Create an error with a given cause, and a message of
-   * <code>cause == null ? null : cause.toString()</code>.
-   *
-   * @param cause the cause of this error
-   * @since 1.4
+   * Returns a pipe's source channel
    */
-  public Error(Throwable cause)
-  {
-    super(cause);
-  }
+  public abstract Pipe.SourceChannel source();   
 }
