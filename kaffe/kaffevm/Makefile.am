@@ -9,15 +9,11 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) systems gcj verifier jni
-DIST_SUBDIRS = intrp jit jit3 systems gcj verifier jni
+SUBDIRS = $(ENGINE_NAME) $(GC_NAME) systems gcj verifier jni
+DIST_SUBDIRS = mem intrp jit jit3 systems gcj verifier jni
 
 EXTRA_DIST = \
 	kaffe.def \
-	mem/gc-incremental.c \
-	mem/gc-incremental.h \
-	mem/gc-mem.c \
-	mem/gc-mem.h \
 	systems/win32/winio.c \
 	systems/win32/winthread.c \
 	systems/win32/winthread.h
@@ -40,6 +36,7 @@ native_LTLIBRARIES = libkaffevm.la
 @cpu_frag@
 @cpu_os_frag@
 @threads_frag@
+@gc_frag@
 
 if HAVE_GCJ_SUPPORT
 libgcj = gcj/libgcj.la
@@ -58,6 +55,7 @@ libkaffevm_la_DEPENDENCIES = \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la \
+	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la
 
 libkaffevm_la_LIBADD = \
@@ -66,7 +64,6 @@ libkaffevm_la_LIBADD = \
 	$(M_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
-	gc-mem.c \
 	md.c
 
 nodist_libkaffevm_la_SOURCES = \
@@ -156,13 +153,7 @@ noinst_HEADERS = \
 	reflect.h \
 	../../binreloc/prefix.h
 
-gc-mem.c: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(srcdir)/mem/gc-mem.c gc-mem.c $@
-
-md.c: stamp-h02
+md.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
@@ -170,7 +161,7 @@ stamp-h02: $(top_builddir)/config.status
 
 CLEANFILES = so_locations
 
-DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
+DISTCLEANFILES = md.c stamp-h01
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

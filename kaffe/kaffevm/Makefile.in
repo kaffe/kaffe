@@ -83,7 +83,8 @@ am__DEPENDENCIES_1 =
 @HAVE_GCJ_SUPPORT_TRUE@am__DEPENDENCIES_2 = gcj/libgcj.la
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
-	verifier/libkaffeverifier.la jni/libkaffejni.la
+	verifier/libkaffeverifier.la $(GC_NAME)/libkaffegc.la \
+	jni/libkaffejni.la
 am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
 	classPool.c methodCache.c code-analyse.c code.c constants.c \
 	debug.c exception.c external.c file.c findInJar.c fp.c gc.c \
@@ -100,7 +101,7 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	soft.lo stackTrace.lo stats.lo string.lo stringParsing.lo \
 	support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
 	reflect.lo $(am__objects_1)
-am__objects_2 = gc-mem.lo md.lo
+am__objects_2 = md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
@@ -115,17 +116,17 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/constants.Plo ./$(DEPDIR)/debug.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/exception.Plo ./$(DEPDIR)/external.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/file.Plo ./$(DEPDIR)/findInJar.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/fp.Plo ./$(DEPDIR)/gc-mem.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/gc.Plo ./$(DEPDIR)/gcFuncs.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/gcRefs.Plo ./$(DEPDIR)/hashtab.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/inflate.Plo ./$(DEPDIR)/itypes.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/jar.Plo ./$(DEPDIR)/ksem.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/locks.Plo ./$(DEPDIR)/lookup.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/md.Plo ./$(DEPDIR)/methodCache.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/object.Plo ./$(DEPDIR)/prefix.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/reflect.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/soft.Plo ./$(DEPDIR)/stackTrace.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/fp.Plo ./$(DEPDIR)/gc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gcFuncs.Plo ./$(DEPDIR)/gcRefs.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hashtab.Plo ./$(DEPDIR)/inflate.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/itypes.Plo ./$(DEPDIR)/jar.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ksem.Plo ./$(DEPDIR)/locks.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/lookup.Plo ./$(DEPDIR)/md.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/methodCache.Plo ./$(DEPDIR)/object.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/prefix.Plo ./$(DEPDIR)/readClass.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/reflect.Plo ./$(DEPDIR)/soft.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/stackTrace.Plo ./$(DEPDIR)/stats.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo
@@ -212,6 +213,7 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
 GNU_CRYPTO_HOME = @GNU_CRYPTO_HOME@
 GNU_CRYPTO_JAR = @GNU_CRYPTO_JAR@
@@ -395,14 +397,10 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-SUBDIRS = $(ENGINE_NAME) systems gcj verifier jni
-DIST_SUBDIRS = intrp jit jit3 systems gcj verifier jni
+SUBDIRS = $(ENGINE_NAME) $(GC_NAME) systems gcj verifier jni
+DIST_SUBDIRS = mem intrp jit jit3 systems gcj verifier jni
 EXTRA_DIST = \
 	kaffe.def \
-	mem/gc-incremental.c \
-	mem/gc-incremental.h \
-	mem/gc-mem.c \
-	mem/gc-mem.h \
 	systems/win32/winio.c \
 	systems/win32/winthread.c \
 	systems/win32/winthread.h
@@ -433,6 +431,7 @@ libkaffevm_la_DEPENDENCIES = \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la \
+	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la
 
 libkaffevm_la_LIBADD = \
@@ -441,7 +440,6 @@ libkaffevm_la_LIBADD = \
 	$(M_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
-	gc-mem.c \
 	md.c
 
 nodist_libkaffevm_la_SOURCES = \
@@ -530,7 +528,7 @@ noinst_HEADERS = \
 	../../binreloc/prefix.h
 
 CLEANFILES = so_locations
-DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
+DISTCLEANFILES = md.c stamp-h01
 all: all-recursive
 
 .SUFFIXES:
@@ -613,7 +611,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/findInJar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-mem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcFuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcRefs.Plo@am__quote@
@@ -818,7 +815,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../binreloc $(distdir)/mem $(distdir)/systems/win32
+	$(mkdir_p) $(distdir)/../../binreloc $(distdir)/systems/win32
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -969,14 +966,9 @@ uninstall-info: uninstall-info-recursive
 @cpu_frag@
 @cpu_os_frag@
 @threads_frag@
+@gc_frag@
 
-gc-mem.c: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(srcdir)/mem/gc-mem.c gc-mem.c $@
-
-md.c: stamp-h02
+md.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
 	else :; fi
 stamp-h02: $(top_builddir)/config.status

@@ -333,6 +333,18 @@ AC_SUBST_FILE(cpu_frag)dnl
 dnl =========================================================================
 
 dnl =========================================================================
+dnl Select the right garbage collector.
+dnl -------------------------------------------------------------------------
+
+gc_frag=$srcdir/kaffe/kaffevm/mem/Makefile.frag
+AC_SUBST_FILE(gc_frag)
+
+GC_NAME=mem
+AC_SUBST(GC_NAME)
+
+dnl =========================================================================
+
+dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
@@ -1987,6 +1999,7 @@ AC_CONFIG_FILES([kaffe/kaffevm/systems/oskit-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/beos-native/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/systems/unix-pthreads/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/verifier/Makefile])
+AC_CONFIG_FILES([kaffe/kaffevm/mem/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/jni/Makefile])
 AC_CONFIG_FILES([kaffe/kaffe/Makefile])
 AC_CONFIG_FILES([kaffe/kaffeh/Makefile])

@@ -14,15 +14,16 @@
 
 @SET_MAKE@
 
-# Makefile.in for kaffevm JIT compiler
+# Makefile.am for the garbage collector - original Kaffe's GC.
 #
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
+# Copyright (c) 2004
+#	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SOURCES = $(libengine_la_SOURCES)
+
+SOURCES = $(libkaffegc_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -45,8 +46,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-subdir = kaffe/kaffevm/intrp
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+subdir = kaffe/kaffevm/mem
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/alsa.m4 \
@@ -71,15 +73,17 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jni_md.h
 CONFIG_CLEAN_FILES =
-LTLIBRARIES = $(noinst_LTLIBRARIES)
-libengine_la_LIBADD =
-am_libengine_la_OBJECTS = machine.lo native-wrapper.lo
-libengine_la_OBJECTS = $(am_libengine_la_OBJECTS)
+am__installdirs = "$(DESTDIR)$(nativedir)"
+nativeLTLIBRARIES_INSTALL = $(INSTALL)
+LTLIBRARIES = $(native_LTLIBRARIES)
+libkaffegc_la_LIBADD =
+am_libkaffegc_la_OBJECTS = gc-incremental.lo gc-mem.lo
+libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/machine.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/native-wrapper.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gc-incremental.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gc-mem.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -87,8 +91,9 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libengine_la_SOURCES)
-DIST_SOURCES = $(libengine_la_SOURCES)
+SOURCES = $(libkaffegc_la_SOURCES)
+DIST_SOURCES = $(libkaffegc_la_SOURCES)
+HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -341,30 +346,27 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = \
-	      -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
-	      -I$(top_srcdir)/kaffe/kaffevm/jni \
-	      -I.. \
-	      -I$(srcdir)/.. \
-	      $(ENGINE_DEFS) \
-	      -I$(top_builddir)/include
+        -I$(top_srcdir)/include \
+        -I$(top_builddir)/config \
+        -I$(top_srcdir)/config \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm \
+	-I$(top_srcdir)/kaffe/jvmpi
 
-noinst_LTLIBRARIES = libengine.la
-libengine_la_LDFLAGS = \
-	$(KVMLIBFLAGS)
+native_LTLIBRARIES = libkaffegc.la
+libkaffegc_la_LDFLAGS = \
+	$(KVMLIBFLAGS) \
+	-export-dynamic \
+	-release $(PACKAGE_VERSION)
 
-libengine_la_SOURCES = \
-	machine.c \
-	native-wrapper.c
+libkaffegc_la_SOURCES = \
+	gc-incremental.c \
+	gc-mem.c \
+	gc-incremental.h \
+	gc-mem.h
 
-EXTRA_DIST = \
-	Makefile.frag \
-	checks.h \
-	icode.h \
-	machine.h \
-	slots.h \
-	stackTrace-impl.h \
-	native-wrapper.h
-
+noinst_HEADERS = gc-mem.h gc-incremental.h
 all: all-am
 
 .SUFFIXES:
@@ -378,9 +380,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  kaffe/kaffevm/intrp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  kaffe/kaffevm/mem/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  kaffe/kaffevm/intrp/Makefile
+	  $(AUTOMAKE) --gnu  kaffe/kaffevm/mem/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -398,17 +400,35 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	test -z "$(nativedir)" || $(mkdir_p) "$(DESTDIR)$(nativedir)"
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    f="`echo $$p | sed -e 's|^.*/||'`"; \
+	    echo " $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(nativedir)/$$f'"; \
+	    $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(nativedir)/$$f"; \
+	  else :; fi; \
+	done
 
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
-	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+uninstall-nativeLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+	    p="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(nativedir)/$$p'"; \
+	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(nativedir)/$$p"; \
+	done
+
+clean-nativeLTLIBRARIES:
+	-test -z "$(native_LTLIBRARIES)" || rm -f $(native_LTLIBRARIES)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libengine.la: $(libengine_la_OBJECTS) $(libengine_la_DEPENDENCIES) 
-	$(LINK)  $(libengine_la_LDFLAGS) $(libengine_la_OBJECTS) $(libengine_la_LIBADD) $(LIBS)
+libkaffegc.la: $(libkaffegc_la_OBJECTS) $(libkaffegc_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativedir) $(libkaffegc_la_LDFLAGS) $(libkaffegc_la_OBJECTS) $(libkaffegc_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -416,8 +436,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/native-wrapper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-incremental.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-mem.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -530,8 +550,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
+	for dir in "$(DESTDIR)$(nativedir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -558,7 +581,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -577,7 +600,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-nativeLTLIBRARIES
 
 install-exec-am:
 
@@ -605,22 +628,21 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	clean-libtool clean-nativeLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-info-am
+	install-nativeLTLIBRARIES install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am \
+	uninstall-nativeLTLIBRARIES
 
-
-@engine_frag@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
