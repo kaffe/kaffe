@@ -38,12 +38,12 @@ exception statement from your version. */
 
 package gnu.java.net.protocol.jar;
 
+import gnu.java.net.URLParseError;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.net.MalformedURLException;
-import gnu.java.net.URLParseError;
 
 /**
  * @author Kresten Krab Thorup <krab@gnu.org>
@@ -72,7 +72,7 @@ public class Handler extends URLStreamHandler
   }
 
   /**
-   * This method overrides URLStreamHandler's for parsing url of protocol "file"
+   * This method overrides URLStreamHandler's for parsing url of protocol "jar"
    *
    * @param url The URL object in which to store the results
    * @param url_string The String-ized URL to parse
@@ -90,11 +90,13 @@ public class Handler extends URLStreamHandler
         && file != "")
       { //has context url
 	url_string = url_string.substring (start, end);
-        if (url_string.startsWith ("/"))
+        if (url_string.startsWith("/"))
           { //url string is an absolute path
             int idx = file.lastIndexOf ("!/");
+	    
 	    if (idx < 0)
-	      throw new URLParseError ("no !/ in spec");
+	      throw new URLParseError("no !/ in spec");
+	    
 	    file = file.substring (0, idx + 1) + url_string;
           }
         else
@@ -128,18 +130,17 @@ public class Handler extends URLStreamHandler
     url_string = url_string.substring (start, end);
 
     int jar_stop;
-    if ((jar_stop = url_string.indexOf ("!/")) < 0)
-      throw new URLParseError ("no !/ in spec");
+    if ((jar_stop = url_string.indexOf("!/")) < 0)
+      throw new URLParseError("no !/ in spec");
 
     try
       {
-	new URL (url_string.substring (0, jar_stop));
+	new URL(url_string.substring (0, jar_stop));
       }
     catch (MalformedURLException e)
       {
 	throw new URLParseError("invalid inner URL: " + e.getMessage());
       }
-    
     
     if (!url.getProtocol().equals ("jar") )
       throw new URLParseError("unexpected protocol " + url.getProtocol());
