@@ -24,6 +24,7 @@
 #define ALIGNMENT_OF_SIZE(S)    (((S>1)?2:1))
 
 #if defined(__linux__)
+#ifdef	USE_ASM		/* Old and obsolete... */
 #define	sysdepCallMethod(CALL)					       \
                asm volatile ("                                       \n\
        1:                                                            \n\
@@ -66,6 +67,47 @@
                asm volatile ("                                       \n\
                add.w %0,%%sp                                         \n\
         " : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
+#else	/* USE_ASM */
+#define sysdepCallMethod(CALL) do {				\
+	int extraargs[(CALL)->nrargs];				\
+	register int d0 asm ("d0");				\
+	register int d1 asm ("d1");				\
+	register double f0d asm ("fp0");			\
+	register float f0f asm ("fp0");				\
+	int *res;						\
+	int *args = extraargs;					\
+	int argidx;						\
+	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx) {	\
+		if ((CALL)->callsize[argidx])			\
+			*args++ = (CALL)->args[argidx].i;	\
+		else						\
+			*args++ = (CALL)->args[argidx-1].j;	\
+	}							\
+	asm volatile ("jsr	%2@\n"				\
+	 : "=r" (d0), "=r" (d1)					\
+	 : "a" ((CALL)->function)				\
+	 : "cc", "memory");					\
+	if ((CALL)->retsize != 0) {				\
+		res = (int *)(CALL)->ret;			\
+	switch((CALL)->retsize) {				\
+	case 2:							\
+	  if ((CALL)->rettype == 'D')				\
+	    *(double*)res = f0d;				\
+	  else {						\
+		res[1] = d1;					\
+		res[0] = d0;					\
+	  }							\
+	  break;						\
+	case 1:							\
+	  if ((CALL)->rettype == 'F')				\
+	    *(double*)res = f0f;				\
+	  else							\
+		res[0] = d0;					\
+	  break;						\
+	}							\
+	}							\
+} while (0)
+#endif	/* USE_ASM */
 #else	/* defined(__linux__) */
 
 #define sysdepCallMethod(CALL) do {				\
@@ -83,8 +125,7 @@
 	}							\
 	asm volatile ("jsr	%2@\n"				\
 	 : "=r" (d0), "=r" (d1)					\
-	 : "a" ((CALL)->function),				\
-	   "r" ((CALL)->nrargs * sizeof(int))			\
+	 : "a" ((CALL)->function)				\
 	 : "cc", "memory");					\
 	if ((CALL)->retsize != 0) {				\
 		res = (int *)(CALL)->ret;			\

@@ -15,6 +15,12 @@
 #include "m68k/common.h"
 #include "m68k/threads.h"
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef  SP_OFFSET
+#define SP_OFFSET	14
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -19,7 +19,7 @@
 /**/
 /* Include common information. */
 /**/
-#include "m68k/netbsd1/jit.h"
+#include "m68k/jit.h"
 
 /**/
 /* Define where addresses are returned.  */

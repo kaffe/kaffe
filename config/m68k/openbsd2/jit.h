@@ -138,16 +138,6 @@ typedef struct _exceptionFrame {
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
 
-/* Define which registers are used for which return values as seen
- * by the the callee */
-#define	RETURN_INT		0	/* d0 */
-#define	RETURN_REF		M68K_RETURN_REF
-#define	RETURN_LONG_LOW		1	/* d1 */
-#define	RETURN_LONG_HIGH	0	/* d0 */
-#define	RETURN_FLOAT		32	/* f0 */
-#define	RETURN_DOUBLE_LOW	32	/* f0 */
-#define	RETURN_DOUBLE_HIGH	32	/* Not used in this configuration */
-
 /**/
 /* Opcode generation. */
 /**/

@@ -31,6 +31,54 @@ Wed Mar 24 16:53:57 PST 1999  Moses DeJong <dejong@cs.umn.edu>
 	* configure.in: enhance help message re --with-engine option
 	* configure: regen
 
+Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/common.h: sysdepCallMethod for linux.
+	Jit support for linux comes back.
+	* config/m68k/linux/config.frag: eliminate the use of -O
+	flag to evading jit bug.
+
+Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/common.h: sysdepCallMethod for linux.
+	Jit support for linux comes back.
+	* config/m68k/linux/config.frag: eliminate the use of -O
+	flag to evading jit bug.
+
+Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/linux/md.h: define SP_OFFSET.
+	* config/alpha/jit.h, config/m68k/jit.h, config/m68k/openbsd2/jit.h
+	remove obsolete macros as THREAD_CTX, RETURN_INT, etc.
+	* config/m68k/netbsd1/jit-md.h: Jit support is now
+	integrated with linux port.
+	* config/m68k/linux/jit-md.h: new file. Jit support for
+	linux (which has not yet been finished).
+	* config/m68k/netbsd1/config.frag: eliminate the use of -O2
+	flag to evading jit bug.
+	* config/m68k/linux/config.frag: cross compiling suport.
+	* config/m68k/trampolines.c: change assembler syntax compatible
+	with linux's as. The 'm68k_do_fixup_trampoline' function is
+	now used with shared_vmlibrary, but I've not yet tested if
+	it works or not.
+
+Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/linux/md.h: define SP_OFFSET.
+	* config/alpha/jit.h, config/m68k/jit.h, config/m68k/openbsd2/jit.h
+	remove obsolete macros as THREAD_CTX, RETURN_INT, etc.
+	* config/m68k/netbsd1/jit-md.h: Jit support is now
+	integrated with linux port.
+	* config/m68k/linux/jit-md.h: new file. Jit support for
+	linux (which has not yet been finished).
+	* config/m68k/netbsd1/config.frag: eliminate the use of -O2
+	flag to evading jit bug.
+	* config/m68k/linux/config.frag: cross compiling suport.
+	* config/m68k/trampolines.c: change assembler syntax compatible
+	with linux's as. The 'm68k_do_fixup_trampoline' function is
+	now used with shared_vmlibrary, but I've not yet tested if
+	it works or not.
+
 Wed Mar 24 16:15:03 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
 
 	* FAQ/FAQ.BeOS: updated list of known problems

@@ -30,8 +30,8 @@ typedef struct _exceptionFrame {
 
 /* Is this frame valid (ie. is it on the current stack) ? */
 #define	FRAMEOKAY(f)							\
-	((f) && (f)->retfp >= (uintp)THREAD_CTX()->stackBase &&		\
-	 (f)->retfp < (uintp)THREAD_CTX()->stackEnd)
+	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
+	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
 
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
@@ -51,12 +51,35 @@ typedef struct _exceptionFrame {
    necessary). */
 #define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
 	__asm__ __volatile__(						\
-		"move%.l %0,%/fp\n\t"					\
 		"move%.l %1,%/d0\n\t"					\
+		"move%.l %0,%/fp\n\t"					\
 		"jmp (%2)"						\
 		: : "g"(frame->retfp), "g"(obj), "a"(info.handler)	\
 		: "d0", "cc", "memory")
 
+/**/
+/* Method dispatch.  */
+/**/
+
+#define HAVE_TRAMPOLINE
+
+typedef struct _methodTrampoline {
+        unsigned short call;
+	int fixup;
+	struct _methods* meth;
+} methodTrampoline;
+
+extern void m68k_do_fixup_trampoline(void);
+
+#define FILL_IN_TRAMPOLINE(t,m)                                         \
+        do {                                                            \
+                (t)->call = 0x4eb9;	/* jsr abs.l */			\
+                (t)->fixup = (int)m68k_do_fixup_trampoline;		\
+                (t)->meth = (m);                                        \
+        } while (0)
+
+#define FIXUP_TRAMPOLINE_DECL   Method** _pmeth
+#define FIXUP_TRAMPOLINE_INIT   (meth = *_pmeth)
 
 /**/
 /* Register management information. */
@@ -97,19 +120,17 @@ typedef struct _exceptionFrame {
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
 
-/* Define which registers are used for which return values as seen
- * by the the callee */
-#define	RETURN_INT		0	/* d0 */
-#define	RETURN_REF		M68K_RETURN_REF
-#define	RETURN_LONG_LOW		1	/* d1 */
-#define	RETURN_LONG_HIGH	0	/* d0 */
-#define	RETURN_FLOAT		32	/* f0 */
-#define	RETURN_DOUBLE_LOW	32	/* f0 */
-#define	RETURN_DOUBLE_HIGH	32	/* Not used in this configuration */
-
 /**/
 /* Opcode generation. */
 /**/
+#define LABEL_FRAMESIZE(L,P) \
+	{ \
+		int framesize = SLOTSIZE * (maxLocal + maxStack + \
+			maxTemp - maxArgs); \
+			*(P) = framesize; \
+	}
+
+#define EXTRA_LABELS(P,D,L)
 
 /* Define if generated code uses two operands rather than one */
 #define	TWO_OPERAND
@@ -136,7 +157,7 @@ typedef struct _exceptionFrame {
  */
 
 /* Generate slot offset for an argument (relative to fp) */
-#define SLOT2ARGOFFSET(_n)    (8 + SLOTSIZE*((_n) + isStatic))
+#define SLOT2ARGOFFSET(_n)    (8 + SLOTSIZE * (_n))
 
 /* Generate slot offset for a local (non-argument) (relative to fp) */
 #define SLOT2LOCALOFFSET(_n)  (-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))

@@ -30,8 +30,8 @@ typedef struct _exceptionFrame {
 
 /* Is this frame valid (ie. is it on the current stack) ? */
 #define	FRAMEOKAY(f)							\
-	((f) && (f)->retfp >= (uintp)THREAD_CTX()->stackBase &&	\
-	 (f)->retfp < (uintp)THREAD_CTX()->stackEnd)
+	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
+	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
 
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
@@ -44,7 +44,7 @@ typedef struct _exceptionFrame {
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o)						\
 	do {								\
-		exceptionFrame *_cur = THREAD_CTX()->exceptPtr;		\
+		exceptionFrame *_cur = TCTX(currentThread)->exceptPtr;	\
 		if (_cur) {						\
 			(f) = *_cur;					\
 		}							\
@@ -197,16 +197,6 @@ extern void alpha_do_fixup_trampoline(void);
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	64
-
-/* Define which registers are used for which return values as seen
- * by the the callee */
-#define	RETURN_INT		0	/* v0 */
-#define	RETURN_REF		0	/* v0 */
-#define	RETURN_LONG_LOW		0	/* v0 */
-#define	RETURN_LONG_HIGH	0	/* Not used in this configuration */
-#define	RETURN_FLOAT		32	/* f0 */
-#define	RETURN_DOUBLE_LOW	32	/* f0 */
-#define	RETURN_DOUBLE_HIGH	32	/* Not used in this configuration */
 
 /**/
 /* Opcode generation. */
