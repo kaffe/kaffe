@@ -68,14 +68,79 @@ public synchronized boolean checkID ( int id, boolean load ) {
 
 public synchronized Object[] getErrorsAny()
 {
-	// We assume we don't get image errors here
-	return (null);
+	int used = 0;
+	int size = 1;
+	int ic;	
+	Object[] array;
+	final boolean load = false;
+
+	array = new Object[size];
+
+	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
+		ic = e.img.checkImage( e.w, e.h, e, load);
+			
+		if ( (ic & ImageObserver.ERROR) != 0 ) {
+		        // Expand the byte array if we need to make more room
+		        if (used >= size) {
+			    Object[] oldArray = array;
+			    int new_size = size * 2;
+			    
+			    array = new Object[new_size];
+			    System.arraycopy(oldArray, 0, array, 0, used);
+			    oldArray = null;
+			    
+			    size = new_size;
+			}
+		        // Add this object to our object array
+			array[used++] = e.img;
+		}
+	}
+
+	if (used == 0)
+	    return null;
+	
+	Object[] ret = new Object[used];
+	System.arraycopy(ret, 0, array, 0, used);
+	return ret;
 }
 
 public synchronized Object[] getErrorsID(int id)
 {
-	// We assume we don't get image errors here
-	return (null);
+    	int used = 0;
+	int size = 1;
+	int ic;	
+	Object[] array;
+	final boolean load = false;
+
+	array = new Object[size];
+	
+	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
+		ic = e.img.checkImage( e.w, e.h, e, load);
+			
+		if ( (ic & ImageObserver.ERROR) != 0 ) {
+		        // Expand the byte array if we need to make more room
+		        if (used >= size) {
+			    Object[] oldArray = array;
+			    int new_size = size * 2;
+			    
+			    array = new Object[new_size];
+			    System.arraycopy(oldArray, 0, array, 0, used);
+			    oldArray = null;
+			    
+			    size = new_size;
+			}
+
+			// Add this object to our object array
+			array[used++] = e.img;
+		}
+	}
+
+	if (used == 0)
+	    return null;
+	
+	Object[] ret = new Object[used];
+	System.arraycopy(ret, 0, array, 0, used);
+	return ret;
 }
 
 MediaTrackerEntry getNextEntry ( int id, MediaTrackerEntry prev ) {
@@ -91,14 +156,12 @@ MediaTrackerEntry getNextEntry ( int id, MediaTrackerEntry prev ) {
 
 public synchronized boolean isErrorAny()
 {
-	// We assume we don't get image errors here
-	return (false);
+	return ((statusAll(false) & ERRORED) != 0);
 }
 
 public synchronized boolean isErrorID(int id)
 {
-	// We assume we don't get image errors here
-	return (false);
+	return ((statusID(id,false) & ERRORED) != 0);	
 }
 
 public synchronized void removeImage(Image image)
