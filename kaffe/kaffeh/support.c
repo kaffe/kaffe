@@ -272,9 +272,6 @@ readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 	char* str;
 	char* ret;
 	char* tsig;
-	char type;
-	int j;
-	char rtype;
 	int args;
 
 	readu2(&m.access_flags, fp);
@@ -444,7 +441,6 @@ findClass(char* nm)
 	struct stat sbuf;
 	char* start;
 	char* end = (char*)1;
-	int j;
 	constants* savepool;
 	classFile hand;
 

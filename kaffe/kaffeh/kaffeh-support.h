@@ -18,6 +18,10 @@ void initInclude(void);
 void startInclude(void);
 void endInclude(void);
 
+void initJniInclude(void);
+void startJniInclude(void);
+void endJniInclude(void);
+
 void findClass(char *nm);
  
 #endif
