@@ -54,6 +54,7 @@ public final class Security {
 
 		// Install configured security providers
 		for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
+			ClassLoader cl = ClassLoader.getSystemClassLoader();
 			Map.Entry ent = (Map.Entry)i.next();
 			String key = (String)ent.getKey();
 
@@ -62,7 +63,7 @@ public final class Security {
 			}
 			try {
 				insertProviderAt(
-				    (Provider)Class.forName(
+				    (Provider)cl.loadClass(
 					(String)ent.getValue()).newInstance(),
 				    Integer.parseInt(
 					key.substring(PROV_PREFIX.length())));

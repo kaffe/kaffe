@@ -1,3 +1,9 @@
+2003-10-21  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/java/security/Security.java:
+	Use the system class loader to load provider classes, otherwise
+	they would have to be in the BOOTCLASSPATH.
+	
 2003-10-19  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java:
