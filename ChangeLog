@@ -1,3 +1,9 @@
+2003-06-20  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* config/sparc/openbsd2/md.h (SP_OFFSET): define it to 2
+
+	Reported by: WhiteGandalf <zuse@libero.it>
+
 2003-06-14 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in:

@@ -15,6 +15,9 @@
 #include "sparc/common.h"
 #include "sparc/threads.h"
 
+#undef SP_OFFSET
+#define SP_OFFSET 2
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif
