@@ -1,3 +1,10 @@
+2002-11-22  Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/clib/native/ByteToCharIconv.c: 
+	(Java_kaffe_io_ByteToCharIconv_convert): convert the
+	begining of an invalid multibyte sequence to '?'. Fixes
+	an infinite loop on invalid multibyte sequences.
+
 2002-11-21  Dalibor Topic  <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/File.java: 

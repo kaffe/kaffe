@@ -21,6 +21,8 @@
 #include <iconv.h>
 #endif
 
+#include <errno.h>
+
 static jfieldID cd_id;
 static jmethodID carry_id;
 
@@ -89,6 +91,16 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
     icv_out = buffer;
 #endif
     ret = iconv (cd, &icv_in, &icv_inlen, &icv_out, &icv_outlen);
+    if (ret < 0) {
+	/* convert the begining of an invalid  multibyte  sequence to '?' */
+	if (errno == EILSEQ) {
+		icv_in++;
+		icv_inlen--;
+		*(icv_out++) = 0;
+		*(icv_out++) = '?';
+		icv_outlen -= 2;
+	}
+    }
 #ifndef WORDS_BIGENDIAN
     swab (buffer, jc + toPos, toLen * 2 - icv_outlen);
     KFREE (buffer);
