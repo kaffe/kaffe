@@ -1,3 +1,10 @@
+Sat May 11 09:47:00 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* configure.in: Instead of enabling gcj support by default if gcj
+	is found, instead force people to explicitly enable it using
+	--enable-gcj configure switch (because newer versions of gcj do
+	not currently work with kaffe).
+
 Wed May  8 20:38:38 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* test/regression/Makefile.am, test/regression/Makefile.in: added
 	GetTest.java to the list of tests.
