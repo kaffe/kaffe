@@ -114,15 +114,15 @@ ip62str(struct in6_addr *addr)
 	for (count=0,i=0;i<16;i++) {
 	    char *format;
 	    
-	    if (i == 0 && addr->in6_u.u6_addr8[i] != 0)
+	    if (i == 0 && addr->s6_addr[i] != 0)
 	      format = "%x";
-	    else if (addr->in6_u.u6_addr8[i] != 0)
+	    else if (addr->s6_addr[i] != 0)
 	      format = "%x:";
 	    else if (i != 0)
 	      format = ":";
 	    else
 	      format = "";
-	    count += sprintf(&addrbuf[count], format, addr->in6_u.u6_addr8[i]);
+	    count += sprintf(&addrbuf[count], format, addr->s6_addr[i]);
 	}
 	return addrbuf;
 }
