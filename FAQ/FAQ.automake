@@ -23,7 +23,8 @@ AM_CPPFLAGS.  Prefer the latter for preprocessor definitions such as
 that it will take care of rebuilding autoconf/automake-related files
 whenever they become out-of-date, but only if you
 --enable-maintainer-mode at configure time.  If not, you'll have to
-run aclocal, automake, autoconf and autoheader -l config by yourself.
+run "aclocal; automake; autoconf; autoheader -l config" manually in the
+top-level source directory.
 
 - you also have to specify which files should go in a distribution
 (make dist): they should either be listed as sources to some binary or
