@@ -76,26 +76,34 @@ if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
 else
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
     *"GDB"* | *"GNU gdb"*)
+	if test -z "$KAFFE_DEBUG_TEMPFILE"; then
+	    echo "KAFFE_DEBUG_TEMPFILE not set"
+	    exit 1
+	fi
 	# start command-line gdb within the correct working directory,
 	# and set up the specified argument list
 	{
-	    echo "shell rm -f /tmp/.gdbinit.$$"
+	    echo "shell rm -f $KAFFE_DEBUG_TEMPFILE"
 	    echo "cd `pwd`"
 	    echo "set args $*"
-	} >/tmp/.gdbinit.$$
-	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_JREBINDIR/@Kaffe_TRANSF@
-	rm -f /tmp/.gdbinit.$$;;
+	} > $KAFFE_DEBUG_TEMPFILE
+	exec "$KAFFE_DEBUG" -command $KAFFE_DEBUG_TEMPFILE $KAFFE_JREBINDIR/@Kaffe_TRANSF@
+	rm -f $KAFFE_DEBUG_TEMPFILE ;;
     DDD*)
+	if test -z "$KAFFE_DEBUG_TEMPFILE"; then
+	    echo "KAFFE_DEBUG_TEMPFILE not set"
+	    exit 1
+	fi
 	# Tell DDD to start gdb within the correct working directory,
 	# and set up the specified argument list
 	{
-	    echo "shell rm -f /tmp/.gdbinit.$$"
+	    echo "shell rm -f $KAFFE_DEBUG_TEMPFILE"
 	    echo "cd `pwd`"
 	    echo "set args $*"
-	} >/tmp/.gdbinit.$$
-        exec "$KAFFE_DEBUG" --debugger "${GDB-gdb} -command /tmp/.gdbinit.$$" \
+	} > $KAFFE_DEBUG_TEMPFILE
+        exec "$KAFFE_DEBUG" --debugger "${GDB-gdb} -command $KAFFE_DEBUG_TEMPFILE" \
 	  $KAFFE_JREBINDIR/Kaffe
-	rm -f /tmp/.gdbinit.$$;;
+	rm -f $KAFFE_DEBUG_TEMPFILE ;;
     "GNU Emacs"*)
 	# start gdb within GNU Emacs, move into the current working
 	# directory and set up the specified argument list
