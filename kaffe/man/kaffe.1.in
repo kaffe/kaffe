@@ -100,7 +100,7 @@ installed in a location not part of the dynamic loader's default search
 path.
 .SH FILES
 .TP
-.B "/usr/local/share/kaffe/kafferc"
+.B "@prefix@/share/kaffe/kafferc"
 System-wide shell script read by kaffe script (optional).
 .TP
 .B "${HOME}/.kafferc"
