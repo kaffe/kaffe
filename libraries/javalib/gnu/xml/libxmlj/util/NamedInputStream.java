@@ -47,18 +47,18 @@ extends FilterInputStream
   private String name;
 
   NamedInputStream (String name, InputStream in, int size)
-    {
-      super (new PushbackInputStream (in, size));
-      this.name = name;
-    }
+  {
+    super (new PushbackInputStream (in, size));
+    this.name = name;
+  }
 
   /**
    * Returns the name of the stream (the XML system ID).
    */
   public String getName ()
-    {
-      return name;
-    }
+  {
+    return name;
+  }
 
   /**
    * Returns the first few bytes of the stream for character encoding
@@ -68,21 +68,21 @@ extends FilterInputStream
    */
   public byte[] getDetectBuffer ()
     throws IOException
-    {
-      PushbackInputStream p = (PushbackInputStream) in;
-      byte[] buffer = new byte[DETECT_BUFFER_SIZE];
-      int len = p.read (buffer);
-      if (len < 0)
-        {
-          return null;
-        }
-      else
-        {
-          p.unread (buffer, 0, len);
-          byte[] ret = new byte[len];
-          System.arraycopy (buffer, 0, ret, 0, len);
-          return ret;
-        }
-    }
+  {
+    PushbackInputStream p = (PushbackInputStream) in;
+    byte[] buffer = new byte[DETECT_BUFFER_SIZE];
+    int len = p.read (buffer);
+    if (len < 0)
+      {
+        return null;
+      }
+    else
+      {
+        p.unread (buffer, 0, len);
+        byte[] ret = new byte[len];
+        System.arraycopy (buffer, 0, ret, 0, len);
+        return ret;
+      }
+  }
   
 }

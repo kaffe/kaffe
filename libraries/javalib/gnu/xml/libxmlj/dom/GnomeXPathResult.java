@@ -43,19 +43,19 @@ implements XPathResult
   /**
    * xmlXPathObjectPtr
    */
-  final long obj;
+  final Object obj;
 
-  GnomeXPathResult (long obj)
-    {
-      this.obj = obj;
-    }
+  GnomeXPathResult (Object obj)
+  {
+    this.obj = obj;
+  }
 
   protected void finalize ()
-    {
-      free (obj);
-    }
+  {
+    free (obj);
+  }
 
-  private native void free (long obj);
+  private native void free (Object obj);
   
   public native short getResultType ();
 
@@ -81,5 +81,41 @@ implements XPathResult
 
   public native Node snapshotItem (int index)
     throws XPathException;
+
+  public String toString ()
+  {
+    short type = getResultType ();
+    switch (type)
+      {
+      case STRING_TYPE:
+        return getStringValue ();
+      case NUMBER_TYPE:
+        return new Double (getNumberValue ()).toString ();
+      case BOOLEAN_TYPE:
+        return Boolean.valueOf (getBooleanValue ()).toString ();
+      case UNORDERED_NODE_SNAPSHOT_TYPE:
+        int len = getSnapshotLength ();
+        switch (len) {
+        case 0:
+          return "[no matches]";
+        case 1:
+          return getSingleNodeValue ().toString ();
+        default:
+          StringBuffer buffer = new StringBuffer ();
+          for (int i = 0; i < len; i++)
+            {
+              if (i > 0)
+                {
+                  buffer.append (',');
+                }
+              buffer.append (snapshotItem (i));
+            }
+          return buffer.toString ();
+        }
+      default:
+        return getClass ().getName () + "[type=" + type + ",length=" +
+          getSnapshotLength () + ']';
+      }
+  }
   
 }

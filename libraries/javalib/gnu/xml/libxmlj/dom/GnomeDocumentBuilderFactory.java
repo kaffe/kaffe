@@ -40,42 +40,44 @@ extends DocumentBuilderFactory
 {
 
   public GnomeDocumentBuilderFactory ()
-    {
-      setNamespaceAware (true);
-    }
+  {
+    setNamespaceAware (true);
+  }
 
   public Object getAttribute (String name)
-    {
-      // TODO
-      return null;
-    }
+  {
+    // TODO
+    return null;
+  }
 
   public DocumentBuilder newDocumentBuilder ()
     throws ParserConfigurationException
-    {
-      if (!isNamespaceAware ())
-        {
-          String msg = "Parser must be namespace-aware";
-          throw new ParserConfigurationException (msg);
-        }
-      if (isIgnoringComments ())
-        {
-          String msg = "Ignoring comments not supported";
-          throw new ParserConfigurationException (msg);
-        }
-      if (isIgnoringElementContentWhitespace ())
-        {
-          String msg = "Ignoring element content whitespace not supported";
-          throw new ParserConfigurationException (msg);
-        }
-      return new GnomeDocumentBuilder (isValidating (),
-                                       isCoalescing (),
-                                       isExpandEntityReferences ());
-    }
+  {
+    /*
+    if (!isNamespaceAware ())
+      {
+        String msg = "Parser must be namespace-aware";
+        throw new ParserConfigurationException (msg);
+      }
+    if (isIgnoringComments ())
+      {
+        String msg = "Ignoring comments not supported";
+        throw new ParserConfigurationException (msg);
+      }
+    if (isIgnoringElementContentWhitespace ())
+      {
+        String msg = "Ignoring element content whitespace not supported";
+        throw new ParserConfigurationException (msg);
+      }
+      */
+    return new GnomeDocumentBuilder (isValidating (),
+                                     isCoalescing (),
+                                     isExpandEntityReferences ());
+  }
 
   public void setAttribute (String name, Object value)
-    {
-      // TODO
-    }
+  {
+    // TODO
+  }
   
 }

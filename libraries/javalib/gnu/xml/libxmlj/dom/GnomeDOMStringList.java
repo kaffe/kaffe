@@ -1,5 +1,5 @@
 /*
- * xmlj_dom.h
+ * GnomeDOMStringList.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -24,32 +24,46 @@
  * This exception does not however invalidate any other reasons why the
  * executable file might be covered by the GNU General Public License.
  */
-#ifndef XMLJ_DOM_H
-#define XMLJ_DOM_H
+package gnu.xml.libxmlj.dom;
 
-#include "gnu_xml_libxmlj_dom_GnomeAttr.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocument.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocumentType.h"
-#include "gnu_xml_libxmlj_dom_GnomeElement.h"
-#include "gnu_xml_libxmlj_dom_GnomeEntity.h"
-#include "gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h"
-#include "gnu_xml_libxmlj_dom_GnomeNode.h"
-#include "gnu_xml_libxmlj_dom_GnomeNodeList.h"
-#include "gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h"
-#include "gnu_xml_libxmlj_dom_GnomeTypeInfo.h"
+import org.w3c.dom.DOMStringList;
 
-#include <libxml/parser.h>
+/**
+ * Implementation of a string list using an array of strings.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ */
+class GnomeDOMStringList
+implements DOMStringList
+{
 
-void xmljValidateChildNode (JNIEnv *env, xmlNodePtr parent, xmlNodePtr child);
-int xmljIsEqualNode (xmlNodePtr node1, xmlNodePtr node2);
-int xmljIsEqualNodeList (xmlNodePtr node1, xmlNodePtr node2);
-void xmljNormalizeNode (xmlNodePtr node);
+  final String[] values;
 
-/* Utility */
-jobject xmljCreateDocument (JNIEnv * env, jobject self, xmlDocPtr doc);
-xmlAttrPtr xmljGetNamedItem (JNIEnv * env, jobject self, jstring name);
-xmlAttrPtr xmljGetNamedItemNS (JNIEnv * env, jobject self, jstring uri,
-			   jstring localName);
+  GnomeDOMStringList (String[] values)
+  {
+    this.values = values;
+  }
 
-#endif /* !defined XMLJ_DOM_H */
+  public int getLength ()
+  {
+    return values.length;
+  }
+
+  public String item (int index)
+  {
+    return values[index];
+  }
+
+  public boolean contains (String value)
+  {
+    for (int i = 0; i < values.length; i++)
+      {
+        if (values[i].equals (value))
+          {
+            return true;
+          }
+      }
+    return false;
+  }
+  
+}

@@ -58,7 +58,7 @@ import gnu.xml.libxmlj.util.XMLJ;
 
 public class LibxsltStylesheet
 {
-  private long nativeStylesheetHandle;
+  private Object nativeStylesheetHandle;
   private Properties outputProperties;
   private static int unfinalized = 0;
 
@@ -70,6 +70,9 @@ public class LibxsltStylesheet
         outputProperties = new Properties ();
         NamedInputStream in = XMLJ.getInputStream (xsltSource);
         String systemId = in.getName ();
+        String base = XMLJ.getBaseURI (systemId);
+        String publicId = (xsltSource instanceof StreamSource) ?
+          ((StreamSource) xsltSource).getPublicId () : null;
         byte[] detectBuffer = in.getDetectBuffer ();
         if (detectBuffer == null)
           {
@@ -78,10 +81,10 @@ public class LibxsltStylesheet
         this.nativeStylesheetHandle
           = newLibxsltStylesheet (in,
                                   detectBuffer,
+                                  publicId,
                                   systemId,
-                                  (xsltSource instanceof StreamSource) ?
-                                  ((StreamSource) xsltSource).
-                                  getPublicId () : null, javaContext,
+                                  base,
+                                  javaContext,
                                   outputProperties);
       }
     catch (IOException e)
@@ -101,7 +104,7 @@ public class LibxsltStylesheet
       }
   }
 
-  public long getNativeStylesheetHandle ()
+  public Object getNativeStylesheetHandle ()
   {
     return this.nativeStylesheetHandle;
   }
@@ -113,10 +116,10 @@ public class LibxsltStylesheet
 
   public void finalize ()
   {
-    if (0 != nativeStylesheetHandle)
+    if (nativeStylesheetHandle != null)
       {
 	freeLibxsltStylesheet (nativeStylesheetHandle);
-	nativeStylesheetHandle = 0;
+	nativeStylesheetHandle = null;
       }
   }
 
@@ -143,14 +146,9 @@ public class LibxsltStylesheet
 
     try
       {
-        String systemId = source.getSystemId ();
-        String publicId = (source instanceof StreamSource) ?
-          ((StreamSource) source).getPublicId () : null;
         GnomeDocument document = javaContext.parseDocumentCached (source);
         libxsltTransform (nativeStylesheetHandle,
                           document,
-                          systemId,
-                          publicId,
                           XMLJ.getOutputStream (result),
                           parameterArray,
                           javaContext);
@@ -164,23 +162,22 @@ public class LibxsltStylesheet
   /*
    *  Native interface to libxslt.
    */
-  private static synchronized native long
+  private static synchronized native Object
   newLibxsltStylesheet (InputStream in,
                         byte[] detectBuffer,
-                        String inSystemId,
-                        String inPublicId,
+                        String publicId,
+                        String systemId,
+                        String base,
                         JavaContext javaContext,
                         Properties
                         outputProperties);
 
   private static synchronized native void 
-  freeLibxsltStylesheet (long handle);
+  freeLibxsltStylesheet (Object handle);
 
   private static synchronized native void 
-  libxsltTransform (long nativeStylesheetHandle,
+  libxsltTransform (Object nativeStylesheetHandle,
                     GnomeDocument document,
-                    String inSystemId,
-                    String inPublicId,
                     OutputStream out,
                     String[] parameterArray,
                     JavaContext javaContext)

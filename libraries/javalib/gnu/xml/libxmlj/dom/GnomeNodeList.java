@@ -41,12 +41,12 @@ implements NodeList
   /**
    * The node id.
    */
-  private final long id;
+  private final Object id;
 
-  GnomeNodeList (long id)
-    {
-      this.id = id;
-    }
+  GnomeNodeList (Object id)
+  {
+    this.id = id;
+  }
 
   public native Node item (int index);
 

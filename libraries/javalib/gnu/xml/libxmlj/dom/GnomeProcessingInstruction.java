@@ -39,19 +39,28 @@ extends GnomeNode
 implements ProcessingInstruction
 {
 
-  GnomeProcessingInstruction (long id)
-    {
-      super (id);
-    }
+  GnomeProcessingInstruction (Object id)
+  {
+    super (id);
+  }
 
   public String getTarget ()
-    {
-      return getNodeName ();
-    }
+  {
+    return getNodeName ();
+  }
 
   public native String getData ();
 
   public native void setData (String data)
     throws DOMException;
+
+  public String toString ()
+  {
+    StringBuffer buffer = new StringBuffer (getClass ().getName ());
+    buffer.append ("[data=");
+    buffer.append (getData ());
+    buffer.append ("]");
+    return buffer.toString ();
+  }
 
 }

@@ -49,44 +49,44 @@ extends SAXParser
   /**
    * Creates a new SAX parser.
    */
-  GnomeSAXParser(boolean namespaceAware, boolean validating)
+  GnomeSAXParser (boolean namespaceAware, boolean validating)
   {
     this.namespaceAware = namespaceAware;
     this.validating = validating;
   }
 
-  public Parser getParser()
+  public Parser getParser ()
     throws SAXException
   {
-    throw new SAXNotSupportedException("SAX version 1 not supported");
+    throw new SAXNotSupportedException ("SAX version 1 not supported");
   }
 
-  public XMLReader getXMLReader()
+  public XMLReader getXMLReader ()
     throws SAXException
   {
-    return new GnomeXMLReader(namespaceAware, validating);
+    return new GnomeXMLReader (namespaceAware, validating);
   }
 
-  public Object getProperty(String name)
+  public Object getProperty (String name)
     throws SAXNotRecognizedException, SAXNotSupportedException
   {
-    GnomeXMLReader.checkPropertyName(name);
-    throw new SAXNotSupportedException(name);
+    GnomeXMLReader.checkPropertyName (name);
+    throw new SAXNotSupportedException (name);
   }
 
-  public void setProperty(String name, Object value)
+  public void setProperty (String name, Object value)
     throws SAXNotRecognizedException, SAXNotSupportedException
   {
-    GnomeXMLReader.checkPropertyName(name);
-    throw new SAXNotSupportedException(name);
+    GnomeXMLReader.checkPropertyName (name);
+    throw new SAXNotSupportedException (name);
   }
 
-  public boolean isNamespaceAware()
+  public boolean isNamespaceAware ()
   {
     return namespaceAware;
   }
 
-  public boolean isValidating()
+  public boolean isValidating ()
   {
     return validating;
   }

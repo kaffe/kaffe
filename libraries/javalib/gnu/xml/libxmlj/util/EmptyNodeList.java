@@ -38,12 +38,12 @@ class EmptyNodeList
 implements NodeList
 {
 
-  public Node item(int index)
+  public Node item (int index)
   {
     return null;
   }
 
-  public int getLength()
+  public int getLength ()
   {
     return 0;
   }

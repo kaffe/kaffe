@@ -37,8 +37,6 @@ xmljNewString (JNIEnv * env, const xmlChar * text)
 
   if (text == NULL)
     return NULL;
-  /*s_text = (char *)malloc(sizeof(char *));
-    sprintf(s_text, "%s", text); */
   s_text = (char *) text;	/* TODO signedness? */
   ret = (*env)->NewStringUTF (env, s_text);
   /*free(s_text); */
@@ -74,13 +72,12 @@ xmljGetPrefix (const xmlChar * qName)
   prefix = (xmlChar **) malloc (sizeof (xmlChar *));
   localName = xmlSplitQName2 (qName, prefix);
   if (localName == NULL)
-    return NULL;
-  else
     {
-      ret = *prefix;
-      free (prefix);
-      return ret;
+      return NULL;
     }
+  ret = *prefix;
+  free (prefix);
+  return ret;
 }
 
 const xmlChar *
@@ -92,12 +89,11 @@ xmljGetLocalName (const xmlChar * qName)
   prefix = (xmlChar **) malloc (sizeof (xmlChar *));
   localName = xmlSplitQName2 (qName, prefix);
   if (localName == NULL)
-    return qName;
-  else
     {
-      free (prefix);
-      return localName;
+      return qName;
     }
+  free (prefix);
+  return localName;
 }
 
 jmethodID xmljGetMethodID (JNIEnv *env,
@@ -122,51 +118,52 @@ jmethodID xmljGetMethodID (JNIEnv *env,
                              signature);
   if (ret == NULL)
     {
-      jclass clscls = (*env)->FindClass(env, "java/lang/Class");
-      jmethodID nm = (*env)->GetMethodID(env, clscls, "getName", "()Ljava/lang/String;");
-      jstring clsname = (jstring)(*env)->CallObjectMethod(env,
-                                                          (jobject)cls,
-                                                          nm);
-      const char * c_clsName = (*env)->GetStringUTFChars(env, clsname, 0);
-      char * cat = (char *)malloc(sizeof(char));
-      sprintf(cat, "%s.%s %s", c_clsName, name, signature);
+      jclass clscls = (*env)->FindClass (env, "java/lang/Class");
+      jmethodID nm = (*env)->GetMethodID (env, clscls, "getName",
+                                          "()Ljava/lang/String;");
+      jstring clsname = (jstring) (*env)->CallObjectMethod (env,
+                                                            (jobject)cls,
+                                                            nm);
+      const char * c_clsName = (*env)->GetStringUTFChars (env, clsname, 0);
+      char cat[512] = "[method signature too long]";
+      sprintf (cat, "%s.%s %s", c_clsName, name, signature);
       xmljThrowException (env,
                           "java/lang/NoSuchMethodException",
                           cat);
-      free (cat);
-      (*env)->ReleaseStringUTFChars(env, clsname, c_clsName);
+      (*env)->ReleaseStringUTFChars (env, clsname, c_clsName);
     }
   return ret;
 }
 
-void * xmljAsPointer (jlong field)
+void * xmljAsPointer (JNIEnv *env, jobject ptr)
 {
-  void * ptr;
-
-  ptr = (void *) field;
-
-  if (field != 0LL && ptr == NULL)
-    {
-      printf ("xmljAsPointer: casting killed %lld\n", field);
-    }
-  return ptr;
+  jclass cls;
+  jfieldID field;
+ 
+#if defined XMLJ_64BIT_POINTER
+  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/RawData64");
+  field = (*env)->GetFieldID (env, cls, "data", "J");
+  return (void *) (*env)->GetLongField (env, ptr, field);
+#else
+  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/RawData32");
+  field = (*env)->GetFieldID (env, cls, "data", "I");
+  return (void *) (*env)->GetIntField (env, ptr, field);
+#endif
 }
 
-jlong xmljAsField (void * ptr)
+jobject xmljAsField (JNIEnv *env, void * ptr)
 {
-  jlong field;
+  jclass cls;
+  jmethodID method;
 
-  field = (jlong) ptr;
-
-  if (ptr == NULL)
-    {
-      printf ("WARNING: ptr is null\n");
-    }
-
-  if (ptr != NULL && field == 0LL)
-    {
-      printf ("xmljAsField: casting killed %d\n", ptr);
-    }
-  return field;
+#if defined XMLJ_64BIT_POINTER
+  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/RawData64");
+  method = (*env)->GetMethodID (env, cls, "<init>", "(J)V");
+  return (*env)->NewObject (env, cls, method, (jlong) ptr);
+#else
+  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/RawData32");
+  method = (*env)->GetMethodID (env, cls, "<init>", "(I)V");
+  return (*env)->NewObject (env, cls, method, (jint) ptr);
+#endif
 }
 

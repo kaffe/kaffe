@@ -42,51 +42,40 @@ extends GnomeNode
 implements Element
 {
 
-  GnomeElement (long id)
-    {
-      super (id);
-    }
+  GnomeElement (Object id)
+  {
+    super (id);
+  }
   
   public String getTagName ()
-    {
-      return getNodeName ();
-    }
+  {
+    return getNodeName ();
+  }
 
-  public String getAttribute (String name)
-    {
-      return getAttributeNS (null, name);
-    }
+  public native String getAttribute (String name);
 
-  public void setAttribute (String name, String value)
-    throws DOMException
-    {
-      setAttributeNS (null, name, value);
-    }
+  public native void setAttribute (String name, String value)
+    throws DOMException;
   
   public void removeAttribute (String name)
     throws DOMException
-    {
-      removeAttributeNS (null, name);
-    }
+  {
+    Attr attr = getAttributeNode (name);
+    if (attr != null)
+      {
+        removeAttributeNode (attr);
+      }
+  }
 
-  public Attr getAttributeNode (String name)
-    {
-      return getAttributeNodeNS (null, name);
-    }
+  public native Attr getAttributeNode (String name);
   
-  public Attr setAttributeNode (Attr newAttr)
-    throws DOMException
-    {
-      return setAttributeNodeNS (newAttr);
-    }
+  public native Attr setAttributeNode (Attr newAttr)
+    throws DOMException;
 
   public native Attr removeAttributeNode (Attr oldAttr)
     throws DOMException;
 
-  public NodeList getElementsByTagName (String name)
-    {
-      return new MatchingNodeList (id, null, name, false);
-    }
+  public native NodeList getElementsByTagName (String name);
   
   public native String getAttributeNS (String namespaceURI, String localName);
   
@@ -96,56 +85,61 @@ implements Element
 
   public void removeAttributeNS (String namespaceURI, String localName)
     throws DOMException
-    {
-      Attr attr = getAttributeNodeNS (namespaceURI, localName);
-      if (attr != null)
-        {
-          removeAttributeNode (attr);
-        }
-    }
-
+  {
+    Attr attr = getAttributeNodeNS (namespaceURI, localName);
+    if (attr != null)
+      {
+        removeAttributeNode (attr);
+      }
+  }
+  
   public native Attr getAttributeNodeNS (String namespaceURI,
                                          String localName);
 
   public native Attr setAttributeNodeNS (Attr newAttr)
     throws DOMException;
 
-  public NodeList getElementsByTagNameNS (String namespaceURI,
-                                          String localName)
-    {
-      return new MatchingNodeList (id, namespaceURI, localName, true);
-    }
+  public native NodeList getElementsByTagNameNS (String namespaceURI,
+                                                 String localName);
   
   public boolean hasAttribute (String name)
-    {
-      return hasAttributeNS (null, name);
-    }
+  {
+    return hasAttributeNS (null, name);
+  }
 
-  public native boolean hasAttributeNS (String namespaceURI, String
-      localName);
+  public native boolean hasAttributeNS (String namespaceURI,
+                                        String localName);
 
   // DOM Level 3 methods
 
   public TypeInfo getSchemaTypeInfo ()
-    {
-      // TODO
-      return null;
-    }
+  {
+    return new GnomeTypeInfo (id);
+  }
 
   public void setIdAttribute (String name, boolean isId)
-    {
-      setIdAttributeNS (null, name, isId);
-    }
+  {
+    setIdAttributeNS (null, name, isId);
+  }
 
   public void setIdAttributeNode (Attr isAddr, boolean isId)
-    {
-      // TODO
-    }
+  {
+    // TODO
+  }
 
   public void setIdAttributeNS (String namespaceURI, String localName,
                                 boolean isId)
-    {
-      // TODO
-    }
+  {
+    // TODO
+  }
+
+  public String toString ()
+  {
+    StringBuffer buffer = new StringBuffer (getClass ().getName ());
+    buffer.append ("[tagName=");
+    buffer.append (getTagName ());
+    buffer.append ("]");
+    return buffer.toString ();
+  }
 
 }

@@ -59,26 +59,26 @@ public final class XMLJ
    */
   public static NamedInputStream getInputStream (InputSource input)
     throws IOException
-    {
-      InputStream in = input.getByteStream ();
-      String systemId = input.getSystemId ();
-      if (in == null)
-        {
-          if (systemId == null)
-            {
-              throw new IOException ("no system ID");
-            }
-          try
-            {
-              in = new URL (systemId).openStream ();
-            }
-          catch (MalformedURLException e)
-            {
-              in = new FileInputStream (systemId);
-            }
-        }
-      return new NamedInputStream (systemId, in, LOOKAHEAD);
-    }
+  {
+    InputStream in = input.getByteStream ();
+    String systemId = input.getSystemId ();
+    if (in == null)
+      {
+        if (systemId == null)
+          {
+            throw new IOException ("no system ID");
+          }
+        try
+          {
+            in = new URL (systemId).openStream ();
+          }
+        catch (MalformedURLException e)
+          {
+            in = new FileInputStream (systemId);
+          }
+      }
+    return new NamedInputStream (systemId, in, LOOKAHEAD);
+  }
 
   /**
    * Returns an input stream for the specified transformer source.
@@ -87,34 +87,34 @@ public final class XMLJ
    */
   public static NamedInputStream getInputStream (Source source)
     throws IOException
-    {
-      if (source instanceof SAXSource)
-        {
-          return getInputStream (((SAXSource) source).getInputSource ());
-        }
-      InputStream in = null;
-      String systemId = source.getSystemId ();
-      if (source instanceof StreamSource)
-        {
-          in = ((StreamSource) source).getInputStream ();
-        }
-      if (in == null)
-        {
-          if (systemId == null)
-            {
-              throw new IOException ("no system ID");
-            }
-          try
-            {
-              in = new URL (systemId).openStream ();
-            }
-          catch (MalformedURLException e)
-            {
-              in = new FileInputStream (systemId);
-            }
-        }
-      return new NamedInputStream (systemId, in, LOOKAHEAD);
-    }
+  {
+    if (source instanceof SAXSource)
+      {
+        return getInputStream (((SAXSource) source).getInputSource ());
+      }
+    InputStream in = null;
+    String systemId = source.getSystemId ();
+    if (source instanceof StreamSource)
+      {
+        in = ((StreamSource) source).getInputStream ();
+      }
+    if (in == null)
+      {
+        if (systemId == null)
+          {
+            throw new IOException ("no system ID");
+          }
+        try
+          {
+            in = new URL (systemId).openStream ();
+          }
+        catch (MalformedURLException e)
+          {
+            in = new FileInputStream (systemId);
+          }
+      }
+    return new NamedInputStream (systemId, in, LOOKAHEAD);
+  }
 
   /**
    * Returns an input stream for the specified URL.
@@ -123,44 +123,43 @@ public final class XMLJ
    */
   public static NamedInputStream getInputStream (URL url)
     throws IOException
-    {
-      return new NamedInputStream (url.toString (), url.openStream(),
-                                   LOOKAHEAD);
-    }
+  {
+    return new NamedInputStream (url.toString (), url.openStream(),
+                                 LOOKAHEAD);
+  }
 
   /**
    * Returns an output stream for the specified transformer result.
    */
   public static OutputStream getOutputStream (Result result)
     throws IOException
-    {
-      OutputStream out = null;
-      if (result instanceof StreamResult)
-        {
-          out = ((StreamResult) result).getOutputStream ();
-        }
-      if (out == null)
-        {
-          String systemId = result.getSystemId ();
-          if (systemId == null)
-            {
-              throw new IOException ("no system ID");
-            }
-          try
-            {
-              URL url = new URL (systemId);
-              URLConnection connection = url.openConnection ();
-              connection.setDoOutput (true);
-              out = connection.getOutputStream ();
-            }
-          catch (MalformedURLException e)
-            {
-              out = new FileOutputStream (systemId);
-            }
-        }
-      return out;
-      
-    }
+  {
+    OutputStream out = null;
+    if (result instanceof StreamResult)
+      {
+        out = ((StreamResult) result).getOutputStream ();
+      }
+    if (out == null)
+      {
+        String systemId = result.getSystemId ();
+        if (systemId == null)
+          {
+            throw new IOException ("no system ID");
+          }
+        try
+          {
+            URL url = new URL (systemId);
+            URLConnection connection = url.openConnection ();
+            connection.setDoOutput (true);
+            out = connection.getOutputStream ();
+          }
+        catch (MalformedURLException e)
+          {
+            out = new FileOutputStream (systemId);
+          }
+      }
+    return out;
+  }
 
   /**
    * Returns the absolute form of the specified URI.
@@ -168,21 +167,34 @@ public final class XMLJ
    * Otherwise returns a new URI relative to the given base URI.
    */
   public static String getAbsoluteURI (String base, String uri)
-    {
-      if (uri != null &&
-          base != null &&
-          (uri.length () > 0) &&
-          (uri.indexOf (':') == -1) &&
-          (uri.charAt (0) != '/'))
-        {
-          // URI is relative
-          return base + uri;
-        }
-      else
-        {
-          // URI is absolute or no base specified
-          return uri;
-        }
-    }
+  {
+    if (uri != null &&
+        base != null &&
+        (uri.length () > 0) &&
+        (uri.indexOf (':') == -1) &&
+        (uri.charAt (0) != '/'))
+      {
+        // URI is relative
+        return base + uri;
+      }
+    else
+      {
+        // URI is absolute or no base specified
+        return uri;
+      }
+  }
+
+  public static String getBaseURI (String uri)
+  {
+    if (uri != null)
+      {
+        int si = uri.lastIndexOf('/');
+        if (si != -1)
+          {
+            uri = uri.substring (0, si + 1);
+          }
+      }
+    return uri;
+  }
   
 }

@@ -55,8 +55,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import gnu.xml.libxmlj.dom.GnomeDocument;
-import gnu.xml.libxmlj.util.StandaloneLocator;
 import gnu.xml.libxmlj.util.NamedInputStream;
+import gnu.xml.libxmlj.util.StandaloneLocator;
 import gnu.xml.libxmlj.util.XMLJ;
 
 class JavaContext
@@ -124,7 +124,7 @@ class JavaContext
         }
     }
 
-  private void setDocumentLocator (long ctx, long loc)
+  private void setDocumentLocator (Object ctx, Object loc)
     {
     }
 
@@ -203,7 +203,8 @@ class JavaContext
   private native GnomeDocument parseDocument (InputStream in,
                                               byte[] detectBuffer,
                                               String systemId,
-                                              String publicId);
+                                              String publicId,
+                                              String base);
 
   GnomeDocument resolveURIAndOpen (String href,
                                    String base) 
@@ -220,7 +221,7 @@ class JavaContext
           {
             URL url = new URL (XMLJ.getAbsoluteURI (base, href));
             InputStream in = url.openStream();
-            return parseDocumentCached (in, url.toString (), null);
+            return parseDocumentCached (in, null, url.toString ());
           }
         catch (IOException e)
           {
@@ -229,8 +230,9 @@ class JavaContext
       }               
   }
 
-  GnomeDocument parseDocumentCached (InputStream in, String systemId,
-                                     String publicId)
+  GnomeDocument parseDocumentCached (InputStream in,
+                                     String publicId,
+                                     String systemId)
     throws TransformerException
   {
     StreamSource source = new StreamSource ();
@@ -251,6 +253,7 @@ class JavaContext
     throws TransformerException
   {
     String systemId = source.getSystemId ();
+    String base = XMLJ.getBaseURI (systemId);
     GnomeDocument cachedValue = (GnomeDocument) cache.get (systemId);
     if (null != cachedValue)
       {
@@ -267,7 +270,7 @@ class JavaContext
                 throw new TransformerException ("No document element");
               }
             GnomeDocument value =
-              parseDocument (in, detectBuffer, systemId, null);
+              parseDocument (in, detectBuffer, null, systemId, base);
             cache.remove (systemId);
             cache.put (systemId, value);
             return value;

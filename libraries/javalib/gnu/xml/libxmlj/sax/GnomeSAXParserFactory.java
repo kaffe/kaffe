@@ -51,31 +51,31 @@ extends SAXParserFactory
   /**
    * Creates a new SAX parser factory.
    */
-  public GnomeSAXParserFactory()
+  public GnomeSAXParserFactory ()
   {
-    features = new HashMap();
+    features = new HashMap ();
   }
 
-  public SAXParser newSAXParser()
+  public SAXParser newSAXParser ()
     throws ParserConfigurationException, SAXException
   {
     // TODO features
-    return new GnomeSAXParser(isNamespaceAware(), isValidating());
+    return new GnomeSAXParser (isNamespaceAware (), isValidating ());
   }
 
-  public boolean getFeature(String name)
+  public boolean getFeature (String name)
     throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException
   {
-    GnomeXMLReader.checkFeatureName(name);
-    Boolean val = (Boolean)features.get(name);
-    return (val == null) ? false : val.booleanValue();
+    GnomeXMLReader.checkFeatureName (name);
+    Boolean val = (Boolean) features.get (name);
+    return (val == null) ? false : val.booleanValue ();
   }
 
-  public void setFeature(String name, boolean flag)
+  public void setFeature (String name, boolean flag)
     throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException
   {
-    GnomeXMLReader.checkFeatureName(name);
-    features.put(name, flag ? Boolean.TRUE : Boolean.FALSE);
+    GnomeXMLReader.checkFeatureName (name);
+    features.put (name, flag ? Boolean.TRUE : Boolean.FALSE);
   }
   
 }

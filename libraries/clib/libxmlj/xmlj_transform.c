@@ -247,16 +247,11 @@ xmljDocumentFunction (xmlXPathParserContextPtr ctxt, int nargs)
   }
 }
 
-/*
- * Class:     gnu_xml_libxmlj_transform_LibxsltStylesheet
- * Method:    newLibxsltStylesheet
- * Signature: ([B)J
- */
-JNIEXPORT jlong JNICALL
+JNIEXPORT jobject JNICALL
 Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_newLibxsltStylesheet(
   JNIEnv * env, jclass clazz, jobject inputStream, jbyteArray detectBuffer,
-  jstring inSystemId,
-  jstring inPublicId, jobject javaContext, jobject outputProperties)
+  jstring publicId, jstring systemId, jstring base,
+  jobject javaContext, jobject outputProperties)
 {
   xsltStylesheetPtr nativeStylesheetHandle = 0;
   xmlDocPtr xsltSourceDoc;
@@ -265,22 +260,22 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_newLibxsltStylesheet(
   xmlSAXHandlerPtr sax;
 
   /* xmlMemSetup (memcheck_free, memcheck_malloc, memcheck_realloc, memcheck_strdup); */
-  ctx = xmljNewParserContext (env, inputStream, detectBuffer, inSystemId,
-                              inPublicId, 0, 0, 0);
+  ctx = xmljNewParserContext (env, inputStream, detectBuffer, publicId,
+                              systemId, base, 0, 0, 0, 0);
   if (ctx == NULL)
     {
       return 0;
     }
 
   saxParseContext = 
-    xmljNewSAXParseContext (env, javaContext, ctx, inPublicId, inSystemId);
+    xmljNewSAXParseContext (env, javaContext, ctx, publicId, systemId);
   if (saxParseContext == NULL)
     {
       xmljFreeParserContext (ctx);
       return 0;
     }
   
-  sax = xmljNewSAXHandler (ctx->sax, 0, 0, 0, 0, 0, 0);
+  sax = xmljNewSAXHandler (0, 0, 0, 0, 0, 0);
   if (sax == NULL)
     {
       xmljFreeSAXParseContext (saxParseContext);
@@ -434,17 +429,12 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_newLibxsltStylesheet(
   /*xmljFreeParserContext (ctx);*/
   
   /* Return handle/address casted to Java int value */
-  return xmljAsField (nativeStylesheetHandle);
+  return xmljAsField (env, nativeStylesheetHandle);
 }
 
-/*
- * Class:     gnu_xml_libxmlj_transform_LibxsltStylesheet
- * Method:    freeLibxsltStylesheet
- * Signature: (J)V
- */
 JNIEXPORT void JNICALL
 Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_freeLibxsltStylesheet
-(JNIEnv * env, jclass clazz, jlong nativeStylesheetHandle)
+(JNIEnv * env, jclass clazz, jobject nativeStylesheetHandle)
 {
 
   /* Cast Java int value to handle/address and free associated
@@ -453,7 +443,7 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_freeLibxsltStylesheet
 
   xsltStylesheetPtr stylesheet;
  
-  stylesheet = (xsltStylesheetPtr) xmljAsPointer (nativeStylesheetHandle);
+  stylesheet = (xsltStylesheetPtr) xmljAsPointer (env, nativeStylesheetHandle);
   stylesheet->_private = NULL;
   xmlFreeDoc (stylesheet->doc);
   stylesheet->doc = NULL;
@@ -479,22 +469,16 @@ xmljXPathFuncLookupFunc (void * ctxt,
   return f;
 }
 
-/*
- * Class:     gnu_xml_libxmlj_transform_LibxsltStylesheet
- * Method:    libxsltTransform
- * Signature: ([B[BLjava/io/OutputStream;[Ljava/lang/String;)V
- */
 JNIEXPORT void JNICALL
 Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_libxsltTransform(
-  JNIEnv *env, jclass clazz, jlong xsltSource, jobject jdocument,
-  jstring inSystemId, jstring inPublicId, jobject outputStream,
-  jobjectArray parametersArray, jobject javaContext)
+  JNIEnv *env, jclass clazz, jobject xsltSource, jobject jdocument,
+  jobject outputStream, jobjectArray parametersArray, jobject javaContext)
 {
   xsltStylesheetPtr stylesheet;
   xmlDocPtr sourceDoc;
   xmlDocPtr resultDoc;
   
-  stylesheet = (xsltStylesheetPtr) xmljAsPointer (xsltSource);
+  stylesheet = (xsltStylesheetPtr) xmljAsPointer (env, xsltSource);
   sourceDoc = (xmlDocPtr) xmljGetNodeID (env, jdocument);
   
   if (!(*env)->ExceptionOccurred (env) && NULL != sourceDoc)
@@ -606,8 +590,9 @@ Java_gnu_xml_libxmlj_transform_JavaContext_parseDocument (JNIEnv *env,
                                                           jobject in,
                                                           jbyteArray
                                                           detectBuffer,
+                                                          jstring publicId,
                                                           jstring systemId,
-                                                          jstring publicId)
+                                                          jstring base)
 {
   xmlDocPtr doc = xmljParseDocument(env,
                                     self,
@@ -615,6 +600,7 @@ Java_gnu_xml_libxmlj_transform_JavaContext_parseDocument (JNIEnv *env,
                                     detectBuffer,
                                     publicId,
                                     systemId,
+                                    base,
                                     0, 0, 0,
                                     0, 0, 0, 0, 0, 0,
                                     0);

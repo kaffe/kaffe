@@ -37,20 +37,28 @@ xmljGetNodeID (JNIEnv * env, jobject self)
 {
   jclass cls;
   jfieldID field;
-  jlong id;
+  jobject id;
   xmlNodePtr node;
 
-  cls = (*env)->GetObjectClass (env, self);
-  field = (*env)->GetFieldID (env, cls, "id", "J");
-  id = (*env)->GetLongField (env, self, field);
-  if (id == 0LL)
+  if (self == NULL)
     {
-      printf ("id is 0LL!\n");
+      xmljThrowDOMException (env, 8, NULL);     /* NOT_FOUND_ERR */
+      return NULL;
     }
-  node = (xmlNodePtr) xmljAsPointer (id);
+  cls = (*env)->GetObjectClass (env, self);
+  if (cls == NULL)
+    {
+      return NULL;
+    }
+  field = (*env)->GetFieldID (env, cls, "id", "Ljava/lang/Object;");
+  if (field == NULL)
+    {
+      return NULL;
+    }
+  id = (*env)->GetObjectField (env, self, field);
+  node = (xmlNodePtr) xmljAsPointer (env, id);
   if (node == NULL)
     {
-      printf ("node is null!\n");
       xmljThrowDOMException (env, 8, NULL);	/* NOT_FOUND_ERR */
     }
   return node;
@@ -70,12 +78,20 @@ xmljGetNodeInstance (JNIEnv * env, xmlNodePtr node)
 
   /* Invoke the GnomeNode.newInstance class method */
   cls = (*env)->FindClass (env, "gnu/xml/libxmlj/dom/GnomeNode");
+  if (cls == NULL)
+    {
+      return NULL;
+    }
   method = (*env)->GetStaticMethodID (env, cls, "newInstance",
-                                      "(JJI)Lgnu/xml/libxmlj/dom/GnomeNode;");
+                                      "(Ljava/lang/Object;Ljava/lang/Object;I)Lgnu/xml/libxmlj/dom/GnomeNode;");
   
+  if (method == NULL)
+    {
+      return NULL;
+    }
   return (*env)->CallStaticObjectMethod (env, cls, method,
-                                         xmljAsField (node->doc),
-                                         xmljAsField (node),
+                                         xmljAsField (env, node->doc),
+                                         xmljAsField (env, node),
                                          node->type);
 }
 
@@ -87,48 +103,74 @@ xmljFreeDoc (JNIEnv * env, xmlDocPtr doc)
 
   /* Invoke the GnomeNode.freeDocument class method */
   cls = (*env)->FindClass (env, "gnu/xml/libxmlj/dom/GnomeNode");
-  method = (*env)->GetStaticMethodID (env, cls, "freeDocument", "(J)V");
-  (*env)->CallStaticVoidMethod (env, cls, method, xmljAsField (doc));
+  if (cls == NULL)
+    {
+      return;
+    }
+  method = (*env)->GetStaticMethodID (env, cls, "freeDocument",
+                                      "(Ljava/lang/Object;)V");
+  if (method == NULL)
+    {
+      return;
+    }
+  (*env)->CallStaticVoidMethod (env, cls, method, xmljAsField (env, doc));
 }
 
 int
 xmljMatch (const xmlChar * name, xmlNodePtr node)
 {
-  xmlNsPtr ns;
-  xmlChar *qName;
-  int ret;
-
-  ns = node->ns;
-  if (ns == NULL || ns->prefix == NULL)
-    qName = xmlStrdup (node->name);
-  else
+  switch (node->type)
     {
-      qName = xmlCharStrdup ("");
-      xmlStrcat (qName, ns->prefix);
-      xmlStrcat (qName, xmlCharStrdup (":"));
-      xmlStrcat (qName, node->name);
+    case XML_ELEMENT_NODE:
+    case XML_ATTRIBUTE_NODE:
+      return xmlStrcmp (node->name, name);
+    default:
+      return 1;
     }
-  ret = xmlStrcmp (name, qName);
-  free (qName);
-  return ret;
 }
 
 int
 xmljMatchNS (const xmlChar * uri, const xmlChar * localName, xmlNodePtr node)
 {
   xmlNsPtr ns;
+  const xmlChar *nodeLocalName;
+  int *len;
+  int ret;
 
-  ns = node->ns;
-  if (ns == NULL || ns->href == NULL)
+  switch (node->type)
     {
-      if (uri != NULL)
-        return 0;
-      return xmlStrcmp (localName, node->name);
-    }
-  else
-    {
-      if (uri == NULL)
-        return 0;
-      return (xmlStrcmp (localName, node->name) && xmlStrcmp (uri, ns->href));
+    case XML_ELEMENT_NODE:
+    case XML_ATTRIBUTE_NODE:
+      len = (int *) malloc (sizeof (int));
+      if (xmlSplitQName3 (node->name, len) != NULL)
+        {
+          nodeLocalName = node->name + (*len);
+        }
+      else
+        {
+          nodeLocalName = node->name;
+        }
+      free (len);
+      ns = node->ns;
+      if (ns == NULL || ns->href == NULL)
+        {
+          if (uri != NULL)
+            {
+              return 0;
+            }
+          ret = xmlStrcmp (localName, nodeLocalName);
+        }
+      else
+        {
+          if (uri == NULL)
+            {
+              return 0;
+            }
+          ret = (xmlStrcmp (localName, nodeLocalName) &&
+                 xmlStrcmp (uri, ns->href));
+        }
+      return ret;
+    default:
+      return 1;
     }
 }

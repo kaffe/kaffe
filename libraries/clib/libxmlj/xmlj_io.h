@@ -92,11 +92,13 @@ xmlParserCtxtPtr
 xmljNewParserContext (JNIEnv * env,
                       jobject inputStream,
                       jbyteArray detectBuffer,
-                      jstring inSystemId,
-                      jstring inPublicId,
+                      jstring publicId,
+                      jstring systemId,
+                      jstring base,
                       jboolean validate,
                       jboolean coalesce,
-                      jboolean expandEntities);
+                      jboolean expandEntities,
+                      jboolean loadEntities);
 
 void
 xmljFreeParserContext (xmlParserCtxtPtr parserContext);
@@ -108,6 +110,7 @@ xmljParseDocument (JNIEnv * env,
                    jbyteArray detectBuffer,
                    jstring publicId,
                    jstring systemId,
+                   jstring base,
                    jboolean validate,
                    jboolean coalesce,
                    jboolean expandEntities,
@@ -129,11 +132,13 @@ xmljParseDocument2 (JNIEnv * env,
 xmlParserInputPtr
 xmljNewParserInput (JNIEnv * env,
 		    jobject inputStream,
-                    jbyteArray detectBuffer, xmlParserCtxtPtr parserContext);
+                    jbyteArray detectBuffer,
+                    xmlParserCtxtPtr parserContext);
 
 xmlParserInputBufferPtr
 xmljNewParserInputBuffer (JNIEnv * env,
-			  jobject inputStream, xmlCharEncoding encoding);
+			  jobject inputStream,
+                          xmlCharEncoding encoding);
 
 void
 xmljSaveFileToJavaOutputStream (JNIEnv * env, jobject outputStream,

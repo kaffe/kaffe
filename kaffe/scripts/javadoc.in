@@ -3,6 +3,6 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 export CLASSPATH=$CLASSPATH:@prefix@/lib/gjdoc.jar
-exec @bindir@/@kaffe_TRANSF@ -Djavax.xml.transform.TransformerFactory=gnu.xml.libxmlj.transform.TransformerFactoryImpl $JAVA_OPTS gnu.classpath.tools.gjdoc.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ -Djavax.xml.transform.TransformerFactory=gnu.xml.libxmlj.transform.GnomeTransformerFactory $JAVA_OPTS gnu.classpath.tools.gjdoc.Main ${1+"$@"}
 exit $?
 

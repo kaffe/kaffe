@@ -43,7 +43,7 @@ implements Attributes
   private XMLName[] keys;
   private String[] values;
 
-  StringArrayAttributes(GnomeXMLReader parser, String[] pairs)
+  StringArrayAttributes (GnomeXMLReader parser, String[] pairs)
   {
     len = pairs.length / 2;
     keys = new XMLName[len];
@@ -51,95 +51,109 @@ implements Attributes
     for (int i = 0; i < len; i++)
     {
       int pairIndex = i * 2;
-      keys[i] = new XMLName(parser, pairs[pairIndex]);
+      keys[i] = new XMLName (parser, pairs[pairIndex]);
       values[i] = pairs[pairIndex + 1];
     }
   }
 
-  public int getLength()
+  public int getLength ()
   {
     return len;
   }
 
-  public String getURI(int index)
+  public String getURI (int index)
   {
     if (index < 0 || index >= len)
-      return null;
+      {
+        return null;
+      }
     return keys[index].uri;
   }
 
-  public String getLocalName(int index)
+  public String getLocalName (int index)
   {
     if (index < 0 || index >= len)
-      return null;
+      {
+        return null;
+      }
     return keys[index].localName;
   }
 
-  public String getQName(int index)
+  public String getQName (int index)
   {
     if (index < 0 || index >= len)
-      return null;
+      {
+        return null;
+      }
     return keys[index].qName;
   }
 
-  public String getType(int index)
+  public String getType (int index)
   {
     if (index < 0 || index >= len)
-      return null;
+      {
+        return null;
+      }
     // TODO can we get this information from libxml2?
     return "CDATA";
   }
 
-  public String getValue(int index)
+  public String getValue (int index)
   {
     if (index < 0 || index >= len)
-      return null;
+      {
+        return null;
+      }
     return values[index];
   }
 
-  public int getIndex(String uri, String localName)
+  public int getIndex (String uri, String localName)
   {
     for (int i = 0; i < len; i++)
     {
       XMLName key = keys[i];
-      if (key.localName.equals(localName))
+      if (key.localName.equals (localName))
       {
         if ((key.uri == null && uri == null) ||
             (key.uri != null && key.uri.equals(uri)))
-          return i;
+          {
+            return i;
+          }
       }
     }
     return -1;
   }
 
-  public int getIndex(String qName)
+  public int getIndex (String qName)
   {
     for (int i = 0; i < len; i++)
     {
-      if (keys[i].qName.equals(qName))
-        return i;
+      if (keys[i].qName.equals (qName))
+        {
+          return i;
+        }
     }
     return -1;
   }
 
-  public String getType(String uri, String localName)
+  public String getType (String uri, String localName)
   {
-    return getType(getIndex(uri, localName));
+    return getType (getIndex (uri, localName));
   }
 
-  public String getType(String qName)
+  public String getType (String qName)
   {
-    return getType(getIndex(qName));
+    return getType (getIndex (qName));
   }
 
-  public String getValue(String uri, String localName)
+  public String getValue (String uri, String localName)
   {
-    return getValue(getIndex(uri, localName));
+    return getValue (getIndex (uri, localName));
   }
 
-  public String getValue(String qName)
+  public String getValue (String qName)
   {
-    return getValue(getIndex(qName));
+    return getValue (getIndex (qName));
   }
 
 }

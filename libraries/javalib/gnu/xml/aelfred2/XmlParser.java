@@ -156,15 +156,17 @@ final class XmlParser
 	try {
 	    // pushURL first to ensure locator is correct in startDocument
 	    // ... it might report an IO or encoding exception.
-	    // FIXME that could call endDocument without startDocument!
+	    handler.startDocument ();
 	    pushURL (false, "[document]",
 			// default baseURI: null
 		    new String [] { publicId, systemId, null},
 		    reader, stream, encoding, false);
 
-	    handler.startDocument ();
 	    parseDocument ();
-	} finally {
+	} catch (EOFException e){
+	    //empty input
+	    error("empty document, with no root element.");
+	}finally {
 	    if (reader != null)
 		try { reader.close ();
 		} catch (IOException e) { /* ignore */ }
@@ -1962,7 +1964,7 @@ loop2:
     throws Exception
     {
 	boolean peFlag = false;
-	int flags = LIT_DISABLE_CREF;
+	int flags = 0;
 
 	// Check for a parameter entity.
 	expandPE = false;
@@ -4391,6 +4393,17 @@ loop:
 		    if (c < 0x0080)
 			encodingError ("Illegal two byte UTF-8 sequence",
 				c, 0);
+		    //Sec 2.11
+		    // [1] the two-character sequence #xD #xA
+		    // [2] the two-character sequence #xD #x85
+		    if ((c == 0x0085 || c == 0x000a) && sawCR)
+		       	continue;
+		    
+		    // Sec 2.1
+		    // [3] the single character #x85
+		    // [4] the single character #x2028
+		    if(c == 0x0085 || c == 0x2028)
+		    	readBuffer[j++] = '\r';
 		} else if ((b1 & 0xf0) == 0xe0) {
 		    // 3-byte sequence:
 		    // zzzzyyyyyyxxxxxx = 1110zzzz 10yyyyyy 10xxxxxx

@@ -1,5 +1,5 @@
 /*
- * xmlj_dom.h
+ * GnomeTypeInfo.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -24,32 +24,31 @@
  * This exception does not however invalidate any other reasons why the
  * executable file might be covered by the GNU General Public License.
  */
-#ifndef XMLJ_DOM_H
-#define XMLJ_DOM_H
+package gnu.xml.libxmlj.dom;
 
-#include "gnu_xml_libxmlj_dom_GnomeAttr.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocument.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h"
-#include "gnu_xml_libxmlj_dom_GnomeDocumentType.h"
-#include "gnu_xml_libxmlj_dom_GnomeElement.h"
-#include "gnu_xml_libxmlj_dom_GnomeEntity.h"
-#include "gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h"
-#include "gnu_xml_libxmlj_dom_GnomeNode.h"
-#include "gnu_xml_libxmlj_dom_GnomeNodeList.h"
-#include "gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h"
-#include "gnu_xml_libxmlj_dom_GnomeTypeInfo.h"
+import org.w3c.dom.TypeInfo;
 
-#include <libxml/parser.h>
+/**
+ * Provides XML Schema information about an element or attribute.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ */
+class GnomeTypeInfo implements TypeInfo
+{
 
-void xmljValidateChildNode (JNIEnv *env, xmlNodePtr parent, xmlNodePtr child);
-int xmljIsEqualNode (xmlNodePtr node1, xmlNodePtr node2);
-int xmljIsEqualNodeList (xmlNodePtr node1, xmlNodePtr node2);
-void xmljNormalizeNode (xmlNodePtr node);
+  final Object id;
 
-/* Utility */
-jobject xmljCreateDocument (JNIEnv * env, jobject self, xmlDocPtr doc);
-xmlAttrPtr xmljGetNamedItem (JNIEnv * env, jobject self, jstring name);
-xmlAttrPtr xmljGetNamedItemNS (JNIEnv * env, jobject self, jstring uri,
-			   jstring localName);
+  GnomeTypeInfo(Object id)
+  {
+    this.id = id;
+  }
 
-#endif /* !defined XMLJ_DOM_H */
+  public native String getTypeName ();
+
+  public native String getTypeNamespace ();
+
+  public native boolean isDerivedFrom (String typeNamespaceArg,
+                                       String typeNameArg,
+                                       int derivationMethod);
+  
+}

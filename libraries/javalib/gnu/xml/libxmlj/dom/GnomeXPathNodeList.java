@@ -1,5 +1,5 @@
 /*
- * MatchingNodeList.java
+ * GnomeXPathNodeList.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -26,65 +26,38 @@
  */
 package gnu.xml.libxmlj.dom;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * A DOM node list that matches an element name.
+ * A node list that uses an XPath result object.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class MatchingNodeList
+class GnomeXPathNodeList
 implements NodeList
 {
 
   /**
-   * The parent node.
+   * xmlXPathObjectPtr
    */
-  private final long id;
+  final Object obj;
 
-  /**
-   * The namespace URI to search for.
-   */
-  private final String uri;
-
-  /**
-   * The element name to search for.
-   */
-  private final String name;
-
-  /**
-   * Whether to search using namespaces.
-   */
-  private boolean ns;
-
-  /**
-   * Constructor.
-   * @param id the parent node
-   * @param uri the namespace URI
-   * @param name the element name to match
-   * @param ns whether to search using namespaces
-   */
-  MatchingNodeList(long id, String uri, String name, boolean ns)
+  GnomeXPathNodeList (Object obj)
   {
-    this.id = id;
-    this.uri = uri;
-    this.name = name;
-    this.ns = ns;
+    this.obj = obj;
   }
 
-  public Node item(int index)
+  protected void finalize ()
   {
-    return item(index, uri, name, ns);
-  }
-  
-  private native Node item(int index, String uri, String name, boolean ns);
-
-  public int getLength()
-  {
-    return getLength(uri, name, ns);
+    free(obj);
   }
 
-  private native int getLength(String uri, String name, boolean ns);
-  
+  private native void free (Object obj);
+
+  public native int getLength ();
+
+  public native Node item (int index);
+
 }

@@ -35,8 +35,7 @@
 #include <libxml/parser.h>
 
 xmlSAXHandlerPtr
-xmljNewSAXHandler (xmlSAXHandlerPtr orig,
-                   jboolean contentHandler,
+xmljNewSAXHandler (jboolean contentHandler,
                    jboolean dtdHandler,
                    jboolean entityResolver,
                    jboolean errorHandler,
@@ -53,12 +52,6 @@ void xmljSAXInternalSubset(void *ctx,
                            const xmlChar *name,
                            const xmlChar *publicId,
                            const xmlChar *systemId);
-
-int xmljSAXIsStandalone(void *ctx);
-
-int xmljSAXHasInternalSubset(void *ctx);
-
-int xmljSAXHasExternalSubset(void *ctx);
 
 xmlParserInputPtr xmljSAXResolveEntity(void *ctx,
                                        const xmlChar *publicId,
@@ -130,7 +123,7 @@ void xmljSAXProcessingInstruction(void *ctx,
 void xmljSAXComment(void *ctx,
                     const xmlChar *value);
 
-void xmljSAXCdataBlock(void *ctx,
+void xmljSAXCDataBlock(void *ctx,
                        const xmlChar *ch,
                        int len);
 

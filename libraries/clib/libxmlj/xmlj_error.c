@@ -40,301 +40,6 @@
 #include "xmlj_io.h"
 #include "xmlj_util.h"
 
-/*
-static void xmljErrorSAXFunc (void *ctx, const char *msg, ...);
-static void xmljFatalErrorSAXFunc (void *ctx, const char *msg, ...);
-static void xmljWarningSAXFunc (void *ctx, const char *msg, ...);
-static jobject xmljMakeJaxpSourceLocator (void *ctx);
-
-static jobject
-xmljMakeJaxpSourceLocator (void *ctx)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  JNIEnv *env;
-  jobject result;
-  const char *systemId;
-  const char *publicId;
-
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return NULL;
-  
-  env = saxErrorContext->env;
-  result = (*env)->AllocObject (env,
-					saxErrorContext->sourceLocatorClass);
-  systemId = (const char *) saxErrorContext->locator->getSystemId (ctx);
-  publicId = (const char *) saxErrorContext->locator->getPublicId (ctx);
-
-  (*env)->CallVoidMethod (env,
-			  result,
-			  saxErrorContext->sourceLocatorConstructor,
-			  (*env)->NewStringUTF (env,
-						(NULL !=
-						 systemId) ? systemId : ""),
-			  (*env)->NewStringUTF (env,
-						(NULL !=
-						 publicId) ? publicId : ""),
-			  saxErrorContext->locator->getLineNumber (ctx),
-			  saxErrorContext->locator->getColumnNumber (ctx));
-
-  return result;
-}
-
-static void
-callErrorAdapterMethod (void *ctx, const char *msg, va_list va,
-			jmethodID methodID)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  JNIEnv *env;
-  
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext = (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return;
-  
-  env = saxErrorContext->env;
-
-  if (!(*env)->ExceptionOccurred (env))
-  {
-    jobject jaxpSourceLocator = xmljMakeJaxpSourceLocator (ctx);
-    
-    char buffer[2048] = "[Error message too long]";
-    vsnprintf (buffer, sizeof buffer, msg, va);
-    
-    (*env)->CallVoidMethod (env,
-                            saxErrorContext->saxErrorAdapter,
-                            methodID,
-                            (*env)->NewStringUTF (env, buffer),
-                            jaxpSourceLocator);
-    
-    if ((*env)->ExceptionOccurred (env))
-    {
-      xmlStopParser (parseContext);
-    }
-  }
-}
-
-static void
-xmljErrorSAXFunc (void *ctx, const char *msg, ...)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  va_list va;
-  
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext = (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return;
-  
-  va_start (va, msg);
-  callErrorAdapterMethod (ctx, msg, va, saxErrorContext->saxErrorMethodID);
-  va_end (va);
-}
-
-static void
-xmljFatalErrorSAXFunc (void *ctx, const char *msg, ...)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  va_list va;
-  
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext = (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return;
-  
-  va_start (va, msg);
-  callErrorAdapterMethod (ctx, msg, va,
-			  saxErrorContext->saxFatalErrorMethodID);
-  va_end (va);
-}
-
-static void
-xmljWarningSAXFunc (void *ctx, const char *msg, ...)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  va_list va;
-  
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext = (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return;
-  
-  va_start (va, msg);
-  callErrorAdapterMethod (ctx, msg, va, saxErrorContext->saxWarningMethodID);
-  va_end (va);
-}
-
-const xmlChar *
-xmljGetSystemId (void *ctx)
-{
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
-  return (xmlChar *) saxErrorContext->systemIdCstr;
-}
-
-
-const xmlChar *
-xmljGetPublicId (void *ctx)
-{
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
-  return (xmlChar *) saxErrorContext->publicIdCstr;
-}
-
-static void
-xmljSetDocumentLocator (void *ctx, xmlSAXLocatorPtr loc)
-{
-  xmlParserCtxtPtr parseContext;
-  SaxErrorContext *saxErrorContext;
-  
-  parseContext = (xmlParserCtxtPtr) ctx;
-  saxErrorContext = (SaxErrorContext *) parseContext->_private;
-  if (saxErrorContext == NULL)
-    return;
-  
-  saxErrorContext->locator = loc;
-  loc->getPublicId = xmljGetPublicId;
-  loc->getSystemId = xmljGetSystemId;
-}
-
-void
-xmljInitErrorHandling (xmlSAXHandler * saxHandler)
-{
-  saxHandler->warning = &xmljWarningSAXFunc;
-  saxHandler->error = &xmljErrorSAXFunc;
-  saxHandler->fatalError = &xmljFatalErrorSAXFunc;
-  saxHandler->setDocumentLocator = &xmljSetDocumentLocator;
-}
-
-SaxErrorContext *
-xmljCreateSaxErrorContext (JNIEnv * env, jobject saxErrorAdapter,
-			   jstring systemId, jstring publicId)
-{
-  SaxErrorContext *saxErrorContext
-    = (SaxErrorContext *) malloc (sizeof (SaxErrorContext));
-
-  jclass saxErrorAdapterClass 
-    = (*env)->FindClass (env,
-                         "gnu/xml/libxmlj/transform/JavaContext");
-  jclass sourceWrapperClass 
-    = (*env)->FindClass (env,
-                         "gnu/xml/libxmlj/transform/SourceWrapper");
-  jclass libxmlDocumentClassID 
-    = (*env)->FindClass (env, 
-                         "gnu/xml/libxmlj/transform/LibxmlDocument");
-  
-  saxErrorContext->saxWarningMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "saxWarning",
-			   "(Ljava/lang/String;Ljavax/xml/transform/SourceLocator;)V");
-  saxErrorContext->saxErrorMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "saxError",
-			   "(Ljava/lang/String;Ljavax/xml/transform/SourceLocator;)V");
-  saxErrorContext->saxFatalErrorMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "saxFatalError",
-			   "(Ljava/lang/String;Ljavax/xml/transform/SourceLocator;)V");
-  saxErrorContext->resolveURIMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "resolveURI",
-			   "(Ljava/lang/String;Ljava/lang/String;)Lgnu/xml/libxmlj/transform/SourceWrapper;");
-  saxErrorContext->resolveURIAndOpenMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "resolveURIAndOpen",
-			   "(Ljava/lang/String;Ljava/lang/String;)Lgnu/xml/libxmlj/transform/LibxmlDocument;");
-  saxErrorContext->getInputStreamMethodID
-    = (*env)->GetMethodID (env,
-			   sourceWrapperClass,
-			   "getInputStream",
-			   "()Ljava/io/PushbackInputStream;");
-
-  saxErrorContext->xsltGenericErrorMethodID
-    = (*env)->GetMethodID (env,
-			   saxErrorAdapterClass,
-			   "xsltGenericError", "(Ljava/lang/String;)V");
-
-  saxErrorContext->sourceLocatorClass
-    = (*env)->FindClass (env, "gnu/xml/libxmlj/transform/SourceLocatorImpl");
-  saxErrorContext->sourceLocatorConstructor
-    = (*env)->GetMethodID (env,
-			   saxErrorContext->sourceLocatorClass,
-			   "<init>",
-			   "(Ljava/lang/String;Ljava/lang/String;II)V");
-
-  saxErrorContext->getNativeHandleMethodID
-    = (*env)->GetMethodID (env,
-			   libxmlDocumentClassID,
-			   "getNativeHandle",
-			   "()J");
-
-  saxErrorContext->env = env;
-  saxErrorContext->saxErrorAdapter = saxErrorAdapter;
-
-  if (NULL != systemId)
-    {
-      saxErrorContext->systemIdCstr =
-	(*env)->GetStringUTFChars (env, systemId, NULL);
-      saxErrorContext->systemId = systemId;
-    }
-  else
-    {
-      saxErrorContext->systemIdCstr = 0;
-      saxErrorContext->systemId = 0;
-    }
-
-  if (NULL != publicId)
-    {
-      saxErrorContext->publicIdCstr =
-	(*env)->GetStringUTFChars (env, publicId, NULL);
-      saxErrorContext->publicId = publicId;
-    }
-  else
-    {
-      saxErrorContext->publicIdCstr = 0;
-      saxErrorContext->publicId = 0;
-    }
-
-  return saxErrorContext;
-}
-
-
-void
-xmljFreeSaxErrorContext (SaxErrorContext * errorContext)
-{
-  JNIEnv *env;
-  
-  if (errorContext == NULL)
-    return;
-  
-  env = errorContext->env;
-  if (NULL != errorContext->systemId && NULL != errorContext->systemIdCstr)
-  {
-    (*env)->ReleaseStringUTFChars (env, errorContext->systemId,
-				     errorContext->systemIdCstr);
-  }
-  if (NULL != errorContext->publicId && NULL != errorContext->publicIdCstr)
-  {
-    (*env)->ReleaseStringUTFChars (env, errorContext->publicId,
-                                   errorContext->publicIdCstr);
-  }
-  free (errorContext);
-}
-*/
-
 void
 xmljXsltErrorFunc (void *ctx, const char *msg, ...)
 {
@@ -402,6 +107,7 @@ xmljThrowException (JNIEnv *env,
   jthrowable ex;
   jstring jmsg;
 
+  /*fprintf(stderr, "Throwing exception %s %s\n", classname, message);*/
   cls = (*env)->FindClass (env, classname);
   if (cls == NULL)
     {
@@ -425,7 +131,7 @@ xmljThrowException (JNIEnv *env,
 }
 
 void
-xmljThrowDOMException (JNIEnv* env,
+xmljThrowDOMException (JNIEnv *env,
                        int code,
                        const char *message)
 {
@@ -434,16 +140,21 @@ xmljThrowDOMException (JNIEnv* env,
   jthrowable ex;
   jstring jmsg;
 
-  cls = (*env)->FindClass (env, "org/w3c/dom/DOMException");
+  if ((*env)->ExceptionOccurred (env))
+    {
+      return;
+    }
+
+  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/dom/GnomeDOMException");
   if (cls == NULL)
     {
-      printf ("Can't find class org.w3c.dom.DOMException\n");
+      fprintf (stderr, "Can't find DOMException class!\n");
       return;
     }
   method = (*env)->GetMethodID (env, cls, "<init>", "(SLjava/lang/String;)V");
   if (method == NULL)
     {
-      printf ("Can't find method org.w3c.dom.DOMException.<init>\n");
+      fprintf (stderr, "Can't find DOMException constructor!\n");
       return;
     }
   jmsg = (message == NULL) ? NULL : (*env)->NewStringUTF (env, message);

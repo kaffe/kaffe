@@ -46,33 +46,33 @@ implements Locator, SourceLocator
 
   private final String systemId;
 
-  public StandaloneLocator(int lineNumber, int columnNumber,
-                    String publicId, String systemId)
-    {
-      this.lineNumber = lineNumber;
-      this.columnNumber = columnNumber;
-      this.publicId = publicId;
-      this.systemId = systemId;
-    }
+  public StandaloneLocator (int lineNumber, int columnNumber,
+                            String publicId, String systemId)
+  {
+    this.lineNumber = lineNumber;
+    this.columnNumber = columnNumber;
+    this.publicId = publicId;
+    this.systemId = systemId;
+  }
+  
+  public String getPublicId ()
+  {
+    return publicId;
+  }
+  
+  public String getSystemId ()
+  {
+    return systemId;
+  }
 
-  public String getPublicId()
-    {
-      return publicId;
-    }
+  public int getLineNumber ()
+  {
+    return lineNumber;
+  }
 
-  public String getSystemId()
-    {
-      return systemId;
-    }
-
-  public int getLineNumber()
-    {
-      return lineNumber;
-    }
-
-  public int getColumnNumber()
-    {
-      return columnNumber;
-    }
+  public int getColumnNumber ()
+  {
+    return columnNumber;
+  }
 
 }

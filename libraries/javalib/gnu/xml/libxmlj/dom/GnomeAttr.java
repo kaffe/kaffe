@@ -42,15 +42,15 @@ extends GnomeNode
 implements Attr
 {
 
-  GnomeAttr (long id)
-    {
-      super (id);
-    }
+  GnomeAttr (Object id)
+  {
+    super (id);
+  }
   
   public String getName ()
-    {
-      return getNodeName ();
-    }
+  {
+    return getNodeName ();
+  }
   
   public native boolean getSpecified ();
   
@@ -60,18 +60,28 @@ implements Attr
     throws DOMException;
   
   public Element getOwnerElement ()
-    {
-      return (Element) getParentNode ();
-    }
+  {
+    return (Element) getParentNode ();
+  }
   
   // DOM Level 3 methods
   
   public TypeInfo getSchemaTypeInfo ()
-    {
-      // TODO
-      return null;
-    }
+  {
+    return new GnomeTypeInfo (id);
+  }
   
   public native boolean isId ();
+
+  public String toString()
+  {
+    StringBuffer buffer = new StringBuffer (getClass ().getName ());
+    buffer.append ("[name=");
+    buffer.append (getName ());
+    buffer.append (",value=");
+    buffer.append (getValue ());
+    buffer.append ("]");
+    return buffer.toString ();
+  }
   
 }

@@ -40,14 +40,14 @@ implements XPathNSResolver
   GnomeDocument doc;
 
   GnomeXPathNSResolver (GnomeDocument doc)
-    {
-      this.doc = doc;
-    }
+  {
+    this.doc = doc;
+  }
 
   public String lookupNamespaceURI (String prefix)
-    {
-      return lookupNamespaceURI (doc, prefix);
-    }
+  {
+    return lookupNamespaceURI (doc, prefix);
+  }
 
   private native String lookupNamespaceURI (GnomeDocument doc, String prefix);
 

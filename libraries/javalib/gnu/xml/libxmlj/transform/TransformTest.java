@@ -88,7 +88,7 @@ public class TransformTest
     Transformer transformer = transformerFactory.newTransformer (xsltSource);
 
     // Set test parameters
-    transformer.setParameter ("bar", "'lala'");
+    transformer.setParameter ("bar", "lala");
     
     // Perform transformation
     transformer.transform (source, target);

@@ -39,24 +39,47 @@ extends GnomeNode
 implements DocumentType
 {
 
-  GnomeDocumentType (long id)
-    {
-      super (id);
-    }
+  GnomeDocumentType (Object id)
+  {
+    super (id);
+  }
   
   public String getName ()
-    {
-      return getNodeName ();
-    }
+  {
+    return getNodeName ();
+  }
 
-  public native NamedNodeMap getEntities ();
+  public NamedNodeMap getEntities ()
+  {
+    return new GnomeNamedNodeMap (id, 1);
+  }
 
-  public native NamedNodeMap getNotations ();
+  public NamedNodeMap getNotations ()
+  {
+    return new GnomeNamedNodeMap (id, 2);
+  }
 
   public native String getPublicId ();
 
   public native String getSystemId ();
 
   public native String getInternalSubset ();
+
+  public String toString ()
+  {
+    String publicId = getPublicId ();
+    StringBuffer buffer = new StringBuffer (getClass ().getName ());
+    buffer.append ("[");
+    if (publicId != null)
+      {
+        buffer.append ("publicId=");
+        buffer.append (publicId);
+        buffer.append (",");
+      }
+    buffer.append ("systemId=");
+    buffer.append (getSystemId ());
+    buffer.append ("]");
+    return buffer.toString ();
+  }
 
 }

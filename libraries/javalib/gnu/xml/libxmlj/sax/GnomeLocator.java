@@ -38,43 +38,51 @@ implements Locator
 {
 
   // An xmlParserCtxtPtr
-  private final int ctx;
+  private final Object ctx;
 
   // An xmlSAXLocatorPtr
-  private final int loc;
+  private final Object loc;
 
-  GnomeLocator(int ctx, int loc)
+  GnomeLocator (Object ctx, Object loc)
   {
     this.ctx = ctx;
     this.loc = loc;
-  }
-
-  public String getPublicId()
-  {
-    return getPublicId(ctx, loc);
-  }
-
-  private native String getPublicId(int ctx, int loc);
-
-  public String getSystemId()
-  {
-    return getSystemId(ctx, loc);
-  }
-
-  private native String getSystemId(int ctx, int loc);
-
-  public int getLineNumber()
-  {
-    return getLineNumber(ctx, loc);
+    if (ctx == null)
+      {
+        throw new NullPointerException ("ctx");
+      }
+    if (loc == null)
+      {
+        throw new NullPointerException ("loc");
+      }
   }
   
-  private native int getLineNumber(int ctx, int loc);
-
-  public int getColumnNumber()
+  public String getPublicId ()
   {
-    return getColumnNumber(ctx, loc);
+    return getPublicId (ctx, loc);
+  }
+
+  private native String getPublicId (Object ctx, Object loc);
+
+  public String getSystemId ()
+  {
+    return getSystemId (ctx, loc);
+  }
+
+  private native String getSystemId (Object ctx, Object loc);
+
+  public int getLineNumber ()
+  {
+    return getLineNumber (ctx, loc);
   }
   
-  private native int getColumnNumber(int ctx, int loc);
+  private native int getLineNumber (Object ctx, Object loc);
+
+  public int getColumnNumber ()
+  {
+    return getColumnNumber (ctx, loc);
+  }
+  
+  private native int getColumnNumber (Object ctx, Object loc);
 
 }

@@ -47,231 +47,237 @@ implements DocumentType
   private final String publicId;
   private final String systemId;
 
-  public StandaloneDocumentType(String name, String publicId, String systemId)
-    {
-      this.name = name;
-      this.publicId = publicId;
-      this.systemId = systemId;
-    }
+  public StandaloneDocumentType (String name, String publicId, String systemId)
+  {
+    this.name = name;
+    this.publicId = publicId;
+    this.systemId = systemId;
+  }
 
-  public String getName()
-    {
-      return name;
-    }
+  public String getName ()
+  {
+    return name;
+  }
 
-  public NamedNodeMap getEntities()
-    {
-      // TODO
-      return null;
-    }
+  public NamedNodeMap getEntities ()
+  {
+    // TODO
+    return null;
+  }
+  
+  public NamedNodeMap getNotations ()
+  {
+    // TODO
+    return null;
+  }
 
-  public NamedNodeMap getNotations()
-    {
-      // TODO
-      return null;
-    }
+  public String getPublicId ()
+  {
+    return publicId;
+  }
 
-  public String getPublicId()
-    {
-      return publicId;
-    }
+  public String getSystemId ()
+  {
+    return systemId;
+  }
 
-  public String getSystemId()
-    {
-      return systemId;
-    }
-
-  public String getInternalSubset()
-    {
-      return null;
-    }
-
+  public String getInternalSubset ()
+  {
+    return null;
+  }
+  
   // -- Node --
 
-  public String getNodeName()
-    {
-      return getName();
-    }
+  public String getNodeName ()
+  {
+    return getName ();
+  }
 
-  public String getNodeValue() throws DOMException
-    {
-      return null;
-    }
+  public String getNodeValue ()
+    throws DOMException
+  {
+    return null;
+  }
+  
+  public void setNodeValue (String nodeValue)
+    throws DOMException
+  {
+  }
 
-  public void setNodeValue(String nodeValue) throws DOMException
-    {
-    }
+  public short getNodeType ()
+  {
+    return DOCUMENT_TYPE_NODE;
+  }
 
-  public short getNodeType()
-    {
-      return DOCUMENT_TYPE_NODE;
-    }
+  public Node getParentNode ()
+  {
+    return null;
+  }
 
-  public Node getParentNode()
-    {
-      return null;
-    }
+  public NodeList getChildNodes ()
+  {
+    return new EmptyNodeList ();
+  }
 
-  public NodeList getChildNodes()
-    {
-      return new EmptyNodeList();
-    }
+  public Node getFirstChild ()
+  {
+    return null;
+  }
 
-  public Node getFirstChild()
-    {
-      return null;
-    }
+  public Node getLastChild ()
+  {
+    return null;
+  }
 
-  public Node getLastChild()
-    {
-      return null;
-    }
+  public Node getPreviousSibling ()
+  {
+    return null;
+  }
 
-  public Node getPreviousSibling()
-    {
-      return null;
-    }
+  public Node getNextSibling ()
+  {
+    return null;
+  }
 
-  public Node getNextSibling()
-    {
-      return null;
-    }
+  public NamedNodeMap getAttributes ()
+  {
+    return null;
+  }
 
-  public NamedNodeMap getAttributes()
-    {
-      return null;
-    }
+  public Document getOwnerDocument ()
+  {
+    return null;
+  }
 
-  public Document getOwnerDocument()
-    {
-      return null;
-    }
+  public Node insertBefore (Node newChild, Node refChild)
+    throws DOMException
+  {
+    throw new DOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
-  public Node insertBefore(Node newChild, Node refChild) throws DOMException
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  public Node replaceChild (Node newChild, Node oldChild)
+    throws DOMException
+  {
+    throw new DOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
-  public Node replaceChild(Node newChild, Node oldChild) throws DOMException
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  public Node removeChild (Node oldChild)
+    throws DOMException
+  {
+    throw new DOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
-  public Node removeChild(Node oldChild) throws DOMException
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  public Node appendChild (Node oldChild)
+    throws DOMException
+  {
+    throw new DOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
-  public Node appendChild(Node oldChild) throws DOMException
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  public boolean hasChildNodes ()
+  {
+    return false;
+  }
 
-  public boolean hasChildNodes()
-    {
-      return false;
-    }
+  public Node cloneNode (boolean deep)
+  {
+    return new StandaloneDocumentType (name, publicId, systemId);
+  }
 
-  public Node cloneNode(boolean deep)
-    {
-      return new StandaloneDocumentType(name, publicId, systemId);
-    }
+  public void normalize ()
+  {
+  }
 
-  public void normalize()
-    {
-    }
+  public boolean isSupported (String feature, String version)
+  {
+    return false;
+  }
 
-  public boolean isSupported(String feature, String version)
-    {
-      return false;
-    }
+  public String getNamespaceURI ()
+  {
+    return null;
+  }
 
-  public String getNamespaceURI()
-    {
-      return null;
-    }
+  public String getPrefix ()
+  {
+    return null;
+  }
 
-  public String getPrefix()
-    {
-      return null;
-    }
+  public void setPrefix (String prefix)
+  {
+    throw new DOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
-  public void setPrefix(String prefix)
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  public String getLocalName ()
+  {
+    return getName ();
+  }
 
-  public String getLocalName()
-    {
-      return getName();
-    }
-
-  public boolean hasAttributes()
-    {
-      return false;
-    }
+  public boolean hasAttributes ()
+  {
+    return false;
+  }
 
   // DOM Level 3
 
   public String getBaseURI ()
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
   public short compareDocumentPosition (Node node)
-    {
-      return -1;
-    }
+  {
+    return -1;
+  }
 
   public String getTextContent ()
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
   public void setTextContent (String content)
-    {
-      throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
-    }
+  {
+    throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, null);
+  }
 
   public boolean isSameNode (Node other)
-    {
-      return equals (other);
-    }
-
+  {
+    return equals (other);
+  }
+  
   public String lookupPrefix (String namespace)
-    {
-      return null;
-    }
-
+  {
+    return null;
+  }
+  
   public boolean isDefaultNamespace (String namespace)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   public String lookupNamespaceURI (String prefix)
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
   public boolean isEqualNode (Node other)
-    {
-      return equals (other);
-    }
+  {
+    return equals (other);
+  }
 
   public Object getFeature (String feature, String version)
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
   public Object setUserData (String name, Object value,
                              UserDataHandler handler)
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
   public Object getUserData (String name)
-    {
-      return null;
-    }
+  {
+    return null;
+  }
 
 }

@@ -200,13 +200,13 @@ xmljNewInputStreamContext (JNIEnv * env, jobject inputStream)
   inputStreamClass = (*env)->FindClass (env, "java/io/InputStream");
   if (inputStreamClass == NULL)
     {
-      xmljThrowException (env, "java/lang/ClassNotFoundException",
-                          "java.io.InputStream");
       return NULL;
     }
   result = (InputStreamContext *) malloc (sizeof (InputStreamContext));
   if (result == NULL)
-    return NULL;
+    {
+      return NULL;
+    }
 
   result->env = env;
   result->inputStream = inputStream;
@@ -238,13 +238,13 @@ xmljNewOutputStreamContext (JNIEnv * env, jobject outputStream)
   outputStreamClass = (*env)->FindClass (env, "java/io/OutputStream");
   if (outputStreamClass == NULL)
     {
-      xmljThrowException (env, "java/lang/ClassNotFoundException",
-                          "java.io.OutputStream");
       return NULL;
     }
   result = (OutputStreamContext *) malloc (sizeof (OutputStreamContext));
   if (result == NULL)
-    return NULL;
+    {
+      return NULL;
+    }
 
   result->env = env;
   result->outputStream = outputStream;
@@ -347,11 +347,13 @@ xmlParserCtxtPtr
 xmljNewParserContext (JNIEnv * env,
                       jobject inputStream,
                       jbyteArray detectBuffer,
-                      jstring inSystemId,
-                      jstring inPublicId,
+                      jstring publicId,
+                      jstring systemId,
+                      jstring base,
                       jboolean validate,
                       jboolean coalesce,
-                      jboolean expandEntities)
+                      jboolean expandEntities,
+                      jboolean loadEntities)
 {
   InputStreamContext *inputContext;
   xmlCharEncoding encoding;
@@ -364,11 +366,13 @@ xmljNewParserContext (JNIEnv * env,
       inputContext = xmljNewInputStreamContext (env, inputStream);
       if (NULL != inputContext)
         {
-          ctx = xmlCreateIOParserCtxt (NULL, NULL,
-                                       /* NOTE: userdata must be NULL for DOM to work */
+          /* NOTE: userdata must be NULL for DOM to work */
+          ctx = xmlCreateIOParserCtxt (NULL,
+                                       NULL,
                                        xmljInputReadCallback,
                                        xmljInputCloseCallback,
-                                       inputContext, encoding);
+                                       inputContext,
+                                       encoding);
           if (NULL != ctx)
             {
               ctx->userData = ctx;
@@ -377,7 +381,6 @@ xmljNewParserContext (JNIEnv * env,
               options = 0;
               if (validate)
                 {
-                  options |= XML_PARSE_DTDLOAD;
                   options |= XML_PARSE_DTDVALID;
                 }
               if (coalesce)
@@ -388,11 +391,20 @@ xmljNewParserContext (JNIEnv * env,
                 {
                   options |= XML_PARSE_NOENT;
                 }
+              if (loadEntities)
+                {
+                  options |= XML_PARSE_DTDLOAD;
+                }
               if (xmlCtxtUseOptions (ctx, options))
                 {
                   xmljThrowException (env,
                                       "java/lang/RuntimeException",
                                       "Unable to set xmlParserCtxtPtr options");
+                }
+              if (base != NULL)
+                {
+                  ctx->input->directory =
+                    (*env)->GetStringUTFChars (env, base, 0);
                 }
               return ctx;
             }
@@ -405,15 +417,19 @@ xmljNewParserContext (JNIEnv * env,
 void
 xmljFreeParserContext (xmlParserCtxtPtr ctx)
 {
-  InputStreamContext *inputStreamContext;
+  InputStreamContext *inputStreamContext = NULL;
 
-  inputStreamContext
-    = (InputStreamContext *) ctx->input->buf->context;
-
+  if (ctx->input != NULL && ctx->input->buf != NULL)
+    {
+      inputStreamContext
+        = (InputStreamContext *) ctx->input->buf->context;
+      
+    }
+  xmlFreeParserCtxt (ctx);
   if (inputStreamContext != NULL)
-    xmljFreeInputStreamContext (inputStreamContext);
-
-  /* TODO xmlFreeParserCtxt (ctx); */
+    {
+      xmljFreeInputStreamContext (inputStreamContext);
+    }
 }
 
 xmlDocPtr
@@ -423,6 +439,7 @@ xmljParseDocument (JNIEnv * env,
                    jbyteArray detectBuffer,
                    jstring publicId,
                    jstring systemId,
+                   jstring base,
                    jboolean validate,
                    jboolean coalesce,
                    jboolean expandEntities,
@@ -438,26 +455,15 @@ xmljParseDocument (JNIEnv * env,
   SAXParseContext *saxCtx;
   xmlSAXHandlerPtr sax;
 
-  /*printf ("validate=%d\ncoalesce=%d\nexpandEntities=%d\ncontentHandler=%d\ndtdHandler=%d\nentityResolver=%d\nerrorHandler=%d\ndeclarationHandler=%d\nlexicalHandler=%d\n",
-          validate,
-          coalesce,
-          expandEntities,
-          contentHandler,
-          dtdHandler,
-          entityResolver,
-          errorHandler,
-          declarationHandler,
-          lexicalHandler);*/
-  
-  ctx = xmljNewParserContext (env, in, detectBuffer, systemId, publicId,
-                              validate, coalesce, expandEntities);
+  ctx = xmljNewParserContext (env, in, detectBuffer, publicId, systemId, base,
+                              validate, coalesce, expandEntities,
+                              entityResolver);
   if (ctx != NULL)
     {
       saxCtx = xmljNewSAXParseContext (env, self, ctx, publicId, systemId);
       if (saxCtx != NULL)
         {
-          sax = xmljNewSAXHandler (contentHandler ? NULL : ctx->sax,
-                                   contentHandler,
+          sax = xmljNewSAXHandler (contentHandler,
                                    dtdHandler,
                                    entityResolver,
                                    errorHandler,
@@ -498,34 +504,33 @@ xmljParseDocument2 (JNIEnv * env,
   ctx->userData = ctx;
   orig = ctx->sax;
   ctx->sax = sax;
-              
+  
   xmljSetThreadContext (saxCtx);
 
-  printf ("xmljParseDocument2 loadsubset=%d\n", ctx->loadsubset);
   ret = xmlParseDocument (ctx);
-  printf ("xmlParseDocument done\n");
   doc = ctx->myDoc;
   if (ret)
     {
+      const char *msg = ctx->lastError.message;
       switch (mode)
         {
         case 0:
-          xmljSAXFatalError (ctx, ctx->lastError.message);
+          xmljSAXFatalError (ctx, msg);
           break;
         case 1:
-          xmljThrowDOMException (env, ret, ctx->lastError.message);
+          xmljThrowDOMException (env, ret, msg);
           break;
         case 2:
           xmljThrowException (env,
                               "javax/xml/transform/TransformerException",
-                              ctx->lastError.message);
+                              msg);
         }
     }
   
   xmljClearThreadContext ();
               
   ctx->sax = orig;
-  free (sax);
+  free(sax);
   xmljFreeSAXParseContext (saxCtx);
   xmljFreeParserContext (ctx);
   return doc;
@@ -537,6 +542,7 @@ xmljNewParserInput (JNIEnv * env,
                     jbyteArray detectBuffer,
                     xmlParserCtxtPtr parserContext)
 {
+  xmlParserInputPtr ret;
   xmlParserInputBufferPtr input;
   xmlCharEncoding encoding;
 
@@ -545,7 +551,10 @@ xmljNewParserInput (JNIEnv * env,
     {
       input = xmljNewParserInputBuffer (env, inputStream, encoding);
       if (input != NULL)
-        return xmlNewIOInputStream (parserContext, input, encoding);
+        {
+          ret = xmlNewIOInputStream (parserContext, input, encoding);
+          return ret;
+        }
       xmlFreeParserInputBuffer (input);
     }
   return NULL;

@@ -1,5 +1,145 @@
 2004-07-25  Dalibor Topic  <robilad@kaffe.org>
 
+        * include/Makefile.am
+	(LIBXMLJ_JNI_HDRS) Updated.
+
+        * include/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regenerated.
+
+        * kaffe/scripts/javadoc.in,
+	kaffe/scripts/compat/javadoc.in:
+	Updated for libxslt transformer.
+
+        * libraries/clib/libxmlj/xmlj_dom.c,
+        libraries/clib/libxmlj/xmlj_dom.h,
+        libraries/clib/libxmlj/xmlj_error.c,
+        libraries/clib/libxmlj/xmlj_io.c,
+        libraries/clib/libxmlj/xmlj_io.h,
+        libraries/clib/libxmlj/xmlj_node.c,
+        libraries/clib/libxmlj/xmlj_sax.c,
+        libraries/clib/libxmlj/xmlj_sax.h,
+        libraries/clib/libxmlj/xmlj_transform.c,
+        libraries/clib/libxmlj/xmlj_util.c,
+        libraries/clib/libxmlj/xmlj_util.h,
+        libraries/clib/libxmlj/xmlj_xpath.c,
+        libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+        libraries/javalib/gnu/xml/aelfred2/XmlParser.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeAttr.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeCDATASection.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeCharacterData.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeComment.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocument.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilder.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilderFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentFragment.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentType.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeElement.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeEntity.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeEntityReference.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNamedNodeMap.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNode.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNodeList.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNotation.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeProcessingInstruction.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeText.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathExpression.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathNSResolver.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathResult.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeLocator.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeSAXParser.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeSAXParserFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeXMLReader.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/Namespaces.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/StringArrayAttributes.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/XMLName.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformerFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/JavaContext.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/LibxsltStylesheet.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+        libraries/javalib/gnu/xml/libxmlj/util/EmptyNodeList.java,
+        libraries/javalib/gnu/xml/libxmlj/util/NamedInputStream.java,
+        libraries/javalib/gnu/xml/libxmlj/util/StandaloneDocumentType.java,
+        libraries/javalib/gnu/xml/libxmlj/util/StandaloneLocator.java,
+        libraries/javalib/gnu/xml/libxmlj/util/XMLJ.java:
+	Resynced with GNU JAXP.
+
+	2004-07-21  Chris Burdess <dog@gnu.org>
+
+        * GnomeTransformerFactory.java: getFeature supports stream features.
+        * dom: Added traversal function.
+
+	2004-07-12  Chris Burdess <dog@gnu.org>
+
+        * dom: Entities and notations NamedNodeMaps.
+
+	2004-07-06  Chris Burdess <dog@gnu.org>
+
+        * xpath: Permit wildcards in getElementsByTagName[NS].
+
+	2004-07-04  Chris Burdess <dog@gnu.org>
+
+        * dom: Skeleton DOMConfiguration implementation.
+
+	2004-07-03  Chris Burdess <dog@gnu.org>
+
+        * dom: Corrected GnomeElement attribute methods and isEqualNode.
+
+	2004-07-01  Chris Burdess <dog@gnu.org>
+
+        * dom: Corrected implementation of getElementsByTagName.
+
+	2004-06-29  Chris Burdess <dog@gnu.org>
+
+        * dom: Added implementation of DOMImplementationSource.
+
+	2004-06-28  Chris Burdess <dog@gnu.org>
+
+        * dom: Fixed name matching.
+
+	2004-06-26  Chris Burdess <dog@gnu.org>
+
+        * dom: Added GnomeTypeInfo.
+
+	2004-06-25  Chris Burdess <dog@gnu.org>
+
+        * xmlj_sax.c: Revert to calling ignorableWhitespace.
+
+	2004-06-23  Chris Burdess <dog@gnu.org>
+
+        * all: Use RawData for native pointers.
+        * xmlj_sax.c: Fixed entity resolution.
+        * xmlj_io.c: Fixed race condition closing input stream context.
+
+	2004-07-25  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Fixed end-of-line handling to comply with sec 2.11.
+
+	2004-07-11  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Handle empty documents.
+
+	2004-07-11  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Call StartDocument at the right time.
+
+	2004-07-11  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Disable LIT_DISABLE_CREF flag on entities parsing.
+
+	2004-07-11  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Refactoring of various attributes lists into a single list.
+
+	2004-06-24  Chris Burdess <dog@bluezoo.org>
+
+        * SAXDriver.java: Introduced reset method to reset state before
+            new parse. Thanks to Musachy Barroso.
+
+2004-07-25  Dalibor Topic  <robilad@kaffe.org>
+
 	Added support for https connections.
 
 	* libraries/clib/security/java.security: 

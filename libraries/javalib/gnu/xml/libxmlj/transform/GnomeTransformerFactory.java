@@ -52,6 +52,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.URIResolver;
 
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import gnu.xml.libxmlj.util.XMLJ;
@@ -144,8 +145,8 @@ public class GnomeTransformerFactory
   
   public boolean getFeature (String name)
   {
-    // No features yet.
-    return false;
+    return (StreamSource.FEATURE.equals (name) ||
+            StreamResult.FEATURE.equals (name));
   }
 
   /**

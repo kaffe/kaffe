@@ -38,10 +38,10 @@ extends GnomeNode
 implements Entity
 {
 
-  GnomeEntity (long id)
-    {
-      super (id);
-    }
+  GnomeEntity (Object id)
+  {
+    super (id);
+  }
 
   public native String getPublicId ();
 
@@ -52,21 +52,40 @@ implements Entity
   // DOM Level 3 methods
   
   public String getInputEncoding ()
-    {
-      // TODO
-      return null;    
-    }
+  {
+    // TODO
+    return null;    
+  }
   
   public String getXmlEncoding ()
-    {
-      // TODO
-      return null;
-    }
+  {
+    // TODO
+    return null;
+  }
   
   public String getXmlVersion ()
-    {
-      // TODO
-      return null;
-    }
+  {
+    // TODO
+    return null;
+  }
   
+  public String toString ()
+  {
+    String publicId = getPublicId ();
+    StringBuffer buffer = new StringBuffer (getClass ().getName ());
+    buffer.append ("[");
+    if (publicId != null)
+      {
+        buffer.append ("publicId=");
+        buffer.append (publicId);
+        buffer.append (",");
+      }
+    buffer.append ("systemId=");
+    buffer.append (getSystemId ());
+    buffer.append (",notationName=");
+    buffer.append (getNotationName ());
+    buffer.append ("]");
+    return buffer.toString ();
+  }
+
 }

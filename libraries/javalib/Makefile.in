@@ -462,6 +462,7 @@ Klasses_jar_SRCS = \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_libxmlj_SRCS) \
 	$(gnu_xml_libxmlj_dom_SRCS) \
 	$(gnu_xml_libxmlj_sax_SRCS) \
 	$(gnu_xml_libxmlj_transform_SRCS) \
@@ -1722,7 +1723,14 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomNsNode.java \
 	gnu/xml/dom/DomPI.java \
 	gnu/xml/dom/DomText.java \
+	gnu/xml/dom/ImplementationList.java \
+	gnu/xml/dom/ImplementationSource.java \
 	gnu/xml/dom/JAXPFactory.java
+
+gnu_xml_libxmlj_SRCS = \
+	gnu/xml/libxmlj/RawData32.java \
+	gnu/xml/libxmlj/RawData64.java \
+	gnu/xml/libxmlj/RawData.java
 
 gnu_xml_libxmlj_dom_SRCS = \
 	gnu/xml/libxmlj/dom/GnomeAttr.java \
@@ -1734,19 +1742,23 @@ gnu_xml_libxmlj_dom_SRCS = \
 	gnu/xml/libxmlj/dom/GnomeDocumentFragment.java \
 	gnu/xml/libxmlj/dom/GnomeDocument.java \
 	gnu/xml/libxmlj/dom/GnomeDocumentType.java \
+	gnu/xml/libxmlj/dom/GnomeDOMException.java \
+	gnu/xml/libxmlj/dom/GnomeDOMStringList.java \
 	gnu/xml/libxmlj/dom/GnomeElement.java \
 	gnu/xml/libxmlj/dom/GnomeEntity.java \
 	gnu/xml/libxmlj/dom/GnomeEntityReference.java \
 	gnu/xml/libxmlj/dom/GnomeNamedNodeMap.java \
+	gnu/xml/libxmlj/dom/GnomeNodeIterator.java \
 	gnu/xml/libxmlj/dom/GnomeNode.java \
 	gnu/xml/libxmlj/dom/GnomeNodeList.java \
 	gnu/xml/libxmlj/dom/GnomeNotation.java \
 	gnu/xml/libxmlj/dom/GnomeProcessingInstruction.java \
 	gnu/xml/libxmlj/dom/GnomeText.java \
+	gnu/xml/libxmlj/dom/GnomeTypeInfo.java \
 	gnu/xml/libxmlj/dom/GnomeXPathExpression.java \
+	gnu/xml/libxmlj/dom/GnomeXPathNodeList.java \
 	gnu/xml/libxmlj/dom/GnomeXPathNSResolver.java \
-	gnu/xml/libxmlj/dom/GnomeXPathResult.java \
-	gnu/xml/libxmlj/dom/MatchingNodeList.java
+	gnu/xml/libxmlj/dom/GnomeXPathResult.java
 
 gnu_xml_libxmlj_sax_SRCS = \
 	gnu/xml/libxmlj/sax/GnomeLocator.java \

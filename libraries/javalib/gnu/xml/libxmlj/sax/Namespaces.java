@@ -39,37 +39,37 @@ import java.util.Iterator;
 class Namespaces
 {
 
-  ArrayList stack = new ArrayList();
+  ArrayList stack = new ArrayList ();
   
   /**
    * Increments the tree depth.
    * This allocates a new potential namespace entry.
    */
-  void push()
+  void push ()
   {
-    stack.add(null);
+    stack.add (null);
   }
 
   /**
    * Decrements the tree depth.
    * This removes namespaces defined at the extremity.
    */
-  void pop()
+  void pop ()
   {
-    stack.remove(stack.size() - 1);
+    stack.remove (stack.size() - 1);
   }
 
   /**
    * Searches for the namespace URI corresponding to the specified prefix.
    */
-  String getURI(String prefix)
+  String getURI (String prefix)
   {
-    for (int i = stack.size() - 1; i >= 0; i--)
+    for (int i = stack.size () - 1; i >= 0; i--)
     {
-      HashMap ns = (HashMap)stack.get(i);
-      if (ns != null && ns.containsKey(prefix))
+      HashMap ns = (HashMap) stack.get (i);
+      if (ns != null && ns.containsKey (prefix))
       {
-        String ret = (String)ns.get(prefix);
+        String ret = (String) ns.get (prefix);
         return (ret == null) ? "" : ret;
       }
     }
@@ -80,28 +80,32 @@ class Namespaces
    * Defines the specified prefix-URI mapping at the current depth in the
    * tree.
    */
-  void define(String prefix, String uri)
+  void define (String prefix, String uri)
   {
-    int index = stack.size() - 1;
-    HashMap ns = (HashMap)stack.get(index);
+    int index = stack.size () - 1;
+    HashMap ns = (HashMap) stack.get (index);
     if (ns == null)
     {
-      ns = new HashMap();
-      stack.set(index, ns);
+      ns = new HashMap ();
+      stack.set (index, ns);
     }
-    ns.put(prefix, uri);
+    ns.put (prefix, uri);
   }
 
   /**
    * Returns an iterator over the prefixes defined at the current depth.
    */
-  Iterator currentPrefixes()
+  Iterator currentPrefixes ()
   {
-    HashMap ns = (HashMap)stack.get(stack.size() - 1);
+    HashMap ns = (HashMap) stack.get (stack.size () - 1);
     if (ns == null)
-      return Collections.EMPTY_LIST.iterator();
+      {
+        return Collections.EMPTY_LIST.iterator ();
+      }
     else
-      return ns.keySet().iterator();
+      {
+        return ns.keySet ().iterator ();
+      }
   }
 
 }

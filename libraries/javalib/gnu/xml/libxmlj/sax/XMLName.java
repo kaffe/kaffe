@@ -34,15 +34,17 @@ package gnu.xml.libxmlj.sax;
 class XMLName
 {
 
+  private static final String XML_URI = "http://www.w3.org/XML/1998/namespace";
+  
   final String uri;
   final String localName;
   final String qName;
   final String prefix;
 
-  XMLName(GnomeXMLReader parser, String qName)
+  XMLName (GnomeXMLReader parser, String qName)
   {
     this.qName = qName;
-    int ci = qName.lastIndexOf(':');
+    int ci = qName.lastIndexOf (':');
     if (ci < 1)
     {
       localName = qName;
@@ -51,13 +53,27 @@ class XMLName
     }
     else
     {
-      localName = qName.substring(ci + 1);
-      prefix = qName.substring(0, ci);
-      uri = parser.getURI(prefix);
+      localName = qName.substring (ci + 1);
+      prefix = qName.substring (0, ci);
+      if ("xml".equals (prefix))
+        {
+          if ("lang".equals (localName) || "space".equals (localName))
+            {
+              uri = XML_URI;
+            }
+          else
+            {
+              uri = parser.getURI (prefix);
+            }
+        }
+      else
+        {
+          uri = parser.getURI (prefix);
+        }
     }
   }
 
-  public String toString()
+  public String toString ()
   {
     return qName;
   }
