@@ -60,6 +60,12 @@ typedef	void*	jfieldID;
 #define	JNI_COMMIT	1
 #define	JNI_ABORT	2
 
+/* JNI return codes */
+#define JNI_OK		0
+#define JNI_ERR		(-1)
+#define JNI_EDETACHED	(-2)
+#define JNI_EVERSION	(-3)
+
 struct JNINativeInterface {
 
 	void*	reserved0;
@@ -302,6 +308,7 @@ struct JNIInvokeInterface {
 	jint	(*DestroyJavaVM)		(JavaVM*);
 	jint	(*AttachCurrentThread)		(JavaVM*, JNIEnv**, ThreadAttachArgs*);
 	jint	(*DetachCurrentThread)		(JavaVM*);
+	jint	(*GetEnv)			(JavaVM*, void**, jint);
 };
 
 struct JNIEnv_ {
@@ -551,6 +558,9 @@ extern JavaVMInitArgs Kaffe_JavaVMArgs[];
 extern jint	JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs*);
 extern jint	JNI_CreateJavaVM(JavaVM**, JNIEnv**, JavaVMInitArgs*);
 extern jint	JNI_GetCreatedJavaVMs(JavaVM**, jsize, jsize*);
+
+#define JNI_VERSION_1_1 0x00010001
+#define JNI_VERSION_1_2 0x00010002
 
 #if defined(__cplusplus)
 }
