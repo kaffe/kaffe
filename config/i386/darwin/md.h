@@ -27,31 +27,21 @@
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>
 #endif
+#if defined(HAVE_SYS_SIGNAL_H)
+#include <sys/signal.h>
+#endif
 
 #undef SP_OFFSET
 #define SP_OFFSET	9
 
-#if defined(SA_SIGINFO)
-#define SIGNAL_ARGS(sig, sc) int sig, siginfo_t *sc
-#define SIGNAL_CONTEXT_POINTER(scp) siginfo_t *scp
-#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
-#define SIGNAL_PC(scp) 0
-#define STACK_POINTER(scp) ((scp)->si_addr)
-#else
+#define SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext *sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
+#define SIGNAL_PC(scp) ((scp)->sc_eip)
+#define STACK_POINTER(scp) ((scp)->sc_esp)
 
 #undef HAVE_SIGALTSTACK
-#if defined(HAVE_SYS_SIGNAL_H)
-#include <sys/signal.h>
-typedef struct sigcontext sigcontext_t;
-#endif
-
-typedef struct  sigaltstack stack_t;
-#define SIGNAL_ARGS(sig, sc) int sig, sigcontext_t *sc
-#define SIGNAL_CONTEXT_POINTER(scp) sigcontext_t *scp
-#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
-#define SIGNAL_PC(scp) ((scp)->sc_ir)
-#define STACK_POINTER(scp) ((scp)->sc_sp)
-#endif
+#define STACK_T struct sigaltstack
 
 #define DARWIN
 
