@@ -597,6 +597,10 @@ AC_SUBST(ZIP_LIBS)
 
 dnl Check for libraries for math library.
 AC_CHECK_LIBRARY(gmp,mpz_get_d,MATH_LIBS)
+if test $ac_cv_lib_gmp_mpz_get_d = no; then
+  dnl with gmp3 it's a #define, use real function name
+  AC_CHECK_LIBRARY(gmp,__gmpz_get_d,MATH_LIBS)
+fi
 MATH_LIBS="$CTLIBS $MATH_LIBS"
 AC_SUBST(MATH_LIBS)
 
