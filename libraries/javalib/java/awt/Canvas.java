@@ -46,4 +46,18 @@ public void paint( Graphics g) {
 	// normally be blanked by the native window system
 	g.clearRect( 0, 0, width, height);
 }
+
+void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
+	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
+								ux, uy, uw, uh,
+								false);
+	if ( g != null ){
+		if ( id == PaintEvent.UPDATE ) {
+			update( g);
+		}
+		paint( g);
+		g.dispose();
+	}
+}
+
 }
