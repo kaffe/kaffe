@@ -2137,6 +2137,7 @@ java_awt_image_SRCS = \
 	java/awt/image/BandedSampleModel.java \
 	java/awt/image/BufferStrategy.java \
 	java/awt/image/BufferedImage.java \
+	java/awt/image/BufferedImageFilter.java \
 	java/awt/image/BufferedImageOp.java \
 	java/awt/image/ByteLookupTable.java \
 	java/awt/image/ColorModel.java \

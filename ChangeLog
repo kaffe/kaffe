@@ -1,3 +1,17 @@
+2004-10-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/image/BufferedImageFilter.java:
+	New file from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	2004-10-07  Jerry Quinn  <jlquinn@optonline.net>
+
+        * java/awt/image/BufferedImageFilter.java: Implement.
+
 2004-10-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* developers/patch-libtool-openbsd33.diff:
