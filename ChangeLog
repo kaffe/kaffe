@@ -1,4 +1,10 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
+
+	* scripts/sort-warnings.pl:
+	  Exclude a few more lines.
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/sort-warnings.pl, scripts/LogWarning.pm,
 	  scripts/JikesWarning.pm, scripts/GCCWarning.pm:
 	  Rewritten to be a 'bit' more modular.
