@@ -5,7 +5,7 @@ NOTE:
 Kaffe has its own jitterbug bug tracking system now.
 See www.kaffe.org and http://www.kaffe.org/cgi-bin/kaffe
 
-We will note new bugs there.
+We will note new bugs only there.
 
 **********************************************************************
 
@@ -17,23 +17,6 @@ MISSING OR BROKEN FEATURES
 
 * reflection: when reporting fields of a class, kaffe wrongly does not include
   public static final fields of the interfaces that this class implements.
-
-* There's a bug in the jitter:
-
-    public class TableSwitch {
-	    public static void main(String[] args) {
-		    int i = 0x7fffffff;
-		    System.out.println("switch("+i+")");
-		    switch(i) {
-		    case -1: System.out.println("-1"); break;
-		    case 0: System.out.println("0"); break;
-		    case 1: System.out.println("1"); break;
-		    default: System.out.println("default"); break;
-		    }
-	    }
-    }
-
-  produces the wrong result.
 
 * java.io.OutputStreamWriter is not buffered like it should.
   This can lead to many small writes where a conformant implementation
@@ -64,11 +47,6 @@ MISSING OR BROKEN FEATURES
 
 * Some run-time classes may not serialize or deserialize according to their
   serial forms.
-
-* Several classes do not have serialVersionUIDs hard-coded in them.  This
-  makes these classes not interoperable with Sun's classes.  
-  Note that some of our classes currently report Sun's serialVersionUIDs,
-  even though they're not following their serial form.
 
 * java.math.* is incomplete.  java.math.BigInteger is mostly written and
   relies on the GNU Multi-precision math package (GMP).  BigDecimal is
