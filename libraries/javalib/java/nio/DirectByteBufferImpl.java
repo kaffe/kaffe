@@ -1,4 +1,4 @@
-/* DirectByteBufferImpl.java -- 
+/* DirectByteBufferImpl.java --
    Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -51,8 +51,8 @@ final class DirectByteBufferImpl extends ByteBuffer
         System.loadLibrary ("nio");
       }
   }
-  
-  /** Used by MappedByteBufferImpl to prevent premature GC. */
+
+  /** Used by MappedByteBufferImpl and when slicing to prevent premature GC. */
   protected Object owner;
 
   RawData address;
@@ -62,10 +62,10 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     this (null, address, (int) len, (int) len, 0, false);
   }
-  
+
   public DirectByteBufferImpl (Object owner, RawData address,
-			       int capacity, int limit,
-			       int position, boolean readOnly)
+                               int capacity, int limit,
+                               int position, boolean readOnly)
   {
     super (capacity, limit, position, -1);
     this.address = address;
@@ -73,14 +73,22 @@ final class DirectByteBufferImpl extends ByteBuffer
     this.owner = owner;
   }
 
+  /**
+   * Allocates a new direct byte buffer.
+   */
+  public static ByteBuffer allocate(int capacity)
+  {
+    return new DirectByteBufferImpl(allocateImpl(capacity), capacity);
+  }
+
   private static native RawData allocateImpl (int capacity);
   private static native void freeImpl (RawData address);
-  
+
   protected void finalize () throws Throwable
   {
     freeImpl (address);
   }
-  
+
   static native byte getImpl (RawData address, int index);
   static native void putImpl (RawData address, int index, byte value);
 
@@ -102,7 +110,7 @@ final class DirectByteBufferImpl extends ByteBuffer
   }
 
   static native void getImpl (RawData address, int index,
-			      byte[] dst, int offset, int length);
+                              byte[] dst, int offset, int length);
 
   public ByteBuffer get (byte[] dst, int offset, int length)
   {
@@ -126,7 +134,7 @@ final class DirectByteBufferImpl extends ByteBuffer
     position (pos + 1);
     return this;
   }
-  
+
   public ByteBuffer put (int index, byte value)
   {
     checkIfReadOnly();
@@ -135,23 +143,23 @@ final class DirectByteBufferImpl extends ByteBuffer
     putImpl (address, index, value);
     return this;
   }
-  
+
   static native void shiftDown(RawData address, int dst_offset, int src_offset, int count);
 
   void shiftDown(int dst_offset, int src_offset, int count)
   {
     shiftDown(address, dst_offset, src_offset, count);
   }
-  
+
   public ByteBuffer compact ()
   {
     int pos = position();
     if (pos > 0)
       {
-	int count = remaining();
-	shiftDown(address, 0, pos, count);
-	position(count);
-	limit(capacity());
+        int count = remaining();
+        shiftDown(address, 0, pos, count);
+        position(count);
+        limit(capacity());
       }
     return this;
   }
@@ -162,8 +170,8 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     int rem = remaining();
     return new DirectByteBufferImpl (owner,
-				     adjustAddress(address, position()),
-				     rem, rem, 0, isReadOnly ());
+                                     adjustAddress(address, position()),
+                                     rem, rem, 0, isReadOnly ());
   }
 
   private ByteBuffer duplicate (boolean readOnly)
@@ -174,12 +182,12 @@ final class DirectByteBufferImpl extends ByteBuffer
     position(pos);
     DirectByteBufferImpl result
       = new DirectByteBufferImpl (owner, address, capacity (), limit (),
-				  pos, readOnly);
+                                  pos, readOnly);
     if (mark != pos)
       {
-	result.position(mark);
-	result.mark();
-	result.position(pos);
+        result.position(mark);
+        result.mark();
+        result.position(pos);
       }
     return result;
   }
@@ -238,18 +246,18 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     return ByteBufferHelper.getChar(this, order());
   }
-  
+
   public ByteBuffer putChar (char value)
   {
     ByteBufferHelper.putChar(this, value, order());
     return this;
   }
-  
+
   public char getChar (int index)
   {
     return ByteBufferHelper.getChar(this, index, order());
   }
-  
+
   public ByteBuffer putChar (int index, char value)
   {
     ByteBufferHelper.putChar(this, index, value, order());
@@ -260,18 +268,18 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     return ByteBufferHelper.getShort(this, order());
   }
-  
+
   public ByteBuffer putShort (short value)
   {
     ByteBufferHelper.putShort(this, value, order());
     return this;
   }
-  
+
   public short getShort (int index)
   {
     return ByteBufferHelper.getShort(this, index, order());
   }
-  
+
   public ByteBuffer putShort (int index, short value)
   {
     ByteBufferHelper.putShort(this, index, value, order());
@@ -282,18 +290,18 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     return ByteBufferHelper.getInt(this, order());
   }
-  
+
   public ByteBuffer putInt (int value)
   {
     ByteBufferHelper.putInt(this, value, order());
     return this;
   }
-  
+
   public int getInt (int index)
   {
     return ByteBufferHelper.getInt(this, index, order());
   }
-  
+
   public ByteBuffer putInt (int index, int value)
   {
     ByteBufferHelper.putInt(this, index, value, order());
@@ -304,18 +312,18 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     return ByteBufferHelper.getLong(this, order());
   }
-  
+
   public ByteBuffer putLong (long value)
   {
     ByteBufferHelper.putLong (this, value, order());
     return this;
   }
-  
+
   public long getLong (int index)
   {
     return ByteBufferHelper.getLong (this, index, order());
   }
-  
+
   public ByteBuffer putLong (int index, long value)
   {
     ByteBufferHelper.putLong (this, index, value, order());
@@ -326,13 +334,13 @@ final class DirectByteBufferImpl extends ByteBuffer
   {
     return ByteBufferHelper.getFloat (this, order());
   }
-  
+
   public ByteBuffer putFloat (float value)
   {
     ByteBufferHelper.putFloat (this, value, order());
     return this;
   }
-  
+
   public float getFloat (int index)
   {
     return ByteBufferHelper.getFloat (this, index, order());
@@ -354,12 +362,12 @@ final class DirectByteBufferImpl extends ByteBuffer
     ByteBufferHelper.putDouble (this, value, order());
     return this;
   }
-  
+
   public double getDouble (int index)
   {
     return ByteBufferHelper.getDouble (this, index, order());
   }
-  
+
   public ByteBuffer putDouble (int index, double value)
   {
     ByteBufferHelper.putDouble (this, index, value, order());

@@ -1,5 +1,16 @@
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/nio/DirectByteBufferImpl.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        *  java/nio/DirectByteBufferImpl.java
+        (owner): Updated comment.
+        (allocate): New method.
+
+2004-11-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/URL.java:
         Resynced with GNU Classpath.
 
