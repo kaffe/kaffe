@@ -335,6 +335,9 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	     lastJniFrame && !vmExcept_isJNIFrame(lastJniFrame);
 	     lastJniFrame = lastJniFrame->prev);
 
+	DBG(ELOOKUP,
+		dprintf ("dispatchException(): lastJniFrame is %p, fp 0x%x\n", lastJniFrame, (lastJniFrame?lastJniFrame->frame.jni.fp:0)); );
+
 	/*
 	 * now walk up the stack 
 	 */
@@ -346,7 +349,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		/*
 		 * if we reach the last jni frame, we're done
 		 */
-		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, (void*)frame->fp)) {
+		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, frame->fp)) {
 			thread_data->exceptPtr = lastJniFrame;
 			vmExcept_jumpToHandler(lastJniFrame); /* doesn't return */
 		}
@@ -513,11 +516,9 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, uintp
 {
 	jexceptionEntry* eptr;
 	Hjava_lang_Class* cptr;
-	int i;
+	unsigned int i;
 
 	assert(handler);
-
-	eptr = &ptr->exception_table->entry[0];
 
 	/* Right method - look for exception */
 	if (ptr->exception_table == 0) {
@@ -525,6 +526,8 @@ DBG(ELOOKUP,
 		dprintf("%s.%s has no handlers.\n", ptr->class->name->data, ptr->name->data); )
 		return (false);
 	}
+
+	eptr = &ptr->exception_table->entry[0];
 
 DBG(ELOOKUP,
 	dprintf("%s.%s has %d handlers (throw was pc=%#lx):\n",

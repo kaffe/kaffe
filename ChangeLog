@@ -1,3 +1,16 @@
+2004-04-22  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h
+	remove some NONRETURNING attributes as they break unix-pthreads
+
+	* kaffe/kaffevm/exception.h
+	(vmExcept_JNIContains, vmExcept_setJNIFrame, VmExceptHandler):
+	change type of fp to uintp as it holds the value of a register
+
+	* kaffe/kaffevm/exception.c
+	(findExceptionBlockInMethod): don't use pointers before checking
+	whether they're != NULL
+	
 2004-04-21  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/soft.c

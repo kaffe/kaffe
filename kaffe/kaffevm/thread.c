@@ -358,7 +358,6 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
  */
 static
 void
-NONRETURNING
 firstStartThread(void* arg UNUSED)
 {
 	Hjava_lang_Thread* tid;
