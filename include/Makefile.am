@@ -209,8 +209,8 @@ endif
 endif
 
 if COND_CLASSPATH_GTK_AWT
-  JAWT_HDRS = \
-  	jawt.h \
+JAWT_HDRS = \
+	jawt.h \
 	jawt_md.h
 endif
 
@@ -266,6 +266,7 @@ noinst_HEADERS = \
 	defs.h \
 	dummyin6.h \
 	files.h \
+	gccbuiltin.h \
 	getaddrinfo.h \
 	gettext.h \
 	nets.h \

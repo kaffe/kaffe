@@ -14,6 +14,8 @@
 #ifndef __defs_h
 #define __defs_h
 
+#include "gccbuiltin.h"
+
 #define	MAXNUMLEN	64
 #define	MAXLIBPATH	1024
 

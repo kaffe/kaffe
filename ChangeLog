@@ -1,3 +1,16 @@
+2005-04-01  Dalibor Topic  <topic@localhost.localdomain>
+
+	Define __builtin_expected away on gcc < 3.0
+
+	* include/Makefile.am (noinst_HEADERS): Added gccbuiltin.h.
+
+	* include/defs.h: Include gccbuiltin.h.
+
+	* include/gccbuiltin.h: New file. Taken from gcc CVS
+	file gcc/gcc/system.h.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>
+	
 2005-04-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/nio/gnu_java_nio_VMSelector.c (Java_gnu_java_nio_VMSelector_select): 
