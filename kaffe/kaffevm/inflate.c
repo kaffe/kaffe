@@ -524,11 +524,18 @@ inflate_new(void)
 	inflateInfo* info;
 
 	info = KMALLOC(sizeof(inflateInfo));
+	if (!info) {
+		return 0;
+	}
 	info->fixed_tl = 0;
 	info->fixed_td = 0;
 	info->fixed_bl = 0;
 	info->fixed_bd = 0;
 	info->slide = KMALLOC(WSIZE);
+	if (!info->slide){
+		KFREE(info);
+		return 0;
+	}
 
 	return (info);
 }
@@ -541,11 +548,15 @@ inflate_new(void)
 int
 inflate_oneshot(uint8* ibuf, int ilen, uint8* obuf, int olen)
 {
-	int r;                /* result code */
+	int r;                /* result code: 0 on success */
 	inflateInfo* pG;
 
 	pG = inflate_new();
 
+	if (!pG) {
+		return 1;
+	}
+	
 	pG->inbuf = ibuf;
 	pG->insz = ilen;
 	pG->outbuf = obuf;

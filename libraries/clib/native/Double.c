@@ -96,7 +96,7 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
 		for (t = eptr - 1; *t == '0' && t[-1] != '.'; t--);
 		memmove(t + 1, eptr, strlen(eptr) + 1);
 	}
-	return (stringC2Java(buf));
+	return (checkPtr(stringC2Java(buf)));
 }
 
 /*

@@ -19,6 +19,7 @@
 #include "baseClasses.h"
 #include "hashtab.h"
 #include "stringSupport.h"
+#include "exception.h"
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
@@ -85,6 +86,7 @@ stringC2Java(const char* cs)
 	/* Get buffer */
 	if (len * sizeof(*ary) > sizeof(buf)) {
 		ary = KMALLOC(len * sizeof(*ary));
+		if (!ary) return 0;
 	} else {
 		ary = buf;
 	}
@@ -111,10 +113,13 @@ stringC2CharArray(const char* cs)
 	const int len = strlen(cs);
 	HArrayOfChar* ary;
 	int k;
+	errorInfo info;
 
 	/* Get new array object */
-	ary = (HArrayOfChar*)newArray(TYPE_CLASS(TYPE_Char), len);
-
+	ary = (HArrayOfChar*)newArrayChecked(TYPE_CLASS(TYPE_Char),
+					     len, &info);
+	if (!ary) return 0;
+	
 	/* Convert C chars to Java chars */
 	for (k = 0; k < len; k++) {
 		unhand_array(ary)->body[k] = (unsigned char) cs[k];
@@ -157,6 +162,7 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 	/* Get buffer */
 	if (uniLen * sizeof(jchar) > sizeof(buf)) {
 		jc = KMALLOC(uniLen * sizeof(*jc));
+		if (!jc) return 0;
 	} else {
 		jc = buf;
 	}
@@ -229,10 +235,15 @@ stringInternString(Hjava_lang_String *string)
 		}
 	} else {
 		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree);
+		assert(hashTable);
 	}
 
 	/* Not in table, so add it */
 	temp = hashAdd(hashTable, string);
+	if (!temp) {
+		unlockStaticMutex(&stringLock);
+		return temp;
+	}
 	assert(temp == string);
 	unhand(string)->interned = true;
 
@@ -318,6 +329,7 @@ stringCharArray2Java(const jchar *data, int len)
 {
 	Hjava_lang_String *string;
 	HArrayOfChar *ary;
+	errorInfo info;
 
 	/* Lock intern table 
 	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
@@ -337,6 +349,8 @@ stringCharArray2Java(const jchar *data, int len)
 		} else {
 			fakeAry = (HArrayOfChar*)buf;
 		}
+		if (!fakeAry) return 0;
+		
 		memset(fakeAry, 0, sizeof(*fakeAry));
 		memcpy(unhand_array(fakeAry)->body, data, len * sizeof(*data));
 		obj_length(fakeAry) = len;
@@ -360,9 +374,13 @@ stringCharArray2Java(const jchar *data, int len)
 	}
 
 	/* Create a new String object */
-	ary = (HArrayOfChar*)newArray(_Jv_charClass, len);
+	ary = (HArrayOfChar*)newArrayChecked(_Jv_charClass, len,
+					     &info);
+	if (!ary) return 0;
+	
 	memcpy(ARRAY_DATA(ary), data, len * sizeof(jchar));
-	string = (Hjava_lang_String*)newObject(StringClass);
+	string = (Hjava_lang_String*)newObjectChecked(StringClass, &info);
+	if (!string) return 0;
 	unhand(string)->value = ary;
 	unhand(string)->count = len;
 
@@ -371,7 +389,8 @@ stringCharArray2Java(const jchar *data, int len)
 	 * but we don't care if we lose the race.  The string created by the
 	 * loser will be picked up by the gc.
 	 */
-	return (stringInternString(string));
+	string = stringInternString(string);
+	return (string);
 }
 
 /*                      

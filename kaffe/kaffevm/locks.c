@@ -161,7 +161,7 @@ initLock(iLock* lk)
  * Retrieve a machine specific (possibly) locking structure associated with
  * this address.  If one isn't found, allocate it.
  */
-iLock*
+static iLock*
 newLock(void* address)
 {
 	struct lockList* lockHead;
@@ -201,6 +201,16 @@ retry:;
                  */
                 SPINOFF(lockHead->lock);
                 lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
+		/* This is a problem.  C code can do
+		 * lockMutex()... lockMutex().  If the inner lockMutex
+		 * fails, we can't throw an exception.  This seems to
+		 * imply that all lock calls must be checked.
+		 */
+		if (!lock) {
+			struct _errorInfo einfo;
+			postOutOfMemory(&einfo);
+			throwError(&einfo);
+		}
 		initLock(lock);
                 SPINON(lockHead->lock);
 

@@ -52,7 +52,12 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 RDBG(	dprintf("constant_pool_count=%d\n", poolsize);	)
 
 	/* Allocate space for tags and data */
-	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * poolsize, GC_ALLOC_CONSTANT);
+	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * poolsize,
+			 GC_ALLOC_CONSTANT);
+	if (!pool) {
+		postOutOfMemory(einfo);
+		return false;
+	}
 	tags = (u1*)&pool[poolsize];
 	info->data = pool;
 	info->tags = tags;
@@ -76,6 +81,10 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 				goto fail;
 			}
 			pool[i] = (ConstSlot) utf8ConstNew(fp->buf, len);
+			if (!pool[i]) {
+				postOutOfMemory(einfo);
+				return 0;
+			}
 			fp->buf += len;
 			break;
 		case CONSTANT_Class:

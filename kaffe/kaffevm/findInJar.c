@@ -93,6 +93,7 @@ CDBG(	dprintf("Scanning for class %s\n", cname);		)
 	case CP_ZIPFILE:
 		class = newClass();
 		if (class == 0) {
+			postOutOfMemory(einfo);
 			return (0);
 		}
 
@@ -216,6 +217,11 @@ FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 			hand.size = sbuf.st_size;
 
 			hand.base = hand.size == 0 ? NULL : KMALLOC(hand.size);
+			if (hand.size != 0 && hand.base == 0) {
+				postOutOfMemory(einfo);
+				hand.type = CP_INVALID;
+				goto done;
+			}
 			hand.buf = hand.base;
 
 			i = 0;

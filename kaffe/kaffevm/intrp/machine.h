@@ -52,12 +52,15 @@
   }
 
 #define field_class()		(finfo.class)
+#define field_statics()		(finfo.class->static_data)
 
 #define	get_class_info(_idx) \
   crinfo = getClass(_idx, meth->class, &einfo); \
   if (crinfo == 0) { throwError(&einfo); }
 
 #define	class_object()		(crinfo)
+
+#define compile_time_error(EINFO) throwError(&EINFO)
 
 #define	switchpair_size		8
 #define	switchpair_addr		4

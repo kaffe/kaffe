@@ -78,6 +78,7 @@ initThreads(void)
 	assert(standardGroup != 0);
 	unhand(standardGroup)->parent = 0;
 	unhand(standardGroup)->name = stringC2Java("main");
+	assert(unhand(standardGroup)->name);
 	unhand(standardGroup)->maxPriority = java_lang_Thread_MAX_PRIORITY;
 	unhand(standardGroup)->destroyed = 0;
 	unhand(standardGroup)->daemon = 0;
@@ -94,8 +95,9 @@ initThreads(void)
 	initStaticLock(&thread_start_lock);
 }
 
-static void
-createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize)
+static int
+createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
+	     struct _errorInfo *einfo)
 {
 	struct Hkaffe_util_Ptr* nativethread;
 
@@ -105,6 +107,12 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize)
 		unhand(tid)->daemon,
 		tid,
 		stacksize);
+
+	if (!nativethread) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
+		
 	unhand(tid)->PrivateInfo = nativethread;
 	/* preallocate a stack overflow error for this thread in case it 
 	 * runs out 
@@ -112,6 +120,7 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize)
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;
+	return 1;
 }
 
 /*
@@ -120,6 +129,9 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize)
 void
 startThread(Hjava_lang_Thread* tid)
 {
+	int success;
+	struct _errorInfo info;
+	
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
 	}
@@ -131,9 +143,13 @@ startThread(Hjava_lang_Thread* tid)
 	 */
 	lockStaticMutex(&thread_start_lock);
 
-	createThread(tid, &firstStartThread, threadStackSize);
+	success = createThread(tid, &firstStartThread,
+			       threadStackSize, &info);
 
 	unlockStaticMutex(&thread_start_lock);
+	if (!success) {
+		throwError(&info);
+	}
 }
 
 /*
@@ -211,6 +227,7 @@ createInitialThread(const char* nm)
 	assert(tid != 0);
 
 	unhand(tid)->name = stringC2CharArray(nm);
+	assert(unhand(tid)->name);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 0;
@@ -249,9 +266,14 @@ startSpecialThread(void* arg)
  * Start a daemon thread, such as a gc or finalizer thread.
  * We give these threads a java incarnation for consistency.
  * It might not be strictly necessary for the gc thread.
+ *
+ * This guy can fail because of allocation failure, or because
+ * createThread failed.
+ * XXX
  */
 Hjava_lang_Thread*
-createDaemon(void* func, const char* nm, void *arg, int prio, size_t stacksize)
+createDaemon(void* func, const char* nm, void *arg, int prio,
+	     size_t stacksize, struct _errorInfo *einfo)
 {
 	Hjava_lang_Thread* tid;
 
@@ -262,6 +284,10 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	assert(tid != 0);
 
 	unhand(tid)->name = stringC2CharArray(nm);
+	if (!unhand(tid)->name) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
 	unhand(tid)->priority = prio;
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 1;
@@ -270,8 +296,9 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	unhand(tid)->target = (void*)func;
 	unhand(tid)->group = (void*)arg;
   
-	createThread(tid, startSpecialThread, stacksize);
-
+	if (!createThread(tid, startSpecialThread, stacksize, einfo)) {
+		return 0;
+	}
 	return (tid);
 }
 

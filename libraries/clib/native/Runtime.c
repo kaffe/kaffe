@@ -42,7 +42,7 @@ extern jboolean runFinalizerOnExit;
 struct Hjava_lang_String*
 java_lang_Runtime_initializeLinkerInternal(struct Hjava_lang_Runtime* this)
 {
-	return (stringC2Java(libraryPath));
+	return (checkPtr(stringC2Java(libraryPath)));
 }
 
 /*
@@ -67,7 +67,7 @@ java_lang_Runtime_buildLibName(struct Hjava_lang_Runtime* this, struct Hjava_lan
 	strncat(lib, LIBRARYSUFFIX, MAXLIBPATH-1);
 	lib[MAXLIBPATH-1] = 0;
 
-	return (stringC2Java(lib));
+	return (checkPtr(stringC2Java(lib)));
 }
 
 /*

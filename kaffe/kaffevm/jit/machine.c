@@ -270,7 +270,10 @@ DBG(MOREJIT,
 	/* Next reduce bytecode to native code */
 	/***************************************/
 
-	initInsnSequence(codeperbytecode * len, meth->localsz, meth->stacksz);
+	if (!(success = initInsnSequence(codeperbytecode * len, meth->localsz,
+					 meth->stacksz, einfo))) {
+		goto done1;
+	}
 
 	start_basic_block();
 	start_function();
@@ -350,7 +353,10 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 
 	assert(maxTemp < MAXTEMPS);
 
-	finishInsnSequence(codeInfo, &ncode);
+	if (finishInsnSequence(codeInfo, &ncode, einfo) == false) {
+		success = false;
+		goto done;
+	}
 	installMethodCode(codeInfo, meth, &ncode);
 
 done:
@@ -371,7 +377,7 @@ DBG(JIT,
 		       (int)(tme - tms), jitStats.time,
 		       METHOD_NATIVECODE(meth));
 	}
-
+done1:
 	jitting = 0;	/* DEBUG */
 	stopTiming(&jit_time);
 	leaveTranslator();
@@ -383,8 +389,8 @@ done2:
 /*
  * Generate the code.
  */
-void
-finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
+bool
+finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 {
 #if defined(CALLTARGET_ALIGNMENT)
 	int align = CALLTARGET_ALIGNMENT;
@@ -405,6 +411,10 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 	 * addresses.   XXX: this should really be gc_memalign
 	 */  
 	methblock = gc_malloc(constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	if (methblock == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
 	codebase = methblock + constlen;
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned int)codebase % align != 0) {
@@ -429,6 +439,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 	code->memlen = constlen + CODEPC;
 	code->code = codebase;
 	code->codelen = CODEPC;
+	return (true);
 }
 
 /*
@@ -505,8 +516,9 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 /*
  * Init instruction generation.
  */
-void
-initInsnSequence(int codesize, int localsz, int stacksz)
+bool
+initInsnSequence(int codesize, int localsz, int stacksz,
+		 struct _errorInfo *einfo)
 {
 	/* Clear various counters */
 	tmpslot = 0;
@@ -530,9 +542,14 @@ initInsnSequence(int codesize, int localsz, int stacksz)
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
 	codeblock = KMALLOC(codeblock_size + CODEBLOCKREDZONE);
+	if (!codeblock) {
+		postOutOfMemory(einfo);
+		return false;
+	}
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
-		     (jlong)GCSIZEOF(codeblock));
+		     (jlong) GCSIZEOF(codeblock));
 	CODEPC = 0;
+	return true;
 }
 
 /*

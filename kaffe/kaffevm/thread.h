@@ -15,6 +15,7 @@
 #include "md.h"
 
 #include "native.h"
+#include "errors.h"
 #include "java_lang_Throwable.h"
 #include "java_lang_Thread.h"
 #include "java_lang_ThreadGroup.h"
@@ -43,7 +44,8 @@ void	finalizeThread(Hjava_lang_Thread*);
 char*	nameThread(Hjava_lang_Thread*);
 char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
-Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int, size_t);
+Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int,
+				size_t, struct _errorInfo *);
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 

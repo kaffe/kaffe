@@ -16,6 +16,7 @@
 #include "jsyscall.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/errors.h"
 
 void
 kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
@@ -25,6 +26,11 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 	void	*buf;
 
 	buf = KMALLOC( bLen);
+	if (!buf) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 
 	stringJava2CBuf( jstr, fName, sizeof(fName));
 

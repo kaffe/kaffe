@@ -51,6 +51,7 @@ Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
 Hjava_lang_Class* SerialClass;
 Hjava_lang_Class* CloneClass;
+Hjava_lang_Class* PtrClass;
 
 Hjava_lang_Class* javaLangVoidClass;
 Hjava_lang_Class* javaLangBooleanClass;
@@ -65,9 +66,13 @@ Hjava_lang_Class* javaLangDoubleClass;
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 Hjava_lang_Class* javaLangNullPointerException;
 
+/* Let's not load this if we can't open Klasses.jar */
+Hjava_lang_Class* javaIoIOException;
+
 #define SYSTEMCLASS "java/lang/System"
 #define	SERIALCLASS "java/io/Serializable"
 #define	CLONECLASS  "java/lang/Cloneable"
+#define PTRCLASS    "kaffe/util/Ptr"
 
 #define	INIT			"<clinit>"
 #define	FINAL			"finalize"
@@ -130,6 +135,13 @@ initialiseKaffe(void)
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
 
+	if (!(init_name && final_name && void_signature &&
+	      constructor_name && Code_name && LineNumberTable_name &&
+	      ConstantValue_name && Exceptions_name &&
+	      SourceFile_name)) {
+		fprintf(stderr, "not enough memory to run kaffe\n");
+		ABORT();
+	}
 #if defined(HAVE_GCJ_SUPPORT)
 	/* Init GCJ support */
 	gcjInit();
@@ -187,10 +199,12 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangLongClass, "java/lang/Long");
 	loadStaticClass(&javaLangFloatClass, "java/lang/Float");
 	loadStaticClass(&javaLangDoubleClass, "java/lang/Double");
+	loadStaticClass(&PtrClass, PTRCLASS);
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
+	loadStaticClass(&javaIoIOException, "java/io/IOException");
 
 	/* Fixup primitive types */
 	finishTypes();
@@ -203,6 +217,10 @@ initBaseClasses(void)
 	 * "KAFFE_VERSION".
 	 */
 	utf8 = utf8ConstNew("KAFFE_VERSION", -1);
+	if (!utf8) {
+		fprintf(stderr, "not enough memory to run kaffe\n");
+		ABORT();
+	}
 	f = lookupClassField(CloneClass, utf8, true, &einfo);
 	utf8ConstRelease(utf8);
 	if (f == 0) {

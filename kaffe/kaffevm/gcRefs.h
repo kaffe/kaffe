@@ -16,7 +16,7 @@
 #include "gc.h"
 
 struct _Collector;
-void gc_add_ref(const void* mem);
+bool gc_add_ref(const void* mem);
 bool gc_rm_ref(const void* mem);
 void gc_walk_refs(struct _Collector*);
 

@@ -70,15 +70,20 @@ verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 	bool wide;
 	codeinfo *codeInfo;
 
-	/* We don't need to do this twice */
-	meth->accflags |= ACC_VERIFIED;
-
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__ " %p: %s.%s\n", THREAD_NATIVE(), 
 		meth->class->name->data, meth->name->data);
     )
-	codeInfo = KMALLOC(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
+	codeInfo = KMALLOC(sizeof(codeinfo) + (meth->c.bcode.codelen *
+					       sizeof(perPCInfo)));
 	*pcodeinfo = codeInfo;
+	if (!codeInfo) {
+		postOutOfMemory(einfo);
+		return false;
+	}
+
+	/* We don't need to do this twice */
+	meth->accflags |= ACC_VERIFIED;
 
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__" %p: codeInfo = %p\n", THREAD_NATIVE(), codeInfo);	
@@ -368,7 +373,13 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 
 	/* Allocate frame to hold type data */
 	activeFrame = ALLOCFRAME();
-	assert(activeFrame != 0);
+	if (activeFrame == 0) {
+		postOutOfMemory(einfo);
+		return false;
+	}
+
+	SET_DONEVERIFY(pc);
+
 	FRAMELOAD(pc);
 
 	/* Process basic block until we get to the beginning of a new one */
@@ -1356,7 +1367,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				failed = true;
 				goto done;
 			}
-			if (FIELD_ISREF(finfo.field)) {
+			if (!FIELD_ISPRIM(finfo.field)) {
 				STKPUSH(1);
 				STACKOUT(0, TOBJ);
 			}
@@ -1395,7 +1406,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				failed = true;
 				goto done;
 			}
-			if (FIELD_ISREF(finfo.field)) {
+			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKIN(0, TOBJ);
 				STKPOP(1);
 			}
@@ -1435,7 +1446,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				goto done;
 			}
 			STACKIN(0, TOBJ);
-			if (FIELD_ISREF(finfo.field)) {
+			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKOUT(0, TOBJ);
 			}
 			else switch (CLASS_PRIM_SIG(FIELD_TYPE(finfo.field))){
@@ -1471,7 +1482,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				failed = true;
 				goto done;
 			}
-			if (FIELD_ISREF(finfo.field)) {
+			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKIN(0, TOBJ);
 				STACKIN(1, TOBJ);
 				STKPOP(2);
@@ -1978,6 +1989,7 @@ tidyVerifyMethod(codeinfo *codeInfo)
 	int pc;
 
 	/* Free the old data */
+	if (!codeInfo) return;
 	for (pc = 0; pc < codeInfo->codelen; pc++) {
 		if (codeInfo->perPC[pc].frame != 0) {
 			KFREE(codeInfo->perPC[pc].frame);

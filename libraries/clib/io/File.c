@@ -23,6 +23,7 @@
 #include "java_io_File.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/errors.h"
 
 /*
  * Is named item a file?
@@ -233,6 +234,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 	HArrayOfObject* array;
 	int count;
 	int i;
+	int oom = 0;
 
 	stringJava2CBuf(unhand(this)->path, path, sizeof(path));
 
@@ -252,7 +254,17 @@ java_io_File_list0(struct Hjava_io_File* this)
 			continue;
 		}
 		mentry = KMALLOC(sizeof(struct dentry) + NAMLEN(entry));
-		assert(mentry != 0);
+		if (!mentry) {
+			errorInfo info;
+
+			while (dirlist) {
+				mentry = dirlist;
+				dirlist = dirlist->next;
+				KFREE(mentry);
+			}
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 		strcpy(mentry->name, entry->d_name);
 		mentry->next = dirlist;
 		dirlist = mentry;
@@ -262,12 +274,23 @@ java_io_File_list0(struct Hjava_io_File* this)
 	closedir(dir);
 
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/String");
+	/* XXX: This assert is a noop.  If AllocObjectArray throws an
+	   exception, we leak. */
 	assert(array != 0);
 	for (i = 0; i < count; i++) {
 		mentry = dirlist;
 		dirlist = mentry->next;
-		unhand_array(array)->body[i] = (Hjava_lang_Object*)stringC2Java(mentry->name);
+		unhand_array(array)->body[i] =
+			(Hjava_lang_Object*)stringC2Java(mentry->name);
+		/* if allocation fails, continue freeing mentries in
+		   this loop. */
+		oom |= !unhand_array(array)->body[i];
 		KFREE(mentry);
+	}
+	if (oom) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
 	}
 
 	return (array);

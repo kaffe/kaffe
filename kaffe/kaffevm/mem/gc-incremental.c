@@ -25,6 +25,9 @@
 #include "md.h"
 #include "stats.h"
 
+/* Avoid recursively allocating OutOfMemoryError */
+#define OOM_ALLOCATING		((void *) -1)
+
 #define GCSTACKSIZE		16384
 #define FINALIZERSTACKSIZE	THREADSTACKSIZE
 
@@ -35,6 +38,10 @@ static struct CollectorImpl {
 	Collector 	collector;
 	/* XXX include static below here for encapsulation */
 } gc_obj;
+
+/* XXX don't use these types ! */
+Hjava_lang_Thread* garbageman;
+static Hjava_lang_Thread* finalman;
 
 static gcList gclists[5];
 static const int mustfree = 4;		/* temporary list */
@@ -53,6 +60,10 @@ static timespent sweep_time;
 static counter gcgcablemem;
 static counter gcfixedmem;
 #endif /* KAFFE_STATS */
+
+static void *reserve;
+static void *outOfMem;
+static void *outOfMem_allocator;
 
 #if defined(SUPPORT_VERBOSEMEM)
 
@@ -733,7 +744,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	mem = UTOMEM(unit);
 	if (unit == 0) {
 		unlockStaticMutex(&gc_lock);
-		throwOutOfMemory();		/* Big XXX */
+		return 0;
 	}
 
 	info = GCMEM2BLOCK(mem);
@@ -779,8 +790,70 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
 		UAPPENDLIST(gclists[white], unit);
 	}
+	if (!reserve) {
+		reserve = gc_primitive_reserve();
+	}
+
+	/* It is not safe to allocate java objects the the first time
+	 * gcMalloc is called, but it should be safe after gcEnable
+	 * has been called.
+	 */
+	if (garbageman && !outOfMem && !outOfMem_allocator) {
+		outOfMem_allocator = jthread_current();
+	}
+
 	unlockStaticMutex(&gc_lock);
+
+	/* jthread_current() will be null in some window before we
+	 * should try allocating java objects
+	 */
+	if (!outOfMem && outOfMem_allocator
+	    && outOfMem_allocator == jthread_current()) { 
+		outOfMem = OOM_ALLOCATING;
+		outOfMem = OutOfMemoryError;
+		outOfMem_allocator = 0;
+		gc_add_ref(outOfMem);
+	}
 	return (mem);
+}
+
+Hjava_lang_Throwable *
+gcThrowOOM(Collector *gcif)
+{
+	Hjava_lang_Throwable *ret = 0;
+	int reffed;
+
+	/*
+	 * Make sure we are the only thread to use this exception
+	 * object.
+	 */
+	lockStaticMutex(&gc_lock);
+	ret = outOfMem;
+	reffed = outOfMem != 0;
+	outOfMem = 0;
+	/* We try allocating reserved pages before we allocate the
+	 * outOfMemory error.  We can use some or all of the reserved
+	 * pages to actually grab an error.
+	 */
+	if (reserve) {
+		gc_primitive_free(reserve);
+		reserve = 0;
+		if (!ret || ret == OOM_ALLOCATING) {
+			unlockStaticMutex(&gc_lock);
+			ret = OutOfMemoryError;
+			lockStaticMutex(&gc_lock);
+		}
+	}
+	if (ret == OOM_ALLOCATING || ret == 0) {
+		/* die now */
+		unlockStaticMutex(&gc_lock);
+		fprintf(stderr,
+			"Not enough memory to throw OutOfMemoryError!\n");
+		ABORT();
+	}
+	unlockStaticMutex(&gc_lock);
+	if (reffed) gc_rm_ref(ret);
+	return ret;
 }
 
 /*
@@ -871,10 +944,6 @@ gcInit(Collector *collector)
 	gc_init = 1;
 }
 
-/* XXX don't use these types ! */
-Hjava_lang_Thread* garbageman;
-static Hjava_lang_Thread* finalman;
-
 /*
  * Start gc threads, which enable collection
  */
@@ -883,13 +952,18 @@ void
 /* ARGSUSED */
 gcEnable(Collector* collector)
 {
+	errorInfo info;
+
         if (DBGEXPR(NOGC, false, true))
         {
                 /* Start the GC daemons we need */
                 finalman = createDaemon(&finaliserMan, "finaliser", 
-				collector, THREAD_MAXPRIO, FINALIZERSTACKSIZE);
+				collector, THREAD_MAXPRIO,
+					FINALIZERSTACKSIZE, &info);
                 garbageman = createDaemon(&gcMan, "gc", 
-				collector, THREAD_MAXPRIO, GCSTACKSIZE);
+				collector, THREAD_MAXPRIO,
+					  GCSTACKSIZE, &info);
+		assert(finalman && garbageman);
         }
 }
 
@@ -961,7 +1035,8 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 	gcWalkMemory,
 	gcWalkConservative,
 	gcRegisterFixedTypeByIndex,
-	gcRegisterGcTypeByIndex
+	gcRegisterGcTypeByIndex,
+	gcThrowOOM
 };
 
 /*

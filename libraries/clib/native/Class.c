@@ -68,7 +68,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
-	utf8buf = utf8ConstNew(buf, -1);
+	utf8buf = checkPtr(utf8ConstNew(buf, -1));
 	if (buf[0] == '[') {
 		clazz = loadArray(utf8buf, loader, &einfo);
 	}
@@ -93,7 +93,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 		 * NB: 1.2 seems to be more consistent and throws 
 		 * ClassNotFoundException in most cases.
 		 */
-		if (!strcmp(einfo.classname, "java.lang.VerifyError")) 
+		if ((einfo.type & KERR_EXCEPTION) && !strcmp(einfo.classname, "java.lang.VerifyError")) 
 		{
 			errorInfo einfo_copy = einfo;
 			postExceptionMessage(&einfo, 
@@ -101,16 +101,16 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 				einfo.mess);
 			discardErrorInfo(&einfo_copy);
 		} else
-		if (!strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
+		if ((einfo.type & KERR_EXCEPTION) && !strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
 		{
 			/*
 			 * However, we don't upgrade if it is a second attempt
 			 * to load a class whose loading has already failed.
 			 */
 			classEntry* centry;
-			centry = lookupClassEntry(utf8buf, loader);
-			if (centry->class &&
-			    centry->class->state == CSTATE_FAILED) {
+			centry = lookupClassEntry(utf8buf, loader, &einfo);
+			if (centry == 0 || (centry->class &&
+			    centry->class->state == CSTATE_FAILED)) {
 				utf8ConstRelease(utf8buf);
 				throwError(&einfo);
 			}
@@ -157,8 +157,15 @@ java_lang_Class_forName0(struct Hjava_lang_String* str)
 	static Method * cfnmeth;
 
 	if (!cfnmeth) {
-		Utf8Const *fname = utf8ConstNew("forName", -1);
+		Utf8Const *fname = checkPtr(utf8ConstNew("forName", -1));
 		Utf8Const *fsig = utf8ConstNew("(Ljava/lang/String;)Ljava/lang/Class;", -1);
+		if (!fsig) {
+			errorInfo einfo;
+
+			utf8ConstRelease(fname);
+			postOutOfMemory(&einfo);
+			throwError(&einfo);
+		}
 		cfnmeth = findMethodLocal(ClassClass, fname, fsig);
 		utf8ConstRelease(fname);
 		utf8ConstRelease(fsig);
@@ -175,6 +182,11 @@ java_lang_Class_forName0(struct Hjava_lang_String* str)
          */
         loader = 0;
         info = (stackTraceInfo*)buildStackTrace(0);
+	if (!info) {
+		struct _errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
         for (i = 0; info[i].meth != ENDOFSTACK; i++) {
                 info[i].meth = stacktraceFindMethod(&info[i]);
 		/* skip java.lang.Class.forName(String) cause that's
@@ -198,7 +210,7 @@ java_lang_Class_forName0(struct Hjava_lang_String* str)
 struct Hjava_lang_String*
 java_lang_Class_getName(struct Hjava_lang_Class* c)
 {
-	return(utf8Const2JavaReplace(c->name, '/', '.'));
+	return(checkPtr(utf8Const2JavaReplace(c->name, '/', '.')));
 }
 
 /*
@@ -490,7 +502,7 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
-	unhand(meth)->name = utf8Const2Java(mth->name);
+	unhand(meth)->name = checkPtr(utf8Const2Java(mth->name));
 	unhand(meth)->parameterTypes = makeParameters(mth);
 	unhand(meth)->exceptionTypes = makeExceptions(mth);
 	unhand(meth)->returnType = makeReturn(mth);
@@ -514,7 +526,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	if (unhand(field)->type == 0) {
 		throwError(&info);
 	}
-	unhand(field)->name = utf8Const2Java(fld->name);
+	unhand(field)->name = checkPtr(utf8Const2Java(fld->name));
 	return (field);
 }
  

@@ -47,7 +47,6 @@ struct _exceptionFrame;
 
 void throwException(struct Hjava_lang_Throwable*) __NORETURN__;
 void throwExternalException(struct Hjava_lang_Throwable*) __NORETURN__;
-void throwError(struct _errorInfo*) __NORETURN__;
 struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
 void* nextFrame(void*);
 

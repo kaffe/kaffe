@@ -157,7 +157,7 @@ void
 walkMethods(Collector* collector, Method* m, int nm)
 {               
         while (nm-- > 0) {
-#if defined(TRANSLATOR)
+#if defined(TRANSLATOR) && 0
                 /* walk the block of jitted code conservatively.
                  * Is this really needed?
  		 */
@@ -446,10 +446,16 @@ finalizeObject(Collector* collector, void* ob)
 { 
 	extern JNIEnv Kaffe_JNIEnv;
 	JNIEnv *env = &Kaffe_JNIEnv;
+	Hjava_lang_Class* objclass;
+        Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
+	Method* final;
 
-        Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;   
-        Hjava_lang_Class* objclass = OBJECT_CLASS(obj);    
-        Method* final = objclass->finalizer;               
+	if (!obj->dtable) {
+		/* Suppose we catch ThreadDeath inside newObject() */
+		return;
+	}
+        objclass = OBJECT_CLASS(obj);    
+        final = objclass->finalizer;               
   
         assert(final != 0);
 	(*env)->CallVoidMethod(env, obj, final);

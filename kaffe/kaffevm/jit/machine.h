@@ -66,6 +66,7 @@
   }
 
 #define field_class()		(finfo.class)
+#define field_statics()		(finfo.class->static_data)
 
 /* -------------------------------------------------------------------- */
 /* Classes */
@@ -83,6 +84,15 @@
 
 #define	object_array_offset	(ARRAY_DATA_OFFSET)
 #define	object_array_length	(ARRAY_SIZE_OFFSET)
+
+/* -------------------------------------------------------------------- */
+/* Errors */
+
+#define compile_time_error(EINFO) {		\
+	*einfo = (EINFO);			\
+	success = false;			\
+	goto done;				\
+}
 
 /* -------------------------------------------------------------------- */
 /* Switches */
@@ -111,8 +121,9 @@ typedef struct _nativeCodeInfo {
 } nativeCodeInfo;
 
 struct codeinfo;
-void initInsnSequence(int, int, int);
-void finishInsnSequence(struct codeinfo*, nativeCodeInfo*);
+bool initInsnSequence(int codesize, int localsz, int stacksz,
+		      struct _errorInfo *einfo);
+bool finishInsnSequence(struct codeinfo*, nativeCodeInfo*, errorInfo*);
 void installMethodCode(struct codeinfo*, Method*, nativeCodeInfo*);
 
 typedef struct {

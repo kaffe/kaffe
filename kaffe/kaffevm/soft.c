@@ -119,6 +119,11 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 	}
 	else {
 		arraydims = KCALLOC(dims+1, sizeof(int));
+		if (!arraydims) {
+			errorInfo info;
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 	}
 
 	/* stack grows up, so move to the first dimension */
@@ -163,6 +168,11 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	}
 	else {
 		arraydims = KCALLOC(dims+1, sizeof(int));
+		if (!arraydims) {
+			errorInfo info;
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 	}
 
 	/* Extract the dimensions into an array */
@@ -393,6 +403,11 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		char *format = "can't cast `%s' to `%s'";
 		char *buf = KMALLOC(strlen(fromtype) 
 			+ strlen(totype) + strlen(format));
+		if (!buf) {
+			errorInfo info;
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 		sprintf(buf, format, fromtype, totype);
 		ccexc = ClassCastException(buf);
 		KFREE(buf);

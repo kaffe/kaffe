@@ -52,19 +52,18 @@
 static Hjava_lang_Class* arr_interfaces[2];
 
 extern JNIEnv Kaffe_JNIEnv;
-extern gcFuncs gcClassObject;
 
 extern bool verify2(Hjava_lang_Class*, errorInfo*);
 extern bool verify3(Hjava_lang_Class*, errorInfo*);
 
 static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, Hjava_lang_ClassLoader*);
 
-static void buildDispatchTable(Hjava_lang_Class*);
+static bool buildDispatchTable(Hjava_lang_Class*, errorInfo *info);
 static bool checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo);
-static void buildInterfaceDispatchTable(Hjava_lang_Class*);
-static void allocStaticFields(Hjava_lang_Class*);
+static bool buildInterfaceDispatchTable(Hjava_lang_Class*, errorInfo*);
+static bool allocStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static void resolveObjectFields(Hjava_lang_Class*);
-static void resolveStaticFields(Hjava_lang_Class*);
+static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
 
 #if !defined(ALIGNMENT_OF_SIZE)
@@ -95,6 +94,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 #ifdef DEBUG
 	static int depth;
 #endif
+	static Method *object_fin;
 
 	/* If this class is initialised to the required point, quit now */
 	if (class->state >= tostate) {
@@ -155,8 +155,10 @@ retry:
 		 * the space with any constant values.  This isn't necessary
 		 * for pre-loaded classes.
 		 */
-		if (class->state != CSTATE_PRELOADED) {
-			allocStaticFields(class);
+		if (class->state != CSTATE_PRELOADED
+		    && !allocStaticFields(class, einfo)) {
+			success = false;
+			goto done;
 		}
 
 		SET_CLASS_STATE(CSTATE_DOING_PREPARE);
@@ -171,7 +173,7 @@ retry:
 			 */
 			unlockKnownMutex(classLock);
 			class->superclass = getClass((uintp)class->superclass, 
-							class, einfo);
+						     class, einfo);
 			classLock = lockMutex(class);
 			if (class->superclass == 0) {
 				success = false;
@@ -221,6 +223,11 @@ retry:
 		/* We build a list of *all* interfaces this class can use */
 		if (class->interface_len != j) {
 			newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, GC_ALLOC_INTERFACE);
+			if (newifaces == 0) {
+				postOutOfMemory(einfo);
+				success = false;
+				goto done;
+			}
 			for (i = 0; i < class->interface_len; i++) {
 				newifaces[i] = class->interfaces[i];
 			}
@@ -248,7 +255,8 @@ retry:
 		class->total_interface_len = totalilen;
 
 		resolveObjectFields(class);
-		resolveStaticFields(class);
+		success = resolveStaticFields(class, einfo);
+		if (!success) goto done;
 
 #if defined(HAVE_GCJ_SUPPORT)
 		if (CLASS_GCJ(class)) {
@@ -260,14 +268,16 @@ retry:
 		 * differently since they only have a <clinit> method.
 		 */
 		if (!CLASS_IS_INTERFACE(class)) {
-			buildDispatchTable(class);
-			success = checkForAbstractMethods(class, einfo);
-			if (success == false) {
-				goto done;
+			success = buildDispatchTable(class, einfo);
+			if (success == true) {
+				success = checkForAbstractMethods(class, einfo);
 			}
 		}
 		else {
-			buildInterfaceDispatchTable(class);
+			success = buildInterfaceDispatchTable(class, einfo);
+		}
+		if (success == false) {
+			goto done;
 		}
 
 		SET_CLASS_STATE(CSTATE_PREPARED);
@@ -346,8 +356,18 @@ retry:
 			goto done;
 		}
 
-		/* is it empty? */
-		if (meth->c.bcode.codelen == 1 && meth->c.bcode.code[0] == RETURN) {
+		/* is it empty?  This test should work even if an
+		 * object has been finalized before this class is
+		 * loaded. If Object.finalize() is emtpy, save a pointer
+		 * to the method itself, and check meth against it in
+		 * the future.
+		 */
+		if ((meth->c.bcode.codelen == 1
+		     && meth->c.bcode.code[0] == RETURN)) {
+			if (!object_fin && meth->class == ObjectClass)
+				object_fin = meth;
+			class->finalizer = 0;
+		} else if (meth == object_fin) {
 			class->finalizer = 0;
 		} else {
 			class->finalizer = meth;
@@ -539,12 +559,13 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hja
 /*
  * add source file name to be printed in exception backtraces
  */
-void
-addSourceFile(Hjava_lang_Class* c, int idx)
+bool
+addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 {
 	constants* pool;
 	const char* sourcefile;
 	const char* basename;
+	bool success = true;
 
 	pool = CLASS_CONSTANTS (c);
 	sourcefile = WORD2UTF (pool->data[idx])->data;
@@ -555,7 +576,16 @@ addSourceFile(Hjava_lang_Class* c, int idx)
 		basename++;
 	}
 	c->sourcefile = KMALLOC(strlen(basename) + 1);
-	strcpy(c->sourcefile, basename);	
+	if (c->sourcefile != 0) {
+		strcpy(c->sourcefile, basename);	
+	} else {
+		success = false;
+		postOutOfMemory(einfo);
+	}
+	/* we should be able to drop this utf8 here */
+	utf8ConstRelease(WORD2UTF (pool->data[idx]));
+	pool->data[idx] = 0;
+	return (success);
 }
 
 Method*
@@ -744,7 +774,8 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	classEntry* centry;
 	Hjava_lang_Class* clazz = NULL;
 
-        centry = lookupClassEntry(name, loader);
+        centry = lookupClassEntry(name, loader, einfo);
+	if (!centry) return 0;
 	/*
 	 * An invariant for classEntries is that if centry->class != 0, then
 	 * the corresponding class object has been read completely and it is
@@ -775,6 +806,11 @@ DBG(VMCLASSLOADER,
 			dprintf("classLoader: loading %s\n", name->data); 
     )
 			str = utf8Const2JavaReplace(name, '/', '.');
+			if (!str) {
+				postOutOfMemory(einfo);
+				unlockMutex(centry);
+				return 0;
+			}
 			/* If an exception is already pending, for instance
 			 * because we're resolving one that has occurred,
 			 * save it and clear it for the upcall.
@@ -865,7 +901,11 @@ DBG(VMCLASSLOADER,
 			 * classloader, so anchor this one
 			 */
 			if (clazz != NULL) {
-				gc_add_ref(clazz);
+				if (!gc_add_ref(clazz)) {
+					postOutOfMemory(einfo);
+					unlockKnownMutex(celock);
+					return 0;
+				}
 			} else {
 DBG(RESERROR,
 				dprintf("findClass failed: %s:`%s'\n", 
@@ -911,7 +951,7 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 
 	clazz = getClassFromSignature(&name->data[1], loader, einfo);
 	if (clazz != 0) {
-		return (lookupArray(clazz));
+		return (lookupArray(clazz, einfo));
 	}
 	return (0);
 }
@@ -930,7 +970,10 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	iLock* celock;
 
 	utf8 = utf8ConstNew(name, -1);
-	centry = lookupClassEntry(utf8, 0);
+	assert(utf8);
+	centry = lookupClassEntry(utf8, 0, &info);
+	if (!centry) goto bad;
+	
 	utf8ConstRelease(utf8);
 	celock = lockMutex(centry);
 	if (centry->class == 0) {
@@ -939,7 +982,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 			goto bad;
 		}
 		/* we won't ever want to lose these classes */
-		gc_add_ref(clazz);
+		assert(gc_add_ref(clazz));
 		(*class) = centry->class = clazz;
 	}
 	unlockKnownMutex(celock);
@@ -964,6 +1007,10 @@ lookupClass(const char* name, errorInfo *einfo)
 	Utf8Const *utf8;
 
 	utf8 = utf8ConstNew(name, -1);
+	if (!utf8) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
 	class = loadClass(utf8, NULL, einfo);
 	utf8ConstRelease(utf8);
 	if (class != 0) {
@@ -1123,8 +1170,7 @@ DBG(GCPRECISE,
 				BITMAP_SET(map, nbits);
 			}
 		} else {
-			if (FIELD_ISREF(fld) && 
-			    strcmp(FIELD_TYPE(fld)->name->data, PTRCLASS)) {
+			if (FIELD_ISREF(fld)) {
 				BITMAP_SET(map, nbits);
 			}
 		}
@@ -1141,8 +1187,8 @@ DBG(GCPRECISE,
  * Allocate the space for the static class data.
  */
 static
-void
-allocStaticFields(Hjava_lang_Class* class)
+bool
+allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	int fsize;
 	int align;
@@ -1153,7 +1199,7 @@ allocStaticFields(Hjava_lang_Class* class)
 
 	/* No static fields */
 	if (CLASS_NSFIELDS(class) == 0) {
-		return;
+		return (true);
 	}
 
 	/* Calculate size and position of static data */
@@ -1171,6 +1217,10 @@ allocStaticFields(Hjava_lang_Class* class)
 
 	/* Allocate memory required */
 	mem = gc_malloc(offset, GC_ALLOC_STATICDATA);
+	if (mem == NULL) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
 	CLASS_STATICDATA(class) = mem;
 
 	/* Rewalk the fields, pointing them at the relevant memory and/or
@@ -1183,11 +1233,12 @@ allocStaticFields(Hjava_lang_Class* class)
 		FIELD_SIZE(fld) = FIELD_CONSTIDX(fld);	/* Keep idx in size */
 		FIELD_ADDRESS(fld) = mem + offset;
 	}
+	return (true);
 }
 
 static
-void
-resolveStaticFields(Hjava_lang_Class* class)
+bool
+resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	uint8* mem;
 	constants* pool;
@@ -1236,10 +1287,19 @@ resolveStaticFields(Hjava_lang_Class* class)
 				break;
 
 			case CONSTANT_String:
-				utf8 = WORD2UTF(pool->data[idx]);
-				pool->data[idx] = (ConstSlot)utf8Const2Java(utf8);
-				pool->tags[idx] = CONSTANT_ResolvedString;
-				utf8ConstRelease(utf8);
+				{
+					Hjava_lang_String *st;
+
+					utf8 = WORD2UTF(pool->data[idx]);
+					st = utf8Const2Java(utf8);
+					if (!st) {
+						postOutOfMemory(einfo);
+						return false;
+					}
+					pool->data[idx] = (ConstSlot)st;
+					pool->tags[idx] = CONSTANT_ResolvedString;
+					utf8ConstRelease(utf8);
+				}
 				/* ... fall through ... */
 			case CONSTANT_ResolvedString:
 				*(jref*)mem = (jref)CLASS_CONST_DATA(class, idx);
@@ -1248,11 +1308,12 @@ resolveStaticFields(Hjava_lang_Class* class)
 			}
 		}
 	}
+	return true;
 }
 
 static
-void
-buildDispatchTable(Hjava_lang_Class* class)
+bool
+buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	Method* meth;
 	void** mtab;
@@ -1310,9 +1371,15 @@ buildDispatchTable(Hjava_lang_Class* class)
 	   that I didn't want to add another slot on class just for holding
 	   the trampolines, but it also works out for space reasons.  */
 	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) + class->msize * sizeof(void*) + ntramps * sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
-	tramp = (methodTrampoline*) &class->dtable->method[class->msize];
 #else
 	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) + (class->msize * sizeof(void*)), GC_ALLOC_DISPATCHTABLE);
+#endif
+	if (class->dtable == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
+#if defined(TRANSLATOR)
+	tramp = (methodTrampoline*) &class->dtable->method[class->msize];
 #endif
 
 	class->dtable->class = class;
@@ -1364,10 +1431,15 @@ buildDispatchTable(Hjava_lang_Class* class)
 	 */
 	/* don't bother if we don't implement any interfaces */
 	if (class->total_interface_len == 0) {
-		return;
+		return (true);
 	}
 
 	class->if2itable = KMALLOC(class->total_interface_len * sizeof(short));
+
+	if (class->if2itable == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
 
 	/* first count how many indices we need */
 	j = 0;
@@ -1378,9 +1450,19 @@ buildDispatchTable(Hjava_lang_Class* class)
 	if (j == 0) {	/* this means only pseudo interfaces without methods
 			 * are implemented, such as Serializable or Cloneable
 			 */
-		return;
+		return (true);
 	}
 	class->itable2dtable = KMALLOC(j * sizeof(short));
+	if (class->itable2dtable == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
+	class->itable2dtable = KMALLOC(j * sizeof(short));
+	if (!class->itable2dtable) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		return false;
+	}
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
 		int nm = CLASS_NMETHODS(class->interfaces[i]);
@@ -1425,6 +1507,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 			class->itable2dtable[j++] = idx;
 		}
 	}
+	return (true);
 }
 
 /* Check for undefined abstract methods if class is not abstract.
@@ -1453,8 +1536,8 @@ checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
 }
 
 static
-void
-buildInterfaceDispatchTable(Hjava_lang_Class* class)
+bool
+buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	Method* meth;
 	int i;
@@ -1472,6 +1555,10 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
 				METHOD_NEEDS_TRAMPOLINE(meth)) 
 			{
 				methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
+				if (tramp == 0) {
+					postOutOfMemory(einfo);
+					return (false);
+				}
 				FILL_IN_TRAMPOLINE(tramp, meth);
 				METHOD_NATIVECODE(meth) = (nativecode*)tramp;
 				FLUSH_DCACHE(tramp, tramp+1);
@@ -1482,8 +1569,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
 			meth->idx = class->msize++;
 		}
 	}
-	return;
-
+	return (true);
 }
 
 /*
@@ -1491,7 +1577,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
  * from utf8 to java.lang.String
  */
 Hjava_lang_String*
-resolveString(constants* pool, int idx)
+resolveString(constants* pool, int idx, errorInfo *info)
 {
 	Utf8Const* utf8;
 	Hjava_lang_String* str = 0;
@@ -1501,7 +1587,12 @@ resolveString(constants* pool, int idx)
 	switch (pool->tags[idx]) {
 	case CONSTANT_String:
 		utf8 = WORD2UTF(pool->data[idx]);
-		pool->data[idx] = (ConstSlot)(str = utf8Const2Java(utf8));
+		str = utf8Const2Java(utf8);
+		if (!str) {
+			postOutOfMemory(info);
+			break;
+		}
+		pool->data[idx] = (ConstSlot)str;
 		pool->tags[idx] = CONSTANT_ResolvedString;
 		utf8ConstRelease(utf8);
 		break;
@@ -1547,6 +1638,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 		switch (pool->tags[idx]) {
 		case CONSTANT_String:
 			utf8 = WORD2UTF(pool->data[idx]);
+			/* XXX: unchecked malloc */
 			pool->data[idx] = (ConstSlot)utf8Const2Java(utf8);
 			pool->tags[idx] = CONSTANT_ResolvedString;
 			utf8ConstRelease(utf8);
@@ -1718,7 +1810,7 @@ sizeofSigItem(const char** strp, bool want_wide_refs)
  * Find (or create) an array class with component type C.
  */
 Hjava_lang_Class*
-lookupArray(Hjava_lang_Class* c)
+lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 {
 	Utf8Const *arr_name;
 	char sig[CLASSMAXSIG];  /* FIXME! unchecked fixed buffer! */
@@ -1747,7 +1839,15 @@ lookupArray(Hjava_lang_Class* c)
 		sprintf (sig, cname[0] == '[' ? "[%s" : "[L%s;", cname);
 	}
 	arr_name = utf8ConstNew(sig, -1);	/* release before returning */
-	centry = lookupClassEntry(arr_name, c->loader);
+	if (!arr_name) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
+	centry = lookupClassEntry(arr_name, c->loader, einfo);
+	if (centry == 0) {
+		utf8ConstRelease(arr_name);
+		return (0);
+	}
 
 	if (centry->class != 0) {
 		goto found;
@@ -1763,9 +1863,19 @@ lookupArray(Hjava_lang_Class* c)
 	}
 
 	arr_class = newClass();
+	if (arr_class == 0) {
+		postOutOfMemory(einfo);
+		centry->class = c = 0;
+		goto bail;
+	}
+
 	/* anchor arrays created without classloader */
 	if (c->loader == 0) {
-		gc_add_ref(arr_class);
+		if (!gc_add_ref(arr_class)) {
+			postOutOfMemory(einfo);
+			centry->class = c = 0;
+			goto bail;
+		}
 	}
 	centry->class = arr_class;
 	/*
@@ -1777,7 +1887,10 @@ lookupArray(Hjava_lang_Class* c)
 	}
 	internalSetupClass(arr_class, arr_name, arr_flags, 0, c->loader);
 	arr_class->superclass = ObjectClass;
-	buildDispatchTable(arr_class);
+	if (buildDispatchTable(arr_class, einfo) == false) {
+		centry->class = c = 0;
+		goto bail;
+	}
 	CLASS_ELEMENT_TYPE(arr_class) = c;
 
 	/* Add the interfaces that arrays implement.  Note that addInterface 
@@ -1794,10 +1907,11 @@ lookupArray(Hjava_lang_Class* c)
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
+bail:
 	unlockKnownMutex(lock);
 
 	found:;
-	if (CLASS_IS_PRIMITIVE(c)) {
+	if (c && CLASS_IS_PRIMITIVE(c)) {
 		CLASS_ARRAY_CACHE(c) = centry->class;
 	}
 

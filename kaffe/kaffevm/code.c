@@ -25,8 +25,8 @@
 #include "slots.h"
 #include "exception.h"
 
-void
-addCode(Method* m, uint32 len, classFile* fp)
+bool
+addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 {
 	Code c;
 	int i;
@@ -44,6 +44,10 @@ DBG(CODEATTR,
     )
 	if (c.code_length > 0) {
 		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
+		if (c.code == 0) {
+			postOutOfMemory(einfo);
+			return (false);
+		}
 DBG(CODEATTR,	
 		dprintf("allocating bytecode @%p\n", c.code);
     )
@@ -56,6 +60,12 @@ DBG(CODEATTR,
 DBG(CODEATTR,	dprintf("Exception table length = %d\n", elen);	)
 	if (elen > 0) {
 		c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
+		if (c.exception_table == 0) {
+			if (c.code) {
+				gc_free(c.code);
+			}
+			return (false);
+		}
 		c.exception_table->length = elen;
 		for (i = 0; i < elen; i++) {
 			readu2(&i2, fp);
@@ -76,14 +86,14 @@ DBG(CODEATTR,	dprintf("Exception table length = %d\n", elen);	)
 	GC_WRITE(m, c.exception_table);
 	addMethodCode(m, &c);
 
-	readAttributes(fp, m->class, m);
+	return (readAttributes(fp, m->class, m, einfo));
 }
 
 /*
  * Read in line numbers assocated with code.
  */
-void
-addLineNumbers(Method* m, uint32 len, classFile* fp)
+bool
+addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 {
 	lineNumbers* lines;
 	int i;
@@ -92,7 +102,11 @@ addLineNumbers(Method* m, uint32 len, classFile* fp)
 
 	readu2(&nr, fp);
 	lines = KMALLOC(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr);
-
+	if (!lines) {
+		postOutOfMemory(info);
+		return (false);
+	}
+	
 	lines->length = nr;
 	for (i = 0; i < nr; i++) {
 		readu2(&data, fp);
@@ -103,13 +117,15 @@ addLineNumbers(Method* m, uint32 len, classFile* fp)
 
 	/* Attach lines to method */
 	m->lines = lines;
+	return (true);
 }
 
 /*
  * Read in (checked) exceptions declared for a method
  */
-void    
-addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp)
+bool
+addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp,
+		     errorInfo *info)
 {
 	int i;
 	u2 nr;
@@ -118,9 +134,15 @@ addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp)
 	readu2(&nr, fp);
 	m->ndeclared_exceptions = nr;
 	idx = KMALLOC(sizeof(constIndex) * nr);
+	if (!idx) {
+		postOutOfMemory(info);
+		return false;
+	}
+	
 	m->declared_exceptions = idx;
 
 	for (i = 0; i < nr; i++) {
 		readu2(idx + i, fp);
 	}
+	return true;
 }

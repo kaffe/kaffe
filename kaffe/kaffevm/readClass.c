@@ -68,10 +68,12 @@ DBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 
 	ADDCLASS(this_class, super_class, access_flags, constant_pool);
 
-	readInterfaces(fp, classThis);
-	readFields(fp, classThis);
-	readMethods(fp, classThis);
-	readAttributes(fp, classThis, classThis);
+	if (readInterfaces(fp, classThis, einfo) == false ||
+	    readFields(fp, classThis, einfo) == false ||
+	    readMethods(fp, classThis, einfo) == false ||
+	    readAttributes(fp, classThis, classThis, einfo) == false) {
+		return (0);
+	}
 
 	return (classThis);
 }
@@ -79,8 +81,8 @@ DBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 /*
  * Read in interfaces.
  */
-void
-readInterfaces(classFile* fp, Hjava_lang_Class* this)
+bool
+readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	u2 interfaces_count;
 
@@ -92,13 +94,14 @@ DBG(	dprintf("interfaces_count=%d\n", interfaces_count);	)
 #else
 	seekm(fp, interfaces_count * 2);
 #endif
+	return (true);
 }
 
 /*
  * Read in fields.
  */
-void
-readFields(classFile* fp, Hjava_lang_Class* this)
+bool
+readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	u2 i;
 	u2 fields_count;
@@ -120,19 +123,22 @@ DBG(	dprintf("fields_count=%d\n", fields_count);		)
 #if defined(READFIELD_ATTRIBUTE)
 		READFIELD_ATTRIBUTE(fp, this);
 #else
-		readAttributes(fp, this, fieldThis);
+		if (readAttributes(fp, this, fieldThis, einfo) == false) {
+			return (false);
+		}
 #endif
 	}
 #if defined(READFIELD_END)
 	READFIELD_END(this);
 #endif
+	return (true);
 }
 
 /*
  * Read in attributes.
  */
-void
-readAttributes(classFile* fp, Hjava_lang_Class* this, void* thing)
+bool
+readAttributes(classFile* fp, Hjava_lang_Class* this, void* thing, errorInfo *einfo)
 {
 	u2 i;
 	u2 cnt;
@@ -152,13 +158,14 @@ DBG(	dprintf("attributes_count=%d\n", cnt);				)
 		seekm(fp, len);
 #endif
 	}
+	return (true);
 }
 
 /*
  * Read in methods.
  */
-void
-readMethods(classFile* fp, Hjava_lang_Class* this)
+bool
+readMethods(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	u2 i;
 	u2 methods_count;
@@ -177,9 +184,12 @@ DBG(	dprintf("methods_count=%d\n", methods_count);		)
 #else
 		fseek(fp, 6, SEEK_CUR);
 #endif
-		readAttributes(fp, this, methodThis);
+		if (readAttributes(fp, this, methodThis, einfo) == false) {
+			return (false);
+		}
 	}
 #ifdef READMETHOD_END
 	READMETHOD_END();
 #endif
+	return (true);
 }

@@ -16,6 +16,7 @@
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/soft.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "java_lang_reflect_Array.h"
 #include "java_lang_Boolean.h"
 #include "java_lang_Byte.h"
@@ -768,6 +769,7 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 	int i;
 	int s;
 	Hjava_lang_Object* array;
+	errorInfo info;
 
 	s = obj_length(sizes);
 
@@ -776,6 +778,10 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 	}
 
 	dims = KCALLOC(s+1, sizeof(int));
+	if (!dims) {
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 
 	/* Copy dimentions into array */
 	for( i = 0; i < s; i++ ) {
@@ -783,7 +789,11 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 		if (dims[i] < 0) {
 			SignalError("java.lang.NegativeArraySizeException", "");
 		}
-		clazz = lookupArray(clazz);
+		clazz = lookupArray(clazz, &info);
+		if (clazz == 0) {
+			KFREE(dims);
+			throwError(&info);
+		}
 	}
 	dims[i] = -1;
 

@@ -30,8 +30,6 @@ Hjava_lang_Class* _Jv_byteClass;
 Hjava_lang_Class* _Jv_shortClass;     
 Hjava_lang_Class* _Jv_voidClass;
 
-extern gcFuncs gcClassObject;
-
 Hjava_lang_Class* types[MAXTYPES];
 
 static
@@ -39,14 +37,19 @@ void
 initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
 	Hjava_lang_Class* clazz = newClass();
+	assert(clazz != 0);
 	(*class) = clazz;
-	gc_add_ref(clazz);
+	assert(gc_add_ref(clazz));
 
 	clazz->dtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
 	clazz->accflags = ACC_PUBLIC;
 	CLASS_PRIM_SIG(clazz) = sig;
         CLASS_PRIM_NAME(clazz) = utf8ConstNew(&sig, 1);
+	if (!clazz->name || !CLASS_PRIM_NAME(clazz)) {
+		fprintf(stderr, "not enough memory to run kaffe\n");
+		ABORT();
+	}
 	TYPE_PRIM_SIZE(clazz) = len;
 }
 
@@ -117,7 +120,8 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 	case 'F': return (_Jv_floatClass);
 	case 'D': return (_Jv_doubleClass);
 	case 'J': return (_Jv_longClass);
-	case '[': return (lookupArray(classFromSig(strp, loader, einfo)));
+	case '[': return (lookupArray(classFromSig(strp, loader, einfo),
+				      einfo));
 	case 'L':
 		start = *strp;
 		for (end = start; *end != 0 && *end != ';'; end++)
@@ -127,6 +131,10 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 			(*strp)++;
 		}
 		utf8 = utf8ConstNew(start, end - start);
+		if (!utf8) {
+			postOutOfMemory(einfo);
+			return 0;
+		}
 		cl = loadClass(utf8, loader, einfo);
 		utf8ConstRelease(utf8);
 		return(cl);

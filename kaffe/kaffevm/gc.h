@@ -17,8 +17,18 @@
  */
 #undef	GC_INCREMENTAL
 
+typedef struct _Collector Collector;
+typedef void (*walk_func_t)(struct _Collector*, void*, uint32);
+typedef void (*final_func_t)(struct _Collector*, void*);
+typedef void (*destroy_func_t)(struct _Collector*, void*);
+
+#define	GC_OBJECT_NORMAL	((final_func_t)0)
+#define	GC_OBJECT_FIXED		((final_func_t)1)
+
 /* Use the incremental garbage collector */
+#ifndef KAFFEH
 #include "mem/gc-incremental.h"
+#endif
 
 /*
  * Garbage collector interface.
@@ -51,9 +61,9 @@
  */
 struct GarbageCollectorInterface_Ops;
 
-typedef struct _Collector {
+struct _Collector {
 	struct GarbageCollectorInterface_Ops *ops;
-} Collector;
+};
 
 struct GarbageCollectorInterface_Ops {
 
@@ -85,7 +95,9 @@ struct GarbageCollectorInterface_Ops {
 	void 	(*registerGcTypeByIndex)(Collector *, 
 			int index,
 			walk_func_t walk, final_func_t final, 
-			destroy_func_t destroy, const char *description);
+			destroy_func_t destroy, const char
+					 *description);
+	struct Hjava_lang_Throwable *(*throwOOM)(Collector *);
 };
 
 Collector* createGC(void (*_walkRootSet)(Collector*));
@@ -107,6 +119,8 @@ Collector* createGC(void (*_walkRootSet)(Collector*));
     ((G)->ops->init)((Collector*)(G))
 #define GC_enable(G)		\
     ((G)->ops->enable)((Collector*)(G))
+#define GC_throwOOM(G)		\
+    ((G)->ops->throwOOM)((Collector*)(G))
 #define GC_markAddress(G, addr)		\
     ((G)->ops->markAddress)((Collector*)(G), (addr))
 #define GC_markObject(G, addr)		\
@@ -141,7 +155,8 @@ extern Collector* main_collector;
 #define	adviseGC()	    GC_invoke(main_collector,0)
 #define	invokeFinalizer()   GC_invokeFinalizer(main_collector)
 
+#define gc_throwOOM()	    GC_throwOOM(main_collector)
+
 #include "gcRefs.h"
 extern char* describeObject(const void* mem);
-
 #endif

@@ -171,7 +171,9 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 		classname2pathname(cname, buf);
 
 		cc = lookupClass(buf, &info);
-		assert(cc != 0);
+		if (!cc) {
+			throwError(&info);
+		}
 	}
 
 	/* We cannot construct interfaces or abstract classes */
@@ -185,7 +187,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 		}
 	}
 
-	sig = utf8ConstNew(signature, -1);
+	sig = checkPtr(utf8ConstNew(signature, -1));
 	mb = findMethodLocal(cc, constructor_name, sig);
 	utf8ConstRelease(sig);
 	if (mb == 0) {
@@ -693,7 +695,16 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 	assert(cls != 0 && name != 0 && sig != 0);
 
 	name_utf8 = utf8ConstNew(name, -1);
+	if (!name_utf8) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
 	sig_utf8 = utf8ConstNew(sig, -1);
+	if (!sig_utf8) {
+		utf8ConstRelease(name_utf8);
+		postOutOfMemory(einfo);
+		return 0;
+	}
 	meth = findMethod(cls, name_utf8, sig_utf8, einfo);
 	utf8ConstRelease(name_utf8);
 	utf8ConstRelease(sig_utf8);
@@ -720,7 +731,7 @@ SignalError(const char* cname, const char* str)
 	Hjava_lang_Throwable* obj;
 
 	obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-		0, ERROR_SIGNATURE, stringC2Java(str));
+		0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
 	throwException(obj);
 }
 
@@ -808,8 +819,8 @@ setProperty(void* properties, char* key, char* value)
 	Hjava_lang_String* jkey;
 	Hjava_lang_String* jvalue;
 
-	jkey = stringC2Java(key);
-	jvalue = stringC2Java(value);
+	jkey = checkPtr(stringC2Java(key));
+	jvalue = checkPtr(stringC2Java(value));
 
 	do_execute_java_method(properties, "put",
 		"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",

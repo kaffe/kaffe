@@ -20,6 +20,7 @@
 #include <native.h>
 #include <files.h>
 #include "kaffe_lang_UNIXProcess.h"
+#include "../../../kaffe/kaffevm/errors.h"
 
 typedef struct _child {
 	jobject 		proc;
@@ -27,6 +28,16 @@ typedef struct _child {
 	struct _child*		next;
 } child;
 static child* children;
+
+static void
+freevec(char **v)
+{
+	char **p = v;
+	if (v) {
+		while (*p) KFREE(*p++);
+		KFREE(v);
+	}
+}
 
 jint
 Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, jarray envs)
@@ -39,7 +50,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	int arglen;
 	int envlen;
 	int i;
-	int rc;
+	int rc = 0;
 	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
 	jclass proc_class;
 	/* the names given to the stream in Java */
@@ -58,6 +69,11 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 	/* Build arguments and environment */
 	argv = KCALLOC(arglen + 1, sizeof(jbyte*));
+	if (!argv) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 	for (i = 0; i < arglen; i++) {
 		jstring argi;
 		const jbyte *argichars;
@@ -65,13 +81,27 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
 		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
 		argv[i] = KMALLOC(strlen(argichars) + 1);
+		if (!argv[i]) {
+			errorInfo info;
+
+			freevec(argv);
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 		strcpy(argv[i], argichars);
 		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 	}
 
-	if (envlen > 0)
+	if (envlen > 0) {
 		arge = KCALLOC(envlen + 1, sizeof(jbyte*));
-	else
+		if (!arge) {
+			errorInfo info;
+
+			freevec(argv);
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
+	} else
 		arge = NULL;
 
 	for (i = 0; i < envlen; i++) {
@@ -81,24 +111,33 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
 		arge[i] = KMALLOC(strlen(envichars) + 1);
+		if (!arge[i]) {
+			errorInfo info;
+
+			freevec(argv);
+			freevec(arge);
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 		strcpy(arge[i], envichars);
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
 
-	rc = KFORKEXEC(argv, arge, ioes, &pid);
+	/* Allocate somewhere to keep the child data.  Make sure we
+	   can allocate this structure before creating the child. */
+	newchild = KMALLOC(sizeof(child));
 
-	/* free before returning on error */
-	for (i = 0; i < arglen; i++) {
-		KFREE(argv[i]);
-	}
-	KFREE(argv);
+	if (newchild)
+		rc = KFORKEXEC(argv, arge, ioes, &pid);
 
-	for (i = 0; i < envlen; i++) {
-		KFREE(arge[i]);
-	}
-	KFREE(arge);
-
-	if (rc) {
+	freevec(argv);
+	freevec(arge);
+	if (!newchild) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	} else if (rc) {
+		KFREE(newchild);
 		(*env)->ThrowNew(env, ioexc_class, SYS_ERROR(rc));
 		return (-1);
 	}
@@ -120,9 +159,6 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 					"fd", "I");
 		(*env)->SetIntField(env, fdi, fd_field, ioes[i]);
 	}
-
-	/* Allocate somewhere to keep the child data */
-	newchild = KMALLOC(sizeof(child));
 
 	/* Note child data and add to children list */
 	newchild->proc = (*env)->NewGlobalRef(env, proc);

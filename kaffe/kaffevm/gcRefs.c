@@ -37,7 +37,7 @@ static refTable			refObjects;
 /*
  * Add a persistent reference to an object.
  */
-void
+bool
 gc_add_ref(const void* mem)
 {
 	uint32 idx;
@@ -48,16 +48,19 @@ gc_add_ref(const void* mem)
 		/* Found it - just increase reference */
 		if (obj->mem == mem) {
 			obj->ref++;
-			return;
+			return true;
 		}
 	}
 
 	/* Not found - create a new one */
 	obj = (refObject*)gc_malloc(sizeof(refObject), GC_ALLOC_REF);
+	if (!obj) return false;
+	
 	obj->mem = mem;
 	obj->ref = 1;
 	obj->next = refObjects.hash[idx];
 	refObjects.hash[idx] = obj;
+	return true;
 }
 
 /*

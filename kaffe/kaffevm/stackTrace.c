@@ -49,6 +49,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	/* Build an array of stackTraceInfo */
 	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), GC_ALLOC_NOWALK);
+	if (!info) return 0;
 
 	cnt = 0;
 
@@ -119,6 +120,16 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 				}
 			}
 			class_dot_name = KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1);
+			if (!class_dot_name) {
+				errorInfo info;
+				/* Even if we are reporting an out of
+				   memory, this is ok.  If we can't
+				   allocate a new one, the vm will
+				   die in an orderly manner.
+				*/
+				postOutOfMemory(&info);
+				throwError(&info);
+			}
 			pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
 			if (linenr == -1) {
 				sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",

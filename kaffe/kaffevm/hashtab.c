@@ -58,7 +58,6 @@ hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free)
 		tab = alloc(sizeof(*tab));
 	}
 	if (tab == 0) {
-		assert(!"hashInit out of memory"); /* XXX OutOfMemoryError? */
 		return (0);
 	}
 	tab->hash = hash;
@@ -107,7 +106,6 @@ hashAdd(hashtab_t tab, const void *ptr)
 
 	if (NEED_RESIZE(tab)) {
 		if (hashResize(tab) == 0) {
-			assert(!"hashResize out of memory"); 
 			/* XXX OutOfMemoryError? */
 			return (0);
 		}

@@ -141,7 +141,11 @@ typedef struct codeinfo {
 #define	SET_NEWFRAME(pc)					\
 	if (FRAME(pc) == 0) {					\
 		FRAME(pc) = ALLOCFRAME();			\
-		assert(FRAME(pc) != 0);				\
+		if (!FRAME(pc)) {				\
+			meth->accflags &= ~ACC_VERIFIED;	\
+			tidyVerifyMethod(codeInfo);		\
+			return false;				\
+		}						\
 	}
 
 #define	FRAMEMERGE(PC, SP)					\

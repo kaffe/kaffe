@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include <native.h>
 #include "java_util_zip_Inflater.h"
+#include "../../../kaffe/kaffevm/errors.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 
@@ -128,6 +129,11 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 	z_stream* dstream;
 
 	dstream = KMALLOC(sizeof(z_stream));
+	if (!dstream) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 	dstream->next_out = 0;
 	dstream->zalloc = 0;
 	dstream->zfree = 0; 

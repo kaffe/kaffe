@@ -120,7 +120,10 @@ utf8ConstNew(const char *s, int len)
 	assert (hashTable != NULL);
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
 		fake = KMALLOC(sizeof(Utf8Const) + len + 1);
-		assert(fake != NULL);		/* XXX */
+		if (!fake) {
+			unlockStaticMutex(&utf8Lock);
+			return 0;
+		}
 	} else {
 		fake = (Utf8Const*)buf;
 	}
@@ -148,6 +151,10 @@ utf8ConstNew(const char *s, int len)
 
 	/* Add to hash table */
 	temp = hashAdd(hashTable, utf8);
+	if (!temp) {
+		KFREE(utf8);
+		return 0;
+	}
 	assert(temp == utf8);
 	unlockStaticMutex(&utf8Lock);
 	return(utf8);
@@ -295,5 +302,6 @@ utf8ConstInit(void)
 {
 	initStaticLock(&utf8Lock);
 	hashTable = hashInit(utf8ConstHashValueInternal,
-		utf8ConstCompare, 0 /* alloc */, 0 /* free */); 
+		utf8ConstCompare, 0 /* alloc */, 0 /* free */);
+	assert(hashTable);
 }

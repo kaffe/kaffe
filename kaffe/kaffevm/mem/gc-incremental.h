@@ -15,11 +15,6 @@
 
 /* ------------------------------------------------------------------------ */
 
-struct _Collector;
-typedef void (*walk_func_t)(struct _Collector*, void*, uint32);
-typedef void (*final_func_t)(struct _Collector*, void*);
-typedef void (*destroy_func_t)(struct _Collector*, void*);
-
 /*
  * This record describes an allocation type.
  */
@@ -36,13 +31,6 @@ typedef struct _gc_unit {
         struct _gc_unit*        cprev;
         struct _gc_unit*        cnext;
 } gc_unit;
-
-/*
- * Note that GC_OBJECT_FIXED and GC_OBJECT_NORMAL are magic final_func_t
- */
-#define	GC_OBJECT_NORMAL	((void*)0)
-#define	GC_OBJECT_FIXED		((void*)1)
-
 
 /* ------------------------------------------------------------------------ */
 

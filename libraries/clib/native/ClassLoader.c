@@ -43,6 +43,11 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	hand.size = length;
 
 	clazz = newClass();
+	if (clazz == 0) {
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
+
 	/*
 	 * Make sure clazz->centry is NULL here, so that nobody will try to
 	 * assert that a lock on centry is held during readClass
@@ -60,7 +65,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	if (name != NULL) {
 		/* The name uses dots, but clazz->name uses slashes */
 		Hjava_lang_String *temp =
-			utf8Const2JavaReplace(clazz->name, '/', '.'); 
+			checkPtr(utf8Const2JavaReplace(clazz->name, '/', '.')); 
 
 		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
 			memcmp(STRING_DATA(temp), STRING_DATA(name), 
@@ -77,8 +82,10 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 * See if an entry for that name and class loader already exists
 	 * create one if not.
 	 */
-	centry = lookupClassEntry(clazz->name, this);
-	assert(centry != 0);
+	centry = lookupClassEntry(clazz->name, this, &info);
+	if (centry == 0) {
+		throwError(&info);
+	}
 
 	/*
 	 * see if somebody loaded that class already
@@ -133,7 +140,7 @@ struct Hjava_lang_Class*
 java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
 {
 	errorInfo info;
-	Hjava_lang_Class *clazz;
+	Hjava_lang_Class *clazz = 0;
         int len = STRING_SIZE(str);
         Utf8Const* c;
         char* name;
@@ -144,13 +151,18 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         }
         else {
                 name = KMALLOC (len);
+			
         }
-        stringJava2CBuf(str, name, len+1);
-        classname2pathname(name, name);
+	if (name) {
+		stringJava2CBuf(str, name, len+1);
+		classname2pathname(name, name);
 
-	c = utf8ConstNew(name, len);
-	clazz = loadClass(c, 0, &info);
-	utf8ConstRelease(c);
+		c = utf8ConstNew(name, len);
+		if (c) {
+			clazz = loadClass(c, 0, &info);
+			utf8ConstRelease(c);
+		}
+	}
 
 	if (clazz == 0) {
 		/* 
@@ -194,7 +206,8 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	HArrayOfByte* data;
 	errorInfo einfo;
 
-	lname = name = stringJava2C(str);
+	lname = name = checkPtr(stringJava2C(str));
+
 	/* skip leading slashes */
 	while (*lname && *lname == '/') {
 		lname++;
@@ -236,6 +249,7 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         char* name;
         char buffer[100];
         classEntry* entry;
+	errorInfo info;
 
         if (len <= sizeof(buffer) - 1) {
                 name = buffer;
@@ -243,6 +257,10 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         else {
                 name = KMALLOC (len);
         }
+	if (!name) {
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
         stringJava2CBuf(str, name, len+1);
         classname2pathname(name, name);
 
@@ -250,6 +268,10 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         if (name != buffer) {
                 KFREE(name);
         }
+	if (!c) {
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 
         entry = lookupClassEntryInternal(c, this);
         utf8ConstRelease(c);

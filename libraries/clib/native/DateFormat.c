@@ -42,5 +42,5 @@ java_text_DateFormat_format0(jlong time, int fmt)
 		GMTTIME(str, localtime(&date));
 		break;
 	}
-	return (stringC2Java(str));
+	return (checkPtr(stringC2Java(str)));
 }

@@ -59,7 +59,8 @@ lookupClassEntryInternal(Utf8Const* name, Hjava_lang_ClassLoader* loader)
  * Create one if none is found.
  */
 classEntry*
-lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
+lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
+		 errorInfo *einfo)
 {
 	classEntry* entry;
 	classEntry** entryp;
@@ -75,6 +76,10 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 
 	/* Failed to find class entry - create a new one */
 	entry = KMALLOC(sizeof(classEntry));
+	if (entry == 0) {
+		postOutOfMemory(einfo);
+		return (0);
+	}
 	entry->name = name;
 	entry->loader = loader;
 	entry->class = 0;
@@ -216,11 +221,22 @@ checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entry = classEntryPool[ipool];
 		for (; entry != NULL; entry = entry->next) {
-			if (entry->class == c) {
-				fprintf(stderr, 
-				    "unloaded class still referenced by "
-				    "defining loader.  Kaffe does not handle "
-				    "this yet.\n");
+			/* we may be leaking classPool entries because
+			 * finalizers are never run.  Running
+			 * finalizers can be hard, since we need to
+			 * know what process a class came from.
+			 */
+			if (entry->class == c && entry->loader != loader) {
+				fprintf(stderr, "class %s@%p ",
+					describeObject(c), c);
+				fprintf(stderr, " referenced by initiating"
+					" loader %s@%p",
+					describeObject(entry->loader),
+					entry->loader);
+				fprintf(stderr, " but not defining loader"
+					" %s@%p\n",
+					describeObject(loader),
+					loader);
 				ABORT();
 			}
 		}

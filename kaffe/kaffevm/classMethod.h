@@ -193,7 +193,10 @@ typedef struct _fields {
 #define FIELD_OFFSET(FLD)	((FLD)->info.boffset)
 #define FIELD_ADDRESS(FLD)	((FLD)->info.addr)
 #define	FIELD_CONSTIDX(FLD)	((FLD)->info.idx)
-#define FIELD_ISREF(FLD)	(!FIELD_RESOLVED(FLD) || !CLASS_IS_PRIMITIVE(FIELD_TYPE(FLD)))
+#define FIELD_ISPRIM(FLD)	(FIELD_RESOLVED(FLD)			\
+				 && CLASS_IS_PRIMITIVE(FIELD_TYPE(FLD)))
+#define FIELD_ISREF(FLD)	(!FIELD_ISPRIM(FLD)			\
+				 && FIELD_TYPE(FLD) != PtrClass)
 
 #define	CLASSMAXSIG		256
 
@@ -277,25 +280,26 @@ Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
-Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex, constIndex, u2, Hjava_lang_ClassLoader*);
-void 			addSourceFile(Hjava_lang_Class* c, int idx);
+Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
+				   constIndex, u2, Hjava_lang_ClassLoader*);
+bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
 Method*			addMethod(Hjava_lang_Class*, struct _method_info*);
 Method*			addExceptionMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void 			addMethodCode(Method*, struct _Code*);
 Field*        		addField(Hjava_lang_Class*, struct _field_info*);
-void			addCode(Method*, uint32, struct _classFile*);
 void			addInterfaces(Hjava_lang_Class*, int, Hjava_lang_Class**);
 void			setFieldValue(Field*, u2);
 Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 
-classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
+classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
+			     errorInfo *info);
 classEntry* lookupClassEntryInternal(Utf8Const*, Hjava_lang_ClassLoader*);
 int removeClassEntries(Hjava_lang_ClassLoader*);
 
 Collector* 		initCollector(void);
 
 Hjava_lang_Class*	lookupClass(const char*, errorInfo*);
-Hjava_lang_Class*	lookupArray(Hjava_lang_Class*);
+Hjava_lang_Class*	lookupArray(Hjava_lang_Class*, errorInfo*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);
 Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo);
 
@@ -313,7 +317,8 @@ Method*			findMethodFromPC(uintp);
 
 void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
-struct Hjava_lang_String* resolveString(constants* pool, int idx);
+struct Hjava_lang_String* resolveString(constants* pool, int idx,
+					errorInfo *einfo);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

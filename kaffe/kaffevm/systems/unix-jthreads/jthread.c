@@ -829,6 +829,18 @@ DBG(JTHREAD,
 			blockInts = 1;
 		}
 
+		/* Now that we are off the runQ, it is safe to leave
+		 * the list of live threads and be GCed.
+		 */
+		/* Remove thread from live list so it can be garbaged */
+		for (ntid = &liveThreads; *ntid != 0; ntid =
+			     &(*ntid)->nextlive) { 
+			if (tid == (*ntid)) {
+				(*ntid) = tid->nextlive;
+				break;
+			}
+		}
+
 		/* Dead Jim - let the GC pick up the remains */
 		tid->status = THREAD_DEAD;
 	}
@@ -874,6 +886,10 @@ DBG(JTHREAD,
 void    
 jthread_destroy(jthread *jtid)
 {
+	jthread *x;
+
+	for (x = liveThreads; x; x = x->nextlive)
+		assert(x != jtid);
 	deallocator(jtid);
 }
 
@@ -1087,9 +1103,11 @@ jthread_atexit(void (*f)(void))
 void 
 jthread_disable_stop(void)
 {
-	intsDisable();
-	currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
-	intsRestore();
+	if (currentJThread) {
+		intsDisable();
+		currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
+		intsRestore();
+	}
 }
 
 /*
@@ -1098,14 +1116,14 @@ jthread_disable_stop(void)
 void 
 jthread_enable_stop(void)
 {
-	intsDisable();
-	currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
-	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0 && 
-		blockInts == 1) 
-	{
-		die();
+	if (currentJThread) {
+		intsDisable();
+		currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;
+		if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0) {
+			die();
+		}
+		intsRestore();
 	}
-	intsRestore();
 }
 
 /*
@@ -1165,7 +1183,10 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 
 	jmutex_lock(&threadLock);
         jtid = newThreadCtx(threadStackSize);
-        assert(jtid != 0);      /* XXX */
+	if (!jtid) {
+		jmutex_unlock(&threadLock);
+		return 0;
+	}
         jtid->priority = pri;
         jtid->jlThread = jlThread;
         jtid->status = THREAD_SUSPENDED;
@@ -1269,9 +1290,23 @@ jthread_alive(jthread *jtid)
 {
         int status = true;
         intsDisable();
-        if (jtid == 0 || 
-		(jtid->flags & (THREAD_FLAGS_KILLED | THREAD_FLAGS_DYING)) != 0 
-		|| jtid->status == THREAD_DEAD)
+        if (jtid == 0
+#if 0
+	    /* this code makes kaffe behave like sun, but it means
+	     * that Thread.join() after Thread.stop() is useless.
+	     */
+	    || (jtid->flags & (THREAD_FLAGS_KILLED | THREAD_FLAGS_DYING)) != 0 
+#else
+	    /* There seems to be a window in which death can be
+	     * broadcast before it is waited for.  Basically,
+	     * jthread_alive will be false immediately after
+	     * Thread.stop(), unless stopping the thread was
+	     * disabled.  Thread.alive() will become false as soon as
+	     * the thread is on its way out.
+	     */
+	    || (jtid->flags & (THREAD_FLAGS_DYING | THREAD_FLAGS_EXITING))
+#endif
+	    || jtid->status == THREAD_DEAD)
                 status = false;
         intsRestore();
         return status;
@@ -1358,9 +1393,7 @@ jthread_stop(jthread *jtid)
 void
 jthread_exit(void)
 {
-	jthread** ntid;
 	jthread* tid;
-	int found = 0;
 
 DBG(JTHREAD,
 	dprintf("jthread_exit %x\n", currentJThread);		)
@@ -1372,16 +1405,8 @@ DBG(JTHREAD,
 		tdaemon--;
 	}
 
-	/* Remove thread from live list so it can be garbaged */
-	for (ntid = &liveThreads; *ntid != 0; ntid = &(*ntid)->nextlive) {
-		if (currentJThread == (*ntid)) {
-			(*ntid) = currentJThread->nextlive;
-			found = 1;
-			break;
-		}
-	}
+	assert(!(currentJThread->flags & THREAD_FLAGS_EXITING));
 	currentJThread->flags |= THREAD_FLAGS_EXITING;
-	assert(found || !!!"Attempt to exit a thread twice");
 
 	jmutex_unlock(&threadLock);
 	/* we disable interrupts while we go out to prevent a reschedule
@@ -1398,7 +1423,12 @@ DBG(JTHREAD,
 		}
 
 		for (tid = liveThreads; tid != 0; tid = tid->nextlive) {
-		    killThread(tid);
+			/* The current thread is still on the live
+			 * list, and we don't want to recursively
+			 * suicide.
+			 */
+			if (!(tid->flags & THREAD_FLAGS_EXITING))
+				killThread(tid);
 		}
 		EXIT(0);
 	}

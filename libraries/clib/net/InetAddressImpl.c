@@ -37,7 +37,7 @@ java_net_InetAddressImpl_getLocalHostName(struct Hjava_net_InetAddressImpl* none
 	if (gethostname(hostname, HOSTNMSZ-1) < 0) {
 		strcpy(hostname, "localhost");
 	}
-	return (stringC2Java(hostname));
+	return (checkPtr(stringC2Java(hostname)));
 }
 
 /*
@@ -129,7 +129,7 @@ java_net_InetAddressImpl_getHostByAddr(struct Hjava_net_InetAddressImpl* none, j
 			SYS_HERROR(rc), ipaddr);
 	}
 
-	return (stringC2Java((char*)ent->h_name));
+	return (checkPtr(stringC2Java((char*)ent->h_name)));
 }
 
 /*

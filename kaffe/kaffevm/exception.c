@@ -80,7 +80,7 @@ error2Throwable(errorInfo* einfo)
 		err = (Hjava_lang_Throwable*)execute_java_constructor(
 			    einfo->classname, 
 			    0, "(Ljava/lang/String;)V",
-			    stringC2Java(einfo->mess));
+			    checkPtr(stringC2Java(einfo->mess)));
 		break;
 
 	case KERR_RETHROW:
@@ -93,15 +93,23 @@ error2Throwable(errorInfo* einfo)
 			    0, "(Ljava/lang/Throwable;)V", einfo->throwable);
 		break;
 
-#ifdef notyet
 	case KERR_OUT_OF_MEMORY:
-		err = preallocatedOOMException;
+		err = gc_throwOOM();
 		break;
-#endif
 	}
 
 	discardErrorInfo(einfo);
 	return (err);
+}
+
+/*
+ * post out-of-memory condition
+ */
+void 
+postOutOfMemory(errorInfo *einfo)
+{
+	memset(einfo, 0, sizeof(*einfo));
+    	einfo->type = KERR_OUT_OF_MEMORY;
 }
 
 /*
@@ -403,7 +411,8 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		Hjava_lang_String *msg;
 		msg = unhand((Hjava_lang_Throwable*)eobj)->message;
 		if (msg) {
-			fprintf(stderr, "Message was `%s'\n", stringJava2C(msg));
+			fprintf(stderr, "Message was `%s'\n",
+				stringJava2C(msg));
 		} else {
 			fprintf(stderr, "NULL message\n");
 		}

@@ -38,10 +38,14 @@
 		u2 iface;						\
 		u2 i;							\
 		if (count == 0) {					\
-			return;						\
+			return (true);					\
 		}							\
 		interfaces = (Hjava_lang_Class**)			\
 			gc_malloc(sizeof(Hjava_lang_Class**) * count, GC_ALLOC_INTERFACE);\
+		if (interfaces == 0) {					\
+			postOutOfMemory(einfo);				\
+			return (false);					\
+		}							\
 		for (i = 0; i < count; i++) {				\
 			readu2(&iface, fp);				\
 			interfaces[i] = (Hjava_lang_Class*) (size_t) iface; \
@@ -109,21 +113,27 @@
 		if (CLASS_CONST_TAG(this, idx) == CONSTANT_Utf8) {	\
 			name = WORD2UTF(CLASS_CONST_DATA (this, idx));	\
 			if (utf8ConstEqual(name, Code_name)) {		\
-				addCode((Method*)thing, len, fp);	\
+				if (addCode((Method*)thing, len, fp, einfo) == false) { return (false); } 	\
 			}						\
 			else if (utf8ConstEqual(name, LineNumberTable_name)){ \
-				addLineNumbers((Method*)thing, len, fp);\
+				if (!addLineNumbers((Method*)thing, \
+						    len, fp, einfo)) {\
+					return (false); \
+				} \
 			}						\
 			else if (utf8ConstEqual(name, ConstantValue_name)){ \
 				readu2(&idx, fp);			\
 				setFieldValue((Field*)thing, idx);	\
 			}						\
-			else if (utf8ConstEqual(name, Exceptions_name)){ \
-				addCheckedExceptions((Method*)thing, len, fp);\
+			else if (utf8ConstEqual(name, Exceptions_name)) { \
+				if(!addCheckedExceptions((Method*)thing, \
+						       len, fp, einfo)) {\
+					return (false); \
+				} \
 			}						\
 			else if (utf8ConstEqual(name, SourceFile_name)){ \
 				readu2(&idx, fp);			\
-				addSourceFile((Hjava_lang_Class*)thing, idx); \
+				if (addSourceFile((Hjava_lang_Class*)thing, idx, einfo) == false) { return (false); } \
 			}						\
 			else {						\
 				seekm(fp, len);				\

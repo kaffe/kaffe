@@ -34,9 +34,14 @@
 #define	ARRAY_DATA_OFFSET	((int)ARRAY_DATA(0))
 
 struct Hjava_lang_Class;
+struct _errorInfo;
 
+Hjava_lang_Object*	newObjectChecked(struct Hjava_lang_Class*,
+					 struct _errorInfo *);
 Hjava_lang_Object*	newObject(struct Hjava_lang_Class*);
 struct Hjava_lang_Class* newClass(void);
+Hjava_lang_Object*	newArrayChecked(struct Hjava_lang_Class*, int,
+					struct _errorInfo *);
 Hjava_lang_Object*	newArray(struct Hjava_lang_Class*, int);
 Hjava_lang_Object*	newMultiArray(struct Hjava_lang_Class*, int*);
 

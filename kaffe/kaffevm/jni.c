@@ -192,6 +192,52 @@ JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen, jsize* nvm)
 	return (0);
 }
 
+/*
+ * Everything from this point to Kaffe_GetVersion is not
+ * exception-aware.  Asynchronous exceptions should not be delivered
+ * to them.
+ *
+ * Everything from Kaffe_GetVersion to Kaffe_JNIExceptionHandler
+ * should be bracketed with BEGIN and END _EXCEPTION_HANDLING.
+ * Question: what happens when an asynchronous exception occurs at the
+ * very start or end of one of these calls.
+ */
+void
+Kaffe_FatalError(JNIEnv* env, const char* mess)
+{
+	kprintf(stderr, "FATAL ERROR: %s\n", mess);
+	exit(1);
+}
+
+void
+Kaffe_DeleteGlobalRef(JNIEnv* env, jref obj)
+{
+	gc_rm_ref(obj);
+}
+
+void
+Kaffe_DeleteLocalRef(JNIEnv* env, jref obj)
+{
+	REMOVE_REF(obj);
+}
+
+jboolean
+Kaffe_IsSameObject(JNIEnv* env, jobject obj1, jobject obj2)
+{
+	if (obj1 == obj2) {
+		return (JNI_TRUE);
+	}
+	else {
+		return (JNI_FALSE);
+	}
+}
+
+void
+Kaffe_ReleaseStringChars(JNIEnv* env, jstring data, const jchar* chars)
+{
+	/* Does nothing */
+}
+
 jint
 Kaffe_GetVersion(JNIEnv* env)
 {
@@ -207,6 +253,19 @@ postError(JNIEnv* env, errorInfo* info)
 	Kaffe_Throw(env, error2Throwable(info));
 }
 
+jref
+Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
+{
+	BEGIN_EXCEPTION_HANDLING(0);
+	if (!gc_add_ref(obj)) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		postError(env, &info);
+	}
+	END_EXCEPTION_HANDLING();
+	return obj;
+}
+
 jclass
 Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 {
@@ -214,16 +273,22 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 	classFile hand;
 	errorInfo info;
 
+	BEGIN_EXCEPTION_HANDLING(0);
 	hand.base = (void*)buf;
 	hand.buf = hand.base;
 	hand.size = len;
 
 	cls = newClass();
-	cls = readClass(cls, &hand, loader, &info);
+	if (cls == 0) {
+		postOutOfMemory(&info);
+	} else {
+		cls = readClass(cls, &hand, loader, &info);
+	}
 	if (cls == 0) {
 		postError(env, &info);
 	}
 
+	END_EXCEPTION_HANDLING();
 	return (cls);
 }
 
@@ -234,12 +299,13 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 	char buf[1024];		/* FIXME: UNCHECKED BUFFER! */
 	errorInfo info;
 
+	BEGIN_EXCEPTION_HANDLING(0);
 	classname2pathname((char*)name, buf);
 
 	if (buf[0] == '[') {
 		cls = getClassFromSignature(&buf[1], NULL, &info);
 		if (cls != 0) {
-			cls = lookupArray(cls);
+			cls = lookupArray(cls, &info);
 		}
 	}
 	else {
@@ -249,6 +315,7 @@ Kaffe_FindClass(JNIEnv* env, const char* name)
 	if (cls == 0) {
 		postError(env, &info);
 	}
+	END_EXCEPTION_HANDLING();
 	return (cls);
 }
 
@@ -300,7 +367,9 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	eobj = execute_java_constructor(NULL, cls, "(Ljava/lang/String;)V", stringC2Java((char*)mess));
+	eobj = execute_java_constructor(NULL, cls,
+					"(Ljava/lang/String;)V",
+					checkPtr(stringC2Java((char*)mess)));
 
 	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)eobj;
 
@@ -341,43 +410,6 @@ Kaffe_ExceptionClear(JNIEnv* env)
 	unhand(getCurrentThread())->exceptObj = 0;
 
 	END_EXCEPTION_HANDLING();
-}
-
-void
-Kaffe_FatalError(JNIEnv* env, const char* mess)
-{
-	kprintf(stderr, "FATAL ERROR: %s\n", mess);
-	exit(1);
-}
-
-jref
-Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
-{
-	gc_add_ref(obj);
-	return (obj);
-}
-
-void
-Kaffe_DeleteGlobalRef(JNIEnv* env, jref obj)
-{
-	gc_rm_ref(obj);
-}
-
-void
-Kaffe_DeleteLocalRef(JNIEnv* env, jref obj)
-{
-	REMOVE_REF(obj);
-}
-
-jboolean
-Kaffe_IsSameObject(JNIEnv* env, jobject obj1, jobject obj2)
-{
-	if (obj1 == obj2) {
-		return (JNI_TRUE);
-	}
-	else {
-		return (JNI_FALSE);
-	}
 }
 
 jobject
@@ -501,6 +533,7 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	Method* meth;
 	errorInfo info;
 
+	BEGIN_EXCEPTION_HANDLING(0);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
 	if (meth == 0) {
 		postError(env, &info);
@@ -510,7 +543,8 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 		postError(env, &info);
 		meth = 0;
 	}
-
+	END_EXCEPTION_HANDLING();
+	
 	return (meth);
 }
 
@@ -1592,13 +1626,14 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	errorInfo info;
 	Utf8Const* utf8;
 
-	utf8 = utf8ConstNew(name, -1);
+	BEGIN_EXCEPTION_HANDLING(0);
+	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, false, &info);
 	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
-
+	END_EXCEPTION_HANDLING();
 	return (fld);
 }
 
@@ -1809,6 +1844,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	Method* meth;
 	errorInfo info;
 
+	BEGIN_EXCEPTION_HANDLING(0);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
 	if (meth == 0) {
 		postError(env, &info);
@@ -1817,6 +1853,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 		postError(env, &info);
 		meth = 0;
 	}
+	END_EXCEPTION_HANDLING();
 
 	return (meth);
 }
@@ -2345,12 +2382,14 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	errorInfo info;
 	Utf8Const* utf8;
 
-	utf8 = utf8ConstNew(name, -1);
+	BEGIN_EXCEPTION_HANDLING(0);
+	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, true, &info);
 	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
+	END_EXCEPTION_HANDLING();
 
 	return (fld);
 }
@@ -2599,12 +2638,6 @@ Kaffe_GetStringChars(JNIEnv* env, jstring data, jboolean* copy)
 	return (ret);
 }
 
-void
-Kaffe_ReleaseStringChars(JNIEnv* env, jstring data, const jchar* chars)
-{
-	/* Does nothing */
-}
-
 jstring
 Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 {
@@ -2618,9 +2651,14 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 	if (!utf8ConstIsValidUtf8(data, len)) {
 		str = NULL;
 	} else {
-		utf8 = utf8ConstNew(data, len);
+		utf8 = checkPtr(utf8ConstNew(data, len));
 		str = utf8Const2Java(utf8);
 		utf8ConstRelease(utf8);
+		if (!str) {
+			errorInfo info;
+			postOutOfMemory(&info);
+			throwError(&info);
+		}
 	}
 
 	END_EXCEPTION_HANDLING();
@@ -2676,6 +2714,11 @@ Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 	}
 
 	buf = KMALLOC(Kaffe_GetStringUTFLength(env, data) + 1);
+	if (!buf) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 
 	ptr = STRING_DATA(str);
 	len = STRING_SIZE(str);
@@ -3449,6 +3492,27 @@ Kaffe_MonitorExit(JNIEnv* env, jobject obj)
 	return (0);
 }
 
+/*
+ * Handle exceptions which fall back to the JNI layer.
+ */
+void
+Kaffe_JNIExceptionHandler(void)
+{
+	vmException* frame;
+
+	frame = (vmException*)unhand(getCurrentThread())->exceptPtr;
+	if (frame) {
+		/* Worry about window around BEGIN and END exception
+		 * handling, as well as functions which only delay
+		 * external exceptions.
+		 */
+		JTHREAD_LONGJMP(frame->jbuf, 1);
+	}
+}
+
+/*
+ * Functions past this point don't bother with jni exceptions.
+ */
 jint
 Kaffe_GetJavaVM(JNIEnv* env, JavaVM** vm)
 {
@@ -3527,6 +3591,7 @@ static
 void
 Kaffe_JNI_wrapper(Method* xmeth, void* func)
 {
+	errorInfo info;
 	char buf[100];
 	int i;
 	const char* str;
@@ -3572,7 +3637,10 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	 */
 	enterTranslator();
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
-	initInsnSequence(0, count, 0);
+	if (!initInsnSequence(0, count, 0, &info)) {
+		leaveTranslator();
+		throwError(&info);
+	}
 	start_basic_block();
 	prologue(0);
 
@@ -3751,7 +3819,9 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	 * only needed if we have labels referring to bytecode.  This is
 	 * not the case here.
 	 */
-	finishInsnSequence(0, &ncode);
+	if (finishInsnSequence(0, &ncode, &info) == false) {
+		throwError(&info);
+	}
 
 	assert(xmeth->exception_table == 0);
 	installMethodCode(0, xmeth, &ncode);
@@ -3896,18 +3966,6 @@ Kaffe_JNI_native(Method* meth)
 	Kaffe_JNI_wrapper(meth, func);
 
 	return (JNI_TRUE);
-}
-
-/*
- * Handle exceptions which fall back to the JNI layer.
- */
-void
-Kaffe_JNIExceptionHandler(void)
-{
-	vmException* frame;
-
-	frame = (vmException*)unhand(getCurrentThread())->exceptPtr;
-	JTHREAD_LONGJMP(frame->jbuf, 1);
 }
 
 /*

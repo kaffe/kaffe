@@ -34,9 +34,9 @@ struct _methods;
 struct _errorInfo;
 
 struct Hjava_lang_Class* readClass(struct Hjava_lang_Class*, classFile*, struct Hjava_lang_ClassLoader*, struct _errorInfo*);
-void readInterfaces(classFile*, struct Hjava_lang_Class*);
-void readMethods(classFile*, struct Hjava_lang_Class*);
-void readFields(classFile*, struct Hjava_lang_Class*);
-void readAttributes(classFile*, struct Hjava_lang_Class*, void*);
+bool readInterfaces(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
+bool readMethods(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
+bool readFields(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
+bool readAttributes(classFile*, struct Hjava_lang_Class*, void*, struct _errorInfo*);
 
 #endif

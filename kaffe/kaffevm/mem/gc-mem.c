@@ -35,7 +35,7 @@ static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
 
 static gc_block* gc_primitive_alloc(size_t);
-static void gc_primitive_free(gc_block*);
+void gc_primitive_free(gc_block*);
 static void* gc_system_alloc(size_t);
 
 size_t gc_heap_base;
@@ -653,7 +653,6 @@ DBG(GCPRIM,		dprintf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->s
 /*
  * Return a block of memory to the free list.
  */
-static
 void
 gc_primitive_free(gc_block* mem)
 {
@@ -737,6 +736,30 @@ DBG(GCPRIM,	dprintf("gc_primitive_free: Merge (%d,%p) onto last in list\n", mem-
 DBG(GCPRIM,	dprintf("gc_primitive_free: Append (%d,%p) onto last in list\n", mem->size, mem); )
 		lptr->next = mem;
 	}
+}
+
+/*
+ * Try to reserve some memory for OOM exception handling.  Gc once at
+ * the beginning.  We start out looking for an arbitrary number of
+ * pages (4), and cut our expectations in half until we are able to
+ * meet them.
+ */
+gc_block *
+gc_primitive_reserve(void)
+{
+	gc_block *r = 0;
+	int size = 4 * gc_pgsize;
+	
+	while (size >= gc_pgsize && !(r = gc_primitive_alloc(size))) {
+		if (size == gc_pgsize) {
+			break;
+		}
+		size /= 2;
+	}
+	if (r) {
+		gc_heap_total += size;
+	}
+	return r;
 }
 
 /*
@@ -932,8 +955,7 @@ gc_system_alloc(size_t sz)
 	/* If we will pass the heap boundary, return 0 to indicate that
 	 * we're run out.
 	 */
-	if (gc_heap_total <= gc_heap_limit && gc_heap_total + sz > gc_heap_limit) {
-		gc_heap_total += sz;
+	if (gc_heap_total + sz > gc_heap_limit) {
 		return (0);
 	}
 #ifdef DEBUG

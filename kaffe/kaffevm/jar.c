@@ -22,6 +22,8 @@
 #include "stats.h"
 #include "files.h"
 
+#undef HAVE_MMAP
+
 static inline int
 jar_read(jarFile* file, char *buf, off_t len)
 {
@@ -122,6 +124,10 @@ readCentralDirRecord(jarFile* file)
 
 	len = sizeof(jarEntry) + (head.fileNameLength + 1);
 	ret = KMALLOC(len);
+	if (!ret) {
+		file->error = "out of memory";
+		return 0;
+	}
 	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(ret));
 DBG(JARFILES,	
 	dprintf("Entry at: %p/len=%d usize%d\n", ret, len, 
@@ -195,12 +201,32 @@ findFirstCentralDirRecord(jarFile* file)
 jarFile*
 openJarFile(char* name)
 {
+#define read_checked(file, ent)				\
+	{						\
+		(ent) = readCentralDirRecord(file);	\
+		if (!(ent)) {				\
+		  	jarEntry *e = file->head;	\
+			jarEntry *d;			\
+							\
+			KCLOSE((file)->fd);		\
+			while (e) {			\
+				d = e;			\
+				e = e->next;		\
+				KFREE(d);		\
+			}				\
+			KFREE(file);			\
+			return 0;			\
+		}					\
+	}
 	jarFile* file;
 	jarEntry* curr;
 	int i;
 	int rc;
 
 	file = KMALLOC(sizeof(jarFile));
+	if (!file) {
+		return 0;
+	}
 
 	rc = KOPEN(name, O_RDONLY|O_BINARY, 0, &file->fd);
 	if (rc) {
@@ -224,24 +250,17 @@ openJarFile(char* name)
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
 	if (i > 0) {
-		curr = readCentralDirRecord(file);
-		if (curr == 0) {
-			KFREE(file);
-			return (0);
-		}
+		read_checked(file, curr);
 		addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 		file->head = curr;
 		for (i--; i > 0; i--) {
-			curr->next = readCentralDirRecord(file);
-			if (curr->next == 0) {
-				closeJarFile(file);
-				return (0);
-			}
+			read_checked(file, curr->next);
 			curr = curr->next;
 		}
 	}
 
 	return (file);
+#undef read_checked
 }
 
 jarEntry*
@@ -270,6 +289,10 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 		return (0);
 	}
 	buf = KMALLOC(entry->compressedSize);
+	if (!buf) {
+		file->error = "Out of memory";
+		return (0);
+	}
 	if (jar_read(file, buf, entry->compressedSize) != entry->compressedSize) {
 		KFREE(buf);
 		return (0);
@@ -281,7 +304,7 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 
 	case COMPRESSION_DEFLATED:
 		nbuf = KMALLOC(entry->uncompressedSize);
-		if (inflate_oneshot(buf, entry->compressedSize, nbuf, entry->uncompressedSize) == 0) {
+		if (nbuf && inflate_oneshot(buf, entry->compressedSize, nbuf, entry->uncompressedSize) == 0) {
 			addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(nbuf));
 			KFREE(buf);
 			return (nbuf);

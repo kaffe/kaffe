@@ -46,6 +46,8 @@ extern void postExceptionMessage(errorInfo *,
 extern void vpostExceptionMessage(errorInfo *einfo,
         const char * fullname, const char * fmt, va_list args);
 
+/* post an out of memory condition */
+extern void postOutOfMemory(errorInfo *einfo);
 
 #define MAX_ERROR_MESSAGE_SIZE        1024
 
@@ -92,5 +94,23 @@ extern void dumpErrorInfo(errorInfo *);
 #define StackOverflowError NEW_LANG_EXCEPTION(StackOverflowError)
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
 #define	InstantiationException(M) NEW_LANG_EXCEPTION_MESSAGE(InstantiationException, M)
+
+void throwError(struct _errorInfo*) __NORETURN__;
+
+/*
+ * KMALLOC and all the allocating string functions return null on
+ * error.  This convenience function can be used when it is safe to
+ * signal the error immidiately.
+ */
+static inline 
+void *checkPtr(void *p)
+{
+	if (!p) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
+	return p;
+}
 
 #endif

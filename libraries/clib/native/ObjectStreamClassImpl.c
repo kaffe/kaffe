@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/exception.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
 #include <native.h>
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
@@ -53,13 +54,34 @@ kaffe_io_ObjectStreamClassImpl_init(void)
 {
 	errorInfo einfo;
 
-	serialVersionUIDName = utf8ConstNew("serialVersionUID" , -1);
+	serialVersionUIDName = checkPtr(utf8ConstNew("serialVersionUID" , -1));
 	writeObjectName = utf8ConstNew("writeObject", -1);
+	if (!writeObjectName) {
+		postOutOfMemory(&einfo);
+		goto svun;
+	}
 	readObjectName = utf8ConstNew("readObject", -1);
+	if (!readObjectName) {
+		postOutOfMemory(&einfo);
+		goto won;
+	}
 	ObjectOutputStreamSig = utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1);
+	if (!ObjectOutputStreamSig) {
+		postOutOfMemory(&einfo);
+		goto ron;
+	}
 	ObjectInputStreamSig = utf8ConstNew("(Ljava/io/ObjectInputStream;)V", -1);
+	if (!ObjectInputStreamSig) {
+		postOutOfMemory(&einfo);
+		goto oos;
+	}
 	ptrType = lookupClass("kaffe/util/Ptr", &einfo);
 	if (ptrType == 0) {
+		utf8ConstRelease(ObjectInputStreamSig);
+oos: 		utf8ConstRelease(ObjectOutputStreamSig);
+ron: 		utf8ConstRelease(readObjectName);
+won: 		utf8ConstRelease(writeObjectName);
+svun: 		utf8ConstRelease(serialVersionUIDName);
 		throwError(&einfo);
 	}
 }
@@ -220,7 +242,7 @@ kaffe_io_ObjectStreamClassImpl_outputClassFieldInfo(struct Hkaffe_io_ObjectStrea
 		type = FIELD_TYPE(*fld);
 		if (CLASS_IS_PRIMITIVE(type)) {
 			do_execute_java_method(out, "writeByte", "(I)V", 0, 0, CLASS_PRIM_SIG(type));
-			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, utf8Const2Java((*fld)->name));
+			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, checkPtr(utf8Const2Java((*fld)->name)));
 /* We dont output the modifiers 
 			do_execute_java_method(out, "writeShort", "(I)V", 0, 0, (*fld)->accflags);
 */
@@ -241,11 +263,11 @@ kaffe_io_ObjectStreamClassImpl_outputClassFieldInfo(struct Hkaffe_io_ObjectStrea
 				strcat(buf, ";");
 			}
 			do_execute_java_method(out, "writeByte", "(I)V", 0, 0, buf[0]);
-			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, utf8Const2Java((*fld)->name));
+			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, checkPtr(utf8Const2Java((*fld)->name)));
 /* We dont output the modifiers 
 			do_execute_java_method(out, "writeShort", "(I)V", 0, 0, (*fld)->accflags);
 */
-			do_execute_java_method(out, "writeObject", "(Ljava/lang/Object;)V", 0, 0, stringC2Java(buf));
+			do_execute_java_method(out, "writeObject", "(Ljava/lang/Object;)V", 0, 0, checkPtr(stringC2Java(buf)));
 		}
 	}
 }
@@ -356,7 +378,7 @@ pathname2ClassnameCopy(const char *orig)
 {
 	char* str;
 	str = KMALLOC(strlen(orig) + 1);
-	pathname2classname(orig, str);
+	if (str) pathname2classname(orig, str);
 	return (str);
 }
 
@@ -375,7 +397,7 @@ getFieldDesc(Field* fld)
 		/* This is like so: Ljava/lang/String; */
 		orig = ((Utf8Const*)(void*)fld->type)->data;
 		str = KMALLOC(strlen(orig) + 1);
-		return (strcpy(str, orig));
+		return (str ? strcpy(str, orig) : 0);
 	}
 	else if (!CLASS_IS_PRIMITIVE(FIELD_TYPE(fld))) {
 		/* This is like so: java.lang.String */
@@ -383,10 +405,11 @@ getFieldDesc(Field* fld)
 		if (orig[0] == '[') {
 			/* arrays should be fine */
 			str = KMALLOC(strlen(orig) + 1);
-			classname2pathname(orig, str);
+			if (str) classname2pathname(orig, str);
 			return (str);
 		} else {
 			str = KMALLOC(strlen(orig) + 3);
+			if (!str) return 0;
 			strcpy(str, "L");
 			strcat(str, orig);
 			strcat(str, ";");
@@ -397,7 +420,7 @@ getFieldDesc(Field* fld)
 	else {
 		orig = CLASS_PRIM_NAME(FIELD_TYPE(fld))->data;
 		str = KMALLOC(strlen(orig) + 1);
-		return (strcpy(str, orig));
+		return (str ? strcpy(str, orig) : 0);
 	}
 }
 
@@ -452,6 +475,10 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	}
 	if (len > 0) {
 		base = KMALLOC(sizeof(uidItem) * len);
+		if (!base) {
+			postOutOfMemory(&einfo);
+			throwError(&einfo);
+		}
 	}
 
 	SHA1Init(&c);
@@ -463,6 +490,11 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	 * but here we must use the dotted form
 	 */
 	classname = getClassName(cls);
+	if (!classname) {
+		KFREE(base);
+		postOutOfMemory(&einfo);
+		throwError(&einfo);
+	}
 	SHA1Update(&c, classname, strlen(classname));
 	KFREE(classname);
 	mod = htonl((int)cls->accflags & (ACC_ABSTRACT|ACC_FINAL|ACC_INTERFACE|ACC_PUBLIC));
@@ -479,6 +511,15 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			base[i].name = getClassName(cls->interfaces[i]);
 			base[i].modifier = -1;
 			base[i].desc = 0;
+			if (!base[i].name) {
+				int j = cls->interface_len;
+
+				for (j--; j > i; j--)
+					KFREE((char*)base[j].name);
+				KFREE(base);
+				postOutOfMemory(&einfo);
+				throwError(&einfo);
+			}
 		}
 		addToSHA(&c, base, cls->interface_len);
 
@@ -503,6 +544,15 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 				base[i].name = fld->name->data;
 				base[i].modifier = (int)fld->accflags & ACC_MASK;
 				base[i].desc = getFieldDesc(fld);
+				if (!base[i].desc) {
+					int j = CLASS_NFIELDS(cls);
+
+					for (j--; j > i; j--)
+						KFREE((char*)base[j].desc);
+					KFREE(base);
+					postOutOfMemory(&einfo);
+					throwError(&einfo);
+				}
 			}
 		}
 		addToSHA(&c, base, CLASS_NFIELDS(cls));
@@ -538,6 +588,15 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			}
 			base[i].modifier = (int)mth->accflags & ACC_MASK;
 			base[i].desc = getMethodDesc(mth);
+			if (!base[i].desc) {
+				int j = CLASS_NMETHODS(cls);
+
+				for (j--; j > i; j--)
+					KFREE((char*)base[j].desc);
+				KFREE(base);
+				postOutOfMemory(&einfo);
+				throwError(&einfo);
+			}
 		}
 		addToSHA(&c, base, CLASS_NMETHODS(cls));
 
@@ -567,6 +626,15 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			}
 			base[i].modifier = (int)mth->accflags & ACC_MASK;
 			base[i].desc = getMethodDesc(mth);
+			if (!base[i].desc) {
+				int j = CLASS_NMETHODS(cls);
+
+				for (j--; j > i; j--)
+					KFREE((char*)base[j].desc);
+				KFREE(base);
+				postOutOfMemory(&einfo);
+				throwError(&einfo);
+			}
 		}
 		addToSHA(&c, base, CLASS_NMETHODS(cls));
 
@@ -612,6 +680,10 @@ findDefaultSerialization(Hjava_lang_Class* clazz)
 	errorInfo einfo;
 
 	name = KMALLOC(strlen(clazz->name->data) + 22);
+	if (!name) {
+		postOutOfMemory(&einfo);
+		throwError(&einfo);
+	}
 	strcpy(name, clazz->name->data);
 	strcat(name, "$DefaultSerialization");
 
