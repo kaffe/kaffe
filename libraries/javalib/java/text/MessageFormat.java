@@ -157,7 +157,7 @@ public class MessageFormat extends Format
      * This is the attribute set for all characters produced
      * by MessageFormat during a formatting.
      */
-    public static final MessageFormat.Field ARGUMENT = new Field("argument");
+    public static final MessageFormat.Field ARGUMENT = new MessageFormat.Field("argument");
 
     // For deserialization
     private Field()
@@ -414,10 +414,12 @@ public class MessageFormat extends Format
 
     for (int i = 0; i < elements.length; ++i)
       {
+	Object thisArg = null;
+	boolean unavailable = false;
 	if (elements[i].argNumber >= arguments.length)
-	  throw new IllegalArgumentException("Not enough arguments given");
-
-	Object thisArg = arguments[elements[i].argNumber];
+	  unavailable = true;
+	else
+	  thisArg = arguments[elements[i].argNumber];
 	AttributedCharacterIterator iterator = null;
 
 	Format formatter = null;
@@ -425,22 +427,27 @@ public class MessageFormat extends Format
 	if (fp != null && i == fp.getField() && fp.getFieldAttribute() == Field.ARGUMENT)
 	  fp.setBeginIndex(appendBuf.length());
 
-	if (elements[i].setFormat != null)
-	  formatter = elements[i].setFormat;
-	else if (elements[i].format != null)
-	  {
-	    if (elements[i].formatClass != null
-		&& ! elements[i].formatClass.isInstance(thisArg))
-	      throw new IllegalArgumentException("Wrong format class");
-	    
-	    formatter = elements[i].format;
-	  }
-	else if (thisArg instanceof Number)
-	  formatter = NumberFormat.getInstance(locale);
-	else if (thisArg instanceof Date)
-	  formatter = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
+	if (unavailable)
+	  appendBuf.append("{" + elements[i].argNumber + "}");
 	else
-	  appendBuf.append(thisArg);
+	  {
+	    if (elements[i].setFormat != null)
+	      formatter = elements[i].setFormat;
+	    else if (elements[i].format != null)
+	      {
+	        if (elements[i].formatClass != null
+		    && ! elements[i].formatClass.isInstance(thisArg))
+	          throw new IllegalArgumentException("Wrong format class");
+	    
+	        formatter = elements[i].format;
+	      }
+	    else if (thisArg instanceof Number)
+	      formatter = NumberFormat.getInstance(locale);
+	    else if (thisArg instanceof Date)
+	      formatter = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
+	    else
+	      appendBuf.append(thisArg);
+	  }
 
 	if (fp != null && fp.getField() == i && fp.getFieldAttribute() == Field.ARGUMENT)
 	  fp.setEndIndex(appendBuf.length());

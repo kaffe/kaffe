@@ -1,3 +1,8 @@
+2004-06-15  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/text/MessageFormat.java
+	(formatInternal) Append "{n}" if argument n is unavailable.
+
 2004-06-14  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c
