@@ -23,9 +23,19 @@ libkthread_la_LDFLAGS = \
 libkthread_la_CFLAGS = \
 	$(PTHREAD_CFLAGS)
 
-libkthread_la_SOURCES = lock-impl.c signal.c syscalls.c thread-impl.c
-EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
-		jsignal.h jthread.h
+libkthread_la_SOURCES = \
+	lock-impl.c \
+	signal.c \
+	syscalls.c \
+	thread-impl.c \
+	lock-impl.h \
+	thread-impl.h \
+	thread-internal.h \
+	jsignal.h \
+	jthread.h
+
+EXTRA_DIST = \
+	Makefile.frag 
 
 @engine_frag@
 @gc_frag@
