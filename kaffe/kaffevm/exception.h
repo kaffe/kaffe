@@ -47,8 +47,9 @@ typedef struct _vmException {
 struct _exceptionFrame;
 
 void throwException(struct Hjava_lang_Throwable*) __NORETURN__;
+void throwFreshException(struct Hjava_lang_Throwable*) __NORETURN__;
 void throwExternalException(struct Hjava_lang_Throwable*) __NORETURN__;
-struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
+struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo, int *fresh);
 void* nextFrame(void*);
 
 struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
