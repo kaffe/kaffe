@@ -151,6 +151,9 @@ public abstract class AbstractMap implements Map {
 					}
 				};
 			}
+			public boolean contains(Object o) {
+				return AbstractMap.this.containsValue(o);
+			}
 		};
 		return valcol;
 	}
