@@ -37,9 +37,13 @@ void
 initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
 	Hjava_lang_Class* clazz = newClass();
-	assert(clazz != 0);
+	if (clazz == 0) {
+		goto bad;
+	}
 	(*class) = clazz;
-	assert(gc_add_ref(clazz));
+	if (!gc_add_ref(clazz)) {
+		goto bad;
+	}
 
 	clazz->dtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
@@ -47,10 +51,13 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	CLASS_PRIM_SIG(clazz) = sig;
         CLASS_PRIM_NAME(clazz) = utf8ConstNew(&sig, 1);
 	if (!clazz->name || !CLASS_PRIM_NAME(clazz)) {
-		fprintf(stderr, "not enough memory to run kaffe\n");
-		ABORT();
+		goto bad;
 	}
 	TYPE_PRIM_SIZE(clazz) = len;
+	return;
+bad:
+	fprintf(stderr, "not enough memory to run kaffe\n");
+	ABORT();
 }
 
 /*
