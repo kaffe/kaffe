@@ -16,13 +16,22 @@ import kaffe.lang.ApplicationException;
 public class Compiler_kjc extends Compiler {
 
 public boolean compile(String name) {
+	String[] args;
+	String classpath = System.getProperty("java.class.path", ".");
+	if (destination != null) {
+		args = new String[] {
+				"-classpath", classpath,
+				"-d", destination,
+				name };
+	}
+	else {
+		args = new String[] {
+				"-classpath", classpath,
+				name };
+	}
 	Application app;
 	try {
-		app = new Application("at.dms.kjc.Main",
-			new String[] {
-				"-classpath",
-				System.getProperty("java.class.path", "."),
-				name });
+		app = new Application("at.dms.kjc.Main", args);
 	}
 	catch (ApplicationException _) {
 		return (false);

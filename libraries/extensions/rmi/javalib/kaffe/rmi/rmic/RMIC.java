@@ -2,8 +2,8 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license-lesser.terms" for information on usage and 
- * redistribution of this file.
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 package kaffe.rmi.rmic;
@@ -32,6 +32,7 @@ private boolean need11Stubs = true;
 private boolean need12Stubs = true;
 private boolean compile = true;
 private boolean verbose;
+private String destination;
 
 private PrintWriter out;
 private TabbedWriter ctrl;
@@ -823,6 +824,7 @@ private void compile(String name) throws Exception {
 	if (verbose) {
 		System.out.println("[Compiling class " + name + "]");
 	}
+	comp.setDestination(destination);
 	boolean result = comp.compile(name);
 	if (result == false) {
 		throw comp.getException();
@@ -904,6 +906,7 @@ private void parseOptions() {
 			next++;
 		}
 		else if (arg.equals("-d")) {
+			destination = args[next];
 			next++;
 		}
 		else if (arg.charAt(1) == 'J') {
@@ -929,7 +932,7 @@ private static void usage() {
 "	-nocompile		Don't compile the generated files\n" +
 "	-verbose 		Output what's going on\n" +
 "	-classpath <path> *	Use given path as classpath\n" +
-"	-d <directory> *	Specify where to place generated classes\n" +
+"	-d <directory> 		Specify where to place generated classes\n" +
 "	-J<flag> *		Pass flag to Java\n" +
 "  * Option currently ignored"
 	);

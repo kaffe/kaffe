@@ -18,11 +18,25 @@ public class Compiler_jikes
 final static private String jikespath = System.getProperty("kaffe.compiler.path", "/usr/local/bin/jikes");
 
 public boolean compile(String name) {
+        String[] args;
+        String classpath = System.getProperty("java.class.path", ".");
+        if (destination != null) {
+                args = new String[] {
+				jikespath,
+                                "-classpath", classpath,
+                                "-d", destination,
+                                name };
+        }
+        else {
+                args = new String[] {
+				jikespath,
+                                "-classpath", classpath,
+                                name };
+        }
 	Process app = null;
 	int exitcode;
 	try {
-		app = Runtime.getRuntime().exec(new String[]
-			{ jikespath, "-classpath", System.getProperty("java.class.path", "."), name });
+		app = Runtime.getRuntime().exec(args);
 		app.waitFor();
 	}
 	catch (IOException e) {

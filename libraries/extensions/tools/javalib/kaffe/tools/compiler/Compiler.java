@@ -15,11 +15,16 @@ abstract public class Compiler {
 private static final String prefix = "kaffe.tools.compiler.Compiler_";
 
 protected Exception exception;
+protected String destination;
 
 abstract public boolean compile(String name);
 
 public Exception getException() {
 	return (exception);
+}
+
+public void setDestination(String dest) {
+	destination = dest;
 }
 
 public static Compiler getInstance() {
