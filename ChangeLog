@@ -1,3 +1,10 @@
+Tue Dec 22 00:16:58 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.c: initialize native pcs with -1.
+	kaffe/kaffevm/jit/machine.c: fixed bug where translator assumed
+	that bytecode instructions at the start/end/handler (bytecode) pc 
+	of an exception table entry had a valid (native) pc.  
+
 Sun Dec 20 17:19:12 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/man/kaffe.1.in: need to substitute @prefix@

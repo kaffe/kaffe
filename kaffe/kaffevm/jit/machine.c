@@ -442,10 +442,32 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {
 		for (i = 0; i < meth->exception_table->length; i++) {
+			/* Note that we cannot assume that the bytecode
+			 * instructions that are at the start/end/handler
+			 * pc index have a corresponding native pc.
+			 * They only have one if they already emitted
+			 * native instructions during translation.
+			 * Jikes, for instance, likes to put a `nop' at
+			 * the end_pc index of an exception handler range.
+			 *
+			 * If this happens, we simply find the next bytecode
+			 * instruction that has a native pc and use it instead.
+			 */
+			int npc, epc;
 			e = &meth->exception_table->entry[i];
-			e->start_pc = INSNPC(e->start_pc) + (uintp)code->code;
-			e->end_pc = INSNPC(e->end_pc) + (uintp)code->code;
-			e->handler_pc = INSNPC(e->handler_pc) + (uintp)code->code;
+
+			epc = e->start_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->start_pc = npc + (uintp)code->code;
+
+			epc = e->end_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->end_pc = npc + (uintp)code->code;
+
+			epc = e->handler_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->handler_pc = npc + (uintp)code->code;
+			assert(e->start_pc <= e->end_pc);
 		}
 	}
 

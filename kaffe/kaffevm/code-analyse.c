@@ -97,6 +97,10 @@ DBG(CODEANALYSE,
 	wide = false;
 	for (pc = 0; pc < codeInfo->codelen;) {
 		SET_STARTOFINSTRUCTION(pc);
+		/* set native pc to -1 so that we can recognize whether
+		 * a corresponding native PC will be generated.
+		 */
+		SET_INSNPC(pc, -1);
 		switch (INSN(pc)) {
 		case IFEQ:	case IFNE:	case IFLT:
 		case IFGE:	case IFGT:	case IFLE:
