@@ -1,11 +1,16 @@
 class IllegalWait {
   public static void main (String[] args) throws Exception {
-    new Object().wait(100);
+    boolean caught = false;
+    try {
+      new Object().wait(100);
+    } catch (IllegalMonitorStateException e) {
+      caught = true;
+    }
+    System.out.println(caught ? "Success." : "Failure.");
   }
 }
 
 /* Expected Output:
-java.lang.IllegalMonitorStateException
-	at x.main(IllegalWait.java:6)
+Success.
 */
 
