@@ -11,8 +11,9 @@
 package java.lang;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.Comparator;
 import java.util.Locale;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
@@ -29,6 +30,14 @@ final public class String implements Serializable, Comparable {
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	static final long serialVersionUID = -6849794470754667710L;
+
+	public static final Comparator CASE_INSENSITIVE_ORDER = new ICComp();
+
+	private static class ICComp implements Comparator, Serializable {
+	  public int compare(Object s1, Object s2) {
+	    return ((String)s1).compareToIgnoreCase((String)s2);
+	  }
+	}
 
 public String() {
 	value = new char[0];
@@ -136,6 +145,11 @@ public int compareTo( String s1) {
 
 	/* Both equal up to min length, therefore check lengths for lexiographical ordering */
 	return ( count - s1.count);
+}
+
+public int compareToIgnoreCase(String that) {
+	return this.toUpperCase().toLowerCase().compareTo(
+		that.toUpperCase().toLowerCase());
 }
 
 public String concat(String str) {
