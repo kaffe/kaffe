@@ -43,6 +43,18 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Vector;
 
+
+/**
+ * This class should not be put public and it is only intended to the
+ * classes of the java.text package. Its aim is to build a segmented
+ * character iterator by appending strings and adding attributes to
+ * portions of strings. The code intends to do some optimization
+ * concerning memory consumption and attribute access but at the
+ * end it is only an AttributedCharacterIterator.
+ *
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date November 22, 2003
+ */
 class FormatCharacterIterator implements AttributedCharacterIterator
 {
   private String formattedString;
@@ -51,6 +63,11 @@ class FormatCharacterIterator implements AttributedCharacterIterator
   private int[] ranges;
   private HashMap[] attributes;
   
+  /**
+   * This constructor builds an empty iterated strings. The attributes
+   * are empty and so is the string. However you may append strings
+   * and attributes to this iterator.
+   */
   FormatCharacterIterator()
   {
     formattedString = "";
@@ -58,6 +75,21 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     attributes = new HashMap[0];
   }
 
+  /**
+   * This constructor take a string <code>s</code>, a set of ranges 
+   * and the corresponding attributes. This is used to build an iterator.
+   * The array <code>ranges</code> should be formatted as follow:
+   * each element of <code>ranges</code> specifies the index in the string
+   * until which the corresponding map of attributes at the same position
+   * is applied. For example, if you have:
+   * <pre>
+   *   s = "hello";
+   *   ranges = new int[] { 2, 6 };
+   *   attributes = new HashMap[2];
+   * </pre>
+   * <code>"he"</code> will have the attributes <code>attributes[0]</code>,
+   * <code>"llo"</code> the <code>attributes[1]</code>.
+   */
   FormatCharacterIterator (String s, int[] ranges, HashMap[] attributes)
   {
     formattedString = s;
@@ -65,11 +97,11 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     this.attributes = attributes;
   }
   
-  /*
-   * -----------------------------------
-   * AttributedCharacterIterator methods
-   * -----------------------------------
+  /* 
+   * The following methods are inherited from AttributedCharacterIterator,
+   * and thus are already documented. 
    */
+
   public Set getAllAttributeKeys()
   {
     if (attributes != null && attributes[attributeIndex] != null)
@@ -192,10 +224,10 @@ class FormatCharacterIterator implements AttributedCharacterIterator
   }
   
   /*
-   * ---------------------------------
-   * CharacterIterator methods
-   * ---------------------------------
+   * The following methods are inherited from CharacterIterator and thus
+   * are already documented.
    */
+
   public char current()
   {
     return formattedString.charAt (charIndex);
@@ -284,6 +316,15 @@ class FormatCharacterIterator implements AttributedCharacterIterator
       return formattedString.charAt (charIndex);
   }
 
+  /**
+   * This method merge the specified attributes and ranges with the
+   * internal tables. This method is in charge of the optimization
+   * of tables. Two following sets of attributes are never the same.
+   *
+   * @see #FormatCharacterIterator()
+   *
+   * @param attributes the new array attributes to apply to the string.
+   */
   protected void mergeAttributes (HashMap[] attributes, int[] ranges)
   {
     Vector new_ranges = new Vector();
@@ -349,6 +390,13 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     
   }
 
+  /**
+   * This method appends to the internal attributed string the attributed
+   * string contained in the specified iterator.
+   *
+   * @param iterator the iterator which contains the attributed string to
+   * append to this iterator.
+   */
   protected void append (AttributedCharacterIterator iterator)
   {
     char c = iterator.first();
@@ -383,6 +431,15 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     ranges = new_ranges;
   }
 
+  /**
+   * This method appends an attributed string which attributes are specified
+   * directly in the calling parameters.
+   *
+   * @param text The string to append.
+   * @param local_attributes The attributes to put on this string in the
+   * iterator. If it is <code>null</code> the string will simply have no
+   * attributes.
+   */
   protected void append (String text, HashMap local_attributes)
   {
     int[] new_ranges = new int[ranges.length+1];
@@ -398,6 +455,13 @@ class FormatCharacterIterator implements AttributedCharacterIterator
     attributes = new_attributes;
   }  
 
+  /**
+   * This method appends a string without attributes. It is completely
+   * equivalent to call {@link #append(String,HashMap)} with local_attributes
+   * equal to <code>null</code>.
+   *
+   * @param text The string to append to the iterator.
+   */
   protected void append (String text)
   {
     append (text, null);

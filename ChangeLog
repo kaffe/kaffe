@@ -1,5 +1,15 @@
 2003-12-04  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/text/FormatCharacterIterator.java:
+	Resynced with GNU Classpath.
+
+	2003-11-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* java/text/FormatCharacterIterator.java: Documented the class and
+        its methods.
+
+2003-12-04  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/text/Format.java:
         Resynced with GNU Classpath by removing empty comment.
 
