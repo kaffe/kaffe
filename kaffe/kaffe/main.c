@@ -291,7 +291,6 @@ usage(void)
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
-	fprintf(stderr, "	-nopreempt 		Disable preemption\n");
 #ifdef DEBUG
         fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging. Set flag=list for a list\n");                     
 #endif
