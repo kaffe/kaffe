@@ -20,6 +20,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.security.ProtectionDomain;
 import java.util.Vector;
 import kaffe.lang.SystemClassLoader;
 
@@ -308,6 +309,10 @@ native public int getModifiers();
 native public String getName();
 
 native static Class getPrimitiveClass(String name);
+
+public ProtectionDomain getProtectionDomain() {
+	return getClassLoader().getProtectionDomain(this);
+}
 
 /**
  * Finds a resource with the specified name.

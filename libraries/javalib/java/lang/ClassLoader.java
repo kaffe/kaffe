@@ -40,6 +40,13 @@ private final Hashtable loadedClasses = new Hashtable();
  */
 private final Set loadedLibraries = new HashSet();
 
+
+/**
+ * We keep the references to loaded classes and their protection domain
+ * in this Map.
+ */
+private final Hashtable protectionDomains = new Hashtable();
+
 private ProtectionDomain defaultProtectionDomain;
 private final ClassLoader parent;
 
@@ -128,6 +135,7 @@ protected final Class defineClass(String name, byte data[], int off,
 	else {
 		loadedClasses.put(clazz.getName(), clazz);
 	}
+	protectionDomains.put(clazz, pd);
 	return (clazz);
 }
 
@@ -254,6 +262,10 @@ protected String findLibrary(String libname) {
 
 synchronized void addNativeLibrary(NativeLibrary lib) {
 	loadedLibraries.add(lib);
+}
+
+ProtectionDomain getProtectionDomain(Class clazz) {
+	return (ProtectionDomain) protectionDomains.get(clazz);
 }
 
 private native Class defineClass0(String name, byte data[], int off, int len);

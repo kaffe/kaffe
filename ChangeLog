@@ -1,3 +1,14 @@
+Fri Aug 16 23:55:24 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Class.java:
+	(getProtectionDomain) new method.
+
+	* libraries/javalib/java/lang/ClassLoader.java:
+	(protectionDomains) map of loaded classes to their protection
+	domains.
+	(defineClass) store the protection domain of a defined class.
+	(getProtectionDomain) new package private method.
+
 Fri Aug 16 22:01:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/net/URLClassLoader.java:
