@@ -20,6 +20,9 @@ public class PrintStream
 public PrintStream(OutputStream out) {
 	super(out);
 	this.autoFlush = false;
+	if (out == null) {
+		throw new NullPointerException();
+	}
 }
 
 public PrintStream(OutputStream out, boolean autoFlush) {
@@ -184,6 +187,9 @@ public void write(int x) {
 
 private void print(byte[] b) {
 	write(b, 0, b.length);
+	if (autoFlush) {	// This is not required by the spec,
+	       flush();		//   but it appears to be what Sun does.
+	}
 }
 
 }
