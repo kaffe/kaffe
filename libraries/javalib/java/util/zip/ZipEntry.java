@@ -10,6 +10,10 @@
 
 package java.util.zip;
 
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class ZipEntry implements Cloneable, ZipConstants {
 
   public static final int STORED = Deflater.NO_COMPRESSION;
@@ -17,6 +21,7 @@ public class ZipEntry implements Cloneable, ZipConstants {
 
   String name;
   long time;
+  int dosTime;
   long crc;
   long size;
   int method;
@@ -43,7 +48,8 @@ public class ZipEntry implements Cloneable, ZipConstants {
       throw new IllegalArgumentException("name length > 0xFFFF");
     }
     name = nm;
-    time = -1;
+    time = new Date().getTime();
+    dosTime = computeDosTime(time);
     crc = -1;
     size = -1;
     method = -1;
@@ -78,6 +84,7 @@ public class ZipEntry implements Cloneable, ZipConstants {
   public void setTime(long tm)
   {
     time = tm;
+    dosTime = computeDosTime(tm);
   }
 
   public long getTime()
@@ -172,6 +179,24 @@ public class ZipEntry implements Cloneable, ZipConstants {
   public String toString()
   {
     return (getName());
+  }
+
+  // Encode timestamp in DOS format
+  int computeDosTime(long time) {
+    time = (time + 1) & ~1L;
+    Calendar cal = new GregorianCalendar();
+    cal.setTime(new Date(time));
+    return encodeDosTime(
+	cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+	cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR),
+	cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+  }
+
+  int encodeDosTime(int year, int month, int day, int hour,
+      int minute, int second) {
+    return (year < 1980) ? encodeDosTime(1980, 0, 1, 0, 0, 0) :
+      ((year - 1980) << 25) | ((month + 1) << 21) | (day << 16) |
+      (hour << 11) | (minute << 5) | (second >> 1);
   }
 
 }

@@ -70,7 +70,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
       entry.method = get16(zheader, LOC_METHOD);
       entry.extra = extra;
       entry.comment = "";
-      entry.flag = (int)get32(zheader, LOC_FLAGS);
+      entry.flag = (int)get16(zheader, LOC_FLAGS);
       entry.version = get16(zheader, LOC_VERSIONEXTRACT);
       entry.csize = (int)get32(zheader, LOC_COMPRESSEDSIZE);
       entry.offset = 0;

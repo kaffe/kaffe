@@ -15,16 +15,16 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Enumeration;
 
-public class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
+// Reference: ftp://ftp.uu.net/pub/archiving/zip/doc/appnote-970311-iz.zip
 
-private static final int ZIPVER = 0x000a;
+public class ZipOutputStream extends DeflaterOutputStream
+	implements ZipConstants {
+ 
+private static final int ZIPVER_1_0 = 0x000a;
+private static final int ZIPVER_2_0 = 0x0014;
 
 private int method = Deflater.DEFLATED;
 private int level = Deflater.DEFAULT_COMPRESSION;
-private byte[] lh = new byte[LOC_RECSZ];
-private byte[] ch = new byte[CEN_RECSZ];
-private byte[] ce = new byte[END_RECSZ];
-private byte[] da = new byte[DATA_RECSZ];
 private ZipEntry curr;
 private Vector dir;
 private OutputStream strm;
@@ -127,23 +127,17 @@ public void closeEntry() throws IOException
 	curr.csize = out;
 	curr.size = in;
 	curr.crc = crcval;
+
 	dout += curr.csize;
 
-
-	// I do not know exactly why, but adding an extended header to
-	// an uncompressed entry breaks things when extracting.
-
-	if (curr.method == DEFLATED) {
-	    // do method called putextended() from zipfile.c
-	    // IE : Write an extended local header (crc, csize, size)
-
-	    put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
-	    put32(da, DATA_CRC, (int)curr.crc);
-	    put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
-	    put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
-
-	    strm.write(da);
-	}
+	// Always add data descriptor (flags must have 0x0008 bit set)
+	byte[] da = new byte[DATA_RECSZ];
+	put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
+	put32(da, DATA_CRC, (int)curr.crc);
+	put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
+	put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
+	strm.write(da);
+	dout += DATA_RECSZ;
 
 	curr = null;
 }
@@ -157,6 +151,7 @@ public void finish() throws IOException
 	closeEntry();
 
 	// Write the directory.
+	byte[] ch = new byte[CEN_RECSZ];
 	Enumeration e = dir.elements();
 	int count = 0;
 	int size = 0;
@@ -165,25 +160,31 @@ public void finish() throws IOException
 		ZipEntry ze = (ZipEntry)e.nextElement();
 
 		put32(ch, CEN_SIGNATURE, (int)CEN_HEADSIG);
-		put16(ch, CEN_VERSIONMADE, ZIPVER);
-		put16(ch, CEN_VERSIONEXTRACT, ZIPVER);
+		put16(ch, CEN_VERSIONMADE, ZIPVER_2_0);
+		put16(ch, CEN_VERSIONEXTRACT,
+		    ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 		put16(ch, CEN_FLAGS, ze.flag);
 		put16(ch, CEN_METHOD, ze.method);
-		put16(ch, CEN_TIME, 0);
-		put16(ch, CEN_DATE, 0);
+		put32(ch, CEN_TIME, ze.dosTime);
 		put32(ch, CEN_CRC, (int)ze.crc);
 		put32(ch, CEN_COMPRESSEDSIZE, (int)ze.csize);
 		put32(ch, CEN_UNCOMPRESSEDSIZE, (int)ze.size);
-		put16(ch, CEN_FILENAMELEN, ze.name == null ? 0 : ze.name.length());
-		put16(ch, CEN_EXTRAFIELDLEN, ze.extra == null ? 0 : ze.extra.length);
-		put16(ch, CEN_FILECOMMENTLEN, ze.comment == null ? 0 : ze.comment.length());
+		put16(ch, CEN_FILENAMELEN, ze.name == null ?
+			0 : ze.name.length());
+		put16(ch, CEN_EXTRAFIELDLEN, ze.extra == null ?
+			0 : ze.extra.length);
+		put16(ch, CEN_FILECOMMENTLEN, ze.comment == null ?
+			0 : ze.comment.length());
 		put16(ch, CEN_DISKNUMBER, 0);
 		put16(ch, CEN_INTERNALATTR, 0);
 		put32(ch, CEN_EXTERNALATTR, 0);
 		put32(ch, CEN_LCLOFFSET, (int)ze.offset);
 
 		strm.write(ch);
-		strm.write(ze.name.getBytes());
+
+		byte[] buf = new byte[ze.name.length()];
+		ze.name.getBytes(0, ze.name.length(), buf, 0);
+		strm.write(buf);
 
 		count++;
 		size += CEN_RECSZ + ze.name.length();
@@ -194,6 +195,7 @@ public void finish() throws IOException
 	        throw new ZipException("ZIP file must have at least one entry");
 	}
 
+	byte[] ce = new byte[END_RECSZ];
 	put32(ce, END_SIGNATURE, (int)END_ENDSIG);
 	put16(ce, END_DISKNUMBER, 0);
 	put16(ce, END_CENDISKNUMBER, 0);
@@ -224,7 +226,7 @@ public void putNextEntry(ZipEntry ze) throws IOException
 			throw new ZipException("crc not set in stored entry");
 		}
 	}
-	ze.flag = ze.method;
+	ze.flag = 0x0008;
 
 	if (curr == null || curr.method != ze.method) {
 		if (ze.method == STORED) {
@@ -235,30 +237,36 @@ public void putNextEntry(ZipEntry ze) throws IOException
 		}
 	}
 
+	byte[] lh = new byte[LOC_RECSZ];
 	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
-	put16(lh, LOC_VERSIONEXTRACT, ZIPVER);
+	put16(lh, LOC_VERSIONEXTRACT,
+		method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 	put16(lh, LOC_FLAGS, ze.flag);
 	put16(lh, LOC_METHOD, ze.method);
-	put16(lh, LOC_TIME, 0);
-	put16(lh, LOC_DATE, 0);
+	put32(lh, LOC_TIME, ze.dosTime);
 
-	put32(lh, LOC_CRC, (ze.crc == -1) ? 0 : (int)ze.crc);
-	put32(lh, LOC_COMPRESSEDSIZE, ze.csize == -1 ? 0 : (int)ze.csize);
-	put32(lh, LOC_UNCOMPRESSEDSIZE, ze.size == -1 ? 0 : (int)ze.size);
+	put32(lh, LOC_CRC, 0);
+	put32(lh, LOC_COMPRESSEDSIZE, 0);
+	put32(lh, LOC_UNCOMPRESSEDSIZE, 0);
 
 	put16(lh, LOC_FILENAMELEN, ze.name == null ? 0 : ze.name.length());
 	put16(lh, LOC_EXTRAFIELDLEN, ze.extra == null ? 0 : ze.extra.length);
 
 	strm.write(lh);
+
+	ze.offset = dout;
+	dout += LOC_RECSZ;
+
 	if (ze.name != null) {
-		strm.write(ze.name.getBytes());
+		byte[] buf = new byte[ze.name.length()];
+		ze.name.getBytes(0, ze.name.length(), buf, 0);
+		strm.write(buf);
+		dout += ze.name.length();
 	}
 	if (ze.extra != null) {
 		strm.write(ze.extra);
+		dout += ze.extra.length;
 	}
-
-	ze.offset = dout;
-	dout += LOC_RECSZ + ze.name.length();
 
 	// Add entry to list of entries we need to write at the end.
 	dir.addElement(ze);
@@ -273,7 +281,8 @@ public void setComment(String comment)
 
 public void setLevel(int lvl)
 {
-	if ((lvl < Deflater.NO_COMPRESSION || lvl > Deflater.BEST_COMPRESSION) && lvl != Deflater.DEFAULT_COMPRESSION) {
+	if ((lvl < Deflater.NO_COMPRESSION || lvl > Deflater.BEST_COMPRESSION)
+	    && lvl != Deflater.DEFAULT_COMPRESSION) {
 		throw new IllegalArgumentException("bad compression level");
 	}
 	level = lvl;
