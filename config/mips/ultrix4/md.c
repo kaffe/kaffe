@@ -2,7 +2,7 @@
  * mips/ultrix4/md.c
  * Ultrix4.2 MIPS specific functions.
  *
- * Copyright (c) 1996, 1997, 1998
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -15,114 +15,6 @@
 #include "jtypes.h"
 #include "object.h"
 #include "support.h"
-
-int
-sysdepCalcArgSize(callMethodInfo *call)
-{
-	int i, argsize;
-
-	for (i=0, argsize=0; i<call->nrargs; i++) {
-		argsize += call->callsize[i];
-		if ((call->callsize[i] == 2) && ((argsize % 2) == 1))
-			argsize += 1;
-	}
-
-	return(argsize);
-}
-
-/*
- * The calling convention is such that the first four 32 bit values are
- * passed in $4-$7, and the remainder goes on the stack.
- * If first one or two values are floating points, they will be in f12, f14.
- * When 8 bytes values are stored into register, they are 8 bytes alligned,
- * and $5 or $7 are not used to store first half of them.
- *
- * Return values are stored in $2, $2 and $3 combination, or f0.
- */
-
-void
-sysdepCallMethod(callMethodInfo *CALL)
-{
-  int stacksize;
-  stacksize = sysdepCalcArgSize(CALL)-4;
-  if (stacksize < 0) stacksize = 0;
-  do {
-    int extraargs[stacksize];
-    register int r2 asm("$2");
-    register int r3 asm("$3");
-    register int r4 asm("$4");
-    register int r5 asm("$5");
-    register int r6 asm("$6");
-    register int r7 asm("$7");
-    register double d0 asm("$f0");
-    register float f0 asm("$f0");
-    register double d12 asm("$f12");
-    register float f12 asm("$f12");
-    register double d14 asm("$f14");
-    register float f14 asm("$f14");
-    int *res;
-    int i, argidx = -4;
-
-    for (i=0; i<(CALL)->nrargs; i++) {
-      if (((CALL)->callsize[i] == 2) && ((argidx % 2) == 1))
-          argidx += 1;
-      switch (argidx) {
-      case -4:
-        r4 = (CALL)->args[i].i;
-	if ((CALL)->callsize[i] == 2)
-          r5 = (CALL)->args[i].j;
-        break;
-      case -3:
-        r5 = (CALL)->args[i].i;
-        break;
-      case -2:
-        r6 = (CALL)->args[i].i;
-	if ((CALL)->callsize[i] == 2)
-          r7 = (CALL)->args[i].j;
-        break;
-      case -1:
-        r7 = (CALL)->args[i].i;
-        break;
-      default:
-        extraargs[argidx] = (CALL)->args[i].i;
-	if ((CALL)->callsize[i] == 2)
-          extraargs[argidx+1] = (CALL)->args[i].j;
-        break;
-      }
-      argidx += (CALL)->callsize[i];
-    }
-    if (((CALL)->nrargs >= 1) && ((CALL)->calltype[0] == 'F')) {
-      f12 = (CALL)->args[0].f;
-      if (((CALL)->nrargs >= 2) && ((CALL)->calltype[1] == 'F'))
-        f14 = (CALL)->args[1].f;
-    } else if (((CALL)->nrargs >= 2) && ((CALL)->calltype[0] == 'D')) {
-      d12 = (CALL)->args[0].d;
-      if (((CALL)->nrargs >= 3) && ((CALL)->calltype[2] == 'F'))
-        f14 = (CALL)->args[2].f;
-      else if (((CALL)->nrargs >= 4) && ((CALL)->calltype[2] == 'D'))
-        d14 = (CALL)->args[2].d;
-    }
-    asm ("move $25, %2\njal $31, $25\n"
-          : "=r" (r2), "=r" (r3)
-          : "r" ((CALL)->function),
-            "r" (r4), "r" (r5), "r" (r6), "r" (r7)
-          : "cc"
-          );
-    if ((CALL)->retsize != 0) {
-      res = (int *)(CALL)->ret;
-      res[1] = r3;
-      res[0] = r2;
-      switch((CALL)->rettype) {
-      case 'D':
-        *(double*)res = d0;
-        break;
-      case 'F':
-        *(float*)res = f0;
-        break;
-      }
-    }
-  } while (0);
-}
 
 #define	JB_PC		2
 #define JB_REGS		3

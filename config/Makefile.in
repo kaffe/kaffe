@@ -143,6 +143,7 @@ EXTRA_DIST = \
 	regen-forward \
 	alpha/jit-alpha.def \
 	alpha/common.h \
+	alpha/sysdepCallMethod.h \
 	alpha/linux/jit-md.h \
 	alpha/linux/config.frag \
 	alpha/linux/md.c \
@@ -269,11 +270,12 @@ EXTRA_DIST = \
 	m68k/sunos4/md.c \
 	m68k/sunos4/md.h \
 	m68k/trampolines.c \
+	mips/common.h \
+	mips/n32-sysdepCallMethod.h \
+	mips/o32-sysdepCallMethod.h \
 	mips/irix5/config.frag \
 	mips/irix5/md.c \
 	mips/irix5/md.h \
-	mips/common.h \
-	mips/mips.c \
 	mips/threads.h \
 	mips/netbsd1/config.frag \
 	mips/netbsd1/md.c \
@@ -302,6 +304,7 @@ EXTRA_DIST = \
 	powerpc/machten/md.h \
 	sparc/jit-icode.h \
 	sparc/common.h \
+	sparc/sysdepCallMethod.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \

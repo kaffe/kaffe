@@ -210,49 +210,35 @@ execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* si
 	return (obj);
 }
 
-/* This is defined in the alpha and mips N32 ports.  */
+/* This is defined in the alpha port.  It causes all integer arguments
+   to be promoted to jlong, and all jfloats to be promoted to jdouble.
+   Note that, when a jfloat is promoted, its calltype will be marked
+   as 'D'.  It implies NO_HOLES, unless explicitly defined otherwise.  */
 #if PROMOTE_TO_64bits
-# define PROMOTE_jint2jlong 1
-# define PROMOTE_jfloat2jdouble 1
-#endif
-
-/* This is currently only defined by PROMOTE_TO_64bits.  It causes
-   32-bit integer types to be promoted to 64-bits.  */
-#if PROMOTE_jint2jlong
-# if ! PROMOTE_TO_64bits
-#  error "PROMOTE_jint2jlong is only supported with PROMOTE_TO_64bits"
-# endif
 # define PROM_i j
-#else
-# define PROM_i i
-#endif
-
-/* This is currently defined by PROMOTE_TO_64bits and in the mips O32
-   port.  It causes 32-bit float types to be promoted to 64-bit
-   doubles.  */
-#if PROMOTE_jfloat2jdouble
 # define PROM_f d
-#else
+/* NO_HOLES causes all types to occupy only one slot in callargs, but
+   not affecting their callsizes, that can still be used to
+   distinguish among types.  */
+# ifndef NO_HOLES
+#  define NO_HOLES 1
+# endif
+#else /* ! PROMOTE_TO_64bits */
+# define PROM_i i
 # define PROM_f f
 #endif
 
-/* If we promote everything to 64bits, all sizes can be divided by 2.  */
-#if PROMOTE_jint2jlong && PROMOTE_jfloat2jdouble
-# define PROM_DIV 2
-# if PTR_TYPE_SIZE != 2 * SIZEOF_INT
-#  error "PROMOTE_TO_64bits requires 64bits pointers"
-# endif
-#else
-# define PROM_DIV 1
-#endif
-
-/* This is currently defined in the MIPS O32 port.  It causes 64bits
-   arguments to be forced into even arguments, by introducing a padding
-   integer argument. */
+/* This is currently defined in the MIPS O32 port.  It causes jlongs
+   and jdoubles to be forced into even arguments, by introducing a
+   padding integer argument. The argument DO is used to adjust the
+   input argument list.  */
 #if ALIGN_AT_64bits
-# define ENSURE_ALIGN64() do { if (call.callsize[i] == 2 && (i & 1)) { call.callsize[i] = 1; call.calltype[i] = 'I'; ++i; ++s; call.callsize[i] = 2; } } while (0)
+# if NO_HOLES
+#  error "ALIGN_AT_64bits is incompatible with NO_HOLES"
+# endif
+# define ENSURE_ALIGN64(DO) do { if (call.callsize[i] == 2 && (i & 1)) { call.callsize[i] = 0; call.calltype[i] = 'I'; DO; ++i; ++s; call.callsize[i] = 2; } } while (0)
 #else
-# define ENSURE_ALIGN64() do {} while (0)
+# define ENSURE_ALIGN64(DO) do {} while (0)
 #endif
 
 /*
@@ -297,8 +283,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-		ENSURE_ALIGN64();
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		call.calltype[i] = 'L';
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
@@ -307,8 +292,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 
 		/* If method is static we must insert the class as an argument */
 		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			s += call.callsize[i];
 			call.calltype[i] = 'L';
 			in[i].l = meth->class;
@@ -322,8 +306,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	 * an argument.
  	 */
 	if ((meth->accflags & ACC_STATIC) == 0) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-		ENSURE_ALIGN64();
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
 		in[i].l = obj;
@@ -356,39 +339,34 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 			break;
 
 		case 'F':
-#if ! PROMOTE_jfloat2jdouble
 			call.callsize[i] = 1;
-			in[i].f = args[i].f;
-			break;
-#else
-			call.callsize[i] = 2 / PROM_DIV;
-			ENSURE_ALIGN64();
+			in[i].PROM_f = args[i].f;
+#if PROMOTE_TO_64bits
 			call.calltype[i] = 'D';
-			in[i].d = args[i].f;
-			goto second_word;
 #endif
+			break;
 		case 'I':
 			call.callsize[i] = 1;
 			in[i].PROM_i = args[i].i;
 			break;
 		case 'D':
 		case 'J':
-			call.callsize[i] = 2 / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = 2;
+			ENSURE_ALIGN64(--args);
 			in[i] = args[i];
-		second_word:
-			if (call.callsize[i] > 1) {
-			  s += call.callsize[i];
-			  in[i+1].i = (&args[i].i)[1];
-			  i++;
-			  call.calltype[i] = 0;
-			  call.callsize[i] = 0;
-			}
+#if NO_HOLES
+			++args; /* Since we'll not be incrementing i */
+#else
+			s += call.callsize[i];
+			in[i+1].i = (&args[i].i)[1];
+			i++;
+			call.calltype[i] = 0;
+			call.callsize[i] = 0;
+#endif
 			break;
 
 		case '[':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			call.calltype[i] = 'L';	/* Looks like an object */
 			in[i] = args[i];
 			while (*sig == '[') {
@@ -401,8 +379,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 			}
 			break;
 		case 'L':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			in[i] = args[i];
 			while (*sig != ';') {
 				sig++;
@@ -508,8 +485,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 
 	/* Insert the JNI environment */
 	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-		ENSURE_ALIGN64();
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		call.calltype[i] = 'L';
 		in[i].l = (void*)&Kaffe_JNIEnv;
 		s += call.callsize[i];
@@ -519,8 +495,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		 * argument 
 		 */
 		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			s += call.callsize[i];
 			call.calltype[i] = 'L';
 			in[i].l = meth->class;
@@ -533,8 +508,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	 * the first argument and get the function code.
  	 */
 	if ((meth->accflags & ACC_STATIC) == 0) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-		ENSURE_ALIGN64();
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
 		in[i].l = obj;
@@ -554,36 +528,31 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			in[i].PROM_i = va_arg(args, jint);
 			break;
 		case 'F':
-#if ! PROMOTE_jfloat2jdouble
 			call.callsize[i] = 1;
 			in[i].PROM_f = (jfloat)va_arg(args, jdouble);
-			break;
-#else
-			call.callsize[i] = 2 / PROM_DIV;
-			ENSURE_ALIGN64();
+#if PROMOTE_TO_64bits
 			call.calltype[i] = 'D';
-			in[i].d = va_arg(args, jdouble);
-			goto second_word;
 #endif
+			break;
 		case 'D':
-			call.callsize[i] = 2 / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = 2;
+			ENSURE_ALIGN64({});
 			in[i].d = va_arg(args, jdouble);
 			goto second_word;
 		case 'J':
-			call.callsize[i] = 2 / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = 2;
+			ENSURE_ALIGN64({});
 			in[i].j = va_arg(args, jlong);
 		second_word:
-			if (call.callsize[i] > 1) {
-			  s += call.callsize[i];
-			  in[i+1].i = (&in[i].i)[1];
-			  i++;
-			  call.callsize[i] = 0;
-			}
+#if ! NO_HOLES
+			s += call.callsize[i];
+			in[i+1].i = (&in[i].i)[1];
+			i++;
+			call.callsize[i] = 0;
+#endif
 			break;
 		case '[':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			call.calltype[i] = 'L';	/* Looks like an object */
 			in[i].l = va_arg(args, jref);
 			while (*sig == '[') {
@@ -596,8 +565,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			}
 			break;
 		case 'L':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT / PROM_DIV;
-			ENSURE_ALIGN64();
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			in[i].l = va_arg(args, jref);
 			while (*sig != ';') {
 				sig++;

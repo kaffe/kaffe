@@ -1,5 +1,47 @@
 1999-04-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* config/sparc/sysdepCallMethod.h (sysdepCallMethod): Moved from
+	common.h.  Make it inlinable for short argument lists, by calling
+	an alternate definition when there are too many arguments to pass
+	in the registers.  It's still possible to get a single version
+	with an appropriate #define.
+	* config/sparc/common.h: Include sysdepCallMethod.h twice, once to 
+	define the non-inlinable longSysdepCallMethod, once to define the
+	inlinable sysdepCallMethod.
+	* config/alpha/sysdepCallMethod.h (sysdepCallMethod): Likewise,
+	but default to the single version in egcs 1.1.*, because it
+	egcs crashes otherwise.  The bug is fixed in older releases and
+	newer snapshots.
+	* config/alpha/common.h: Likewise.
+	* kaffe/kaffevm/support.c (PROM_DIV): Removed; use NO_HOLES.
+	(PROMOTE_jint2jlong, PROMOTE_jfloat2jdouble): Removed; use
+	PROMOTE_TO_64bits instead.
+	(NO_HOLES): Semantically similar to PROM_DIV-1, but it allows
+	proper implementation of jfloat2jdouble promotion.  Do not modify
+	callsize.
+	(ALIGN_AT_64bits): Operate only on jlongs and jdoubles.  Do not
+	modify callsize.
+	(ENSURE_ALIGN64): Accept one argument to adjust args.
+	(callMethodA): Adjust args whenever we promote jfloat2jdouble, 
+	remove a hole after a jlong or jdouble (even a promoted
+	one), or insert a hole because of alignment.
+	* config/mips/n32-sysdepCallMethod.h (sysdepCallMethod): Moved
+	from mips.c.  Rewritten as a static inline function, similar with
+	the ones for alpha.  Define NO_HOLES.
+	* config/mips/o32-sysdepCallMethod.h (sysdepCallMethod): Likewise.
+	Define ALIGN_AT_64bits.
+	* config/mips/common.h: Include the appropriate sysdepCallMethod.
+	If it cannot determined which one to use, print an error.
+	* config/mips/mips.c: Removed.
+	* config/mips/irix5/md.c: Do not include mips/mips.c.
+	* config/mips/linux/md.c: Likewise.
+	* config/mips/ultrix4/md.c: Removed definition of
+	sysdepCallMethod, it's o32 ABI.  It may fail to select it, though, 
+	and some #define may be needed.
+	* config/Makefile.am (EXTRA_DIST): Removed mips/mips.c.  Added
+	*/*sysdepCallMethod.h.
+	* config/Makefile.in: Rebuilt.
+	
 	* test/regression/DoubleComp.java (DoubleComp): Add try/catch
 	blocks so that it reports which tests cause ArithmeticExceptions.
 
