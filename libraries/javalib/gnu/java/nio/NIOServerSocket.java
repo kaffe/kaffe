@@ -39,14 +39,18 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import gnu.java.net.PlainSocketImpl;
+
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 
 /**
- * @author Michael Koch
+ * @author Michael Koch (konqueror@gmx.de)
  */
 public final class NIOServerSocket extends ServerSocket
 {
@@ -59,7 +63,36 @@ public final class NIOServerSocket extends ServerSocket
     this.channel = channel;
   }
 
-  public native PlainSocketImpl getPlainSocketImpl();
+  public PlainSocketImpl getPlainSocketImpl()
+  {
+    try
+      {
+       Method[] methods = NIOServerSocket.class.getDeclaredMethods();
+       for (int i = 0; i < methods.length; i++)
+       {
+               System.out.println("Michael: method: " + methods[i].getName());
+       }
+
+       final Object t = this;
+       final Method method = ServerSocket.class.getDeclaredMethod("getImpl", new Class[0]);
+       method.setAccessible(true);
+       PrivilegedExceptionAction action = new PrivilegedExceptionAction()
+         {
+           public Object run() throws Exception
+           {
+             return method.invoke(t, new Object[0]);
+           }
+         };
+       return (PlainSocketImpl) AccessController.doPrivileged(action);
+      }
+    catch (Exception e)
+      {
+       // This should never happen.
+       Error error = new InternalError("unable to invoke method ServerSocket.getImpl()");
+       error.initCause(e);
+       throw error;
+      }
+  }
 
   public ServerSocketChannel getChannel()
   {

@@ -109,7 +109,6 @@ INSTALL_JNI_DERIVED_HDRS =
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
-	gnu_java_nio_NIOServerSocket.h \
 	gnu_java_nio_SelectorImpl.h \
 	java_nio_channels_Channels.h \
 	java_nio_VMDirectByteBuffer.h \

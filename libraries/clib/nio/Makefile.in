@@ -84,8 +84,8 @@ LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =  \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am_libnio_la_OBJECTS = libnio_la-java_nio_VMDirectByteBuffer.lo \
-	libnio_la-SelectorImpl.lo libnio_la-NIOServerSocket.lo \
-	libnio_la-FileChannelImpl.lo libnio_la-Channels.lo
+	libnio_la-SelectorImpl.lo libnio_la-FileChannelImpl.lo \
+	libnio_la-Channels.lo
 libnio_la_OBJECTS = $(am_libnio_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -386,7 +386,6 @@ libnio_la_LDFLAGS = \
 libnio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
 	SelectorImpl.c \
-	NIOServerSocket.c \
 	FileChannelImpl.c \
 	Channels.c
 
@@ -468,7 +467,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-Channels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-FileChannelImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-NIOServerSocket.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-SelectorImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Plo@am__quote@
 
@@ -506,13 +504,6 @@ libnio_la-SelectorImpl.lo: SelectorImpl.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='SelectorImpl.c' object='libnio_la-SelectorImpl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-SelectorImpl.lo `test -f 'SelectorImpl.c' || echo '$(srcdir)/'`SelectorImpl.c
-
-libnio_la-NIOServerSocket.lo: NIOServerSocket.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-NIOServerSocket.lo -MD -MP -MF "$(DEPDIR)/libnio_la-NIOServerSocket.Tpo" -c -o libnio_la-NIOServerSocket.lo `test -f 'NIOServerSocket.c' || echo '$(srcdir)/'`NIOServerSocket.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnio_la-NIOServerSocket.Tpo" "$(DEPDIR)/libnio_la-NIOServerSocket.Plo"; else rm -f "$(DEPDIR)/libnio_la-NIOServerSocket.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='NIOServerSocket.c' object='libnio_la-NIOServerSocket.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-NIOServerSocket.lo `test -f 'NIOServerSocket.c' || echo '$(srcdir)/'`NIOServerSocket.c
 
 libnio_la-FileChannelImpl.lo: FileChannelImpl.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-FileChannelImpl.lo -MD -MP -MF "$(DEPDIR)/libnio_la-FileChannelImpl.Tpo" -c -o libnio_la-FileChannelImpl.lo `test -f 'FileChannelImpl.c' || echo '$(srcdir)/'`FileChannelImpl.c; \

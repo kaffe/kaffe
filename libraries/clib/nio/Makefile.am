@@ -24,7 +24,6 @@ libnio_la_LDFLAGS = \
 libnio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
 	SelectorImpl.c \
-	NIOServerSocket.c \
 	FileChannelImpl.c \
 	Channels.c
 
