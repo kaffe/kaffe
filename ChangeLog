@@ -1,3 +1,7 @@
+2004-04-22  Ito kazumitsu <kaz@maczuka.gcd.org>
+        * kaffe/kaffevm/locks.c
+	slowUnlockMutex(): Reverted.
+
 2004-04-22  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Check for sigaltstack.
