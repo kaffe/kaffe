@@ -49,6 +49,15 @@ public final class ByteOrder
   public static final ByteOrder BIG_ENDIAN     = new ByteOrder();
   public static final ByteOrder LITTLE_ENDIAN  = new ByteOrder();
 
+  static
+  {
+    // load the shared library needed for native methods.
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary ("nio");
+      }
+  }
+  
   /**
    * Returns the native byte order of the platform currently running.
    */

@@ -108,7 +108,7 @@ public class UnicastRemoteCall
       {
 	oout = conn.getObjectOutputStream();
 	
-	for (int i=0;i<vec.size();i+=2)
+	for (int i = 0; i < vec.size(); i += 2)
 	  {
 	    boolean primitive = ((Boolean)vec.elementAt(i)).booleanValue();
 	    Object data = vec.elementAt(i+1);
@@ -286,55 +286,55 @@ public class UnicastRemoteCall
 
     public void writeBoolean(boolean v) throws IOException
     {
-      vec.addElement(new Boolean(true));
-      vec.addElement(new Boolean(v));
+      vec.addElement(Boolean.TRUE);
+      vec.addElement(Boolean.valueOf(v));
     }
 
     public void writeByte(int v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Byte((byte) v));
     }
 
     public void writeChar(int v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Character((char) v));
     }
 
     public void writeDouble(double v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Double(v));
     }
 
     public void writeFloat(float v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Float(v));
     }
 
     public void writeInt(int v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Integer(v));
     }
 
     public void writeLong(long v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Long(v));
     }
 
     public void writeShort(int v) throws IOException
     {
-      vec.addElement(new Boolean(true));
+      vec.addElement(Boolean.TRUE);
       vec.addElement(new Short((short) v));
     }
 
     public void writeObject(Object obj) throws IOException
     {
-      vec.addElement(new Boolean(false));
+      vec.addElement(Boolean.FALSE);
       vec.addElement(obj);
     }
 

@@ -1,5 +1,5 @@
-/* HasControls.java --
-   Copyright (C) 2001 Free Software Foundation, Inc.
+/* ChannelInputStream.java -- 
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,16 +36,44 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.naming.ldap;
+package gnu.java.nio;
 
-import javax.naming.NamingException;
- 
+import java.io.InputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.IllegalBlockingModeException;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectableChannel;
+
 /**
- * @author Warren Levy <warrenl@redhat.com>
- * @date June 1, 2001
+ * @author Michael Koch
  */
-
-public interface HasControls
+public final class ChannelInputStream extends InputStream
 {
-  Control[] getControls() throws NamingException;
+  private ReadableByteChannel ch;
+  
+  public ChannelInputStream (ReadableByteChannel ch)
+  {
+    super();
+    
+    this.ch = ch;
+  }
+
+  public int read() throws IOException
+  {
+    if (ch instanceof SelectableChannel
+	&& (! ((SelectableChannel) ch).isBlocking()))
+      throw new IllegalBlockingModeException();
+      
+    ByteBuffer buffer = ByteBuffer.allocate(1);
+    int result = ch.read(buffer);
+
+    if (result == -1)
+      return -1;
+
+    if (result == 0)
+      throw new IOException("Could not read from channel");
+
+     return buffer.get(0);
+  }
 }

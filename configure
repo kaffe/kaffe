@@ -19288,9 +19288,14 @@ _ACEOF
 fi
 
 
+NOSIGCONTEXT=false
+
 case $Khost_os in
 win32*)
 	SYSTEM=win32 ;;
+cygwin*)
+	SYSTEM=unix;
+	NOSIGCONTEXT=true;;
 *)
 	SYSTEM=unix ;;
 esac
@@ -19468,11 +19473,15 @@ fi;
 case "$enable_jvmpi" in
 "") ;;
 no) ;;
-*)
+*) if test "x$NOSIGCONTEXT" = "xtrue"; then
+	echo "JVMPI does not support Cygwin"
+   else
+
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_JVMPI 1
 _ACEOF
-;;
+
+   fi;;
 esac
 
 
@@ -19516,6 +19525,11 @@ if test "${enable_xprofiling+set}" = set; then
   enableval="$enable_xprofiling"
 
 fi;
+if test "x$NOSIGCONTEXT" = "xtrue"; then
+  echo "XProfiling does not support Cygwin"
+  enable_xprofiling=no
+fi
+
 case "$enable_xprofiling" in
 "") xprofiling=no ;;
 no) xprofiling=no ;;

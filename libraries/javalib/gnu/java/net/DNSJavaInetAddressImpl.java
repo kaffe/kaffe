@@ -52,7 +52,6 @@ import org.xbill.DNS.Section;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.ReverseMap;
 
-/* This class is just a forward to native implementation. */
 public class DNSJavaInetAddressImpl implements InetAddressImpl
 {
   static private Resolver resolver = null;
@@ -60,7 +59,6 @@ public class DNSJavaInetAddressImpl implements InetAddressImpl
   public String getHostByAddr(byte[] ip)
     throws UnknownHostException
   {
-    
     if (resolver == null)
       resolver = new ExtendedResolver();
 

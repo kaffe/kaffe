@@ -34,7 +34,18 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
+
 package gnu.java.rmi.server;
 
-public class RMIVoidValue
-{}
+/**
+ * Package private class used to indicate a void return type.
+ * INSTANCE is the only object of this class ever made.
+ */
+final class RMIVoidValue
+{
+  static RMIVoidValue INSTANCE = new RMIVoidValue();
+
+  private RMIVoidValue()
+  {
+  }
+}

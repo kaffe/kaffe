@@ -1,5 +1,5 @@
-/* HasControls.java --
-   Copyright (C) 2001 Free Software Foundation, Inc.
+/* InputStreamChannel.java -- 
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,16 +36,53 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.naming.ldap;
+package gnu.java.nio;
 
-import javax.naming.NamingException;
- 
+import java.io.InputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.ReadableByteChannel;
+
 /**
- * @author Warren Levy <warrenl@redhat.com>
- * @date June 1, 2001
+ * @author Michael Koch
  */
-
-public interface HasControls
+public final class InputStreamChannel implements ReadableByteChannel
 {
-  Control[] getControls() throws NamingException;
+  private boolean closed = false;
+  private InputStream in;
+  
+  public InputStreamChannel (InputStream in)
+  {
+    super();
+    this.in = in;
+  }
+
+  public void close() throws IOException
+  {
+    if (!closed)
+      {
+        in.close();
+        closed = true;
+      }
+  }
+
+  public boolean isOpen()
+  {
+    return !closed;
+  }
+
+  public int read (ByteBuffer dst) throws IOException
+  {
+    if (!isOpen())
+      throw new ClosedChannelException();
+    
+    byte[] buffer = new byte [dst.remaining()];
+    int readBytes = in.read (buffer);
+
+    if (readBytes > 0)
+      dst.put (buffer, 0, readBytes);
+
+    return readBytes;
+  }
 }

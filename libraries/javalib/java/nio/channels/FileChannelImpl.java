@@ -60,6 +60,15 @@ import gnu.classpath.RawData;
 
 public class FileChannelImpl extends FileChannel
 {
+  static
+  {
+    // load the shared library needed for native methods.
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary ("nio");
+      }
+  }
+  
   public RawData map_address;
   
   int length;
@@ -160,7 +169,9 @@ public class FileChannelImpl extends FileChannel
     byte[] buffer = new byte [dst.remaining ()];
     
     result = implRead (buffer, 0, buffer.length);
-    dst.put (buffer, 0, result);
+
+    if (result > 0)
+      dst.put (buffer, 0, result);
 
     return result;
   }

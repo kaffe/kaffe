@@ -80,7 +80,7 @@ public abstract class AbstractSelectableChannel extends SelectableChannel
   {
     synchronized (LOCK)
       {
-        blocking = true;
+        blocking = block;
         implConfigureBlocking (block);
       }
     

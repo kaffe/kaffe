@@ -221,17 +221,20 @@ public class ServerSocket
       throw new IllegalArgumentException ("Address type not supported");
 
     InetSocketAddress tmp = (InetSocketAddress) endpoint;
-    
+
     SecurityManager s = System.getSecurityManager ();
     if (s != null)
       s.checkListen (tmp.getPort ());
 
+    InetAddress addr = tmp.getAddress();
+    
+    // Initialize addr with 0.0.0.0.
+    if (addr == null)
+      addr = InetAddress.ANY_IF;
+    
     try
       {
-	if (tmp.getAddress () != null)
-	  impl.bind (tmp.getAddress (), tmp.getPort ());
-	else
-	  impl.bind (InetAddress.ANY_IF, tmp.getPort ());
+	impl.bind(addr, tmp.getPort());
 	impl.listen(backlog);
 	bound = true;
       }
@@ -356,15 +359,15 @@ public class ServerSocket
    */
   public void close () throws IOException
   {
-    if (!isClosed())
-      {
-	impl.close();
-	impl = null;
-	bound = false;
+    if (isClosed())
+      return;
+    
+    impl.close();
+    impl = null;
+    bound = false;
 
-	if (getChannel() != null)
-	  getChannel().close();
-      }
+    if (getChannel() != null)
+      getChannel().close();
   }
 
   /**

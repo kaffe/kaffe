@@ -159,9 +159,14 @@ dnl Start of default configurations
 dnl -------------------------------------------------------------------------
 
 dnl What kind of system are we using?
+NOSIGCONTEXT=false
+
 case $Khost_os in
 win32*)
 	SYSTEM=win32 ;;
+cygwin*)
+	SYSTEM=unix;
+	NOSIGCONTEXT=true;;
 *)
 	SYSTEM=unix ;;
 esac
@@ -330,7 +335,11 @@ AC_ARG_ENABLE(jvmpi,[  --enable-jvmpi          Enable JVMPI @<:@default=no@:>@]
 case "$enable_jvmpi" in
 "") ;;
 no) ;;
-*) AC_DEFINE(ENABLE_JVMPI, 1, [JVM Profiling Interface]);;
+*) if test "x$NOSIGCONTEXT" = "xtrue"; then
+	echo "JVMPI does not support Cygwin"
+   else
+	AC_DEFINE(ENABLE_JVMPI, 1, [JVM Profiling Interface])
+   fi;;
 esac
 
 AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" = x"yes")
@@ -354,6 +363,11 @@ dnl -------------------------------------------------------------------------
 need_libxprof=no
 
 AC_ARG_ENABLE(xprofiling,[  --enable-xprofiling     Enable profiling for C and jitted code])
+if test "x$NOSIGCONTEXT" = "xtrue"; then
+  echo "XProfiling does not support Cygwin"
+  enable_xprofiling=no
+fi
+
 case "$enable_xprofiling" in
 "") xprofiling=no ;;
 no) xprofiling=no ;;

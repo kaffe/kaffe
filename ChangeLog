@@ -1,3 +1,73 @@
+2003-12-27  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure, libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in: Regenerated.
+
+	* configure.in, config/i386/cygwin32/md.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Disable JVMPI and XPROF when the system is a cygwin.
+
+	* libraries/javalib/essential.files: Added missing classes in NIO.
+
+	* test/regression/URLTest.java: Changed regression test. Checking here is
+	too strict and so the message could change.
+	
+	* libraries/javalib/gnu/java/lang/reflect/TypeSignature.java,
+	libraries/javalib/gnu/java/rmi/server/RMIVoidValue.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java,
+	libraries/javalib/java/io/FilePermission.java,
+	libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLStreamHandler.java,
+	libraries/javalib/java/nio/ByteOrder.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelectableChannel.java,
+	libraries/javalib/javax/naming/directory/Attribute.java,
+	libraries/javalib/javax/naming/directory/Attributes.java,
+	libraries/javalib/javax/naming/directory/DirContext.java,
+	libraries/javalib/javax/naming/directory/InitialDirContext.java,
+	libraries/javalib/javax/naming/directory/SearchResult.java,
+	libraries/javalib/javax/naming/event/EventContext.java,
+	libraries/javalib/javax/naming/event/EventDirContext.java,
+	libraries/javalib/javax/naming/event/NamingEvent.java,
+	libraries/javalib/javax/naming/event/NamingExceptionEvent.java,
+	libraries/javalib/javax/naming/ldap/ControlFactory.java,
+	libraries/javalib/javax/naming/ldap/ExtendedRequest.java,
+	libraries/javalib/javax/naming/ldap/HasControls.java,
+	libraries/javalib/javax/naming/ldap/InitialLdapContext.java,
+	libraries/javalib/javax/naming/ldap/LdapContext.java,
+	libraries/javalib/javax/naming/ldap/LdapReferralException.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotification.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotificationListener.java,
+	libraries/javalib/javax/naming/spi/DirObjectFactory.java,
+	libraries/javalib/javax/naming/spi/DirStateFactory.java,
+	libraries/javalib/javax/naming/spi/DirectoryManager.java,
+	libraries/javalib/javax/naming/spi/NamingManager.java,
+	libraries/javalib/javax/naming/spi/ObjectFactoryBuilder.java,
+	libraries/javalib/javax/naming/spi/ResolveResult.java,
+	libraries/javalib/javax/naming/spi/Resolver.java,
+	libraries/javalib/javax/naming/spi/StateFactory.java,
+	libraries/javalib/pure-java/math/java/math/BigDecimal.java,
+	libraries/javalib/pure-java/math/java/math/BigInteger.java:
+	Resynchronized with Classpath.
+
+	* libraries/javalib/java/nio/ByteOrder.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java,
+	libraries/javalib/java/nio/channels/spi/AbstractSelectableChannel.java,
+	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+	libraries/javalib/gnu/java/nio/ChannelInputStream.java,
+	libraries/javalib/gnu/java/nio/ChannelOutputStream.java,
+	libraries/javalib/gnu/java/nio/InputStreamChannel.java,
+	libraries/javalib/gnu/java/nio/OutputStreamChannel.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java:
+	Merged from GCJ/libjava.
+	
 2003-12-26  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated KJC to

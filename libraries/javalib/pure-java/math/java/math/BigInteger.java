@@ -541,7 +541,6 @@ public class BigInteger extends Number implements Comparable
     if (y.words == null)
       return BigInteger.add(x, y.ival);
     // Both are big
-    int len;
     if (y.ival > x.ival)
       { // Swap so x is longer then y.
 	BigInteger tmp = x;  x = y;  y = tmp;
@@ -1566,7 +1565,7 @@ public class BigInteger extends Number implements Comparable
   /* Assumes this and obj are both canonicalized. */
   public boolean equals(Object obj)
   {
-    if (obj == null || ! (obj instanceof BigInteger))
+    if (! (obj instanceof BigInteger))
       return false;
     return equals(this, (BigInteger) obj);
   }

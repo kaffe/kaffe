@@ -26,7 +26,10 @@
 #undef SP_OFFSET
 #define	SP_OFFSET	7
 
-#error Signal handlers are not supported on CygWin32.
+#define SIGNAL_ARGS(sig, sc) int sig
+#define SIGNAL_CONTEXT_POINTER(scp) int scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (NULL)
+#define SIGNAL_PC(scp) (0)
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

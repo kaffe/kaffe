@@ -389,13 +389,17 @@ gnu_java_net_protocol_jar_SRCS = \
 	gnu/java/net/protocol/jar/Connection.java \
 	gnu/java/net/protocol/jar/Handler.java
 gnu_java_nio_SRCS = \
+	gnu/java/nio/ChannelInputStream.java \
+	gnu/java/nio/ChannelOutputStream.java \
 	gnu/java/nio/DatagramChannelImpl.java \
 	gnu/java/nio/DatagramChannelSelectionKey.java \
 	gnu/java/nio/FileLockImpl.java \
+	gnu/java/nio/InputStreamChannel.java \
 	gnu/java/nio/NIOConstants.java \
 	gnu/java/nio/NIODatagramSocket.java \
 	gnu/java/nio/NIOServerSocket.java \
 	gnu/java/nio/NIOSocket.java \
+	gnu/java/nio/OutputStreamChannel.java \
 	gnu/java/nio/PipeImpl.java \
 	gnu/java/nio/SelectionKeyImpl.java \
 	gnu/java/nio/SelectorImpl.java \

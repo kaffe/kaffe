@@ -119,11 +119,6 @@ public final class Connection extends HttpURLConnection
   private ByteArrayOutputStream bufferedOutputStream;
 
   /**
-   * The PrintWriter for this connection (used internally)
-   */
-  private PrintWriter outputWriter;
-
-  /**
    * This is the object that holds the header field information
    */
   private HeaderFieldHelper headers = new HeaderFieldHelper();
@@ -164,13 +159,11 @@ public final class Connection extends HttpURLConnection
 	socket = new Socket(url.getHost(), port);
       }
 
-    if (doInput)
-      inputStream = new DataInputStream
-	(new BufferedInputStream (socket.getInputStream()));
+    inputStream =
+      new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
     outputStream = new BufferedOutputStream (socket.getOutputStream());
     bufferedOutputStream = new ByteArrayOutputStream (256); //default is too small
-    outputWriter = new PrintWriter (new OutputStreamWriter (outputStream, "8859_1")); 
 
     sendRequest();
     receiveReply();
@@ -202,36 +195,30 @@ public final class Connection extends HttpURLConnection
    */
   void sendRequest() throws IOException
   {
+    // Create PrintWriter for easier sending of headers.
+    PrintWriter outputWriter =
+      new PrintWriter(new OutputStreamWriter(outputStream, "8859_1")); 
+    
     // Send request including any request properties that were set.
     outputWriter.print (getRequestMethod() + " " + url.getFile()
                         + " HTTP/1.1\r\n");
 
     // Set additional HTTP headers.
     if (getRequestProperty ("Host") == null)
-      {
-        setRequestProperty ("Host", url.getHost());
-      }
+      setRequestProperty ("Host", url.getHost());
     
     if (getRequestProperty ("Connection") == null)
-      {
-        setRequestProperty ("Connection", "Close");
-      }
+      setRequestProperty ("Connection", "Close");
     
     if (getRequestProperty ("user-agent") == null)
-      {
-        setRequestProperty ("user-agent", "gnu-classpath/"
-                            + System.getProperty ("classpath.version"));
-      }
+      setRequestProperty ("user-agent", "gnu-classpath/"
+                          + System.getProperty ("classpath.version"));
     
     if (getRequestProperty ("accept") == null)
-      {
-        setRequestProperty ("accept", "*/*");
-      }
+      setRequestProperty ("accept", "*/*");
     
     if (getRequestProperty ("Content-type") == null)
-      {
-        setRequestProperty ("Content-type", "application/x-www-form-urlencoded");
-      }
+      setRequestProperty ("Content-type", "application/x-www-form-urlencoded");
 
     // Set correct content length.
     setRequestProperty ("Content-length", String.valueOf (bufferedOutputStream.size()));
@@ -257,7 +244,7 @@ public final class Connection extends HttpURLConnection
   /**
    * Read HTTP reply from inputStream.
    */
-  void receiveReply() throws IOException
+  private void receiveReply() throws IOException
   {
     // Parse the reply
     String line = inputStream.readLine();
@@ -267,6 +254,8 @@ public final class Connection extends HttpURLConnection
     if ((idx == -1)
         || (line.length() < (idx + 6)))
       throw new IOException ("Server reply was unparseable: " + saveline);
+
+    headers.addHeaderField (null, line);
 
     line = line.substring (idx + 1);
     String code = line.substring (0, 3);
@@ -349,6 +338,59 @@ public final class Connection extends HttpURLConnection
   }
 
   /**
+   * Return a boolean indicating whether or not this connection is
+   * going through a proxy
+   *
+   * @return true if using a proxy, false otherwise
+   */
+  public boolean usingProxy()
+  {
+    return proxyInUse;
+  }
+
+  /**
+   * Returns an InputStream for reading from this connection.  This stream
+   * will be "queued up" for reading just the contents of the requested file.
+   * Overrides URLConnection.getInputStream()
+   *
+   * @return An InputStream for this connection.
+   *
+   * @exception IOException If an error occurs
+   */
+  public InputStream getInputStream() throws IOException
+  {
+    if (!connected)
+      connect();
+
+    if (!doInput)
+      throw new ProtocolException("Can't open InputStream if doInput is false");
+    
+    return inputStream;
+  }
+
+  /**
+   * Returns on OutputStream for writing to this connection.
+   *
+   * @return An OutputStream for this connection.
+   *
+   * @exception IOException If an error occurs
+   */
+  public OutputStream getOutputStream() throws IOException
+  {
+    if (!doOutput)
+      throw new ProtocolException
+        ("Want output stream while haven't setDoOutput(true)");
+    
+    if (!method.equals ("POST")) //But we might support "PUT" in future
+      setRequestMethod ("POST");
+  
+    if (!connected)
+      connect();
+    
+    return bufferedOutputStream;
+  }
+
+  /**
    * Overrides java.net.HttpURLConnection.setRequestMethod() in order to
    * restrict the available methods to only those we support.
    *
@@ -368,46 +410,6 @@ public final class Connection extends HttpURLConnection
       throw new ProtocolException ("Unsupported or unknown request method " +
                                    method);
   }
-  
-  /**
-   * Return a boolean indicating whether or not this connection is
-   * going through a proxy
-   *
-   * @return true if using a proxy, false otherwise
-   */
-  public boolean usingProxy()
-  {
-    return proxyInUse;
-  }
-
-  /**
-   * This method returns the header field key at the specified numeric
-   * index.
-   *
-   * @param n The index into the header field array
-   *
-   * @return The name of the header field key, or <code>null</code> if the
-   * specified index is not valid.
-   */
-  public String getHeaderFieldKey (int n)
-  {
-    if (n < 1)
-      return null;
-
-    n--;
-
-    if (!connected)
-      try
-	{
-	  connect();
-	}
-      catch (IOException e)
-	{
-	  return null;
-	}
-
-    return headers.getHeaderFieldKeyByIndex (n);
-  }
 
   /**
    * This method returns the header field value at the specified numeric
@@ -418,12 +420,8 @@ public final class Connection extends HttpURLConnection
    * @return The value of the specified header field, or <code>null</code>
    * if the specified index is not valid.
    */
-  public String getHeaderField (int n)
+  public String getHeaderField(int n)
   {
-    if (n < 1)
-      return null;
-
-    n--;
     if (!connected)
       try
 	{
@@ -438,39 +436,26 @@ public final class Connection extends HttpURLConnection
   }
 
   /**
-   * Returns an InputStream for reading from this connection.  This stream
-   * will be "queued up" for reading just the contents of the requested file.
-   * Overrides URLConnection.getInputStream()
+   * This method returns the header field key at the specified numeric
+   * index.
    *
-   * @return An InputStream for this connection.
+   * @param n The index into the header field array
    *
-   * @exception IOException If an error occurs
+   * @return The name of the header field key, or <code>null</code> if the
+   * specified index is not valid.
    */
-  public InputStream getInputStream() throws IOException
+  public String getHeaderFieldKey(int n)
   {
-    if(inputStream != null)
-      return inputStream;
-
     if (!connected)
-      connect();
+      try
+	{
+	  connect();
+	}
+      catch (IOException e)
+	{
+	  return null;
+	}
 
-    return inputStream;
+    return headers.getHeaderFieldKeyByIndex (n);
   }
-
-  public OutputStream getOutputStream() throws IOException
-  {
-    if (!doOutput)
-      throw new ProtocolException
-        ("Want output stream while haven't setDoOutput(true)");
-    
-    if (!method.equals ("POST")) //But we might support "PUT" in future
-      setRequestMethod ("POST");
-  
-    if (!connected)
-      connect();
-  
-    return bufferedOutputStream;
-  }
-
-
 }

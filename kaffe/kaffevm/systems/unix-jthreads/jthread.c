@@ -417,7 +417,9 @@ interrupt(SIGNAL_ARGS(sig, sc))
 {
 	if( currentJThread->status != THREAD_SUSPENDED )
 	{
+#ifdef ENABLE_JVMPI
 		EXCEPTIONFRAME(jthread_current()->localData.topFrame, sc);
+#endif
 	}
 	
 	/*

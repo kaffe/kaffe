@@ -256,7 +256,7 @@ public Object incomingMessageCall(UnicastConnection conn, int method, long hash)
 		UnicastRemoteCall call = new UnicastRemoteCall(conn);
 		skel.dispatch(myself, call, method, hash);		  
 		if (!call.isReturnValue())
-		  return new RMIVoidValue();
+		  return RMIVoidValue.INSTANCE;
 		else
 		  return (call.returnValue());
 	}
