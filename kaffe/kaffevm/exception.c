@@ -332,6 +332,12 @@ catchSignal(int sig, void* handler)
 
 	newact.sa_handler = (SIG_T)handler;
 	sigemptyset(&newact.sa_mask);
+	/* we cannot afford to have our signal handlers preempted before
+	 * they are able to disable interrupts.
+	 */
+	sigaddset(&newact.sa_mask, SIGIO);
+	sigaddset(&newact.sa_mask, SIGALRM);
+	sigaddset(&newact.sa_mask, SIGVTALRM);
 	newact.sa_flags = 0;
 #if defined(SA_SIGINFO)
 	newact.sa_flags |= SA_SIGINFO;

@@ -1,3 +1,16 @@
+Mon Jan  4 15:28:45 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/exception.c: set up sa_mask in catchSignal to
+	avoid preempting signal handlers which could lead to lost
+	signals.
+
+Mon Jan  4 14:38:30 1999  Leigh Stoller <stoller@cs.utah.edu>, 
+			  Godmar Back <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/oskit-pthreads: support for OSKit's pthreads
+	implementation.  This is a pthreads superset with hooks for gc.
+	* config/i386/oskit: added OS Kit port
+
 Sun Jan  3 15:22:22 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/jar.c:  added O_BINARY flag for Windoze.
