@@ -48,7 +48,7 @@ public interface Configuration
    * It is set according to the release of classpath this version of kaffe
    * is synced up with.
    */
-  String CLASSPATH_VERSION = "classpath-0.08+cvs+kaffe-1.1.4+cvs";
+  String CLASSPATH_VERSION = "classpath-0.12+cvs+kaffe-1.1.4+cvs";
 
   /**
    * The value of DEBUG is substituted according to whether the

@@ -1,3 +1,10 @@
+2004-12-06  Dalibor Topic  <topic@notebox>
+
+	* libraries/javalib/gnu/classpath/Configuration.java
+	(CLASSPATH_VERSION) Updated.
+
+	Reported by:  Michael Koch  <konqueror@gmx.de>
+
 2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* FAQ/FAQ.automake: Updated to automake 1.9.3.
