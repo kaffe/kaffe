@@ -292,7 +292,7 @@ jobject JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_mapImpl(JNIEnv *env, jobject filechannel,
 						   jchar mode, jlong pos, jint size)
 {
-  // Kaffe's mmapping mode corresponds exactly to java.nio.channels.FileChannel.MapMode numbers.
+  /* Kaffe's mmapping mode corresponds exactly to java.nio.channels.FileChannel.MapMode numbers. */
   void *memory;
   int rc;
   int nativeFd = (int)getFD(env, filechannel);
@@ -302,10 +302,10 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl(JNIEnv *env, jobject filechan
   jobject bytebuffer;
   jmethodID bytebuffer_init = (*env)->GetMethodID(env, bytebuffer_class, "<init>", "(Lgnu/classpath/RawData;IZ)V");
 
+  int nativeMode;
+
   assert(bytebuffer_class != NULL);
   assert(bytebuffer_init != NULL);
-
-  int nativeMode;
 
   switch (mode) 
     {

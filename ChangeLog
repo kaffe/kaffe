@@ -1,5 +1,11 @@
 2004-04-12  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/clib/nio/FileChannelImpl.c
+	(Java_gnu_java_nio_channels_FileChannelImpl_mapImpl): Fixed a compile
+	error on some platforms (moved a declaration above a piece of code).
+
+2004-04-12  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/bootstrap.classlist: Added some missing classes
 	needed to run kjc with the new NIO structure.
 
