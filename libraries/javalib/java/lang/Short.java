@@ -28,11 +28,6 @@ public Short(short value)
 	val = value;
 }
 
-public byte byteValue()
-	{
-	return ((byte)val);
-}
-
 public static Short decode(String nm) throws NumberFormatException
 {
 	short val;
@@ -98,11 +93,6 @@ public static short parseShort(String s) throws NumberFormatException
 public static short parseShort(String s, int radix) throws NumberFormatException
 {
 	return ((short)Integer.parseInt(s, radix));
-}
-
-public short shortValue()
-	{
-	return ((short)val);
 }
 
 public String toString()

@@ -76,16 +76,6 @@ public final class Double extends Number {
     return ((int)value);
   }
   
-  public byte byteValue()
-  {
-    return (byte)value;
-  }
-
-  public short shortValue()
-  {
-    return ((short)value);
-  }
-
   public boolean isInfinite() {
     return ((doubleValue()==POSITIVE_INFINITY) || (doubleValue()==NEGATIVE_INFINITY));		
   }

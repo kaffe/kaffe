@@ -27,11 +27,6 @@ public Long(long value) {
 	this.value=value;
 }
 
-public byte byteValue()
-	{
-	return ((byte)value);
-}
-
 public double doubleValue() {
 	return (double )value;
 }
@@ -141,11 +136,6 @@ public static long parseLong(String s, int radix) {
 
 		return result;
 	}			
-}
-
-public short shortValue()
-	{
-	return ((short)value);
 }
 
 public static String toBinaryString ( long i ) {

@@ -31,11 +31,6 @@ public Integer(int value)
 	this.value=value;
 }
 
-public byte byteValue()
-	{
-	return ((byte)value);
-}
-
 public static Integer decode(String nm) throws NumberFormatException
 {
 	if (nm.startsWith("0x")) {
@@ -138,11 +133,6 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 
 		return result;
 	}
-}
-
-public short shortValue()
-	{
-	return ((short)value);
 }
 
 public static String toBinaryString(int i) {

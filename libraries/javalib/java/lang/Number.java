@@ -16,8 +16,9 @@ abstract public class Number implements Serializable
 	/* This is what Sun's JDK1.1 "serialver java.lang.Number" spits out */
 	private static final long serialVersionUID = -8742448824652078965L;
 
-abstract public byte byteValue();
-
+public byte byteValue() {
+	return (byte)intValue();
+}
 abstract public double doubleValue();
 
 abstract public float floatValue();
@@ -26,5 +27,7 @@ abstract public int intValue();
 
 abstract public long longValue();
 
-abstract public short shortValue();
+public short shortValue() {
+	return (short)intValue();
+}
 }

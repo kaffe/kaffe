@@ -27,11 +27,6 @@ public Byte(byte value)
 	val = value;
 }
 
-public byte byteValue()
-	{
-	return ((byte)val);
-}
-
 public static Byte decode(String nm) throws NumberFormatException
 {
 	byte val;
@@ -97,11 +92,6 @@ public static byte parseByte(String s) throws NumberFormatException
 public static byte parseByte(String s, int radix) throws NumberFormatException
 {
 	return ((byte)Integer.parseInt(s, radix));
-}
-
-public short shortValue()
-	{
-	return ((short)val);
 }
 
 public String toString()

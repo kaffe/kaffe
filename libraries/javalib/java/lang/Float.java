@@ -65,16 +65,6 @@ public final class Float extends Number {
     return (double )value;
   }
   
-  public byte byteValue()
-  {
-    return ((byte)value);
-  }
-  
-  public short shortValue()
-  {
-    return ((short)value);
-  }
-  
   public float floatValue() {
     return value;
   }
