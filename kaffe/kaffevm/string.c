@@ -291,7 +291,7 @@ stringInternString(Hjava_lang_String *string)
 		}
 	} else {
 		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree);
-		assert(hashTable);
+		assert(hashTable != NULL);
 	}
 
 	/* Not in table, so add it */

@@ -98,7 +98,7 @@ initThreads(void)
 	assert(standardGroup != 0);
 	unhand(standardGroup)->parent = 0;
 	unhand(standardGroup)->name = stringC2Java("main");
-	assert(unhand(standardGroup)->name);
+	assert(unhand(standardGroup)->name != NULL);
 	unhand(standardGroup)->maxPriority = java_lang_Thread_MAX_PRIORITY;
 	unhand(standardGroup)->destroyed = 0;
 	unhand(standardGroup)->daemon = 0;
@@ -146,7 +146,7 @@ initThreadLock(Hjava_lang_Thread* tid)
 {
 	Ksem *sem;
 	sem = thread_malloc(sizeof(Ksem));
-	assert(sem);
+	assert(sem != NULL);
 	ksemInit(sem);
 
 	unhand(tid)->sem = (struct Hkaffe_util_Ptr*)sem;
@@ -232,7 +232,7 @@ createInitialThread(const char* nm)
 	assert(tid != 0);
 
 	unhand(tid)->name = stringC2CharArray(nm);
-	assert(unhand(tid)->name);
+	assert(unhand(tid)->name != NULL);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
 	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 0;
@@ -340,7 +340,7 @@ firstStartThread(void* arg)
 	tid  = getCurrentThread();
 
 DBG(VMTHREAD,	
-	dprintf("firstStartThread %x\n", tid);		
+	dprintf("firstStartThread %p\n", tid);		
     )
 
 	/*
@@ -365,6 +365,7 @@ DBG(VMTHREAD,
 	} else {
 		/* eobj will usually be NoSuchMethodError */
 		eobj = (*env)->ExceptionOccurred(env);
+		(*env)->ExceptionClear(env);
 	}
 
 	/* If all else fails we call the the uncaught exception method
@@ -421,12 +422,16 @@ exitThread(void)
 {
 	Hjava_lang_Thread* tid;
 
+DBG(VMTHREAD,	
+	dprintf("exitThread %p\n", getCurrentThread());		
+    )
+
         do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
 
 	/* Destroy this thread's heavy lock */
 	tid = getCurrentThread();
-	assert(tid);
-	assert(unhand(tid)->sem);
+	assert(tid != NULL);
+	assert(unhand(tid)->sem != NULL);
 	ksemDestroy((Ksem*)unhand(tid)->sem);
 
 	/* This never returns */
@@ -453,7 +458,7 @@ aliveThread(Hjava_lang_Thread* tid)
 {
 	bool status;
 
-DBG(VMTHREAD,	dprintf("aliveThread: tid 0x%x\n", tid);		)
+DBG(VMTHREAD,	dprintf("aliveThread: tid %p\n", tid);		)
 
 	status = jthread_alive((jthread_t)unhand(tid)->PrivateInfo);
 

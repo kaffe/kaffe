@@ -56,7 +56,7 @@ typedef struct Ksem {
 static inline void
 ksemInit(Ksem* sem)
 {
-	assert(sem);
+	assert(sem != NULL);
 	
 	jmutex_initialise(&(sem->mux));
 	jcondvar_initialise(&(sem->cv));
@@ -77,7 +77,7 @@ ksemGet(Ksem* sem, jlong timeout)
 {
 	jboolean r;
 
-	assert(sem);
+	assert(sem != NULL);
 	
 	r = true;
 
@@ -119,7 +119,7 @@ ksemPut(Ksem* sem)
 static inline void
 ksemDestroy(Ksem* sem)
 {
-	assert(sem);
+	assert(sem != NULL);
 	jmutex_destroy(&(sem->mux));
 	jcondvar_destroy(&(sem->cv));
 }

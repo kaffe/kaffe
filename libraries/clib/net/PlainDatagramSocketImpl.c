@@ -225,8 +225,8 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	struct sockaddr_in addr;
 	int alen = sizeof(addr);
 
-	assert(this);
-	assert(pkt);
+	assert(this != NULL);
+	assert(pkt != NULL);
 
 DBG(NATIVENET,
 	dprintf("datagram_receive(%p, %p [%d bytes])\n",

@@ -254,7 +254,7 @@ debugToBuffer(int size)
 	bufferSz = size;
 	debugBuffer = malloc(size);
 	bufferOutput = 1;
-	assert(debugBuffer);
+	assert(debugBuffer != NULL);
 }
 
 /*
