@@ -5807,7 +5807,7 @@ done
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-for ac_func in remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod
+for ac_func in remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod mergesort
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:5814: checking for $ac_func" >&5

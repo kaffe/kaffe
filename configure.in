@@ -684,7 +684,7 @@ getcwd getwd gettimeofday ftime time uname getuid dnl
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-AC_CHECK_FUNCS(remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod)
+AC_CHECK_FUNCS(remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod mergesort)
 LIBS="$KSAVE_LIBS"
 
 dnl Test whether LONG_LONG_MIN % -1ll crashes

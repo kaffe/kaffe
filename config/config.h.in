@@ -136,6 +136,9 @@
 /* Define if you have the getwd function.  */
 #undef HAVE_GETWD
 
+/* Define if you have the MERGESORT function.  */
+#undef HAVE_MERGESORT
+
 /* Define if you have the hstrerror function.  */
 #undef HAVE_HSTRERROR
 

@@ -51,6 +51,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_PlainSocketImpl.h \
 	java_net_SocketImpl.h \
 	java_net_SocketOptions.h \
+	java_util_Arrays.h \
+	java_util_Comparator.h \
 	java_util_Vector.h \
 	java_util_zip_Adler32.h \
 	java_util_zip_CRC32.h \
