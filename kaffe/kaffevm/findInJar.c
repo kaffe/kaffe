@@ -5,8 +5,8 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -68,7 +68,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 	cname = centry->name->data;
 
 #if defined(HAVE_GCJ_SUPPORT)
-	/* 
+	/*
  	 * XXX: for now, prefer *any* classes given in a .so file
 	 * What we really want is to have separate lists for each .so module
 	 * so that we can search for classes in the order that the classpath
@@ -92,10 +92,10 @@ DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 #endif
 
 	/* Note: In order to avoid that a thread goes on and tries to link a
-	 * class that hasn't been fully read, we make sure we don't set 
-	 * centry->class before the reading has completed.  It's the 
-	 * caller's responsibility to set centry->class after the reading 
-	 * is completed and threads can start racing for who gets to process 
+	 * class that hasn't been fully read, we make sure we don't set
+	 * centry->class before the reading has completed.  It's the
+	 * caller's responsibility to set centry->class after the reading
+	 * is completed and threads can start racing for who gets to process
 	 * it.
 	 */
 	assert(centry->class == 0);
@@ -131,7 +131,7 @@ DBG(CLASSLOOKUP,
 		if (hand.base != 0) {
 #if defined(KAFFE_STATS)
 			if (hand.type == CP_ZIPFILE) {
-				addToCounter(&jarmem, "vmmem-jar files", 1, 
+				addToCounter(&jarmem, "vmmem-jar files", 1,
 					-(jlong)GCSIZEOF(hand.base));
 			}
 #endif
@@ -201,7 +201,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			if (hand.base == 0) {
 				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
-					"Couldn't extract data from jar: %s", 
+					"Couldn't extract data from jar: %s",
 					ptr->u.jar->error);
 				hand.type = CP_INVALID;
 				goto done;
@@ -234,7 +234,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			 */
 			if ((rc = KFSTAT(fp, &sbuf)) != 0) {
 				KCLOSE(fp);
-				postExceptionMessage(einfo, 
+				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
 					"Couldn't fstat: %s", SYS_ERROR(rc));
 				hand.type = CP_INVALID;
@@ -254,9 +254,9 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			while (i < hand.size) {
 				rc = KREAD(fp, hand.buf, hand.size - i, &j);
 				if (rc != 0) {
-					postExceptionMessage(einfo, 
+					postExceptionMessage(einfo,
 						JAVA_IO(IOException),
-						"Couldn't read: %s", 
+						"Couldn't read: %s",
 						SYS_ERROR(rc));
 					hand.type = CP_INVALID;
 					KFREE(hand.base);
@@ -306,8 +306,8 @@ initClasspath(void)
 	cp = (char*)Kaffe_JavaVMArgs[0].classpath;
 	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
 
-	if (cp != 0) {
-		/* cp may reside in read-only memory, but 
+	if (cp != 0 && cp[0] != '\0') {
+		/* cp may reside in read-only memory, but
 		 * makeClasspath writes to it
 		 */
 		char *writable_cp = KMALLOC(strlen(cp) + 1);
