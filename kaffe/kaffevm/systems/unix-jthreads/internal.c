@@ -69,7 +69,7 @@ throwDeath()
 static void *
 thread_malloc(size_t s)
 {
-	gc_malloc(s, GC_ALLOC_THREADCTX);
+	return gc_malloc(s, GC_ALLOC_THREADCTX);
 }
 
 static void
