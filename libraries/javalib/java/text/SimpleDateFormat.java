@@ -614,234 +614,234 @@ public class SimpleDateFormat extends DateFormat
     boolean saw_timezone = false;
     int quote_start = -1;
     boolean is2DigitYear = false;
-    for (; fmt_index < fmt_max; ++fmt_index)
+    try
       {
-	char ch = pattern.charAt(fmt_index);
-	if (ch == '\'')
+	for (; fmt_index < fmt_max; ++fmt_index)
 	  {
-	    int index = pos.getIndex();
-	    if (fmt_index < fmt_max - 1
-		&& pattern.charAt(fmt_index + 1) == '\'')
+	    char ch = pattern.charAt(fmt_index);
+	    if (ch == '\'')
+	      {
+		int index = pos.getIndex();
+		if (fmt_index < fmt_max - 1
+		    && pattern.charAt(fmt_index + 1) == '\'')
+		  {
+		    if (! expect (dateStr, pos, ch))
+		      return null;
+		    ++fmt_index;
+		  }
+		else
+		  quote_start = quote_start < 0 ? fmt_index : -1;
+		continue;
+	      }
+	    
+	    if (quote_start != -1
+		|| ((ch < 'a' || ch > 'z')
+		    && (ch < 'A' || ch > 'Z')))
 	      {
 		if (! expect (dateStr, pos, ch))
 		  return null;
-		++fmt_index;
+		continue;
 	      }
-	    else
-	      quote_start = quote_start < 0 ? fmt_index : -1;
-	    continue;
-	  }
-
-	if (quote_start != -1
-	    || ((ch < 'a' || ch > 'z')
-		&& (ch < 'A' || ch > 'Z')))
-	  {
-	    if (! expect (dateStr, pos, ch))
-	      return null;
-	    continue;
-	  }
-
-	// We've arrived at a potential pattern character in the
-	// pattern.
-	int first = fmt_index;
-	while (++fmt_index < fmt_max && pattern.charAt(fmt_index) == ch)
-	  ;
-	int fmt_count = fmt_index - first;
-
-	// We might need to limit the number of digits to parse in
-	// some cases.  We look to the next pattern character to
-	// decide.
-	boolean limit_digits = false;
-	if (fmt_index < fmt_max
-	    && standardChars.indexOf(pattern.charAt(fmt_index)) >= 0)
-	  limit_digits = true;
-	--fmt_index;
-
-	// We can handle most fields automatically: most either are
-	// numeric or are looked up in a string vector.  In some cases
-	// we need an offset.  When numeric, `offset' is added to the
-	// resulting value.  When doing a string lookup, offset is the
-	// initial index into the string array.
-	int calendar_field;
-	boolean is_numeric = true;
-	String[] match = null;
-	int offset = 0;
-	boolean maybe2DigitYear = false;
-	switch (ch)
-	  {
-	  case 'd':
-	    calendar_field = Calendar.DATE;
-	    break;
-	  case 'D':
-	    calendar_field = Calendar.DAY_OF_YEAR;
-	    break;
-	  case 'F':
-	    calendar_field = Calendar.DAY_OF_WEEK_IN_MONTH;
-	    break;
-	  case 'E':
-	    is_numeric = false;
-	    offset = 1;
-	    calendar_field = Calendar.DAY_OF_WEEK;
-	    match = (fmt_count <= 3
-		     ? formatData.getShortWeekdays()
-		     : formatData.getWeekdays());
-	    break;
-	  case 'w':
-	    calendar_field = Calendar.WEEK_OF_YEAR;
-	    break;
-	  case 'W':
-	    calendar_field = Calendar.WEEK_OF_MONTH;
-	    break;
-	  case 'M':
-	    calendar_field = Calendar.MONTH;
-	    if (fmt_count <= 2)
-	      offset = -1;
-	    else
+	    
+	    // We've arrived at a potential pattern character in the
+	    // pattern.
+	    int fmt_count = 1;
+	    while (++fmt_index < fmt_max && pattern.charAt(fmt_index) == ch)
 	      {
+		++fmt_count;
+	      }
+	    
+	    // We might need to limit the number of digits to parse in
+	    // some cases.  We look to the next pattern character to
+	    // decide.
+	    boolean limit_digits = false;
+	    if (fmt_index < fmt_max
+		&& standardChars.indexOf(pattern.charAt(fmt_index)) >= 0)
+	      limit_digits = true;
+	    --fmt_index;
+	    
+	    // We can handle most fields automatically: most either are
+	    // numeric or are looked up in a string vector.  In some cases
+	    // we need an offset.  When numeric, `offset' is added to the
+	    // resulting value.  When doing a string lookup, offset is the
+	    // initial index into the string array.
+	    int calendar_field;
+	    boolean is_numeric = true;
+	    String[] match = null;
+	    int offset = 0;
+	    boolean maybe2DigitYear = false;
+	    switch (ch)
+	      {
+	      case 'd':
+		calendar_field = Calendar.DATE;
+		break;
+	      case 'D':
+		calendar_field = Calendar.DAY_OF_YEAR;
+		break;
+	      case 'F':
+		calendar_field = Calendar.DAY_OF_WEEK_IN_MONTH;
+		break;
+	      case 'E':
 		is_numeric = false;
+		offset = 1;
+		calendar_field = Calendar.DAY_OF_WEEK;
 		match = (fmt_count <= 3
-			 ? formatData.getShortMonths()
-			 : formatData.getMonths());
-	      }
-	    break;
-	  case 'y':
-	    calendar_field = Calendar.YEAR;
-	    if (fmt_count <= 2)
-	      maybe2DigitYear = true;
-	    break;
-	  case 'K':
-	    calendar_field = Calendar.HOUR;
-	    break;
-	  case 'h':
-	    calendar_field = Calendar.HOUR;
-	    break;
-	  case 'H':
-	    calendar_field = Calendar.HOUR_OF_DAY;
-	    break;
-	  case 'k':
-	    calendar_field = Calendar.HOUR_OF_DAY;
-	    break;
-	  case 'm':
-	    calendar_field = Calendar.MINUTE;
-	    break;
-	  case 's':
-	    calendar_field = Calendar.SECOND;
-	    break;
-	  case 'S':
-	    calendar_field = Calendar.MILLISECOND;
-	    break;
-	  case 'a':
-	    is_numeric = false;
-	    calendar_field = Calendar.AM_PM;
-	    match = formatData.getAmPmStrings();
-	    break;
-	  case 'z':
-	    // We need a special case for the timezone, because it
-	    // uses a different data structure than the other cases.
-	    is_numeric = false;
-	    calendar_field = Calendar.DST_OFFSET;
-	    String[][] zoneStrings = formatData.getZoneStrings();
-	    int zoneCount = zoneStrings.length;
-	    int index = pos.getIndex();
-	    boolean found_zone = false;
-	    for (int j = 0;  j < zoneCount;  j++)
-	      {
-		String[] strings = zoneStrings[j];
-		int k;
-		for (k = 1; k < strings.length; ++k)
+			 ? formatData.getShortWeekdays()
+			 : formatData.getWeekdays());
+		break;
+	      case 'w':
+		calendar_field = Calendar.WEEK_OF_YEAR;
+		break;
+	      case 'W':
+		calendar_field = Calendar.WEEK_OF_MONTH;
+		break;
+	      case 'M':
+		calendar_field = Calendar.MONTH;
+		if (fmt_count <= 2)
+		  offset = -1;
+		else
 		  {
-		    if (dateStr.startsWith(strings[k], index))
-		      break;
+		    is_numeric = false;
+		    match = (fmt_count == 3
+			     ? formatData.getShortMonths()
+			     : formatData.getMonths());
 		  }
-		if (k != strings.length)
+		break;
+	      case 'y':
+		calendar_field = Calendar.YEAR;
+		if (fmt_count <= 2)
+		  maybe2DigitYear = true;
+		break;
+	      case 'K':
+		calendar_field = Calendar.HOUR;
+		break;
+	      case 'h':
+		calendar_field = Calendar.HOUR;
+		break;
+	      case 'H':
+		calendar_field = Calendar.HOUR_OF_DAY;
+		break;
+	      case 'k':
+		calendar_field = Calendar.HOUR_OF_DAY;
+		break;
+	      case 'm':
+		calendar_field = Calendar.MINUTE;
+		break;
+	      case 's':
+		calendar_field = Calendar.SECOND;
+		break;
+	      case 'S':
+		calendar_field = Calendar.MILLISECOND;
+		break;
+	      case 'a':
+		is_numeric = false;
+		calendar_field = Calendar.AM_PM;
+		match = formatData.getAmPmStrings();
+		break;
+	      case 'z':
+		// We need a special case for the timezone, because it
+		// uses a different data structure than the other cases.
+		is_numeric = false;
+		calendar_field = Calendar.DST_OFFSET;
+		String[][] zoneStrings = formatData.getZoneStrings();
+		int zoneCount = zoneStrings.length;
+		int index = pos.getIndex();
+		boolean found_zone = false;
+		for (int j = 0;  j < zoneCount;  j++)
 		  {
-		    found_zone = true;
-		    saw_timezone = true;
-		    TimeZone tz = TimeZone.getTimeZone (strings[0]);
-		    calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
-		    offset = 0;
-		    if (k > 2 && tz instanceof SimpleTimeZone)
+		    String[] strings = zoneStrings[j];
+		    int k;
+		    for (k = 1; k < strings.length; ++k)
 		      {
-			SimpleTimeZone stz = (SimpleTimeZone) tz;
-			offset = stz.getDSTSavings ();
+			if (dateStr.startsWith(strings[k], index))
+			  break;
 		      }
-		    pos.setIndex(index + strings[k].length());
-		    break;
+		    if (k != strings.length)
+		      {
+			found_zone = true;
+			saw_timezone = true;
+			TimeZone tz = TimeZone.getTimeZone (strings[0]);
+			calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
+			offset = 0;
+			if (k > 2 && tz instanceof SimpleTimeZone)
+			  {
+			    SimpleTimeZone stz = (SimpleTimeZone) tz;
+			    offset = stz.getDSTSavings ();
+			  }
+			pos.setIndex(index + strings[k].length());
+			break;
+		      }
 		  }
-	      }
-	    if (! found_zone)
-	      {
+		if (! found_zone)
+		  {
+		    pos.setErrorIndex(pos.getIndex());
+		    return null;
+		  }
+		break;
+	      default:
 		pos.setErrorIndex(pos.getIndex());
 		return null;
 	      }
-	    break;
-	  default:
-	    pos.setErrorIndex(pos.getIndex());
-	    return null;
-	  }
-
-	// Compute the value we should assign to the field.
-	int value;
-	int index = -1;
-	if (is_numeric)
-	  {
-	    numberFormat.setMinimumIntegerDigits(fmt_count);
-	    if (limit_digits)
-	      numberFormat.setMaximumIntegerDigits(fmt_count);
-	    if (maybe2DigitYear)
-	      index = pos.getIndex();
-	    Number n = numberFormat.parse(dateStr, pos);
-	    if (pos == null || ! (n instanceof Long))
-	      return null;
-	    value = n.intValue() + offset;
-	  }
-	else if (match != null)
-	  {
-	    index = pos.getIndex();
-	    int i;
-	    for (i = offset; i < match.length; ++i)
+	    
+	    // Compute the value we should assign to the field.
+	    int value;
+	    int index = -1;
+	    if (is_numeric)
 	      {
-		if (match[i] != null)
-		  if (dateStr.toUpperCase().startsWith(match[i].toUpperCase(),
-							index))
-		    break;
+		numberFormat.setMinimumIntegerDigits(fmt_count);
+		if (limit_digits)
+		  numberFormat.setMaximumIntegerDigits(fmt_count);
+		if (maybe2DigitYear)
+		  index = pos.getIndex();
+		Number n = numberFormat.parse(dateStr, pos);
+		if (pos == null || ! (n instanceof Long))
+		  return null;
+		value = n.intValue() + offset;
 	      }
-	    if (i == match.length)
+	    else if (match != null)
 	      {
-		pos.setErrorIndex(index);
-		return null;
+		index = pos.getIndex();
+		int i;
+		for (i = offset; i < match.length; ++i)
+		  {
+		    if (match[i] != null)
+		      if (dateStr.toUpperCase().startsWith(match[i].toUpperCase(),
+							   index))
+			break;
+		  }
+		if (i == match.length)
+		  {
+		    pos.setErrorIndex(index);
+		    return null;
+		  }
+		pos.setIndex(index + match[i].length());
+		value = i;
 	      }
-	    pos.setIndex(index + match[i].length());
-	    value = i;
-	  }
-	else
-	  value = offset;
+	    else
+	      value = offset;
 	  
-	if (maybe2DigitYear)
-	  {
-	    // Parse into default century if the numeric year string has 
-	    // exactly 2 digits.
-	    int digit_count = pos.getIndex() - index;
-	    if (digit_count == 2)
-	      is2DigitYear = true;
+	    if (maybe2DigitYear)
+	      {
+		// Parse into default century if the numeric year string has 
+		// exactly 2 digits.
+		int digit_count = pos.getIndex() - index;
+		if (digit_count == 2)
+		  is2DigitYear = true;
+	      }
+	    
+	    // Assign the value and move on.
+	    calendar.set(calendar_field, value);
 	  }
-
-	// Assign the value and move on.
-	calendar.set(calendar_field, value);
-      }
     
-    if (is2DigitYear)
-      {
-	// Apply the 80-20 heuristic to dermine the full year based on 
-	// defaultCenturyStart. 
-	int year = defaultCentury + calendar.get(Calendar.YEAR);
-	calendar.set(Calendar.YEAR, year);
-	if (calendar.getTime().compareTo(defaultCenturyStart) < 0)
-	  calendar.set(Calendar.YEAR, year + 100);      
-      }
-
-    try
-      {
+	if (is2DigitYear)
+	  {
+	    // Apply the 80-20 heuristic to dermine the full year based on 
+	    // defaultCenturyStart. 
+	    int year = defaultCentury + calendar.get(Calendar.YEAR);
+	    calendar.set(Calendar.YEAR, year);
+	    if (calendar.getTime().compareTo(defaultCenturyStart) < 0)
+	      calendar.set(Calendar.YEAR, year + 100);      
+	  }
 	if (! saw_timezone)
 	  {
 	    // Use the real rules to determine whether or not this
