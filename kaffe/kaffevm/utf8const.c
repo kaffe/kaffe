@@ -152,13 +152,10 @@ utf8ConstNew(const char *s, int len)
 		    hash = (31 * hash) + ch);
 	}
 
-	/* Lock intern table */
-	lockUTF();
-
 	/* See if string is already in the table using a "fake" Utf8Const */
 	assert (hashTable != NULL);
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
-		fake = UTFmalloc(sizeof(Utf8Const) + len + 1);
+		fake = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
 		if (!fake) {
 			unlockUTF();
 			return 0;
@@ -169,7 +166,11 @@ utf8ConstNew(const char *s, int len)
 	memcpy((char *)fake->data, s, len);
 	((char *)fake->data)[len] = '\0';
 	fake->hash = hash;
+
+	/* Lock intern table */
+	lockUTF();
 	utf8 = hashFind(hashTable, fake);
+
 	if (utf8 != NULL) {
 		assert(utf8->nrefs >= 1);
 		utf8->nrefs++;
@@ -179,13 +180,13 @@ utf8ConstNew(const char *s, int len)
 		}
 		return(utf8);
 	}
+	unlockUTF();
 
 	hitCounter(&utf8newalloc, "utf8-new-alloc");
 	/* Not in table; create new Utf8Const struct */
 	if ((char *) fake == buf) {
-		utf8 = UTFmalloc(sizeof(Utf8Const) + len + 1);
+		utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
 		if (!utf8) {
-			unlockUTF();
 			return 0;
 		}
 		memcpy((char *) utf8->data, s, len);
@@ -198,15 +199,27 @@ utf8ConstNew(const char *s, int len)
 	utf8->nrefs = 1;
 
 	/* Add to hash table */
+	lockUTF();
 	temp = hashAdd(hashTable, utf8);
-	if (!temp) {
-		unlockUTF();
-		jfree(utf8);
-		return 0;
+
+	/* 
+	 * temp == 0    -> hash table couldn't resize, return 0
+	 * temp != utf8 -> other thread beat us, drop our utf8
+	 *		   add additional ref to other utf8
+	 */
+
+	if (temp != 0 && temp != utf8) {
+		temp->nrefs++;
 	}
-	assert(temp == utf8);
+
 	unlockUTF();
-	return(utf8);
+
+	if (temp == 0 || temp != utf8) {
+		jfree(utf8);
+	}
+
+	assert(temp->nrefs > 0);
+	return (temp);
 }
 
 /*
