@@ -13,6 +13,7 @@
 
 package kaffe.util;
 
+import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
@@ -94,7 +95,9 @@ public class UNIXTimeZone extends TimeZone {
 	 *	If either argument is equal to <code>null</code>
 	 */
 	public UNIXTimeZone(String id, File zoneFile) throws IOException {
-		if (!read(new DataInputStream(new FileInputStream(zoneFile))))
+		if (!read(new DataInputStream(
+		    new BufferedInputStream(
+		    new FileInputStream(zoneFile)))))
 			throw new IOException("invalid file contents");
 		setID(id.toString());	// to generate NullPointerException
 	}
