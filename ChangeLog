@@ -1,3 +1,8 @@
+Fri Feb 11 17:26:23 CET 2000  Pavel Roskin  <pavel_roskin@geocities.com>
+
+	* kaffe/kaffevm/classPool.c: compile walkClassPool() if                      
+        DEBUG is defined.
+
 Fri Feb 11 12:07:40 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 	
 	* configure.in: detect gmp with mpz_get_d() in place of mpz_add().
