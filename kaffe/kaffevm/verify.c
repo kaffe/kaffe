@@ -36,6 +36,7 @@
 
 #include "verify.h"
 #include "verify-debug.h"
+#include "verify-uninit.h"
 
 /*
  * Returns whether the given class is "trusted" (i.e. does not require verification).
@@ -1026,12 +1027,6 @@ static BlockInfo*         inWhichBlock(uint32 pc, BlockInfo** blocks, uint32 num
 static SigStack*          pushSig(SigStack* sigs, const char* sig);
 static void               freeSigStack(SigStack* sigs);
 
-static bool               checkUninit(Hjava_lang_Class* this, Type* type);
-static UninitializedType* pushUninit(UninitializedType* uninits, const Type* type);
-static void               popUninit(const Method*, UninitializedType*, BlockInfo*);
-static void               freeUninits(UninitializedType* uninits);
-
-
 static bool               verifyMethod(errorInfo* einfo, Method* method);
 static BlockInfo**        verifyMethod3a(errorInfo* einfo,
 					 Method* method,
@@ -1058,7 +1053,6 @@ static bool               loadInitialArgs(const Method* method, errorInfo* einfo
 
 static bool               isReference(const Type* type);
 static bool               isArray(const Type* type);
-static bool               sameType(Type* t1, Type* t2);
 static bool               sameRefType(Type* t1, Type* t2);
 static void               resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type);
 
@@ -4732,7 +4726,6 @@ isArray(const Type* type)
  * sameType()
  *     returns whether two Types are effectively equivalent.
  */
-static
 bool
 sameType(Type* t1, Type* t2)
 {
@@ -5055,105 +5048,3 @@ freeSigStack(SigStack* sigs)
 }
 
 
-/*
- * checkUninit()
- *     To be called when dealing with (get/put)field access.  Makes sure that get/putfield and
- *     invoke* instructions have access to the instance fields of the object in question.
- */
-static
-bool
-checkUninit(Hjava_lang_Class* this, Type* type)
-{
-	if (type->tinfo & TINFO_UNINIT) {
-		if (type->tinfo & TINFO_UNINIT_SUPER) {
-			UninitializedType* uninit = type->data.uninit;
-			Type t;
-			t.tinfo = TINFO_CLASS;
-			t.data.class = this;
-			
-			if (!sameType(&uninit->type, &t)) {
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	}
-	
-	return true;
-}
-
-/*
- * pushUninit()
- *    Adds an unitialized type to the list of uninitialized types.
- *
- *    uninits is the front of the list to be added onto.
- */
-static
-UninitializedType*
-pushUninit(UninitializedType* uninits, const Type* type)
-{
-	UninitializedType* uninit = checkPtr(gc_malloc(sizeof(UninitializedType), GC_ALLOC_VERIFIER));
-	uninit->type = *type;
-	uninit->prev = NULL;
-	
-	if (!uninits) {
-		uninit->next = NULL;
-		return uninit;
-	}
-	
-	uninit->prev = NULL;
-	uninit->next = uninits;
-	uninits->prev = uninit;
-	return uninit;
-}
-
-/*
- * popUninit()
- *     Pops an uninitialized type off of the operand stack
- */
-static
-void
-popUninit(const Method* method, UninitializedType* uninit, BlockInfo* binfo)
-{
-	uint32 n;
-	
-	for (n = 0; n < method->localsz; n++) {
-		if (binfo->locals[n].tinfo & TINFO_UNINIT &&
-		    ((UninitializedType*)binfo->locals[n].data.class) == uninit) {
-			binfo->locals[n] = uninit->type;
-		}
-	}
-	
-	for (n = 0; n < binfo->stacksz; n++) {
-		if (binfo->opstack[n].tinfo & TINFO_UNINIT &&
-		    ((UninitializedType*)binfo->opstack[n].data.class) == uninit) {
-			binfo->opstack[n] = uninit->type;
-		}
-	}
-	
-	if (uninit->prev) {
-		uninit->prev->next = uninit->next;
-	}
-	if (uninit->next) {
-		uninit->next->prev = uninit->prev;
-	}
-	
-	gc_free(uninit);
-}
-
-/*
- * freeUninits
- *    frees a list of unitialized types
- */
-static
-void
-freeUninits(UninitializedType* uninits)
-{
-	UninitializedType* tmp;
-	while (uninits) {
-		tmp = uninits->next;
-		gc_free(uninits);
-		uninits = tmp;
-	}
-}

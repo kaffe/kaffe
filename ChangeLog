@@ -1,5 +1,24 @@
 2004-02-29  Dalibor Topic <robilad@kaffe.org>
 
+        * kaffe/kaffevm/verify-uninit.c,
+        kaffe/kaffevm/verify-uninit.h:
+	New files.
+
+        * kaffe/kaffevm/Makefile.am:
+        (libkaffevm_la_SOURCES): Added verify-uninit.c.
+        (noinst_HEADERS): Added verify-uninit.h.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/verify.c,
+        * kaffe/kaffevm/verify.h:
+	(checkUninit, pushUninit, popUninit, freeUninits):
+	Moved to kaffe/kaffevm/verify-uninit.c.
+	(sameType): Export symbol.
+
+2004-02-29  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/verify.c:
 	Use gc_free instead of KFREE.
 

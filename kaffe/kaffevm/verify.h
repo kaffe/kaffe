@@ -152,6 +152,7 @@ typedef struct sig_stack
 
 
 void initVerifierPrimTypes(void);
+bool sameType(Type* t1, Type* t2);
 bool verify3(Hjava_lang_Class* class, errorInfo *einfo);
 
 /*

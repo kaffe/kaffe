@@ -80,7 +80,7 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	locks.lo lookup.lo object.lo readClass.lo sha-1.lo soft.lo \
 	stackTrace.lo stats.lo string.lo stringParsing.lo support.lo \
 	thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo \
-	verify-debug.lo
+	verify-debug.lo verify-uninit.lo
 am__objects_1 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -110,6 +110,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-debug.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify-uninit.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -435,7 +436,8 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	gcRefs.c \
 	verify.c \
-	verify-debug.c
+	verify-debug.c \
+	verify-uninit.c
 
 noinst_HEADERS = \
 	access.h \
@@ -478,7 +480,8 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	verify.h \
-	verify-debug.h
+	verify-debug.h \
+	verify-uninit.h
 
 CLEANFILES = so_locations
 DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
@@ -588,6 +591,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8const.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-uninit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Plo@am__quote@
 
 .c.o:
