@@ -86,7 +86,7 @@ initNative(void)
 	char* ptr;
 	int len;
 
-	lpath = (char*)Kaffe_JavaVMArgs[0].librarypath;
+	lpath = (char*)Kaffe_JavaVMArgs[0].libraryhome;
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
 	}

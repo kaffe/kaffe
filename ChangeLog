@@ -1,3 +1,8 @@
+Tue Nov 24 22:42:13 1998 Tim Wilkinson	<tim@transvirtual.com>
+
+	* include/jni.h, include/jni_cpp.h: added C++ binding for JNI.
+	kaffe/kaffevm/external.c: renamed librarypath -> libraryhome
+
 Tue Nov 24 19:45:47 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/stackTrace.[ch]: postpone call to findMethodFromPC
