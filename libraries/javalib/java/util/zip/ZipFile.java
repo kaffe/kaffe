@@ -58,6 +58,10 @@ public ZipEntry getEntry(String zname)
 
 public InputStream getInputStream(ZipEntry ze) throws IOException
 {
+	if (ze == null) {
+		throw new NullPointerException();
+	}
+
 	byte[] buf = getZipData0(zip, ze);
 	if (buf == null) {
 		throw new ZipException("no data");
