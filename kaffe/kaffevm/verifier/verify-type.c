@@ -16,6 +16,8 @@
 #include "gc.h"
 #include "exception.h"
 #include "errors.h"
+#include "utf8const.h"
+#include <string.h>
 #include "verify.h"
 #include "verify-debug.h"
 #include "verify-type.h"
@@ -177,18 +179,21 @@ initVerifierPrimTypes(void)
 void
 resolveType(Verifier* v, Type *t)
 {
-	const char* sig;
-	char* tmp = NULL;
-
-	if (t->tinfo & TINFO_NAME) {
-		sig = t->data.sig;
+	if (t->tinfo & TINFO_SIG ||
+	    *t->data.name == '[') {
 		
-		if (*sig != '[') {
-			tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
-			sprintf(tmp, "L%s;", sig);
-			sig = tmp;
-		}
+		t->tinfo = TINFO_CLASS;
+		t->data.class = getClassFromSignature(t->data.sig, v->class->loader, v->einfo);	    
+	}
+	else if (t->tinfo & TINFO_NAME) {
+		char* tmp;
+		const char* sig = t->data.name;
 		
+		tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
+		sprintf(tmp, "L%s;", sig);
+		sig = tmp;
+		
+		DBG(VERIFY3, dprintf("%s    converted name to sig \"%s\" and about to load...\n", indent, sig); );
 		t->tinfo = TINFO_CLASS;
 		t->data.class = getClassFromSignature(sig, v->class->loader, v->einfo);
 		
@@ -196,9 +201,8 @@ resolveType(Verifier* v, Type *t)
 			gc_free(tmp);
 		}
 	}
-	else if (t->tinfo & TINFO_SIG) {
-		t->tinfo = TINFO_CLASS;
-		t->data.class = getClassFromSignature(t->data.sig, v->class->loader, v->einfo);
+	else {
+		/* TODO: post an internal error here...we should never get this */
 	}
 }
 
@@ -269,12 +273,7 @@ freeSupertypes(SupertypeSet* supertypes)
 /*
  * merges two types, t1 and t2, into t2.
  * if t1 and t2 cannot be merged, t2 will become TUNSTABLE.
- * frequently, merging will result in t2 being represented as a supertype list.
- *
- * the precedence of merged types goes (from highest to lowest):
- *     actual pointer to Hjava_lang_Class*
- *     TINFO_SIG
- *     TINFO_NAME
+ * merging may result in t2 being represented as a supertype list.
  *
  * @return whether an actual merger was made (i.e. they two types given were not the same type)
  */
@@ -300,17 +299,9 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
 		*t2 = *TUNSTABLE;
 		return true;
 	}
-	/* references only from here on out */
-	else if (t1->data.class == TOBJ->data.class) {
-		*t2 = *t1;
-		return true;
-	}
-	else if (t2->data.class == TOBJ->data.class) {
-		return false;
-	}
 	
-	
-	/* must resolve them to go on */
+	/* references only from here on out.
+	 * must resolve them to go on */
 	resolveType(v, t1);
 	resolveType(v, t2);
 	if ((t1->tinfo & TINFO_CLASS && t1->data.class == NULL) ||
@@ -318,43 +309,22 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
 		return false;
 	}
 	
-	
-	if (CLASS_IS_INTERFACE(t1->data.class)) {
-		if (instanceof_interface(t1->data.class, t2->data.class)) {
-			/* t1 is an interface and t2 implements or extends it,
-			 * so the interface is the merged type.
-			 */
-			*t2 = *t1;
-			return true;
-		}
-		/* we now know that t2 is an interface */
-		else if (instanceof_interface(t2->data.class, t1->data.class)) {
-			/* t2 is a superinterface of t1 */
-			return false;
-		}
+	if (instanceof(t1->data.class, t2->data.class)) {
+		*t2 = *t1;
+		return true;
 	}
-	else if (CLASS_IS_INTERFACE(t2->data.class)) {
-		/* t1 is not an interface here */
-		if (instanceof_interface(t2->data.class, t1->data.class)) {
-			/* t2 is a superinterface of t1 */
-			return false;
-		}
-	}
-	else {
-		/* neither is an interface */
+	else if (instanceof(t2->data.class, t1->data.class)) {
+		return false;
 	}
 	
-	/* at this point, neither type implements or extends the other,
-	 * so we're going to build a supertype list.
-	 */
 	mergeSupersets(v, t1, t2);
 	if (v->supertypes->count == 1) {
-		*t2 = *TOBJ;
+		t2->tinfo = TINFO_CLASS;
+		t2->data.class = v->supertypes->list[0];
 	}
 	else {
 		t2->tinfo = TINFO_SUPERTYPES;
 		t2->data.supertypes = v->supertypes;
-		return true;
 	}
 	return true;
 }

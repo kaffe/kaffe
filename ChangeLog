@@ -1,3 +1,9 @@
+2004-06-28  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/verifier/verity-types.c
+	(mergeTypes) return value of mergeSupertypes fixed.
+
+	Reported by: Helmer Kraemer  <hkraemer@freenet.de>
+
 2004-06-28  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/sysdepCallMethod.h:
