@@ -398,12 +398,12 @@ extern void kprintf(char *, ...);
 #define	op_mov_c(T,V,S)		op_rrc(CC_AL,ALU_MOV,T,0,V,((S)>>1))
 
 #define	op_add(T,F1,F2)		op_rrr(CC_AL,ALU_ADD | ALU_SETCC,SFT_LSLC,0,T,F1,F2)
-#define	op_add_const(T,F1,I8)	op_rrr(CC_AL,ALU_ADD | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+#define	op_add_const(T,F1,I8)	op_rrr(CC_AL,ALU_ADD | ALU_SETCC | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
 
 #define	op_adc(T,F1,F2)		op_rrr(CC_AL,ALU_ADC,SFT_LSLC,0,T,F1,F2)
 
 #define	op_sub(T,F1,F2)		op_rrr(CC_AL,ALU_SUB | ALU_SETCC,SFT_LSLC,0,T,F1,F2)
-#define	op_sub_const(T,F1,I8)	op_rrr(CC_AL,ALU_SUB | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+#define	op_sub_const(T,F1,I8)	op_rrr(CC_AL,ALU_SUB | ALU_SETCC | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
 
 #define	op_sbc(T,F1,F2)		op_rrr(CC_AL,ALU_SBC,SFT_LSLC,0,T,F1,F2)
 
