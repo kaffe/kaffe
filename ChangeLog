@@ -1,3 +1,16 @@
+2004-07-11  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/lang/Package.java (getPackage, getPackages):
+	directly call kaffe.lang.ThreadStack
+	(getCallingClassLoader): removed
+
+	* libraries/javalib/java/lang/Thread.java (setContextClassLoader):
+	call system's SecurityManager instead of AccessController in order to
+	check permission
+
+	* libraries/javalib/java/util/ResourceBundle.java (getBundle):
+	use kaffe.lang.ThreadStack to get caller's classloader
+
 2004-07-10  Guilhem Lavaux <guilhem@kaffe.org>
 	
 	* configure.ac: Check whether we are using GLIBC 2.1 or 2.2.

@@ -10,7 +10,6 @@
 
 package java.lang;
 
-import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -479,7 +478,9 @@ public ClassLoader getContextClassLoader() {
 }
 
 public void setContextClassLoader(ClassLoader cl) {
-	AccessController.checkPermission(sccl);
+	SecurityManager sm = System.getSecurityManager ();
+	if (sm != null)
+		sm.checkPermission (sccl);
 	context = cl;
 }
 

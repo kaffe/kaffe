@@ -53,16 +53,6 @@ public class Package {
 		this.sealBase = sealBase;
 	}
 
-	private static ClassLoader getCallingClassLoader() {
-		/* We go two steps down the stack,
-		 * since getCallingClassLoader() is supposed to be called
-		 * by methods from Package, so we need to skip over them.
-		 * Otherwise, we would just be getting the same ClassLoader
-		 * that loaded Package all the time.
-		 */
-		return ThreadStack.getCallersClassLoader(true);
-	}
-
 	public String getImplementationTitle() {
 		return implTitle;
 	}
@@ -80,11 +70,11 @@ public class Package {
 	}
 
 	public static Package getPackage(String pname) {
-		return getCallingClassLoader().getPackage(pname);
+		return ThreadStack.getCallersClassLoader(true).getPackage(pname);
 	}
 
 	public static Package [] getPackages() {
-		return getCallingClassLoader().getPackages();
+		return ThreadStack.getCallersClassLoader(true).getPackages();
 	}
 
 	public String getSpecificationTitle() {
