@@ -23,9 +23,9 @@ Treat it as an TODO list.
 * Several classes do not have serialVersionUIDs hard-coded in them. This
   makes these classes not interoperable with Sun's classes.  Note, however,
   that simply putting in Sun's will not fix that: in order to allow 
-  interoperability, Sun would have to publish how the serialize objects
-  such as hashtable.  According to Tim, Sun at some point promised to do
-  that; it hasn't happened, though.  
+  interoperability, we will need to implement Sun's specification for
+  how classes are serialized.  As of 1.2, these specs are part of the
+  JDK documentation.
   Note that some of our classes currently report Sun's serialVersionUIDs,
   even though they're incompatible.
 
@@ -58,4 +58,6 @@ Treat it as an TODO list.
   cygwin32 gcc compiler, we do know that people are trying to compile it
   with compilers such as Visual C++.  Jongwon Kim <freefish@chollian.net>
   reports that FIELD_OFFSET in classMethod.h conflicts with winnt.h.
+
+* kaffe.util.Timer has several problems.  Peter has a fix in the pipeline.
 
