@@ -16,6 +16,12 @@ public abstract class FilterReader extends Reader {
 
   protected FilterReader(Reader i)
   {
+    /* Empiric evidence shows that JDK 1.1 - 1.3 
+     * set lock to i. This also takes care of the 
+     * i == null case.
+     */
+    super(i);
+
     in = i;
   }
 
