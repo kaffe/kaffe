@@ -45,8 +45,46 @@
 #ifndef KAFFEH				/* Yuk! */
 static hashtab_t	hashTable;
 static iLock*		utf8Lock;	/* mutex on all intern operations */
+
+static int *utfLockRoot;
+
+static inline void lockUTF(int *where)
+{
+	_lockMutex(&utf8Lock, where);
+	utfLockRoot = where;
+}
+
+#define lockUTF()   lockUTF(&iLockRoot)
+#define unlockUTF() _unlockMutex(&utf8Lock, &iLockRoot)
+
+static inline void *UTFmalloc(size_t size)
+{
+	void *ret;
+	int *myRoot = utfLockRoot;
+	
+	_unlockMutex(&utf8Lock, myRoot);
+	ret = gc_malloc(size, GC_ALLOC_UTF8CONST);
+	_lockMutex(&utf8Lock, myRoot);
+	utfLockRoot = myRoot;
+	return ret;
+}
+
+static inline void UTFfree(const void *mem)
+{
+	int *myRoot = utfLockRoot;
+
+	_unlockMutex(&utf8Lock, myRoot);
+	jfree(mem);
+	_lockMutex(&utf8Lock, myRoot);
+	utfLockRoot = myRoot;
+}
 #else
 static hashtab_t	hashTable = (hashtab_t)1;
+
+#define lockUTF()
+#define unlockUTF() 
+#define UTFmalloc(size) malloc(size)
+#define UTFfree(size)   free(size)
 #endif
 
 /* Internal functions */
@@ -89,14 +127,14 @@ utf8ConstNew(const char *s, int len)
 	}
 
 	/* Lock intern table */
-	lockStaticMutex(&utf8Lock);
+	lockUTF();
 
 	/* See if string is already in the table using a "fake" Utf8Const */
 	assert (hashTable != NULL);
 	if (sizeof(Utf8Const) + len + 1 > sizeof(buf)) {
-		fake = KMALLOC(sizeof(Utf8Const) + len + 1);
+		fake = UTFmalloc(sizeof(Utf8Const) + len + 1);
 		if (!fake) {
-			unlockStaticMutex(&utf8Lock);
+			unlockUTF();
 			return 0;
 		}
 	} else {
@@ -106,33 +144,38 @@ utf8ConstNew(const char *s, int len)
 	((char *)fake->data)[len] = '\0';
 	fake->hash = hash;
 	utf8 = hashFind(hashTable, fake);
-	if (fake != (Utf8Const*)buf) {
-		KFREE(fake);
-	}
 	if (utf8 != NULL) {
 		assert(utf8->nrefs >= 1);
 		utf8->nrefs++;
 		unlockStaticMutex(&utf8Lock);
+		if (fake != (Utf8Const*)buf) {
+			jfree(fake);
+		}
 		return(utf8);
 	}
 
 	hitCounter(&utf8newalloc, "utf8-new-alloc");
 	/* Not in table; create new Utf8Const struct */
-	utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
-	if (!utf8) {
-		unlockStaticMutex(&utf8Lock);
-		return 0;
+	if ((char *) fake == buf) {
+		utf8 = UTFmalloc(sizeof(Utf8Const) + len + 1);
+		if (!utf8) {
+			unlockStaticMutex(&utf8Lock);
+			return 0;
+		}
+		memcpy((char *) utf8->data, s, len);
+		((char*)utf8->data)[len] = '\0';
+		utf8->hash = hash;
+	} else {
+		utf8 = fake;
 	}
-	memcpy((char *) utf8->data, s, len);
-	((char*)utf8->data)[len] = '\0';
-	utf8->hash = hash;
+	
 	utf8->nrefs = 1;
 
 	/* Add to hash table */
 	temp = hashAdd(hashTable, utf8);
 	if (!temp) {
-		KFREE(utf8);
 		unlockStaticMutex(&utf8Lock);
+		jfree(utf8);
 		return 0;
 	}
 	assert(temp == utf8);
@@ -178,9 +221,10 @@ utf8ConstRelease(Utf8Const *utf8)
 	if (--utf8->nrefs == 0) {
 		hitCounter(&utf8release, "utf8-release");
 		hashRemove(hashTable, utf8);
-		jfree(utf8);
 	}
 	unlockStaticMutex(&utf8Lock);
+	if (utf8->nrefs == 0)
+		jfree(utf8);
 }
 
 /*
@@ -333,6 +377,6 @@ void
 utf8ConstInit(void)
 {
 	hashTable = hashInit(utf8ConstHashValueInternal,
-		utf8ConstCompare, 0 /* alloc */, 0 /* free */);
+		utf8ConstCompare, UTFmalloc, UTFfree);
 	assert(hashTable);
 }
