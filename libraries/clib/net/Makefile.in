@@ -34,8 +34,8 @@ OBJEXT=		@OBJEXT@
 LIBEXT=		@LIBEXT@
 
 LIBNAME=	libnet
-LIB=		$(LIBNAME)$(LIBEXT)
-LIBV=		$(LIBNAME)$(LIBEXT).$(KVER)
+LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
+LLIB=		$(LIBNAME)$(LIBEXT)
 
 WRAPPER_CMD=	"s%^\(java_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
 
@@ -49,7 +49,11 @@ OBJECT=		$(OBJECT.NET)
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
 SOURCES=        $(OBJECT:@OBJEXT@=.c)
 
-all:		$(LIB)
+all:		$(LLIB)
+
+$(LLIB):	$(LIB)
+		rm -f $(LLIB)
+		$(LN) $(LIB) $(LLIB)
 
 $(LIB):         $(OBJECT) lib.exp external_wrappers.h
 		@LINKLIB@
@@ -66,7 +70,7 @@ external_wrappers.h: $(SOURCES)
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 clean:
-		rm -f $(LIB) $(OBJECT) lib.exp
+		rm -f $(LLIB) $(LIB) $(OBJECT) lib.exp
 		rm -f $(DEPENDS) .depend external_wrappers.h
 		touch .depend
 
@@ -75,9 +79,9 @@ distclean:	clean
 
 install:
 		test -d $(INSTROOT)$(nativedir) || $(MKDIR) $(INSTROOT)$(nativedir)
-		rm -f $(INSTROOT)$(nativedir)/$(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
-		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
-		$(LN) $(LIBV) $(INSTROOT)$(nativedir)/$(LIB)
+		rm -f $(INSTROOT)$(nativedir)/$(LLIB) $(INSTROOT)$(nativedir)/$(LIB)
+		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIB)
+		$(LN) $(LIB) $(INSTROOT)$(nativedir)/$(LLIB)
 
 derived-files:
 
@@ -88,3 +92,4 @@ depend:         $(DEPENDS) external_wrappers.h
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LIB)
 		touch lib.exp
+

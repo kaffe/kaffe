@@ -35,8 +35,8 @@ OBJEXT=		@OBJEXT@
 LIBEXT=		@LIBEXT@
 
 LIBNAME=	libmanagement
-LIB=		$(LIBNAME)$(LIBEXT)
-LIBV=		$(LIBNAME)$(LIBEXT).$(KVER)
+LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
+LLIB=		$(LIBNAME)$(LIBEXT)
 
 WRAPPER_CMD=	"s%^\(kaffe_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
 
@@ -48,7 +48,11 @@ OBJECT=		$(OBJECT.KAFFE.MANAGEMENT)
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
 SOURCES=        $(OBJECT:@OBJEXT@=.c)
 
-all:		$(LIB)
+all:		$(LLIB)
+
+$(LLIB):	$(LIB)
+		rm -f $(LLIB)
+		$(LN) $(LIB) $(LLIB)
 
 $(LIB):		$(OBJECT) lib.exp external_wrappers.h
 		@LINKLIB@
@@ -65,7 +69,7 @@ external_wrappers.h:	$(SOURCES)
 		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 clean:
-		rm -f $(LIB) $(OBJECT) lib.exp external_wrappers.h
+		rm -f $(LLIB) $(LIB) $(OBJECT) lib.exp external_wrappers.h
 		rm -f $(DEPENDS) .depend 
 		touch .depend
 
@@ -74,9 +78,9 @@ distclean:	clean
 
 install:
 		test -d $(INSTROOT)$(nativedir) || $(MKDIR) $(INSTROOT)$(nativedir)
-		rm -f $(INSTROOT)$(nativedir)/$(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
-		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
-		$(LN) $(LIBV) $(INSTROOT)$(nativedir)/$(LIB)
+		rm -f $(INSTROOT)$(nativedir)/$(LIB) $(INSTROOT)$(nativedir)/$(LLIB)
+		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIB)
+		$(LN) $(LIB) $(INSTROOT)$(nativedir)/$(LLIB)
 
 derived-files:
 
@@ -89,3 +93,4 @@ lib.exp:
 		touch lib.exp
 
 @INC_DEPEND@
+
