@@ -2000,7 +2000,10 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 			/* ignore */
 			continue;
 		}
-		if (haveBlocked) {
+		else if (errno = EAGAIN) {
+			/* ignore - go back to sleep */
+		}
+		else if (haveBlocked) {
 			errno = EINTR;
 			break;
 		}
