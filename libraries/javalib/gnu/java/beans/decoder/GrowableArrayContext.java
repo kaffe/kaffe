@@ -37,7 +37,6 @@ exception statement from your version. */
 package gnu.java.beans.decoder;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 /** A Context implementation for a growable array. The array
  * elements have to be set using expressions.
@@ -46,14 +45,17 @@ import java.util.ArrayList;
  */
 class GrowableArrayContext extends AbstractContext
 {
+    private static final int INITIAL_SIZE = 16;
+    
     private Class klass;
-    private ArrayList list = new ArrayList();
     private Object array;
-
+    private int length;
+    
     GrowableArrayContext(String id, Class newClass)
     {
         setId(id);
         klass = newClass;
+        array = Array.newInstance(klass, INITIAL_SIZE);
     }
 
     /* (non-Javadoc)
@@ -61,15 +63,18 @@ class GrowableArrayContext extends AbstractContext
      */
     public void addParameterObject(Object o) throws AssemblyException
     {
-        if (!klass.isInstance(o))
-            throw new AssemblyException(
-                new IllegalArgumentException(
-                    "Cannot add object "
-                        + o
-                        + " to array where the elements are of class "
-                        + klass));
-
-        list.add(o);
+      if (length == Array.getLength(array))
+        {
+          Object tmp = Array.newInstance(klass, length * 2);
+          System.arraycopy(array, 0, tmp, 0, length);
+          array = tmp;
+        }
+        
+      try {
+        Array.set(array, length++, o);
+      } catch(IllegalArgumentException iae) {
+        throw new AssemblyException(iae);
+      }
     }
 
     /* (non-Javadoc)
@@ -86,14 +91,13 @@ class GrowableArrayContext extends AbstractContext
      */
     public Object endContext(Context outerContext) throws AssemblyException
     {
-        if (array == null)
-        {
-            array = Array.newInstance(klass, list.size());
-
-            for (int i = 0; i < list.size(); i++)
-                Array.set(array, i, list.get(i));
-        }
-
+        if (length != Array.getLength(array))
+          {
+            Object tmp = Array.newInstance(klass, length);
+            System.arraycopy(array, 0, tmp, 0, length);
+            array = tmp;
+          }
+        
         return array;
     }
 
@@ -112,16 +116,11 @@ class GrowableArrayContext extends AbstractContext
      */
     public void set(int index, Object o) throws AssemblyException
     {
-        if (array == null)
-        {
-            if (klass.isInstance(o))
-                list.add(index, o);
-            else
-                throw new AssemblyException(
-                    new IllegalArgumentException("Argument is not compatible to array component type."));
-        }
-        else
-            Array.set(array, index, o);
+      try {
+        Array.set(array, index, o);
+      } catch(IllegalArgumentException iae) {
+        throw new AssemblyException(iae);   
+      }
     }
 
     /* (non-Javadoc)
@@ -129,10 +128,7 @@ class GrowableArrayContext extends AbstractContext
      */
     public Object get(int index) throws AssemblyException
     {
-        if (array == null)
-            return list.get(index);
-        else
-            return Array.get(array, index);
+      return Array.get(array, index);
     }
 
     public Object getResult()

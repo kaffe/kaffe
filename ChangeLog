@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-02  Robert Schuster  <thebohemian@gmx.net>
+
+        * gnu/java/beans/decoder/GrowableArrayContext.java: Fixed
+        assignment behavior by using java.lang.reflect.Array.set()
+        directly.
+	
+2005-02-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-02  Sven de Marothy  <sven@physto.se>
 
 	* java/util/Calendar.java 
