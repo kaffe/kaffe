@@ -10,13 +10,21 @@
 
 package java.sql;
 
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
 
 public class Timestamp
   extends Date {
 
 private static final long serialVersionUID = 2745179027874758501L;
 private int nanos;
+private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+private static DecimalFormat nanosFormat = new DecimalFormat("000000000");
+
 
 public Timestamp(int year, int month, int date, int hour, int minute, int second, int nano) {
 	super(year, month, date, hour, minute, second);
@@ -27,12 +35,41 @@ public Timestamp(long time) {
 	super(time);
 }
 
-public static Timestamp valueOf(String s) {
-	return (new Timestamp(Date.parse(s)));
+public static Timestamp valueOf(String s)
+	throws IllegalArgumentException
+{
+	ParsePosition pos = new ParsePosition (0);
+	
+	Date date = dateFormat.parse (s, pos);
+	if (date == null) {
+		throw new IllegalArgumentException(s);
+	}
+
+	Timestamp ts = new Timestamp(date.getTime());
+	
+	int index = pos.getIndex() + 1;
+	if ((index < s.length()) && 
+	    (s.charAt(index) == '.')) {
+		pos.setIndex(index);
+		Number nanos = nanosFormat.parse(s, pos);
+		if (nanos == null) {
+			throw new IllegalArgumentException(s);
+		}
+		ts.setNanos(nanos.intValue());
+	}
+
+	return ts;
 }
 
 public String toString() {
-	return (super.toString());
+	StringBuffer sb = new StringBuffer();
+	dateFormat.format(this, sb, new FieldPosition(0));
+	if (getNanos() != 0) {
+		sb.append('.');
+		nanosFormat.format ((long)getNanos(), sb, new FieldPosition(0));
+	}
+	
+	return sb.toString();
 }
 
 public int getNanos() {

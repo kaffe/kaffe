@@ -10,9 +10,15 @@
 
 package java.sql;
 
+import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
+
+
 public class Date
   extends java.util.Date {
 
+static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    
 public Date(int year, int month, int day) {
 	super(year, month, day);
 }
@@ -25,12 +31,18 @@ public void setTime(long date) {
 	super.setTime(date);
 }
 
-public static Date valueOf(String s) {
-	return (new Date(java.util.Date.parse(s)));
+public static Date valueOf(String s)
+	throws IllegalArgumentException
+{
+	java.util.Date date = sdf.parse(s, new ParsePosition(0));
+	if (date == null) {
+		throw new IllegalArgumentException(s);
+	}
+	return new Date(date.getTime());
 }
 
 public String toString() {
-	return (super.toString());
+	return sdf.format(this);
 }
 
 public int getHours() {
