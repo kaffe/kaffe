@@ -705,7 +705,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	 * parameter to all get(Declared){Method|Constructor} functions
 	 * is treated like passing an empty array "new Class [] {}"
 	 */
-	if ((argtypes == NULL) && !strcmp(sig,"()V")) {
+	if ((argtypes == NULL) && sig[0] == '(' && sig[1] == ')')
 		return (1);
 	}
 
