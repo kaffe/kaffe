@@ -1,5 +1,21 @@
-What's New in Kaffe OpenVM 1.0.6
+What's New since Kaffe OpenVM 1.0.6
 -----------------------------------
+
+* Port to Darwin (Mac OS X).
+
+* JIT port for Alpha on Compaq Tru64, GNU/Linux.
+
+* Support of PowerPC without libffi.
+
+* New version of KJC (1.5A).
+
+* New encoding converters based on iconv().
+
+* Lots of bug fixes.
+
+
+What's New in Kaffe OpenVM 1.0.6
+--------------------------------
 
 * New cross language debugging support for JIT3 engine.
 
