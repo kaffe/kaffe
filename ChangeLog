@@ -1,3 +1,8 @@
+Thu Jul  4 03:12:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/image/AreaAveragingScaleFilter.java:
+	(setHints), (setPixels): actually implemented the methods.
+
 Thu Jul  4 02:46:31 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am: added java.sql.Array,
