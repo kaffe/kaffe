@@ -1068,6 +1068,7 @@ jthread_exit ( void )
 	  if ( (cur != firstThread) && (firstThread->active == 0) ) {
 		/* if the firstThread has already been frozen, it's not in the cache list */
 		pthread_cancel( firstThread->tid);
+		repsem_post (&firstThread->sem);
 	  }
 
 	  unprotectThreadList(cur);
@@ -1102,6 +1103,11 @@ jthread_exit ( void )
 	 * linux-threads "feature")
 	 */
 	repsem_wait( &cur->sem);
+
+	/* We put here a safe-guard in case the pthread_cancel has not managed
+	 * to do its job and that repsem_wait awakes.
+	 */
+	pthread_exit(NULL);
   }
   else {
 	/* flag that we soon will get a new cache entry (would be annoying to

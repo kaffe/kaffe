@@ -45,11 +45,12 @@ class WaitTest
 	    }
 	}
 
-	new Thread(new WaitTest(waiter)).start();
 	synchronized( waiter )
 	{
 	    final long time = 500;
 	    
+	    new Thread(new WaitTest(waiter)).start();
+
 	    start = System.currentTimeMillis();
 	    waiter.wait(Long.MAX_VALUE);
 	    end = System.currentTimeMillis();

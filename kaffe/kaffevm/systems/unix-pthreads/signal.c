@@ -105,10 +105,17 @@ nullException(SIGNAL_ARGS(sig, ctx))
 #if defined(STACK_POINTER)
 	current_thread = jthread_current();
 	stackptr = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(ctx));
+	/* Here we have a stupid heuristic which may not work rightfully
+	 * if kaffe allocates a big buffer using alloca (in that case we
+	 * will get an NPE). But it is better than the previous case which was
+	 * heating nearly all NPEs on Darwin.
+	 */
 #if defined(STACK_GROWS_UP)
-	if (current_thread != NULL && stackptr >= current_thread->stackMax)
+	if (current_thread != NULL && stackptr >= current_thread->stackMax &&
+	    stackptr <= (void *)((uintp)current_thread->stackMax+1024))
 #else
-	if (current_thread != NULL && stackptr <= current_thread->stackMin)
+	if (current_thread != NULL && stackptr <= current_thread->stackMin &&
+	    stackptr >= (void *)((uintp)current_thread->stackMax-1024))
 #endif
 	  stackOverflowHandler(EXCEPTIONFRAMEPTR);
 	else

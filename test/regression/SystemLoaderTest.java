@@ -2,22 +2,22 @@
  * Check that our system class loader doesn't initialize classes too early
  */
 
-class l {
+class SLTest_class1 {
 	static {
-		System.out.println("l.init invoked");
+		System.out.println("SLTest_class1.init invoked");
 	}
 }
 
-class k extends l {
+class SLTest_class2 extends SLTest_class1 {
 	static {
-		System.out.println("k.init invoked");
+		System.out.println("SLTest_class2.init invoked");
 	}
 }
 
 public class SystemLoaderTest extends ClassLoader {
 
     public static void main(String []av) throws Exception {
-	Class c = new SystemLoaderTest().loadClass("k");
+	Class c = new SystemLoaderTest().loadClass("SLTest_class2");
 	System.out.println("LOADED");
 	c.newInstance();
 	System.out.println("DONE");
@@ -26,8 +26,8 @@ public class SystemLoaderTest extends ClassLoader {
 
 /* Expected Output:
 LOADED
-l.init invoked
-k.init invoked
+SLTest_class1.init invoked
+SLTest_class2.init invoked
 DONE
 */
 
