@@ -1,3 +1,13 @@
+Mon Sep  7 21:52:32 1998  Steve Ratcliffe <sterat@dial.pipex.com>
+
+	* libraries/javalib/java/lang/Byte.java: add missing byteValue()
+
+Mon Sep  7 21:52:32 1998  Petter Reinholdtsen <pere@cc.uit.no>
+
+	* libraries/javalib/java/lang/BufferedInputStream.java,
+	  libraries/javalib/java/lang/FilterInputStream.java:
+	  use read(byte[], int, int) instead of read(byte[])
+
 Wed Sep  2 18:04:36 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/awt/X/img.c: fix bug in countAlphas()
