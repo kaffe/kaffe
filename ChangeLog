@@ -1,3 +1,12 @@
+2003-08-07 Milos Negovanovic <milosn@bmf.bounceme.net>,
+	   Dalibor Topic <robilad@kaffe.org>
+
+	Compilation fix for i386/netbsd.
+
+	* config/i386/netbsd1/md.h:
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER,
+	SIGNAL_PC) new signal handling macros copied over from freebsd2.
+
 2003-08-07 Guilhem Lavaux <guilhem.lavaux@free.fr>
 
 	* libraries/javalib/java/net/Socket.java:
