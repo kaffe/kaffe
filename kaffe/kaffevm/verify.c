@@ -1036,7 +1036,7 @@ verifyMethod3a(errorInfo* einfo,
 	int32 low, high;
 	
 	bool wide;
-	// bool inABlock; // used when calculating the start/return address of each block
+	bool inABlock; // used when calculating the start/return address of each block
 	
 	uint32 blockCount  = 0;
 	BlockInfo** blocks = NULL;
@@ -1109,7 +1109,7 @@ verifyMethod3a(errorInfo* einfo,
 			n = pc + 1;
 			branchoffset = DWORD(code, n);
 			newpc = pc + branchoffset;
-			BRANCH_IN_BOUNDS(newpc, "goto");
+			BRANCH_IN_BOUNDS(newpc, "goto_w");
 			status[newpc] |= START_BLOCK;
 			break;
 			
@@ -1138,17 +1138,17 @@ verifyMethod3a(errorInfo* einfo,
 			
 			
 		case JSR:
-			n = WORD(code, pc + 1);
+			newpc = pc + WORD(code, pc + 1);
 			goto JSR_common;
 		case JSR_W:
-			n = DWORD(code, pc + 1);
+			newpc = pc + DWORD(code, pc + 1);
 			
 		JSR_common:
 			ENSURE_NON_WIDE;
 			status[pc] |= END_BLOCK;
 			
-			BRANCH_IN_BOUNDS(n, "jsr");
-			status[n] |= START_BLOCK;
+			BRANCH_IN_BOUNDS(newpc, "jsr");
+			status[newpc] |= START_BLOCK;
 			
 			// the next instruction is a target for branching via RET
 			pc = NEXTPC;
@@ -1179,7 +1179,7 @@ verifyMethod3a(errorInfo* einfo,
 			// default branch is at an address that is divisible by 4
 			n = (pc + 1) % 4;
 			if (n) n = pc + 5 - n;
-			else   n = pc;
+			else   n = pc + 1;
 			newpc = pc + DWORD(code, n);
 			BRANCH_IN_BOUNDS(newpc, "lookupswitch");
 			status[newpc] |= START_BLOCK;
@@ -1221,7 +1221,7 @@ verifyMethod3a(errorInfo* einfo,
 			// default branch is at an address that is divisible by 4
 			n = (pc + 1) % 4;
 			if (n) n = pc + 5 - n;
-			else   n = pc;
+			else   n = pc + 1;
 			newpc = pc + DWORD(code, n);
 			BRANCH_IN_BOUNDS(newpc, "tableswitch");
 			status[newpc] |= START_BLOCK;
@@ -1309,8 +1309,8 @@ verifyMethod3a(errorInfo* einfo,
 	
 	
 	blocks = NULL;
-	/* TODO: we'll do this when we add pass 3b
-	 * 
+	/* To be included with pass 3b ...
+	 *
 	DBG(VERIFY3, dprintf("      Verifier Pass 3a: third pass to allocate memory for basic blocks...\n"); );
 	
 	blocks = checkPtr((BlockInfo**)KMALLOC(blockCount * sizeof(BlockInfo*)));
@@ -1340,6 +1340,7 @@ verifyMethod3a(errorInfo* einfo,
 	}
 	*/
 	
+	
 	DBG(VERIFY3, dprintf("      Verifier Pass 3a: done\n"); );
 	
 	*numBlocks = blockCount;
@@ -1364,9 +1365,9 @@ printInstruction(const int opcode)
 #define PRINT(_OP) dprintf("%s", _OP); return;
 	
 	switch(opcode) {
-	case 0: PRINT("NOP");
+	case 0:   PRINT("NOP");
 		
-	case 1: PRINT("ACONST-null");
+	case 1:   PRINT("ACONST-null");
 		
 	case 2:   PRINT("ICONST_M1");
 	case 3:   PRINT("ICONST_0");
