@@ -899,7 +899,7 @@ define_insn(build_const_ref, set_wordconst_xxC)
 
 	/* Align data onto relevant boundary */
 	if (l->size == 2 && ((uintp)CODEPC) % 8 != 0) {
-		LOUT(0;
+		LOUT(0);
 	}
 
 	l->to = (uintp)CODEPC;

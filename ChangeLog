@@ -1,3 +1,10 @@
+2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/sparc/jit-sparc.def:
+	Fixed stray LOUT without closing brace.
+
+	Reported by: Mark Wielaard  <mark@klomp.org>
+
 2004-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/i386/freebsd2/md.[ch]
