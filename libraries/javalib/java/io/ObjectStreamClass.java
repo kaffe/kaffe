@@ -888,7 +888,7 @@ outer:
   boolean realClassIsSerializable;
   boolean realClassIsExternalizable;
   ObjectStreamField[] fieldMapping;
-  Class firstNonSerializableParent;
+  Constructor firstNonSerializableParentConstructor;
   private Constructor constructor;  // default constructor for Externalizable
 
   boolean isProxyClass = false;

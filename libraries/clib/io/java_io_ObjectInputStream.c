@@ -78,28 +78,14 @@ JNIEXPORT jobject JNICALL
 Java_java_io_ObjectInputStream_allocateObject( JNIEnv * env,
 					       jobject self
 					       __attribute__ ((__unused__)),
-					       jclass clazz )
+					       jclass clazz,
+					       jclass constr_clazz,
+	       				       jobject constructor)
 {
-  return (*env)->AllocObject( env, clazz );
-}
+  jobject obj = (*env)->AllocObject( env, clazz );
+  jmethodID id = (*env)->FromReflectedMethod( env, constructor);
 
+  (*env)->CallNonvirtualVoidMethod( env, obj, constr_clazz, id);
 
-/*
- * Class:     java_io_ObjectInputStream
- * Method:    callConstructor
- * Signature: (Ljava/lang/Class;Ljava/lang/Object;)V
- */
-JNIEXPORT void JNICALL 
-Java_java_io_ObjectInputStream_callConstructor( JNIEnv * env,
-						jclass clazz
-						__attribute__ ((__unused__)),
-						jclass constr_class,
-						jobject obj )
-{
-  jmethodID id = (*env)->GetMethodID( env, constr_class,
-				      "<init>", "()V" );
-  if( id == NULL )
-    return;
-  
-  (*env)->CallNonvirtualVoidMethod( env, obj, constr_class, id);
+  return obj;
 }

@@ -144,7 +144,7 @@ public class TestSerializable2
 a = Serialized-0 magic 321
 b = Serialized-0 magic 999
 a = Serialized1-10 magic 321
-java.io.InvalidClassException: TestSerializable2$NotSerializable1; Missing no-arg constructor for class
+java.io.InvalidClassException: Missing accessible no-arg base class constructor for TestSerializable2$Serialized1
 a = Serialized2-10 magic 321
-java.io.InvalidClassException: TestSerializable2$NotSerializable2; IllegalAccessException
+java.io.InvalidClassException: Missing accessible no-arg base class constructor for TestSerializable2$Serialized2
 */
