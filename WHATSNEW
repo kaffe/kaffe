@@ -17,6 +17,10 @@ What's New in Kaffe OpenVM 1.0.5
 
 * Now ships with KJC Java compiler, a truly Open Source Java compiler.
 
+* SuperFast locking implementation.
+
+* Pthreads implementation (currently for GLIBC 2.1.2 LinuxThreads only)
+
 * ....
 
 * Lots of bug fixes.
