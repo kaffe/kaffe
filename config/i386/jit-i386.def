@@ -195,7 +195,7 @@ define_insn(prologue, prologue_xxx)
 		OUT = 0xFF;
 		OUT = 0x05;
 		LOUT = (int)&(globalMethod->callsCount);
-		debug(("incl 0x%x\n",&(globalMethod->callsCount)));
+		debug(("incl 0x%x\n",(int)&(globalMethod->callsCount)));
 	}
 #endif
 
