@@ -67,12 +67,6 @@ public final class NIOServerSocket extends ServerSocket
   {
     try
       {
-       Method[] methods = NIOServerSocket.class.getDeclaredMethods();
-       for (int i = 0; i < methods.length; i++)
-       {
-               System.out.println("Michael: method: " + methods[i].getName());
-       }
-
        final Object t = this;
        final Method method = ServerSocket.class.getDeclaredMethod("getImpl", new Class[0]);
        method.setAccessible(true);
