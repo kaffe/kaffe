@@ -470,40 +470,6 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
-#if defined(SO_RCVTIMEO) && !defined(HAVE_BROKEN_SO_RCVTIMEO)
-	int ret;
-	struct timeval old_tv;
-	struct timeval new_tv;
-	int old_tv_sz = sizeof (old_tv);
-	getsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, &old_tv, &old_tv_sz);
-	new_tv.tv_sec = 0;
-	/* Guessed according to the former behaviour of jthreadedAccept
-	 * Even if it is wrong
-	 */
-	if (timeout == NOTIMEOUT) {
-	  new_tv.tv_sec = 0;
-	  new_tv.tv_usec = 0;
-	} else {
-	  new_tv.tv_sec = timeout / 1000;
-	  new_tv.tv_usec = (timeout % 1000) * 1000;
-	}
-	ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &new_tv, sizeof(new_tv));
-        if (!ret) {
-		ret = accept (fd, addr, len);
-		setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, &old_tv, sizeof (old_tv));
-		if( ret < 0 )
-		{
-		    switch( errno )
-		    {
-		    case EAGAIN:
-			errno = ETIMEDOUT;
-			break;
-		    }
-		}
-	}
-	SET_RETURN_OUT(ret, out, ret)
-	return ret;
-#else
 	int r=-1, ret;	
 	ret = waitForTimeout(fd,timeout);
 	if (ret > 0) {
@@ -518,7 +484,6 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 	
 	SET_RETURN_OUT(r, out, r)
 	return (r);
-#endif
 }
 
 /*

@@ -83,6 +83,12 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  /* We cannot construct the string if data is NULL. So as JNI says
+   * we return NULL.
+   */
+  if (data == NULL)
+    return NULL;
+
   len = strlen(data);
   if (!utf8ConstIsValidUtf8(data, len)) {
     str = NULL;

@@ -1,5 +1,27 @@
 2004-12-30  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* include/Makefile.am
+	(NOINSTALL_DERIVED_HDRS): Added java_lang_VMClassLoader.h.
+
+	* configure.ac: Removed the detection of broken setsockopt.
+
+	* kaffe/kaffevm/jni/jni-string.c
+	(KaffeJNI_NewStringUTF): If data is NULL we should return NULL
+	directly.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedAccept): Use the old implementation using select all the
+	time. It looks like being the only really working way of handling
+	timeouts.
+
+	* libraries/clib/native/ClassLoader.c: Include
+	java_lang_VMClassLoader.h to fix some warnings.
+	
+	* configure, include/Makefile.in, config/config.h.in,
+	libltdl/ltdl.c: Regenerated.
+
+2004-12-30  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
 	kaffe/kaffevm/systems/unix-jthreads/signal.c:
 	Brought back ignoreSignal as a global symbol but renamed it to

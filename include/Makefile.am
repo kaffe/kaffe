@@ -38,6 +38,7 @@ INSTALL_DERIVED_HDRS =
 NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_VMObject.h \
+	java_lang_VMClassLoader.h \
 	java_lang_String.h \
 	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \

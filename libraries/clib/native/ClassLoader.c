@@ -25,6 +25,7 @@
 #include "baseClasses.h"
 #include "exception.h"
 #include "java_lang_ClassLoader.h"
+#include "java_lang_VMClassLoader.h"
 #include "defs.h"
 
 /*

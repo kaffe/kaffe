@@ -42737,7 +42737,10 @@ echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch 
 			;;
 		linux*)
 			if test "$ac_cv_c_compile_value_glibc" -le "2"; then
-			   BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS -DTHREAD_LOCAL_ALLOC"
+			   BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			   if test "$Khost_cpu" = "i386"; then
+			     BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
+			   fi
 			fi
 			;;
 		*)
@@ -51889,84 +51892,6 @@ _ACEOF
 
 fi
 
-echo "$as_me:$LINENO: checking whether setsockopt(SO_RCVTIMEO) is broken" >&5
-echo $ECHO_N "checking whether setsockopt(SO_RCVTIMEO) is broken... $ECHO_C" >&6
-if test "${ac_cv_so_rcvtimeo_broken+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-      if test "$cross_compiling" = yes; then
-  ac_cv_so_rcvtimeo_broken=cross
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#if defined(HAVE_SYS_TYPES_H)
-#include <sys/types.h>
-#endif
-
-#if defined(HAVE_SYS_SOCKET_H)
-#include <sys/socket.h>
-#endif
-
-#if defined(HAVE_SYS_TIME_H)
-#include <sys/time.h>
-#endif
-
-int main(void) {
-	int fd;
-	int ret;
-	struct timeval new_tv;
-
-	/* Open the socket (INET/TCP).*/
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-
-	/* set the timeout for the incoming queue */
-	/* 1 second for example */
-	new_tv.tv_sec = 1;
-	new_tv.tv_usec = 0;
-
-	ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &new_tv, sizeof(new_tv));
-	return ret;
-}
-
-_ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_so_rcvtimeo_broken=no
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-ac_cv_so_rcvtimeo_broken=yes
-fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-fi
-echo "$as_me:$LINENO: result: $ac_cv_so_rcvtimeo_broken" >&5
-echo "${ECHO_T}$ac_cv_so_rcvtimeo_broken" >&6
-if test x"$ac_cv_so_rcvtimeo_broken" = x"yes"; then
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_BROKEN_SO_RCVTIMEO 1
-_ACEOF
-
-fi
-
 
 if test "$ac_cv_c_compile_value_glibc" -le "2"; then
 	if test "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
@@ -56851,7 +56776,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 56858: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 56779: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -56969,7 +56894,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 56976 "configure" */
+/* #line 56897 "configure" */
 public class Test {
 }
 EOF
@@ -57006,7 +56931,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 57013 "configure" */
+/* [#]line 56934 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);
