@@ -1,3 +1,10 @@
+2003-04-04 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/BufferedInputStream.java:
+	(read) use internal _read method to do the work to avoid circular
+	recursion in overloaded methods.
+	(_read) new method.
+
 2003-04-03 Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* kaffe/scripts/kaffe.in:

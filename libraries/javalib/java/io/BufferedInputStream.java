@@ -77,7 +77,7 @@ public boolean markSupported() {
 }
 
 public synchronized int read() throws IOException {
-	if (read(single, 0, 1) == -1) {
+	if (_read(single, 0, 1) == -1) {
 		return (-1);
 	}
 	else {
@@ -86,6 +86,10 @@ public synchronized int read() throws IOException {
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
+	return _read(b, off, len);
+}
+
+private int _read(byte b[], int off, int len) throws IOException {
 	if (off < 0 || len < 0 || off + len > b.length) {
 	   throw new IndexOutOfBoundsException();
 	}
