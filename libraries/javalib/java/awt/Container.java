@@ -525,10 +525,12 @@ public void setLayout ( LayoutManager newLayout ) {
 }
 
 public void validate() {
-	if ( !isValid && (peer != null) ){
-		// we have to descent before validating ourself
-		validateTree();
-		isValid = true;
+	synchronized(getTreeLock()) {
+		if ( !isValid && (peer != null) ){
+			// we have to descent before validating ourself
+			validateTree();
+			isValid = true;
+		}
 	}
 }
 
