@@ -406,7 +406,8 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 		if (sp < meth->localsz || sp > meth->localsz + meth->stacksz) {
 			failed = true;
 			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
-				"at pc %d sp %d not in range [%d, %d]",
+				"In class %s in method %s with signature %s at pc %d: sp %d not in range [%d, %d]",
+				meth->class->name->data, meth->name->data, METHOD_SIGD(meth),
 				pc, sp, meth->localsz, 
 				meth->localsz + meth->stacksz);
 			break;
