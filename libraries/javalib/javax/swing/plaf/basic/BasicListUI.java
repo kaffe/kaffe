@@ -44,6 +44,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -71,6 +74,22 @@ import javax.swing.plaf.ListUI;
  */
 public class BasicListUI extends ListUI
 {
+
+  /**
+   * A helper class which listens for {@link ComponentEvent}s from
+   * the JList.
+   */
+  class ComponentHandler extends ComponentAdapter {
+
+    /**
+     * Called when the component is hidden. Invalidates the internal
+     * layout.
+     */
+    public void componentResized(ComponentEvent ev) {
+      BasicListUI.this.damageLayout();
+    }
+  }
+
   /**
    * A helper class which listens for {@link FocusEvents}
    * from the JList.
@@ -296,6 +315,10 @@ public class BasicListUI extends ListUI
   /** The property change listener listening to the list. */
   PropertyChangeHandler propertyChangeListener;
 
+  /** The component listener that receives notification for resizing the
+   * JList component.*/
+  ComponentListener componentListener;
+
   /** Saved reference to the list this UI was created for. */
   JList list;
 
@@ -437,6 +460,7 @@ public class BasicListUI extends ListUI
             Dimension dim = flyweight.getPreferredSize();
             cellHeights[i] = dim.height;
             cellWidth = Math.max(cellWidth, dim.width);
+            cellWidth = Math.max(cellWidth, list.getSize().width);
           }
       }
     else
@@ -481,6 +505,7 @@ public class BasicListUI extends ListUI
     listSelectionListener = new ListSelectionHandler();
     mouseInputListener = new MouseInputHandler();
     propertyChangeListener = new PropertyChangeHandler();
+    componentListener = new ComponentHandler();
     updateLayoutStateNeeded = 1;
   }
 
@@ -527,6 +552,7 @@ public class BasicListUI extends ListUI
     list.addMouseListener(mouseInputListener);
     list.addMouseMotionListener(mouseInputListener);
     list.addPropertyChangeListener(propertyChangeListener);
+    list.addComponentListener(componentListener);
   }
 
   /**

@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-26  Roman Kennke  <roman@ontographics.com>
+
+        * javax/swing/plaf/basic/BasicListUI
+        (updateLayoutState,paint): make BasicListUI aware of the
+        width of the rendered JList
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-25  Sven de Marothy  <sven@physto.se>
 
         * java/net/InetAddress.java
