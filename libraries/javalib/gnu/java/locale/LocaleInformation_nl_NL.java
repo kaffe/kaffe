@@ -62,7 +62,6 @@ public class LocaleInformation_nl_NL extends ListResourceBundle
   static final String defaultTimeFormat = "";
   static final String currencySymbol = "fl";
   static final String intlCurrencySymbol = "NLG";
-  static final String currencyFormat = "$ #,###,##0.00;$ #,###,##0.00-";
 
   private static final Object[][] contents =
   {
@@ -75,11 +74,11 @@ public class LocaleInformation_nl_NL extends ListResourceBundle
     { "defaultTimeFormat", defaultTimeFormat },
     { "currencySymbol", currencySymbol },
     { "intlCurrencySymbol", intlCurrencySymbol },
-    { "currencyFormat", currencyFormat },
     { "decimalSeparator", decimalSeparator },
     { "groupingSeparator", groupingSeparator },
     { "numberFormat", numberFormat },
     { "percentFormat", percentFormat },
+    { "currencyFormat", "\u00a4 #,##0.00;\u00a4 #,##0.00-" }
   };
 
   public Object[][] getContents() { return contents; }
