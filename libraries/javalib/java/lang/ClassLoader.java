@@ -165,11 +165,7 @@ protected final Class defineClass(byte data[], int off, int len)
 
 protected final Class defineClass(String name, byte data[], int off, int len)
 		throws ClassFormatError {
-	if (defaultProtectionDomain == null) {
-		// XXX FIXME..
-		defaultProtectionDomain = new ProtectionDomain(null, null);
-	}
-	return defineClass(name, data, off, len, defaultProtectionDomain);
+	return defineClass(name, data, off, len, null);
 }
 
 protected final Class defineClass(String name, byte data[], int off,
@@ -177,12 +173,20 @@ protected final Class defineClass(String name, byte data[], int off,
 	if (off < 0 || len < 0 || off + len > data.length) {
 		throw new IndexOutOfBoundsException();
 	}
-	Class clazz = defineClass0(name, data, off, len);
+	Class clazz = null;
+	clazz = defineClass0(name, data, off, len);
 	if (name != null) {
 		loadedClasses.put(name, clazz);
 	}
 	else {
 		loadedClasses.put(clazz.getName(), clazz);
+	}
+	if (pd == null) {
+		if (defaultProtectionDomain == null) {
+			// XXX FIXME..
+			defaultProtectionDomain = new ProtectionDomain(null, null);
+		}
+		pd = defaultProtectionDomain;
 	}
 	protectionDomains.put(clazz, pd);
 	return (clazz);

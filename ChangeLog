@@ -1,5 +1,12 @@
 2004-11-13  Mark Wielaard  <mark@klomp.org>
 
+        * libraries/javalib/java/lang/ClassLoader.java
+        (defineClass(String,byte[],int,int)): Move
+        defaultProtectionDomain initialization to...
+        (defineClass(String,byte[],int,int,ProtectionDomain)): ...here.
+
+2004-11-13  Mark Wielaard  <mark@klomp.org>
+
         * include/errors.h
         (ArrayStoreException): Define to take a message.
         * kaffe/kaffevm/soft.c
