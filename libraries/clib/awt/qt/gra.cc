@@ -8,13 +8,12 @@
  * of this file. 
  */
 
-#include "qpaintdevice.h"
-#include "qpainter.h"
-#include "qstring.h"
-#include "qwidget.h"
-#include "qpixmap.h"
-
-#include "qimage.h"
+#include <qimage.h>
+#include <qpaintdevice.h>
+#include <qpainter.h>
+#include <qpixmap.h>
+#include <qstring.h>
+#include <qwidget.h>
 
 #include "toolkit.h"
 

@@ -15,12 +15,11 @@
 // Murphy
 #include <qapplication.h>
 #include <qpaintdevicemetrics.h>
-QApplication *qapp;
 
 #include "toolkit.h"
 #include "tlkprops.h"
 
-
+QApplication *qapp;
 
 /********************************************************************************
  * exported functions

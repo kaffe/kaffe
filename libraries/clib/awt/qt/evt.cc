@@ -8,10 +8,10 @@
  * of this file. 
  */
 
-#include "qapplication.h"
-#include "qevent.h"
-#include "qqueue.h"
-#include "qwidget.h"
+#include <qapplication.h>
+#include <qevent.h>
+#include <qqueue.h>
+#include <qwidget.h>
 
 #include "evt.h"
 #include "toolkit.h"
@@ -109,16 +109,28 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
 
     case QEvent::Show: {
       AWT_DBG(printf("Event Show: srcIdx=%d\n", X->srcIdx));
+
+#if (QT_VERSION < 300)
+      newEvent = (QEvent*) new QShowEvent(true);
+#else
       QShowEvent* tmpShowEvent = (QShowEvent*)e;
       newEvent = (QEvent*) new QShowEvent();
+#endif
+
       processed = true;
       break;
     }
     
     case QEvent::Hide: {
       AWT_DBG(printf("Event Hid: srcIdx=%d\n", X->srcIdx));
+
+#if (QT_VERSION < 300)
+      newEvent = (QEvent*) new QHideEvent(true);
+#else
       QHideEvent* tmpHideEvent = (QHideEvent*)e;
       newEvent = (QEvent*) new QHideEvent();
+#endif
+
       processed = true;
       break;
     }

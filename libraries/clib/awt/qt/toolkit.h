@@ -45,8 +45,8 @@ extern "C" {
 /*******************************************************************************
  * image handling structures
  */
-struct QImage;
-struct QPixmap;
+//struct QImage;
+//struct QPixmap;
 typedef struct _AlphaImage {       /* storage for full alpha channel images */
   unsigned char *buf;
   int           width, height;
@@ -232,9 +232,9 @@ jint Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz,
 /* Graphics */
 
 
-struct QPainter;
-struct QWidget;
-class QPaintDevice;
+//struct QPainter;
+//struct QWidget;
+//class QPaintDevice;
 
 typedef struct {
   //GC        gc;

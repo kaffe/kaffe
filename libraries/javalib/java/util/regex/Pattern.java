@@ -22,7 +22,6 @@ public final class Pattern implements Serializable {
     RE getRE() { return re; }
 
     private Pattern(String pattern, int flags) throws PatternSyntaxException {
-	System.err.println("gnu.regexp facade Pattern constructor");
 	this.pattern = pattern;
 	this.flags = flags;
 

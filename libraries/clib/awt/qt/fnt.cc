@@ -8,8 +8,9 @@
  * of this file. 
  */
 
-#include "qfont.h"
-#include "qfontmetrics.h"
+#include <qfont.h>
+#include <qfontmetrics.h>
+
 #include "toolkit.h"
 
 /*******************************************************************************

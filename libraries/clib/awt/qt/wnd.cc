@@ -8,13 +8,14 @@
  * of this file. 
  */
 
-#include "qapplication.h"
-#include "qwidget.h"
-#include "qframe.h"
-#include "qcursor.h"
+#include <limits.h>
+
+#include <qapplication.h>
+#include <qframe.h>
+#include <qcursor.h>
+#include <qwidget.h>
 
 #include "toolkit.h"
-#include <limits.h>
 
 #define QCOLOR(c) QColor(JRED(c), JGREEN(c), JBLUE(c))
 
@@ -94,8 +95,28 @@ getCursor ( jint jCursor )
   if ( jCursor > 13 ) jCursor = 0;
 
   if ( !(cursor = X->cursors[jCursor]) ){
-    int shape;
+    QCursorShape shape;
     switch ( jCursor ) {
+
+#if QT_VERSION < 300
+      /* Qt2 */
+      case  0: shape = ArrowCursor; break;     /*  0: DEFAULT_CURSOR     */
+      case  1: shape = CrossCursor; break;     /*  1: CROSSHAIR_CURSOR   */
+      case  2: shape = IbeamCursor; break;     /*  2: TEXT_CURSOR        */
+      case  3: shape = WaitCursor; break;      /*  3: WAIT_CURSOR        */
+      case  4: shape = SizeBDiagCursor; break; /*  4: SW_RESIZE_CURSOR */
+      case  5: shape = SizeFDiagCursor; break; /*  5: SE_RESIZE_CURSOR   */
+      case  6: shape = SizeFDiagCursor; break; /*  6: NW_RESIZE_CURSOR   */
+      case  7: shape = SizeBDiagCursor; break; /*  7: NE_RESIZE_CURSOR   */
+      case  8: shape = SizeVerCursor; break;   /*  8: N_RESIZE_CURSOR    */
+      case  9: shape = SizeVerCursor; break;   /*  9: S_RESIZE_CURSOR    */
+      case 10: shape = SizeHorCursor; break;   /* 10: W_RESIZE_CURSOR    */
+      case 11: shape = SizeHorCursor; break;   /* 11: E_RESIZE_CURSOR    */
+      case 12: shape = PointingHandCursor; break; /* 12: HAND_CURSOR        */
+      case 13: shape = SizeAllCursor; break;   /* 13: MOVE_CURSOR        */
+      default: shape = ArrowCursor;
+#else
+      /* Qt3 */
       case  0: shape = Qt::ArrowCursor; break;     /*  0: DEFAULT_CURSOR     */
       case  1: shape = Qt::CrossCursor; break;     /*  1: CROSSHAIR_CURSOR   */
       case  2: shape = Qt::IbeamCursor; break;     /*  2: TEXT_CURSOR        */
@@ -111,6 +132,7 @@ getCursor ( jint jCursor )
       case 12: shape = Qt::PointingHandCursor; break; /* 12: HAND_CURSOR        */
       case 13: shape = Qt::SizeAllCursor; break;   /* 13: MOVE_CURSOR        */
       default: shape = Qt::ArrowCursor;
+#endif
     }
 
     cursor = X->cursors[jCursor] = shape;

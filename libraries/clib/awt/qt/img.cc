@@ -9,7 +9,9 @@
  */
 
 #include <stdio.h>
-#include "qimage.h"
+
+#include <qimage.h>
+
 #include "toolkit.h"
 
 

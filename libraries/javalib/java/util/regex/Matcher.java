@@ -19,7 +19,7 @@ public final class Matcher {
     }
 
     public boolean matches() {
-	return pattern.getRE().isMatch(input);
+	return find(0);
     }
 
     public boolean lookingAt() {

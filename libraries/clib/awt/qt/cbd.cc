@@ -7,12 +7,10 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
-#include "qapplication.h"
-#include "qclipboard.h"
-#include "qdragobject.h"
-//#include <unistd.h>
-//#include <X11/Xlib.h>
-//#include <X11/Xatom.h>
+
+#include <qapplication.h>
+#include <qclipboard.h>
+#include <qdragobject.h>
 
 #include "toolkit.h"
 

@@ -159,8 +159,8 @@ CONFIG_CLEAN_FILES =
 SCRIPTS =  $(noinst_SCRIPTS)
 
 DIST_COMMON =  README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
-acinclude.m4 aclocal.m4 config.guess config.sub configure configure.in \
-install-sh ltconfig ltmain.sh missing mkinstalldirs
+aclocal.m4 config.guess config.sub configure configure.in install-sh \
+ltconfig ltmain.sh missing mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -176,7 +176,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in  acinclude.m4
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in 
 	cd $(srcdir) && $(ACLOCAL)
 
 config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)

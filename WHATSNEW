@@ -1,10 +1,60 @@
 What's New since Kaffe OpenVM 1.0.7
 ------------------------------------------------------
+
+* Qt based AWT backend
+
 * New build system.
 
 * New version of KJC (2.1B).
 
 * Port to SuperH GNU/Linux
+
+* Many improvements to serialization, localization,
+  and reflection.
+
+* New packages:
+
+  * java.awt.color
+  * java.awt.dnd
+  * java.awt.font
+  * java.awt.geom
+  * java.awt.print
+  * java.beans.beancontext
+  * java.nio
+  * java.nio.channels
+  * java.nio.channels.spi
+  * java.nio.charset
+  * java.nio.charset.spi
+  * java.security.acl
+  * java.util.logging
+  * java.util.prefs
+  * java.util.regex
+  * javax.naming
+  * javax.naming.directory
+  * javax.naming.event
+  * javax.naming.ldap
+  * javax.naming.spi
+  * javax.sound.sampled
+  * javax.transaction
+  * javax.transaction.xa
+  * javax.xml.parsers
+  * javax.xml.transform
+  * javax.xml.transform.dom
+  * javax.xml.transform.sax
+  * javax.xml.transform.stream
+  * org.w3c.dom
+  * org.w3c.dom.css
+  * org.w3c.dom.events
+  * org.w3c.dom.html
+  * org.w3c.dom.ranges
+  * org.w3c.dom.stylesheets
+  * org.w3c.dom.traversal
+  * org.w3c.dom.views
+  * org.xml.sax
+  * org.xml.sax.ext
+  * org.xml.sax.helpers
+
+* Lots of bug fixes.
 
 What's New in Kaffe OpenVM 1.0.7
 ------------------------------------------------------

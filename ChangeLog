@@ -1,3 +1,309 @@
+2002-12-02 Dalibor Topic <robilad@yahoo.com>
+
+	Upgraded libtool and libltdl files to libtool 1.4.3.
+	Imported javax.xml, org.w3c and org.xml packages from GNU jaxp,
+	available at http://www.gnu.org/software/classpathx/jaxp.
+	javax.xml is licensed under GPL + linking exception,
+	org.xml.sax is public domain, and org.w3c is licensed under
+	the W3C IPR Software Notice, included in text for as
+	license-w3c.terms. It is a GPL compatible license.
+
+	* license-w3c.terms: new file.
+	
+	* acinclude.m4: removed.
+	* libtool.m4: new file from libtool 1.4.3.
+        * config.guess,
+        config.sub,
+        libltdl/COPYING.LIB,
+        libltdl/Makefile.in,
+        libltdl/acinclude.m4,
+        libltdl/aclocal.m4,
+        libltdl/config-h.in,
+        libltdl/configure,
+        libltdl/ltdl.c,
+        ltmain.sh: updated to libtool 1.4.3.
+	
+	* libraries/clib/awt/qt/cbd.cc,
+	libraries/clib/awt/qt/clr.cc,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/awt/qt/fnt.cc,
+	libraries/clib/awt/qt/gra.cc,
+	libraries/clib/awt/qt/img.cc,
+	libraries/clib/awt/qt/tlk.cc,
+	libraries/clib/awt/qt/toolkit.h,
+	libraries/clib/awt/qt/wnd.cc:
+	Use system paths to look for Qt headers.
+	Made it work with Qt2.
+
+	Patch by: Jim Huang <jserv@mdk.linux.org.tw>
+	
+	* libraries/javalib/Makefile.am: Added new files and packages.
+	* libraries/javalib/Makefile.in: regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Added java.lang.CharSequence
+	
+	* libraries/javalib/java/net/URI.java:
+	partially implemented using java.util.regex.
+	(URI_REGEXP) new constant. Used to parse URIs.
+	(SCHEME_GROUP) new constant representing index of scheme group in
+	parsed URI.
+	(AUTHORITY_GROUP) new constant representing index of authority
+	group in parsed URI.
+	(PATH_GROUP) new constant representing index of path group in
+	parsed URI.
+	(QUERY_GROUP) new constant representing index of query group in
+	parsed URI.
+	(FRAGMENT_GROUP) new constant representing index of fragment group
+	in parsed URI.
+	(getURIGroup) new static utility method.
+	(parseURI) implemented.
+	(quote) stub for new static utility method.
+	(quoteAuthority) stub for new static utility method.
+	(quoteHost) stub for new static utility method.
+	(quotePath) stub for new static utility method.
+	(quoteUserInfo) stub for new static utility method.
+	(URI) implemented.
+	(create) don't throw URISyntaxException. Implemented.
+	(toString) implemented.
+
+	Checked in as it will take some time before this code will enter
+	GNU Classpath. It takes some time to have the necessary
+	copyright statements signed.
+	
+	* libraries/javalib/java/util/regex/Matcher.java:
+	(matches) needs to set match result. Reimplemented using find.
+	* libraries/javalib/java/util/regex/Pattern.java:
+	(Pattern) removed log message.
+
+	Checked in as java.util.regex is not in gnu.regex CVS yet.
+
+	* libraries/javalib/javax/xml/parsers/ClassStuff.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilderFactory.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilder.java,
+	libraries/javalib/javax/xml/parsers/FactoryConfigurationError.java,
+	libraries/javalib/javax/xml/parsers/ParserConfigurationException.java,
+	libraries/javalib/javax/xml/parsers/SAXParserFactory.java,
+	libraries/javalib/javax/xml/parsers/SAXParser.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/javax/xml/transform/ClassStuff.java,
+        libraries/javalib/javax/xml/transform/ErrorListener.java,
+        libraries/javalib/javax/xml/transform/OutputKeys.java,
+        libraries/javalib/javax/xml/transform/Result.java,
+        libraries/javalib/javax/xml/transform/Source.java,
+        libraries/javalib/javax/xml/transform/SourceLocator.java,
+        libraries/javalib/javax/xml/transform/Templates.java,
+        libraries/javalib/javax/xml/transform/TransformerConfigurationException.java,
+        libraries/javalib/javax/xml/transform/TransformerException.java,
+        libraries/javalib/javax/xml/transform/TransformerFactoryConfigurationError.java,
+        libraries/javalib/javax/xml/transform/TransformerFactory.java,
+        libraries/javalib/javax/xml/transform/Transformer.java,
+        libraries/javalib/javax/xml/transform/URIResolver.java:
+	new filesfrom GNU jaxp.
+
+	* libraries/javalib/javax/xml/transform/dom/DOMLocator.java,
+        libraries/javalib/javax/xml/transform/dom/DOMResult.java,
+        libraries/javalib/javax/xml/transform/dom/DOMSource.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/javax/xml/transform/sax/SAXResult.java,
+        libraries/javalib/javax/xml/transform/sax/SAXSource.java,
+        libraries/javalib/javax/xml/transform/sax/SAXTransformerFactory.java,
+        libraries/javalib/javax/xml/transform/sax/TemplatesHandler.java,
+        libraries/javalib/javax/xml/transform/sax/TransformerHandler.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/javax/xml/transform/stream/StreamResult.java,
+        libraries/javalib/javax/xml/transform/stream/StreamSource.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/Attr.java,
+        libraries/javalib/org/w3c/dom/CDATASection.java,
+        libraries/javalib/org/w3c/dom/CharacterData.java,
+        libraries/javalib/org/w3c/dom/Comment.java,
+        libraries/javalib/org/w3c/dom/DocumentFragment.java,
+        libraries/javalib/org/w3c/dom/Document.java,
+        libraries/javalib/org/w3c/dom/DocumentType.java,
+        libraries/javalib/org/w3c/dom/DOMException.java,
+        libraries/javalib/org/w3c/dom/DOMImplementation.java,
+        libraries/javalib/org/w3c/dom/Element.java,
+        libraries/javalib/org/w3c/dom/Entity.java,
+        libraries/javalib/org/w3c/dom/EntityReference.java,
+        libraries/javalib/org/w3c/dom/NamedNodeMap.java,
+        libraries/javalib/org/w3c/dom/Node.java,
+        libraries/javalib/org/w3c/dom/NodeList.java,
+        libraries/javalib/org/w3c/dom/Notation.java,
+        libraries/javalib/org/w3c/dom/ProcessingInstruction.java,
+        libraries/javalib/org/w3c/dom/Text.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/css/Counter.java,
+        libraries/javalib/org/w3c/dom/css/CSS2Azimuth.java,
+        libraries/javalib/org/w3c/dom/css/CSS2BackgroundPosition.java,
+        libraries/javalib/org/w3c/dom/css/CSS2BorderSpacing.java,
+        libraries/javalib/org/w3c/dom/css/CSS2CounterIncrement.java,
+        libraries/javalib/org/w3c/dom/css/CSS2CounterReset.java,
+        libraries/javalib/org/w3c/dom/css/CSS2Cursor.java,
+        libraries/javalib/org/w3c/dom/css/CSS2FontFaceSrc.java,
+        libraries/javalib/org/w3c/dom/css/CSS2FontFaceWidths.java,
+        libraries/javalib/org/w3c/dom/css/CSS2PageSize.java,
+        libraries/javalib/org/w3c/dom/css/CSS2PlayDuring.java,
+        libraries/javalib/org/w3c/dom/css/CSS2Properties.java,
+        libraries/javalib/org/w3c/dom/css/CSS2TextShadow.java,
+        libraries/javalib/org/w3c/dom/css/CSSCharsetRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSFontFaceRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSImportRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSMediaRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSPageRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSPrimitiveValue.java,
+        libraries/javalib/org/w3c/dom/css/CSSRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSRuleList.java,
+        libraries/javalib/org/w3c/dom/css/CSSStyleDeclaration.java,
+        libraries/javalib/org/w3c/dom/css/CSSStyleRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSStyleSheet.java,
+        libraries/javalib/org/w3c/dom/css/CSSUnknownRule.java,
+        libraries/javalib/org/w3c/dom/css/CSSValue.java,
+        libraries/javalib/org/w3c/dom/css/CSSValueList.java,
+        libraries/javalib/org/w3c/dom/css/DocumentCSS.java,
+        libraries/javalib/org/w3c/dom/css/DOMImplementationCSS.java,
+        libraries/javalib/org/w3c/dom/css/ElementCSSInlineStyle.java,
+        libraries/javalib/org/w3c/dom/css/Rect.java,
+        libraries/javalib/org/w3c/dom/css/RGBColor.java,
+        libraries/javalib/org/w3c/dom/css/ViewCSS.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/events/DocumentEvent.java,
+        libraries/javalib/org/w3c/dom/events/EventException.java,
+        libraries/javalib/org/w3c/dom/events/Event.java,
+        libraries/javalib/org/w3c/dom/events/EventListener.java,
+        libraries/javalib/org/w3c/dom/events/EventTarget.java,
+        libraries/javalib/org/w3c/dom/events/MouseEvent.java,
+        libraries/javalib/org/w3c/dom/events/MutationEvent.java,
+        libraries/javalib/org/w3c/dom/events/UIEvent.java,:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/html/HTMLAnchorElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLAppletElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLAreaElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLBaseElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLBaseFontElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLBodyElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLBRElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLButtonElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLCollection.java,
+        libraries/javalib/org/w3c/dom/html/HTMLDirectoryElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLDivElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLDListElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLDocument.java,
+        libraries/javalib/org/w3c/dom/html/HTMLDOMImplementation.java,
+        libraries/javalib/org/w3c/dom/html/HTMLElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLFieldSetElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLFontElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLFormElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLFrameElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLFrameSetElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLHeadElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLHeadingElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLHRElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLHtmlElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLIFrameElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLImageElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLInputElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLIsIndexElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLLabelElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLLegendElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLLIElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLLinkElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLMapElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLMenuElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLMetaElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLModElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLObjectElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLOListElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLOptGroupElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLOptionElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLParagraphElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLParamElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLPreElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLQuoteElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLScriptElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLSelectElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLStyleElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableCaptionElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableCellElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableColElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableRowElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTableSectionElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTextAreaElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLTitleElement.java,
+        libraries/javalib/org/w3c/dom/html/HTMLUListElement.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/ranges/DocumentRange.java,
+        libraries/javalib/org/w3c/dom/ranges/RangeException.java,
+        libraries/javalib/org/w3c/dom/ranges/Range.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/stylesheets/DocumentStyle.java,
+        libraries/javalib/org/w3c/dom/stylesheets/LinkStyle.java,
+        libraries/javalib/org/w3c/dom/stylesheets/MediaList.java,
+        libraries/javalib/org/w3c/dom/stylesheets/StyleSheet.java,
+        libraries/javalib/org/w3c/dom/stylesheets/StyleSheetList.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/traversal/DocumentTraversal.java,
+        libraries/javalib/org/w3c/dom/traversal/NodeFilter.java,
+        libraries/javalib/org/w3c/dom/traversal/NodeIterator.java,
+        libraries/javalib/org/w3c/dom/traversal/TreeWalker.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/w3c/dom/views/AbstractView.java,
+        libraries/javalib/org/w3c/dom/views/DocumentView.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/xml/sax/AttributeList.java,
+        libraries/javalib/org/xml/sax/Attributes.java,
+        libraries/javalib/org/xml/sax/ContentHandler.java,
+        libraries/javalib/org/xml/sax/DocumentHandler.java,
+        libraries/javalib/org/xml/sax/DTDHandler.java,
+        libraries/javalib/org/xml/sax/EntityResolver.java,
+        libraries/javalib/org/xml/sax/ErrorHandler.java,
+        libraries/javalib/org/xml/sax/HandlerBase.java,
+        libraries/javalib/org/xml/sax/InputSource.java,
+        libraries/javalib/org/xml/sax/Locator.java,
+        libraries/javalib/org/xml/sax/Parser.java,
+        libraries/javalib/org/xml/sax/SAXException.java,
+        libraries/javalib/org/xml/sax/SAXNotRecognizedException.java,
+        libraries/javalib/org/xml/sax/SAXNotSupportedException.java,
+        libraries/javalib/org/xml/sax/SAXParseException.java,
+        libraries/javalib/org/xml/sax/XMLFilter.java,
+        libraries/javalib/org/xml/sax/XMLReader.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/xml/sax/ext/Attributes2Impl.java,
+        libraries/javalib/org/xml/sax/ext/Attributes2.java,
+        libraries/javalib/org/xml/sax/ext/DeclHandler.java,
+        libraries/javalib/org/xml/sax/ext/DefaultHandler2.java,
+        libraries/javalib/org/xml/sax/ext/EntityResolver2.java,
+        libraries/javalib/org/xml/sax/ext/LexicalHandler.java,
+        libraries/javalib/org/xml/sax/ext/Locator2Impl.java,
+        libraries/javalib/org/xml/sax/ext/Locator2.java:
+	new files from GNU jaxp.
+
+	* libraries/javalib/org/xml/sax/helpers/AttributeListImpl.java,
+        libraries/javalib/org/xml/sax/helpers/AttributesImpl.java,
+        libraries/javalib/org/xml/sax/helpers/DefaultHandler.java,
+        libraries/javalib/org/xml/sax/helpers/LocatorImpl.java,
+        libraries/javalib/org/xml/sax/helpers/NamespaceSupport.java,
+        libraries/javalib/org/xml/sax/helpers/NewInstance.java,
+        libraries/javalib/org/xml/sax/helpers/ParserAdapter.java,
+        libraries/javalib/org/xml/sax/helpers/ParserFactory.java,
+        libraries/javalib/org/xml/sax/helpers/XMLFilterImpl.java,
+        libraries/javalib/org/xml/sax/helpers/XMLReaderAdapter.java,
+        libraries/javalib/org/xml/sax/helpers/XMLReaderFactory.java:
+	new files from GNU jaxp.
+
 2002-11-29 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am: added gnu.regexp message bundles.

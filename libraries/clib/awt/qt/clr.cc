@@ -8,11 +8,13 @@
  * of this file. 
  */
 
-#include "qapplication.h"
-
-#include "toolkit.h"
 #include <limits.h>
 #include <math.h>
+
+#include <qapplication.h>
+
+#include "toolkit.h"
+
 
 // Murphy
 extern QApplication *qapp;

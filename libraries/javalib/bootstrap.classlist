@@ -43,6 +43,7 @@ java/lang/Boolean.class
 java/lang/Byte.class
 java/lang/Character.class
 java/lang/Character$CharacterProperties.class
+java/lang/CharSequence.class
 java/lang/Class.class
 java/lang/Class$CallStack.class
 java/lang/ClassCastException.class

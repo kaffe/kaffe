@@ -10,13 +10,14 @@
 # Class libraries are not currently part of the integrate Make cycle. 
 #
 
-SRCDIRS = gnu java javax kaffe
+SRCDIRS = gnu java javax kaffe org
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
 	$(gnu_java_util_SRCS) \
+	$(gnu_regexp_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
 	$(java_lang_ref_SRCS) \
@@ -32,6 +33,7 @@ Klasses_jar_SRCS = \
 	$(java_text_SRCS) \
 	$(java_util_SRCS) \
 	$(java_util_jar_SRCS) \
+	$(java_util_regex_SRCS) \
 	$(java_util_zip_SRCS) \
 	$(kaffe_io_SRCS) \
 	$(kaffe_jar_SRCS) \
@@ -64,7 +66,6 @@ Rest_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
-	$(gnu_regexp_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_nio_SRCS) \
@@ -75,7 +76,6 @@ Rest_SRCS = \
 	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
-	$(java_util_regex_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
@@ -101,13 +101,29 @@ RMI_SRCS = \
 	$(javax_sound_sampled_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
+	$(javax_xml_parsers_SRCS) \
+	$(javax_xml_transform_SRCS) \
+	$(javax_xml_transform_dom_SRCS) \
+	$(javax_xml_transform_sax_SRCS) \
+	$(javax_xml_transform_stream_SRCS) \
 	$(kaffe_rmi_dgc_SRCS) \
 	$(kaffe_rmi_registry_SRCS) \
 	$(kaffe_rmi_rmic_SRCS) \
 	$(kaffe_rmi_server_SRCS) \
 	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_serialver_SRCS)
+	$(kaffe_tools_serialver_SRCS) \
+	$(org_w3c_dom_SRCS) \
+	$(org_w3c_dom_css_SRCS) \
+	$(org_w3c_dom_events_SRCS) \
+	$(org_w3c_dom_html_SRCS) \
+	$(org_w3c_dom_ranges_SRCS) \
+	$(org_w3c_dom_stylesheets_SRCS) \
+	$(org_w3c_dom_traversal_SRCS) \
+	$(org_w3c_dom_views_SRCS) \
+	$(org_xml_sax_SRCS) \
+	$(org_xml_sax_ext_SRCS) \
+	$(org_xml_sax_helpers_SRCS) 
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
@@ -1277,6 +1293,41 @@ javax_transaction_xa_SRCS = \
 	javax/transaction/xa/XAException.java \
 	javax/transaction/xa/XAResource.java \
 	javax/transaction/xa/Xid.java
+javax_xml_parsers_SRCS = \
+	javax/xml/parsers/ClassStuff.java \
+	javax/xml/parsers/DocumentBuilderFactory.java \
+	javax/xml/parsers/DocumentBuilder.java \
+	javax/xml/parsers/FactoryConfigurationError.java \
+	javax/xml/parsers/ParserConfigurationException.java \
+	javax/xml/parsers/SAXParserFactory.java \
+	javax/xml/parsers/SAXParser.java
+javax_xml_transform_SRCS = \
+	javax/xml/transform/ClassStuff.java \
+	javax/xml/transform/ErrorListener.java \
+	javax/xml/transform/OutputKeys.java \
+	javax/xml/transform/Result.java \
+	javax/xml/transform/Source.java \
+	javax/xml/transform/SourceLocator.java \
+	javax/xml/transform/Templates.java \
+	javax/xml/transform/TransformerConfigurationException.java \
+	javax/xml/transform/TransformerException.java \
+	javax/xml/transform/TransformerFactoryConfigurationError.java \
+	javax/xml/transform/TransformerFactory.java \
+	javax/xml/transform/Transformer.java \
+	javax/xml/transform/URIResolver.java
+javax_xml_transform_dom_SRCS = \
+	javax/xml/transform/dom/DOMLocator.java \
+	javax/xml/transform/dom/DOMResult.java \
+	javax/xml/transform/dom/DOMSource.java
+javax_xml_transform_sax_SRCS = \
+	javax/xml/transform/sax/SAXResult.java \
+	javax/xml/transform/sax/SAXSource.java \
+	javax/xml/transform/sax/SAXTransformerFactory.java \
+	javax/xml/transform/sax/TemplatesHandler.java \
+	javax/xml/transform/sax/TransformerHandler.java
+javax_xml_transform_stream_SRCS = \
+	javax/xml/transform/stream/StreamResult.java \
+	javax/xml/transform/stream/StreamSource.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletTag.java \
 	kaffe/applet/AppletViewer.java \
@@ -1474,6 +1525,182 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
+org_w3c_dom_SRCS = \
+	org/w3c/dom/Attr.java \
+	org/w3c/dom/CDATASection.java \
+	org/w3c/dom/CharacterData.java \
+	org/w3c/dom/Comment.java \
+	org/w3c/dom/DocumentFragment.java \
+	org/w3c/dom/Document.java \
+	org/w3c/dom/DocumentType.java \
+	org/w3c/dom/DOMException.java \
+	org/w3c/dom/DOMImplementation.java \
+	org/w3c/dom/Element.java \
+	org/w3c/dom/Entity.java \
+	org/w3c/dom/EntityReference.java \
+	org/w3c/dom/NamedNodeMap.java \
+	org/w3c/dom/Node.java \
+	org/w3c/dom/NodeList.java \
+	org/w3c/dom/Notation.java \
+	org/w3c/dom/ProcessingInstruction.java \
+	org/w3c/dom/Text.java 
+org_w3c_dom_css_SRCS = \
+	org/w3c/dom/css/Counter.java \
+	org/w3c/dom/css/CSS2Azimuth.java \
+	org/w3c/dom/css/CSS2BackgroundPosition.java \
+	org/w3c/dom/css/CSS2BorderSpacing.java \
+	org/w3c/dom/css/CSS2CounterIncrement.java \
+	org/w3c/dom/css/CSS2CounterReset.java \
+	org/w3c/dom/css/CSS2Cursor.java \
+	org/w3c/dom/css/CSS2FontFaceSrc.java \
+	org/w3c/dom/css/CSS2FontFaceWidths.java \
+	org/w3c/dom/css/CSS2PageSize.java \
+	org/w3c/dom/css/CSS2PlayDuring.java \
+	org/w3c/dom/css/CSS2Properties.java \
+	org/w3c/dom/css/CSS2TextShadow.java \
+	org/w3c/dom/css/CSSCharsetRule.java \
+	org/w3c/dom/css/CSSFontFaceRule.java \
+	org/w3c/dom/css/CSSImportRule.java \
+	org/w3c/dom/css/CSSMediaRule.java \
+	org/w3c/dom/css/CSSPageRule.java \
+	org/w3c/dom/css/CSSPrimitiveValue.java \
+	org/w3c/dom/css/CSSRule.java \
+	org/w3c/dom/css/CSSRuleList.java \
+	org/w3c/dom/css/CSSStyleDeclaration.java \
+	org/w3c/dom/css/CSSStyleRule.java \
+	org/w3c/dom/css/CSSStyleSheet.java \
+	org/w3c/dom/css/CSSUnknownRule.java \
+	org/w3c/dom/css/CSSValue.java \
+	org/w3c/dom/css/CSSValueList.java \
+	org/w3c/dom/css/DocumentCSS.java \
+	org/w3c/dom/css/DOMImplementationCSS.java \
+	org/w3c/dom/css/ElementCSSInlineStyle.java \
+	org/w3c/dom/css/Rect.java \
+	org/w3c/dom/css/RGBColor.java \
+	org/w3c/dom/css/ViewCSS.java
+org_w3c_dom_events_SRCS = \
+	org/w3c/dom/events/DocumentEvent.java \
+	org/w3c/dom/events/EventException.java \
+	org/w3c/dom/events/Event.java \
+	org/w3c/dom/events/EventListener.java \
+	org/w3c/dom/events/EventTarget.java \
+	org/w3c/dom/events/MouseEvent.java \
+	org/w3c/dom/events/MutationEvent.java \
+	org/w3c/dom/events/UIEvent.java
+org_w3c_dom_html_SRCS = \
+	org/w3c/dom/html/HTMLAnchorElement.java \
+	org/w3c/dom/html/HTMLAppletElement.java \
+	org/w3c/dom/html/HTMLAreaElement.java \
+	org/w3c/dom/html/HTMLBaseElement.java \
+	org/w3c/dom/html/HTMLBaseFontElement.java \
+	org/w3c/dom/html/HTMLBodyElement.java \
+	org/w3c/dom/html/HTMLBRElement.java \
+	org/w3c/dom/html/HTMLButtonElement.java \
+	org/w3c/dom/html/HTMLCollection.java \
+	org/w3c/dom/html/HTMLDirectoryElement.java \
+	org/w3c/dom/html/HTMLDivElement.java \
+	org/w3c/dom/html/HTMLDListElement.java \
+	org/w3c/dom/html/HTMLDocument.java \
+	org/w3c/dom/html/HTMLDOMImplementation.java \
+	org/w3c/dom/html/HTMLElement.java \
+	org/w3c/dom/html/HTMLFieldSetElement.java \
+	org/w3c/dom/html/HTMLFontElement.java \
+	org/w3c/dom/html/HTMLFormElement.java \
+	org/w3c/dom/html/HTMLFrameElement.java \
+	org/w3c/dom/html/HTMLFrameSetElement.java \
+	org/w3c/dom/html/HTMLHeadElement.java \
+	org/w3c/dom/html/HTMLHeadingElement.java \
+	org/w3c/dom/html/HTMLHRElement.java \
+	org/w3c/dom/html/HTMLHtmlElement.java \
+	org/w3c/dom/html/HTMLIFrameElement.java \
+	org/w3c/dom/html/HTMLImageElement.java \
+	org/w3c/dom/html/HTMLInputElement.java \
+	org/w3c/dom/html/HTMLIsIndexElement.java \
+	org/w3c/dom/html/HTMLLabelElement.java \
+	org/w3c/dom/html/HTMLLegendElement.java \
+	org/w3c/dom/html/HTMLLIElement.java \
+	org/w3c/dom/html/HTMLLinkElement.java \
+	org/w3c/dom/html/HTMLMapElement.java \
+	org/w3c/dom/html/HTMLMenuElement.java \
+	org/w3c/dom/html/HTMLMetaElement.java \
+	org/w3c/dom/html/HTMLModElement.java \
+	org/w3c/dom/html/HTMLObjectElement.java \
+	org/w3c/dom/html/HTMLOListElement.java \
+	org/w3c/dom/html/HTMLOptGroupElement.java \
+	org/w3c/dom/html/HTMLOptionElement.java \
+	org/w3c/dom/html/HTMLParagraphElement.java \
+	org/w3c/dom/html/HTMLParamElement.java \
+	org/w3c/dom/html/HTMLPreElement.java \
+	org/w3c/dom/html/HTMLQuoteElement.java \
+	org/w3c/dom/html/HTMLScriptElement.java \
+	org/w3c/dom/html/HTMLSelectElement.java \
+	org/w3c/dom/html/HTMLStyleElement.java \
+	org/w3c/dom/html/HTMLTableCaptionElement.java \
+	org/w3c/dom/html/HTMLTableCellElement.java \
+	org/w3c/dom/html/HTMLTableColElement.java \
+	org/w3c/dom/html/HTMLTableElement.java \
+	org/w3c/dom/html/HTMLTableRowElement.java \
+	org/w3c/dom/html/HTMLTableSectionElement.java \
+	org/w3c/dom/html/HTMLTextAreaElement.java \
+	org/w3c/dom/html/HTMLTitleElement.java \
+	org/w3c/dom/html/HTMLUListElement.java
+org_w3c_dom_ranges_SRCS = \
+	org/w3c/dom/ranges/DocumentRange.java \
+	org/w3c/dom/ranges/RangeException.java \
+	org/w3c/dom/ranges/Range.java
+org_w3c_dom_stylesheets_SRCS = \
+	org/w3c/dom/stylesheets/DocumentStyle.java \
+	org/w3c/dom/stylesheets/LinkStyle.java \
+	org/w3c/dom/stylesheets/MediaList.java \
+	org/w3c/dom/stylesheets/StyleSheet.java \
+	org/w3c/dom/stylesheets/StyleSheetList.java
+org_w3c_dom_traversal_SRCS = \
+	org/w3c/dom/traversal/DocumentTraversal.java \
+	org/w3c/dom/traversal/NodeFilter.java \
+	org/w3c/dom/traversal/NodeIterator.java \
+	org/w3c/dom/traversal/TreeWalker.java
+org_w3c_dom_views_SRCS = \
+	org/w3c/dom/views/AbstractView.java \
+	org/w3c/dom/views/DocumentView.java
+org_xml_sax_SRCS = \
+	org/xml/sax/AttributeList.java \
+	org/xml/sax/Attributes.java \
+	org/xml/sax/ContentHandler.java \
+	org/xml/sax/DocumentHandler.java \
+	org/xml/sax/DTDHandler.java \
+	org/xml/sax/EntityResolver.java \
+	org/xml/sax/ErrorHandler.java \
+	org/xml/sax/HandlerBase.java \
+	org/xml/sax/InputSource.java \
+	org/xml/sax/Locator.java \
+	org/xml/sax/Parser.java \
+	org/xml/sax/SAXException.java \
+	org/xml/sax/SAXNotRecognizedException.java \
+	org/xml/sax/SAXNotSupportedException.java \
+	org/xml/sax/SAXParseException.java \
+	org/xml/sax/XMLFilter.java \
+	org/xml/sax/XMLReader.java 
+org_xml_sax_ext_SRCS = \
+	org/xml/sax/ext/Attributes2Impl.java \
+	org/xml/sax/ext/Attributes2.java \
+	org/xml/sax/ext/DeclHandler.java \
+	org/xml/sax/ext/DefaultHandler2.java \
+	org/xml/sax/ext/EntityResolver2.java \
+	org/xml/sax/ext/LexicalHandler.java \
+	org/xml/sax/ext/Locator2Impl.java \
+	org/xml/sax/ext/Locator2.java
+org_xml_sax_helpers_SRCS = \
+	org/xml/sax/helpers/AttributeListImpl.java \
+	org/xml/sax/helpers/AttributesImpl.java \
+	org/xml/sax/helpers/DefaultHandler.java \
+	org/xml/sax/helpers/LocatorImpl.java \
+	org/xml/sax/helpers/NamespaceSupport.java \
+	org/xml/sax/helpers/NewInstance.java \
+	org/xml/sax/helpers/ParserAdapter.java \
+	org/xml/sax/helpers/ParserFactory.java \
+	org/xml/sax/helpers/XMLFilterImpl.java \
+	org/xml/sax/helpers/XMLReaderAdapter.java \
+	org/xml/sax/helpers/XMLReaderFactory.java
 OMITTED_PACKAGES_SRCS = \
 	$(java_awt_win32_SRCS)
 java_awt_win32_SRCS = \
