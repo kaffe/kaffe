@@ -221,39 +221,32 @@ getRunLimit(AttributedCharacterIterator.Attribute attrib)
 public synchronized int
 getRunLimit(Set attribute_set)
 {
-  int orig_index = ci.getIndex();
-  int run_limit;
-
-  do  
+  boolean hit = false;
+  int runLimit = ci.getEndIndex ();
+  int pos = ci.getIndex ();
+ 
+  for (int i = 0; i < attribs.length; ++i)
     {
-      run_limit = ci.getIndex();
-
-      Map attribute_map = getAttributes();
-
-      boolean found = false;
-      Iterator iter = attribute_set.iterator();
-      while(iter.hasNext()) 
-        if (!attribute_map.containsKey(iter.next()))
-          {
-            found = true;
-            break;
-          }
-
-      if (found)
-        break;
+      if (pos >= attribs[i].begin_index &&
+          pos <= attribs[i].end_index)
+	{
+	  Map attribute_map = getAttributes();
+	  
+	  boolean found = false;
+	  Iterator iter = attribute_set.iterator();
+	  while(iter.hasNext()) 
+	    if (!attribute_map.containsKey(iter.next()))
+	      if (attribs[i].attribs.containsKey(iter.next()))
+		{
+		  hit = true;
+		  runLimit = Math.min(runLimit, attribs[i].end_index);
+		}
+	}
     }
-  while (ci.next() != CharacterIterator.DONE);
-
-  boolean hit_end = (ci.previous() == CharacterIterator.DONE);
-
-  ci.setIndex(orig_index);
-
-  if (run_limit == orig_index)
-    return(-1); // No characters match the given attributes
-//  else if (!hit_end)
-//    --run_limit;
-
-  return(run_limit); 
+  if (hit)
+    return runLimit;
+  else
+    return -1;
 }
 
 /*************************************************************************/
@@ -281,35 +274,28 @@ getRunStart(AttributedCharacterIterator.Attribute attrib)
 public int
 getRunStart(Set attribute_set)
 {
-  int orig_index = ci.getIndex();
-  int run_start;
-
-  do  
+  boolean hit = false;
+  int runBegin = 0;
+  int pos = ci.getIndex ();
+  
+  for (int i = 0; i < attribs.length; ++i)
     {
-      run_start = ci.getIndex();
-
-      Map attribute_map = getAttributes();
-
-      Iterator iter = attribute_set.iterator();
-      while(iter.hasNext())
-        if (!attribute_map.containsKey(iter.next()))
-          break;
-
-      if (iter.hasNext())
-        break;
+      if (pos >= attribs[i].begin_index &&
+          pos <= attribs[i].end_index)
+	{	  
+	  Iterator iter = attribute_set.iterator();
+	  while(iter.hasNext())
+            if (attribs[i].attribs.containsKey(iter.next()))
+              {
+                hit = true;
+                runBegin = Math.max(runBegin, attribs[i].begin_index);
+	      }
+	}
     }
-  while (ci.previous() != CharacterIterator.DONE);
-
-  boolean hit_beginning = (ci.previous() == CharacterIterator.DONE);
-
-  ci.setIndex(orig_index);
-
-  if (run_start == orig_index)
-    return(-1); // No characters match the given attributes
-  else if (!hit_beginning)
-    ++run_start;
-
-  return(run_start); 
+  if (hit)
+    return runBegin;
+  else
+    return -1;
 }
 
 /*************************************************************************/

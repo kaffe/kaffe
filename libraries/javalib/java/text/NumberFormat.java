@@ -794,7 +794,7 @@ public abstract class NumberFormat extends Format implements Cloneable
    *
    * @since 1.4
    */
-  public void setCurreny(Currency currency)
+  public void setCurrency(Currency currency)
   {
     if (currency == null)
       throw new NullPointerException("currency may not be null");

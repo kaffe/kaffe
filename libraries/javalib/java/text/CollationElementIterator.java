@@ -231,6 +231,7 @@ public final class CollationElementIterator
   public void setText(String text)
   {
     int idx = 0;
+    int alreadyExpanded = 0;
 
     this.text = text;
     this.index = 0;
@@ -254,6 +255,16 @@ public final class CollationElementIterator
 	      key_old = key;
 	    key = work_text.substring (idx, idx+p);
 	    object = collator.prefix_tree.get (key);
+	    if (object != null && idx < alreadyExpanded)
+	      {
+		RuleBasedCollator.CollationElement prefix = (RuleBasedCollator.CollationElement)object;
+		if (prefix.expansion != null && 
+		    prefix.expansion.startsWith(work_text.substring(0, idx)))
+		{
+		  object = null;
+		  key = key_old;
+		}
+	      }
 	    p++;
 	  }
 	while (idx+p <= work_text.length());
@@ -279,6 +290,7 @@ public final class CollationElementIterator
 	    work_text = prefix.expansion
 	      + work_text.substring (idx+prefix.key.length());
 	    idx = 0;
+	    alreadyExpanded = prefix.expansion.length();
 	    v.add (prefix);
 	  }
 	else
