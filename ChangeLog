@@ -1,3 +1,16 @@
+2004-06-22  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/common.h: ALIGNMENT_OF_SIZE is moved to each
+	ports.
+	* config/m68k/jit.h: packed attributes are added to fields of
+	_methodTrampoline.
+	* config/m68k/linux/md.h: ALIGNMENT_OF_SIZE is added. Some
+	comments are revised.
+	* config/m68k/netbsd1/config.frag: compiling option -O0 is
+	added, because O2 does not work for the time being.
+	* config/m68k/netbsd1/md.h: ALIGNMENT_OF_SIZE is added.
+	sysddepCallMethod macro for netbsd was added.
+
 2004-06-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Use AM_LCMESSAGES to check for LC_MESSAGES in

@@ -1,6 +1,6 @@
 /*
  * m68k/linux/md.h
- * Linux m68k configuration information.
+ * Linux/m68k configuration information.
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -26,9 +26,15 @@
 #endif
 
 /*
- * Redefine stack pointer offset.
+ * Alignment in structure is 2 bytes packed.
  */
-#undef  SP_OFFSET
+#define ALIGNMENT_OF_SIZE(S)    (((S>1)?2:1))
+
+/*
+ * Stack offset.
+ * This is the offset into the setjmp buffer where the stack pointer is
+ * stored.
+ */
 #define SP_OFFSET	14
 
 /**/
@@ -57,14 +63,8 @@ extern void init_md(void);
 /*
  * sysdepCallMethod supports:
  *
- *	Calling sequences for linux and netbsd1 are same, except for
- *	the place of return values. The float/double values are in
- *	fp0 (linux) or d0/d1 (netbsd1).
- *
- *	Still I do not understand 'asm' statement well, and the
- *	statement below is a 'because it works' version.
+ *	Linux version
  */
-//	Linux version
 #define sysdepCallMethod(CALL) do {				\
 	int extraargs[(CALL)->nrargs];				\
 	register int d0 asm ("d0");				\

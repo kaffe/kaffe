@@ -53,8 +53,8 @@ typedef struct _exceptionFrame {
 typedef struct _methodTrampoline {
         unsigned short call;
 	int fixup __attribute__ ((packed));
-	struct _methods* meth;
-	void** where;
+	struct _methods* meth __attribute__ ((packed));
+	void** where __attribute__ ((packed));
 } methodTrampoline;
 
 extern void m68k_do_fixup_trampoline(void);
