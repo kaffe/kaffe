@@ -1,3 +1,11 @@
+Wed Jul  8 15:24:17 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/baseClasses.c: preload java.lang.NullPointerException.
+	  kaffe/kaffevm/jit/machine.[ch]: added jit_flag NULLPOINTER to obtain
+	  information when null pointer exceptions are caught.  Modified
+	  CHECK_NULL to sync registers if that is the case.
+	  test/regression/NullPointerTest.java: new file
+	
 Mon Jul  6 17:43:04 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/thread.[ch];locks.c;baseClasses.c:
