@@ -1,3 +1,8 @@
+Mon Apr 12 10:12:25 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
+
+	* config/i386/beos/config.frag: removed explicit definition for CFLAGS
+	because it interfered with --disable-debug option
+
 1999-04-12  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/i386/common.h (sysdepCallMethod): Rewrite so that it

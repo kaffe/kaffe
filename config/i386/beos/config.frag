@@ -14,5 +14,3 @@ ac_cv_typedef_uint32=yes
 ac_cv_typedef_int64=yes
 ac_cv_typedef_uint64=yes
 ac_cv_typedef_bool=yes
-
-CFLAGS="-DDEBUG -g -O2 -Wall -Wstrict-prototypes"
