@@ -77,8 +77,26 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * ClassNotFoundException was thrown
 	 */
 	assert(clazz != 0);
-	processClass(clazz, CSTATE_OK);
 
+	/*
+	 * loadClass returns the class in state CSTATE_LINKED.
+	 *
+	 * This is sufficient for now, it is not necessary to process the
+	 * class to state CSTATE_OK.  In fact, not processing the class
+	 * here avoids ClassNotFoundExceptions if any of the classes
+	 * to which this class refers do not exist.  Some programs who
+	 * look the class up, but never invoke methods on it, will tolerate
+	 * if referred classes do not exist, but they will not work if we
+	 * throw a ClassNotFoundException here just because we couldn't
+	 * resolve the constant pool.  (serialver, for example)
+	 * 
+	 * Finally, note that it is at least safe as the other ways user
+	 * programs can use to obtain a Class object:
+	 *
+	 *	ClassLoader_defineClass0: 	returns CSTATE_PREPARED
+	 * 	ClassLoader_resolveClass0:	returns CSTATE_LINKED
+	 * 	ClassLoader_findSystemClass0:	returns CSTATE_LINKED
+	 */
 	return (clazz);
 }
 
