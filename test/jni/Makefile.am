@@ -8,9 +8,11 @@
 
 check_PROGRAMS= jniBase jniExecClass jniReflect
 
-AM_CPPFLAGS= -I$(top_srcdir)/include -I$(top_srcdir)/include/kaffe \
-	     -I$(top_srcdir)/libltdl \
-	     -DCLASSPATH_SOURCE_DIR=\"$(top_srcdir)/test/jni\"
+AM_CPPFLAGS= \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include -I$(top_srcdir)/include/kaffe \
+	-I$(top_srcdir)/libltdl \
+	-DCLASSPATH_SOURCE_DIR=\"$(top_srcdir)/test/jni\"
 
 if NEED_LIBXPROF
 libxprof = ../../kaffe/xprof/libkaffexprof.la
