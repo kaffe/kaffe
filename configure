@@ -1094,7 +1094,7 @@ Optional Features:
   --enable-libxmlj        Enable building of libxmlj
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --disable-xslttest       Do not try to compile and run a test LIBXSLT program
-  --disable-gjdoc         Disable building of gjdoc
+  --enable-gjdoc          Enable building of gjdoc
   --enable-binreloc       compile with binary relocation support
                           (default=enable when available)
 
@@ -56706,7 +56706,7 @@ if test "${enable_gjdoc+set}" = set; then
   enableval="$enable_gjdoc"
 
 else
-  enable_gjdoc=yes
+  enable_gjdoc=no
 fi;
 
 if test x"$enable_gjdoc" = x"yes" ; then

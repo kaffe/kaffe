@@ -1,5 +1,12 @@
 2004-12-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Disable gjdoc by default because it needs 
+	external ANTLR.
+
+	* configure: Regenerated.
+
+2004-12-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/ac_prog_javac.m4,
 	m4/ac_prog_javac_works.m4:
 	Added missing m4 macros.

@@ -1943,10 +1943,10 @@ dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([gjdoc],
-		AS_HELP_STRING([--disable-gjdoc],
-				[Disable building of gjdoc]),
+		AS_HELP_STRING([--enable-gjdoc],
+				[Enable building of gjdoc]),
 		[],
-		[enable_gjdoc=yes])
+		[enable_gjdoc=no])
 
 if test x"$enable_gjdoc" = x"yes" ; then
 	AC_PROG_ANTLR(2,7,1)
