@@ -1,10 +1,13 @@
+Thu Mar 16 11:38:26 PST 2000  Maurizio DE CECCO <maurizio@mandrakesoft.com>
+
+	* kaffevm/systems/unix-jthreads/jthread.c: use macros to
+	properly get child exit status.
+
 2000-03-15  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* kaffe/kaffe/version.c (versionfd): Initialize at run-time.
-
 	* kaffe/kaffe/Makefile.am (version-info.h): Depend on
-	config.status too.
-	(.PHONY): Removed.
+	config.status too. (.PHONY): Removed.
 	* kaffe/kaffe/Makefile.in: Rebuilt.
 
 Tue Mar 14 12:21:47 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
