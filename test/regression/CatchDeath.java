@@ -1,12 +1,26 @@
+/*
+ * See whether we can catch a ThreadDeath exception.
+ *
+ * Turns out we can't do it reliably, so we need to use a work-around.
+ * This test demonstrates and tests the work-around.
+ *
+ * The work-around is the have the try/catch clause in an outer context
+ * that is not executing when the stop request arrives.
+ * See try { loop(); } catch ()...
+ */
 public class CatchDeath implements Runnable
 {
     boolean alwaysTrue()	{ return (true); }
 
+    void loop() {
+	while (alwaysTrue())
+	    Thread.yield();
+    }
+
     public void run()
     {
 	try {
-	    while (alwaysTrue())
-		Thread.yield();
+	    loop();
 	    System.out.println("CatchDeath should not be here");
 	} catch(Error o) {
 	    System.out.println("CD Caught " + o);
@@ -40,12 +54,16 @@ class CatchSyncDeath implements Runnable
 {
     boolean alwaysTrue()        { return (true); }
 
+    void loop() {
+	while (alwaysTrue())
+	    Thread.yield();
+    }
+
     public void run()
     {
 	try {
 	    synchronized(this) {
-		while (alwaysTrue())
-		    Thread.yield();
+		loop();
 	    }
 	    System.out.println("CatchSyncDeath should not be here");
 	} catch(Error o) {
@@ -59,16 +77,20 @@ class CatchSyncDeath implements Runnable
 
 class CatchSyncWaitDeath implements Runnable
 {
+    void go() {
+	synchronized(this) {
+	    try {
+		wait();
+	    } catch (InterruptedException e) {
+		System.out.println("Interrupted " + e);
+	    }
+	}
+    }
+
     public void run()
     {
 	try {
-	    synchronized(this) {
-		try {
-		    wait();
-		} catch (InterruptedException e) {
-		    System.out.println("Interrupted " + e);
-		}
-	    }
+	    go();
 	    System.out.println("CatchSyncWaitDeath should not be here");
 	} catch(Error o) {
 	    System.out.println("CSWD Caught " + o);
