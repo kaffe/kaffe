@@ -11,14 +11,17 @@
 package java.net;
 
 public interface SocketOptions {
-  static final int SO_SNDBUF = 1;
-  static final int SO_RCVBUF = 2;
-  static final int SO_LINGER = 3;
-  static final int SO_TIMEOUT = 4;
-  static final int SO_BINDADDR = 5;
-  static final int SO_REUSEADDR = 6;
-  static final int TCP_NODELAY = 7;
-  static final int IP_MULTICAST_IF = 8;
+  /*
+   * Various options.  Note that these constants match those used by Sun.
+   */
+  public final static int TCP_NODELAY 		= 0x0001;
+  public final static int SO_BINDADDR  		= 0x000F;
+  public final static int SO_REUSEADDR 		= 0x0004;
+  public final static int IP_MULTICAST_IF 	= 0x0010;
+  public final static int SO_LINGER 		= 0x0080;
+  public final static int SO_TIMEOUT 		= 0x1006;
+  public final static int SO_SNDBUF 		= 0x1001;
+  public final static int SO_RCVBUF 		= 0x1002;
 
   public void setOption(int option, Object data) throws SocketException;
   public Object getOption(int option) throws SocketException;
