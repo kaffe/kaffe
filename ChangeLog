@@ -1,6 +1,9 @@
 Wed Sep 13 12:27:17 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/utf8const.c: fix race condition in utf8ConstNew
+	* kaffe/kaffevm/locks.[ch], kaffe/kaffevm/string.c, 
+	kaffe/kaffevm/utf8const.c: include string/utf8 lock among
+	the no-allocation locks.
 
 Sun Sep 10 18:55:53 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
