@@ -1,5 +1,11 @@
 2004-03-25  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(jcondvar_wait): Renamed stat to status to fix a compiler
+	warning and clarify code.
+
+2004-03-25  Dalibor Topic <robilad@kaffe.org>
+
 	* include/jsyscall.h:
 	Include header files with the required types instead of
 	declaring them as structs.

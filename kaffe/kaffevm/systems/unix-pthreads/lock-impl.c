@@ -36,7 +36,7 @@ jboolean
 jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 {
   jthread_t cur = jthread_current();
-  int             stat;
+  int             status;
   struct timespec abst;
   struct timeval  now;
 
@@ -47,7 +47,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
   if ( timeout == NOTIMEOUT ) {
 	/* we handle this as "wait forever"	*/
 	cur->blockState |= BS_CV;
-	stat = pthread_cond_wait( cv, mux );
+	status = pthread_cond_wait( cv, mux );
 	cur->blockState &= ~BS_CV;
   }
   else {
@@ -57,7 +57,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	if( abst.tv_sec < now.tv_sec ) {
 	    /* huge timeout value, we handle this as "wait forever" */
 	    cur->blockState |= BS_CV;
-	    stat = pthread_cond_wait( cv, mux );
+	    status = pthread_cond_wait( cv, mux );
 	    cur->blockState &= ~BS_CV;
 	}
 	else {
@@ -69,11 +69,11 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	    }
 	    
 	    cur->blockState |= BS_CV_TO;
-	    stat = pthread_cond_timedwait( cv, mux, &abst);
+	    status = pthread_cond_timedwait( cv, mux, &abst);
 	    cur->blockState &= ~BS_CV_TO;
 	}
 
   }
   
-  return (stat == 0);
+  return (status == 0);
 }
