@@ -23,7 +23,7 @@
 
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO							\
-	int sig, int code, struct vregs* ctx
+	int sig, void* userdata, struct vregs* ctx
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\

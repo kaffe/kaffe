@@ -44,18 +44,21 @@
 #define PTI_AREA_SIZE	(B_PAGE_SIZE * 6)
 
 /*
- * At least BeOS has semaphores!
- */
-typedef sem_id jmutex;
-
-/*
- * BeOS doesn't have a condition variable type, so we make one up
- * using a couple of semaphores.
+ * Instead of a raw semaphore, we'll implement a jmutex using a Benaphore.
  */
 typedef struct {
-	sem_id mutex;		/* for locking the cv while signaling */
-	sem_id cond;		/* threads block on this */
-	int32  num_sleeping;	/* # of threads waiting on condition */
+	sem_id mutex;
+	int32  mutex_count;
+} jmutex;
+
+/*
+ * The condition variable implementation is courtesy of Chris Tate (Be DTS).
+ */
+typedef struct {
+	sem_id cond;
+	sem_id handshake;
+	int32  wait_count;
+	sem_id wait_count_lock;
 } jcondvar;
 
 /*
@@ -69,7 +72,10 @@ typedef struct jthread {
 	void*			jlThread;         /* java_lang_thread ptr */
 	thread_id		native_thread;    /* BeOS tid */
 	unsigned char		status;		  /* Thread status */
-	bool			stop_pending;	  /* remember when STOPped */
+	int32			stop_allowed;	  /* non-zero if STOPpable */
+	int32			stop_pending;	  /* remember when STOPped */
+	void*			stack_top;	  /* "static" address */
+	void*			stack_bottom;	  /* this one, too */
 } *jthread_t;
 
 /*
@@ -110,7 +116,11 @@ extern per_thread_info_t* per_thread_info;	  /* addr of a BeOS area */
  * return thread-specific data for a given native thread (not a jthread!)
  * as returned by jthread_current().
  */
-void* jthread_getcookie(void* tid);
+static inline void*
+jthread_getcookie(void* tid)
+{
+	return per_thread_info[(thread_id)tid % MAX_THREADS].cookie;
+}
 
 /****************************************************************************
  *
@@ -236,6 +246,11 @@ int 	jthread_on_current_stack(void *bp);
 int 	jthread_stackcheck(int left);
 
 /*
+ * determine conservative limit to stack growth
+ */
+void*	jthread_stacklimit(void);
+
+/*
  * determine the "interesting" stack range a conservative gc must walk
  */
 int jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);
@@ -283,5 +298,7 @@ void jcondvar_initialise(jcondvar *cv);
 void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
+
+void catchSignal(int sig, void* handler);
 
 #endif
