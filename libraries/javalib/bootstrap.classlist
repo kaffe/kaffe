@@ -228,6 +228,7 @@ java/util/zip/ZipFile.class
 kaffe/io/ByteToCharConverter.class
 kaffe/io/ByteToCharDefault.class
 kaffe/io/ByteToCharIconv.class
+kaffe/io/ByteToChar8859_1.class
 kaffe/io/CharToByteConverter.class
 kaffe/io/CharToByteDefault.class
 kaffe/io/CharToByteIconv.class
@@ -246,6 +247,13 @@ kaffe/lang/ThreadStack.class
 kaffe/util/IntegerHashtable.class
 kaffe/util/Ptr.class
 kaffe/util/UTF8.class
+java/nio/channels/Channel.class
+java/nio/channels/ByteChannel.class
+java/nio/channels/ReadableByteChannel.class
+java/nio/channels/WritableByteChannel.class
+java/nio/channels/GatheringByteChannel.class
+java/nio/channels/ScatteringByteChannel.class
+java/nio/channels/InterruptibleChannel.class
 
 # Additional classes used by -v option passed to kjc
 java/text/FieldPosition.class
@@ -301,9 +309,9 @@ java/security/MessageDigest.class
 java/security/MessageDigestSpi.class
 gnu/java/nio/SelectorImpl.class
 gnu/java/nio/NIOServerSocket.class
+gnu/java/nio/channels/FileChannelImpl.class
 java/nio/channels/FileChannel.class
 java/nio/channels/spi/AbstractInterruptibleChannel.class
-gnu/java/nio/channels/FileChannelImpl.class
 java/nio/channels/spi/AbstractSelector.class
 java/nio/channels/Selector.class
 java/nio/channels/Channels.class

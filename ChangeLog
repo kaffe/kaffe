@@ -1,3 +1,10 @@
+2004-04-13  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: Readded the java converter
+	to the classlist.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 2004-04-12  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/nio/FileChannelImpl.c
