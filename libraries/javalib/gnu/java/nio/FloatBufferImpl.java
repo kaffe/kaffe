@@ -54,24 +54,24 @@ public final class FloatBufferImpl extends FloatBuffer
   {
     this.backing_buffer = new float[cap];
     this.cap = cap;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
   
   public FloatBufferImpl(float[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
   
   public FloatBufferImpl(FloatBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position(copy.position());
     limit(copy.limit());
+    position(copy.position());
   }
   
   void inc_pos(int a)

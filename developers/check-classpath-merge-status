@@ -1,0 +1,7 @@
+## run from libraries/javalib
+## find all java sources
+## which contain the string "of GNU Classpath"
+## and print out the files found
+## pass it to xargs to diff them one by one against the classpath dir
+## grep for diffs
+find . -name "*.java" | xargs grep -l 2>/dev/null "of GNU Classpath" | xargs -n 1 -iXXX diff -u XXX ~/classpath/XXX | grep "+++"

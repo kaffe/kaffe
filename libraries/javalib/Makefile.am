@@ -63,12 +63,14 @@ Awt_SRCS = \
 Rest_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
+	$(gnu_regexp_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_nio_SRCS) \
 	$(java_util_logging_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
+	$(java_util_regex_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
@@ -86,6 +88,11 @@ RMI_SRCS = \
 	$(java_rmi_dgc_SRCS) \
 	$(java_rmi_registry_SRCS) \
 	$(java_rmi_server_SRCS) \
+	$(javax_naming_SRCS) \
+	$(javax_naming_directory_SRCS) \
+	$(javax_naming_event_SRCS) \
+	$(javax_naming_ldap_SRCS) \
+	$(javax_naming_spi_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
 	$(kaffe_rmi_dgc_SRCS) \
@@ -115,6 +122,34 @@ gnu_java_util_prefs_SRCS = \
 	gnu/java/util/prefs/MemoryBasedPreferences.java \
 	gnu/java/util/prefs/NodeReader.java \
 	gnu/java/util/prefs/NodeWriter.java
+gnu_regexp_SRCS = \
+	gnu/regexp/CharIndexedCharArray.java \
+	gnu/regexp/CharIndexedInputStream.java \
+	gnu/regexp/CharIndexed.java \
+	gnu/regexp/CharIndexedReader.java \
+	gnu/regexp/CharIndexedStringBuffer.java \
+	gnu/regexp/CharIndexedString.java \
+	gnu/regexp/REException.java \
+	gnu/regexp/REFilterInputStream.java \
+	gnu/regexp/REFilterReader.java \
+	gnu/regexp/RE.java \
+	gnu/regexp/REMatchEnumeration.java \
+	gnu/regexp/REMatch.java \
+	gnu/regexp/RESyntax.java \
+	gnu/regexp/RETokenAny.java \
+	gnu/regexp/RETokenBackRef.java \
+	gnu/regexp/RETokenChar.java \
+	gnu/regexp/RETokenEnd.java \
+	gnu/regexp/RETokenEndSub.java \
+	gnu/regexp/REToken.java \
+	gnu/regexp/RETokenLookAhead.java \
+	gnu/regexp/RETokenOneOf.java \
+	gnu/regexp/RETokenPOSIX.java \
+	gnu/regexp/RETokenRange.java \
+	gnu/regexp/RETokenRepeated.java \
+	gnu/regexp/RETokenStart.java \
+	gnu/regexp/RETokenWordBoundary.java \
+	gnu/regexp/UncheckedRE.java
 java_applet_SRCS = \
 	java/applet/Applet.java \
 	java/applet/AppletContext.java \
@@ -998,6 +1033,10 @@ java_util_prefs_SRCS = \
 	java/util/prefs/PreferenceChangeListener.java \
 	java/util/prefs/Preferences.java \
 	java/util/prefs/PreferencesFactory.java
+java_util_regex_SRCS = \
+	java/util/regex/Matcher.java \
+	java/util/regex/Pattern.java \
+	java/util/regex/PatternSyntaxException.java
 java_util_zip_SRCS = \
 	java/util/zip/Adler32.java \
 	java/util/zip/CRC32.java \
@@ -1017,10 +1056,114 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
+javax_naming_SRCS = \
+	javax/naming/AuthenticationException.java \
+	javax/naming/AuthenticationNotSupportedException.java \
+	javax/naming/BinaryRefAddr.java \
+	javax/naming/Binding.java \
+	javax/naming/CannotProceedException.java \
+	javax/naming/CommunicationException.java \
+	javax/naming/CompositeName.java \
+	javax/naming/CompoundName.java \
+	javax/naming/ConfigurationException.java \
+	javax/naming/Context.java \
+	javax/naming/ContextNotEmptyException.java \
+	javax/naming/InitialContext.java \
+	javax/naming/InsufficientResourcesException.java \
+	javax/naming/InterruptedNamingException.java \
+	javax/naming/InvalidNameException.java \
+	javax/naming/LimitExceededException.java \
+	javax/naming/LinkException.java \
+	javax/naming/LinkLoopException.java \
+	javax/naming/LinkRef.java \
+	javax/naming/MalformedLinkException.java \
+	javax/naming/NameAlreadyBoundException.java \
+	javax/naming/NameClassPair.java \
+	javax/naming/Name.java \
+	javax/naming/NameNotFoundException.java \
+	javax/naming/NameParser.java \
+	javax/naming/NamingEnumeration.java \
+	javax/naming/NamingException.java \
+	javax/naming/NamingSecurityException.java \
+	javax/naming/NoInitialContextException.java \
+	javax/naming/NoPermissionException.java \
+	javax/naming/NotContextException.java \
+	javax/naming/OperationNotSupportedException.java \
+	javax/naming/PartialResultException.java \
+	javax/naming/RefAddr.java \
+	javax/naming/Referenceable.java \
+	javax/naming/Reference.java \
+	javax/naming/ReferralException.java \
+	javax/naming/ServiceUnavailableException.java \
+	javax/naming/SizeLimitExceededException.java \
+	javax/naming/StringRefAddr.java \
+	javax/naming/TimeLimitExceededException.java
+javax_naming_directory_SRCS = \
+	javax/naming/directory/AttributeInUseException.java \
+	javax/naming/directory/Attribute.java \
+	javax/naming/directory/AttributeModificationException.java \
+	javax/naming/directory/Attributes.java \
+	javax/naming/directory/BasicAttribute.java \
+	javax/naming/directory/BasicAttributes.java \
+	javax/naming/directory/DirContext.java \
+	javax/naming/directory/InitialDirContext.java \
+	javax/naming/directory/InvalidAttributeIdentifierException.java \
+	javax/naming/directory/InvalidAttributesException.java \
+	javax/naming/directory/InvalidAttributeValueException.java \
+	javax/naming/directory/InvalidSearchControlsException.java \
+	javax/naming/directory/InvalidSearchFilterException.java \
+	javax/naming/directory/ModificationItem.java \
+	javax/naming/directory/NoSuchAttributeException.java \
+	javax/naming/directory/SchemaViolationException.java \
+	javax/naming/directory/SearchControls.java \
+	javax/naming/directory/SearchResult.java
+javax_naming_event_SRCS = \
+	javax/naming/event/EventContext.java \
+	javax/naming/event/EventDirContext.java \
+	javax/naming/event/NamespaceChangeListener.java \
+	javax/naming/event/NamingEvent.java \
+	javax/naming/event/NamingExceptionEvent.java \
+	javax/naming/event/NamingListener.java \
+	javax/naming/event/ObjectChangeListener.java
+javax_naming_ldap_SRCS = \
+	javax/naming/ldap/ControlFactory.java \
+	javax/naming/ldap/Control.java \
+	javax/naming/ldap/ExtendedRequest.java \
+	javax/naming/ldap/ExtendedResponse.java \
+	javax/naming/ldap/HasControls.java \
+	javax/naming/ldap/InitialLdapContext.java \
+	javax/naming/ldap/LdapContext.java \
+	javax/naming/ldap/LdapReferralException.java \
+	javax/naming/ldap/UnsolicitedNotificationEvent.java \
+	javax/naming/ldap/UnsolicitedNotification.java \
+	javax/naming/ldap/UnsolicitedNotificationListener.java
+javax_naming_spi_SRCS = \
+	javax/naming/spi/DirectoryManager.java \
+	javax/naming/spi/DirObjectFactory.java \
+	javax/naming/spi/DirStateFactory.java \
+	javax/naming/spi/InitialContextFactoryBuilder.java \
+	javax/naming/spi/InitialContextFactory.java \
+	javax/naming/spi/NamingManager.java \
+	javax/naming/spi/ObjectFactoryBuilder.java \
+	javax/naming/spi/ObjectFactory.java \
+	javax/naming/spi/ResolveResult.java \
+	javax/naming/spi/Resolver.java \
+	javax/naming/spi/StateFactory.java
 javax_transaction_SRCS = \
+	javax/transaction/HeuristicCommitException.java \
+	javax/transaction/HeuristicMixedException.java \
+	javax/transaction/HeuristicRollbackException.java \
 	javax/transaction/InvalidTransactionException.java \
+	javax/transaction/NotSupportedException.java \
+	javax/transaction/RollbackException.java \
+	javax/transaction/Status.java \
+	javax/transaction/Synchronization.java \
+	javax/transaction/SystemException.java \
+	javax/transaction/Transaction.java \
+	javax/transaction/TransactionManager.java \
 	javax/transaction/TransactionRequiredException.java \
-	javax/transaction/TransactionRolledbackException.java
+	javax/transaction/TransactionRolledbackException.java \
+	javax/transaction/UserTransaction.java
 javax_transaction_xa_SRCS = \
 	javax/transaction/xa/XAException.java \
 	javax/transaction/xa/XAResource.java \

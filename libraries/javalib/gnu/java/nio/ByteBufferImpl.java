@@ -54,24 +54,24 @@ public final class ByteBufferImpl extends ByteBuffer
   public ByteBufferImpl (int cap, int off, int lim)
   {
     this.cap = cap;
-    position (off);
     limit (lim);
+    position (off);
     this.backing_buffer = new byte[cap];
   }
 
   public ByteBufferImpl (byte[] array, int off, int lim)
   {
     this.cap = array.length;
-    position (off);
     limit (lim);
+    position (off);
     this.backing_buffer = array;
   }
 
   public ByteBufferImpl (ByteBufferImpl copy)
   {
     this.cap = copy.capacity ();
-    position (copy.position ());
     limit (copy.limit ());
+    position (copy.position ());
     ro = copy.ro;
     backing_buffer = copy.backing_buffer;
   }

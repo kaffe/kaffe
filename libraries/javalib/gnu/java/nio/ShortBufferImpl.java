@@ -54,24 +54,24 @@ public final class ShortBufferImpl extends ShortBuffer
   {
     this.backing_buffer = new short[cap];
     this.cap = cap ;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public ShortBufferImpl(short[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public ShortBufferImpl(ShortBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position(copy.position());
     limit(copy.limit());
+    position(copy.position());
   }
 
   void inc_pos(int a)

@@ -331,79 +331,285 @@ public abstract class ByteBuffer extends Buffer
    */
   public abstract byte get ();
   
+  /**
+   * Relative put method.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   * @exception ReadOnlyBufferException If this buffer is read-only.
+   */
   public abstract ByteBuffer put (byte b);
   
+  /**
+   * Absolute get method.
+   *
+   * @exception IndexOutOfBoundsException FIXME
+   */
   public abstract byte get (int index);
   
+  /**
+   * Absolute put method.
+   *
+   * @exception ReadOnlyBufferException If this buffer is read-only
+   * @exception IndexOutOfBoundsException FIXME
+   */
   public abstract ByteBuffer put (int index, byte b);
   
+  /**
+   * Compacts this buffer.
+   *
+   * @exception ReadOnlyBufferException If this buffer is read-only
+   */
   public abstract ByteBuffer compact();
 
+  /**
+   * Tells whether or not this buffer is direct.
+   */
   public abstract boolean isDirect();
   
+  /**
+   * Creates a new byte buffer whose content is a shared subsequence of this
+   * buffer's content.
+   */
   public abstract ByteBuffer slice();
   
+  /**
+   * Creates a new byte buffer that shares this buffer's content.
+   */
   public abstract ByteBuffer duplicate();
   
+  /**
+   * Creates a new, read-only byte buffer that shares this buffer's content.
+   */
   public abstract ByteBuffer asReadOnlyBuffer();
-  
+ 
+  /**
+   * Creates a view of this byte buffer as a short buffer.
+   */
   public abstract ShortBuffer asShortBuffer();
   
+  /**
+   * Creates a view of this byte buffer as a char buffer.
+   */
   public abstract CharBuffer asCharBuffer();
   
+  /**
+   * Creates a view of this byte buffer as an integer buffer.
+   */
   public abstract IntBuffer asIntBuffer();
   
+  /**
+   * Creates a view of this byte buffer as a long buffer.
+   */
   public abstract LongBuffer asLongBuffer();
   
+  /**
+   * Creates a view of this byte buffer as a float buffer.
+   */
   public abstract FloatBuffer asFloatBuffer();
   
+  /**
+   * Creates a view of this byte buffer as a double buffer.
+   */
   public abstract DoubleBuffer asDoubleBuffer();
-  
+
+  /**
+   * Relative get method for reading a character value.
+   *
+   * @exception BufferUnderflowException  If there are fewer than two bytes
+   * remaining in this buffer.
+   */
   public abstract char getChar();
   
+  /**
+   * Relative put method for writing a character value.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   */
   public abstract ByteBuffer putChar(char value);
   
+  /**
+   * Absolute get method for reading a character value.
+   *
+   * @exception IndexOutOfBoundsException If there are fewer than two bytes
+   * remaining in this buffer
+   */
   public abstract char getChar(int index);
   
+  /**
+   * Absolute put method for writing a character value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus one.
+   */
   public abstract ByteBuffer putChar(int index, char value);
   
+  /**
+   * Relative get method for reading a short value.
+   *
+   * @exception BufferUnderflowException If index is negative or not smaller
+   * than the buffer's limit, minus one.
+   */
   public abstract short getShort();
   
+  /**
+   * Relative put method for writing a short value.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   */
   public abstract ByteBuffer putShort(short value);
   
+  /**
+   * Absolute get method for reading a short value.
+   *
+   * @exception IndexOutOfBoundsException If there are fewer than two bytes
+   * remaining in this buffer
+   */
   public abstract short getShort(int index);
  
+  /**
+   * Absolute put method for writing a short value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus one.
+   */
   public abstract ByteBuffer putShort(int index, short value);
   
+  /**
+   * Relative get method for reading an integer value.
+   *
+   * @exception BufferUnderflowException If there are fewer than four bytes
+   * remaining in this buffer.
+   */
   public abstract int getInt();
   
+  /**
+   * Relative put method for writing an integer value.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   */
   public abstract ByteBuffer putInt(int value);
   
+  /**
+   * Absolute get method for reading an integer value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus three.
+   */
   public abstract int getInt(int index);
   
+  /**
+   * Absolute put method for writing an integer value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus three.
+   */
   public abstract ByteBuffer putInt(int index, int value);
   
+  /**
+   * Relative get method for reading a long value.
+   *
+   * @exception BufferUnderflowException If there are fewer than eight bytes
+   * remaining in this buffer.
+   */
   public abstract long getLong();
   
+  /**
+   * Relative put method for writing a long value.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   */
   public abstract ByteBuffer putLong(long value);
   
+  /**
+   * Absolute get method for reading a long value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus seven.
+   */
   public abstract long getLong(int index);
   
+  /**
+   * Absolute put method for writing a float value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus seven.
+   */
   public abstract ByteBuffer putLong(int index, long value);
   
+  /**
+   * Relative get method for reading a float value.
+   *
+   * @exception BufferUnderflowException If there are fewer than four bytes
+   * remaining in this buffer.
+   */
   public abstract float getFloat();
   
+  /**
+   * Relative put method for writing a float value.
+   *
+   * @exception BufferOverflowException If there are fewer than four bytes
+   * remaining in this buffer.
+   */
   public abstract ByteBuffer putFloat(float value);
   
+  /**
+   * Absolute get method for reading a float value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus three.
+   */
   public abstract float getFloat(int index);
   
+  /**
+   * Relative put method for writing a float value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus three.
+   */
   public abstract ByteBuffer putFloat(int index, float value);
   
+  /**
+   * Relative get method for reading a double value.
+   *
+   * @exception BufferUnderflowException If there are fewer than eight bytes
+   * remaining in this buffer.
+   */
   public abstract double getDouble();
   
+  /**
+   * Relative put method for writing a double value.
+   *
+   * @exception BufferOverflowException If this buffer's current position is
+   * not smaller than its limit.
+   */
   public abstract ByteBuffer putDouble(double value);
   
+  /**
+   * Absolute get method for reading a double value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus seven.
+   */
   public abstract double getDouble(int index);
   
+  /**
+   * Absolute put method for writing a double value.
+   *
+   * @exception IndexOutOfBoundsException If index is negative or not smaller
+   * than the buffer's limit, minus seven.
+   */
   public abstract ByteBuffer putDouble(int index, double value);
+
+  /**
+   * Returns a string summarizing the state of this buffer.
+   */
+  public String toString ()
+  {
+    return "";
+  }
 }

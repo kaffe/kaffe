@@ -48,31 +48,32 @@ import java.nio.ShortBuffer;
 
 public final class CharBufferImpl extends CharBuffer
 {
-  private int array_offset;
   private boolean ro;
+
+  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   
   public CharBufferImpl(int cap, int off, int lim)
   {
     this.backing_buffer = new char[cap];
     this.cap = cap;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
   
   public CharBufferImpl(char[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
   
   public CharBufferImpl (CharBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position (copy.position ());
     limit (copy.limit());
+    position (copy.position ());
   }
   
   void inc_pos (int a)
@@ -87,6 +88,7 @@ public final class CharBufferImpl extends CharBuffer
   private static native char[] nio_cast(int[]copy);
   private static native char[] nio_cast(float[]copy);
   private static native char[] nio_cast(double[]copy);
+
   CharBufferImpl(byte[] copy) { this.backing_buffer = copy != null ? nio_cast(copy) : null; } private static native byte nio_get_Byte(CharBufferImpl b, int index, int limit); private static native void nio_put_Byte(CharBufferImpl b, int index, int limit, byte value); public ByteBuffer asByteBuffer() { ByteBufferImpl res = new ByteBufferImpl(backing_buffer); res.limit((limit()*1)/2); return res; }
   CharBufferImpl(char[] copy) { this.backing_buffer = copy != null ? nio_cast(copy) : null; } private static native char nio_get_Char(CharBufferImpl b, int index, int limit); private static native void nio_put_Char(CharBufferImpl b, int index, int limit, char value); public CharBuffer asCharBuffer() { CharBufferImpl res = new CharBufferImpl(backing_buffer); res.limit((limit()*2)/2); return res; }
   CharBufferImpl(short[] copy) { this.backing_buffer = copy != null ? nio_cast(copy) : null; } private static native short nio_get_Short(CharBufferImpl b, int index, int limit); private static native void nio_put_Short(CharBufferImpl b, int index, int limit, short value); public ShortBuffer asShortBuffer() { ShortBufferImpl res = new ShortBufferImpl(backing_buffer); res.limit((limit()*2)/2); return res; }
@@ -128,6 +130,19 @@ public final class CharBufferImpl extends CharBuffer
   {
     return backing_buffer != null;
   }
+
+  final public CharSequence subSequence (int start, int end)
+  {
+    if (start < 0 ||
+        end > length () ||
+        start > end)
+      throw new IndexOutOfBoundsException ();
+
+    // No support for direct buffers yet.
+    // assert array () != null;
+    return new CharBufferImpl (array (), position () + start,
+                               position () + end);
+  }
   
   final public char get()
   {
@@ -161,13 +176,8 @@ public final class CharBufferImpl extends CharBuffer
   final public float getFloat() { float a = nio_get_Float(this, position(), limit()); inc_pos(4); return a; } final public CharBuffer putFloat(float value) { nio_put_Float(this, position(), limit(), value); inc_pos(4); return this; } final public float getFloat(int index) { float a = nio_get_Float(this, index, limit()); return a; } final public CharBuffer putFloat(int index, float value) { nio_put_Float(this, index, limit(), value); return this; };
   final public double getDouble() { double a = nio_get_Double(this, position(), limit()); inc_pos(8); return a; } final public CharBuffer putDouble(double value) { nio_put_Double(this, position(), limit(), value); inc_pos(8); return this; } final public double getDouble(int index) { double a = nio_get_Double(this, index, limit()); return a; } final public CharBuffer putDouble(int index, double value) { nio_put_Double(this, index, limit(), value); return this; };
 
-  public String toString()
+  public final ByteOrder order()
   {
-    if (backing_buffer != null)
-      {
-        return new String(backing_buffer, position(), limit());
-      }
-      
-    return super.toString();
+    return endian;
   }
 }

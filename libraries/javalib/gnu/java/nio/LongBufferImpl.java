@@ -54,24 +54,24 @@ public final class LongBufferImpl extends LongBuffer
   {
     this.backing_buffer = new long[cap];
     this.cap = cap ;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public LongBufferImpl(long[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public LongBufferImpl(LongBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position(copy.position());
     limit(copy.limit());
+    position(copy.position());
   }
 
   void inc_pos(int a)

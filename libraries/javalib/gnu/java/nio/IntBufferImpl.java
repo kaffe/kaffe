@@ -54,24 +54,24 @@ public final class IntBufferImpl extends IntBuffer
   {
     this.backing_buffer = new int[cap];
     this.cap = cap;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public IntBufferImpl(int[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public IntBufferImpl(IntBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position(copy.position());
     limit(copy.limit());
+    position(copy.position());
   }
 
   void inc_pos(int a)

@@ -1,3 +1,169 @@
+2002-11-27 Dalibor Topic <robilad@yahoo.com>
+
+	Merged in LGPL-d java.util.regex and gnu.regexp from
+	Wes Biggs <wes@cacas.org>. Merged in javax.naming from
+	GNU Classpath, and imported a few missing classes from
+	GNU Classpath in javax.transaction package. Synced up
+	java.nio and gnu.java.nio with GNU Classpath.
+
+	* libraries/javalib/Makefile.am: added new files and packages.
+	* libraries/javalib/Makefile.in: regenerated.
+	
+	* libraries/javalib/gnu/regexp/CharIndexed.java,
+	libraries/javalib/gnu/regexp/CharIndexedCharArray.java,
+	libraries/javalib/gnu/regexp/CharIndexedInputStream.java,
+	libraries/javalib/gnu/regexp/CharIndexedReader.java,
+	libraries/javalib/gnu/regexp/CharIndexedString.java,
+	libraries/javalib/gnu/regexp/CharIndexedStringBuffer.java,
+	libraries/javalib/gnu/regexp/RE.java,
+	libraries/javalib/gnu/regexp/REException.java,
+	libraries/javalib/gnu/regexp/REFilterInputStream.java,
+	libraries/javalib/gnu/regexp/REFilterReader.java,
+	libraries/javalib/gnu/regexp/REMatch.java,
+	libraries/javalib/gnu/regexp/REMatchEnumeration.java,
+	libraries/javalib/gnu/regexp/RESyntax.java,
+	libraries/javalib/gnu/regexp/REToken.java,
+	libraries/javalib/gnu/regexp/RETokenAny.java,
+	libraries/javalib/gnu/regexp/RETokenBackRef.java,
+	libraries/javalib/gnu/regexp/RETokenChar.java,
+	libraries/javalib/gnu/regexp/RETokenEnd.java,
+	libraries/javalib/gnu/regexp/RETokenEndSub.java,
+	libraries/javalib/gnu/regexp/RETokenLookAhead.java,
+	libraries/javalib/gnu/regexp/RETokenOneOf.java,
+	libraries/javalib/gnu/regexp/RETokenPOSIX.java,
+	libraries/javalib/gnu/regexp/RETokenRange.java,
+	libraries/javalib/gnu/regexp/RETokenRepeated.java,
+	libraries/javalib/gnu/regexp/RETokenStart.java,
+	libraries/javalib/gnu/regexp/RETokenWordBoundary.java,
+	libraries/javalib/gnu/regexp/UncheckedRE.java:
+	new files, merged in from gnu.regexp CVS on Savannah.
+
+	* libraries/javalib/java/util/regex/Matcher.java,
+	libraries/javalib/java/util/regex/Pattern.java,
+	libraries/javalib/java/util/regex/PatternSyntaxException.java:
+	new files, merged in from gnu-regexp-jdk14.tar.gz on the
+	gnu.regexp home page.
+	
+	* libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/gnu/java/nio/ByteBufferImpl.java,
+	libraries/javalib/gnu/java/nio/CharBufferImpl.java,
+	libraries/javalib/gnu/java/nio/DoubleBufferImpl.java,
+	libraries/javalib/gnu/java/nio/FloatBufferImpl.java,
+	libraries/javalib/gnu/java/nio/IntBufferImpl.java,
+	libraries/javalib/gnu/java/nio/LongBufferImpl.java,
+	libraries/javalib/gnu/java/nio/ShortBufferImpl.java:
+	Synced up with GNU Classpath.
+
+	* libraries/javalib/javax/naming/AuthenticationException.java,
+	libraries/javalib/javax/naming/AuthenticationNotSupportedException.java,
+	libraries/javalib/javax/naming/BinaryRefAddr.java,
+	libraries/javalib/javax/naming/Binding.java,
+	libraries/javalib/javax/naming/CannotProceedException.java,
+	libraries/javalib/javax/naming/CommunicationException.java,
+	libraries/javalib/javax/naming/CompositeName.java,
+	libraries/javalib/javax/naming/CompoundName.java,
+	libraries/javalib/javax/naming/ConfigurationException.java,
+	libraries/javalib/javax/naming/Context.java,
+	libraries/javalib/javax/naming/ContextNotEmptyException.java,
+	libraries/javalib/javax/naming/InitialContext.java,
+	libraries/javalib/javax/naming/InsufficientResourcesException.java,
+	libraries/javalib/javax/naming/InterruptedNamingException.java,
+	libraries/javalib/javax/naming/InvalidNameException.java,
+	libraries/javalib/javax/naming/LimitExceededException.java,
+	libraries/javalib/javax/naming/LinkException.java,
+	libraries/javalib/javax/naming/LinkLoopException.java,
+	libraries/javalib/javax/naming/LinkRef.java,
+	libraries/javalib/javax/naming/MalformedLinkException.java,
+	libraries/javalib/javax/naming/Name.java,
+	libraries/javalib/javax/naming/NameAlreadyBoundException.java,
+	libraries/javalib/javax/naming/NameClassPair.java,
+	libraries/javalib/javax/naming/NameNotFoundException.java,
+	libraries/javalib/javax/naming/NameParser.java,
+	libraries/javalib/javax/naming/NamingEnumeration.java,
+	libraries/javalib/javax/naming/NamingException.java,
+	libraries/javalib/javax/naming/NamingSecurityException.java,
+	libraries/javalib/javax/naming/NoInitialContextException.java,
+	libraries/javalib/javax/naming/NoPermissionException.java,
+	libraries/javalib/javax/naming/NotContextException.java,
+	libraries/javalib/javax/naming/OperationNotSupportedException.java,
+	libraries/javalib/javax/naming/PartialResultException.java,
+	libraries/javalib/javax/naming/RefAddr.java,
+	libraries/javalib/javax/naming/Reference.java,
+	libraries/javalib/javax/naming/Referenceable.java,
+	libraries/javalib/javax/naming/ReferralException.java,
+	libraries/javalib/javax/naming/ServiceUnavailableException.java,
+	libraries/javalib/javax/naming/SizeLimitExceededException.java,
+	libraries/javalib/javax/naming/StringRefAddr.java,
+	libraries/javalib/javax/naming/TimeLimitExceededException.java,
+	libraries/javalib/javax/naming/directory/Attribute.java,
+	libraries/javalib/javax/naming/directory/AttributeInUseException.java,
+	libraries/javalib/javax/naming/directory/AttributeModificationException.java,
+	libraries/javalib/javax/naming/directory/Attributes.java,
+	libraries/javalib/javax/naming/directory/BasicAttribute.java,
+	libraries/javalib/javax/naming/directory/BasicAttributes.java,
+	libraries/javalib/javax/naming/directory/DirContext.java,
+	libraries/javalib/javax/naming/directory/InitialDirContext.java,
+	libraries/javalib/javax/naming/directory/InvalidAttributeIdentifierException.java,
+	libraries/javalib/javax/naming/directory/InvalidAttributeValueException.java,
+	libraries/javalib/javax/naming/directory/InvalidAttributesException.java,
+	libraries/javalib/javax/naming/directory/InvalidSearchControlsException.java,
+	libraries/javalib/javax/naming/directory/InvalidSearchFilterException.java,
+	libraries/javalib/javax/naming/directory/ModificationItem.java,
+	libraries/javalib/javax/naming/directory/NoSuchAttributeException.java,
+	libraries/javalib/javax/naming/directory/SchemaViolationException.java,
+	libraries/javalib/javax/naming/directory/SearchControls.java,
+	libraries/javalib/javax/naming/directory/SearchResult.java,
+	libraries/javalib/javax/naming/event/EventContext.java,
+	libraries/javalib/javax/naming/event/EventDirContext.java,
+	libraries/javalib/javax/naming/event/NamespaceChangeListener.java,
+	libraries/javalib/javax/naming/event/NamingEvent.java,
+	libraries/javalib/javax/naming/event/NamingExceptionEvent.java,
+	libraries/javalib/javax/naming/event/NamingListener.java,
+	libraries/javalib/javax/naming/event/ObjectChangeListener.java,
+	libraries/javalib/javax/naming/ldap/Control.java,
+	libraries/javalib/javax/naming/ldap/ControlFactory.java,
+	libraries/javalib/javax/naming/ldap/ExtendedRequest.java,
+	libraries/javalib/javax/naming/ldap/ExtendedResponse.java,
+	libraries/javalib/javax/naming/ldap/HasControls.java,
+	libraries/javalib/javax/naming/ldap/InitialLdapContext.java,
+	libraries/javalib/javax/naming/ldap/LdapContext.java,
+	libraries/javalib/javax/naming/ldap/LdapReferralException.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotification.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotificationEvent.java,
+	libraries/javalib/javax/naming/ldap/UnsolicitedNotificationListener.java,
+	libraries/javalib/javax/naming/spi/DirObjectFactory.java,
+	libraries/javalib/javax/naming/spi/DirStateFactory.java,
+	libraries/javalib/javax/naming/spi/DirectoryManager.java,
+	libraries/javalib/javax/naming/spi/InitialContextFactory.java,
+	libraries/javalib/javax/naming/spi/InitialContextFactoryBuilder.java,
+	libraries/javalib/javax/naming/spi/NamingManager.java,
+	libraries/javalib/javax/naming/spi/ObjectFactory.java,
+	libraries/javalib/javax/naming/spi/ObjectFactoryBuilder.java,
+	libraries/javalib/javax/naming/spi/ResolveResult.java,
+	libraries/javalib/javax/naming/spi/Resolver.java,
+	libraries/javalib/javax/naming/spi/StateFactory.java:
+	new files, imported from GNU Classpath.
+
+	* libraries/javalib/javax/transaction/HeuristicCommitException.java,
+	libraries/javalib/javax/transaction/HeuristicMixedException.java,
+	libraries/javalib/javax/transaction/HeuristicRollbackException.java,
+	libraries/javalib/javax/transaction/NotSupportedException.java,
+	libraries/javalib/javax/transaction/RollbackException.java,
+	libraries/javalib/javax/transaction/Status.java,
+	libraries/javalib/javax/transaction/Synchronization.java,
+	libraries/javalib/javax/transaction/SystemException.java,
+	libraries/javalib/javax/transaction/Transaction.java,
+	libraries/javalib/javax/transaction/TransactionManager.java,
+	libraries/javalib/javax/transaction/UserTransaction.java:
+	new files, imported from GNU Classpath.
+
+	* developers/check-classpath-merge-status:  new file. Small utility script
+	to check merge status with classpath. It outputs the files that may need
+	to be remerged. You may have to change the location of classpath
+	libraries to get it to work.
+
 2002-11-26 Dalibor Topic <robilad@yahoo.com>
 
 	Merged in the Qt based AWT backend written by

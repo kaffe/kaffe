@@ -54,24 +54,24 @@ public final class DoubleBufferImpl extends DoubleBuffer
   {
     this.backing_buffer = new double[cap];
     this.cap = cap;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
   
   public DoubleBufferImpl(double[] array, int off, int lim)
   {
     this.backing_buffer = array;
     this.cap = array.length;
-    this.position(off);
     this.limit(lim);
+    this.position(off);
   }
 
   public DoubleBufferImpl(DoubleBufferImpl copy)
   {
     backing_buffer = copy.backing_buffer;
     ro = copy.ro;
-    position(copy.position());
     limit(copy.limit());
+    position(copy.position());
   }
   
   void inc_pos(int a)
