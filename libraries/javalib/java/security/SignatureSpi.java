@@ -263,7 +263,7 @@ public abstract class SignatureSpi
    */
   protected AlgorithmParameters engineGetParameters()
   {
-    throw new UnsupportedOperationException();    
+    throw new UnsupportedOperationException();
   }
 
   /**

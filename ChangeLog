@@ -6,6 +6,100 @@
 
 2004-08-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/text/AttributedString.java:
+	Resynced with GNU Classpath.
+
+	2004-08-16  Tom Tromey  <tromey@redhat.com>
+
+        Bug 9949.
+        * java/text/AttributedString.java (AttributedString): Use
+        ArrayList to build array of attribute ranges.  Don't use
+        `attribs' before it is set.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/JDesktopPane.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSplitPaneUI.java:
+	Resynced with GNU Classpath.
+
+	2004-08-16  Tom Tromey  <tromey@redhat.com>
+
+        Bug 9948.
+        * javax/swing/JDesktopPane.java (LIVE_DRAG_MODE): Now final.
+        (OUTLINE_DRAG_MODE): LIVE_DRAG_MODE.
+        * javax/swing/plaf/basic/BasicSplitPaneUI.java
+        (NON_CONTINUOUS_DIVIDER): Now final.  Initialize.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/rmi/server/UID.java:
+	Resynced with GNU Classpath.
+
+	2004-08-16  Tom Tromey  <tromey@redhat.com>
+
+        Bug 9944.
+        * java/rmi/server/UID.java (UID): Read `nextCount', not count.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/lang/Compiler.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/java/lang/VMCompiler.java:
+	New file. Taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	2004-08-16  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Compiler.java: Rewrote in terms of VMCompiler.
+        * vm/reference/java/lang/VMCompiler.java: New file.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/io/File.java:
+	Resynced with GNU Classpath.
+
+	2004-08-16  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/File.java File(String,String): Fixed handling of empty
+        path.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/security/DummyKeyPairGenerator.java,
+	libraries/javalib/java/security/DummyMessageDigest.java,
+	libraries/javalib/java/security/DummySignature.java,
+	libraries/javalib/java/security/MessageDigest.java,
+	libraries/javalib/java/security/MessageDigestSpi.java,
+	libraries/javalib/java/security/Signature.java,
+	libraries/javalib/java/security/SignatureSpi.java,
+	libraries/javalib/javax/crypto/MacSpi.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/java/security/KeyPairGenerator.java,
+	libraries/javalib/java/security/KeyPairGeneratorSpi.java:
+	Replaced by implementation from GNU Classpath.
+
+	2004-08-15  Casey Marshall  <csm@gnu.org>
+
+        * java/security/DummyKeyPairGenerator.java (clone): removed
+        useless instanceof check.
+        * java/security/DummyMessageDigest.java (clone): likewise.
+        * java/security/DummySignature.java (clone): likewise.
+        * java/security/MessageDigest.java (clone): remove useless
+        instanceof check.
+        * java/security/MessageDigestSpi.java (clone): likewise.
+        * java/security/Signature.java (clone): provide meaningful
+        implementation.
+        * java/security/SignatureSpi.java (clone): likewise.
+        * javax/crypto/MacSpi.java (clone): likewise.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
         * include/Makefile.am:
 	Added new libxmlj includes, and remove no longer needed ones.
 

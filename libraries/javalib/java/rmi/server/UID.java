@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
+  Copyright (c) 1996, 1997, 1998, 1999, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,10 +37,13 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.io.Serializable;
+import java.io.DataOutput;
+import java.io.DataInput;
+import java.io.IOException;
+import java.util.Random;
+import java.lang.Thread;
+import java.lang.InterruptedException;
 
 public final class UID
 	implements Serializable {
@@ -62,7 +65,7 @@ private short count;
  */
 public UID() {
 	synchronized (lock) {
-		if (count == Short.MAX_VALUE) {
+		if (nextCount == Short.MAX_VALUE) {
 			long newtime;
 			for (;;) {
 				newtime = System.currentTimeMillis();

@@ -1,4 +1,4 @@
-/* DummyMessageDigest.java - Wrapper for MessageDigestSpi
+/* DummyKeyPairGenerator.java - Wrapper for KeyPairGeneratorSpi
    Copyright (C) 1999, 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,54 +37,39 @@ exception statement from your version. */
 
 package java.security;
 
-final class DummyMessageDigest extends MessageDigest
-{
-  private MessageDigestSpi mdSpi = null;
+import java.security.spec.AlgorithmParameterSpec;
 
-  public DummyMessageDigest(MessageDigestSpi mdSpi, String algorithm)
+final class DummyKeyPairGenerator extends KeyPairGenerator
+{
+  private KeyPairGeneratorSpi kpgSpi = null;
+
+  public DummyKeyPairGenerator(KeyPairGeneratorSpi kpgSpi, String algorithm)
   {
     super(algorithm);
-    this.mdSpi = mdSpi;
+    this.kpgSpi = kpgSpi;
   }
 
   public Object clone() throws CloneNotSupportedException
   {
-    MessageDigest result = new DummyMessageDigest
-        ((MessageDigestSpi) mdSpi.clone(), this.getAlgorithm());
+    KeyPairGenerator result = new DummyKeyPairGenerator
+            ((KeyPairGeneratorSpi) kpgSpi.clone(), this.getAlgorithm());
     result.provider = this.getProvider();
     return result;
   }
 
-  // java.security.MessageDigestSpi abstract methods implementation ---------
-
-  public byte[] engineDigest()
+  public void initialize(int keysize, SecureRandom random)
   {
-    return mdSpi.engineDigest();
+    kpgSpi.initialize(keysize, random);
   }
 
-  public int engineDigest(byte[] buf, int offset, int len)
-    throws DigestException
+  public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+    throws InvalidAlgorithmParameterException
   {
-    return mdSpi.engineDigest(buf, offset, len);
+    kpgSpi.initialize(params, random);
   }
 
-  public int engineGetDigestLength()
+  public KeyPair generateKeyPair()
   {
-    return mdSpi.engineGetDigestLength();
-  }
-
-  public void engineReset()
-  {
-    mdSpi.engineReset();
-  }
-
-  public void engineUpdate(byte input)
-  {
-    mdSpi.engineUpdate(input);
-  }
-
-  public void engineUpdate(byte[] input, int offset, int len)
-  {
-    mdSpi.engineUpdate(input, offset, len);
+    return kpgSpi.generateKeyPair();
   }
 }

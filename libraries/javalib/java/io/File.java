@@ -364,9 +364,9 @@ public class File implements Serializable, Comparable
 	    if (separatorChar == '\\' /* TODO use ON_WINDOWS */)
 	      {
 		int skip = 0;
-		while(name.length() > skip &&
-		    (name.charAt(skip) == separatorChar ||
-		    name.charAt(skip) == '/'))
+		while(name.length() > skip
+		    && (name.charAt(skip) == separatorChar
+		    || name.charAt(skip) == '/'))
 		  {
 		    skip++;
 		  }

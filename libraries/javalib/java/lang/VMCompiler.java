@@ -1,5 +1,5 @@
-/* Compiler.java -- placeholder for Java-to-native runtime compilers
-   Copyright (C) 1998, 1999, 2001, 2002, 2004 Free Software Foundation, Inc.
+/* VMClassLoader.java -- Reference implementation of compiler interface
+   Copyright (C) 2004 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -35,34 +35,18 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package java.lang;
 
 /**
- * The <code>Compiler</code> class is a placeholder for a JIT compiler
- * implementation, and does nothing unless there is such a compiler.
- *
- * <p>The system property <code>java.compiler</code> may contain the name
- * of a library to load with <code>System.loadLibrary</code> when the
- * virtual machine first starts.  If so, and loading the library succeeds,
- * then a function by the name of <code>java_lang_Compiler_start()</code>
- * in that library is called.
- *
- * <p>Note that a VM might not have implemented any of this.
- *
- * @author Tom Tromey <tromey@cygnus.com>
- * @see System#getProperty(String)
- * @see System#getProperty(String, String)
- * @see System#loadLibrary(String)
- * @since JDK 1.0
- * @status updated to 1.4
+ * This class is just a per-VM reflection of java.lang.Compiler.
+ * All methods are defined identically.
  */
-public final class Compiler
+final class VMCompiler
 {
   /**
    * Don't allow new `Compiler's to be made.
    */
-  private Compiler()
+  private VMCompiler()
   {
   }
 
@@ -76,7 +60,8 @@ public final class Compiler
    */
   public static boolean compileClass(Class oneClass)
   {
-    return VMCompiler.compileClass(oneClass);
+    // Never succeed.
+    return false;
   }
 
   /**
@@ -89,7 +74,8 @@ public final class Compiler
    */
   public static boolean compileClasses(String classNames)
   {
-    return VMCompiler.compileClasses(classNames);
+    // Note the incredibly lame interface.  Always fail.
+    return false;
   }
 
   /**
@@ -103,7 +89,8 @@ public final class Compiler
    */
   public static Object command(Object arg)
   {
-    return VMCompiler.command(arg);
+    // Our implementation defines this to a no-op.
+    return null;
   }
 
   /**
@@ -113,7 +100,6 @@ public final class Compiler
    */
   public static void enable()
   {
-    VMCompiler.enable();
   }
 
   /**
@@ -122,6 +108,5 @@ public final class Compiler
    */
   public static void disable()
   {
-    VMCompiler.disable();
   }
 }

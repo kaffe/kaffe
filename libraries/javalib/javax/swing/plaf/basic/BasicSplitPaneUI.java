@@ -892,7 +892,8 @@ public class BasicSplitPaneUI extends SplitPaneUI
    * The constraints object used when adding the non-continuous divider to the
    * JSplitPane.
    */
-  protected static String NON_CONTINUOUS_DIVIDER;
+  protected static final String NON_CONTINUOUS_DIVIDER
+    = "nonContinuousDivider";
 
   /** The dark divider used when dragging in non-continuous layout mode. */
   protected Component nonContinuousLayoutDivider;

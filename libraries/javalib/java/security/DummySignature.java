@@ -1,4 +1,4 @@
-/* DummyMessageDigest.java - Wrapper for MessageDigestSpi
+/* DummySignature.java - Signature wrapper for SignatureSpi.
    Copyright (C) 1999, 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,54 +37,66 @@ exception statement from your version. */
 
 package java.security;
 
-final class DummyMessageDigest extends MessageDigest
+final class DummySignature extends Signature
 {
-  private MessageDigestSpi mdSpi = null;
+  private SignatureSpi sigSpi = null;
 
-  public DummyMessageDigest(MessageDigestSpi mdSpi, String algorithm)
+  public DummySignature(SignatureSpi sigSpi, String algorithm)
   {
     super(algorithm);
-    this.mdSpi = mdSpi;
+    this.sigSpi = sigSpi;
   }
 
   public Object clone() throws CloneNotSupportedException
   {
-    MessageDigest result = new DummyMessageDigest
-        ((MessageDigestSpi) mdSpi.clone(), this.getAlgorithm());
+    Signature result = new DummySignature
+            ((SignatureSpi) sigSpi.clone(), this.getAlgorithm());
     result.provider = this.getProvider();
     return result;
   }
 
-  // java.security.MessageDigestSpi abstract methods implementation ---------
-
-  public byte[] engineDigest()
+  protected void engineInitVerify(PublicKey publicKey)
+    throws InvalidKeyException
   {
-    return mdSpi.engineDigest();
+    sigSpi.engineInitVerify(publicKey);
   }
 
-  public int engineDigest(byte[] buf, int offset, int len)
-    throws DigestException
+  protected void engineInitSign(PrivateKey privateKey)
+    throws InvalidKeyException
   {
-    return mdSpi.engineDigest(buf, offset, len);
+    sigSpi.engineInitSign(privateKey);
   }
 
-  public int engineGetDigestLength()
+  protected void engineUpdate(byte b) throws SignatureException
   {
-    return mdSpi.engineGetDigestLength();
+    sigSpi.engineUpdate(b);
   }
 
-  public void engineReset()
+  protected void engineUpdate(byte[]b, int off, int len)
+    throws SignatureException
   {
-    mdSpi.engineReset();
+    sigSpi.engineUpdate(b, off, len);
   }
 
-  public void engineUpdate(byte input)
+  protected byte[] engineSign() throws SignatureException
   {
-    mdSpi.engineUpdate(input);
+    return sigSpi.engineSign();
   }
 
-  public void engineUpdate(byte[] input, int offset, int len)
+  protected boolean engineVerify(byte[]sigBytes) throws SignatureException
   {
-    mdSpi.engineUpdate(input, offset, len);
+    return sigSpi.engineVerify(sigBytes);
+  }
+
+  protected void engineSetParameter(String param, Object value)
+    throws InvalidParameterException
+  {
+    sigSpi.engineSetParameter(param, value);
+  }
+
+  protected Object engineGetParameter(String param)
+    throws InvalidParameterException
+  {
+    return sigSpi.engineGetParameter(param);
   }
 }

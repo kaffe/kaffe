@@ -1922,6 +1922,7 @@ java_lang_SRCS = \
 	java/lang/UnsatisfiedLinkError.java \
 	java/lang/UnsupportedClassVersionError.java \
 	java/lang/UnsupportedOperationException.java \
+	java/lang/VMCompiler.java \
 	java/lang/VMObject.java \
 	java/lang/VMSecurityManager.java \
 	java/lang/VMThread.java \
@@ -2171,7 +2172,9 @@ java_security_SRCS = \
 	java/security/DigestInputStream.java \
 	java/security/DigestOutputStream.java \
 	java/security/DomainCombiner.java \
+	java/security/DummyKeyPairGenerator.java \
 	java/security/DummyMessageDigest.java \
+	java/security/DummySignature.java \
 	java/security/GeneralSecurityException.java \
 	java/security/Guard.java \
 	java/security/GuardedObject.java \

@@ -64,13 +64,13 @@ public class JDesktopPane extends JLayeredPane implements Accessible
    * This specifies that when dragged, a JInternalFrame should be completely
    * visible.
    */
-  public static int LIVE_DRAG_MODE = 0;
+  public static final int LIVE_DRAG_MODE = 0;
 
   /**
    * This specifies that when dragged, a JInternalFrame should only be visible
    * as an outline.
    */
-  public static int OUTLINE_DRAG_MODE = 1;
+  public static final int OUTLINE_DRAG_MODE = 1;
 
   /** The selected frame in the JDesktopPane. */
   private transient JInternalFrame selectedFrame;
