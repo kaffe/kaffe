@@ -46,7 +46,7 @@
 #define EXCEPTIONEND()
 #endif
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 char stat_act[]   = { ' ', 'a' };
 char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
 char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
@@ -154,7 +154,7 @@ sem_t            critSem;
 sigset_t         suspendSet;
 
 /* an optional deadlock watchdog thread (not in the activeThread list),
- * activated by DEBUG topic vm_thread */
+ * activated by KAFFE_VMDEBUG topic vm_thread */
 pthread_t        deadlockWatchdog;
 
 

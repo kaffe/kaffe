@@ -86,7 +86,7 @@ initLocking(void)
 {
 }
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 void
 dumpObjectLocks(void)
 {

@@ -137,7 +137,7 @@ utf8ConstNew(const char *s, int len)
 		len = strlen(s);
 	}
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	assert(utf8ConstIsValidUtf8(s, len));
 #endif
 	hitCounter(&utf8new, "utf8-new");

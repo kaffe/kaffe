@@ -27,7 +27,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if defined(HAVE_MPROTECT) && defined(DEBUG)
+#if defined(HAVE_MPROTECT) && defined(KAFFE_VMDEBUG)
 #include <sys/mman.h>
 #endif
 
@@ -98,13 +98,13 @@ size_t gc_pgsize;
 int gc_pgbits;
 #endif
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 int gc_system_alloc_cnt;
 #endif
 
 extern struct Hjava_lang_Thread* garbageman;
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 /*
  * analyze the slack incurred by small objects
  */
@@ -149,7 +149,7 @@ gc_heap_check(void)
 	}
 }
 
-#endif /* DEBUG */
+#endif /* KAFFE_VMDEBUG */
 
 /*
  * Initialise allocator.
@@ -603,14 +603,14 @@ gc_large_block(size_t sz)
  * Primitive block management:  Allocating and freeing whole pages.
  *
  * Unused pages may be marked unreadable.  This is only done when
- * compiled with DEBUG.
+ * compiled with KAFFE_VMDEBUG.
  */ 
 
 #ifndef PROT_NONE
 #define PROT_NONE 0
 #endif
 
-#if !defined(HAVE_MPROTECT) || !defined(DEBUG)
+#if !defined(HAVE_MPROTECT) || !defined(KAFFE_VMDEBUG)
 #define mprotect(A,L,P)
 #define ALL_PROT
 #define NO_PROT
@@ -990,7 +990,7 @@ gc_system_alloc(size_t sz)
 		assert(sz % gc_pgsize == 0);
 		DBG(GCSYSALLOC, dprintf("allocating up to limit\n"));
 	}
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	gc_system_alloc_cnt++;
 #endif
 

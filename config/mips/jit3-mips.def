@@ -24,7 +24,7 @@
 #define HOFFSET		4
 #endif
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 extern uint pc;
 int jit_debug = 0;
 /* int dbmsg = 0; */

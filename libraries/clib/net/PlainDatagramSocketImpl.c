@@ -47,7 +47,7 @@ static const struct {
 #endif
   };
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 static const struct {
     int opt;
     const char *name;
@@ -62,9 +62,9 @@ static const struct {
     { java_net_SocketOptions_SO_REUSEADDR,	"SO_REUSEADDR" },
 #endif
 };
-#endif /*DEBUG*/
+#endif /*KAFFE_VMDEBUG*/
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 /* Generate a string for an inet addr (in host form). */
 static char *
 ip2str(jint addr) 
@@ -78,7 +78,7 @@ ip2str(jint addr)
 	sprintf(addrbuf, "%u.%u.%u.%u", top, tmid, bmid, bottom);
 	return addrbuf;
 }
-#endif /* DEBUG */
+#endif /* KAFFE_VMDEBUG */
 
 
 

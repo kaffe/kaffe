@@ -111,7 +111,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	bool success = true;	/* optimistic */
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	int i;
 	static int depth;
 #endif
@@ -804,7 +804,7 @@ addMethod(Hjava_lang_Class* c,
 	constants* pool;
 	Utf8Const* name;
 	Utf8Const* signature;
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	int ni;
 #endif
 
@@ -832,7 +832,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 	name = WORD2UTF (pool->data[nc]);
 	signature = WORD2UTF (pool->data[sc]);
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	/* Search down class for method name - don't allow duplicates */
 	for (ni = CLASS_NMETHODS(c), mt = CLASS_METHODS(c); --ni >= 0; ) {
 		assert(! utf8ConstEqual (name, mt->name)

@@ -13,8 +13,7 @@
 
 native_LTLIBRARIES = libawt.la
 
-CFLAGS = -I$(QTDIR)/include -fno-exceptions -fno-rtti -DQWS -pipe -g @CFLAGS@ @X_CFLAGS@
-CXXFLAGS := $(CXXFLAGS) $(QT_CXXFLAGS)
+CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
 
 AWT_LIBS = -L$(QTDIR)/lib
 

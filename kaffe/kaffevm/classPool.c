@@ -247,7 +247,7 @@ destroyClassLoader(Collector *c, void* _loader)
    	}
 }
 
-#if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(DEBUG)
+#if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(KAFFE_VMDEBUG)
 /**
  * Walk the class pool and invoke walker() for each classes
  */

@@ -28,7 +28,7 @@ extern void	jfree(void* ptr);
 #define KCALLOC(A, B)	jmalloc((A) * (B))
 #define KFREE(p)	jfree((void *)(p))
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 #undef KFREE
 #define KFREE(p)	do {			\
 	void **__kfree_p = (void **)&(p);	\

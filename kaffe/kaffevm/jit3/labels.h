@@ -105,7 +105,7 @@ typedef struct _label_ {
 	uintp		to;
 	uintp		from;
 	int		type;
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 	char name[8];
 #endif
 } label;
@@ -182,7 +182,7 @@ void resetLabels(void);
  */
 label *getInternalLabel(label **lptr, uintp pc);
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 /*
  * returns - The symbolic name of a label or the native pc offset if the
  *   referenced code has already been generated.  Useful for printing out

@@ -139,7 +139,7 @@ static jlong currentTime()
 void 	jthread_exit_when_done();
 
 /* debug.h stuff */
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 #define DBG(x, y)       	y
 #define DBGEXPR(x, t, f)        t
 #define DBGIF(x)        	x

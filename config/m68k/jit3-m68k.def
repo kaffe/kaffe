@@ -8,7 +8,7 @@
  * of this file. 
  */
 
-#define	DEBUG
+#define	KAFFE_VMDEBUG
 
 #include <assert.h>
 #include <string.h>
@@ -23,7 +23,7 @@
 #define REG_sp			15
 #define REG_fp0			16
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 static const char * const rnames[] = {
 	"%d0", "%d1", "%d2", "%d3", "%d4", "%d5", "%d6", "%d7",
 	"%a0", "%a1", "%a2", "%a3", "%a4", "%a5", "%fp", "%sp",
@@ -61,7 +61,7 @@ static const char * const rnames[] = {
 	x	address register indirect with index & 8-bit displacement
 */
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 int jit_debug = 0;
 #define	debug(x)	(jit_debug ? printf("%x:\t", (int)CODEPC), printf x : 0)
 #else
@@ -1246,7 +1246,7 @@ define_insn(prologue, prologue_xxC)
 	Method* meth;
 	label* l;
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	if (jit_debug) {
 		meth = const_method(2);
 		printf("\n%s.%s %s\n", meth->class->name->data,

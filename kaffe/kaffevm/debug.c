@@ -35,7 +35,7 @@ static int bufferBegin = 0;
 static int bufferSz = 16 * 1024;
 static int bufferOutput = 0;
 
-#if defined(NDEBUG) || !defined(DEBUG)
+#if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
 /* --- Debugging is NOT enabled --- */
 
 /* Don't waste space with the debugging functions */
@@ -330,7 +330,7 @@ debugSysInit(void)
 
 	if (once) return;
 	once = 1;
-#if defined(TRANSLATOR) && defined(DEBUG)
+#if defined(TRANSLATOR) && defined(KAFFE_VMDEBUG)
 	{
 		extern int jit_debug;
 		if (getenv("JIT_DEBUG"))
@@ -356,7 +356,7 @@ printDebugBuffer(void)
 		putc(debugBuffer[i++], stdout);
 }
 
-#endif /* DEBUG */
+#endif /* KAFFE_VMDEBUG */
 
 
 /*

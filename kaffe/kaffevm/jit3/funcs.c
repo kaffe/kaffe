@@ -34,7 +34,7 @@ uintp CODEPC;
 		   ? CODEPC + (byte) - (CODEPC % (byte))		\
 		   : CODEPC))
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 /*
  * Print any labels that refer to the current address.
  */

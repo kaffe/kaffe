@@ -30,7 +30,7 @@ extern void init_md(void);
  * exception, so...
  */
 
-#ifdef  DEBUG
+#ifdef  KAFFE_VMDEBUG
 #define CREATE_NULLPOINTER_CHECKS
 #endif
 

@@ -36,7 +36,7 @@ static uint32 labelCount;
 #define	gc_calloc_fixed(A,B)	gc_malloc((A)*(B), GC_ALLOC_JITTEMP)
 #include "debug.h"
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 char *getLabelName(label *l)
 {
 	static char labeladdress[32]; /* XXX one more global */
@@ -197,7 +197,7 @@ linkLabels(uintp codebase)
 		unhandled:
 #if 0
 		default:
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 			kprintf("Label type 0x%x not supported (%p).\n", l->type & Ltypemask, l);
 #endif
 			ABORT();
@@ -241,7 +241,7 @@ newLabel(void)
 
 		/* Link elements into list */
 		for (i = 0; i < ALLOCLABELNR-1; i++) {
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 			sprintf(ret[i].name, "L%d", labelCount + i);
 #endif
 			ret[i].next = &ret[i+1];

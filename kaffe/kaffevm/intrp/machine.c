@@ -154,7 +154,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* Allocate stack space and locals. */
 	lcl = alloca(sizeof(slots) * (meth->localsz + meth->stacksz));
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 	{
 	    int32 *p = (int32 *) &lcl[meth->localsz + meth->stacksz];
 	    while (p-- > (int32*)lcl)
@@ -180,7 +180,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 			npc = vmExcept_getPC(&mjbuf);
 			sp = &lcl[meth->localsz];
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 			{
 			    int32 *p = (int32 *) &lcl[meth->localsz + meth->stacksz];
 			    while (p-- > (int32*)sp)

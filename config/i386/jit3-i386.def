@@ -21,7 +21,7 @@
 asm(".globl tStore\ntStore:	.long 0,0");
 #endif
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 int jit_debug;
 #define	debug(x)	(jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else

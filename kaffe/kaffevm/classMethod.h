@@ -116,7 +116,7 @@ struct Hjava_lang_Class {
 	struct _innerClass*	inner_classes;
 
 	void*			gcjPeer;	/* only needed if GCJ_SUPPORT */
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	int			live_count;
 #endif
 };

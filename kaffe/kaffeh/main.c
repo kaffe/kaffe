@@ -222,12 +222,12 @@ options(char** argv)
 		else if (strcmp(argv[i], "-jni") == 0) {
 			flag_jni = 1;
 		}
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 		else if (strcmp(argv[i], "-Xdebug") == 0) {
 			i++;
 			dbgSetMaskStr(argv[i]);
 		}
-#endif /*DEBUG*/
+#endif /*KAFFE_VMDEBUG*/
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
 			strcpy(realClassPath, argv[i]);
@@ -262,9 +262,9 @@ usage(void)
 	dprintf("	-version		Print version number\n");
 	dprintf("	-classpath <path>	Set classpath\n");
 	dprintf("	-jni			Generate JNI interface\n");
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	dprintf("	-Xdebug <opts>		Kaffe debug options.\n");
-#endif /*DEBUG*/
+#endif /*KAFFE_VMDEBUG*/
 	dprintf("	-o <file>		Generate all output to the given file\n");
 	dprintf("	-d <directory>		Directory for the output\n");
 }

@@ -85,7 +85,7 @@ main(int argc, char* argv[])
 	/* set up libtool/libltdl dlopen emulation */
 	LTDL_SET_PRELOADED_SYMBOLS();
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 	cp = getenv("KAFFE_VMDEBUG");
 	if (cp != 0)
 		dbgSetMaskStr(cp);
@@ -515,7 +515,7 @@ options(char** argv)
                         statsSetMaskStr(argv[i]);
                 }
 #endif
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
@@ -619,7 +619,7 @@ usage(void)
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
         fprintf(stderr, "	-jar                    Executable is a JAR\n");
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
         fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");
 #endif
 #ifdef KAFFE_STATS

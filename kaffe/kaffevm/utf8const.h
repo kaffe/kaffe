@@ -65,7 +65,7 @@ static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b)
 	/* Do the full compare (Kaffeh doesn't intern Utf8s) */
 	return (0 == strcmp(a->data, b->data));
 #else
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	/* If they're different pointers, double check that they're different strings... */
 	if ((a != b) && (a->hash == b->hash))
 	{

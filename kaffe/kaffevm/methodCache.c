@@ -106,7 +106,7 @@ makeMethodActive(Method* meth)
 	}
 #endif	/* defined(DUMPMETHODCACHESTATS) */
 
-#if defined(JIT3) && defined(DEBUG)
+#if defined(JIT3) && defined(KAFFE_VMDEBUG)
 	/* paranoia */
 	assert(findMethodFromPC((unsigned int)pc_key) == (Method*)0);
 #endif

@@ -55,7 +55,7 @@
 #define REG_fzero		(32+31)
 
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 static const char * const rnames[] = {
 	"v0",
 	"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
@@ -125,7 +125,7 @@ alpha_jit_info_t alpha_jit_info;
 /* --------------------------------------------------------------------- */
 /* Specific Instructions						 */
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 int jit_debug;
 #define debug(x)	(jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
@@ -676,7 +676,7 @@ define_insn(prologue, prologue_xxC)
 	L = const_label(1);
 	meth = const_method(2);
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	if (jit_debug) {
 		dprintf("\n%s.%s %s\n", meth->class->name->data,
 			meth->name->data, METHOD_SIGD(meth));
@@ -961,7 +961,7 @@ define_insn(prologue, prologue_xxC)
 		}
 	}
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	if (jit_debug) {
 	    dprintf ("nr arg slots = %d\n", sl);
 	}
@@ -973,7 +973,7 @@ define_insn(prologue, prologue_xxC)
 		alpha_slot2argoffset[sl++] = -SLOTSIZE * (aspill++);
 	}
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	if (jit_debug) {
 		for (sl = 0; sl < l; sl++) {
 			dprintf ("slot(%d) = %d\n", sl, alpha_slot2argoffset[sl]);

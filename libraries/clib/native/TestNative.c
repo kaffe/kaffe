@@ -22,7 +22,7 @@
 #include <native.h>
 #include "defs.h"
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 jint
 TestNative_test16int(jint a, jint b, jint c, jint d, 
 	jint e, jint f, jint g, jint h, 
@@ -105,4 +105,4 @@ TestNative_test16floatdouble(jfloat a, jdouble b, jdouble c, jdouble d,
 	return a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p;
 }
 
-#endif /* DEBUG */
+#endif /* KAFFE_VMDEBUG */

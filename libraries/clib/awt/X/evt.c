@@ -175,7 +175,7 @@ jmethodID  getWMEvent;
 
 #define    WM_KILLED           1905
 
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 static char *eventStr ( int evtId )
 {
   switch (evtId) {

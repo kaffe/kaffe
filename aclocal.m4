@@ -3975,6 +3975,10 @@ AC_MSG_RESULT([$QT_IS_MT])
 AC_MSG_CHECKING([if Qt is embedded])
 AC_MSG_RESULT([$QT_IS_EMBEDDED])
 
+if test x$QT_IS_EMBEDDED = xyes ; then
+	QT_CXXFLAGS="$QT_CXXFLAGS -DQWS"
+fi
+
 QT_GUILINK=""
 case "${host}" in
     *irix*)

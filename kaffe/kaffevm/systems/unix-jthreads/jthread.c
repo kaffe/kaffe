@@ -351,7 +351,7 @@ processSignals(void)
 static inline void
 intsRestore(void)
 { 
-        /* DEBUG */
+        /* KAFFE_VMDEBUG */
         assert(blockInts >= 1);
 
         if (blockInts == 1) {   

@@ -1,3 +1,59 @@
+2003-03-09 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/awt/qt/Makefile.am:
+	(CFLAGS) removed.
+	(CXXFLAGS) Added -fno-rtti and -fno-exceptions.
+	
+	* libraries/clib/awt/qt/Makefile.in:
+	regenerated.
+
+	* configure.in:
+	(--enable-debug) Define KAFFE_VMDEBUG instead of DEBUG.
+
+	* configure:
+	regenerated.
+	
+	* config/alpha/jit-alpha.def,
+	config/arm/jit-arm.def,
+	config/arm/jit3-arm.def,
+	config/arm/linux/md.h,
+	config/i386/jit-i386.def,
+	config/i386/jit3-i386.def,
+	config/m68k/jit-m68k.def,
+	config/m68k/jit3-m68k.def,
+	config/mips/jit3-mips.def,
+	config/sparc/jit-sparc.def,
+	include/jmalloc.h,
+	kaffe/kaffe/main.c,
+	kaffe/kaffeh/main.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/debug.c,
+	kaffe/kaffevm/debug.h,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit3/funcs.c,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/labels.h,
+	kaffe/kaffevm/locks.c,
+	kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/mem/gc-mem.h,
+	kaffe/kaffevm/methodCache.c,
+	kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/utf8const.h,
+	kaffe/xprof/callGraph.c,
+	libraries/clib/awt/X/evt.c,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/native/TestNative.c,
+	libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c:
+	replaced use of DEBUG with KAFFE_VMDEBUG.
+
 2003-03-07 Tony Wyatt <wyattaw@optushome.com.au>
 
 	* configure/m68k/common.h:

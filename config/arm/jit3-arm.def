@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 extern char _dbg_vm_jit_translate;
 extern void kprintf(char *, ...);
 #define	debug(MSG)	 { if( _dbg_vm_jit_translate) { kprintf("[%s:%d] 0x%x:\t", __FUNCTION__, __LINE__, CODEPC); fprintf MSG; } }

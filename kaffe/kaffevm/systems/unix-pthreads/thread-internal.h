@@ -79,7 +79,7 @@ extern void tDump (void);
 
 
 /* debugging and log helpers */
-#if defined (DEBUG)
+#if defined (KAFFE_VMDEBUG)
 
 extern char stat_act[];
 extern char stat_susp[];
@@ -102,6 +102,6 @@ extern char stat_block[];
     tDump();                                                               \
   }
 
-#endif /* DEBUG */
+#endif /* KAFFE_VMDEBUG */
 
 #endif /* __thread_impl_h */

@@ -23,7 +23,7 @@ extern size_t gc_heap_total;
 extern size_t gc_heap_allocation_size;
 extern size_t gc_heap_limit;
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 extern int gc_system_alloc_cnt;
 #endif
 
@@ -53,7 +53,7 @@ extern void	gc_heap_free(void*);
 #define	GC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
 
 typedef struct _gc_block {
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 	uint32			magic;	/* Magic number */
 #endif
 	struct _gc_freeobj*	free;	/* Next free sub-block */

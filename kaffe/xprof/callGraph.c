@@ -173,7 +173,7 @@ int writeCallGraph(struct call_graph *cg, struct gmon_file *gf)
 			    (ca->ca_from > gf->gf_high) ||
 			    (ca->ca_to > gf->gf_high) )
 			{
-#if defined(DEBUG)
+#if defined(KAFFE_VMDEBUG)
 			    /* FIXME: add debug code like Janos VM. */
 #endif
 			}

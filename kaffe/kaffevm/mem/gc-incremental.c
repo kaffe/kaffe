@@ -394,7 +394,7 @@ DBG(GCWALK,
 	}
 }
 
-#ifdef DEBUG
+#ifdef KAFFE_VMDEBUG
 static int
 gcClearCounts(Hjava_lang_Class *c, void *_)
 {

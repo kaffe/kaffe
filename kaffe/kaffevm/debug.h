@@ -128,14 +128,14 @@ typedef long long int   debugmask_t;
 #error "no known 64-bit type for debugmask_t"
 #endif
 
-#if defined(NDEBUG) || !defined(DEBUG)
+#if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
 /* --- Debugging is NOT enabled --- */
 
 /*
  * DBGIF:
  * 	if debugging is disabled, resolves to nothing.
  *	if debugging is enabled, resolve to statement.
- *	shortcut for #if DEBUG ... #endif
+ *	shortcut for #if KAFFE_VMDEBUG ... #endif
  */
 # define DBGIF(statement) { ((void)0); }
 
@@ -189,7 +189,7 @@ extern debugmask_t kaffevmDebugMask;
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
 
-#endif /* defined(NDEBUG) || !defined(DEBUG) */
+#endif /* defined(NDEBUG) || !defined(KAFFE_VMDEBUG) */
 
 
 #undef dprintf

@@ -332,7 +332,7 @@ AC_ARG_ENABLE(debug,[  --enable-debug          Enable run-time debugging machine
 case "$enable_debug" in
 "") ;;
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
-*) CPPFLAGS="$CPPFLAGS -DDEBUG";;
+*) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
 
 dnl =========================================================================
