@@ -15,16 +15,31 @@
 #include "arm/common.h"
 #include "arm/threads.h"
 
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+
+#ifdef HAVE_SIGCONTEXT_H
+#include <sigcontext.h>
+#endif
+
+/*
+ * newer Linux kernel actually implement SA_SIGINFO.
+ * But we don't need it, so let's turn it off
+ */
+#if defined(SA_SIGINFO)
+#undef SA_SIGINFO
+#endif
 
 /* Function prototype for signal handlers */
 #if defined(HAVE_STRUCT_SIGCONTEXT_STRUCT) && !defined(__GLIBC__)
 /* Linux < 2.1.1 */
 #define	SIGNAL_ARGS(sig, ctx) \
-	int sig, struct sigcontext_struct ctx
+	int sig, int arm_r1, int arm_r2, int arm_r3, struct sigcontext_struct ctx
 #elif defined(HAVE_STRUCT_SIGCONTEXT) || defined(__GLIBC__)
 /* Linux >= 2.1.1  or Linux 2.0.x with glibc2 */
 #define	SIGNAL_ARGS(sig, ctx) \
-	int sig, struct sigcontext ctx
+	int sig, int arm_r1, int arm_r2, int arm_r3, struct sigcontext ctx
 #else
 #error Do not know how to define SIGNAL_ARGS
 #endif

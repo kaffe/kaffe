@@ -227,6 +227,8 @@ public class URLClassLoader extends SecureClassLoader {
 			jarFiles.put(url, file);
 			return file;
 		    }
+
+		    return null;
 		}
 
 		// Download JAR file

@@ -106,6 +106,8 @@ int checkAccess(struct Hjava_lang_Class *context,
 		/* Same class. */
 		class_acc = 1;
 		slot_acc = 1;
+
+		return 1;
 	}
 	else if( target->accflags & ACC_PUBLIC )
 	{
@@ -116,7 +118,29 @@ int checkAccess(struct Hjava_lang_Class *context,
 	{
 		class_acc = 1;
 	}
+	else if( (target->this_inner_index >= 0) &&
+		 (target->accflags & ACC_PROTECTED) )
+	{
+		/* check whether target is non private innerclass of superclass */
+		innerClass *ic = &target->inner_classes[target->this_inner_index];
 
+		if( ic->outer_class )
+		{
+			Hjava_lang_Class *outer;
+			errorInfo einfo;
+
+			outer = getClass(ic->outer_class, target, &einfo);
+			if( outer != NULL )
+			{
+				class_acc = instanceof(outer, context);
+			}
+			else
+			{
+				discardErrorInfo(&einfo);
+			}
+		}
+	}
+	
 	if((context->packageLength == target->packageLength) &&
 	    !strncmp(context->name->data,
 		     target->name->data,
@@ -147,7 +171,7 @@ int checkAccess(struct Hjava_lang_Class *context,
 		 same_package &&
 		 (target->this_inner_index >= 0) )
 	{
-		slot_acc = 1;
+ 		slot_acc = 1;
 	}
 	else if( context->this_inner_index >= 0 )
 	{

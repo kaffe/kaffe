@@ -36,76 +36,53 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
     register int r2 asm("r2");
     register int r3 asm("r3");
     register double f0 asm("f0");
+
   default:
     {
       int *args = extraargs;
       int argidx = 4;
-      if (call->callsize[3] == 2) {
-	*args++ = (call->args[argidx].j) >> 32;
-	}
       for(; argidx < call->nrargs; ++argidx) {
-	if (call->callsize[argidx]) {
-	  *args++ = call->args[argidx].i;
-	  if (call->callsize[argidx] == 2)
-	    *args++ = (call->args[argidx].j) >> 32;
-	}
+        *args++ = call->args[argidx].i;
       }
     }
   case 4:
-    if (call->callsize[3]) {
-      r3 = call->args[3].i;
-      if (call->callsize[3] == 2)
-        *extraargs = (call->args[3].j) >> 32;
-    }
+    r3 = call->args[3].i;
   case 3:
-    if (call->callsize[2]) {
-      r2 = call->args[2].i;
-      if (call->callsize[2] == 2)
-        r3 = (call->args[2].j) >> 32;
-    }
+    r2 = call->args[2].i;
   case 2:
-    if (call->callsize[1]) {
-      r1 = call->args[1].i;
-      if (call->callsize[1] == 2)
-        r2 = (call->args[1].j) >> 32;
-    }
+    r1 = call->args[1].i;
   case 1:
-    if (call->callsize[0]) {
-      r0 = call->args[0].i;
-      if (call->callsize[0] == 2)
-        r1 = (call->args[0].j) >> 32;
-    }
+    r0 = call->args[0].i;
   case 0:
-    asm ("mov lr, pc\n"
-"	  mov pc, %3\n"
-        : "=r" (r0), "=r" (r1), "=f" (f0)
-	: "r" (call->function),
-	  "0" (r0), "1" (r1), "r" (r2), "r" (r3)
-	: "ip", "rfp", "sl", "fp", "lr"
-	);
-    switch(call->rettype)
+    asm volatile ("mov lr, pc\n"
+"                    mov pc, %3\n"
+                  : "=r" (r0), "=r" (r1), "=f" (f0)
+                  : "r" (call->function),
+                    "0" (r0), "1" (r1), "r" (r2), "r" (r3)
+                  : "ip", "rfp", "sl", "fp", "lr");
+    switch (call->rettype)
     {
+    case 'V':
+      break;
+
     case 'D':
-        asm("stfd %1,%0" : "=m" (call->ret->d) : "f" (f0));
-	break;
+      asm volatile ("stfd %1,%0" : "=m" (call->ret->d) : "f" (f0));
+      break;
+
     case 'F':
-	asm("stfs %1,%0" : "=m" (call->ret->f) : "f" (f0));
-	break;
-    /*
-     * XXX doesn't seem to be necessary to special case 'L',
-     * since its just another 32bit int, right !??!??
-    case 'L':
-	call->ret->l = r0;
-	break;
-	*/
+      asm volatile ("stfs %1,%0" : "=m" (call->ret->f) : "f" (f0));
+      break;
+ 
     case 'J':
-	(&call->ret->i)[1] = r1;
-	/* follow through */
+      (&call->ret->i)[1] = r1;
+      (&call->ret->i)[0] = r0;
+      break;
+
     default:
-	call->ret->i = r0;
+      call->ret->i = r0;
+      break;
     }
-    break;
-  }									
+  }
 }
 #endif
 

@@ -58,10 +58,9 @@ static void clickToFocus ( Component newKeyTgt ) {
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 	Container  cntr;
 	Component  c, tgt;
-	int        i, xm = 0, ym = 0, u, v;
+	int        i, xm = 0, ym = 0;
 	
 	tgt = cntr = toplevel;
-	xMouseTgt = yMouseTgt = 0;
 
 	// This is a workaround for no-native-wm Frames with childs extending the Frame size
 	// (the Frame deco border is no separate Component, just "protected" by the Frame insets)
@@ -77,8 +76,8 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 		if ( ((c.flags & Component.IS_SHOWING) == Component.IS_SHOWING) &&
 		     (x >= c.x) && (y >= c.y) && (x <= (c.x+c.width)) && (y <= (c.y+c.height)) ) {
 
-			u = x - c.x;
-			v = y - c.y;
+			int u = x - c.x;
+			int v = y - c.y;
 
 			if ( c.contains( u, v) ){  // contains() might be reimplemented
 
@@ -104,8 +103,6 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 					// so it gets the event, whether it cn handle
 					// it, or not.
 					tgt = c;
-					xMouseTgt = xm;
-					yMouseTgt = ym;
 
 					break;
 				}
@@ -113,7 +110,10 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 		}
 		i++;
 	}
-	
+
+	xMouseTgt = xm;
+	yMouseTgt = ym;
+
 	return tgt;
 }
 

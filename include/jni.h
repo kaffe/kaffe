@@ -324,7 +324,7 @@ struct JNIInvokeInterface {
 	void*	reserved1;
 	void*	reserved2;
 	jint	(*DestroyJavaVM)		(JavaVM*);
-	jint	(*AttachCurrentThread)		(JavaVM*, JNIEnv**, ThreadAttachArgs*);
+	jint	(*AttachCurrentThread)		(JavaVM*, void**, ThreadAttachArgs*);
 	jint	(*DetachCurrentThread)		(JavaVM*);
 	jint	(*GetEnv)			(JavaVM*, void**, jint);
 	void*	reserved3; // AttachCurrentThreadAsDaemon
@@ -547,6 +547,12 @@ struct JNIEnv_ {
 
 struct JavaVM_ {
 	const struct JNIInvokeInterface*	functions;
+#ifdef __cplusplus
+        jint    DestroyJavaVM(void);
+        jint    AttachCurrentThread(void**, ThreadAttachArgs*);
+        jint    DetachCurrentThread(void);
+        jint    GetEnv(void**, jint);
+#endif
 };
 
 struct JavaVMInitArgs {

@@ -1206,4 +1206,23 @@ inline jboolean JNIEnv::ExceptionCheck(void)
 	return (functions->ExceptionCheck(this));
 }
 
+inline jint JavaVM::DestroyJavaVM(void)
+{
+	return (functions->DestroyJavaVM(this));
+}
+
+inline jint JavaVM::AttachCurrentThread(void** env, ThreadAttachArgs* args)
+{
+	return (functions->AttachCurrentThread(this, env, args));
+}
+
+inline jint JavaVM::DetachCurrentThread(void)
+{
+	return (functions->DetachCurrentThread(this));
+}
+
+inline jint JavaVM::GetEnv(void** envPtr, jint version)
+{
+	return (functions->GetEnv(this, envPtr, version));
+}
 #endif

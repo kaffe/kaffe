@@ -1,3 +1,44 @@
+2003-10-25  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* config/arm/linux/jit-md.h:
+	removed now unnecessary signal stuff, corrected the definition of
+	the FIRSTFRAME macro
+
+	* config/arm/linux/md.h:
+	include necessary signal related headers, corrected the definition
+	of the SIGNAL_ARGS macro
+	
+	* config/arm/trampolines.c: 
+	(arm_do_fixup_trampoline) create a stack frame for the trampoline
+	
+	* config/arm/common.h:
+	(sysdepCallMethod) fixed passing of 64bit parameters, made asm
+	statements volatile so gcc doesn't optimize them away
+
+	* config/sparc/jit.h:
+	(CALL_KAFFE_EXCEPTION) removed wrong quote
+
+	* kaffe/kaffevm/access.c:
+	(checkAccess) properly grant access to inherited inner classes
+	that are protected
+
+	* include/jni.h, include/jni_cpp.h:
+	added missing c++ functions for the VM Invocation Interface
+	
+	* libraries/javalib/java/awt/MouseEvt.java:
+	(computeMouseTarget) properly translate the mouse position 
+	when the mouse is inside of a container
+
+	Reported by: Ross Martin <hacker@ross.interwrx.com>
+	
+	* libraries/javalib/java/net/URLClassLoader.java:
+	(getJar) immediately return if the url denotes a local file
+	that doesn't exist
+
+	* libraries/clib/net/Makefile.am, libraries/clib/net/Makefile.in:
+	(libnet_la_LDADD) make sure that symbols starting with gnu are
+	exported
+	
 2003-10-24  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/zip/ZipInputStream.java:
