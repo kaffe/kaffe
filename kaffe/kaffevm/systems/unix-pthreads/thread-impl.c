@@ -1345,6 +1345,9 @@ jthread_suspendall (void)
   int		status;
   jthread_t	cur = jthread_current();
   volatile jthread_t	t;
+
+  if (!jthreadInitialized)
+    return;
  
   /* don't allow any new thread to be created or recycled until this is done */
   protectThreadList(cur);
@@ -1442,7 +1445,7 @@ jthread_unsuspendall (void)
   jthread_t	t;
   int		status;
 
-  if ( !critSection )
+  if ( !jthreadInitialized || !critSection )
 	return;
 
   if ( --critSection == 0 ){

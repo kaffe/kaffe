@@ -1,5 +1,12 @@
 2005-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_suspendall, jthread_unsuspendall): Check whether the thread
+	subsystem has been initialized as some architecture needs to invoke it
+	for compare and exchange.
+
+2005-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/locks.c
 	(waitCond): Unlock completely the mutex (the lock may be recursive).
 
