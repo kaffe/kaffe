@@ -1,5 +1,10 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/intrp/native-wrapper.c:
+	Don't try to return something from a void function.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/classMethod.c:
 	Cast appropriately to avoid a warning.
 
