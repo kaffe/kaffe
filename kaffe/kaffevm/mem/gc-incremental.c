@@ -152,7 +152,7 @@ static gcFuncs gcFunctions[] = {
 #define	REFOBJHASHSZ	128
 typedef struct _refObject {
 	void*			mem;
-	uint			ref;
+	unsigned int		ref;
 	struct _refObject*	next;
 } refObject;
 typedef struct _refTable {
