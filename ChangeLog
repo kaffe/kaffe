@@ -1,3 +1,21 @@
+2003-06-29  Rob Gonzalez <rob@kaffe.org>
+
+	This is the first of a series of small checkins that will
+	integrate a verifier into kaffe.  This one adds most of
+	pass 2 verification, though without a parser for type
+	descriptors of method and field references from the constant
+	pool.
+
+	* kaffe/kaffevm/debug.h
+	Added VERIFY2, VERIFY3, and VERIFY debugging flags.
+
+	* kaffe/kaffevm/debug.c
+	Added VERIFY2, VERIFY3, and VERIFY debugging flags.
+
+	* kaffe/kaffevm/verify.c
+	Rewrote verify2() and added support methods that check
+	for errors in method static constraints.
+
 2003-06-28  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/javalib/kaffe/lang/ThreadStack:

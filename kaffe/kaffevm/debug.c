@@ -135,7 +135,11 @@ static struct debug_opts
 
 	D(REGFORCE,	"Debug forced registers framework."),
 	D(READCLASS,	"Trace readClass() parsing of .class files."),
-
+	
+	D(VERIFY2,      "Debug verifier, pass 2...outputs constant pool."),
+	D(VERIFY3,      "Debug verifier, pass 3...outputs walkthrough of data-flow analysis."),
+	D(VERIFY,       "Debug verifier, passes 2 and 3...produces a TON of output."),
+	
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP,
 			"Various lookup operations" },

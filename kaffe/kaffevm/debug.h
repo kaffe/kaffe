@@ -110,6 +110,10 @@
 # define DBG_SYSDEPCALLMETHOD   DBG_BIT(58)
 # define DBG_READCLASS		DBG_BIT(59)
 
+# define DBG_VERIFY2            DBG_BIT(60)
+# define DBG_VERIFY3            DBG_BIT(61)
+# define DBG_VERIFY             (DBG_VERIFY2 | DBG_VERIFY3)
+
 # define DBG_ALL		((debugmask_t)(-1))
 # define DBG_ANY                DBG_ALL
 
