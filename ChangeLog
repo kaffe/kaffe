@@ -1,3 +1,11 @@
+Wed Jul 24 21:58:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Added java/lang/Class$CallStack.class and
+	java/lang/VerifyError.class.	
+	* libraries/javalib/bootstrap.classlist:
+	same.
+
 Wed Jul 24 02:06:01 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/Class.c:

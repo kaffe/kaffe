@@ -44,6 +44,7 @@ java/lang/Byte.class
 java/lang/Character.class
 java/lang/Character$CharacterProperties.class
 java/lang/Class.class
+java/lang/Class$CallStack.class
 java/lang/ClassCastException.class
 java/lang/ClassLoader.class
 java/lang/ClassNotFoundException.class
@@ -88,6 +89,7 @@ java/lang/ThreadGroup.class
 java/lang/Throwable.class
 java/lang/UnsatisfiedLinkError.class
 java/lang/UnsupportedOperationException.class
+java/lang/VerifyError.class
 java/lang/VirtualMachineError.class
 java/lang/Void.class
 java/lang/reflect/AccessibleObject.class
