@@ -791,25 +791,54 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 	return (1);
 }
 
+
+static
+Hjava_lang_reflect_Method*
+findMatchingMethod(struct Hjava_lang_Class* clas, 
+		   struct Hjava_lang_String* name, 
+		   HArrayOfObject* arr, jboolean declared)
+{
+	Method* mth = CLASS_METHODS(clas);
+	int n = CLASS_NMETHODS(clas);
+	int i;
+	for (i = 0;  i < n;  ++mth, ++i) {
+		if (((mth->accflags & ACC_PUBLIC) || declared)
+		    && utf8ConstEqualJavaString(mth->name, name)) {
+			if (checkParameters(mth, arr))
+				return (makeMethod(clas, i));
+		}
+	}
+	return (0);
+}
+
 Hjava_lang_reflect_Method*
 java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_String* name, HArrayOfObject* arr, jboolean declared)
 {
 	Hjava_lang_Class* clas;
+	Hjava_lang_reflect_Method *rmeth;
 
 	clas = this;
 	do {
-		Method* mth = CLASS_METHODS(clas);
-		int n = CLASS_NMETHODS(clas);
-		int i;
-		for (i = 0;  i < n;  ++mth, ++i) {
-			if (((mth->accflags & ACC_PUBLIC) || declared)
-			    && utf8ConstEqualJavaString(mth->name, name)) {
-				if (checkParameters(mth, arr))
-					return (makeMethod(clas, i));
-			}
+		rmeth = findMatchingMethod(clas, name, arr, declared);
+		if (rmeth != 0) {
+			return (rmeth);
 		}
 		clas = clas->superclass;
 	} while (!declared && clas != NULL);
+
+	/* If the class is an interface, check implemented interfaces as well.
+	 * Those are the interfaces this interface inherited
+	 */
+	if (CLASS_IS_INTERFACE(this)) {
+		int i;
+		for (i = 0; i < this->total_interface_len; i++) {
+			rmeth = findMatchingMethod(this->interfaces[i], 
+						   name, arr, declared);
+			if (rmeth != 0) {
+				return (rmeth);
+			}
+		}
+	}
 
 	/* like SignalError, except that the name of the class that is
 	 * not found becomes the error message 

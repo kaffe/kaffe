@@ -1,3 +1,9 @@
+Thu Jun 15 11:16:52 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c: when getMethod is invoked on an
+	interface, make sure we search implemented (i.e., those inherited at
+	the source level) interfaces as well.
+
 2000-06-15  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java
