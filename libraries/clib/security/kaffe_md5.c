@@ -38,7 +38,7 @@
 # endif
 #endif
 
-#include "md5.h"
+#include "kaffe_md5.h"
 
 #ifdef _LIBC
 # include <endian.h>

@@ -134,12 +134,12 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libsecurity.la
 
 EXTRA_DIST = \
-		md5.h
+		kaffe_md5.h
 
 
 SECURITY_SRCS = \
 		digest.c \
-		md5.c
+		kaffe_md5.c
 
 
 securitydir = $(pkglibdir)/security
@@ -165,7 +165,7 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libsecurity_la_DEPENDENCIES = 
-am_libsecurity_la_OBJECTS =  digest.lo md5.lo
+am_libsecurity_la_OBJECTS =  digest.lo kaffe_md5.lo
 libsecurity_la_OBJECTS =  $(am_libsecurity_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -182,7 +182,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  @AMDEP@ $(DEPDIR)/digest.Plo $(DEPDIR)/md5.Plo
+DEP_FILES =  @AMDEP@ $(DEPDIR)/digest.Plo $(DEPDIR)/kaffe_md5.Plo
 SOURCES = $(libsecurity_la_SOURCES)
 OBJECTS = $(am_libsecurity_la_OBJECTS)
 
@@ -243,7 +243,7 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 digest.lo:
-md5.lo:
+kaffe_md5.lo:
 
 libsecurity.la: $(libsecurity_la_OBJECTS) $(libsecurity_la_DEPENDENCIES)
 	$(LINK) -rpath $(nativedir) $(libsecurity_la_LDFLAGS) $(libsecurity_la_OBJECTS) $(libsecurity_la_LIBADD) $(LIBS)
@@ -312,7 +312,7 @@ distdir: $(DISTFILES)
 	done
 
 @AMDEP@include $(DEPDIR)/digest.Plo
-@AMDEP@include $(DEPDIR)/md5.Plo
+@AMDEP@include $(DEPDIR)/kaffe_md5.Plo
 
 mostlyclean-depend:
 

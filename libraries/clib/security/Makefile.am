@@ -9,11 +9,11 @@
 native_LTLIBRARIES = libsecurity.la
 
 EXTRA_DIST = \
-		md5.h
+		kaffe_md5.h
 
 SECURITY_SRCS =	\
 		digest.c \
-		md5.c
+		kaffe_md5.c
 
 securitydir = $(pkglibdir)/security
 security_DATA = java.security

@@ -234,18 +234,19 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 
 /**************************** MD5 ***********************************/
 
-#if !defined(HAVE_MD5INIT) && !defined(HAVE_LIBMD)
+#if defined(HAVE_MD5INIT) || defined(HAVE_LIBMD)
+#include <md5.h>
+#else
 /*
  * If we don't have an external MD5 library, we use an internal version
  * instead.
  */
+#include "kaffe_md5.h"
 #define	MD5_CTX			struct md5_ctx
 #define	MD5Init(C)		md5_init_ctx(C)
 #define	MD5Update(C,B,L)	md5_process_bytes(B,L,C)
 #define	MD5Final(B,C)		md5_finish_ctx(C,B)
-#endif
-
-#include <md5.h>
+#endif	/* defined(HAVE_MD5INIT) || defined(HAVE_LIBMD) */
 
 void JNICALL
 Java_kaffe_security_provider_MD5_Init(JNIEnv *env, jobject this)
