@@ -1,12 +1,32 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TDOUBLEARR): Made static. 
+	(getTDOUBLEARR) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TDOUBLEARR) Removed prototype.
+	(getTDOUBLEARR) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TDOUBLEARR by getTDOUBLEARR.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TUNSTABLE): Made static. 
 	(getTUNSTABLE) Added.
 
 	* kaffe/kaffevm/verifier/verify-type.h: 
 	(TUNSTABLE) Removed prototype.
 	(getTUNSTABLE) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify3b.c,
+	kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TUNSTABLE by getTUNSTABLE.
 	
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 

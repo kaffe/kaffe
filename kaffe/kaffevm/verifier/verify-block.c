@@ -723,7 +723,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			case TYPE_Boolean: OPSTACK_PUSH(TBOOLARR);   break;
 			case TYPE_Char:    OPSTACK_PUSH(TCHARARR);   break;
 			case TYPE_Float:   OPSTACK_PUSH(TFLOATARR);  break;
-			case TYPE_Double:  OPSTACK_PUSH(TDOUBLEARR); break;
+			case TYPE_Double:  OPSTACK_PUSH(getTDOUBLEARR()); break;
 			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
 			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
@@ -787,7 +787,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case SALOAD: ARRAY_LOAD(TINT,   TSHORTARR); break;
 			
 		case LALOAD: ARRAY_WLOAD(TLONG,   TLONGARR);   break;
-		case DALOAD: ARRAY_WLOAD(TDOUBLE, TDOUBLEARR); break;
+		case DALOAD: ARRAY_WLOAD(TDOUBLE, getTDOUBLEARR()); break;
 #undef ARRAY_LOAD
 #undef ARRAY_WLOAD
 
@@ -872,7 +872,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case SASTORE: ARRAY_STORE(TINT,   TSHORTARR); break;
 			
 		case LASTORE: ARRAY_WSTORE(TLONG,   TLONGARR);   break;
-		case DASTORE: ARRAY_WSTORE(TDOUBLE, TDOUBLEARR); break;
+		case DASTORE: ARRAY_WSTORE(TDOUBLE, getTDOUBLEARR()); break;
 #undef ARRAY_STORE
 #undef ARRAY_WSTORE
 

@@ -114,7 +114,12 @@ Type* TFLOATARR = &verify_FLOATARR;
 
 static const char* DOUBLEARR_SIG = "[D";
 static Type  verify_DOUBLEARR;
-Type* TDOUBLEARR = &verify_DOUBLEARR;
+static Type* TDOUBLEARR = &verify_DOUBLEARR;
+
+Type* getTDOUBLEARR(void)
+{
+  return TDOUBLEARR;
+}
 
 /*
  * Initialize Type structures needed for verification

@@ -112,7 +112,7 @@ extern Type* TSHORTARR;
 extern Type* TINTARR;
 extern Type* TLONGARR;
 extern Type* TFLOATARR;
-extern Type* TDOUBLEARR;
+extern Type* getTDOUBLEARR(void);
 
 extern Type* TSTRING;
 
