@@ -1321,6 +1321,58 @@ fi
 AC_SUBST(MATH_LIB)
 
 dnl -----------------------------------------------------------------------
+dnl                       Support selection of extensions
+dnl -----------------------------------------------------------------------
+
+AC_ARG_WITH(extensions, 
+[  --with-extensions       the extensions (like the servlet API) to include [default=none]])
+AC_MSG_CHECKING([which extensions to include])
+
+dnl ouch
+case "$enable_sound" in
+	no)
+		INCLUDED_EXTENSIONS=
+		;;
+	*)
+		INCLUDED_EXTENSIONS=sound
+		;;
+esac
+ 
+case $with_extensions in
+	'*')
+		for i in `( cd $srcdir/libraries/extensions ; echo * )` ; do
+			if test -d $srcdir/libraries/extensions/$i ; then
+				if test x"$i" != x"CVS" ; then
+					if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then 
+						INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i" 
+					fi
+				fi
+			fi 
+		done 
+		;;
+
+	no | "")
+		;;
+
+	"yes")
+		AC_MSG_ERROR([Please supply a comma seperated list of extensions that should be included])
+		;;
+
+	*)
+		for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
+			if test -d $srcdir/libraries/extensions/$i ; then
+				if test '(' x"$enable_sound" = x"no" ')' -o '(' x"$i" != x"sound" ')' ; then
+					INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
+				fi
+			fi
+		done
+		;;
+esac
+
+AC_MSG_RESULT($INCLUDED_EXTENSIONS)
+AC_SUBST(INCLUDED_EXTENSIONS)
+
+dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
 dnl -----------------------------------------------------------------------
 
@@ -1369,7 +1421,6 @@ JAVA_LIBS=" \
 $MATH_LIB \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
-\$(top_builddir)/libraries/extensions/microsoft/clib/libmicrosoft.la \
 $AWT_LIB \
 $JAVA_LIBS \
 "

@@ -105,6 +105,7 @@ HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
+INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -237,9 +238,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../../kaffe/xprof/libkaffexprof.la
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 check_PROGRAMS = jitBasic
 

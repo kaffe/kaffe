@@ -101,6 +101,7 @@ HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
+INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -235,9 +236,9 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 jrebin_PROGRAMS = kaffe-bin
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof

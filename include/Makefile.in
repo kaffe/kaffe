@@ -101,6 +101,7 @@ HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
 HAVE_JIKES_TRUE = @HAVE_JIKES_TRUE@
 HAVE_ZIP_FALSE = @HAVE_ZIP_FALSE@
 HAVE_ZIP_TRUE = @HAVE_ZIP_TRUE@
+INCLUDED_EXTENSIONS = @INCLUDED_EXTENSIONS@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -289,7 +290,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Math.h \
 	java_lang_NativeLibrary.h \
 	java_lang_Runtime.h \
-	java_lang_SecurityManager.h \
 	java_lang_Short.h \
 	java_lang_System.h \
 	java_lang_reflect_Array.h \
@@ -371,12 +371,12 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
+@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 nodist_noinst_HEADERS = \
 	$(NOINSTALL_DERIVED_HDRS) \
