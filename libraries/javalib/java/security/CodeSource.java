@@ -25,9 +25,9 @@ import java.util.Set;
 public class CodeSource implements Serializable {
 
     private URL location;
-    private Certificate [] certificates;
+    private java.security.cert.Certificate [] certificates;
 
-    public CodeSource(URL location, Certificate[] certificates) {
+    public CodeSource(URL location, java.security.cert.Certificate[] certificates) {
 	this.location = location;
 	this.certificates = certificates;
     }
@@ -46,7 +46,7 @@ public class CodeSource implements Serializable {
 	    && getCertSet().equals(that.getCertSet());
     }
 
-    public final Certificate[] getCertificates() {
+    public final java.security.cert.Certificate[] getCertificates() {
 	return certificates;
     }
 

@@ -42,14 +42,19 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 		return;
 	}
 
-	if (!PROPERTY_LISTENERS.containsKey(null)
-	    && !PROPERTY_LISTENERS.containsKey(propertyName)) { 
+	// Is anyone interested ?
+	Vector vec = (Vector) PROPERTY_LISTENERS.get (propertyName);
+        if (vec == null) {
+        	vec = (Vector) PROPERTY_LISTENERS.get (null);
+        } else {
+		vec = ((Vector)vec.clone());
+                vec.addAll((Vector) PROPERTY_LISTENERS.get(null));
+	}
+
+        if (vec==null) {
 		return;
 	}
 
-	// Is anyone interested ?
-	Vector vec = (Vector) ((Vector) PROPERTY_LISTENERS.get(propertyName)).clone();
-	vec.addAll((Vector) PROPERTY_LISTENERS.get(null));
 	int size;
 	synchronized (this) {
 		size = vec.size();

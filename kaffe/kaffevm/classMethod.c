@@ -1133,9 +1133,15 @@ addInterfaces(Hjava_lang_Class* c, u2 inr, Hjava_lang_Class** inf)
 	GC_WRITE(c, c->interfaces); /* XXX */
 }
 
-/*
+/**
  * Lookup a named class, loading it if necessary.
- * The name is as used in class files, e.g. "java/lang/String".
+ *
+ * @param name: the name of the class (fully qualified with slashes instead of dots)
+ * @param loader: the loader that is to be used to load the class (0 for premordial class loader)
+ * @param einfo: storage for error information
+ *
+ * If a class called @name has already been loaded by @loader, that class is
+ * returned. Otherwise, it is loaded and brought to LINKED afterwards.
  */
 Hjava_lang_Class*
 loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
@@ -1176,7 +1182,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 			jthrowable excobj, excpending;
 
 DBG(VMCLASSLOADER,
-			dprintf("classLoader: loading %s\n", name->data);
+			dprintf("classLoader %s: loading %s\n", loader->base.dtable->class->name->data, name->data);
     )
 			str = utf8Const2JavaReplace(name, '/', '.');
 			if (!str) {
@@ -1206,9 +1212,15 @@ DBG(VMCLASSLOADER,
 				return 0;
 			}
 			
+			/*
+			 * We have to pass false as the second parameter to loadClass
+			 * in order to prevent the classloader from resolving the class
+			 * since that would run the static initializers of the loaded
+			 * class too early.
+			 */
 			clazz = (Hjava_lang_Class*)
 				(*env)->CallObjectMethod(env, loader, meth,
-							str, true);
+							str, false);
 
 			/*
 			 * Check whether an exception occurred.
@@ -1219,7 +1231,7 @@ DBG(VMCLASSLOADER,
 			(*env)->ExceptionClear(env);
 			if (excobj != 0) {
 DBG(VMCLASSLOADER,
-				dprintf("exception!\n");
+				dprintf("exception %s!\n", ((Hjava_lang_Object*)excobj)->dtable->class->name->data);
     )
 				einfo->type = KERR_RETHROW;
 				einfo->throwable = excobj;
@@ -1253,7 +1265,7 @@ DBG(VMCLASSLOADER,
 				clazz = NULL;
 			}
 DBG(VMCLASSLOADER,
-			dprintf("classLoader: done %p\n", clazz);
+			dprintf("classLoader %s: done (%s) at %p\n", loader->base.dtable->class->name->data, clazz->name->data, clazz);
     )
 			/* rethrow pending exception */
 			if (excpending != NULL) {

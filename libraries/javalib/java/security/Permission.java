@@ -52,10 +52,9 @@ public abstract class Permission implements Guard, Serializable {
 
 	public abstract String getActions();
 
-/************ XXX implement me
 	public PermissionCollection newPermissionCollection() {
+		return null;
 	}
-************/
 
 	public String toString() {
 		StringBuffer b = new StringBuffer();

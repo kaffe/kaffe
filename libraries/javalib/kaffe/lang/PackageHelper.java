@@ -35,7 +35,7 @@ public class PackageHelper {
 	    start = 0;
 	}
 
-	int end = name.lastIndexOf('.') - 1;
+	int end = name.lastIndexOf('.');
 	if (end < 0) {
 	    end = 0;
 	}

@@ -26,16 +26,6 @@
 #define NOTIMEOUT	0
 
 /*
- * We currently don't support exec'ing external processes.  While that
- * is easy to do, it unclear how we can wait for the process to exit since
- * it must be done from the same thread that created it.  This might not
- * be the case.
- * It's not clear how best to achieve this - TIM 10/17/99
- */
-#undef	HAVE_FORK
-#undef	HAVE_WAITPID
-
-/*
  * various building blocks for timeout system call functions
  */
 #define SET_DEADLINE(deadline, timeout) 		\
@@ -431,8 +421,23 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
-	int r=-1,ret;
-	
+#ifdef SO_RCVTIMEO 
+	int ret;
+	struct timeval old_tv;
+	struct timeval new_tv;
+	int old_tv_sz = sizeof (old_tv);
+	getsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, &old_tv, &old_tv_sz);
+	new_tv.tv_sec = 0;
+	new_tv.tv_usec = timeout*1000;
+	ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &new_tv, sizeof(new_tv));
+        if (!ret) {
+		ret = accept (fd, addr, len);
+		setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, &old_tv, sizeof (old_tv));
+	}
+	SET_RETURN_OUT(ret, out, ret)
+	return ret;
+#else
+	int r=-1, ret;	
 	ret = waitForTimeout(fd,timeout);
 	if (ret > 0) {
 		r = accept(fd,addr,len);
@@ -446,6 +451,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 	
 	SET_RETURN_OUT(r, out, r)
 	return (r);
+#endif
 }
 
 /*

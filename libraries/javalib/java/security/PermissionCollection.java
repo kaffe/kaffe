@@ -23,6 +23,8 @@ public abstract class PermissionCollection {
 	public PermissionCollection() {
 	}
 
+	public abstract void add(Permission permission);
+
 	public abstract boolean implies(Permission permission);
 
 	public abstract Enumeration elements();

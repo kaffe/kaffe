@@ -110,12 +110,14 @@ public Object invoke(Object obj, Object args[])
 		args = nullArgs;
 	}
 
-	if (obj == null && !"<init>".equals(name) && !Modifier.isStatic(getModifiers())) {
-		throw new NullPointerException("Null object pointer");
-	}
+	if (!Modifier.isStatic (getModifiers())) {
+		if (obj == null && !"<init>".equals(name)) {
+			throw new NullPointerException("Null object pointer");
+		}
 
-	if (obj != null && !(getDeclaringClass().isInstance(obj))) {
-		throw new IllegalArgumentException("Object type doesn't match method's class");
+		if (obj != null && !getDeclaringClass().isInstance(obj)) {
+			throw new IllegalArgumentException("Object type doesn't match method's class");
+		}
 	}
 
 	if (args.length != getParameterTypes().length) {

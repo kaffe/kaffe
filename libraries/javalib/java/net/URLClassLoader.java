@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Certificate;
+import java.security.cert.Certificate;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.SecureClassLoader;
@@ -80,13 +80,24 @@ public class URLClassLoader extends SecureClassLoader {
 			}
 			buf = out.toByteArray();
 
+			/*
+			 * If the URL is a directory, it is also the correct url for the code source.
+			 * If the URL is a jar entry, the correct url for the code source is the url
+			 * of the jar, not the url of the jar entry.
+			 */
+			URL codeSourceUrl = url;
+
+			if (url.getProtocol().equals("jar")) {
+				codeSourceUrl = new URL (url.getFile().substring (0, url.getFile().indexOf ("!/")));
+			}
+
 			Class found =  defineClass(name, buf, 0, buf.length,
-			    new CodeSource(url, new Certificate[0]));	// XXX specify codesource certificates
+			    new CodeSource(codeSourceUrl, new Certificate[0]));	// XXX specify codesource certificates
 
 			// package management
 			String pkgName = PackageHelper.getPackageName(found);
 			if (getPackage(pkgName) == null) {
-				if (in instanceof JarInputStream) {	
+				if (in instanceof JarInputStream) {
 					definePackage(pkgName, ((JarInputStream)in).getManifest(), url);
 				}
 				else {
@@ -119,20 +130,20 @@ public class URLClassLoader extends SecureClassLoader {
 	// need to implement SEALED.
 	protected Package definePackage(String name, Manifest man, URL url)
 			throws IllegalArgumentException {
+		Attributes attrs = man.getAttributes (name);
+
+		if (attrs==null) {
+			attrs = man.getMainAttributes();
+		}
+
 		return super.definePackage(name,
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.SPECIFICATION_TITLE),
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.SPECIFICATION_VERSION),
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.SPECIFICATION_VENDOR),
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.IMPLEMENTATION_TITLE),
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.IMPLEMENTATION_VERSION),
-		    man.getAttributes(name).getValue(
-		      Attributes.Name.IMPLEMENTATION_VENDOR),
-		    null);
+		   		attrs.getValue(Attributes.Name.SPECIFICATION_TITLE),
+		    		attrs.getValue(Attributes.Name.SPECIFICATION_VERSION),
+		    		attrs.getValue(Attributes.Name.SPECIFICATION_VENDOR),
+		    		attrs.getValue(Attributes.Name.IMPLEMENTATION_TITLE),
+		    		attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION),
+		    		attrs.getValue(Attributes.Name.IMPLEMENTATION_VENDOR),
+		    		null);
 	}
 
 	public URL findResource(String name) {

@@ -1,3 +1,48 @@
+2003-05-18  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	don't undef HAVE_FORK and HAVE_WAITPID since UNIXProcess.java
+	starts a dedicated thread that starts the new process and waits
+	until it is completed
+	(jthreadedAccept) use SO_RCVTIMEO if available
+
+	* kaffe/kaffevm/classMethod.c:
+	(loadClass) corrected calling user defined class loaders,
+	made the debug messages more verbose
+
+	* libraries/javalib/java/beans/PropertyChangeSupport.java: 
+	(firePropertyChange) properly handle the case that there are no
+	listeners for the specific property, but listeners for all
+	properties
+
+	* libraries/javalib/java/lang/reflect/Method.java: 
+	(invoke) only check whether obj parameter is valid when
+	method is not static
+	
+	* libraries/javalib/java/net/URLClassLoader.java: 
+	(findClass) corrected the URL of the CodeSource,
+	changed type of certificates to java.security.cert.Certificate
+	(definePackage) use main attributes of manifest if
+	it doesn't contain an entry for the package to be defined
+	
+	* libraries/javalib/java/security/Permission.java: 
+	(newPermissionCollection) implemented 
+	
+	* libraries/javalib/java/security/PermissionCollection.java: 
+	(add) new method declaration
+	
+	* libraries/javalib/java/security/Permissions.java: 
+	new file
+	
+	* libraries/javalib/java/security/CodeSource.java: 
+	changed type of certificates to java.security.cert.Certificate
+	
+	* libraries/javalib/java/util/jar/JarEntry.java: 
+	(getCertificates) dummy implementation
+	
+	* libraries/javalib/kaffe/lang/PackageHelper.java: 
+	(getPackageName) correctly extract package name
+	
 2003-05-17 Benja Fallenstein <b.fallenstein@gmx.de>
 
 	* libraries/javalib/java/awt/Color.java,

@@ -17,6 +17,7 @@ package java.util.jar;
 
 import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.security.cert.Certificate;
 
 public class JarEntry extends ZipEntry {
 	private final Attributes attr;
@@ -45,10 +46,7 @@ public class JarEntry extends ZipEntry {
 		return attr;
 	}
 
-/*****		// XXX FIXME implement me
 	public Certificate[] getCertificates() {
 		return null;
 	}
-*****/
 }
-
