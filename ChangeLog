@@ -1,3 +1,11 @@
+2005-01-30  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Turn jikes error messages into warnings
+	about building tests if kaffe is configured to use
+	a precompiled rt.jar.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>
+
 2005-01-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/ksem.c: Include debug.h for dprintf.

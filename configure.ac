@@ -697,6 +697,37 @@ AC_ARG_WITH([gc],
 	    [ GC_NAME="$withval" ]
 )
 
+dnl -----------------------------------------------------------------------
+dnl                    Support for using a precompiled class library
+dnl -----------------------------------------------------------------------
+AC_ARG_WITH([rt_jar],
+	    AS_HELP_STRING([--with-rt-jar=ABS.PATH],
+			   [use precompiled kaffe class library]))
+
+case "$with_rt_jar" in
+"")
+	if test -f $abssrcdir/libraries/javalib/rt-precompiled.jar; then
+		use_rt_jar=true
+		PATH_TO_RT_JAR=$abssrcdir/libraries/javalib/rt-precompiled.jar
+	else
+		use_rt_jar=false
+	fi 
+	;;
+"no" )
+	use_rt_jar=false
+	;;
+"yes")
+	AC_MSG_ERROR([Please suply an absolute path to a precompiled rt.jar from this version of kaffe])
+	;;
+*)
+	use_rt_jar=true
+	PATH_TO_RT_JAR=$with_rt_jar
+	;;
+esac;
+
+AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_rt_jar = xtrue)
+AC_SUBST(PATH_TO_RT_JAR)
+
 dnl =========================================================================
 dnl Use jikes
 dnl =========================================================================
@@ -713,14 +744,22 @@ AC_MSG_CHECKING([whether to use jikes])
 case $with_jikes in
 yes)
 	if test x"$JIKESPROG" == x"" ; then
-	  AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
+	  if  test x$use_rt_jar = xtrue ; then
+	    AC_MSG_WARN([No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher.])
+          else
+	    AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
+          fi
 	fi
 	JIKES="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 	use_jikes="yes ($JIKES)"
 	;;
 no)
 	use_jikes="no"
-	AC_MSG_ERROR([You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script.])
+	  if  test x$use_rt_jar = xtrue ; then
+	    AC_MSG_WARN([You have to use jikes 1.21 or higher to build kaffe's regression tests, or to pass a different external java compiler to configure script.])
+          else
+	    AC_MSG_ERROR([You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script.])
+          fi
 	;;
 *)
 	JIKES="$with_jikes"
@@ -1928,37 +1967,6 @@ if test x"$enable_gjdoc" = x"yes" ; then
 fi
 
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
-
-dnl -----------------------------------------------------------------------
-dnl                    Support for using a precompiled class library
-dnl -----------------------------------------------------------------------
-AC_ARG_WITH([rt_jar],
-	    AS_HELP_STRING([--with-rt-jar=ABS.PATH],
-			   [use precompiled kaffe class library]))
-
-case "$with_rt_jar" in
-"")
-	if test -f $abssrcdir/libraries/javalib/rt-precompiled.jar; then
-		use_rt_jar=true
-		PATH_TO_RT_JAR=$abssrcdir/libraries/javalib/rt-precompiled.jar
-	else
-		use_rt_jar=false
-	fi 
-	;;
-"no" )
-	use_rt_jar=false
-	;;
-"yes")
-	AC_MSG_ERROR([Please suply an absolute path to a precompiled rt.jar from this version of kaffe])
-	;;
-*)
-	use_rt_jar=true
-	PATH_TO_RT_JAR=$with_rt_jar
-	;;
-esac;
-
-AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_rt_jar = xtrue)
-AC_SUBST(PATH_TO_RT_JAR)
 
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
