@@ -989,6 +989,11 @@ public class DecimalFormat extends NumberFormat
 	pos.setErrorIndex(index);
 	return null;
       }
+    else if (! got_pos_suf)
+      {
+       pos.setErrorIndex(index);
+       return null;
+      }
 
     String suffix = is_neg ? ns : positiveSuffix;
     long parsedMultiplier = 1;
