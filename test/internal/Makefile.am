@@ -18,6 +18,12 @@ else
 libxprof = #
 endif
 
+if ENABLE_JVMPI
+libjvmpi = ../../kaffe/jvmpi/libkaffejvmpi.la
+else
+libjvmpi = #
+endif
+
 @threads_frag@
 
 check_PROGRAMS = jitBasic
@@ -37,7 +43,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_srcdir)/kaffe/jvmpi
 
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
-LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la ../../kaffe/jvmpi/libkaffejvmpi.la
+LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
 
 jitBasic_LDFLAGS = -export-dynamic
 jitBasic_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof) @LIBLTDL@
