@@ -70,7 +70,12 @@ public int read(byte b[]) throws IOException {
 }
 
 public int read(byte b[], int off, int len) throws IOException {
-	return readBytes(b, off, len);
+	if (off >= 0 && off + len <= b.length) {
+		return readBytes(b, off, len);
+	}
+	else {
+		throw new ArrayIndexOutOfBoundsException();
+	}
 }
 
 native private int readBytes(byte b[], int off, int len);

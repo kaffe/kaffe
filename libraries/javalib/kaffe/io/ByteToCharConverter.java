@@ -22,9 +22,8 @@ abstract public class ByteToCharConverter
 {
 	private static String encodingRoot;
 	private static String encodingDefault;
-	private static ByteToCharConverter defaultConverter = new ByteToCharDefault();
 	private static Hashtable cache = new Hashtable();
-	private static Object noConverter = new Object();
+	private static Class noConverter = Object.class;
 	protected byte[] buf;
 	protected int blen;
 
@@ -86,35 +85,37 @@ public int flush ( char[] to, int tpos, int tlen ) {
 }
 
 private static ByteToCharConverter getConverterInternal ( String enc ) {
-	ByteToCharConverter conv;
-
-	Object obj = cache.get(enc);
-	if (obj == noConverter) {
+	Class cls = (Class)cache.get(enc);
+	if (cls == noConverter) {
 		return (null);
 	}
-	if (obj != null) {
-		return ((ByteToCharConverter)obj);
-	}
-	String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
 	try {
-		obj = Class.forName(realenc).newInstance();
-		cache.put(enc, obj);
-		return ((ByteToCharConverter)obj);
+		if (cls == null) {
+			String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
+			cls = Class.forName(realenc);
+			cache.put(enc, cls);
+		}
+		return ((ByteToCharConverter)cls.newInstance());
 	}
 	catch (ClassNotFoundException _) {
 		try {
+			String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
 			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
 			if (in != null) {
 				ObjectInputStream oin = new ObjectInputStream(in);
-				obj = oin.readObject();
+				cls = oin.readObject().getClass();
 				oin.close();
-				cache.put(enc, obj);
-				return ((ByteToCharConverter)obj);
+				cache.put(enc, cls);
+				return ((ByteToCharConverter)cls.newInstance());
 			}
 		}
 		catch (IOException __) {
 		}
 		catch (ClassNotFoundException __) {
+		}
+		catch (InstantiationException __) {
+		}
+		catch (IllegalAccessException __) {
 		}
 	}
 	catch (ClassCastException _) {
@@ -139,7 +140,7 @@ public static ByteToCharConverter getDefault() {
 
 	conv = getConverterInternal(encodingDefault);
 	if (conv == null) {
-		conv = defaultConverter;
+		conv = new ByteToCharDefault();
 	}
 	return (conv);
 }

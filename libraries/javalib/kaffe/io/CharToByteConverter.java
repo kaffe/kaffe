@@ -22,9 +22,8 @@ abstract public class CharToByteConverter
 	protected int blen;
 	private static String encodingRoot;
 	private static String encodingDefault;
-	private static CharToByteConverter defaultConverter = new CharToByteDefault();
 	private static Hashtable cache = new Hashtable();
-	private static Object noConverter = new Object();
+	private static Class noConverter = Object.class;
 
 static {
 	// see explanation in ByteToCharConverter
@@ -33,6 +32,15 @@ static {
 }
 
 public CharToByteConverter() {
+}
+
+public Object clone() {
+	try {
+		return (super.clone());
+	}
+	catch (CloneNotSupportedException _) {
+		return (null);
+	}
 }
 
 public void carry ( char[] from, int fpos, int flen ) {
@@ -74,33 +82,37 @@ public int flush ( byte[] to, int tpos, int tlen ) {
 
 private static CharToByteConverter getConverterInternal(String enc)
 {
-	Object obj = cache.get(enc);
-	if (obj == noConverter) {
+	Class cls = (Class)cache.get(enc);
+	if (cls == noConverter) {
 		return (null);
 	}
-	if (obj != null) {
-		return ((CharToByteConverter)obj);
-	}
-	String realenc = encodingRoot + ".CharToByte" + ConverterAlias.alias(enc);
 	try {
-		obj = Class.forName(realenc).newInstance();
-		cache.put(enc, obj);
-		return ((CharToByteConverter)obj);
+		if (cls == null) {
+			String realenc = encodingRoot + ".CharToByte" + ConverterAlias.alias(enc);
+			cls = Class.forName(realenc);
+			cache.put(enc, cls);
+		}
+		return (CharToByteConverter)cls.newInstance();
 	}
 	catch (ClassNotFoundException _) {
 		try {
+			String realenc = encodingRoot + ".CharToByte" + ConverterAlias.alias(enc);
 			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
 			if (in != null) {
 				ObjectInputStream oin = new ObjectInputStream(in);
-				obj = oin.readObject();
+				cls = oin.readObject().getClass();
 				oin.close();
-				cache.put(enc, obj);
-				return ((CharToByteConverter)obj);
+				cache.put(enc, cls);
+				return (CharToByteConverter)cls.newInstance();
 			}
 		}
 		catch (IOException __) {
 		}
 		catch (ClassNotFoundException __) {
+		}
+		catch (InstantiationException __) {
+		}
+		catch (IllegalAccessException __) {
 		}
 	}
 	catch (ClassCastException _) {
@@ -125,7 +137,7 @@ public static CharToByteConverter getConverter(String enc) throws UnsupportedEnc
 public static CharToByteConverter getDefault() {
 	CharToByteConverter conv = getConverterInternal(encodingDefault);
 	if (conv == null) {
-		conv = defaultConverter;
+		conv = new CharToByteDefault();
 	}
 	return (conv);
 }
