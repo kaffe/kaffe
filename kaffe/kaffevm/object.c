@@ -44,8 +44,15 @@ Hjava_lang_Object*
 newObject(Hjava_lang_Class* class)
 {
 	Hjava_lang_Object* obj;
+	int type;
 
-	obj = gc_malloc(CLASS_FSIZE(class), GC_ALLOC_NORMALOBJECT);
+	if (class->finalizer == 0) {
+		type = GC_ALLOC_NORMALOBJECT;
+	} else {
+		type = GC_ALLOC_FINALIZEOBJECT; 
+	}
+
+	obj = gc_malloc(CLASS_FSIZE(class), type);
 
         /* Fill in object information */
         obj->dtable = class->dtable;

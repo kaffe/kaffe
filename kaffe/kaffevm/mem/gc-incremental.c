@@ -125,11 +125,11 @@ static gcFuncs gcFunctions[] = {
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
-	{ walkObject,	    finalizeObject   },	/* GC_ALLOC_NORMALOBJECT */
+	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
 	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
 	{ walkClass,        GC_OBJECT_NORMAL },	/* GC_ALLOC_CLASSOBJECT */
-	{ 0,       	    0		     },	/* GC_ALLOC_FINALIZEOBJECT */
+	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_METHOD */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_FIELD */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_STATICDATA */
@@ -765,7 +765,7 @@ gcMalloc(size_t size, int fidx)
 
 	/* If object is fixed, we give it the fixed colour and do not
 	 * attach it to any lists.  This object is not part of the GC
-	 * regieme and must be freed explicitly.
+	 * regime and must be freed explicitly.
 	 */
 	if (gcFunctions[fidx].final == GC_OBJECT_FIXED) {
 		GC_SET_COLOUR(info, i, GC_COLOUR_FIXED);
@@ -924,16 +924,8 @@ finalizeObject(void* ob)
 	Hjava_lang_Class* objclass = OBJECT_CLASS(obj);
 	Method* final = objclass->finalizer;
 
-	if (final != 0) {
-		callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
-	}
-
-	/* 
-	 * make sure thread objects get detached 
-	 */
-	if (soft_instanceof(ThreadClass, ob)) {
-		finalizeThread((Hjava_lang_Thread*)ob);
-	}
+	assert(final != 0);
+	callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
 }
 
 #if defined(STATS)

@@ -118,3 +118,9 @@ java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
 {
 	interruptThread(this);
 }
+
+void
+java_lang_Thread_finalize0(struct Hjava_lang_Thread* this)
+{
+	finalizeThread(this);
+}

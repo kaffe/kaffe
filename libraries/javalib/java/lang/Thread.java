@@ -137,7 +137,13 @@ public static int enumerate(Thread tarray[]) {
 	return (Thread.currentThread().getThreadGroup().enumerate(tarray));
 }
 
-final native private void finalize0();
+final native public void finalize0();
+
+private Object finalizeHelper = new Object() {
+    protected void finalize() throws Throwable {
+	finalize0();
+    }
+};
 
 /*
  * Called by system when thread terminates (for whatever reason)
