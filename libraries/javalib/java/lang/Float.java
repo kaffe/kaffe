@@ -146,4 +146,11 @@ public final class Float extends Number {
     }
     return (new Float(Double.valueOf0(s)));
   }
+
+  public static float parseFloat(String s) throws NumberFormatException {
+    if (s == null) {
+      throw new NullPointerException();
+    }
+    return (float) Double.valueOf0(s);
+  }
 }
