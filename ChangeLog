@@ -1,3 +1,18 @@
+Tue Jul 28 15:27:56 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* configure.in, configure, config/config.h.in: added check for
+	snprintf.
+
+	* kaffe/kaffevm/errors.h, soft.c: made classcast exceptions more 
+	informative.
+
+	* libraries/javalib/java/lang/Class.java:
+	libraries/javalib/java/util/ResourceBundle.java: fixed problems
+	that were caused by getClassLoader() fix.
+
+	* config/i386/jit-i386.def, kaffe/kaffevm/debug.[ch]: PJB's 
+	<pjb@imaginet.fr> work-around to allow debugging under Linux.
+
 Mon Jul 27 18:14:44 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/javalib/java/lang/String.java: fixed String.
