@@ -1,5 +1,8 @@
 1999-04-13  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* libltdl/ltdl.c: Update from libtool.  Remove warnings.  Bug
+	fixes for HP/UX.
+
 	* config/i386/common.h (sysdepCallMethod): Update comments, and
 	optimize a bit further.
 
