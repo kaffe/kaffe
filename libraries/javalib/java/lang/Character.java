@@ -14,6 +14,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.StringTokenizer;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
 import kaffe.util.IntegerHashtable;
 
 public final class Character implements Serializable, Comparable {
@@ -491,13 +494,13 @@ public final class Character implements Serializable, Comparable {
 
 	static {
 	    try {
-	    	propTable = getResource("/kaffe/lang/unicode.tbl");
+	    	propTable = getResource("kaffe/lang/unicode.tbl");
 	    } catch (IOException e) {
 		throw new Error("Missing Kaffe Unicode Database table: " + e);
 	    }
 	    byte tbl[];
 	    try {
-	    	tbl = getResource("/kaffe/lang/unicode.idx");
+	    	tbl = getResource("kaffe/lang/unicode.idx");
 	    } catch (IOException e) {
 		throw new Error("Missing Kaffe Unicode Database index: " + e);
 	    }
@@ -522,7 +525,21 @@ public final class Character implements Serializable, Comparable {
 
 	// Read in a resource and convert it to a byte array
 	private static byte[] getResource(String name) throws IOException {
-		InputStream in = Character.class.getResourceAsStream(name);
+		String pathSep = System.getProperties().getProperty("path.separator");
+		String classpath = System.getProperties().getProperty("java.class.path");
+		StringTokenizer t = new StringTokenizer(classpath, pathSep);
+		InputStream in = null;
+		while (t.hasMoreTokens()) {
+			ZipFile zf = new ZipFile(t.nextToken());
+			if (zf != null) {
+				ZipEntry ze = zf.getEntry(name);
+				if (ze != null) {
+					in = zf.getInputStream(ze);
+					break;
+				}
+			}
+		}
+//		InputStream in = Character.class.getResourceAsStream(name);
 		if (in == null) {
 			throw new IOException("not found");
 		}
