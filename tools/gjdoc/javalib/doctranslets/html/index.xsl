@@ -34,7 +34,7 @@
   <xsl:include href="html_common.xsl"/>
 
   <xsl:output method="html"
-    encoding="ISO-8859-1"
+    encoding="utf-8"
     doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
     doctype-system="http://www.w3.org/TR/html4/loose.dtd"
     indent="no"/>

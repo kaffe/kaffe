@@ -36,6 +36,13 @@ public class SerialFieldTagImpl extends AbstractTagImpl implements SerialFieldTa
       super(text);
       this.contextClass=contextClass;
 
+      if (fieldName==null)
+        fieldName="";
+      if (fieldType==null)
+        fieldType="";
+      if (description==null)
+        description="";
+
       int state=1;
       char[] textArr=text.toCharArray();
       for (int i=0; i<textArr.length; ++i) {

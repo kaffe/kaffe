@@ -34,7 +34,6 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public ClassDocProxy(String qualifiedName, ClassDoc classContext) {
       this.qualifiedName=qualifiedName;
       this.classContext=classContext;
-      this.dimension=dimension;
       int pndx=qualifiedName.lastIndexOf('.');
       if (pndx>=0) {
 	 this.name=qualifiedName.substring(pndx+1);

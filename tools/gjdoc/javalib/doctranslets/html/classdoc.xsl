@@ -33,7 +33,7 @@
   <xsl:include href="html_common.xsl"/>
 
   <xsl:output method="html"
-    encoding="iso-8859-1"
+    encoding="utf-8"
     indent="no"/>
 
   <xsl:strip-space elements="*"/>

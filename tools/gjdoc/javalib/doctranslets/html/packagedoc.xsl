@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <!-- packagedoc.xsl
      Copyright (C) 2003 Free Software Foundation, Inc.
@@ -33,7 +33,7 @@
   <xsl:include href="html_common.xsl"/>
 
   <xsl:output method="xml"
-    encoding="UTF8"
+    encoding="utf-8"
     indent="no"/>
 
   <xsl:strip-space elements="*"/>

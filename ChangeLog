@@ -1,5 +1,34 @@
 2004-10-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* tools/gjdoc/javalib/doctranslets/html/allclasses.xsl,
+	tools/gjdoc/javalib/doctranslets/html/allpackages.xsl,
+	tools/gjdoc/javalib/doctranslets/html/classdoc.xsl,
+	tools/gjdoc/javalib/doctranslets/html/descriptor.xsl,
+	tools/gjdoc/javalib/doctranslets/html/doctranslet.xsl,
+	tools/gjdoc/javalib/doctranslets/html/fulltree.xsl,
+	tools/gjdoc/javalib/doctranslets/html/gjdoc.xsl,
+	tools/gjdoc/javalib/doctranslets/html/index.xsl,
+	tools/gjdoc/javalib/doctranslets/html/index_noframes.xsl,
+	tools/gjdoc/javalib/doctranslets/html/packageclasses.xsl,
+	tools/gjdoc/javalib/doctranslets/html/packagedoc.xsl,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ClassDocProxy.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/SerialFieldTagImpl.java:
+	Resynced with gjdoc.
+
+	2004-10-11  Arnaud Vandyck <avdyk@gnu.org>
+
+        * src/gnu/classpath/tools/gjdoc/ClassDocProxy: removed unnecessary
+        assignation (see patch#1964 at Savannah's cp-tools project).
+        * src/gnu/classpath/tools/gjdoc/SerialFieldTagImpl: added not null
+        test against fieldName, fieldType and description.
+        * src/resources/doctranslets/html/allclasses.xsl, allpackages.xsl,
+        classdoc.xsl, descriptor.xsl, doctranslet.xsl, fulltree.xsl,
+        gjdoc.xsl, index.xsl, index_noframes.xsl, packageclasses.xsl,
+        packagedoc.xsl: I18n patch by Takashi Okamoto (see patch#3013 at
+        Savannah's cp-tools project) (it's utf-8, not utf8).
+
+2004-10-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/xml/xpath/XPathParser.y:
 	New file taken from GNU JAXP.
 

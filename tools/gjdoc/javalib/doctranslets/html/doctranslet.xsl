@@ -31,7 +31,7 @@
   xmlns="http://www.gnu.org/software/cp-tools/gjdocxslfiles">
 
   <xsl:output method="xml"
-    encoding="utf8"
+    encoding="utf-8"
     indent="no"/>
 
   <xsl:strip-space elements="*"/>
