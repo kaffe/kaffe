@@ -298,7 +298,7 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", jthread_current(), lk);	    )
 	 * holder as a thread id (null), we might be fooled into thinking 
 	 * we already hold the lock, when in fact we don't.
 	 */
-	if (lk->count > 0 && lk->holder == jthread_current()) {
+	if (lk->count > 0 && lk->holder == (void*)jthread_current()) {
 		lk->count++;
 	}
 	else {
@@ -368,7 +368,7 @@ DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", jthread_current(), lk);   )
 		ABORT();
 	}
 #endif
-	assert(lk->count > 0 && lk->holder == jthread_current());
+	assert(lk->count > 0 && lk->holder == (void*)jthread_current());
 	lk->count--;
 	if (lk->count == 0) {
 		lk->holder = 0;
@@ -415,7 +415,7 @@ __waitCond(iLock* lk, jlong timeout)
        int count;
 DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", jthread_current(), lk);	)
 
-	if (lk == 0 || lk->holder != jthread_current()) {
+	if (lk == 0 || lk->holder != (void*)jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -464,7 +464,7 @@ __signalCond(iLock* lk)
 {
 DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", jthread_current(), lk);)
 
-	if (lk == 0 || lk->holder != jthread_current()) {
+	if (lk == 0 || lk->holder != (void*)jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -498,7 +498,7 @@ __broadcastCond(iLock* lk)
 {
 DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", jthread_current(), lk);)
 
-	if (lk == 0 || lk->holder != jthread_current()) {
+	if (lk == 0 || lk->holder != (void*)jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
@@ -523,7 +523,7 @@ DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", jthread_current(), addr);)
 int
 __holdMutex(iLock* lk)
 {
-	if (lk == 0 || lk->holder != jthread_current()) {
+	if (lk == 0 || lk->holder != (void*)jthread_current()) {
 		return (0);
 	}
 	else {
