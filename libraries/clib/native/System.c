@@ -153,7 +153,7 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 }
 
 void
-java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
+java_lang_System_arraycopy0(struct Hjava_lang_Object* src, jint srcpos,
 			   struct Hjava_lang_Object* dst, jint dstpos,
 			   jint len) {
 	char* in; 	 
@@ -162,50 +162,8 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 	Hjava_lang_Class* sclass; 	 
 	Hjava_lang_Class* dclass;
 
-	if (src==0 || dst==0) {
-		throwException (NullPointerException);
-	}
-
-	if (len == 0) { 	 
-		return; 	 
-	} 	 
-
 	sclass = OBJECT_CLASS(src); 	 
 	dclass = OBJECT_CLASS(dst);
-
-	/* Must be arrays */ 	 
-	if (!CLASS_IS_ARRAY(sclass)) {
-		Hjava_lang_Throwable* asexc;
-		const char *type = CLASS_CNAME(sclass);
-		char *b;
-#define _FORMAT "source not an array `%s'"
-		b = checkPtr(KMALLOC(strlen(type)+strlen(_FORMAT)));
-		sprintf(b, _FORMAT, type);
-#undef _FORMAT
-		asexc = ArrayStoreException(b);
-		KFREE(b);
-		throwException(asexc);
-	}
-
-	if(!CLASS_IS_ARRAY(dclass)) { 	 
-		Hjava_lang_Throwable* asexc;
-		const char *type = CLASS_CNAME(dclass);
-		char *b;
-#define _FORMAT "destination not an array `%s'"
-		b = checkPtr(KMALLOC(strlen(type)+strlen(_FORMAT)));
-		sprintf(b, _FORMAT, type);
-#undef _FORMAT
-		asexc = ArrayStoreException(b);
-		KFREE(b);
-		throwException(asexc);
-	} 	 
-
-	/* Make sure we'll keep in the array boundaries */ 	 
-	if ((srcpos < 0 || srcpos + len > ARRAY_SIZE(src)) || 	 
-	    (dstpos < 0 || dstpos + len > ARRAY_SIZE(dst)) || 	 
-	    (len < 0)) { 	 
-		throwException (ArrayIndexOutOfBoundsException);
-	}
 
 	sclass = CLASS_ELEMENT_TYPE(sclass); 	 
 	dclass = CLASS_ELEMENT_TYPE(dclass); 	 
