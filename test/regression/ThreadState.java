@@ -22,6 +22,16 @@ public class ThreadState extends Thread {
       numThreads = DEFAULT_NUMTHREADS;
     }
 
+	new Thread() {
+	    public void run() {
+		try {
+		    Thread.sleep(60 * 1000);
+		} catch (Exception _) { }
+		System.out.println("Time out.  Failure.");
+		System.exit(-1);
+	    }
+	}.start();
+
     Thread[] threads = new Thread[numThreads];
     for (int i = 0; i < numThreads; i++) {
       threads[i] = new ThreadState();
@@ -36,6 +46,7 @@ public class ThreadState extends Thread {
 	assert(false, "main " + e);
       }
     }
+    System.exit(0);
   }
 
   public void run() {
