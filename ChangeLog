@@ -1,3 +1,9 @@
+Sun Jan 17 04:26:15 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/Makefile.am (EXTRA_DIST): added
+	HelloWorldApp.class.save
+	* test/regression/Makefile.in: regen
+
 Sun Jan 17 03:46:17 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh, libltdl/ltdl.c: updated from libtool, to

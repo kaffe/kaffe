@@ -66,6 +66,7 @@ EXTRA_DIST = \
 	HashtableTest1.java \
 	HashtableTest1.out \
 	Hello.java \
+	HelloWorldApp.class.save \
 	HelloWorldApp.java \
 	HelloWorldApp.out \
 	IllegalInterface.java \
