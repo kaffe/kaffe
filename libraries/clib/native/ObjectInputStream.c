@@ -117,7 +117,16 @@ java_io_ObjectInputStream_invokeObjectReader(struct Hjava_io_ObjectInputStream* 
 	Method* meth;
 	jvalue args;
 
-	meth = lookupClassMethod(cls, "readObject", "(Ljava/io/ObjectInputStream;)V");
+	/*
+	 * Each subclass of a Serializable object may define its own 
+	 * readObject method.  [...] When implemented, the class is only 
+	 * responsible for restoring its own fields, not those of its 
+	 * supertypes or subtypes. 
+	 */
+	meth = findMethodLocal(cls, 
+		makeUtf8Const("readObject", -1), 
+		makeUtf8Const("(Ljava/io/ObjectInputStream;)V", -1));
+
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);
 		return (true);
