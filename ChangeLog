@@ -1,3 +1,12 @@
+2004-07-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/profiles/default/coreawt.files,
+	libraries/javalib/profiles/default/moreawt.files:
+	Moved gnu/java/awt/EmbeddedWindow.java, 
+	gnu/java/awt/EmbeddedWindowSupport.java and
+	gnu/java/awt/peer/EmbeddedWindowPeer.java to moreawt.files
+	to fix build with kjc.
+
 2004-07-09  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-base.c

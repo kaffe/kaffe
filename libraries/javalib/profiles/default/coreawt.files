@@ -2,9 +2,6 @@ gnu/java/awt/BitMaskExtent.java
 gnu/java/awt/Buffers.java
 gnu/java/awt/ComponentDataBlitOp.java
 gnu/java/awt/EventModifier.java
-gnu/java/awt/EmbeddedWindow.java
-gnu/java/awt/EmbeddedWindowSupport.java
-gnu/java/awt/peer/EmbeddedWindowPeer.java
 java/awt/ActionEvt.java
 java/awt/Adjustable.java
 java/awt/AdjustmentEvt.java

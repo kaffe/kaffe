@@ -1,3 +1,6 @@
+gnu/java/awt/EmbeddedWindow.java
+gnu/java/awt/EmbeddedWindowSupport.java
+gnu/java/awt/peer/EmbeddedWindowPeer.java
 java/awt/AlphaComposite.java
 java/awt/ComponentOrientation.java
 java/awt/Robot.java
