@@ -33,11 +33,9 @@
 
 #include <xprof/debugFile.h>
 
-JavaVMInitArgs vmargs;
+KaffeVM_Arguments vmargs;
 JNIEnv* env;
 int noExit = 0;
-
-extern JavaVMInitArgs Kaffe_JavaVMArgs[1]; // XXX
 
 extern int internal_test(parsedString *ps);
 
@@ -61,7 +59,6 @@ extern Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 /* Initialisation prototypes */
 void initClasspath(void);
 void initNative(void);
-void initThreads(void);
 
 int main(int argc, char *argv[])
 {
@@ -70,7 +67,7 @@ int main(int argc, char *argv[])
 	char *cp;
 
 	dbgSetMaskStr("MOREJIT,JIT");
-	vmargs.version = JAVA_VERSION_HEX;
+	vmargs.version = JNI_VERSION_1_1;
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
 	
 #if defined(KAFFE_XDEBUGGING)
@@ -99,8 +96,8 @@ int main(int argc, char *argv[])
 	INIT_MD();
 #endif
 
-	Kaffe_JavaVMArgs[0] = vmargs;
-	threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
+	Kaffe_JavaVMArgs = vmargs;
+	threadStackSize = Kaffe_JavaVMArgs.nativeStackSize;
 	
 	/* Register allocation types with gc subsystem */
 	main_collector = initCollector();

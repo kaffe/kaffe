@@ -1,3 +1,11 @@
+2004-07-15  Dalibor Topic  <robilad@kaffe.org>,
+	    Timothy S. Stack <stack@cs.utah.edu>
+
+	* test/internal/jit_stub.c:
+	Fixed to build again with updated jni.
+
+	Reported by: Arnaud Vandyck  <avdyk@ressource-toi.org>
+
 2004-07-15  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/javalib/java/awt/MouseEvt.java
@@ -12,7 +20,7 @@
 
 	* kaffe/kaffevm/ksem.c (ksemGet): Readded jmutex_lock.
 
-2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+2004-07-14  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/essential.files,
         libraries/javalib/profiles/allatonce/all.files,
@@ -20,7 +28,7 @@
 	Shuffled java/lang/IllegalMonitorStateException.java to 
 	essential file set to fix build on kjc.
 
-2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+2004-07-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/superh: Moved over to
 	* config/sh: new directory.
@@ -57,21 +65,21 @@
         scripts/config.sub:
 	Rengenerated.
 
-2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+2004-07-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/classpath/Configuration.java
 	(default_awt_toolkit): Added new field for classpath AWT.
 
         Reported by: Jim Huang  <jserv@kaffe.org>
 
-2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+2004-07-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/lang/Thread.java
 	(holdsLock): Implemented.
 
 	Reported by: Jim Huang  <jserv@kaffe.org>
 	
-2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+2004-07-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/sparc/jit-sparc.def:
 	Fixed stray LOUT without closing brace.
