@@ -1,3 +1,9 @@
+Wed Aug 19 18:03:54 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * libraries/clib/native/FileInputStream.c
+	(java_io_FileInputStream_available): try file size, from fstat,
+	minus current position, from lseek, before trying ioctl and/or select
+
 Wed Aug 19 15:23:07 1998  Pavel Roskin  <Pavel.Roskin@ecsoft.co.uk>
 
 	* config/config-hacks.h, config-io.h: only include winsock if we
@@ -5,6 +11,9 @@ Wed Aug 19 15:23:07 1998  Pavel Roskin  <Pavel.Roskin@ecsoft.co.uk>
 	* libraries/clib/native/System.c, File.c: use ../ in include to
 	work around case insensitivity on some OSs.
 	* config/config.alias: treat all HPPA versions the same.
+	* kaffe/kaffe/main.c: avoid empty if() clause for #ifdef'd code.
+	* kaffe/kaffevm/slib.h, config/parisc/hpux/config.frag: HPUX-specific
+	fixes.
 
 Wed Aug 19 11:45:12 1998  Mike Boilen <mgb@cs.brown.edu>
 
