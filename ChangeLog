@@ -1,5 +1,18 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/SwingUtilities.java:
+        Resynced with GNU Classpath.
+
+	2004-11-16  Sven de Marothy  <sven@physto.se>
+
+        * javax/swing/SwingUtilities.java:
+        (computeDifference): Implemented
+        (computeIntersection): Likewise
+        (computeUnion): Likewise
+        (isRectangleContainingRectangle): Likewise
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/BasicStroke.java,
 	libraries/javalib/java/awt/Button.java,
 	libraries/javalib/java/awt/Canvas.java,
