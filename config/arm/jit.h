@@ -74,11 +74,11 @@ typedef struct _exceptionFrame {
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
 #define CALL_KAFFE_EXCEPTION(frame, handler, object)			\
-	asm volatile ("							\n\
-		mov r0, %0						\n\
-		mov fp, %2						\n\
-		mov pc, %1						\n\
-	" : : "r" (object), "r" (handler), "r" (frame) : "r0")
+	asm volatile ("	\n"						\
+	"	mov r0, %0 \n"						\
+	"	mov fp, %2 \n"						\
+	"	mov pc, %1 \n"						\
+	: : "r" (object), "r" (handler), "r" (frame) : "r0")
 
 /**/
 /* Method dispatch.  */

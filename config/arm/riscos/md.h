@@ -87,8 +87,8 @@ extern void init_md(void);
 	: "r" ((CALL)->args[i].i)					\
 	: "sp");							\
     }									\
-    asm ("mov __lr, __pc\n						\
-	  mov __pc, %3\n"						\
+    asm ("mov __lr, __pc\n"						\
+	 "mov __pc, %3\n"						\
         : "=r" (r0), "=r" (r1), "=f" (f0)				\
 	: "r" ((CALL)->function),					\
 	  "0" (r0), "1" (r1), "r" (r2), "r" (r3)			\
