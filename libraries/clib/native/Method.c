@@ -19,7 +19,6 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/exception.h"
-#include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "java_lang_reflect_Method.h"
 #include "java_lang_Boolean.h"

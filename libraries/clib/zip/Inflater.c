@@ -13,7 +13,6 @@
 #include "config-mem.h"
 #include <native.h>
 #include "java_util_zip_Inflater.h"
-#include "../../../kaffe/kaffevm/errors.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 

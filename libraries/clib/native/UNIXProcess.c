@@ -20,7 +20,6 @@
 #include <native.h>
 #include <files.h>
 #include "kaffe_lang_UNIXProcess.h"
-#include "../../../kaffe/kaffevm/errors.h"
 
 typedef struct _child {
 	jobject 		proc;

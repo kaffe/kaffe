@@ -23,7 +23,6 @@
 #include "java_io_File.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/errors.h"
 
 /*
  * Is named item a file?

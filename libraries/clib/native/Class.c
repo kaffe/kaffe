@@ -19,7 +19,6 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"

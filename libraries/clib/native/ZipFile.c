@@ -16,7 +16,6 @@
 #include <native.h>
 #include "../../../kaffe/kaffevm/jar.h"
 #include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/errors.h"
 #include "java_util_zip_ZipEntry.h"
 #include "java_util_Vector.h"
 

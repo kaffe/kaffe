@@ -12,7 +12,6 @@
 #include "config-std.h"
 #include "config-std.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/errors.h"
 #include <native.h>
 
 Hjava_lang_String*

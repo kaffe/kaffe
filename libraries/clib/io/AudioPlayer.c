@@ -14,9 +14,9 @@
 #include "files.h"
 #include "defs.h"
 #include "jsyscall.h"
+#include <native.h>
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
-#include "../../../kaffe/kaffevm/errors.h"
 
 void
 kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
