@@ -1,3 +1,9 @@
+2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/clib/io/FileDescriptor.c:
+	Use '#ifdef's around O_SYNC/O_DSYNC since they are not defined on
+	FreeBSD.
+
 2003-08-30  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/rebuildLib.in: Check if SRCDIR represents an

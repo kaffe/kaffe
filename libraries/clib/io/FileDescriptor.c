@@ -84,11 +84,15 @@ jlong java_io_FileDescriptor_nativeOpen(struct Hjava_io_FileDescriptor* this, st
     else
       open_options |= O_TRUNC;
   }
-  
+
+#if defined(O_SYNC)
   if (mode & JAVA_SYNC)
     open_options |= O_SYNC;
+#endif
+#if defined(O_DSYNC)
   if (mode & JAVA_DSYNC)
     open_options |= O_DSYNC;
+#endif
 
   // By default we put the files in all rw access. It will be modified by process umask.
   rc = KOPEN(str, open_options|O_BINARY, 0666, &fd);
