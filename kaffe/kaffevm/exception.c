@@ -27,7 +27,7 @@
 #include "baseClasses.h"
 #include "lookup.h"
 #include "thread.h"
-#include "jthread.h"
+#include "thread-impl.h"
 #include "errors.h"
 #include "itypes.h"
 #include "external.h"
