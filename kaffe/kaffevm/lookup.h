@@ -35,7 +35,7 @@ typedef struct _fieldInfo {
 	Hjava_lang_Class*	class;
 } fieldInfo;
 
-void	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, callInfo*);
+void	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, bool, callInfo*);
 void	getField(constIndex, Hjava_lang_Class*, bool, fieldInfo*);
 Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*);
 

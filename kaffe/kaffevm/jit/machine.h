@@ -32,7 +32,8 @@
 /* -------------------------------------------------------------------- */
 /* Methods */
 
-#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, &cinfo)
+#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, false, &cinfo)
+#define	get_special_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, true, &cinfo)
 
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)

@@ -1489,7 +1489,7 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
-			getMethodSignatureClass(lclw, meth->class, false, &call);
+			getMethodSignatureClass(lclw, meth->class, false, false, &call);
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1587,7 +1587,7 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKEINTERFACE:
-			getMethodSignatureClass(lclw, meth->class, false, &call);
+			getMethodSignatureClass(lclw, meth->class, false, false, &call);
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1684,7 +1684,7 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKESTATIC:
-			getMethodSignatureClass(lclw, meth->class, false, &call);
+			getMethodSignatureClass(lclw, meth->class, false, false, &call);
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');

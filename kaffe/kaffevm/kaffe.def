@@ -2201,7 +2201,7 @@ define_insn(INVOKESPECIAL)
 
 	slot_alloctmp(mtable);
 
-	get_method_info(idx);
+	get_special_method_info(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {

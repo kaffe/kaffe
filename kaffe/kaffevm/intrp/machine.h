@@ -21,7 +21,8 @@
 #define	object_array_offset	(ARRAY_DATA_OFFSET)
 #define	object_array_length	(ARRAY_SIZE_OFFSET)
 
-#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, &cinfo)
+#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, false, &cinfo)
+#define	get_special_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, true, &cinfo)
 
 #define	get_dispatch_table(mtable) \
 	move_ref(mtable, ((slots*)&cinfo.class->dtable))

@@ -26,6 +26,7 @@
 #include "baseClasses.h"
 #include "machine.h"
 #include "locks.h"
+#include "soft.h"
 
 static void throwAbstractMethodError(void);
 static void throwNoSuchMethodError(void);
@@ -34,7 +35,7 @@ static void throwNoSuchMethodError(void);
  * Lookup a method reference and get the various interesting bits.
  */
 void
-getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, callInfo* call)
+getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, bool isSpecial, callInfo* call)
 {
 	constants* pool;
 	constIndex ci;
@@ -65,6 +66,13 @@ DBG(MLOOKUP,	dprintf("No Methodref found\n");			)
 		ci = METHODREF_CLASS(idx, pool);
 		class = getClass(ci, this);
 		processClass(class, CSTATE_LINKED);
+
+                if (isSpecial == true) {
+                        if (!equalUtf8Consts(name, constructor_name) && class !=
+ this && instanceof(class, this)) {
+                                class = this->superclass;
+                        }
+                }
 
 DBG(MLOOKUP,	dprintf("getMethodSignatureClass(%s,%s,%s)\n",
 			class->name->data, name->data, sig->data);	)
