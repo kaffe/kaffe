@@ -1,3 +1,7 @@
+Thu Aug 20 00:22:02 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/alpha/trampolines.c: remove extra trailing #endif
+
 Wed Aug 19 21:54:45 1998  Archie Cobbs  <archie@whistle.com>
 
 	* kaffe/kaffevm/string.c: make sure hashChars works even if len==0
