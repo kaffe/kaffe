@@ -1,6 +1,9 @@
 import java.lang.reflect.Method;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.beans.Introspector;
+import java.beans.BeanInfo;
+import java.beans.SimpleBeanInfo;
 
 public class LoaderTest {
 
@@ -12,6 +15,9 @@ public class LoaderTest {
 		System.out.println("Loading Class1 with Loader1");
 		Class c1 = Class.forName("Class1", true, l1);
 		show(c1);
+
+		System.out.println("Loading Class1BeanInfo");
+		Introspector.getBeanInfo(c1);
 
 		System.out.println("Loading Class2 via Class1");
 		Object o = c1.newInstance();
@@ -57,10 +63,10 @@ public class LoaderTest {
 	}
 }
 
-class Class0 {
+public class Class0 {
 }
 
-class Class1 {
+public class Class1 {
 	public Class1 () {
 	}
 	public Class getClass2() throws Exception {
@@ -73,7 +79,10 @@ class Class1 {
 	}
 }
 
-class Class2 {
+public class Class1BeanInfo extends SimpleBeanInfo {
+}
+
+public class Class2 {
 	static {
 		try {
 			System.loadLibrary("Class2.lib");
@@ -82,7 +91,7 @@ class Class2 {
 	}
 }
 
-class Class3 {
+public class Class3 {
 	static {
 		try {
 			System.loadLibrary("Class3.lib");
@@ -91,14 +100,20 @@ class Class3 {
 	}
 }
 
-class Loader1 extends ClassLoader {
+public class Loader1 extends ClassLoader {
 	public Class findClass(String name) throws ClassNotFoundException {
-		if (!name.startsWith("java"))
-			System.out.println(this + ": finding " + name);
+		boolean debug = !name.startsWith("java");
+		if (debug)
+			System.out.print(this + ": finding " + name + "...");
 		try {
 			byte[] buf = LoaderTest.getClassBytes(name);
-			return defineClass(name, buf, 0, buf.length);
+			Class rtn = defineClass(name, buf, 0, buf.length);
+			if (debug)
+				System.out.println("found");
+			return rtn;
 		} catch (ClassNotFoundException e) {
+			if (debug)
+				System.out.println("not found");
 			return findSystemClass(name);
 		}
 	}
@@ -120,7 +135,7 @@ class Loader1 extends ClassLoader {
 	}
 }
 
-class Loader2 extends ClassLoader {
+public class Loader2 extends ClassLoader {
 	public Class findClass(String name) throws ClassNotFoundException {
 		if (!name.startsWith("java"))
 			System.out.println(this + ": finding " + name);
@@ -153,14 +168,16 @@ class Loader2 extends ClassLoader {
 Loading Class0 with default ClassLoader
 -> class Class0 loader null
 Loading Class1 with Loader1
-Loader1: finding Class1
+Loader1: finding Class1...found
 -> class Class1 loader Loader1
+Loading Class1BeanInfo
+Loader1: finding Class1BeanInfo...found
 Loading Class2 via Class1
-Loader1: finding Class2
+Loader1: finding Class2...found
 Loader1.findLibrary(Class2.lib)
 -> class Class2 loader Loader1
 Loading Class3 via Class1
-Loader1: finding Class3
+Loader1: finding Class3...found
 Loader1.findLibrary(Class3.lib)
 -> class Class3 loader Loader1
 Loading Class3 via Loader2
