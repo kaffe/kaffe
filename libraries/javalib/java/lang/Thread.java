@@ -130,9 +130,6 @@ public class Thread implements Runnable
   /** The next thread number to use. */
   private static int numAnonymousThreadsCreated;
 
-  /** True if the thread has already been started */
-  private boolean alreadyStarted;
-
   /**
    * Allocates a new <code>Thread</code> object. This constructor has
    * the same effect as <code>Thread(null, null,</code>
@@ -971,14 +968,5 @@ public class Thread implements Runnable
   {
     group.removeThread(this);
     vmThread = null;
-    alreadyStarted = true;
-  }
-
-  /**
-   * Returns true if the thread had already been started once.
-   */
-  final boolean hasDied()
-  {
-    return alreadyStarted;
   }
 }

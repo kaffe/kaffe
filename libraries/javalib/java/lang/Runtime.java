@@ -272,7 +272,7 @@ public void addShutdownHook(Thread hook) throws IllegalArgumentException, Illega
 		if (VMShuttingDown)
 			throw new IllegalStateException("VM is shutting down.");
 	}
-	if (hook.isAlive() || hook.isInterrupted() || hook.hasDied())
+	if (hook.isAlive() || hook.isInterrupted() || hook.getThreadGroup() == null)
 		throw new IllegalArgumentException("Thread has already been started once.");
 
 	synchronized( shutdownHooks ) {

@@ -1,3 +1,12 @@
+2004-07-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/java/lang/Thread.java: Reverted to original file from
+	GNU Classpath.
+
+	* libraries/java/lang/Runtime.java
+	(addShutdownHook): Use getThreadGroup() == null instead of hasDied()
+	which has the same meaning.
+
 2004-07-30  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/jit3/machine.c:
