@@ -10,7 +10,12 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libmicrosoft.la
 
-libmicrosoft_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libmicrosoft_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libmicrosoft_la_SOURCES = Delegate.c
 
 CLEANFILES = so_locations

@@ -10,8 +10,14 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libtritonusalsa.la
 
-libtritonusalsa_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
+libtritonusalsa_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|org)_"
+
 libtritonusalsa_la_LIBADD = -lasound
+
 libtritonusalsa_la_SOURCES = \
 	common.c \
 	init.c \

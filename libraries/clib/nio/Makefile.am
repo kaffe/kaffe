@@ -8,7 +8,12 @@
 AM_CPPFLAGS = -I$(top_builddir)/include
 native_LTLIBRARIES = libnio.la
 
-libnio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libnio_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libnio_la_SOURCES = \
 	DirectByteBufferImpl.c \
 	SelectorImpl.c \

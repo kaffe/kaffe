@@ -20,8 +20,14 @@ SECURITY_SRCS =	\
 
 security_DATA = java.security
 
-libsecurity_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libsecurity_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libsecurity_la_LIBADD = $(SECURITY_LIBS)
+
 libsecurity_la_SOURCES = $(SECURITY_SRCS)
 
 CLEANFILES = so_locations

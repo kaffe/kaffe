@@ -10,7 +10,12 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libmanagement.la
 
-libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libmanagement_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libmanagement_la_SOURCES = \
 	Classpath.c \
 	JIT.c \

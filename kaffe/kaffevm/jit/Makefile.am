@@ -12,7 +12,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(
 
 noinst_LTLIBRARIES = libengine.la
 
-libengine_la_LDFLAGS = $(KVMLIBFLAGS)
+libengine_la_LDFLAGS = \
+	$(KVMLIBFLAGS)
+
 libengine_la_SOURCES = \
 	basecode.c \
 	constpool.c \

@@ -16,9 +16,13 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$
 
 lib_LTLIBRARIES = libkaffexprof.la
 
-libkaffexprof_la_LDFLAGS = -export-dynamic -release $(KVER)
+libkaffexprof_la_LDFLAGS = \
+	-export-dynamic \
+	-release $(KVER)
+
 libkaffexprof_la_DEPENDENCIES = \
 	$(LIBLTDL)
+
 libkaffexprof_la_LIBADD = $(libkaffexprof_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
 libkaffexprof_la_SOURCES = \

@@ -294,11 +294,7 @@ void jthread_dumpthreadinfo(jthread_t tid);
 /*
  * return thread-specific data for a given jthread
  */
-static inline threadData*
-jthread_get_data(jthread_t tid) 
-{
-	return (&tid->localData);
-}
+threadData* jthread_get_data(jthread_t tid);
 
 /*
  * API related to I/O
@@ -340,40 +336,16 @@ jthread_t jthread_from_data(threadData *td, void *suspender);
 
 jlong jthread_get_usage(jthread_t jt);
 
-static inline
-int jthread_get_status(jthread_t jt)
-{
-	return( jt->status );
-}
+int jthread_get_status(jthread_t jt);
 
-static inline
-int jthread_is_interrupted(jthread_t jt)
-{
-	return( jt->flags & THREAD_FLAGS_INTERRUPTED );
-}
+int jthread_is_interrupted(jthread_t jt);
 
-static inline
-int jthread_on_mutex(jthread_t jt)
-{
-	return( jt->flags & THREAD_FLAGS_WAIT_MUTEX );
-}
+int jthread_on_mutex(jthread_t jt);
 
-static inline
-int jthread_on_condvar(jthread_t jt)
-{
-	return( jt->flags & THREAD_FLAGS_WAIT_CONDVAR );
-}
+int jthread_on_condvar(jthread_t jt);
 
-static inline
-void jthread_clear_run(jthread_t jt)
-{
-	jt->startUsed = 0;
-}
+void jthread_clear_run(jthread_t jt);
 
-static inline
-int jthread_has_run(jthread_t jt)
-{
-	return( jt->startUsed != 0 );
-}
+int jthread_has_run(jthread_t jt);
 
 #endif

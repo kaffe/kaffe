@@ -20,6 +20,5 @@ libreplace_la_SOURCES = \
 	inet_ntop.c \
 	memset.c
 
-#libreplace_la_LIBADD = @LTLIBOBJS@
-
-EXTRA_DIST = ifaddrs_linux.c
+EXTRA_DIST = \
+	ifaddrs_linux.c

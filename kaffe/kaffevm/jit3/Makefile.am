@@ -19,7 +19,9 @@ AM_CPPFLAGS = \
 
 noinst_LTLIBRARIES = libengine.la
 
-libengine_la_LDFLAGS = $(KVMLIBFLAGS)
+libengine_la_LDFLAGS = \
+	$(KVMLIBFLAGS)
+
 libengine_la_SOURCES = \
 	basecode.c \
 	constpool.c \

@@ -1,4 +1,4 @@
-AC_INIT([kaffe],[1.1.x-cvs],[kaffe@kaffe.org])
+AC_INIT([Kaffe OpenVM],[1.1.x-cvs],[kaffe@kaffe.org],[kaffe])
 AC_CONFIG_SRCDIR([kaffe])
 AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
 AC_CONFIG_MACRO_DIR([m4])
@@ -136,6 +136,7 @@ esac
 
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_SUBST(LIBLTDL)

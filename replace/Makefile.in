@@ -96,6 +96,7 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 AR = @AR@
+AS = @AS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -128,6 +129,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
+DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
 DNSJAVA_JAR = @DNSJAVA_JAR@
 ECHO = @ECHO@
@@ -206,6 +208,7 @@ M_LIBS = @M_LIBS@
 NEED_LIBXPROF_FALSE = @NEED_LIBXPROF_FALSE@
 NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -250,9 +253,12 @@ ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 abssrcdir = @abssrcdir@
 ac_ct_AR = @ac_ct_AR@
+ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
+ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
@@ -311,9 +317,9 @@ libreplace_la_SOURCES = \
 	inet_ntop.c \
 	memset.c
 
+EXTRA_DIST = \
+	ifaddrs_linux.c
 
-#libreplace_la_LIBADD = @LTLIBOBJS@
-EXTRA_DIST = ifaddrs_linux.c
 all: all-am
 
 .SUFFIXES:

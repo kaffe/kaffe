@@ -10,8 +10,14 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libmath.la
 
-libmath_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libmath_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libmath_la_LIBADD = $(MATH_LIBS) $(M_LIBS)
+
 libmath_la_SOURCES = BigInteger.c
 
 CLEANFILES = so_locations

@@ -10,8 +10,14 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libzip.la
 
-libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libzip_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libzip_la_LIBADD = $(ZIP_LIBS)
+
 libzip_la_SOURCES = \
 	Adler32.c \
 	CRC32.c \

@@ -18,8 +18,14 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 AWT_LIBS = -L$(QTDIR)/lib
 
-libawt_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libawt_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-module \
+	-release $(KVER) \
+	-export-symbols-regex "^([Jj]ava|kaffe)_"
+
 libawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+
 libawt_la_MOC = \
 	evt.moc.cc
 libawt_la_SOURCES = \

@@ -7,7 +7,9 @@
 # of this file. 
 
 noinst_LTLIBRARIES = libkthread.la
-libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
+libkthread_la_LDFLAGS = \
+	$(KVMLIBFLAGS)
+
 libkthread_la_SOURCES = lock-impl.c signal.c syscalls.c thread-impl.c
 EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
 		jsignal.h jthread.h
