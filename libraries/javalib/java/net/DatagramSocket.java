@@ -137,7 +137,7 @@ public void send(DatagramPacket p) throws IOException  {
 			    || p.getPort() == -1) {
 				throw new IOException("no destination");
 			}
-			//checkRemote(p.getAddress(), p.getPort());
+			checkRemote(p.getAddress(), p.getPort());
 		} else if (p.getAddress() == null) {
 			p.setAddress(this.address);
 			p.setPort(this.port);
