@@ -359,25 +359,24 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	}
 	
 	{
-	char *tmp;
 	char *locale;
 	char lang[3];
 
 #if defined(HAVE_LC_MESSAGES)
 	locale = setlocale (LC_MESSAGES, "");
-
-	tmp = strchr (locale, '_');
 #else
-	tmp = NULL;
+	locale = NULL;
 #endif
-	if (tmp != NULL) {
+	if ((locale != NULL) && (strlen(locale)>2)) {
 		lang[2] = '\0';
 
 		strncpy (lang, locale, 2);
 		setProperty (p, "user.language", lang);
 
-		strncpy (lang, tmp+1, 2);
-		setProperty (p, "user.region", lang);
+		if (locale[2] == '_') {
+			strncpy (lang, &locale[3], 2);
+			setProperty (p, "user.region", lang);
+		}
 	} else {
 		/* locale not set or not of the form <lang>_<region> */
 		setProperty (p, "user.language", "en");
