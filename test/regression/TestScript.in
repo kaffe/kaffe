@@ -187,6 +187,7 @@ runtest KaffeVerifyBug
 runtest Schtum
 runtest tthrd1
 runtest Reflect 
+runtest MethodBug
 runtest Bean
 
 #
@@ -227,6 +228,9 @@ runtest -nocompile ClassGC
 # These tests must have their output sorted, because they're multi-threaded.
 runtest -sort GCTest
 runtest -sort ThreadLocalTest
+
+# This one is sorted cause it the order of its output is not defined by the spec
+runtest -sort BeanBug
 
 runtest BitSetTest 
 runtest ExceptionInInitializerTest
