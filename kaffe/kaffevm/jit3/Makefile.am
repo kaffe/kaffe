@@ -45,7 +45,9 @@ libengine_la_SOURCES = \
 	slots.h \
 	stackTrace-impl.h \
 	native-wrapper.c \
-	native-wrapper.h
+	native-wrapper.h \
+	methodcalls.c \
+	methodcalls.h
 
 EXTRA_DIST = \
 	Makefile.frag

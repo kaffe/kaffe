@@ -2703,6 +2703,13 @@ define_insn(INVOKEVIRTUAL)
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
 	}
+	else if ( (method_method()->accflags & ACC_ABSTRACT) != 0 &&
+		  (method_class()->accflags & ACC_ABSTRACT) == 0 ) {
+		softcall_abstractmethod(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
 	else if (!checkMethodAccess(current_class(),
 				    method_class(),
 				    method_method())) {
@@ -2828,6 +2835,13 @@ define_insn(INVOKESPECIAL)
 	}
 	else if (method_method()->accflags & ACC_STATIC) {
 		softcall_incompatibleclasschange(method_classname(), method_name());
+		low = method_returntype();
+		pop(method_nargs() + 1);
+		METHOD_RETURN_VALUE();
+	}
+	else if ( (method_method()->accflags & ACC_ABSTRACT) != 0 &&
+		  (method_class()->accflags & ACC_ABSTRACT) == 0 ) {
+		softcall_abstractmethod(method_classname(), method_name());
 		low = method_returntype();
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();

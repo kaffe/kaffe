@@ -184,14 +184,9 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
 #define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
 
-#if defined(TRANSLATOR)
 #define	METHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
 		((M)->ncode) : \
 		((M)->class->vtable->method[(M)->idx]))
-#else
-/* INTERPRETER */
-#define	METHOD_NATIVECODE(M)		((M)->ncode)
-#endif
 
 /* Like METHOD_NATIVECODE, except we take the address ---
  * gcc doesn't compile &( ? : ) expressions for some reason
@@ -205,12 +200,6 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 					(M)->accflags |= ACC_TRANSLATED
 #define	SET_METHOD_JITCODE(M, C)	METHOD_NATIVECODE(M) = (C); \
 					(M)->accflags |= ACC_TRANSLATED|ACC_JITTED
-
-#if defined(TRANSLATOR)
-#define	METHOD_INDIRECTMETHOD(M)	METHOD_NATIVECODE(M)
-#else
-#define	METHOD_INDIRECTMETHOD(M)	(M)
-#endif
 
 /*
  * Stats for the nameMapping object.

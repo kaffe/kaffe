@@ -39,6 +39,8 @@
 #include "thread.h"
 #include "jthread.h"
 #include "locks.h"
+#include "methodcalls.h"
+#include "native.h"
 
 #if !defined(HAVE_GETTIMEOFDAY)
 #include <sys/timeb.h>
@@ -152,7 +154,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 		throwException(NoSuchMethodError(method_name));
 	}
 
-	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, &retval);
 
 	return (retval);
 }
@@ -228,7 +230,7 @@ do_execute_java_class_method_v(const char* cname,
 	}
 
 	/* Make the call */
-	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), 0, argptr, &retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), 0, argptr, &retval);
 
 	return (retval);
 }
@@ -317,7 +319,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 	assert(obj != 0);
 
 	/* Make the call */
-	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+	callMethodV(mb, METHOD_NATIVECODE(mb), obj, argptr, &retval);
 
 	return (obj);
 }
@@ -434,54 +436,18 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	int i;
 	int j;
 	int s;
-	/* XXX call.callsize and call.calltype arrays are statically sized 
-	   and are not checked for running out of bounds */
 	callMethodInfo call;	
-	jvalue in[MAXMARGS];
 	jvalue tmp;
 
 	if (ret == 0) {
 		ret = &tmp;
 	}
-	i = 0;
+	i = engine_reservedArgs(meth);
 	s = 0;
-
-#if defined(INTERPRETER)
-	/*
-	 * If the method is native, we must find it so that we know whether
-	 * it is a JNI method or not.  If it is one, ACC_JNI will be set
-	 * upon return from native and we will add additional parameters 
-	 * according to the JNI calling convention.
-	 */
-	meth = (Method*)func;
-	if (meth->accflags & ACC_NATIVE) {
-		if (!METHOD_TRANSLATED(meth)) {
-			errorInfo info;
-			if (native(meth, &info) == false) {
-				throwError(&info);
-			}
-		}
-		call.function = METHOD_NATIVECODE(meth);
-	}
-
-	/* Insert the JNI environment */
-	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-		call.calltype[i] = 'L';
-		in[i].l = THREAD_JNIENV(); 
-		s += call.callsize[i];
-		i++;
-
-		/* If method is static we must insert the class as an argument */
-		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			s += call.callsize[i];
-			call.calltype[i] = 'L';
-			in[i].l = meth->class;
-			i++;
-		}
-	} 
-#endif
+	
+	call.args = (jvalue *)alloca((METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	call.callsize = (char *)&call.args[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
+	call.calltype = (char *)&call.callsize[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
 
 	/* If this method isn't static, we must insert the object as
 	 * an argument.
@@ -490,7 +456,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
-		in[i].l = obj;
+		call.args[i].l = obj;
 		i++;
 	}
 
@@ -500,30 +466,30 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		case 'Z':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[j].z;
+			call.args[i].PROM_i = args[j].z;
 			break;
 
 		case 'S':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[j].s;
+			call.args[i].PROM_i = args[j].s;
 			break;
 
 		case 'B':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[j].b;
+			call.args[i].PROM_i = args[j].b;
 			break;
 
 		case 'C':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[j].c;
+			call.args[i].PROM_i = args[j].c;
 			break;
 
 		case 'F':
 			call.callsize[i] = 1;
-			in[i].PROM_f = args[j].f;
+			call.args[i].PROM_f = args[j].f;
 			if (PROMOTE_jfloat2jdouble) {
 				call.calltype[i] = 'D';
 			}
@@ -531,19 +497,19 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		case 'I':
 		use_int:
 			call.callsize[i] = 1;
-			in[i].PROM_i = args[j].i;
+			call.args[i].PROM_i = args[j].i;
 			break;
 		case 'D':
 		case 'J':
 			call.callsize[i] = 2;
 			ENSURE_ALIGN64({});
-			in[i] = args[j];
+			call.args[i] = args[j];
 			if (promoted) { /* compensate for the second array element by incrementing args */
 			  args++;
 			}
 			if (! NO_HOLES) {
 				s += call.callsize[i];
-				in[i+1].i = (&in[i].i)[1];
+				call.args[i+1].i = (&call.args[i].i)[1];
 				i++; 
 				call.calltype[i] = 0;
 				call.callsize[i] = 0;
@@ -554,7 +520,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			in[i] = args[j];
+			call.args[i] = args[j];
 			break;
 		default:
 			ABORT();
@@ -565,7 +531,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
 	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-	in[i].l = jthread_stacklimit();
+	call.args[i].l = jthread_stacklimit();
 	s += PTR_TYPE_SIZE / SIZEOF_INT;
 	i++;
 #endif
@@ -594,11 +560,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	/* Call info and arguments */
 	call.nrargs = i;
 	call.argsize = s;
-	call.args = in;
 	call.ret = ret;
-
-
-#if defined(TRANSLATOR)
 	call.function = func;
 
 	/* GCDIAG wipes free memory with 0xf4... */
@@ -606,82 +568,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	assert(*(uint32*)(call.function) != 0xf4f4f4f4);
 
 	/* Make the call - system dependent */
-	sysdepCallMethod(&call);
-#endif
-#if defined(INTERPRETER)
-	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, THREAD_DATA()); 
-	}
-	else {
-		Hjava_lang_Object* syncobj = 0;
-		VmExceptHandler mjbuf;
-		threadData* thread_data = THREAD_DATA(); 
-		struct Hjava_lang_Throwable *save_except = NULL;
-
-		if (meth->accflags & ACC_SYNCHRONISED) {
-			if (meth->accflags & ACC_STATIC) {
-				syncobj = &meth->class->head;
-			}
-			else {
-				syncobj = (Hjava_lang_Object*)call.args[0].l;
-			}
-			lockObject(syncobj);
-		}
-
-		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
-
-		/* This exception has yet been handled by the VM creator.
-		 * We are putting it in stand by until it is cleared. For
-		 * that JNI call we're cleaning up the pointer and we will
-		 * put it again to the value afterward.
-		 */
-		if ((meth->accflags & ACC_JNI) != 0) {
-			if (thread_data->exceptObj != NULL)
-				save_except = thread_data->exceptObj;
-			else
-				save_except = NULL;
-			thread_data->exceptObj = NULL;
-		}
-			
-		/* Make the call - system dependent */
-		sysdepCallMethod(&call);
-
-		if (syncobj != 0) {
-			unlockObject(syncobj);
-		}
-
-		/* If we have a pending exception and this is JNI, throw it */
-		if ((meth->accflags & ACC_JNI) != 0) {
-			struct Hjava_lang_Throwable *eobj;
-			
-			eobj = thread_data->exceptObj;
-			if (eobj != 0) {
-				thread_data->exceptObj = 0;
-				throwExternalException(eobj);
-			}
-			thread_data->exceptObj = save_except;
-		}
-
-		cleanupExceptionHandling(&mjbuf, thread_data);
-
-	}
-#endif
-	if (!promoted && call.retsize == 1) {
-		switch (call.rettype) {
-		case 'Z':
-			ret->z = ret->i;
-			break;
-		case 'S':
-			ret->s = ret->i;
-			break;
-		case 'B':
-			ret->b = ret->i;
-			break;
-		case 'C':
-			ret->c = ret->i;
-			break;
-		}
-	}
+	engine_callMethod(&call);
 }
 
 /**
@@ -700,50 +587,18 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	int i;
 	int s;
 	int j;
-	/* XXX call.callsize and call.calltype arrays are statically sized 
-	   and are not checked for running out of bounds */
 	callMethodInfo call;
-	jvalue in[MAXMARGS];
 	jvalue tmp;
 
 	if (ret == 0) {
 		ret = &tmp;
 	}
-	i = 0;
+	i = engine_reservedArgs(meth);
 	s = 0;
 
-#if defined(INTERPRETER)
-	meth = (Method*)func;
-	if (meth->accflags & ACC_NATIVE) {
-                if (METHOD_NATIVECODE(meth) == 0) {
-			errorInfo info;
-			if (native(meth, &info) == false) {
-				throwError(&info);
-			}
-                }
-		call.function = METHOD_NATIVECODE(meth);
-	}
-
-	/* Insert the JNI environment */
-	if (meth->accflags & ACC_JNI) {
-		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-		call.calltype[i] = 'L';
-		in[i].l = THREAD_JNIENV(); 
-		s += call.callsize[i];
-		i++;
-
-		/* If method is static we must insert the class as an 
-		 * argument 
-		 */
-		if (meth->accflags & ACC_STATIC) {
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			s += call.callsize[i];
-			call.calltype[i] = 'L';
-			in[i].l = meth->class;
-			i++;
-		}
-	}
-#endif
+	call.args = (jvalue *)alloca((METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	call.callsize = (char *)&call.args[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
+	call.calltype = (char *)&call.callsize[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
 
 	/* If this method isn't static, we must insert the object as
 	 * the first argument and get the function code.
@@ -752,7 +607,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
-		in[i].l = obj;
+		call.args[i].l = obj;
 		i++;
 	}
 
@@ -765,11 +620,11 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'B':
 		case 'C':
 			call.callsize[i] = 1;
-			in[i].PROM_i = va_arg(args, jint);
+			call.args[i].PROM_i = va_arg(args, jint);
 			break;
 		case 'F':
 			call.callsize[i] = 1;
-			in[i].PROM_f = (jfloat)va_arg(args, jdouble);
+			call.args[i].PROM_f = (jfloat)va_arg(args, jdouble);
 			if (PROMOTE_jfloat2jdouble) {
 				call.calltype[i] = 'D';
 			}
@@ -777,16 +632,16 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'D':
 			call.callsize[i] = 2;
 			ENSURE_ALIGN64({});
-			in[i].d = va_arg(args, jdouble);
+			call.args[i].d = va_arg(args, jdouble);
 			goto second_word;
 		case 'J':
 			call.callsize[i] = 2;
 			ENSURE_ALIGN64({});
-			in[i].j = va_arg(args, jlong);
+			call.args[i].j = va_arg(args, jlong);
 		second_word:
 			if(! NO_HOLES) {
 				s += call.callsize[i];
-				in[i+1].i = (&in[i].i)[1];
+				call.args[i+1].i = (&call.args[i].i)[1];
 				i++;
 				call.callsize[i] = 0;
 			}
@@ -796,7 +651,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			in[i].l = va_arg(args, jref);
+			call.args[i].l = va_arg(args, jref);
 			break;
 		default:
 			ABORT();
@@ -807,7 +662,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
 	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-	in[i].l = jthread_stacklimit();
+	call.args[i].l = jthread_stacklimit();
 	s += PTR_TYPE_SIZE / SIZEOF_INT;
 	i++;
 #endif
@@ -836,10 +691,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	/* Call info and arguments */
 	call.nrargs = i;
 	call.argsize = s;
-	call.args = in;
 	call.ret = ret;
-
-#if defined(TRANSLATOR)
 	call.function = func;
 
 	/* GCDIAG wipes free memory with 0xf4... */
@@ -847,65 +699,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	assert(*(uint32*)(call.function) != 0xf4f4f4f4);
 
 	/* Make the call - system dependent */
-	sysdepCallMethod(&call);
-#endif
-#if defined(INTERPRETER)
-	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, THREAD_DATA()); 
-	}
-	else {
-		Hjava_lang_Object* syncobj = 0;
-		VmExceptHandler mjbuf;
-		threadData* thread_data = THREAD_DATA(); 
-		struct Hjava_lang_Throwable *save_except = NULL;
-
-		if (meth->accflags & ACC_SYNCHRONISED) {
-			if (meth->accflags & ACC_STATIC) {
-				syncobj = &meth->class->head;
-			}
-			else {
-				syncobj = (Hjava_lang_Object*)call.args[0].l;
-			}
-			lockObject(syncobj);
-		}
-
-		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
-
-		/* This exception has yet been handled by the VM creator.
-		 * We are putting it in stand by until it is cleared. For
-		 * that JNI call we're cleaning up the pointer and we will
-		 * put it again to the value afterward.
-		 */
-		if ((meth->accflags & ACC_JNI) != 0) {
-			if (thread_data->exceptObj != NULL)
-				save_except = thread_data->exceptObj;
-			else
-				save_except = NULL;
-			thread_data->exceptObj = NULL;
-		}
-
-		/* Make the call - system dependent */
-		sysdepCallMethod(&call);
-
-		if (syncobj != 0) {
-			unlockObject(syncobj);
-		}
-
-		/* If we have a pending exception and this is JNI, throw it */
-		if ((meth->accflags & ACC_JNI) != 0) {
-			struct Hjava_lang_Throwable *eobj;
-
-			eobj = thread_data->exceptObj;
-			if (eobj != 0) {
-				thread_data->exceptObj = 0;
-				throwExternalException(eobj);
-			}
-			thread_data->exceptObj = save_except;
-		}
-
-		cleanupExceptionHandling(&mjbuf, thread_data);
-	}
-#endif
+	engine_callMethod(&call);
 }
 
 /**

@@ -97,8 +97,8 @@ typedef struct {
 	int			argsize;
 	char			retsize;
 	char			rettype;
-	char			callsize[MAXMARGS];
-	char			calltype[MAXMARGS];
+	char			*callsize;
+	char			*calltype;
 } callMethodInfo;
 
 struct Hjava_lang_String;

@@ -47,6 +47,7 @@
 #include "debugFile.h"
 #include "jvmpi_kaffe.h"
 #include "kaffe/jmalloc.h"
+#include "methodcalls.h"
 
 #if 0
 #define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start
@@ -567,7 +568,7 @@ DBG(STATICINIT,
 DBG(STATICINIT,
 			dprintf("using callMethodA\n");
     )
-			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0, 1);
+			callMethodA(meth, METHOD_NATIVECODE(meth), 0, 0, 0, 1);
 		}
 
 		lockClass(class);
@@ -1931,112 +1932,6 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	return true;
 }
 
-#if defined(TRANSLATOR)
-/*
- * When do we need a trampoline?
- *
- * NB: this method is invoked for *all* methods a class defines or
- * inherits.
- */
-static bool
-methodNeedsTrampoline(Method *meth)
-{
- 	/* A gcj class's native virtual methods always need a trampoline
-	 * since the gcj trampoline doesn't work for them.  By using a
-	 * trampoline, we can fix the vtable the first time it is invoked.
-	 *
-	 * NB: If we'll ever support CNI, revisit this.
-	 */
-	if (CLASS_GCJ((meth)->class) && (meth->accflags & ACC_NATIVE) &&
-		meth->idx != -1)
-		return (true);
-
-	/* If the method hasn't been translated, we need a trampoline
-	 * NB: we assume the TRANSLATED flag for abstract methods produced
-	 * by gcj is cleared.
-	 */
-	if (!METHOD_TRANSLATED(meth))
-		return (true);
-
-	/* We also need one if it's a static method and the class
-	 * hasn't been initialized, because such method invocation
-	 * would constitute a first active use, requiring the initializer
-	 * to be run.
-	 */
-	if ((meth->accflags & ACC_STATIC)
-		&& meth->class->state < CSTATE_DOING_INIT)
-	{
-		/* Exception: gcj's classes don't need trampolines for two
-		 * reasons:
- 		 *   a) call _Jv_InitClass before invoking any static method.
-		 *   b) they're not compiled as indirect invocations anyway
-		 */
-		if (!CLASS_GCJ(meth->class)) {
-			return (true);
-		}
-	}
-	return (false);
-}
-#endif /* TRANSLATOR */
-
-
-
-/*
- * Build a trampoline if necessary, return the address of the native code
- * to either the trampoline or the translated or native code.
- *
- * Sets *where to the address of the native code.
- *
- * Return the address of the native code or 0 on failure
- */
-static void *
-/* ARGSUSED */
-buildTrampoline(Method *meth, void **where, errorInfo *einfo)
-{
-	void *ret;
-
-#if defined(TRANSLATOR)
-	methodTrampoline *tramp;
-
-	if (methodNeedsTrampoline(meth)) {
-		/* XXX don't forget to pick those up at class gc time */
-		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), KGC_ALLOC_TRAMPOLINE);
-		if (tramp == 0) {
-			postOutOfMemory(einfo);
-			return (0);
-		}
-		FILL_IN_TRAMPOLINE(tramp, meth, where);
-
-		/* a disadvantage of building trampolines individually---as
-		 * opposed to allocating them in a contiguous region---is that
-		 * we have flush the dcache individually for each trampoline
-		 */
-		FLUSH_DCACHE(tramp, tramp+1);
-
-		/* for native gcj methods, we do override their
-		 * anchors so we can patch them up before they're invoked.
-		 */
-		if (!(CLASS_GCJ((meth)->class)
-			&& (meth->accflags & ACC_NATIVE)))
-		{
-			assert(*where == 0 ||
-				!!!"Cannot override trampoline anchor");
-		}
-		ret = tramp;
-	} else {
-		if (CLASS_GCJ((meth)->class)) {
-			METHOD_NATIVECODE(meth) = meth->ncode;
-		}
-		assert(METHOD_NATIVECODE(meth) != 0);
-		ret = METHOD_NATIVECODE(meth);
-	}
-#else
-	ret = meth;
-#endif
-	*where = ret;
-	return (ret);
-}
-
 /*
  * Check whether there exists a method with the same name and signature
  * ``meth'' in class ``clazz'' or any of its superclasses.
@@ -2136,7 +2031,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		 * point to this trampoline.
 		 */
 		where = (void**)PMETHOD_NATIVECODE(meth);
-		if (buildTrampoline(meth, where, einfo) == 0) {
+		if (engine_buildTrampoline(meth, where, einfo) == 0) {
 			return (false);
 		}
 	}
@@ -2159,7 +2054,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			 * but do not update METHOD_NATIVECODE.
 			 */
 			where = &mtab[meth->idx];
-			if (buildTrampoline(meth, where, einfo) == 0) {
+			if (engine_buildTrampoline(meth, where, einfo) == 0) {
 				return (false);
 			}
 		}
@@ -2269,7 +2164,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			if (cmeth == 0) {
 				class->itable2dtable[j] = (void *)-1;
 			} else {
-				if (buildTrampoline(cmeth,
+				if (engine_buildTrampoline(cmeth,
 					    class->itable2dtable + j,
 					    einfo) == 0)
 				{
@@ -2473,17 +2368,15 @@ prepareInterface(Hjava_lang_Class* class, errorInfo *einfo)
 	for (i = 0; i < CLASS_NMETHODS(class); i++, meth++) {
 		if (meth->accflags & ACC_STATIC) {
 			meth->idx = -1;
-#if defined(TRANSLATOR)
 			/* Handle <clinit> */
 			if (utf8ConstEqual(meth->name, init_name)) {
 				void **where;
 				where = (void**)PMETHOD_NATIVECODE(meth);
 
-				if (buildTrampoline(meth, where, einfo) == 0) {
+				if (engine_buildTrampoline(meth, where, einfo) == 0) {
 					return (false);
 				}
 			}
-#endif
 		}
 		else {
 			meth->idx = class->msize++;

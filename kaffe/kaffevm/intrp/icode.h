@@ -301,6 +301,7 @@
 #define	softcall_addreference(f, t)		soft_addreference((f)[0].v.taddr, (t)[0].v.taddr)
 #define	softcall_addreference_static(f, t)	soft_addreference((f), (t)[0].v.taddr)
 #define softcall_incompatibleclasschange(a,b)	soft_incompatibleclasschange(a,b)
+#define	softcall_abstractmethod(a,b)		soft_abstractmethod(a,b)
 
 #define	adjustpc(a)				/* Not needed for interpreter */
 

@@ -440,7 +440,7 @@ Kaffe_NewObjectV(JNIEnv* env UNUSED, jclass cls, jmethodID meth, va_list args)
 	}
 	obj = newObject(clazz);
 
-	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
+	callMethodV(m, METHOD_NATIVECODE(m), obj, args, &retval);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -480,7 +480,7 @@ Kaffe_NewObjectA(JNIEnv* env UNUSED, jclass cls, jmethodID meth, jvalue* args)
 	}
 	obj = newObject(clazz);
 
-	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_NATIVECODE(m), obj, args, &retval, 0);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();

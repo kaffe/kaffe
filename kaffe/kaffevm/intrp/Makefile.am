@@ -23,7 +23,8 @@ libengine_la_LDFLAGS = \
 
 libengine_la_SOURCES = \
 	machine.c \
-	native-wrapper.c
+	native-wrapper.c \
+	methodcalls.c
 
 EXTRA_DIST = \
 	Makefile.frag \
@@ -32,4 +33,5 @@ EXTRA_DIST = \
 	machine.h \
 	slots.h \
 	stackTrace-impl.h \
-	native-wrapper.h
+	native-wrapper.h \
+	methodcalls.h

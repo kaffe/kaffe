@@ -64,4 +64,3 @@ void printCodeLabels(void)
 #endif
 
 #include "jit.def"
-#include "trampolines.c"

@@ -59,6 +59,7 @@
 #include "mangle.h"
 #include "jvmpi_kaffe.h"
 #include "kaffe_jni.h"
+#include "native-wrapper.h"
 
 char* engine_name = "Just-in-time v3";
 
@@ -135,6 +136,19 @@ static void printProfilerStats(void);
 
 /*
  * Translate a method into native code.
+ *
+ * Registers are allocated per basic block, using an LRU algorithm.
+ * Contents of registers are spilled at the end of basic block,
+ * depending on the edges in the CFG leaving the basic block:
+ *
+ * - If there is an edge from the basic block to an exception handler,
+ *   local variables are spilled on the stack
+ *
+ * - If there is only one non-exception edge, and the target basic
+ *   block is following the current block immediately, no spills are done
+ *
+ * - Otherwise, the local variables and the operand stack are spilled
+ *   onto the stack
  */
 jboolean
 translate(Method* xmeth, errorInfo* einfo)
@@ -174,9 +188,12 @@ translate(Method* xmeth, errorInfo* einfo)
 
 	/* If this code block is native, then just set it up and return */
 	if ((xmeth->accflags & ACC_NATIVE) != 0) {
-		success = native(xmeth, einfo);
-		if (success == true) {
+		void *func = native(xmeth, einfo);
+		if (func != NULL) {
+			engine_create_wrapper(xmeth, func);
 			KAFFEJIT_TO_NATIVE(xmeth);
+		} else {
+			success = false;
 		}
 		goto done3;
 	}
@@ -1332,8 +1349,6 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 /*
  * Include the machine specific trampoline functions.
  */
-#include "trampolines.c"
-
 typedef struct _fakeCall {
 	struct _fakeCall*	next;
 	struct _fakeCall*	parent;

@@ -300,6 +300,7 @@ void softcall_nosuchfield(Utf8Const*, Utf8Const*);
 void softcall_linkage(Utf8Const*, Utf8Const*);
 void softcall_illegalaccess(Utf8Const*, Utf8Const*);
 void softcall_incompatibleclasschange(Utf8Const*, Utf8Const*);
+void softcall_abstractmethod(Utf8Const*, Utf8Const*);
 void softcall_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void softcall_newarray_const(SlotInfo*, int, int);
 void softcall_anewarray_const(SlotInfo*, int, struct Hjava_lang_Class*);

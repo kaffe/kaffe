@@ -20,6 +20,6 @@
 void
 engine_create_wrapper (Method *meth, void *func)
 {
-	SET_METHOD_NATIVECODE(meth, func);
+	METHOD_CODE_START(meth) = func;
 	return meth;
 }

@@ -29,8 +29,6 @@
 #include "locks.h"
 #include "soft.h"
 
-static void throwAbstractMethodError(void);
-
 /*
  * Lookup a method reference and get the various interesting bits.
  *
@@ -320,20 +318,6 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 	n = CLASS_NMETHODS(class);
 	for (mptr = CLASS_METHODS(class); --n >= 0; ++mptr) {
 		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, METHOD_SIG(mptr))) {
-			if ((mptr->accflags & ACC_ABSTRACT) != 0 && !CLASS_IS_INTERFACE(mptr->class)) {
-#if defined(TRANSLATOR)
-				if(KGC_getObjectIndex(main_collector,
-						     METHOD_NATIVECODE(mptr))
-				   == KGC_ALLOC_DISPATCHTABLE) {
-					/* 'nc' is workaround for GCC 2.7.2 ?: bug */
-					void *nc;
-					nc = METHOD_NATIVECODE(mptr);
-					KFREE(nc);
-				}
-#endif
-				SET_METHOD_NATIVECODE(mptr, (void*)throwAbstractMethodError);
-				mptr->accflags |= ACC_NATIVE;
-			}
 DBG(MLOOKUP,
 			dprintf("findMethodLocal(%s,%s,%s) -> %p\n",
 				class->name->data, name->data, signature->data, mptr); )
@@ -378,12 +362,4 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 	}
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), "%s", name->data);
 	return (0);
-}
-
-static
-void
-NONRETURNING
-throwAbstractMethodError(void)
-{
-	throwException(AbstractMethodError);
 }

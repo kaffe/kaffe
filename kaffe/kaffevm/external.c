@@ -40,7 +40,6 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "stats.h"
-#include "native-wrapper.h"
 #if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
 #endif
@@ -105,17 +104,6 @@ DBG(NATIVELIB,
 static char *libraryPath = "";
 
 extern JavaVM Kaffe_JavaVM;
-
-/*
- * Error stub function.  Point unresolved link errors here to avoid
- * problems.
- */
-static
-void*
-error_stub(void)
-{
-	return (0);
-}
 
 #ifdef ENABLE_BINRELOC
 static
@@ -476,7 +464,7 @@ strcatJNI(char* to, const char* from)
 /*
  * Look up a native function using the JNI interface system.
  */
-static jint
+static nativecode*
 Kaffe_JNI_native(Method* meth)
 {
 	char name[1024];
@@ -500,21 +488,21 @@ Kaffe_JNI_native(Method* meth)
 		strcat(name, "__");
 		strcatJNI(name, METHOD_SIGD(meth));
 		func = loadNativeLibrarySym(name);
-		if (func == 0) {
-			return (JNI_FALSE);
-		}
 	}
 
-	meth->accflags |= ACC_JNI;
+	if (func != NULL) {
+		meth->accflags |= ACC_JNI;
+	}
 
-	/* Wrap the function in a calling wrapper */
-	engine_create_wrapper(meth, func);
-
-	return (JNI_TRUE);
+	return (func);
 }
 
-
-bool
+/**
+ * Try to find the native implementation of a java method.
+ *
+ * 
+ */
+nativecode*
 native(Method* m, errorInfo *einfo)
 {
 	char stub[MAXSTUBLEN];
@@ -546,34 +534,24 @@ DBG(NATIVELIB,
 
 	/* Find the native method */
 	func = loadNativeLibrarySym(stub);
-	if (func != 0) {
-		/* Fill it in */
-		engine_create_wrapper(m, func);
-		return (true);
+	if (func != NULL) {
+		return (func);
 	}
 
 	/* Try to locate the nature function using the JNI interface */
-        if (Kaffe_JNI_native(m)) {
-                return (true);
+	func = Kaffe_JNI_native(m);
+        if (func != NULL) {
+                return (func);
         }
 
 DBG(NATIVELIB,
 	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));
     )
-#if defined(TRANSLATOR)
-	{
-		/* Work around for KFREE() ? : bug in gcc 2.7.2 */
-		void *nc = METHOD_NATIVECODE(m);
-		KFREE(nc);
-	}
-#endif
-	SET_METHOD_NATIVECODE(m, (void*)error_stub);
-
 	postExceptionMessage(einfo, JAVA_LANG(UnsatisfiedLinkError),
 		"Failed to locate native function:\t%s.%s%s",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));
-	return (false);
+	return (NULL);
 }
 
 /*

@@ -1,3 +1,58 @@
+2004-08-19  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/jit3/methodcalls.c, kaffe/kaffevm/jit3/methodcalls.h
+	kaffe/kaffevm/jit/methodcalls.c, kaffe/kaffevm/jit/methodcalls.h
+	kaffe/kaffevm/intrp/methodcalls.c, kaffe/kaffevm/intrp/methodcalls.h:
+	new files
+
+	* kaffe/kaffevm/jit3/Makefile.am, kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/intrp/Makefile.am: added new files
+
+	* kaffe/kaffevm/jit3/Makefile.in, kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in: regenerated
+
+	* kaffe/kaffevm/classMethod.h: removed METHOD_INDIRECTMETHOD macro,
+	use only one definition of METHOD_NATIVECODE for all engines
+
+	* kaffe/kaffevm/classMethod.c (processClass): replace METHOD_INDIRECTMETHOD
+	with METHOD_NATIVECODE
+	(methodNeedsTrampoline, buildTrampoline): moved to jit/methodcalls.c
+	(buildDispatchTable, buildInterfaceDispatchTable, prepareInterface):
+	use new engine_buildTrampoline method
+	
+	* kaffe/kaffevm/jni/jni.c, kaffe/kaffevm/jni/jni-callmethod.c:
+	replaced METHOD_INDIRECTMETHOD with METHOD_NATIVECODE
+
+	* kaffe/kaffevm/external.c (error_stub): removed
+	(Kaffe_JNI_native, native): return address of native function or NULL,
+	don't create wrappers for native functions
+
+	* kaffe/kaffevm/kaffe.def (INVOKEVIRTUAL, INVOKESPECIAL): throw
+	AbstractMethodError if necessary
+
+	* kaffe/kaffevm/lookup.c (throwAbstractMethodError): removed
+	(findMethodLocal): don't modify METHOD_NATIVECODE when method is abstract
+
+	* kaffe/kaffevm/soft.c (soft_abstractmethod): new method
+	(soft_fixup_trampoline): moved into jit/methodcalls.c
+
+	* kaffe/kaffevm/support.c (do_execute_java_method_v, do_execute_java_class_method_v,
+	execute_java_constructor_v): replaced METHOD_INDIRECTMETHOD with METHOD_NATIVECODE
+	(callMethodA, callMethodV): allocate call.args, call.callsize and call.calltype
+	dynamically. Moved engine specific part into new engine_callMethod function.
+
+	* kaffe/kaffevm/intrp/native-wrapper.c (engine_create_wrapper): use
+	METHOD_CODE_START to store address of native function
+
+	* kaffe/kaffevm/intrp/icode.h, kaffe/kaffevm/jit/icode.c,
+	kaffe/kaffevm/jit3/codeproto.h, kaffe/kaffevm/jit3/icode.c:
+	added softcall_abstractmethod
+
+	* kaffe/kaffevm/jit/machine.c, kaffe/kaffevm/jit3/machine.c
+	(translate): adapted to changes to external.c
+
+	* include/errors.h (AbstractMethodError): pass String to constructor
+	
 2004-08-19  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c

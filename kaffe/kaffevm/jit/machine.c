@@ -48,6 +48,7 @@
 #include "jthread.h"
 #include "stats.h"
 #include "support.h"
+#include "native-wrapper.h"
 
 /*
  * Define information about this engine.
@@ -225,10 +226,13 @@ DBG(MOREJIT,
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
-		success = native(meth, einfo);
-		if (success == false) {
+		void *func = native(meth, einfo);
+
+		if (func == NULL) {
+			success = false;
 			goto done3;
 		}
+		engine_create_wrapper(meth, func);
 		KAFFEJIT_TO_NATIVE(meth);
 		/* Note that this is a real function not a trampoline.  */
 		if (meth->c.ncode.ncode_end == 0)
@@ -237,7 +241,7 @@ DBG(MOREJIT,
 	}
 
 	/* Scan the code and determine the basic blocks */
-	success = analyzeMethod(meth, &codeInfo, einfo);
+	success = analyzeMethod(meth, &codeInfo, einfo); 
 	if (success == false) {
 		goto done3;
 	}
@@ -300,7 +304,6 @@ DBG(MOREJIT,
 	/***************************************/
 	/* Next reduce bytecode to native code */
 	/***************************************/
-
 	if (!(success = initInsnSequence(meth, codeperbytecode * len, meth->localsz,
 					 meth->stacksz, einfo))) {
 		goto done1;
@@ -396,7 +399,7 @@ done:
 DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
 		meth->name->data, METHOD_SIGD(meth), 
-		isStatic ? "static" : "normal", meth->ncode);	
+		isStatic ? "static" : "normal", METHOD_NATIVECODE(meth));	
     )
 
 	if (Kaffe_JavaVMArgs.enableVerboseJIT) {

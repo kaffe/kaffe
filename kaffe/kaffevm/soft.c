@@ -12,8 +12,6 @@
 #include <stdarg.h>
 
 #include "debug.h"
-#define	TDBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "config-math.h"
@@ -553,6 +551,18 @@ soft_incompatibleclasschange(Utf8Const *c, Utf8Const* n)
 }
 
 /*
+ * soft_abstractmethod.
+ */
+void
+soft_abstractmethod(Utf8Const *c, Utf8Const* n)
+{
+	char buf[256];
+
+	sprintf(buf, "%.100s.%.100s", c->data, n->data);
+	throwException(AbstractMethodError(buf));
+}
+
+/*
  * soft_initialise_class.
  */
 void
@@ -567,88 +577,6 @@ soft_initialise_class(Hjava_lang_Class* c)
 	}
 }
 
-#if defined(TRANSLATOR)
-/*
- * Trampolines come in here - do the translation and replace the trampoline.
- */
-nativecode*
-soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
-{
-	Method* meth;
-	void **where;
-	void *tramp;
-	errorInfo info;
-
-	/* FIXUP_TRAMPOLINE_INIT sets tramp and where */
-	FIXUP_TRAMPOLINE_INIT;
-	tramp = *where;
-
-DBG(MOREJIT,
-	dprintf("soft_fixup_trampoline(): meth %p, where %p\n",
-		meth, where);
-    );
-
-	/* If this class needs initializing, do it now.  */
-	if (meth->class->state < CSTATE_USABLE &&
-		processClass(meth->class, CSTATE_COMPLETE, &info) == false) {
-		throwError(&info);
-	}
-
-	/* Generate code on demand.  */
-	if (!METHOD_TRANSLATED(meth)) {
-		if (translate(meth, &info) == false) {
-			throwError(&info);
-		}
-	}
-
-	/*
-	 * Update the origin of the trampoline and free it if necessary. 
-	 * Another thread might have jumped through the same trampoline
-	 * while we were translating the method, so we have to make this
-	 * atomic.
-	 */
-#if defined(COMPARE_AND_EXCHANGE)
-	if (COMPARE_AND_EXCHANGE(where, tramp, METHOD_NATIVECODE(meth))) {
-		gc_free(tramp);
-	}
-#elif defined(ATOMIC_EXCHANGE)
-	{
-		void *tmp = METHOD_NATIVECODE(meth); 
-
-		ATOMIC_EXCHANGE(where, tmp);
-
-		if (tmp == tramp) {
-			gc_free(tramp);
-		}
-	}
-#else
-#error "You have to define either COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE"
-#endif
-
-#if 0
-	if (METHOD_PRE_COMPILED(meth)) {
-		nativecode* ncode = METHOD_TRUE_NCODE(meth);
-		nativecode* ocode = METHOD_NATIVECODE(meth);
-		METHOD_NATIVECODE(meth) = ncode;
-		/* Update the dtable entries for all classes if this isn't a
-	   	   static method.  */
-		if (meth->idx >= 0 && ocode != ncode) {
-			meth->class->dtable->method[meth->idx] = ncode;
-		}
-		SET_METHOD_PRE_COMPILED(meth, 0);
-	}
-#endif
-
-TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
-
-DBG(MOREJIT,
-	dprintf("soft_fixup_trampoline(): return %p\n",
-		METHOD_NATIVECODE(meth));
-    );
-
-	return (METHOD_NATIVECODE(meth));
-}
-#endif
 
 /*
  * Check we can store 'obj' into the 'array'.

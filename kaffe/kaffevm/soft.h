@@ -39,6 +39,7 @@ void	soft_nosuchclass(Utf8Const*) NONRETURNING;
 void	soft_linkage(Utf8Const*, Utf8Const*) NONRETURNING;
 void	soft_illegalaccess(Utf8Const*, Utf8Const*) NONRETURNING;
 void	soft_incompatibleclasschange(Utf8Const*, Utf8Const*) NONRETURNING;
+void	soft_abstractmethod(Utf8Const*, Utf8Const*) NONRETURNING;
 void	soft_stackoverflow(void) NONRETURNING;
 void	soft_checkarraystore(struct Hjava_lang_Object*, struct Hjava_lang_Object*);
 void	soft_addreference(void*, void*);

@@ -77,7 +77,7 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libengine_la_LIBADD =
 am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo icode.lo \
 	labels.lo machine.lo registers.lo seq.lo slots.lo \
-	native-wrapper.lo
+	native-wrapper.lo methodcalls.lo
 libengine_la_OBJECTS = $(am_libengine_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -392,7 +392,9 @@ libengine_la_SOURCES = \
 	slots.h \
 	stackTrace-impl.h \
 	native-wrapper.c \
-	native-wrapper.h
+	native-wrapper.h \
+	methodcalls.c \
+	methodcalls.h
 
 EXTRA_DIST = \
 	Makefile.frag
@@ -455,6 +457,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/methodcalls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/native-wrapper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/registers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seq.Plo@am__quote@

@@ -101,7 +101,7 @@ extern void dumpErrorInfo(errorInfo *);
 #define ArrayIndexOutOfBoundsException NEW_LANG_EXCEPTION(ArrayIndexOutOfBoundsException)
 #define ArrayStoreException NEW_LANG_EXCEPTION(ArrayStoreException)
 #define ArithmeticException NEW_LANG_EXCEPTION(ArithmeticException)
-#define AbstractMethodError NEW_LANG_EXCEPTION(AbstractMethodError)
+#define AbstractMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(AbstractMethodError, M)
 #define ThreadDeath NEW_LANG_EXCEPTION(ThreadDeath)
 #define StackOverflowError NEW_LANG_EXCEPTION(StackOverflowError)
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
