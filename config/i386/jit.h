@@ -86,15 +86,15 @@ typedef struct _methodTrampoline {
 
 /* Define the register set */
 #define	REGISTER_SET							\
-	{ /* eax */	0, 0, Rint|Rsubint|Rref,0, 0, 0    },		\
-	{ /* ecx */	0, 0, Rint|Rsubint|Rref,0, 0, 1    },		\
-	{ /* edx */	0, 0, Rint|Rsubint|Rref,0, 0, 2    },		\
-	{ /* ebx */	0, 0, Rint|Rsubint|Rref,Rglobal|Rnosaveoncall, 0, 3 },\
-	{ /* esp */	0, 0, Reserved,		0, 0, 4    },		\
-	{ /* ebp */	0, 0, Reserved,		0, 0, 5    },		\
-	{ /* esi */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 6 },\
-	{ /* edi */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 7 },\
-	{ /* f0  */	0, 0, Rfloat|Rdouble,	Rreadonce, 0, 8    },
+	{ /* eax */	NULL, 0, Rint|Rsubint|Rref,0, 0, 0    },		\
+	{ /* ecx */	NULL, 0, Rint|Rsubint|Rref,0, 0, 1    },		\
+	{ /* edx */	NULL, 0, Rint|Rsubint|Rref,0, 0, 2    },		\
+	{ /* ebx */	NULL, 0, Rint|Rsubint|Rref,Rglobal|Rnosaveoncall, 0, 3 },\
+	{ /* esp */	NULL, 0, Reserved,		0, 0, 4    },		\
+	{ /* ebp */	NULL, 0, Reserved,		0, 0, 5    },		\
+	{ /* esi */	NULL, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 6 },\
+	{ /* edi */	NULL, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 7 },\
+	{ /* f0  */	NULL, 0, Rfloat|Rdouble,	Rreadonce, 0, 8    },
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	9

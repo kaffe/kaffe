@@ -177,7 +177,7 @@ newLabel(void)
 
 			ret[i].next = &ret[i+1];
 		}
-		ret[ALLOCLABELNR-1].next = 0;
+		ret[ALLOCLABELNR-1].next = NULL;
 	}
 	currLabel = ret->next;
 #if defined(KAFFE_VMDEBUG)
@@ -189,11 +189,11 @@ newLabel(void)
 label*
 getInternalLabel(label **lptr, uintp pc)
 {
-	label *curr, *retval = 0;
+	label *curr, *retval = NULL;
 
-	assert(lptr != 0);
+	assert(lptr != NULL);
 	
-	if( *lptr == 0 )
+	if( *lptr == NULL )
 	{
 		/* Start at the head of the list. */
 		*lptr = firstLabel;

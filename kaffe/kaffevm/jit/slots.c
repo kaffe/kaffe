@@ -56,6 +56,6 @@ initSlots(int nrslots)
 
 	/* Setup various slot pointers */
 	slotinfo = &basicslots[0];
-	localinfo = 0;
-	tempinfo = 0;
+	localinfo = NULL;
+	tempinfo = NULL;
 }

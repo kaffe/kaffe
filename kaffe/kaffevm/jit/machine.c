@@ -72,7 +72,7 @@ uint32 npc;
 jitflags willcatch;
 
 #define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
-      cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
+      cbranch_ref_const_ne((_s), NULL, reference_label(_i, _n)); \
       softcall_nullpointer();                                 \
       set_label(_i, _n)
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the
@@ -204,7 +204,7 @@ translate(Method* meth, errorInfo *einfo)
 
 	int iLockRoot;
 
-	static Method* jitting = 0;	/* DEBUG */
+	static Method* jitting = NULL;	/* DEBUG */
 
 	lockClass(meth->class);
 
@@ -418,11 +418,11 @@ done1:
 
 		profiler_get_clicks(end);
 		meth->jitClicks = end - meth->jitClicks;
-		globalMethod = 0;
+		globalMethod = NULL;
 	}
 #endif
 done2:
-	jitting = 0;	/* DEBUG */
+	jitting = NULL;	/* DEBUG */
 	stopTiming(&jit_time);
 	leaveTranslator();
 done3:

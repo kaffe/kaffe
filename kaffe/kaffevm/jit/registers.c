@@ -27,7 +27,7 @@
  */
 kregs reginfo[MAXREG+1] = {
 	REGISTER_SET
-	{ /* BAD */	0, 0, 0, 0, 0, 0 }
+	{ /* BAD */	NULL, 0, 0, 0, 0, 0 }
 };
 
 /* This is horrible but necessary at the moment.  Sometime we need to

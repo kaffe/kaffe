@@ -76,12 +76,12 @@ _slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
-	SlotInfo* olddst = 0;
+	SlotInfo* olddst = NULL;
 
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fix it so the dst is one of the source ops.
 	 */
-	if (s1 != 0 && s2 != 0 && dst != 0) {
+	if (s1 != NULL && s2 != NULL && dst != NULL) {
 		if (type == Tcomm) {
 			if (s2 == dst) {
 				s2 = s1;
@@ -107,7 +107,7 @@ _slot_slot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	seq->func = f;
 
 #if defined(TWO_OPERAND)
-	if (olddst != 0) {
+	if (olddst != NULL) {
 		move_any(olddst, dst);
 	}
 #endif
@@ -121,8 +121,8 @@ _lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
-	if (s1 != 0 && s2 != 0 && dst != 0) {
+	SlotInfo* olddst = NULL;
+	if (s1 != NULL && s2 != NULL && dst != NULL) {
 		if (s2 == dst) {
 			olddst = dst;
 			slot_alloc2tmp(dst);
@@ -142,7 +142,7 @@ _lslot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	seq->func = f;
 
 #if defined(TWO_OPERAND)
-	if (olddst != 0) {
+	if (olddst != NULL) {
 		move_anylong(olddst, dst);
 	}
 #endif
@@ -156,8 +156,8 @@ _lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
-	if (s1 != 0 && s2 != 0 && dst != 0) {
+	SlotInfo* olddst = NULL;
+	if (s1 != NULL && s2 != NULL && dst != NULL) {
 		if (s2 == dst) {
 			olddst = dst;
 			slot_alloctmp(dst);
@@ -177,7 +177,7 @@ _lslot_lslot_slot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	seq->func = f;
 
 #if defined(TWO_OPERAND)
-	if (olddst != 0) {
+	if (olddst != NULL) {
 		move_any(olddst, dst);
 	}
 #endif
@@ -191,8 +191,8 @@ _slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
-	SlotInfo* olddst = 0;
-	if (s1 != 0 && s2 != 0 && dst != 0) {
+	SlotInfo* olddst = NULL;
+	if (s1 != NULL && s2 != NULL && dst != NULL) {
 		if (s2 == dst) {
 			olddst = dst;
 			slot_alloctmp(dst);
@@ -212,7 +212,7 @@ _slot_slot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	seq->func = f;
 
 #if defined(TWO_OPERAND)
-	if (olddst != 0) {
+	if (olddst != NULL) {
 		move_any(olddst, dst);
 	}
 #endif
