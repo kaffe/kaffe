@@ -13,4 +13,8 @@ package java.lang;
 // NOT IMPLEMENTED
 
 public class Package {
+
+    private Package() {
+    }
+    
 }

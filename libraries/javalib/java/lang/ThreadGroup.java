@@ -24,7 +24,7 @@ public class ThreadGroup {
 	private int ngroups = 0;
 	private ThreadGroup[] groups = new ThreadGroup[0];
 
-public ThreadGroup() {
+private ThreadGroup() {
 	this(Thread.currentThread().getThreadGroup(), "main");
 }
 
@@ -65,7 +65,7 @@ public synchronized int activeGroupCount() {
 	return result;
 }
 
-public synchronized void add(Thread thread) {
+synchronized void add(Thread thread) {
 	int i;
 
 	nthreads++;
@@ -88,7 +88,7 @@ public synchronized void add(Thread thread) {
 	threads[threads.length - 1] = thread;
 }
 
-public synchronized void add(ThreadGroup group) {
+synchronized void add(ThreadGroup group) {
 	ngroups++;
 
 	for (int i = 0; i < groups.length; i++) {
@@ -176,7 +176,7 @@ public int enumerate(Thread list[], boolean recurse) {
 	return enumerate(list, recurse, 0);
 }
 
-public int enumerate(Thread list[], boolean recurse, int pos) {
+private int enumerate(Thread list[], boolean recurse, int pos) {
 
 	/* First do the local threads */
 	pos = copyArray(threads, list, pos);
@@ -247,7 +247,7 @@ private void printThreads(int tabulation) {
 	}
 }
 
-public synchronized void remove(Thread thread) {
+synchronized void remove(Thread thread) {
 	int i;
 
 	for (i = 0; i < threads.length; i++) {
@@ -259,7 +259,7 @@ public synchronized void remove(Thread thread) {
 	}
 }
 
-public synchronized void remove(ThreadGroup group) {
+synchronized void remove(ThreadGroup group) {
 	int i;
 
 	for (i = 0; i < groups.length; i++) {

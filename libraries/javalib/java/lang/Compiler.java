@@ -12,6 +12,9 @@ package java.lang;
 
 public final class Compiler {
 
+private Compiler() {
+}
+    
 public static boolean compileClass(Class aClass) {
 	return (false);
 }

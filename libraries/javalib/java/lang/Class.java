@@ -166,7 +166,7 @@ native public int getModifiers();
 
 native public String getName();
 
-native public static Class getPrimitiveClass(String name);
+native static Class getPrimitiveClass(String name);
 
 /**
  * Finds a resource with the specified name.  

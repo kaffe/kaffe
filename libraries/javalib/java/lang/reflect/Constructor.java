@@ -13,7 +13,7 @@ package java.lang.reflect;
 import java.lang.Class;
 import java.lang.String;
 
-public class Constructor
+public final class Constructor
   implements Member
 {
 	private Class clazz;
@@ -21,6 +21,9 @@ public class Constructor
 	private Class[] parameterTypes;
 	private Class[] exceptionTypes;
 
+private Constructor() {
+}
+    
 public boolean equals(Object obj)
 	{
 	// Catch the simple case where they're really the same

@@ -100,7 +100,7 @@ public void checkPropertyAccess(String key) {
 	throw new SecurityException();
 }
 
-public void checkPropertyAccess(String key, String def) {
+void checkPropertyAccess(String key, String def) {
 	throw new SecurityException();
 }
 

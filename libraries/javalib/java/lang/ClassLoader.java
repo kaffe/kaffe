@@ -109,7 +109,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
 	return (cls);
 }
 
-protected void checkPackageAccess(String name) throws SecurityException {
+void checkPackageAccess(String name) throws SecurityException {
 }
 
 protected Class findLocalClass(String name) throws ClassNotFoundException {
@@ -124,7 +124,7 @@ final protected void setSigners(Class cl, Object signers[]) {
 	// Signer's are not currently supported.
 }
 
-public ClassLoader getParent() {
+public final ClassLoader getParent() {
 	return (parent);
 }
 
@@ -133,19 +133,19 @@ public final Enumeration getResources(String name) throws IOException {
 }
 
 
-public Enumeration getLocalResources(String name) throws IOException {
+Enumeration getLocalResources(String name) throws IOException {
 	return (null);
 }
 
-public URL getLocalResource(String name) {
+URL getLocalResource(String name) {
 	return (null);
 }
 
-public Enumeration getSystemResources(String name) throws IOException {
+public static Enumeration getSystemResources(String name) throws IOException {
 	throw new kaffe.util.NotImplemented();
 }
 
-public static ClassLoader getBaseClassLoader() {
+static ClassLoader getBaseClassLoader() {
 	return (null);
 }
 
@@ -165,10 +165,8 @@ native private Class defineClass0(String name, byte data[], int offset, int leng
 native private Class findSystemClass0(String name);
 native private Class findLoadedClass0(String name);
 native private void resolveClass0(Class cls);
-/**
- *  This is not part of the public interface.
- */
-native public static byte[] getSystemResourceAsBytes0(String name);
+
+native static byte[] getSystemResourceAsBytes0(String name);
 
 final native private void finalize0();
 

@@ -15,14 +15,14 @@ public class InvocationTargetException
 {
 	private Throwable thrown;
 
-public InvocationTargetException () {
+protected InvocationTargetException () {
 	super();
 	thrown = null;
 }
 
-public InvocationTargetException (String s) {
+public InvocationTargetException (Throwable t,String s) {
 	super(s);
-	thrown = null;
+	thrown = t;
 }
 
 public InvocationTargetException (Throwable t) {

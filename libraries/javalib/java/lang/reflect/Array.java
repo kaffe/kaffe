@@ -10,8 +10,11 @@ package java.lang.reflect;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class Array
+public final class Array
 {
+private Array() {
+}
+    
 native public static Object get(Object array, int index) throws IllegalArgumentException, ArrayIndexOutOfBoundsException;
 
 native public static boolean getBoolean(Object array, int index) throws IllegalArgumentException, ArrayIndexOutOfBoundsException;

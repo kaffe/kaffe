@@ -13,7 +13,7 @@ package java.lang.reflect;
 import java.lang.String;
 import java.lang.Class;
 
-public class Field
+public final class Field
   implements Member
 {
 	private Class clazz;
@@ -21,6 +21,9 @@ public class Field
 	private String name;
 	private Class type;
 
+private Field() {
+}
+    
 public boolean equals(Object obj)
 	{
 	// Quick test for identity

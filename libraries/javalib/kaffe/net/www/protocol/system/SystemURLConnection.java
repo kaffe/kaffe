@@ -23,7 +23,7 @@ import kaffe.net.www.protocol.BasicURLConnection;
 
 public class SystemURLConnection extends BasicURLConnection {
 
-private byte[] data;
+private InputStream data;
 
 public SystemURLConnection(URL url)
 {
@@ -33,18 +33,13 @@ public SystemURLConnection(URL url)
 public void connect() throws IOException
 {
 	String filename = url.getFile();
-	data = ClassLoader.getSystemResourceAsBytes0(filename);
+	data = ClassLoader.getSystemResourceAsStream(filename);
 	setContentTypeFromName();
 }
 
 public InputStream getInputStream() throws IOException
 {
-	if (data == null) {
-		return (null);
-	}
-	else {
-		return (new ByteArrayInputStream(data));
-	}
+	return data;
 }
 
 }

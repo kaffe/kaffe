@@ -13,7 +13,7 @@ package java.lang.reflect;
 import java.lang.Class;
 import java.lang.String;
 
-public class Method
+public final class Method
   implements Member
 {
 	private Class clazz;
@@ -23,6 +23,9 @@ public class Method
 	private Class[] parameterTypes;
 	private Class[] exceptionTypes;
 
+private Method() {
+}
+    
 public boolean equals(Object obj)
 	{
 	// Catch the simple case where they're really the same

@@ -16,7 +16,7 @@ import java.io.UTFDataFormatException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class ProcessInputStream
+class ProcessInputStream
   extends FilterInputStream
   implements DataInput
 {

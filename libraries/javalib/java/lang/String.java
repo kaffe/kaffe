@@ -503,10 +503,10 @@ public static String valueOf( long l) {
 	return Long.toString(l);
 }
 
-final public String intern() {
+public String intern() {
 	return interned ? this : intern0(this);
 }
 
-final native static public synchronized String intern0(String str);
+private native static synchronized String intern0(String str);
 
 }

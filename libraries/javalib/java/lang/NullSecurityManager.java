@@ -16,7 +16,7 @@ import java.lang.Class;
 import java.lang.SecurityManager;
 import java.net.InetAddress;
 
-public class NullSecurityManager 
+class NullSecurityManager 
   extends SecurityManager {
 
 NullSecurityManager() {
@@ -82,8 +82,8 @@ public void checkPropertiesAccess() {
 public void checkPropertyAccess(String key) {
 }
 
-public void checkPropertyAccess(String key, String def) {
-}
+/* public void checkPropertyAccess(String key, String def) {
+}*/
 
 public void checkRead(FileDescriptor fd) {
 }

@@ -17,7 +17,9 @@ import java.util.StringTokenizer;
 
 public class Runtime
 {
-
+/**
+ *  This is not part of the public interface.
+ */
 public static interface MemoryAdvice {
 
 // These should match those in kaffe.lang.MemoryAdvice
@@ -144,11 +146,11 @@ public synchronized void loadLibrary(String libname) {
 	// otherwise we don't have external libraries at all
 }
 
-public int getMemoryAdvice() {
+int getMemoryAdvice() {
 	return (advice.getColor());
 }
 
-public int waitForMemoryAdvice(int level) throws InterruptedException {
+int waitForMemoryAdvice(int level) throws InterruptedException {
 	return (advice.waitForOtherColor(level));
 }
 
