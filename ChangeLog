@@ -1,3 +1,7 @@
+2004-01-10  Milos Negovanovic <milosn@xtra.co.nz>
+	* kaffe/scripts/kaffe.in:
+	Add support for cgdb(vi based curses frontend for gdb).
+
 2004-01-10  Mark Wielaard  <mark@klomp.org>
                                                                                 
         * kaffe/kaffeh/support.c (kaffeh_findClass): Close jar file and
