@@ -138,6 +138,7 @@ void Kaffe_JNIExceptionHandler(void);
 jint Kaffe_GetVersion(JNIEnv*);
 jclass Kaffe_FindClass(JNIEnv*, const char*);
 jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
+jint Kaffe_Throw(JNIEnv* env, jobject obj);
 
 jint
 JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs* args)
