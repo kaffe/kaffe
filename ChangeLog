@@ -1,5 +1,6 @@
 Thu Feb 18 15:55:45 PST 1999 Archie Cobbs <archie@whistle.com>
 
+	* libltdl/ltdl.c: fix a free() when we shouldn't bug.
 	* kaffe/kaffevm/systems/unix-jthread/signal.c: make sure
 	async signals are blocked when we get SIGINT or SIGTERM.
 	This fixes the kaffe-wont-die problem on FreeBSD for me.
