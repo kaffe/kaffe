@@ -60,6 +60,11 @@ EXTRA_DIST = \
 	arm/netbsd1/md.h \
 	arm/threads.h \
 	arm/trampolines.c \
+	ia64/common.h \
+	ia64/linux/md.c \
+	ia64/linux/md.h \
+	ia64/threads.h \
+	ia64/sysdepCallMethod.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \

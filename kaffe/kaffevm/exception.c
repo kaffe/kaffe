@@ -432,12 +432,12 @@ DBG(ELOOKUP,
 			if (res == true) {
 				unhand(ct)->needOnStack = STACK_HIGH;
 				frame->pc = einfo.handler;
-				JTHREAD_LONGJMP(frame->jbuf, 1);
+				JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
 			}
 
 			/* If not here, exit monitor if synchronised. */
 			if (obj != 0 && (einfo.method->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, frame->jbuf);
+				_slowUnlockMutexIfHeld(&obj->lock, JTHREAD_ACCESS_JMPBUF(frame, jbuf));
 			}
 		}
 	}

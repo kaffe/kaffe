@@ -301,6 +301,12 @@ options(char** argv)
 			printFullVersion();
 			exit(0);
 		}
+#if defined(__ia64__)
+		else if (strcmp(argv[i], "-ia32") == 0) {
+			i++;
+			/* FIXME: skip, case handled by the calle script */
+		}
+#endif
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
 			if (argv[i] == 0) {
@@ -571,6 +577,9 @@ usage(void)
 	dprintf("	-help			Print this message\n");
 	dprintf("	-version		Print version number\n");
 	dprintf("	-fullversion		Print verbose version info\n");
+#if defined(__ia64__)
+	dprintf("	-ia32			Execute the ia32 version of Kaffe\n");
+#endif
 	dprintf("	-ss <size>		Maximum native stack size\n");
 	dprintf("	-mx <size> 		Maximum heap size\n");
 	dprintf("	-ms <size> 		Initial heap size\n");

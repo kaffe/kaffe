@@ -90,7 +90,7 @@ typedef struct _jthread {
 	 * used to hold the current Java thread
 	 */
 	void*				jlThread;
-	JTHREAD_JMPBUF			env;
+	JTHREAD_DECLARE_JMPBUF		(env);
 #if defined(SAVED_FP_SIZE)
 	char				fpstate[SAVED_FP_SIZE];
 #endif

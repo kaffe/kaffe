@@ -3502,7 +3502,7 @@ Kaffe_JNIExceptionHandler(void)
 		 * handling, as well as functions which only delay
 		 * external exceptions.
 		 */
-		JTHREAD_LONGJMP(frame->jbuf, 1);
+		JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
 	}
 }
 

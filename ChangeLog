@@ -1,3 +1,50 @@
+Wed May 29 12:45:06 PDT 2002  Jim Pick  <jim@jimpick.com>
+
+	* kaffe/kaffe/main.c:
+	(options) recognize support for -ia32 option.
+	(usage) print usage info for ia32 option.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: add ia64 specific
+	macros for backing store pointers.
+	(jthread_create) Adjust stack size. Handle backing store pointers
+	and split stacks.
+	(reschedule) Adjust context switch handling.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h: Adapt jthread
+	struct.
+
+	* kaffe/kaffevm/jni.c:
+	(Kaffe_JNIExceptionHandler) Adapt to use JTHREAD_ACCESS_JMPBUF.
+
+	* kaffe/kaffevm/exception.c:
+	(dispatchException) Adapt to use JTHREAD_ACCESS_JMPBUF.
+
+	* kaffe/kaffevm/exception.h: Adapt vmException struct.
+
+	* kaffe/scripts/kaffe.in: Handle -ia32 option on ia64.
+
+	* config/Makefile.am: Add files for ia64 platform.
+
+	* config/ia64/common.h: new file.
+
+	* config/ia64/linux/config.frag: new file.
+
+	* config/ia64/linux/md.c: new file.
+
+	* config/ia64/linux/md.h: new file.
+
+	* config/ia64/sysdepCallMethod.h: new file.
+
+	* config/ia64/threads.h: new file.
+
+	* config/Makefile.in: add files for ia64 platform. 
+
+	* config/config-setjmp.h: add JTHREAD_DECLARE_JMPBUF and
+	JTHREAD_ACCESS_JMPBUF macros.
+
+	Patch by Gwenole Beauchesne <gbeauchesne@mandrakesoft.com>
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+
 Wed May 29 12:04:47 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* configure.in,

@@ -170,6 +170,16 @@ static void intsRestore(void);
 #define GET_FP(E)       (((void**)(E))[FP_OFFSET])
 #define SET_FP(E, V)    ((void**)(E))[FP_OFFSET] = (V)
 
+/*
+ * Macros to set and extract backing store pointer from jmp_buf
+ * (IA-64 specific)
+ */
+#if defined(__ia64__)
+#define BSP_OFFSET	17
+#define GET_BSP(E)	(((void**)(E))[BSP_OFFSET])
+#define SET_BSP(E, V)	((void**)(E))[BSP_OFFSET] = (V)
+#endif
+
 /* Set the base pointer in a jmp_buf if we can (only a convenience) */
 #if defined(BP_OFFSET)
 #define SET_BP(E, V)    ((void**)(E))[BP_OFFSET] = (V)
@@ -1245,6 +1255,16 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 {
 	jthread *jtid; 
 	void	*oldstack, *newstack;
+#if defined(__ia64__)
+	void	*oldbsp, *newbsp;
+#endif
+	size_t   page_size;
+	
+	/* Adjust stack size */
+	page_size = getpagesize();
+	if (threadStackSize == 0)
+		threadStackSize = THREADSTACKSIZE;
+	threadStackSize = (threadStackSize + page_size - 1) & -page_size;
 
 	/*
 	 * Disable stop to protect the threadLock lock, and prevent
@@ -1254,7 +1274,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 	jthread_disable_stop();
 
 	jmutex_lock(&threadLock);
-        jtid = newThreadCtx(threadStackSize);
+	jtid = newThreadCtx(threadStackSize);
 	if (!jtid) {
 		jmutex_unlock(&threadLock);
 		jthread_enable_stop();
@@ -1289,7 +1309,7 @@ DBG(JTHREAD,
 	 *
 	 * To be safe, we immediately call a new function.
 	 */
-        if (JTHREAD_SETJMP(jtid->env)) {
+        if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(jtid, env))) {
 		/* new thread */
 		start_this_sucker_on_a_new_frame();
 		assert(!"Never!");
@@ -1300,34 +1320,57 @@ DBG(JTHREAD,
 	SAVE_FP(jtid->fpstate);
 #endif
 	/* set up context for new thread */
-	oldstack = GET_SP(jtid->env);
+	oldstack = GET_SP(JTHREAD_ACCESS_JMPBUF(jtid, env));
+#if defined(__ia64__)
+	oldbsp = GET_BSP(JTHREAD_ACCESS_JMPBUF(jtid, env));
+#endif
 
 #if defined(STACK_GROWS_UP)
 	newstack = jtid->stackBase+STACK_COPY;
 	memcpy(newstack-STACK_COPY, oldstack-STACK_COPY, STACK_COPY);
 #else /* !STACK_GROWS_UP */
-	newstack = jtid->stackEnd-STACK_COPY;
+	newstack = jtid->stackEnd;
+#if defined(__ia64__)
+	/*
+	 * The stack segment is split in the middle. The upper half is used
+	 * as backing store for the register stack which grows upward.
+	 * The lower half is used for the traditional memory stack which
+	 * grows downward. Both stacks start in the middle and grow outward
+	 * from each other.
+	 */
+	newstack -= (threadStackSize >> 1);
+	newbsp = newstack;
+	/* Make register stack 64-byte aligned */
+	if ((unsigned long)newbsp & 0x3f)
+		newbsp = newbsp + (0x40 - ((unsigned long)newbsp & 0x3f));
+	newbsp += STACK_COPY;
+	memcpy(newbsp-STACK_COPY, oldbsp-STACK_COPY, STACK_COPY);
+#endif
+	newstack -= STACK_COPY;
 	memcpy(newstack, oldstack, STACK_COPY);
 #endif /* !STACK_GROWS_UP */
 
 #if defined(NEED_STACK_ALIGN)
-        newstack = (void *) STACK_ALIGN(newstack);
+	newstack = (void *) STACK_ALIGN(newstack);
 #endif
 
-	SET_SP(jtid->env, newstack);
+	SET_SP(JTHREAD_ACCESS_JMPBUF(jtid, env), newstack);
+#if defined(__ia64__)
+	SET_BSP(JTHREAD_ACCESS_JMPBUF(jtid, env), newbsp);
+#endif
 
 #if defined(SET_BP)
 	/*
 	 * Clear the base pointer in the new thread's stack.
 	 * Nice for debugging, but not strictly necessary.
 	 */
-	SET_BP(jtid->env, 0);
+	SET_BP(JTHREAD_ACCESS_JMPBUF(jtid, env), 0);
 #endif
 
 
 #if defined(FP_OFFSET)
 	/* needed for: IRIX */
-	SET_FP(jtid->env, newstack + ((void *)GET_FP(jtid->env) - oldstack));
+	SET_FP(JTHREAD_ACCESS_JMPBUF(jtid, env), newstack + ((void *)GET_FP(JTHREAD_ACCESS_JMPBUF(jtid, env)) - oldstack));
 #endif
 
         resumeThread(jtid);
@@ -1574,10 +1617,9 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 #if defined(CONTEXT_SWITCH)
 				CONTEXT_SWITCH(lastThread, currentJThread);
 #else
-				if (JTHREAD_SETJMP(lastThread->env) == 0) {
-				    lastThread->restorePoint = 
-					GET_SP(lastThread->env);
-				    JTHREAD_LONGJMP(currentJThread->env, 1);
+				if (JTHREAD_SETJMP(JTHREAD_ACCESS_JMPBUF(lastThread, env)) == 0) {
+				    lastThread->restorePoint = GET_SP(JTHREAD_ACCESS_JMPBUF(lastThread, env));
+				    JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(currentJThread, env), 1);
 				}
 #endif
 #if defined(LOAD_FP)
