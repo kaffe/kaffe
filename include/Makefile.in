@@ -9,6 +9,7 @@
 prefix=		@prefix@
 srcdir=		@srcdir@
 incdir=		@includedir@/kaffe
+classdir=	@datadir@/kaffe
 INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
@@ -52,9 +53,9 @@ install:
 		done
 
 derived-files:
-		$(KAFFEH) java/lang/Thread
-		$(KAFFEH) java/lang/ThreadGroup
-		$(KAFFEH) java/lang/Throwable
+		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Thread
+		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/ThreadGroup
+		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Throwable
 
 depend:
 
