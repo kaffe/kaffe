@@ -4,6 +4,20 @@
 
 	2004-12-27  Michael Koch  <konqueror@gmx.de>
 
+	* javax/imageio/IIOParam.java
+	(setSourceBands): New method.
+	(setSourceSubsampling): Likewise.
+	* javax/imageio/ImageReadParam.java
+	(setDestination): Likewise.
+	(setDestinationBands): Likewise.
+	(setSourceProgressivePasses): Likewise.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-27  Michael Koch  <konqueror@gmx.de>
+
 	* javax/swing/AbstractAction.java,
 	javax/swing/AbstractCellEditor.java,
 	javax/swing/AbstractListModel.java,
