@@ -1,5 +1,33 @@
 2003-12-11  Dalibor Topic <robilad@kaffe.org>
 
+	* config/arm/sysdepCallMethod.h: New file.
+
+	* config/Makefile.am
+	(EXTRA_DIST) Added config/arm/sysdepCallMethod.h.
+
+	* aclocal.m4,
+	config/Makefile.in,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/Makefile.in:
+	Regenerated.
+
+	* config/arm/common.h
+	(sysdepCallMethod) Moved into its own file,
+	config/arm/sysdepCallMethod.h.
+
+	* config/arm/linux/md.h,
+	config/arm/netbsd1/md.h:
+	Include config/arm/sysdepCallMethod.h.
+
+	* config/arm/riscos/md.h:
+	(sysdepCallMethod) Converted macro to inline function.
+
+2003-12-11  Dalibor Topic <robilad@kaffe.org>
+
 	* config/m68k/common.h
 	(sysdemCallMethod)[!__linux__]: Removed unused 
 	variables.

@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2003
+#       Kaffe.org contributors. See ChangeLog for details.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -312,6 +315,7 @@ EXTRA_DIST = \
         arm/riscos/md.c \
         arm/riscos/md.h \
 	arm/threads.h \
+	arm/sysdepCallMethod.h \
 	arm/trampolines.c \
 	ia64/common.h \
 	ia64/linux/config.frag \

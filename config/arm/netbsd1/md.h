@@ -13,6 +13,7 @@
 #define __arm_netbsd1_md_h
 
 #include "arm/common.h"
+#include "arm/sysdepCallMethod.h"
 #include "arm/threads.h"
 
 #if defined(TRANSLATOR)

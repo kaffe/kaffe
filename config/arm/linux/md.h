@@ -13,6 +13,7 @@
 #define __arm_linux_md_h
  
 #include "arm/common.h"
+#include "arm/sysdepCallMethod.h"
 #include "arm/threads.h"
 
 #ifdef HAVE_SIGNAL_H
