@@ -68,6 +68,7 @@ Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
+Hjava_lang_Class* javaLangThrowable;
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 Hjava_lang_Class* javaLangNullPointerException;
 Hjava_lang_Class* javaLangArithmeticException;
@@ -248,6 +249,7 @@ initBaseClasses(void)
 	loadStaticClass(&PtrClass, PTRCLASS);
 
 	/* Exception handling types */
+	loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 	loadStaticClass(&javaLangArithmeticException, "java/lang/ArithmeticException");

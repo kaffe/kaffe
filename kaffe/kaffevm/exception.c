@@ -599,6 +599,11 @@ DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 		}
 		/* Resolve catch class if necessary */
 		if (eptr[i].catch_type == NULL) {
+			/*
+			 * XXX Since we pre-load all catch clause exceptions
+			 * in code-analyse.c now, this code should never
+			 * be called.  Right?
+			 */
 			errorInfo info;
 			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class, &info);
 			/* 

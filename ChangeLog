@@ -1,3 +1,16 @@
+Tue Jun 13 22:17:51 MDT 2000  Tim Stack  <stack@cs.utah.edu>
+	
+	* kaffe/kaffevm/baseClasses.[ch]: statically load and reference
+ 	java/lang/Throwable for the verifier.
+	* kaffe/kaffevm/code-analyse.c: check catch clause exceptions to
+	make sure they can be found and are legit exceptions.
+	* kaffe/kaffevm/exception.c: comment about some probably-dead
+ 	code.
+	* test/regression/{ExceptionTestClassLoader.java,
+	ExceptionTestClassLoader2.java}: Tweaks.
+	* test/regression/Overflow.java: Make it more interesting by using 
+	a ClassLoader.
+	
 2000-06-13  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/net/URL.java: Add serialization functions.

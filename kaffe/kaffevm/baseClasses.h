@@ -46,6 +46,7 @@ extern struct Hjava_lang_Class*	javaLangLongClass;
 extern struct Hjava_lang_Class*	javaLangFloatClass;
 extern struct Hjava_lang_Class*	javaLangDoubleClass;
 
+extern struct Hjava_lang_Class* javaLangThrowable;
 extern struct Hjava_lang_Class*	javaLangNullPointerException;
 extern struct Hjava_lang_Class*	javaLangArithmeticException;
 extern struct Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
