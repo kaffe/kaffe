@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentBuilderFactory.java,v 1.1 2002/12/02 15:01:15 dalibor Exp $
+ * $Id: DocumentBuilderFactory.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -43,7 +43,7 @@ import org.xml.sax.*;
  * W3C DOM APIs don't include portable bootstrapping.
  *
  * @author	Andrew Selkirk, David Brownell
- * @version	$Id: DocumentBuilderFactory.java,v 1.1 2002/12/02 15:01:15 dalibor Exp $
+ * @version	$Id: DocumentBuilderFactory.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  */
 public abstract class DocumentBuilderFactory {
 
@@ -74,6 +74,9 @@ public abstract class DocumentBuilderFactory {
 	// Methods ----------------------------------------------------
 	//-------------------------------------------------------------
 
+  /**
+   * @exception IllegalArgumentException if implementation doesn't recognize the attribute
+   */
 	public abstract Object getAttribute(String name) 
 		throws IllegalArgumentException;
 
@@ -104,6 +107,9 @@ public abstract class DocumentBuilderFactory {
 	public abstract DocumentBuilder newDocumentBuilder()
 		throws ParserConfigurationException;
 
+  /**
+   * @exception FactoryConfigurationError if the implementation is not available
+   */
 	public static DocumentBuilderFactory newInstance() {
 		try {
 		    return (DocumentBuilderFactory)
@@ -116,6 +122,9 @@ public abstract class DocumentBuilderFactory {
 		}
 	}
 
+  /**
+   * @exception IllegalArgumentException if implementation doesn't recognize the attribute
+   */
 	public abstract void setAttribute(String name, Object value) 
 		throws IllegalArgumentException;
 

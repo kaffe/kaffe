@@ -1,5 +1,5 @@
 /*
- * $Id: SAXParser.java,v 1.1 2002/12/02 15:01:15 dalibor Exp $
+ * $Id: SAXParser.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -71,6 +71,7 @@ public abstract class SAXParser
 	 * Avoid using this API, since relative URIs in the document need
 	 * to be resolved against the document entity's URI, and good
 	 * diagnostics also need that URI.
+   * @exception IllegalArgumentException if InputStream is null
 	 */
 	public void parse(InputStream stream, HandlerBase handler) 
 	throws SAXException, IOException
@@ -79,6 +80,7 @@ public abstract class SAXParser
 	/**
 	 * Parse using (deprecated) SAX1 style handlers,
 	 * and a byte stream with a specified URI.
+   * @exception IllegalArgumentException if InputStream is null
 	 */
 	public void parse (
 		InputStream stream,
@@ -86,6 +88,10 @@ public abstract class SAXParser
 		String systemID
 	) throws SAXException, IOException
 	{
+    if(stream==null)
+      {
+        throw new IllegalArgumentException("InputStream is 'null'");
+      }
 		InputSource	source;
 
 		// Prepare Source
@@ -102,14 +108,22 @@ public abstract class SAXParser
 	 * Avoid using this API, since relative URIs in the document need
 	 * to be resolved against the document entity's URI, and good
 	 * diagnostics also need that URI.
+   * @exception IllegalArgumentException if InputStream is null
 	 */
 	public void parse(InputStream stream, DefaultHandler def) 
 	throws SAXException, IOException
-	    { parse (new InputSource (stream), def); }
+  {
+    if(stream==null)
+      {
+        throw new IllegalArgumentException("InputStream is 'null'");
+      }
+    parse (new InputSource (stream), def);
+  }
 
 	/**
 	 * Parse using SAX2 style handlers,
 	 * and a byte stream with a specified URI.
+   * @exception IllegalArgumentException if InputStream is null
 	 */
 	public void parse (
 		InputStream stream,
@@ -117,6 +131,10 @@ public abstract class SAXParser
 		String systemID
 	) throws SAXException, IOException
 	{
+    if(stream==null)
+      {
+        throw new IllegalArgumentException("InputStream is 'null'");
+      }
 		InputSource	source;
 
 		// Prepare Source
@@ -130,26 +148,45 @@ public abstract class SAXParser
 	/**
 	 * Parse using (deprecated) SAX1 style handlers,
 	 * and a URI for the document entity.
+   * @exception IllegalArgumentException if URI is null
 	 */
 	public void parse(String uri, HandlerBase handler) 
 	throws SAXException, IOException
-	    { parse (new InputSource (uri), handler); }
+  {
+    if(uri==null)
+      {
+        throw new IllegalArgumentException("URI is 'null'");
+      }
+    parse (new InputSource (uri), handler);
+  }
 
 	/**
 	 * Parse using SAX2 style handlers,
 	 * and a URI for the document entity.
+   * @exception IllegalArgumentException if URI is null
 	 */
 	public void parse(String uri, DefaultHandler def) 
 	throws SAXException, IOException
-	    { parse (new InputSource (uri), def); }
+  {
+    if(uri==null)
+      {
+        throw new IllegalArgumentException("URI is 'null'");
+      }
+    parse (new InputSource (uri), def);
+  }
 
 	/**
 	 * Parse using (deprecated) SAX1 style handlers,
 	 * turning a file name into the document URI.
+   * @exception IllegalArgumentException if file is null
 	 */
 	public void parse(File file, HandlerBase handler) 
 	throws SAXException, IOException
 	{
+    if(file==null)
+      {
+        throw new IllegalArgumentException("The file is 'null'");
+      }
 		InputSource	in;
 		
 		in = new InputSource (DocumentBuilder.fileToURL (file));
@@ -159,10 +196,15 @@ public abstract class SAXParser
 	/**
 	 * Parse using SAX2 style handlers,
 	 * turning a file name into the document URI.
+   * @exception IllegalArgumentException if file is null
 	 */
 	public void parse(File file, DefaultHandler def) 
 	throws SAXException, IOException
 	{
+    if(file==null)
+      {
+        throw new IllegalArgumentException("The file is 'null'");
+      }
 		InputSource	in;
 		
 		in = new InputSource (DocumentBuilder.fileToURL (file));
@@ -171,10 +213,15 @@ public abstract class SAXParser
 
 	/**
 	 * Parse using (deprecated) SAX1 style handlers.
+   * @exception IllegalArgumentException if InputSource is null
 	 */
 	public void parse(InputSource source, HandlerBase handler) 
 	throws SAXException, IOException
 	{
+    if(source==null)
+      {
+        throw new IllegalArgumentException("The InputSource is 'null'");
+      }
 		Parser	parser;
 
 		// Prepare Parser
@@ -191,10 +238,15 @@ public abstract class SAXParser
 
 	/**
 	 * Parse using SAX2 style handlers.
+   * @exception IllegalArgumentException if InputSource is null
 	 */
 	public void parse(InputSource source, DefaultHandler def) 
 	throws SAXException, IOException
 	{
+    if(source==null)
+      {
+        throw new IllegalArgumentException("The InputSource is 'null'");
+      }
 		XMLReader	reader;
 
 		// Prepare XML Reader
@@ -217,6 +269,7 @@ public abstract class SAXParser
 
 	/**
 	 * Get a SAX2 driver for the underlying parser.
+   * @since 1.1
 	 */
 	public abstract XMLReader getXMLReader() throws SAXException;
 

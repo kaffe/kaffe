@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentBuilder.java,v 1.1 2002/12/02 15:01:14 dalibor Exp $
+ * $Id: DocumentBuilder.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 /**
  * Uses an XML parser to construct a DOM document.
  * @author	Andrew Selkirk, David Brownell
- * @version	$Id: DocumentBuilder.java,v 1.1 2002/12/02 15:01:14 dalibor Exp $
+ * @version	$Id: DocumentBuilder.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  */
 public abstract class DocumentBuilder
 {
@@ -96,17 +96,30 @@ public abstract class DocumentBuilder
 	/**
 	 * Constructs an InputSource from the file, and invokes parse ().
 	 * The InputSource includes the URI for the file.
+   * @param file the file to parse
+   * @return the DOM representation of the xml document
+   * @exception IOException 
+   * @exception SAXException if parse errors occur
+   * @exception IllegalArgumentException if the file is null
 	 */
 	public Document parse (File file) 
 	throws SAXException, IOException
 	{
-	    InputSource	source;
-
-	    source = new InputSource (fileToURL (file));
-	    source.setByteStream (new FileInputStream(file));
-	    return parse (source);
+    if (file==null)
+      {
+        throw new IllegalArgumentException("File si 'null'");
+      }
+    InputSource	source;
+    
+    source = new InputSource (fileToURL (file));
+    source.setByteStream (new FileInputStream(file));
+    return parse (source);
 	}
-
+  
+  /**
+   * 
+   * @exception IllegalArgumentException if InputSource is null
+   */
 	public abstract Document parse(InputSource source) 
 		throws SAXException, IOException;
 
@@ -114,15 +127,28 @@ public abstract class DocumentBuilder
 	 * Avoid using this call; provide the system ID wherever possible.
 	 * System IDs are essential when parsers resolve relative URIs,
 	 * or provide diagnostics.
+   * @exception IllegalArgumentException if InputStream is null
 	 */
 	public Document parse(InputStream stream) 
 		throws SAXException, IOException {
+    if (stream==null)
+    {
+      throw new IllegalArgumentException("InputStream si 'null'");
+    }
 		return parse(new InputSource(stream));
 	} // parse()
 
+  /**
+   * 
+   * @exception IllegalArgumentException if InputStream is null
+   */
 	public Document parse(InputStream stream, String systemID) 
 		throws SAXException, IOException {
 
+    if (stream==null)
+      {
+        throw new IllegalArgumentException("InputStream si 'null'");
+      }
 		// Variables
 		InputSource	source;
 
@@ -135,11 +161,19 @@ public abstract class DocumentBuilder
 
 	} // parse()
 
+  /**
+   * 
+   * @exception IllegalArgumentException if the URI is null
+   */
 	public Document parse(String uri) 
 		throws SAXException, IOException {
+    if (uri==null)
+      {
+        throw new IllegalArgumentException("URI si 'null'");
+      }
 		return parse(new InputSource(uri));
 	} // parse()
-
+  
 	public abstract void setEntityResolver(EntityResolver resolver);
 
 	public abstract void setErrorHandler(ErrorHandler handler);

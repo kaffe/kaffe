@@ -1,3 +1,13 @@
+2003-09-15  Dalibor Topic <robilad@kaffe.org>
+	
+	* libraries/javalib/javax/xml/parsers/DocumentBuilder.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilderFactory.java,
+	libraries/javalib/javax/xml/parsers/SAXParser.java,
+	libraries/javalib/javax/xml/transform/TransformerConfigurationException.java,
+	libraries/javalib/javax/xml/transform/TransformerException.java,
+	libraries/javalib/javax/xml/transform/sax/SAXSource.java:
+	Resynced with GNU JAXP.
+	
 2003-09-14  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/Klasses.jar.bootstrap:
