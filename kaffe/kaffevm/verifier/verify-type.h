@@ -106,7 +106,7 @@ extern Type* getTOBJ(void);
 
 extern Type* TOBJARR;
 extern Type* TCHARARR;
-extern Type* TBYTEARR;
+extern Type* getTBYTEARR(void);
 extern Type* getTBOOLARR(void);
 extern Type* getTSHORTARR(void);
 extern Type* getTINTARR(void);

@@ -724,7 +724,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			case TYPE_Char:    OPSTACK_PUSH(TCHARARR);   break;
 			case TYPE_Float:   OPSTACK_PUSH(getTFLOATARR());  break;
 			case TYPE_Double:  OPSTACK_PUSH(getTDOUBLEARR()); break;
-			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
+			case TYPE_Byte:    OPSTACK_PUSH(getTBYTEARR());   break;
 			case TYPE_Short:   OPSTACK_PUSH(getTSHORTARR());  break;
 			case TYPE_Int:     OPSTACK_PUSH(getTINTARR());    break;
 			case TYPE_Long:    OPSTACK_PUSH(getTLONGARR());   break;
@@ -795,7 +795,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			/* BALOAD can be used for bytes or booleans .... */
 			OPSTACK_POP_T(TINT);
 
-			if (!typecheck (v, TBYTEARR, getOpstackTop(block)) &&
+			if (!typecheck (v, getTBYTEARR(), getOpstackTop(block)) &&
 			    !typecheck (v, getTBOOLARR(), getOpstackTop(block))) {
                                 DBG(VERIFY3,
                                     dprintf("                OPSTACK_TOP: ");
@@ -881,7 +881,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			OPSTACK_POP_T(TINT);
 			OPSTACK_POP_T(TINT);
 
-			if ( !typecheck(v, TBYTEARR, getOpstackTop(block)) &&
+			if ( !typecheck(v, getTBYTEARR(), getOpstackTop(block)) &&
 			     !typecheck(v, getTBOOLARR(), getOpstackTop(block))) {
 				DBG(VERIFY3,
 				    dprintf("                OPSTACK_TOP: ");

@@ -90,7 +90,12 @@ Type* TCHARARR = &verify_CHARARR;
 
 static const char* BYTEARR_SIG = "[B";
 static Type  verify_BYTEARR;
-Type* TBYTEARR = &verify_BYTEARR;
+static Type* TBYTEARR = &verify_BYTEARR;
+
+Type* getTBYTEARR(void)
+{
+  return TBYTEARR;
+}
 
 static const char* BOOLARR_SIG = "[Z";
 static Type  verify_BOOLARR;
