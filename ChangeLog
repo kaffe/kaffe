@@ -1,3 +1,8 @@
+2004-10-24  Noa Resare  <noa@resare.com>
+
+       * libraries/clib/io/ObjectInputStream.c:
+       Update fields in superclasses as well in deserialization.
+
 2004-10-24  Eric Anholt  <eta@lclark.edu>
 
 	* config/x86_64/common.h,

@@ -90,7 +90,7 @@ getFieldAddress (struct Hjava_lang_reflect_Field* sfield, struct Hjava_lang_Obje
 		SignalError ("java.lang.IllegalArgumentException", "");
 	}
 
-	return (void *)((uintp)obj + FIELD_BOFFSET(CLASS_FIELDS(OBJECT_CLASS(obj)) + unhand(sfield)->slot));
+	return (void *)((uintp)obj + FIELD_BOFFSET(CLASS_FIELDS(sfield->clazz) + unhand(sfield)->slot));
 }
 
 void java_io_VMObjectStreamClass_setBooleanNative
