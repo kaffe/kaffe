@@ -1,3 +1,8 @@
+Tue Jan  4 16:20:27 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/clib/io/FileOutputStream.c: add array bounds check
+	to native method writeBytes()
+
 Tue Jan  4 15:54:07 PST 2000  Frohwalt Egerer <froh@iconsult.com>
 
 	* libraries/clib/io/File.c, libraries/javalib/java/io/File.java:
