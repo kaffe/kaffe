@@ -201,6 +201,7 @@ TESTS = \
 	MapTest.java \
 	URLTest.java \
 	ReaderTest.java \
+	CharArrayReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 	ReflectInvoke.java \
