@@ -508,7 +508,7 @@ Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
 
 	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
 
-	return ((jint)mpz_get_si(src));
+	return ((jint)mpz_get_ui(src));
 }
 
 jint
