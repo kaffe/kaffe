@@ -200,6 +200,7 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
+	PropertiesTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
 	LineNumberReaderTest.java \
