@@ -2,7 +2,7 @@ class DoublePrint {
 
   static final double[] dcases = {
     0.0,
-//    -0.0,
+    -0.0,
     Double.longBitsToDouble(0x8000000000000000L),
     Double.NaN,
     Double.POSITIVE_INFINITY,
@@ -18,7 +18,7 @@ class DoublePrint {
 
   static final float[] fcases = {
     0.0f,
-//    -0.0f,
+    -0.0f,
     Float.intBitsToFloat(0x80000000),
     Float.NaN,
     Float.POSITIVE_INFINITY,
@@ -69,6 +69,7 @@ Double values:
   NaN -> 7ff8000000000000
   0.0
   -0.0
+  -0.0
   NaN
   Infinity
   -Infinity
@@ -84,6 +85,7 @@ Double values:
 Float values:
   NaN -> 7fc00000
   0.0
+  -0.0
   -0.0
   NaN
   Infinity
