@@ -114,11 +114,10 @@ extern int alpha_andconst_rangecheck(long v);
 #define HAVE_load_code_ref		loadpc_RxR
 
 #define	HAVE_cvt_int_double		cvtid_RxR
-#define	HAVE_cvt_float_int		cvtfi_RxR
-#define	HAVE_cvt_double_int		cvtdi_RxR
 #define	HAVE_cvt_int_float		cvtif_RxR
 #define	HAVE_cvt_float_double		cvtfd_RxR
 #define	HAVE_cvt_double_float		cvtdf_RxR
+
 
 /*
  * These must be defined for 64-bit architectures.
@@ -265,8 +264,24 @@ extern int alpha_andconst_rangecheck(long v);
 #define	HAVE_cvt_int_long		cvtil_RxR
 #define	HAVE_cvt_long_int		cvtli_RxR
 #define	HAVE_cvt_long_double		cvtld_RxR
+#define	HAVE_cvt_long_float		cvtlf_RxR
+
+
+#if 0
+/* These functions does not work correctly, use soft_cvtXX */
+
+#define	HAVE_cvt_float_int		cvtfi_RxR
+#define	HAVE_cvt_double_int		cvtdi_RxR
 #define	HAVE_cvt_float_long		cvtfl_RxR
 #define	HAVE_cvt_double_long		cvtdl_RxR
-#define	HAVE_cvt_long_float		cvtlf_RxR
+
+#else
+
+#undef HAVE_cvt_float_int
+#undef HAVE_cvt_double_int
+#undef HAVE_cvt_float_long
+#undef HAVE_cvt_double_long
+
+#endif
 
 #endif
