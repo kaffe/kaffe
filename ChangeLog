@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/font/TransformAttribute.java,
+	(TransformAttribute(AffineTransform)): throw 
+	IllegalArgumentException for null transform.
+	(getTransform): return a copy of transform.
+	Added doc comments to all.
+	
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-18  Sven de Marothy <sven@physto.se>
 
 	* java/util/TimeZone.java,
