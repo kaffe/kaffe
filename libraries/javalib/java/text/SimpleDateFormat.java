@@ -1096,7 +1096,10 @@ public class SimpleDateFormat extends DateFormat
 		// exactly 2 digits.
 		int digit_count = pos.getIndex() - index;
 		if (digit_count == 2)
-		  is2DigitYear = true;
+		  {
+		    is2DigitYear = true;
+		    value += defaultCentury;
+		  }
 	      }
 	    
 	    // Assign the value and move on.
@@ -1107,8 +1110,7 @@ public class SimpleDateFormat extends DateFormat
 	  {
 	    // Apply the 80-20 heuristic to dermine the full year based on 
 	    // defaultCenturyStart. 
-	    int year = defaultCentury + calendar.get(Calendar.YEAR);
-	    calendar.set(Calendar.YEAR, year);
+	    int year = calendar.get(Calendar.YEAR);
 	    if (calendar.getTime().compareTo(defaultCenturyStart) < 0)
 	      calendar.set(Calendar.YEAR, year + 100);      
 	  }

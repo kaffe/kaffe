@@ -1,3 +1,13 @@
+2005-02-05  Sven de Marothy  <sven@physto.se>
+
+	* java/text/SimpleDateFormat.java
+	(parse): Tweak handling of 2-year dates
+	* java/util/Calendar.java
+	(clear): Clear fields to correct value.
+	* java/util/GregorianCalendar.java
+	(computeTime): Correct handling of time zones.
+	Correct field minimum values.
+
 2005-02-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Don't add PTHREAD_CFLAGS to CFLAGS.

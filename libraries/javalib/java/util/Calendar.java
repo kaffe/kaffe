@@ -683,7 +683,7 @@ public abstract class Calendar implements Serializable, Cloneable
     fields[field] = value;
     isSet[field] = true;
 
-    // The five valid date patterns, in order of validity
+    // The five valid date patterns, in order of priority
     // 1  YEAR + MONTH + DAY_OF_MONTH
     // 2  YEAR + MONTH + WEEK_OF_MONTH + DAY_OF_WEEK
     // 3  YEAR + MONTH + DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK
@@ -827,23 +827,21 @@ public abstract class Calendar implements Serializable, Cloneable
   {
     isTimeSet = false;
     areFieldsSet = false;
+    int zoneOffs = zone.getRawOffset();
 
-    int hour = fields[ZONE_OFFSET] / (60 * 60 * 1000);
-    int minute = (fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour) / (60 * 1000);
-    int seconds = (fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour
-                  - 60 * 1000 * minute) / 1000;
-    int millis = fields[ZONE_OFFSET] - 60 * 60 * 1000 * hour
-                 - 60 * 1000 * minute - seconds * 1000;
+    int hour = zoneOffs / (60 * 60 * 1000);
+    int minute = (zoneOffs - 60 * 60 * 1000 * hour) / (60 * 1000);
+    int seconds = (zoneOffs - 60 * 60 * 1000 * hour - 60 * 1000 * minute) / 1000;
+    int millis = zoneOffs - 60 * 60 * 1000 * hour - 60 * 1000 * minute
+                 - seconds * 1000;
     int[] tempFields = 
                        {
                          1, 1970, JANUARY, 1, 1, 1, 1, THURSDAY, 1, AM, hour,
-                         hour, minute, seconds, millis, fields[ZONE_OFFSET],
-                         fields[DST_OFFSET]
+                         hour, minute, seconds, millis, zoneOffs, 0
                        };
     fields = tempFields;
-    for (int i = 0; i < FIELD_COUNT - 2; i++)
+    for (int i = 0; i < FIELD_COUNT; i++)
       isSet[i] = false;
-    isSet[ZONE_OFFSET] = isSet[DST_OFFSET] = true;
   }
 
   /**
@@ -855,10 +853,15 @@ public abstract class Calendar implements Serializable, Cloneable
    */
   public final void clear(int field)
   {
+    int[] tempFields = 
+                       {
+                         1, 1970, JANUARY, 1, 1, 1, 1, THURSDAY, 1, AM, 0, 0, 0,
+                         0, 0, zone.getRawOffset(), 0
+                       };
     isTimeSet = false;
     areFieldsSet = false;
     isSet[field] = false;
-    fields[field] = 0;
+    fields[field] = tempFields[field];
   }
 
   /**

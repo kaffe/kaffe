@@ -562,18 +562,18 @@ public class GregorianCalendar extends Calendar
     // rest of code assumes day/month/year set
     // should negative BC years be AD?
     // get the hour (but no check for validity)
-    if (isSet[HOUR_OF_DAY])
-      hour = fields[HOUR_OF_DAY];
-    else if (isSet[HOUR])
+    if (isSet[HOUR])
       {
 	hour = fields[HOUR];
-	if (isSet[AM_PM] && fields[AM_PM] == PM)
+	if (fields[AM_PM] == PM)
 	  if (hour != 12) /* not Noon */
 	    hour += 12;
 	/* Fix the problem of the status of 12:00 AM (midnight). */
-	if (isSet[AM_PM] && fields[AM_PM] == AM && hour == 12)
+	if (fields[AM_PM] == AM && hour == 12)
 	  hour = 0;
       }
+    else
+      hour = fields[HOUR_OF_DAY];
 
     // Read the era,year,month,day fields and convert as appropriate.
     // Calculate number of milliseconds into the day
@@ -644,12 +644,20 @@ public class GregorianCalendar extends Calendar
       weekday += 7;
     fields[DAY_OF_WEEK] = weekday;
 
+    // Time zone corrections.
     TimeZone zone = getTimeZone();
-    int rawOffset = zone.getRawOffset();
-    int dstOffset = zone.getOffset((year < 1) ? BC : AD,
-                                   (year < 1) ? 1 - year : year, month, day,
-                                   weekday, millisInDay) - zone.getRawOffset();
-    time -= (rawOffset + dstOffset);
+    int rawOffset = isSet[ZONE_OFFSET] ? fields[ZONE_OFFSET]
+                                       : zone.getRawOffset();
+
+    int dstOffset = isSet[DST_OFFSET] ? fields[DST_OFFSET]
+                                      : (zone.getOffset((year < 0) ? BC : AD,
+                                                        (year < 0) ? 1 - year
+                                                                   : year,
+                                                        month, day, weekday,
+                                                        millisInDay)
+                                      - zone.getRawOffset());
+
+    time -= rawOffset + dstOffset;
 
     isTimeSet = true;
   }
@@ -1101,7 +1109,7 @@ public class GregorianCalendar extends Calendar
   private static final int[] minimums = 
                                         {
                                           BC, 1, 0, 0, 1, 1, 1, SUNDAY, 1, AM,
-                                          1, 0, 1, 1, 1, -(12 * 60 * 60 * 1000),
+                                          1, 0, 0, 0, 0, -(12 * 60 * 60 * 1000),
                                           0
                                         };
 
