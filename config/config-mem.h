@@ -14,15 +14,23 @@
 #if defined(HAVE_STRING_H)
 #include <string.h>
 #endif
-#if defined(HAVE_MALLOC_H)
-#include <malloc.h>
-#endif
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h>
+#else /* !HAVE_STDLIB_H */
+# if defined(HAVE_MALLOC_H)
+#  include <malloc.h>
+# endif /* HAVE_MALLOC_H */
+#endif /* HAVE_STDLIB_H */
+
 #if defined(HAVE_ALLOCA_H)
 #include <alloca.h>
 #endif
+
 #if defined(HAVE_MEMORY_H)
 #include <memory.h>
 #endif
+
 #if defined(HAVE_MMAP)
 #include <sys/types.h>
 #include <sys/mman.h>

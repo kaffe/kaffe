@@ -37,7 +37,6 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	classFile hand;
 	classEntry *centry;
 	errorInfo info;
-	int iLockRoot;
 
 	classFileInit(&hand, &unhand_array(data)->body[offset], length, CP_BYTEARRAY);
 

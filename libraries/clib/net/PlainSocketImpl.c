@@ -281,6 +281,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	struct sockaddr_in addr;
 	HArrayOfByte *remote_addr;
 	
+	remote_addr = NULL;
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);

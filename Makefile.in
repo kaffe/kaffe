@@ -328,7 +328,6 @@ EXTRA_DIST = \
 	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/fixup.c \
-	developers/getaddrinfo-socketinttypes-glibc2.diff \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
 	developers/mangleNative.pl \
@@ -339,6 +338,7 @@ EXTRA_DIST = \
 	developers/patch-libtool-amiga.diff \
 	developers/patch-libtool-openbsd.diff \
 	developers/patch-libtool-realloc.diff \
+	developers/patch-libtool-amiga-max-command-line-length.diff \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \

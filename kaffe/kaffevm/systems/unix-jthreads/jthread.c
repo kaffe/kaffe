@@ -143,7 +143,7 @@ jthread* currentJThread;
 
 /* A signal context pointer type, used in parameter lists/declarations */
 #ifndef SIGNAL_CONTEXT_POINTER
-#define SIGNAL_CONTEXT_POINTER(x) void *##x
+#define SIGNAL_CONTEXT_POINTER(x) void *x
 #endif
 
 /* Get the PC from a signal context pointer */

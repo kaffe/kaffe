@@ -1,5 +1,38 @@
 2003-06-24  Dalibor Topic <robilad@yahoo.com>
 
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_defineClass0) removed unneeded variable.
+
+	* libraries/clib/net/PlainsocketImpl.c:
+	(java_net_PlainSocketImpl_socketAccept) initialize remote_addr
+	with NULL.
+
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
+	* config/config-mem.h:
+	Include <stdlib.h> if the system has it, instead of <malloc.h>, to
+	fix warnings on FreeBSD 4.8.
+	
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
+	* Makefile.am:
+	(EXTRA_DIST) removed
+	developers/getaddrinfo-socketinttypes-glibc2.diff. added
+	developers/patch-libtool-amiga-max-command-line-length.diff.
+	
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
+	* config/i386/freebsd2/md.h:
+	(SIGNAL_CONTEXT_POINTER) removed unnecessary concatenation.
+
+2003-06-24  Luca Saiu <positrone@freemail.it>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(SIGNAL_CONTEXT_POINTER) removed unnecessary concatenation, fixing
+	compilation problems on gcc 3.3.
+	
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
 	* herrno.m4, in6addr.m4, include/dummyin6.h, replace/dummyin6.c,
 	replace/getaddrinfo.c, replace/memset.c, sockaddrin6.m4,
 	sockinttypes.m4: updated to getaddrinfo 1.6.
