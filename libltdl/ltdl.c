@@ -1,5 +1,5 @@
 /* ltdl.c -- system independent dlopen wrapper
-   Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2004 Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -385,11 +385,13 @@ memcpy (dest, src, size)
      const lt_ptr src;
      size_t size;
 {
-  size_t i = 0;
+  const char *	s = src;
+  char *	d = dest;
+  size_t	i = 0;
 
   for (i = 0; i < size; ++i)
     {
-      dest[i] = src[i];
+      d[i] = s[i];
     }
 
   return dest;
@@ -409,17 +411,21 @@ memmove (dest, src, size)
      const lt_ptr src;
      size_t size;
 {
-  size_t i;
+  const char *	s = src;
+  char *	d = dest;
+  size_t	i;
 
-  if (dest < src)
+  if (d < s)
     for (i = 0; i < size; ++i)
       {
-	dest[i] = src[i];
+	d[i] = s[i];
       }
-  else if (dest > src)
-    for (i = size -1; i >= 0; --i)
+  else if (d > s && size > 0)
+    for (i = size -1; ; --i)
       {
-	dest[i] = src[i];
+	d[i] = s[i];
+	if (i == 0)
+	  break;
       }
 
   return dest;
