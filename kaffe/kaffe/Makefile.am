@@ -21,7 +21,7 @@ Kaffe_SOURCES = main.c version.c version.h
 
 LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
-Kaffe_LDFLAGS = -export-dynamic
+Kaffe_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
 Kaffe_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
 Kaffe_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
 
