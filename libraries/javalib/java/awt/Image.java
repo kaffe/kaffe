@@ -55,6 +55,9 @@ public class Image
 	final public static Object UndefinedProperty = ImageLoader.class;
 	static Image unknownImage;
 
+public Image() {
+}
+
 Image ( File file ) {
 	producer = new ImageNativeProducer( this, file);
 }

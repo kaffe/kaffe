@@ -14,15 +14,16 @@ package java.security;
 
 import java.util.Enumeration;
 
+/** @deprecated */
 public abstract class IdentityScope extends Identity {
     protected IdentityScope() {
     }
 
-    protected IdentityScope(String name) {
+    public IdentityScope(String name) {
 	super(name);
     }
 
-    protected IdentityScope(String name, IdentityScope scope) throws KeyManagementException {
+    public IdentityScope(String name, IdentityScope scope) throws KeyManagementException {
 	super(name, scope);
     }
 

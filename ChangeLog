@@ -1,3 +1,36 @@
+Thu Jul  4 12:46:53 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+ 
+	* libraries/javalib/java/security/acl/Acl.java:
+	(getPermission) renamed to getPermissions, fixing a typo.
+
+	* libraries/javalib/java/security/Certificate.java:
+	deprecated interface, it's been deprecated with java 1.2.
+	(toString) added missing parameter.
+
+	* libraries/javalib/java/security/IdentityScope.java:
+	deprecated class.
+	(IdentityScope) changed access modifier on constructors to public,
+	to comply with spec.
+
+	* libraries/javalib/java/awt/AWTEvent.java:
+	(RESERVED_ID_MAX) changed type to int.
+
+	* libraries/javalib/java/awt/Image.java:
+	(Image) added empty constructor.
+
+	* libraries/javalib/java/awt/Frame.java:
+	(MOVE_CURSOR) new constant.
+
+	* libraries/javalib/java/awt/Toolkit.java:
+	(Toolkit) made constructor public.
+
+	* libraries/extensions/rmi/javalib/java/rmi/server/LogStream.java:
+	(BRIEF), (VERBOSE) corrected constants to match values from jdk
+	1.4.0 spec.
+
+	* libraries/javalib/java/util/zip/GZIPInputStream.java:
+	(GZIP_MAGIC) corrected constant to match value from jdk 1.4.0 spec.
+
 Thu Jul  4 03:48:36 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Klasses.jar: regenerated using kaffe's kjc.

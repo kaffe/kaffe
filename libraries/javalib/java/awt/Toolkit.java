@@ -132,7 +132,7 @@ static {
 	}
 }
 
-Toolkit () {
+public Toolkit () {
 }
 
 public void beep () {

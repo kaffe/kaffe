@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/** @deprecated since 1.2 */
 public interface Certificate {
     void decode(InputStream stream) throws IOException, KeyException;
     void encode(OutputStream stream) throws IOException, KeyException;
@@ -23,5 +24,5 @@ public interface Certificate {
     Principal getGuarantor();
     Principal getPrincipal();
     PublicKey getPublicKey();
-    String toString();
+    String toString(boolean print_details);
 }

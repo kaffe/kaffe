@@ -20,7 +20,7 @@ public interface Acl extends Owner {
     boolean checkPermission(Principal valid_authenticated_principal, Permission to_be_checked);
     Enumeration entries();
     String getName();
-    Enumeration getPermission(Principal principal);
+    Enumeration getPermissions(Principal principal);
     boolean removeEntry(Principal invoker, AclEntry to_be_removed) throws NotOwnerException;
     void setName(Principal invoker, String name) throws NotOwnerException;
     String toString();

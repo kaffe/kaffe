@@ -37,6 +37,7 @@ public class Frame
 	final public static int SE_RESIZE_CURSOR = Cursor.SE_RESIZE_CURSOR;
 	final public static int SW_RESIZE_CURSOR = Cursor.SW_RESIZE_CURSOR;
 	final public static int W_RESIZE_CURSOR = Cursor.W_RESIZE_CURSOR;
+	final public static int MOVE_CURSOR = Cursor.MOVE_CURSOR;
 
 static {
 	// these are just the guesses (to be overwritten by a subsequent
