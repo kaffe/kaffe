@@ -1,4 +1,9 @@
 2005-01-01  Dalibor Topic  <robilad@kaffe.org>
+	
+	* test/internal/System.java: Removed.
+	* test/internal/java/lang/System.java: Moved over here.
+	
+2005-01-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/internal/Makefile.am (CPATH): New variable
 	as shortcut for classpath setting. Prepended '.' to
