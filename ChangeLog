@@ -6,6 +6,16 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
 
+	* libraries/javalib/gnu/java/nio/SelectorImpl.java:
+	Resynced with GNU Classpath.
+
+	2004-06-24  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/nio/SelectorImpl.java (select): Call static Thread
+        interrupted() method to clear interupt flag of our Thread.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+
 	* libraries/javalib/gnu/java/net/protocol/http/Connection.java:
 	Resynced with GNU Classpath.
 
