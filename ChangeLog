@@ -1,3 +1,9 @@
+2005-01-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/internal/Makefile.am (CPATH): New variable
+	as shortcut for classpath setting. Prepended '.' to
+	classpath.
+	
 2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/sparc/jit-alpha.def: Renamed setEpilogueLabel to
