@@ -94,6 +94,7 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 {
 	int sz;
 	int i;
+	int cnt;
 	HArrayOfObject* sf;
 	Hjava_io_ObjectStreamField* obj;
 	Field* fld;
@@ -101,9 +102,22 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 	char* type;
 
 	sz = CLASS_NIFIELDS(cls);
+	cnt = 0;
+
+	/* count how many non-transient fields there are */
 	fld = CLASS_IFIELDS(cls);
-	sf = (HArrayOfObject*)AllocObjectArray(sz, "Ljava/io/ObjectStreamField;");
 	for (i = 0; i < sz; i++, fld++) {
+		if ((fld->accflags & ACC_TRANSIENT) == 0)
+			cnt++;
+	}
+
+	fld = CLASS_IFIELDS(cls);
+	sf = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/io/ObjectStreamField;");
+	for (i = 0; i < cnt; fld++) {
+		/* skip transient fields */
+		if (fld->accflags & ACC_TRANSIENT)
+			continue;
+
 		unhand(sf)->body[i] = AllocObject("java/io/ObjectStreamField");
 		obj = (Hjava_io_ObjectStreamField*)unhand(sf)->body[i];
 		unhand(obj)->name = Utf8Const2JavaString(fld->name);
@@ -134,6 +148,7 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 			}
 			unhand(obj)->typeString = makeJavaString(buf, strlen(buf));
 		}
+		i++;
 	}
 	return (sf);
 }

@@ -1,3 +1,8 @@
+Mon Jun 29 16:16:23 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/ObjectStreamClass.c: exclude transient
+	fields from serialization.
+
 Fri Jun 26 20:06:02 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Method.c:
