@@ -56,8 +56,17 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	byte junk[]=new byte[(int )n];
+	byte[] buf = new char[1024];
+	int skipped = 0;
 
-	return (long)read(junk);
+	while (n > 0) {
+		int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
+		if (r <= 0)
+			break;
+		n -= r;
+		skipped += r;
+	}
+	return skipped;
 }
+
 }
