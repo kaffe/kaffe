@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-17  Tom Tromey  <tromey@redhat.com>
+
+	* java/text/MessageFormat.java (scanString): Changed how quoting
+	is handled.
+	(scanFormatElement): Likewise.
+
+2005-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-17  Michael Koch  <konqueror@gmx.de>
 
 	PR libgcj/19444
