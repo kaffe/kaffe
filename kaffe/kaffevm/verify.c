@@ -908,9 +908,16 @@ static const uint8 insnLen[256] = {
 /* these retrieve the word (16 bits) or double world (32 bits) of bytecode starting
  * at pc = _PC
  */
-#define	WORD(_CODE, _PC)  ((int16)( \
-			   (_CODE[(_PC)+0] << 8) | \
-			   (_CODE[(_PC)+1])))
+
+static inline
+int16
+getWord(const unsigned char* code,
+	const unsigned int pc)
+{
+	return ((int16)((code[(pc)+0] << 8)
+			| (code[(pc)+1])));
+}
+
 #define	DWORD(_CODE, _PC) ((int32)( \
 			   (_CODE[(_PC)+0] << 24) | \
 			   (_CODE[(_PC)+1] << 16) | \
@@ -1405,7 +1412,7 @@ verifyMethod3a(errorInfo* einfo,
 	
 #define GET_WIDX(_IDX, _PC) \
 	_IDX = (_PC) + 1; \
-	_IDX = WORD(code, _IDX); \
+	_IDX = getWord(code, _IDX); \
 	CHECK_POOL_IDX(_IDX)
 
 #define BRANCH_IN_BOUNDS(_N, _INST) \
@@ -1686,7 +1693,7 @@ verifyMethod3a(errorInfo* einfo,
 				pc++;
 				wide = false;
 				
-				n = WORD(code, pc);
+				n = getWord(code, pc);
 			}
 			else {
 				n = code[pc + 1];
@@ -1705,7 +1712,7 @@ verifyMethod3a(errorInfo* einfo,
 				pc++;
 				wide = false;
 				
-				n = WORD(code, pc);
+				n = getWord(code, pc);
 			}
 			else {
 				GET_IDX(n, pc);
@@ -1739,7 +1746,7 @@ verifyMethod3a(errorInfo* einfo,
 			status[pc] |= END_BLOCK;
 			
 			n = pc + 1;
-			branchoffset = WORD(code, n);
+			branchoffset = getWord(code, n);
 			newpc = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "goto");
 			status[newpc] |= START_BLOCK;
@@ -1773,7 +1780,7 @@ verifyMethod3a(errorInfo* einfo,
 			status[newpc] |= START_BLOCK;
 			
 			n            = pc + 1;
-			branchoffset = WORD(code, n);
+			branchoffset = getWord(code, n);
 			newpc        = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "if<condition> = true");
 			status[newpc] |= START_BLOCK;
@@ -1782,7 +1789,7 @@ verifyMethod3a(errorInfo* einfo,
 			
 		case JSR:
 			newpc = pc + 1;
-			newpc = pc + WORD(code, newpc);
+			newpc = pc + getWord(code, newpc);
 			goto JSR_common;
 		case JSR_W:
 			newpc = pc + 1;
@@ -2182,7 +2189,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			{
 			case GOTO:
 				newpc = pc + 1;
-				newpc = pc + WORD(code, newpc);
+				newpc = pc + getWord(code, newpc);
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
@@ -2202,7 +2209,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 					
 			case JSR:
 				newpc = pc + 1;
-				newpc = pc + WORD(code, newpc);
+				newpc = pc + getWord(code, newpc);
 				goto JSR_common;
 			case JSR_W:
 				newpc = pc + 1;
@@ -2224,7 +2231,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			case RET:
 				if (status[pc] & WIDE_MODDED) {
 					n = pc + 1;
-					n = WORD(code, n);
+					n = getWord(code, n);
 				} else {
 					n = code[pc + 1];
 				}
@@ -2259,7 +2266,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 			case IF_ICMPLT:	 case IFLT:
 			case IF_ICMPLE:	 case IFLE:
 				newpc     = pc + 1;
-				newpc     = pc + WORD(code, newpc);
+				newpc     = pc + getWord(code, newpc);
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
@@ -2747,7 +2754,7 @@ verifyBasicBlock(errorInfo* einfo,
 	idx = code[pc + 1]
 	
 #define GET_WIDX \
-	idx = pc + 1; idx = WORD(code, idx)
+	idx = pc + 1; idx = getWord(code, idx)
 	
 	
 	/* checks whether the specified local variable is of the specified type. */
@@ -4128,7 +4135,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	const uint32 opcode              = code[pc];
 	
 	const constants* pool            = CLASS_CONSTANTS(method->class);
-	const uint32 idx                 = WORD(code, pc + 1);
+	const uint32 idx                 = getWord(code, pc + 1);
 				   				 
 	const uint32 classIdx            = METHODREF_CLASS(idx, pool);
 	Type  mrc;
