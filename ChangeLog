@@ -1,3 +1,14 @@
+2005-03-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-03-16  Archie Cobbs  <archie@dellroad.org>
+
+        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c: use
+        global native reference to wrap persistent jclass variable.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c:
+        use DeleteLocalRef() to avoid exhausting local native references.
+
 2003-03-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for -mregnames. It lets us use common register 

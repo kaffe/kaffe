@@ -135,6 +135,14 @@ Java_java_nio_VMDirectByteBuffer_init
 #else
 #error unsupported pointer size
 #endif
+
+  /* We need to wrap the jclass in global reference to make it persistent */
+  if ((classRawData = (*env)->NewGlobalRef(env, classRawData)) == NULL)
+    {
+      JCL_ThrowException(env, "java/lang/InternalError",
+			      "failed to create global reference");
+      return;
+    }
 }
 
 JNIEXPORT jobject JNICALL
