@@ -1,3 +1,8 @@
+2003-07-28  Rob Gonzalez <rob@kaffe.org>
+
+	* libraries/javalib/essential.files
+	fixed "gnu/java/locale/Calendar_nl.javA" to be "gnu/java/locale/Calendar_nl.java"
+
 2003-07-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	config/alpha/netbsd1/config.frag,
