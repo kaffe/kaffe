@@ -623,11 +623,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			lockObject(syncobj);
 		}
 
-		vmExcept_setIntrpFrame(&mjbuf, 0, meth, syncobj);
-		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-			mjbuf.prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
-			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
-		}
+		setupExceptionHandling(&mjbuf, meth, syncobj, tid);
 
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
@@ -636,9 +632,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			unlockObject(syncobj);
 		}
 
-		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
-		}
+		cleanupExceptionHandling(&mjbuf, tid);
 	}
 #endif
 	if (!promoted && call.retsize == 1) {
@@ -843,11 +837,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			lockObject(syncobj);
 		}
 
-		vmExcept_setIntrpFrame(&mjbuf, 0, meth, syncobj);
-		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-			mjbuf.prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
-			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
-		}
+		setupExceptionHandling(&mjbuf, meth, syncobj, tid);
 
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
@@ -856,9 +846,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			unlockObject(syncobj);
 		}
 
-		if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
-		}
+		cleanupExceptionHandling(&mjbuf, tid);
 	}
 #endif
 }

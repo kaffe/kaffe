@@ -168,11 +168,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* If we have any exception handlers we must prepare to catch them.
 	 * We also need to catch if we are synchronised (so we can release it).
 	 */
-	vmExcept_setIntrpFrame(&mjbuf, 0, meth, mobj);
-	if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-		mjbuf.prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
-		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
-	}
+	setupExceptionHandling(&mjbuf, meth, mobj, tid);
 
 	if (meth->exception_table != 0) {
 		if (JTHREAD_SETJMP(mjbuf.jbuf) != 0) {
@@ -235,9 +231,8 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	if (mobj != 0) {
 		locks_internal_unlockMutex(&mobj->lock, &mjbuf, 0); 
 	}
-	if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
-	}
+
+	cleanupExceptionHandling(&mjbuf, tid);
 
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); )
 }
@@ -290,4 +285,39 @@ char*
 getEngine()
 {
 	return "kaffe.intr";
+}
+
+static inline void 
+setFrame(VmExceptHandler* eh,
+	 struct _methods* meth,
+	 struct Hjava_lang_Object* syncobj)
+{
+	assert(eh);
+	assert(meth);
+	
+	eh->meth = meth;
+	eh->frame.intrp.pc = 0;
+	eh->frame.intrp.syncobj = syncobj;
+}
+
+void
+setupExceptionHandling(VmExceptHandler* eh,
+		       struct _methods* meth,
+		       struct Hjava_lang_Object* syncobj,
+		       struct Hjava_lang_Thread* tid)
+{
+  setFrame(eh, meth, syncobj);
+  if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+    eh->prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
+    unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)eh;
+  }
+}
+
+void
+cleanupExceptionHandling(VmExceptHandler* eh,
+			 struct Hjava_lang_Thread* tid)
+{
+  if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
+    unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)eh->prev;
+  }
 }

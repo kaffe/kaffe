@@ -33,6 +33,7 @@
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
+
 struct _methods;
 struct _errorInfo;
 
@@ -146,19 +147,6 @@ vmExcept_jumpToHandler(VmExceptHandler* frame)
 {
 	JTHREAD_LONGJMP(frame->jbuf, 1);
 }
-
-#if defined(INTERPRETER)
-static inline void 
-vmExcept_setIntrpFrame(VmExceptHandler* eh, u4 pc, struct _methods* meth, struct Hjava_lang_Object* syncobj)
-{
-	assert(eh);
-	assert(meth);
-	
-	eh->meth = meth;
-	eh->frame.intrp.pc = pc;
-	eh->frame.intrp.syncobj = syncobj;
-}
-#endif
 
 static inline void 
 vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)

@@ -1,3 +1,22 @@
+2003-09-28  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/exception.h:
+	{INTERPRETER] removed vmExcept_setIntrpFrame, moved to
+	intrp/machine.c and renamed to setFrame.
+
+	* kaffe/kaffevm/support.c:
+	(callMethodA, callMethodV)[INTERPRETER] Call new functions in
+	machine.c.
+	
+	* kaffe/kaffevm/intrp/machine.c:
+	(setFrame, setupExceptionHandling, cleanupExceptionHandling) New
+	functions.
+	(virtualMachine) Call the new functions.
+
+	* kaffe/kaffevm/intrp/machine.h:
+	Added prototypes for setupExceptionHandling,
+	cleanupExceptionHandling.
+
 2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/nio/ByteBufferHelper.java: added missing

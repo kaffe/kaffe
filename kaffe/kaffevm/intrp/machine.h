@@ -110,5 +110,7 @@ struct _methods;
 struct _slots;
 struct Hjava_lang_Thread;
 void virtualMachine(struct _methods*, struct _slots*, struct _slots*, struct Hjava_lang_Thread*);
+void setupExceptionHandling(VmExceptHandler* eh, struct _methods* meth, struct Hjava_lang_Object* syncobj, struct Hjava_lang_Thread* tid);
+void cleanupExceptionHandling(VmExceptHandler* eh, struct Hjava_lang_Thread* tid);
 
 #endif
