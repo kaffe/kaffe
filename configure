@@ -1069,10 +1069,9 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --disable-nls           do not use Native Language Support
   --disable-rpath         do not hardcode runtime library paths
-  --enable-debug          Enable run-time debugging machinery [default=yes]
-  --disable-debug         Disable assertion checking (but not -g)]
+  --enable-debug          Enable run-time debugging machinery
+                          [default=yes]
   --enable-jvmpi          Enable JVMPI [default=no]
-  --disable-jvmpi         Disable JVMPI]
   --enable-xprofiling     Enable profiling for C and jitted code
   --enable-xdebugging     Enable debugging symbol generation for jitted code
   --enable-feedback       Enable generation of feedback data
@@ -1082,7 +1081,8 @@ Optional Features:
   --disable-alsatest      Do not try to compile and run a test Alsa program
   --disable-esdtest       Do not try to compile and run a test ESD program
   --disable-sound         Disable javax.sound support
-  --enable-pure-java-math Enable pure java java.math.* package [default=native]
+  --enable-pure-java-math Enable pure java java.math.* package
+                          [default=native]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1090,7 +1090,8 @@ Optional Packages:
   --with-includes=dirs    Search specified directories for header files
   --with-libraries=dirs   Search for libraries in specified directories
   --with-staticlib        Force the use of static libraries rather than shared
-  --with-staticbin        Force the creation of a static virtual machine binary
+  --with-staticbin        Force the creation of a static virtual machine
+                          binary
   --with-staticvm         Force the creation of a static virtual machine
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-pic              try to use only PIC/non-PIC objects [default=use
@@ -1102,33 +1103,39 @@ Optional Packages:
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
   --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
   --without-libintl-prefix     don't search for libintl in includedir and libdir
-  --with-engine=ENGINE    Force use given execution engine (intrp, jit, or jit3)
+  --with-engine=ENGINE    Force use given execution engine (intrp, jit, or
+                          jit3)
   --with-bcel=<jar>       Use the specified Bytecode Engineering Jar file.
-  --with-dnsjava=<jar>       Use the specified DNS java Jar file.
+  --with-dnsjava=<jar>    Use the specified DNS java Jar file.
   --with-profiling        Compile with gprof(1) profiling support
   --without-suncompat     Don't include Sun compatibility scripts
-  --with-threads=SYSTEM   Define which threading system to use [default=unix-jthreads]
-  --with-jikes=JIKES      Define to use jikes compiler [default=no]
+  --with-threads=SYSTEM   Define which threading system to use
+                          [default=unix-jthreads]
+  --with-jikes<=JIKES>    Define to use jikes compiler [default=no]
   --with-libffi           Use libffi for sysdepCallMethod
   --with-x                use the X Window System
   --with-stats            Gather statistics on vm execution
-  --with-awt=GRAPHICSYS	  specify AWT engine (no, X, qt)
+  --with-awt=GRAPHICSYS   specify AWT engine (no, X, qt)
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --with-alsa-prefix=PFX  Prefix where Alsa library is installed(optional)
   --with-alsa-inc-prefix=PFX  Prefix where include libraries are (optional)
   --with-esd-prefix=PFX   Prefix where ESD is installed (optional)
   --with-esd-exec-prefix=PFX Exec prefix where ESD is installed (optional)
-  --without-alsa          Don't use ALSA for sound default is to use it if present
-  --without-esd           Don't use esd for sound default is to use it if present
-  --with-extensions       the extensions (like the servlet API) to include [default=none]
+  --without-alsa          Don't use ALSA for sound
+                          default, is, to, use, it, if, present
+  --without-esd           Don't use esd for sound
+                          default, is, to, use, it, if, present
+  --with-extensions       the extensions (like the servlet API) to include
+                          [default=none]
   --with-dmalloc          use dmalloc, as in
 			  http://www.dmalloc.com/dmalloc.tar.gz
   --with-gnu-crypto       path to GNU Crypto install directory. if
                           unspecified, /usr/local/gnu-crypto, /usr/local,
                           /usr, /opt/gnu-crypto, and /opt are considered, in
                           that order
-  --with-class-library-profile=PROFILE	specify class library profile
-  --with-rt-jar=ABS.PATH	use precompiled kaffe class library
+  --with-class-library-profile=PROFILE
+                          specify class library profile
+  --with-rt-jar=ABS.PATH  use precompiled kaffe class library
 
 Some influential environment variables:
   CC          C compiler command
@@ -3762,6 +3769,7 @@ if test "${with_staticlib+set}" = set; then
   withval="$with_staticlib"
 
 fi;
+
 if test x"$with_staticlib" = x"yes" ; then
 	dynamic_libraries=no
 	if test x"${with_staticvm+set}" != x"set"; then
@@ -3775,6 +3783,7 @@ if test "${with_staticbin+set}" = set; then
   withval="$with_staticbin"
 
 fi;
+
 if test x"$with_staticbin" = x"yes" ; then
 	vm_dynamic_binary=no
 	if test x"${with_staticvm+set}" != x"set"; then
@@ -3788,6 +3797,7 @@ if test "${with_staticvm+set}" = set; then
   withval="$with_staticvm"
 
 fi;
+
 if test x"$with_staticvm" = x"yes" ; then
 	vm_dynamic_library=no
 fi
@@ -4394,7 +4404,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4397 "configure"' > conftest.$ac_ext
+  echo '#line 4407 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5744,7 +5754,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5747:" \
+echo "$as_me:5757:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6782,11 +6792,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6785: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6795: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6789: \$? = $ac_status" >&5
+   echo "$as_me:6799: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -7015,11 +7025,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7018: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7028: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7022: \$? = $ac_status" >&5
+   echo "$as_me:7032: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -7075,11 +7085,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7078: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7088: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7082: \$? = $ac_status" >&5
+   echo "$as_me:7092: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9259,7 +9269,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9262 "configure"
+#line 9272 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9357,7 +9367,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9360 "configure"
+#line 9370 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11540,11 +11550,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11543: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11553: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11547: \$? = $ac_status" >&5
+   echo "$as_me:11557: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11600,11 +11610,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11603: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11613: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11607: \$? = $ac_status" >&5
+   echo "$as_me:11617: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12961,7 +12971,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12964 "configure"
+#line 12974 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13059,7 +13069,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 13062 "configure"
+#line 13072 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13886,11 +13896,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13889: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13899: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13893: \$? = $ac_status" >&5
+   echo "$as_me:13903: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13946,11 +13956,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13949: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13959: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13953: \$? = $ac_status" >&5
+   echo "$as_me:13963: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15984,11 +15994,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15987: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15997: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15991: \$? = $ac_status" >&5
+   echo "$as_me:16001: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16217,11 +16227,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16220: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16230: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16224: \$? = $ac_status" >&5
+   echo "$as_me:16234: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16277,11 +16287,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16280: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16290: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16284: \$? = $ac_status" >&5
+   echo "$as_me:16294: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18461,7 +18471,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18464 "configure"
+#line 18474 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18559,7 +18569,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18562 "configure"
+#line 18572 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -21717,6 +21727,7 @@ if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
 
 fi;
+
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
@@ -21750,6 +21761,7 @@ if test "${enable_jvmpi+set}" = set; then
   enableval="$enable_jvmpi"
 
 fi;
+
 case "$enable_jvmpi" in
 "") ;;
 no) ;;
@@ -21805,6 +21817,7 @@ if test "${enable_xprofiling+set}" = set; then
   enableval="$enable_xprofiling"
 
 fi;
+
 if test "x$NOSIGCONTEXT" = "xtrue"; then
   echo "XProfiling does not support Cygwin"
   enable_xprofiling=no
@@ -21843,6 +21856,7 @@ if test "${enable_xdebugging+set}" = set; then
   enableval="$enable_xdebugging"
 
 fi;
+
 case "$enable_xdebugging" in
 "") ;;
 no) ;;
@@ -21857,6 +21871,7 @@ if test "${enable_feedback+set}" = set; then
   enableval="$enable_feedback"
 
 fi;
+
 case "$enable_feedback" in
 "") ;;
 no) ;;
@@ -21900,6 +21915,7 @@ if test "${with_suncompat+set}" = set; then
   withval="$with_suncompat"
 
 fi;
+
 echo "$as_me:$LINENO: checking sun compatibility mode" >&5
 echo $ECHO_N "checking sun compatibility mode... $ECHO_C" >&6
 if test x"${with_suncompat+set}" != x"set" ; then
@@ -21925,6 +21941,7 @@ if test "${with_threads+set}" = set; then
   withval="$with_threads"
 
 fi;
+
 echo "$as_me:$LINENO: checking thread system" >&5
 echo $ECHO_N "checking thread system... $ECHO_C" >&6
 if test x"$with_threads" = x"" ; then
@@ -21986,6 +22003,7 @@ if test "${with_jikes+set}" = set; then
 else
   JIKES=""
 fi;
+
 echo "$as_me:$LINENO: checking whether to use jikes" >&5
 echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6
 
@@ -25549,6 +25567,7 @@ if test "${with_libffi+set}" = set; then
   withval="$with_libffi"
 
 fi;
+
 if test x"$with_libffi" = x"yes" ; then
 	KSAVE_LIBS="$LIBS"
 LIBS="$VM_LIBS $KSAVE_LIBS"
@@ -38443,6 +38462,7 @@ if test "${enable_gcj+set}" = set; then
   enableval="$enable_gcj"
 
 fi;
+
 echo "$as_me:$LINENO: checking whether to enable GCJ support" >&5
 echo $ECHO_N "checking whether to enable GCJ support... $ECHO_C" >&6
 echo "$as_me:$LINENO: result: $enable_gcj" >&5
@@ -38465,6 +38485,7 @@ if test "${enable_mips2+set}" = set; then
   enableval="$enable_mips2"
 
 fi;
+
 echo "$as_me:$LINENO: checking whether to enable MIPS II instructions" >&5
 echo $ECHO_N "checking whether to enable MIPS II instructions... $ECHO_C" >&6
 if test x"$enable_mips2" != x"no"; then
@@ -38484,6 +38505,7 @@ if test "${enable_pxa+set}" = set; then
   enableval="$enable_pxa"
 
 fi;
+
 echo "$as_me:$LINENO: checking whether to enable PXA/XScale support" >&5
 echo $ECHO_N "checking whether to enable PXA/XScale support... $ECHO_C" >&6
 if test x"$enable_pxa" != x"no"; then
@@ -47259,6 +47281,7 @@ if test "${with_extensions+set}" = set; then
   withval="$with_extensions"
 
 fi;
+
 echo "$as_me:$LINENO: checking which extensions to include" >&5
 echo $ECHO_N "checking which extensions to include... $ECHO_C" >&6
 
