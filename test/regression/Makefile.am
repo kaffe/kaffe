@@ -20,6 +20,7 @@ ALWAYS_TESTS = \
 	TestFloatDouble.java \
 	DoubleCvt.java \
 	DoubleNeg.java \
+	DoubleConst.java \
 	DoublePrint.java \
 	DoubleComp.java \
 	ModuloTest.java \
@@ -136,6 +137,7 @@ ALWAYS_TESTS = \
 ## Test for package java.util.zip
 	DosTimeVerify.java \
 	ZipVerify.java \
+	ZipTest.java \
 ## This one is skipped unless you --enable-debug.
 	TestNative.java
 
@@ -147,7 +149,7 @@ else
 TESTS = $(ALWAYS_TESTS)
 endif
 
-XFAIL_TESTS = divtest.java
+XFAIL_TESTS =
 
 EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \
