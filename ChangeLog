@@ -9,6 +9,8 @@ Thu Oct  7 15:31:57 PDT 1999  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/lang/Double.java,
 	libraries/javalib/java/lang/Float.java: implement *ToRaw*Bits()
 	* test/regression/ThreadState.java: new test
+	* test/regression/MapTest.java, test/regression/MarkResetTest.java,
+	test/regression/SortTest.java: remove dependencies on kaffe.util.*
 
 Wed Oct  6 15:36:27 CEST 1999  Edouard G. Parmelan <egp@quadratec.fr>
 
