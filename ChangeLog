@@ -1,3 +1,14 @@
+Thu Feb  4 17:57:15 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/lang/{Byte,Short}.java:
+	fix bogus NullPointerExceptions in equals() method
+
+Thu Feb  4 17:57:15 1999  Jose Orlando Pereira <jop@di.uminho.pt>
+
+	* libraries/javalib/java/util/Hashtable.java: fix bug that
+	is triggered when, after being used for a while, all free
+	slots are marked as "removed".
+
 Thu Feb  4 11:49:54 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/beans/FeatureDescriptor.java,
@@ -8,8 +19,7 @@ Thu Feb  4 11:49:54 1999  Godmar Back  <gback@cs.utah.edu>
 Thu Feb  4 10:49:33 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/ObjectInputStream.java: don't
-	multiply define the variable "key" to work around jikes
-	compilation error
+	multiply define the variable "key"
 	* libraries/javalib/java/net/Socket.java: add getLocalAddress()
 
 Thu Feb  4 10:10:34 1999  Godmar Back  <gback@cs.utah.edu>
