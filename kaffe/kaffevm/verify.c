@@ -1320,7 +1320,9 @@ verifyMethod(errorInfo *einfo, Method* method)
 	return(true);
 }
 
-
+/*
+ * Helper function for error reporting in verifyMethod3a.
+ */
 static inline
 BlockInfo **
 verifyErrorInVerifyMethod3a(errorInfo* einfo,
@@ -1333,6 +1335,39 @@ verifyErrorInVerifyMethod3a(errorInfo* einfo,
 				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
 	}
 	return NULL;
+}
+
+/*
+ * Helper function for error reporting in BRANCH_IN_BOUNDS macro in verifyMethod3a.
+ */
+static inline
+BlockInfo **
+branchInBoundsErrorInVerifyMethod3a(errorInfo* einfo,
+				    Method* method,
+				    int codelen,
+				    int n)
+{
+  DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
+  return verifyErrorInVerifyMethod3a(einfo, method, "branch out of method code");
+}
+
+/*
+ * Helper function for error reporting in CHECK_LOCAL_INDEX macro in verifyMethod3a.
+ */
+static inline
+BlockInfo **
+checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
+				     Method* method,
+				     uint32 pc,
+				     unsigned char* code,
+				     int n)
+{
+  DBG(VERIFY3,
+      dprintf("ERROR:  pc = %d, instruction = ", pc);
+      printInstruction(code[pc]);
+      dprintf(", localsz = %d, localindex = %d\n", method->localsz, n);
+      );
+  return verifyErrorInVerifyMethod3a(einfo, method, "attempting to access a local variable beyond local array");
 }
 
 /*
@@ -1375,21 +1410,14 @@ verifyMethod3a(errorInfo* einfo,
 
 #define BRANCH_IN_BOUNDS(_N, _INST) \
 	if (_N < 0 || _N >= codelen) { \
-		DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", _N, codelen); ); \
-		return verifyErrorInVerifyMethod3a(einfo, method, "branch out of method code"); \
+	  return branchInBoundsErrorInVerifyMethod3a(einfo, method, codelen, _N); \
 	}
 
         /* makes sure the index given for a local variable is within the correct index */
 #define CHECK_LOCAL_INDEX(_N) \
 	if ((_N) >= method->localsz) { \
-		DBG(VERIFY3, \
-		    dprintf("ERROR:  pc = %d, instruction = ", pc); \
-		    printInstruction(code[pc]); \
-		    dprintf(", localsz = %d, localindex = %d\n", method->localsz, _N); \
-		    ); \
-		return verifyErrorInVerifyMethod3a(einfo, method, "attempting to access a local variable beyond local array");  \
+	  return checkLocalIndexErrorInVerifyMethod3a(einfo, method, pc, code, _N); \
 	}
-	
 	
 	constants* pool     = CLASS_CONSTANTS(method->class);
 	
