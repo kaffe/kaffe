@@ -59,8 +59,10 @@ static void clickToFocus ( Component newKeyTgt ) {
 	// the focus by means of explicit requestFocus() (not very intuitive) OR by means of
 	// mouseclicks (even on components which are not mouse aware, which sounds silly)
 
+/* XXX
 	if ( ((newKeyTgt.flags & Component.IS_NATIVE_LIKE) != 0) && newKeyTgt.isFocusTraversable() )
 		newKeyTgt.requestFocus();	
+ */
 }
 
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
