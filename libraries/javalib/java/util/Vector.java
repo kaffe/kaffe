@@ -45,11 +45,17 @@ public Vector(Collection c) {
 	}
 }
 
-public synchronized void addElement(Object obj) {
-	if (elementCount == elementData.length) {
-		increaseCapacity();
-	}
-	elementData[elementCount++] = obj;
+public void addElement(Object obj) {
+	insertElementAt(obj, size());
+}
+
+public boolean add(Object obj) {
+	insertElementAt(obj, size());
+	return true;
+}
+
+public void add(int index, Object obj) {
+	insertElementAt(obj, index);
 }
 
 public int capacity() {
@@ -125,6 +131,7 @@ public synchronized Enumeration elements() {
 
 public synchronized void ensureCapacity(int newCapacity) { 
 	if (elementData.length < newCapacity) {
+		modCount++;
 		Object oldBuffer[] = elementData;
 		elementData = new Object[newCapacity];
 		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
@@ -153,9 +160,7 @@ private void increaseCapacity() {
 	else {
 		newCapacity *= 2;
 	}
-	Object oldBuffer[] = elementData;
-	elementData = new Object[newCapacity];
-	System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
+	ensureCapacity(newCapacity);
 }
 
 public int indexOf(Object elem) {
@@ -174,9 +179,11 @@ public synchronized int indexOf(Object elem, int index) {
 
 public synchronized void insertElementAt ( Object obj, int index ) {
 
+	int initialModCount = modCount;
 	if ( elementCount == elementData.length ) {
 		increaseCapacity();
 	}
+	modCount = initialModCount + 1;
 
 	if ( (index > elementCount) || (index < 0) ) {
 		throw new ArrayIndexOutOfBoundsException();
@@ -225,22 +232,22 @@ public synchronized void removeAllElements () {
 		elementData[i] = null;
 	}
 	elementCount = 0;
+	modCount++;
 }
 
 public synchronized boolean removeElement(Object obj) {
-	if (contains(obj)) {
-		removeElementAt(indexOf(obj));
-		return (true);
-	}
-	else {
-		return (false);
-	}
+	int index = indexOf(obj);
+	if (index == -1)
+		return false;
+	removeElementAt(index);
+	return true;
 }
 
 public synchronized void removeElementAt ( int index ) {
 	if ( index >= elementCount ) {
 		throw new ArrayIndexOutOfBoundsException();
 	}
+	modCount++;
 
 	System.arraycopy( elementData, index+1, elementData, index, elementCount-index-1);
 	elementCount--;
@@ -257,7 +264,9 @@ public synchronized void setElementAt(Object obj, int index)
 }
 
 public synchronized void setSize(int newSize) {
+	int initialModCount = modCount;
 	ensureCapacity(newSize);
+	modCount = initialModCount + 1;
 	elementCount = newSize;
 }
 
@@ -281,10 +290,11 @@ public synchronized String toString() {
 
 public synchronized void trimToSize() {
 	if (elementCount != elementData.length) {
+		modCount++;
 		Object oldBuffer[] = elementData;
 		elementData = new Object[elementCount];
 		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
 	}
 }
-
 }
+
