@@ -36,8 +36,41 @@ struct JNIEnv_;
 struct JNINativeInterface;
 struct JavaVM_;
 struct JNINativeMethod_;
-struct JavaVMAttachArgs;
-struct JavaVMInitArgs;
+
+typedef struct JavaVMAttachArgs {
+  void*	reserved0;
+} JavaVMAttachArgs;
+
+typedef struct JavaVMOption
+{
+  char *optionString;
+  void *extraInfo;
+} JavaVMOption;
+
+typedef struct JavaVMInitArgs {
+	jint		version;
+	char**		properties;
+	jint		checkSource;
+	jint		nativeStackSize;
+	jint		javaStackSize;
+	jint		minHeapSize;
+	jint		maxHeapSize;
+	jint		verifyMode;
+	const char*	classpath;
+	const char*     bootClasspath;
+	jint		(*vfprintf)(FILE*, const char*, va_list);
+	void		(*exit)(jint) __NORETURN__;
+	void		(*abort)(void) __NORETURN__;
+	jint		enableClassGC;
+	jint		enableVerboseGC;
+	jint		disableAsyncGC;
+	jint		enableVerboseClassloading;
+	jint		enableVerboseJIT;
+	jint		enableVerboseCall;
+	jint		allocHeapSize;
+	const char*	classhome;
+	const char*	libraryhome;
+} JavaVMInitArgs;
 
 #if defined(__cplusplus)
 typedef JNIEnv_ JNIEnv;
@@ -49,7 +82,6 @@ typedef const struct JNIInvokeInterface* JavaVM;
 
 typedef struct JNINativeMethod_ JNINativeMethod;
 typedef struct JavaVMAttachArgs ThreadAttachArgs;
-typedef struct JavaVMInitArgs JavaVMInitArgs;
 
 typedef	void*	jobjectID;
 typedef	void*	jmethodID;
@@ -309,10 +341,6 @@ struct JNINativeInterface {
         void* reserved22; /* GetDirectBufferCapacity */
 };
 
-struct JavaVMAttachArgs {
-	void*	reserved0;
-};
-
 struct JNINativeMethod_ {
 	char*	name;
 	char*	signature;
@@ -553,31 +581,6 @@ struct JavaVM_ {
         jint    DetachCurrentThread(void);
         jint    GetEnv(void**, jint);
 #endif
-};
-
-struct JavaVMInitArgs {
-	jint		version;
-	char**		properties;
-	jint		checkSource;
-	jint		nativeStackSize;
-	jint		javaStackSize;
-	jint		minHeapSize;
-	jint		maxHeapSize;
-	jint		verifyMode;
-	const char*	classpath;
-	const char*     bootClasspath;
-	jint		(*vfprintf)(FILE*, const char*, va_list);
-	void		(*exit)(jint) __NORETURN__;
-	void		(*abort)(void) __NORETURN__;
-	jint		enableClassGC;
-	jint		enableVerboseGC;
-	jint		disableAsyncGC;
-	jint		enableVerboseClassloading;
-	jint		enableVerboseJIT;
-	jint		enableVerboseCall;
-	jint		allocHeapSize;
-	const char*	classhome;
-	const char*	libraryhome;
 };
 
 extern JavaVMInitArgs Kaffe_JavaVMArgs[];

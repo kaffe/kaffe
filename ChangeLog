@@ -1,5 +1,13 @@
 2004-03-12  Dalibor Topic <robilad@kaffe.org>
 
+	* include/jni.h:
+	(JavaVMOption) New struct.
+	(JavaVMInitArgs, JavaVMAttachArgs) Use typedefs.
+
+	Reported by: Jim Huang <jimchyun@ccns.ncku.edu.tw>
+
+2004-03-12  Dalibor Topic <robilad@kaffe.org>
+
 	* config/sparc/atomicity-sparc32.h,
 	config/sparc/atomicity-sparc32v9.h,
 	config/sparc/atomicity-sparc64.h:
