@@ -1,3 +1,19 @@
+2005-02-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(nullException): Better handling of stack overflows though we
+	would need a stack switch here.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_exit): Awake the first thread and exits there.
+	
+	* test/regression/SystemLoaderTest.java
+	(l, k): Use another name to avoid conflicts with ArrayForName.
+
+	* test/regression/WaitTest.java: Synchronize then start the thread
+	to be sure the notification is sent after the first thread is
+	going into wait.
+
 2005-02-05  Dalibor Topic  <robilad@kaffe.org>
 
 	Attempt to fix up the FreeeBSD x86 tinderbox build.
