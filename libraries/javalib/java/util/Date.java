@@ -164,7 +164,7 @@ public int getTimezoneOffset() {
 public int getYear() {
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(this);
-	return (cal.get(Calendar.YEAR)-1990);
+	return (cal.get(Calendar.YEAR)-1900);
 }
 
 public int hashCode() {
