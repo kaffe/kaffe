@@ -1,3 +1,8 @@
+2004-12-17  Paul Jenner  <psj.home@ntlworld.com>
+
+	* libraries/javalib/javax/swing/TransferHandler.java
+	(createTransferable): Made protected.
+
 2004-12-16  Adam Heath  <doogieg@brainfood.com>
 
 	* libraries/clib/native/Runtime.c:

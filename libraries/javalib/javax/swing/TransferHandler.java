@@ -155,7 +155,7 @@ public class TransferHandler implements Serializable
     return false;
   }
 
-  public Transferable createTransferable(JComponent c) 
+  protected Transferable createTransferable(JComponent c) 
   {
     return null;
   }
