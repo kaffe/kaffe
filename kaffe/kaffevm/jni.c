@@ -43,7 +43,9 @@
 #include "basecode.h"
 #include "icode.h"
 #include "machine.h"
+#if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
+#endif
 #endif
 #include "jvmpi_kaffe.h"
 #include "jni_i.h"

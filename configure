@@ -26448,12 +26448,16 @@ echo "${ECHO_T}$enable_xdebugging" >&6
 if test "${enable_feedback+set}" = set; then
   enableval="$enable_feedback"
 
-fi;
-
 case "$enable_feedback" in
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_FEEDBACK";;
 esac
+
+else
+  enable_feedback=no
+need_libxprof=no
+
+fi;
 
 
 

@@ -35,7 +35,9 @@
 #include "java_lang_Cloneable.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
+#if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
+#endif
 #include "debugFile.h"
 #include "fileSections.h"
 #include "verify-type.h"

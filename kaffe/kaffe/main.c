@@ -31,7 +31,9 @@
 #include "debugFile.h"
 #include "xprofiler.h"
 #include "fileSections.h"
+#if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
+#endif
 #include "methodCache.h"
 #include "external.h"
 

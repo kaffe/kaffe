@@ -51,7 +51,9 @@
 #include "methodCache.h"
 #include "support.h"
 #include "xprofiler.h"
+#if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
+#endif
 #include "debugFile.h"
 #include "fileSections.h"
 #include "mangle.h"

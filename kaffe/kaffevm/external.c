@@ -42,7 +42,9 @@
 #include "stats.h"
 #define LT_NON_POSIX_NAMESPACE
 #include "ltdl.h"
+#if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
+#endif
 #include "jni_i.h"
 
 #ifdef __riscos__

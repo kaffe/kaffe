@@ -570,12 +570,16 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([feedback],
               AS_HELP_STRING([--enable-feedback],
-                             [Enable generation of feedback data]))
-
+                             [Enable generation of feedback data]),
+[
 case "$enable_feedback" in
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_FEEDBACK";;
 esac
+],
+[enable_feedback=no
+need_libxprof=no
+])
 
 AM_CONDITIONAL(NEED_LIBXPROF, test x"$need_libxprof" = x"yes")
 

@@ -1,3 +1,21 @@
+2004-06-10  Dalibor Topic  <robilad@kaffe.org>,
+	    Julian Scheid <julian@sektor37.de>
+
+        * configure.ac:
+	Fixed --enable-feedback.
+
+        * configure:
+	Regenerated.
+
+        * kaffe/kaffe/main.c,
+        kaffe/kaffevm/baseClasses.c,
+        kaffe/kaffevm/external.c,
+        kaffe/kaffevm/jni.c,
+        kaffe/kaffevm/jit3/machine.c:
+	Only include feedback.h if KAFFE_FEEDBACK is defined.
+
+	Reported by: Julian Scheid <julian@sektor37.de>
+
 2004-06-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am.in
