@@ -40,6 +40,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	classEntry* centry;
 	char entryName[10];
 	Hjava_lang_Class* clazz = newClass();
+	Utf8Const *uname;
 
 	if (clazz == 0) {
 		goto bad;
@@ -69,7 +70,10 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	 */
 	assert(strlen(name) <= 8);
 	sprintf(entryName, ";%s", name);
-	centry = lookupClassEntry(entryName, 0, &info);
+	uname = utf8ConstNew(entryName, -1);
+	centry = lookupClassEntry(uname, 0, &info);
+	utf8ConstRelease(uname);
+
 	if (centry == 0) {
 		goto bad;
 	}
