@@ -181,10 +181,18 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 	HArrayOfObject* obj;
 	struct Hjava_lang_Class** ifaces;
 	int i;
+	int nr;
 
-	obj = (HArrayOfObject*)AllocObjectArray(this->interface_len, "Ljava/lang/Class");
+	nr = this->interface_len;
+	/*
+	 * Do not report java.io.Serializable for array classes
+	 */
+	if (CLASS_IS_ARRAY(this))
+		nr = 0;
+
+	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class");
 	ifaces = (struct Hjava_lang_Class**)unhand(obj)->body;
-	for (i = 0; i < this->interface_len; i++) {
+	for (i = 0; i < nr; i++) {
 		ifaces[i] = this->interfaces[i];
 	}
 
