@@ -798,12 +798,21 @@ DBG(VMCLASSLOADER,
 			if (excpending != NULL) {
 				(*env)->Throw(env, excpending);
 			}
-			/* NB: it is possible for a thread to both return
-			 * null from loadClass, yet actually have succeeded
-			 * in adding the class.  For this reason, we MUST not
-			 * overwrite centry->class here.  Other threads might
-			 * in fact use the class this thread created.
+			/*
+			 * NB: if the classloader we invoked defined that class
+			 * by the time we're here, we must ignore whatever it
+			 * returns.  It can return null or lie or whatever.
+			 *
+			 * If, however, the classloader we initiated returns
+			 * and has not defined the class --- for instance,
+			 * because it has used delegation --- then we must
+			 * record this classloader's answer in the class entry
+			 * pool to guarantee temporal consistency.
 			 */
+			if (centry->class == 0) {
+				/* NB: centry->class->centry != centry */
+				centry->class = clazz;
+			}
 		} else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);
