@@ -8,14 +8,10 @@
 
 if NEED_LIBXPROF
 XPROF_SUBDIRS = xprof
-else
-XPROF_SUBDIRS = #
 endif
 
 if ENABLE_JVMPI
 JVMPI_SUBDIRS = jvmpi
-else
-JVMPI_SUBDIRS = #
 endif
 
 SUBDIRS = kaffeh kaffevm $(XPROF_SUBDIRS) $(JVMPI_SUBDIRS) kaffe scripts man

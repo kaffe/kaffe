@@ -10,14 +10,10 @@ jrebin_PROGRAMS = kaffe-bin
 
 if NEED_LIBXPROF
 libxprof = ../xprof/libkaffexprof.la
-else
-libxprof = #
 endif
 
 if ENABLE_JVMPI
 libjvmpi = ../jvmpi/libkaffejvmpi.la
-else
-libjvmpi = #
 endif
 
 AM_CPPFLAGS = \

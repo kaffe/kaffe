@@ -44,6 +44,9 @@ else
 libgcj = #
 endif
 
+libkaffevm_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libkaffevm_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	-export-dynamic \

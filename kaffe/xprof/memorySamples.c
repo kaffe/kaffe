@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <jtypes.h>
+#include <gtypes.h>
 
 #include "kaffe/jmalloc.h"
 

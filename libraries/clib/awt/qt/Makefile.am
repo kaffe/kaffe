@@ -10,16 +10,18 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-%.moc.cc: %.h
-	$(MOC) -o $@ $<
-
-
 native_LTLIBRARIES = libqtawt.la
 
-AM_CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
 AM_CPPFLAGS = -I$(top_builddir)/include
 
 AWT_LIBS = -L$(QTDIR)/lib
+
+libqtawt_la_CXXFLAGS = \
+	$(CFLAGS_PG) \
+	-fno-exceptions \
+	-fno-rtti \
+	$(CXXFLAGS) \
+	$(QT_CXXFLAGS)
 
 libqtawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
@@ -31,6 +33,10 @@ libqtawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
 
 libqtawt_la_MOC = \
 	evt.moc.cc
+
+evt.moc.cc: evt.h
+	$(MOC) -o evt.moc.cc $(srcdir)/evt.h
+
 libqtawt_la_SOURCES = \
 	tlk.cc \
 	wnd.cc \

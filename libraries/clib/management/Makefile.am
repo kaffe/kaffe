@@ -12,6 +12,9 @@ AM_CPPFLAGS = \
 
 native_LTLIBRARIES = libmanagement.la
 
+libmanagement_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libmanagement_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

@@ -12,6 +12,9 @@ AM_CPPFLAGS = \
 
 native_LTLIBRARIES = libio.la
 
+libio_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

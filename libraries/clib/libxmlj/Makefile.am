@@ -40,17 +40,17 @@ libxmlj_la_SOURCES = \
 	xmlj_util.h \
 	xmlj_xpath.c
 
+libxmlj_la_CFLAGS = \
+	-pedantic \
+	-Wall \
+	-fbounds-check \
+	$(CFLAGS_PG)
+
 libxmlj_la_LDFLAGS = \
         $(KLIBFLAGS) \
         -module \
 	-export-dynamic \
         -release $(PACKAGE_VERSION)
-
-libxmlj_la_CFLAGS = \
-	-pedantic \
-	-Wall \
-	-fbounds-check
-
 
 $(libxmlj_la_SOURCES): libxmlj_headers
 .PHONY:libxmlj_headers

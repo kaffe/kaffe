@@ -59,6 +59,9 @@ UTIL_SRCS = \
 		Arrays.c \
 		TimeZone.c
 
+libnative_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libnative_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

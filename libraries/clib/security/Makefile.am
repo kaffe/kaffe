@@ -24,6 +24,9 @@ security_DATA = java.security
 EXTRA_DIST = \
 	$(security_DATA)
 
+libsecurity_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libsecurity_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

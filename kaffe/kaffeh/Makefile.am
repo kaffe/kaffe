@@ -22,6 +22,9 @@ GEN_SRCS = \
 
 DISTCLEANFILES = $(GEN_SRCS)
 
+kaffeh_CFLAGS = \
+	$(CFLAGS_PG)
+
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \

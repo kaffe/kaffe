@@ -4093,8 +4093,6 @@ org_xml_sax_helpers_SRCS = \
 	org/xml/sax/helpers/XMLFilterImpl.java \
 	org/xml/sax/helpers/XMLReaderAdapter.java \
 	org/xml/sax/helpers/XMLReaderFactory.java
-OMITTED_PACKAGES_SRCS = \
-
 
 ## Do not delete the previous blank line; update-class-list depends on it
 

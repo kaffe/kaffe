@@ -8,10 +8,13 @@
 
 native_LTLIBRARIES = libxawt.la
 
-AM_CFLAGS = @CFLAGS@ @X_CFLAGS@
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
+
+libxawt_la_CFLAGS = \
+	$(CFLAGS_PG) \
+	$(X_FLAGS)
 
 libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \

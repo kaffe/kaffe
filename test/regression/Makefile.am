@@ -276,12 +276,8 @@ endif
 
 
 ## Test for GNU Crypto classes
-if USER_WANT_GNU_CRYPTO
 TEST_GNU_CRYPTO = \
 	TestGnuCrypto.java
-else
-TEST_GNU_CRYPTO = 
-endif
 
 TEST_Overflow = Overflow.java
 

@@ -10,6 +10,9 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libzip.la
 
+libzip_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libzip_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

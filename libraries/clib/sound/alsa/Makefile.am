@@ -10,6 +10,9 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libtritonusalsa.la
 
+libtritonusalsa_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libtritonusalsa_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

@@ -12,6 +12,9 @@ AM_CPPFLAGS = \
 
 native_LTLIBRARIES = libmicrosoft.la
 
+libmicrosoft_la_CFLAGS = \
+	($CFLAGS_PG)
+
 libmicrosoft_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

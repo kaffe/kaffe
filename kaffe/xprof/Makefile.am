@@ -47,7 +47,3 @@ noinst_HEADERS = \
 	memorySamples.h \
 	sectionFile.h \
 	xprofiler.h
-
-# Ignore the warning!  We need to override CFLAGS or else it compile with -pg
-# and cause an endless recursion in the mcount code.
-CFLAGS = @CFLAGS_WITHOUT_PG@

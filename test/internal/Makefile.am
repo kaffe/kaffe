@@ -75,8 +75,44 @@ JAVA_CLASSES = \
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
-%.class: $(top_srcdir)/test/internal/%.java
-	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
+ConstMethods.class: $(srcdir)/ConstMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ConstMethods.java
+
+ConstMathMethods.class: $(srcdir)/ConstMathMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ConstMathMethods.java
+
+ParameterizedMethods.class: $(srcdir)/ParameterizedMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ParameterizedMethods.java
+
+ParameterizedMathMethods.class: $(srcdir)/ParameterizedMathMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ParameterizedMathMethods.java
+
+ParameterizedLogicalMethods.class: $(srcdir)/ParameterizedLogicalMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ParameterizedLogicalMethods.java
+
+ParameterizedBitwiseMethods.class: $(srcdir)/ParameterizedBitwiseMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ParameterizedBitwiseMethods.java
+
+ControlFlowMethods.class: $(srcdir)/ControlFlowMethods.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ControlFlowMethods.java
+
+StaticMethodCall.class: $(srcdir)/StaticMethodCall.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/StaticMethodCall.java
+
+TypeConversion.class: $(srcdir)/TypeConversion.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/TypeConversion.java
+
+StaticFields.class: $(srcdir)/StaticFields.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/StaticFields.java
+
+PrimitiveArrays.class: $(srcdir)/PrimitiveArrays.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/PrimitiveArrays.java
+
+ObjectFields.class: $(srcdir)/ObjectFields.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/ObjectFields.java
+
+MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/MethodOptimizations.java
 
 jit_stub.o: $(JAVA_CLASSES)
 

@@ -13,6 +13,9 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
 
+libnet_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libnet_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

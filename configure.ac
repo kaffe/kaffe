@@ -563,7 +563,6 @@ no) ;;
 esac
 ],
 [enable_feedback=no
-need_libxprof=no
 ])
 
 AM_CONDITIONAL(NEED_LIBXPROF, test x"$need_libxprof" = x"yes")
@@ -578,12 +577,14 @@ AC_ARG_WITH([profiling],
 
 AC_MSG_CHECKING(gprof(4) profiling support)
 if test x"${with_profiling}" = x"yes" ; then
-	CFLAGS="$CFLAGS -pg"
+	CFLAGS_PG="-pg"
 	CPPFLAGS="$CPPFLAGS -DKAFFE_CPROFILER"
 else
 	with_profiling=no
 fi
 AC_MSG_RESULT($with_profiling)
+
+AC_SUBST(CFLAGS_PG)
 
 dnl =========================================================================
 dnl Do we include our Sun compatibility scripts?

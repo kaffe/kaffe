@@ -8,6 +8,9 @@
 AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
 native_LTLIBRARIES = libnio.la
 
+libnio_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libnio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

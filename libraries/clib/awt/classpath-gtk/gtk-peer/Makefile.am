@@ -1,5 +1,8 @@
 native_LTLIBRARIES = libgtkpeer.la
 
+libgtkpeer_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libgtkpeer_la_SOURCES = \
 			gnu_java_awt_peer_gtk_GdkFontMetrics.c \
 			gnu_java_awt_peer_gtk_GdkGraphics.c \

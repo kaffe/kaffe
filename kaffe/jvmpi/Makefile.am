@@ -3,6 +3,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$
 
 lib_LTLIBRARIES = libkaffejvmpi.la
 
+libkaffejvmpi_la_CFLAGS = \
+	$(CFLAGS_PG)
+
 libkaffejvmpi_la_LDFLAGS = \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)

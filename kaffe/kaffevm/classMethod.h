@@ -159,7 +159,7 @@ struct Hjava_lang_Class {
 #ifdef KAFFE_VMDEBUG
 	int			live_count;
 #endif
-#ifdef KAFFE_XDEBUGGING
+#if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
 	/** Stab type ID. */
 	int stab_id;
 #endif
