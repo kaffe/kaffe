@@ -22,6 +22,11 @@
 #include <stdlib.h>
 #endif /* HAVE_STDLIB_H */
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
+
 #if defined (HAVE_SYS_SOCKET_H)
 #include <sys/socket.h>
 #endif /* defined (HAVE_SYS_SOCKET_H) */
@@ -34,9 +39,6 @@
 #include <sys/time.h>
 #endif /* defined(HAVE_SYS_TIME_H) */
 
-#if defined(HAVE_SYS_TYPES_H)
-#include <sys/types.h>
-#endif /* defined(HAVE_SYS_TYPES_H) */
 
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>
