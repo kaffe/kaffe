@@ -117,7 +117,9 @@ with_engine = @with_engine@
 
 SUBDIRS = $(ENGINE_NAME) systems
 DIST_SUBDIRS = intrp jit systems
-EXTRA_DIST = mem/gc-*.[ch]
+
+EXTRA_DIST =  	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
+
 
 INCLUDES = $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
 
@@ -129,8 +131,7 @@ libkaffevm_la_LIBADD =  	$(top_builddir)/libltdl/libltdl.la 	$(ENGINE_NAME)/libe
 libkaffevm_la_SOURCES =  	baseClasses.c 	classMethod.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	gc-mem.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	md.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	string.c 	support.c 	thread.c 	utf8const.c 	verify.c
 
 
-BUILT_SOURCES =  	java_lang_Cloneable.h 	gc-mem.c 	md.c
-
+noinst_HEADERS = java_lang_Cloneable.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -157,6 +158,8 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -416,7 +419,7 @@ install-am: all-am
 install: install-recursive
 uninstall-am: uninstall-libLTLIBRARIES
 uninstall: uninstall-recursive
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -434,7 +437,6 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic

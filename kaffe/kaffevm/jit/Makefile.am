@@ -36,7 +36,7 @@ EXTRA_DIST = \
 	seq.h \
 	slots.h
 
-BUILT_SOURCES = jit.def icode.h trampolines.c
+noinst_HEADERS = icode.h jit.def trampolines.c
 
 icode.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

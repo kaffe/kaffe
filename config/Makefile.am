@@ -7,14 +7,15 @@
 # of this file. 
 
 if USE_JIT
-ENGINE_BUILT_SRCS = jit-md.h
+ENGINE_GEN_HDRS = jit-md.h
 else
-ENGINE_BUILT_SRCS =
+ENGINE_GEN_HDRS =
 endif
 
-BUILT_SOURCES = md.h $(ENGINE_BUILT_SRCS)
+GEN_HDRS = md.h $(ENGINE_GEN_HDRS)
 
-noinst_HEADERS = config-hacks.h config-io.h config-math.h config-mem.h \
+noinst_HEADERS = $(GEN_HDRS) \
+	config-hacks.h config-io.h config-math.h config-mem.h \
 	config-net.h config-setjmp.h config-signal.h config-std.h
 
 EXTRA_DIST = config.alias \

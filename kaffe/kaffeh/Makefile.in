@@ -119,9 +119,9 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 
-BUILT_SOURCES = inflate.c jar.c utf8const.c readClass.c
+GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
 
-kaffeh_SOURCES = constants.c sigs.c support.c main.c $(BUILT_SOURCES)
+kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -137,8 +137,8 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-kaffeh_OBJECTS =  constants.o sigs.o support.o main.o inflate.o jar.o \
-utf8const.o readClass.o
+kaffeh_OBJECTS =  inflate.o jar.o utf8const.o readClass.o constants.o \
+sigs.o support.o main.o
 kaffeh_LDADD = $(LDADD)
 kaffeh_DEPENDENCIES = 
 kaffeh_LDFLAGS = 
@@ -348,7 +348,6 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic
@@ -391,7 +390,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-$(BUILT_SOURCES):
+$(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

@@ -8,7 +8,12 @@
 
 SUBDIRS = $(ENGINE_NAME) systems
 DIST_SUBDIRS = intrp jit systems
-EXTRA_DIST = mem/gc-*.[ch]
+
+EXTRA_DIST = \
+	mem/gc-incremental.c \
+	mem/gc-incremental.h \
+	mem/gc-mem.c \
+	mem/gc-mem.h
 
 @engine_frag@
 
@@ -55,10 +60,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	verify.c
 
-BUILT_SOURCES = \
-	java_lang_Cloneable.h \
-	gc-mem.c \
-	md.c
+noinst_HEADERS = java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
 	if test -x $(KAFFEH_FOR_HOST); then \

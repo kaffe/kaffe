@@ -10,9 +10,9 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 
-BUILT_SOURCES = inflate.c jar.c utf8const.c readClass.c
+GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
 
-kaffeh_SOURCES = constants.c sigs.c support.c main.c $(BUILT_SOURCES)
+kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 
-$(BUILT_SOURCES):
+$(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@

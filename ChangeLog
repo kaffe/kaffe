@@ -1,3 +1,24 @@
+Mon Jan 11 14:51:13 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/Makefile.am (noinst_HEADERS): instead of BUILT_SOURCES
+	* kaffe/kaffevm/jit/Makefile.am (noinst_HEADERS): ditto
+	* include/Makefile.am (include_HEADERS): ditto
+	(noinst_HEADERS): add a few missing headers
+	(KAFFEH_HDRS): build with KAFFEH_FOR_HOST
+	* kaffe/kaffevm/Makefile.am (noinst_HEADERS): force build of
+ 	java_lang_Cloneable.h instead of BUILT_SOURCES; the others are
+ 	built because libkaffevm.la depends on them
+	(EXTRA_DIST): expand mem/gc-*.[ch]
+	* kaffe/kaffeh/Makefile.am (BUILT_SOURCES): get rid of it, the
+	sources will be built because the kaffeh depends on them
+	* config/Makefile.in, include/Makefile.in: regen
+	* kaffe/kaffeh/Makefile.in, kaffe/kaffevm/Makefile.in: ditto
+	* kaffe/kaffevm/jit/Makefile.in: ditto
+	* kaffe/kaffevm/intrp/Makefile.in: ditto
+	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.in: ditto
+	* kaffe/kaffevm/systems/unix-internal/Makefile.in: ditto
+	* kaffe/scripts/bat/Makefile.in: ditto
+
 Mon Jan 11 13:23:21 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* missing: updated from automake
