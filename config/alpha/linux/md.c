@@ -37,14 +37,6 @@ init_md(void)
 	   continuous heap to present to the gc.  */
 	mallopt(M_MMAP_MAX, 0);
 #endif
-
-#if defined(TRANSLATOR)
-	{
-	extern int jit_debug;
-	if (getenv("KAFFE_JIT_DEBUG"))
-		jit_debug = 1;
-	}
-#endif
 }
 
 #if 0
