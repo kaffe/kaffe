@@ -134,8 +134,9 @@ private void setHandler(String protocol, URLStreamHandler handler)
 
 	// User-supplied handler?
 	if (handler != null) {
-		System.getSecurityManager().checkPermission(
-		    new NetPermission("specifyStreamHandler"));
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkPermission(new NetPermission("specifyStreamHandler"));
 		this.handler = handler;
 		return;
 	}
@@ -268,7 +269,9 @@ protected void set(String protocol, String host, int port, String file, String r
 
 public static synchronized void setURLStreamHandlerFactory(URLStreamHandlerFactory fac) {
 	if (factory == null) {
-		System.getSecurityManager().checkSetFactory();
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSetFactory();
 		factory = fac;
 	}
 	else {
@@ -285,7 +288,7 @@ public String toString() {
 }
 
     /* Serialization */
-    class DefaultSerialization 
+    class DefaultSerialization
     {
 	private String file;
 	private int hashCode;
@@ -293,11 +296,11 @@ public String toString() {
 	private int port;
 	private String protocol;
 	private String ref;
-	
+
 	private void readDefaultObject() {
 	    set(protocol, host, port, file, ref);
 	}
-	
+
 	private void writeDefaultObject () {
 	    file = URL.this.file;
 	    hashCode = URL.this.hashCode();
@@ -307,18 +310,18 @@ public String toString() {
 	    ref = URL.this.ref;
 	}
     }
-    
+
     private void readObject (ObjectInputStream stream)
-	throws IOException, ClassNotFoundException 
+	throws IOException, ClassNotFoundException
     {
 	// read all default fields
 	stream.defaultReadObject();
-	
+
 	setHandler(protocol, null);
     }
 
     private void writeObject (java.io.ObjectOutputStream stream)
-	throws IOException 
+	throws IOException
     {
 	// write all default fields
 	stream.defaultWriteObject();

@@ -147,7 +147,9 @@ public String getHostName() {
 public static InetAddress getLocalHost() throws UnknownHostException {
 	try {
 		String name = impl.getLocalHostName();
-		System.getSecurityManager().checkConnect(name, 0);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkConnect(name, 0);
 		return (getByName(name));
 	}
 	catch (SecurityException se) {

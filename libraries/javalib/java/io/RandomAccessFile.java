@@ -29,9 +29,12 @@ public RandomAccessFile(String name, String mode) throws FileNotFoundException {
 	else if (mode.equalsIgnoreCase("rw")) writable=true;
 	else throw new IllegalArgumentException();
 
-	System.getSecurityManager().checkRead(name);
-	if (writable) {
-		System.getSecurityManager().checkWrite(name);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null) {
+		sm.checkRead(name);
+		if (writable) {
+		    sm.checkWrite(name);
+		}
 	}
 
 	open(name, writable);
@@ -145,7 +148,7 @@ final public String readLine() throws IOException {
 	return (nread == 0) ? null : buffer.toString();
 }
 
-final public long readLong() throws IOException {    
+final public long readLong() throws IOException {
 	int i1=readInt(); /* b1-4 */
 	int i2=readInt(); /* b5-8 */
 
@@ -156,7 +159,7 @@ final public short readShort() throws IOException {
 	int b1=readUnsignedByte();
 	int b2=readUnsignedByte();
 
-	return (short)((b1 << 8)|b2);		
+	return (short)((b1 << 8)|b2);
 }
 
 final public String readUTF() throws IOException {
@@ -213,7 +216,7 @@ native private void writeBytes(byte bytes[], int off, int len);
 
 final public void writeChar(int v) throws IOException {
 	writeByte((v & 0xFF00) >> 8);
-	writeByte((v & 0x00FF));		
+	writeByte((v & 0x00FF));
 }
 
 final public void writeChars(String s) throws IOException {

@@ -25,7 +25,9 @@ public abstract class Permission implements Guard, Serializable {
 	}
 
 	public void checkGuard(Object object) throws SecurityException {
-		System.getSecurityManager().checkPermission(this);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkPermission(this);
 	}
 
 	public abstract boolean implies(Permission permission);

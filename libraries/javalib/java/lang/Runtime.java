@@ -69,7 +69,9 @@ public Process exec(String cmdarray[], String envp[]) throws IOException {
 
 public Process exec(String[] cmdarray, String[] envp, File dir)
 		throws IOException {
-	System.getSecurityManager().checkExec(cmdarray[0]);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkExec(cmdarray[0]);
 	return execInternal(cmdarray, envp, dir);
 }
 
@@ -77,7 +79,9 @@ private native Process execInternal(String cmdary[], String envp[], File dir)
 	throws IOException;
 
 public void exit(int status) {
-	System.getSecurityManager().checkExit(status);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkExit(status);
 	// Handle application extensions - if this thread is part of an
 	// application then we exit that rather than the whole thing.
 	if (kaffe.lang.Application.exit(status) == false) {
@@ -113,7 +117,7 @@ public OutputStream getLocalizedOutputStream(OutputStream out) {
 }
 
 public static Runtime getRuntime() {
-	return currentRuntime;		
+	return currentRuntime;
 }
 
 public void loadLibrary(String libname) {
@@ -121,7 +125,9 @@ public void loadLibrary(String libname) {
 }
 
 void loadLibrary(String libname, ClassLoader loader) {
-	System.getSecurityManager().checkLink(libname);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkLink(libname);
 	String errmsg = libname + ": not found";
 	String filename;
 	String[] names;
@@ -146,7 +152,9 @@ public void load(String filename) {
 }
 
 void load(String filename, ClassLoader loader) {
-	System.getSecurityManager().checkLink(filename);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkLink(filename);
 	new NativeLibrary(filename, loader);
 }
 

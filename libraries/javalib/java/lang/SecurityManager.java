@@ -239,6 +239,7 @@ protected ClassLoader currentClassLoader() {
 	return (null);
 }
 
-native static private Class[] getClassContext0();
+// used by java.lang.Class.getStackClass()
+native static /* private */ Class[] getClassContext0();
 
 }

@@ -85,11 +85,15 @@ public boolean canWrite() {
 native private boolean canWrite0();
 
 private void checkReadAccess() {
-	System.getSecurityManager().checkRead(getPath());
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkRead(getPath());
 }
 
 private void checkWriteAccess() {
-	System.getSecurityManager().checkWrite(getPath());
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkWrite(getPath());
 }
 
 public static File createTempFile(String prefix, String suffix)
@@ -119,7 +123,9 @@ public static File createTempFile(String prefix, String suffix, File dir)
 }
 
 public boolean delete() {
-	System.getSecurityManager().checkDelete(getPath());
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkDelete(getPath());
 
 	return isDirectory0() ? rmdir0() : delete0();
 }
@@ -159,7 +165,7 @@ public boolean equals(Object that) {
 public boolean exists() {
 	checkReadAccess();
 
-	return exists0();			
+	return exists0();
 }
 
 native private boolean exists0();
@@ -274,7 +280,7 @@ public String[] list(FilenameFilter filter) {
 	}
 
 	Vector filtered = new Vector();
-	
+
 	for (int idx = 0; idx < all.length; idx++) {
 		String fn = all[idx];
 		if (filter.accept(this, fn)) {
@@ -341,8 +347,11 @@ public boolean mkdirs() {
 }
 
 public boolean renameTo(File dest) {
-	System.getSecurityManager().checkWrite(getPath());
-	System.getSecurityManager().checkWrite(dest.getPath());
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null) {
+		sm.checkWrite(getPath());
+		sm.checkWrite(dest.getPath());
+	}
 
 	return renameTo0(dest);
 }

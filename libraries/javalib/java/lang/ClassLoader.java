@@ -51,7 +51,9 @@ protected ClassLoader() {
 }
 
 protected ClassLoader(ClassLoader parent) {
-	System.getSecurityManager().checkCreateClassLoader();
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkCreateClassLoader();
 	this.parent = parent;
 }
 

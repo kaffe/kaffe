@@ -32,7 +32,9 @@ public DatagramSocket(int port) throws SocketException {
 }
 
 public DatagramSocket(int port, InetAddress bindAddr) throws SocketException {
-	System.getSecurityManager().checkListen(port);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkListen(port);
 	if (bindAddr == null) {
 		bindAddr = InetAddress.getAnyAddress();
 	}
@@ -112,8 +114,10 @@ public synchronized void receive(DatagramPacket p) throws IOException {
 		while (true) {
 			impl.receive(p);
 			if (this.address == null) {
-				System.getSecurityManager().checkAccept(
-				    p.getAddress().getHostName(), p.getPort());
+				SecurityManager sm = System.getSecurityManager();
+				if (sm != null)
+					sm.checkAccept(p.getAddress().getHostName(),
+						       p.getPort());
 				break;
 			} else if (this.address.equals(p.getAddress())
 			    && this.port == p.getPort()) {
@@ -145,10 +149,13 @@ public void send(DatagramPacket p) throws IOException  {
 }
 
 private void checkRemote(InetAddress addr, int port) {
-	if (addr.isMulticastAddress()) {
-		System.getSecurityManager().checkMulticast(addr);
-	} else {
-		System.getSecurityManager().checkConnect(addr.getHostName(), port);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null) {
+		if (addr.isMulticastAddress()) {
+			sm.checkMulticast(addr);
+		} else {
+			sm.checkConnect(addr.getHostName(), port);
+		}
 	}
 }
 

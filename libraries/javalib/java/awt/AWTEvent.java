@@ -59,7 +59,7 @@ static {
 
 protected AWTEvent ( Object source, int id ) {
 	super( source);
-	
+
 	this.id = id;
 }
 
@@ -90,9 +90,9 @@ protected static Component getToplevel ( Component c ) {
 	// a dispatch() method - and that would slow down dispatching. Since it also would be
 	// difficult to decide what to do (because of inconsistent global state), we prefer a
 	// clean cut and rely on no events being dispatched on removeNotified Components
-	
+
 	while ( c.parent != null ) c = c.parent;
-	
+
 	return c;
 }
 
@@ -161,8 +161,10 @@ static void unregisterSource ( Component c, Ptr nativeData ) {
 		if ( Defaults.AutoStop ) {
 			// give the SecurityManager a chance to step in before
 			// closing down the Toolkit
-			System.getSecurityManager().checkExit( 0);
-		
+			SecurityManager sm = System.getSecurityManager();
+			if (sm != null)
+				sm.checkExit( 0);
+
 			Toolkit.terminate();
 			System.exit( 0); // not strictly required (if there are no persistent daemons)
 		}

@@ -51,8 +51,9 @@ public abstract class Provider extends Properties {
 	}
 
 	public void clear() {
-		System.getSecurityManager().checkSecurityAccess(
-			"clearProviderProperties." + name);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("clearProviderProperties." + name);
 		super.clear();
 	}
 
@@ -77,14 +78,16 @@ public abstract class Provider extends Properties {
 	}
 
 	public Object put(Object key, Object value) {
-		System.getSecurityManager().checkSecurityAccess(
-			"putProviderProperty." + name);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("putProviderProperty." + name);
 		return super.put(key, value);
 	}
 
 	public Object remove(Object key) {
-		System.getSecurityManager().checkSecurityAccess(
-			"removeProviderProperty." + name);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("removeProviderProperty." + name);
 		return super.remove(key);
 	}
 }

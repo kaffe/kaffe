@@ -115,10 +115,12 @@ public Class getDeclaringClass() {
  * @since JDK1.1
  */
 public Class[] getClasses() {
+	SecurityManager sm = System.getSecurityManager();
 	Vector v = new Vector();
 	Class clazz = this;
 	while (clazz != null) {
-		System.getSecurityManager().checkMemberAccess(clazz, Member.PUBLIC);
+		if (sm != null)
+			sm.checkMemberAccess(clazz, Member.PUBLIC);
 		Class[] classes = clazz.getClasses0(true);
 
 		for (int i = 0; i < classes.length; i++) {
@@ -138,7 +140,9 @@ native public Class getComponentType();
 
 public Constructor getConstructor(Class parameterTypes[]) throws NoSuchMethodException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC);
 	return (getConstructor0(parameterTypes, false));
 }
 
@@ -146,7 +150,9 @@ native private Constructor getConstructor0(Class[] args, boolean declared);
 
 public Constructor[] getConstructors() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC);
 	return (getConstructors0(false));
 }
 
@@ -162,49 +168,65 @@ native private Constructor[] getConstructors0(boolean declared);
  */
 public Class[] getDeclaredClasses() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getClasses0(true));
 }
 
 public Constructor getDeclaredConstructor(Class parameterTypes[]) throws NoSuchMethodException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getConstructor0(parameterTypes, true));
 }
 
 public Constructor[] getDeclaredConstructors() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getConstructors0(true));
 }
 
 public Field getDeclaredField(String name) throws NoSuchFieldException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getField0(name, true));
 }
 
 public Field[] getDeclaredFields() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getFields0(true));
 }
 
 public Method getDeclaredMethod(String name, Class parameterTypes[]) throws NoSuchMethodException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getMethod0(name, parameterTypes, true));
 }
 
 public Method[] getDeclaredMethods() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.DECLARED);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.DECLARED);
 	return (getMethods0(true));
 }
 
 public Field getField(String name) throws NoSuchFieldException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC);
 	return (getField0(name, false));
 }
 
@@ -212,7 +234,9 @@ native private Field getField0(String name, boolean declared);
 
 public Field[] getFields() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC);
 	return (getFields0(false));
 }
 
@@ -222,7 +246,9 @@ native public Class[] getInterfaces();
 
 public Method getMethod(String name, Class parameterTypes[]) throws NoSuchMethodException, SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC );
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC );
 	return (getMethod0(name, parameterTypes, false));
 }
 
@@ -230,7 +256,9 @@ native private Method getMethod0(String name, Class[] args, boolean declared);
 
 public Method[] getMethods() throws SecurityException
 {
-	System.getSecurityManager().checkMemberAccess( this, Member.PUBLIC);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkMemberAccess(this, Member.PUBLIC);
 	return (getMethods0(false));
 }
 
@@ -317,8 +345,7 @@ public String toString() {
  *
  * Frame #      Method
  * -------      ------
- *   -3		SecurityManager.getClassContext0()
- *   -2		SecurityManager.getClassContext()
+ *   -2		SecurityManager.getClassContext0()
  *   -1		Class.getStackClass()
  *    0		The method calling Class.getStackClass()
  *    1		The method calling the method calling Class.getStackClass()
@@ -327,8 +354,8 @@ public String toString() {
  * Returns null if not found.
  */
 static Class getStackClass(int frame) {
-	Class[] classStack = System.getSecurityManager().getClassContext();
-	frame += 3;
+	Class[] classStack = SecurityManager.getClassContext0();
+	frame += 2;
 	if (frame >= 0 && frame < classStack.length)
 		return classStack[frame];
 	return null;

@@ -10,13 +10,13 @@ import java.awt.peer.ComponentPeer;
 import kaffe.util.Ptr;
 
 /**
- * Window - 
+ * Window -
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  *
  * @author P.C.Mehlitz
  */
@@ -54,7 +54,7 @@ public void addNotify () {
 
 	// create the native object (this might involve a thread switch)
 	Toolkit.createNative( this);
-	
+
 	// addNotify childs and set flags. Be aware of that childs might be native, too
 	// (i.e. need a native parent before they can be addNotified by themselves)
 	super.addNotify();
@@ -141,7 +141,8 @@ public ComponentPeer getPeer () {
 }
 
 final public String getWarningString() {
-	if (System.getSecurityManager().checkTopLevelWindow(this) == true) {
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null && sm.checkTopLevelWindow(this) == true) {
 		return (null);
 	}
 	return (System.getProperty("awt.appletWarning"));

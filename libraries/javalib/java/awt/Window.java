@@ -10,13 +10,13 @@ import java.awt.peer.ComponentPeer;
 import kaffe.util.Ptr;
 
 /**
- * Window - 
+ * Window -
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  *
  * @author P.C.Mehlitz
  */
@@ -32,7 +32,7 @@ public class Window
 Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified
 	flags = (IS_PARENT_SHOWING | IS_BG_COLORED | IS_FG_COLORED | IS_FONTIFIED);
-	
+
 	fgClr = Defaults.WndForeground;
 	bgClr = Defaults.WndBackground;
 	font  = Defaults.WndFont;
@@ -48,21 +48,21 @@ public Window ( Frame owner ) {
 public void addNotify () {
 	if ( nativeData != null )  // don't do it twice
 		return;
-	
+
 	// if we have an owner that has not been created yet, do it now
 	if ( (owner != null) && (owner.nativeData == null) )
 		owner.addNotify();
 
 	// create the native object (this might involve a thread switch)
 	Toolkit.createNative( this);
-	
+
 	if ( nativeData == null ){
 		throw new AWTError( "native create failed: " + this);
 	}
 
 	// enable mapping of native events to Java Components
 	AWTEvent.registerSource( this, nativeData);
-	
+
 	// addNotify childs and set flags. Be aware of that childs might be native, too
 	// (i.e. need a native parent before they can be addNotified by themselves)
 	super.addNotify();
@@ -98,7 +98,7 @@ void createNative () {
 
 void destroyNative () {
 	Toolkit.wndDestroyWindow( nativeData);
-	
+
 	cleanUpNative();
 }
 
@@ -142,7 +142,7 @@ public Graphics getGraphics () {
 			u -= deco.x;
 			v -= deco.y;
 		}
-	
+
 		// note that we have to clip against possible Frame menubars, too
 		// (hence we partly have to use insets, not completely relying on deco)
 		return NativeGraphics.getGraphics( this, nativeData,
@@ -172,7 +172,8 @@ public ComponentPeer getPeer () {
 }
 
 final public String getWarningString() {
-	if (System.getSecurityManager().checkTopLevelWindow(this) == true) {
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null && sm.checkTopLevelWindow(this) == true) {
 		return (null);
 	}
 	return (System.getProperty("awt.appletWarning"));
@@ -180,7 +181,7 @@ final public String getWarningString() {
 
 public void hide() {
 	super.hide();
-	
+
 	if ( nativeData != null ){
 		Toolkit.wndSetVisible( nativeData, false);
 	}
@@ -195,14 +196,14 @@ public void pack () {
 		addNotify();
 	}
 	setSize( getPreferredSize());
-	
+
 	// this happens to be one of the automatic validation points
 	validate();
 }
 
 void process ( FocusEvent event ) {
 	Component c;
-	
+
 	super.process( event);
 
 	if ( event.id == FocusEvent.FOCUS_GAINED ) {
@@ -257,7 +258,7 @@ public void removeNotify () {
 		}
 
 		super.removeNotify();
-		
+
 		// this might cause a context switch, since we have to do it sync
 		// (to prevent double-destroys for things like the swing popup
 		// removeNotify jitter)
@@ -307,7 +308,7 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 			wNew -= deco.width;
 			hNew -= deco.height;
 		}
-	
+
 		Toolkit.wndSetBounds( nativeData, xNew, yNew, wNew, hNew, ((flags & IS_RESIZABLE) != 0));
 	}
 }
@@ -317,7 +318,7 @@ public void setBackground ( Color clr ) {
 	if ( clr != null ) {
 		bgClr = clr;
 		propagateBgClr( clr);
-		
+
 		if ( isShowing() )
 			repaint();
 	}
@@ -328,7 +329,7 @@ public void setFont ( Font fnt ) {
 	if ( fnt != null ) {
 		font = fnt;
 		propagateFont( fnt);
-		
+
 		if ( isShowing() )
 			repaint();
 	}
@@ -339,7 +340,7 @@ public void setForeground ( Color clr ) {
 	if ( clr != null ) {
 		fgClr = clr;
 		propagateFgClr( clr);
-		
+
 		if ( isShowing() )
 			repaint();
 	}

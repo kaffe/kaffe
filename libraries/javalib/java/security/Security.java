@@ -96,8 +96,9 @@ public final class Security {
 	}
 
 	public static int insertProviderAt(Provider provider, int position) {
-		System.getSecurityManager().checkSecurityAccess(
-		    "insertProvider." + provider.getName());
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("insertProvider." + provider.getName());
 		if (--position < 0) {
 			throw new IllegalArgumentException();
 		}
@@ -116,8 +117,9 @@ public final class Security {
 	}
 
 	public static int addProvider(Provider provider) {
-		System.getSecurityManager().checkSecurityAccess(
-		    "insertProvider." + provider.getName());
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("insertProvider." + provider.getName());
 		synchronized (providers) {
 			if (findProvider(provider.getName()) >= 0) {
 				return -1;
@@ -127,8 +129,9 @@ public final class Security {
 	}
 
 	public static void removeProvider(String name) {
-		System.getSecurityManager().checkSecurityAccess(
-		    "removeProvider." + name);
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("removeProvider." + name);
 		synchronized (providers) {
 			int posn = findProvider(name);
 			if (posn >= 0) {
@@ -156,16 +159,18 @@ public final class Security {
 	}
 
 	public static String getProperty(String key) {
-		System.getSecurityManager().checkPermission(
-		    new SecurityPermission("getProperty." + key));
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkPermission(new SecurityPermission("getProperty." + key));
 		synchronized (props) {
 			return (String)props.get(key);
 		}
 	}
 
 	public static void setProperty(String key, String value) {
-		System.getSecurityManager().checkPermission(
-		    new SecurityPermission("setProperty." + key));
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkPermission(new SecurityPermission("setProperty." + key));
 		synchronized (props) {
 			props.put(key, value);
 		}

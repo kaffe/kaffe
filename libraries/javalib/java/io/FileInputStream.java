@@ -26,17 +26,21 @@ public FileInputStream(File file) throws FileNotFoundException {
 }
 
 public FileInputStream(FileDescriptor fdObj) {
-	System.getSecurityManager().checkRead(fdObj);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkRead(fdObj);
 	fd=fdObj;
 }
 
 public FileInputStream(String name) throws FileNotFoundException {
-	System.getSecurityManager().checkRead(name);		
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkRead(name);
 	try {
 		open(name);
 	} catch (IOException e) {
-		/* Note that open may throw an IOException, but the spec says 
-		 * that this constructor throws only FileNotFoundExceptions, 
+		/* Note that open may throw an IOException, but the spec says
+		 * that this constructor throws only FileNotFoundExceptions,
 		 * hence we must map them.
 		 */
 		throw new FileNotFoundException(name + ": " + e.getMessage());

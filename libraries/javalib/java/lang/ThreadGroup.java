@@ -108,7 +108,9 @@ public boolean allowThreadSuspension(boolean b) {
 }
 
 final public void checkAccess() {
-	System.getSecurityManager().checkAccess(this);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkAccess(this);
 }
 
 final public synchronized void destroy() {
@@ -360,7 +362,7 @@ public String toString() {
 public void uncaughtException(Thread t, Throwable e) {
 	if (parent != null) {
 		parent.uncaughtException(t, e);
-	} 
+	}
 	// be quiet about ThreadDeath exceptions
 	else if (!(e instanceof ThreadDeath)) {
 		e.printStackTrace(System.err);

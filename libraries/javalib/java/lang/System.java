@@ -21,8 +21,6 @@ import java.io.PrintStream;
 import java.util.Properties;
 
 public final class System {
-	final static SecurityManager defaultSecurityManager =
-		new NullSecurityManager();
 	final public static InputStream in;
 	final public static PrintStream out;
 	final public static PrintStream err;
@@ -41,8 +39,6 @@ public static native void debugE(Throwable t);	// print stack trace to stderr
 
 static {
 	// XXX what are the constraints on the initialization order in here?
-
-	security = defaultSecurityManager;
 
 	props = initProperties(new Properties());
 	// Load any system properties from the system.properties resource
@@ -67,7 +63,7 @@ static {
 
 		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
-		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
+		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
 	}
 	else {
 		in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
@@ -92,7 +88,9 @@ native public static void arraycopy(Object src,
 	int src_position, Object dst, int dst_position, int length);
 
 private static void checkPropertyAccess() {
-	getSecurityManager().checkPropertiesAccess();
+	SecurityManager sm = getSecurityManager();
+	if (sm != null)
+		sm.checkPropertiesAccess();
 }
 
 native public static long currentTimeMillis();
@@ -193,7 +191,7 @@ public static void setProperties(Properties prps) {
 }
 
 public static void setSecurityManager(SecurityManager s) {
-	if (security != defaultSecurityManager) {
+	if (security != null) {
 		throw new SecurityException();
 	}
 	if (s != null) {

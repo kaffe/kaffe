@@ -28,7 +28,9 @@ public FileOutputStream(File file) throws IOException
 
 public FileOutputStream(FileDescriptor fdObj)
 	{
-	System.getSecurityManager().checkWrite(fdObj);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkWrite(fdObj);
 	fd = fdObj;
 }
 
@@ -39,12 +41,14 @@ public FileOutputStream(String name) throws FileNotFoundException
 
 public FileOutputStream(String name, boolean append) throws FileNotFoundException
 {
-	System.getSecurityManager().checkWrite(name);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkWrite(name);
 	if (append == false) {
-		open(name);		
+		open(name);
 	}
 	else {
-		openAppend(name);		
+		openAppend(name);
 	}
 }
 

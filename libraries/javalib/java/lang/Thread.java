@@ -139,7 +139,9 @@ public static int activeCount() {
 }
 
 public void checkAccess() {
-	System.getSecurityManager().checkAccess(this);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkAccess(this);
 }
 
 native public int countStackFrames();
@@ -177,7 +179,7 @@ public static int enumerate(Thread tarray[]) {
  * guarantee this is ever called - which seems like dumb semantics to me but there
  * you go.
  */
-protected void finalize() throws Throwable { 
+protected void finalize() throws Throwable {
 	finalize0();
 	super.finalize();
 }
@@ -187,7 +189,7 @@ final native private void finalize0();
 /*
  * Called by system when thread terminates (for whatever reason)
  */
-/* Not private for now so GCJ won't optimize it away */ 
+/* Not private for now so GCJ won't optimize it away */
 void finish() {
 	synchronized(this) {
 		dying = true;
@@ -439,7 +441,7 @@ public final void suspend() {
 
 public String toString() {
 	return new String("Thread["
-			  + getName() 
+			  + getName()
 			  + ","
 			  + getPriority()
 			  + ","

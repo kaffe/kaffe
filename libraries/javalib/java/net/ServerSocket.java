@@ -31,19 +31,21 @@ public ServerSocket(int port, int backlog) throws IOException {
 }
 
 /**
- *  Create a server with the specified port, listen backlog, and local 
- * IP address to bind to. The bindAddr argument can be used on a 
- * multi-homed host for a ServerSocket that will only accept connect 
- * requests to one of its addresses.  If bindAddr is null, it will default 
- * accepting connections on any/all local addresses. The port must be 
- * between 0 and 65535, inclusive. 
+ *  Create a server with the specified port, listen backlog, and local
+ * IP address to bind to. The bindAddr argument can be used on a
+ * multi-homed host for a ServerSocket that will only accept connect
+ * requests to one of its addresses.  If bindAddr is null, it will default
+ * accepting connections on any/all local addresses. The port must be
+ * between 0 and 65535, inclusive.
  *
  * @param port 		the local TCP port
  * @param backlog 	the listen backlog
  * @param bindAddr 	the local InetAddress the server will bind to
  */
 public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
-	System.getSecurityManager().checkListen(port);
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkListen(port);
 
 	if (bindAddr == null) {
 		bindAddr = InetAddress.getAnyAddress();
@@ -72,7 +74,9 @@ public Socket accept() throws IOException {
 
 protected final void implAccept(Socket s) throws IOException {
 	impl.accept(s.impl);
-	System.getSecurityManager().checkAccept(s.getInetAddress().getHostName(), s.getPort());
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+		sm.checkAccept(s.getInetAddress().getHostName(), s.getPort());
 }
 
 public void close() throws IOException {

@@ -19,7 +19,9 @@ public class SecureClassLoader extends ClassLoader {
 	private ClassLoader parent;
 
 	protected SecureClassLoader(ClassLoader parent) {
-		System.getSecurityManager().checkCreateClassLoader();
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkCreateClassLoader();
 		this.parent = parent;
 	}
 
