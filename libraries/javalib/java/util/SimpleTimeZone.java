@@ -424,8 +424,6 @@ public class SimpleTimeZone extends TimeZone
    */
   private int checkRule(int month, int day, int dayOfWeek)
   {
-    if (month < 0 || month > 11)
-      throw new IllegalArgumentException("month out of range");
     int daysInMonth = getDaysInMonth(month, 1);
     if (dayOfWeek == 0)
       {
@@ -587,7 +585,7 @@ public class SimpleTimeZone extends TimeZone
    *
    * Note that this API isn't incredibly well specified.  It appears that the
    * after flag must override the parameters, since normally, the day and
-   * dayofweek can select this.  I.e., if day &lt; 0 and dayOfWeek &lt; 0, on or
+   * dayofweek can select this.  I.e., if day < 0 and dayOfWeek < 0, on or
    * before mode is chosen.  But if after == true, this implementation
    * overrides the signs of the other arguments.  And if dayOfWeek == 0, it
    * falls back to the behavior in the other APIs.  I guess this should be
@@ -681,7 +679,7 @@ public class SimpleTimeZone extends TimeZone
     if (dayOfWeek < Calendar.SUNDAY || dayOfWeek > Calendar.SATURDAY)
       throw new IllegalArgumentException("dayOfWeek out of range");
     if (month < Calendar.JANUARY || month > Calendar.DECEMBER)
-      throw new IllegalArgumentException("month out of range");
+      throw new IllegalArgumentException("month out of range:" + month);
 
     // This method is called by Calendar, so we mustn't use that class.
     int daylightSavings = 0;
@@ -692,9 +690,9 @@ public class SimpleTimeZone extends TimeZone
 	boolean afterStart = ! isBefore(year, month, day, dayOfWeek, millis,
 	                                startMode, startMonth, startDay,
 	                                startDayOfWeek, startTime);
-	boolean beforeEnd = isBefore(year, month, day, dayOfWeek,
-	                             millis + dstSavings, endMode, endMonth,
-	                             endDay, endDayOfWeek, endTime);
+	boolean beforeEnd = isBefore(year, month, day, dayOfWeek, millis,
+	                             endMode, endMonth, endDay, endDayOfWeek,
+	                             endTime);
 
 	if (startMonth < endMonth)
 	  // use daylight savings, if the date is after the start of
@@ -766,20 +764,28 @@ public class SimpleTimeZone extends TimeZone
   }
 
   /**
-   * Returns the number of days in the given month.  It does always
-   * use the Gregorian leap year rule.
+   * Returns the number of days in the given month.
+   * Uses gregorian rules prior to 1582 (The default and earliest cutover)
    * @param month The month, zero based; use one of the Calendar constants.
    * @param year  The year.
    */
   private int getDaysInMonth(int month, int year)
   {
-    // Most of this is copied from GregorianCalendar.getActualMaximum()
     if (month == Calendar.FEBRUARY)
-      return ((year & 3) == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
-    else if (month < Calendar.AUGUST)
-      return 31 - (month & 1);
+      {
+	if ((year & 3) != 0)
+	  return 28;
+
+	// Assume default Gregorian cutover, 
+	// all years prior to this must be Julian
+	if (year < 1582)
+	  return 29;
+
+	// Gregorian rules 
+	return ((year % 100) != 0 || (year % 400) == 0) ? 29 : 28;
+      }
     else
-      return 30 + (month & 1);
+      return monthArr[month];
   }
 
   /**

@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-23  Sven de Marothy <sven@physto.se>
+
+        * java/util/Calendar.java: Invalidate ERA field on setting the YEAR.
+        * java/util/SimpleTimeZone.java:
+        (getDaysInMonth): Reimplemented.
+        * java/util/GregorianCalendar.java:
+        (getLinearTime): Removed.
+        (isLeapYear(int,boolean)): Removed.
+        (before(), after()): Removed.
+        (computeTime): Reimplemented.
+
+2005-01-24  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-01-23  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
         * gnu/java/locale/LocaleInformation.java:
