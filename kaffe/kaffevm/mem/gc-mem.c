@@ -277,6 +277,7 @@ SDBG(		objectStatsPrint();	/* XXX */			)
 
 	default:
 		/* Guess we've really run out */
+		unlockStaticMutex(&gc_lock);
 		return (0);
 	}
 
@@ -319,6 +320,12 @@ FDBG(	printf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
 			freelist[lnr].list = info;
 		}
 		info->avail++;
+#if defined(GC_DEBUG)
+		/* write pattern in memory to see when live objects were
+		 * freed - Note that (f4f4f4f4 == -185273100)
+		 */
+		memset(mem, 0xf4, info->size);
+#endif
 		obj = GCMEM2FREE(mem);
 		obj->next = info->free;
 		info->free = obj;

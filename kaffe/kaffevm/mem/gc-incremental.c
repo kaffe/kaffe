@@ -253,7 +253,9 @@ DBG(	printf("walkConservative: %x-%x\n", base, base+size);
 		gcStats.markedmem += size;
 
 		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
-			markObject(*(void**)mem);
+			void *p = *(void **)mem;
+			if (p)
+				markObject(p);
 		}
 	}
 }
@@ -678,8 +680,10 @@ ADBG(	printf("gcMalloc: 0x%x (%d)\n", unit, size);			)
 		GC_SET_COLOUR(info, i, GC_COLOUR_FIXED);
 	}
 	else {
+		LOCK(); 
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
 		UAPPENDLIST(gclists[white], unit);
+		UNLOCK();
 	}
 	return (UTOMEM(unit));
 }
