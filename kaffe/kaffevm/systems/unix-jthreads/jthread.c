@@ -668,7 +668,7 @@ handleInterrupt(int sig, SIGNAL_CONTEXT_POINTER(sc))
 		break;
 
 	default:
-		printf("unknown signal %d\n", sig);
+		dprintf("unknown signal %d\n", sig);
 		exit(-1);
 	}
 }
@@ -690,7 +690,7 @@ resumeThread(jthread* jtid)
 {
 	jthread** ntid;
 
-DBG(JTHREAD,	dprintf("resumeThread %x\n", jtid);	)
+DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 	intsDisable();
 
 	if (jtid->status != THREAD_RUNNING) {
@@ -731,7 +731,7 @@ DBG(JTHREAD,	dprintf("resumeThread %x\n", jtid);	)
 		}
 		jtid->nextQ = 0;
 	} else {
-DBG(JTHREAD,		dprintf("Re-resuming 0x%x\n", jtid); )
+DBG(JTHREAD,		dprintf("Re-resuming %p\n", jtid); )
 	}
 	intsRestore();
 }
@@ -793,7 +793,7 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n",
 		}
 	} else {
 	DBG(JTHREAD,	
-		dprintf("Re-suspending 0x%x on %x\n", jtid, *queue); )
+		dprintf("Re-suspending %p on %p\n", jtid, *queue); )
 	}
 	return (rc);
 }
@@ -816,7 +816,7 @@ killThread(jthread *tid)
 		(*destructor1)(tid->jlThread);
 
 DBG(JTHREAD,	
-	dprintf("killThread %x kills %x\n", currentJThread, tid); )
+	dprintf("killThread %p kills %p\n", currentJThread, tid); )
 
 	if (tid->status != THREAD_DEAD) {
 
@@ -1484,7 +1484,7 @@ jthread_exit(void)
 	jthread* tid;
 
 DBG(JTHREAD,
-	dprintf("jthread_exit %x\n", currentJThread);		)
+	dprintf("jthread_exit %p\n", currentJThread);		)
 
 	jthread_disable_stop();
 	jmutex_lock(&threadLock);
