@@ -25,9 +25,6 @@ Here's a list of the remaining limitations/problems:
       are included.
 
     - fixup only supports a single module.  Need scripts.
-
-    - exception dispatch and stack trace computation for jitted code
-      is broken.
       
     - only supports dlopen-style dynamic linking.
 
