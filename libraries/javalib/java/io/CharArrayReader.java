@@ -12,67 +12,126 @@ package java.io;
 
 public class CharArrayReader extends Reader {
 
-  protected char buf[];
+  protected char [] buf;
   protected int pos;
   protected int markedPos;
   protected int count;
 
-  public CharArrayReader(char bf[])
+  public CharArrayReader(char [] bf)
   {
+    /* If bf == null, bf.length will throw a
+       NullPointerException.
+    */
     this(bf, 0, bf.length);
   }
 
-  public CharArrayReader(char bf[], int offset, int length)
+  public CharArrayReader(char [] bf, int offset, int length)
   {
-    buf = bf;
-    pos = offset;
-    count = length;
-    markedPos = -1;
+    /* Check if arguments are legal.
+
+       If bf == null, bf.length will throw a
+       NullPointerException.
+
+       IBM's JRE 1.3 seems to tolerate offset+length way
+       out of bf's range. It just sets count to bf.length.
+    */
+    if (offset < 0 || offset > bf.length || length < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    buf       = bf;
+    pos       = offset;
+    count     = offset + length < bf.length ? offset + length : bf.length;
+    markedPos = offset;
+  }
+
+  /* Internal function used to check whether the
+     CharArrayReader has been closed already. It throws
+     an IOException in that case.
+  */
+
+  private void checkIfStillOpen() throws IOException {
+    /* Since close() sets buf to null, we use that
+       as an indicator for a closed stream.
+    */
+    if (buf == null) {
+      throw new IOException("Stream closed");
+    }
   }
 
   public int read() throws IOException
   {
     synchronized(lock) {
 
-      if (count > 0) {
-        char ch = buf[pos++];
-        count--;
-        return ((int)ch);
-      }
-      else {
-       return (-1);
-      }
+      checkIfStillOpen();
 
+      if (pos < count) {
+        return (buf[pos++]);
+      }
     }
+
+    return (-1);
   }
 
-  public int read(char b[], int off, int len) throws IOException
+  public int read(char [] b, int off, int len) throws IOException
   {
      synchronized(lock) {
-       if (count == 0) {
-	 return (-1);
+
+       checkIfStillOpen();
+
+       // Check if we can read safely.
+
+       if (off < 0 || len < 0 || off + len > b.length) {
+	 throw new IndexOutOfBoundsException();
        }
-       int cnt = (len < count ? len : count);
-       System.arraycopy(buf, pos, b, off, cnt);
-       pos += cnt;
-       count -= cnt;
-       return (cnt);
+
+       if (pos < count) {
+	   int cnt = Math.min(len, count - pos);
+	   System.arraycopy(buf, pos, b, off, cnt);
+	   pos += cnt;
+	   return (cnt);
+       }
      }
+
+     return (-1);
+
   }
 
   public long skip(long n) throws IOException
   {
+    /* If n < 0, don't throw an exception, as some other
+       Readers do. IBM's JRE 1.3 doesn't throw one.
+       Act as if n == 0.
+    */
+
      synchronized(lock) {
-       int cnt = (int)(n < (long)count ? n : (long)count);
+       checkIfStillOpen();
+
+       int cnt = (int)Math.min(n, (long)(count - pos));
+
+       if (cnt < 0) {
+	   cnt = 0;
+       }
+
        pos += cnt;
-       count -= cnt;
        return (cnt);
      }
   }
 
   public boolean ready() throws IOException
   {
-    return (true);
+
+    checkIfStillOpen();
+
+    /* A CharArrayReader is ready as long as there
+       are any characters left unread.
+    */
+
+    if (pos < count) {
+      return (true);
+    }
+
+    return (false);
   }
 
   public boolean markSupported()
@@ -82,20 +141,30 @@ public class CharArrayReader extends Reader {
 
   public void mark(int readAheadLimit) throws IOException
   {
-    markedPos = pos;
+    synchronized(lock) {
+      checkIfStillOpen();
+
+      markedPos = pos;
+    }
   }
 
   public void reset() throws IOException
   {
     synchronized(lock) {
-      count += (pos - markedPos);
+      checkIfStillOpen();
+
       pos = markedPos;
     }
   }
 
   public void close()
   {
-    // Nothing to close as such.
+    /* Nothing to close as such.
+       Just release the buffer.
+    */
+    synchronized (lock) {
+      buf = null;
+    }
   }
 
-};
+}
