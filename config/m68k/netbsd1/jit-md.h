@@ -21,6 +21,12 @@
 /**/
 #include "m68k/jit.h"
 
+/*
+ * Include m68k_sync_icache prototypes
+ */
+#include <sys/types.h>
+#include <m68k/sync_icache.h>
+ 
 /**/
 /* Define where addresses are returned.  */
 /**/
