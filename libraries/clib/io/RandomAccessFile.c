@@ -86,7 +86,9 @@ java_io_RandomAccessFile_readBytes(struct Hjava_io_RandomAccessFile* this, HArra
 	len = (len < obj_length(bytes) - off ? len : obj_length(bytes) - off);
 
 	rc = KREAD(unhand(unhand(this)->fd)->fd, &unhand_array(bytes)->body[off], len, &ret);
-	if (rc) {
+	if (rc == EINTR) {
+		SignalError("java.io.InterruptedIOException", "");
+	} else if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	return (ret > 0 ? ret : -1);

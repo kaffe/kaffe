@@ -66,7 +66,9 @@ java_io_FileInputStream_readBytes(struct Hjava_io_FileInputStream* fh, HArrayOfB
 	ssize_t ret;
 
 	rc = KREAD(unhand(unhand(fh)->fd)->fd, &unhand_array(bytes)->body[off], len, &ret);
-	if (rc) {
+	if (rc == EINTR) {
+		SignalError("java.io.InterruptedIOException", "");
+	} else if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	return (ret > 0 ? ret : -1);
@@ -83,7 +85,9 @@ java_io_FileInputStream_read(struct Hjava_io_FileInputStream* fh)
 	unsigned char byte;
 
 	rc = KREAD(unhand(unhand(fh)->fd)->fd, &byte, 1, &ret);
-	if (rc) {
+	if (rc == EINTR) {
+		SignalError("java.io.InterruptedIOException", "");
+	} else if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	return (ret > 0 ? byte : -1);
@@ -116,7 +120,9 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 		int num = (off < 100) ? off : 100;
 
 		rc = KREAD(unhand(unhand(fh)->fd)->fd, buffer, num, &count);
-		if (rc) {
+		if (rc == EINTR) {
+			SignalError("java.io.InterruptedIOException", "");
+		} else if (rc) {
 			SignalError("java.io.IOException", SYS_ERROR(rc));
 		}
 		if (count == 0) {	/* Reached EOF. */
