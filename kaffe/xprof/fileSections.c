@@ -24,7 +24,7 @@
 #include "sectionFile.h"
 #include "fileSections.h"
 
-typdef va_list *va_list_ptr;
+typedef va_list *va_list_ptr;
 
 
 /* Set a value in the jit section structure by name */
