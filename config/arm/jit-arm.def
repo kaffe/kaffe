@@ -1523,10 +1523,10 @@ define_insn(push_int, push_xRC)
 	 * XXX: This should go in a macro `rreg_int_pref(1, R0+a)'
 	 */
 	if (a < 4) {
-	 	idealReg = R0 + a;
+	 	KaffeVM_jitSetIdealReg(R0 + a);
 	}
 	r = rreg_int(1);
-	idealReg = NOREG;	/* reset idealReg */
+	KaffeVM_jitSetIdealReg(NOREG);	/* reset idealReg */
 
 	if (a < 4) {
 		int w = R0 + a;

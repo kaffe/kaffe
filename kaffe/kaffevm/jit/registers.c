@@ -74,7 +74,18 @@ static int usecnt = 0;
 /*
  * Set this if you prefer a given register for a slot.
  */
-int idealReg = NOREG;
+static int idealReg = NOREG;
+
+/**
+ * Set preferred register for a slot
+ *
+ * @param reg the preferred register
+ */
+void 
+KaffeVM_jitSetIdealReg(int reg)
+{
+  idealReg = reg;
+}
 
 /*
  * Initiate registers.

@@ -72,7 +72,7 @@ void	clobberRegister(int);
 void	forceRegister(SlotInfo*, int, int);
 int	slowSlotOffset(SlotInfo*, int, int);
 
-extern int idealReg;
+extern void KaffeVM_jitSetIdealReg(int reg);
 extern int KaffeVM_jitGetEnableReadonce(void);
 extern void KaffeVM_jitSetEnableReadonce(int enable);
 

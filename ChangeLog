@@ -1,5 +1,18 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 	
+	* config/arm/jit-arm.def:
+	Replace use of idealReg by KaffeVM_jitSetIdealReg.
+	
+	* kaffe/kaffevm/jit/registers.c:
+	(idealReg) Made static.
+	(KaffeVM_jitSetIdealReg) New function.
+	
+	* kaffe/kaffevm/jit/registers.h:
+	(idealReg) Removed prototype.
+	(KaffeVM_jitSetIdealReg) New prototype.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+	
 	* kaffe/kaffevm/jit/machine.c:
 	Replace use of enable_readonce by 
 	KaffeVM_jitSetEnableReadonce and KaffeVM_jitGetEnableReadonce.
