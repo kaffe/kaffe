@@ -1,3 +1,8 @@
+Fri Oct  8 12:24:39 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/soft.c: soft_lookupmethod:  handle the case where
+	a java.lang.Object method is invoked via INVOKEINTERFACE.
+
 Thu Oct  7 15:31:57 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/HashMap.java: fix obscure bug

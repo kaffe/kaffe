@@ -202,6 +202,7 @@ soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 	Hjava_lang_Class* cls;
 	Hjava_lang_Class** c;
 	Method* meth;
+	void*	ncode;
 	int i;
 	int dtableidx;
 	errorInfo info;
@@ -231,11 +232,30 @@ soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 		goto notfound;
 	}
 
-	meth = *(Method**)((char*)cls->dtable 
+	ncode = *(void**)((char*)cls->dtable 
 			+ DTABLE_METHODOFFSET + dtableidx * DTABLE_METHODSIZE);
-	return (meth);
+	return (ncode);
 
 notfound:
+	/*
+	 * Some compilers emit a INVOKEINTERFACE instruction for methods
+	 * that aren't defined in an interface, but inherited from Object.
+	 *
+	 * The Right Thing To Do (TM) in this case would be to transform the
+	 * INVOKEINTERFACE call into a (faster) INVOKEVIRTUAL call.
+	 *
+	 * For now, we simply detect the case where an object method is called
+	 * and find it by hand using its (name, signature). 
+	 */
+	if (ifclass == ObjectClass) {
+		Method* objm = CLASS_METHODS(ifclass) + idx;
+		
+		meth = findMethod(cls, objm->name, objm->signature, &info);
+		if (meth == 0) {
+			throwError(&info);
+		}
+		return (METHOD_NATIVECODE(meth));
+	}
 	meth = CLASS_METHODS(ifclass) + idx;
 	soft_nosuchmethod(cls, meth->name, meth->signature);
 	return (0);
