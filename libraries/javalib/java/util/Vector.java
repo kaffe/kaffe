@@ -82,6 +82,8 @@ final public synchronized void copyInto ( Object anArray[] ) {
 }
 
 final public synchronized Object elementAt ( int index ) {
+	if (index >= elementCount)
+		throw new ArrayIndexOutOfBoundsException();
 	return elementData[index];
 }
 
