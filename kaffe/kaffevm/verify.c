@@ -4065,7 +4065,7 @@ verifyErrorInCheckMethodCall(errorInfo* einfo,
 			     const char* methSig,
 			     const char* msg)
 {
-	KFREE(argbuf);
+	gc_free(argbuf);
 	DBG(VERIFY3,
 	    dprintf("                error with method invocation, pc = %d, method = %s%s\n",
 		    pc,

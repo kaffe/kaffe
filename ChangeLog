@@ -1,6 +1,12 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (verifyErrorInCheckMethodCall): Use gc_free instead of KFREE on
+	memory allocated by gc_malloc.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (verifyErrorInCheckMethodCall): New static inline function.
         (VERIFY_ERROR) Removed.
         Replaced use of VERIFY_ERROR by verifyErrorInCheckMethodCall.
