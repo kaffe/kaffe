@@ -254,7 +254,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	assert(r >= 0);
 	setProperty(p, "os.name", system.sysname);
 	setProperty(p, "os.arch", system.machine);
-	setProperty(p, "os.version", system.version);
+	setProperty(p, "os.version", system.release);
 #else
 	setProperty(p, "os.name", "Unknown");
 	setProperty(p, "os.arch", "Unknown");
