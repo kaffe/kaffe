@@ -44,6 +44,7 @@ OBJECT.KAFFE.MANAGEMENT=\
 OBJECT=		$(OBJECT.KAFFE.MANAGEMENT)
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
+SOURCES=        $(OBJECT:@OBJEXT@=.c)
 
 all:		$(LIB)
 
@@ -53,7 +54,7 @@ $(LIB):		$(OBJECT) lib.exp external_wrappers.h
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
-external_wrappers.h:	$(OBJECT)
+external_wrappers.h:	$(SOURCES)
 		sed -n $(WRAPPER_CMD) $(srcdir)/*.c > external_wrappers.h
 
 .SUFFIXES: .d
@@ -75,7 +76,7 @@ install:
 		$(INSTALL_DATA) $(LIB) $(nativedir)/$(LIBV)
 		$(LN) $(LIBV) $(nativedir)/$(LIB)
 
-depend:         $(DEPENDS)
+depend:         $(DEPENDS) external_wrappers.h
 		rm -f .depend
 		cat $(DEPENDS) > .depend
 

@@ -54,6 +54,7 @@ OBJECT=\
 		X/cbd$(OBJEXT) \
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
+SOURCES=        $(OBJECT:@OBJEXT@=.c)
 
 $(LIB):         .dir-stamp $(OBJECT) lib.exp external_wrappers.h
 		@LINKLIB@
@@ -65,7 +66,7 @@ $(LIB):         .dir-stamp $(OBJECT) lib.exp external_wrappers.h
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
-external_wrappers.h:	$(OBJECT)
+external_wrappers.h:	$(SOURCES)
 		sed -n $(WRAPPER_CMD) $(srcdir)/X/*.c > external_wrappers.h
 
 .SUFFIXES: .d
@@ -88,7 +89,7 @@ install:
 		$(INSTALL_DATA) $(LIB) $(nativedir)/$(LIBV)
 		$(LN) $(LIBV) $(nativedir)/$(LIB)
 
-depend:         .dir-stamp $(DEPENDS)
+depend:         .dir-stamp external_wrappers.h $(DEPENDS)
 		rm -f .depend
 		cat $(DEPENDS) > .depend
 
