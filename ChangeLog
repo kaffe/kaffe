@@ -1,3 +1,16 @@
+2004-07-24  Jim Huang  <jserv@kaffe.org>
+
+	* configure.ac,
+	configure,
+	po/kaffe.pot,
+	po/fr.po,
+	po/zh_TW.po,
+	libraries/clib/awt/qt/Makefile.am,
+	libraries/clib/awt/qt/Makefile.in,
+	kaffe/kaffe/main.c:
+	Rename qteawt to qtawt to be more definite.
+	Use -Xkaffe-qt-awt to switch over Qt AWT backend.
+	
 2004-07-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/main.c (setKaffeAWT, options): Fix definiiton of

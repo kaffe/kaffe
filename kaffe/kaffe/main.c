@@ -508,8 +508,8 @@ options(char** argv, int argc)
                 }
                 /* Extra option to use kaffe's Qt/Embedded AWT backend.
                  */
-                else if (strncmp(argv[i], "-Xkaffe-qte-awt", (j=15)) == 0) {
-                        prop = setKaffeAWT("kaffe.awt.nativelib=qteawt");
+                else if (strncmp(argv[i], "-Xkaffe-qt-awt", (j=15)) == 0) {
+                        prop = setKaffeAWT("kaffe.awt.nativelib=qtawt");
                 }
 #if defined(USE_GMP)
 		/* Extra option to use gmp for native, fast bignums.
@@ -909,7 +909,7 @@ usage(void)
         fprintf(stderr, _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
 #endif /* defined(USE_GMP) */
 	fprintf(stderr, _("	-Xkaffe-xlib-awt	Use Kaffe's Xlib AWT backend\n"));
-	fprintf(stderr, _("	-Xkaffe-qte-awt		Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+	fprintf(stderr, _("	-Xkaffe-qt-awt		Use Kaffe's Qt2/3/Embedded AWT backend\n"));
 
 	fprintf(stderr, _("  * Option currently ignored.\n"
 			  "\n"

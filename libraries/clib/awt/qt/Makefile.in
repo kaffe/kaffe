@@ -27,7 +27,7 @@
 # of this file. 
 
 
-SOURCES = $(libqteawt_la_SOURCES) $(nodist_libqteawt_la_SOURCES)
+SOURCES = $(libqtawt_la_SOURCES) $(nodist_libqtawt_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -82,14 +82,14 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libqteawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+libqtawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_libqteawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
+am_libqtawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
 	img.lo cbd.lo
 am__objects_1 = evt.moc.lo
-nodist_libqteawt_la_OBJECTS = $(am__objects_1)
-libqteawt_la_OBJECTS = $(am_libqteawt_la_OBJECTS) \
-	$(nodist_libqteawt_la_OBJECTS)
+nodist_libqtawt_la_OBJECTS = $(am__objects_1)
+libqtawt_la_OBJECTS = $(am_libqtawt_la_OBJECTS) \
+	$(nodist_libqtawt_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -106,8 +106,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libqteawt_la_SOURCES) $(nodist_libqteawt_la_SOURCES)
-DIST_SOURCES = $(libqteawt_la_SOURCES)
+SOURCES = $(libqtawt_la_SOURCES) $(nodist_libqtawt_la_SOURCES)
+DIST_SOURCES = $(libqtawt_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -365,20 +365,20 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-native_LTLIBRARIES = libqteawt.la
+native_LTLIBRARIES = libqtawt.la
 AM_CXXFLAGS := -fno-exceptions -fno-rtti $(CXXFLAGS) $(QT_CXXFLAGS)
 AM_CPPFLAGS = -I$(top_builddir)/include
-libqteawt_la_LDFLAGS = \
+libqtawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libqteawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
-libqteawt_la_MOC = \
+libqtawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
+libqtawt_la_MOC = \
 	evt.moc.cc
 
-libqteawt_la_SOURCES = \
+libqtawt_la_SOURCES = \
 	tlk.cc \
 	wnd.cc \
 	evt.cc \
@@ -388,15 +388,15 @@ libqteawt_la_SOURCES = \
 	img.cc \
 	cbd.cc
 
-nodist_libqteawt_la_SOURCES = \
-	$(libqteawt_la_MOC)
+nodist_libqtawt_la_SOURCES = \
+	$(libqtawt_la_MOC)
 
 noinst_HEADERS = \
 	keysyms.h \
 	toolkit.h \
 	tlkprops.h
 
-BUILT_SOURCES = $(libqteawt_la_MOC)
+BUILT_SOURCES = $(libqtawt_la_MOC)
 CLEANFILES = so_locations $(BUILT_SOURCES)
 EXTRA_DIST = evt.h
 all: $(BUILT_SOURCES)
@@ -460,8 +460,8 @@ clean-nativeLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libqteawt.la: $(libqteawt_la_OBJECTS) $(libqteawt_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(nativedir) $(libqteawt_la_LDFLAGS) $(libqteawt_la_OBJECTS) $(libqteawt_la_LIBADD) $(LIBS)
+libqtawt.la: $(libqtawt_la_OBJECTS) $(libqtawt_la_DEPENDENCIES) 
+	$(CXXLINK) -rpath $(nativedir) $(libqtawt_la_LDFLAGS) $(libqtawt_la_OBJECTS) $(libqtawt_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
