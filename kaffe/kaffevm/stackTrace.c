@@ -92,9 +92,6 @@ buildStackTrace(struct _exceptionFrame* base)
 	return ((Hjava_lang_Object*)info);
 }
 
-/*
- * We make these exported functions because we use them in classMethod.c
- */
 #if defined(TRANSLATOR)
 static Method*
 stacktraceFindMethod(uintp fp, uintp pc)
