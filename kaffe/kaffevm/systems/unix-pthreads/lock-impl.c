@@ -19,18 +19,37 @@
 #ifdef KAFFE_BOEHM_GC
 #include "boehm-gc/boehm/include/gc.h"
 #endif
+#include <signal.h>
 
 static inline void
-setBlockState(jthread_t cur, unsigned int newState, void *sp)
+setBlockState(jthread_t cur, unsigned int newState, void *sp, sigset_t *old_mask)
 {
+  int suspendSig;
+  sigset_t suspendMask, pendingMask;
+
+  suspendSig = KaffePThread_getSuspendSignal();
+  sigemptyset(&suspendMask);
+  sigaddset(&suspendMask, suspendSig);
+  pthread_sigmask(SIG_BLOCK, &suspendMask, old_mask);
+
   pthread_mutex_lock(&cur->suspendLock);
   cur->blockState |= newState;
   cur->stackCur  = sp;
   pthread_mutex_unlock(&cur->suspendLock);
+
+  /* This thread is protected against suspendall. So if a signal has been
+   * received it is just before the mutex_lock and after pthread_sigmask.
+   * We must acknowledge and go in WaitForResume.
+   */
+  sigpending(&pendingMask); 
+  if (sigismember(&pendingMask, suspendSig))
+  {
+    KaffePThread_AckAndWaitForResume(cur, newState);
+  }
 }
 
 static inline void
-clearBlockState(jthread_t cur, unsigned int newState)
+clearBlockState(jthread_t cur, unsigned int newState, sigset_t *old_mask)
 {
   pthread_mutex_lock(&cur->suspendLock);
   cur->blockState &= ~newState;
@@ -38,7 +57,7 @@ clearBlockState(jthread_t cur, unsigned int newState)
     {
       DBG(JTHREADDETAIL, dprintf("Changing blockstate of %p to %d while in suspend, block again\n",  cur, newState));
 
-      KaffePThread_WaitForResume(true);
+      KaffePThread_WaitForResume(true, 0);
     }
   else
     {
@@ -51,16 +70,22 @@ clearBlockState(jthread_t cur, unsigned int newState)
    */
   if (cur->status == THREAD_KILL)
     pthread_exit(NULL);
+
+  pthread_sigmask(SIG_SETMASK, old_mask, NULL);
+  /* Here the state is not SS_PENDING_SUSPEND so releasing the signal will
+   * not trigger a deadlock.
+   */
 }
 
 void
 jmutex_lock( jmutex* lk )
 {
   jthread_t cur = jthread_current ();
+  sigset_t oldmask;
 
-  setBlockState(cur, BS_MUTEX, (void*)&cur);
+  setBlockState(cur, BS_MUTEX, (void*)&cur, &oldmask);
   pthread_mutex_lock( lk );
-  clearBlockState(cur, BS_MUTEX);
+  clearBlockState(cur, BS_MUTEX, &oldmask);
 }
 
 
@@ -68,10 +93,11 @@ static inline int
 ThreadCondWait(jthread_t cur, jcondvar *cv, jmutex *mux)
 {
   int status;
+  sigset_t oldmask;
 
-  setBlockState(cur, BS_CV, (void*)&cur);
+  setBlockState(cur, BS_CV, (void*)&cur, &oldmask);
   status = pthread_cond_wait( cv, mux );
-  clearBlockState(cur, BS_CV);
+  clearBlockState(cur, BS_CV, &oldmask);
 
   return status;
 }
@@ -87,6 +113,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
   int             status;
   struct timespec abst;
   struct timeval  now;
+  sigset_t oldmask;
 
   /*
    * If a thread trying to get a heavy lock is interrupted, we may get here
@@ -120,9 +147,9 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
 	      abst.tv_nsec -= 1000000000;
 	    }
 
-	  setBlockState(cur, BS_CV_TO, (void*)&cur);
+	  setBlockState(cur, BS_CV_TO, (void*)&cur, &oldmask);
 	  status = pthread_cond_timedwait( cv, mux, &abst);
-	  clearBlockState(cur, BS_CV_TO);
+	  clearBlockState(cur, BS_CV_TO, &oldmask);
 	}
     }
 

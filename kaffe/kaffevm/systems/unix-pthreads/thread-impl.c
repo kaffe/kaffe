@@ -784,6 +784,8 @@ void* tRun ( void* p )
 	/* Wait until we get re-used (by TcreateThread). No need to update the
 	 * blockState, since we aren't active anymore */
 	repsem_wait( &cur->sem);
+	if (cur->status == THREAD_KILL)
+	  break;
 
 	/*
 	 * we have already been moved back to the activeThreads list by
@@ -1024,7 +1026,7 @@ jthread_exit ( void )
 	   */
 	  for ( t=cache; t != NULL; t = t->next ){
 		t->status = THREAD_KILL;
-		pthread_cancel( t->tid);
+		repsem_post(&t->sem);
 	  }
 
 	  for ( t=activeThreads; t != NULL; t = t->next ){
@@ -1033,8 +1035,6 @@ jthread_exit ( void )
 		  t->status = THREAD_KILL;
 		  /* Send an interrupt event to the remote thread. */
 		  jthread_interrupt(t);
-		  /* Cancel it to be sure it is dead. */
-		  pthread_cancel( t->tid);
 		}
 	  }
 
@@ -1156,7 +1156,7 @@ jthread_setpriority (jthread_t cur UNUSED, jint prio UNUSED)
  * mask and to release the suspendLock mutex only after this. In that case we
  * keep in sync with jthread_suspendall()
  */
-void KaffePThread_WaitForResume(int releaseMutex)
+void KaffePThread_WaitForResume(int releaseMutex, unsigned int state)
 {
   volatile jthread_t cur = jthread_current();
   int s;
@@ -1164,8 +1164,16 @@ void KaffePThread_WaitForResume(int releaseMutex)
 
   if (releaseMutex)
     {
-      pthread_sigmask(SIG_SETMASK, &suspendSet, &oldset);
+      pthread_sigmask(SIG_BLOCK, &suspendSet, &oldset);
       pthread_mutex_unlock(&cur->suspendLock);
+      /*
+       * In that particular case we have to release the mutex on the thread list
+       * because it may cause deadlocks in the GC thread. It does not hurt as we
+       * do not access the thread list but we will have to reacquire it before
+       * returning.
+       */
+      if (cur->blockState & BS_THREAD)
+	      pthread_mutex_unlock(&activeThreadsLock);
     }
 
   /* freeze until we get a subsequent sigResume */
@@ -1173,15 +1181,22 @@ void KaffePThread_WaitForResume(int releaseMutex)
     sigwait( &suspendSet, &s);
   
   DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur));
-    
-  cur->stackCur     = NULL;
+
+  /* If the thread needs to be put back in a block state
+   * we must not reset the stack pointer.
+   */
+  if (state == 0)
+    cur->stackCur     = NULL;
   cur->suspendState = 0;
+  cur->blockState |= state;
   
   /* notify the critSect owner we are leaving the handler */
   repsem_post( &critSem);
 
   if (releaseMutex)
     {
+      if (cur->blockState & BS_THREAD)
+	pthread_mutex_lock(&activeThreadsLock);
       pthread_sigmask(SIG_SETMASK, &oldset, NULL);
     }
 }
@@ -1206,25 +1221,32 @@ suspend_signal_handler ( UNUSED int sig )
   if ( !cur || !cur->active )
 	return;
 
+  KaffePThread_AckAndWaitForResume(cur, 0);
+}
+
+void KaffePThread_AckAndWaitForResume(volatile jthread_t cur, unsigned int state)
+{
   if ( cur->suspendState == SS_PENDING_SUSPEND ){
-	JTHREAD_JMPBUF env;
-
-	/*
-	 * Note: We're not gonna do a longjmp to this place, we just want
-	 * to do something that will save all of the registers onto the stack.
-	 */
-	JTHREAD_SETJMP(env);
-
-	/* assuming we are executing on the thread stack, we record our current pos */
-	cur->stackCur     = (void*)&env;
-	cur->suspendState = SS_SUSPENDED;
-
-	/* notify the critSect owner that we are now suspending in the handler */
-	repsem_post( &critSem);
-
-	KaffePThread_WaitForResume(false);
+    JTHREAD_JMPBUF env;
+    
+    /*
+     * Note: We're not gonna do a longjmp to this place, we just want
+     * to do something that will save all of the registers onto the stack.
+     */
+    JTHREAD_SETJMP(env);
+    
+    /* assuming we are executing on the thread stack, we record our current pos */
+    cur->stackCur     = (void*)&env;
+    cur->suspendState = SS_SUSPENDED;
+    cur->blockState  &= ~state;
+    
+    /* notify the critSect owner that we are now suspending in the handler */
+    repsem_post( &critSem);
+    
+    KaffePThread_WaitForResume(false, state);
   }
 }
+
 
 /**
  * The resume signal handler, which we mainly need to get the implicit sigreturn
@@ -1312,18 +1334,8 @@ jthread_suspendall (void)
 	 */
 	while (numPending > 0)
 	  {
-	    repsem_getvalue(&critSem, &val);
 	    repsem_wait( &critSem);
-	    for ( numPending=0,t=activeThreads; t; t = t->next ){
-	      if (t->suspendState == SS_PENDING_SUSPEND)
-		numPending++;
-	    }
-	  }
-	/* Now flush the semaphore. */
-	repsem_getvalue(&critSem, &val);
-	for (;val != 0; val--)
-	  {
-	    repsem_wait(&critSem);
+	    numPending--;
 	  }
 
 #else
@@ -1362,11 +1374,14 @@ jthread_unsuspendall (void)
 	return;
 
   if ( --critSection == 0 ){
+	  int val;
 	/* No need to sync, there's nobody else running. However it seems
 	 * we cannot use mutexes as they cause a deadlock when the world
 	 * is suspended.
 	 */
-	  protectThreadList(cur);
+	protectThreadList(cur);
+	repsem_getvalue(&critSem, &val);
+	assert(val == 0);
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
@@ -1408,6 +1423,8 @@ jthread_unsuspendall (void)
 	GC_start_world();
 
 #endif
+	repsem_getvalue(&critSem, &val);
+	assert(val == 0);
 	  unprotectThreadList(cur);
 
   }
@@ -1592,4 +1609,9 @@ void jthread_spinoff(UNUSED void *dummy)
 void jthread_atexit(void (* func)(void))
 {
   runOnExit = func;
+}
+
+int KaffePThread_getSuspendSignal()
+{
+  return sigSuspend;
 }

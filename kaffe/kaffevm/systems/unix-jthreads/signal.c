@@ -453,7 +453,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	old_sigsegv = registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
 #endif
 #if defined(SIGBUS)
-	old_sigbus = haregisterSyncSignalHandler(SIGBUS, stackOverflowDetector);
+	old_sigbus = registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
 #endif
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)

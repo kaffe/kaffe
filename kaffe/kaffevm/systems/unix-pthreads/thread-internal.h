@@ -414,7 +414,9 @@ int jthread_is_interrupted(jthread_t jt);
 
 int jthread_interrupted(jthread_t jt);
 
-void KaffePThread_WaitForResume(int releaseMutex);
+void KaffePThread_WaitForResume(int releaseMutex, unsigned int state);
+void KaffePThread_AckAndWaitForResume(jthread_t cur, unsigned int newState);
+int KaffePThread_getSuspendSignal();
 
 void detectStackBoundaries(jthread_t jtid, int mainThreadStackSize);
 

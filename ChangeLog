@@ -1,3 +1,26 @@
+2005-01-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(setBlockState): Protect the mutex locking against signal.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(KaffePThread_AckAndWaitForResume): New function.
+	(suspend_handler): Call directly KaffePThread_AckAndWaitForResume
+	now.
+	(KaffePThread_getSuspendSignal): Export the signal number
+	corresponding to the suspend signal.
+	(jthread_suspendall): Cleant up the semaphore sweep. Added a few
+	assertion checking.
+	(jthread_unsuspendall): Added a few assertion checking.
+	(tRun): Check whether the thread is killed when it is woken up.
+	(jthread_exit): Do not cancel any thread as it may cause deadlocks
+	on 2.4. Only interrupt and set the state to THREAD_KILL.
+
+	* libraries/clib/native/Thread.c
+	(VMThread.sleep): Check that if timeout is null we should return
+	immediately.
+
 2005-01-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/regression/TestSerializable2.java:
