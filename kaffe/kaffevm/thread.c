@@ -139,7 +139,7 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
 		return 0;
 	}
 
-	jthread_get_data(nativethread)->jniEnv = &Kaffe_JNINativeInterface;
+	jthread_get_data((jthread_t)nativethread)->jniEnv = &Kaffe_JNINativeInterface;
 	unhand(tid)->PrivateInfo = nativethread;
 	/* preallocate a stack overflow error for this thread in case it 
 	 * runs out 

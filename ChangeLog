@@ -1,3 +1,37 @@
+2003-07-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	Fixes to make unix-pthreads compile with JVMPI (but lots of
+	not implemented features).
+
+	* kaffe/kaffevm/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/unix-pthreads/thread-impl.h:
+	(jcondvar_broadcast) implemented
+	(THREAD_*) added to ensure the compatibility with jthreads
+	(jthread_suspend, jthread_resume, jthread_from_data,
+	jthread_get_usage, jthread_is_interrupted, jthread_on_mutex,
+	jthread_on_condvar) added dummy functions.
+
+	Various fixes.
+
+	* libraries/javalib/bootstrap.classlist: Added missing classes
+	java.text.MessageFormat$MessagePatternDescription and URLClassLoader.
+
+	* libraries/javalib/java/text/DecimalFormat.java: Fixed parsing of
+	the number pattern: missing "exponential" format.
+
+	* kaffe/kaffvm/baseClasses.h: Added external references to
+	VMThrowable and StackTraceElement.
+
+	* kaffe/kaffevm/stackTrace.c: added include file
+	"java_lang_StackTraceElement.h".
+
+	* libraries/javalib/java/lang/Throwable.java: copied from
+	GNU/Classpath.
+
+	* test/regression/TestMessageFormat.java: Hardened the test case.
+
+	* libraries/javalib/Klasses.jar: regenerated.
+
 2003-07-27  Helmer Kraemer <hkraemer@freenet.de>
 
 	* test/internal/jit_stub.c:
@@ -166,7 +200,17 @@
 
 	* config.rpath: Added to solve the dependence of "lib-link.m4" on it.
 
-	* Makefile.in: regenerated
+	* Makefile.in: regenerated.
+
+	* configure.in: Fixed typos.
+
+	* configure: Regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Added
+	java.text.MessageFormat$MessagePatternDescription and
+	java.net.URLClassLoader.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
 
 2003-07-27  Jim Pick  <jim@kaffe.org>
 

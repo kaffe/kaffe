@@ -35,6 +35,7 @@
 #include "stackTrace.h"
 #include "support.h"
 #include "stringSupport.h"
+#include "java_lang_StackTraceElement.h"
 
 static Method*
 stacktraceFindMethod (uintp fp, uintp pc);

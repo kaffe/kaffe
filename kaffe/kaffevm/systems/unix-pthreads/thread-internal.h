@@ -21,6 +21,11 @@
 #define STACKREDZONE    8192
 #endif
 
+/* For jthread_get_status */
+#define THREAD_SUSPENDED	0
+#define THREAD_RUNNING		1
+#define THREAD_DEAD		2
+
 /* suspend states (these are exclusive) */
 typedef enum {
   SS_PENDING_SUSPEND =  0x01,  /* suspend signal has been sent, but not handled */
@@ -367,5 +372,57 @@ void jthread_unsuspendall (void);
  *
  */
 void jthread_walkLiveThreads (void(*)(void*));
+
+/**
+ * Return thread status
+ */
+int jthread_get_status (jthread_t thread);
+
+static inline void
+jthread_suspend(jthread_t jt, void *suspender)
+{
+	/* TODO */
+}
+
+static inline void
+jthread_resume(jthread_t jt, void *suspender)
+{
+	/* TODO */
+}
+
+static inline jthread_t
+jthread_from_data(threadData *td, void *suspender)
+{
+	/* TODO */
+	return NULL;
+}
+
+static inline
+jlong jthread_get_usage(jthread_t jt)
+{
+	/* TODO */
+	return 0;
+}
+
+static inline
+int jthread_is_interrupted(jthread_t jt)
+{
+	/* TODO */
+	return 0;
+}
+
+static inline
+int jthread_on_mutex(jthread_t jt)
+{
+	/* TODO */
+	return 0;
+}
+
+static inline
+int jthread_on_condvar(jthread_t jt)
+{
+	/* TODO */
+	return 0;
+}
 
 #endif /* __thread_impl_h */

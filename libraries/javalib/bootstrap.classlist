@@ -117,6 +117,7 @@ java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
 java/text/Format.class
 java/text/MessageFormat.class
+java/text/MessageFormat$MessagePatternDescription.class
 java/util/AbstractCollection.class
 java/util/AbstractList.class
 java/util/AbstractList$1.class
@@ -197,6 +198,7 @@ kaffe/util/IntegerHashtable.class
 kaffe/util/Ptr.class
 kaffe/util/UTF8.class
 java/net/URL.class
+java/net/URLClassLoader.class
 java/net/MalformedURLException.class
 kaffe/net/DefaultURLStreamHandlerFactory.class
 java/net/URLStreamHandlerFactory.class

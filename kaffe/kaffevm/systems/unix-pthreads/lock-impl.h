@@ -107,6 +107,13 @@ jcondvar_signal( jcondvar* cv, jmutex* mux )
 
 static inline
 void
+jcondvar_broadcast ( jcondvar* cv, jmutex* mux)
+{
+  pthread_cond_broadcast( cv );
+}
+
+static inline
+void
 jcondvar_destroy( jcondvar *cv )
 {
   pthread_cond_destroy( cv );

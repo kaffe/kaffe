@@ -43,7 +43,7 @@ public class TestMessageFormat {
     }
 
     public static void test4() {
-        MessageFormat fmt = new MessageFormat("{0,number,#.#E0}");
+        MessageFormat fmt = new MessageFormat("{0,number,#.#E00}");
 	Object[] data;
 
 	data = new Object[] { new Integer(130385093) };
@@ -69,6 +69,6 @@ This is bad
 This is unknown (10)
 130,385,093 12.4
 0 100
-1.3E8
-1.2E1
+1.3E08
+1.2E01
 */

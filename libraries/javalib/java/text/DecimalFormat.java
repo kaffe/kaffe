@@ -24,6 +24,8 @@ public class DecimalFormat
 	private String positiveprefix;
 	private String positivesuffix;
 	private boolean decsepshown;
+	private int expo_numcount;
+	private int expoint;
 
 public DecimalFormat() {
 	this("#,##0.###;-#,##0.###", Locale.getDefault());
@@ -113,6 +115,7 @@ public void applyPattern(String pattern) {
 		case '#':
 		case '.':
 		case ',':
+		case 'E':
 			switch (want) {
 			case 0:
 				positiveprefix = new String(patt, si, i-si);
@@ -170,16 +173,23 @@ public void applyPattern(String pattern) {
 	}
 
 	boolean dec = false;
+	boolean expo = false;
 	int group = -1;
 	int zerocount = 0;
 	int hashcount = 0;
+	
+	expo_numcount = 0;
 
 	for (int i = formatstart; i < formatend; i++) {
 		switch (patt[i]) {
 		case '0':
-			if (hashcount > 0 && dec)
+			if (hashcount > 0 && dec && !expo)
 				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-			zerocount++;
+
+			if (expo)
+				expo_numcount++;
+			else
+				zerocount++;
 			break;
 		case '#':
 			if (zerocount > 0 && !dec)
@@ -187,10 +197,13 @@ public void applyPattern(String pattern) {
 			hashcount++;
 			break;
 		case '.':
-			if (dec)
+			if (dec || expo)
 				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			dec = true;
 			minint = zerocount;
+			if (hashcount == 0)
+				hashcount = 1;
+			expoint = hashcount;
 			maxint = Integer.MAX_VALUE;
 			if (group == -1 || i - group < 2) {
 				groupsize = 0;
@@ -208,11 +221,19 @@ public void applyPattern(String pattern) {
 				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 			group = i;
 			break;
+		case 'E':
+			if (group >= 0 || grouping || expo)
+				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 
+			expo = true;
+			break;
 		default:
 			break;
 		}
 	}
+
+	if (expo && expo_numcount == 0)
+		throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
 
 	if (dec) {
 		intonly = false;
@@ -352,12 +373,47 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 }
 
 public StringBuffer format(double num, StringBuffer buf, FieldPosition pos) {
-	return (format(Double.toString(num), buf, pos));
+	if (expo_numcount == 0)
+		return (format(Double.toString(num), buf, pos));
+	else
+		return (formatExponential(num, buf, pos));
+}
+	
+public StringBuffer formatExponential(double num, StringBuffer app, FieldPosition pos) {
+	double abs_val = Math.abs(num);
+	int num_power;
+	int formatted_power;
 
+	if (abs_val == 0.0) {
+		StringBuffer buf = format(Double.toString(num), app, pos);
+
+		buf.append("E");
+		for (int i=0;i<expo_numcount;i++)
+			buf.append("0");
+
+		return buf;
+	}
+	
+	num_power = (int)Math.floor(Math.log(abs_val)/Math.log(10));
+	formatted_power = (int)Math.floor((double)num_power / expoint) * expoint;
+	num *= Math.pow(10, -formatted_power);
+
+	StringBuffer buf = format(Double.toString(num), app, pos);
+	String exponent = Integer.toString(formatted_power);
+	buf.append("E");
+
+	for (int i=exponent.length();i<expo_numcount;i++)
+		buf.append("0");
+	buf.append(exponent);
+	
+	return buf;
 }
 
 public StringBuffer format(long num, StringBuffer buf, FieldPosition pos) {
-	return (format(Long.toString(num), buf, pos));
+	if (expo_numcount == 0)
+		return (format(Long.toString(num), buf, pos));
+	else
+		return (format((double)num, buf, pos));
 }
 
 public DecimalFormatSymbols getDecimalFormatSymbols() {
