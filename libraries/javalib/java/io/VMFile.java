@@ -47,18 +47,18 @@ import gnu.java.io.PlatformHelper;
  */
 final class VMFile
 {
-	static boolean caseSensitive;
+  static boolean caseSensitive;
 	
-	static
-	{
-	  if (Configuration.INIT_LOAD_LIBRARY)
-		{
-		  System.loadLibrary("io");
-		}
-    
-		// FIXME: We support only caseSensitive filesystems currently.
-		caseSensitive = true;
-	}
+  static
+  {
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+	System.loadLibrary("io");
+      }
+
+    // FIXME: We support only caseSensitive filesystems currently.
+    caseSensitive = true;
+  }
   
   /*
    * This native method does the actual work of getting the last file
