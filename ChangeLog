@@ -1,3 +1,15 @@
+Sat Jun  6 17:52:14 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/Method.c: used JNI to implement 
+	  InvocationTargetException as recommended by Tim.
+	  test/regression/InvTarExcTest.java: new file
+	  test/regression/ReflectInvoke.java: new file
+	  test/regression/TestScript: added two small tests InvTarExcTest,
+		ReflectInvoke
+
+	 * libraries/clib/native/ClassLoader.c: fixed processClass to
+	 process to CSTATE_OK, needed for Method.invoke on a static method.
+
 Thu Jun  4 18:47:51 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* config/config-hacks.h: added DOUBLE_ORDER_OPPOSITE for arm32
