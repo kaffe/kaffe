@@ -421,7 +421,13 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
 	bytecode_processed += METHOD_BYTECODE_LEN(meth);
-	codeperbytecode = code_generated / bytecode_processed;
+
+	/* When using GCJ, the only use for the translator may be to output
+	 * JNI wrappers which have zero bytecode ;-); hence the test
+	 */
+	if (bytecode_processed > 0) {
+		codeperbytecode = code_generated / bytecode_processed;
+	}
 
 	GC_WRITE(meth, code->mem);
 	SET_METHOD_JITCODE(meth, code->code);
@@ -451,6 +457,11 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	}
 	res = makeMethodActive(meth);
 	assert(res == true);
+
+	/* record framesize for gcj unwinding information */
+#if defined(LABEL_Lframe)
+	LABEL_Lframe(&meth->framesize, /* unused */ 0, /* unused */ 0);
+#endif
 }
 
 /*
