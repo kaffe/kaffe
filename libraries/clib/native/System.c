@@ -41,6 +41,7 @@ extern jlong currentTime(void);
 extern userProperty* userProperties;
 extern Hjava_lang_Class* SystemClass;
 extern char* realClassPath;
+extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
 
 /*
  * Copy one part of an array to another.
