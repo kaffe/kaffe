@@ -22,13 +22,11 @@
 #include "system.h"
 #include "md.h"
 #include "ltdl.h"
+#include "version.h"
 
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
 #endif
-extern char* engine_name;
-extern char* engine_version;
-static char* java_version;
 
 #include "jni.h"
 
@@ -63,8 +61,8 @@ main(int argc, char* argv[])
 	/* Machine specific main first */
 	MAIN_MD;
 #endif
-	java_version = "1.1";
-	vmargs.version = 0x00010001;
+	vmargs.version = JAVA_VERSION_HEX;
+
 #if defined(KAFFE_PROFILER)
 	profFlag = 0;
 #endif
@@ -231,9 +229,11 @@ options(char** argv)
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-version") == 0) {
-			fprintf(stderr, "Kaffe Virtual Machine\n");
-			fprintf(stderr, "Copyright (c) 1996-2000\nTransvirtual Technologies, Inc.  All rights reserved\n");
-			fprintf(stderr, "Engine: %s   Version: %s   Java Version: %s\n", engine_name, engine_version, java_version);
+			printShortVersion();
+			exit(0);
+		}
+		else if (strcmp(argv[i], "-fullversion") == 0) {
+			printFullVersion();
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-classpath") == 0) {
@@ -434,6 +434,7 @@ usage(void)
 	fprintf(stderr, "Options are:\n");
 	fprintf(stderr, "	-help			Print this message\n");
 	fprintf(stderr, "	-version		Print version number\n");
+	fprintf(stderr, "	-fullversion		Print verbose version info\n");
 	fprintf(stderr, "	-ss <size>		Maximum native stack size\n");
 	fprintf(stderr, "	-mx <size> 		Maximum heap size\n");
 	fprintf(stderr, "	-ms <size> 		Initial heap size\n");
