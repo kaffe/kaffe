@@ -199,6 +199,13 @@ public void enable( boolean isEnabled) {
 	setEnabled(isEnabled);
 }
 
+/**
+ * @deprecated, use setEnable()
+ */
+public void disable() {
+	setEnabled(false);
+}
+
 public void enableEvents ( long enableMask ) {
 	eventMask |= enableMask;  
 }

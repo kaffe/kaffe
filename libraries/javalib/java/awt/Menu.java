@@ -65,6 +65,13 @@ public MenuItem getItem( int idx) {
 	catch( Exception e) { return null; }
 }
 
+/**
+ * @deprecated, use getItemCount()
+ */
+public int countItems() {
+	return (getItemCount());
+}
+
 public int getItemCount() {
 	try { return items.size(); }
 	catch( Exception e) { return 0; }
