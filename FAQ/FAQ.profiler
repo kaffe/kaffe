@@ -1,58 +1,80 @@
 Profiler modifications to Kaffe's JIT system
 
-Nathan M. Hanish
-William E. Cohen
+Initial work from Nathan M. Hanish and William E. Cohen.
+Improved by Edouard G. Parmelan.
+
 
 Instrumented Java Virtual Machine Overview:
 
 What system does the instrumentation work with?
 
-	Kaffe Virtual Machine, Version 1.0.4b with JIT Translator
-	Intel Pentium(I,II,III,MMX,Pro),Celeron, or Xeon processor
-		based system that provides the IA-32 timestamp register.
-	Linux OS
+	* Kaffe Virtual Machine, Version 1.0.5 with JIT and JIT3 Translator
+	Intel Pentium(I,II,III,MMX,Pro), Celeron, or Xeon processor based
+	system that provides the IA-32 timestamp register (Intel instruction
+	rdtsc).
+
+	* Tested on Intel GNU/Linux.
+
 
 What does the instrumentation record?
 
-	A count of the total number of invocations for each method.
-	The total amount of cpu time spend between the entry and exit of
-		each method.
-	The total amount of cpu time spend between the entry and exit of
-		each of the methods children.
-	The total amount of cpu time spend between the performing JIT
-		translation of executed methods
-	A timing resolution of 1 clock cycle.
-	Low overhead, roughly 10 instructions per method invocation.
+	* A count of the total number of invocations for each method,
+	including native method.
+	
+	* The total amount of CPU time spend between the entry and exit of
+	each method.
+	
+	* The total amount of CPU time spend between the entry and exit of
+	each of the methods children (not applicable for native methods).
+	
+	* Time spent in just that method.
+	
+	* The total amount of CPU time spend between the performing JIT
+	translation of executed methods.
+	
+	* A timing resolution of 1 clock cycle.
+	
+	* Low overhead, roughly 10 instructions per method invocation.
+
 
 What doesn't the instrumentation provide?
 
-	A call graph.
-	Proper handling of exceptions and multithreaded code.
-	Time spent in particular C functions called from Java.
+	* A call graph.
 	
+	* Proper handling of exceptions and multi-threaded code.  Upon
+	exception, only the self+children time is properly updated.    
+	
+	* Time spent in particular C functions called from native method.
+	
+
 How do to use the instrumentation?
 
 	Install the latest version of the instrumented virtual machine.
-	Execute kaffe with the -prof option.  The output is dumped to a file
-	java.prof.
+	And execute Kaffe with -prof option.  The output is dumped to
+	file prof.out in current directory.
+
 
 What is the format of the output?
 
-	Each line of java.prof contains the profing information for one method.
-	The fields are printed as human readable ASCII text and are separated
-	by spaces. Each line has the following format:
+	Each line of prof.out contains the profiling information for one
+	method.  The fields are printed as human readable ASCII text and are
+	separated by spaces.  All times are in milliseconds.
+	Each line has the following format:
 
-	method_signature invocation_count child+self_time self_time JIT_time
+		time		time	time		time
+	count   self+child	self	children	jit	 method-name
+
 
 How is the profiling implemented?
 
-	Four fields added to the struture that describes each method:
-		-Count of invocations
-		-Time spent in self and children
-		-Time spent in children
-		-Time spent in JIT
+	* Four fields added to the structure that describes each method:
+		- Count of invocations (callsCount)
+		- Time spent in self and children (totalClicks)
+		- Time spent in children (totalChildrenClick)
+		- Time spent in JIT (jitClicks)
 
-	The JIT translator modified to produce additional inline code:
+	* The JIT translator modified to produce additional inline code
+	(config/i386/{jit,jit3}-i386.def):
 		Prologue:
 			Increment count of invocations
 			Subtract current time from time in self and children
@@ -63,19 +85,29 @@ How is the profiling implemented?
 			Call function
 			Read current time and add to time in child
 
-	Dumping data:
-		profiler.c added to provide functions to dump profiling data.
-		Added functions to classPool.c to allow iteration over entries
-			in the hash table.
+	* Dumping data:
+		Add function printProfilerStats() to dump profiling data
+		in kaffe/kaffevm/{jit,jit3}/machine.c.
 
-	Headers:
-		md.h has the structure definition of the struct timeStamp,
-			inline function to read the time stamp from C, and
-			functions to convert data to and from the timeStamp
-			format. Look at config/i386/linux/md.h for details.
-		
-		dumbprof.h had been developed to allow compilation of kaffe
-			even if the profiling has not been developed for
-			particular port. Include dumbprof.h in the md.h
-			file. For an example, take a look at
-			config/alpha/osf/md.h.
+	* Headers:
+		config/i386/common.h defines the profiler_click_t type and
+		macro profiler_get_clicks().
+
+		kaffe/kaffevm/classMethod.h has additional fields in the
+		methods structure for storing the profiling data.
+
+
+How to port to other arch ?
+    
+	* Create type profiler_click_t and macro profiler_get_clicks() in
+	config/ARCH/common.h and define KAFFE_PROFILER.
+
+	* Create macros profiler_start() and profiler_end() for your JIT
+	engine in config/ARCH/jit-ARCH.def and/or config/ARCH/jit3-ARCH.def
+	and use them in prologue, epilogue and all call functions.
+	
+	* Don't forget to enclose your code in #if defined(KAFFE_PROFILER)
+	and #endif block.
+
+
+Last edit: Sun Dec  5 02:01:40 CET 1999
