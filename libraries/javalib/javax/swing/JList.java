@@ -250,12 +250,10 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   int visibleRowCount;
 
-
-
   /**
    * Fire a {@link ListSelectionEvent} to all the registered ListSelectionListeners.
    */
-  void fireSelectionValueChanged(int firstIndex, int lastIndex, boolean isAdjusting) 
+  protected void fireSelectionValueChanged(int firstIndex, int lastIndex, boolean isAdjusting) 
   {
     ListSelectionEvent evt = new ListSelectionEvent(this, firstIndex, lastIndex, isAdjusting);
     ListSelectionListener listeners[] = getListSelectionListeners();
@@ -264,7 +262,6 @@ public class JList extends JComponent implements Accessible, Scrollable
         listeners[i].valueChanged(evt);
       }
   }
-
 
   /**
    * This private listener propagates {@link ListSelectionEvent} events
@@ -365,11 +362,21 @@ public class JList extends JComponent implements Accessible, Scrollable
     listListener = new ListListener();
 
     setModel(new DefaultListModel());
-    setSelectionModel(new DefaultListSelectionModel());
+    setSelectionModel(createSelectionModel());
 
     updateUI();
   }
 
+  /**
+   * Creates the default <code>ListSelectionModel</code>.
+   *
+   * @return the <code>ListSelectionModel</code>
+   */
+  protected ListSelectionModel createSelectionModel()
+  {
+    return new DefaultListSelectionModel();
+  }
+  
   /**
    * Gets the value of the {@link #fixedCellHeight} property. This property
    * may be <code>-1</code> to indicate that no cell height has been
@@ -501,6 +508,11 @@ public class JList extends JComponent implements Accessible, Scrollable
     return (ListSelectionListener[]) getListeners(ListSelectionListener.class);
   }
 
+  public int getSelectionMode()
+  {
+    return selectionModel.getSelectionMode();
+  }
+  
   /**
    * Sets the list's "selectionMode" property, which simply mirrors the
    * same property on the list's {@link #selectionModel} property. This
@@ -1195,5 +1207,120 @@ public class JList extends JComponent implements Accessible, Scrollable
   public boolean getScrollableTracksViewportHeight()
   {
     return false;
+  }
+
+  public int getAnchorSelectionIndex()
+  {
+    return selectionModel.getAnchorSelectionIndex();
+  }
+
+  public int getLeadSelectionIndex()
+  {
+    return selectionModel.getLeadSelectionIndex();
+  }
+
+  public int getMinSelectionIndex()
+  {
+    return selectionModel.getMaxSelectionIndex();
+  }
+
+  public int getMaxSelectionIndex()
+  {
+    return selectionModel.getMaxSelectionIndex();
+  }
+
+  public void clearSelection()
+  {
+    selectionModel.clearSelection();
+  }
+
+  public void setSelectionInterval(int anchor, int lead)
+  {
+    selectionModel.setSelectionInterval(anchor, lead);
+  }
+
+  public void addSelectionInterval(int anchor, int lead)
+  {
+    selectionModel.addSelectionInterval(anchor, lead);
+  }
+
+  public void removeSelectionInterval(int index0, int index1)
+  {
+    selectionModel.removeSelectionInterval(index0, index1);
+  }
+
+  /**
+   * Returns the value of the <code>valueIsAdjusting</code> property.
+   *
+   * @return the value
+   */
+  public boolean getValueIsAdjusting()
+  {
+    return valueIsAdjusting;
+  }
+
+  /**
+   * Sets the <code>valueIsAdjusting</code> property.
+   *
+   * @param isAdjusting the new value
+   */
+  public void setValueIsAdjusting(boolean isAdjusting)
+  {
+    valueIsAdjusting = isAdjusting;
+  }
+
+  /**
+   * Return the value of the <code>dragEnabled</code> property.
+   *
+   * @return the value
+   * 
+   * @since 1.4
+   */
+  public boolean getDragEnabled()
+  {
+    return dragEnabled;
+  }
+
+  /**
+   * Set the <code>dragEnabled</code> property.
+   *
+   * @param enabled new value
+   * 
+   * @since 1.4
+   */
+  public void setDragEnabled(boolean enabled)
+  {
+    dragEnabled = enabled;
+  }
+
+  /**
+   * Returns the layout orientation.
+   *
+   * @return the orientation, one of <code>JList.VERTICAL</code>,
+   * </code>JList.VERTICAL_WRAP</code> and <code>JList.HORIZONTAL_WRAP</code>
+   *
+   * @since 1.4
+   */
+  public int getLayoutOrientation()
+  {
+    return layoutOrientation;
+  }
+
+  /**
+   * Sets the layout orientation.
+   *
+   * @param orientation the orientation to set, one of <code>JList.VERTICAL</code>,
+   * </code>JList.VERTICAL_WRAP</code> and <code>JList.HORIZONTAL_WRAP</code>
+   *
+   * @since 1.4
+   */
+  public void setLayoutOrientation(int orientation)
+  {
+    if (layoutOrientation == orientation)
+      return;
+
+    int old = layoutOrientation;
+    layoutOrientation = orientation;
+    firePropertyChange("layoutOrientation", old, orientation);
   }
 }

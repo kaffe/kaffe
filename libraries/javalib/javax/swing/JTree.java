@@ -87,6 +87,11 @@ public class JTree extends JComponent
   public static final String TREE_MODEL_PROPERTY = "model";
   public static final String VISIBLE_ROW_COUNT_PROPERTY = "visibleRowCount";
 
+  private boolean dragEnabled;
+  private boolean expandsSelectedPaths;
+  private TreePath anchorSelectionPath;
+  private TreePath leadSelectionPath;
+
   protected TreeCellEditor cellEditor;
   protected TreeCellRenderer cellRenderer;
   protected boolean editable;
@@ -247,6 +252,39 @@ public class JTree extends JComponent
     }
   }
 
+  public int getRowForPath(TreePath path)
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.getRowForPath(this, path);
+
+    return -1;
+  }
+  
+  public TreePath getPathForRow(int row)
+  {
+    TreeUI ui = getUI();
+    return ui != null ? ui.getPathForRow(this, row) : null;
+  }
+
+  protected TreePath[] getPathBetweenRows(int index0, int index1)
+  {
+    TreeUI ui = getUI();
+    
+    if (ui == null)
+      return null;
+    
+    int minIndex = Math.min(index0, index1);
+    int maxIndex = Math.max(index0, index1);
+    TreePath[] paths = new TreePath[maxIndex - minIndex + 1];
+    
+    for (int i = minIndex; i <= maxIndex; ++i)
+      paths[i - minIndex] = ui.getPathForRow(this, i);
+
+    return paths;
+  }
+  
   /**
    * Creates a new <code>TreeModel</code> object.
    *
@@ -517,7 +555,12 @@ public class JTree extends JComponent
    */
   public void setModel(TreeModel model)
   {
+    if (treeModel == model)
+      return;
+
+    TreeModel oldValue = treeModel;
     treeModel = model;
+    firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
   }
 
   /**
@@ -544,7 +587,7 @@ public class JTree extends JComponent
 
     boolean oldValue = editable;
     editable = flag;
-    firePropertyChange("editable", oldValue, editable);
+    firePropertyChange(EDITABLE_PROPERTY, oldValue, editable);
   }
 
   /**
@@ -560,7 +603,12 @@ public class JTree extends JComponent
 
   public void setRootVisible(boolean flag)
   {
+    if (rootVisible == flag)
+      return;
+    
+    boolean oldValue = rootVisible;
     rootVisible = flag;
+    firePropertyChange(ROOT_VISIBLE_PROPERTY, oldValue, flag);
   }
 
   public boolean getShowsRootHandles()
@@ -570,7 +618,12 @@ public class JTree extends JComponent
 
   public void setShowsRootHandles(boolean flag)
   {
+    if (showsRootHandles == flag)
+      return;
+
+    boolean oldValue = showsRootHandles;
     showsRootHandles = flag;
+    firePropertyChange(SHOWS_ROOT_HANDLES_PROPERTY, oldValue, flag);
   }
 
   public TreeCellEditor getCellEditor()
@@ -580,7 +633,12 @@ public class JTree extends JComponent
 
   public void setCellEditor(TreeCellEditor editor)
   {
+    if (cellEditor == editor)
+      return;
+
+    TreeCellEditor oldValue = cellEditor;
     cellEditor = editor;
+    firePropertyChange(CELL_EDITOR_PROPERTY, oldValue, editor);
   }
   
   public TreeCellRenderer getCellRenderer()
@@ -590,7 +648,12 @@ public class JTree extends JComponent
   
   public void setCellRenderer(TreeCellRenderer newRenderer)
   {
+    if (cellRenderer == newRenderer)
+      return;
+
+    TreeCellRenderer oldValue = cellRenderer;
     cellRenderer = newRenderer;
+    firePropertyChange(CELL_RENDERER_PROPERTY, oldValue, newRenderer);
   }
 
   public TreeSelectionModel getSelectionModel()
@@ -600,7 +663,12 @@ public class JTree extends JComponent
 
   public void setSelectionModel(TreeSelectionModel model)
   {
+    if (selectionModel == model)
+      return;
+    
+    TreeSelectionModel oldValue = selectionModel;
     selectionModel = model;
+    firePropertyChange(SELECTION_MODEL_PROPERTY, oldValue, model);
   }
 
   public int getVisibleRowCount()
@@ -610,7 +678,12 @@ public class JTree extends JComponent
 
   public void setVisibleRowCount(int rows)
   {
+    if (visibleRowCount == rows)
+      return;
+
+    int oldValue = visibleRowCount;
     visibleRowCount = rows;
+    firePropertyChange(VISIBLE_ROW_COUNT_PROPERTY, oldValue, rows);
   }
 
   public boolean isLargeModel()
@@ -620,7 +693,12 @@ public class JTree extends JComponent
 
   public void setLargeModel(boolean large)
   {
+    if (largeModel == large)
+      return;
+
+    boolean oldValue = largeModel;
     largeModel = large;
+    firePropertyChange(LARGE_MODEL_PROPERTY, oldValue, large);
   }
 
   public int getRowHeight()
@@ -630,7 +708,17 @@ public class JTree extends JComponent
 
   public void setRowHeight(int height)
   {
+    if (rowHeight == height)
+      return;
+    
+    int oldValue = rowHeight;
     rowHeight = height;
+    firePropertyChange(ROW_HEIGHT_PROPERTY, oldValue, height);
+  }
+
+  public boolean isFixedRowHeight()
+  {
+    return rowHeight > 0;
   }
 
   public boolean getInvokesStopCellEditing()
@@ -640,7 +728,12 @@ public class JTree extends JComponent
 
   public void setInvokesStopCellEditing(boolean invoke)
   {
+    if (invokesStopCellEditing == invoke)
+     return;
+
+    boolean oldValue = invokesStopCellEditing;
     invokesStopCellEditing = invoke;
+    firePropertyChange(INVOKES_STOP_CELL_EDITING_PROPERTY, oldValue, invoke);
   }
 
   /**
@@ -656,7 +749,12 @@ public class JTree extends JComponent
    */
   public void setToggleClickCount(int count)
   {
+    if (toggleClickCount == count)
+      return;
+    
+    int oldValue = toggleClickCount;
     toggleClickCount = count;
+    firePropertyChange(TOGGLE_CLICK_COUNT_PROPERTY, oldValue, count);
   }
 
   public boolean getScrollsOnExpand()
@@ -666,6 +764,401 @@ public class JTree extends JComponent
 
   public void setScrollsOnExpand(boolean scroll)
   {
+    if (scrollsOnExpand == scroll)
+      return;
+
+    boolean oldValue = scrollsOnExpand;
     scrollsOnExpand = scroll;
+    firePropertyChange(SCROLLS_ON_EXPAND_PROPERTY, oldValue, scroll);
+  }
+
+  public void setSelectionPath(TreePath path)
+  {
+    selectionModel.setSelectionPath(path);
+  }
+
+  public void setSelectionPaths(TreePath[] paths)
+  {
+    selectionModel.setSelectionPaths(paths);
+  }
+  
+  public void setSelectionRow(int row)
+  {
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      selectionModel.setSelectionPath(path);
+  }
+
+  public void setSelectionRows(int[] rows)
+  {
+    // Make sure we have an UI so getPathForRow() does not return null.
+    if (rows == null || getUI() == null)
+      return;
+
+    TreePath[] paths = new TreePath[rows.length];
+
+    for (int i = rows.length - 1; i >= 0; --i)
+      paths[i] = getPathForRow(rows[i]);
+
+    setSelectionPaths(paths);
+  }
+
+  public void setSelectionInterval(int index0, int index1)
+  {
+    TreePath[] paths = getPathBetweenRows(index0, index1);
+
+    if (paths != null)
+      setSelectionPaths(paths);
+  }
+
+  public void addSelectionPath(TreePath path)
+  {
+    selectionModel.addSelectionPath(path);
+  }
+
+  public void addSelectionPaths(TreePath[] paths)
+  {
+    selectionModel.addSelectionPaths(paths);
+  }
+
+  public void addSelectionRow(int row)
+  {
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      selectionModel.addSelectionPath(path);
+  }
+
+  public void addSelectionRows(int[] rows)
+  {
+    // Make sure we have an UI so getPathForRow() does not return null.
+    if (rows == null || getUI() == null)
+      return;
+
+    TreePath[] paths = new TreePath[rows.length];
+
+    for (int i = rows.length - 1; i >= 0; --i)
+      paths[i] = getPathForRow(rows[i]);
+
+    addSelectionPaths(paths);
+  }
+
+  public void addSelectionInterval(int index0, int index1)
+  {
+    TreePath[] paths = getPathBetweenRows(index0, index1);
+
+    if (paths != null)
+      addSelectionPaths(paths);
+  }
+
+  public void removeSelectionPath(TreePath path)
+  {
+    selectionModel.removeSelectionPath(path);
+  }
+
+  public void removeSelectionPaths(TreePath[] paths)
+  {
+    selectionModel.removeSelectionPaths(paths);
+  }
+
+  public void removeSelectionRow(int row)
+  {
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      selectionModel.removeSelectionPath(path);
+  }
+
+  public void removeSelectionRows(int[] rows)
+  {
+    // Make sure we have an UI so getPathForRow() does not return null.
+    if (rows == null || getUI() == null)
+      return;
+
+    TreePath[] paths = new TreePath[rows.length];
+
+    for (int i = rows.length - 1; i >= 0; --i)
+      paths[i] = getPathForRow(rows[i]);
+
+    removeSelectionPaths(paths);
+  }
+
+  public void removeSelectionInterval(int index0, int index1)
+  {
+    TreePath[] paths = getPathBetweenRows(index0, index1);
+
+    if (paths != null)
+      removeSelectionPaths(paths);
+  }
+
+  public void clearSelection()
+  {
+    selectionModel.clearSelection();
+  }
+  
+  public TreePath getLeadSelectionPath()
+  {
+    return leadSelectionPath;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public void setLeadSelectionPath(TreePath path)
+  {
+    if (leadSelectionPath == path)
+      return;
+
+    TreePath oldValue = leadSelectionPath;
+    leadSelectionPath = path;
+    firePropertyChange(LEAD_SELECTION_PATH_PROPERTY, oldValue, path);
+  }
+
+  /**
+   * @since 1.3
+   */
+  public TreePath getAnchorSelectionPath()
+  {
+    return anchorSelectionPath;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public void setAnchorSelectionPath(TreePath path)
+  {
+    if (anchorSelectionPath == path)
+      return;
+
+    TreePath oldValue = anchorSelectionPath;
+    anchorSelectionPath = path;
+    firePropertyChange(ANCHOR_SELECTION_PATH_PROPERTY, oldValue, path);
+  }
+
+  public int getLeadSelectionRow()
+  {
+    return selectionModel.getLeadSelectionRow();
+  }
+
+  public int getMaxSelectionRow()
+  {
+    return selectionModel.getMaxSelectionRow();
+  }
+
+  public int getMinSelectionRow()
+  {
+    return selectionModel.getMinSelectionRow();
+  }
+
+  public int getSelectionCount()
+  {
+    return selectionModel.getSelectionCount();
+  }
+
+  public TreePath getSelectionPath()
+  {
+    return selectionModel.getSelectionPath();
+  }
+
+  public TreePath[] getSelectionPaths()
+  {
+    return selectionModel.getSelectionPaths();
+  }
+
+  public int[] getSelectionRows()
+  {
+    return selectionModel.getSelectionRows();
+  }
+
+  public boolean isPathSelected(TreePath path)
+  {
+    return selectionModel.isPathSelected(path);
+  }
+
+  public boolean isRowSelected(int row)
+  {
+    return selectionModel.isRowSelected(row);
+  }
+
+  public boolean isSelectionEmpty()
+  {
+    return selectionModel.isSelectionEmpty();
+  }
+  
+  /**
+   * Return the value of the <code>dragEnabled</code> property.
+   *
+   * @return the value
+   * 
+   * @since 1.4
+   */
+  public boolean getDragEnabled()
+  {
+    return dragEnabled;
+  }
+
+  /**
+   * Set the <code>dragEnabled</code> property.
+   *
+   * @param enabled new value
+   * 
+   * @since 1.4
+   */
+  public void setDragEnabled(boolean enabled)
+  {
+    dragEnabled = enabled;
+  }
+
+  public int getRowCount()
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.getRowCount(this);
+    
+    return 0;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public boolean getExpandsSelectedPaths()
+  {
+    return expandsSelectedPaths;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public void setExpandsSelectedPaths(boolean flag)
+  {
+    if (expandsSelectedPaths == flag)
+      return;
+
+    boolean oldValue = expandsSelectedPaths;
+    expandsSelectedPaths = flag;
+    firePropertyChange(EXPANDS_SELECTED_PATHS_PROPERTY, oldValue, flag);
+  }
+
+  public Rectangle getPathBounds(TreePath path)
+  {
+    TreeUI ui = getUI();
+
+    if (ui == null)
+      return null;
+
+    return ui.getPathBounds(this, path);
+  }
+
+  public Rectangle getRowBounds(int row)
+  {
+    TreePath path = getPathForRow(row);
+
+    if (path != null)
+      return getPathBounds(path);
+
+    return null;
+  }
+
+  public boolean isEditing()
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.isEditing(this);
+
+    return false;
+  }
+
+  public boolean stopEditing()
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.stopEditing(this);
+
+   return false;
+  }
+
+  public void cancelEditing()
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      ui.cancelEditing(this);
+  }
+
+  public void startEditingAtPath(TreePath path)
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      ui.startEditingAtPath(this, path);
+  }
+
+  public TreePath getEditingPath()
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.getEditingPath(this);
+
+    return null;
+  }
+
+  public TreePath getPathForLocation(int x, int y)
+  {
+    TreePath path = getClosestPathForLocation(x, y);
+
+    if (path != null)
+      {
+	 Rectangle rect = getPathBounds(path);
+
+	 if ((rect != null) && rect.contains(x, y))
+	   return path;
+      }
+
+    return null;
+  }
+
+  public int getRowForLocation(int x, int y)
+  {
+    TreePath path = getPathForLocation(x, y);
+
+    if (path != null)
+      return getRowForPath(path);
+
+    return -1;
+  }
+  
+  public TreePath getClosestPathForLocation(int x, int y)
+  {
+    TreeUI ui = getUI();
+
+    if (ui != null)
+      return ui.getClosestPathForLocation(this, x, y);
+    
+    return null;
+  }
+
+  public int getClosestRowForLocation(int x, int y)
+  {
+    TreePath path = getClosestPathForLocation(x, y);
+
+    if (path != null)
+      return getRowForPath(path);
+
+    return -1;
+  }
+
+  public Object getLastSelectedPathComponent()
+  {
+    TreePath path = getSelectionPath();
+
+    if (path != null)
+      return path.getLastPathComponent();
+
+    return null;
   }
 }
