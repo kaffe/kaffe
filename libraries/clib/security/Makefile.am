@@ -19,6 +19,9 @@ SECURITY_SRCS =	\
 
 security_DATA = java.security
 
+EXTRA_DIST = \
+	$(security_DATA)
+
 libsecurity_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
