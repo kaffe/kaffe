@@ -1,5 +1,15 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jit/registers.c,
+	kaffe/kaffevm/jit3/registers.c:
+	(usecnt) Made static.
+	
+	* kaffe/kaffevm/jit/registers.h,
+	kaffe/kaffevm/jit3/registers.h:
+	(usecnt) Removed prototype.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/thread.c: 
 	(deadlockDetection) Made static.
 	(KaffeVM_setDeadlockDetection) New function.

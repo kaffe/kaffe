@@ -58,7 +58,7 @@ int enable_readonce = Rreadonce;
  * 
  * Gives an idea of which register is to be reused.
  */
-int usecnt = 0;
+static int usecnt = 0;
 
 /**
  * Initialize the registers.

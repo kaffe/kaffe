@@ -41,7 +41,6 @@ typedef struct _kregs {
 } kregs;
 
 extern kregs reginfo[];
-extern int usecnt;
 
 #define	register_invalidate(r)	reginfo[r].slot = NOSLOT
 

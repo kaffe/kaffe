@@ -47,7 +47,6 @@ typedef struct _kregs {
 } kregs;
 
 extern kregs reginfo[];
-extern int usecnt;
 extern int enable_readonce;
 
 #define	MAXREG			NR_REGISTERS

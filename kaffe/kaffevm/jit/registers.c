@@ -40,7 +40,7 @@ int enable_readonce = Rreadonce;
 /* Count for each register use - gives an idea of which register is
  * to be reused.
  */
-int usecnt = 0;
+static int usecnt = 0;
 
 /*
  * Set this if you prefer a given register for a slot.
