@@ -2142,7 +2142,7 @@ symxfrm='\1 \2\3 \3'
 lt_cv_global_symbol_to_cdecl="sed -n -e 's/^. .* \(.*\)$/extern char \1;/p'"
 
 # Transform an extracted symbol line into symbol name and symbol address
-lt_cv_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
+lt_cv_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\"\1\", (lt_ptr) 0},/p' -e 's/^$symcode \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
 
 # Define system-specific variables.
 case $host_os in
@@ -2154,7 +2154,7 @@ cygwin* | mingw* | pw32*)
   ;;
 hpux*) # Its linker distinguishes data from code symbols
   lt_cv_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern char \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
-  lt_cv_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode* \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
+  lt_cv_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\"\1\", (lt_ptr) 0},/p' -e 's/^$symcode* \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
   ;;
 irix*)
   symcode='[BCDEGRST]'
@@ -5539,7 +5539,7 @@ if test x"${want_engine}" != x""; then
   if test x"${want_engine}" = x"intrp"; then
     :
   else
-    if test -f "$srcdir/config/$Khost_cpu/${want_engine}-$Khost_cpu.def"; then
+    if test -f "$srcdir/config/$Khost_cpu/${want_engine}-$Khost_cpu.def" && test -f "$srcdir/config/$Khost_cpu/$Khost_os/${want_engine}-md.h"; then
       if sed 1q < "$srcdir/config/$Khost_cpu/$Khost_os/${want_engine}-md.h" |
 	 fgrep "Needs update, do not use" > /dev/null; then
 	echo "configure: warning: The $want_engine engine was not updated for $Khost_cpu-$Khost_os" 1>&2
@@ -5561,7 +5561,7 @@ else
 			break;
 		
   else
-    if test -f "$srcdir/config/$Khost_cpu/${engine}-$Khost_cpu.def"; then
+    if test -f "$srcdir/config/$Khost_cpu/${engine}-$Khost_cpu.def" && test -f "$srcdir/config/$Khost_cpu/$Khost_os/${engine}-md.h"; then
       if sed 1q < "$srcdir/config/$Khost_cpu/$Khost_os/${engine}-md.h" |
 	 fgrep "Needs update, do not use" > /dev/null; then
 	:
