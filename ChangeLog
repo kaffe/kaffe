@@ -1,3 +1,9 @@
+2003-12-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java:
+	Corrected the typo "0x20E3" to "0x203E" (reported by
+	Atsushi Nemoto <anemo@mba.ocn.ne.jp>).
+
 2003-12-11  Dalibor Topic <robilad@kaffe.org>
 
 	* config/i386/sysdepCallMethod.h: New file.

@@ -74,7 +74,7 @@ public class CharToByteEUC_JP extends CharToByteConverter {
 		to[o++] = (byte)chr;
 		continue;
 	    }
-	    if (!US_ASCII && (chr == 0x20E3)) {
+	    if (!US_ASCII && (chr == 0x203E)) {
 		if (o >= oe) {
 		    break;
 		}
