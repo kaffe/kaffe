@@ -28,14 +28,38 @@ private SystemClassLoader() {
 	super(null);		// this line is not really necessary!
 }
 
-private static String componentType(String name) {
+// returns the component type name of an array type.
+// Throws ClassNotFoundException if the component type
+// is not a primitive type and is not enclosed by 'L' and ';'.
+private static String componentType(String name) throws ClassNotFoundException {
+        // find the start of the component type
 	int componentStart = name.lastIndexOf('[') + 1;
-	if (name.charAt(componentStart) == 'L' && name.endsWith(";")) {
+
+	// if component type is an object type,
+	// return the object type without 'L' and ';'
+	if (name.charAt(componentStart) == 'L') {
+	    if (name.endsWith(";")) {
 		return name.substring(componentStart + 1, name.length() - 1);
+	    }
+	    else {
+		throw new ClassNotFoundException(name);
+	    }
 	}
+	// handle case of a class name ending with ';'
+	// but not starting with 'L' to denote the object type
+	else if (name.endsWith(";")) {
+	    throw new ClassNotFoundException(name);
+	}
+	// if component type is a primitive type return primitive type.
+	// if the length of the primitive type name is > 1,
+	// then it's a bad primitive type: 
+	// just return the primitive type name
+	// for the error message
 	else if (name.length() - componentStart > 1) {
 		return name.substring(componentStart);
 	}
+	// if the length is 1 then return [primitive type,
+	// as just returning the primitive type name will fail.
 	else {
 		return name.substring(componentStart - 1);
 	}

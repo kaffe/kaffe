@@ -47,12 +47,21 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
         else {
                 name = KMALLOC (len);
         }
-	if (name) {
-		stringJava2CBuf(str, name, len+1);
+
+	if (!name) {
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
+	else {
+	        stringJava2CBuf(str, name, len + 1);
 		classname2pathname(name, name);
 
 		c = utf8ConstNew(name, len);
-		if (c) {
+		if (!c) {
+		    postOutOfMemory(&info);
+		    throwError(&info);
+		}
+		else {
 		    if (c->data[0] == '[') {
 			clazz = loadArray(c, 0, &info);
 		    }
@@ -63,7 +72,7 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 		    utf8ConstRelease(c);
 		}
 	}
-
+        
 	if (clazz == 0) {
 		/* 
 		 * upgrade error to an exception if *this* class wasn't found.
@@ -76,7 +85,7 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 			 */
 			classEntry* centry;
 
-			stringJava2CBuf(str, name, len+1);
+			stringJava2CBuf(str, name, len + 1);
 			classname2pathname(name, name);
 			c = utf8ConstNew(name, len);
 

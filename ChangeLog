@@ -1,3 +1,19 @@
+Mon Jul 29 15:03:28 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_findLoadedClass0) use -1 as length
+	parameter for utf8ConstNew. Fixes problem with ArrayForName
+	regression test.
+
+	Reported by  Pat Tullmann <pat@tullmann.org>
+	* libraries/clib/native/SystemClassLoader.c:
+	(kaffe_lang_SystemClassLoader_findClass0) added more checks for
+	failed memory allocation.
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java:
+	(componentType) Added more comments. Throw ClassNotFoundException
+	if component type is not a private type or is not enclosed by 'L'
+	and ';'.
+
 Wed Jul 24 21:58:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Klasses.jar.bootstrap:

@@ -159,10 +159,10 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 		postOutOfMemory(&info);
 		throwError(&info);
 	}
-        stringJava2CBuf(str, name, len+1);
+        stringJava2CBuf(str, name, len + 1);
         classname2pathname(name, name);
 
-        c = utf8ConstNew(name, len);
+        c = utf8ConstNew(name, -1);
         if (name != buffer) {
                 KFREE(name);
         }
@@ -180,4 +180,3 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 		return (0);
 	}
 }
-
