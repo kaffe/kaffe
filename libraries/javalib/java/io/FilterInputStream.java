@@ -104,7 +104,7 @@ public class FilterInputStream extends InputStream
     */
   public boolean markSupported()
   {
-    return in.markSupported() ;
+    return in.markSupported();
   }
 
   /**
@@ -126,7 +126,7 @@ public class FilterInputStream extends InputStream
     */
   public int available() throws IOException
   {
-    return in.available() ;
+    return in.available();
   }
 
   /**

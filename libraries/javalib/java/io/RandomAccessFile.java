@@ -194,12 +194,14 @@ public class RandomAccessFile implements DataOutput, DataInput
   }
 
   /**
-   * This method sets the length of the file to the specified length.  If
-   * the currently length of the file is longer than the specified length,
-   * then the file is truncated to the specified length.  If the current
-   * length of the file is shorter than the specified length, the file
-   * is extended with bytes of an undefined value.
-   *  <p>
+   * This method sets the length of the file to the specified length.
+   * If the currently length of the file is longer than the specified
+   * length, then the file is truncated to the specified length (the
+   * file position is set to the end of file in this case).  If the
+   * current length of the file is shorter than the specified length,
+   * the file is extended with bytes of an undefined value (the file
+   * position is unchanged in this case).
+   * <p>
    * The file must be open for write access for this operation to succeed.
    *
    * @param newlen The new length of the file
@@ -208,7 +210,17 @@ public class RandomAccessFile implements DataOutput, DataInput
    */
   public void setLength (long newLen) throws IOException
   {
-    ch.truncate (newLen);
+    // FileChannel.truncate() can only shrink a file.
+    // To expand it we need to seek forward and write at least one byte.
+    if (newLen < length())
+      ch.truncate (newLen);
+    else
+      {
+	long pos = getFilePointer();
+	seek(newLen - 1);
+	write(0);
+	seek(pos);
+      }
   }
 
   /**
@@ -318,12 +330,12 @@ public class RandomAccessFile implements DataOutput, DataInput
    * significant byte first (i.e., "big endian") regardless of the native
    * host byte ordering. 
    * <p>
-   * As an example, if <code>byte1</code> and code{byte2</code> represent 
+   * As an example, if <code>byte1</code> and <code>byte2</code> represent 
    * the first
    * and second byte read from the stream respectively, they will be
    * transformed to a <code>char</code> in the following manner:
    * <p>
-   * <code>(char)(((byte1 & 0xFF) << 8) | (byte2 & 0xFF)</code>
+   * <code>(char)(((byte1 &amp; 0xFF) &lt;&lt; 8) | (byte2 &amp; 0xFF)</code>
    * <p>
    * This method can read a <code>char</code> written by an object 
    * implementing the
@@ -539,12 +551,12 @@ public class RandomAccessFile implements DataOutput, DataInput
    * significant byte first (i.e., "big endian") regardless of the native
    * host byte ordering. 
    * <p>
-   * As an example, if <code>byte1</code> and code{byte2</code> 
+   * As an example, if <code>byte1</code> and <code>byte2</code> 
    * represent the first
    * and second byte read from the stream respectively, they will be
    * transformed to a <code>short</code> in the following manner:
    * <p>
-   * <code>(short)(((byte1 & 0xFF) << 8) | (byte2 & 0xFF)</code>
+   * <code>(short)(((byte1 &amp; 0xFF) &lt;&lt; 8) | (byte2 &amp; 0xFF)</code>
    * <p>
    * The value returned is in the range of -32768 to 32767.
    * <p>

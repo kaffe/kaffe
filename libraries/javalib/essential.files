@@ -128,6 +128,7 @@ java/io/StreamCorruptedException.java
 java/io/SyncFailedException.java
 java/io/UnsupportedEncodingException.java
 java/io/UTFDataFormatException.java
+java/io/VMFile.java
 java/io/VMObjectStreamClass.java
 java/io/Writer.java
 java/lang/ArrayIndexOutOfBoundsException.java

@@ -39,9 +39,6 @@
 
 package java.io;
 
-import gnu.java.io.NullOutputStream;
-import gnu.java.lang.reflect.TypeSignature;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -53,10 +50,13 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
+import gnu.java.io.NullOutputStream;
+import gnu.java.lang.reflect.TypeSignature;
 //import gnu.java.security.provider.Gnu;
 
 
@@ -104,16 +104,16 @@ public class ObjectStreamClass implements Serializable
       }
   }
 
-
   /**
    * Returns the name of the class that this
    * <code>ObjectStreamClass</code> represents.
+   *
+   * @return the name of the class.
    */
   public String getName()
   {
     return name;
   }
-
 
   /**
    * Returns the class that this <code>ObjectStreamClass</code>
@@ -129,31 +129,33 @@ public class ObjectStreamClass implements Serializable
     return clazz;
   }
 
-
   /**
    * Returns the serial version stream-unique identifier for the class
    * represented by this <code>ObjectStreamClass</code>.  This SUID is
    * either defined by the class as <code>static final long
    * serialVersionUID</code> or is calculated as specified in
    * Javasoft's "Object Serialization Specification" XXX: add reference
+   *
+   * @return the serial version UID.
    */
   public long getSerialVersionUID()
   {
     return uid;
   }
 
-
-  // Returns the serializable (non-static and non-transient) Fields
-  // of the class represented by this ObjectStreamClass.  The Fields
-  // are sorted by name.
-  // XXX doc
+  /**
+   * Returns the serializable (non-static and non-transient) Fields
+   * of the class represented by this ObjectStreamClass.  The Fields
+   * are sorted by name.
+   *
+   * @return the fields.
+   */
   public ObjectStreamField[] getFields()
   {
     ObjectStreamField[] copy = new ObjectStreamField[ fields.length ];
     System.arraycopy(fields, 0, copy, 0, fields.length);
     return copy;
   }
-
 
   // XXX doc
   // Can't do binary search since fields is sorted by name and
@@ -165,7 +167,6 @@ public class ObjectStreamClass implements Serializable
 	return fields[i];
     return null;
   }
-
 
   /**
    * Returns a textual representation of this
@@ -180,7 +181,6 @@ public class ObjectStreamClass implements Serializable
   {
     return "java.io.ObjectStreamClass< " + name + ", " + uid + " >";
   }
-
 
   // Returns true iff the class that this ObjectStreamClass represents
   // has the following method:

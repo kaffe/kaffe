@@ -54,6 +54,7 @@ java/io/Reader.class
 java/io/Serializable.class
 java/io/UTFDataFormatException.class
 java/io/UnsupportedEncodingException.class
+java/io/VMFile.class
 java/io/VMObjectStreamClass.class
 java/io/Writer.class
 java/lang/ArithmeticException.class

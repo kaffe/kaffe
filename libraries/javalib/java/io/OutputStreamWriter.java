@@ -101,6 +101,14 @@ public class OutputStreamWriter extends Writer
     throws UnsupportedEncodingException
   {
     this.out = EncodingManager.getEncoder (out, encoding_scheme);
+    try
+    {
+      this.out.setBadCharValue('?');
+    }
+    catch(CharConversionException x)
+    {
+      // what can we do here?
+    }
   }
 
   /**
@@ -112,6 +120,14 @@ public class OutputStreamWriter extends Writer
   public OutputStreamWriter (OutputStream out)
   {
     this.out = EncodingManager.getEncoder (out);
+    try
+    {
+      this.out.setBadCharValue('?');
+    }
+    catch(CharConversionException x)
+    {
+      // what can we do here?
+    }
   }
 
   /**
@@ -134,7 +150,7 @@ public class OutputStreamWriter extends Writer
    */
   public String getEncoding ()
   {
-    return out.getSchemeName ();
+    return out != null ? out.getSchemeName () : null;
   }
 
   /**

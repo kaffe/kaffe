@@ -380,7 +380,7 @@ public interface DataInput
    *
    * Note that all characters are encoded in the method that requires the
    * fewest number of bytes with the exception of the character with the
-   * value of <code>\<llll>u0000</code> which is encoded as two bytes.  
+   * value of <code>\&lt;llll&gt;u0000</code> which is encoded as two bytes.  
    * This is a modification of the UTF standard used to prevent C language 
    * style <code>NUL</code> values from appearing in the byte stream.
    * <p>

@@ -25,15 +25,14 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
-#include "java_io_File.h"
+#include "java_io_VMFile.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 
 /*
  * Is named item a file?
  */
-jboolean java_io_File_isFileInternal(struct Hjava_io_File* this UNUSED, 
-				     struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_isFile(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];
@@ -53,8 +52,7 @@ jboolean java_io_File_isFileInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Is named item a directory?
  */
-jboolean java_io_File_isDirectoryInternal(struct Hjava_io_File* this UNUSED,
-					  struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_isDirectory(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];
@@ -74,8 +72,7 @@ jboolean java_io_File_isDirectoryInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Does named file exist?
  */
-jboolean java_io_File_existsInternal(struct Hjava_io_File* this UNUSED,
-				     struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_exists(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];
@@ -89,8 +86,7 @@ jboolean java_io_File_existsInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Last modified time on file.
  */
-jlong java_io_File_lastModifiedInternal(struct Hjava_io_File* this UNUSED,
-					struct Hjava_lang_String* fileName)
+jlong java_io_VMFile_lastModified(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];
@@ -109,8 +105,7 @@ jlong java_io_File_lastModifiedInternal(struct Hjava_io_File* this UNUSED,
  * Can I write to this file?
  */
 jboolean
-java_io_File_canWriteInternal(struct Hjava_io_File* this UNUSED,
-			      struct Hjava_lang_String* fileName)
+java_io_VMFile_canWrite(struct Hjava_lang_String* fileName)
 {
 	char str[MAXPATHLEN];
 	int r;
@@ -124,8 +119,7 @@ java_io_File_canWriteInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Can I read from this file.
  */
-jboolean java_io_File_canReadInternal(struct Hjava_io_File* this UNUSED,
-				      struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_canRead(struct Hjava_lang_String* fileName)
 {
   char str[MAXPATHLEN];
   int r;
@@ -139,8 +133,7 @@ jboolean java_io_File_canReadInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Return length of file.
  */
-jlong java_io_File_lengthInternal(struct Hjava_io_File* this UNUSED,
-				  struct Hjava_lang_String* fileName)
+jlong java_io_VMFile_length(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];
@@ -158,8 +151,7 @@ jlong java_io_File_lengthInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Create a directory.
  */
-jboolean java_io_File_mkdirInternal(struct Hjava_io_File* this UNUSED,
-				    struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_mkdir(struct Hjava_lang_String* fileName)
 {
   char str[MAXPATHLEN];
   int r;
@@ -172,9 +164,8 @@ jboolean java_io_File_mkdirInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Rename a file.
  */
-jboolean java_io_File_renameToInternal(struct Hjava_io_File* this UNUSED,
-				       struct Hjava_lang_String* fromName,
-				       struct Hjava_lang_String* toName)
+jboolean java_io_VMFile_renameTo(struct Hjava_lang_String* fromName,
+				 struct Hjava_lang_String* toName)
 {
   char str[MAXPATHLEN];
   char str2[MAXPATHLEN];
@@ -190,15 +181,14 @@ jboolean java_io_File_renameToInternal(struct Hjava_io_File* this UNUSED,
 /*
  * Delete a file.
  */
-jboolean java_io_File_deleteInternal(struct Hjava_io_File* this, 
-				    struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_delete(struct Hjava_lang_String* fileName)
 {
 	char str[MAXPATHLEN];
 	int r;
 	
 	stringJava2CBuf(fileName, str, sizeof(str));
 
-	if (java_io_File_isDirectoryInternal(this, fileName))
+	if (java_io_VMFile_isDirectory(fileName))
 	  r = KRMDIR(str);
 	else
 	  r = KREMOVE(str);
@@ -208,8 +198,7 @@ jboolean java_io_File_deleteInternal(struct Hjava_io_File* this,
 /*
  * Get a directory listing.
  */
-HArrayOfObject* java_io_File_listInternal(struct Hjava_io_File* this UNUSED,
-					  struct Hjava_lang_String* dirName)
+HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
 {
 #if defined(HAVE_DIRENT_H)
   char path[MAXPATHLEN];
@@ -290,7 +279,7 @@ HArrayOfObject* java_io_File_listInternal(struct Hjava_io_File* this UNUSED,
 #endif
 }
 
-jboolean java_io_File_createInternal(struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_create(struct Hjava_lang_String* fileName)
 {
   char str[MAXPATHLEN];
   int fd;
@@ -313,9 +302,8 @@ jboolean java_io_File_createInternal(struct Hjava_lang_String* fileName)
   return 1;
 }
 
-jboolean java_io_File_setLastModifiedInternal(struct Hjava_io_File* this UNUSED,
-					      struct Hjava_lang_String* fileName,
-					      jlong thetime)
+jboolean java_io_VMFile_setLastModified(struct Hjava_lang_String* fileName,
+					jlong thetime)
 {
 #ifdef HAVE_UTIME_H
   char path[MAXPATHLEN];
@@ -334,8 +322,7 @@ jboolean java_io_File_setLastModifiedInternal(struct Hjava_io_File* this UNUSED,
 #endif
 }
 
-jboolean java_io_File_setReadOnlyInternal(struct Hjava_io_File* this UNUSED, 
-					  struct Hjava_lang_String* fileName)
+jboolean java_io_VMFile_setReadOnly(struct Hjava_lang_String* fileName)
 {
   struct stat buf;
   char str[MAXPATHLEN];

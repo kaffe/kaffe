@@ -1,5 +1,170 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+        * include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) Added java_io_VMFile.h.
+	
+        * include/Makefile.in: Regenerated.
+	
+        * libraries/clib/io/File.c:
+	Changed signatures to match VMFile.
+	
+        * libraries/javalib/Klasses.jar.bootstrap,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+	
+        * libraries/javalib/bootstrap.classlist:
+	Added java/io/VMFile.class.
+	
+        * libraries/javalib/essential.files:
+	Added java/io/VMFile.java.
+	
+        * libraries/javalib/java/io/ByteArrayInputStream.java,
+        libraries/javalib/java/io/CharArrayWriter.java,
+        libraries/javalib/java/io/DataInput.java,
+        libraries/javalib/java/io/File.java,
+        libraries/javalib/java/io/FileDescriptor.java,
+        libraries/javalib/java/io/FilePermission.java,
+        libraries/javalib/java/io/FilterInputStream.java,
+        libraries/javalib/java/io/InputStream.java,
+        libraries/javalib/java/io/InputStreamReader.java,
+        libraries/javalib/java/io/ObjectStreamClass.java,
+        libraries/javalib/java/io/ObjectStreamField.java,
+        libraries/javalib/java/io/OutputStreamWriter.java,
+        libraries/javalib/java/io/PipedInputStream.java,
+        libraries/javalib/java/io/PipedReader.java,
+        libraries/javalib/java/io/PushbackInputStream.java,
+        libraries/javalib/java/io/RandomAccessFile.java,
+        libraries/javalib/java/io/SerializablePermission.java,
+        libraries/javalib/java/io/StreamTokenizer.java,
+        libraries/javalib/java/io/StringWriter.java,
+        libraries/javalib/java/io/VMObjectStreamClass.java,
+        libraries/javalib/java/io/WriteAbortedException.java,
+        libraries/javalib/java/io/Writer.java:
+	Resynced with GNU Classpath.
+
+	2004-05-14  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/Writer.java (Writer(Object)): Check for null lock object.
+
+	2004-04-12  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/CharArrayWriter.java,
+	java/io/PipedInputStream.java,
+	java/io/PipedReader.java,
+	java/io/SerializablePermission.java,
+	java/io/StreamTokenizer.java,
+	java/io/WriteAbortedException.java:
+	Fixed HTML in javadocs.
+
+	2004-04-20  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/StringWriter.java
+	(close): Fixed typo in javadoc.
+
+	2004-04-30  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/RandomAccessFile.java (setLength): Use truncate for
+	shrinking the file and seek plus write for expanding the file.
+
+	2004-04-29  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/RandomAccessFile.java (setLength): Set position to new
+	length when new length is smaller then current position.
+
+	2004-04-17  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/DataInput.java,
+	java/io/File.java,
+	java/io/InputStream.java,
+	java/io/InputStreamReader.java,
+	java/io/PushbackInputStream.java,
+	java/io/RandomAccessFile.java:
+	Fixed javadocs all over.
+
+	004-04-23  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/OutputStreamWriter.java (getEncoding): Return null when
+	out == null, otherwise call out.getSchemeName.
+
+	2004-04-28  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/ObjectStreamField.java: Cleaned up imports.
+	* java/io/BufferedReader.java (skip): Removed unused
+	variable.
+
+	2004-04-08  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/ByteArrayInputStream.java,
+	java/io/DataInput.java,
+	java/io/DataInputStream.java,
+	java/io/InputStream.java,
+	java/io/InputStreamReader.java,
+	java/io/ObjectStreamClass.java,
+	java/io/ObjectStreamField.java,
+	java/io/PushbackReader.java,
+	java/io/StringWriter.java,
+	java/io/Writer.java:
+	Fixed javadocs and style all over.
+
+	2004-04-06  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* java/io/ObjectStreamField.java
+	(setBooleanField, setCharField, setByteField, setShortField,
+	setIntField, setLongField, setFloatField, setDoubleField,
+	setObjectField): Use native methods directly to be able to set
+	final fields.
+
+	* vm/reference/java/io/VMObjectStreamClass.java
+	(setBooleanNative, setCharNative, setByteNative, setShortNative,
+	setIntNative, setLongNative, setFloatNative, setDoubleNative,
+	setObjectNative): New methods for serialization to be able to
+	set final fields.
+
+	2004-04-23  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/FilePermission.java (implies): Removed unused
+	variable.
+
+	2004-04-09  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/FileDescriptor.java: (FileDescriptor) Added public
+	constructor. (valid) Added null check.
+
+	2004-04-18  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/File.java (canWrite): Only do checkWrite() security
+	check, use internal methods for actual actions.
+	(createTempFile): Don't do security checks for temp files that
+	won't be created.
+	(setReadOnly): Do checkWrite() security check before trying to
+	do anything else.
+	(renameTo): Add checkWrite() security check for destination file.
+
+	2004-04-20  Jeroen Frijters <jeroen@sumatra.nl>
+
+        * java/io/File.java
+        (toURL): Correct the file path before constructing the URL.
+
+	2004-04-26  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/File.java: Moved all native methods to the new class
+	VMFile and removed the "Internal" suffix.
+	* vm/reference/java/io/VMFile.java: New file.
+
+	2004-04-30  Tom Tromey  <tromey@redhat.com>
+	            Mark Wielaard  <mark@klomp.org>
+
+       * java/io/File.java (toURI): New method.
+       (toURL): Use isDirectory() directly.
+
+	2004-05-05  Michael Koch  <konqueror@gmx.de>
+
+	* java/io/File.java
+	(getParent): Fixed javadoc.
+	
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
         * libraries/javalib/java/lang/CharSequence.java,
         libraries/javalib/java/lang/Compiler.java,
         libraries/javalib/java/lang/Number.java,
