@@ -1,9 +1,6 @@
 This file is a list of known bugs, short-comings and oddities.  
 Treat it as an TODO list.
 
-* java/net/ServerSocket.<init>(IILjava/net/InetAddress;)V
-  is not implemented.  Should be easy and quick to fix.
-
 * javap java.lang.ThreadGroup outputs 'NUL' characters when used with
   Klasses.jar.
 
