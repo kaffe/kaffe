@@ -292,25 +292,31 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 static jclass
 Kaffe_FindClass(JNIEnv* env, const char* name)
 {
+	Hjava_lang_ClassLoader* loader;
 	Hjava_lang_Class* cls;
-	char *buf;
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	buf = checkPtr(KMALLOC(strlen(name) + 1));
-	classname2pathname((char*)name, buf);
+	if (!getClassLoader(&loader, &info)) {
+		cls = 0;
+	} else {
+		char *buf;
 
-	if (buf[0] == '[') {
-		cls = getClassFromSignature(&buf[1], NULL, &info);
-		if (cls != 0) {
-			cls = lookupArray(cls, &info);
+		buf = checkPtr(KMALLOC(strlen(name) + 1));
+		classname2pathname(name, buf);
+
+		if (buf[0] == '[') {
+			cls = getClassFromSignature(&buf[1], loader, &info);
+			if (cls != 0) {
+				cls = lookupArray(cls, &info);
+			}
 		}
+		else {
+			cls = lookupClass(buf, loader, &info);
+		}
+		KFREE(buf);
 	}
-	else {
-		cls = lookupClass(buf, &info);
-	}
-	KFREE(buf);
 
 	if (cls == 0) {
 		postError(env, &info);

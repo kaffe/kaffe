@@ -75,7 +75,7 @@ kaffe_io_ObjectStreamClassImpl_init(void)
 		postOutOfMemory(&einfo);
 		goto oos;
 	}
-	ptrType = lookupClass("kaffe/util/Ptr", &einfo);
+	ptrType = lookupClass("kaffe/util/Ptr", NULL, &einfo);
 	if (ptrType == 0) {
 		utf8ConstRelease(ObjectInputStreamSig);
 oos: 		utf8ConstRelease(ObjectOutputStreamSig);
@@ -697,7 +697,7 @@ findDefaultSerialization(Hjava_lang_Class* clazz)
 	strcat(name, "$DefaultSerialization");
 
 	/* Use the JNI because it handles errors */
-	nclazz = lookupClass(name, &einfo);
+	nclazz = lookupClass(name, clazz->loader, &einfo);
 	if (nclazz == 0) {
 		discardErrorInfo(&einfo);
 		nclazz = clazz;

@@ -75,7 +75,7 @@ buildStackTrace(struct _exceptionFrame* base)
 }
 
 /*
- * We make these exported functions because we use them in Class.c
+ * We make these exported functions because we use them in classMethod.c
  */
 #if defined(TRANSLATOR)
 Method*

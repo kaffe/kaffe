@@ -172,20 +172,28 @@ do_execute_java_method(void* obj, const char* method_name, const char* signature
 jvalue
 do_execute_java_class_method_v(const char* cname, const char* method_name, const char* signature, va_list argptr)
 {
-	Method* mb = 0;
-	jvalue retval;
-	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
+	Hjava_lang_ClassLoader* loader;
 	Hjava_lang_Class* clazz;
 	errorInfo info;
+	Method* mb = 0;
+	jvalue retval;
+	char *buf;
 
-	/* Convert "." to "/" */
-	classname2pathname(cname, cnname);
+	/* Get class loader */
+	if (!getClassLoader(&loader, &info)) {
+		throwError(&info);
+	}
 
-	clazz = lookupClass(cnname, &info);
+	/* Convert "." to "/" and lookup class */
+	buf = checkPtr(KMALLOC(strlen(cname) + 1));
+	classname2pathname(cname, buf);
+	clazz = lookupClass(buf, loader, &info);
+	KFREE(buf);
+
+	/* Get method */
 	if (clazz != 0) {
 		mb = lookupClassMethod(clazz, method_name, signature, &info);
 	}
-
 	if (mb == 0) {
 		throwError(&info);
 	}
@@ -222,16 +230,24 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 {
 	Hjava_lang_Object* obj;
 	Method* mb;
-	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
 	errorInfo info;
 	Utf8Const* sig;
 
 	if (cc == 0) {
-		/* Convert "." to "/" */
-		classname2pathname(cname, buf);
+		Hjava_lang_ClassLoader* loader;
+		char *buf;
 
-		cc = lookupClass(buf, &info);
+		/* Get class loader */
+		if (!getClassLoader(&loader, &info)) {
+			throwError(&info);
+		}
+
+		/* Convert "." to "/" and lookup class */
+		buf = checkPtr(KMALLOC(strlen(cname) + 1));
+		classname2pathname(cname, buf);
+		cc = lookupClass(buf, loader, &info);
+		KFREE(buf);
 		if (!cc) {
 			throwError(&info);
 		}
@@ -891,9 +907,14 @@ setProperty(void* properties, char* key, char* value)
 Hjava_lang_Object*
 AllocObject(const char* classname)
 {
+	Hjava_lang_ClassLoader* loader;
+	Hjava_lang_Class* clazz;
 	errorInfo info;
-	Hjava_lang_Class* clazz = lookupClass(classname, &info);
 
+	if (!getClassLoader(&loader, &info)) {
+		throwError(&info);
+	}
+	clazz = lookupClass(classname, loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
 	}

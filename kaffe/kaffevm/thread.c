@@ -87,9 +87,9 @@ initThreads(void)
 	errorInfo info;
 
 	/* Get a handle on the thread and thread group classes */
-	ThreadClass = lookupClass(THREADCLASS, &info);
+	ThreadClass = lookupClass(THREADCLASS, NULL, &info);
 	assert(ThreadClass != 0);
-	ThreadGroupClass = lookupClass(THREADGROUPCLASS, &info);
+	ThreadGroupClass = lookupClass(THREADGROUPCLASS, NULL, &info);
 	assert(ThreadGroupClass != 0);
 
 	/* Create base group */

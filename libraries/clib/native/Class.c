@@ -150,57 +150,13 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 struct Hjava_lang_Class*
 java_lang_Class_forName0(struct Hjava_lang_String* str)
 {
-        int i;
 	Hjava_lang_ClassLoader* loader;
-	stackTraceInfo* info;
-	static Method * cfnmeth;
+	errorInfo info;
 
-	if (!cfnmeth) {
-		Utf8Const *fname = checkPtr(utf8ConstNew("forName", -1));
-		Utf8Const *fsig = utf8ConstNew("(Ljava/lang/String;)Ljava/lang/Class;", -1);
-		if (!fsig) {
-			errorInfo einfo;
-
-			utf8ConstRelease(fname);
-			postOutOfMemory(&einfo);
-			throwError(&einfo);
-		}
-		cfnmeth = findMethodLocal(ClassClass, fname, fsig);
-		utf8ConstRelease(fname);
-		utf8ConstRelease(fsig);
-	}
-
-	if (cfnmeth == 0) {
-		abort();
-	}
-
-        /*
-         * If the calling method is in a class that was loaded by a class
-         * loader, use that class loader to find the class corresponding to
-         * the name.  Otherwise, use the system class loader.
-         */
-        loader = 0;
-        info = (stackTraceInfo*)buildStackTrace(0);
-	if (!info) {
-		struct _errorInfo info;
-		postOutOfMemory(&info);
+	if (!getClassLoader(&loader, &info)) {
 		throwError(&info);
 	}
-        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-                info[i].meth = stacktraceFindMethod(&info[i]);
-		/* skip java.lang.Class.forName(String) cause that's
-		 * who called us
-		 */
-		if (info[i].meth == cfnmeth) {
-			continue;
-		}
-
-                if (info[i].meth != 0 && info[i].meth->class != 0) {
-                        loader = info[i].meth->class->loader;
-                        break;
-                }
-        }
-	return (java_lang_Class_forName(str, true, loader));
+	return java_lang_Class_forName(str, true, loader);
 }
 
 /*

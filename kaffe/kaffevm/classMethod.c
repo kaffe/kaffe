@@ -24,6 +24,7 @@
 #include "readClass.h"
 #include "baseClasses.h"
 #include "stringSupport.h"
+#include "stackTrace.h"
 #include "thread.h"
 #include "jthread.h"
 #include "itypes.h"
@@ -1098,7 +1099,7 @@ bad:
  * Look a class up by name.
  */
 Hjava_lang_Class*
-lookupClass(const char* name, errorInfo *einfo)
+lookupClass(const char* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
 	Hjava_lang_Class* class;
 	Utf8Const *utf8;
@@ -1108,7 +1109,7 @@ lookupClass(const char* name, errorInfo *einfo)
 		postOutOfMemory(einfo);
 		return 0;
 	}
-	class = loadClass(utf8, NULL, einfo);
+	class = loadClass(utf8, loader, einfo);
 	utf8ConstRelease(utf8);
 	if (class != 0) {
 		if (processClass(class, CSTATE_COMPLETE, einfo) == true) {
@@ -1116,6 +1117,42 @@ lookupClass(const char* name, errorInfo *einfo)
 		}
 	}
 	return (0);
+}
+
+/*
+ * Determine the 'current' class loader. We do this by examining stack
+ * frames, starting with the current frame and going back up the stack.
+ * We stop when we find a stack frame corresponding to a Java method,
+ * and then use the class loader associated with the method's class.
+ * We ignore class 'java/lang/Class' for the sake of Class.forName()
+ * (it's class loader is always the bootstrap class loader anyway).
+ *
+ * Returns 1 on success and sets *loaderp to the class loader or
+ * NULL for the bootstrap loader, or 0 on failure and sets *einfo.
+ */
+
+int
+getClassLoader(Hjava_lang_ClassLoader** loaderp, errorInfo *einfo)
+{
+	stackTraceInfo* strace;
+
+	if ((strace = (stackTraceInfo*)buildStackTrace(0)) == NULL) {
+		postOutOfMemory(einfo);
+		return 0;
+	}
+	while (strace->meth != ENDOFSTACK) {
+		strace->meth = stacktraceFindMethod(strace);
+		if (strace->meth != NULL
+		    && strace->meth->class != NULL
+		    && strcmp(strace->meth->class->name->data,
+		      CLASSCLASS) != 0) {
+			*loaderp = strace->meth->class->loader;
+			return 1;
+		}
+		strace++;
+	}
+	*loaderp = NULL;
+	return 1;
 }
 
 /*
@@ -2272,7 +2309,7 @@ Hjava_lang_Class*
 lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 {
 	Utf8Const *arr_name;
-	char sig[CLASSMAXSIG];  /* FIXME! unchecked fixed buffer! */
+	char *sig;
 	classEntry* centry;
 	Hjava_lang_Class* arr_class;
 	int arr_flags;
@@ -2291,10 +2328,13 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 		if (arr_class) {
 			return (arr_class);
 		}
+		sig = checkPtr(KMALLOC(3));
 		sprintf (sig, "[%c", CLASS_PRIM_SIG(c));
 	}
 	else {
 		const char* cname = CLASS_CNAME (c);
+		sig = checkPtr(KMALLOC(strlen(cname) + 4));
+
 		if (cname[0] == '[') {
 			sprintf (sig, "[%s", cname);
 		} else {
@@ -2302,6 +2342,8 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 		}
 	}
 	arr_name = utf8ConstNew(sig, -1);	/* release before returning */
+	KFREE(sig);
+
 	if (!arr_name) {
 		postOutOfMemory(einfo);
 		return 0;

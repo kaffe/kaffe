@@ -1,3 +1,14 @@
+Mon Mar 20 17:47:56 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h:
+	create new function getClassLoader() to determine the 'current'
+	loader; add a ClassLoader parameter to lookupClass()
+	* kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/support.c,
+	kaffe/kaffevm/thread.c, kaffe/kaffevm/jni.c,
+	libraries/clib/native/ObjectStreamClassImpl.c,
+	libraries/clib/native/Class.c: provide the proper ClassLoader
+	to lookupClass()
+
 Mon Mar 20 17:22:04 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 	* FAQ/FAQ.locks: Updated to clearly define the ksem and jmutex
 	interfaces and the boundary between vm locking and threading

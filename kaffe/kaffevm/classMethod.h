@@ -357,6 +357,8 @@ bool			processClass(Hjava_lang_Class*, int, errorInfo *einfo);
 Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
+int			getClassLoader(Hjava_lang_ClassLoader** loaderp,
+				errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
@@ -372,14 +374,16 @@ void			setFieldValue(Field*, u2);
 Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 bool			getInheritedMethodIndex(Hjava_lang_Class *clazz, Method *meth);
 
-classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
-			     errorInfo *info);
-classEntry* lookupClassEntryInternal(Utf8Const*, Hjava_lang_ClassLoader*);
-int removeClassEntries(Hjava_lang_ClassLoader*);
+classEntry*		lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
+				errorInfo *info);
+classEntry*		lookupClassEntryInternal(Utf8Const*,
+				Hjava_lang_ClassLoader*);
+int			removeClassEntries(Hjava_lang_ClassLoader*);
 
 Collector* 		initCollector(void);
 
-Hjava_lang_Class*	lookupClass(const char*, errorInfo*);
+Hjava_lang_Class*	lookupClass(const char*, Hjava_lang_ClassLoader*,
+				errorInfo*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*, errorInfo*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);
 Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo);
