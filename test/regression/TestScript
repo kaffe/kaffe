@@ -89,8 +89,18 @@ runtest HelloWorldApp "Hello World!"
 # Test ints, longs, floats and doubles
 runtest TestIntLong "Some mathmatical tests
 Results Good"
+
 ignoretest TestFloatDouble "Some mathmatical tests
 Results Good"
+
+runtest ModuloTest "-1111123 % -1123 = -476
+-1123 % -1111123 = -1123
+11123 % -123 = 53
+-123 % 11123 = -123
+-1111123 % 1123 = -476
+1123 % -1111123 = 1123
+-9223372036854775808 % -1 = 0
+-1 % -9223372036854775808 = -1"
 
 # Test strings
 runtest Str "12abcd34567890"

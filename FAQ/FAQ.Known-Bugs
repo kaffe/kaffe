@@ -86,3 +86,6 @@ Treat it as an TODO list.
 * java.util.Random produces different results than Sun's.  While the basic
   algorithm is the same, Kaffe uses different multipliers and modulos.
 
+* ModuloTest fails under FreeBSD. This is apparently due to a bug in libc
+  that was fixed recently (Nov. 98)
+
