@@ -1,3 +1,12 @@
+2003-12-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java
+	(getConverterInternal),
+	libraries/javalib/kaffe/io/CharToByteConverter.java
+	(getConverterInternal):
+	For an encoding name that cannot be a class name, directly
+	return an instance of the iconv based converter.
+
 2003-12-29  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:

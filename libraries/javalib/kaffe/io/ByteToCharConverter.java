@@ -109,7 +109,24 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	}
 	try {
 		if (cls == null) {
-			String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
+			String realenc = ConverterAlias.alias(enc);
+			// Check whether realenc has a character that
+			// cannot be used for class names but may appear
+			// in encoding names.  As far as I know, such
+			// characters include: '-'.
+			for (int i = 0; i < realenc.length(); i++) {
+				if (realenc.charAt(i) == '-') {
+					try {
+						return (new ByteToCharIconv (realenc);
+					}
+					catch (UnsupportedEncodingException _) {
+						cache.put(enc, noConverter);
+						return (null);
+					}
+				}
+			}
+			realenc = encodingRoot + ".CharToByte" + realenc;
+			String realenc = encodingRoot + ".ByteToChar" + realenc;
 			cls = Class.forName(realenc);
 			cache.put(enc, cls);
 		}
