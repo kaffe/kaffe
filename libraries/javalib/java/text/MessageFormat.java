@@ -504,28 +504,16 @@ public class MessageFormat extends Format
 
   /**
    * Returns the pattern with the formatted objects.
+   * This is equivalent to format((Object[]) singleArg, appendBuf, fpos)
    *
-   * @param source The object to be formatted.
-   * @param result The StringBuffer where the text is appened.
+   * @param singleArg The object to be formatted.
+   * @param appendBuf The StringBuffer where the text is appened.
    * @param fpos A FieldPosition object (it is ignored).
    */
   public final StringBuffer format (Object singleArg, StringBuffer appendBuf,
 				    FieldPosition fpos)
   {
-    Object[] args;
-
-    if (singleArg instanceof Object[])
-      {
-	// This isn't specified in any manual, but it follows the
-	// JDK implementation.
-	args = (Object[]) singleArg;
-      }
-    else
-      {
-	args = new Object[1];
-	args[0] = singleArg;
-      }
-    return format (args, appendBuf, fpos);
+    return format((Object[]) singleArg, appendBuf, fpos);
   }
 
   /**
