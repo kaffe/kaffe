@@ -85,7 +85,7 @@ vmExcept_JNIContains(VmExceptHandler* eh, JNIFrameAddress fp)
 {
 	assert(eh != NULL);
 	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	assert(fp != NULL);
+	assert(fp != (JNIFrameAddress)0);
 
 	return (eh->frame.jni.fp == fp);
 }
@@ -94,7 +94,7 @@ void
 vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp)
 {
 	assert(eh != NULL);
-	assert(fp != NULL);
+	assert(fp != (JNIFrameAddress)0);
 
 	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
 	eh->frame.jni.fp = fp;
@@ -181,6 +181,8 @@ error2Throwable(errorInfo* einfo)
 	case KERR_OUT_OF_MEMORY:
 		err = gc_throwOOM();
 		break;
+	default:
+	        assert(!!!"Unexpected error info mask");
 	}
 
 	discardErrorInfo(einfo);
@@ -292,7 +294,7 @@ void
 discardErrorInfo(errorInfo *einfo)
 {
 	if (einfo->type & KERR_FREE_MESSAGE) {
-		KFREE(einfo->mess);
+		KFREE((void *)einfo->mess);
 		einfo->type &= ~KERR_FREE_MESSAGE;
 	}
 }
@@ -461,7 +463,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 
 		/* If not here, exit monitor if synchronised. */
 		if (frame->meth->accflags & ACC_SYNCHRONISED) {
-			locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void *)frame->fp, NULL);
+			locks_internal_slowUnlockMutexIfHeld(&obj->lock, NULL);
 		}	    
 
 		/* If method found and profiler enable, fix self+children time */

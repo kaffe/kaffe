@@ -41,6 +41,7 @@
 #include "debugFile.h"
 #include "fileSections.h"
 #include "verify-type.h"
+#include "jar.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -164,6 +165,10 @@ initialiseKaffe(void)
 
 	/* Initialise the (native) threading system */
 	initNativeThreads(threadStackSize);
+
+	initEngine();
+	KaffeVM_initClassPool();
+	KaffeVM_initJarCache();
 
 	/* Initialise the string and utf8 systems */
 	stringInit();

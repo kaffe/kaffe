@@ -36,7 +36,7 @@ struct Hjava_lang_Throwable;
 typedef struct _errorInfo {
 	int type;		/* type of error */
 	const char* classname;	/* full dotted name of exception/error class */
-	char* mess;		/* accompanying msg */
+	const char* mess;		/* accompanying msg */
 	struct Hjava_lang_Throwable* throwable;	/* a throwable */
 } errorInfo;
 

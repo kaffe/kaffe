@@ -34,6 +34,12 @@
 #define FPCR_DZED 0
 #endif
 
+#if defined(USE_LIBEXC)
+#include "locks.h"
+/* libexc is not thread safe :-( */
+static iStaticLock excLock;
+#endif
+
 void
 init_md(void)
 {
@@ -55,6 +61,8 @@ init_md(void)
 	   those that don't.  */
 	ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
 #endif
+
+	initStaticLock(&excLock);
 }
 
 
@@ -80,14 +88,9 @@ void alpha_disable_uac(void)
 #include <excpt.h>
 
 #include "debug.h"
-#include "locks.h"
-
-/* libexc is not thread safe :-( */
-static iStaticLock excLock;
 
 void __alpha_osf_firstFrame (exceptionFrame *frame)
 {
-	int iLockRoot;
 
 	/* Retreive caller frame as current one will be invalidate
            after function exit. */
@@ -104,7 +107,6 @@ void __alpha_osf_firstFrame (exceptionFrame *frame)
 
 exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 {
-	int iLockRoot;
 
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_nextFrame(0x%p) pc 0x%p fp 0x%p sp 0x%p\n", frame,
@@ -140,7 +142,6 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 /* Construct JIT Exception information and register it.  */
 void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeend)
 {
-	int iLockRoot;
 	extern int maxLocal, maxStack, maxTemp, maxArgs, maxPush;
 	struct {
 		pdsc_crd crd[2];
@@ -209,7 +210,6 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeen
 
 void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, void *codeend)
 {
-	int iLockRoot;
 	int codelen = codeend - codebase;
 
 	DBG(STACKTRACE,

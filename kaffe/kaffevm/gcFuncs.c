@@ -266,7 +266,7 @@ walkMethods(Collector* collector, void *gc_info, Method* m, int nm)
                    alive */
                 if (m->exception_table != 0) {
                         jexceptionEntry* eptr = &m->exception_table->entry[0];
-                        int i;
+                        unsigned int i;
 
                         for (i = 0; i < m->exception_table->length; i++) {
                                 Hjava_lang_Class* c = eptr[i].catch_type;
@@ -289,7 +289,8 @@ walkClass(Collector* collector, void *gc_info, void* base, uint32 size UNUSED)
         Field* fld;
         int n;
         constants* pool;
-        int idx;
+        unsigned int idx;
+	iLock *lk;
 
         class = (Hjava_lang_Class*)base;
 
@@ -297,8 +298,18 @@ DBG(GCPRECISE,
         dprintf("walkClass `%s' state=%d\n", CLASS_CNAME(class), class->state);
     );
 
+        lk = GET_HEAVYLOCK(class->lock); 
+        if (lk != NULL
+	    && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
+           KGC_markObject(collector, gc_info, lk);
+
+	lk = GET_HEAVYLOCK(class->head.lock);
+        if (lk != NULL
+	    && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
+           KGC_markObject(collector, gc_info, lk);
+
         if (class->state >= CSTATE_PREPARED) {
-                KGC_markObject(collector, gc_info, class->superclass);
+	  KGC_markObject(collector, gc_info, class->superclass);
         } 
 
         /* We only need the interface array to be allocated.
@@ -468,6 +479,7 @@ walkRefArray(Collector* collector, void *gc_info, void* base, uint32 size UNUSED
 {
         Hjava_lang_Object* arr;
         int i;
+	iLock *lk;
         Hjava_lang_Object** ptr;
 
         arr = (Hjava_lang_Object*)base;
@@ -475,7 +487,11 @@ walkRefArray(Collector* collector, void *gc_info, void* base, uint32 size UNUSED
                 return;
         }
 
-        ptr = OBJARRAY_DATA(arr);
+	lk = GET_HEAVYLOCK(arr->lock);
+   	if (lk != NULL && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
+	  KGC_markObject(collector, gc_info, lk);
+
+	ptr = OBJARRAY_DATA(arr);
         /* mark class only if not a system class (which would be anchored
          * anyway.)  */
         if (arr->vtable->class->loader != 0) {
@@ -503,7 +519,9 @@ walkObject(Collector* collector, void *gc_info, void* base, uint32 size)
         Hjava_lang_Class *clazz;
         int *layout;
         int8* mem;
-        int i, l, nbits;
+        unsigned int i;
+	int l, nbits;
+	iLock *lk;
 
         /*
          * Note that there is a window after the object is allocated but
@@ -521,6 +539,10 @@ walkObject(Collector* collector, void *gc_info, void* base, uint32 size)
         if (clazz->loader != 0) {
                 KGC_markObject(collector, gc_info, clazz);
         }
+
+	lk = GET_HEAVYLOCK(obj->lock);
+	if (lk != NULL && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
+	  KGC_markObject(collector, gc_info, lk);
 
         layout = clazz->gc_layout;
         nbits = CLASS_FSIZE(clazz)/ALIGNMENTOF_VOIDP;
@@ -686,6 +708,8 @@ initCollector(void)
 	    NULL, KGC_OBJECT_NORMAL, NULL, "jit-code");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_BYTECODE,
 	    NULL, KGC_OBJECT_NORMAL, NULL, "java-bytecode");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_LOCK,
+	    NULL, KGC_OBJECT_NORMAL, KaffeLock_destroyLock, "locks");
 
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATIC_THREADDATA, "thread-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_EXCEPTIONTABLE, "exc-table");
@@ -696,7 +720,6 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_METHOD, "methods");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_FIELD, "fields");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_UTF8CONST, "utf8consts");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LOCK, "locks");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_REF, "gc-refs");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITTEMP, "jit-temp-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JAR, "jar");

@@ -223,8 +223,8 @@
 
 #define HAVE_call_indirect_const	call_ind_xCC
 
-#define	HAVE_mon_enter			monenter_xxRCC
-#define	HAVE_mon_exit			monexit_xxRCC
+//#define	HAVE_mon_enter			monenter_xxRCC
+//#define	HAVE_mon_exit			monexit_xxRCC
 
 #define HAVE_get_arg_ptr		get_arg_ptr_R
 

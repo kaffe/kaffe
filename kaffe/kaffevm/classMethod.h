@@ -19,6 +19,7 @@
 #include "constants.h"
 #include "errors.h"
 #include "jthread.h"
+#include "locks.h"
 
 #define	MAXMETHOD		64
 
@@ -261,7 +262,7 @@ typedef struct _classEntry {
 	struct _classEntry*	next;
 	Utf8Const*		name;
     
-        struct _iLock*          lock;
+        iStaticLock          slock;
 	name_mapping_state_t state;
 	Hjava_lang_ClassLoader*	loader;
 	union {
@@ -614,6 +615,8 @@ Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl);
 void setClassMappingState(classEntry *ce, name_mapping_state_t nms);
 
 void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);
+
+void KaffeVM_initClassPool(void);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

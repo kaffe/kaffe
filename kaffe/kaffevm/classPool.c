@@ -30,7 +30,7 @@
 #include "md.h"
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
-static iStaticLock	classHashLock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	classHashLock;
 static classEntry* classEntryPool[CLASSHASHSZ];
 #if defined(KAFFE_STATS)
 statobject classStats;
@@ -65,7 +65,6 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 {
 	classEntry* entry;
 	classEntry** entryp;
-	int iLockRoot;
 	static int f = 0;
 
         if (f == 0) {
@@ -87,6 +86,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	entry->loader = loader;
 	entry->data.cl = NULL;
 	entry->next = NULL;
+	initStaticLock(&entry->slock);
 
 	/* Lock the class table and insert entry into it (if not already
 	   there) */
@@ -194,7 +194,6 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 	classEntry* entry;
 	int ipool;
 	int totalent = 0;
-	int iLockRoot;
 
         lockStaticMutex(&classHashLock);
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
@@ -221,6 +220,7 @@ DBG(CLASSGC,
 				(*entryp) = entry->next;
 				addToCounter(&cpemem, "vmmem-class entry pool",
 					1, -(jlong)GCSIZEOF(entry));
+				destroyStaticLock(&entry->slock);
 				gc_free(entry);
 				totalent++;
 			} else {
@@ -252,7 +252,7 @@ destroyClassLoader(Collector *c UNUSED, void* _loader)
 }
 
 static nameDependency *dependencies;
-static iStaticLock	mappingLock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	mappingLock;
 
 static
 nameDependency *findNameDependency(jthread_t jt)
@@ -273,7 +273,6 @@ static
 int addNameDependency(nameDependency *nd)
 {
 	int retval = 1;
-	int iLockRoot;
 
 	assert(nd != 0);
 
@@ -301,7 +300,6 @@ int addNameDependency(nameDependency *nd)
 static
 void remNameDependency(classEntry *ce)
 {
-	int iLockRoot;
 
 	assert(ce != 0);
 	
@@ -331,12 +329,11 @@ int classMappingSearch(classEntry *ce,
 	int done = 0, retval = 1;
 	nameDependency nd;
 	jthread_t jt;
-	int iLockRoot;
 
 	jt = KTHREAD(current)();
 	while( !done )
 	{
-		lockMutex(ce);
+		lockStaticMutex(&ce->slock);
 		switch( ce->state )
 		{
 		case NMS_EMPTY:
@@ -351,7 +348,7 @@ int classMappingSearch(classEntry *ce,
 				done = 1;
 				break;
 			}
-			waitCond(ce, 0);
+			waitStaticCond(&ce->slock, (jlong)0);
 			break;
 		case NMS_LOADING:
 			/*
@@ -374,7 +371,7 @@ int classMappingSearch(classEntry *ce,
 			}
 			else
 			{
-				waitCond(ce, 0);
+				waitStaticCond(&ce->slock, (jlong)0);
 			}
 			remNameDependency(ce);
 			break;
@@ -383,7 +380,7 @@ int classMappingSearch(classEntry *ce,
 			 * Another thread loaded it, however, its not finished
 			 * linking yet.
 			 */
-			waitCond(ce, 0);
+			waitStaticCond(&ce->slock, (jlong)0);
 			break;
 		case NMS_DONE:
 			/* Its already been loaded and linked. */
@@ -391,7 +388,7 @@ int classMappingSearch(classEntry *ce,
 			done = 1;
 			break;
 		}
-		unlockMutex(ce);
+		unlockStaticMutex(&ce->slock);
 	}
 	return( retval );
 }
@@ -403,13 +400,12 @@ int classMappingLoad(classEntry *ce,
 	int done = 0, retval = 1;
 	nameDependency nd;
 	jthread_t jt;
-	int iLockRoot;
 
 	*out_cl = NULL;
 	jt = KTHREAD(current)();
 	while( !done )
 	{
-		lockMutex(ce);
+		lockStaticMutex(&ce->slock);
 		switch( ce->state )
 		{
 		case NMS_EMPTY:
@@ -440,7 +436,7 @@ int classMappingLoad(classEntry *ce,
 			}
 			else
 			{
-				waitCond(ce, 0);
+				waitStaticCond(&ce->slock, (jlong)0);
 			}
 			remNameDependency(ce);
 			break;
@@ -449,7 +445,7 @@ int classMappingLoad(classEntry *ce,
 			 * Another thread loaded it, however, its not finished
 			 * linking yet.
 			 */
-			waitCond(ce, 0);
+			waitStaticCond(&ce->slock, (jlong)0);
 			break;
 		case NMS_DONE:
 			/* Its already been loaded and linked. */
@@ -457,7 +453,7 @@ int classMappingLoad(classEntry *ce,
 			done = 1;
 			break;
 		}
-		unlockMutex(ce);
+		unlockStaticMutex(&ce->slock);
 	}
 	return( retval );
 }
@@ -465,12 +461,11 @@ int classMappingLoad(classEntry *ce,
 Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl)
 {
 	Hjava_lang_Class *retval = NULL;
-	int iLockRoot;
 
 	assert(ce != 0);
 	assert(cl != 0);
 	
-	lockMutex(ce);
+	lockStaticMutex(&ce->slock);
 	{
 		switch( ce->state )
 		{
@@ -493,20 +488,19 @@ Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl)
 			retval = ce->data.cl;
 			break;
 		}
-		broadcastCond(ce);
+		broadcastStaticCond(&ce->slock);
 	}
-	unlockMutex(ce);
+	unlockStaticMutex(&ce->slock);
 
 	return( retval );
 }
 
 void setClassMappingState(classEntry *ce, name_mapping_state_t nms)
 {
-	int iLockRoot;
 	
 	assert(ce != 0);
 	
-	lockMutex(ce);
+	lockStaticMutex(&ce->slock);
 	{
 		switch( ce->state )
 		{
@@ -526,9 +520,15 @@ void setClassMappingState(classEntry *ce, name_mapping_state_t nms)
 			assert(0);
 			break;
 		}
-		broadcastCond(ce);
+		broadcastStaticCond(&ce->slock);
 	}
-	unlockMutex(ce);
+	unlockStaticMutex(&ce->slock);
+}
+
+void KaffeVM_initClassPool()
+{
+  initStaticLock(&classHashLock);
+  initStaticLock(&mappingLock);
 }
 
 #if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(KAFFE_VMDEBUG)

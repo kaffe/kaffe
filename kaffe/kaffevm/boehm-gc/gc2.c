@@ -44,9 +44,9 @@ typedef struct _gcFuncs {
         int                     mem;		/* only used ifdef STATS */
 } gcFuncs;
 
-static iStaticLock	gcman_lock = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	gcmanend_lock = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	finman_lock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	gcman_lock;
+static iStaticLock	gcmanend_lock;
+static iStaticLock	finman_lock;
 static volatile int finalRunning = -1; 
 static volatile int gcRunning = -1;
 static volatile int gcDisabled = 0;
@@ -154,7 +154,6 @@ finalizeObject(void* ob, UNUSED void* descriptor)
 static void NONRETURNING
 finaliserMan(void* arg UNUSED)
 {
-  int iLockRoot;
 
   lockStaticMutex(&finman_lock);
   for (;;) {
@@ -178,7 +177,6 @@ static
 void
 KaffeGC_SignalFinalizer(void)
 {
-  int iLockRoot;
 
   lockStaticMutex(&finman_lock);
   if (finalRunning == 0) {
@@ -207,7 +205,6 @@ static
 void
 KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
 {
-  int iLockRoot;
 
   while (gcRunning < 0)
     KTHREAD(yield)();
@@ -231,7 +228,6 @@ KaffeGC_InvokeGC(Collector* gcif UNUSED, int mustgc)
 static void NONRETURNING
 gcMan(UNUSED void* arg)
 {
-  int iLockRoot;
 
   lockStaticMutex(&gcman_lock);
   gcRunning = 0;
@@ -253,7 +249,6 @@ gcMan(UNUSED void* arg)
 static void
 KaffeGC_EnableGC(Collector* gcif UNUSED)
 {
-  int iLockRoot;
 
   lockStaticMutex(&gcman_lock);
   gcDisabled -= 1;
@@ -265,7 +260,6 @@ KaffeGC_EnableGC(Collector* gcif UNUSED)
 static void
 KaffeGC_DisableGC(Collector* gcif UNUSED)
 {
-  int iLockRoot;
 
   lockStaticMutex(&gcman_lock);
   gcDisabled += 1;
@@ -588,6 +582,9 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 Collector* createGC(void)
 {
   boehm_gc.collector.ops = &GC_Ops;
+  initStaticLock(&gcman_lock);
+  initStaticLock(&gcmandend_lock);
+  initStaticLock(&finman_lock);
 
   return (&boehm_gc.collector);
 }

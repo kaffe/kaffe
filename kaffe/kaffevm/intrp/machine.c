@@ -220,7 +220,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 			mobj = (Hjava_lang_Object*)lcl[0].v.taddr;
 		}
 		/* this lock is safe for Thread.stop() */
-		locks_internal_lockMutex(&mobj->lock, &mjbuf, 0);
+		locks_internal_lockMutex(&mobj->lock, 0);
 
 		/*
 		 * We must store the object on which we synchronized
@@ -237,7 +237,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
  end:
 	/* Unsync. if required */
 	if (mobj != 0) {
-		locks_internal_unlockMutex(&mobj->lock, &mjbuf, 0); 
+		locks_internal_unlockMutex(&mobj->lock, NULL); 
 	}
 
 	cleanupExceptionHandling(&mjbuf, thread_data);
@@ -292,6 +292,10 @@ const char*
 getEngine(void)
 {
 	return "kaffe.intr";
+}
+
+void initEngine(void)
+{
 }
 
 static inline void 

@@ -33,7 +33,7 @@ typedef struct _referenceLinkListHead {
   referenceLinkList *references;
 } referenceLinkListHead;
 
-static iStaticLock referencesLock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock referencesLock;
 static hashtab_t referencesHashTable;
 static uint32 referentOffset = ~((uint32)0);
 
@@ -65,11 +65,11 @@ objectComp(const void *p1, const void *p2)
 void KaffeVM_referenceInit(void)
 {
   referencesHashTable = hashInit(objectHash, objectComp, NULL, NULL);
+  initStaticLock(&referencesLock);
 }
 
 void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_reference_type reftype)
 {
-  int iLockRoot;
   referenceLinkList *ll;
   referenceLinkListHead *head, *temp;
 
@@ -123,7 +123,6 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
 
 bool KaffeVM_isReferenced(jobject obj)
 {
-  int iLockRoot;
   referenceLinkListHead *ref;
 
   lockStaticMutex(&referencesLock);
@@ -154,7 +153,6 @@ defaultObjectFinalizer(jobject ob)
 static void
 referenceObjectFinalizer(jobject ob)
 {
-  int iLockRoot;
   referenceLinkListHead *head;
   referenceLinkList *ll;
   referenceLinkListHead search_ref;
@@ -200,7 +198,6 @@ referenceObjectFinalizer(jobject ob)
 static void
 referenceFinalizer(jobject ref)
 {
-  int iLockRoot;
   void *referent;
   referenceLinkList **ll;
   referenceLinkListHead *head;

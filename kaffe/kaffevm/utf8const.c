@@ -38,7 +38,7 @@
 /* Internal variables */
 #ifndef KAFFEH				/* Yuk! */
 static hashtab_t	hashTable;
-static iStaticLock	utf8Lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* mutex on all intern operations */
+static iStaticLock	utf8Lock;	/* mutex on all intern operations */
 
 /*
  * Used to keep track of the current utf8Lock holder's stack
@@ -49,61 +49,26 @@ static iStaticLock	utf8Lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* mutex on all int
  * Also used by debugging code to assert that the utf8Lock is never
  * recursively acquired.
  */
-static int *utfLockRoot = NULL;
 
-static inline void do_lockUTF(int *where)
-{
-	KTHREAD(disable_stop)();
-	locks_internal_lockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
-	DBGIF(assert(utfLockRoot == NULL));
-	utfLockRoot = where;
-}
-
-static inline void do_unlockUTF(int *where)
-{
-	DBGIF(assert(utfLockRoot != NULL));
-	DBGIF(utfLockRoot = NULL);
-	locks_internal_unlockMutex(&utf8Lock.lock, where, &utf8Lock.heavyLock);
-	KTHREAD(enable_stop)();
-}
-
-/* convenience macros which assume the iLockRoot local variable */
-#define lockUTF()   do_lockUTF(&iLockRoot)
-#define unlockUTF() do_unlockUTF(&iLockRoot)
+#define lockUTF() lockStaticMutex(&utf8Lock)
+#define unlockUTF() unlockStaticMutex(&utf8Lock)
 
 static inline void *UTFmalloc(size_t size)
 {
 	void *ret;
-	int *myRoot;
 
-	DBGIF(assert(utfLockRoot != NULL));
-	myRoot = utfLockRoot;
-	DBGIF(utfLockRoot = NULL);
-	locks_internal_unlockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
-
+	unlockStaticMutex(&utf8Lock);
 	ret = gc_malloc(size, KGC_ALLOC_UTF8CONST);
-
-	locks_internal_lockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
-	DBGIF(assert(utfLockRoot == NULL));
-	utfLockRoot = myRoot;
+	lockStaticMutex(&utf8Lock);
 
 	return ret;
 }
 
 static inline void UTFfree(const void *mem)
 {
-	int *myRoot;
-
-	DBGIF(assert(utfLockRoot != NULL));
-	myRoot = utfLockRoot;
-	DBGIF(utfLockRoot = NULL);
-	locks_internal_unlockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
-
+        unlockStaticMutex(&utf8Lock);
 	gc_free((void *)mem);
-
-	locks_internal_lockMutex(&utf8Lock.lock, myRoot, &utf8Lock.heavyLock);
-	DBGIF(assert(utfLockRoot == NULL));
-	utfLockRoot = myRoot;
+	lockStaticMutex(&utf8Lock);
 }
 #else /* KAFFEH replacements: */
 static hashtab_t	hashTable = (hashtab_t)1;
@@ -131,7 +96,6 @@ utf8ConstNew(const char *s, int slen)
 	Utf8Const *fake;
 	char buf[200];
 #if !defined(KAFFEH)
-	int iLockRoot;
 #endif
 
 	/* Automatic length finder */
@@ -235,7 +199,6 @@ void
 utf8ConstAddRef(Utf8Const *utf8)
 {
 #if !defined(KAFFEH)
-	int iLockRoot;
 #endif
 	lockUTF();
 	assert(utf8->nrefs >= 1);
@@ -250,7 +213,6 @@ void
 utf8ConstRelease(Utf8Const *utf8)
 {
 #if !defined(KAFFEH)
-	int iLockRoot;
 #endif
 	/* NB: we ignore zero utf8s here in order to not having to do it at
 	 * the call sites, such as when destroying half-processed class 
@@ -405,10 +367,11 @@ utf8ConstEncode(const jchar *chars, int clength)
 void
 utf8ConstInit(void)
 {
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 	DBG(INIT, dprintf("utf8ConstInit()\n"); );
+
+#if !defined(KAFFEH)
+	initStaticLock(&utf8Lock);
+#endif
 
 	lockUTF();
 	hashTable = hashInit(utf8ConstHashValueInternal,

@@ -114,6 +114,7 @@ struct Hjava_lang_Throwable;
 struct Hjava_lang_ClassLoader;
 
 extern const char*		getEngine(void);
+extern void initEngine(void);
 extern void		do_execute_java_method(jvalue *retval, void*, const char*, const char*, struct _methods*, int, ...);
 extern void		do_execute_java_method_v(jvalue *retval, void*, const char*, const char*, struct _methods*, int, va_list);
 extern void		do_execute_java_class_method(jvalue *retval, const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);

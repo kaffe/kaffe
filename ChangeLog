@@ -1,3 +1,75 @@
+2005-05-11  Guilhem Lavaux  <guilhem@kaffe.org>,
+	Helmer Krämer <hkraemer@freenet.de>
+
+	* config/alpha/osf/md.c
+	(init_md): Initialize explicitly the static lock.
+
+	* config/i386/jit3-icode.h
+	(HAVE_mon_enter, HAVE_mon_exit): Disabled.
+	
+	* include/errors.h
+	(errorInfo): Use a const modifier for mess.
+
+	* kaffe/kaffevm/baseClasses.c
+	(initialiseKaffe): Call sub-system initializers.
+
+	* kaffe/kaffevm/classMethod.c: Removed all iLockRoot. Use
+	*StaticMutex functions because classEntry has now a static lock.
+	
+	* kaffe/kaffevm/classMethod.h
+	(classEntry): Changed dynamic lock "lock" into static lock
+	"slock".
+
+	* kaffe/kaffevm/classPool.c: Removed all iLockRoot. Use
+	*StaticMutex functions for class entries.
+	(KaffeVM_initClassPool): New initializer.
+
+	* kaffe/kaffevm/exception.c
+	(dispatchException): Updated to new lock API.
+
+	* kaffe/kaffevm/external.c,
+	kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/lookup.c,
+	kaffe/kaffevm/reference.c,
+	kaffe/kaffevm/string.c,
+	kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/boehm-gc/gc2.c,
+	kaffe/kaffevm/jit/native-wrapper.c,
+	kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	kaffe/kaffevm/kaffe-gc/gc-mem.c: Removed iLockRoot. Upgraded to new
+	static lock API.
+
+	* kaffe/kaffevm/jar.[ch]: Likewise. Use also a static lock for jarFile.
+	(KaffeVM_initJarCache): New initializer.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c: Likewise.
+	(KaffeGC_initRefs): New initializer.
+	
+	* kaffe/kaffevm/ksem.[ch]: Updated to match true semaphore behaviour.
+	
+	* kaffe/kaffevm/gcFuncs.c
+	(walkObject, walkClass, walkRefArray): Mark the heavy lock if it
+	has been allocated.
+	(initCollector): Changed KGC_ALLOC_LOCK into garbage-collected memory.
+	
+	* kaffe/kaffevm/locks.c, kaffe/kaffevm/locks.h: New
+	implementation for heavy locks and thin locks.
+
+	* kaffe/kaffevm/thread.c: Reduced the number of
+	KTHREAD(get_data). Removed iLockRoot.
+
+	* kaffe/kaffevm/support.h: Added initEngine().
+
+	* libraries/clib/net/InetAddressImpl.c: Removed iLockRoot. Updated
+	to the new lock interface.
+	(initInetLock, initNsLock): New initializer to take care of
+	concurrent initialization of the static locks.
+
+	* kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/machine.c: Updated to new lock interface.
+	(initEngine): New initializer.
+
 2005-03-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

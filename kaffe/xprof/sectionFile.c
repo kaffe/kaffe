@@ -1082,7 +1082,7 @@ char *makeFlagString(unsigned long flags, unsigned long flag_bit, char *value)
 
 int syncSectionFile(struct section_file *sf)
 {
-	int iLockRoot, retval;
+	int retval;
 
 	lockMutex(sf);
 	retval = syncFile(0, sf, sf->sf_filename);
@@ -1119,7 +1119,7 @@ struct file_section *findSectionType(char *name)
 
 void addSectionToFile(struct section_file *sf, struct section_file_data *sfd)
 {
-	int iLockRoot, hash;
+	int hash;
 
 	hash = hashName(sfd->sfd_name, SECTION_FILE_HASH_SIZE);
 	lockMutex(sf);
@@ -1143,7 +1143,7 @@ struct section_file_data *findSectionInFile(struct section_file *sf,
 					    char *name)
 {
 	struct section_file_data *retval = 0, *sfd;
-	int iLockRoot, hash;
+	int hash;
 
 	lockMutex(sf);
 	hash = hashName(name, SECTION_FILE_HASH_SIZE);
@@ -1166,7 +1166,7 @@ int walkFileSections(struct section_file *sf,
 		     void *arg)
 {
 	struct section_file_data *sfd;
-	int iLockRoot, retval = 1;
+	int retval = 1;
 
 	if( !sf )
 		return( 0 );

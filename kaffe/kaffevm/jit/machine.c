@@ -202,7 +202,6 @@ translate(Method* meth, errorInfo *einfo)
 	int64 tms = 0;
 	int64 tme;
 
-	int iLockRoot;
 
 	static Method* jitting = NULL;	/* DEBUG */
 
@@ -925,6 +924,10 @@ getEngine(void)
 	return "kaffe.jit";
 }
 
+void initEngine(void)
+{
+  initStaticLock(&translatorLock);
+}
 
 #if defined(KAFFE_PROFILER)
 static jlong click_multiplier;

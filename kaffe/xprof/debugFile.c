@@ -412,7 +412,6 @@ static void dfHandleLocalVariable(struct debug_file *df,
 int addDebugInfo(struct debug_file *df, df_tag_t tag, ...)
 {
 	int retval = 1;
-	int iLockRoot;
 	va_list args;
 
 #if defined(KAFFE_XPROFILER)

@@ -72,7 +72,7 @@ static struct _libHandle {
 	Hjava_lang_ClassLoader*		loader;
 } libHandle[MAXLIBS];
 
-static iStaticLock	libraryLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all intern operations */
+static iStaticLock	libraryLock; /* mutex on all intern operations */
 static char *libraryPath = NULL;
 
 extern JavaVM Kaffe_JavaVM;
@@ -113,6 +113,8 @@ initNative(void)
 	unsigned int len;
 
 	DBG(INIT, dprintf("initNative()\n"); );
+
+	initStaticLock(&libraryLock);
 
 	lpath = (const char*)Kaffe_JavaVMArgs.libraryhome;
 	if (lpath == NULL) {
@@ -201,7 +203,6 @@ loadNativeLibrary(char* path, struct Hjava_lang_ClassLoader* loader, char *errbu
 	struct _libHandle *lib;
 	int libIndex;
 	void *func;
-	int iLockRoot;
 
 	lockStaticMutex(&libraryLock);
 
@@ -311,7 +312,6 @@ void
 unloadNativeLibraries(struct Hjava_lang_ClassLoader* loader)
 {
 	int libIndex;
-	int iLockRoot;
 
 	lockStaticMutex(&libraryLock);
 
@@ -349,7 +349,6 @@ loadNativeLibrarySym(const char* name)
 {
   int i = 0;
   void* func = NULL;
-  int iLockRoot;
 
   lockStaticMutex(&libraryLock);
   

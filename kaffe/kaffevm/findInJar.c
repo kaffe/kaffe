@@ -172,6 +172,8 @@ DBG(CLASSLOOKUP,
 	return (NULL);
 }
 
+static iStaticLock	jarlock;
+
 /*
  * Locate the given name in the CLASSPATH.  Fill in the provided
  * classFile handle with a buffer containing the class (or
@@ -184,11 +186,9 @@ findClassInJar(char* cname, classFile* hand, errorInfo *einfo)
 {
 	char *buf;
 	int fp;
-	static iStaticLock	jarlock = KAFFE_STATIC_LOCK_INITIALIZER;
 	classpathEntry* ptr;
 	int i;
 	int rc;
-	int iLockRoot;
 
 	/* Look for the class */
 DBG(CLASSLOOKUP,  dprintf("Scanning for element %s\n", cname); );
@@ -362,6 +362,8 @@ initClasspath(void)
 
 	cp = Kaffe_JavaVMArgs.bootClasspath;
 	hm = Kaffe_JavaVMArgs.classhome;
+
+	initStaticLock(&jarlock);
 
 	if (cp != NULL && cp[0] != '\0') {
 		/* cp may reside in read-only memory, but

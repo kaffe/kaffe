@@ -52,5 +52,6 @@ typedef struct Ksem {
 	jcondvar	cv;
 	int		count;
 } Ksem;
+
 #endif /* !defined(JTHREAD_HAS_KSEM) */
 #endif /* kaffevm_ksem_h */

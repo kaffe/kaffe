@@ -50,7 +50,7 @@ ksem_get(Ksem* volatile sem, jlong timeout)
 	r = true;
 
 	if (timeout == 0)
-		timeout = NOTIMEOUT;
+	  timeout = NOTIMEOUT;
 
 	DBG(KSEM,
 		dprintf("ksem_get sp=%p\n", &r);
@@ -63,15 +63,15 @@ ksem_get(Ksem* volatile sem, jlong timeout)
 	}
 
 	/* Use a stored wakeup if available. */
-	if (sem->count == 1) {
-		sem->count = 0;
-		r = true;
+	if (sem->count > 0) {
+	  sem->count--;
+	  r = true;
 	}
 	else {
-		/* Still no stored wakeup means we waited and timedout. */
-		r = false;
+	  /* Still no stored wakeup means we waited and timedout. */
+	  r = false;
 	}
-	assert(sem->count == 0);
+	assert(sem->count >= 0);
 	KMUTEX(unlock)(&sem->mux);
 	return (r);
 }
@@ -85,7 +85,7 @@ ksem_put(Ksem* volatile sem)
 {
 	assert(sem != NULL);
 	KMUTEX(lock)(&sem->mux);
-        sem->count = 1;
+        sem->count++;
 	KCONDVAR(signal)(&sem->cv, &sem->mux);
 	KMUTEX(unlock)(&sem->mux);
 }

@@ -155,7 +155,6 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 	Utf8Const *name;
 	Hjava_lang_Class* class;
 	int tag;
-	int iLockRoot;
 
 	pool = CLASS_CONSTANTS(this);
 

@@ -24,6 +24,7 @@
 #include "debug.h"
 #include "gc.h"
 #include "jvmpi_kaffe.h"
+#include "stats.h"
 
 /*
  * If we don't have an atomic compare and exchange defined then make
@@ -50,9 +51,6 @@
 #endif
 #endif
 
-/* Count number of backoffs.  XXX move into the STAT infrastructure. */
-int backoffcount = 0;
-
 /*
  * Initialise the locking system.
  */
@@ -61,95 +59,153 @@ initLocking(void)
 {
 }
 
+#if defined(KAFFE_STATS)
+static timespent heavyLockTime;
+static timespent locksTime;
+#endif
+
 /*
  * Get a heavy lock for the object and hold it.  If the object doesn't
  * have a heavy lock then we create one.
  */
-static
-iLock*
+
+#define IS_HEAVY_LOCK(ptr) ((((uintp)ptr)&1)==1)
+
+static iLock *
 getHeavyLock(iLock* volatile * lkp, iLock *heavyLock)
 {
-	iLock* old;
-	iLock* lk;
-	jlong timeout;
+  iLock *lk;
+  iLock *newLock;
 
-DBG(SLOWLOCKS,
-    	dprintf("  getHeavyLock(**lkp=%p, *lk=%p, th=%p)\n",
-		lkp, *lkp, KTHREAD(current)());
-);
- 
-	lk = heavyLock;
-	timeout = 1;
-	for (;;) {
-		/* Get the current lock and replace it with LOCKINPROGRESS to indicate
-		 * changes are in progress.
-		 */
-		old = *lkp;
-		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
-			/* Someone else put the lock in LOCKINPROGRESS state */
-			backoffcount++;
-			KSEM(get)(&THREAD_DATA()->sem, timeout);
-			/* Back off */
-			timeout = (timeout << 1)|timeout;
-			continue;
-		}
+  DBG(SLOWLOCKS,
+      dprintf("  getHeavyLock(lk=%p, th=%p)\n",
+	      *lkp, KTHREAD(current)());
+      );
 
-		/* If bottom bit is set, strip off and use pointer as pointer to heavy lock */
-		if ((((uintp)old) & 1) == 1) {
-DBG(SLOWLOCKS,
-    			dprintf("    got cached lock\n");
-);
-			if (lk != heavyLock) {
-				gc_free (lk);
-			}
+  for (;;)
+    {
+      lk = *lkp;
 
-			lk = (iLock*)(((uintp)old) & (uintp)-2);
+      /* Check if it has been allocated, if not acquire the lock by putting our
+       * temporary structure.
+       */
+      if (!IS_HEAVY_LOCK(lk))
+	{
+	  startTiming(&heavyLockTime, "heavylock-handling");
+
+	  if (heavyLock != NULL)
+	    {
+	      /* First we try to acquire the static heavy lock. */   
+	      if (COMPARE_AND_EXCHANGE(&heavyLock->in_progress, 0, 1))
+		{
+		  /* We succeed. So anyway the other threads using this lock knows
+		   * already about it.
+		   */
+		  /* Now we check whether the other thread holding the thin lock
+		   * has released it or not. If it is so mark the holder as free.
+		   * We loop until we are sure to have placed the heavylock and to have
+		   * the correct value in lk.
+		   */
+		  while (!COMPARE_AND_EXCHANGE(lkp, lk, (iLock *)(((uintp)heavyLock) | 1)))
+		    lk = *lkp;
+		  
+		  /* Remind the holder. */
+		  heavyLock->holder = lk;
+		  if (lk != LOCKFREE)
+		    heavyLock->lockCount = 1;
+		  heavyLock->lkp = lkp;
+		  
+		  return heavyLock;
 		}
-		else {
-			if (lk == LOCKFREE) {
-				/* Release the lock before we go into malloc.
-				 * We have to reclaim the lock afterwards (at beginning
-				 * of loop)
-				 */
-				*lkp = old;
-				lk = (iLock*)gc_malloc(sizeof(iLock), KGC_ALLOC_LOCK);
-				/* if that fails we're in trouble!! */
-				assert(lk != 0);
-				continue;
-			}
-DBG(SLOWLOCKS,
-			dprintf("    got %s lock\n",
-				(lk != heavyLock) ? "new" : "special");
-);
-			lk->holder = (void*)old;
-			lk->mux = NULL;
-			lk->cv = NULL;
-		}
-		return (lk);
+	      lk = heavyLock;
+	      break;
+	    }
+
+	  /* Build a temporary lock */
+	  newLock = gc_malloc (sizeof(iLock), KGC_ALLOC_LOCK);
+
+	  /* initialize the new lock. */
+	  KSEM(init)(&newLock->sem);
+
+	  // preserve current state of lock
+	  newLock->holder = lk;
+	  if (lk != LOCKFREE)
+	    newLock->lockCount = 1;
+	  newLock->lkp = lkp;
+
+	  if (!COMPARE_AND_EXCHANGE(lkp, lk, ((uintp)newLock)|1))
+	    {
+	      /* heavyLock exchange must always succeed as we have already exchanged it
+	       * sooner.
+	       */
+	      newLock->lockCount = 0;
+	      continue;
+	    }
+
+	  /* Now the lock is acquired by this thread and ready to use for the others.
+	   */
+	  lk = newLock;
+	  stopTiming(&heavyLockTime);
 	}
+      else
+	break;
+    }
+
+  lk = GET_HEAVYLOCK(lk);
+  
+  /* The lock is allocated and ready to use. */
+  for (;;) {
+    /* Try to acquire the lock. */
+    if (!COMPARE_AND_EXCHANGE(&(lk->in_progress), 0, 1))
+      {
+	lk->num_wait++;
+	KSEM(get)(&lk->sem, (jlong)0);
+	lk->num_wait--;
+	continue;
+      }
+    lk->lkp = lkp;
+    return lk;
+  }
+}
+
+void initStaticLock(iStaticLock *slock)
+{
+  slock->lock = NULL;
+  slock->heavyLock.num_wait = 0;
+  slock->heavyLock.lockCount = 0;
+  slock->heavyLock.mux = NULL;
+  slock->heavyLock.cv = NULL;
+  slock->heavyLock.in_progress = 0;
+  slock->heavyLock.holder = NULL;
+  KSEM(init)(&slock->heavyLock.sem);
+}
+
+void destroyStaticLock(iStaticLock *slock)
+{
+  assert(slock->lock == NULL || GET_HEAVYLOCK(slock->lock) == &slock->heavyLock);
+  assert(slock->heavyLock.lockCount == 0);
+  assert(slock->heavyLock.num_wait == 0);
+  assert(slock->heavyLock.in_progress == 0);
+  KSEM(destroy)(&slock->heavyLock.sem);
 }
 
 /*
  * Release the lock - only the one who has claimed it can do this
  * so there's no need for locked instructions.
  */
-static
-void
-putHeavyLock(iLock** lkp, iLock* lk)
+static void
+putHeavyLock(iLock* volatile lk)
 {
-	assert(*lkp == LOCKINPROGRESS);
+  DBG(SLOWLOCKS,
+      dprintf("  putHeavyLock(lk=%p, th=%p)\n", 
+	      lk, KTHREAD(current)());
+      );
 
-DBG(SLOWLOCKS,
-	dprintf("  putHeavyLock(**lkp=%p, *lk=%p, th=%p)\n", 
-		lkp, lk, KTHREAD(current)());
-);
-
-	if (lk == LOCKFREE) {
-		*lkp = LOCKFREE;
-	}
-	else {
-		*lkp = (iLock*)(1|(uintp)lk);
-	}
+  assert(lk->in_progress == 1);
+  
+  lk->in_progress = 0;
+  lk->lkp = NULL;
+  KSEM(put)(&(lk->sem));
 }
 
 /*
@@ -157,41 +213,53 @@ DBG(SLOWLOCKS,
  * If we can't lock it we suspend until we can.
  */
 static void
-slowLockMutex(iLock** lkp, void* where, iLock *heavyLock)
+slowLockMutex(iLock** lkp, iLock *heavyLock)
 {
-	iLock* lk;
-	jthread_t cur = KTHREAD(current) ();
-
+  iLock* volatile lk;
+  jthread_t cur = KTHREAD(current) ();
+  threadData *tdata;
+  
 DBG(SLOWLOCKS,
-    	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, KTHREAD(current)());
-);
-	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
+    dprintf("slowLockMutex(lk=%p, th=%p)\n",
+	    *lkp, KTHREAD(current)());
+    );
+ KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
 
-	for (;;) {
-		lk = getHeavyLock(lkp, heavyLock);
-
-		/* If I hold the heavy lock then just keep on going */
-		if (KTHREAD(on_current_stack)(lk->holder)) {
-			putHeavyLock(lkp, lk);
-			KTHREAD(enable_stop)();
-			return;
-		}
-
-		/* If no one holds the heavy lock then claim it */
-		if (lk->holder == 0) {
-			lk->holder = where;
-			putHeavyLock(lkp, lk);
-			KTHREAD(enable_stop)();
-			return;
-		}
-
-		/* Otherwise wait for holder to release it */
-		KTHREAD(get_data)(cur)->nextlk = lk->mux;
-		lk->mux = cur;
-		putHeavyLock(lkp, lk);
-		KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
-	}
+ tdata = KTHREAD(get_data)(cur);
+ for (;;) {
+   lk = getHeavyLock(lkp, heavyLock);
+   
+   startTiming(&lockTime, "slowlocks-time");
+   /* If I hold the heavy lock then just keep on going */
+   if (cur == lk->holder) {
+     lk->lockCount++;
+     putHeavyLock(lk);
+     stopTiming(&lockTime);
+     KTHREAD(enable_stop)();
+     return;
+   }
+   
+   /* If no one holds the heavy lock then claim it */
+   if (lk->holder == NULL) {
+     if (lk->lockCount != 0) {
+       dprintf("Lockcount should be 0 for %p\n", lk);
+       abort();
+     }
+     lk->holder = cur;
+     lk->lockCount++;
+     stopTiming(&lockTime);
+     putHeavyLock(lk);
+     KTHREAD(enable_stop)();
+     return;
+   }
+   
+   /* Otherwise wait for holder to release it */
+   tdata->nextlk = lk->mux;
+   lk->mux = cur;
+   putHeavyLock(lk);
+   stopTiming(&lockTime);
+   KSEM(get)(&tdata->sem, (jlong)0);
+ }
 }
 
 /*
@@ -200,216 +268,219 @@ DBG(SLOWLOCKS,
  * a fast thin lock.
  */
 static void
-slowUnlockMutex(iLock** lkp, void* where, iLock *heavyLock)
+slowUnlockMutex(iLock** lkp, iLock *heavyLock)
 {
-	iLock* lk;
-	jthread_t tid;
+  iLock* volatile lk;
+  jthread_t tid;
+  jthread_t cur = KTHREAD(current)();
 
-DBG(SLOWLOCKS,
-    	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, KTHREAD(current)());
-);
-	KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
-	lk = getHeavyLock(lkp, heavyLock);
+  DBG(SLOWLOCKS,
+      dprintf("slowUnlockMutex(lk=%p, th=%p)\n",
+	      *lkp, KTHREAD(current)());
+      );
+  KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
+  lk = getHeavyLock(lkp, heavyLock);
 
-	/* Only the lock holder can be doing an unlock */
-	if (!KTHREAD(on_current_stack)(lk->holder)) {
-		putHeavyLock(lkp, lk);
-		KTHREAD(enable_stop)();
-		throwException(IllegalMonitorStateException);
-	}
+  startTiming(&locksTime, "slowlocks-time");
+  
+  /* Only the lock holder can be doing an unlock */
+  if (cur != lk->holder) {
+    putHeavyLock(lk);
+    KTHREAD(enable_stop)();
+    stopTiming(&locksTime);
+    throwException(IllegalMonitorStateException);
+  }
 
-	/* If holder isn't where we are now then this isn't the final unlock */
-#if defined(STACK_GROWS_UP)
-	if (lk->holder < where) {
-#else
-	if (lk->holder > where) {
-#endif
-		putHeavyLock(lkp, lk);
-		KTHREAD(enable_stop)();
-		return;
-	}
+  assert(lk->lockCount > 0);
 
-	/* Final unlock - if someone is waiting for it now would be a good
-	 * time to tell them.
-	 */
-	if (lk->mux != NULL) {
-		tid = lk->mux;
-		lk->mux = KTHREAD(get_data)(tid)->nextlk;
-		KTHREAD(get_data)(tid)->nextlk = NULL;
-		lk->holder = NULL;
-		putHeavyLock(lkp, lk);
-		KSEM(put)(&KTHREAD(get_data)(tid)->sem);
-	}
-	/* If someone's waiting to be signaled keep the heavy in place */
-	else if (lk->cv != NULL) {
-		lk->holder = NULL;
-		putHeavyLock(lkp, lk);
-	}
-	else {
-		if (lk != heavyLock) {
-			gc_free(lk);
-		}
-		else {
-			lk->holder = NULL;
-		}
-		putHeavyLock(lkp, LOCKFREE);
-	}
-	KTHREAD(enable_stop)();
+  /* If holder isn't where we are now then this isn't the final unlock */
+  lk->lockCount--;
+  if (lk->lockCount != 0) {
+    putHeavyLock(lk);
+    stopTiming(&locksTime);
+    KTHREAD(enable_stop)();
+    return;
+  }
+    
+  /* Final unlock - if someone is waiting for it now would be a good
+   * time to tell them.
+   */
+  if (lk->mux != NULL) {
+    threadData *tdata;
+
+    tid = lk->mux;
+    tdata = KTHREAD(get_data)(tid);
+    lk->mux = tdata->nextlk;
+    tdata->nextlk = NULL;
+    lk->holder = NULL;
+    KSEM(put)(&tdata->sem);
+    putHeavyLock(lk);
+  }
+  else {
+    lk->holder = NULL;
+    putHeavyLock(lk);
+  }
+  KTHREAD(enable_stop)();
+  stopTiming(&locksTime);
 }
 
 void
-locks_internal_slowUnlockMutexIfHeld(iLock** lkp, void* where, iLock *heavyLock)
+locks_internal_slowUnlockMutexIfHeld(iLock** lkp, iLock *heavyLock)
 {
-	iLock* lk;
-	void* holder;
+  iLock* lk;
+  void* holder;
+  jthread_t cur = KTHREAD(current)();
+  
+  DBG(SLOWLOCKS,
+      dprintf("slowUnlockMutexIfHeld(lkp=%p, th=%p)\n",
+	      *lkp, KTHREAD(current)());
+      );
+  lk = *lkp;
+  if (lk == LOCKFREE)
+    return;
 
-DBG(SLOWLOCKS,
-    	dprintf("slowUnlockMutexIfHeld(**lkp=%p, where=%p, th=%p)\n",
-	       lkp, where, KTHREAD(current)());
-);
-	holder = *lkp;
+  /* Even if the lock is not allocated the holder is NULL. */
+  if (!IS_HEAVY_LOCK(lk) &&
+    /* if it's a thin lock and this thread owns it,
+     * try to free it the easy way
+     */
+      !COMPARE_AND_EXCHANGE(lkp, cur, LOCKFREE))
+    return;
 
-	/* nothing to do if the lock is free */
-	if (holder == LOCKFREE) {
-		return;
-	}
-
-	/* if it's a thin lock and this thread owns it,
-	 * try to free it the easy way
-	 */
-	if (KTHREAD(on_current_stack)(holder) &&
-	    COMPARE_AND_EXCHANGE(lkp, holder, LOCKFREE)) {
-		return;
-	}
-
-	/* ok, it is a heavy lock */
-	lk = getHeavyLock(lkp, heavyLock);
-	holder = lk->holder;
-	putHeavyLock(lkp, lk);
-
-	if (KTHREAD(on_current_stack)(holder)) {
-		slowUnlockMutex(lkp, where, heavyLock);
-	}
+  /* ok, it is a heavy lock and it is acquire by someone. */
+  lk = getHeavyLock(lkp, heavyLock);
+  holder = lk->holder;
+  putHeavyLock(lk);
+  
+  if (holder == cur)
+    slowUnlockMutex(lkp, heavyLock);
 }
 
 jboolean
-locks_internal_waitCond(iLock** lkp, jlong timeout, iLock *heavyLock)
+locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
 {
-	iLock* lk;
-	void* holder;
-	jthread_t cur = KTHREAD(current)();
-	jthread_t *ptr;
-	jboolean r;
+  iLock* volatile lk;
+  void* holder;
+  jthread_t cur = KTHREAD(current)();
+  jthread_t *ptr;
+  jboolean r;
+  threadData *tdata;
+  
+  DBG(SLOWLOCKS,
+      dprintf("_waitCond(lk=%p, timeout=%ld, th=%p)\n",
+	      *lkp, (long)timeout, KTHREAD(current)());
+      );
+  
+  lk = getHeavyLock(lkp, heavyLock);
+  holder = lk->holder;
+  
+  /* I must be holding the damn thing */
+  if (holder != cur) {
+    putHeavyLock(lk);
+    throwException(IllegalMonitorStateException);
+  }
+  
+  tdata = KTHREAD(get_data)(cur);
+  tdata->nextlk = lk->cv;
+  lk->cv = cur;
 
-DBG(SLOWLOCKS,
-    	dprintf("_waitCond(**lkp=%p, timeout=%ld, th=%p)\n",
-	       lkp, (long)timeout, KTHREAD(current)());
-);
-
-	lk = getHeavyLock(lkp, heavyLock);
-	holder = lk->holder;
-
-	/* I must be holding the damn thing */
-	if (!KTHREAD(on_current_stack)(holder)) {
-		putHeavyLock(lkp, holder);
-		throwException(IllegalMonitorStateException);
-	}
-
-	KTHREAD(get_data)(cur)->nextlk = lk->cv;
-	lk->cv = cur;
-	putHeavyLock(lkp, lk);
-	slowUnlockMutex(lkp, holder, heavyLock);
-	r = KSEM(get)(&KTHREAD(get_data)(cur)->sem, timeout);
-
-	/* Timeout */
-	if (r == false) {
-		lk = getHeavyLock(lkp, heavyLock);
-		/* Remove myself from CV or MUX queue - if I'm * not on either
-		 * then I should wait on myself to remove any pending signal.
-		 */
-		for (ptr = &lk->cv; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
-			if ((*ptr) == cur) {
-				*ptr = KTHREAD(get_data)(cur)->nextlk;
-				goto found;
-			}
-		}
-		for (ptr = &lk->mux; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
-			if ((*ptr) == cur) {
-				*ptr = KTHREAD(get_data)(cur)->nextlk;
-				goto found;
-			}
-		}
-		/* Not on list - so must have been signalled after all -
-		 * decrease the semaphore to avoid problems.
-		 */
-		KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
-
-		found:;
-		putHeavyLock(lkp, lk);
-	}
-
-	slowLockMutex(lkp, holder, heavyLock);
-
-	return (r);
+  putHeavyLock(lk);
+  slowUnlockMutex(lkp, heavyLock);
+  r = KSEM(get)(&tdata->sem, timeout);
+  
+  /* Timeout */
+  if (r == false) {
+    lk = getHeavyLock(lkp, heavyLock);
+    /* Remove myself from CV or MUX queue - if I'm * not on either
+     * then I should wait on myself to remove any pending signal.
+     */
+    for (ptr = &lk->cv; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
+      if ((*ptr) == cur) {
+	*ptr = tdata->nextlk;
+	goto found;
+      }
+    }
+    for (ptr = &lk->mux; *ptr != 0; ptr = &KTHREAD(get_data)(*ptr)->nextlk) {
+      if ((*ptr) == cur) {
+	*ptr = tdata->nextlk;
+	goto found;
+      }
+    }
+    /* Not on list - so must have been signalled after all -
+     * decrease the semaphore to avoid problems.
+     */
+    KSEM(get)(&tdata->sem, (jlong)0);
+    
+  found:;
+    putHeavyLock(lk);
+  }
+  
+  slowLockMutex(lkp, heavyLock);
+  
+  return (r);
 }
 
 void
 locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 {
-	iLock* lk;
-	jthread_t tid;
+  iLock* volatile lk;
+  jthread_t tid;
+  
+  DBG(SLOWLOCKS,
+      dprintf("_signalCond(lk=%p, th=%p)\n",
+	      *lkp, KTHREAD(current)());
+      );
+  
+  lk = getHeavyLock(lkp, heavyLock);
+  
+  if (lk->holder != KTHREAD(current)()) {
+    putHeavyLock(lk);
+    throwException(IllegalMonitorStateException);
+  }
+  
+  /* Move one CV's onto the MUX */
+  tid = lk->cv;
+  if (tid != 0) {
+    threadData *tdata = KTHREAD(get_data)(tid);
 
-DBG(SLOWLOCKS,
-    	dprintf("_signalCond(**lkp=%p, th=%p)\n",
-	       lkp, KTHREAD(current)());
-);
-
-	lk = getHeavyLock(lkp, heavyLock);
-
-	if (!KTHREAD(on_current_stack)(lk->holder)) {
-		putHeavyLock(lkp, lk);
-		throwException(IllegalMonitorStateException);
-	}
-
-	/* Move one CV's onto the MUX */
-	tid = lk->cv;
-	if (tid != 0) {
-		lk->cv = KTHREAD(get_data)(tid)->nextlk;
-		KTHREAD(get_data)(tid)->nextlk = lk->mux;
-		lk->mux = tid;
-	}
-
-	putHeavyLock(lkp, lk);
+    lk->cv = tdata->nextlk;
+    tdata->nextlk = lk->mux;
+    lk->mux = tid;
+  }
+  
+  putHeavyLock(lk);
 }
 
 void
 locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 {
-	iLock* lk;
-	jthread_t tid;
+  iLock* lk;
+  jthread_t tid;
+  
+  DBG(SLOWLOCKS,
+      dprintf("_broadcastCond(lk=%p, th=%p)\n",
+	      *lkp, KTHREAD(current)());
+      );
+  
+  lk = getHeavyLock(lkp, heavyLock);
 
-DBG(SLOWLOCKS,
-    	dprintf("_broadcastCond(**lkp=%p, th=%p)\n",
-	       lkp, KTHREAD(current)());
-);
+  if (lk->holder != KTHREAD(current)()) {
+    putHeavyLock(lk);
+    throwException(IllegalMonitorStateException);
+  }
+  
+  /* Move all the CV's onto the MUX */
+  while (lk->cv != 0) {
+    threadData *tdata;
 
-	lk = getHeavyLock(lkp, heavyLock);
-
-	if (!KTHREAD(on_current_stack)(lk->holder)) {
-		putHeavyLock(lkp, lk);
-		throwException(IllegalMonitorStateException);
-	}
-
-	/* Move all the CV's onto the MUX */
-	while (lk->cv != 0) {
-		tid = lk->cv;
-		lk->cv = KTHREAD(get_data)(tid)->nextlk;
-		KTHREAD(get_data)(tid)->nextlk = lk->mux;
-		lk->mux = tid;
-	}
-
-	putHeavyLock(lkp, lk);
+    tid = lk->cv;
+    tdata = KTHREAD(get_data)(tid);
+    lk->cv = tdata->nextlk;
+    tdata->nextlk = lk->mux;
+    lk->mux = tid;
+  }
+  
+  putHeavyLock(lk);
 }
 
 /*
@@ -418,21 +489,10 @@ DBG(SLOWLOCKS,
  * contention then fall back on a slow lock.
  */
 void
-locks_internal_lockMutex(iLock** lkp, void* where, iLock *heavyLock)
-{
-	uintp val;
-
-	val = (uintp)*lkp;
-
-	if (val == 0) {
-		if (!COMPARE_AND_EXCHANGE(lkp, 0, (iLock*)where)) {
-			slowLockMutex(lkp, where, heavyLock);
-		}
-	}
-	else if (!KTHREAD(on_current_stack)((void *)val)) {
-		/* XXX count this in the stats area */
-		slowLockMutex(lkp, where, heavyLock);
-	}
+locks_internal_lockMutex(iLock** lkp, iLock *heavyLock)
+{  
+  if (!COMPARE_AND_EXCHANGE(lkp, LOCKFREE, KTHREAD(current)()))
+      slowLockMutex(lkp, heavyLock);
 }
 
 /*
@@ -440,73 +500,65 @@ locks_internal_lockMutex(iLock** lkp, void* where, iLock *heavyLock)
  * we've got contention so fall back on a slow lock.
  */
 void
-locks_internal_unlockMutex(iLock** lkp, void* where, iLock *heavyLock)
+locks_internal_unlockMutex(iLock** lkp, iLock *heavyLock)
 {
-	uintp val;
-
-	val = (uintp)*lkp;
-
-	if ((val & 1) != 0) {
-		slowUnlockMutex(lkp, where, heavyLock);
-	}
-	else if ((val == (uintp)where) /* XXX squirrely bit */
-		&& !COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
-		slowUnlockMutex(lkp, where, heavyLock);
-	}
+  /* slowUnlockMutex should be fast enough. */
+  if (!COMPARE_AND_EXCHANGE(lkp, KTHREAD(current)(), LOCKFREE))
+    slowUnlockMutex(lkp, heavyLock);
 }
 
 void
 lockObject(Hjava_lang_Object* obj)
 {
-	locks_internal_lockMutex(&obj->lock, &obj, NULL);
+  locks_internal_lockMutex(&obj->lock, NULL);
 }
 
 void
 unlockObject(Hjava_lang_Object* obj)
 {
-	locks_internal_unlockMutex(&obj->lock, &obj, NULL);
+  locks_internal_unlockMutex(&obj->lock, NULL);
 }
 
 void
-slowLockObject(Hjava_lang_Object* obj, void* where)
+slowLockObject(Hjava_lang_Object* obj)
 {
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTER) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTER;
-		ev.u.monitor.object = obj;
-		jvmpiPostEvent(&ev);
-	}
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTER) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTER;
+      ev.u.monitor.object = obj;
+      jvmpiPostEvent(&ev);
+    }
 #endif
-	slowLockMutex(&obj->lock, where, NULL);
+  slowLockMutex(&obj->lock, NULL);
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTERED;
-		ev.u.monitor.object = obj;
-		jvmpiPostEvent(&ev);
-	}
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTERED;
+      ev.u.monitor.object = obj;
+      jvmpiPostEvent(&ev);
+    }
 #endif
 }
 
 void
-slowUnlockObject(Hjava_lang_Object* obj, void* where)
+slowUnlockObject(Hjava_lang_Object* obj)
 {
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_EXIT) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_EXIT;
-		ev.u.monitor.object = obj;
-		jvmpiPostEvent(&ev);
-	}
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_EXIT) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_EXIT;
+      ev.u.monitor.object = obj;
+      jvmpiPostEvent(&ev);
+    }
 #endif
-	slowUnlockMutex(&obj->lock, where, NULL);
+  slowUnlockMutex(&obj->lock, NULL);
 }
 
 void
@@ -514,3 +566,10 @@ dumpLocks(void)
 {
 }
 
+void KaffeLock_destroyLock(Collector *gcif, iLock *lock)
+{
+  assert(lock->lockCount == 0);
+  assert(lock->num_wait == 0);
+  assert(lock->in_progress == 0);
+  KSEM(destroy)(&lock->sem);
+}

@@ -52,8 +52,8 @@ typedef struct _weakRefTable {
 
 static strongRefTable			strongRefObjects;
 static weakRefTable                     weakRefObjects;
-static iStaticLock                      strongRefLock = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock                      weakRefLock = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock                      strongRefLock;
+static iStaticLock                      weakRefLock;
 
 /* This is a bit homemade.  We need a 7-bit hash from the address here */
 #define	REFOBJHASH(V)	((((uintp)(V) >> 2) ^ ((uintp)(V) >> 9))%REFOBJHASHSZ)
@@ -64,7 +64,6 @@ static iStaticLock                      weakRefLock = KAFFE_STATIC_LOCK_INITIALI
 bool
 KaffeGC_addRef(Collector *collector, const void* mem)
 {
-  int iLockRoot;
   uint32 idx;
   strongRefObject* obj;
 
@@ -99,7 +98,6 @@ KaffeGC_addRef(Collector *collector, const void* mem)
 bool
 KaffeGC_rmRef(Collector *collector, void* mem)
 {
-  int iLockRoot;
   uint32 idx;
   strongRefObject** objp;
   strongRefObject* obj;
@@ -128,7 +126,6 @@ KaffeGC_rmRef(Collector *collector, void* mem)
 bool
 KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 {
-  int iLockRoot;
   int idx;
   weakRefObject* obj;
 
@@ -173,7 +170,6 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 bool
 KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 {
-  int iLockRoot;
   uint32 idx;
   weakRefObject** objp;
   weakRefObject* obj;
@@ -314,7 +310,6 @@ KaffeGC_walkRefs(Collector* collector)
 {
   int i;
   strongRefObject* robj;
-  int iLockRoot;
   
 DBG(GCWALK,
     dprintf("Walking gc roots...\n");
@@ -359,7 +354,6 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
-  int iLockRoot;
 
   idx = REFOBJHASH(mem);
 
@@ -381,4 +375,10 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
 	}
     }
   unlockStaticMutex(&weakRefLock);
+}
+
+void KaffeGC_initRefs()
+{
+  initStaticLock(&strongRefLock);
+  initStaticLock(&weakRefLock);
 }

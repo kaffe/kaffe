@@ -24,6 +24,8 @@
 #include "gnu_java_net_SysInetAddressImpl.h"
 #include "nets.h"
 #include "jsyscall.h"
+#include "classMethod.h"
+#include "utf8const.h"
 
 #include "baseClasses.h"
 #include "locks.h"
@@ -35,41 +37,6 @@
 #endif
 
 #define	HOSTNMSZ	1024
-
-#if 0
-/*
- * Return the inet address family.
- */
-jint
-java_net_InetAddressImpl_getInetFamily(jint kind)
-{
-  jint retval = -1;
-  errorInfo einfo;
-	
-  assert(kind > java_net_InetAddressImpl_INET_ADDRESS_MIN);
-  assert(kind < java_net_InetAddressImpl_INET_ADDRESS_MAX);
-	
-  switch( kind )
-    {
-    case java_net_InetAddressImpl_INET_ADDRESS_V4:
-      retval = AF_INET;
-      break;
-#if defined(AF_INET6)
-    case java_net_InetAddressImpl_INET_ADDRESS_V6:
-      retval = AF_INET6;
-      break;
-#endif
-    default:
-      postExceptionMessage(&einfo,
-			   JAVA_LANG(InternalError),
-			   "Unknown family: %d",
-			   kind);
-      throwError(&einfo);
-      break;
-    }
-  return( retval );
-}
-#endif
 
 HArrayOfByte*
 java_net_InetAddress_lookupInaddrAny(void)
@@ -93,6 +60,37 @@ java_net_InetAddress_lookupInaddrAny(void)
   return addr;
 }
 
+static Hjava_lang_Class* inetClass;
+static Hjava_lang_Class* SysInetClass;
+static int inetLockInit;
+static int nsLockInit;
+static iStaticLock inetLock;
+static iStaticLock nsLock;
+
+/* TODO: This is functional but ugly and should be updated later. */
+static void initInetLock(void)
+{
+  errorInfo einfo;
+
+  if (inetLockInit != 0)
+    return;
+
+  if (inetClass == NULL)
+    {
+      Utf8Const *name = utf8ConstNew("java/net/InetAddress", -1);
+      inetClass = loadClass(name, NULL, &einfo);
+      utf8ConstRelease(name);
+      assert(inetClass != NULL);
+    }
+  lockClass(inetClass);
+  if (inetLockInit == 0)
+    {
+      initStaticLock(&inetLock);
+      inetLockInit = 1;
+    }
+  unlockClass(inetClass);
+}
+
 /*
  * Get localhost name.
  */
@@ -100,23 +98,45 @@ struct Hjava_lang_String*
 java_net_InetAddress_getLocalHostname(void)
 {
   static char hostname[HOSTNMSZ] = "localhost";
-  static iStaticLock	hostLock;
 	
   struct Hjava_lang_String *retval = NULL;
-  int iLockRoot;
-	
-  lockStaticMutex(&hostLock);
+
+  initInetLock();
+  lockStaticMutex(&inetLock);
   if( gethostname(hostname, HOSTNMSZ - 1) < 0 )
     {
-      assert(0);
+      perror("gethostname");
+      ABORT();
     }
   retval = stringC2Java(hostname);
-  unlockStaticMutex(&hostLock);
+  unlockStaticMutex(&inetLock);
 
   return( checkPtr(retval) );
 }
 
-static iStaticLock	nsLock;
+static void initNsLock(void)
+{
+  errorInfo einfo;
+
+  if (nsLockInit != 0)
+    return;
+
+  if (SysInetClass == NULL)
+    {
+      Utf8Const *name = utf8ConstNew("gnu/java/net/SysInetAddressImpl", -1);
+      SysInetClass = loadClass(name, NULL, &einfo);
+      utf8ConstRelease(name);
+      assert(SysInetClass != NULL);
+    }
+
+  lockClass(SysInetClass);
+  if (nsLockInit == 0)
+    {
+      initStaticLock(&nsLock);
+      nsLockInit = 1;
+    }
+  unlockClass(SysInetClass);
+}
 
 /*
  * Convert a hostname to an array of host addresses.
@@ -131,9 +151,10 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
   jsize count = 0;
   struct addrinfo hints, *ai = NULL, *curr;
   HArrayOfArray *retval = NULL;
-  int iLockRoot;
   errorInfo einfo;
   char *name;
+
+  initNsLock();
 
   name = checkPtr(stringJava2C(jStr));
 	
@@ -146,7 +167,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	 (retryCount > 0) )
     {
       unlockStaticMutex(&nsLock);
-      KTHREAD(sleep)(1 * 1000);
+      KTHREAD(sleep)((jlong)(1 * 1000));
       lockStaticMutex(&nsLock);
       retryCount -= 1;
     }
@@ -369,7 +390,6 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 #endif
   struct sockaddr_in *sain = (struct sockaddr_in *)&sa_buf;
   int rc, retryCount = 5;
-  int iLockRoot;
   errorInfo einfo;
   char *hostname;
   unsigned int sin_len;
@@ -429,7 +449,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 	 (retryCount > 0) )
     {
       unlockStaticMutex(&nsLock);
-      KTHREAD(sleep)(1 * 1000);
+      KTHREAD(sleep)((jlong)(1 * 1000));
       lockStaticMutex(&nsLock);
       retryCount -= 1;
     }
@@ -501,7 +521,6 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
   int family, rc = 0;
   const char *msg;
   errorInfo einfo;
-  int iLockRoot;
 	
   switch( obj_length(addr) )
     {

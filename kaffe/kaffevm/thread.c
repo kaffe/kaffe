@@ -282,8 +282,9 @@ startSpecialThread(void *arg)
 	void **pointer_args = (void **)arg;
 	void *argument;
 	jthread_t calling_thread;
+	threadData *thread_data = THREAD_DATA();
 
-	KSEM(init)(&THREAD_DATA()->sem);
+	KSEM(init)(&thread_data->sem);
 
 	/* We save the value before the lock so we are sure
 	 * pointer_args is still a valid pointer on the stack.
@@ -297,9 +298,9 @@ startSpecialThread(void *arg)
 	/* We have now to wait the parent to synchronize the data
 	 * and link the thread to the Java VM.
 	 */
-	KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
+	KSEM(get)(&thread_data->sem, (jlong)0);
 
-	THREAD_DATA()->exceptObj = NULL;
+	thread_data->exceptObj = NULL;
 
 	func(argument);
 }
@@ -388,18 +389,20 @@ firstStartThread(void* arg)
 	JNIEnv *env;
 	jmethodID runmethod;
 	jthread_t calling_thread = (jthread_t) arg;
+	threadData *thread_data;
 
 	cur = KTHREAD(current)();
+	thread_data = KTHREAD(get_data)(cur);
 
-	KSEM(init)(&KTHREAD(get_data)(cur)->sem);
+	KSEM(init)(&thread_data->sem);
 
 	/* We acknowledge the parent thread that this thread has been started. */
 	KSEM(put)(&KTHREAD(get_data)(calling_thread)->sem);
 	/* Now we must wait the parent to link the thread to the Java VM. */
-	KSEM(get)(&KTHREAD(get_data)(cur)->sem, (jlong)0);
+	KSEM(get)(&thread_data->sem, (jlong)0);
  
-	tid = (Hjava_lang_VMThread *)(KTHREAD(get_data)(cur)->jlThread);
-	env = &KTHREAD(get_data)(cur)->jniEnv;
+	tid = (Hjava_lang_VMThread *)(thread_data->jlThread);
+	env = &thread_data->jniEnv;
 
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_START) )
@@ -552,7 +555,6 @@ broadcastDeath(void *jlThread)
 {
         Hjava_lang_VMThread *vmtid = (Hjava_lang_VMThread *)jlThread;
 	Hjava_lang_Thread *tid = unhand(vmtid)->thread;
-	int iLockRoot;
 
         /* Notify on the object just in case anyone is waiting */
         lockMutex(&tid->base);

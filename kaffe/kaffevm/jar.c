@@ -41,6 +41,8 @@
 #undef  unlockMutex
 #define lockMutex(x)
 #define unlockMutex(x)
+#undef destroyStaticLock
+#define destroyStaticLock(x)
 #endif
 
 /*
@@ -75,12 +77,7 @@ struct _jarCache {
 	unsigned int count;
 };
 
-static struct _jarCache jarCache = {
-#if !defined(KAFFEH)
-	KAFFE_STATIC_LOCK_INITIALIZER,
-#endif
-	NULL, 0
-};
+static struct _jarCache jarCache;
 
 /*
  * Hash a file name, the hash value is stored in what `hash' points to.
@@ -105,9 +102,6 @@ static unsigned int hashName(const char *name)
 static jarFile *findCachedJarFile(char *name)
 {
 	jarFile *curr, **prev, *retval = NULL;
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 
 	assert(name != NULL);
 	
@@ -188,6 +182,7 @@ static void collectJarFile(jarFile *jf)
 	}
 #endif
 	addToCounter(&jarmem, "vmmem-jar files", 1, -(jlong)GCSIZEOF(jf));
+	destroyStaticLock(&jf->lock);
 	gc_free(jf);
 }
 
@@ -200,9 +195,6 @@ static jarFile *cacheJarFile(jarFile *jf)
 {
 	jarFile *curr, **prev, **lru = NULL, *dead_jar = NULL, *retval = jf;
 	int already_cached = 0;
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 
 	assert(jf != 0);
 	assert(!(jf->flags & JFF_CACHED));
@@ -330,9 +322,6 @@ DBG(JARFILES,  dprintf("Cached jar file %s purged\n", curr->fileName); );
 static void removeJarFile(jarFile *jf)
 {
 	jarFile *curr, **prev;
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 
 	assert(jf != NULL);
 
@@ -364,9 +353,6 @@ static void removeJarFile(jarFile *jf)
 void flushJarCache(void)
 {
 	jarFile **prev, *curr, *next;
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 
 	lockStaticMutex(&jarCache.lock);
 	curr = jarCache.files;
@@ -951,14 +937,11 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 {
 	uint8 *buf = NULL, *retval = NULL;
 	jarLocalHeader lh;
-#if !defined(KAFFEH)
-	int iLockRoot;
-#endif
 
 	assert(jf != 0);
 	assert(je != 0);
 
-	lockMutex(jf);
+	lockStaticMutex(&jf->lock);
 	/* Move to the local header in the file and read it. */
 	if( !jf->error &&
 	    (jarSeek(jf, (off_t)je->localHeaderOffset, SEEK_SET) >= 0) &&
@@ -987,7 +970,7 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 		}
 	}
 
-	unlockMutex(jf);
+	unlockStaticMutex(&jf->lock);
 	if( buf )
 	{
 	        /* Try to decompress it */
@@ -1018,17 +1001,14 @@ static jarFile *delayedOpenJarFile(jarFile *jf)
 			if( jar_stat.st_mtime == jf->lastModified )
 			{
 #endif /* !defined(STATIC_JAR_FILES) */
-#if !defined(KAFFEH)
-				int iLockRoot;
-#endif
 				
 				/* Only set the fd in the structure here */
-				lockMutex(jf);
+				lockStaticMutex(&jf->lock);
 				if( jf->fd == -1 )
 					jf->fd = fd; /* We're first */
 				else
 					KCLOSE(fd); /* Someone else set it */
-				unlockMutex(jf);
+				unlockStaticMutex(&jf->lock);
 				retval = jf;
 #if !defined(STATIC_JAR_FILES)
 			}
@@ -1098,6 +1078,7 @@ jarFile *openJarFile(char *name)
 		retval->fd = -1;
 		retval->table = NULL;
 		retval->tableSize = 0;
+		initStaticLock(&retval->lock);
 #ifdef HAVE_MMAP
  		retval->data = MAP_FAILED;
 #endif /* HAVE_MMAP */
@@ -1196,9 +1177,6 @@ void closeJarFile(jarFile *jf)
 {
 	if( jf )
 	{
-#if !defined(KAFFEH)
-		int iLockRoot;
-#endif
 
 		lockStaticMutex(&jarCache.lock);
 		jf->users--;
@@ -1274,4 +1252,9 @@ jarEntry *lookupJarFile(jarFile *jf, const char *entry_name)
 		}
 	}
 	return( retval );
+}
+
+void KaffeVM_initJarCache()
+{
+  initStaticLock(&jarCache.lock);
 }

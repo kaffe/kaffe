@@ -232,6 +232,8 @@ gc_heap_check(void)
 void
 gc_heap_initialise(void)
 {
+  initStaticLock(&gc_heap_lock);
+
 #ifndef gc_pgsize
 	gc_pgsize = getpagesize();
 	for (gc_pgbits = 0;
@@ -354,7 +356,6 @@ gc_heap_malloc(size_t sz)
 	gc_block** mptr;
 	gc_block* blk;
 	size_t nsz;
-	int iLockRoot;
 
 	lockStaticMutex(&gc_heap_lock);
 
@@ -453,7 +454,6 @@ gc_heap_free(void* mem)
 	int lnr;
 	int msz;
 	int idx;
-	int iLockRoot;
 
 	info = gc_mem2block(mem);
 	idx = GCMEM2IDX(info, mem);
@@ -1183,7 +1183,6 @@ void *
 gc_heap_grow(size_t sz)
 {
 	gc_block* blk;
-	int iLockRoot;
 
 	if (KGC_SMALL_OBJECT(sz)) {
 		sz = gc_pgsize;

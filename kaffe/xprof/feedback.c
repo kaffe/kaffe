@@ -238,7 +238,7 @@ int feedbackJITMethod(char *method, char *address, int size, int precompile)
 {
 	struct section_file_data *sfd;
 	struct jit_section_data *jsd;
-	int retval = 0, iLockRoot;
+	int retval = 0;
 
 	if( !kaffe_feedback_file )
 		return( 0 );
@@ -274,7 +274,7 @@ int feedbackJITMethod(char *method, char *address, int size, int precompile)
 int feedbackLibrary(char *name, int preload)
 {
 	struct section_file_data *sfd;
-	int retval = 0, iLockRoot;
+	int retval = 0;
 
 	if( !kaffe_feedback_file )
 		return( 0 );

@@ -180,7 +180,6 @@ translate(Method* xmeth, errorInfo* einfo)
 	static bool reinvoke = false;
 
 	jboolean success = true;
-	int iLockRoot;
 
 	lockClass(xmeth->class);
 
@@ -1483,6 +1482,11 @@ const char*
 getEngine(void)
 {
 	return "kaffe.jit";
+}
+
+void initEngine(void)
+{
+  initStaticLock(&translatorlock);
 }
 
 

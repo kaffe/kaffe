@@ -168,11 +168,11 @@ void record_marked(int nr_of_objects, uint32 size)
         gcStats.markedmem += size;
 } 
 
-static iStaticLock	gcman = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	finman = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	gcmanend = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	finmanend = KAFFE_STATIC_LOCK_INITIALIZER;
-static iStaticLock	gc_lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* allocator mutex */
+static iStaticLock	gcman; 
+static iStaticLock	finman;
+static iStaticLock	gcmanend;
+static iStaticLock	finmanend;
+static iStaticLock	gc_lock;	/* allocator mutex */
 
 static void gcFree(Collector* gcif, void* mem);
 
@@ -386,7 +386,6 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 {
 	int idx;
 	gc_block* info;
-	int iLockRoot;
 
 	/* quickly reject pointers that are not part of this heap */
 	if (!IS_A_HEAP_POINTER(mem)) {
@@ -504,7 +503,6 @@ gcMan(void* arg)
 	gc_block* info;
 	uintp idx;
 	Collector *gcif = (Collector*)arg;
-	int iLockRoot;
 
 	lockStaticMutex(&gcman);
 	gcRunning = 0;
@@ -840,7 +838,6 @@ static
 void
 startFinalizer(void)
 {
-	int iLockRoot;
 	int start;
 
         start = 0;
@@ -867,7 +864,7 @@ startFinalizer(void)
  * the objects in turn.  An object is only finalised once after which
  * it is deleted.
  */
-static void finaliserJob(Collector *gcif, int *where)
+static void finaliserJob(Collector *gcif)
 {
   gc_block* info = NULL;
   gc_unit* unit = NULL;
@@ -939,8 +936,7 @@ static void NONRETURNING
 finaliserMan(void* arg)
 {
   Collector *gcif = (Collector*)arg;
-  int iLockRoot;
-    
+
   lockStaticMutex(&finman);
   for (;;) {
     finalRunning = false;
@@ -949,7 +945,7 @@ finaliserMan(void* arg)
     }
     assert(finalRunning == true);
     
-    finaliserJob(gcif, &iLockRoot);
+    finaliserJob(gcif);
     
     /* Wake up anyone waiting for the finalizer to finish */
     lockStaticMutex(&finmanend);
@@ -963,7 +959,6 @@ static
 void
 gcEnableGC(Collector* gcif UNUSED)
 {
-	int iLockRoot;
 
 	lockStaticMutex(&gcman);
 	gcDisabled -= 1;
@@ -976,7 +971,6 @@ static
 void
 gcDisableGC(Collector* gcif UNUSED)
 {
-	int iLockRoot;
 
 	lockStaticMutex(&gcman);
 	gcDisabled += 1;
@@ -990,7 +984,6 @@ static
 void
 gcInvokeGC(Collector* gcif UNUSED, int mustgc)
 {
-	int iLockRoot;
 
 	while (gcRunning < 0)
 		KTHREAD(yield)();
@@ -1018,7 +1011,6 @@ static
 void
 gcInvokeFinalizer(Collector* gcif)
 {
-	int iLockRoot;
 
 	/* First invoke the GC */
 	KGC_invoke(gcif, 1);
@@ -1055,7 +1047,6 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 	void * volatile mem;	/* needed on SGI, see comment below */
 	int i;
 	size_t bsz;
-	int iLockRoot;
 	int times = 0;
 
 	assert(gc_init != 0);
@@ -1189,7 +1180,6 @@ gcThrowOOM(Collector *gcif UNUSED)
 {
 	Hjava_lang_Throwable *ret = NULL;
 	int reffed;
-	int iLockRoot;
 
 	/*
 	 * Make sure we are the only thread to use this exception
@@ -1236,7 +1226,6 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 	void* newmem;
 	gc_unit* unit;
 	size_t osize;
-	int iLockRoot;
 
 	assert(gcFunctions[fidx].final == KGC_OBJECT_FIXED);
 
@@ -1281,7 +1270,6 @@ gcFree(Collector* gcif UNUSED, void* mem)
 	gc_block* info;
 	int idx;
 	gc_unit* unit;
-	int iLockRoot;
 
 	if (mem != NULL) {
 		lockStaticMutex(&gc_lock);
@@ -1510,17 +1498,25 @@ static struct GarbageCollectorInterface_Ops KGC_Ops = {
 Collector* 
 createGC(void)
 {
-	URESETLIST(gclists[nofin_white]);
-	URESETLIST(gclists[fin_white]);
-	URESETLIST(gclists[grey]);
-	URESETLIST(gclists[nofin_black]);
-	URESETLIST(gclists[fin_black]);
-	URESETLIST(gclists[finalise]);
-	gc_obj.collector.ops = &KGC_Ops;
+  initStaticLock(&gcman);
+  initStaticLock(&gcmanend);
+  initStaticLock(&finman);
+  initStaticLock(&finmanend);
+  initStaticLock(&gc_lock);
 
-	gc_heap_initialise ();
-	reserve = gc_primitive_reserve ();
+  KaffeGC_initRefs();
 
-	return (&gc_obj.collector);
+  URESETLIST(gclists[nofin_white]);
+  URESETLIST(gclists[fin_white]);
+  URESETLIST(gclists[grey]);
+  URESETLIST(gclists[nofin_black]);
+  URESETLIST(gclists[fin_black]);
+  URESETLIST(gclists[finalise]);
+  gc_obj.collector.ops = &KGC_Ops;
+  
+  gc_heap_initialise ();
+  reserve = gc_primitive_reserve ();
+  
+  return (&gc_obj.collector);
 }
 

@@ -23,8 +23,7 @@
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
-static iStaticLock	stringLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all intern operations */
-static int *            stringLockRoot = NULL;	/* the string lock is not a monitor */
+static iStaticLock	stringLock; /* mutex on all intern operations */
 
 /* Internal functions */
 static int		stringHashValue(void *ptr);
@@ -278,26 +277,21 @@ static void*
 stringAlloc(size_t sz)
 {
 	void* p;
-	int *myRoot = stringLockRoot;
 
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
-	locks_internal_unlockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
+	unlockStaticMutex(&stringLock);
 	p = gc_malloc(sz, KGC_ALLOC_FIXED);
-	locks_internal_lockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
-	stringLockRoot = myRoot;
-	return (p);
+	lockStaticMutex(&stringLock);
+	return p;
 }
 
 static void
 stringFree(const void *ptr)
 {
-	int *myRoot = stringLockRoot;
-
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
-	locks_internal_unlockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
+        unlockStaticMutex(&stringLock);	
 	KFREE(ptr);
-	locks_internal_lockMutex(&stringLock.lock, myRoot, &stringLock.heavyLock);
-	stringLockRoot = myRoot;
+	lockStaticMutex(&stringLock);
 }
 
 /*
@@ -307,12 +301,10 @@ stringFree(const void *ptr)
 const Hjava_lang_String *
 stringInternString(Hjava_lang_String *string)
 {
-	int iLockRoot;
 	const Hjava_lang_String *temp;
 
 	/* Lock intern table */
 	lockStaticMutex(&stringLock);
-	stringLockRoot = &iLockRoot;
 
 	/* See if string is already in the table */
 	if (hashTable != NULL) {
@@ -348,7 +340,6 @@ stringInternString(Hjava_lang_String *string)
 void
 stringUninternString(Hjava_lang_String* string)
 {
-	int iLockRoot;
 
 	lockStaticMutex(&stringLock);
 	if (!unhand(string)->interned)
@@ -356,7 +347,6 @@ stringUninternString(Hjava_lang_String* string)
 	  unlockStaticMutex(&stringLock);
 	  return;
 	}
-	stringLockRoot = &iLockRoot;
 	hashRemove(hashTable, string);
 	unhand(string)->interned = false;
 	unlockStaticMutex(&stringLock);
@@ -426,7 +416,6 @@ stringCharArray2Java(const jchar *data, int len)
 	Hjava_lang_String *string;
 	HArrayOfChar *ary;
 	errorInfo info;
-	int iLockRoot;
 
 	/* Lock intern table 
 	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
@@ -458,7 +447,6 @@ stringCharArray2Java(const jchar *data, int len)
 
 		/* Return existing copy of this string, if any */
 		lockStaticMutex(&stringLock);
-		stringLockRoot = &iLockRoot;
 		string = hashFind(hashTable, &fakeString);
 		unlockStaticMutex(&stringLock);
 
@@ -527,4 +515,5 @@ stringDestroy(Collector* collector UNUSED, void* obj)
 void
 stringInit(void)
 {
+  initStaticLock(&stringLock);
 }

@@ -176,7 +176,7 @@ typedef struct _jarFile {
 
 	struct _jarFile*	next;
 #if !defined(KAFFEH)
-	iLock*			lock;
+	iStaticLock		lock;
 #endif
 	char*			fileName;
 	unsigned long		flags;
@@ -252,5 +252,7 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je);
  * Flush the internal cache of JAR files.
  */
 void flushJarCache(void);
+
+void KaffeVM_initJarCache(void);
 
 #endif

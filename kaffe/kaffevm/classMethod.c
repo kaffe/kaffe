@@ -115,7 +115,6 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	static int depth;
 #endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 	static Method *object_fin;
-	int iLockRoot;
 
 	/* If this class is initialised to the required point, quit now */
 	if (class->state >= tostate) {
@@ -750,7 +749,6 @@ expandInterfaces(Hjava_lang_Class *root_class,
 static bool
 resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 {
-	int iLockRoot;
 	int i, j, k;
 	int totalilen;
 	Hjava_lang_Class** newifaces;
@@ -1539,7 +1537,6 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	errorInfo info;
 	Utf8Const *utf8;
 	classEntry* centry;
-	int iLockRoot;
 	bool refAdded;
 
 	utf8 = utf8ConstNew(name, -1);
@@ -1548,7 +1545,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	if (!centry) goto bad;
 
 	utf8ConstRelease(utf8);
-	lockMutex(centry);
+	lockStaticMutex(&centry->slock);
 	if (centry->data.cl == 0) {
 		centry->state = NMS_LOADING;
 
@@ -1570,7 +1567,7 @@ DBG(VMCLASSLOADER,
 
 		(*class) = centry->data.cl = clazz;
 	}
-	unlockMutex(centry);
+	unlockStaticMutex(&centry->slock);
 	
 	if (!(*class))
 		(*class) = centry->data.cl;
@@ -1618,7 +1615,6 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	Hjava_lang_Class* clas;
 	const char* name;
-	int iLockRoot;
 
 	/* Avoid locking if we can */
 	if (FIELD_RESOLVED(fld)) {
@@ -2230,7 +2226,6 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 	int found_i;
 	bool rc = false;
 	Hjava_lang_Class** ifcs;
-	int iLockRoot;
 
 	/* find an impl_index for this class
 	 * Note that we only find a suitable impl_index with regard to the
@@ -2429,7 +2424,6 @@ resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
 	Utf8Const* utf8;
 	Hjava_lang_String* str = NULL;
 	constants* pool;
-	int iLockRoot;
 
 	pool = CLASS_CONSTANTS(clazz);
 
@@ -2768,7 +2762,6 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	classEntry* centry;
 	Hjava_lang_Class* arr_class;
 	int arr_flags;
-	int iLockRoot;
 
 	/* If we couldn't resolve the element type, there's no way we can
 	 * construct the array type.
@@ -2819,11 +2812,11 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	}
 
 	/* Lock class entry */
-	lockMutex(centry);
+	lockStaticMutex(&centry->slock);
 
 	/* Incase someone else did it */
 	if (centry->data.cl != 0) {
-		unlockMutex(centry);
+		unlockStaticMutex(&centry->slock);
 		goto found;
 	}
 
@@ -2879,7 +2872,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	centry->state = NMS_DONE;
 
 bail:
-	unlockMutex(centry);
+	unlockStaticMutex(&centry->slock);
 
 	found:;
 	if (c && CLASS_IS_PRIMITIVE(c)) {
