@@ -1,3 +1,9 @@
+2005-01-10  Ito Kazumitsu  < kaz@maczuka.gcd.org>
+
+	* kaffe/libraries/javalib/kaffe/io/KaffeCharset.java,
+	kaffe/libraries/javalib/kaffe/io/KaffeCharsetProvider.java:
+	New files.
+
 2005-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/external.c
