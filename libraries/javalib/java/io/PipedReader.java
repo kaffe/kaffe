@@ -28,7 +28,7 @@ public class PipedReader extends Reader {
   public int read(char cbuf[], int off, int len) throws IOException {
 
     // Read each character as two bytes big endian
-    len = (len << 1) & 0xfff;
+    len = Math.min(len, rawInput.PIPE_SIZE >> 1) << 1;
     byte[] buf = new byte[len];
     int num = rawInput.read(buf, 0, len);
     if (num == -1) {
