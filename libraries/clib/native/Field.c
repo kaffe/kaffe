@@ -48,6 +48,10 @@ getFieldAddress(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj)
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
 
         if (unhand(this)->slot < CLASS_NSFIELDS(clas)) {
+		errorInfo einfo;
+		if (!processClass(clas, CSTATE_COMPLETE, &einfo)) {
+			throwError(&einfo);
+		}
                 return (FIELD_ADDRESS(fld));
         }
         else {
