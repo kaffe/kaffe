@@ -1,5 +1,5 @@
 /* MemoryImageSource.java -- Java class for providing image data 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package java.awt.image;
 
-import java.awt.Image;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 

@@ -1,5 +1,5 @@
 /* StringSelection.java -- Clipboard handler for text.
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.awt.datatransfer;
 
-import java.io.StringReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
   * This class transfers a string as plain text using the clipboard.

@@ -38,35 +38,34 @@ exception statement from your version. */
 
 package java.awt;
 
+import gnu.java.awt.ClasspathToolkit;
+import gnu.java.awt.peer.ClasspathFontPeer;
+
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.font.TextAttribute;
-import java.awt.font.TransformAttribute;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.peer.FontPeer;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.text.AttributedCharacterIterator;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.text.CharacterIterator;
-import java.text.AttributedCharacterIterator;
-import java.text.StringCharacterIterator;
-
-import gnu.java.awt.ClasspathToolkit;
-import gnu.java.awt.peer.ClasspathFontPeer;
 
 /**
-  * This class represents a windowing system font.
-  *
-  * @author Aaron M. Renn (arenn@urbanophile.com)
-  * @author Warren Levy <warrenl@cygnus.com>
- * @author Graydon Hoare <graydon@redhat.com>
-  */
+ * This class represents a windowing system font.
+ *
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Warren Levy (warrenl@cygnus.com)
+ * @author Graydon Hoare (graydon@redhat.com)
+ */
 public class Font implements Serializable
 {
 

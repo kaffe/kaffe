@@ -1,5 +1,5 @@
 /* KeyboardFocusManager.java -- manage component focusing via the keyboard
-   Copyright (C) 2002 Free Software Foundation
+   Copyright (C) 2002, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
-import java.awt.event.KeyEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;

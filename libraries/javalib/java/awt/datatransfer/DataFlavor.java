@@ -39,11 +39,11 @@ exception statement from your version. */
 package java.awt.datatransfer;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;

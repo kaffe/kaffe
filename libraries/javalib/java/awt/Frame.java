@@ -39,7 +39,6 @@ exception statement from your version. */
 package java.awt;
 
 import java.awt.peer.FramePeer;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**

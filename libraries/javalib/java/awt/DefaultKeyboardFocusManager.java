@@ -1,5 +1,5 @@
 /* DefaultKeyboardFocusManager.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,15 @@ exception statement from your version. */
 
 package java.awt;
 
-import java.util.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 // FIXME: finish documentation
 public class DefaultKeyboardFocusManager extends KeyboardFocusManager

@@ -1,6 +1,5 @@
-// CardLayout.java - Card-based layout engine
-
-/* Copyright (C) 1999, 2000, 2002, 2003  Free Software Foundation
+/* CardLayout.java -- Card-based layout engine
+   Copyright (C) 1999, 2000, 2002, 2003, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -39,9 +38,9 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.io.Serializable;
 
 /** This class implements a card-based layout scheme.  Each included
  * component is treated as a card.  Only one card can be shown at a

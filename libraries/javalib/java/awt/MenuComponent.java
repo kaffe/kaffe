@@ -1,5 +1,5 @@
 /* MenuComponent.java -- Superclass of all AWT menu components
-   Copyright (C) 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2002, 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,6 +43,7 @@ import java.awt.event.FocusListener;
 import java.awt.peer.MenuComponentPeer;
 import java.io.Serializable;
 import java.util.Locale;
+
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleComponent;
 import javax.accessibility.AccessibleContext;

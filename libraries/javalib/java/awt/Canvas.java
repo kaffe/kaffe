@@ -1,4 +1,5 @@
-/* Copyright (C) 1999, 2000, 2002  Free Software Foundation
+/* Canvas.java --
+   Copyright (C) 1999, 2000, 2002, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -40,6 +41,7 @@ package java.awt;
 import java.awt.image.BufferStrategy;
 import java.awt.peer.ComponentPeer;
 import java.io.Serializable;
+
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;

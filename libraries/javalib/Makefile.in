@@ -2168,6 +2168,7 @@ java_awt_image_SRCS = \
 	java/awt/image/RasterOp.java \
 	java/awt/image/RenderedImage.java \
 	java/awt/image/ReplicateScaleFilter.java \
+	java/awt/image/RescaleOp.java \
 	java/awt/image/SampleModel.java \
 	java/awt/image/ShortLookupTable.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \

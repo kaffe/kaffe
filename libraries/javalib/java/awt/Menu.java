@@ -40,8 +40,8 @@ package java.awt;
 
 import java.awt.peer.MenuPeer;
 import java.io.Serializable;
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /**
   * This class represents a pull down or tear off menu in Java's AWT.

@@ -1,5 +1,5 @@
 /* SystemColor.java -- access dynamic system color values
-   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,9 +38,9 @@ exception statement from your version. */
 
 package java.awt;
 
-import java.awt.image.ColorModel;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.ColorModel;
 import java.io.Serializable;
 
 /**

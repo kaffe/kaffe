@@ -1,5 +1,5 @@
 /* Window.java --
-   Copyright (C) 1999, 2000, 2002, 2003 Free Software Foundation
+   Copyright (C) 1999, 2000, 2002, 2003, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -48,11 +48,12 @@ import java.awt.event.WindowStateListener;
 import java.awt.peer.WindowPeer;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
 import java.util.EventListener;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
+
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 

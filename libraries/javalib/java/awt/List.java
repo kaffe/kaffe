@@ -1,5 +1,5 @@
 /* List.java -- A listbox widget
-   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -45,6 +45,7 @@ import java.awt.event.ItemListener;
 import java.awt.peer.ListPeer;
 import java.util.EventListener;
 import java.util.Vector;
+
 import javax.accessibility.Accessible;
 
 /**

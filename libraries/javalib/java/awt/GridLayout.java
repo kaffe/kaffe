@@ -1,6 +1,5 @@
-// GridLayout.java - Grid-based layout engine
-
-/* Copyright (C) 1999, 2000, 2002  Free Software Foundation
+/* GridLayout.java -- Grid-based layout engine
+   Copyright (C) 1999, 2000, 2002, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
