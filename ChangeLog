@@ -1,5 +1,10 @@
 2004-12-21  Adam Heath  <doogie@brainfood.com>
 
+	* AUTHORS:
+	  Added myself.
+
+2004-12-21  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/findInJar.c,
 	  kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
 	  kaffe/kaffevm/hashtab.c, kaffe/kaffevm/jar.c, kaffe/kaffevm/jar.h,
