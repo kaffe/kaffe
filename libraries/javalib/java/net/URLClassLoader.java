@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Certificate;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.SecureClassLoader;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.jar.Attributes;
@@ -33,8 +35,8 @@ import java.util.jar.Manifest;
 public class URLClassLoader extends SecureClassLoader {
 	private final Vector urls;
 	private final URLStreamHandlerFactory factory;
-	private final HashMap handlers = new HashMap();
-	private final HashMap jarFiles = new HashMap();
+	private final Map handlers = new Hashtable();
+	private final Map jarFiles = new Hashtable();
 
 	public URLClassLoader(URL[] urls, ClassLoader parent) {
 		this(urls, parent, null);
@@ -77,7 +79,7 @@ public class URLClassLoader extends SecureClassLoader {
 			in.close();
 			buf = out.toByteArray();
 			return defineClass(name, buf, 0, buf.length,
-			    (CodeSource)null);	// XXX specify codesource
+			    new CodeSource(url, new Certificate[0]));	// XXX specify codesource certificates
 		} catch (IOException e) {
 			throw new ClassNotFoundException(name + ": " + e);
 		}
@@ -167,6 +169,22 @@ public class URLClassLoader extends SecureClassLoader {
 		File file = (File)jarFiles.get(url);
 		if (file != null) {
 			return file;
+		}
+
+		// Check if it is a local file
+		String protocol = url.getProtocol();
+		String host = url.getHost();
+
+		if ((protocol.equals("file") || protocol.equals("jar"))
+		    && (host.equals("") || host.equals("localhost"))) {
+
+		    file = new File(url.getFile());
+
+		    if (file.exists() && !file.isDirectory()) {
+
+			jarFiles.put(url, file);
+			return file;
+		    }
 		}
 
 		// Download JAR file

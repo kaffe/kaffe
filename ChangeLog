@@ -1,3 +1,11 @@
+Fri Aug 16 22:01:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/net/URLClassLoader.java:
+	(handlers, jarfiles) use Hashtable instead of HashMap.
+	(findClass) create a new code source with the URL when a new class
+	has been found.
+	(findResources) don't copy local files and jars.
+
 Fri Aug 16 19:38:09 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/zip/GZIPInputStream.java:
@@ -21,6 +29,9 @@ Fri Aug 16 19:38:09 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	(inflate) moved handling of empty input buffer to java, and
 	renamed the rest to
 	(inflate0) new method.
+
+	* libraries/javalib/Klasses.jar.boostrap:
+	regenerated.
 
 Thu Aug 15 14:35:16 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
