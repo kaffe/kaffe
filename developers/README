@@ -4,4 +4,4 @@ This directory contains various files useful for Kaffe developers.
 sp_offset.c:	a program that guesses the correct offset of the sp in a
 		jmpbuf for the jthread threading system.
 
-
+gdbinit:	a gdb macro file to help in debugging kaffe
