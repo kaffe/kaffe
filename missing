@@ -82,7 +82,7 @@ WARNING: \`$1' is missing on your system.  You should only need it if
          you modified \`acconfig.h' or \`configure.in'.  You might want
          to install the \`Autoconf' and \`GNU m4' packages.  Grab them
          from any GNU archive site."
-    files=`sed -n '/^[ ]*A[CM]_CONFIG_HEADER(\([^)]*\)).*/\1/p' configure.in`
+    files=`sed -n 's/^[ ]*A[CM]_CONFIG_HEADER(\([^)]*\)).*/\1/p' configure.in`
     test -z "$files" && files="config.h"
     touch_files=
     for f in $files; do
