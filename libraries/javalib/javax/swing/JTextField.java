@@ -1,5 +1,5 @@
 /* JTextField.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -322,7 +322,8 @@ public class JTextField extends JTextComponent
 
   public void postActionEvent()
   {
-    ActionEvent event = new ActionEvent(this, 0, actionCommand);
+    String command = actionCommand != null ? actionCommand : getText();
+    ActionEvent event = new ActionEvent(this, 0, command);
     ActionListener[] listeners = getActionListeners();
 
     for (int index = 0; index < listeners.length; ++index)
@@ -369,17 +370,9 @@ public class JTextField extends JTextComponent
   /**
    * @since 1.3
    */
-  public String getActionCommand()
-  {
-    return actionCommand;
-  }
-
-  /**
-   * @since 1.3
-   */
   public void setActionCommand(String command)
   {
-    this.actionCommand = command;
+    actionCommand = command;
   }
 
   /**
