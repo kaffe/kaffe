@@ -44,12 +44,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.Permission;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -79,7 +81,17 @@ public class Connection extends URLConnection
    * OutputStream if we are writing to the file
    */
   private BufferedOutputStream outputStream;
-  
+
+  /**
+   * FilePermission to read the file
+   */
+  private FilePermission permission;
+
+  /**
+   * Default permission for a file
+   */
+  private static final String DEFAULT_PERMISSION = "read";
+
   /**
    * Calls superclass constructor to initialize.
    */
@@ -89,6 +101,8 @@ public class Connection extends URLConnection
     
     /* Set up some variables */
     doOutput = false;
+
+    permission = new FilePermission(getURL().getFile(), DEFAULT_PERMISSION);
   }
   
   /**
@@ -193,6 +207,19 @@ public class Connection extends URLConnection
       }
   }
 
+
+  /**
+   * This method returns a <code>Permission</code> object representing the
+   * permissions required to access this URL.  This method returns a
+   * <code>java.io.FilePermission</code> for the file's path with a read
+   * permission.
+   *
+   * @return A Permission object
+   */
+  public Permission getPermission() throws IOException
+  {
+    return permission;
+  }
 
   /**
    * Does the resource pointed to actually exist?
