@@ -107,6 +107,13 @@ DBG(CLASSGC,
         if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
                 Method *m = CLASS_METHODS(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
+#if defined(TRANSLATOR) && defined (UNREGISTER_JIT_METHOD)
+			if (METHOD_JITTED(m)) {
+				UNREGISTER_JIT_METHOD (m->c.ncode.ncode_start,
+					m->ncode,
+					m->c.ncode.ncode_end - m->ncode);
+			}
+#endif
                         utf8ConstRelease(m->name);
                         utf8ConstRelease(m->signature);
                         KFREE(m->lines);
