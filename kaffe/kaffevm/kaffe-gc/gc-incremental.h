@@ -106,19 +106,6 @@ typedef	gc_unit			gcList;
 #define	STOPWORLD()		jthread_suspendall()
 #define	RESUMEWORLD()		jthread_unsuspendall()
 
-extern struct _gcStats {
-        uint32  totalmem;
-        uint32  totalobj;
-        uint32  freedmem;
-        uint32  freedobj;
-        uint32  markedobj;
-        uint32  markedmem;
-        uint32  allocobj;
-        uint32  allocmem;
-        uint32  finalobj;
-        uint32  finalmem;
-} gcStats;
-
 void KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size);
 void KaffeGC_WalkMemory(Collector* gcif, void* mem);
 

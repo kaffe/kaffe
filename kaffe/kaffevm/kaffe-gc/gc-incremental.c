@@ -30,6 +30,19 @@
 #include "gc-refs.h"
 #include "jvmpi_kaffe.h"
 
+static struct _gcStats {
+        uint32  totalmem;
+        uint32  totalobj;
+        uint32  freedmem;
+        uint32  freedobj;
+        uint32  markedobj;
+        uint32  markedmem;
+        uint32  allocobj;
+        uint32  allocmem;
+        uint32  finalobj;
+        uint32  finalmem;
+} gcStats;
+
 /* Avoid recursively allocating OutOfMemoryError */
 #define OOM_ALLOCATING		((void *) -1)
 
@@ -45,7 +58,7 @@ static struct CollectorImpl {
 } gc_obj;
 
 /* XXX don't use these types ! */
-Hjava_lang_Thread* garbageman;
+static Hjava_lang_Thread* garbageman;
 static Hjava_lang_Thread* finalman;
 
 static gcList gclists[6];
@@ -209,8 +222,6 @@ gcRegisterGcTypeByIndex(Collector* gcif UNUSED,
 {
 	registerTypeByIndex(idx, walk, final, destroy, description);
 }
-
-struct _gcStats gcStats;
 
 static void startGC(Collector *gcif);
 static void finishGC(Collector *gcif);

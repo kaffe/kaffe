@@ -120,8 +120,6 @@ int gc_pgbits;
 int gc_system_alloc_cnt;
 #endif
 
-extern struct Hjava_lang_Thread* garbageman;
-
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 /* Magic constant used to mark blocks under gc's management */
 static const uint32 gc_magic = 0xD0DECADE;

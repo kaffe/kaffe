@@ -1,3 +1,17 @@
+2004-08-31  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
+	(gcStats) Moved over here and made static.
+	(garbageman) Made static.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h:
+	(gcStats) Removed.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(garbageman) Removed declaration.
+
+	Reported by: Michael Franz <developer.franz@verizon.net>
+
 2004-08-31  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
