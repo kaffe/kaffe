@@ -57,11 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+
+@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
+AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
@@ -117,6 +120,7 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+install_sh = @install_sh@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
@@ -133,10 +137,8 @@ with_engine = @with_engine@
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
-@HAVE_GCJ_SUPPORT_TRUE@TEST_Overflow = \
-@HAVE_GCJ_SUPPORT_TRUE@#
-@HAVE_GCJ_SUPPORT_FALSE@TEST_Overflow = \
-@HAVE_GCJ_SUPPORT_FALSE@Overflow.java
+@HAVE_GCJ_SUPPORT_TRUE@TEST_Overflow = @HAVE_GCJ_SUPPORT_TRUE@#
+@HAVE_GCJ_SUPPORT_FALSE@TEST_Overflow = @HAVE_GCJ_SUPPORT_FALSE@Overflow.java
 
 TESTS = \
 	HelloWorldApp.class.save \
@@ -242,6 +244,7 @@ TESTS = \
 EXTRA_DIST = $(TESTS)
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
+subdir = test/regression
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  TestScript
@@ -269,16 +272,13 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = test/regression
-
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir); \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -370,6 +370,7 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
+	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-generic
 
 mostlyclean: mostlyclean-am

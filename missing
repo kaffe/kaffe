@@ -197,9 +197,15 @@ WARNING: \`$1' is missing on your system.  You should only need it if
       exit 1
     fi
 
-    # we have already tried tar in the generic part
-    gnutar ${1+"$@"} && exit 0
-    gtar ${1+"$@"} && exit 0
+    # We have already tried tar in the generic part.
+    # Look for gnutar/gtar before invocation to avoid ugly error
+    # messages.
+    if (gnutar --version > /dev/null 2>&1); then
+       gnutar ${1+"$@"} && exit 0
+    fi
+    if (gtar --version > /dev/null 2>&1); then
+       gtar ${1+"$@"} && exit 0
+    fi
     firstarg="$1"
     if shift; then
 	case "$firstarg" in

@@ -700,7 +700,8 @@ AC_SUBST(PACKAGE)
 VERSION=[$2]
 AC_SUBST(VERSION)
 dnl test to see if srcdir already configured
-if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
+if test "`CDPATH=: && cd $srcdir && pwd`" != "`pwd`" &&
+   test -f $srcdir/config.status; then
   AC_MSG_ERROR([source directory already configured; run "make distclean" there first])
 fi
 ifelse([$3],,
@@ -714,6 +715,10 @@ AM_MISSING_PROG(AUTOMAKE, automake)
 AM_MISSING_PROG(AUTOHEADER, autoheader)
 AM_MISSING_PROG(MAKEINFO, makeinfo)
 AM_MISSING_PROG(AMTAR, tar)
+AM_MISSING_INSTALL_SH
+dnl We need awk for the "check" target.  The system "awk" is bad on
+dnl some platforms.
+AC_REQUIRE([AC_PROG_AWK])
 AC_REQUIRE([AC_PROG_MAKE_SET])
 AC_REQUIRE([AM_DEP_TRACK])
 AC_REQUIRE([AM_SET_DEPDIR])
@@ -772,18 +777,33 @@ AC_REQUIRE([AM_MISSING_HAS_RUN])
 $1=${$1-"${am_missing_run}$2"}
 AC_SUBST($1)])
 
+dnl Like AM_MISSING_PROG, but only looks for install-sh.
+dnl AM_MISSING_INSTALL_SH()
+AC_DEFUN(AM_MISSING_INSTALL_SH, [
+AC_REQUIRE([AM_MISSING_HAS_RUN])
+if test -z "$install_sh"; then
+   install_sh="$ac_aux_dir/install-sh"
+   test -f "$install_sh" || install_sh="$ac_aux_dir/install.sh"
+   test -f "$install_sh" || install_sh="${am_missing_run}${ac_auxdir}/install-sh"
+   dnl FIXME: an evil hack: we remove the SHELL invocation from
+   dnl install_sh because automake adds it back in.  Sigh.
+   install_sh="`echo $install_sh | sed -e 's/\${SHELL}//'`"
+fi
+AC_SUBST(install_sh)])
+
 dnl AM_MISSING_HAS_RUN.
 dnl Define MISSING if not defined so far and test if it supports --run.
 dnl If it does, set am_missing_run to use it, otherwise, to nothing.
 AC_DEFUN([AM_MISSING_HAS_RUN], [
 test x"${MISSING+set}" = xset || \
-  MISSING="\${SHELL} $ac_aux_dir/missing"
+  MISSING="\${SHELL} `CDPATH=: && cd $ac_aux_dir && pwd`/missing"
 dnl Use eval to expand $SHELL
 if eval "$MISSING --run :"; then
   am_missing_run="$MISSING --run "
 else
   am_missing_run=
-  AC_MSG_WARN([\`missing' script is too old or missing])
+  am_backtick='`'
+  AC_MSG_WARN([${am_backtick}missing' script is too old or missing])
 fi
 ])
 
@@ -927,12 +947,16 @@ for mf in $CONFIG_FILES; do
     }
     /^DEP_FILES = / s/^DEP_FILES = //p' < "$mf" | \
        sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
+    # Make sure the directory exists.
     test -f "$dirpart/$file" && continue
-    echo "creating $dirpart/$file"
+    fdir=`echo "$file" | sed -e 's|/[^/]*$||'`
+    $ac_aux_dir/mkinstalldirs "$dirpart/$fdir" > /dev/null 2>&1
+    # echo "creating $dirpart/$file"
     echo '# dummy' > "$dirpart/$file"
   done
 done
-], [AMDEP="$AMDEP"])])
+], [AMDEP="$AMDEP"
+ac_aux_dir="$ac_aux_dir"])])
 
 # Add --enable-maintainer-mode option to configure.
 # From Jim Meyering

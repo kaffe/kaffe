@@ -1,3 +1,9 @@
+2000-03-13  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* FAQ/FAQ.automake: Updated automake snapshot.
+	* aclocal.m4, configure, */Makefile.in: Rebuilt.
+	* missing, depcomp: Updated from automake.
+
 Thu Mar  9 16:51:38 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Class.java: don't prepend primitive

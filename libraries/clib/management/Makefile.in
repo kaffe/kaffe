@@ -57,11 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+
+@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
+AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
@@ -117,6 +120,7 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+install_sh = @install_sh@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
@@ -140,6 +144,7 @@ libmanagement_la_SOURCES = \
 
 
 CLEANFILES = so_locations
+subdir = libraries/clib/management
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -157,9 +162,9 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libmanagement_la_LIBADD = 
 am_libmanagement_la_OBJECTS =  Classpath.lo JIT.lo Debug.lo
 libmanagement_la_OBJECTS =  $(am_libmanagement_la_OBJECTS)
-CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CFLAGS = @CFLAGS@
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES =  $(libmanagement_la_SOURCES)
 DIST_COMMON =  Makefile.am Makefile.in
@@ -199,8 +204,8 @@ install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
 	$(mkinstalldirs) $(DESTDIR)$(nativedir)
 	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(nativedir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(nativedir)/$$p; \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$p; \
 	  else :; fi; \
 	done
 
@@ -231,32 +236,33 @@ clean-libtool:
 distclean-libtool:
 
 maintainer-clean-libtool:
-Classpath.lo:
-JIT.lo:
-Debug.lo:
 
 libmanagement.la: $(libmanagement_la_OBJECTS) $(libmanagement_la_DEPENDENCIES)
 	$(LINK) -rpath $(nativedir) $(libmanagement_la_LDFLAGS) $(libmanagement_la_OBJECTS) $(libmanagement_la_LIBADD) $(LIBS)
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	here=`pwd` && cd $(srcdir) \
-	  && mkid -f$$here/ID $$unique $(LISP)
+	mkid -f$$here/ID $$unique $(LISP)
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+	  || etags $(ETAGS_ARGS) $$tags  $$unique $(LISP)
 
 mostlyclean-tags:
 
@@ -269,16 +275,13 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = libraries/clib/management
-
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir); \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -299,22 +302,22 @@ maintainer-clean-depend:
 @AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c $<
+	$(COMPILE) -c -o $@ $<
 
 .c.lo:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
 
 .c.obj:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c `cygpath -w $<`
+	$(COMPILE) -c -o $@ `cygpath -w $<`
 
 info-am:
 info: info-am
@@ -353,6 +356,7 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
+	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-nativeLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic

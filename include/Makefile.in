@@ -57,11 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+
+@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
+AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
@@ -117,6 +120,7 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+install_sh = @install_sh@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
@@ -238,6 +242,7 @@ pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) $(INSTALL_JNI_DERIVED_HDRS) \
 
 
 CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
+subdir = include
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -273,16 +278,16 @@ stamp-h2: $(srcdir)/jtypes.h.in $(top_builddir)/config.status
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
 	@mv stamp-h2T stamp-h2
-$(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h2.in
+$(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/./stamp-h2.in
 	@if test ! -f $@; then \
-		rm -f $(srcdir)/stamp-h2.in; \
-		$(MAKE) $(srcdir)/stamp-h2.in; \
+		rm -f $(srcdir)/./stamp-h2.in; \
+		$(MAKE) $(srcdir)/./stamp-h2.in; \
 	else :; fi
-$(srcdir)/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	@rm -f $(srcdir)/stamp-h2.in $(srcdir)/stamp-h2.inT
-	@echo timestamp > $(srcdir)/stamp-h2.inT 2> /dev/null
+$(srcdir)/./stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/./stamp-h2.in $(srcdir)/./stamp-h2.inT
+	@echo timestamp > $(srcdir)/./stamp-h2.inT 2> /dev/null
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@mv $(srcdir)/stamp-h2.inT $(srcdir)/stamp-h2.in
+	@mv $(srcdir)/./stamp-h2.inT $(srcdir)/./stamp-h2.in
 
 mostlyclean-hdr:
 
@@ -313,23 +318,27 @@ uninstall-pkgincludeHEADERS:
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	here=`pwd` && cd $(srcdir) \
-	  && mkid -f$$here/ID $$unique $(LISP)
+	mkid -f$$here/ID $$unique $(LISP)
 
-TAGS:  $(HEADERS) $(SOURCES) jtypes.h.in $(TAGS_DEPENDENCIES) $(LISP)
+TAGS:  $(HEADERS) $(SOURCES) jtypes.h.in $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)jtypes.h.in$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags jtypes.h.in $$unique $(LISP) -o $$here/TAGS)
+	  || etags $(ETAGS_ARGS) $$tags jtypes.h.in $$unique $(LISP)
 
 mostlyclean-tags:
 
@@ -342,16 +351,13 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = include
-
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir); \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -395,6 +401,7 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
+	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-hdr mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-am

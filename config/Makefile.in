@@ -57,11 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+
+@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
+AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
@@ -117,6 +120,7 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+install_sh = @install_sh@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
@@ -129,9 +133,8 @@ with_engine = @with_engine@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-@USE_JIT_TRUE@ENGINE_GEN_HDRS = \
-@USE_JIT_TRUE@jit-md.h
-@USE_JIT_FALSE@ENGINE_GEN_HDRS = \
+@USE_JIT_TRUE@ENGINE_GEN_HDRS = @USE_JIT_TRUE@jit-md.h
+@USE_JIT_FALSE@ENGINE_GEN_HDRS = 
 
 GEN_HDRS = md.h $(ENGINE_GEN_HDRS)
 
@@ -368,6 +371,7 @@ EXTRA_DIST = \
 	sparc/uxpds/md.c \
 	sparc/uxpds/md.h
 
+subdir = config
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h ../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -403,16 +407,16 @@ stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
 	@mv stamp-h1T stamp-h1
-$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h1.in
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/./stamp-h1.in
 	@if test ! -f $@; then \
-		rm -f $(srcdir)/stamp-h1.in; \
-		$(MAKE) $(srcdir)/stamp-h1.in; \
+		rm -f $(srcdir)/./stamp-h1.in; \
+		$(MAKE) $(srcdir)/./stamp-h1.in; \
 	else :; fi
-$(srcdir)/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	@rm -f $(srcdir)/stamp-h1.in $(srcdir)/stamp-h1.inT
-	@echo timestamp > $(srcdir)/stamp-h1.inT 2> /dev/null
+$(srcdir)/./stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/./stamp-h1.in $(srcdir)/./stamp-h1.inT
+	@echo timestamp > $(srcdir)/./stamp-h1.inT 2> /dev/null
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@mv $(srcdir)/stamp-h1.inT $(srcdir)/stamp-h1.in
+	@mv $(srcdir)/./stamp-h1.inT $(srcdir)/./stamp-h1.in
 
 mostlyclean-hdr:
 
@@ -425,23 +429,27 @@ maintainer-clean-hdr:
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	here=`pwd` && cd $(srcdir) \
-	  && mkid -f$$here/ID $$unique $(LISP)
+	mkid -f$$here/ID $$unique $(LISP)
 
-TAGS:  $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) $(LISP)
+TAGS:  $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)config.h.in$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP) -o $$here/TAGS)
+	  || etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP)
 
 mostlyclean-tags:
 
@@ -453,8 +461,6 @@ distclean-tags:
 maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = config
 
 distdir: $(DISTFILES)
 	$(mkinstalldirs) $(distdir)/alpha $(distdir)/alpha/linux \
@@ -483,10 +489,9 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir); \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -529,6 +534,7 @@ distclean-generic:
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
+	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-hdr mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-am

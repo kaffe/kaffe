@@ -57,11 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+
+@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AS = @AS@
+AWK = @AWK@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
@@ -117,6 +120,7 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+install_sh = @install_sh@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
@@ -124,6 +128,15 @@ with_engine = @with_engine@
 # Makefile.in for kaffevm - a Java(tm) compatible virtual machine.
 #
 # Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
+# Makefile fragment to distclean DIST_SUBDIRS not in SUBDIRS
+#
+# Copyright (c) 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -147,10 +160,8 @@ EXTRA_DIST = \
 INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
 
 lib_LTLIBRARIES = libkaffevm.la
-@HAVE_GCJ_SUPPORT_TRUE@libgcj = \
-@HAVE_GCJ_SUPPORT_TRUE@gcj/libgcj.la
-@HAVE_GCJ_SUPPORT_FALSE@libgcj = \
-@HAVE_GCJ_SUPPORT_FALSE@#
+@HAVE_GCJ_SUPPORT_TRUE@libgcj = @HAVE_GCJ_SUPPORT_TRUE@gcj/libgcj.la
+@HAVE_GCJ_SUPPORT_FALSE@libgcj = @HAVE_GCJ_SUPPORT_FALSE@#
 
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_DEPENDENCIES = \
@@ -244,6 +255,9 @@ noinst_HEADERS = \
 
 CLEANFILES = so_locations
 DISTCLEANFILES = $(libkaffevm_la_GEN_SRCS)
+
+DISTCLEAN_LOCAL = distclean-local
+subdir = kaffe/kaffevm
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -266,9 +280,9 @@ object.lo readClass.lo sha-1.lo soft.lo stackTrace.lo stats.lo \
 string.lo support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
 verify.lo
 libkaffevm_la_OBJECTS =  $(am_libkaffevm_la_OBJECTS)
-CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CFLAGS = @CFLAGS@
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES =  $(libkaffevm_la_SOURCES)
 HEADERS =  $(noinst_HEADERS)
@@ -298,7 +312,7 @@ OBJECTS = $(am_libkaffevm_la_OBJECTS)
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/include/distclean-hack
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffevm/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
@@ -320,8 +334,8 @@ install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
 	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(libdir)/$$p; \
 	  else :; fi; \
 	done
 
@@ -352,41 +366,6 @@ clean-libtool:
 distclean-libtool:
 
 maintainer-clean-libtool:
-gc-mem.lo:
-md.lo:
-baseClasses.lo:
-classMethod.lo:
-classPool.lo:
-methodCache.lo:
-code-analyse.lo:
-code.lo:
-constants.lo:
-debug.lo:
-exception.lo:
-external.lo:
-findInJar.lo:
-fp.lo:
-gc.lo:
-hashtab.lo:
-inflate.lo:
-itypes.lo:
-jar.lo:
-jni.lo:
-locks.lo:
-lookup.lo:
-object.lo:
-readClass.lo:
-sha-1.lo:
-soft.lo:
-stackTrace.lo:
-stats.lo:
-string.lo:
-support.lo:
-thread.lo:
-utf8const.lo:
-gcFuncs.lo:
-gcRefs.lo:
-verify.lo:
 
 libkaffevm.la: $(libkaffevm_la_OBJECTS) $(libkaffevm_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libkaffevm_la_LDFLAGS) $(libkaffevm_la_OBJECTS) $(libkaffevm_la_LIBADD) $(LIBS)
@@ -397,8 +376,6 @@ libkaffevm.la: $(libkaffevm_la_OBJECTS) $(libkaffevm_la_DEPENDENCIES)
 # (1) if the variable is set in `config.status', edit `config.status'
 #     (which will cause the Makefiles to be regenerated when you run `make');
 # (2) otherwise, pass the desired values on the `make' command line.
-
-@SET_MAKE@
 
 all-recursive install-data-recursive install-exec-recursive \
 installdirs-recursive install-recursive uninstall-recursive  \
@@ -448,15 +425,17 @@ tags-recursive:
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	here=`pwd` && cd $(srcdir) \
-	  && mkid -f$$here/ID $$unique $(LISP)
+	mkid -f$$here/ID $$unique $(LISP)
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
 	list='$(SUBDIRS)'; for subdir in $$list; do \
@@ -464,12 +443,14 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
    fi; \
 	done; \
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+	  || etags $(ETAGS_ARGS) $$tags  $$unique $(LISP)
 
 mostlyclean-tags:
 
@@ -482,17 +463,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = kaffe/kaffevm
-
 distdir: $(DISTFILES)
 	$(mkinstalldirs) $(distdir)/mem $(distdir)/systems/win32
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir); \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -501,7 +479,6 @@ distdir: $(DISTFILES)
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \
 	    || exit 1; \
-	    chmod 777 $(distdir)/$$subdir; \
 	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
 	      || exit 1; \
 	  fi; \
@@ -555,22 +532,22 @@ maintainer-clean-depend:
 @AMDEP@CCDEPMODE = @CCDEPMODE@
 
 .c.o:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c $<
+	$(COMPILE) -c -o $@ $<
 
 .c.lo:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
 
 .c.obj:
-@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c `cygpath -w $<`
+	$(COMPILE) -c -o $@ `cygpath -w $<`
 
 info-am:
 info: info-recursive
@@ -605,12 +582,8 @@ mostlyclean-generic:
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
-distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES)
-	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
-
 maintainer-clean-generic:
+	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic
@@ -624,7 +597,7 @@ clean: clean-recursive
 
 distclean-am:  distclean-libLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-tags distclean-depend \
-		distclean-generic clean-am
+		distclean-generic clean-am distclean-local
 	-rm -f libtool
 
 distclean: distclean-recursive
@@ -643,8 +616,8 @@ clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
 uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
 distclean-compile clean-compile maintainer-clean-compile \
 mostlyclean-libtool distclean-libtool clean-libtool \
-maintainer-clean-libtool install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
+maintainer-clean-libtool install-recursive uninstall-recursive \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \
 dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
@@ -678,8 +651,16 @@ stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
 
 jit/icode.h:
-
-include $(top_srcdir)/include/distclean-hack
+distclean-generic: $(DISTCLEAN_LOCAL)
+distclean-local:
+	@dirs='$(DIST_SUBDIRS)'; xdirs='$(SUBDIRS)'; subdirs=; \
+	for dir in $$dirs; do \
+	  for xdir in $$xdirs; do \
+	    test "$$dir" = "$$xdir" && continue 2; \
+	  done; subdirs="$$subdirs $$dir"; \
+	done; \
+	$(MAKE) AM_MAKEFLAGS="DISTCLEAN_LOCAL=ignore-this-failure" \
+	  SUBDIRS=". $$subdirs" distclean-recursive || :
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
