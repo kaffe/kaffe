@@ -3442,7 +3442,9 @@ Kaffe_AttachCurrentThread(JavaVM* vm, JNIEnv** env, ThreadAttachArgs* args)
 jint
 Kaffe_DetachCurrentThread(JavaVM* vm)
 {
-	exitThread();	/* XXX this is wrong */
+	/* Right now, calling this from main2 is what prevents us from 
+	   exiting there */
+	exitThread();	
 	return (0);
 }
 
