@@ -612,6 +612,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		Hjava_lang_Object* syncobj = 0;
 		VmExceptHandler mjbuf;
 		threadData* thread_data = THREAD_DATA(); 
+		struct Hjava_lang_Throwable *save_except = NULL;
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -625,6 +626,19 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 
 		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
 
+		/* This exception has yet been handled by the VM creator.
+		 * We are putting it in stand by until it is cleared. For
+		 * that JNI call we're cleaning up the pointer and we will
+		 * put it again to the value afterward.
+		 */
+		if ((meth->accflags & ACC_JNI) != 0) {
+			if (thread_data->exceptObj != NULL)
+				save_except = thread_data->exceptObj;
+			else
+				save_except = NULL;
+			thread_data->exceptObj = NULL;
+		}
+			
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
 
@@ -632,7 +646,20 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			unlockObject(syncobj);
 		}
 
+		/* If we have a pending exception and this is JNI, throw it */
+		if ((meth->accflags & ACC_JNI) != 0) {
+			struct Hjava_lang_Throwable *eobj;
+			
+			eobj = thread_data->exceptObj;
+			if (eobj != 0) {
+				thread_data->exceptObj = 0;
+				throwExternalException(eobj);
+			}
+			thread_data->exceptObj = save_except;
+		}
+
 		cleanupExceptionHandling(&mjbuf, thread_data);
+
 	}
 #endif
 	if (!promoted && call.retsize == 1) {
@@ -826,6 +853,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		Hjava_lang_Object* syncobj = 0;
 		VmExceptHandler mjbuf;
 		threadData* thread_data = THREAD_DATA(); 
+		struct Hjava_lang_Throwable *save_except = NULL;
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -839,11 +867,36 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 
 		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
 
+		/* This exception has yet been handled by the VM creator.
+		 * We are putting it in stand by until it is cleared. For
+		 * that JNI call we're cleaning up the pointer and we will
+		 * put it again to the value afterward.
+		 */
+		if ((meth->accflags & ACC_JNI) != 0) {
+			if (thread_data->exceptObj != NULL)
+				save_except = thread_data->exceptObj;
+			else
+				save_except = NULL;
+			thread_data->exceptObj = NULL;
+		}
+
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
 
 		if (syncobj != 0) {
 			unlockObject(syncobj);
+		}
+
+		/* If we have a pending exception and this is JNI, throw it */
+		if ((meth->accflags & ACC_JNI) != 0) {
+			struct Hjava_lang_Throwable *eobj;
+
+			eobj = thread_data->exceptObj;
+			if (eobj != 0) {
+				thread_data->exceptObj = 0;
+				throwExternalException(eobj);
+			}
+			thread_data->exceptObj = save_except;
 		}
 
 		cleanupExceptionHandling(&mjbuf, thread_data);

@@ -1,3 +1,9 @@
+2004-04-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/support.c
+	(callMethodV, callMethodA): If the called method is a JNI, then
+	throw the waiting exception in exceptObj.
+
 2004-04-16  Riccardo Mottola <zuse@libero.it>
 
 	* config/m68k/openbsd2/jit.h:
