@@ -1,3 +1,13 @@
+Tue Feb 23 20:41:28 PST 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/zip/DeflaterOutputStream.java:
+	Fix constructor to throw exceptions consistent with JDK.
+
+Mon Feb 22 20:42:16 PST 1999  Tim Wilkinson <tim@transvirtual.com>
+
+	* config/i386/jit-i386.def: fix stack corruption problem when
+	signal happened at just the wrong moment.
+
 Mon Feb 22 09:38:44 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: test whether signal handlers are one-shot
