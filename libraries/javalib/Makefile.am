@@ -61,6 +61,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_text_dateformat_SRCS) \
 	$(kaffe_text_numberformat_SRCS) \
 	$(kaffe_util_SRCS) \
+	$(kaffe_util_locale_SRCS) \
 	$(kaffe_util_log_SRCS) \
 	$(kaffe_util_zip_SRCS)
 java_applet_SRCS = \
@@ -838,6 +839,23 @@ kaffe_util_SRCS = \
 	kaffe/util/UNIXTimeZone.java \
 	kaffe/util/UTF8.java \
 	kaffe/util/VectorSnapshot.java
+kaffe_util_locale_SRCS = \
+	kaffe/util/locale/Country.java \
+	kaffe/util/locale/Country_de.java \
+	kaffe/util/locale/Country_en.java \
+	kaffe/util/locale/Country_fr.java \
+	kaffe/util/locale/Country_it.java \
+	kaffe/util/locale/Country_ja.java \
+	kaffe/util/locale/Country_ko.java \
+	kaffe/util/locale/Country_zh.java \
+	kaffe/util/locale/Language.java \
+	kaffe/util/locale/Language_de.java \
+	kaffe/util/locale/Language_en.java \
+	kaffe/util/locale/Language_fr.java \
+	kaffe/util/locale/Language_it.java \
+	kaffe/util/locale/Language_ja.java \
+	kaffe/util/locale/Language_ko.java \
+	kaffe/util/locale/Language_zh.java 
 kaffe_util_log_SRCS = \
 	kaffe/util/log/LogClient.java \
 	kaffe/util/log/LogStream.java \

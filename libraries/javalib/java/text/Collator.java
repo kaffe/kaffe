@@ -26,6 +26,11 @@ public final static int PRIMARY = 0;
 public final static int SECONDARY = 1;
 public final static int TERTIARY = 2;
 
+/* locales in kaffe.text.collator */
+private static final Locale [] LOCALES = new Locale[] {
+	Locale.US
+};
+
 private int mode;
 private int strength;
 
@@ -64,7 +69,7 @@ public boolean equals(String src, String target) {
 }
 
 public static synchronized Locale[] getAvailableLocales() {
-        return (Format.getAvailableLocales("collator"));
+        return (LOCALES);
 }
 
 public abstract CollationKey getCollationKey(String src);

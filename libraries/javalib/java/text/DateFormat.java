@@ -44,6 +44,11 @@ public final static int HOUR1_FIELD = 15;
 public final static int HOUR0_FIELD = 16;
 public final static int TIMEZONE_FIELD = 17;
 
+/* locales in kaffe.text.dateformat */
+private static final Locale [] LOCALES = new Locale[] {
+	Locale.US
+};
+
 protected Calendar calendar;
 protected NumberFormat numberFormat;
 
@@ -168,7 +173,7 @@ public Date parse(Object src, ParsePosition pos) {
 }
 
 public static synchronized Locale[] getAvailableLocales() {
-	return (Format.getAvailableLocales("dateformat"));
+	return (LOCALES);
 }
 
 public void setCalendar(Calendar cal) {

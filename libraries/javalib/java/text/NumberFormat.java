@@ -18,6 +18,12 @@ abstract public class NumberFormat
 	private static final long serialVersionUID = -2308460125733713944L;
 	final public static int INTEGER_FIELD = 0;
 	final public static int FRACTION_FIELD = 1;
+
+	/* locales in kaffe.text.numberformat */
+	private static final Locale [] LOCALES = new Locale[] {
+		Locale.US
+	};
+
 	boolean grouping;
 	boolean intonly;
 	int maxfrac;
@@ -86,7 +92,7 @@ final public String format(long num) {
 abstract public StringBuffer format(long num, StringBuffer buf, FieldPosition pos);
 
 public static synchronized Locale[] getAvailableLocales() {
-	return (Format.getAvailableLocales("numberformat"));
+	return (LOCALES);
 }
 
 final public static NumberFormat getCurrencyInstance() {

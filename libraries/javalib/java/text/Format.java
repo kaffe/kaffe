@@ -55,34 +55,4 @@ public Object parseObject(String source) throws ParseException {
 static ResourceBundle getResources(String name, Locale loc) {
 	return (ResourceBundle.getBundle(RESOURCEBASE + name + ".locale", loc));
 }
-
-static Locale[] getAvailableLocales(String name) {
-	File dir = new File(RESOURCEBASE + name);
-	String[] list = dir.list();
-
-	int j = 0;
-	for (int i = 0; i < list.length; i++) {
-		String nm = list[i];
-		if (!nm.startsWith("locale_") && nm.length() == 12) {
-			j++;
-		}
-		else {
-			list[i] = null;
-		}
-	}
-
-	Locale[] locales = new Locale[j];
-	for (int i = 0; i < list.length; i++) {
-		String nm = list[i];
-		if (nm != null) {
-			String lang = nm.substring(7, 9);
-			String cont = nm.substring(10, 12);
-			locales[j] = new Locale(lang, cont);
-			j++;
-		}
-	}
-
-	return (locales);
-}
-
 }
