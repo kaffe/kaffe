@@ -1,3 +1,12 @@
+2004-04-19  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/javax/sql/XAConnection.java:
+	Resynced with GNU Classpath.
+
+	2003-10-12  Michael Koch  <konqueror@gmx.de>
+        javax/sql/XAConnection.java:
+        Removed redundant modifiers.
+
 2004-04-18  Nektarios Papadopoulos <npapadop@inaccessnetworks.com>
 
 	* tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java:
