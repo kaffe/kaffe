@@ -1,3 +1,26 @@
+2004-09-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/nio/ByteBuffer.java,
+	libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/ShortBuffer.java:
+	Resynced with GNU Classpath.
+
+	2004-09-17  Sven de Marothy <sven@physto.se>
+
+        * java/nio/ByteBuffer.java:
+        (hashCode): Implemented.
+        * java/nio/CharBuffer.java:
+        * java/nio/DoubleBuffer.java:
+        * java/nio/FloatBuffer.java:
+        * java/nio/LongBuffer.java:
+        * java/nio/IntBuffer.java:
+        * java/nio/ShortBuffer.java:
+        Likewise.
+
 2004-09-17  Michael Franz <mvfranz@gmail.com>,
 	    Timothy S. Stack <stack@cs.utah.edu>
 
