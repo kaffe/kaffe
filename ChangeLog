@@ -1,3 +1,20 @@
+Mon Jul 12 21:06:34 PDT 1999  Niels Kristian Bech Jensen <nkbj@image.dk>
+
+	* libraries/extensions/microsoft/javalib/Makefile.{am,in}: fix typo
+
+Mon Jul 12 20:52:12 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/ConcurrentModificationException.java,
+	libraries/javalib/java/util/ArrayList.java: new files
+	* libraries/javalib/java/util/AbstractCollection.java: fix bogus
+	comparisons using == instead of equals(); implement toArray()
+	* libraries/javalib/java/util/AbstractList.java: fix bogus
+	comparisons using == instead of equals(); implement remove(),
+	iterator(), listIterator(), removeRange() and subList(); reimplement
+	addAll() per docs
+	* libraries/javalib/java/util/Arrays.java: use new ArrayList class
+	instead of private inner class
+
 Mon Jul 12 14:40:41 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
 	* kaffe/kaffevm/external.c kaffe/kaffevm/jni.c: Add profiling
