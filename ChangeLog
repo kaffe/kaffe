@@ -24,6 +24,17 @@
 	* include/Makefile.am:
 	(NOINSTALL_DERIVED_HDRS) added java_io_InterruptedIOException.h
 
+	* include/Makefile.in: regenerated.
+
+	* libraries/javalib/java/io/File.java:
+	(deleteOnExit) reimplemented deleteOnExit for classpath using 
+	shutdownHooks.
+
+	* libraries/javalib/java/lang/Runtime.java:
+	(runShutdownHooks) don't show InterruptedException because it may
+	be a remanant of a former interrupt. If it happens try to join again.
+
+
 	* test/regression/SoInterrupt.java: removed. This test was a
 	non-sense from the beginning to the end.
 
