@@ -1,3 +1,18 @@
+Thu May 30 11:20:14 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	From: Mariusz Mazur <mariusz@isn.pl>
+
+	* kaffe/kaffe/Makefile.am, kaffe/kaffevm/Makefile.am,
+	kaffe/xprof/Makefile.am, configure.in:
+	
+	While packaging kaffe into an rpm (PLD Linux Distribution) I
+	stumbled across a problem of turning off the libltdl distributed
+	with kaffe and turning on the one already present in the
+	system. Attached is a little patch for kaffe
+	(applied as patch -p 0) which makes it possible. Then it's just
+	./configure --enable-ltdl-install=no and voila. Kaffe starts using
+	system libltdl :)
+
 Wed May 29 15:59:09 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         From: Pat Tullmann <pat@tullmann.org>
