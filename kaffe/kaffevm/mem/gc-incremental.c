@@ -27,6 +27,7 @@
 #include "soft.h"
 #include "md.h"
 #include "jni.h"
+#include "access.h"
 
 static gcList gclists[5];
 static int mustfree = 4;		/* temporary list */
@@ -442,9 +443,10 @@ walkMethods(void* base, uint32 size)
 		MARK_IFNONZERO(m, lines);
 		MARK_IFNONZERO(m, exception_table);
 		MARK_IFNONZERO(m, declared_exceptions);
-		/* NB: don't need to mark ncode cause it does not point to
-		 * any allocated object.  
-		 */
+
+		/* NB: need to mark ncode only if it points to a trampoline */
+		if(!METHOD_TRANSLATED(m) && (m->ncode != 0))
+			markObject(m->ncode);
 		m++;
 	}
 }
