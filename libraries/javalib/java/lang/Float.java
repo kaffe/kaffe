@@ -52,11 +52,15 @@ public final class Float extends Number implements Comparable {
       && floatToIntBits(value) == floatToIntBits(((Float)that).value));
   }
 
-  public int compareTo(Object that) {
+  public int compareTo(Float that) {
     final int bits1 = floatToIntBits(this.value);
-    final int bits2 = floatToIntBits(((Float)that).value);
+    final int bits2 = floatToIntBits(that.value);
 
     return (bits1 < bits2) ? -1 : (bits1 == bits2) ? 0 : 1;
+  }
+
+  public int compareTo(Object that) {
+    return compareTo((Float) that);
   }
 
   public int hashCode() {

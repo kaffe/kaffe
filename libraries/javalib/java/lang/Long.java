@@ -38,11 +38,15 @@ public boolean equals(Object obj) {
 		(((Long)obj).value == this.value);
 }
 
-public int compareTo(Object o) {
+public int compareTo(Long l) {
 	final long long1 = this.value;
-	final long long2 = ((Long)o).value;
+	final long long2 = l.value;
 
 	return (long1 == long2) ? 0 : (long1 < long2) ? -1 : 1;
+}
+
+public int compareTo(Object o) {
+	return compareTo((Long) o);
 }
 
 public float floatValue() {

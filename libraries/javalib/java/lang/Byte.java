@@ -93,8 +93,11 @@ public static Byte valueOf(String s, int radix) throws NumberFormatException {
 	return (new Byte(parseByte(s, radix)));
 }
 
-public int compareTo(Object o) {
-	return (int)value - (int)((Byte)o).value;
+public int compareTo(Byte b) {
+	return (int)value - (int)b.value;
 }
 
+public int compareTo(Object o) {
+	return compareTo((Byte) o);
+}
 }

@@ -59,11 +59,15 @@ public final class Double extends Number implements Comparable {
     return value;
   }
 
-  public int compareTo(Object that) {
+  public int compareTo(Double that) {
     final long bits1 = doubleToLongBits(this.value);
-    final long bits2 = doubleToLongBits(((Double)that).value);
+    final long bits2 = doubleToLongBits(that.value);
 
     return (bits1 < bits2) ? -1 : (bits1 == bits2) ? 0 : 1;
+  }
+
+  public int compareTo(Object that) {
+    return compareTo((Double) that);
   }
 
   public static String toString(double value) {

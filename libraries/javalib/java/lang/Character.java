@@ -84,9 +84,14 @@ public final class Character implements Serializable, Comparable {
     return (String.valueOf(value));
   }
 
+  public int compareTo(Character c)
+  {
+    return (int)value - (int)c.value;
+  }
+
   public int compareTo(Object o)
   {
-    return (int)value - (int)((Character)o).value;
+    return compareTo((Character)o);
   }
 
   /**

@@ -49,7 +49,11 @@ public boolean equals(Object obj) {
 }
 
 public int compareTo(Object o) {
-	return (int)value - (int)((Short)o).value;
+	return compareTo((Short) o);
+}
+
+public int compareTo(Short s) {
+	return (int)value - (int)s.value;
 }
 
 public float floatValue()

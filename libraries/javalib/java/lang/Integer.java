@@ -73,11 +73,15 @@ public boolean equals(Object obj) {
 		(((Integer)obj).value == this.value);
 }
 
-public int compareTo(Object o) {
+public int compareTo(Integer i) {
 	final int int1 = this.value;
-	final int int2 = ((Integer)o).value;
+	final int int2 = i.value;
 
 	return (int1 == int2) ? 0 : (int1 < int2) ? -1 : 1;
+}
+
+public int compareTo(Object o) {
+	return compareTo((Integer) o);
 }
 
 public float floatValue() {
