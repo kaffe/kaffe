@@ -164,6 +164,13 @@ public abstract class ImageWriter
     aborted = false;
   }
   
+  public abstract IIOMetadata convertImageMetadata (IIOMetadata inData,
+		                                    ImageTypeSpecifier imageType,
+				                    ImageWriteParam param);
+
+  public abstract IIOMetadata convertStreamMetadata (IIOMetadata inData,
+					             ImageWriteParam param);
+
   public void dispose()
   {
     // The default implementation is empty. Subclasses have to overwrite it.
@@ -376,4 +383,7 @@ public abstract class ImageWriter
 
     this.output = output;
   }
+
+  public abstract void write (IIOMetadata streamMetadata, IIOImage image, ImageWriteParam param)
+    throws IOException;
 }
