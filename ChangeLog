@@ -3,6 +3,7 @@ Tue Sep 28 10:31:56 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* kaffe/kaffevm/soft.c: avoid KMALLOC() in soft_nosuch{method,field}
 	* kaffe/kaffevm/jit3/codeproto.h, kaffe/kaffevm/jit3/icode.c,
 	kaffe/kaffevm/jit3/kaffe-jit.def: fix bug throwing NoSuchMethodError
+	* libraries/javalib/java/io/DataInputStream.java: add missing method
 	
 Mon Sep 27 15:35:39 PDT 1999  Archie Cobbs <archie@whistle.com>
 
