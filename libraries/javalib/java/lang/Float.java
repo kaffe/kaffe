@@ -97,8 +97,15 @@ public final class Float extends Number {
   }
   
   public static boolean isNaN(float v) {
-    /* A NaN is the only number which doesn't equal itself */
-    return (v != v);
+    /* A NaN is the only number which doesn't equal itself. Unfortunately,
+       this test doesn't seem to work on all platforms. */
+    /* return (v != v); */
+
+    final int expMask = 0x7f800000;	// exponent mask
+    final int manMask = 0x007fffff;	// mantissa mask
+    final int bits = floatToIntBits(v);
+
+    return ((bits & expMask) == expMask && (bits & manMask) != 0);
   }
   
   public boolean isNaN() {

@@ -101,8 +101,15 @@ public final class Double extends Number {
   }
   
   public static boolean isNaN(double v) {
-    /* A NaN is the only number which doesn't equal itself */
-    return (v != v);
+    /* A NaN is the only number which doesn't equal itself. Unfortunately,
+       this test doesn't seem to work on all platforms. */
+    /* return (v != v); */
+
+    final long expMask = 0x7ff0000000000000L;	// exponent mask
+    final long manMask = 0x000fffffffffffffL;	// mantissa mask
+    final long bits = doubleToLongBits(v);
+
+    return ((bits & expMask) == expMask && (bits & manMask) != 0);
   }
 
   public long longValue() {
