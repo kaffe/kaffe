@@ -1341,7 +1341,7 @@ objectStatsPrint(void)
 	dprintf("Memory statistics:\n");
 	dprintf("------------------\n");
 
-	while (gcFunctions[cnt].description != NULL) {
+	while (cnt < KGC_ALLOC_MAX_INDEX) {
 		dprintf("%14.14s: Nr %6d  Mem %6dK",
 			gcFunctions[cnt].description, 
 			gcFunctions[cnt].nr, 
