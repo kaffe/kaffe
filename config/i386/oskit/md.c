@@ -17,17 +17,23 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <pthread.h>
 
-#include <fs.h>
+#include <oskit/threads/pthread.h>
+
+/* why is fs.h part of the minimal c library? */
+#include <oskit/c/fs.h>
+
 #include <oskit/fs/dir.h>
-#include <oskit/fs/bmodfs.h>
+/* #include <oskit/fs/bmodfs.h> */
 #include <oskit/net/socket.h>
 #include <oskit/startup.h>
 #include <oskit/dev/dev.h>
 #include <oskit/dev/freebsd.h>
 #include <oskit/dev/net.h>
 #include <oskit/dev/linux.h>
+
+#include <oskit/dev/osenv.h>
+#include <oskit/com/services.h>
 
 /* For DBGEXPR */
 #include "debug.h"
@@ -60,6 +66,10 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 		*argv++ = 0;
 	}
 
+	oskit_clientos_init();
+	/*oskit_register(&oskit_osenv_iid,
+	  oskit_osenv_create_default());*/
+	start_osenv();
 	/*
 	 * XXX: pthread_init() is called here instead of in the thread
 	 * init code since it needs to be done before all this goop is.
@@ -84,6 +94,13 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 	 */
 	start_fs_native_pthreads("/");
 	start_network_native_pthreads();
+
+	/*
+	 * I guess I could reimpliment getcwd here using native_
+	 * system calls, but why?
+	 */
+	cp = getenv("PWD");
+	if (cp) chdir(cp);
 #endif
 	/*
 	 * Read in the default classpath file.

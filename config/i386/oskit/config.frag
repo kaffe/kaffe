@@ -38,6 +38,11 @@ ac_cv_func_sigemptyset='yes'
 ac_cv_func_sigaddset='yes'
 ac_cv_func_sigprocmask='yes'
 
+ac_cv_func_dlopen='no'
+ac_cv_func_dlerror='no'
+ac_cv_func_sbrk='no'
+ac_cv_func_getuid='no'
+
 # Configure tries to compile *and* run a program to figure this out!
 ac_cv_func_mmap_fixed_mapped=yes
 
@@ -62,34 +67,35 @@ eval `$CPP conftest.c 2>&1 | grep oskit_env | awk '{print $3}'`
 #
 # what a mess this is
 #
-if [ "$oskit_env" = "real" ]
-then
-KAFFE_LIBS="\
-                -loskit_startup \
-                -loskit_threads \
-                -loskit_svm -loskit_amm \
-                -loskit_bootp \
-                -loskit_freebsd_net \
-                -loskit_linux_dev -loskit_dev \
-                -loskit_kern -loskit_lmm \
-		-loskit_netbsd_fs \
-		-loskit_freebsd_c_r \
-                -loskit_diskpart -loskit_fs -loskit_com \
-                -loskit_threads \
-$KAFFE_LIBS "
-else
-KAFFE_LIBS="\
-                -loskit_startup \
-                -loskit_threads \
-                -loskit_bootp \
-                -loskit_freebsd_net \
-                -loskit_linux_dev -loskit_freebsd_c_r \
-		-loskit_dev \
-                -loskit_kern -loskit_lmm \
-		-loskit_netbsd_fs \
-		-loskit_freebsd_c_r \
-                -loskit_diskpart -loskit_fs -loskit_com \
-                -loskit_threads \
-$KAFFE_LIBS "
-fi
-
+#if [ "$oskit_env" = "real" ]
+#then
+#KAFFE_LIBS="\
+#                -loskit_startup \
+#                -loskit_threads \
+#                -loskit_svm -loskit_amm \
+#                -loskit_bootp \
+#                -loskit_freebsd_net \
+#                -loskit_linux_dev -loskit_dev \
+#                -loskit_kern -loskit_lmm \
+#		-loskit_netbsd_fs \
+#		-loskit_freebsd_c_r \
+#                -loskit_diskpart -loskit_fs -loskit_com \
+#                -loskit_threads \
+#$KAFFE_LIBS "
+#elif (exit 0)
+#then
+#KAFFE_LIBS="\
+#                -loskit_startup \
+#                -loskit_threads \
+#                -loskit_bootp \
+#                -loskit_freebsd_net \
+#                -loskit_linux_dev -loskit_freebsd_c_r \
+#		-loskit_dev \
+#                -loskit_kern -loskit_lmm \
+#		-loskit_netbsd_fs \
+#		-loskit_freebsd_c_r \
+#                -loskit_diskpart -loskit_fs -loskit_com \
+#                -loskit_threads \
+#$KAFFE_LIBS "
+#fi
+#
