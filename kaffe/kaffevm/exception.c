@@ -83,14 +83,19 @@ error2Throwable(errorInfo* einfo)
 			    checkPtr(stringC2Java(einfo->mess)));
 		break;
 
+	case KERR_INITIALIZER_ERROR:
+		if (strcmp(CLASS_CNAME(OBJECT_CLASS(&einfo->throwable->base)),
+			   "java/lang/ExceptionInInitializerError") != 0) {
+			err = (Hjava_lang_Throwable*)execute_java_constructor(
+				    JAVA_LANG(ExceptionInInitializerError),
+				    0, "(Ljava/lang/Throwable;)V",
+				    einfo->throwable);
+			break;
+		}
+		/* FALLTHRU */
+
 	case KERR_RETHROW:
 		err = einfo->throwable;
-		break;
-
-	case KERR_INITIALIZER_ERROR:
-		err = (Hjava_lang_Throwable*)execute_java_constructor(
-			    JAVA_LANG(ExceptionInInitializerError),
-			    0, "(Ljava/lang/Throwable;)V", einfo->throwable);
 		break;
 
 	case KERR_OUT_OF_MEMORY:
@@ -348,32 +353,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 				obj = &einfo.class->head;
 			}
 			else {
-#if defined(FRAMEOBJECT)	/* does this arch support a FRAMEOBJECT macro */
-				obj = FRAMEOBJECT(frame->fp);
-#else
-				/* otherwise, do it the hard way... */
-				{
-					const char *str;
-					/* Set up the necessary state for
-					 * the SLOT2 macros to work ---
-					 * see jit/machine.c
-					 * Since we have the translator lock,
-					 * we can clobber the max* variables.
-					 */
-					enterTranslator();
-					maxLocal = einfo.method->localsz;
-					maxStack = einfo.method->stacksz;
-					str = einfo.method->signature->data;
-					maxArgs = sizeofSig(&str, false);
-					maxTemp = MAXTEMPS - 1;
-					/* NB: we assume that the JIT will have
-					 * spilled the 'this' object in the
-					 * stack location for slot zero.
-					 */
-					obj = (fpframe(frame))[SLOT2ARGOFFSET(0)/SLOTSIZE];
-					leaveTranslator();
-				}
-#endif
+			    	FRAMEOBJECT(obj, frame->fp, einfo);
 			}
 
 #if defined(HAVE_GCJ_SUPPORT)
