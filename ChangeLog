@@ -1,3 +1,8 @@
+Wed Aug 19 11:45:12 1998  Mike Boilen <mgb@cs.brown.edu>
+
+	* libraries/javalib/java/lang/Runtime.java: fixed typo in parsing cmd.
+	libraries/clib/native/UNIXProcess.c: fixed typo in passing of env.
+
 Tue Aug 18 15:24:32 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* libraries/javalib/java/io/ObjectInputStream.java: avoid unwanted
