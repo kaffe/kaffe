@@ -39,7 +39,9 @@ exception statement from your version. */
 package java.io;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URI;
 import gnu.classpath.Configuration;
 import gnu.java.io.PlatformHelper;
 import java.util.LinkedList;
@@ -291,6 +293,24 @@ public class File implements Serializable, Comparable
     checkRead ();
     return existsInternal (path);
   }
+
+//  File(URI) copied from Kaffe's File.java
+  /**
+   * This method initializes a new <code>File</code> object to represent
+   * a file with the specified URI.
+   *
+   * @param uri The URI of the file
+   */
+
+public File(URI uri) {
+	if (uri == null) {
+		throw new NullPointerException();
+	}
+	this.path = uri.getPath();
+	if (this.path == null) {
+		throw new IllegalArgumentException();
+	}
+}
 
   /**
    * This method initializes a new <code>File</code> object to represent
@@ -866,6 +886,29 @@ public class File implements Serializable, Comparable
     
     return new URL (url_string);
   }
+
+// toURI() copied from Kaffe's File.java
+/**
+ * @since 1.4
+ */
+public URI toURI() {
+	try {
+		return new URI("file",
+			       null,
+			       (isDirectory() ?                               
+				getAbsolutePath() + separator
+				: getAbsolutePath()),
+			       null,
+			       null);
+	}
+	catch (URISyntaxException e) {
+		throw (IllegalArgumentException) 
+			new IllegalArgumentException("Couldn't convert "
+						     + toString()
+						     + " to an URI")
+			.initCause(e);
+	}
+}
 
   /*
    * This native method actually creates the directory

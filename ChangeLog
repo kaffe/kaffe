@@ -1,3 +1,8 @@
+2003-09-12  Ito Kazumitsu <kaz@maczuka.gcd.org>
+	* java/io/File.java:
+	added missing 1.4 features (toURI() and File(URI)) once implemented
+	in kaffe but lost when GNU Classpath's File.java was imported.
+
 2003-09-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
 	* java/util/GregorianCalendar.java:
 	(getLinearTime) corrected a bug of counting leap days twice.
