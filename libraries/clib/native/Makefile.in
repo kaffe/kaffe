@@ -137,13 +137,15 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libnative.la
 
 IO_SRCS = \
+		ByteToCharDefault.c \
+		ByteToCharIconv.c \
+		CharToByteDefault.c \
+		CharToByteIconv.c \
 		ObjectStreamClassImpl.c
 
 
 LANG_SRCS = \
 		Application.c \
-		ByteToCharDefault.c \
-		CharToByteDefault.c \
 		Class.c \
 		ClassLoader.c \
 		Compiler.c \
@@ -205,13 +207,13 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libnative_la_DEPENDENCIES = 
-am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo Application.lo \
-ByteToCharDefault.lo CharToByteDefault.lo Class.lo ClassLoader.lo \
-Compiler.lo Double.lo Float.lo Math.lo MemoryAdvice.lo NativeLibrary.lo \
-Object.lo RMIHashes.lo Runtime.lo SecurityManager.lo String.lo \
-System.lo SystemClassLoader.lo Thread.lo Throwable.lo UNIXProcess.lo \
-ZipFile.lo Array.lo Constructor.lo Field.lo Method.lo DateFormat.lo \
-TestNative.lo Arrays.lo
+am_libnative_la_OBJECTS =  ByteToCharDefault.lo ByteToCharIconv.lo \
+CharToByteDefault.lo CharToByteIconv.lo ObjectStreamClassImpl.lo \
+Application.lo Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
+Math.lo MemoryAdvice.lo NativeLibrary.lo Object.lo RMIHashes.lo \
+Runtime.lo SecurityManager.lo String.lo System.lo SystemClassLoader.lo \
+Thread.lo Throwable.lo UNIXProcess.lo ZipFile.lo Array.lo \
+Constructor.lo Field.lo Method.lo DateFormat.lo TestNative.lo Arrays.lo
 libnative_la_OBJECTS =  $(am_libnative_la_OBJECTS)
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -227,7 +229,8 @@ GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 DEP_FILES =  @AMDEP@ $(DEPDIR)/Application.Plo $(DEPDIR)/Array.Plo \
 $(DEPDIR)/Arrays.Plo $(DEPDIR)/ByteToCharDefault.Plo \
-$(DEPDIR)/CharToByteDefault.Plo $(DEPDIR)/Class.Plo \
+$(DEPDIR)/ByteToCharIconv.Plo $(DEPDIR)/CharToByteDefault.Plo \
+$(DEPDIR)/CharToByteIconv.Plo $(DEPDIR)/Class.Plo \
 $(DEPDIR)/ClassLoader.Plo $(DEPDIR)/Compiler.Plo \
 $(DEPDIR)/Constructor.Plo $(DEPDIR)/DateFormat.Plo $(DEPDIR)/Double.Plo \
 $(DEPDIR)/Field.Plo $(DEPDIR)/Float.Plo $(DEPDIR)/Math.Plo \
@@ -353,7 +356,9 @@ distdir: $(DISTFILES)
 @AMDEP@include $(DEPDIR)/Array.Plo
 @AMDEP@include $(DEPDIR)/Arrays.Plo
 @AMDEP@include $(DEPDIR)/ByteToCharDefault.Plo
+@AMDEP@include $(DEPDIR)/ByteToCharIconv.Plo
 @AMDEP@include $(DEPDIR)/CharToByteDefault.Plo
+@AMDEP@include $(DEPDIR)/CharToByteIconv.Plo
 @AMDEP@include $(DEPDIR)/Class.Plo
 @AMDEP@include $(DEPDIR)/ClassLoader.Plo
 @AMDEP@include $(DEPDIR)/Compiler.Plo

@@ -204,6 +204,7 @@ ALWAYS_TESTS = \
 	LineNumberReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
+	PipeTest.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
 	SystemLoaderTest.java \
