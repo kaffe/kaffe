@@ -1,3 +1,16 @@
+2004-12-15  Michael Koch  <konqueror@gmx.de>
+
+	* libraries/javalib/javax/swing/JComponent.java
+	(setTransferHandler): Made public. Fire property change event.
+	* libraries/javalib/javax/swing/TransferHandler.java: Implemented.
+	* jlibraries/javalib/avax/swing/text/JTextComponent.java
+	(DefaultTransferHandler): New inner class.
+	(defaultTransferHandler): New variable.
+	(copy): New method.
+	(cut): Likewise.
+	(paste): Likewise.
+	(doTransferAction): Likewise.
+
 2004-12-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/text/NumberFormat.java:

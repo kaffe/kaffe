@@ -2092,9 +2092,14 @@ public abstract class JComponent extends Container implements Serializable
    * @see ComponentUI#getTransferHandler
    */
 
-  void setTransferHandler (TransferHandler newHandler)
+  public void setTransferHandler(TransferHandler newHandler)
   {
+    if (transferHandler == newHandler)
+      return;
+
+    TransferHandler oldHandler = transferHandler;
     transferHandler = newHandler;
+    firePropertyChange("transferHandler", oldHandler, newHandler);
   }
 
   /**
