@@ -6,6 +6,7 @@ Mon Oct  4 12:01:07 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/Klasses.jar: regen
 	* libraries/javalib/java/lang/InheritableThreadLocal.java,
 	libraries/javalib/java/lang/ThreadLocal.java: simplify using HashMap
+	* libraries/javalib/java/util/ArrayList.java: fix bug
 
 Sun Oct  3 16:26:13 1999  Godmar Back  <gback@cs.utah.edu>
 
