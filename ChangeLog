@@ -1,3 +1,17 @@
+Tue Oct 13 17:28:22 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* Fixes for NCR MP-RAS 3.x (i386/univel_svr4):
+	kaffe/kaffevm/jit/basecode.h: constants (``bn'') conflict 
+	with sys/vnode.h -> change #defines to enums.
+
+	* config/i386/univel_svr4/:  Page 0 (aka address in range 
+	[0, 0x1000[) has read access, so NullPointerException can't retrieve 
+	the PC of the current method, remap page 0 as PROT_NONE.
+
+	* configure.in:  Need the library ``mw'' with the library ``m''.
+	Need nsl library, but gethostbyname() is not in, add a check with
+	gethostname().
+
 Tue Oct 13 16:36:07 1998  Stephen Clawson  <sclawson@cs.utah.edu>
 
 	* libraries/javalib/java/util/Vector.java: fix clone() to invoke

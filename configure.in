@@ -388,6 +388,7 @@ dnl -------------------------------------------------------------------------
 dnl Checks for standard libraries
 
 AC_CHECK_LIBRARY(c,printf,STD_LIBRARIES)
+AC_CHECK_LIBRARY(mw,_mwvalidcheckl,STD_LIBRARIES)
 AC_CHECK_LIBRARY(m,sin,STD_LIBRARIES)
 AC_CHECK_LIBRARY(gmp,mpz_abs,STD_LIBRARIES)
 AC_SUBST(STD_LIBRARIES)
@@ -410,6 +411,10 @@ dnl Check libraries for native library.
 dnl None required.
 
 dnl Check for libraries for net library.
+AC_CHECK_FUNC(gethostname)
+if test $ac_cv_func_gethostname = no; then
+      AC_CHECK_LIBRARY(nsl, gethostname, NET_LIBRARIES)
+fi
 AC_CHECK_FUNC(gethostbyname)
 if test $ac_cv_func_gethostbyname = no; then
       AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBRARIES)

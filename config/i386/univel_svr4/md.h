@@ -19,4 +19,7 @@
 #include "jit-md.h"
 #endif
 
+/* NCR MP-RAS requires a little initialisation */
+#define INIT_MD()	init_md()
+
 #endif
