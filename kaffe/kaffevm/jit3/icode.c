@@ -4496,9 +4496,8 @@ check_array_store(SlotInfo* array, SlotInfo* obj)
 }
 
 void
-check_null(int x, SlotInfo* obj, int y)
+explict_check_null(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_NULLPOINTER_CHECKS)
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_ref_const_eq(obj, 0, newFakeCall(soft_nullpointer, pc));
@@ -4512,6 +4511,13 @@ check_null(int x, SlotInfo* obj, int y)
 		start_sub_block();
 		set_label(x, y);
 	}
+}
+
+void
+check_null(int x, SlotInfo* obj, int y)
+{
+#if defined(CREATE_NULLPOINTER_CHECKS)
+	explict_check_null(x, obj, y);
 #else
 	if (canCatch(ANY)) {
 		begin_func_sync();

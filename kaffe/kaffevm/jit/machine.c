@@ -69,13 +69,15 @@ uint32 npc;
 
 jitflags willcatch;
 
+#define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
+      cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
+      softcall_nullpointer();                                 \
+      set_label(_i, _n)
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the
  * MMU for detecting null pointer accesses */
 #if defined(CREATE_NULLPOINTER_CHECKS)
 #define CHECK_NULL(_i, _s, _n)                                  \
-      cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
-      softcall_nullpointer();                                 \
-      set_label(_i, _n)
+    EXPLICIT_CHECK_NULL(_i, _s, _n)
 #else
 /*
  * If we rely on the MMU to catch null pointer accesses, we must spill
@@ -501,7 +503,9 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	 * before overwriting it.
 	 */
 	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
-		KFREE(METHOD_NATIVECODE(meth));
+		/* Workaround for KFREE() ? : bug on gcc 2.7.2 */
+		void *nc = METHOD_NATIVECODE(meth);
+		KFREE(nc);
 	}
 	SET_METHOD_JITCODE(meth, code->code);
 	/* Free bytecode before replacing it with native code */

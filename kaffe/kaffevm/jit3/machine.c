@@ -77,6 +77,7 @@ uint32 npc;
 jitflags willcatch;
 
 /* jit3 specific prototypes from icode.c */
+void explict_check_null (int x, SlotInfo* obj, int y);
 void check_null (int x, SlotInfo* obj, int y);
 void check_div (int x, SlotInfo* obj, int y);
 void check_div_long (int x, SlotInfo* obj, int y);

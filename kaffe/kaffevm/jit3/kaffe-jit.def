@@ -2349,7 +2349,7 @@ define_insn(INVOKESPECIAL)
 	else {
 		idx = method_nargs();
 
-		check_null(INVOKESPECIAL, stack(idx), 34);
+		explict_check_null(INVOKESPECIAL, stack(idx), 34);
 
 		check_stack_ref(idx);
 

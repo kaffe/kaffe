@@ -56,13 +56,15 @@ char* engine_version = KVER;
 #define	define_insn_alias(code)	case code:				\
 				IDBG( dprintf("%03d: %s\n", pc, #code); )
 
+#define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
+      cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
+      softcall_nullpointer();                                 \
+      set_label(_i, _n)
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the
  * MMU for detecting null pointer accesses */
 #if defined(CREATE_NULLPOINTER_CHECKS)
 #define CHECK_NULL(_i, _s, _n)                                  \
-      cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
-      softcall_nullpointer();                                 \
-      set_label(_i, _n)
+    EXPLICIT_CHECK_NULL(_i, _s, _n)
 #else
 #define CHECK_NULL(_i, _s, _n)
 #endif
