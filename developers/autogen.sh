@@ -7,7 +7,7 @@
 ## update class list breaks on Mandrake 9.0
 ## generating a ton of double entries
 ##
-## ( cd libraries/javalib && ../../developers/update-class-list )
+( cd libraries/javalib && ../../developers/update-class-list )
 aclocal -I .
 autoheader -Wall
 automake --add-missing --copy -Wall

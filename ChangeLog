@@ -1,3 +1,28 @@
+2003-05-28  Dalibor Topic <robilad@yahoo.com>
+
+	* developers/autogen.sh:
+	uncommented class file list updating since it works again on
+	Mandrake 9.1.
+
+	* libraries/javalib/gnu/java/nio/ByteBufferImpl.java,
+        libraries/javalib/gnu/java/nio/CharBufferImpl.java,
+        libraries/javalib/gnu/java/nio/DoubleBufferImpl.java,
+        libraries/javalib/gnu/java/nio/FloatBufferImpl.java,
+        libraries/javalib/gnu/java/nio/IntBufferImpl.java,
+        libraries/javalib/gnu/java/nio/LongBufferImpl.java,
+        libraries/javalib/gnu/java/nio/ShortBufferImpl.java:
+	removed.
+	
+	* libraries/javalib/Makefile.am:
+        libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/nio.files,
+	updated to reflect class library changes.
+	
+        * kaffe/scripts/compat/Makefile.in,
+        kaffe/scripts/Makefile.in,
+        libraries/javalib/Makefile.in:
+	regenerated.
+
 2003-05-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
 	* libraries/javalib/Makefile.in:
 	added gnu_classpath_SRCS required for compiling java/nio/*
@@ -412,40 +437,40 @@
 	* Makefile.am:
 	(EXTRA_DIST) Added THIRDPARTY.
 
-	* kaffe-patched/kaffe/kaffe/Makefile.am,
-	kaffe-patched/kaffe/kaffeh/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/gcj/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/intrp/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/jit/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/jit3/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/systems/beos-native/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
-	kaffe-patched/kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
-	kaffe-patched/kaffe/xprof/Makefile.am,
-	kaffe-patched/libraries/clib/net/Makefile.am,
-	kaffe-patched/Makefile.am,
-	kaffe-patched/replace/Makefile.am,
-	kaffe-patched/test/internal/Makefile.am:
+	* kaffe/kaffe/Makefile.am,
+	kaffe/kaffeh/Makefile.am,
+	kaffe/kaffevm/gcj/Makefile.am,
+	kaffe/kaffevm/intrp/Makefile.am,
+	kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am,
+	kaffe/kaffevm/Makefile.am,
+	kaffe/kaffevm/systems/beos-native/Makefile.am,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+	kaffe/xprof/Makefile.am,
+	libraries/clib/net/Makefile.am,
+	Makefile.am,
+	replace/Makefile.am,
+	test/internal/Makefile.am:
 	(INCLUDES) replaced by AM_CPPFLAGS.
 	
-	* kaffe-patched/kaffe/kaffe/Makefile.in,
-	kaffe-patched/kaffe/kaffeh/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/gcj/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/intrp/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/jit/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/jit3/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/systems/beos-native/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
-	kaffe-patched/kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
-	kaffe-patched/kaffe/xprof/Makefile.in,
-	kaffe-patched/libraries/clib/net/Makefile.in,
-	kaffe-patched/Makefile.in,
-	kaffe-patched/replace/Makefile.in,
-	kaffe-patched/test/internal/Makefile.in:
+	* kaffe/kaffe/Makefile.in,
+	kaffe/kaffeh/Makefile.in,
+	kaffe/kaffevm/gcj/Makefile.in,
+	kaffe/kaffevm/intrp/Makefile.in,
+	kaffe/kaffevm/jit/Makefile.in,
+	kaffe/kaffevm/jit3/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/xprof/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	Makefile.in,
+	replace/Makefile.in,
+	test/internal/Makefile.in:
 	regenerated.
 	
 2003-05-22 Dalibor Topic <robilad@yahoo.com>
