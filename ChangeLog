@@ -1,3 +1,8 @@
+Fri May  7 13:23:07 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/jni.c: in NewStringUTF(), return null if the data
+	does not contain valid UTF-8 characters, instead of crashing
+
 Wed May  5 12:27:21 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in,  kaffe/kaffe/main.c,
