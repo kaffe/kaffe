@@ -1,5 +1,12 @@
 2000-06-16  Edouard G. Parmelan  <egp@free.fr>
 
+	* libraries/javalib/kaffe/util/IntegerIntegerHashtable.java:
+	Add serialVersionUID as kjc may add <clinit>() but Jikes don't.
+
+	* libraries/javalib/kaffe/io/ConverterAlias.java: If they are not
+	aliases for encoding name, return it in uppercase.  This will
+	automaticly create aliases for Cp1250 and Co to your classes.
+	
 	* test/regression/FPUStack.java, test/regression/Makefile.am,
 	test/regression/Makefile.in: new testcase for PR#620.
 
