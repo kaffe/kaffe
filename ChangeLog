@@ -1,3 +1,8 @@
+Thu Jul  4 03:38:44 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/image/ImageFilter.java:
+	merged with pocketlinux kaffe.
+
 Thu Jul  4 03:25:32 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/zip/Deflater.java,
