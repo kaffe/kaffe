@@ -62,8 +62,31 @@ int dbgSetMaskStr(const char UNUSED *s) { return 0; }
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */
 
-debugmask_t kaffevmDebugMask = DEFAULT_DEBUG_MASK;
+/* Defines what debugging output is seen. Needs to be 64-bit. */
+static debugmask_t kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 
+/**
+ * Get the debug mask. 
+ *
+ * The debug mask defines what kind of
+ * debugging output is enabled or disabled.
+ *
+ * @return current debug mask
+ */
+debugmask_t
+dbgGetMask(void)
+{
+	return kaffevmDebugMask;
+}
+
+/**
+ * Set the debug mask. 
+ *
+ * The debug mask defines what kind of
+ * debugging output is enabled or disabled.
+ *
+ * @param mask new debug mask
+ */
 void
 dbgSetMask(debugmask_t mask)
 {

@@ -177,21 +177,20 @@ typedef long long int   debugmask_t;
 #else
 /* --- Debugging is enabled --- */
 
-/* Defines what debugging output is seen. Needs to be 64-bit. */
-extern debugmask_t kaffevmDebugMask;
+extern debugmask_t dbgGetMask(void);
 
 # define DBGIF(statement)  do { statement; } while (0)
 
 /* Debug macros that are selected with the above flags. */
 
 # define DBG(mask, statement) do {			\
-	if ((DBG_##mask)&(kaffevmDebugMask)) {	\
+	if ((DBG_##mask)&(dbgGetMask())) {	\
 		statement;			\
 	}					\
 	} while (0)
 
 # define DBGEXPR(mask, expr, default)			\
-	(((DBG_##mask)&(kaffevmDebugMask))?(expr):(default))
+	(((DBG_##mask)&(dbgGetMask()))?(expr):(default))
 
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() do { (*(int*)0) = 42; } while (0)
