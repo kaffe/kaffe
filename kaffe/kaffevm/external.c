@@ -233,6 +233,7 @@ DBG(NATIVELIB,
 		}
 	}
 	if (errbuf != 0) {
+		assert(errsiz > 0);
 		strncpy(errbuf, "Too many open libraries", errsiz);
 		errbuf[errsiz - 1] = '\0';
 	}
@@ -245,6 +246,7 @@ DBG(NATIVELIB,
 	/* If this file doesn't exist, ignore it */
 	if (access(path, R_OK) != 0) {
 		if (errbuf != 0) {
+			assert(errsiz > 0);
 			strncpy(errbuf, SYS_ERROR(errno), errsiz);
 			errbuf[errsiz - 1] = '\0';
 		}
@@ -281,9 +283,10 @@ DBG(NATIVELIB,
 				if( err == 0 )
 				{
 					status = TRY_LOAD_ERROR;
-					strncpy(errbuf,
-						"Unknown error",
-						errsiz);
+					if (errbuf != 0)
+						strncpy(errbuf,
+							"Unknown error",
+							errsiz);
 				}
 				else if( (strstr(err, "ile not found") ||
 					  strstr(err, "annot open")) )
@@ -294,7 +297,8 @@ DBG(NATIVELIB,
 				{
 					/* We'll assume its a real error. */
 					status = TRY_LOAD_ERROR;
-					strncpy(errbuf, err, errsiz);
+					if (errbuf != 0)
+						strncpy(errbuf, err, errsiz);
 				}
 			}
 		}
@@ -303,9 +307,14 @@ DBG(NATIVELIB,
 	unblockAsyncSignals();
 
 	if (lib->desc == 0) {
-		if (status == TRY_LOAD_NOT_FOUND) 
-			snprintf(errbuf, errsiz, "%s: not found", strrchr(path, file_separator[0]) + 1);
-		errbuf[errsiz - 1] = '\0';
+		if (errbuf != 0)
+		{
+			assert(errsiz != 0);
+			if (status == TRY_LOAD_NOT_FOUND) 
+				snprintf(errbuf, errsiz, "%s: not found",
+					 strrchr(path, file_separator[0]) + 1);
+			errbuf[errsiz - 1] = '\0';
+		}
 		return -1;
 	}
 

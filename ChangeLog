@@ -6,6 +6,9 @@ Thu Oct  3 2002 Patrick Tullmann  <pat@tullmann.org>
 	ranges and a pre-compiled version (needs Jasmin to compile the
 	bytecodes).
 	* test/regression/Makefile.*: update for new test and regenerate
+
+	* kaffe/kaffevm/external.c: errbuf may be null in
+	loadNativeLibrary2(), always check that.
 	
 Fri Sep 27 2002 Patrick Tullmann  <pat@tullmann.org>
 	* libraries/javalib/Makefile.{am,in}: Fix bootstrap
