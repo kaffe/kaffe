@@ -62,180 +62,125 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
 {
   private static final long serialVersionUID = 5420698392125238833L;
   
-  public static final int HIDE_ON_CLOSE = 0;
-  public static final int EXIT_ON_CLOSE = 1;
-  public static final int DISPOSE_ON_CLOSE = 2;
-  public static final int DO_NOTHING_ON_CLOSE  = 3;
+  protected AccessibleContext accessibleContext;
 
-    protected  AccessibleContext accessibleContext;
-
-    private int close_action = EXIT_ON_CLOSE;    
-    
-    
-    /***************************************************
-     *
-     *
-     *  constructors
-     *
-     *
-     *************/
-
-    public JWindow()
-    {      
-      super(SwingUtilities.getOwnerFrame());
-    }
-
-    // huuu ?
-    public JWindow(Frame f)
-    {
-	super(f);
-    }
-    
-    /***************************************************
-     *
-     *
-     *  methods, this part is shared with JDialog, JFrame
-     *
-     *
-     *************/
-
-  
-    private boolean checking;
-    protected  JRootPane         rootPane;
-
-    
-    protected  void frameInit()
-    {
-      super.setLayout(new BorderLayout(1, 1));
-      getRootPane(); // will do set/create
-    }
-  
-  public Dimension getPreferredSize()
+  public JWindow()
   {
-    Dimension d = super.getPreferredSize();
-    return d;
+    super(SwingUtilities.getOwnerFrame());
   }
 
-  public  void setLayout(LayoutManager manager)
-  {    super.setLayout(manager);  }
+  public JWindow(Frame f)
+  {
+    super(f);
+  }
 
-    public void setLayeredPane(JLayeredPane layeredPane) 
-    {   getRootPane().setLayeredPane(layeredPane);   }
-  
-    public JLayeredPane getLayeredPane()
-    {   return getRootPane().getLayeredPane();     }
-  
-    public JRootPane getRootPane()
-    {
-	if (rootPane == null)
-	    setRootPane(createRootPane());
-	return rootPane;          
-    }
+  private boolean checking;
+  protected JRootPane rootPane;
 
-    public void setRootPane(JRootPane root)
-    {
-	if (rootPane != null)
-	    remove(rootPane);
-	    
-	rootPane = root; 
-	add(rootPane, BorderLayout.CENTER);
-    }
+  protected void frameInit()
+  {
+    super.setLayout(new BorderLayout(1, 1));
+    getRootPane(); // will do set/create
+  }
 
-    public JRootPane createRootPane()
-    {   return new JRootPane();    }
+  public Dimension getPreferredSize()
+  {
+    return super.getPreferredSize();
+  }
 
-    public Container getContentPane()
-    {    return getRootPane().getContentPane();     }
+  public void setLayout(LayoutManager manager)
+  {
+    super.setLayout(manager);
+  }
 
-    public void setContentPane(Container contentPane)
-    {    getRootPane().setContentPane(contentPane);    }
-  
-    public Component getGlassPane()
-    {    return getRootPane().getGlassPane();   }
-  
-    public void setGlassPane(Component glassPane)
-    {   getRootPane().setGlassPane(glassPane);   }
+  public void setLayeredPane(JLayeredPane layeredPane)
+  {
+    getRootPane().setLayeredPane(layeredPane);
+  }
 
-    
-    protected  void addImpl(Component comp, Object constraints, int index)
-    {	super.addImpl(comp, constraints, index);    }
+  public JLayeredPane getLayeredPane()
+  {
+    return getRootPane().getLayeredPane();
+  }
 
+  public JRootPane getRootPane()
+  {
+    if (rootPane == null)
+      setRootPane(createRootPane());
+    return rootPane;
+  }
 
-    public void remove(Component comp)
-    {   getContentPane().remove(comp);  }
-  
-    protected  boolean isRootPaneCheckingEnabled()
-    {    return checking;        }
+  public void setRootPane(JRootPane root)
+  {
+    if (rootPane != null)
+      remove(rootPane);
 
+    rootPane = root;
+    add(rootPane, BorderLayout.CENTER);
+  }
 
-    protected  void setRootPaneCheckingEnabled(boolean enabled)
-    { checking = enabled;  }
+  public JRootPane createRootPane()
+  {
+    return new JRootPane();
+  }
 
+  public Container getContentPane()
+  {
+    return getRootPane().getContentPane();
+  }
 
-    public void update(Graphics g)
-    {   paint(g);  }
+  public void setContentPane(Container contentPane)
+  {
+    getRootPane().setContentPane(contentPane);
+  }
 
-    protected  void processKeyEvent(KeyEvent e)
-    {	super.processKeyEvent(e);    }
+  public Component getGlassPane()
+  {
+    return getRootPane().getGlassPane();
+  }
 
-    /////////////////////////////////////////////////////////////////////////////////
-  
-    public AccessibleContext getAccessibleContext()
-    {    return null;  }
-  
-    int getDefaultCloseOperation()
-    {    return close_action;   }    
-    
-    protected  String paramString()
-    {   return "JWindow";     }
+  public void setGlassPane(Component glassPane)
+  {
+    getRootPane().setGlassPane(glassPane);
+  }
 
+  protected void addImpl(Component comp, Object constraints, int index)
+  {
+    super.addImpl(comp, constraints, index);
+  }
 
-    protected  void processWindowEvent(WindowEvent e)
-    {
-	//	System.out.println("PROCESS_WIN_EV-1: " + e);
-	super.processWindowEvent(e); 
-	//	System.out.println("PROCESS_WIN_EV-2: " + e);
-	switch (e.getID())
-	    {
-	    case WindowEvent.WINDOW_CLOSING:
-		{
-		    switch(close_action)
-			{
-			case EXIT_ON_CLOSE:
-			    {
-				System.out.println("user requested exit on close");
-				System.exit(1);
-				break;
-			    }
-			case DISPOSE_ON_CLOSE:
-			    {
-				System.out.println("user requested dispose on close");
-				dispose();
-				break;
-			    }
-			case HIDE_ON_CLOSE:
-			    {
-				setVisible(false);
-				break;
-			    }
-			case DO_NOTHING_ON_CLOSE:
-			    break;
-			}
-		    break;
-		}
-		
-	    case WindowEvent.WINDOW_CLOSED:
-	    case WindowEvent.WINDOW_OPENED:
-	    case WindowEvent.WINDOW_ICONIFIED:
-	    case WindowEvent.WINDOW_DEICONIFIED:
-	    case WindowEvent.WINDOW_ACTIVATED:
-	    case WindowEvent.WINDOW_DEACTIVATED:
-		break;
-	    }
-    }   
- 
+  public void remove(Component comp)
+  {
+    getContentPane().remove(comp);
+  }
 
-    void setDefaultCloseOperation(int operation)
-    {  close_action = operation;   }
+  protected boolean isRootPaneCheckingEnabled()
+  {
+    return checking;
+  }
 
+  protected void setRootPaneCheckingEnabled(boolean enabled)
+  {
+    checking = enabled;
+  }
+
+  public void update(Graphics g)
+  {
+    paint(g);
+  }
+
+  protected void processKeyEvent(KeyEvent e)
+  {
+    super.processKeyEvent(e);
+  }
+
+  public AccessibleContext getAccessibleContext()
+  {
+    return null;
+  }
+
+  protected String paramString()
+  {
+    return "JWindow";
+  }
 }
