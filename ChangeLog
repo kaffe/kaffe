@@ -1,3 +1,9 @@
+Thu Jul  8 11:57:45 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/Arrays.java: fix binarySearch bugs
+	* test/regression/SortTest.java: add binarySearch() test
+	* test/regression/MarkResetTest.java: avoid pizza compile problem
+
 Wed Jul  7 11:21:19 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* configure.in, config/config.h.in: add test for mergesort()
