@@ -471,7 +471,7 @@ public void paint ( Graphics g ) {
 	// standard JDK behavior is to paint last added childs first, simulating
 	// a first-to-last z order
 
-	validate();
+	validateTree();
 
 	for ( int i=nChildren-1; i>=0; i-- ) {
 		Component c = children[i];

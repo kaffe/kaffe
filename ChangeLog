@@ -1,3 +1,12 @@
+Mon Jul 15 10:26:12 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Container.java:
+	(paint) use validateTree to validate the whole tree.
+	This fixes a bug with repainting of containers.
+	See http://www.kaffe.org/pipermail/kaffe/2002-July/008521.html
+	for more details.
+	Reported by David Turner  novalis@novalis.org
+
 Mon Jul 15 01:37:05 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/AWTEvent.java:
