@@ -1,5 +1,21 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/NetworkInterface.java,
+	libraries/javalib/javax/security/auth/x500/X500PrivateCredential.java,
+	libraries/javalib/javax/security/cert/X509CertBridge.java,
+	libraries/javalib/javax/sql/XAConnection.java:
+        Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/NetworkInterface.java,
+        javax/security/auth/x500/X500PrivateCredential.java,
+        javax/security/cert/X509CertBridge.java,
+        javax/sql/XAConnection.java:
+        Import cleanup.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/net/ssl/HandshakeCompletedEvent.java,
 	libraries/javalib/javax/net/ssl/KeyManagerFactory.java,
 	libraries/javalib/javax/net/ssl/SSLContext.java,
