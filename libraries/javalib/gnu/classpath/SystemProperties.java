@@ -128,6 +128,7 @@ public class SystemProperties
 	dp.put("gnu.java.io.encoding_scheme_alias.UTF16_LittleEndian",
 	       "UTF16LE");
 	dp.put("gnu.java.io.encoding_scheme_alias.windows-1200", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UnicodeLittleUnmarked", "UTF16LE");
 
 	//# UTF16 Big Endian
 	dp.put("gnu.java.io.encoding_scheme_alias.UTF16BE", "UTF16BE");
@@ -144,6 +145,7 @@ public class SystemProperties
 	dp.put("gnu.java.io.encoding_scheme_alias.cp1200", "UTF16BE");
 	dp.put("gnu.java.io.encoding_scheme_alias.cp1201", "UTF16BE");
 	dp.put("gnu.java.io.encoding_scheme_alias.UTF16_BigEndian", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UnicodeBigUnmarked", "UTF16BE");
 
 	//# UTF16
 	dp.put("gnu.java.io.encoding_scheme_alias.UTF16", "UTF16BE");
