@@ -1,3 +1,10 @@
+Fri Jan 29 02:00:10 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (KAFFEH_FOR_BUILD): better tell the user how to set
+	it up if it is not found, by setting the KAFFEH environment
+	variable...
+	* configure: regen
+
 Fri Jan 29 01:12:49 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (KAFFEH_FOR_BUILD): give up trying to build

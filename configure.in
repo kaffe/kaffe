@@ -627,10 +627,11 @@ if test "$cross_compiling" = yes; then
   if test x"${ac_cv_c_char_unsigned}" != x"set"; then
     AC_MSG_WARN([when cross compiling, you may want to set ac_cv_c_char_unsigned to yes or no])
   fi
-  AC_PATH_PROG(KAFFEH_FOR_BUILD, kaffeh)
-  if test -n "${KAFFEH_FOR_BUILD}"; then
-    AC_MSG_ERROR([cross builds require a locally-executable pre-installed kaffeh])
+  AC_PATH_PROG(KAFFEH, kaffeh)
+  if test -z "${KAFFEH}"; then
+    AC_MSG_ERROR([please set KAFFEH to the full pathname of a locally executable kaffeh])
   fi
+  KAFFEH_FOR_BUILD="$KAFFEH"
   MAKE_KAFFEH_FOR_BUILD=":"
 else
   KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
