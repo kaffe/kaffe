@@ -10,10 +10,11 @@
 
 #include "toolkit.h"
 
-#include <stdio.h>
-#include <setjmp.h>
+#if defined(HAVE_JPEG_H) && defined(HAVE_LIBJPEG)
+#define INCLUDE_JPEG 1
+#endif
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(INCLUDE_JPEG)
 #include "jpeglib.h"
 #include "jerror.h"
 #endif
@@ -36,7 +37,7 @@ void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 void createXImage ( Toolkit* X, Image* img );
 
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(INCLUDE_JPEG)
 
 /*******************************************************************************************
  * required typedefs and structs
@@ -232,7 +233,7 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, int colors )
   return img;
 }
 
-#endif /* HAVE_JPEGLIB_H */
+#endif /* INCLUDE_JPEG */
 
 
 /**************************************************************************************
@@ -244,7 +245,7 @@ readJpegFile ( FILE* infile )
 {
   Image *img = 0;
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(INCLUDE_JPEG)
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);
@@ -253,7 +254,7 @@ readJpegFile ( FILE* infile )
   img = readJpeg( &cinfo, MAX_JPEG_COLORS);
 
   jpeg_destroy_decompress( &cinfo);
-#endif /* HAVE_JPEGLIB_H */
+#endif /* INCLUDE_JPEG */
 
   return img;
 }
@@ -264,7 +265,7 @@ readJpegData ( unsigned char* buf, long len )
 {
   Image *img = 0;
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(INCLUDE_JPEG)
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);
@@ -273,7 +274,7 @@ readJpegData ( unsigned char* buf, long len )
   img = readJpeg( &cinfo, MAX_JPEG_COLORS);
 
   jpeg_destroy_decompress( &cinfo);
-#endif /* HAVE_JPEGLIB_H */
+#endif /* INCLUDE_JPEG */
 
   return img;
 }

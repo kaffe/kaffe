@@ -11,11 +11,11 @@
 #include "toolkit.h"
 #include <stdio.h>
 
-#if !defined(HAVE_LIBGIF) && !defined(HAVE_LIBUNGIF)
-#undef HAVE_GIF_LIB_H
+#if defined(HAVE_GIF_LIB_H) && (defined(HAVE_LIBGIF) || defined(HAVE_LIBUNGIF))
+#define INCLUDE_GIF 1
 #endif
 
-#if defined(HAVE_GIF_LIB_H)
+#if defined(INCLUDE_GIF)
 #include "gif_lib.h"
 #endif
 
@@ -28,7 +28,7 @@ static int iJumps[] = { 8, 8, 4, 2 };
  * internal functions
  */
 
-#if defined(HAVE_GIF_LIB_H)
+#if defined(INCLUDE_GIF)
 void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {
@@ -182,7 +182,7 @@ readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
   }
 }
 
-#endif /* HAVE_GIF_LIB_H */
+#endif /* INCLUDE_GIF */
 
 /**************************************************************************************
  * these are the "exported" production interface functions
@@ -193,7 +193,7 @@ readGifFile ( FILE* infile )
 {
   Image          *img = 0;
 
-#if defined(HAVE_GIF_LIB_H)
+#if defined(INCLUDE_GIF)
   GifFileType    *gf;
 
   if ( !(gf = DGifOpenFileHandle( fileno( infile))) )
@@ -212,7 +212,7 @@ Image*
 readGifData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
-#if defined(HAVE_GIF_LIB_H)
+#if defined(INCLUDE_GIF)
   BufferSource   bufSrc;
   GifFileType    *gf;
 
@@ -226,7 +226,7 @@ readGifData ( unsigned char* buf, long len )
 
   DGifCloseFile( gf);
   
-#endif /* HAVE_GIF_LIB_H */
+#endif /* INCLUDE_GIF */
 
   return img;
 }
