@@ -108,7 +108,7 @@ enum {
 	/* (int *) Increment the counter on each value found */
 	SPO_Count,
 	/* () Skip any preceding white space. */
-	SPO_SkipSpace,
+	SPO_SkipSpace
 };
 
 #define SPO_MAX_ARG_COUNT 2

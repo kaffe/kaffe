@@ -1,5 +1,5 @@
 /*
- * constants.h
+ * cnstants.h
  * Manage constants.
  *
  * Copyright (c) 1996, 1997
@@ -59,7 +59,7 @@ typedef struct _constants {
 #define CLASS_NAME(idx, pool)                           ((uint16)pool->data[idx])
 #define CONST_STRING_NAME(idx, pool)                    CLASS_NAME(idx, pool)
 
-// the actual character string pointed to by the data
+/* the actual character string pointed to by the data */
 #define UNRESOLVED_CLASS_NAMED(idx, pool)               (WORD2UTF(pool->data[idx])->data)
 #define RESOLVED_CLASS_NAMED(idx, pool)                 ((CLASS_CLASS(idx, pool))->name->data)
 
@@ -80,7 +80,7 @@ typedef struct _constants {
 #define NAMEANDTYPE_NAME(idx, pool)                     ((uint16)pool->data[idx])
 #define NAMEANDTYPE_SIGNATURE(idx, pool)                ((uint16)(pool->data[idx] >> 16))
 
-// the actual character string pointed to by the data
+/* the actual character string pointed to by the data */
 #define NAMEANDTYPE_NAMED(idx, pool)                    (WORD2UTF(pool->data[NAMEANDTYPE_NAME(idx, pool)])->data)
 #define NAMEANDTYPE_SIGD(idx, pool)                     (WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(idx, pool)])->data)
 
@@ -89,7 +89,7 @@ typedef struct _constants {
 #define METHODREF_NAME(idx, pool)                       FIELDREF_NAME(idx, pool)
 #define INTERFACEMETHODREF_NAME(idx, pool)              FIELDREF_NAME(idx, pool)
 
-// the actual character string pointed to by the data
+/* the actual character string pointed to by the data */
 #define FIELDREF_NAMED(idx, pool)                       (WORD2UTF(pool->data[FIELDREF_NAME(idx, pool)])->data)
 #define METHODREF_NAMED(idx, pool)                      FIELDREF_NAMED(idx, pool)
 #define INTERFACEMETHODREF_NAMED(idx, pool)             FIELDREF_NAMED(idx, pool)
@@ -98,12 +98,12 @@ typedef struct _constants {
 #define METHODREF_SIGNATURE(idx, pool)                  FIELDREF_SIGNATURE(idx, pool)
 #define INTERFACEMETHODREF_SIGNATURE(idx, pool)         FIELDREF_SIGNATURE(idx, pool)
 
-// aliases...make more sense in certain situations, like type checking
+/* aliases...make more sense in certain situations, like type checking */
 #define FIELDREF_TYPE(idx, pool)                        FIELDREF_SIGNATURE(idx, pool)
 #define METHODREF_TYPE(idx, pool)                       FIELDREF_TYPE(idx, pool)
 #define INTERFACEMETHODREF_TYPE(idx, pool)              FIELDREF_TYPE(idx, pool)
 
-// the actual character string pointed to by the data
+/* the actual character string pointed to by the data */
 #define FIELDREF_SIGD(idx, pool)                        (WORD2UTF(pool->data[FIELDREF_SIGNATURE(idx, pool)])->data)
 #define METHODREF_SIGD(idx, pool)                       FIELDREF_SIGD(idx, pool)
 #define INTERFACEMETHODREF_SIGD(idx, pool)              FIELDREF_SIGD(idx, pool)

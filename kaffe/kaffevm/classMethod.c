@@ -160,7 +160,7 @@ retry:
 				     JAVA_LANG(NoClassDefFoundError),
 				     "%s",
 				     class->name->data);
-		einfo->type |= KERR_NO_CLASS_FOUND; // for the verifier
+		einfo->type |= KERR_NO_CLASS_FOUND; /* for the verifier */
 		success = false;
 		goto done;
 	}

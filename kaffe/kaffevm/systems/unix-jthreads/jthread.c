@@ -1377,7 +1377,7 @@ void
 jthread_disable_stop(void)
 {
 	if (currentJThread) {
-	  //DBG(JTHREAD,	dprintf("disable stop for thread  %p\n", currentJThread);	)
+	  /* DBG(JTHREAD,	dprintf("disable stop for thread  %p\n", currentJThread);	) */
 		intsDisable();
 		currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
 		currentJThread->stopCounter++;
@@ -1397,7 +1397,7 @@ void
 jthread_enable_stop(void)
 {
 	if (currentJThread) {
-	  //DBG(JTHREAD,	dprintf("enable stop for thread  %p\n", currentJThread);	)
+	  /* DBG(JTHREAD,	dprintf("enable stop for thread  %p\n", currentJThread);	) */
 		intsDisable();
 		if (--currentJThread->stopCounter == 0) {
 			currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;

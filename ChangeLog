@@ -1,3 +1,24 @@
+2003-11-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/jni.h,
+	kaffe/kaffevm/constants.h,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/jni.c,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/verify.h,
+	kaffe/kaffevm/verify.c,
+	kaffe/kaffeh/support.c,
+	libraries/clib/io/FileDescriptor.c,
+	libraries/clib/native/ClassLoader.c:
+	Changed C++ comments to C comments to fix -pedantic warnings.
+
+	* kaffe/kaffevm/access.h,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/stringParsing.h,
+	include/jvmpi.h:
+	Removed comma at end of enumerator list.
+	
 2003-11-03  Dalibor Topic <robilad@kaffe.org>
 
 	Fixed build with kjc.

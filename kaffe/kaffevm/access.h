@@ -46,7 +46,7 @@ typedef enum {
 	ACC_TYPE_METHOD,
 	ACC_TYPE_INTERFACE_METHOD,
 	ACC_TYPE_FIELD,
-	ACC_TYPE_INTERFACE_FIELD,
+	ACC_TYPE_INTERFACE_FIELD
 } access_type_t;
 
 struct Hjava_lang_Class;

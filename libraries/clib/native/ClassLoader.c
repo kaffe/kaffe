@@ -38,7 +38,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	classEntry *centry;
 	errorInfo info;
 
-	// This is the error sent by JDK 1.4.2
+	/* This is the error sent by JDK 1.4.2 */
 	if (length == 0)
 	{
 		SignalError("java.lang.ClassFormatError", "truncated class");

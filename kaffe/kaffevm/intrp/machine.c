@@ -109,7 +109,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 		/* implement stack overflow check */
 		needOnStack = &unhand(tid)->needOnStack;
 
-		//		dprintf ("needOnStack [%p] %p -> %d\n", &needOnStack, needOnStack, *needOnStack);
+		/*		dprintf ("needOnStack [%p] %p -> %d\n", &needOnStack, needOnStack, *needOnStack); */
 
 		if (jthread_stackcheck(*needOnStack) == false) {
 			overflow = (Hjava_lang_Throwable*)

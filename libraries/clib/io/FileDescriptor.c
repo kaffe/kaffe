@@ -94,7 +94,9 @@ jlong java_io_FileDescriptor_nativeOpen(struct Hjava_io_FileDescriptor* this, st
     open_options |= O_DSYNC;
 #endif
 
-  // By default we put the files in all rw access. It will be modified by process umask.
+  /* By default we put the files in all rw access. 
+   * It will be modified by process umask.
+   */
   rc = KOPEN(str, open_options|O_BINARY, 0666, &fd);
   switch (rc) {
   case 0:
@@ -333,7 +335,7 @@ jlong java_io_FileDescriptor_nativeSeek(struct Hjava_io_FileDescriptor* this,
 	sysOffset = 0;
       break;
     default:
-      // Not reachable.
+      /* Not reachable. */
       sysOffset = 0;
       break;
     }

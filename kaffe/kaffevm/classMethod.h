@@ -38,7 +38,7 @@ typedef enum {
 	CSTATE_DOING_SUPER,
 	CSTATE_USABLE,
 	CSTATE_DOING_INIT,
-	CSTATE_COMPLETE,
+	CSTATE_COMPLETE
 } class_state_t;
 
 struct _classEntry;
@@ -192,7 +192,7 @@ typedef enum {
 	NMS_SEARCHING,
 	NMS_LOADING,
 	NMS_LOADED,
-	NMS_DONE,
+	NMS_DONE
 } name_mapping_state_t;
 
 /*
