@@ -217,6 +217,7 @@ loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
 	int index;
+	void *func;
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the
@@ -318,8 +319,8 @@ DBG(NATIVELIB,
 #if defined(KAFFE_FEEDBACK)
 	feedbackLibrary(path, true);
 #endif
-
-	void *func = loadNativeLibrarySym("JNI_OnLoad");
+ 
+        func = loadNativeLibrarySym("JNI_OnLoad"); 
 	if (func != NULL) {
 	    JavaVM *jvm = &Kaffe_JavaVM;
 	    jint vers = ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);

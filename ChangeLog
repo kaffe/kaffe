@@ -1,3 +1,10 @@
+2003-07-08  Rob Gonzalez <rob@kaffe.org>
+
+	Dalibor's patch to help get eclipse to run.
+	
+	* kaffe/kaffevm/external.c
+	Small but necessary compilation fix.
+	
 2003-07-08  Mark Wielaard <mark@klomp.org>
 
 	* libraries/javalib/java/net/URL.java:
