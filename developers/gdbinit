@@ -80,8 +80,10 @@ pCPool <class> <entry>:
 end
 
 define pmeth
-    printf "%s.%s;%s: %p %p\n", ($arg0).class.name.data, ($arg0).name.data, \
-	($arg0).signature.data, ($arg0).c.ncode.ncode_start, ($arg0).c.ncode.ncode_end
+    printf "%s.%s;%s: %p %p idx=%d\n", \
+	($arg0).class.name.data, ($arg0).name.data, \
+	($arg0).parsed_sig.signature.data, ($arg0).c.ncode.ncode_start, \
+	($arg0).c.ncode.ncode_end, ($arg0).idx
 end
 document pmeth
     Print full name of a method <meth>
