@@ -636,7 +636,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 	/* Search down class for method name - don't allow duplicates */
 	for (ni = CLASS_NMETHODS(c), mt = CLASS_METHODS(c); --ni >= 0; ) {
 		assert(! utf8ConstEqual (name, mt->name)
-		       || ! utf8ConstEqual (signature, mt->signature));
+		       || ! utf8ConstEqual (signature, METHOD_SIG(mt)));
 	}
 #endif
 
