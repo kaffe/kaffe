@@ -36,13 +36,13 @@ TRAMPOLINE_FUNCTION()
 #define C_FUNC_NAME(FUNC) #FUNC
 #endif
 
-asm(
+asm (
         START_ASM_FUNC() C_FUNC_NAME(m68k_do_fixup_trampoline) "\n"
-C_FUNC_NAME(m68k_do_fixup_trampoline) ":                        \n
-        jbsr    " C_FUNC_NAME(soft_fixup_trampoline) "          \n
-	addqw	#4,%sp						\n
-	movel	%d0,%a0						\n
-        jmp     (%a0)"
+C_FUNC_NAME(m68k_do_fixup_trampoline) ":
+        jbsr    " C_FUNC_NAME(soft_fixup_trampoline) "
+	addqw	#4,sp
+	movel	d0,a0
+        jmp     a0@"
         END_ASM_FUNC()
 );
 

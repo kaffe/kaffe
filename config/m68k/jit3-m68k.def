@@ -1250,7 +1250,7 @@ define_insn(prologue, prologue_xxC)
 	if (jit_debug) {
 		meth = const_method(2);
 		printf("\n%s.%s %s\n", meth->class->name->data,
-			meth->name->data, makeStrFromSignature(meth->sig));
+			meth->name->data, METHOD_SIGD(meth));
 	}
 #endif
 

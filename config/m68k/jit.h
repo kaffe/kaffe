@@ -31,6 +31,7 @@ typedef struct _exceptionFrame {
 
 /* Extract the PC from the given frame */
 #define	PCFRAME(f)		((f)->retpc)
+#define FPFRAME(f)		((f)->retfp)
 
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o)						\
@@ -46,7 +47,7 @@ typedef struct _exceptionFrame {
 	__asm__ __volatile__(						\
 		"move%.l %1,%/d0\n\t"					\
 		"move%.l %0,%/a6\n\t"					\
-		"jmp (%2)"						\
+		"jmp %2@"						\
 		: : "g"(frame), "g"(obj), "a"(handler)			\
 		: "d0", "cc", "memory")
 
@@ -126,18 +127,16 @@ extern void m68k_do_fixup_trampoline(void);
 #define SAVEMASK        0x3F3C
 #define RESTOREMASK     0x3CFC
 
-/**/
-/* Opcode generation. */
-/**/
-#define LABEL_FRAMESIZE(L,P) \
-	{ \
-		int framesize = SLOTSIZE * (maxLocal + maxStack + \
-			maxTemp - maxArgs); \
-			*(P) = framesize; \
-	}
+/* Define the size of the frame */
+#define FRAMESIZE \
+        ((maxLocal - maxArgs + maxStack + maxTemp) * SLOTSIZE)
 
 #define Llong16                 (Larchdepend+0) /* Label is 16 bits long */
 #define Llnegframe              (Larchdepend+1)
+
+#define LABEL_Lnegframe(P,D,L)  *(int16*)(P) = -FRAMESIZE
+#define LABEL_Llnegframe(P,D,L) *(int32*)(P) = -FRAMESIZE
+#define LABEL_Llong16(P,V,L)    *(int16*)(P) = (V)
 
 #define EXTRA_LABELS(P,D,L) \
 	case Llong16:           LABEL_Llong16(P,D,L);		break; \
@@ -169,14 +168,17 @@ extern void m68k_do_fixup_trampoline(void);
  */
 
 /* Generate slot offset for an argument (relative to fp) */
-#define SLOT2ARGOFFSET(_n)    (8 + SLOTSIZE * (_n))
+#define SLOT2ARGOFFSET(_n)	(8 + SLOTSIZE * (_n))
 
 /* Generate slot offset for a local (non-argument) (relative to fp) */
 #if !defined(JIT3)
-#define SLOT2LOCALOFFSET(_n)  (-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
+#define SLOT2LOCALOFFSET(_n)	(-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
 #else
-#define SLOT2LOCALOFFSET(N)     (-SLOTSIZE * ((N) - maxArgs + 1))
+#define SLOT2LOCALOFFSET(N)	(-SLOTSIZE * ((N) - maxArgs + 1))
 #endif
+
+/* Generate the slot offset to the stack limit */
+#define	STACK_LIMIT()		SLOT2ARGOFFSET(maxArgs)
 
 /* Wrap up a native call for the JIT */
 #define	KAFFEJIT_TO_NATIVE(_m)
