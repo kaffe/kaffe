@@ -81,7 +81,7 @@ Java_kaffe_io_CharToByteIconv_convert (JNIEnv* env, jobject _this,
     iconv_t	cd = (iconv_t) (*env)->GetObjectField(env, _this, cd_id);
     int		ret;
 
-    ret = iconv (cd, &icv_in, &icv_inlen, &icv_out, &icv_outlen);
+    ret = iconv (cd, (ICONV_CONST char **) &icv_in, &icv_inlen, &icv_out, &icv_outlen);
     if (icv_inlen > 0) {
 	/* In case we have some bytes left, save them */
 	(*env)->CallVoidMethod(env, _this, carry_id,
