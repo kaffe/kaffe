@@ -1,3 +1,12 @@
+Wed Oct 25 10:23:10 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* test/regression/CLTestDelegate.java,
+	  test/regression/Makefile.*:
+	  A new regression test.  More than a year ago, we regressed to
+	  the point where finalizeClassLoader is no longer run.  This test 
+	  will trigger the destroyClass sanity check if there are dangling 
+	  ClassPool entries.
+
 2000-10-24  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/locks.h: Fix include header for thread
