@@ -4,6 +4,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -30,4 +33,24 @@
 #  define END_C_DECLS
 #endif /* __cplusplus */
 
-#endif
+/* define a cross platform VA_LIST_COPY(destination, source).
+ *
+ * We can's simply assign va_lists, since they are not necessarily structs.
+ * On s390-linux, they are arrays, for example.
+ * So let's use whatever system method there is to copy va_lists, before
+ * we try to copy them by assignment.
+ */
+#if defined HAVE_VA_COPY
+/* use va_copy */
+#  define VA_LIST_COPY(dest, src) (va_copy(dest,src))
+#else /* ! HAVE_VA_COPY */
+/* use __va_copy*/
+#  if defined HAVE___VA_COPY
+#    define VA_LIST_COPY(dest, src) (__va_copy(dest, src))
+#  else /* ! HAVE_VA_COPY && ! HAVE___VA_COPY */
+/* use plain assignment, then */
+#    define VA_LIST_COPY(dest, src) (dest = src)
+#  endif /* HAVE___VA_COPY*/
+#endif /* HAVE_VA_COPY */
+
+#endif /* __defs_h */

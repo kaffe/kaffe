@@ -20,6 +20,8 @@
 /* We use this in JSI stuff too, and we don't want to drag in kaffe goo. */
 #include "gtypes.h"
 #include "gc.h"
+#include "defs.h"
+
 #define spMalloc(x) gc_malloc(x, GC_ALLOC_FIXED)
 #define spFree(x) gc_free(x)
 
@@ -110,7 +112,7 @@ int pushFrame(parseErrorInfo *pe,
 		pf->pv.type = SPO_Noop;
 		pf->script_pos = script_pos;
 		pf->values_pos = values_pos;
-		pf->args = args;
+		VA_LIST_COPY(pf->args, args);
 		ps->top = pf;
 		retval = 1;
 	}
@@ -486,7 +488,7 @@ int parseString_private(parseErrorInfo *pe,
 		{
 		case SPO_End:
 			if( ps.top->op == SPO_Do )
-				args = ps.top->args;
+				VA_LIST_COPY(args, ps.top->args);
 			else
 				popFrame(&ps);
 			script_pos++;

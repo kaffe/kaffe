@@ -530,6 +530,9 @@
 /* Define to 1 if you have the `valloc' function. */
 #undef HAVE_VALLOC
 
+/* Define if we have va_copy */
+#undef HAVE_VA_COPY
+
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
@@ -568,6 +571,9 @@
 
 /* Define to 1 if you have the `__throw' function. */
 #undef HAVE___THROW
+
+/* Define if we have __va_copy */
+#undef HAVE___VA_COPY
 
 /* Define if \`h_errno' is declared by <netdb.h> */
 #undef H_ERRNO_DECLARED

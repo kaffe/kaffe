@@ -1,5 +1,19 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	Compilation fixes for s390-linux.
+	
+	* configure.in:
+	Merged in checks for va_copy and __va_copy from LGPLd Wine
+	configure.ac.
+
+	* include/defs.h:
+	(VA_LIST_COPY) new macro to copy va_lists.
+
+	* kaffe/kaffevm/stringParsing.c:
+	(pushFrame, parseString_private) use VA_LIST_COPY.
+	
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* developers/autogen.sh:
 	Don't apply developers/getaddrinfo-socketinttypes-glibc2.diff,
 	simply use the patched up version.
