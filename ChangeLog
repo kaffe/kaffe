@@ -1,5 +1,13 @@
 2004-05-30  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/powerpc/darwin/md.h: Added a few includes.
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c: As we
+	don't need STACK_POINTER anymore for the detection we
+	may relax the condition.
+
+2004-05-30  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/powerpc/darwin/md.h
 	(mdGetStackSize): Implemented for Darwin/PPC.
 

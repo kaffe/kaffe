@@ -432,7 +432,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 #endif
 }
 
-#elif defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
+#elif defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
 
 static JTHREAD_JMPBUF outOfLoop;
 

@@ -18,6 +18,17 @@
 #include "powerpc/common.h"
 #include "powerpc/threads.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+#if defined(HAVE_SYS_TIME_H)
+#include <sys/time.h>
+#endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+
+
 #undef SP_OFFSET
 #define SP_OFFSET	0
 
