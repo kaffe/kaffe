@@ -9,6 +9,7 @@
 prefix=		@prefix@
 srcdir=		@srcdir@
 mandir=		@mandir@
+INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_DATA=	${INSTALL} -m 644
 MKDIR=		@MKDIR@
@@ -21,9 +22,9 @@ distclean:
 		rm -f Makefile .depend
 
 install:
-		test -d $(mandir) || $(MKDIR) $(mandir)
-		test -d $(mandir)/man1 || $(MKDIR) $(mandir)/man1
-		$(INSTALL_DATA) $(srcdir)/kaffe.1 $(mandir)/man1/kaffe.1
+		test -d $(INSTROOT)$(mandir) || $(MKDIR) $(INSTROOT)$(mandir)
+		test -d $(INSTROOT)$(mandir)/man1 || $(MKDIR) $(INSTROOT)$(mandir)/man1
+		$(INSTALL_DATA) $(srcdir)/kaffe.1 $(INSTROOT)$(mandir)/man1/kaffe.1
 
 depend:
 

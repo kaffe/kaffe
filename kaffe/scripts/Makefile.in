@@ -10,6 +10,7 @@ srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 bindir=		@bindir@
+INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_SCRIPT=	@INSTALL_SCRIPT@
 MKDIR=		@MKDIR@
@@ -38,28 +39,28 @@ distclean:
 install:	install-pizza install-sun install-jars @suncompatible@
 
 install-sun:
-		test -d $(bindir) || $(MKDIR) $(bindir)
+		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
 		for i in $(SCRIPTFILES_SUN) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
 install-pizza:
 		for i in $(SCRIPTFILES_PIZZA) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) $(srcdir)/$(SCREXT)/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
 install-compat:
 		for i in $(SCRIPTFILES_COMPAT) ;\
 		do \
-			$(INSTALL_SCRIPT) $(srcdir)/compat/$$i $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+			$(INSTALL_SCRIPT) $(srcdir)/compat/$$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
 install-jars:
 		for i in $(PSCRIPTFILES) ;\
 		do \
-			$(INSTALL_SCRIPT) $$i $(bindir)/$(KPREFIX)$$i ;\
+			$(INSTALL_SCRIPT) $$i $(INSTROOT)$(bindir)/$(KPREFIX)$$i ;\
 		done
 
 depend:

@@ -11,6 +11,7 @@ srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 bindir=		@bindir@
+INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
 MKDIR=		@MKDIR@
@@ -84,8 +85,8 @@ distclean:	clean
 		rm -f Makefile
 
 install:
-		test -d $(bindir) || $(MKDIR) $(bindir)
-		$(INSTALL_PROGRAM) $(KPREFIX)kaffeh$(EXEEXT) $(bindir)/$(KPREFIX)kaffeh$(EXEEXT)
+		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
+		$(INSTALL_PROGRAM) $(KPREFIX)kaffeh$(EXEEXT) $(INSTROOT)$(bindir)/$(KPREFIX)kaffeh$(EXEEXT)
 
 @INC_DEPEND@
 

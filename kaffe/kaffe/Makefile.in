@@ -12,6 +12,7 @@ prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 bindir=		@bindir@
 libdir=         @libdir@
+INSTROOT=	@INSTROOT@
 INSTALL=	@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
 MKDIR=		@MKDIR@
@@ -45,8 +46,8 @@ distclean:	clean
 		rm -f .depend
 
 install:
-		test -d $(bindir) || $(MKDIR) $(bindir)
-		$(INSTALL_PROGRAM) Kaffe$(EXEEXT) $(bindir)/Kaffe$(EXEEXT)
+		test -d $(INSTROOT)$(bindir) || $(MKDIR) $(INSTROOT)$(bindir)
+		$(INSTALL_PROGRAM) Kaffe$(EXEEXT) $(INSTROOT)$(bindir)/Kaffe$(EXEEXT)
 
 .SUFFIXES:	.d
 
