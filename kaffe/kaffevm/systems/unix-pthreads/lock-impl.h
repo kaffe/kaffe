@@ -21,6 +21,9 @@ typedef pthread_cond_t jcondvar;
 
 /* prototypes for jmutex interfaces.  All inlined except jcondvar_wait() */
 
+extern void KaffePThread_setBlockingCall(void *sigdata);
+extern void KaffePThread_clearBlockingCall(void *sigdata);
+
 static inline void jmutex_initialise( jmutex* lk ) __UNUSED__;
 extern void jmutex_lock( jmutex* lk );
 static inline void jmutex_unlock( jmutex* lk ) __UNUSED__;

@@ -48,6 +48,13 @@ setBlockState(jthread_t cur, unsigned int newState, void *sp, sigset_t *old_mask
   }
 }
 
+void KaffePThread_setBlockingCall(void *sigdata)
+{
+  jthread_t cur = jthread_current();
+
+  setBlockState(cur, BS_SYSCALL, (void*)&cur, (sigset_t*)sigdata);
+}
+
 static inline void
 clearBlockState(jthread_t cur, unsigned int newState, sigset_t *old_mask)
 {
@@ -75,6 +82,13 @@ clearBlockState(jthread_t cur, unsigned int newState, sigset_t *old_mask)
   /* Here the state is not SS_PENDING_SUSPEND so releasing the signal will
    * not trigger a deadlock.
    */
+}
+
+void KaffePThread_clearBlockingCall(void *sigdata)
+{
+  jthread_t cur = jthread_current();
+
+  clearBlockState(cur, BS_SYSCALL, (sigset_t *)sigdata);
 }
 
 void

@@ -47,7 +47,8 @@ typedef enum {
   BS_THREAD          =  0x01,  /* blocked on tLock (thread system internal) */
   BS_MUTEX           =  0x02,  /* blocked on a external mutex lock */
   BS_CV              =  0x04,  /* blocked on a external convar wait */
-  BS_CV_TO           =  0x08   /* blocked on a external convar timeout wait */
+  BS_CV_TO           =  0x08,   /* blocked on a external convar timeout wait */
+  BS_SYSCALL         =  0x10  /* blocked on a real blocking syscall */
 } block_state_t;
 
 /*

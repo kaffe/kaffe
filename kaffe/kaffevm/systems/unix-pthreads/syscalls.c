@@ -19,6 +19,7 @@
 #include "jsyscall.h"
 #include "jsignal.h"
 #include "nets.h"
+#include "lock-impl.h"
 
 #if defined(HAVE_SYS_WAIT_H)
 #include <sys/wait.h>
@@ -751,8 +752,11 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 {
 #if defined(HAVE_WAITPID)
 	int npid;
+	sigset_t sigdata;
 
+	KaffePThread_setBlockingCall(&sigdata);
 	npid = waitpid(wpid, status, options);
+	KaffePThread_clearBlockingCall(&sigdata);
 	if (npid > 0) {
 		*outpid = npid;
 		return (0);

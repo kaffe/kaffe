@@ -303,7 +303,7 @@ void* tWatchdogRun (void* p)
 	   * timeout wait, and is not suspended, we are still safe (even though
 	   * the timeout value might effectively be a deadlock)
 	   */
-	  if ( (!t->blockState || (t->blockState == BS_CV_TO)) && !t->suspendState ){
+	  if ( (!t->blockState || (t->blockState == BS_SYSCALL) || (t->blockState == BS_CV_TO)) && !t->suspendState ){
 		life = 1;
 		break;
 	  }
@@ -620,7 +620,7 @@ void jthread_interrupt(jthread_t tid)
     {
       pthread_cond_signal (&tid->data.sem.cv);
     }
-  else if(tid->blockState == 0)
+  else if (tid->blockState == 0 || (tid->blockState & BS_SYSCALL) != 0)
     {
       /* We need to send some signal to interrupt syscalls. */
       pthread_kill(tid->tid, sigInterrupt);
@@ -1302,7 +1302,7 @@ jthread_suspendall (void)
 
 		t->suspendState = SS_PENDING_SUSPEND;
 
-		if ((t->blockState & (BS_CV|BS_MUTEX|BS_CV_TO)) != 0)
+		if ((t->blockState & (BS_SYSCALL|BS_CV|BS_MUTEX|BS_CV_TO)) != 0)
 		  {
 		    /* The thread is already stopped.
 		     */
@@ -1393,7 +1393,7 @@ jthread_unsuspendall (void)
 				    t, t->suspendState, t->blockState));
 
 	      t->suspendState = SS_PENDING_RESUME;
-	      if ((t->blockState & (BS_CV|BS_CV_TO|BS_MUTEX)) == 0)
+	      if ((t->blockState & (BS_SYSCALL|BS_CV|BS_CV_TO|BS_MUTEX)) == 0)
 		{
 		  DBG (JTHREADDETAIL, dprintf("  sending sigResume\n"));
 		  status = pthread_kill( t->tid, sigResume);

@@ -1,3 +1,19 @@
+2005-01-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.h:
+	(KaffePThread_setBlockingCall, KaffePThread_clearBlockingCall):
+	Defined two external functions to handle blocking syscalls (not
+	interruptible by a signal).
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedWaitPid): Advertise the thread subsystem that we cannot
+	receive any suspend signal in that syscall.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c	
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h: Handle the
+	new blocking state.
+
 2005-01-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/regression/Reflect.java: Adapted expected output to match
