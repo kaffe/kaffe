@@ -20,3 +20,29 @@ thread_dummy(char *s, ...)
     volatile int n;
     n = 0;
 }
+
+
+/*
+ * Do an atomic compare and exchange.  The address 'A' is checked against
+ * value 'O' and if they match it's exchanged with value 'N'.
+ * We return '1' if the exchange is sucessful, otherwise 0.
+ */
+int __aix_cmpxchg(void **A, void *O, void *N) {
+	int tmp, ret = 0;
+
+	asm volatile(
+	"	eieio\n"
+	"L..cax1:	lwarx	%0,0,%3\n"
+	"	cmpw	0,%0,%4\n"
+	"	bne	L..cax2\n"
+	"	stwcx.	%5,0,%3\n"
+	"	bne-	L..cax1\n"
+	"	sync\n"
+	"	li	%1,1\n"
+	"L..cax2:\n"
+	: "=&r"(tmp), "=&r"(ret), "=m"(*(A))
+	: "r"(A), "r"(O), "r"(N), "m"(*(A))
+	: "cc", "memory");
+
+	return ret;
+}

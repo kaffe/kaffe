@@ -15,6 +15,7 @@
 #ifndef __powerpc_aix_md_h
 #define __powerpc_aix_md_h
 
+#include "powerpc/common.h"
 #include "powerpc/threads.h"
 
 #if defined(TRANSLATOR)
@@ -25,5 +26,12 @@
 #undef SP_OFFSET
 #endif
 #define SP_OFFSET	3
+
+/* Version without GAS */
+extern int __aix_cmpxchg(void **A, void *O, void *N);
+
+#undef COMPARE_AND_EXCHANGE
+#define COMPARE_AND_EXCHANGE(A,O,N)		\
+	__aix_cmpxchg((void**)(A), (void*)(O), (void*)(N))
 
 #endif
