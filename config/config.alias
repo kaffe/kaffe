@@ -9,6 +9,7 @@ i[3456]86)	host_cpu=i386 ;;
 sa110)		host_cpu=arm ;;
 arm32)		host_cpu=arm ;;
 mipsel)		host_cpu=mips ;;
+alpha*)		host_cpu=alpha ;;
 
 esac
 
