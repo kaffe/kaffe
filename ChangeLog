@@ -1,5 +1,15 @@
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
 
+	* config/Makefile.am:
+	(EXTRA_DIST) Added s390/linux/sigcontextinfo.h
+
+	* config/Makefile.in:
+	Regenerated.
+
+	Reported by: Arnaud Vandyck  <avdyk@ressource-toi.org>
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>,
+
         * configure.ac:
 	Added check for pthread_attr_setschedpolicy.
 

@@ -305,6 +305,7 @@ EXTRA_DIST = \
 	s390/linux/config.frag \
 	s390/linux/md.c \
 	s390/linux/md.h \
+	s390/linux/sigcontextinfo.h \
 	s390/sysdepCallMethod.h \
 	s390/threads.h \
 	sparc/atomicity-sparc32.h \
