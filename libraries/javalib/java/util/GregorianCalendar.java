@@ -369,8 +369,25 @@ public class GregorianCalendar extends Calendar
   private int getFirstDayOfMonth(int year, int month)
   {
     int[] dayCount = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-    int dayOfYear = dayCount[month] + 1;
 
+    if (month > 11)
+      {
+	year += (month / 12);
+	month = month % 12;
+      }
+
+    if (month < 0)
+      {
+	year += (int) month / 12;
+	month = month % 12;
+	if (month < 0)
+	  {
+	    month += 12;
+	    year--;
+	  }
+      }
+
+    int dayOfYear = dayCount[month] + 1;
     if (month > 1)
       if (isLeapYear(year))
 	dayOfYear++;
@@ -508,22 +525,28 @@ public class GregorianCalendar extends Calendar
     if (! isLenient())
       nonLeniencyCheck();
 
-    if (! isSet[MONTH])
+    if (! isSet[MONTH] && (! isSet[DAY_OF_WEEK] || isSet[WEEK_OF_YEAR]))
       {
 	// 5: YEAR + DAY_OF_WEEK + WEEK_OF_YEAR
-	if (isSet[DAY_OF_WEEK] || isSet[WEEK_OF_YEAR])
+	if (isSet[WEEK_OF_YEAR])
 	  {
 	    int first = getFirstDayOfMonth(year, 0);
-	    int offs;
-	    if ((8 - first) >= getMinimalDaysInFirstWeek())
-	      // start counting on first week
-	      offs = 1;
-	    else
-	      offs = 1 + (8 - first);
+	    int offs = 1;
+	    int daysInFirstWeek = getFirstDayOfWeek() - first;
+	    if (daysInFirstWeek <= 0)
+	      daysInFirstWeek += 7;
 
+	    if (daysInFirstWeek < getMinimalDaysInFirstWeek())
+	      offs += daysInFirstWeek;
+	    else
+	      offs -= 7 - daysInFirstWeek;
 	    month = 0;
 	    day = offs + 7 * (fields[WEEK_OF_YEAR] - 1);
-	    day += fields[DAY_OF_WEEK] - first;
+	    offs = fields[DAY_OF_WEEK] - getFirstDayOfWeek();
+
+	    if (offs < 0)
+	      offs += 7;
+	    day += offs;
 	  }
 	else
 	  {
@@ -549,8 +572,21 @@ public class GregorianCalendar extends Calendar
 	      }
 	    else
 	      { // 2: YEAR + MONTH + WEEK_OF_MONTH + DAY_OF_WEEK
-		day = 1 + 7 * (fields[WEEK_OF_MONTH] - 1);
-		day += fields[DAY_OF_WEEK] - first;
+		int offs = 1;
+		int daysInFirstWeek = getFirstDayOfWeek() - first;
+		if (daysInFirstWeek <= 0)
+		  daysInFirstWeek += 7;
+
+		if (daysInFirstWeek < getMinimalDaysInFirstWeek())
+		  offs += daysInFirstWeek;
+		else
+		  offs -= 7 - daysInFirstWeek;
+
+		day = offs + 7 * (fields[WEEK_OF_MONTH] - 1);
+		offs = fields[DAY_OF_WEEK] - getFirstDayOfWeek();
+		if (offs < 0)
+		  offs += 7;
+		day += offs;
 	      }
 	  }
 

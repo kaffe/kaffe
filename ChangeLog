@@ -2,6 +2,24 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-02-14  Sven de Marothy  <sven@physto.se>
+
+        * java/util/Calendar.java 
+        (Calendar): Constructor should clear fields.
+
+	2005-02-14  Sven de Marothy  <sven@physto.se>
+
+        * java/util/Calendar.java 
+        (clear): Dates should clear to local time.
+
+        * java/util/GregorianCalendar.java      
+        (computeTime): Fix priority problem with DAY_OF_WEEK,
+        Handle non-sunday-startig weeks and minimumDaysInFirstWeek.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-02-13  Mark Wielaard  <mark@klomp.org>
 
 	* java/awt/AWTKeyStroke.java (getAWTKeyStroke(String)): Throw

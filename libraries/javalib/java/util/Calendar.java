@@ -454,6 +454,7 @@ public abstract class Calendar implements Serializable, Cloneable
     firstDayOfWeek = ((Integer) rb.getObject("firstDayOfWeek")).intValue();
     minimalDaysInFirstWeek = ((Integer) rb.getObject("minimalDaysInFirstWeek"))
                              .intValue();
+    clear();
   }
 
   /**
@@ -828,16 +829,10 @@ public abstract class Calendar implements Serializable, Cloneable
     isTimeSet = false;
     areFieldsSet = false;
     int zoneOffs = zone.getRawOffset();
-
-    int hour = zoneOffs / (60 * 60 * 1000);
-    int minute = (zoneOffs - 60 * 60 * 1000 * hour) / (60 * 1000);
-    int seconds = (zoneOffs - 60 * 60 * 1000 * hour - 60 * 1000 * minute) / 1000;
-    int millis = zoneOffs - 60 * 60 * 1000 * hour - 60 * 1000 * minute
-                 - seconds * 1000;
     int[] tempFields = 
                        {
-                         1, 1970, JANUARY, 1, 1, 1, 1, THURSDAY, 1, AM, hour,
-                         hour, minute, seconds, millis, zoneOffs, 0
+                         1, 1970, JANUARY, 1, 1, 1, 1, THURSDAY, 1, AM, 0, 0, 0,
+                         0, 0, zoneOffs, 0
                        };
     fields = tempFields;
     for (int i = 0; i < FIELD_COUNT; i++)
