@@ -3,6 +3,11 @@ Wed Jun 17 11:25:56 1998  Godmar Back  <gback@marker.cs.utah.edu>
 	* kaffe/kaffevm/code-analyse.c: fixed race condition where verifier 
 	was reentered by finalizer between verifyMethod and tidyVerifyMethod.
 
+	* kaffe/kaffevm/gtypes.h: replaced EXIT and ABORT macros with calls
+	to JVM/JNI hooks.  
+	various files: Changed all occurrences of abort->ABORT and of 
+	exit->EXIT.
+
 Mon Jun 15 12:33:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/findInJar.c (classpath): dynamically grow.
