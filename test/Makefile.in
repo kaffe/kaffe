@@ -377,7 +377,7 @@ EXTRA_DIST = \
 	awt/WidgetsDemo/forward.jpg \
 	awt/WidgetsDemo/hand.up.jpg \
 	awt/WidgetsDemo/transfer.jpg \
-	awt/WidgetsDemo/tvt.jpg
+	awt/WidgetsDemo/kaffe_powered.png
 
 all: all-recursive
 

@@ -1,5 +1,12 @@
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/dgux/jit-md.h: Fixed compilation error.
+
+	* test/Makefile.am (EXTRA_DIST): Added missing logo, 
+	removed Transvirtual logo. Fixes make dist gain.
+
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/ac_prog_antlr.m4: Simplified. No longer needs
 	java or javac. 
 

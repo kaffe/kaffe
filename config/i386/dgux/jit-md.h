@@ -39,7 +39,7 @@
 	    "X" (__LINE__)						\
 	    : "eax", "cc" );						\
 	asm volatile ("	\n						"\
-		addl %0,%%esp" : : "r" (4*(nargs+1)) : "cc")
+"		addl %0,%%esp" : : "r" (4*(nargs+1)) : "cc")
 
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
