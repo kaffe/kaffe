@@ -1,3 +1,39 @@
+2004-09-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/System.c:
+	Added gnu.classpath.vm.shortname.
+
+	* libraries/clib/security/java.security:
+	Added GNU Classpath provider.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/io/Base64InputStream.java,
+	libraries/javalib/gnu/java/security/provider/DSAKeyFactory.java,
+	libraries/javalib/gnu/java/security/provider/DSAKeyPairGenerator.java,
+	libraries/javalib/gnu/java/security/provider/DSAParameterGenerator.java,
+	libraries/javalib/gnu/java/security/provider/DSAParameters.java,
+	libraries/javalib/gnu/java/security/provider/DSASignature.java,
+	libraries/javalib/gnu/java/security/provider/DefaultPolicy.java,
+	libraries/javalib/gnu/java/security/provider/Gnu.java,
+	libraries/javalib/gnu/java/security/provider/GnuDSAPrivateKey.java,
+	libraries/javalib/gnu/java/security/provider/GnuDSAPublicKey.java,
+	libraries/javalib/gnu/java/security/provider/MD5.java,
+	libraries/javalib/gnu/java/security/provider/SHA.java,
+	libraries/javalib/gnu/java/security/provider/X509CertificateFactory.java,
+	libraries/javalib/gnu/java/security/util/Prime.java,
+	libraries/javalib/gnu/java/security/x509/X500DistinguishedName.java,
+	libraries/javalib/gnu/java/security/x509/X509CRL.java,
+	libraries/javalib/gnu/java/security/x509/X509CRLEntry.java,
+	libraries/javalib/gnu/java/security/x509/X509Certificate.java:
+	New files taken from GNU Classpath.
+
+	* libraries/javalib/java/security/Security.java:
+	Replaced by implementation from GNU Classpath.
+
 2004-09-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/security/AlgorithmParameterGenerator.java:

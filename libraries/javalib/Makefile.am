@@ -142,6 +142,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_security_action_SRCS) \
 	$(gnu_java_security_der_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
+	$(gnu_java_security_util_SRCS) \
 	$(gnu_java_security_x509_SRCS) \
 	$(gnu_java_text_SRCS) \
 	$(gnu_java_util_SRCS) \
@@ -984,6 +985,7 @@ gnu_java_beans_editors_SRCS = \
 	gnu/java/beans/editors/StringEditor.java
 gnu_java_io_SRCS = \
 	gnu/java/io/ASN1ParsingException.java \
+	gnu/java/io/Base64InputStream.java \
 	gnu/java/io/ClassLoaderObjectInputStream.java \
 	gnu/java/io/EncodingManager.java \
 	gnu/java/io/NullOutputStream.java \
@@ -1245,10 +1247,26 @@ gnu_java_security_der_SRCS = \
 	gnu/java/security/der/DERValue.java \
 	gnu/java/security/der/DERWriter.java
 gnu_java_security_provider_SRCS = \
+	gnu/java/security/provider/DSAKeyFactory.java \
+	gnu/java/security/provider/DSAKeyPairGenerator.java \
+	gnu/java/security/provider/DSAParameterGenerator.java \
+	gnu/java/security/provider/DSAParameters.java \
+	gnu/java/security/provider/DSASignature.java \
 	gnu/java/security/provider/DefaultPolicy.java \
-	gnu/java/security/provider/SHA1PRNG.java
+	gnu/java/security/provider/Gnu.java \
+	gnu/java/security/provider/GnuDSAPrivateKey.java \
+	gnu/java/security/provider/GnuDSAPublicKey.java \
+	gnu/java/security/provider/MD5.java \
+	gnu/java/security/provider/SHA.java \
+	gnu/java/security/provider/SHA1PRNG.java \
+	gnu/java/security/provider/X509CertificateFactory.java
+gnu_java_security_util_SRCS = \
+	gnu/java/security/util/Prime.java
 gnu_java_security_x509_SRCS = \
-	gnu/java/security/x509/X500DistinguishedName.java
+	gnu/java/security/x509/X500DistinguishedName.java \
+	gnu/java/security/x509/X509CRL.java \
+	gnu/java/security/x509/X509CRLEntry.java \
+	gnu/java/security/x509/X509Certificate.java
 gnu_java_text_SRCS = \
 	gnu/java/text/AttributedFormatBuffer.java \
 	gnu/java/text/BaseBreakIterator.java \

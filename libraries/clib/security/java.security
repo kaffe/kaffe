@@ -1,10 +1,9 @@
 #
 # Security configuration file for Kaffe
 #
-# You'll need to have kaffe configured to use 
-# GNU Crypto for the GNU Crypto provider 
-# to be picked up.
 
 security.provider.1=gnu.crypto.jce.GnuCrypto
 security.provider.2=org.metastatic.jessie.provider.Jessie
 security.provider.3=kaffe.security.provider.Kaffe
+security.provider.4=gnu.java.security.provider.Gnu
+

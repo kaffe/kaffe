@@ -254,6 +254,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * sun.boot.class.path  Bootclasspath
 	 * kaffe.library.path   Search path for kaffe's native libraries
 	 * gnu.cpu.endian	Specify the native endian-ness.
+         * gnu.classpath.vm.shortname
+         *                      Alias for java.vm.name.
 	 *
 	 */
 
@@ -286,6 +288,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.specification.vendor", kaffe_specification_vendor);
 	setProperty(p, "java.specification.name", kaffe_specification_name);
 	setProperty(p, "java.class.version", kaffe_class_version);
+        setProperty(p, "gnu.classpath.vm.shortname", kaffe_vm_name);
 
 	/* Undocumented properties used by some applications */
 	setProperty(p, "java.runtime.name", kaffe_vm_name);
