@@ -54,19 +54,25 @@ public class URLClassLoader extends SecureClassLoader {
 		return (URL[])urls.toArray(new URL[urls.size()]);
 	}
 
-	//protected Class findClass(String name) throws ClassNotFoundException {
-	//}
+	protected Class findClass(String name) throws ClassNotFoundException {
+		throw new kaffe.util.NotImplemented(getClass().getName()
+			+ ".findClass()");
+	}
 
 	protected Package definePackage(String name, Manifest man, URL url)
 			throws IllegalArgumentException {
 		return super.definePackage(name, "", "", "", "", "", "", url);
 	}
 
-	//public URL findResource(String name) {
-	//}
+	public URL findResource(String name) {
+		throw new kaffe.util.NotImplemented(getClass().getName()
+			+ ".findResource()");
+	}
 
-	//public Enumeration findResources(String name) throws IOException {
-	//}
+	public Enumeration findResources(String name) throws IOException {
+		throw new kaffe.util.NotImplemented(getClass().getName()
+			+ ".findResources()");
+	}
 
 	protected PermissionCollection getPermissions(CodeSource codesource) {
 		return null;
