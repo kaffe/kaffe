@@ -3327,17 +3327,10 @@ check_array_index(SlotInfo* obj, SlotInfo* idx)
 #if defined(HAVE_ccall_ugt)
 	ccall_int_ugt(tmp, idx, soft_badarrayindex);
 #else
-	/* NB: note that the call_soft below may cause registers to be
-	 * spilled and reused, but the spill will not be executed if the
-	 * test is good.  Don't know how to fix this.  Put in a sledgehammer
-	 * for now.
-	 */
-	sync_registers();
+	end_sub_block();
 	cbranch_int_ult(idx, tmp, reference_label(1, 1));
-	if (canCatch(BADARRAYINDEX)) {
-		sync_registers();
-	}
 	call_soft(soft_badarrayindex);
+	start_sub_block();
 	set_label(1, 1);
 #endif
 	slot_freetmp(tmp);
@@ -3353,12 +3346,10 @@ check_array_constindex(SlotInfo* obj, jint idx)
 #if defined(HAVE_ccall_ugt)
 	ccall_int_const_ugt(tmp, idx, soft_badarrayindex);
 #else
-	sync_registers();	/* see check_array_index */
+	end_sub_block();
 	cbranch_int_const_ugt(tmp, idx, reference_label(1, 1));
-	if (canCatch(BADARRAYINDEX)) {
-		sync_registers();
-	}
 	call_soft(soft_badarrayindex);
+	start_sub_block();
 	set_label(1, 1);
 #endif
 	slot_freetmp(tmp);
