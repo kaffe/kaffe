@@ -2,6 +2,7 @@ Wed May 27 21:48:41 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* configure.in, Makefile.in at all levels: added depend target;
 	copied and adapted from Pat Tullmann's build env <tullmann@cs.utah.edu>
+	README.depend: new file describing the changes.
 
 Wed May 27 12:39:02 PDT 1998	Rémi Perrot <remi.perrot@mail.dotcom.fr>
 
