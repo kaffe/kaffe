@@ -25,10 +25,11 @@
 #endif
 
 #ifdef DEBUG
-extern int pc;
-int dbmsg = 0;
+extern uint pc;
+int jit_debug = 0;
+/* int dbmsg = 0; */
 #define	debug_name(x)	debug(x)
-#define	debug(x)	if (dbmsg) printf##x;fflush(stdout)
+#define	debug(x)	if (jit_debug) printf##x;fflush(stdout)
 static char* rnames[] = {
 	"i0",  "i1",  "i2",  "i3",  "i4",  "i5",  "i6",  "i7",
 	"i8",  "i9",  "i10", "i11", "i12", "i13", "i14", "i15",

@@ -1,3 +1,15 @@
+Sat Oct 19 12:24:24 CEST 2002 Kevin D. Kissell <kevink@mips.com>
+	config/mips/common.h, config/mips/jit3-mips.def,
+	config/mips/linux/md.c, config/mips/linux/md.h,
+	config/mips/o32-sysdepCallMethod.h, config/mips/threads.h
+	kaffe/kaffevm/support.c:
+	
+	fixed several MIPS/Linux interpreter bugs.
+
+	With these changes, an interpretive MIPS/Linux
+	build passes all 1.0.7 regression tests both with and 
+	without debugging enabled.
+
 Fri Oct 18 23:34:11 CEST 2002 Timothy S Stack <stack@cs.utah.edu>
 	* kaffe/kaffevm/thread.c:
 	The "started" field wasn't being set for the main thread

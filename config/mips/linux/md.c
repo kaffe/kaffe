@@ -9,4 +9,6 @@
  * of this file. 
  */
 
+#if defined(TRANSLATOR)
 #include "mips/mips.c"
+#endif

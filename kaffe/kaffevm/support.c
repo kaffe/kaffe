@@ -332,7 +332,17 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 # if NO_HOLES
 #  error "ALIGN_AT_64bits is incompatible with NO_HOLES"
 # endif
-# define ENSURE_ALIGN64(DO) do { if (call.callsize[i] == 2 && (i & 1)) { call.callsize[i] = 0; call.calltype[i] = 'I'; DO; ++i; ++s; call.callsize[i] = 2; } } while (0)
+# define ENSURE_ALIGN64(DO) do { \
+		if (call.callsize[i] == 2 && (i & 1)) { \
+			char tmptype = call.calltype[i]; \
+			call.callsize[i] = 0; \
+			call.calltype[i] = 'I'; \
+			DO; \
+			++i; ++s; \
+			call.calltype[i] = tmptype; \
+			call.callsize[i] = 2; \
+		} \
+	} while (0)
 #else
 # define ENSURE_ALIGN64(DO) do {} while (0)
 #endif

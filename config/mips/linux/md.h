@@ -28,16 +28,16 @@
 /**/
 /* Signal handling */
 /**/
-#include <sigcontext.h>
+#include <signal.h>
 
 /* Define the entry into a signal handler */
-#define EXCEPTIONPROTO  int sig, int c1, int c2, int c3, int c4, int c5, int c6, int c7, struct sigcontext ctx
+#define EXCEPTIONPROTO  int sig, int cause, struct sigcontext *ctx
 
 /* Get the first exception frame from a signal handler */
 #define MIPS_FP 30
 #define EXCEPTIONFRAME(f, c) \
-	(f).return_frame = (void*)(c).sc_regs[MIPS_FP]; \
-	(f).return_pc = (void*)(c).sc_pc
+	(f).return_frame = (void*)(c)->sc_regs[MIPS_FP]; \
+	(f).return_pc = (void*)(c)->sc_pc
 
 
 #endif

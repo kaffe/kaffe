@@ -123,61 +123,66 @@ longSysdepCallMethod(callMethodInfo *call,
 #endif
 
   case 4:
-      if (calltype[0] != D) {
+      if ((calltype[0] != D) && (calltype[0] != F)) {
 	  a3 = callargs[3].i;
-	  goto allint_3;
+	  a2 = callargs[2].i;
+	  a1 = callargs[1].i;
+	  a0 = callargs[0].i;
+	  goto alldone;
       }
       
       if (calltype[2] == D) {
 	  d2 = callargs[2].d;
-	  goto alldouble_2;
+	  if(calltype[0] == D) d0 = callargs[0].d;
+	  else f0 = callargs[0].f;
+	  goto alldone;
       }
 
       a3 = callargs[3].i;
-      goto int_double;
 
   case 3:
-      if (calltype[0] != D) {
-      allint_3:
+      if ((calltype[0] != D) && (calltype[0] != F)) {
 	  a2 = callargs[2].i;
-	  goto testfloat_2;
+	  a1 = callargs[1].i;
+	  a0 = callargs[0].i;
+	  goto alldone;
       }
       
-      if (calltype[2] == F)
+      if ((calltype[2] == F) && (calltype[0] == D))
 	  f2 = callargs[2].f;
       else {
-      int_double:
 	  a2 = callargs[2].i;
       }
-      goto alldouble_2;
 
   case 2:
       if (calltype[0] == D) {
-      alldouble_2:
 	  d0=callargs[0].d;
+	  goto alldone;
       } else {
-      testfloat_2:
 	  if (calltype[0] != F) {
 	      a1 = callargs[1].i;
-	      goto allint_1;
+	      a0 = callargs[0].i;
+	      goto alldone;
 	  }
 
-	  if (calltype[1] == F)
+	  if (calltype[1] == F) {
 	      f2=callargs[1].f;
-	  else
+	      f0=callargs[0].f;
+	      goto alldone;
+	  } else {
 	      a1=callargs[1].i;
-	  goto allfloat_1;
+	      f0=callargs[0].f;
+	      goto alldone;
+	  }
       }
 
   case 1:
       if (calltype[0] == F) {
-      allfloat_1:
 	  f0=callargs[0].f;
       } else {
-      allint_1:
 	  a0=callargs[0].i;
       }
-
+alldone:
   case 0:
 #ifndef LONG_SYSDEP
   noargs:

@@ -53,16 +53,17 @@
 	asm volatile(				\
 	"	.set	noreorder\n"		\
 	"	.set	mips2\n"		\
-	"1:	ll	%0, %3\n"		\
-	"	xor	%1, %0, %4\n"		\
-	"	sltiu	%1, %1, 1\n"		\
-	"	movn	%0, %5, %1\n"		\
-	"	sc	%0, %2\n"		\
+	"1:	ll	%0, %2\n"		\
+	"	bne	%0, %3,2f\n"		\
+	"	move	%0, $0\n"		\
+	"	move	%0, %4\n"		\
+	"	sc	%0, %1\n"		\
 	"	beqz	%0, 1b\n"		\
-	"	sync\n"				\
+	"	nop\n"				\
+	"2:\n"					\
 	"	.set	mips0\n"		\
 	"	.set	reorder\n"		\
-	: "=&r" (tmp), "=&r" (ret), "=m" (*(A))	\
+	: "=&r" (ret), "=m" (*(A))		\
 	: "m" (*(A)), "r" (O), "r" (N)		\
 	: "memory");				\
 	ret;					\
