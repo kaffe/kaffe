@@ -594,7 +594,15 @@ soft_ldiv(jlong v1, jlong v2)
 jlong
 soft_lrem(jlong v1, jlong v2)
 {
-	return (v1 % v2);
+	jlong r = v1 % v2;
+	/* Java says sgn(r) == sgn(v1).
+	 * C doesn't say what the sign of the remainder will be, and in
+	 * fact some implementations are wrong.  So we fix it up.
+	 */
+	if ((v1 < 0L && r >= 0L) || (v1 >= 0L && r < 0L)) {
+		r = -r;
+	}
+	return (r);
 }
 
 jfloat
