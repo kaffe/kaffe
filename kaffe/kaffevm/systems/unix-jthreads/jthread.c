@@ -1517,14 +1517,12 @@ jthreadedFileDescriptor(int fd)
 	}
 #elif defined(FIOASYNC)
 	/* 
-	 * On some systems, this will not work if a terminal fd is redirected.
-	 * (Solaris sets errno to ENXIO in this case.)
+	 * This ioctl fails for so many systems on so many occasions.
+	 * Reasons include ENXIO, ENOTTY, EINVAL(?)
 	 */
 	r = ioctl(fd, FIOASYNC, &on);
-	if (r < 0 && errno != ENXIO && errno != ENOTTY) {
-		/* Defines ENXIO and ENOTTY to be acceptable errors */
-		perror("FIOASYNC");
-		return (r);
+	if (r < 0) {
+		DBG(JTHREAD, perror("FIOASYNC"); )
         }
 #endif
 
