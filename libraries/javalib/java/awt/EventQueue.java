@@ -1,302 +1,459 @@
+/* Copyright (C) 1999, 2000, 2001, 2002, 2003  Free Software Foundation
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.PaintEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.InvocationEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.EmptyStackException;
+
+/* Written using on-line Java 2 Platform Standard Edition v1.3 API 
+ * Specification, as well as "The Java Class Libraries", 2nd edition 
+ * (Addison-Wesley, 1998).
+ * Status:  Believed complete, but untested.
+ */
 
 /**
+ * This class manages a queue of <code>AWTEvent</code> objects that
+ * are posted to it.  The AWT system uses only one event queue for all
+ * events.
  *
- * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- * @author P.C.Mehlitz
+ * @author Bryce McKinlay
+ * @author Aaron M. Renn (arenn@urbanophile.com)
  */
 public class EventQueue
 {
-	AWTEvent localQueue;
-	AWTEvent localEnd;
+  private static final int INITIAL_QUEUE_DEPTH = 8;
+  private AWTEvent[] queue = new AWTEvent[INITIAL_QUEUE_DEPTH];
 
-static {
-	// force static init of AWTEvent (need that for native event system
-	// initialization)
-	Class c = AWTEvent.class;
-}
+  private int next_in = 0; // Index where next event will be added to queue
+  private int next_out = 0; // Index of next event to be removed from queue
 
-public EventQueue () {
-}
+  private EventQueue next;
+  private EventQueue prev;
+  private AWTEvent currentEvent;
+  private long lastWhen = System.currentTimeMillis();
 
-synchronized void dropAll ( Object source ) {
-	AWTEvent e = localQueue;
-	AWTEvent del, last = null;
+  private EventDispatchThread dispatchThread = new EventDispatchThread(this);
 
-	while ( e != null ) {
-		if ( e.getSource() == source ) {
-			if ( localEnd == e )
-				localEnd = last;
+  /**
+   * Initializes a new instance of <code>EventQueue</code>.
+   */
+  public EventQueue()
+  {
+  }
 
-			if ( last == null )
-				localQueue = e.next;
-			else
-				last.next = e.next;
+  /**
+   * Returns the next event in the queue.  This method will block until
+   * an event is available or until the thread is interrupted.
+   *
+   * @return The next event in the queue.
+   *
+   * @exception InterruptedException If this thread is interrupted while
+   * waiting for an event to be posted to the queue.
+   */
+  public synchronized AWTEvent getNextEvent()
+    throws InterruptedException
+  {
+    if (next != null)
+      return next.getNextEvent();
 
-			del = e;
-			e = e.next;
-			del.recycle();  // watch out - recycle mutates the 'next' field
-		}
-		else {
-			last = e;
-			e = e.next;
-		}
-	}
-}
+    while (next_in == next_out)
+      wait();
 
-synchronized void dropLiveEvents ( Object source ) {
-	AWTEvent e = localQueue;
-	AWTEvent del, last = null;
+    AWTEvent res = queue[next_out];
 
-	while ( e != null ) {
-		if ( e.isLiveEventFor( source) ) {
-			if ( localEnd == e )
-				localEnd = last;
+    if (++next_out == queue.length)
+      next_out = 0;
+    return res;
+  }
 
-			if ( last == null )
-				localQueue = e.next;
-			else
-				last.next = e.next;
+  /**
+   * Returns the next event in the queue without removing it from the queue.
+   * This method will block until an event is available or until the thread
+   * is interrupted.
+   *
+   * @return The next event in the queue.
+   * @specnote Does not block. Returns null if there are no events on the 
+   *            queue. 
+   */ 
+  public synchronized AWTEvent peekEvent()
+  {
+    if (next != null)
+      return next.peekEvent();
 
-			del = e;
-			e = e.next;
-			del.recycle();  // watch out - recycle mutates the 'next' field
-		}
-		else {
-			last = e;
-			e = e.next;
-		}
-	}
-}
+    if (next_in != next_out)
+      return queue[next_out];
+    else
+      return null;
+  }
 
-synchronized void dropPaintEvents ( Object source, int x, int y, int w, int h ) {
-	AWTEvent e = localQueue;
-	AWTEvent del, last = null;
+  /**
+   * Returns the next event in the queue that has the specified id
+   * without removing it from the queue.
+   * This method will block until an event is available or until the thread
+   * is interrupted.
+   *
+   * @param id The event id to return.
+   *
+   * @return The next event in the queue.
+   *
+   * @specnote Does not block. Returns null if there are no matching events 
+   *            on the queue. 
+   */ 
+  public synchronized AWTEvent peekEvent(int id)
+  {
+    if (next != null)
+      return next.peekEvent(id);
 
-	while ( e != null ) {
-		if ( (e.id == PaintEvent.UPDATE) && e.isObsoletePaint( source, x, y, w, h) ) {
-			if ( localEnd == e )
-				localEnd = last;
+    int i = next_out;
+    while (i != next_in)
+      {
+        AWTEvent qevt = queue[i];
+        if (qevt.id == id)
+          return qevt;
+      }
+    return null;
+  }
 
-	 		if ( last == null )
-				localQueue = e.next;
-			else
-				last.next = e.next;
+  /**
+   * Posts a new event to the queue.
+   *
+   * @param event The event to post to the queue.
+   *
+   * @exception NullPointerException If event is null.
+   */
+  public synchronized void postEvent(AWTEvent evt)
+  {
+    if (evt == null)
+      throw new NullPointerException();
 
-			del = e;
-			e = e.next;
-			del.recycle();  // watch out - recycle mutates the 'next' field
-		}
-		else {
-			last = e;
-			e = e.next;
-		}
-	}
-}
+    if (next != null)
+      {
+        next.postEvent(evt);
+        return;
+      }
 
-synchronized void dropPendingEvents ( Component src, int id ) {
-	AWTEvent e = localQueue;
-	AWTEvent del, last = null;
+    /* Check for any events already on the queue with the same source 
+       and ID. */	
+    int i = next_out;
+    while (i != next_in)
+      {
+        AWTEvent qevt = queue[i];
+        Object src;
+        if (qevt.id == evt.id
+            && (src = qevt.getSource()) == evt.getSource()
+            && src instanceof Component)
+          {
+            /* If there are, call coalesceEvents on the source component 
+               to see if they can be combined. */
+            Component srccmp = (Component) src;
+            AWTEvent coalesced_evt = srccmp.coalesceEvents(qevt, evt);
+            if (coalesced_evt != null)
+              {
+                /* Yes. Replace the existing event with the combined event. */
+                queue[i] = coalesced_evt;
+                return;
+              }
+            break;
+          }
+        if (++i == queue.length)
+          i = 0;
+      }
 
-	while ( e != null ) {
-		if ( ((id != 0) && (e.id != id)) ||
-		     ((src != null) && (e.getSource() != src)) ) {
-			last = e;
-			e = e.next;
-			continue;
-		}
-	
-		if ( localEnd == e )
-			localEnd = last;
+    queue[next_in] = evt;    
+    if (++next_in == queue.length)
+      next_in = 0;
 
- 		if ( last == null )
-			localQueue = e.next;
-		else
-			last.next = e.next;
+    if (next_in == next_out)
+      {
+        /* Queue is full. Extend it. */
+        AWTEvent[] oldQueue = queue;
+        queue = new AWTEvent[queue.length * 2];
 
-		del = e;
-		e = e.next;
-		del.recycle();  // watch out - recycle mutates the 'next' field
-	}
-}
+        int len = oldQueue.length - next_out;
+        System.arraycopy(oldQueue, next_out, queue, 0, len);
+        if (next_out != 0)
+          System.arraycopy(oldQueue, 0, queue, len, next_out);
 
-public AWTEvent getNextEvent () throws InterruptedException {
-	AWTEvent e;
+        next_out = 0;
+        next_in = oldQueue.length;
+      }
+    notify();
+  }
 
-	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
-		// We only have one source of Java events - our localQueue (every
-		// native event is posted to this queue by the native layer). If
-		// it is empty, we can't do anything else than go sleeping
-		synchronized ( this) {
-			// block until we get something in
-			while ( localQueue == null ) {
-				wait();
-			}
+  /**
+   * Causes runnable to have its run method called in the dispatch thread of the
+   * EventQueue. This will happen after all pending events are processed. The
+   * call blocks until this has happened. This method will throw an Error if
+   * called from the event dispatcher thread.
+   *
+   * @exception InterruptedException If another thread has interrupted
+   * this thread.
+   * @exception InvocationTargetException If an exception is thrown when running
+   * runnable.
+   *
+   * @since 1.2
+   */
+  public static void invokeAndWait(Runnable runnable)
+    throws InterruptedException, InvocationTargetException
+  {
+    if (isDispatchThread ())
+      throw new Error("Can't call invokeAndWait from event dispatch thread");
 
-			e = localQueue;
-			localQueue = e.next;
-			e.next = null;
-			if ( e == localEnd )
-				localEnd = null; // just to avoid a temp mem leak
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
+    Thread current = Thread.currentThread();
 
-			return e;
-		}
-	}
-	else {
-		// Slightly more complex - we have two sources of events: our local queue
-		// and some native mechanism accessed via evtGetNextEvent(). We start with
-		// our local queue, but don't block in case it is empty. Blocking (if any) is done
-		// in evtGetNextEvent(), which means we have to create some native event traffic
-		// (getting back as a null event) in case we subsequently post a event to
-		// the localQueue
-		while ( true ) {
-			synchronized ( this ) {
-				if ( localQueue != null ) {
-					e = localQueue;
-					localQueue = e.next;
-					e.next = null;
-					if ( e == localEnd )
-						localEnd = null; // just to avoid a temp mem leak
+    InvocationEvent ie = 
+      new InvocationEvent(eq, runnable, current, true);
 
-					return e;
-				}
-			}
+    synchronized (current)
+      {
+        eq.postEvent(ie);
+        current.wait();
+      }
 
-			// this is the sync point in case we have a blocking AWT (suspending
-			// the dispatcher thread until the next event becomes available)
-			if ( (e = Toolkit.evtGetNextEvent()) != null ) {
-				e.next = null;
-				return e;
-			}
-			// we don't have to check Toolkit.IS_BLOCKING here, since we reach
-			// this point only in case it is not blocked, or evtGetNextEvent()
-			// returned 'null'
-			Thread.sleep( Defaults.EventPollingRate);
-		}
-	}
-}
+    Exception exception;
 
-synchronized boolean hasPendingEvents ( Component c, int id ) {
-	AWTEvent e;
+    if ((exception = ie.getException()) != null)
+      throw new InvocationTargetException(exception);
+  }
 
-	for ( e=localQueue; e != null; e = e.next ) {
-		if ( (c != null) && (c != e.getSource()) )
-			continue;
-	
-		if ( (id != 0) && (id != e.id) )
-			continue;
-	
-		return true;
-	}
+  /**
+   * This arranges for runnable to have its run method called in the
+   * dispatch thread of the EventQueue.  This will happen after all
+   * pending events are processed.
+   *
+   * @since 1.2
+   */
+  public static void invokeLater(Runnable runnable)
+  {
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
 
-	return false;
-}
+    InvocationEvent ie = 
+      new InvocationEvent(eq, runnable, null, false);
 
-public static boolean isDispatchThread() {
-	return Thread.currentThread() == Toolkit.eventThread;
-}
+    eq.postEvent(ie);
+  }
 
-public synchronized AWTEvent peekEvent () {
-	if ( localQueue != null ){
-		return localQueue;
-	}
-	else if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) == 0 ) {
-		return Toolkit.evtPeekEvent();
-	}
+  /**
+   * Return true if the current thread is the current AWT event dispatch
+   * thread.
+   */
+  public static boolean isDispatchThread()
+  {
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue();
+    
+    /* Find last EventQueue in chain */ 
+    while (eq.next != null)
+      eq = eq.next;
 
-	return null;
-}
+    return (Thread.currentThread() == eq.dispatchThread);
+  }
 
-public synchronized AWTEvent peekEvent ( int id ) {
-	for ( AWTEvent e=localQueue; e != null; e = e.next ) {
-		if ( e.id == id )
-			return e;
-	}
-	
-	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) == 0 )
-		return Toolkit.evtPeekEventId( id);
-		
-	return null;
-}
+  /**
+   * Return the event currently being dispatched by the event
+   * dispatch thread.  If the current thread is not the event
+   * dispatch thread, this method returns null.
+   *
+   * @since 1.4
+   */
+  public static AWTEvent getCurrentEvent()
+  {
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
+    Thread ct = Thread.currentThread();
+    
+    /* Find out if this thread is the dispatch thread for any of the
+       EventQueues in the chain */ 
+    while (ct != eq.dispatchThread)
+      {
+        // Try next EventQueue, if any
+        if (eq.next == null)
+           return null;  // Not an event dispatch thread
+        eq = eq.next;
+      }
 
-public synchronized void postEvent ( AWTEvent e ) {
-	if ( localQueue == null ) {
-		localQueue = localEnd = e;
+    return eq.currentEvent;
+  }
 
-		if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
-			notify();  // wake up any waiter
-		}
-		else {
-			// If we use blocked IO, and this is not the eventThread, wake it up by creating
-			// some IO traffic. No need to do that if we have a native dispatcher loop
-			if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0)
-			     && !isDispatchThread()){
-				Toolkit.evtWakeup();
-			}
-		}
-	}
-	else {
-		localEnd.next = e;
-		localEnd = e;
-				
-		// there is no need to wakeup the eventThread, since local events are
-		// always processed *before* blocking on a native event inquiry (and
-		// the localQueue isn't empty)
-	}
-}
+  /**
+   * Allows a custom EventQueue implementation to replace this one. 
+   * All pending events are transferred to the new queue. Calls to postEvent,
+   * getNextEvent, and peekEvent and others are forwarded to the pushed queue
+   * until it is removed with a pop().
+   *
+   * @exception NullPointerException if newEventQueue is null.
+   */
+  public synchronized void push(EventQueue newEventQueue)
+  {
+    if (newEventQueue == null)
+      throw new NullPointerException ();
 
-void postFocusEvent ( FocusEvent evt ) {
-	if ( evt.id == FocusEvent.FOCUS_GAINED ) {
-		dropPendingEvents( null, FocusEvent.FOCUS_GAINED);
-	}
-	
-	postEvent( evt);
-}
+    /* Make sure we are at the top of the stack because callers can
+       only get a reference to the one at the bottom using
+       Toolkit.getDefaultToolkit().getSystemEventQueue() */
+    if (next != null)
+      {
+        next.push (newEventQueue);
+        return;
+      }
 
-synchronized void postPaintEvent ( int id, Component c, int x, int y, int width, int height ) {
-	AWTEvent e = localQueue;
+    /* Make sure we have a live dispatch thread to drive the queue */
+    if (dispatchThread == null)
+      dispatchThread = new EventDispatchThread(this);
 
-	// OK, this is pretty redundant to postEvent, but we don't want to
-	// scan the localQueue twice (it might get large)
-	if ( e != null ) {
-		do {
-			if ( (e.id == id) && ((PaintEvt)e).solicitRepaint( c, x, y, width, height) ){
-				return;
-			}
-			if ( e.next == null ) {
-				break;
-			}
-			else {
-				e = e.next;
-			}
-		} while ( true );
-		
-		e.next = localEnd = PaintEvt.getEvent( c, id, 0, x, y, width, height);
-	}
-	else {
-		localQueue = localEnd = PaintEvt.getEvent( c, id, 0, x, y, width, height);
+    int i = next_out;
+    while (i != next_in)
+      {
+        newEventQueue.postEvent(queue[i]);
+        next_out = i;
+        if (++i == queue.length)
+          i = 0;
+      }
 
-		if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
-			notify();  // wake up any waiter
-		}
-		else if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0) &&
-			  !isDispatchThread()){
-			Toolkit.evtWakeup();
-		}
-	}
-}
+    next = newEventQueue;
+    newEventQueue.prev = this;    
+  }
 
-  /* taken from GNU Classpath */
+  /** Transfer any pending events from this queue back to the parent queue that
+    * was previously push()ed. Event dispatch from this queue is suspended.
+    *
+    * @exception EmptyStackException If no previous push was made on this
+    * EventQueue.
+    */
+  protected void pop() throws EmptyStackException
+  {
+    if (prev == null)
+      throw new EmptyStackException();
+
+    /* The order is important here, we must get the prev lock first,
+       or deadlock could occur as callers usually get here following
+       prev's next pointer, and thus obtain prev's lock before trying
+       to get this lock. */
+    synchronized (prev)
+      {
+        prev.next = next;
+        if (next != null)
+          next.prev = prev;
+
+        synchronized (this)
+          {
+            int i = next_out;
+            while (i != next_in)
+              {
+                prev.postEvent(queue[i]);
+                next_out = i;
+                if (++i == queue.length)
+                  i = 0;
+              }
+	    // Empty the queue so it can be reused
+	    next_in = 0;
+	    next_out = 0;
+
+            // Tell our EventDispatchThread that it can end execution
+            dispatchThread.interrupt ();
+	    dispatchThread = null;
+          }
+      }
+  }
+
+  /**
+   * Dispatches an event. The manner in which the event is dispatched depends
+   * upon the type of the event and the type of the event's source object.
+   *
+   * @exception NullPointerException If event is null.
+   */
+  protected void dispatchEvent(AWTEvent evt)
+  {
+    currentEvent = evt;
+
+    if (evt instanceof InputEvent)
+      lastWhen = ((InputEvent) evt).getWhen();
+    else if (evt instanceof ActionEvent)
+      lastWhen = ((ActionEvent) evt).getWhen();
+    else if (evt instanceof InvocationEvent)
+      lastWhen = ((InvocationEvent) evt).getWhen();
+
+    if (evt instanceof ActiveEvent)
+      {
+        ActiveEvent active_evt = (ActiveEvent) evt;
+        active_evt.dispatch();
+      }
+    else
+      {
+        Object source = evt.getSource();
+
+        if (source instanceof Component)
+          {
+            Component srccmp = (Component) source;
+            srccmp.dispatchEvent(evt);
+          }
+        else if (source instanceof MenuComponent)
+          {
+            MenuComponent srccmp = (MenuComponent) source;
+            srccmp.dispatchEvent(evt);
+          }
+      }
+  }
+
+  /**
+   * Returns the timestamp of the most recent event that had a timestamp, or
+   * the initialization time of the event queue if no events have been fired.
+   * At present, only <code>InputEvent</code>s, <code>ActionEvent</code>s,
+   * <code>InputMethodEvent</code>s, and <code>InvocationEvent</code>s have
+   * timestamps, but this may be added to other events in future versions.
+   * If this is called by the event dispatching thread, it can be any
+   * (sequential) value, but to other threads, the safest bet is to return
+   * System.currentTimeMillis().
+   *
+   * @return the most recent timestamp
+   * @see InputEvent#getWhen()
+   * @see ActionEvent#getWhen()
+   * @see InvocationEvent#getWhen()
+   * @see InputMethodEvent#getWhen()
+   * @since 1.4
+   */
   public static long getMostRecentEventTime()
   {
-    // XXX For now, this ONLY does the current time.
-    return System.currentTimeMillis();
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
+    if (Thread.currentThread() != eq.dispatchThread)
+      return System.currentTimeMillis();
+    return eq.lastWhen;
   }
 }

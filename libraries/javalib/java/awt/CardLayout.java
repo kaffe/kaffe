@@ -1,217 +1,431 @@
+// CardLayout.java - Card-based layout engine
+
+/* Copyright (C) 1999, 2000, 2002, 2003  Free Software Foundation
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
-import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.io.Serializable;
 
-public class CardLayout
-  implements LayoutManager2, Serializable
-{
-	/** @serial undocumented */
-	int hgap;
-	/** @serial undocumented */
-	int vgap;
-	/** @serial undocumented */
-	Hashtable tab = new Hashtable();
-
-	/* Sun's doesn't hardcode, we do */
-	private static final long serialVersionUID = -4328196481005934313L;
-
-public CardLayout () {
-	this( 0, 0);
-}
-
-public CardLayout ( int hgap, int vgap) {
-	this.hgap = hgap;
-	this.vgap = vgap;
-}
-
-public void addLayoutComponent ( Component comp, Object constraints) {
-	if ( constraints instanceof String) {
-		addLayoutComponent( (String)constraints, comp);
-	}
-	else {
-		throw new IllegalArgumentException("non-string constraint");
-	}
-}
-
-/**
- * @deprecated
+/** This class implements a card-based layout scheme.  Each included
+ * component is treated as a card.  Only one card can be shown at a
+ * time.  This class includes methods for changing which card is
+ * shown.
+ *
+ * @author Tom Tromey <tromey@redhat.com>
+ * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public void addLayoutComponent ( String name, Component comp) {
-	tab.put( name, comp);
-	if ( tab.size() > 1 )
-		comp.setVisible( false);
-}
+public class CardLayout implements LayoutManager2, Serializable
+{
+  static final long serialVersionUID = -4328196481005934313L;
 
-public void first ( Container parent) {
-	Component fc = null;
-	int cc = parent.getComponentCount();
+  /**
+   * Initializes a new instance of <code>CardLayout</code> with horizontal
+   * and vertical gaps of 0.
+   */
+  public CardLayout ()
+  {
+    this (0, 0);
+  }
 
-	for ( int i=0; i<cc; i++) {
-		Component c = parent.getComponent(i);
-		if ( fc == null )
-			fc = c;
-		if ( (c.flags & Component.IS_VISIBLE) != 0 ) {
-			if ( c != fc ) {
-				c.setVisible( false);
-				fc.setVisible( true);
-			}
-			return;
-		}
-	}
-}
+  /**
+   * Create a new <code>CardLayout</code> object with the specified
+   * horizontal and vertical gaps.
+   * @param hgap The horizontal gap
+   * @param vgap The vertical gap
+   */
+  public CardLayout (int hgap, int vgap)
+  {
+    this.hgap = hgap;
+    this.vgap = vgap;
+    this.tab = new Hashtable ();
+  }
 
-public int getHgap () {
-	return hgap;
-}
+  /** Add a new component to the layout.  The constraint must be a
+   * string which is used to name the component.  This string can
+   * later be used to refer to the particular component.
+   * @param comp The component to add
+   * @param constraints The name by which the component can later be called
+   * @exception IllegalArgumentException If `constraints' is not a
+   * <code>String</code>
+   */
+  public void addLayoutComponent (Component comp, Object constraints)
+  {
+    if (! (constraints instanceof String))
+      throw new IllegalArgumentException ("Object " + constraints
+					  + " is not a string");
+    addLayoutComponent ((String) constraints, comp);
+  }
 
-public float getLayoutAlignmentX ( Container parent ) {
-	return (Component.CENTER_ALIGNMENT);
-}
+  /** Add a new component to the layout.  The name can be used later
+   * to refer to the component.
+   * @param name The name by which the component can later be called
+   * @param comp The component to add
+   * @deprecated This method is deprecated in favor of
+   * <code>addLayoutComponent(Component, Object)</code>.
+   */
+  public void addLayoutComponent (String name, Component comp)
+  {
+    tab.put (name, comp);
+    // First component added is the default component.
+    if (tab.size() == 1)
+      comp.setVisible(true);
+    else
+      comp.setVisible(false);
+  }
 
-public float getLayoutAlignmentY ( Container parent ) {
-	return (Component.CENTER_ALIGNMENT);
-}
+  /** Cause the first component in the container to be displayed.
+   * @param parent The parent container
+   */
+  public void first (Container parent)
+  {
+    gotoComponent (parent, FIRST);
+  }
 
-private Dimension getLayoutSize (  Container parent, boolean preferred) {
-	Dimension d = new Dimension();
-	int cc = parent.getComponentCount();
+  /** Return this layout manager's horizontal gap.  */
+  public int getHgap ()
+  {
+    return hgap;
+  }
 
-	for ( int i=0; i<cc; i++) {
-		Component c = parent.getComponent(i);
-		Dimension cd = preferred ? c.getPreferredSize() : c.getMinimumSize();
-		d.width = Math.max( d.width, cd.width );
-		d.height = Math.max( d.height, cd.height );
-	}
-	
-	// use getInsets() instead of fields (might be redefined)
-	Insets in = parent.getInsets();
-	d.width += in.left + in.right;
-	d.height += in.top + in.bottom;
-	
-	return d;
-}
+  /** Return this layout manager's x alignment.  This method always
+   * returns Component.CENTER_ALIGNMENT.
+   * @param parent Container using this layout manager instance
+   */
+  public float getLayoutAlignmentX (Container parent)
+  {
+    return Component.CENTER_ALIGNMENT;
+  }
 
-public int getVgap () {
-	return vgap;
-}
+  /** Returns this layout manager's y alignment.  This method always
+   * returns Component.CENTER_ALIGNMENT.
+   * @param parent Container using this layout manager instance
+   */
+  public float getLayoutAlignmentY (Container parent)
+  {
+    return Component.CENTER_ALIGNMENT;
+  }
 
-public void invalidateLayout ( Container parent) {
-}
+  /** Return this layout manager's vertical gap.  */
+  public int getVgap ()
+  {
+    return vgap;
+  }
 
-public void last ( Container parent) {
-	Component lc = null;
-	int cc = parent.getComponentCount();
+  /** Invalidate this layout manager's state.  */
+  public void invalidateLayout (Container target)
+  {
+    // Do nothing.
+  }
 
-	for ( int i=cc-1; i>=0; i--) {
-		Component c = parent.getComponent(i);
-		if ( lc == null )
-			lc = c;
-		if ( (c.flags & Component.IS_VISIBLE) != 0) {
-			if ( c != lc ) {
-				c.setVisible( false);
-				lc.setVisible( true);
-			}
-			return;
-		}
-	}
-}
+  /** Cause the last component in the container to be displayed.
+   * @param parent The parent container
+   */
+  public void last (Container parent)
+  {
+    gotoComponent (parent, LAST);
+  }
 
-public void layoutContainer ( Container parent) {
-	Insets in = parent.getInsets();  // getInsets() might be redefined (swing)
-	int cc = parent.getComponentCount();
+  /**
+   * Lays out the container.  This is done by resizing the child components
+   * to be the same size as the parent, less insets and gaps.
+   *
+   * @param parent The parent container.
+   */ 
+  public void layoutContainer (Container parent)
+  {
+    synchronized (parent.getTreeLock ())
+      {
+	int width = parent.width;
+	int height = parent.height;
 
-	for ( int i=0; i<cc; i++) {
-		parent.getComponent(i).setBounds(	in.left + hgap,
-																	in.top + vgap,
-																	parent.width - 2*hgap - in.left - in.right,
-																	parent.height - 2*vgap - in.top - in.bottom );
-	}
-}
+	Insets ins = parent.getInsets ();
 
-public Dimension maximumLayoutSize ( Container parent ) {
-	return Toolkit.singleton.getScreenSize();
-}
+	int num = parent.ncomponents;
+	Component[] comps = parent.component;
 
-public Dimension minimumLayoutSize ( Container parent ) {
-	return getLayoutSize( parent, false);
-}
+	int x = ins.left + hgap;
+	int y = ins.top + vgap;
+	width = width - 2 * hgap - ins.left - ins.right;
+	height = height - 2 * vgap - ins.top - ins.bottom;
 
-public void next ( Container parent) {
-	Component lc = null;
-	int cc = parent.getComponentCount();
+	for (int i = 0; i < num; ++i)
+	  comps[i].setBounds (x, y, width, height);
+      }
+  }
 
-	for ( int i=0; i<cc; i++) {
-		Component c = parent.getComponent(i);
-		if ( (c.flags & Component.IS_VISIBLE) != 0 )
-			lc = c;
-		else if ( lc != null) {
-			lc.setVisible( false);
-			c.setVisible( true);
-			return;
-		}
-	}
-}
+  /** Get the maximum layout size of the container.
+   * @param target The parent container
+   */
+  public Dimension maximumLayoutSize (Container target)
+  {
+    // The JCL says that this returns Integer.MAX_VALUE for both
+    // dimensions.  But that just seems wrong to me.
+    return getSize (target, MAX);
+  }
 
-public Dimension preferredLayoutSize ( Container parent) {
-	return getLayoutSize( parent, true);
-}
+  /** Get the minimum layout size of the container.
+   * @param target The parent container
+   */
+  public Dimension minimumLayoutSize (Container target)
+  {
+    return getSize (target, MIN);
+  }
 
-public void previous ( Container parent) {
-	Component lc = null;
-	int cc = parent.getComponentCount();
+  /** Cause the next component in the container to be displayed.  If
+   * this current card is the  last one in the deck, the first
+   * component is displayed.
+   * @param parent The parent container
+   */
+  public void next (Container parent)
+  {
+    gotoComponent (parent, NEXT);
+  }
 
-	for ( int i=cc-1; i>=0; i--) {
-		Component c = parent.getComponent(i);
-		if ( (c.flags & Component.IS_VISIBLE) != 0 )
-			lc = c;
-		else if ( lc != null) {
-			lc.setVisible( false);
-			c.setVisible( true);
-			return;
-		}
-	}
-}
+  /** Get the preferred layout size of the container.
+   * @param target The parent container
+   */
+  public Dimension preferredLayoutSize (Container parent)
+  {
+    return getSize (parent, PREF);
+  }
 
-public void removeLayoutComponent ( Component comp) {
-	for( Enumeration e = tab.keys(); e.hasMoreElements(); ) {
-		String key = (String)e.nextElement();
-		Component c = (Component)tab.get( key);
-		if ( c == comp ) {
-			tab.remove( key);
-			return;
-		}
-	}
-}
+  /** Cause the previous component in the container to be displayed.
+   * If this current card is the first one in the deck, the last
+   * component is displayed.
+   * @param parent The parent container
+   */
+  public void previous (Container parent)
+  {
+    gotoComponent (parent, PREV);
+  }
 
-public void setHgap ( int hgap) {
-	this.hgap = hgap;
-}
+  /** Remove the indicated component from this layout manager.
+   * @param comp The component to remove
+   */
+  public void removeLayoutComponent (Component comp)
+  {
+    Enumeration e = tab.keys ();
+    while (e.hasMoreElements ())
+      {
+	Object key = e.nextElement ();
+	if (tab.get (key) == comp)
+	  {
+	    tab.remove (key);
+	    Container parent = comp.getParent();
+	    next(parent);
+	    break;
+	  }
+      }
+  }
 
-public void setVgap ( int vgap) {
-	this.vgap = vgap;
-}
+  /** Set this layout manager's horizontal gap.
+   * @param hgap The new gap
+   */
+  public void setHgap (int hgap)
+  {
+    this.hgap = hgap;
+  }
 
-public void show ( Container parent, String name) {
-	Component nc = (Component)tab.get( name);
-	if ( nc == null )
-		return;
-	int cc = parent.getComponentCount();
-	
-	for ( int i=0; i<cc; i++) {
-		Component c = parent.getComponent(i);
-		if ( (c.flags & Component.IS_VISIBLE) != 0 ) {
-			if ( c != nc) {
-				c.setVisible( false);
-				nc.setVisible( true);
-			}
-			return;
-		}
-	}
-}
+  /** Set this layout manager's vertical gap.
+   * @param vgap The new gap
+   */
+  public void setVgap (int vgap)
+  {
+    this.vgap = vgap;
+  }
 
-public String toString () {
-	return ("CardLayout: hgap: " + hgap + ",vgap: " + vgap);
-}
+  /** Cause the named component to be shown.  If the component name is
+   * unknown, this method does nothing.
+   * @param parent The parent container
+   * @param name The name of the component to show
+   */
+  public void show (Container parent, String name)
+  {
+    Object target = tab.get (name);
+    if (target != null)
+      {
+	int num = parent.ncomponents;
+	// This is more efficient than calling getComponents().
+	Component[] comps = parent.component;
+	for (int i = 0; i < num; ++i)
+	  {
+	    if (comps[i].isVisible())
+	      {
+		if (target == comps[i])
+		  return;
+		comps[i].setVisible (false);
+	      }
+	  }
+	((Component) target).setVisible (true);
+      }
+  }
+
+  /**
+   * Returns a string representation of this layout manager.
+   *
+   * @return A string representation of this object.
+   */
+  public String toString ()
+  {
+    return getClass ().getName () + "[" + hgap + "," + vgap + "]";
+  }
+
+  /** This implements first(), last(), next(), and previous().
+   * @param parent The parent container
+   * @param what The type of goto: FIRST, LAST, NEXT or PREV
+   */
+  private void gotoComponent (Container parent, int what)
+  {
+    synchronized (parent.getTreeLock ())
+      {
+	int num = parent.ncomponents;
+	// This is more efficient than calling getComponents().
+	Component[] comps = parent.component;
+
+	if (num == 1)
+	  {
+	    comps[0].setVisible(true);
+	    return;
+	  }
+
+	int choice = -1;
+
+	if (what == FIRST)
+	  choice = 0;
+	else if (what == LAST)
+	  choice = num - 1;
+
+	for (int i = 0; i < num; ++i)
+	  {
+	    if (comps[i].isVisible ())
+	      {
+		if (what == NEXT)
+		  {
+		    choice = i + 1;
+		    if (choice == num)
+		      choice = 0;
+		  }
+		else if (what == PREV)
+		  {
+		    choice = i - 1;
+		    if (choice < 0)
+		      choice = num - 1;
+		  }
+		else if (choice == i)
+		  {
+		    // Do nothing if we're already looking at the right
+		    // component.
+		    return;
+		  }
+		comps[i].setVisible (false);
+ 
+		if (choice >= 0)
+		  break;
+	      }
+	  }
+
+	if (choice >= 0 && choice < num)
+	  comps[choice].setVisible (true);
+      }
+  }
+
+  // Compute the size according to WHAT.
+  private Dimension getSize (Container parent, int what)
+  {
+    synchronized (parent.getTreeLock ())
+      {
+	int w = 0, h = 0, num = parent.ncomponents;
+	Component[] comps = parent.component;
+
+	for (int i = 0; i < num; ++i)
+	  {
+	    Dimension d;
+
+	    if (what == MIN)
+	      d = comps[i].getMinimumSize ();
+	    else if (what == MAX)
+	      d = comps[i].getMaximumSize ();
+	    else
+	      d = comps[i].getPreferredSize ();
+
+	    w = Math.max (d.width, w);
+	    h = Math.max (d.height, h);
+	  }
+
+	Insets i = parent.getInsets ();
+	w += 2 * hgap + i.right + i.left;
+	h += 2 * vgap + i.bottom + i.top;
+
+	// Handle overflow.
+	if (w < 0)
+	  w = Integer.MAX_VALUE;
+	if (h < 0)
+	  h = Integer.MAX_VALUE;
+
+	return new Dimension (w, h);
+      }
+  }
+
+  /**
+   * @serial Horizontal gap value.
+   */
+  private int hgap;
+
+  /**
+   * @serial Vertical gap value.
+   */
+  private int vgap;
+
+  /**
+   * @serial Table of named components.
+   */
+  private Hashtable tab;
+
+  // These constants are used by the private gotoComponent method.
+  private int FIRST = 0;
+  private int LAST = 1;
+  private int NEXT = 2;
+  private int PREV = 3;
+
+  // These constants are used by the private getSize method.
+  private int MIN = 0;
+  private int MAX = 1;
+  private int PREF = 2;
 }

@@ -1,288 +1,333 @@
+/* Button.java -- AWT button widget
+   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
-import kaffe.awt.ImageDict;
-import kaffe.awt.ImageSpec;
+import java.awt.peer.ButtonPeer;
+import java.lang.reflect.Array;
+import java.util.EventListener;
 
 /**
- * class Button -
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
-public class Button
-  extends Component
-  implements ShortcutConsumer
+  * This class provides a button widget for the AWT. 
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  * @author Tom Tromey <tromey@cygnus.com>
+  */
+public class Button extends Component implements java.io.Serializable
 {
-	final private static long serialVersionUID = -8774683716313001058L;
-	private static int counter;
 
-	String label;
-	ActionListener aListener;
-	String aCmd;
-	FontMetrics fm;
-	ImageSpec imgs;
-	MenuShortcut shortcut;
-	int state;
-	static int PUSHED = 1;
-	static int HILIGHTED = 2;
+/*
+ * Static Variables
+ */
 
-public Button () {
-	this( "");
+// FIXME: Need readObject/writeObject for serialization
+
+// Serialization version constant
+private static final long serialVersionUID = -8774683716313001058L;
+
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * @serial The action command name for this button.
+  */
+private String actionCommand;
+
+/**
+  * @serial The label for this button.
+  */
+private String label;
+
+// List of ActionListeners for this class.
+private transient ActionListener action_listeners;
+
+  /*
+   * The number used to generate the name returned by getName.
+   */
+  private static transient long next_button_number = 0;
+
+/*************************************************************************/
+
+/*
+ * Constructors
+ */
+
+/**
+  * Initializes a new instance of <code>Button</code> with no label.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+  * returns true
+  */
+public
+Button()
+{
+  this(null);
 }
 
-public Button ( String label) {
-	cursor = Cursor.getPredefinedCursor( Cursor.HAND_CURSOR);
+/*************************************************************************/
 
-	flags |= IS_MOUSE_AWARE;
+/**
+  * Initializes a new instance of <code>Button</code> with the specified
+  * label.  The action command name is also initialized to this value.
+  *
+  * @param label The label to display on the button.
+  *
+  * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+  * returns true
+  */
+public
+Button(String label)
+{
+  this.label = label;
+  actionCommand = label;
 
-	setFont( Defaults.BtnFont);
-	setBackground( Defaults.BtnClr);
-	setForeground( Defaults.BtnTxtClr);
-	setLabel( label);
-	setName("button" + counter++);
+  if (GraphicsEnvironment.isHeadless ())
+    throw new HeadlessException ();
 }
 
-public void addActionListener ( ActionListener a) {
-	aListener = AWTEventMulticaster.add( aListener, a);
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * Returns the label for this button.
+  *
+  * @return The label for this button.
+  */
+public String
+getLabel()
+{
+  return(label);
 }
 
-public void addNotify () {
-	super.addNotify();
+/*************************************************************************/
 
-	if ( shortcut != null )
-		ShortcutHandler.addShortcut( shortcut, getToplevel(), this);
-
-	MenuShortcut s1 = new MenuShortcut( this, KeyEvent.VK_ENTER, 0);
-	MenuShortcut s2 = new MenuShortcut( this, KeyEvent.VK_SPACE, 0);
-	ShortcutHandler.addShortcut( s1, this, this);
-	ShortcutHandler.addShortcut( s2, this, this);
+/**
+  * Sets the label for this button to the specified value.
+  *
+  * @param label The new label for this button.
+  */
+public synchronized void
+setLabel(String label)
+{
+  this.label = label;
+  actionCommand = label;
+  if (peer != null)
+    {
+      ButtonPeer bp = (ButtonPeer) peer;
+      bp.setLabel (label);
+    }
 }
 
-void animate() {
-	Graphics g = getGraphics();
+/*************************************************************************/
 
-	state |= PUSHED;
-	paint( g);
-	Toolkit.tlkSync();
-	try { Thread.sleep( 100); }
-	catch ( Exception _x) {}
-	state &= ~PUSHED;
-	paint( g);
-	Toolkit.tlkSync();
-
-	g.dispose();
+/**
+  * Returns the action command name for this button.
+  *
+  * @return The action command name for this button.
+  */
+public String
+getActionCommand()
+{
+  return(actionCommand);
 }
 
-void checkMouseAware () {
-	// we always want our processMouse to be called
+/*************************************************************************/
+
+/**
+  * Sets the action command name for this button to the specified value.
+  *
+  * @param actionCommand The new action command name.
+  */
+public void
+setActionCommand(String actionCommand)
+{
+  this.actionCommand = actionCommand == null ? label : actionCommand;
 }
 
-void drawImage ( Graphics g) {
-	Image img = imgs.getImage();
-	int iw = img.getWidth( this);
-	int ih = img.getHeight( this);
-	int di = ((state & PUSHED) > 0) ? 1 : 0;
-	int x = (width - iw) / 2 + di;
-	int y = (height - ih) / 2 + di;
+/*************************************************************************/
 
-	g.drawImage( img, x, y, this);
+/**
+  * Adds a new entry to the list of listeners that will receive
+  * action events from this button.
+  *
+  * @param listener The listener to add.
+  */
+public synchronized void
+addActionListener(ActionListener listener)
+{
+  action_listeners = AWTEventMulticaster.add(action_listeners, listener);
 }
 
-void drawText ( Graphics g) {
-	Color c1 = null, c2;
-	int x = (width - fm.stringWidth( label)) / 2;
-	int y = height - (height - fm.getHeight()) / 2 - fm.getDescent();
+/*************************************************************************/
 
-	// If button is disabled then the text as such.
-	if (!isEnabled()) {
-		c1 = null;
-		c2 = bgClr.darker();
-	}
-	else if ( (state & PUSHED) > 0 ){
-		x--; y--;
-		c1 = Color.yellow;
-		c2 = Color.red;
-	}
-	else {
-		if ( (state & HILIGHTED) > 0 ) {
-			c1 = Defaults.BtnTxtCarved ? bgClr.brighter() : null;
-			c2 = Defaults.BtnPointTxtClr;
-		}
-		else {
-			c1 = Defaults.BtnTxtCarved ? bgClr.brighter() : null;
-			c2 = fgClr;
-		}
-	}
-
-	if ( c1 != null ){
-		g.setColor( c1);
-		g.drawString( label, x+1, y+1);
-	}
-
-	g.setColor( c2);
-	g.drawString( label, x, y);
+/**
+  * Removes the specified listener from the list of listeners that will
+  * receive action events from this button.
+  * 
+  * @param listener The listener to remove.
+  */
+public synchronized void
+removeActionListener(ActionListener listener)
+{
+  action_listeners = AWTEventMulticaster.remove(action_listeners, listener);
 }
 
-public String getActionCommand () {
-	return ( (aCmd != null) ? aCmd : label);
+  public synchronized ActionListener[] getActionListeners()
+  {
+    return (ActionListener[])
+      AWTEventMulticaster.getListeners(action_listeners,
+                                       ActionListener.class);
+  }
+
+/** Returns all registered EventListers of the given listenerType. 
+ * listenerType must be a subclass of EventListener, or a 
+ * ClassClassException is thrown.
+ *
+ * @exception ClassCastException If listenerType doesn't specify a class or
+ * interface that implements @see java.util.EventListener.
+ *
+ * @since 1.3 
+ */
+  public EventListener[] getListeners(Class listenerType)
+  {
+    if (listenerType == ActionListener.class)
+      return getActionListeners();
+    return (EventListener[]) Array.newInstance(listenerType, 0);
+  }
+
+/*************************************************************************/
+
+/**
+  * Notifies this button that it should create its native peer object.
+  */
+public void
+addNotify()
+{
+  if (peer == null)
+    peer = getToolkit ().createButton (this);
+  super.addNotify();
 }
 
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
+/*************************************************************************/
+
+/**
+  * Processes an event for this button.  If the specified event is an
+  * instance of <code>ActionEvent</code>, then the
+  * <code>processActionEvent()</code> method is called to dispatch it
+  * to any registered listeners.  Otherwise, the superclass method
+  * will be invoked.  Note that this method will not be called at all
+  * unless <code>ActionEvent</code>'s are enabled.  This will be done
+  * implicitly if any listeners are added.
+  *
+  * @param event The event to process.
+  */
+protected void
+processEvent(AWTEvent event)
+{
+  if (event instanceof ActionEvent)
+    processActionEvent((ActionEvent)event);
+  else
+    super.processEvent(event);
 }
 
-public String getLabel() {
-	return label;
+/*************************************************************************/
+
+/**
+  * This method dispatches an action event for this button to any
+  * registered listeners.
+  *
+  * @param event The event to process.
+  */
+protected void
+processActionEvent(ActionEvent event)
+{
+  if (action_listeners != null)
+    action_listeners.actionPerformed(event);
 }
 
-public void handleShortcut( MenuShortcut ms) {
-	int mods = (ms != null) ? ms.mods : 0;
-
-	if ( (state & PUSHED) == 0 )
-		animate();
-
-	if ( (aListener != null) ||
-	     ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ||
-	     ((flags & IS_OLD_EVENT) != 0) ) {
-		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
-		                                                  getActionCommand(), mods));
-	}
+void
+dispatchEventImpl(AWTEvent e)
+{
+  if (e.id <= ActionEvent.ACTION_LAST 
+      && e.id >= ActionEvent.ACTION_FIRST
+      && (action_listeners != null 
+	  || (eventMask & AWTEvent.ACTION_EVENT_MASK) != 0))
+    processEvent(e);
+  else
+    super.dispatchEventImpl(e);
 }
 
-public void paint ( Graphics g) {
-	int d = BORDER_WIDTH;
+/*************************************************************************/
 
-	if ( (imgs != null) && imgs.isPlain() ) {
-		g.setColor( parent.getBackground() );
-		g.fillRect( 0, 0, width, height);
-		if ( (state & HILIGHTED) > 0 ) {
-			g.setColor( Defaults.BtnPointClr);
-			g.draw3DRect( 0, 0, width-1, height-1, ((state & PUSHED) == 0));
-		}
-		drawImage( g);
-	}
-	else {
-		kaffePaintBorder( g);
-		g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : bgClr);
-		g.fill3DRect( d, d, width-2*d, height-2*d, ((state & PUSHED) == 0));
-		if ( imgs != null )
-			drawImage( g);
-		else if (label != null )
-			drawText( g);
-	}
+/**
+  * Returns a debugging string for this button.
+  *
+  * @return A debugging string for this button.
+  */
+protected String
+paramString()
+{
+  return getName () + "," + getX () + "," + getY () + ","
+    + getWidth () + "x" + getHeight () + ",label=" + getLabel ();
 }
 
-protected String paramString() {
-	return (super.paramString()
-		+ ",label=" + getLabel());
-}
+  /**
+   * Generate a unique name for this button.
+   *
+   * @return A unique name for this button.
+   */
+  String generateName ()
+  {
+    return "button" + getUniqueLong ();
+  }
 
-public Dimension preferredSize () {
-	int cx = 40;
-	int cy = 20;
-	if ( imgs != null ) {
-		cx = imgs.getImage().getWidth( this) + 2*BORDER_WIDTH;
-		cy = imgs.getImage().getHeight( this) + 2*BORDER_WIDTH;
-	}
-	else if ( fm != null ){
-		cx = Math.max( cx, 4*fm.stringWidth( label)/3);
-		cy = Math.max( cy, 2*fm.getHeight() );
-	}
-	return new Dimension( cx, cy);
-}
+  private static synchronized long getUniqueLong ()
+  {
+    return next_button_number++;
+  }
 
-void process ( ActionEvent e ) {
-	if ( (aListener != null) || ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ){
-		processEvent( e);
-	}
+} // class Button 
 
-	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( e));
-}
-
-void process ( FocusEvent e ) {
-	repaint();
-
-	super.process( e);
-}
-
-protected void processActionEvent( ActionEvent e) {
-	if ( aListener != null ) {
-		aListener.actionPerformed( e);
-	}
-}
-
-void processMouse ( MouseEvent e ) {
-	switch ( e.id ) {
-		case MouseEvent.MOUSE_ENTERED:
-			state |= HILIGHTED;
-			repaint();
-			break;
-		case MouseEvent.MOUSE_EXITED:
-			state &= ~HILIGHTED;
-			repaint();
-			break;
-		case MouseEvent.MOUSE_PRESSED:
-			state |= PUSHED;
-			if ( AWTEvent.keyTgt != Button.this )
-				requestFocus();
-			else
-				repaint();
-			break;
-		case MouseEvent.MOUSE_RELEASED:
-			if ( contains( e.getX(), e.getY()))
-				handleShortcut( null);
-			state &= ~PUSHED;
-			repaint();
-			break;
-	}
-
-	super.processMouse( e);
-}
-
-public void removeActionListener ( ActionListener a) {
-	aListener = AWTEventMulticaster.remove( aListener, a);
-}
-
-public void removeNotify () {
-	if ( shortcut != null )
-		ShortcutHandler.removeFromOwner( getToplevel(), shortcut);
-	ShortcutHandler.removeShortcuts( this);
-	super.removeNotify();
-}
-
-public void setActionCommand ( String aCmd) {
-	this.aCmd = aCmd;
-}
-
-public void setFont ( Font f) {
-	fm = getFontMetrics( f);
-	super.setFont( f);
-}
-
-public void setLabel ( String label) {
-	int ti = label.indexOf( '~');
-
-	if ( ti > -1){
-		this.label = label.substring( 0, ti) + label.substring( ti+1);
-		shortcut = new MenuShortcut( this, Character.toUpperCase( label.charAt(ti+1)), KeyEvent.ALT_MASK);
-	}
-	else if ( label.startsWith( " ") && label.endsWith( " ") ) {
-		imgs = ImageDict.getDefaultDict().getSpec( label.substring( 1, label.length() - 1), null, this );
-		this.label = (imgs != null) ? null : label;
-	}
-	else
-		this.label = label;
-
-	if ( isShowing() )
-		repaint();
-}
-}

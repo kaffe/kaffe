@@ -1,395 +1,504 @@
+/* Choice.java -- Java choice button widget.
+   Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
+import java.awt.peer.ChoicePeer;
+import java.io.Serializable;
+import java.util.EventListener;
 import java.util.Vector;
 
 /**
- * class Choice - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
+  * This class implements a drop down choice list.
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  */
+public class Choice extends Component implements ItemSelectable, Serializable
+{
+
+/*
+ * Static Variables
  */
-public class Choice
-  extends Container
-  implements ItemSelectable, ActionListener, ItemListener, MouseListener, KeyListener, FocusListener
-{
-	final private static long serialVersionUID = -4075310674757313071L;
-	Vector items = new Vector();
-	Object selection;
-	ItemListener iListener;
-	ChoiceWindow prompter;
-	TextField entry = new TextField();
-	int state;
-	static int BTN_WIDTH = 15;
-	static int HILIGHTED = 1;
 
-class ChoiceWindow
-  extends Window
-{
-	List list = new List();
+// Serialization constant
+private static final long serialVersionUID = -4075310674757313071L;
 
-public ChoiceWindow ( Frame owner ) {
-	super( owner);
+/*************************************************************************/
 
-	this.setLayout( null);
-	list.removeHScroll();
-	this.add( list);
-}
-
-public void doLayout() {
-	int db = 1;
-	list.setBounds( db, db, this.width-2*db, this.height-2*db);
-}
-
-void popUpAt( int x, int y, int width, int height) {
-	int is = items.size();
-
-	this.setBounds( x, y, width, height);
-	list.setFont( Choice.this.font);
-
-	for ( int i=0; i<is; i++)
-		list.add( (String)items.elementAt( i));
-
-	this.setVisible( true);
-	list.select( items.indexOf( selection));
-	
-	prompter.list.requestFocus();
-}
-
-void process ( WindowEvent e ) {
-	super.process( e);
-
-	if ( e.id == WindowEvent.WINDOW_DEACTIVATED )
-		closePrompt( false);
-}
-}
-
-public Choice () {
-	setLayout( null);
-	setBackground( Color.lightGray);
-	add ( entry);
-	
-	entry.setEditable(false);
-	entry.addActionListener( this);
-	entry.addKeyListener( this);
-	
-	addMouseListener( this);
-}
-
-public void actionPerformed ( ActionEvent e) {
-	select( e.getActionCommand() );
-}
-
-public synchronized void add ( String item) {
-	addItem( item);
-}
-
-public synchronized void addItem ( String item) {
-	insert( item, items.size() );
-}
-
-public synchronized void addItemListener ( ItemListener il) {
-	iListener = AWTEventMulticaster.add( iListener, il);
-}
-
-void closePrompt( boolean resetFocus) {
-	if ( prompter != null) {
-		prompter.list.removeItemListener( this);
-		prompter.list.removeActionListener( this);
-		prompter.list.removeFocusListener( this);
-
-		prompter.dispose();
-		prompter = null;
-		paintButton();
-		
-		if ( resetFocus)
-			entry.requestFocus();
-	}
-}
-
-public int countItems() {
-        return getItemCount();
-}
-
-public void doLayout () {
-	int d = BORDER_WIDTH;
-	entry.setBounds( 0, 0, width-BTN_WIDTH-2*d, height);
-}
-
-public void focusGained ( FocusEvent e) {
-}
-
-public void focusLost ( FocusEvent e) {
-	if ( (prompter != null) && (e.getSource() == prompter.list) ) {
-		closePrompt( false);
-	}
-}
-
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
-
-public String getItem ( int index) {
-	return (String)items.elementAt( index);
-}
-
-public int getItemCount () {
-	return (getItems());
-}
+/*
+ * Instance Variables
+ */
 
 /**
- * @deprecated
- */
-public int getItems() {
-	return items.size();
-}
-
-public int getSelectedIndex () {
-	return items.indexOf( selection);
-}
-
-public synchronized String getSelectedItem () {
-	return (String)selection;
-}
-
-public synchronized Object[] getSelectedObjects () {
-	Object[] oa;
-	if ( selection != null) {
-		oa = new Object[1];
-		oa[0] = selection;
-	}
-	else
-		oa = new Object[0];
-		
-	return oa;
-}
-
-public synchronized void insert ( String item, int index) {
-	if ( items.size() == 0) {
-		selection = item;
-		entry.setText( item);
-	}
-	items.insertElementAt( item, index);
-}
-
-public void itemStateChanged ( ItemEvent e) {
-	if ( e.getStateChange() == e.SELECTED ){
-		if ( prompter.list.selMouse )
-			select( prompter.list.getSelectedItem() );
-	}
-}
-
-public void keyPressed ( KeyEvent e ) {
-	Object src = e.getSource();
-	int cc = e.getKeyCode();
-	
-	if ( (prompter != null) && (src == prompter.list) ){
-		if ( cc == e.VK_ESCAPE )
-			closePrompt( true);
-	}
-	else {	
-		if ( cc == e.VK_DOWN )
-			openPrompt();
-	}
-}
-
-public void keyReleased( KeyEvent e) {
-}
-
-public void keyTyped( KeyEvent e) {
-}
-
-public void mouseClicked ( MouseEvent e) {
-}
-
-public void mouseEntered ( MouseEvent e) {
-	state |= HILIGHTED;
-	paintButton();
-}
-
-public void mouseExited ( MouseEvent e) {
-	state &= ~HILIGHTED;
-	paintButton();
-}
-
-public void mousePressed ( MouseEvent e) {
-	if ( prompter == null)
-		openPrompt();
-	else
-		closePrompt( true);
-}
-
-public void mouseReleased ( MouseEvent e) {
-}
-
-void notifyItem() {
-	if ( (iListener != null) || (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0 ){
-		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
-		                                                selection, ItemEvent.SELECTED));
-	}
-}
-
-void openPrompt() {
-	if ( prompter == null) {
-		Component top = getToplevel();
-		prompter = new ChoiceWindow( (top instanceof Frame) ? (Frame)top : null );
-		
-		Point p = getLocationOnScreen();
-		prompter.popUpAt( p.x, p.y+height+1, width,
-		                  Math.min( items.size() + 1, 8)*Defaults.WndFontMetrics.getHeight());
-		prompter.list.addItemListener( this);
-		prompter.list.addActionListener( this);
-		prompter.list.addKeyListener( this);
-//		prompter.list.addFocusListener( this);
-		
-		repaint();
-	}
-}
-
-public void paint ( Graphics g) {
-	super.paint( g);
-	paintButton( g);
-}
-
-void paintButton() {
-	if ( isShowing() ) {
-		Graphics g = getGraphics();
-		paintButton( g);
-		g.dispose();
-	}
-}
-
-void paintButton( Graphics g) {
-	int x, y;
-	int d = BORDER_WIDTH;
-	int db = BTN_WIDTH;
-
-	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : Defaults.BtnClr);
-	g.fill3DRect ( width-db-d, d, db, height-2*d, prompter == null );
-	
-	//draw button marker
-	x = width - d - db/2;
-	y = height - (height-7)/2;
-	g.setColor( Color.white);
-	g.drawLine( x, y, x-3, y-7);
-	g.drawLine( x, y, x+3, y-7);
-	x--;
-	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.FocusClr : Color.black);
-	g.drawLine( x, y, x-3, y-7);
-	g.drawLine( x, y, x+3, y-7);
-	
-	//draw non focus border around button
-	g.setColor( Defaults.BtnClr);
-	x = width - db - 2*d;
-	g.draw3DRect( x, 0,  width-x-1, height-1, true);
-	g.draw3DRect( x+1, 1, width-x-3, height-3, false);
-}
-
-protected String paramString() {
-	return super.paramString();
-}
+  * @serial A list of items for the choice box, which can be <code>null</code>.
+  */
+private Vector pItems = new Vector();
 
 /**
- * @deprecated
+  * @serial The index of the selected item in the choice box.
+  */
+private int selectedIndex = -1;
+
+// Listener chain
+private ItemListener item_listeners;
+
+/*************************************************************************/
+
+/*
+ * Constructors
  */
-public Dimension preferredSize () {
-    /* Instead of simply asking the current selection's size,
-     * we better find the maximum...
-     */
-    //Dimension d = entry.getPreferredSize();
-    Dimension d = new Dimension();
-    for (int i = items.size(); --i >= 0; ) {
-       Dimension d2 = entry.getPreferredSize(
-          ((String) items.elementAt(i)).length());
-       if (d2.width > d.width)
-           d.width = d2.width;
-       if (d2.height > d.height)
-           d.height = d2.height;
+
+  /**
+   * Initializes a new instance of <code>Choice</code>.
+   *
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true
+   */
+  public Choice()
+  {
+    if (GraphicsEnvironment.isHeadless())
+      throw new HeadlessException ();
+  }
+
+/*************************************************************************/
+
+/*
+ * Instance Methods
+ */
+
+/**
+  * Returns the number of items in the list.
+  *
+  * @return The number of items in the list.
+  */
+public int
+getItemCount()
+{
+  return countItems ();
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the number of items in the list.
+  *
+  * @return The number of items in the list.
+  *
+  * @deprecated This method is deprecated in favor of <code>getItemCount</code>.
+  */
+public int
+countItems()
+{
+  return(pItems.size());
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the item at the specified index in the list.
+  *
+  * @param index The index into the list to return the item from.
+  *
+  * @exception ArrayIndexOutOfBoundsException If the index is invalid.
+  */
+public String
+getItem(int index)
+{
+  return((String)pItems.elementAt(index));
+}
+
+/*************************************************************************/
+
+/**
+  * Adds the specified item to this choice box.
+  *
+  * @param item The item to add.
+  *
+  * @exception NullPointerException If the item's value is null
+  *
+  * @since 1.1
+  */
+public synchronized void
+add(String item)
+{
+  if (item == null)
+    throw new NullPointerException ("item must be non-null");
+
+  pItems.addElement(item);
+
+  int i = pItems.size () - 1;
+  if (peer != null)
+    {
+      ChoicePeer cp = (ChoicePeer) peer;
+      cp.add (item, i);
     }
-    d.width += BTN_WIDTH + 2*BORDER_WIDTH;
-    return d;
 }
 
-void process ( ItemEvent e ) {
-	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
-		processEvent( e);
-	}
+/*************************************************************************/
+
+/**
+  * Adds the specified item to this choice box.
+  *
+  * This method is oboslete since Java 2 platform 1.1. Please use @see add
+  * instead.
+  *
+  * @param item The item to add.
+  *
+  * @exception NullPointerException If the item's value is equal to null
+  */
+public synchronized void
+addItem(String item)
+{
+  add(item);
 }
 
-protected void processItemEvent( ItemEvent e) {
-	if ( iListener != null ){
-		iListener.itemStateChanged( e);
-	}
+/*************************************************************************/
+
+/** Inserts an item into this Choice.  Existing items are shifted
+ * upwards.  If the new item is the only item, then it is selected.
+ * If the currently selected item is shifted, then the first item is
+ * selected.  If the currently selected item is not shifted, then it
+ * remains selected.
+ *
+ * @param item The item to add.
+ * @param index The index at which the item should be inserted.
+ *
+ * @exception IllegalArgumentException If index is less than 0
+ */
+public synchronized void
+insert(String item, int index)
+{
+  if (index < 0)
+    throw new IllegalArgumentException ("index may not be less then 0");
+
+  if (index > getItemCount ())
+    index = getItemCount ();
+
+  pItems.insertElementAt(item, index);
+
+  if (peer != null)
+    {
+      ChoicePeer cp = (ChoicePeer) peer;
+      cp.add (item, index);
+    }
 }
 
-public synchronized void remove ( String item) {
-	items.removeElement( item);
+/*************************************************************************/
+
+/**
+  * Removes the specified item from the choice box.
+  *
+  * @param item The item to remove.
+  *
+  * @exception IllegalArgumentException If the specified item doesn't exist.
+  */
+public synchronized void
+remove(String item)
+{
+  int index = pItems.indexOf(item);
+  if (index == -1)
+    throw new IllegalArgumentException ("item \""
+					+ item + "\" not found in Choice");
+  remove(index);
 }
 
-public synchronized void remove ( int index ) {
-	if (index >= 0 && index < items.size()) {
-		items.removeElementAt( index);
-	}
+/*************************************************************************/
+
+/**
+  * Removes the item at the specified index from the choice box.
+  *
+  * @param index The index of the item to remove.
+  *
+  * @exception IndexOutOfBoundsException If the index is not valid.
+  */
+public synchronized void
+remove(int index)
+{
+  if ((index < 0) || (index > getItemCount()))
+    throw new IllegalArgumentException("Bad index: " + index);
+
+  pItems.removeElementAt(index);
+
+  if (peer != null)
+    {
+      ChoicePeer cp = (ChoicePeer) peer;
+      cp.remove (index);
+    }
+
+  if (selectedIndex > index)
+    --selectedIndex;
 }
 
-public synchronized void removeAll () {
-	items.removeAllElements();
+/*************************************************************************/
+
+/**
+  * Removes all of the objects from this choice box.
+  */
+public synchronized void
+removeAll()
+{
+  if (getItemCount() <= 0)
+    return;
+  
+  pItems.removeAllElements ();
+
+  if (peer != null)
+    {
+      ChoicePeer cp = (ChoicePeer) peer;
+      cp.removeAll ();
+    }
+
+  selectedIndex = -1;
 }
 
-public synchronized void removeItemListener ( ItemListener il) {
-	iListener = AWTEventMulticaster.remove( iListener, il);
+/*************************************************************************/
+
+/**
+  * Returns the currently selected item, or null if no item is
+  * selected.
+  *
+  * @return The currently selected item.
+  */
+public synchronized String
+getSelectedItem()
+{
+  return (selectedIndex == -1
+	  ? null
+	  : ((String)pItems.elementAt(selectedIndex)));
 }
 
-public void requestFocus () {
-	entry.requestFocus();
+/*************************************************************************/
+
+/**
+  * Returns an array with one row containing the selected item.
+  *
+  * @return An array containing the selected item.
+  */
+public synchronized Object[]
+getSelectedObjects()
+{
+  if (selectedIndex == -1)
+    return null;
+
+  Object[] objs = new Object[1];
+  objs[0] = pItems.elementAt(selectedIndex);
+
+  return(objs);
 }
 
-public void reshape ( int x, int y, int w, int h ) {
-	super.reshape( x, y, w, h);
-	
-	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
-	// in JDK, so we automagically have to re-layout them
-	doLayout();
-	flags |= IS_VALID;
+/*************************************************************************/
+
+/**
+  * Returns the index of the selected item.
+  *
+  * @return The index of the selected item.
+  */
+public int
+getSelectedIndex()
+{
+  return(selectedIndex);
 }
 
-public synchronized void select ( String item) {
-	closePrompt( true);
-	if ( items.contains( item) ) {
-		selection = item;
-		if ( ! entry.getText().equals( item) )
-			entry.setText( item);
-		notifyItem();
-	}
+/*************************************************************************/
+
+/**
+  * Forces the item at the specified index to be selected.
+  *
+  * @param index The index of the row to make selected.
+  *
+  * @exception IllegalArgumentException If the specified index is invalid.
+  */
+public synchronized void
+select(int index)
+{
+  if ((index < 0) || (index > getItemCount()))
+    throw new IllegalArgumentException("Bad index: " + index);
+
+  this.selectedIndex = index;
+  if (peer != null)
+    {
+      ChoicePeer cp = (ChoicePeer) peer;
+      cp.select (index);
+    }
 }
 
-public synchronized void select ( int index) {
-	if (index >= 0 && index < items.size()) {
-		select((String)items.elementAt(index));
-	}
+/*************************************************************************/
+
+/**
+  * Forces the named item to be selected.
+  *
+  * @param item The item to be selected.
+  *
+  * @exception IllegalArgumentException If the specified item does not exist.
+  */
+public synchronized void
+select(String item)
+{
+  int index = pItems.indexOf(item);
+  if (index >= 0)
+    select(index);
 }
 
-public void setEnabled ( boolean isEnabled ) {
-	super.setEnabled( isEnabled);
+/*************************************************************************/
 
-	entry.setEnabled( isEnabled);
+/**
+  * Creates the native peer for this object.
+  */
+public void
+addNotify()
+{
+  if (peer == null)
+    peer = getToolkit ().createChoice (this);
+  super.addNotify ();
 }
 
-public void setFont ( Font fnt) {
-	super.setFont( fnt);
-	entry.setFont( fnt);
+/*************************************************************************/
+
+/**
+  * Adds the specified listener to the list of registered listeners for
+  * this object.
+  *
+  * @param listener The listener to add.
+  */
+public synchronized void
+addItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.add(item_listeners, listener);
 }
+
+/*************************************************************************/
+
+/**
+  * Removes the specified listener from the list of registered listeners for
+  * this object.
+  *
+  * @param listener The listener to remove.
+  */
+public synchronized void
+removeItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.remove(item_listeners, listener);
 }
+
+/*************************************************************************/
+
+/**
+  * Processes this event by invoking <code>processItemEvent()</code> if the
+  * event is an instance of <code>ItemEvent</code>, otherwise the event
+  * is passed to the superclass.
+  *
+  * @param event The event to process.
+  */
+protected void
+processEvent(AWTEvent event)
+{
+  if (event instanceof ItemEvent)
+    processItemEvent((ItemEvent)event);
+  else
+    super.processEvent(event);
+}
+
+/*************************************************************************/
+
+/**
+  * Processes item event by dispatching to any registered listeners.
+  *
+  * @param event The event to process.
+  */
+protected void
+processItemEvent(ItemEvent event)
+{
+  if (item_listeners != null)
+    item_listeners.itemStateChanged(event);
+}
+
+void
+dispatchEventImpl(AWTEvent e)
+{
+  if (e.id <= ItemEvent.ITEM_LAST
+      && e.id >= ItemEvent.ITEM_FIRST
+      && (item_listeners != null 
+	  || (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0))
+    processEvent(e);
+  else
+    super.dispatchEventImpl(e);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a debugging string for this object.
+  *
+  * @return A debugging string for this object.
+  */
+protected String
+paramString()
+{
+  return ("selectedIndex=" + selectedIndex + "," + super.paramString());
+}
+
+  /**
+   * Returns an array of all the objects currently registered as FooListeners
+   * upon this Choice. FooListeners are registered using the addFooListener
+   * method.
+   *
+   * @exception ClassCastException If listenerType doesn't specify a class or
+   * interface that implements java.util.EventListener.
+   *
+   * @since 1.3
+   */
+  public EventListener[] getListeners (Class listenerType)
+  {
+    if (listenerType == ItemListener.class)
+      return AWTEventMulticaster.getListeners (item_listeners, listenerType);
+    
+    return super.getListeners (listenerType);
+  }
+
+  /**
+   * Returns all registered item listeners.
+   *
+   * @since 1.4
+   */
+  public ItemListener[] getItemListeners ()
+  {
+    return (ItemListener[]) getListeners (ItemListener.class);
+  }
+} // class Choice 

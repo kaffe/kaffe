@@ -1,90 +1,91 @@
+/* Copyright (C) 1999, 2000, 2002  Free Software Foundation
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
+import java.awt.peer.ComponentPeer;
 
-/**
- * Canvas - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- * @author J. Mehlitz
- */
-public class Canvas
-  extends Component
+public class Canvas extends Component implements java.io.Serializable
 {
-	final private static long serialVersionUID = -2284879212465893870L;
-	private static int counter;
- 
-public Canvas() {
-	// Canvases usually get their own update events, not being updated
-	// sync within their parents
-	flags |= IS_ASYNC_UPDATED;
+  transient GraphicsConfiguration graphicsConfiguration;
 
-	setName("canvas" + counter++);
-}
+  /**
+   * Initializes a new instance of <code>Canvas</code>.
+   */
+  public Canvas() { }
 
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
+  public Canvas(GraphicsConfiguration graphicsConfiguration)
+  {
+    this.graphicsConfiguration = graphicsConfiguration;
+  }
 
-public Graphics getGraphics () {
-	if ( (flags & IS_ADD_NOTIFIED) != 0 ){
-		NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
-		                                                      0, 0, 0, 0,
-		                                                      width, height, false);
-		if ( g != null )
-			linkGraphics( g);
+  GraphicsConfiguration getGraphicsConfigurationImpl()
+  {
+    if (graphicsConfiguration != null)
+      return graphicsConfiguration;
+    return super.getGraphicsConfigurationImpl();
+  }
 
-		return g;
-	}
-	else {
-		return null;
-	}
-}
+  /**
+   * Creates the native peer for this object.
+   */
+  public void addNotify()
+  {
+    if (peer == null)
+      peer = (ComponentPeer) getToolkit().createCanvas(this);
+    super.addNotify();
+  }
 
-public boolean isFocusTraversable () {
-	// for some obscure reason, Canvases are not focusTraversable by default
-	return false;
-}
+  /**
+   * Repaints the canvas window.  This method should be overriden by 
+   * a subclass to do something useful, as this method simply paints
+   * the window with the background color.
+   */
+  public void paint(Graphics gfx)
+  {
+    /* This implementation doesn't make much sense since the filling
+      of background color is guaranteed for heavyweight components
+      such as this.  But there's no need to worry, since paint() is
+      usually overridden anyway.  */
+    gfx.setColor(getBackground());
+    Dimension size = getSize();
+    gfx.fillRect(0, 0, size.width, size.height);
+  }
 
-public void paint( Graphics g) {
-	// Canvas blanks the background in its own background color.
-	// As the graphics context we got passed may not have the
-	// same background color as this Canvas, and you can't change
-	// the background color of a graphics context, we need
-	// a new graphics context.
-	// Unfortunately, there is no way to query the background color
-	// of a graphics context, so we can't optimize for the case
-	// when the parameter's background matches ours.
-
-	Graphics context = getGraphics();
-	context.clearRect( 0, 0, width, height);
-	context.dispose();
-}
-
-void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
-	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
-	                                                      ux, uy, uw, uh,
-	                                                      false);
-	if ( g != null ){	
-		if ( id == PaintEvt.UPDATE ) {
-			update( g);
-		}
-		else {
-			// Another anoying anomaly: on some window systems, the
-			// background of native Components is automatically blanked (by the
-			// native window system or native peer), which is simulated here.
-			// Note that we don't do that for UPDATE events, since the update() spec
-			// explicitly states "you can assume that the background is not cleared..",
-			// and we take that literally! This also shows up in Panel
-			g.clearRect( 0, 0, width, height);
-
-			paint( g);
-		}
-		g.dispose();
-	}
-}
+  // Serialization constant
+  private static final long serialVersionUID = -2284879212465893870L;
 }

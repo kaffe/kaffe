@@ -224,26 +224,6 @@ public class Color implements Paint, Serializable
    */
   final int value;
 
-  /** The color value, as assigned by the native toolkit.
-   *  This allows the toolkit to store the color converted
-   *  to its own format, as an efficiency hack. This is
-   *  only initialized when needed, avoiding initializing
-   *  all of AWT when only this class is used.
-   */
-  private int nativeValue;
-
-  /** Whether nativeValue has been initialized.
-   */
-  private boolean nativeValueIsInitialized = false;
-
-  final int getNativeValue() {
-      if(!nativeValueIsInitialized) {
-	  nativeValue = Toolkit.clrGetPixelValue(value);
-	  nativeValueIsInitialized = true;
-      }
-      return nativeValue;
-  }
-
   /**
    * The color value, in sRGB. This may be null if the color was constructed
    * with ints; and it does not include alpha. This stores red, green, and

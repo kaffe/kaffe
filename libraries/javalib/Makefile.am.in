@@ -21,7 +21,7 @@
 #
 #   Makefile.am.in -> Makefile.am -> Makefile.in -> Makefile
 
-SUBDIRS = . gmp-math
+SUBDIRS = . awt-implementations gmp-math
 
 SRCDIRS = com gnu java javax kaffe org
 

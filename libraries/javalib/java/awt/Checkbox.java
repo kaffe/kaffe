@@ -1,285 +1,395 @@
+/* Checkbox.java -- An AWT checkbox widget
+   Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.peer.CheckboxPeer;
+import java.io.Serializable;
 
 /**
- * class Checkbox - 
+ * This class implements a component which has an on/off state.  Two
+ * or more Checkboxes can be grouped by a CheckboxGroup.
  *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
+ * @author Aaron M. Renn (arenn@urbanophile.com)
+ * @author Tom Tromey <tromey@redhat.com>
  */
-public class Checkbox
-  extends Component
-  implements ItemSelectable, MouseListener, FocusListener, KeyListener
+public class Checkbox extends Component implements ItemSelectable, Serializable
 {
-	private static final long serialVersionUID = 7270714317450821763L;
-	CheckboxGroup group;
-	int state;
-	String label;
-	ItemListener iListener;
 
-	public static int counter;
-	static int CHECKED = 1;
-	static int HILIGHTED = 2;
+// FIXME: Need readObject/writeObject for this.
 
-public Checkbox () {
-	this( "", false, null);
-}
-
-public Checkbox ( String label) {
-	this( label, false, null);
-}
-
-public Checkbox ( String label, CheckboxGroup group, boolean state) {
-	this( label, state, group);
-}
-
-public Checkbox ( String label, boolean state) {
-	this( label, state, null);
-}
-
-public Checkbox ( String label, boolean state, CheckboxGroup group) {
-	this.label = (label == null) ? "" : label;
-	setCheckboxGroup( group);
-	setState( state);
-	setName("checkbox" + counter++);
-
-	setForeground( Color.black);
-	setFont( Defaults.TextFont);
-	addMouseListener( this);
-	addFocusListener( this);
-	addKeyListener( this);
-}
-
-public synchronized void addItemListener ( ItemListener il) {
-	iListener = AWTEventMulticaster.add( iListener, il);
-}
-
-void drawButton( Graphics g, int ext, int x0, int y0 ) {
-	g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : Defaults.BtnClr);
-	g.fill3DRect( x0, y0, ext, ext, true);
-
-	if ( label.endsWith( " " ) )
-		kaffePaintBorder( g);
-	else {
-		int d = BORDER_WIDTH;
-		kaffePaintBorder( g, x0-d, y0-d, width-(x0+ext+d), height-(y0+ext+d) );
-	}
-
-}
-
-void drawCheckMark( Graphics g, int ext, int x0, int y0 ) {
-	g.setColor( Color.black);
-	g.drawLine( x0+3, y0+4, x0+ext-5, y0+ext-4);
-	g.drawLine( x0+2, y0+ext-4, x0+ext-5, y0+3);
-
-	g.setColor( Color.white);
-	g.drawLine( x0+3, y0+3, x0+ext-4, y0+ext-4);
-	g.drawLine( x0+3, y0+ext-4, x0+ext-4, y0+3);
-}
-
-public void focusGained ( FocusEvent e) {
-	state |= HILIGHTED;
-	repaint();
-}
-
-public void focusLost ( FocusEvent e) {
-	state &= ~HILIGHTED;
-	repaint();
-}
-
-public CheckboxGroup getCheckboxGroup () {
-	return group;
-}
-
-ClassProperties getClassProperties () {
-	return ClassAnalyzer.analyzeAll( getClass(), true);
-}
-
-public String getLabel () {
-	return label;
-}
-
-public Object[] getSelectedObjects () {
-	Object[] oa;
-	if ( (state & CHECKED) > 0 ) {
-		oa = new Object[1];
-		oa[0] = this;
-	}
-	else
-		oa = new Object[0];
-		
-	return oa;
-}
-
-public boolean getState () {
-	return ((state & CHECKED) > 0);
-}
-
-public void keyPressed ( KeyEvent e) {
-}
-
-public void keyReleased ( KeyEvent e) {
-}
-
-public void keyTyped ( KeyEvent e) {
-	char c = e.getKeyChar();
-
-	switch ( c) {
-		case ' ':
-		case 0xA:	//ENTER
-			if ( ((state & CHECKED) > 0) && (group != null) )
-				return;
-			setState ( (state & CHECKED) == 0 );
-			break;
-	}
-
-}
-
-public void mouseClicked ( MouseEvent e) {
-}
-
-public void mouseEntered ( MouseEvent e) {
-	state |= HILIGHTED;
-	repaint();
-}
-
-public void mouseExited ( MouseEvent e) {
-	state &= ~HILIGHTED;
-	repaint();
-}
-
-public void mousePressed ( MouseEvent e) {
-	requestFocus();
-	if ( ((state & CHECKED) > 0) && (group != null) )
-		return;
-	setState( (state & CHECKED) == 0);
-}
-
-public void mouseReleased ( MouseEvent e) {
-}
-
-void notifyItem () {
-	if ( (iListener != null) ||
-	     ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ||
-	     ((flags & IS_OLD_EVENT) != 0) ) {
-		int id = ((state & CHECKED) > 0) ? ItemEvent.SELECTED : ItemEvent.DESELECTED;
-		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label, id));
-	}
-}
-
-public void paint ( Graphics g) {
-	Color c1, c2;
-	FontMetrics fm = getFontMetrics( font);
-	int fh	= fm.getHeight();
-	int ext = fh;                 // this controls the button size
-	int dc  = fm.getDescent();
-	int dx  = fm.charWidth( 'x');
-	int x0  = dx;
-	int y0  = (height - ext) / 2;
-	
-	g.setColor( bgClr);
-	g.fillRect( 0, 0, width, height);
-	
-	drawButton( g, ext, x0, y0);
-	
-	if ( (state & CHECKED) > 0)
-		drawCheckMark( g, ext, x0, y0);
-
-	x0 += ext + dx;
-	y0 += ext/2 + fh/2 - dc;
-	
-	c1 = ((state & HILIGHTED) > 0) ? Defaults.FocusClr : getForeground();
-	c2 = Color.white;
-	
-	g.setColor( c2);
-	g.drawString( label, x0+1, y0+1);
-	g.setColor( c1);
-	g.drawString( label, x0, y0);
-
-}
-
-protected String paramString() {
-	return super.paramString() + ",label=" + label + ",state=" + getState();
-}
-
-/** 
- * @deprecated
+/*
+ * Static Variables
  */
-public Dimension preferredSize () {
-	int cx = 50;
-	int cy = 20;
-	if ( font != null ){
-		FontMetrics fm = getFontMetrics( font);
-		cx = Math.max( cx, fm.stringWidth( label) + 2 * fm.getHeight() );
-		cy = Math.max( cy, 3*fm.getHeight()/2 );
-	}
-	return new Dimension( cx, cy);
+
+// Serialization Constant
+private static final long serialVersionUID = 7270714317450821763L;
+
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * @serial The checkbox group for this checkbox.
+  */
+private CheckboxGroup group;
+
+/**
+  * @serial The label on this checkbox.
+  */
+private String label;
+
+/**
+  * @serial The state of this checkbox.
+  */
+private boolean state;
+
+// The list of listeners for this object.
+private transient ItemListener item_listeners;
+
+/*************************************************************************/
+
+/*
+ * Constructors
+ */
+
+/**
+  * Initializes a new instance of <code>Checkbox</code> with no label,
+  * an initial state of off, and that is not part of any checkbox group.
+  */
+public 
+Checkbox()
+{
+  this("", false, null);
 }
 
-void process ( ItemEvent e ) {
-	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
-		processEvent( e);
-	}
-	
-	if ( (flags & IS_OLD_EVENT) > 0 ) {
-		postEvent( Event.getEvent( e));
-	}
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Checkbox</code> with the specified
+  * label, an initial state of off, and that is not part of any checkbox
+  * group.
+  *
+  * @param label The label for this checkbox.
+  */
+public
+Checkbox(String label)
+{
+  this(label, false, null);
 }
 
-protected void processItemEvent( ItemEvent e) {
-	if (iListener != null) {
-		iListener.itemStateChanged( e);
-	}
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Checkbox</code> with the specified
+  * label and initial state, and that is not part of any checkbox
+  * group.
+  *
+  * @param label The label for this checkbox.
+  * @param state The initial state of the checkbox, <code>true</code> for
+  * on, <code>false</code> for off.
+  */
+public
+Checkbox(String label, boolean state)
+{
+  this(label, state, null);
 }
 
-public synchronized void removeItemListener ( ItemListener il) {
-	iListener = AWTEventMulticaster.remove( iListener, il);
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Checkbox</code> with the specified
+  * label, initial state, and checkbox group.
+  *
+  * @param label The label for this checkbox.
+  * @param group The checkbox group for this box, or <code>null</code>
+  * if there is no checkbox group.
+  * @param state The initial state of the checkbox, <code>true</code> for
+  * on, <code>false</code> for off.
+  */
+public
+Checkbox(String label, CheckboxGroup group, boolean state)
+{
+  this(label, state, group);
 }
 
-public void setCheckboxGroup ( CheckboxGroup group) {
-	if ( this.group == group )
-		return;
-		
-	if ( this.group != null)
-		this.group.boxes.removeElement( this);
-		
-	this.group = group;
-	
-	if ( this.group != null)
-		this.group.boxes.addElement( this);
+/*************************************************************************/
+
+/**
+  * Initializes a new instance of <code>Checkbox</code> with the specified
+  * label, initial state, and checkbox group.
+  *
+  * @param label The label for this checkbox.
+  * @param state The initial state of the checkbox, <code>true</code> for
+  * on, <code>false</code> for off.
+  * @param group The checkbox group for this box, or <code>null</code>
+  * if there is no checkbox group.
+  */
+public
+Checkbox(String label, boolean state, CheckboxGroup group)
+{
+  this.label = label;
+  this.state = state;
+  this.group = group;
 }
 
-public synchronized void setLabel ( String label) {
-	this.label = (label == null) ? "" : label;
-	if ( isShowing() )
-		repaint();
+/*************************************************************************/
+
+/*
+ * Instance Variables
+ */
+
+/**
+  * Returns the label for this checkbox.
+  *
+  * @return The label for this checkbox.
+  */
+public String
+getLabel()
+{
+  return(label);
 }
 
-public void setState ( boolean state) {
-	boolean curState = ((this.state & CHECKED) > 0);
-	if ( curState == state )
-		return;
-	if ( state && (group != null) )
-		group.setSelectedCheckbox( this);
-	else {
-		if ( state)	
-			this.state |= CHECKED;
-		else
-			this.state &= ~CHECKED;
-		if ( isShowing() )
-			repaint();
-		notifyItem();
-	}
+/*************************************************************************/
+
+/**
+  * Sets the label for this checkbox to the specified value.
+  *
+  * @param label The new checkbox label.
+  */
+public synchronized void
+setLabel(String label)
+{
+  this.label = label;
+  if (peer != null)
+    {
+      CheckboxPeer cp = (CheckboxPeer) peer;
+      cp.setLabel(label);
+    }
 }
+
+/*************************************************************************/
+
+/**
+  * Returns the state of this checkbox.
+  *
+  * @return The state of this checkbox, which will be <code>true</code> for
+  * on and <code>false</code> for off.
+  */
+public boolean
+getState()
+{
+  return(state);
 }
+
+/*************************************************************************/
+
+/**
+  * Sets the state of this checkbox to the specified value.
+  *
+  * @param state The new state of the checkbox, which will be <code>true</code>
+  * for on or <code>false</code> for off.
+  */
+public synchronized void
+setState(boolean state)
+{
+  this.state = state;
+  if (peer != null)
+    {
+      CheckboxPeer cp = (CheckboxPeer) peer;
+      cp.setState (state);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Returns an array of length one containing the checkbox label if this
+  * checkbox is selected.  Otherwise <code>null</code> is returned.
+  *
+  * @return The selection state of this checkbox.
+  */
+public Object[]
+getSelectedObjects()
+{
+  if (state == false)
+    return(null);
+
+  Object[] objs = new Object[1];
+  objs[0] = label;
+
+  return(objs);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns the checkbox group this object is a member of, if any.
+  *
+  * @return This object's checkbox group, of <code>null</code> if it is
+  * not a member of any group.
+  */
+public CheckboxGroup
+getCheckboxGroup()
+{
+  return(group);
+}
+
+/*************************************************************************/
+
+/**
+  * Sets this object's checkbox group to the specified group.
+  *
+  * @param group The new checkbox group, or <code>null</code> to make this
+  * object part of no checkbox group.
+  */
+public synchronized void
+setCheckboxGroup(CheckboxGroup group)
+{
+  this.group = group;
+  if (peer != null)
+    {
+      CheckboxPeer cp = (CheckboxPeer) peer;
+      cp.setCheckboxGroup (group);
+    }
+}
+
+/*************************************************************************/
+
+/**
+  * Creates this object's native peer.
+  */
+public void
+addNotify()
+{
+  if (peer == null)
+    peer = getToolkit ().createCheckbox (this);
+  super.addNotify ();
+}
+
+  public ItemListener[] getItemListeners ()
+  {
+    return (ItemListener[])
+      AWTEventMulticaster.getListeners (item_listeners, ItemListener.class);
+  }
+
+/**
+  * Adds a new listeners to the list of registered listeners for this object.
+  *
+  * @param listener The new listener to add.
+  */
+public synchronized void
+addItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.add(item_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Removes a listener from the list of registered listeners for this object.
+  *
+  * @param listener The listener to remove.
+  */
+public synchronized void
+removeItemListener(ItemListener listener)
+{
+  item_listeners = AWTEventMulticaster.remove(item_listeners, listener);
+}
+
+/*************************************************************************/
+
+/**
+  * Processes this event by calling <code>processItemEvent()</code> if it
+  * is any instance of <code>ItemEvent</code>.  Otherwise it is passed to
+  * the superclass for processing.
+  *
+  * @param event The event to process.
+  */
+protected void
+processEvent(AWTEvent event)
+{
+  if (event instanceof ItemEvent)
+    processItemEvent((ItemEvent)event);
+  else
+    super.processEvent(event);
+}
+
+/*************************************************************************/
+
+/**
+  * Processes this event by dispatching it to any registered listeners.
+  *
+  * @param event The <code>ItemEvent</code> to process.
+  */
+protected void
+processItemEvent(ItemEvent event)
+{
+  if (item_listeners != null)
+    item_listeners.itemStateChanged(event);
+}
+
+void
+dispatchEventImpl(AWTEvent e)
+{
+  if (e.id <= ItemEvent.ITEM_LAST
+      && e.id >= ItemEvent.ITEM_FIRST
+      && (item_listeners != null 
+	  || (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0))
+    processEvent(e);
+  else
+    super.dispatchEventImpl(e);
+}
+
+/*************************************************************************/
+
+/**
+  * Returns a debugging string for this object.
+  */
+protected String
+paramString()
+{
+  return ("label=" + label + ",state=" + state + ",group=" + group
+	  + "," + super.paramString());
+}
+
+} // class Checkbox 

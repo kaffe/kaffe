@@ -1,74 +1,224 @@
+/* Copyright (C) 1999, 2000, 2002  Free Software Foundation
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.awt;
 
-
 /**
- * Cursor - class to access predefined standard native cursors
- *
- * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- * @author P.C.Mehlitz
- */
+  * This class represents various predefined cursor types.
+  *
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  */
 public class Cursor implements java.io.Serializable
 {
-	final public static int CUSTOM_CURSOR = -1;
-	final public static int DEFAULT_CURSOR = 0;
-	final public static int CROSSHAIR_CURSOR = 1;
-	final public static int TEXT_CURSOR = 2;
-	final public static int WAIT_CURSOR = 3;
-	final public static int SW_RESIZE_CURSOR = 4;
-	final public static int SE_RESIZE_CURSOR = 5;
-	final public static int NW_RESIZE_CURSOR = 6;
-	final public static int NE_RESIZE_CURSOR = 7;
-	final public static int N_RESIZE_CURSOR = 8;
-	final public static int S_RESIZE_CURSOR = 9;
-	final public static int W_RESIZE_CURSOR = 10;
-	final public static int E_RESIZE_CURSOR = 11;
-	final public static int HAND_CURSOR = 12;
-	final public static int MOVE_CURSOR = 13;
+  static final long serialVersionUID = 8028237497568985504L;
 
-	/** @serial 
-	 * The chosen cursor type intially set to the DEFAULT_CURSOR.
-	 */
-	int type;
+  /**
+  * Constant for the system default cursor type
+  */
+  public static final int DEFAULT_CURSOR = 0;
 
-	/** @serial
-	 * The user-visible name of the cursor.
-	 */
-	protected String name;
+  /**
+  * Constant for a cross-hair cursor.
+  */
+  public static final int CROSSHAIR_CURSOR = 1;
 
-	protected static Cursor[] predefined = new Cursor[14];
-	static Cursor defaultCursor;
-	private static final long serialVersionUID = 8028237497568985504L;
+  /**
+  * Constant for a cursor over a text field.
+  */
+  public static final int TEXT_CURSOR = 2;
 
-static {
-	defaultCursor = predefined[DEFAULT_CURSOR] = new Cursor( DEFAULT_CURSOR);
-	
-	for ( int i=1; i<= MOVE_CURSOR; i++ )
-		predefined[i] = new Cursor( i);
-}
+  /**
+  * Constant for a cursor to display while waiting for an action to complete.
+  */
+  public static final int WAIT_CURSOR = 3;
 
-public Cursor ( int cursorType ) {
-	if ( (cursorType < 0) || (cursorType > MOVE_CURSOR) )
-		type = DEFAULT_CURSOR;
-	else
-		type = cursorType;
-}
+  /**
+  * Cursor used over SW corner of window decorations.
+  */
+  public static final int SW_RESIZE_CURSOR = 4;
 
-public static Cursor getDefaultCursor() {
-	return defaultCursor;
-}
+  /**
+  * Cursor used over SE corner of window decorations.
+  */
+  public static final int SE_RESIZE_CURSOR = 5;
 
-public static Cursor getPredefinedCursor ( int cursorType ) {
-	if ( (cursorType < 1) || (cursorType > MOVE_CURSOR) )
-		return defaultCursor;
-	else
-		return predefined[cursorType];
-}
+  /**
+  * Cursor used over NW corner of window decorations.
+  */
+  public static final int NW_RESIZE_CURSOR = 6;
 
-public int getType () {
-	return type;
-}
+  /**
+  * Cursor used over NE corner of window decorations.
+  */
+  public static final int NE_RESIZE_CURSOR = 7;
+
+  /**
+  * Cursor used over N edge of window decorations.
+  */
+  public static final int N_RESIZE_CURSOR = 8;
+
+  /**
+  * Cursor used over S edge of window decorations.
+  */
+  public static final int S_RESIZE_CURSOR = 9;
+
+  /**
+  * Cursor used over W edge of window decorations.
+  */
+  public static final int W_RESIZE_CURSOR = 10;
+
+  /**
+  * Cursor used over E edge of window decorations.
+  */
+  public static final int E_RESIZE_CURSOR = 11;
+
+  /**
+  * Constant for a hand cursor.
+  */
+  public static final int HAND_CURSOR = 12;
+
+  /**
+  * Constant for a cursor used during window move operations.
+  */
+  public static final int MOVE_CURSOR = 13;
+
+  public static final int CUSTOM_CURSOR    = 0xFFFFFFFF;
+
+  private static final int PREDEFINED_COUNT = 14;
+
+  protected static Cursor[] predefined = new Cursor[PREDEFINED_COUNT];
+  protected String name;
+
+  /**
+   * @serial The numeric id of this cursor.
+   */
+  int type;
+
+  /**
+   * Initializes a new instance of <code>Cursor</code> with the specified
+   * type.
+   *
+   * @param type The cursor type.
+   *
+   * @exception IllegalArgumentException If the specified cursor type is invalid
+   */
+  public Cursor(int type)
+  {
+    if (type < 0 || type >= PREDEFINED_COUNT)
+      throw new IllegalArgumentException ("invalid cursor " + type);
+
+    this.type = type;
+    // FIXME: lookup and set name?
+  }
+
+  /** This constructor is used internally only. 
+   * Application code should call Toolkit.createCustomCursor().
+   */
+  protected Cursor(String name)
+  {
+    this.name = name;
+    this.type = CUSTOM_CURSOR;
+  }
+
+  /**
+   * Returns an instance of <code>Cursor</code> for one of the specified
+   * predetermined types.
+   *
+   * @param type The type contant from this class.
+   *
+   * @return The requested predefined cursor.
+   *
+   * @exception IllegalArgumentException If the constant is not one of the
+   * predefined cursor type constants from this class.
+   */
+  public static Cursor getPredefinedCursor(int type)
+  {
+    if (type < 0 || type >= PREDEFINED_COUNT)
+      throw new IllegalArgumentException ("invalid cursor " + type);
+    if (predefined[type] == null)
+      predefined[type] = new Cursor(type);
+    return predefined[type];
+  }
+
+  /**
+   * Retrieves the system specific custom Cursor named Cursor names are,
+   * for example: "Invalid.16x16".
+   *
+   * @exception AWTException
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
+   */
+  public static Cursor getSystemCustomCursor(String name)
+                                      throws AWTException
+  {
+    if (GraphicsEnvironment.isHeadless())
+      throw new HeadlessException ();
+
+    // FIXME
+    return null;
+  }
+
+  /**
+   * Returns an instance of the system default cursor type.
+   *
+   * @return The system default cursor.
+   */
+  public static Cursor getDefaultCursor()
+  {
+    return getPredefinedCursor(DEFAULT_CURSOR);
+  }
+
+  /**
+   * Returns the numeric type identifier for this cursor.
+   *
+   * @return The cursor id.
+   */
+  public int getType()
+  {
+    return type;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public String toString()
+  {
+    return (this.getClass() + "[" + getName() + "]");
+  }
 }
