@@ -170,7 +170,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		}
 		arraydims[i] = arg;
 	}
-	arraydims[i] = 0;
+	arraydims[i] = -1;
 	va_end(ap);
 
 	/* Mmm, okay now build the array using the wonders of recursion */
