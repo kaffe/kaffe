@@ -1,3 +1,8 @@
+Wed Mar  3 13:37:53 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffe/main.c, kaffe/man/kaffe.1.in: new "-addclasspath"
+	command line option for appending to the current classpath
+
 Wed Mar  3 00:06:45 PST 1999  Aaron Place <beavis@ihug.co.nz>
 
 	* libraries/javalib/java/lang: Class, ClassLoader, Long,
