@@ -3783,7 +3783,9 @@ Kaffe_JNI_native(Method* meth)
 	void* func;
 
 	/* Build the simple JNI name for the method */
-#if defined(HAVE_DYN_UNDERSCORE)
+#if defined(NO_SHARED_LIBRARIES)
+        strcpy(name, "Java_");
+#elif defined(HAVE_DYN_UNDERSCORE)
 	strcpy(name, "_Java_");
 #else
 	strcpy(name, "Java_");
