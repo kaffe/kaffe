@@ -5,7 +5,7 @@ use warnings;
 use Data::Dumper;
 BEGIN {
     my $prog = $0;
-    $prog =~ s,/[^/]*,,;
+    $prog =~ s,/[^/]*$,,;
     unshift( @INC, $prog );
 }
 use LogWarning;
