@@ -824,11 +824,22 @@ DBG(	fprintf(stderr, "creating thread %p, daemon=%d\n", jtid, daemon); )
 		assert(!"Never!");
 		/* NOT REACHED */
 	} 
+
 	/* set up context for new thread */
+	oldstack = GET_SP(jtid->env);
+
+#if defined(STACK_GROWS_UP)
+	newstack = jtid->stackBase+STACK_COPY;
+	memcpy(newstack-STACK_COPY, oldstack-STACK_COPY, STACK_COPY);
+#else /* !STACK_GROWS_UP */
 	newstack = jtid->stackEnd-STACK_COPY;
-	memcpy(newstack, oldstack = GET_SP(jtid->env), STACK_COPY);
+	memcpy(newstack, oldstack, STACK_COPY);
+#endif /* !STACK_GROWS_UP */
+
 	SET_SP(jtid->env, newstack);
+
 #if defined(FP_OFFSET)
+	/* needed for: IRIX */
 	SET_FP(jtid->env, newstack + ((void *)GET_FP(jtid->env) - oldstack));
 #endif
 
