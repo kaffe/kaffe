@@ -77,17 +77,22 @@ Java_kaffe_io_CharToByteIconv_convert (JNIEnv* env, jobject _this,
 #endif
 
 #ifndef WORDS_BIGENDIAN
-    buffer = KMALLOC (icv_inlen);
-    if (!buffer) {
-	jclass oom;
-
-	(*env)->ReleaseCharArrayElements(env, fromChars, jc, JNI_ABORT);
-	(*env)->ReleaseByteArrayElements(env, toBytes, jb, 0);
-	oom = (*env)->FindClass(env, "java.lang.OutOfMemory");
-	(*env)->ThrowNew(env, oom, "iconv()");
+    if (icv_inlen > 0) {
+	buffer = KMALLOC (icv_inlen);
+	if (!buffer) {
+	    jclass oom;
+	    
+	    (*env)->ReleaseCharArrayElements(env, fromChars, jc, JNI_ABORT);
+	    (*env)->ReleaseByteArrayElements(env, toBytes, jb, 0);
+	    oom = (*env)->FindClass(env, "java.lang.OutOfMemory");
+	    (*env)->ThrowNew(env, oom, "iconv()");
+	}
+	swab (icv_in, buffer, icv_inlen);
+	icv_in = buffer;
     }
-    swab (icv_in, buffer, icv_inlen);
-    icv_in = buffer;
+    else {
+	buffer = NULL;
+    }
 #endif
     ret = iconv (cd, &icv_in, &icv_inlen, &icv_out, &icv_outlen);
 #ifndef WORDS_BIGENDIAN

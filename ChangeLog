@@ -1,3 +1,13 @@
+2003-05-06 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/clib/native/ByteToCharIconv.c,
+	libraries/clib/native/CharToByteIconv.c:
+	Avoid doing a KMALLOC(0) during conversion.
+
+	* test/regression/CharCvt.java:
+	Test for zero-length arguments to ByteToCharIconv and
+	CharToByteIconv.
+
 2003-04-25 Tim Stack <stack@cs.utah.edu>
 
 	* configure.in:
@@ -9,7 +19,8 @@
 	* config/i386/jit3-i386.def:
 	Wrap profiling debugging message in an 'if(profFlag)'.
 
-	* kaffe/kaffevm/stringParsing.c,
+	* kaffe/kaffevm/Makefile.am,
+	kaffe/kaffevm/stringParsing.c,
 	kaffe/kaffevm/stringParsing.h:
 	Added string parsing utility function from the JanosVM.
 

@@ -77,8 +77,11 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
 #ifndef WORDS_BIGENDIAN
     char	*buffer;
 #endif
-    
+
 #ifndef WORDS_BIGENDIAN
+    if (icv_outlen == 0) {
+	return 0;
+    }
     buffer = KMALLOC (icv_outlen);
     if (!buffer) {
 	jclass oom;
