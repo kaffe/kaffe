@@ -47,6 +47,6 @@ Hjava_lang_Thread* createDaemon(void*, const char*, int);
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 
-#define THREAD_NATIVE()         (jthread_current())
+#define THREAD_NATIVE()         ((void*)jthread_current())
 
 #endif
