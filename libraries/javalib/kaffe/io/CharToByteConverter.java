@@ -20,7 +20,8 @@ abstract public class CharToByteConverter
 	private static String encodingDefault;
 
 static {
-	encodingRoot = System.getProperty("file.encoding.pkg");
+	// see explanation in ByteToCharConverter
+	encodingRoot = "kaffe.io";
 	encodingDefault = System.getProperty("file.encoding");
 }
 
@@ -66,8 +67,9 @@ public int flush ( byte[] to, int tpos, int tlen ) {
 
 public static CharToByteConverter getConverter(String enc) throws UnsupportedEncodingException
 {
+	String realenc = ConverterAlias.alias(enc);
 	try {
-		return ((CharToByteConverter)Class.forName(encodingRoot + ".CharToByte" + enc).newInstance());
+		return ((CharToByteConverter)Class.forName(encodingRoot + ".CharToByte" + realenc).newInstance());
 	}
 	catch (ClassNotFoundException _) {
 		throw new UnsupportedEncodingException(enc);

@@ -2,6 +2,12 @@ Wed Dec 16 10:52:18 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/util/Random.java: implemented according 
 	to JLS, passes mauve now.
+	* libraries/javalib/kaffe/io/CharToByteConverter.java: ignore
+	file.encoding.pkg as for ByteToCharConverter
+	* libraries/javalib/kaffe/io/CharToByteConverter.java, 
+	ByteToCharConverter.java: consult ConverterAlias for alternate names
+	*  libraries/javalib/kaffe/io/ConverterAlias.java: find alternate
+	names for certain encodings.
 
 Tue Dec 15 23:16:40 1998  Godmar Back  <gback@cs.utah.edu>
 

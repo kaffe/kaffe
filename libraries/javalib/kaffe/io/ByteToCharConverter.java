@@ -81,8 +81,9 @@ public int flush ( char[] to, int tpos, int tlen ) {
 public static ByteToCharConverter getConverter ( String enc )
 			throws UnsupportedEncodingException
 {
+	String realenc = ConverterAlias.alias(enc);
 	try {
-		return ((ByteToCharConverter)Class.forName(encodingRoot + ".ByteToChar" + enc).newInstance());
+		return ((ByteToCharConverter)Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance());
 	}
 	catch (ClassNotFoundException _) {
 		throw new UnsupportedEncodingException(enc);
