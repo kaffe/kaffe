@@ -14,7 +14,7 @@ import java.util.BitSet;
 import java.util.Vector;
 
 /**
- * class List - 
+ * class List -
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -66,35 +66,35 @@ public void keyPressed( KeyEvent e) {
 		return;
 
 	selMouse = false;
-	
+
 	switch ( e.getKeyCode() ) {
-		case e.VK_DOWN:
+		case KeyEvent.VK_DOWN:
 			nIdx = getSelectedIndex() + 1;
 			this.makeVisible( nIdx);
 			selectEvent( nIdx, true);
 			break;
-		case e.VK_UP:
+		case KeyEvent.VK_UP:
 			nIdx = getSelectedIndex() - 1;
 			this.makeVisible( nIdx);
 			selectEvent( nIdx, true);
 			break;
-		case e.VK_ENTER:
+		case KeyEvent.VK_ENTER:
 			notifyAction();
 			break;
-		case e.VK_PAGE_UP:
+		case KeyEvent.VK_PAGE_UP:
 			this.makeVisible( first - getVisibleRows());
 			break;
-		case e.VK_PAGE_DOWN:
+		case KeyEvent.VK_PAGE_DOWN:
 			this.makeVisible( first + 2 * getVisibleRows() - 1);
 			break;
-		case e.VK_ESCAPE:
+		case KeyEvent.VK_ESCAPE:
 			clearSelections();
 			this.repaint();
 			break;
 		default:
 		  return;
 	}
-	
+
 	e.consume();
 }
 
@@ -108,11 +108,11 @@ public void keyReleased( KeyEvent e) {
 
 public void keyTyped( KeyEvent e) {
 	int mods = e.getModifiers();
-	if ( (mods == 0) || (mods == e.SHIFT_MASK ) ) {
+	if ( (mods == 0) || (mods == KeyEvent.SHIFT_MASK ) ) {
 		letterNav( e.getKeyChar(), e.isShiftDown() );
 		e.consume();
 	}
-		
+
 	if ( this.parent.keyListener != null ){
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
@@ -121,11 +121,11 @@ public void keyTyped( KeyEvent e) {
 
 void letterNav( char c, boolean acc) {
 	int rs = rows.size();
-	
+
 	if ( !acc )
 		lnsBuf.setLength( 0);
 	lnsBuf.append( c);
-	
+
 	for ( int i=0; i<rs; i++) {
 		String s = (String)rows.elementAt( i);
 		if ( s.regionMatches( true, 0, lnsBuf.toString(), 0, lnsBuf.length() ) ){
@@ -138,13 +138,13 @@ void letterNav( char c, boolean acc) {
 int maxRowWidth() {
 	int rs = rows.size();
 	int iw, mw = 0;
-	
+
 	for ( int i=0; i<rs; i++ ) {
 		iw = fm.stringWidth( (String)rows.elementAt( i) );
 		if ( iw > mw )
 			mw = iw;
 	}
-	
+
 	return mw;
 }
 
@@ -153,7 +153,7 @@ public void mouseClicked( MouseEvent e) {
 		int idx = getRowIdx( e.getY() );
 		if ( idx > -1 ) {
 			selMouse = true;
-			
+
 			if ( isIndexSelected( idx) ) {
 				if ( multipleMode )
 					deselectElement( idx, true, true);
@@ -161,11 +161,11 @@ public void mouseClicked( MouseEvent e) {
 			else {
 				selectEvent( idx, true);
 			}
-		}	
+		}
 	}
 	else
 		notifyAction();
-		
+
 	redirectMouseEvent( e);
 }
 
@@ -183,7 +183,7 @@ public void mouseEntered( MouseEvent e) {
 public void mouseExited( MouseEvent e) {
 	if ( rgr != null ) // otherwise we aren't visible anymore
 		updateFlyOver( -1);
-		
+
 	redirectMouseEvent( e);
 }
 
@@ -192,7 +192,7 @@ public void mouseMoved( MouseEvent e) {
 	if ( row != idxFlyOver ) {
 		updateFlyOver( row );
 	}
-	
+
 	if ( this.parent.motionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
@@ -202,10 +202,10 @@ public void mouseMoved( MouseEvent e) {
 public void mousePressed( MouseEvent e) {
 	if ( AWTEvent.keyTgt != ip )
 		ip.requestFocus();
-		
+
 	if ( e.isPopupTrigger() )
 		this.triggerPopup( e.getX(), e.getY());
-		
+
 	redirectMouseEvent( e);
 }
 
@@ -222,11 +222,11 @@ void repaintItem( Graphics g, int idx) {
 	if ( g == null)
 		return;
 
-	int d = BORDER_WIDTH;		
+	int d = BORDER_WIDTH;
 	int x0 = xOffs + d +2;
 	int y0 = d + ( idx - first) * rowHeight;
 	int y1 = y0 + rowHeight - (rowHeight - fm.getHeight())/2 - fm.getDescent();
-		
+
 	String s = (String)rows.elementAt( idx);
 
 	if ( isIndexSelected( idx) ) {
@@ -244,7 +244,7 @@ void repaintItem( Graphics g, int idx) {
 		g.fillRect( d, y0, this.width-2*d, rowHeight);
 		g.setColor( this.fgClr );
 	}
-	
+
 	g.drawString( s, x0, y1);
 }
 
@@ -267,10 +267,10 @@ public void setFont( Font fnt) {
 void updateFlyOver( int newIdx) {
 	int lov = idxFlyOver;
 	idxFlyOver = newIdx;
-	
+
 	if ( lov == newIdx )
 		return;
-		
+
 	int rs = rows.size();
 	if ( (lov > -1) && (lov < rs) )
 		repaintItem( lov);
@@ -326,7 +326,7 @@ void addElement ( String item, int index) {
 		ip.rows.insertElementAt( item, index);
 
 	ip.updateScrolls();
-	
+
 	if ( isShowing() )
 		ip.repaint();
 }
@@ -365,7 +365,7 @@ public synchronized void clear() {
 void clearSelection ( int index ) {
 	if ( sel == index )
 		sel = -1;
-		
+
 	if ( multipleMode ) {
 		if (multiSel.get(index)) {
 			multiSel.clear( index);
@@ -483,13 +483,13 @@ public synchronized int[] getSelectedIndexes () {
 		else {
 			r = new int[nSel];
 			n = Math.min( ip.rows.size(), multiSel.size());
-		
+
 			for ( i=0, j=0; i<n; i++ ) {
 				if ( multiSel.get( i) ){
 					r[j++] = i;
 					if ( j == nSel )
 						break;
-				}	
+				}
 			}
 			return r;
 		}
@@ -544,13 +544,13 @@ public synchronized String[] getSelectedItems () {
 		else {
 			r = new String[nSel];
 			n = Math.min( ip.rows.size(), multiSel.size());
-		
+
 			for ( i=0, j=0; i<n; i++ ) {
 				if ( multiSel.get( i) ){
 					r[j++] = (String) ip.rows.elementAt( i);
 					if ( j == nSel )
 						break;
-				}	
+				}
 			}
 			return r;
 		}
@@ -577,11 +577,11 @@ public Object[] getSelectedObjects () {
 	int      i;
 	int[]    selIdx = getSelectedIndexes();
 	Object[] selObj = new Object[selIdx.length];
-	
+
 	for ( i=0; i<selIdx.length; i++ ) {
 		selObj[i] = ip.rows.elementAt( selIdx[i]);
 	}
-	
+
 	return selObj;
 }
 
@@ -607,10 +607,10 @@ public boolean isMultipleMode () {
 public boolean isSelected ( int index ) {
 	if ( sel == index )
 		return true;
-		
+
 	if ( multipleMode )
 		return multiSel.get( index);
-		
+
 	return false;
 }
 
@@ -628,7 +628,7 @@ public Dimension minimumSize (int rows) {
 
 void notifyAction () {
 	String s = (sel >= 0) ? (String) ip.rows.elementAt( sel) : null;
-	
+
 	if ( (s != null) &&
 	     ((aListener != null) || (eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ) {
 		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED, s, 0));
@@ -648,7 +648,7 @@ public void paint ( Graphics g ) {
 	// we know about our childs, we don't have to blank the background,
 	// so let's speed up things a little
 	g.paintChild( ip, false);
-	
+
 	if ( (ip.hScroll != null) && ((ip.hScroll.flags & IS_VISIBLE) != 0) )
 		g.paintChild( ip.hScroll, true);
 	if ( (ip.vScroll != null) && ((ip.vScroll.flags & IS_VISIBLE) != 0) )
@@ -722,9 +722,9 @@ void removeElement ( int index) {
 	try {
 		deselectElement( index, false, true);
 		ip.rows.removeElementAt( index);
-	
+
 		ip.updateScrolls();
-		ip.repaintRows( index, ip.getVisibleRows() );	
+		ip.repaintRows( index, ip.getVisibleRows() );
 	}
 	catch ( Exception e) {}
 }
@@ -759,7 +759,7 @@ public void requestFocus () {
 
 public void reshape ( int x, int y, int w, int h ) {
 	super.reshape( x, y, w, h);
-	
+
 	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
 	// in JDK, so we automagically have to re-layout them
 	ip.innerLayout();
@@ -789,7 +789,7 @@ void selectEvent ( int index, boolean fire ) {
 		sel = index;
 		ip.repaintRows( oldSel, 1);
 		if (fire) {
-			notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);		
+			notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);
 		}
 	}
 	else
@@ -807,7 +807,7 @@ public void setBackground ( Color c) {
 	// Ideally, we would just do a super.setBackground(), but that would give us
 	// a strange look for the scrollbar backgrounds. If we just forward here, we also
 	// have to resolve getBackground()
-	
+
 	//super.setBackground( c);
 	ip.setBackground( c);
 }
@@ -839,17 +839,17 @@ public synchronized void setMultipleMode ( boolean b) {
 public synchronized void setMultipleSelections ( boolean b ) {
 	if ( multipleMode == b )
 		return;
-		
+
 	if ( multipleMode ){
 		multiSel = null;
 		nSel = 0;
-		
+
 		multipleMode = false;
 	}
 	else {
 		multiSel = new BitSet();
 		nSel = 0;
-		
+
 		multipleMode = true;
 	}
 }

@@ -49,7 +49,7 @@ public TextPane () {
 	this.setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR));
 	tCursor.setPos( xOffs, rowHeight + BORDER_WIDTH);
 	insertLine( "", 0);
-	
+
 	this.addKeyListener( this);
 	this.addMouseListener( this);
 	this.addMouseMotionListener( this);
@@ -61,23 +61,23 @@ synchronized void append ( String s ) {
 	TextBuffer  tb;
 	String[]    lines;
 
-	blankCursor();	
+	blankCursor();
 	lines = breakLines( s);
-	
+
 	nOld = rows.size() - 1;
 	tb = (TextBuffer)rows.elementAt( nOld);
 	tb.append( lines[0]);
-	
+
 	for ( i=1; i<lines.length; i++ ){
 		tb = new TextBuffer( lines[i]);
 		tb.setMetrics( fm, tabWidth);
 		rows.addElement( tb);
 	}
-	
+
 	nNew = rows.size() - 1;
 	makeVisible( nNew);
 	updateScrolls();
-	
+
 	repaintRows( nOld, nNew - nOld);
 
 	setCursorPos( tb.len, nNew, true, true);
@@ -101,7 +101,7 @@ void backspace() {
 
 void blankCursor() {
 	TextBuffer tb;
-		
+
 	if ( rgr != null ) {
 		rgr.setColor( this.bgClr );
 		tCursor.blank( rgr, xOffs, getRowYPos( tCursor.yindex) );
@@ -120,7 +120,7 @@ String[] breakLines( String str) {
 
 	if ( (str == null) || (n == 0) )
 		return new String[1];
-		
+
 	v = new Vector( n / 20);
 	cbuf = str.toCharArray();
 
@@ -178,7 +178,7 @@ void cursorHome( boolean extend) {
 
 boolean cursorLeft( int steps, boolean extend) {
 	int nx = -1, ny = -1;
-	
+
 	if ( tCursor.index >= steps) {
 		nx = tCursor.index - steps;
 		ny = tCursor.yindex;
@@ -195,14 +195,14 @@ boolean cursorLeft( int steps, boolean extend) {
 			setCursorPos( nx, ny, true, true);
 		return true;
 	}
-	
+
 	return false;
 }
 
 void cursorRight( int steps, boolean extend) {
 	int nx = -1, ny = -1;
 	TextBuffer tb = (TextBuffer)rows.elementAt( tCursor.yindex);
-	
+
 	if ( tb.len >= tCursor.index + steps) {
 		nx = tCursor.index + steps;
 		ny = tCursor.yindex;
@@ -266,10 +266,10 @@ void deleteSel() {
 	Point pe = getSelEnd();
 	TextBuffer tb = (TextBuffer)rows.elementAt( ps.y);
 	int af = 1;
-	
+
 	if ( (ps.x == pe.x) && (ps.y == pe.y) )
 		return;
-		
+
 	if ( ps.y == pe.y ) {
 		tb.remove( ps.x, pe.x - ps.x);
 		setCursorPos( ps.x, ps.y, true, true);
@@ -284,10 +284,10 @@ void deleteSel() {
 		af = 0;
 	tb = (TextBuffer)rows.elementAt( pe.y);
 	tb.remove( 0, pe.x);
-	
+
 	for ( int i = ps.y + af; i < pe.y; i++)
 		rows.removeElementAt( ps.y + af);
-		
+
 	setCursorPos( ps.x, ps.y, false, true);
 	updateScrolls();
 	this.repaint();
@@ -295,7 +295,7 @@ void deleteSel() {
 
 public void focusGained( FocusEvent e) {
 	repaintCursor();
-	
+
 	super.focusGained( e);
 }
 
@@ -311,14 +311,14 @@ public void focusLost( FocusEvent e) {
 
 int get1D( Point p) {
 	int xt = 0;
-	
+
 	for ( int i=0; i<p.y; i++) {
 		TextBuffer tb = (TextBuffer)rows.elementAt( i);
 		xt += tb.len;
 		xt ++;  // hjb 01-27-1999: count the virtual newline
 	}
 	xt += p.x;
-	
+
 	return xt;
 }
 
@@ -337,7 +337,7 @@ Point get2D( int pos) {
 			return new Point( tb.len - xt + pos, i);
 		pos --;  // hjb 01-27-1999: substract 1 for the virtual newline
 	}
-	
+
 	return new Point( tb.len, rs-1);
 }
 
@@ -385,14 +385,14 @@ boolean hasSel( int row) {
 void insert( String s, boolean keepCursor) {
 	if ( (s == null) || (s.length() == 0) )
 		return;
-		
+
 	String[] lns = breakLines( s);
 	int lnsi = 0;
 	TextBuffer tb = (TextBuffer)rows.elementAt( tCursor.yindex);
 
 	if ( lns.length == 0 )
 		return;
-		
+
 	if ( lns.length == 1 ) {
 		int ncp = keepCursor ? tCursor.index : tCursor.index + lns[0].length();
 		tb.insert( tCursor.index, lns[0] );
@@ -400,15 +400,15 @@ void insert( String s, boolean keepCursor) {
 		repaintLine( tCursor.yindex, 0, tb);
 		return;
 	}
-	
+
 	String le = tb.getString( tCursor.index, tb.len - tCursor.index);
 	tb.remove( tCursor.index, tb.len - tCursor.index);
 	tb.append( lns[lnsi++] );
-	
+
 	while ( lnsi < lns.length)
 		tb = insertLine( lns[lnsi++], tCursor.yindex + lnsi - 1 );
-	
-	if ( ! keepCursor)	
+
+	if ( ! keepCursor)
 		setCursorPos( tb.len, tCursor.yindex + lns.length - 1, false, false);
 	tb.append( le);
 
@@ -422,17 +422,17 @@ void insert( String s, int pos) {
 
 void insertChar( char c) {
 	boolean app;
-	
+
 	TextBuffer tb = (TextBuffer)rows.elementAt( tCursor.yindex);
 	app = ( tCursor.index == tb.len);
 	tb.insert( tCursor.index, c);
-	
+
 	if ( !app){
 		//leading problem ( repaint left cursor char also)
 		int sIdx = (tCursor.index > 0 ) ? tCursor.index-1 : tCursor.index;
 		repaintLine( tCursor.yindex, sIdx, tb);
 	}
-	
+
 	cursorRight( 1, false);
 }
 
@@ -449,7 +449,7 @@ TextBuffer insertLine( String str, int lIdx) {
 void insertText(String s, int pos) {
 	Point p = get2D( pos);
 	setCursorPos( p.x, p.y, true, true);
-	
+
 	insert( s, false);
 }
 
@@ -465,23 +465,23 @@ public void keyPressed( KeyEvent e) {
 	boolean sh = e.isShiftDown();
 
 	//do not consume unused key for ShortcutHandler
-	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
+	if ( (mods != 0) && (mods != KeyEvent.SHIFT_MASK) )
 		return;
 
 	switch( code) {
-		case e.VK_LEFT:
+		case KeyEvent.VK_LEFT:
 			cursorLeft( 1, sh);
 			break;
-		case e.VK_RIGHT:
+		case KeyEvent.VK_RIGHT:
 			cursorRight( 1, sh);
 			break;
-		case e.VK_UP:
+		case KeyEvent.VK_UP:
 			cursorUp( 1, sh);
 			break;
-		case e.VK_DOWN:
+		case KeyEvent.VK_DOWN:
 			cursorDown( 1, sh);
 			break;
-		case e.VK_TAB:
+		case KeyEvent.VK_TAB:
 			if (sh) {
 				return;	//do not consume event for HotKeyHandler
 			}
@@ -490,12 +490,12 @@ public void keyPressed( KeyEvent e) {
 			}
 			insertChar( '\t' );
 			break;
-		case e.VK_ENTER:
+		case KeyEvent.VK_ENTER:
 		        if ( ! isEditable)
 			    break;
 			newline();
 			break;
-		case e.VK_BACK_SPACE:
+		case KeyEvent.VK_BACK_SPACE:
 		        if ( ! isEditable)
 			    break;
 			if ( hasSel() )
@@ -503,7 +503,7 @@ public void keyPressed( KeyEvent e) {
 			else
 				backspace();
 			break;
-		case e.VK_DELETE:
+		case KeyEvent.VK_DELETE:
 		        if ( ! isEditable)
 		            break;
 			if ( hasSel() )
@@ -511,19 +511,19 @@ public void keyPressed( KeyEvent e) {
 			else
 				del();
 			break;
-		case e.VK_HOME:
+		case KeyEvent.VK_HOME:
 			cursorHome( sh);
 			break;
-		case e.VK_END:
+		case KeyEvent.VK_END:
 			cursorEnd( sh);
 			break;
-		case e.VK_PAGE_UP:
+		case KeyEvent.VK_PAGE_UP:
 			pageUp( sh);
 			break;
-		case e.VK_PAGE_DOWN:
+		case KeyEvent.VK_PAGE_DOWN:
 			pageDown( sh);
 			break;
-		case e.VK_ESCAPE:
+		case KeyEvent.VK_ESCAPE:
 			resetSel( true);
 			break;
 		default:
@@ -535,7 +535,7 @@ public void keyPressed( KeyEvent e) {
 
 public void keyReleased( KeyEvent e) {
 	redirectKeyEvent( e);
-	
+
 	e.consumed = true;
 }
 
@@ -559,22 +559,22 @@ public void keyTyped( KeyEvent e) {
 
 	if ( (textListener != null) || (this.eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 ) {
 		Toolkit.eventQueue.postEvent( TextEvt.getEvent( TextArea.this,
-		                                                TextEvt.TEXT_VALUE_CHANGED));		
+		                                                TextEvt.TEXT_VALUE_CHANGED));
 	}
-	
+
 	e.consumed = true;
 }
 
 int maxRowWidth() {
 	int rs = rows.size();
 	int iw, mw = 0;
-	
+
 	for ( int i=0; i<rs; i++ ) {
 		iw = ((TextBuffer)rows.elementAt( i)).getWidth();
 		if ( iw > mw )
 			mw = iw;
 	}
-	
+
 	return mw;
 }
 
@@ -589,7 +589,7 @@ public void mouseDragged( MouseEvent e) {
 	int y = getRowIdx( e.getY() );
 	int x = getCol( y, e.getX() );
 	updateSel( x, y, true);
-	
+
 	if ( this.parent.motionListener != null ){
 		// unlikely, check motionListener first
 		redirectMotionEvent( e);
@@ -631,7 +631,7 @@ public void mousePressed( MouseEvent e) {
 			pasteFromClipboard();
 			break;
 	}
-	
+
 	redirectMouseEvent( e);
 }
 
@@ -641,19 +641,19 @@ public void mouseReleased( MouseEvent e) {
 
 void newline() {
 	String s = "";
-	
+
 	TextBuffer tb = getCursorLine();
 	if ( tb.len > tCursor.index ) {
 		int rl = tb.len - tCursor.index;
 		s = tb.getString( tCursor.index, rl);
 		tb.remove( tCursor.index, rl);
 	}
-	
+
 	TextBuffer tbNew = insertLine( s, tCursor.yindex+1);
 	tbNew.copyLevelFrom( tb);
 
 	updateScrolls();
-	
+
 	setCursorPos( tbNew.getLevel(), tCursor.yindex+1, true, true);
 	repaintRows( tCursor.yindex-1, getVisibleRows() );
 }
@@ -707,18 +707,18 @@ void repaintCursor( Graphics g) {
 void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 	int x0, w;
 	int d = BORDER_WIDTH;
-	
+
 	if ( g == null )
 		return;
-		
+
 	if ( tb == null )
 		tb = (TextBuffer)rows.elementAt( row);
-		
+
 	int ss = selXStart( row);
 	int se = selXEnd( row, tb);
 	int y0 = d + (row - first) * rowHeight;
 	int xa = tCursor.width;
-	
+
 	if ( ss == se ) {
 		x0 = (startX == 0) ? 0 : tb.getPos( startX) + xOffs;
 		w = this.width - x0;
@@ -733,15 +733,15 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 			w = tb.getWidth( startX, ss);
 			g.setColor( this.bgClr );
 			g.fillRect( x0, y0, w, rowHeight);
-			g.setColor( this.fgClr );			
+			g.setColor( this.fgClr );
 			tb.paint( g, xOffs, y0, rowHeight, startX, ss-startX);
 		}
 		if ( se > startX ) {
 			x0 = tb.getPos( ss) + xOffs;
-			w = tb.getWidth( ss, se); 
+			w = tb.getWidth( ss, se);
 			g.setColor( Defaults.TextAreaSelBgClr );
 			g.fill3DRect( x0, y0, w, rowHeight, true);
-			g.setColor( Defaults.TextAreaSelTxtClr );			
+			g.setColor( Defaults.TextAreaSelTxtClr );
 			tb.paint( g, xOffs, y0, rowHeight, ss, se-ss);
 		}
 		x0 = tb.getPos( se) + xOffs;
@@ -749,14 +749,14 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 		g.setColor( this.bgClr );
 		g.fillRect( x0, y0, w, rowHeight);
 		if ( se < tb.len ) {
-			g.setColor( this.fgClr );			
+			g.setColor( this.fgClr );
 			tb.paint( g, xOffs, y0, rowHeight, se);
 		}
 	}
 
 	if ( tCursor.yindex == row )
 		repaintCursor( g);
-		
+
 }
 
 void repaintLine( int row, int startX, TextBuffer tb) {
@@ -775,7 +775,7 @@ void replaceRange( String s, int start, int end) {
 		deleteSel();
 	else
 		resetSel( false);
-		
+
 	insert( s, true);
 }
 
@@ -786,7 +786,7 @@ void replaceSelectionWith( String s) {
 
 void resetSel( boolean repaint) {
 	boolean se = hasSel();
-		
+
 	int y0 = Math.min( sSel.y, eSel.y);
 	int y1 = Math.max( sSel.y, eSel.y);
 
@@ -794,7 +794,7 @@ void resetSel( boolean repaint) {
 	sSel.y = tCursor.yindex;
 	eSel.x = sSel.x;
 	eSel.y = sSel.y;
-		
+
 	if ( se && repaint)
 		repaintRows( y0, y1-y0);
 }
@@ -802,14 +802,14 @@ void resetSel( boolean repaint) {
 int selXEnd( int row, TextBuffer tb) {
 	Point ps = getSelStart();
 	Point pe = getSelEnd();
-	
+
 	if ( row > pe.y )
 		return -1;
 	if ( row < ps.y )
 		return -1;
 	if ( row == pe.y )
 		return pe.x;
-		
+
 	return tb.len;
 }
 
@@ -823,7 +823,7 @@ int selXStart( int row) {
 		return -1;
 	if ( row == ps.y )
 		return ps.x;
-		
+
 	return 0;
 }
 
@@ -841,16 +841,16 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 	TextBuffer tb;
 	int xPos;
 	int lastX = tCursor.index;
-	
+
 	if ( resetSel )
 		resetSel( repaint);
-		
+
 	if ( repaint) {
 		blankCursor();
 	}
 
 	makeVisible( y);
-	
+
 	tb = (TextBuffer)rows.elementAt( y);
 	tCursor.setYIndex( y, getRowYPos( y) );
 	if ( x > tb.len)
@@ -859,7 +859,7 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 	tCursor.setIndex( x, xPos );
 
 	repaintCursor();
-		
+
 	if ( resetSel)
 		resetSel( false);
 
@@ -889,13 +889,13 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 public void setFont( Font f) {
 	TextBuffer tb;
 	int s = rows.size();
-	
+
 	super.setFont( f);
 	fm = this.getFontMetrics( f);
-	
+
 	if ( rgr != null )
 		rgr.setFont( f);
-		
+
 	tabWidth = 3*fm.charWidth( 'x');
 	rowHeight = fm.getHeight() + 2;
 
@@ -903,7 +903,7 @@ public void setFont( Font f) {
 		tb = (TextBuffer)rows.elementAt( i);
 		tb.setMetrics( fm, tabWidth);
 	}
-	
+
 	tb = (TextBuffer)rows.elementAt( tCursor.yindex);
 	tCursor.setHeight( rowHeight-1 );
 	tCursor.setYIndex( tCursor.yindex, getRowYPos( tCursor.yindex) );
@@ -915,7 +915,7 @@ public void setFont( Font f) {
 
 boolean updateSel( int x, int y, boolean repaint) {
 	int y0, y1;
-	
+
 	if ( (x == eSel.x) && (y == eSel.y) )
 		return false;
 
@@ -923,12 +923,12 @@ boolean updateSel( int x, int y, boolean repaint) {
 	eSel.y = y;
 	y0 = Math.min( sSel.y, eSel.y );
 	y1 = Math.max( sSel.y, eSel.y );
-			
+
 	setCursorPos( x, y, false, false);
 	if ( repaint) {
 		repaintRows( y0, y1 - y0 + 1);
 	}
-		
+
 	return true;
 }
 
@@ -970,7 +970,7 @@ public TextArea( String text, int rows, int cols, int scrolls) {
 	buildMenu();
 	add( tp);
 	tp.setListeners();
-	
+
 	setBackground( Defaults.TextAreaBgClr);
 	setForeground( Defaults.TextAreaTxtClr);
 
@@ -1005,7 +1005,7 @@ protected void buildMenu() {
 	p.addSeparator();
 	p.add( new MenuItem("Select All")).setShortcut( new MenuShortcut( KeyEvent.VK_S, false) );
 	p.addActionListener( this);
-	
+
 	tp.add( p);
 }
 
@@ -1067,10 +1067,10 @@ public int getScrollbarVisibility() {
 
 public String getSelectedText() {
 	StringBuffer sb = new StringBuffer();
-	
+
 	int y0 = Math.min( tp.sSel.y, tp.eSel.y);
 	int yMax = Math.max( tp.sSel.y, tp.eSel.y);
-	
+
 	for ( int i=y0; i<=yMax; i++) {
 		TextBuffer tb = (TextBuffer) tp.rows.elementAt( i);
 		int x0 = tp.selXStart( i);
@@ -1079,28 +1079,28 @@ public String getSelectedText() {
 		if ( i < yMax )
 			sb.append( " ");
 	}
-	
+
 	return sb.toString();
 }
 
 public int getSelectionEnd() {
 	int i1 = tp.get1D( tp.sSel);
 	int i2 = tp.get1D( tp.eSel);
-	
+
 	return Math.max( i1, i2);
 }
 
 public int getSelectionStart() {
 	int i1 = tp.get1D( tp.sSel);
 	int i2 = tp.get1D( tp.eSel);
-	
+
 	return Math.min( i1, i2);
 }
 
 public String getText() {
 	int i, imax = tp.rows.size()-1;
 	StringBuffer sb = new StringBuffer( (imax+1) * 80);
-	
+
 	for ( i = 0; i <= imax; ) {
 		TextBuffer tb = (TextBuffer) tp.rows.elementAt(i);
 		sb.append( tb.buf, 0, tb.len);
@@ -1137,7 +1137,7 @@ public void paint ( Graphics g ) {
 	// we know about our childs, we don't have to blank the background,
 	// so let's speed up things a little
 	g.paintChild( tp, false);
-	
+
 	if ( (tp.hScroll != null) && ((tp.hScroll.flags & IS_VISIBLE) != 0) )
 		g.paintChild( tp.hScroll, true);
 	if ( (tp.vScroll != null) && ((tp.vScroll.flags & IS_VISIBLE) != 0) )
@@ -1187,7 +1187,7 @@ public void requestFocus() {
 
 public void reshape ( int x, int y, int w, int h ) {
 	super.reshape( x, y, w, h);
-	
+
 	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
 	// in JDK, so we automagically have to re-layout them
 	tp.innerLayout();
@@ -1196,7 +1196,7 @@ public void reshape ( int x, int y, int w, int h ) {
 
 public void select( int start, int end) {
 	Point p = tp.get2D( end);
-	
+
 	tp.sSel = tp.get2D( start);
 	tp.updateSel( p.x, p.y, true);
 }

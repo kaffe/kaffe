@@ -3,7 +3,7 @@ package java.awt;
 import java.util.Hashtable;
 
 /**
- * class GridBagLayout - 
+ * class GridBagLayout -
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -81,14 +81,14 @@ void adjustWeightsRelative( Container parent) {
 			twx += dd;
 			nxw++;
 		}
-	}		
+	}
 	for ( i=0; i<rowWeights.length; i++) {
 		dd = rowWeights[i];
 		if ( dd > 0.0 ) {
 			twy += dd;
 			nyw++;
 		}
-	}		
+	}
 
 	int piw = pin.left + pin.right;
 	int pih = pin.top + pin.bottom;
@@ -206,7 +206,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 				}
 			}
 		}
-	}		
+	}
 	for ( x=MAXGRIDSIZE-1; x>-1; x--) {
 		if ( defGrid[x][MAXGRIDSIZE-1] != null ) {
 			maxY = Math.max( maxY, myr);
@@ -219,7 +219,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 				}
 			}
 		}
-	}		
+	}
 
 	boolean allocNew = (columnWidths == null) || (rowHeights == null) ||
 	(columnWidths.length != maxX) || (rowHeights.length != maxY);
@@ -241,7 +241,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 		}
 	}
 
-	// convert relatives and remainders to real values	
+	// convert relatives and remainders to real values
 	updateConstraints( parent);
 
 	//fill widths and heights
@@ -250,8 +250,8 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 
 	for ( int idx=0; idx<nc; idx++) {
 		Component c = parent.getComponent( idx);
-		cc = lookupConstraints( c);	
-		cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);	
+		cc = lookupConstraints( c);
+		cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);
 
 		if ( (cRect.width == 1) || (cRect.height == 1) ) {
 			getComponentExt( c, cc, mode, cd);
@@ -261,7 +261,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 			}
 			if ( cRect.height == 1) {
 				rowHeights[cRect.y] = Math.max( rowHeights[cRect.y], cd.height);
-			}			
+			}
 		}
 
 		di = cRect.x + cRect.width - 1;
@@ -282,7 +282,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 				if ( c != null ) {
 					cc = lookupConstraints( c);
 					getComponentExt( c, cc, mode, cd);
-					cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);	
+					cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);
 					columnWidths[x] = Math.max( columnWidths[x], cd.width / cRect.width );
 				}
 			}
@@ -297,7 +297,7 @@ void fillGrid( Container parent, int mxr, int myr, int mode ) {
 				if ( c != null ) {
 					cc = lookupConstraints( c);
 					getComponentExt( c, cc, mode, cd);
-					cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);	
+					cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);
 					rowHeights[y] = Math.max( rowHeights[y], cd.height / cRect.height );
 				}
 			}
@@ -329,7 +329,7 @@ void getGrid( Container parent, int mode ) {
 	GridBagConstraints lcc = null;
 	int nc = parent.getComponentCount();
 
-	synchronized( defGrid) {	
+	synchronized( defGrid) {
 		clearDefGrid();
 
 		for ( int i=0; i<nc; i++){
@@ -449,14 +449,14 @@ public void layoutContainer( Container parent) {
 	Rectangle cRect = new Rectangle();
 	int nc = parent.getComponentCount();
 
-	getGrid( parent, ACTUALSIZE);	
+	getGrid( parent, ACTUALSIZE);
 
 	for ( int idx=0; idx<nc; idx++) {
 		Component c = parent.getComponent( idx);
 		GridBagConstraints cc = lookupConstraints( c);
 		Insets in = cc.insets;
 
-		cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);	
+		cRect.setBounds( cc.gridx, cc.gridy, cc.gridwidth, cc.gridheight);
 		gridToPels( cRect);
 
 		Dimension cd = c.getPreferredSize();
@@ -466,107 +466,107 @@ public void layoutContainer( Container parent) {
 		int ch = Math.min( cd.height, cRect.height);
 
 		switch ( cc.fill ) {
-		case cc.BOTH:
+		case GridBagConstraints.BOTH:
 			cx += in.left + cc.ipadx;
 			cy += in.top + cc.ipady;
 			cw = cRect.width - (in.left + in.right + 2 * cc.ipadx);
 			ch = cRect.height - (in.top + in.bottom + 2 * cc.ipady);
 			break;
 
-		case cc.HORIZONTAL:
+		case GridBagConstraints.HORIZONTAL:
 			cx += in.left + cc.ipadx;
 			cw = cRect.width - (in.left + in.right + 2 * cc.ipadx);
 			switch ( cc.anchor ) {
-			case cc.WEST:
-			case cc.CENTER:
-			case cc.EAST:
+			case GridBagConstraints.WEST:
+			case GridBagConstraints.CENTER:
+			case GridBagConstraints.EAST:
 			default:
 				cy += (cRect.height - ch) / 2;
 				break;
 
-			case cc.NORTH:
-			case cc.NORTHEAST:
-			case cc.NORTHWEST:
+			case GridBagConstraints.NORTH:
+			case GridBagConstraints.NORTHEAST:
+			case GridBagConstraints.NORTHWEST:
 				cy += in.top + cc.ipady;
 				break;
 
-			case cc.SOUTHEAST:
-			case cc.SOUTH:
-			case cc.SOUTHWEST:
+			case GridBagConstraints.SOUTHEAST:
+			case GridBagConstraints.SOUTH:
+			case GridBagConstraints.SOUTHWEST:
 				cy += cRect.height - (cd.height + in.bottom + cc.ipady);
 				break;
 			}
 			break;
 
-		case cc.VERTICAL:
+		case GridBagConstraints.VERTICAL:
 			cy += in.top + cc.ipady;
 			ch = cRect.height - (in.top + in.bottom + 2 * cc.ipady);
 			switch ( cc.anchor ) {
-			case cc.NORTH:
-			case cc.CENTER:
-			case cc.SOUTH:
+			case GridBagConstraints.NORTH:
+			case GridBagConstraints.CENTER:
+			case GridBagConstraints.SOUTH:
 			default:
 				cx += (cRect.width - cw) / 2;
 				break;
 
-			case cc.NORTHWEST:
-			case cc.WEST:
-			case cc.SOUTHWEST:
+			case GridBagConstraints.NORTHWEST:
+			case GridBagConstraints.WEST:
+			case GridBagConstraints.SOUTHWEST:
 				cx += in.left + cc.ipadx;
 				break;
 
-			case cc.NORTHEAST:
-			case cc.SOUTHEAST:
-			case cc.EAST:
+			case GridBagConstraints.NORTHEAST:
+			case GridBagConstraints.SOUTHEAST:
+			case GridBagConstraints.EAST:
 				cx += cRect.width - (cw + in.right + cc.ipadx);
 				break;
 			}
 			break;
 
-		case cc.NONE:
+		case GridBagConstraints.NONE:
 		default:
 			switch ( cc.anchor ) {
-			case cc.NORTH:
+			case GridBagConstraints.NORTH:
 				cy += in.top + cc.ipady;
 				cx += (cRect.width - cw) / 2;
 				break;
 
-			case cc.NORTHEAST:
+			case GridBagConstraints.NORTHEAST:
 				cy += in.top + cc.ipady;
 				cx += cRect.width - (cw + in.right + cc.ipadx);
 				break;
 
-			case cc.EAST:
+			case GridBagConstraints.EAST:
 				cy += (cRect.height - ch) / 2;
 				cx += cRect.width - (cw + in.right + cc.ipadx);
 				break;
 
-			case cc.SOUTHEAST:
+			case GridBagConstraints.SOUTHEAST:
 				cy += cRect.height - (ch + in.bottom + cc.ipady);
 				cx += cRect.width - (cw + in.right + cc.ipadx);
 				break;
 
-			case cc.SOUTH:
+			case GridBagConstraints.SOUTH:
 				cy += cRect.height - (ch + in.bottom + cc.ipady);
 				cx += (cRect.width - cw) / 2;
 				break;
 
-			case cc.SOUTHWEST:
+			case GridBagConstraints.SOUTHWEST:
 				cy += cRect.height - (ch + in.bottom + cc.ipady);
 				cx += in.left + cc.ipadx;
 				break;
 
-			case cc.WEST:
+			case GridBagConstraints.WEST:
 				cy += (cRect.height - ch) / 2;
 				cx += in.left + cc.ipadx;
 				break;
 
-			case cc.NORTHWEST:
+			case GridBagConstraints.NORTHWEST:
 				cy += in.top + cc.ipady;
 				cx += in.left + cc.ipadx;
 				break;
 
-			case cc.CENTER:
+			case GridBagConstraints.CENTER:
 			default:
 				cy += (cRect.height - ch) / 2;
 				cx += (cRect.width - cw) / 2;

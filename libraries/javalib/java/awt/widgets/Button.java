@@ -11,7 +11,7 @@ import kaffe.awt.ImageDict;
 import kaffe.awt.ImageSpec;
 
 /**
- * class Button - 
+ * class Button -
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -40,9 +40,9 @@ public Button () {
 
 public Button ( String label) {
 	cursor = Cursor.getPredefinedCursor( Cursor.HAND_CURSOR);
-	
+
 	flags |= IS_MOUSE_AWARE;
-	
+
 	setFont( Defaults.BtnFont);
 	setBackground( Defaults.BtnClr);
 	setForeground( Defaults.BtnTxtClr);
@@ -58,7 +58,7 @@ public void addNotify () {
 
 	if ( shortcut != null )
 		ShortcutHandler.addShortcut( shortcut, getToplevel(), this);
-		
+
 	MenuShortcut s1 = new MenuShortcut( this, KeyEvent.VK_ENTER, 0);
 	MenuShortcut s2 = new MenuShortcut( this, KeyEvent.VK_SPACE, 0);
 	ShortcutHandler.addShortcut( s1, this, this);
@@ -67,7 +67,7 @@ public void addNotify () {
 
 void animate() {
 	Graphics g = getGraphics();
-	
+
 	state |= PUSHED;
 	paint( g);
 	Toolkit.tlkSync();
@@ -76,7 +76,7 @@ void animate() {
 	state &= ~PUSHED;
 	paint( g);
 	Toolkit.tlkSync();
-	
+
 	g.dispose();
 }
 
@@ -91,7 +91,7 @@ void drawImage ( Graphics g) {
 	int di = ((state & PUSHED) > 0) ? 1 : 0;
 	int x = (width - iw) / 2 + di;
 	int y = (height - ih) / 2 + di;
-	
+
 	g.drawImage( img, x, y, this);
 }
 
@@ -125,9 +125,9 @@ void drawText ( Graphics g) {
 		g.setColor( c1);
 		g.drawString( label, x+1, y+1);
 	}
-	
+
 	g.setColor( c2);
-	g.drawString( label, x, y);	
+	g.drawString( label, x, y);
 }
 
 public String getActionCommand () {
@@ -147,7 +147,7 @@ public void handleShortcut( MenuShortcut ms) {
 
 	if ( (state & PUSHED) == 0 )
 		animate();
-		
+
 	if ( (aListener != null) ||
 	     ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ||
 	     ((flags & IS_OLD_EVENT) != 0) ) {
@@ -219,22 +219,22 @@ protected void processActionEvent( ActionEvent e) {
 
 void processMouse ( MouseEvent e ) {
 	switch ( e.id ) {
-		case e.MOUSE_ENTERED:
+		case MouseEvent.MOUSE_ENTERED:
 			state |= HILIGHTED;
 			repaint();
 			break;
-		case e.MOUSE_EXITED:
+		case MouseEvent.MOUSE_EXITED:
 			state &= ~HILIGHTED;
 			repaint();
 			break;
-		case e.MOUSE_PRESSED:
+		case MouseEvent.MOUSE_PRESSED:
 			state |= PUSHED;
 			if ( AWTEvent.keyTgt != Button.this )
 				requestFocus();
 			else
 				repaint();
 			break;
-		case e.MOUSE_RELEASED:
+		case MouseEvent.MOUSE_RELEASED:
 			if ( contains( e.getX(), e.getY()))
 				handleShortcut( null);
 			state &= ~PUSHED;
@@ -267,7 +267,7 @@ public void setFont ( Font f) {
 
 public void setLabel ( String label) {
 	int ti = label.indexOf( '~');
-	
+
 	if ( ti > -1){
 		this.label = label.substring( 0, ti) + label.substring( ti+1);
 		shortcut = new MenuShortcut( this, Character.toUpperCase( label.charAt(ti+1)), KeyEvent.ALT_MASK);
@@ -278,7 +278,7 @@ public void setLabel ( String label) {
 	}
 	else
 		this.label = label;
-		
+
 	if ( isShowing() )
 		repaint();
 }

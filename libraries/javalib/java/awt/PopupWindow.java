@@ -37,7 +37,7 @@ public PopupWindow ( Component client, Frame fr, Vector items) {
 }
 
 public void dispose () {
-	disposeSubMenus();		
+	disposeSubMenus();
 	super.dispose();
 
 	if ( this == MouseEvt.getGrab() )
@@ -70,7 +70,7 @@ void disposeSubMenus() {
 int getY ( MenuItem mi) {
 	int s = items.size();
 	int y = 1;
-	
+
 	for ( int i=0; i<s; i++) {
 		MenuItem cmi = (MenuItem)items.elementAt( i);
 		if ( cmi == mi )
@@ -83,20 +83,20 @@ int getY ( MenuItem mi) {
 
 boolean isMaster ( Component c ) {
 	PopupWindow pop = this;
-	
+
 	while ( pop.client instanceof PopupWindow ) {
-		if ( pop.client == c ) 
+		if ( pop.client == c )
 			return true;
 		pop = (PopupWindow) pop.client;
 	}
-	
+
 	return false;
 }
 
 MenuItem itemAt ( int yPos) {
 	int s = items.size();
 	int y = 0;
-	
+
 	for ( int i=0; i<s; i++) {
 		MenuItem mi = (MenuItem)items.elementAt( i);
 		y += mi.getHeight();
@@ -117,7 +117,7 @@ boolean openSubMenu () {
 	Vector v = ((Menu)selection).items;
 	if ( (v == null) || (v.size() == 0) )
 		return false;
-		
+
 	sub = new PopupWindow( this, owner, v );
 	sub.popupAt( x+width, y+getY( selection));
 	return true;
@@ -129,9 +129,9 @@ public void paint( Graphics g) {
 
 	g.setColor( Color.black);
 	g.drawRect( 0, 0, width-1, height-1);
-	g.setColor( bgClr);		
+	g.setColor( bgClr);
 	g.fill3DRect( 1, 1, width-2, height-2, true);
-	
+
 	for ( int i=0; i<s; i++) {
 		MenuItem mi = (MenuItem)items.elementAt( i);
 		y += paintItem( mi, g, y);
@@ -185,7 +185,7 @@ public Dimension preferredSize() {
 	int th = 0;
 	int tw = 0;
 	int cs = 2;
-	
+
 	for ( int i=0; i<s; i++) {
 		MenuItem mi = (MenuItem)items.elementAt( i);
 		if ( mi instanceof Menu)
@@ -210,7 +210,7 @@ void process ( KeyEvent evt ) {
 	// we have to process our own keys first to make sure they don't get passed
 	// to our owner
 	switch ( evt.id ){
-	case evt.KEY_PRESSED:
+	case KeyEvent.KEY_PRESSED:
 		switch( evt.getKeyCode() ) {
 		case KeyEvent.VK_ENTER:
 			processSelection();
@@ -248,17 +248,17 @@ void processMotion ( MouseEvent evt ) {
 	MenuItem mi;
 
 	switch ( evt.id ){
-	
-	case evt.MOUSE_MOVED:
+
+	case MouseEvent.MOUSE_MOVED:
 		mi = itemAt( v);
-		
+
 		if ( (sub != null) && (mi != selection) )
 			requestFocus();
-			
+
 		selectItem( mi);
 		break;
-		
-	case evt.MOUSE_DRAGGED:
+
+	case MouseEvent.MOUSE_DRAGGED:
 		skipRelease = false;
 
 		if ( contains( u, v) ) {
@@ -288,20 +288,20 @@ void processMouse ( MouseEvent evt ) {
 	super.processMouse( evt);
 
 	switch ( evt.id ){
-	
-	case evt.MOUSE_PRESSED:
+
+	case MouseEvent.MOUSE_PRESSED:
 		selectItem( itemAt( v));
 		break;
-	
-	case evt.MOUSE_RELEASED:
+
+	case MouseEvent.MOUSE_RELEASED:
 		if ( MouseEvt.getGrab() == this )
 			MouseEvt.releaseMouse(null);
-	
+
 		if ( skipRelease ) {
 			skipRelease = false;
 			break;
 		}
-	
+
 		if ( contains( u, v) && (selection != null) ){  // action!
 			processSelection();
 		}
@@ -309,8 +309,8 @@ void processMouse ( MouseEvent evt ) {
 			disposeAll();
 		}
 		break;
-		
-	case evt.MOUSE_ENTERED:
+
+	case MouseEvent.MOUSE_ENTERED:
 		requestFocus();
 		break;
 	}
@@ -319,7 +319,7 @@ void processMouse ( MouseEvent evt ) {
 void processSelection () {
 	if ( selection == null)
 		return;
-		
+
 	if ( selection instanceof Menu){
 		selectLower();
 	}
@@ -344,7 +344,7 @@ PopupWindow rootWnd () {
 boolean selectItem ( MenuItem nmi) {
 	if ( (nmi == null) || (nmi.isSeparator()) || (nmi == selection) )
 		return false;
-		
+
 	Graphics g = getGraphics();
 	if ( g != null ) {
 		if ( selection != null){
@@ -352,14 +352,14 @@ boolean selectItem ( MenuItem nmi) {
 			selection = null;
 			paintItem( cmi, g, getY( cmi) );
 		}
-	
+
 		selection = nmi;
 		paintItem( selection, g, getY( selection) );
-		
+
 		g.dispose();
 	}
 
-	return true;	
+	return true;
 }
 
 boolean selectLower() {
@@ -379,20 +379,20 @@ boolean selectLower() {
 		sub.selectItem ((MenuItem) v.firstElement());
 		return true;
 	}
-	
+
 	return false;
 }
 
 boolean selectNext () {
 	int isz = (items != null) ? items.size() : 0;
 	int ci = 0;
-	
+
 	if ( isz == 0 )
 		return false;
-		
+
 	if ( selection != null )
 		ci = items.indexOf( selection) + 1;
-	
+
 	for ( int idx = ci; idx<isz; idx++) {
 		MenuItem mi = (MenuItem)items.elementAt( idx);
 		if ( ! mi.isSeparator() ){
@@ -400,20 +400,20 @@ boolean selectNext () {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 boolean selectPrev () {
 	int isz = (items != null) ? items.size() : 0;
 	int ci = isz-1;
-	
+
 	if ( isz == 0 )
 		return false;
-		
+
 	if ( selection != null )
 		ci = items.indexOf( selection) -1;
-	
+
 	for ( int idx = ci; idx>=0; idx--) {
 		MenuItem mi = (MenuItem)items.elementAt( idx);
 		if ( ! mi.isSeparator() ){
@@ -421,17 +421,17 @@ boolean selectPrev () {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 boolean selectUpper() {
 	if ( ! (client instanceof PopupWindow))
 		return false;
-		
+
 	PopupWindow p = (PopupWindow)client;
 	p.requestFocus();
-	
+
 	return true;
 }
 }
