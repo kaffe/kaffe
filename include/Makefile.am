@@ -172,17 +172,17 @@ LIBXMLJ_JNI_HDRS = \
 	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
 	gnu_xml_libxmlj_dom_GnomeNode.h \
 	gnu_xml_libxmlj_dom_GnomeNodeList.h \
+	gnu_xml_libxmlj_dom_GnomeNotation.h \
 	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
 	gnu_xml_libxmlj_dom_GnomeTypeInfo.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
 	gnu_xml_libxmlj_dom_GnomeXPathExpression.h \
 	gnu_xml_libxmlj_dom_GnomeXPathNodeList.h \
 	gnu_xml_libxmlj_dom_GnomeXPathNSResolver.h \
 	gnu_xml_libxmlj_dom_GnomeXPathResult.h \
-	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
-	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h \
-	gnu_xml_libxmlj_transform_JavaContext.h
+	gnu_xml_libxmlj_sax_GnomeLocator.h \
+	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
+	gnu_xml_libxmlj_transform_GnomeTransformer.h \
+	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
 
 LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GdkClasspathFontPeer.h \

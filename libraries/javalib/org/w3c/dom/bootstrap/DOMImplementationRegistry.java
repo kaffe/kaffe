@@ -127,7 +127,7 @@ public final class DOMImplementationRegistry {
 	    //
 	    // DOM Implementations can modify here to add *additional* fallback
 	    // mechanisms to access a list of default DOMImplementationSources.
-	    
+	    p = "gnu.xml.dom.ImplementationSource";
 	}
 	if (p != null) {
 	    StringTokenizer st = new StringTokenizer(p);

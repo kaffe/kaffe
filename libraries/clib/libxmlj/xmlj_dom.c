@@ -47,6 +47,17 @@ typedef struct
 }
 xmljHashScanData;
 
+/* Prototypes for local functions */
+
+void
+xmljAddAttribute (xmlNodePtr node, xmlAttrPtr attr);
+
+void
+xmljHashScanner (void *payload, void *vdata, xmlChar *name);
+
+xmlChar *
+xmljGetNodeValue (xmlNodePtr node);
+
 /*
  * Determines whether a child node is suitable for insertion in the list of
  * children for a given parent node.
@@ -834,10 +845,15 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getAttribute (JNIEnv * env,
 {
   xmlNodePtr node;
   const xmlChar *s_name;
+  const xmlChar *s_value;
   
   node = xmljGetNodeID (env, self);
   s_name = xmljGetStringChars (env, name);
-  return xmljNewString (env, xmlGetProp (node, s_name));
+  s_value = xmlGetProp (node, s_name);
+  xmlFree ((xmlChar *) s_name);
+  return (s_value == NULL) ?
+    xmljNewString (env, BAD_CAST "") :
+    xmljNewString (env, s_value);
 }
 
 JNIEXPORT void JNICALL
@@ -877,6 +893,7 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getAttributeNode (JNIEnv * env,
     {
       return NULL;
     }
+  xmlFree ((xmlChar *) s_name);
   return xmljGetNodeInstance (env, (xmlNodePtr) attr);
 }
 
@@ -943,8 +960,12 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getAttributeNS (JNIEnv * env,
     {
       s_uri = xmljGetStringChars (env, uri);
       s_value = xmlGetNsProp (node, s_localName, s_uri);
+      xmlFree ((xmlChar *) s_uri);
     }
-  return xmljNewString (env, s_value);
+  xmlFree ((xmlChar *) s_localName);
+  return (s_value == NULL) ?
+    xmljNewString (env, BAD_CAST "") :
+    xmljNewString (env, s_value);
 }
 
 JNIEXPORT void JNICALL
@@ -1013,6 +1034,8 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getAttributeNodeNS (JNIEnv * env,
         }
       attr = attr->next;
     }
+  xmlFree ((xmlChar *) s_uri);
+  xmlFree ((xmlChar *) s_localName);
   return xmljGetNodeInstance (env, (xmlNodePtr) attr);
 }
 
@@ -1049,35 +1072,46 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_setAttributeNodeNS (JNIEnv * env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeElement_hasAttribute (JNIEnv * env,
+                                                    jobject self,
+                                                    jstring name)
+{
+  xmlNodePtr node;
+  const xmlChar *s_name;
+  const xmlChar *s_value;
+  
+  node = xmljGetNodeID (env, self);
+  s_name = xmljGetStringChars (env, name);
+  s_value = xmlGetProp (node, s_name);
+  xmlFree ((xmlChar *) s_name);
+  return (s_value != NULL);
+}
+
+JNIEXPORT jboolean JNICALL
 Java_gnu_xml_libxmlj_dom_GnomeElement_hasAttributeNS (JNIEnv * env,
                                                       jobject self,
                                                       jstring uri,
                                                       jstring localName)
 {
   xmlNodePtr node;
-  xmlAttrPtr attr;
   const xmlChar *s_uri;
   const xmlChar *s_localName;
+  const xmlChar *s_value;
 
   node = xmljGetNodeID (env, self);
-  attr = node->properties;
-  s_uri = xmljGetStringChars (env, uri);
   s_localName = xmljGetStringChars (env, localName);
-  while (attr != NULL)
+  if (uri == NULL)
     {
-      if (uri == NULL)
-        {
-          if (xmljMatch (s_localName, (xmlNodePtr) attr))
-            break;
-        }
-      else
-        {
-          if (xmljMatchNS (s_uri, s_localName, (xmlNodePtr) attr))
-            break;
-        }
-      attr = attr->next;
+      s_value = xmlGetNoNsProp (node, s_localName);
     }
-  return (attr != NULL);
+  else
+    {
+      s_uri = xmljGetStringChars (env, uri);
+      s_value = xmlGetNsProp (node, s_localName, s_uri);
+      xmlFree ((xmlChar *) s_uri);
+    }
+  xmlFree ((xmlChar *) s_localName);
+  return (s_value != NULL);
 }
 
 /* -- GnomeEntity -- */
@@ -1146,6 +1180,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_getNamedItem (JNIEnv * env,
         }
       s_name = xmljGetStringChars (env, name);
       ret = (xmlNodePtr) xmlHashLookup (hash, s_name);
+      xmlFree ((xmlChar *) s_name);
       return xmljGetNodeInstance (env, ret);
     }
 }
@@ -1255,6 +1290,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_removeNamedItem (JNIEnv * env,
         {
           xmlHashRemoveEntry (hash, s_name, NULL);
         }
+      xmlFree ((xmlChar *) s_name);
       return xmljGetNodeInstance (env, ret);
     }
 }
@@ -1302,7 +1338,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_item (JNIEnv * env,
           if (attr == NULL)
             {
               char msg[1024];
-              sprintf (msg, "No attribute at index %d\n", index);
+              sprintf (msg, "No attribute at index %d\n", (int) index);
               xmljThrowException (env, "java/lang/NullPointerException", msg);
               return NULL;
             }
@@ -1384,12 +1420,12 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_getLength (JNIEnv * env,
       hash = (xmlHashTablePtr) ((type == 1) ? dtd->entities : dtd->notations);
       if (hash == NULL)
         {
-          return NULL;
+          return 0;
         }
       data = (xmljHashScanData *) malloc (sizeof (xmljHashScanData));
       if (data == NULL)
         {
-          return NULL;
+          return 0;
         }
       data->index = -1;
       data->count = 0;
@@ -1917,6 +1953,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_lookupPrefix (JNIEnv * env, jobject self,
   xmlNodePtr node;
   xmlNsPtr ns;
   xmlDocPtr doc;
+  const xmlChar *s_uri;
   
   node = xmljGetNodeID (env, self);
   doc = node->doc;
@@ -1926,8 +1963,9 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_lookupPrefix (JNIEnv * env, jobject self,
       doc = (xmlDocPtr) node;
       node = xmlDocGetRootElement (doc);
     }
-  ns = xmlSearchNsByHref (doc, node, xmljGetStringChars (env,
-                                                         namespaceURI));
+  s_uri = xmljGetStringChars (env, namespaceURI);
+  ns = xmlSearchNsByHref (doc, node, s_uri);
+  xmlFree ((xmlChar *) s_uri);
   if (ns == NULL)
     {
       return NULL;
@@ -1942,10 +1980,12 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_isDefaultNamespace (JNIEnv * env,
 {
   xmlNodePtr node;
   xmlNsPtr ns;
+  const xmlChar *s_uri;
   
   node = xmljGetNodeID (env, self);
-  ns = xmlSearchNsByHref (node->doc, node, xmljGetStringChars (env,
-                                                               namespaceURI));
+  s_uri = xmljGetStringChars (env, namespaceURI);
+  ns = xmlSearchNsByHref (node->doc, node, s_uri);
+  xmlFree ((xmlChar *) s_uri);
   if (ns == NULL)
     {
       return 0;
@@ -1961,6 +2001,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_lookupNamespaceURI (JNIEnv * env,
   xmlNodePtr node;
   xmlDocPtr doc;
   xmlNsPtr ns;
+  const xmlChar *s_prefix;
   
   node = xmljGetNodeID (env, self);
   doc = node->doc;
@@ -1970,7 +2011,9 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_lookupNamespaceURI (JNIEnv * env,
       doc = (xmlDocPtr) node;
       node = xmlDocGetRootElement (doc);
     }
-  ns = xmlSearchNs (doc, node, xmljGetStringChars (env, prefix));
+  s_prefix = xmljGetStringChars (env, prefix);
+  ns = xmlSearchNs (doc, node, s_prefix);
+  xmlFree ((xmlChar *) s_prefix);
   if (ns == NULL)
     {
       return NULL;
@@ -2263,6 +2306,7 @@ xmljGetNamedItem (JNIEnv * env, jobject self, jstring name)
         break;
       attr = attr->next;
     }
+  xmlFree ((xmlChar *) s_name);
 
   return attr;
 }
@@ -2286,6 +2330,8 @@ xmljGetNamedItemNS (JNIEnv * env, jobject self, jstring uri, jstring localName)
         break;
       attr = attr->next;
     }
+  xmlFree ((xmlChar *) s_uri);
+  xmlFree ((xmlChar *) s_localName);
 
   return attr;
 }

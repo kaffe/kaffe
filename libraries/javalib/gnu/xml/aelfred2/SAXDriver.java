@@ -740,7 +740,30 @@ final public class SAXDriver
 
 	// FIXME:  char [0] must be ascii alpha; chars [1..index]
 	// must be ascii alphanumeric or in "+-." [RFC 2396]
-
+	
+	//Namespace Constraints
+	//name for xml prefix must be http://www.w3.org/XML/1998/namespace
+	boolean prefixEquality = prefix.equals("xml");
+	boolean uriEquality = uri.equals("http://www.w3.org/XML/1998/namespace");
+	if ((prefixEquality || uriEquality) && !(prefixEquality && uriEquality))
+	   fatal ("xml is by definition bound to the namespace name " +
+	   		"http://www.w3.org/XML/1998/namespace");
+	
+        //xmlns prefix declaration is illegal but xml prefix declaration is llegal...
+	if (prefixEquality && uriEquality)
+	   return;
+	
+        //name for xmlns prefix must be http://www.w3.org/2000/xmlns/
+	prefixEquality = prefix.equals("xmlns");
+	uriEquality = uri.equals("http://www.w3.org/2000/xmlns/");
+	if ((prefixEquality || uriEquality) && !(prefixEquality && uriEquality))
+	   fatal("http://www.w3.org/2000/xmlns/ is by definition bound" +
+	   		" to prefix xmlns");
+	
+	//even if the uri is http://www.w3.org/2000/xmlns/ it is illegal to declare it
+	if (prefixEquality && uriEquality)
+	   fatal ("declaring the xmlns prefix is illegal");
+		
 	uri = uri.intern ();
 	prefixStack.declarePrefix (prefix, uri);
 	contentHandler.startPrefixMapping (prefix, uri);
@@ -772,8 +795,10 @@ final public class SAXDriver
                  && qname.startsWith ("xmlns")) {
           String		prefix = qname.substring (6);
           
+          if (prefix.equals(""))
+          	fatal ("missing prefix in namespace declaration attribute");	
           if (value.length () == 0) {
-            verror ("missing URI in namespace decl attribute: "
+            verror ("missing URI in namespace declaration attribute: "
                     + qname);
           } else
             declarePrefix (prefix, value);
@@ -857,7 +882,11 @@ final public class SAXDriver
       if ("xmlns".equals(qname))
 		    continue;
     }
-
+               //Illegal in the new Namespaces Draft
+               //should it be only in 1.1 docs??
+               if (qname.equals (":"))
+                   fatal ("namespace names consisting of a single colon " +
+                   		"character are invalid");
 		index = qname.indexOf (':');
 
 		// NS prefix declaration?
@@ -866,7 +895,7 @@ final public class SAXDriver
 
 		// it's not a NS decl; patch namespace info items
 		if (prefixStack.processName (qname, nsTemp, true) == null)
-		    verror ("undeclared attribute prefix in: " + qname);
+		    fatal ("undeclared attribute prefix in: " + qname);
 		else {
 		    attribute.nameSpace = nsTemp[0];
 		    attribute.localName = nsTemp[1];
@@ -878,7 +907,7 @@ final public class SAXDriver
 	elementName = elname;
 	if (namespaces) {
 	    if (prefixStack.processName (elname, nsTemp, false) == null) {
-		verror ("undeclared element prefix in: " + elname);
+		fatal ("undeclared element prefix in: " + elname);
 		nsTemp [0] = nsTemp [1] = "";
 	    }
 	    handler.startElement (nsTemp [0], nsTemp [1], elname, this);

@@ -1,5 +1,138 @@
 2004-08-15  Dalibor Topic  <robilad@kaffe.org>
 
+        * include/Makefile.am:
+	Added new libxmlj includes, and remove no longer needed ones.
+
+        * include/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/all.files:
+	Regnerated.
+
+        * libraries/clib/libxmlj/xmlj_dom.c,
+        libraries/clib/libxmlj/xmlj_dom.h,
+        libraries/clib/libxmlj/xmlj_io.c,
+        libraries/clib/libxmlj/xmlj_io.h,
+        libraries/clib/libxmlj/xmlj_sax.c,
+        libraries/clib/libxmlj/xmlj_transform.c,
+        libraries/clib/libxmlj/xmlj_util.c,
+        libraries/clib/libxmlj/xmlj_util.h,
+        libraries/clib/libxmlj/xmlj_xpath.c,
+        libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+        libraries/javalib/gnu/xml/aelfred2/XmlParser.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilder.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeElement.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathExpression.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeLocator.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/GnomeXMLReader.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/StringArrayAttributes.java,
+        libraries/javalib/gnu/xml/libxmlj/sax/XMLName.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformerFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/util/XMLJ.java,
+        libraries/javalib/org/w3c/dom/bootstrap/DOMImplementationRegistry.java:
+	Resynced with GNU JAXP.
+
+	2004-08-10  Chris Burdess <dog@gnu.org>
+
+        * transform: Fixed imports.
+
+	2004-07-30  Chris Burdess <dog@gnu.org>
+
+        * transform: Added support for DOMSource and DOMResult transforms
+            to/from GnomeDocument nodes.
+
+	2004-07-27  Chris Burdess <dog@gnu.org>
+
+        * GnomeElement: getAttribute(NS) returns empty strings instead of
+            null.
+        * sax: Cached java.lang.String class.
+
+	2004-08-10  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Fixed bug while reading 0x2028. Check
+        for document version in external subset.
+        	
+	2004-08-10  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Convert 0x2028 to '\r' when document is 1.1
+        
+	2004-08-08  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Report start name characters that are not
+        BaseChar. (more of them)
+        	
+	2004-08-08  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Report start name characters that are not
+        BaseChar. 
+        	
+	2004-08-08  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Report NEL characters as igorable if document
+        is 1.1
+        
+	2004-08-07  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Fixed bug while reading whitespaces in elements
+        content.
+        
+	2004-08-06  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Check added for missing prefix in namespace 
+        declaration attribute.
+        
+	2004-08-06  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Partial character ref, partial entity 
+        references checks, moved to parseEntity(...)
+        
+	2004-08-06  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Checks added for colon in entities, PI and
+        notations. Unbounded prefixes error changed to fatal.
+        
+	2004-08-05  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Fixed bug intruduced with the partial character
+        ref, partial entity references checks.
+        
+	2004-08-05  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Fixed bug intruduced with the partial character
+        ref, partial entity references checks.
+        
+	2004-08-03  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Check added for namespaces names containing only
+        ':'. 
+        
+	2004-07-31  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Improved check for partial character references
+        and partial entity references in internal entities. 
+        
+	2004-07-31  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Added check for partial character references
+        in internal entities. 
+        
+	2004-07-29  Musachy Barroso  <musachy@gmail.com>
+
+        * SAXDriver.java: Added checks for invalid use of reserved 
+        prefixes and namespaces.
+
+	2004-07-28  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Invalidate character range [0x7f - 0x9f] if the 
+        document version is 1.1. 0x85(NEL) is still valid.
+         
+	2004-07-25  Musachy Barroso  <musachy@gmail.com>
+
+        * XmlParser.java: Fixed end-of-line handling to comply with sec 2.11.
+
+2004-08-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/security/DummyMessageDigest.java:
 	New file. Taken from GNU Classpath.
 

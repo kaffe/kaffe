@@ -37,6 +37,8 @@
 
 jstring xmljNewString (JNIEnv *, const xmlChar *);
 
+void xmljClearStringCache (void);
+
 const xmlChar *xmljGetStringChars (JNIEnv *, jstring);
 
 const xmlChar *xmljGetPrefix (const xmlChar * qName);

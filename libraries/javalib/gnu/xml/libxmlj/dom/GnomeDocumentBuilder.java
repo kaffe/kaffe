@@ -63,7 +63,7 @@ implements DOMImplementation
 
   static
   {
-    System.loadLibrary ("xmlj");
+    XMLJ.init ();
   }
 
   // -- DocumentBuilder --

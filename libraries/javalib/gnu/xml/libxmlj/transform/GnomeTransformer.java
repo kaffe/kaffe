@@ -1,4 +1,5 @@
 /* 
+ * $Id: GnomeTransformer.java,v 1.8 2004/12/04 21:12:27 robilad Exp $
  * Copyright (C) 2003, 2004 Free Software Foundation, Inc.
  * 
  * This file is part of GNU Classpathx/jaxp.
@@ -58,111 +59,162 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Result;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Node;
+
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+
+import gnu.xml.libxmlj.dom.GnomeDocument;
+import gnu.xml.libxmlj.sax.GnomeXMLReader;
+import gnu.xml.libxmlj.util.NamedInputStream;
+import gnu.xml.libxmlj.util.StandaloneLocator;
+import gnu.xml.libxmlj.util.XMLJ;
+
 /**
- *  An implementation of {@link javax.xml.transform.Transformer} which
- *  performs XSLT transformation using <code>libxslt</code>.
+ * An implementation of {@link javax.xml.transform.Transformer} which
+ * performs XSLT transformation using <code>libxslt</code>.
  *
- *  @fixme This implementation keeps native handles in
- *  <code>long</code> fields. A solution mapping handle IDs to actual
- *  memory addresses within the native peer may be more safe. Will
- *  this one day be called a software with the 19-exabyte-problem?
- *
- *  @author Julian Scheid
+ * @author Julian Scheid
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class GnomeTransformer
-  extends Transformer 
+  extends Transformer
+  implements Templates
 {
 
   /**
-   *  The parameters added by the user via {@link setParameter()}.
+   * The parameters added by the user via {@link setParameter()}.
    */
-  private Map parameters = new HashMap ();
+  private Map parameters;
 
   /**
-   *  The output properties set by the user.
+   * The output properties set by the user.
    */
-  private Properties outputProperties = new Properties ();
+  private Properties outputProperties;
 
   /**
-   *  The URIResolver passed in by the {@link TransformFactory} or
-   *  {@link Templates}.
+   * The URI resolver to use during transformation.
    */
-  private URIResolver uriResolver;
+  private URIResolver resolver;
 
   /**
-   *  The ErrorListener passed in by the {@link TransformFactory} or
-   *  {@link Templates}.
+   * The error listener for transformation errors.
    */
   private ErrorListener errorListener;
 
   /**
-   *  The object representing the underlying Libxslt Stylesheet.
+   * Handle to the source stylesheet.
+   * This is a native pointer of type xsltStylesheetPtr.
    */
-  private LibxsltStylesheet stylesheet;
+  private Object stylesheet;
 
   /**
-   *  Package-private constructor. Called by {@link
-   *  TransformerFactory}.
-   *
-   *  @param uriResolver the default URIResolver to use (can be
-   *  overridden by the user).
-   *
-   *  @param errorListener the default ErrorListener to use (can be
-   *  overridden by the user).
-   *
-   *  @param nativeStylesheetHandle implementation-specific handle
-   *  to underlying stylesheet object.
-   *
-   *  @param attributes implementation-specific attributes passed in
-   *  by the factory. These are currently not used.
+   * Constructor.
+   * @param source the XSLT stylesheet document source
+   * @param resolver the resolver to use during transformation
+   * @param errorListener the error listener for transformation errors
    */
-  GnomeTransformer (URIResolver uriResolver, 
-                    ErrorListener errorListener,
-                    LibxsltStylesheet stylesheet, 
-                    Map attributes)
-  {
-    this.uriResolver = uriResolver;
-    this.errorListener = errorListener;
-    this.stylesheet = stylesheet;
-
-    // ignore attributes
-  }
-
-  /**
-   *  Package-private constructor. Called by {@link
-   *  Templates}.
-   *
-   *  @param uriResolver the default URIResolver to use (can be
-   *  overridden by the user).
-   *
-   *  @param errorListener the default ErrorListener to use (can be
-   *  overridden by the user).
-   *
-   *  @param xsltSource the XML Source for reading the XSLT
-   *  stylesheet represented by this object.
-   *
-   *  @param attributes implementation-specific attributes passed in
-   *  by the factory. These are currently not used.
-   */
-  GnomeTransformer (URIResolver uriResolver, 
-                    ErrorListener errorListener,
-                    Source source,
-                    Map attributes) 
+  GnomeTransformer (Source source,
+                    URIResolver resolver, 
+                    ErrorListener errorListener) 
     throws TransformerConfigurationException
   {
-    this (uriResolver, errorListener,
-          new LibxsltStylesheet (source, new JavaContext (uriResolver, 
-                                                          errorListener)),
-          attributes);
+    this.resolver = resolver;
+    this.errorListener = errorListener;
+    parameters = new HashMap ();
+    outputProperties = new Properties ();
+   
+    if (source == null)
+      {
+        stylesheet = newStylesheet ();
+      } 
+    if (source instanceof StreamSource)
+      {
+        try
+          {
+            StreamSource ss = (StreamSource) source;
+            NamedInputStream in = XMLJ.getInputStream (ss);
+            String systemId = ss.getSystemId ();
+            String publicId = ss.getPublicId ();
+            String base = XMLJ.getBaseURI (systemId);
+            byte[] detectBuffer = in.getDetectBuffer ();
+            if (detectBuffer == null)
+              {
+                String msg = "No document element";
+                throw new TransformerConfigurationException (msg);
+              }
+            stylesheet = newStylesheetFromStream (in, detectBuffer, publicId,
+                                                  systemId, base,
+                                                  (resolver != null),
+                                                  (errorListener != null));
+          }
+        catch (IOException e)
+          {
+            throw new TransformerConfigurationException (e);
+          }
+      }
+    else if (source instanceof DOMSource)
+      {
+        DOMSource ds = (DOMSource) source;
+        Node node = ds.getNode ();
+        if (!(node instanceof GnomeDocument))
+          {
+            String msg = "Node is not a GnomeDocument";
+            throw new TransformerConfigurationException (msg);
+          }
+        GnomeDocument doc = (GnomeDocument) node;
+        stylesheet = newStylesheetFromDoc (doc);
+      }
+    else
+      {
+        String msg = "Source type not supported";
+        throw new TransformerConfigurationException (msg);
+      }
   }
+  
+  /**
+   * Copy constructor.
+   */
+  private GnomeTransformer (Object stylesheet,
+                            URIResolver resolver, 
+                            ErrorListener errorListener,
+                            Map parameters,
+                            Properties outputProperties)
+  {
+    this.stylesheet = stylesheet;
+    this.resolver = resolver;
+    this.errorListener = errorListener;
+    this.parameters = parameters;
+    this.outputProperties = outputProperties;
+  }
+
+  private native Object newStylesheet ()
+    throws TransformerConfigurationException;
+
+  private native Object newStylesheetFromStream (InputStream in,
+                                                 byte[] detectBuffer,
+                                                 String publicId,
+                                                 String systemId,
+                                                 String base,
+                                                 boolean entityResolver,
+                                                 boolean errorHandler)
+    throws TransformerConfigurationException;
+
+  private native Object newStylesheetFromDoc (GnomeDocument doc)
+    throws TransformerConfigurationException;
 
   //--- Implementation of javax.xml.transform.Transformer follows.
 
@@ -197,14 +249,14 @@ public class GnomeTransformer
 
   // Set and get the URIResolver to use on transformation
 
-  public void setURIResolver (URIResolver uriResolver)
+  public void setURIResolver (URIResolver resolver)
   {
-    this.uriResolver = uriResolver;
+    this.resolver = resolver;
   } 
 
   public URIResolver getURIResolver ()
   {
-    return uriResolver;
+    return resolver;
   }
 
   // Set the output properties to use on transformation; get default
@@ -233,22 +285,296 @@ public class GnomeTransformer
     return outputProperties.getProperty (name);
   }
 
+  // -- Templates --
+
+  public Transformer newTransformer ()
+  {
+    return new GnomeTransformer (stylesheet, resolver, errorListener,
+                                 new HashMap (parameters),
+                                 new Properties (outputProperties));
+  }
+
+  // -- transform --
+
   /**
-   *  <p> Transforms the given source and writes the result to the
-   *  given target. </p>
-   *
-   *  @fixme This performs poorly at the time for large input
-   *  documents, as both input and output document are held in
-   *  memory, and even at the same time. A better implementation
-   *  would be to implement the appropriate interfaces for reading
-   *  and writing streams from the libxml API.  (check names.)
-   *
+   * Transforms the given source and writes the result to the
+   * given target.
    */
   public void transform (Source source, Result result)
     throws TransformerException
   {
-    stylesheet.transform (source, result, parameters,
-			  new JavaContext (uriResolver, errorListener));
+    if (source instanceof StreamSource)
+      {
+        try
+          {
+            StreamSource ss = (StreamSource) source;
+            NamedInputStream in = XMLJ.getInputStream (ss);
+            String publicId = ss.getPublicId ();
+            String systemId = ss.getSystemId ();
+            String base = XMLJ.getBaseURI (systemId);
+            byte[] detectBuffer = in.getDetectBuffer ();
+            if (detectBuffer == null)
+              {
+                throw new TransformerException ("No document element");
+              }
+            if (result instanceof StreamResult)
+              {
+                OutputStream out = XMLJ.getOutputStream ((StreamResult) result);
+                transformStreamToStream (in, detectBuffer, publicId, systemId,
+                                         base, (resolver != null),
+                                         (errorListener != null), out);
+              }
+            else if (result instanceof DOMResult)
+              {
+                DOMResult dr = (DOMResult) result;
+                GnomeDocument ret =
+                  transformStreamToDoc (in, detectBuffer, publicId, systemId,
+                                        base, (resolver != null),
+                                        (errorListener != null));
+                dr.setNode (ret);
+                dr.setSystemId (null);
+              }
+            else if (result instanceof SAXResult)
+              {
+                SAXResult sr = (SAXResult) result;
+                transformStreamToSAX (in, detectBuffer, publicId, systemId,
+                                      base, (resolver != null),
+                                      (errorListener != null),
+                                      getSAXContext (sr));
+              }
+            else
+              {
+                String msg = "Result type not supported";
+                throw new TransformerConfigurationException (msg);
+              }
+          }
+        catch (IOException e)
+          {
+            throw new TransformerException (e);
+          }
+      }
+    else if (source instanceof DOMSource)
+      {
+        DOMSource ds = (DOMSource) source;
+        Node node = ds.getNode ();
+        if (!(node instanceof GnomeDocument))
+          {
+            String msg = "Node is not a GnomeDocument";
+            throw new TransformerException (msg);
+          }
+        GnomeDocument doc = (GnomeDocument) node;
+        if (result instanceof StreamResult)
+          {
+            try
+              {
+                OutputStream out = XMLJ.getOutputStream ((StreamResult) result);
+                transformDocToStream (doc, out);
+              }
+            catch (IOException e)
+              {
+                throw new TransformerException (e);
+              }
+          }
+        else if (result instanceof DOMResult)
+          {
+            DOMResult dr = (DOMResult) result;
+            GnomeDocument ret = transformDocToDoc (doc);
+            dr.setNode (ret);
+            dr.setSystemId (null);
+          }
+        else if (result instanceof SAXResult)
+          {
+            SAXResult sr = (SAXResult) result;
+            transformDocToSAX (doc, getSAXContext (sr));
+          }
+        else
+          {
+            String msg = "Result type not supported";
+            throw new TransformerConfigurationException (msg);
+          }
+      }
+    else
+      {
+        String msg = "Source type not supported";
+        throw new TransformerConfigurationException (msg);
+      }
   }
 
+  private GnomeXMLReader getSAXContext (SAXResult result)
+  {
+    GnomeXMLReader ctx = new GnomeXMLReader ();
+    ctx.setContentHandler (result.getHandler ());
+    ctx.setLexicalHandler (result.getLexicalHandler ());
+    if (errorListener != null)
+      {
+        ErrorHandler errorHandler =
+          new ErrorListenerErrorHandler (errorListener);
+        ctx.setErrorHandler (errorHandler);
+      }
+    if (resolver != null)
+      {
+        EntityResolver entityResolver =
+          new URIResolverEntityResolver (resolver);
+        ctx.setEntityResolver (entityResolver);
+      }
+    return ctx;
+  }
+
+  private native void transformStreamToStream (InputStream in,
+                                               byte[] detectBuffer,
+                                               String publicId,
+                                               String systemId,
+                                               String base,
+                                               boolean entityResolver,
+                                               boolean errorHandler,
+                                               OutputStream out)
+    throws TransformerException;
+
+  private native GnomeDocument transformStreamToDoc (InputStream in,
+                                                     byte[] detectBuffer,
+                                                     String publicId,
+                                                     String systemId,
+                                                     String base,
+                                                     boolean entityResolver,
+                                                     boolean errorHandler)
+    throws TransformerException;
+
+  private native void transformStreamToSAX (InputStream in,
+                                            byte[] detectBuffer,
+                                            String publicId,
+                                            String systemId,
+                                            String base,
+                                            boolean entityResolver,
+                                            boolean errorHandler,
+                                            GnomeXMLReader out)
+    throws TransformerException;
+
+  private native void transformDocToStream (GnomeDocument in,
+                                            OutputStream out)
+    throws TransformerException;
+
+  private native GnomeDocument transformDocToDoc (GnomeDocument in)
+    throws TransformerException;
+
+  private native void transformDocToSAX (GnomeDocument in,
+                                         GnomeXMLReader out)
+    throws TransformerException;
+
+  /*
+   * Retrieve parameters as a string array.
+   * This is a convenience method called from native code.
+   */
+  private String[] getParameterArray ()
+  {
+    String[] parameterArray = new String[parameters.size () * 2];
+    int index = 0;
+    for (Iterator it = parameters.keySet ().iterator ();
+         it.hasNext ();
+         ++index)
+      {
+        String parameterKey = (String) it.next ();
+        String parameterValue = (String) parameters.get (parameterKey);
+        parameterArray[index * 2 + 0] = parameterKey;
+        parameterArray[index * 2 + 1] =
+          "'" + ((parameterValue != null) ? parameterValue : "") + "'";
+        // FIXME encode parameter value correctly for XPath
+      }
+    return parameterArray;
+  }
+
+  // -- Free xsltStylesheet handle --
+
+  public void finalize ()
+  {
+    if (stylesheet != null)
+      {
+        free ();
+        stylesheet = null;
+      }
+  }
+
+  private native void free ();
+
+  // -- Callbacks --
+
+  private InputStream resolveEntity (String publicId, String systemId)
+    throws TransformerException
+  {
+    if (resolver != null)
+      {
+        systemId = resolver.resolve (null, systemId).getSystemId ();
+      }
+    if (systemId == null)
+      {
+        return null;
+      }
+    try
+      {
+        URL url = new URL (systemId);
+        return XMLJ.getInputStream (url);
+      }
+    catch (IOException e)
+      {
+        throw new TransformerException (e);
+      }
+  }
+  
+  private void setDocumentLocator (Object ctx, Object loc)
+  {
+  }
+
+  private void warning (String message,
+                        int lineNumber,
+                        int columnNumber,
+                        String publicId,
+                        String systemId)
+    throws TransformerException
+  {
+    if (errorListener == null)
+      {
+        return;
+      }
+    SourceLocator l = new StandaloneLocator (lineNumber,
+                                             columnNumber,
+                                             publicId,
+                                             systemId);
+    errorListener.warning (new TransformerException (message, l));
+  }
+
+  private void error (String message,
+                      int lineNumber,
+                      int columnNumber,
+                      String publicId,
+                      String systemId)
+    throws TransformerException
+  {
+    if (errorListener == null)
+      {
+        return;
+      }
+    SourceLocator l = new StandaloneLocator (lineNumber,
+                                             columnNumber,
+                                             publicId,
+                                             systemId);
+    errorListener.error (new TransformerException (message, l));
+  }
+  
+  private void fatalError (String message,
+                           int lineNumber,
+                           int columnNumber,
+                           String publicId,
+                           String systemId)
+    throws TransformerException
+  {
+    if (errorListener == null)
+      {
+        return;
+      }
+    SourceLocator l = new StandaloneLocator (lineNumber,
+                                             columnNumber,
+                                             publicId,
+                                             systemId);
+    errorListener.fatalError (new TransformerException (message, l));
+  }
+  
 }

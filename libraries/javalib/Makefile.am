@@ -1344,14 +1344,11 @@ gnu_xml_libxmlj_sax_SRCS = \
 	gnu/xml/libxmlj/sax/StringArrayAttributes.java \
 	gnu/xml/libxmlj/sax/XMLName.java
 gnu_xml_libxmlj_transform_SRCS = \
-	gnu/xml/libxmlj/transform/ErrorListenerProxy.java \
-	gnu/xml/libxmlj/transform/GnomeTemplates.java \
+	gnu/xml/libxmlj/transform/ErrorListenerErrorHandler.java \
 	gnu/xml/libxmlj/transform/GnomeTransformer.java \
 	gnu/xml/libxmlj/transform/GnomeTransformerFactory.java \
-	gnu/xml/libxmlj/transform/JavaContext.java \
-	gnu/xml/libxmlj/transform/LibxsltStylesheet.java \
 	gnu/xml/libxmlj/transform/TransformTest.java \
-	gnu/xml/libxmlj/transform/URIResolverProxy.java
+	gnu/xml/libxmlj/transform/URIResolverEntityResolver.java
 gnu_xml_libxmlj_util_SRCS = \
 	gnu/xml/libxmlj/util/EmptyNodeList.java \
 	gnu/xml/libxmlj/util/NamedInputStream.java \

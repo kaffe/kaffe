@@ -8,6 +8,23 @@
 #include "xmlj_util.h"
 #include <libxml/xpath.h>
 
+/* Local function prototypes */
+
+xmlXPathContextPtr
+xmljCreateXPathContextPtr (JNIEnv *env, xmlNodePtr node);
+
+jobject
+xmljGetXPathResult (JNIEnv *env, xmlXPathObjectPtr obj);
+
+jobject
+xmljGetXPathNodeList (JNIEnv *env, xmlXPathObjectPtr obj);
+
+xmlXPathObjectPtr
+xmljGetXPathObjectID (JNIEnv *env, jobject obj);
+
+/**
+ * Creates an XPath context for the given node.
+ */
 xmlXPathContextPtr
 xmljCreateXPathContextPtr (JNIEnv *env, xmlNodePtr node)
 {
@@ -130,6 +147,7 @@ Java_gnu_xml_libxmlj_dom_GnomeDocument_evaluate (JNIEnv *env,
       eval = xmlXPathEval (str, ctx);
       xmlXPathFreeContext (ctx);
     }
+  xmlFree ((xmlChar *) str);
   return xmljGetXPathResult (env, eval);
 }
 
@@ -139,9 +157,12 @@ Java_gnu_xml_libxmlj_dom_GnomeXPathExpression_init (JNIEnv *env,
                                                     jstring expression)
 {
   const xmlChar *str;
+  xmlXPathCompExprPtr ptr;
 
   str = xmljGetStringChars (env, expression);
-  return xmljAsField (env, xmlXPathCompile (str));
+  ptr = xmlXPathCompile (str);
+  xmlFree ((xmlChar *) str);
+  return xmljAsField (env, ptr);
 }
 
 JNIEXPORT void JNICALL
@@ -156,12 +177,12 @@ Java_gnu_xml_libxmlj_dom_GnomeXPathExpression_free (JNIEnv *env,
 }
 
 JNIEXPORT jobject JNICALL
-Java_gnu_xml_libxmlj_dom_GnomeXPathExpression_evaluate (JNIEnv *env,
-                                                        jobject self,
-                                                        jobject ptr,
-                                                        jobject contextNode,
-                                                        jshort type,
-                                                        jobject result)
+Java_gnu_xml_libxmlj_dom_GnomeXPathExpression_doEvaluate (JNIEnv *env,
+                                                          jobject self,
+                                                          jobject ptr,
+                                                          jobject contextNode,
+                                                          jshort type,
+                                                          jobject result)
 {
   xmlXPathCompExprPtr expr;
   xmlNodePtr node;
@@ -372,6 +393,11 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getElementsByTagName (JNIEnv *env,
   xmlXPathContextPtr ctx;
   xmlXPathObjectPtr eval = NULL;
   
+  node = xmljGetNodeID (env, self);
+  if (node == NULL)
+    {
+      return NULL;
+    }
   s_name = xmljGetStringChars (env, name);
   if (xmlStrEqual (s_name, BAD_CAST "*"))
     {
@@ -389,11 +415,7 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getElementsByTagName (JNIEnv *env,
           return NULL;
         }
     }
-  node = xmljGetNodeID (env, self);
-  if (node == NULL)
-    {
-      return NULL;
-    }
+  xmlFree ((xmlChar *) s_name);
   ctx = xmljCreateXPathContextPtr (env, node);
   if (ctx != NULL)
     {
@@ -429,6 +451,11 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getElementsByTagNameNS (JNIEnv *env,
   xmlXPathContextPtr ctx;
   xmlXPathObjectPtr eval = NULL;
   
+  node = xmljGetNodeID (env, self);
+  if (node == NULL)
+    {
+      return NULL;
+    }
   s_uri = xmljGetStringChars (env, uri);
   s_localName = xmljGetStringChars (env, localName);
   if (uri == NULL)
@@ -490,11 +517,8 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_getElementsByTagNameNS (JNIEnv *env,
             }
         }
     }
-  node = xmljGetNodeID (env, self);
-  if (node == NULL)
-    {
-      return NULL;
-    }
+  xmlFree ((xmlChar *) s_uri);
+  xmlFree ((xmlChar *) s_localName);
   ctx = xmljCreateXPathContextPtr (env, node);
   if (ctx != NULL)
     {

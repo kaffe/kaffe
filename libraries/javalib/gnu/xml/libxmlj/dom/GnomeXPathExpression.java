@@ -65,11 +65,11 @@ implements XPathExpression
   public Object evaluate (Node contextNode, short type, Object result)
     throws XPathException, DOMException
   {
-    return evaluate (expr, contextNode, type, result);
+    return doEvaluate (expr, contextNode, type, result);
   }
   
-  private native Object evaluate (Object expr, Node contextNode,
-                                  short type, Object result)
+  private native Object doEvaluate (Object expr, Node contextNode,
+                                    short type, Object result)
     throws XPathException, DOMException;
     
 }

@@ -52,6 +52,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.URIResolver;
 
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -68,6 +70,11 @@ public class GnomeTransformerFactory
   extends TransformerFactory
 {
 
+  static
+  {
+    XMLJ.init ();
+  }
+  
   /**
    *  URIResolver set by user, or default implementation.
    */
@@ -146,7 +153,9 @@ public class GnomeTransformerFactory
   public boolean getFeature (String name)
   {
     return (StreamSource.FEATURE.equals (name) ||
-            StreamResult.FEATURE.equals (name));
+            StreamResult.FEATURE.equals (name) ||
+            DOMSource.FEATURE.equals (name) ||
+            DOMResult.FEATURE.equals (name));
   }
 
   /**
@@ -166,10 +175,7 @@ public class GnomeTransformerFactory
   public Transformer newTransformer (Source source)
     throws TransformerConfigurationException
   {
-    return new GnomeTransformer (uriResolver,
-                                 errorListener,
-                                 source, 
-                                 attributes);
+    return new GnomeTransformer (source, uriResolver, errorListener);
   }
 
   /**
@@ -179,10 +185,7 @@ public class GnomeTransformerFactory
   public Templates newTemplates (Source source) 
     throws TransformerConfigurationException
   {
-    return new GnomeTemplates (uriResolver,
-                               errorListener, 
-                               source,
-                               attributes);
+    return new GnomeTransformer (source, uriResolver, errorListener);
   }
 
   private static native String getAssociatedStylesheet (InputStream in,
@@ -195,28 +198,6 @@ public class GnomeTransformerFactory
   /**
    *  Perform native cleanup.
    */
-  private static native void freeLibxsltGlobal ();
+  public static native void freeLibxsltGlobal ();
 
-  /**
-   *  Install a shutdown hook for pre-mortem cleanup.
-   */
-  static
-  {
-    System.loadLibrary ("xmlj");
-
-    Runtime.getRuntime ().addShutdownHook (new Thread ()
-      {
-        public void run ()
-        {          
-          JavaContext.cleanup();
-
-          // Make sure finalizers are run
-          System.gc ();
-          Runtime.getRuntime ().runFinalization ();
-
-          // Perform global cleanup on the native level
-          freeLibxsltGlobal ();
-        }
-      });
-  }
 }

@@ -97,6 +97,11 @@ int xmljOutputCloseCallback (void *context);
 OutputStreamContext *xmljNewOutputStreamContext (JNIEnv * env,
                                                  jobject outputStream);
 
+void
+xmljFreeOutputStreamContext (OutputStreamContext * outContext);
+
+xmlCharEncoding
+xmljDetectCharEncoding (JNIEnv * env, jbyteArray buffer);
 
 int
 xmljOutputWriteCallback (void *context, const char *buffer, int len)
@@ -300,7 +305,7 @@ xmljNewSAXParseContext (JNIEnv * env, jobject obj, xmlParserCtxtPtr ctx,
   ret->fatalError = NULL;
 
   ret->resolveURIAndOpen = NULL;
-  
+  ret->stringClass = NULL; 
   return ret;
 }
 
@@ -533,6 +538,7 @@ xmljParseDocument2 (JNIEnv * env,
   free(sax);
   xmljFreeSAXParseContext (saxCtx);
   xmljFreeParserContext (ctx);
+  xmljClearStringCache ();
   return doc;
 }
 
@@ -762,6 +768,9 @@ static pthread_key_t thread_context_key;
 
 /* Once-only initialisation of the key */
 static pthread_once_t thread_context_once = PTHREAD_ONCE_INIT;
+
+static void
+thread_context_key_alloc (void);
 
 /* Allocate the key */
 static void

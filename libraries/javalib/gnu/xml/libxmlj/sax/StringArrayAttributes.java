@@ -45,7 +45,7 @@ implements Attributes
 
   StringArrayAttributes (GnomeXMLReader parser, String[] pairs)
   {
-    len = pairs.length / 2;
+    len = (pairs == null) ? 0 : pairs.length / 2;
     keys = new XMLName[len];
     values = new String[len];
     for (int i = 0; i < len; i++)

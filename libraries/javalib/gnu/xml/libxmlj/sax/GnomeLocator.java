@@ -59,30 +59,30 @@ implements Locator
   
   public String getPublicId ()
   {
-    return getPublicId (ctx, loc);
+    return publicId (ctx, loc);
   }
 
-  private native String getPublicId (Object ctx, Object loc);
+  private native String publicId (Object ctx, Object loc);
 
   public String getSystemId ()
   {
-    return getSystemId (ctx, loc);
+    return systemId (ctx, loc);
   }
 
-  private native String getSystemId (Object ctx, Object loc);
+  private native String systemId (Object ctx, Object loc);
 
   public int getLineNumber ()
   {
-    return getLineNumber (ctx, loc);
+    return lineNumber (ctx, loc);
   }
   
-  private native int getLineNumber (Object ctx, Object loc);
+  private native int lineNumber (Object ctx, Object loc);
 
   public int getColumnNumber ()
   {
-    return getColumnNumber (ctx, loc);
+    return columnNumber (ctx, loc);
   }
   
-  private native int getColumnNumber (Object ctx, Object loc);
+  private native int columnNumber (Object ctx, Object loc);
 
 }

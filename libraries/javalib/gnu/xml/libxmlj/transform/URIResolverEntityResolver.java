@@ -1,5 +1,5 @@
 /*
- * XMLName.java
+ * URIResolverEntityResolver.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -24,58 +24,53 @@
  * This exception does not however invalidate any other reasons why the
  * executable file might be covered by the GNU General Public License.
  */
-package gnu.xml.libxmlj.sax;
+package gnu.xml.libxmlj.transform;
+
+import java.io.IOException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.sax.SAXSource;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
- * Structure containing the components of an XML element/attribute name.
+ * Provides an EntityResolver interface to a URIResolver.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class XMLName
+class URIResolverEntityResolver
+implements EntityResolver
 {
 
-  private static final String XML_URI = "http://www.w3.org/XML/1998/namespace";
-  
-  final String uri;
-  final String localName;
-  final String qName;
-  final String prefix;
+  private URIResolver resolver;
 
-  XMLName (GnomeXMLReader parser, String qName)
+  URIResolverEntityResolver (URIResolver resolver)
   {
-    this.qName = qName;
-    int ci = qName.lastIndexOf (':');
-    if (ci < 1)
-      {
-        localName = qName;
-        prefix = null;
-        uri = "";
-      }
-    else
-      {
-        localName = qName.substring (ci + 1);
-        prefix = qName.substring (0, ci);
-        if ("xml".equals (prefix))
-          {
-            if ("lang".equals (localName) || "space".equals (localName))
-              {
-                uri = XML_URI;
-              }
-            else
-              {
-                uri = parser.getURI (prefix);
-              }
-          }
-        else
-          {
-            uri = parser.getURI (prefix);
-          }
-      }
+    this.resolver = resolver;
   }
 
-  public String toString ()
+  public InputSource resolveEntity (String publicId, String systemId)
+    throws SAXException, IOException
   {
-    return qName;
+    try
+      {
+        return SAXSource.sourceToInputSource (resolver.resolve (systemId,
+                                                                null));
+      }
+    catch (TransformerException e)
+      {
+        Throwable cause = e.getCause ();
+        if (cause instanceof SAXException)
+          {
+            throw (SAXException) cause;
+          }
+        else if (cause instanceof IOException)
+          {
+            throw (IOException) cause;
+          }
+        throw new SAXException (e);
+      }
   }
 
 }

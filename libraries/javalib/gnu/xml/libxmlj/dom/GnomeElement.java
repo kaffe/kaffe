@@ -102,10 +102,7 @@ implements Element
   public native NodeList getElementsByTagNameNS (String namespaceURI,
                                                  String localName);
   
-  public boolean hasAttribute (String name)
-  {
-    return hasAttributeNS (null, name);
-  }
+  public native boolean hasAttribute (String name);
 
   public native boolean hasAttributeNS (String namespaceURI,
                                         String localName);

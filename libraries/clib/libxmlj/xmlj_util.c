@@ -29,18 +29,55 @@
 #include <libxml/tree.h>
 #include <unistd.h>
 
+/* xmlChar->jstring cache */
+#define XMLJ_STRING_CACHE_SIZE 1024
+xmlHashTablePtr xmljStringCache = NULL;
+
+void
+xmljHashDeallocate (void *data, xmlChar *name);
+
+void
+xmljHashDeallocate (void *data, xmlChar *name)
+{
+  /* NOOP */
+}
+
 jstring
 xmljNewString (JNIEnv * env, const xmlChar * text)
 {
-  char *s_text;
   jstring ret;
 
   if (text == NULL)
-    return NULL;
-  s_text = (char *) text;	/* TODO signedness? */
-  ret = (*env)->NewStringUTF (env, s_text);
-  /*free(s_text); */
+    {
+      return NULL;
+    }
+  if (xmljStringCache == NULL) /* Init cache */
+    {
+      xmljStringCache = xmlHashCreate (XMLJ_STRING_CACHE_SIZE);
+    }
+  ret = (jstring) xmlHashLookup (xmljStringCache, text);
+  if (ret == NULL)
+    {
+      ret = (*env)->NewStringUTF (env, (char *) text);
+      if (ret == NULL) /* Why? */
+        {
+          printf("xmljNewString: ERROR: NewStringUTF returned null for \"%s\"\n", text);
+        }
+      else
+        {
+          xmlHashAddEntry (xmljStringCache, text, ret);
+        }
+    }
   return ret;
+}
+
+void
+xmljClearStringCache ()
+{
+  if (xmljStringCache != NULL)
+    {
+      xmlHashFree (xmljStringCache, &xmljHashDeallocate);
+    }
 }
 
 const xmlChar *
@@ -50,7 +87,9 @@ xmljGetStringChars (JNIEnv * env, jstring text)
   xmlChar *x_text;
 
   if (text == NULL)
-    return NULL;
+    {
+      return NULL;
+    }
 
   s_text = (*env)->GetStringUTFChars (env, text, 0);
   x_text = (s_text == NULL) ? NULL : xmlCharStrdup (s_text);
@@ -118,14 +157,31 @@ jmethodID xmljGetMethodID (JNIEnv *env,
                              signature);
   if (ret == NULL)
     {
-      jclass clscls = (*env)->FindClass (env, "java/lang/Class");
-      jmethodID nm = (*env)->GetMethodID (env, clscls, "getName",
-                                          "()Ljava/lang/String;");
-      jstring clsname = (jstring) (*env)->CallObjectMethod (env,
-                                                            (jobject)cls,
-                                                            nm);
-      const char * c_clsName = (*env)->GetStringUTFChars (env, clsname, 0);
+      jclass clscls;
+      jmethodID nm;
+      jstring clsname;
+      const char *c_clsName;
       char cat[512] = "[method signature too long]";
+      
+      clscls = (*env)->FindClass (env, "java/lang/Class");
+      if (clscls == NULL)
+        {
+          return NULL;
+        }
+      nm = (*env)->GetMethodID (env, clscls, "getName",
+                                "()Ljava/lang/String;");
+      if (nm == NULL)
+        {
+          return NULL;
+        }
+      clsname = (jstring) (*env)->CallObjectMethod (env,
+                                                    (jobject)cls,
+                                                    nm);
+      if (clsname == NULL)
+        {
+          return NULL;
+        }
+      c_clsName = (*env)->GetStringUTFChars (env, clsname, 0);
       sprintf (cat, "%s.%s %s", c_clsName, name, signature);
       xmljThrowException (env,
                           "java/lang/NoSuchMethodException",

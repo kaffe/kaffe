@@ -44,11 +44,43 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.InputSource;
 
+import gnu.xml.libxmlj.transform.GnomeTransformerFactory;
+
 /**
  * Utility functions for libxmlj.
  */
 public final class XMLJ
 {
+
+  static class XMLJShutdownHook
+    implements Runnable
+  {
+    
+    public void run ()
+    {
+      // Make sure finalizers are run
+      System.gc ();
+      Runtime.getRuntime ().runFinalization ();
+      
+      // Perform global cleanup on the native level
+      GnomeTransformerFactory.freeLibxsltGlobal ();
+    }
+  
+  }
+
+  private static boolean initialised = false;
+  
+  public static void init ()
+  {
+    if (!initialised)
+      {
+        System.loadLibrary ("xmlj");
+        
+        XMLJShutdownHook hook = new XMLJShutdownHook ();  
+        Runtime.getRuntime ().addShutdownHook (new Thread (hook));
+      }
+    initialised = true;
+  }
 
   private static final int LOOKAHEAD = 50;
   
