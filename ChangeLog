@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-09  Robert Schuster <thebohemian@gmx.net>
+
+        * java/awt/AWTEvent.java (toString): Added case
+        for source not being an AWT component.
+
+2005-03-09  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-08 David Gilbert <david.gilbert@object-refinery.com>
 
         * java/awt/Font.java (decode): Handle null argument and allow
