@@ -1961,7 +1961,7 @@ mergeFrame(codeinfo* codeInfo, int pc, int sp, frameElement* from, Method* meth)
 
 	/* Merge locals */
 	for (m = 0; m < meth->localsz; m++) {
-		if (from[m].type != TUNASSIGNED && from[m].type != to[m].type) {
+		if (from[m].type != TUNASSIGNED && from[m].type != to[m].type && to[m].type != TUNSTABLE) {
 			SET_NEEDVERIFY(pc);
 			if (to[m].type == TUNASSIGNED) {
 				to[m].type = from[m].type;
@@ -1974,7 +1974,7 @@ mergeFrame(codeinfo* codeInfo, int pc, int sp, frameElement* from, Method* meth)
 
 	/* Merge stacks */
 	for (m = sp; m < meth->localsz + meth->stacksz; m++) {
-		if (from[m].type != TUNASSIGNED && from[m].type != to[m].type) {
+		if (from[m].type != TUNASSIGNED && from[m].type != to[m].type && to[m].type != TUNSTABLE) {
 			SET_NEEDVERIFY(pc);
 			if (to[m].type == TUNASSIGNED) {
 				to[m].type = from[m].type;
