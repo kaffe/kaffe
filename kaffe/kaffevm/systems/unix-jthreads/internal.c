@@ -410,7 +410,6 @@ LockInterface Kaffe_LockInterface = {
 
 SystemCallInterface Kaffe_SystemCallInterface = {
 
-	jthreadedFileDescriptor,
         jthreadedOpen,
         jthreadedRead,	
         jthreadedWrite, 
@@ -438,5 +437,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 
         select,	
 
+        jthreadedForkExec,
         jthreadedWaitpid,
+        kill
 };

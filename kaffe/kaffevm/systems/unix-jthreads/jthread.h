@@ -246,7 +246,6 @@ int 	intsDisabled();
 /*
  * API related to I/O
  */
-int jthreadedFileDescriptor(int fd);
 int jthreadedOpen(const char* path, int flags, int mode);
 int jthreadedSocket(int af, int type, int proto);
 int jthreadedConnect(int fd, struct sockaddr* addr, size_t len);
@@ -256,6 +255,7 @@ ssize_t jthreadedWrite(int fd, const void* buf, size_t len);
 ssize_t jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
         struct sockaddr* from, int* fromlen);
 int jthreadedWaitpid(int wpid, int* status, int options);
+int jthreadedForkExec(char **argv, char **arge, int ioes[4]);
 
 /* 
  * Locking API

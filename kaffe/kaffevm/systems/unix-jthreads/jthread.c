@@ -121,6 +121,7 @@ static void reschedule(void);
 static void restore_fds();
 static void restore_fds_and_exit();
 static void die();
+static int jthreadedFileDescriptor(int fd);
 
 /*
  * macros to set and extract stack pointer from jmp_buf
@@ -699,6 +700,7 @@ jthread_frames(jthread *thrd)
  *
  */
 
+#if defined(HAVE_SETITIMER)
 /*
  * set virtual timer for 10ms round-robin time-slicing
  */
@@ -722,6 +724,10 @@ deactivate_time_slicing()
 	tm.it_interval.tv_usec = tm.it_value.tv_usec = 0;
 	setitimer(ITIMER_VIRTUAL, &tm, 0);
 }
+#else
+static void activate_time_slicing() { }
+static void deactivate_time_slicing() { }
+#endif
 
 /*
  * Initialize the threading system. 
@@ -1466,7 +1472,7 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
  * We try various fcntl and ioctl to put the file descriptor in non-blocking
  * mode and to enable asynchronous notifications.
  */
-int
+static int
 jthreadedFileDescriptor(int fd)
 {
 	int r, on = 1;
@@ -1480,6 +1486,14 @@ jthreadedFileDescriptor(int fd)
 		perror("F_GETFL");
 		return (r);
 	}
+
+#if defined(F_SETFD)
+	/* set close-on-exec flag for this file descriptor */
+	if ((r = fcntl(fd, F_SETFD, 1)) < 0) {
+		perror("F_SETFD");
+		return (r);
+	}
+#endif
 
 	/*
 	 * Apparently, this can fail, for instance when we stdout is 
@@ -1749,3 +1763,144 @@ DBG(JTHREAD,
 #endif
 }
 
+/* helper function for forkexec, close fd[0..n-1] */
+static void
+close_fds(int fd[], int n)
+{
+	int i = 0;
+	while (i < n)
+		close(fd[i++]);
+}
+
+int 
+jthreadedForkExec(char **argv, char **arge, int ioes[4])
+{
+/* these defines are indices in ioes */
+#define IN_IN		0
+#define IN_OUT		1
+#define OUT_IN		2
+#define OUT_OUT		3
+#define ERR_IN		4
+#define ERR_OUT		5
+#define SYNC_IN		6
+#define SYNC_OUT	7
+
+	int fds[8];
+	int nfd;		/* number of fds in `fds' that are valid */
+	sigset_t nsig;
+	char b[1];
+	int pid, i, err;
+
+	/* 
+	 * we need execve() and fork() for this to work.  Don't bother if
+	 * we don't have them.
+	 */
+#if !defined(HAVE_EXECVE) && !defined(HAVE_EXECVP)
+	unimp("neither execve() nor execvp() not provided");
+#endif
+#if !defined(HAVE_FORK)
+	unimp("fork() not provided");
+#endif
+
+DBG(JTHREAD,	
+	{
+		char **d = argv;
+		dprintf("argv = [`%s ", *d++); 
+		while (*d)
+			dprintf(", `%s'", *d++);
+		dprintf("]\n");
+	}
+    )
+	/* Create the pipes to communicate with the child */
+	/* Make sure fds get closed if we can't create all pipes */
+	for (nfd = 0; nfd < 8; nfd += 2) {
+		err = pipe(fds + nfd);
+		if (err == -1) {
+			close_fds(fds, nfd);
+			return -1;
+		}
+	}
+
+	/* 
+	 * We must avoid that the child dies because of SIGVTALRM or
+	 * other signals.  We disable interrupts before forking and then
+	 * reenable signals in the child after we cleaned up.
+	 */
+	sigfillset(&nsig);
+	sigprocmask(SIG_BLOCK, &nsig, 0);
+
+	pid = fork();
+
+	switch (pid) {
+	case 0:
+		/* Child */
+		/* turn timers off */
+		deactivate_time_slicing();
+		MALARM(0);
+
+		/* set all signals back to their default state */
+		for (i = 0; i < NSIG; i++) {
+			catchSignal(i, SIG_DFL);
+		}
+
+		/* now reenable interrupts */
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+
+		/* set stdin, stdout, and stderr up from the pipes */
+		dup2(fds[IN_IN], 0);
+		dup2(fds[OUT_OUT], 1);
+		dup2(fds[ERR_OUT], 2);
+
+		/* What is sync about anyhow?  Well my current guess is that
+		 * the parent writes a single byte to it when it's ready to
+		 * proceed.  So here I wait until I get it before doing
+		 * anything.
+		 */
+		/* note that this is a blocking read */
+		read(fds[SYNC_IN], b, sizeof(b));
+
+		/* now close all pipe fds */
+		close_fds(fds, 8);
+
+		/*
+		 * If no environment was given and we have execvp, we use it.
+		 * If an environment was given, we use execve.
+		 * This is roughly was the linux jdk seems to do.
+		 */
+
+		/* execute program */
+#if defined(HAVE_EXECVP)
+		if (arge == NULL)
+			execvp(argv[0], argv);
+		else
+#endif
+			execve(argv[0], argv, arge);
+		break;
+
+	case -1:
+		/* Error */
+		/* Close all pipe fds */
+		close_fds(fds, 8);
+		return (-1);
+
+	default:
+		/* Parent */
+		/* close the fds we won't need */
+		close(fds[IN_IN]);
+		close(fds[OUT_OUT]);
+		close(fds[ERR_OUT]);
+		close(fds[SYNC_IN]);
+
+		/* copy and fix up the fds we do need */
+		ioes[0] = jthreadedFileDescriptor(fds[IN_OUT]);
+		ioes[1] = jthreadedFileDescriptor(fds[OUT_IN]);
+		ioes[2] = jthreadedFileDescriptor(fds[ERR_IN]);
+		ioes[3] = jthreadedFileDescriptor(fds[SYNC_OUT]);
+
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		return (pid);
+	}
+
+	exit(-1);
+	/* NEVER REACHED */	
+}
