@@ -164,6 +164,7 @@ How do I use own class library profile?
 
 The configure script has the option --with-class-library-profile,
 which allows you to specify a profile to use for the class library.
+You must specify the absolute path to the profile file.
 
 Which profiles are available?
 -----------------------------
