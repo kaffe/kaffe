@@ -2829,10 +2829,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	$(SHELL) $(rebuildLib) $(DNSJAVA_InetAddressImpl)
 	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
 	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
-		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; \
-		if [ $${?} -ne 0 ]; then \
-			break ; \
-		fi ; \
+		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i || exit $$? ; \
 	done
 	echo timestamp > $(LIBDIR)/stamp
 
