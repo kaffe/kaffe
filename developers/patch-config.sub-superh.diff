@@ -1,0 +1,34 @@
+
+More info on this patch:
+
+  http://www.kaffe.org/pipermail/kaffe/2003-May/042416.html
+
+This should be merged upstream to autoconf.
+
+--- config.sub.jim	2003-06-06 17:03:38.000000000 -0700
++++ config.sub	2003-06-06 17:20:27.000000000 -0700
+@@ -259,6 +259,7 @@
+ 	| pyramid \
+ 	| sh | sh[1234] | sh[23]e | sh[34]eb | shbe | shle | sh[1234]le | sh3ele \
+ 	| sh64 | sh64le \
++	| superh \
+ 	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv8 | sparcv9 | sparcv9b \
+ 	| strongarm \
+ 	| tahoe | thumb | tic80 | tron \
+@@ -331,6 +332,7 @@
+ 	| romp-* | rs6000-* \
+ 	| sh-* | sh[1234]-* | sh[23]e-* | sh[34]eb-* | shbe-* \
+ 	| shle-* | sh[1234]le-* | sh3ele-* | sh64-* | sh64le-* \
++	| superh-* \
+ 	| sparc-* | sparc64-* | sparc86x-* | sparclet-* | sparclite-* \
+ 	| sparcv9-* | sparcv9b-* | strongarm-* | sv1-* | sx?-* \
+ 	| tahoe-* | thumb-* \
+@@ -1037,7 +1039,7 @@
+ 	we32k)
+ 		basic_machine=we32k-att
+ 		;;
+-	sh3 | sh4 | sh[34]eb | sh[1234]le | sh[23]ele)
++	sh3 | sh4 | sh[34]eb | sh[1234]le | sh[23]ele | superh)
+ 		basic_machine=sh-unknown
+ 		;;
+ 	sh64)

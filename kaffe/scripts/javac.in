@@ -1,0 +1,5 @@
+#! /bin/sh
+# Script to run Sun's compiler
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/@kaffe_TRANSF@ sun.tools.javac.Main ${1+"$@"}

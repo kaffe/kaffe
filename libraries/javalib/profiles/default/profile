@@ -1,0 +1,12 @@
+core.files
+coreawt.files
+awt.files
+moreawt.files
+rest.files
+rmi.files
+xml.files
+jaxp.files
+sound.files
+jsse.files
+inet.files
+
