@@ -1410,18 +1410,36 @@ mul_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 int
 div_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)
 {
+	SlotInfo* tmp;
+	
 	switch (val) {
 	case 2:
-		ashr_int_const(dst, src, 1);
+		slot_alloctmp(tmp);
+		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		add_int(tmp, tmp, src);
+		ashr_int_const(dst, tmp, 1);
+		slot_freetmp(tmp);
 		break;
 	case 4:
-		ashr_int_const(dst, src, 2);
+		slot_alloctmp(tmp);
+		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		add_int(tmp, tmp, src);
+		ashr_int_const(dst, tmp, 2);
+		slot_freetmp(tmp);
 		break;
 	case 8:
-		ashr_int_const(dst, src, 3);
+		slot_alloctmp(tmp);
+		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		add_int(tmp, tmp, src);
+		ashr_int_const(dst, tmp, 3);
+		slot_freetmp(tmp);
 		break;
 	case 16:
-		ashr_int_const(dst, src, 4);
+		slot_alloctmp(tmp);
+		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		add_int(tmp, tmp, src);
+		ashr_int_const(dst, tmp, 4);
+		slot_freetmp(tmp);
 		break;
 	default:
 		return (0);
