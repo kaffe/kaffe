@@ -212,8 +212,10 @@ gcMarkObject(Collector* gcif, const void* objp)
 	if (objp != 0) {
 		gc_unit *unit = UTOUNIT(objp);
 		gc_block *info = GCMEM2BLOCK(unit);
-		int idx = GCMEM2IDX(info, unit);
-		markObjectDontCheck(unit, info, idx);
+#if defined(DEBUG)
+		assert(gc_heap_isobject(info, unit));
+#endif
+		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 	}
 }
 
