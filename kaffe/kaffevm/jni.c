@@ -40,6 +40,7 @@
 #if defined(TRANSLATOR)
 #include "seq.h"
 #include "slots.h"
+#include "registers.h"
 #include "labels.h"
 #include "codeproto.h"
 #include "basecode.h"

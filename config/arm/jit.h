@@ -53,14 +53,14 @@ typedef struct _exceptionFrame {
 	    (f) = *(exceptionFrame*)(v - sizeof(exceptionFrame)); })
 
 /* Extract the object argument from given frame */
-#define FRAMEOBJECT(obj, f, einfo)	do {				\
+#define FRAMEOBJECT(obj, f, meth)	do {				\
 	const char *str;						\
 	int maxLocal, maxStack, maxArgs, maxTemp;			\
 	/* Set up the necessary state for the SLOT2 macros to work	\
 	 * in local variables to not get the translator lock.  */	\
-	maxLocal = einfo.method->localsz;				\
-	maxStack = einfo.method->stacksz;				\
-	str = METHOD_SIGD(einfo.method);				\
+	maxLocal = meth->localsz;				\
+	maxStack = meth->stacksz;				\
+	str = METHOD_SIGD(meth);				\
 	maxArgs = sizeofSig(&str, false);				\
 	maxTemp = MAXTEMPS - 1;						\
 	/* NB: we assume that the JIT will have				\

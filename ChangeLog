@@ -1,3 +1,22 @@
+2003-08-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffe/main.c:
+	(options) fix parsing of -X<something><size> style options 
+
+	* kaffe/kaffevm/jni.c: include registers.h to fix compilation
+	problems for jit engine
+
+	* libraries/javalib/java/lang/Class.java:
+	(lookupMethod) don't crash if parameterTypes is null
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	adjust expected output to java.lang.Class changes
+
+	* config/arm/jit.h:
+	(FRAMEOBJECT) adapted to changes in exception.c to fix
+	compilation problems
+
 2003-08-29  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/java/text/DecimalFormat.java:

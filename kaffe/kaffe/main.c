@@ -331,7 +331,7 @@ static
 int
 options(char** argv)
 {
-	int i;
+	int i,j;
 	int sz;
 	userProperty* prop;
 
@@ -394,9 +394,9 @@ options(char** argv)
 			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
-		else if ((strncmp(argv[i], "-ss", 3) == 0) 
-			 || (strncmp(argv[i], "-Xss", 4) == 0)) {
-			if (argv[i][3] == 0) {
+		else if ((strncmp(argv[i], "-ss", (j=3)) == 0) 
+			 || (strncmp(argv[i], "-Xss", (j=4)) == 0)) {
+			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  "Error: No stack size found for -ss option.\n");
@@ -404,7 +404,7 @@ options(char** argv)
 				}
 				sz = parseSize(argv[i]);
 			} else {
-				sz = parseSize(&argv[i][3]);
+				sz = parseSize(&argv[i][j]);
 			}
 			if (sz < THREADSTACKSIZE) {
 				fprintf(stderr,  "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
@@ -413,9 +413,9 @@ options(char** argv)
 				vmargs.nativeStackSize = sz;
 			}
 		}
-		else if ((strncmp(argv[i], "-mx", 3) == 0)
-			 || (strncmp(argv[i], "-Xmx", 4) == 0)) {
-			if (argv[i][3] == 0) {
+		else if ((strncmp(argv[i], "-mx", (j=3)) == 0)
+			 || (strncmp(argv[i], "-Xmx", (j=4)) == 0)) {
+			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  "Error: No heap size found for -mx option.\n");
@@ -423,12 +423,12 @@ options(char** argv)
 				}
 				vmargs.maxHeapSize = parseSize(argv[i]);
 			} else {
-				vmargs.maxHeapSize = parseSize(&argv[i][3]);
+				vmargs.maxHeapSize = parseSize(&argv[i][j]);
 			}
 		}
-		else if ((strncmp(argv[i], "-ms", 3) == 0)
-			 || (strncmp(argv[i], "-Xms", 4) == 0)) {
-			if (argv[i][3] == 0) {
+		else if ((strncmp(argv[i], "-ms", (j=3)) == 0)
+			 || (strncmp(argv[i], "-Xms", (j=4)) == 0)) {
+			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  "Error: No heap size found for -ms option.\n");
@@ -436,7 +436,7 @@ options(char** argv)
 				}
 				vmargs.minHeapSize = parseSize(argv[i]);
 			} else {
-				vmargs.minHeapSize = parseSize(&argv[i][3]);
+				vmargs.minHeapSize = parseSize(&argv[i][j]);
 			}
 		}
 		else if (strncmp(argv[i], "-as", 3) == 0) {

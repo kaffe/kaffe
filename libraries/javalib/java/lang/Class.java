@@ -396,10 +396,12 @@ private Method lookupMethod (String name, Class [] parameterTypes, boolean decla
       .append(" (");
 	  
     /* write parameter types */
-    for (int i = 0; i < parameterTypes.length; ++i) {
-      buf.append(parameterTypes[i].getName());
-      if (i < parameterTypes.length - 1) {
-	buf.append(", ");
+    if (parameterTypes != null) {
+      for (int i = 0; i < parameterTypes.length; ++i) {
+        buf.append(parameterTypes[i].getName());
+        if (i < parameterTypes.length - 1) {
+	  buf.append(", ");
+        }
       }
     }
 
