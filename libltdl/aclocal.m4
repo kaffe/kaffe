@@ -446,20 +446,14 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 AM_MISSING_PROG(MAKEINFO, makeinfo, $missing_dir)
-dnl We check for tar when the user configures the end package.
-dnl This is sad, since we only need this for "dist".  However,
-dnl there's no other good way to do it.  We prefer GNU tar if
-dnl we can find it.  If we can't find a tar, it doesn't really matter.
-AC_CHECK_PROGS(AMTAR, gnutar gtar tar)
-AMTARFLAGS=
-if test -n "$AMTAR"; then
-  if $SHELL -c "$AMTAR --version" > /dev/null 2>&1; then
-    dnl We have GNU tar.
-    AMTARFLAGS=o
-  fi
-fi
-AC_SUBST(AMTARFLAGS)
-AC_REQUIRE([AC_PROG_MAKE_SET])])
+AM_MISSING_PROG(AMTAR, tar, $missing_dir)
+AC_REQUIRE([AC_PROG_MAKE_SET])
+AC_REQUIRE([AM_SET_DEPDIR])
+ifdef([AC_PROVIDE_AC_PROG_CC], [AM_DEPENDENCIES(CC)], [
+   define([AC_PROG_CC], defn([AC_PROG_CC])[AM_DEPENDENCIES(CC)])])
+ifdef([AC_PROVIDE_AC_PROG_CXX], [AM_DEPENDENCIES(CXX)], [
+   define([AC_PROG_CXX], defn([AC_PROG_CXX])[AM_DEPENDENCIES(CXX)])])
+])
 
 #
 # Check to make sure that the build environment is sane.
@@ -506,19 +500,141 @@ AC_MSG_RESULT(yes)])
 
 dnl AM_MISSING_PROG(NAME, PROGRAM, DIRECTORY)
 dnl The program must properly implement --version.
-AC_DEFUN(AM_MISSING_PROG,
-[AC_MSG_CHECKING(for working $2)
-# Run test in a subshell; some versions of sh will print an error if
-# an executable is not found, even if stderr is redirected.
-# Redirect stdin to placate older versions of autoconf.  Sigh.
-if ($2 --version) < /dev/null > /dev/null 2>&1; then
-   $1=$2
-   AC_MSG_RESULT(found)
-else
-   $1="$3/missing $2"
-   AC_MSG_RESULT(missing)
-fi
+AC_DEFUN(AM_MISSING_PROG, [$1=${$1-"$3/missing $2"}
 AC_SUBST($1)])
+
+dnl See how the compiler implements dependency checking.
+dnl Usage:
+dnl AM_DEPENDENCIES(NAME)
+dnl NAME is "CC", "CXX" or "OBJC".
+
+dnl We try a few techniques and use that to set a single cache variable.
+
+AC_DEFUN(AM_DEPENDENCIES,[
+AC_REQUIRE([AM_SET_DEPDIR])
+AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])
+ifelse([$1],CC,[
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_CPP])
+depcc="$CC"
+depcpp="$CPP"
+depgcc="$GCC"],[$1],CXX,[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([AC_PROG_CXXCPP])
+depcc="$CXX"
+depcpp="$CXXCPP"
+depgcc="$GXX"],[$1],OBJC,[
+am_cv_OBJC_dependencies_compiler_type=gcc],[
+AC_REQUIRE([AC_PROG_][$1])
+depcc="$[$1]"
+depcpp=""
+depgcc="no"])
+AC_MSG_CHECKING([dependency style of $depcc])
+AC_CACHE_VAL(am_cv_[$1]_dependencies_compiler_type,[
+am_cv_[$1]_dependencies_compiler_type=none
+if test "$depgcc" = yes; then
+   am_cv_[$1]_dependencies_compiler_type=gcc
+else
+   echo '#include "conftest.h"' > conftest.c
+   echo 'int i;' > conftest.h
+
+   dnl SGI compiler has its own method for side-effect dependency
+   dnl tracking.
+   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
+      rm -f conftest.P
+      if $depcc -c -MDupdate conftest.P conftest.c 2>/dev/null &&
+	 test -f conftest.P; then
+	 am_cv_[$1]_dependencies_compiler_type=sgi
+      fi
+   fi
+
+   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
+      # -o /dev/null avoids selecting -M for a compiler that would
+      # output dependencies to the object file
+      if test -n "`$depcc -M conftest.c -o /dev/null 2>/dev/null`"; then
+	 am_cv_[$1]_dependencies_compiler_type=dashmstdout
+      fi
+   fi
+
+   if test "$am_cv_[$1]_dependencies_compiler_type" = none; then
+      # -o /dev/null avoids selecting -E for a compiler that would
+      # output dependencies to the object file
+      if test -n "`$depcc -E conftest.c -o /dev/null 2>/dev/null`"; then
+	 am_cv_[$1]_dependencies_compiler_type=cpp
+      fi
+   fi
+
+   dnl As a last resort, see if we can run CPP and extract line
+   dnl information from the output.
+   dnl FIXME
+
+   rm -f conftest.*
+fi
+])
+AC_MSG_RESULT($am_cv_[$1]_dependencies_compiler_type)
+[$1]DEPMODE="depmode=$am_cv_[$1]_dependencies_compiler_type"
+AC_SUBST([$1]DEPMODE)
+])
+
+dnl Choose a directory name for dependency files.
+dnl This macro is AC_REQUIREd in AM_DEPENDENCIES
+
+AC_DEFUN(AM_SET_DEPDIR,[
+if test -d .deps || mkdir .deps 2> /dev/null || test -d .deps; then
+  DEPDIR=.deps
+else
+  DEPDIR=_deps
+fi
+AC_SUBST(DEPDIR)
+])
+
+dnl Generate code to set up dependency tracking.
+dnl This macro should only be invoked once -- use via AC_REQUIRE.
+dnl Usage:
+dnl AM_OUTPUT_DEPENDENCY_COMMANDS
+
+dnl
+dnl This code is only required when automatic dependency tracking
+dnl is enabled.  FIXME.  This creates each `.P' file that we will
+dnl need in order to bootstrap the dependency handling code.
+AC_DEFUN(AM_OUTPUT_DEPENDENCY_COMMANDS,[
+AC_OUTPUT_COMMANDS([
+find . -name Makefile -print | while read mf; do
+  # Extract the definition of DEP_FILES from the Makefile without
+  # running `make'.
+  DEPDIR=`sed -n -e '/^DEPDIR = / s///p' $mf`
+  # We invoke sed twice because it is the simplest approach to
+  # changing $(DEPDIR) to its actual value in the expansion.
+  deps="`sed -n -e '
+    /^DEP_FILES = .*\\\\$/ {
+      s/^DEP_FILES = //
+      :loop
+	s/\\\\$//
+	p
+	n
+	/\\\\$/ b loop
+      p
+    }
+    /^DEP_FILES = / s/^DEP_FILES = //p' $mf | \
+       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g'`"
+  # If we found a definition, proceed to create all the files.
+  if test -n "$deps"; then
+    dirpart="`echo $mf | sed -e 's|/[^/]*$||'`"
+    test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
+    case "$deps" in
+    *'$U'*) # When using ansi2knr, U may be empty or an underscore; expand it
+	U=`sed -n -e '/^U = / s///p' $mf`
+	deps=`echo "$deps" | sed 's/\$U/'"$U"'/g'`
+	;;
+    esac	
+    for file in $deps; do
+      if test ! -f "$dirpart/$file"; then
+	echo "creating $dirpart/$file"
+	echo '# dummy' > "$dirpart/$file"
+      fi
+    done
+  fi
+done])])
 
 # Like AC_CONFIG_HEADER, but automatically create stamp file.
 

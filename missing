@@ -1,7 +1,7 @@
 #! /bin/sh
 # Common stub for a few missing GNU programs while installing.
-# Copyright (C) 1996, 1997 Free Software Foundation, Inc.
-# Franc,ois Pinard <pinard@iro.umontreal.ca>, 1996.
+# Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
+# Originally by Fran,cois Pinard <pinard@iro.umontreal.ca>, 1996.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@ if test $# -eq 0; then
   exit 1
 fi
 
+# Try to run requested program, and just exit if it succeeds.
+"$@" && exit 0
+
+# If it does not exist, or fails to run (possibly an outdated version),
+# try to emulate it.
 case "$1" in
 
   -h|--h|--he|--hel|--help)
@@ -45,6 +50,7 @@ Supported PROGRAM values:
   flex         create \`lex.yy.c', if possible, from existing .c
   lex          create \`lex.yy.c', if possible, from existing .c
   makeinfo     touch the output file
+  gnutar       try tar, gnutar, gtar, then tar without non-portable flags
   yacc         create \`y.tab.[ch]', if possible, from existing .[ch]"
     ;;
 
@@ -173,6 +179,34 @@ WARNING: \`$1' is missing on your system.  You should only need it if
       file=`sed -n '/^@setfilename/ { s/.* \([^ ]*\) *$/\1/; p; q; }' $file`
     fi
     touch $file
+    ;;
+
+  tar)
+    shift
+    # we have already tried tar in the generic part
+    gnutar ${1+"$@"} && exit 0
+    gtar ${1+"$@"} && exit 0
+    firstarg="$1"
+    if shift; then
+	case "$firstarg" in
+	*o*)
+	    firstarg=`echo "$firstarg" | sed s/o//`
+	    tar "$firstarg" ${1+"$@"} && exit 0
+	    ;;
+	esac
+	case "$firstarg" in
+	*h*)
+	    firstarg=`echo "$firstarg" | sed s/h//`
+	    tar "$firstarg" ${1+"$@"} && exit 0
+	    ;;
+	esac
+    fi
+
+    echo 1>&2 "\
+WARNING: I can't seem to be able to run \`tar' with the given arguments.
+         You may want to install GNU tar or Free paxutils, or check the
+         command line arguments."
+    exit 1
     ;;
 
   *)

@@ -1,3 +1,14 @@
+1999-05-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/distclean-hack (DISTCLEAN_LOCAL): Avoid error in case of 
+	empty SUBDIRS.
+	* aclocal.m4, configure, */Makefile.in: Regen with new automake
+	1.4a snapshot; see FAQ/FAQ.automake for details.
+	* depcomp: New script to keep track of dependencies.
+	* missing: Updated from new automake.
+	* FAQ/FAQ.automake: Note about new snapshot and no-longer-existant 
+	need for GNU make.
+
 Sun May 16 15:22:39 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* config/config-setjmp.h: add assert() protection for corrupted

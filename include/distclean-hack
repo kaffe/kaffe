@@ -9,9 +9,9 @@
 DISTCLEAN_LOCAL = distclean-local
 distclean-generic: $(DISTCLEAN_LOCAL)
 distclean-local:
-	@subdirs=; \
-	for dir in $(DIST_SUBDIRS); do \
-	  for xdir in $(SUBDIRS); do \
+	@dirs='$(DIST_SUBDIRS)'; xdirs='$(SUBDIRS)'; subdirs=; \
+	for dir in $$dirs; do \
+	  for xdir in $$xdirs; do \
 	    test "$$dir" = "$$xdir" && continue 2; \
 	  done; subdirs="$$subdirs $$dir"; \
 	done; \

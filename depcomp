@@ -1,0 +1,171 @@
+#! /bin/sh
+
+# depcomp - compile a program generating dependencies as side-effects
+# Copyright (C) 1999 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+# Originally written by Alexandre Oliva <oliva@dcc.unicamp.br>.
+
+if test -z "$depmode" || test -z "$source" || test -z "$object"; then
+  echo "depcomp: Variables source, object and depmode must be set" 1>&2
+  exit 1
+fi
+
+depfile=${depfile-`echo "$object" | sed 's,\([^/]*\)$,.deps/\1,;s/\.\([^.]*\)$/.P\1/'`}
+# depdir=`echo "$depfile" | sed 's,/*[^/]*$,,'`
+# test -d "$depdir" || { echo "mkdir \"$depdir\"" && mkdir "$depdir"; } ||
+# test -d "$depdir" || exit 1
+
+tmpdepfile=${tmpdepfile-`echo "$depfile" | sed 's/\.\([^.]*\)$/.T\1/'`}
+
+rm -f "$tmpdepfile"
+
+case "$depmode" in
+gcc)
+## There are various ways to get dependency output from gcc.  Here's
+## why we pick this rather obscure method:
+## - Don't want to use -MD because we'd like the dependencies to end
+##   up in a subdir.  Having to rename by hand is ugly.
+##   (We might end up doing this anyway to support other compilers.)
+## - The DEPENDENCIES_OUTPUT environment variable makes gcc act like
+##   -MM, not -M (despite what the docs say).
+## - Using -M directly means running the compiler twice (even worse
+##   than renaming).
+  if "$@" -Wp,-MD,"$tmpdepfile"; then :
+  else
+    stat=$?
+    rm -f "$tmpdepfile"
+    exit $stat
+  fi
+  rm -f "$depfile" 
+  echo "$object : \\" > "$depfile"
+  sed 's/^[^:]*: / /' < "$tmpdepfile" >> "$depfile"
+## This next piece of magic avoids the `deleted header file' problem.
+## The problem is that when a header file which appears in a .P file
+## is deleted, the dependency causes make to die (because there is
+## typically no way to rebuild the header).  We avoid this by adding
+## dummy dependencies for each header file.  Too bad gcc doesn't do
+## this for us directly.
+  tr ' ' '
+' < "$tmpdepfile" |
+## Some versions of gcc put a space before the `:'.  On the theory
+## that the space means something, we add a space to the output as
+## well.
+    sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile"
+  ;;
+
+sgi)
+  if "$@" -MDupdate "$tmpdepfile"; then :
+  else
+    stat=$?
+    rm -f "$tmpdepfile"
+    exit $stat
+  fi
+  rm -f "$depfile" 
+  echo "$object : \\" > "$depfile"
+  sed 's/^[^:]*: / /' < "$tmpdepfile" >> "$depfile"
+  tr ' ' '
+' < "$tmpdepfile" | \
+    sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile"
+  ;;
+
+dashmstdout)
+  # Important note: in order to support this mode, a compiler *must*
+  # always write the proprocessed file to stdout, regardless of -o,
+  # because we must use -o when running libtool.
+  ( IFS=" "
+    case " $* " in
+    *" --mode=compile "*) # this is libtool, let us make it quiet
+      for arg
+      do # cycle over the arguments
+        case "$arg" in
+	"--mode=compile")
+	  # insert --quiet before "--mode=compile"
+	  set fnord "$@" --quiet
+	  shift # fnord
+	  ;;
+	esac
+	set fnord "$@" "$arg"
+	shift # fnord
+	shift # "$arg"
+      done
+      ;;
+    esac
+    "$@" -M | sed 's:^[^:]*\:[ 	]*:'"$object"'\: :' > "$tmpdepfile"
+  ) &
+  proc=$!
+  "$@"
+  stat=$?
+  wait "$proc"
+  if test "$stat" != 0; then exit $stat; fi
+  rm -f "$depfile" 
+  cat < "$tmpdepfile" > "$depfile"
+  tr ' ' '
+' < "$tmpdepfile" | \
+    sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile"
+  ;;
+
+cpp)
+  # Important note: in order to support this mode, a compiler *must*
+  # always write the proprocessed file to stdout, regardless of -o,
+  # because we must use -o when running libtool.
+  ( IFS=" "
+    case " $* " in
+    *" --mode=compile "*)
+      for arg
+      do # cycle over the arguments
+        case "$arg" in
+	"--mode=compile")
+	  # insert --quiet before "--mode=compile"
+	  set fnord "$@" --quiet
+	  shift # fnord
+	  ;;
+	esac
+	set fnord "$@" "$arg"
+	shift # fnord
+	shift # "$arg"
+      done
+      ;;
+    esac
+    "$@" -E |
+    sed -n '/^# [0-9][0-9]* "\([^"]*\)"/ s::'"$object"'\: \1:p' > "$tmpdepfile"
+  ) &
+  proc=$!
+  "$@"
+  stat=$?
+  wait "$proc"
+  if test "$stat" != 0; then exit $stat; fi
+  rm -f "$depfile"
+  cat < "$tmpdepfile" > "$depfile"
+  sed < "$tmpdepfile" -e 's/^[^:]*: //' -e 's/$/ :/' >> "$depfile"
+  rm -f "$tmpdepfile"
+  ;;
+
+none)
+  exec "$@"
+  ;;
+
+*)
+  echo "Unknown depmode $depmode" 1>&2
+  exit 1
+  ;;
+esac
+
+exit 0

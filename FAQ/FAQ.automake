@@ -2,9 +2,11 @@
 IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
-recent versions of autoconf and automake: autoconf 2.13 and automake
-1.4.  automake is supposed to work with perl4, but it apparently
-doesn't, which means you probably need perl5 as well.
+recent versions of autoconf and automake: autoconf 2.13 and the
+automake snapshot available from
+http://www.dcc.unicamp.br/~oliva/snapshots/automake/automake-1.4a-dep.tar.gz
+It may still work with automake 1.4, but then you'll need GNU make.
+This new automake snapshot does not depend on GNU make at all.
 
 **************************************************************************
 
