@@ -513,18 +513,7 @@ generateInsnSequence(codeinfo* codeInfo)
 void
 startInsn(sequence* s, codeinfo* codeInfo)
 {
-	int pc = const_int(2);
-
-#if defined(JUMPTARGET_ALIGNMENT)
-	/* align branch target if desired */
-	if (IS_JUMPFLOW(pc) || IS_STARTOFEXCEPTION(pc)) {
-		while (CODEPC % JUMPTARGET_ALIGNMENT != 0) {	
-			extern void nop(sequence*);
-			nop(s);
-		}
-	}
-#endif
-	SET_INSNPC(pc, CODEPC);
+	SET_INSNPC(const_int(2), CODEPC);
 }
 
 /*
