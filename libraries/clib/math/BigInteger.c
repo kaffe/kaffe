@@ -16,6 +16,8 @@
 #include <gmp.h>
 #include <stdlib.h>
 
+#include "kaffe/jmalloc.h"
+
 static jfieldID number;
 
 static void *

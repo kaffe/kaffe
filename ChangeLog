@@ -1,3 +1,22 @@
+2004-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+        * config/sparc/linux/jit-md.h:
+	(EXCEPTIONFRAME) Use generic GET_PC and 
+	GET_STACK macros from glibc that work on both sparc 
+	and sparc64. Fixes build on sparc64-linux.
+
+        * kaffe/kaffevm/soft.c,
+        kaffe/kaffevm/support.c,
+        kaffe/kaffevm/jit/constpool.c,
+        kaffe/kaffevm/jit/icode.c,
+        kaffe/kaffevm/jit/labels.c,
+        kaffe/kaffevm/jit/machine.c,
+        kaffe/kaffevm/jit/seq.c,
+        kaffe/kaffevm/jit/slots.c,
+        libraries/clib/math/BigInteger.c,
+        libraries/clib/native/UNIXProcess.c:
+	Added missing include for "kaffe/jmalloc.h".
+
 2004-07-06  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* include/jni.h: Fixed compilation for C++.

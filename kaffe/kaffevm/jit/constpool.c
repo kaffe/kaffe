@@ -14,6 +14,7 @@
 #include "gtypes.h"
 #include "constpool.h"
 #include "gc.h"
+#include "kaffe/jmalloc.h"
 #include "support.h"
 #include "stats.h"
 

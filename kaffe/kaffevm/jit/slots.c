@@ -11,6 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "gtypes.h"
+#include "kaffe/jmalloc.h"
 #include "slots.h"
 #include "registers.h"
 #include "md.h"

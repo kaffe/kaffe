@@ -17,6 +17,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
+#include "kaffe/jmalloc.h"
 #include <jni.h>
 #include <jsyscall.h>
 #include <native.h>

@@ -9,6 +9,8 @@
  * of this file.
  */
 
+#include <stdarg.h>
+
 #include "debug.h"
 #define	TDBG(s)
 
@@ -16,8 +18,8 @@
 #include "config-std.h"
 #include "config-math.h"
 #include "config-mem.h"
-#include <stdarg.h>
 #include "gtypes.h"
+#include "kaffe/jmalloc.h"
 #include "bytecode.h"
 #include "slots.h"
 #include "access.h"

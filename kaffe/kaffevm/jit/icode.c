@@ -12,6 +12,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
+#include "kaffe/jmalloc.h"
 #include "slots.h"
 #include "seq.h"
 #include "registers.h"

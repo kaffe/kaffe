@@ -14,6 +14,7 @@
 #include "config-mem.h"
 #include "classMethod.h"
 #include "gtypes.h"
+#include "kaffe/jmalloc.h"
 #include "bytecode.h"
 #include "slots.h"
 #include "registers.h"

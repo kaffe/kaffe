@@ -27,15 +27,13 @@
 #include <sigcontext.h> 
 #endif
 
-#include <asm/ptrace.h>
-
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO							\
 	int sig, struct sigcontext* ctx
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\
-	(f).retbp = (c)->si_regs.u_regs[UREG_FP];			\
-	(f).retpc = (c)->si_regs.pc
+	(f).retbp = GET_STACK(c);			\
+	(f).retpc = GET_PC(c)
 
 #endif

@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "classMethod.h"
+#include "kaffe/jmalloc.h"
 #include "labels.h"
 #include "code-analyse.h"
 #include "itypes.h"
