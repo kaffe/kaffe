@@ -199,15 +199,16 @@ findFirstCentralDirRecord(jarFile* file)
 jarFile*
 openJarFile(char* name)
 {
-#define read_checked(file, ent)				\
-	do {						\
-		(ent) = readCentralDirRecord(file);	\
-		if (!(ent)) {				\
-			closeJarFile(file);		\
-			return 0;			\
-		}					\
-	} while (0)
-
+#define read_checked(file, ent)					\
+	{							\
+		(ent) = readCentralDirRecord(file);		\
+		if (!(ent)) {					\
+			closeJarFile(file);			\
+			return 0;				\
+		}						\
+		addToCounter(&jarmem, "vmmem-jar files", 1,	\
+			     (jlong)GCSIZEOF((ent)));		\
+	}
 	jarFile* file;
 	jarEntry* curr;
 	int i;
@@ -237,11 +238,11 @@ openJarFile(char* name)
 		file->offset = 0;
 	}
 #endif
+	addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
 	if (i > 0) {
 		read_checked(file, curr);
-		addToCounter(&jarmem, "vmmem-jar files", 1, GCSIZEOF(file));
 		file->head = curr;
 		for (i--; i > 0; i--) {
 			read_checked(file, curr->next);
