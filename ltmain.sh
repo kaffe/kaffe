@@ -55,8 +55,8 @@ modename="$progname"
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.4.0a
-TIMESTAMP=" (1.922.2.23 2001/07/29 16:48:38)"
+VERSION=1.4.2a
+TIMESTAMP=" (1.922.2.79 2001/11/28 21:50:31)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -83,6 +83,9 @@ fi
 if test "${LANG+set}" = set; then
   save_LANG="$LANG"; LANG=C; export LANG
 fi
+
+# Make sure IFS has a sensible default
+: ${IFS=" 	"}
 
 if test "$build_libtool_libs" != yes && test "$build_old_libs" != yes; then
   echo "$modename: not configured to build any kind of library" 1>&2
@@ -173,6 +176,8 @@ do
 
   --mode) prevopt="--mode" prev=mode ;;
   --mode=*) mode="$optarg" ;;
+
+  --preserve-dup-deps) duplicate_deps="yes" ;;
 
   --quiet | --silent)
     show=:
@@ -334,7 +339,7 @@ if test -z "$show_help"; then
       -Wc,*)
 	args=`$echo "X$arg" | $Xsed -e "s/^-Wc,//"`
 	lastarg=
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	save_ifs="$IFS"; IFS=','
 	for arg in $args; do
 	  IFS="$save_ifs"
 
@@ -989,7 +994,7 @@ compiler."
       # so, if we see these flags be careful not to treat them like -L
       -L[A-Z][A-Z]*:*)
 	case $with_gcc/$host in
-	no/*-*-irix*)
+	no/*-*-irix* | no/*-*-nonstopux*)
 	  compile_command="$compile_command $arg"
 	  finalize_command="$finalize_command $arg"
 	  ;;
@@ -1040,18 +1045,17 @@ compiler."
 	    # These systems don't actually have a C library (as such)
 	    test "X$arg" = "X-lc" && continue
 	    ;;
-          *-*-openbsd*)
-            # Do not include libc due to us having libc/libc_r.
-            continue
-            ;;
-          esac
-         fi
-         if test "X$arg" = "X-lc_r"; then
-          case $host in
-          *-*-openbsd*)
-            # Do not include libc_r directly, use -pthread flag.
-            continue
-            ;;
+	  *-*-openbsd* | *-*-freebsd*)
+	    # Do not include libc due to us having libc/libc_r.
+	    test "X$arg" = "X-lc" && continue
+	    ;;
+	  esac
+	 elif test "X$arg" = "X-lc_r"; then
+	  case $host in
+	 *-*-openbsd* | *-*-freebsd*)
+	    # Do not include libc_r directly, use -pthread flag.
+	    continue
+	    ;;
 	  esac
 	fi
 	deplibs="$deplibs $arg"
@@ -1143,7 +1147,7 @@ compiler."
       -Wc,*)
 	args=`$echo "X$arg" | $Xsed -e "$sed_quote_subst" -e 's/^-Wc,//'`
 	arg=
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	save_ifs="$IFS"; IFS=','
 	for flag in $args; do
 	  IFS="$save_ifs"
 	  case $flag in
@@ -1161,7 +1165,7 @@ compiler."
       -Wl,*)
 	args=`$echo "X$arg" | $Xsed -e "$sed_quote_subst" -e 's/^-Wl,//'`
 	arg=
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	save_ifs="$IFS"; IFS=','
 	for flag in $args; do
 	  IFS="$save_ifs"
 	  case $flag in
@@ -1328,9 +1332,11 @@ compiler."
     # Find all interdependent deplibs by searching for libraries
     # that are linked more than once (e.g. -la -lb -la)
     for deplib in $deplibs; do
-      case "$libs " in
-      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-      esac
+      if test "X$duplicate_deps" = "Xyes" ; then
+	case "$libs " in
+	*" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	esac
+      fi
       libs="$libs $deplib"
     done
     deplibs=
@@ -1459,10 +1465,12 @@ compiler."
 	  lib)
 	    if test "$deplibs_check_method" != pass_all; then
 	      echo
-	      echo "*** Warning: This library needs some functionality provided by $deplib."
+	      echo "*** Warning: Trying to link with static lib archive $deplib."
 	      echo "*** I have the capability to make that library automatically link in when"
 	      echo "*** you link to this library.  But I can only do this if you have a"
-	      echo "*** shared version of the library, which you do not appear to have."
+	      echo "*** shared version of the library, which you do not appear to have"
+	      echo "*** because the file extensions .$libext of this argument makes me believe"
+	      echo "*** that it is just a static archive that I should not used here."
 	    else
 	      echo
 	      echo "*** Warning: Linking the shared library $output against the"
@@ -1553,9 +1561,11 @@ compiler."
 	    tmp_libs=
 	    for deplib in $dependency_libs; do
 	      deplibs="$deplib $deplibs"
-	      case "$tmp_libs " in
-	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	      esac
+              if test "X$duplicate_deps" = "Xyes" ; then
+	        case "$tmp_libs " in
+	        *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	        esac
+              fi
 	      tmp_libs="$tmp_libs $deplib"
 	    done
 	  elif test $linkmode != prog && test $linkmode != lib; then
@@ -1678,9 +1688,11 @@ compiler."
 	      # or/and link against static libraries
 	      newdependency_libs="$deplib $newdependency_libs"
 	    fi
-	    case "$tmp_libs " in
-	    *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	    esac
+	    if test "X$duplicate_deps" = "Xyes" ; then
+	      case "$tmp_libs " in
+	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	      esac
+	    fi
 	    tmp_libs="$tmp_libs $deplib"
 	  done # for deplib
 	  continue
@@ -1771,7 +1783,7 @@ compiler."
 	    if test -f "$output_objdir/$soname-def"; then :
 	    else
 	      $show "extracting exported symbol list from \`$soname'"
-	      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	      save_ifs="$IFS"; IFS='~'
 	      eval cmds=\"$extract_expsyms_cmds\"
 	      for cmd in $cmds; do
 		IFS="$save_ifs"
@@ -1784,7 +1796,7 @@ compiler."
 	    # Create $newlib
 	    if test -f "$output_objdir/$newlib"; then :; else
 	      $show "generating import library for \`$soname'"
-	      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	      save_ifs="$IFS"; IFS='~'
 	      eval cmds=\"$old_archive_from_expsyms_cmds\"
 	      for cmd in $cmds; do
 		IFS="$save_ifs"
@@ -1924,25 +1936,26 @@ compiler."
 	    # Just print a warning and add the library to dependency_libs so
 	    # that the program can be linked against the static library.
 	    echo
-	    echo "*** Warning: This library needs some functionality provided by $lib."
+	    echo "*** Warning: This system can not link to static lib archive $lib."
 	    echo "*** I have the capability to make that library automatically link in when"
 	    echo "*** you link to this library.  But I can only do this if you have a"
 	    echo "*** shared version of the library, which you do not appear to have."
 	    if test "$module" = yes; then
-	      echo "*** Therefore, libtool will create a static module, that should work "
-	      echo "*** as long as the dlopening application is linked with the -dlopen flag."
+	      echo "*** But as you try to build a module library, libtool will still create "
+	      echo "*** a static module, that should work as long as the dlopening application"
+	      echo "*** is linked with the -dlopen flag to resolve symbols at runtime."
 	      if test -z "$global_symbol_pipe"; then
-	        echo
-	        echo "*** However, this would only work if libtool was able to extract symbol"
-	        echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
-	        echo "*** not find such a program.  So, this module is probably useless."
-	        echo "*** \`nm' from GNU binutils and a full rebuild may help."
+		echo
+		echo "*** However, this would only work if libtool was able to extract symbol"
+		echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
+		echo "*** not find such a program.  So, this module is probably useless."
+		echo "*** \`nm' from GNU binutils and a full rebuild may help."
 	      fi
 	      if test "$build_old_libs" = no; then
-	        build_libtool_libs=module
-	        build_old_libs=yes
+		build_libtool_libs=module
+		build_old_libs=yes
 	      else
-	        build_libtool_libs=no
+		build_libtool_libs=no
 	      fi
 	    fi
 	  else
@@ -1979,9 +1992,11 @@ compiler."
 	  tmp_libs=
 	  for deplib in $dependency_libs; do
 	    newdependency_libs="$deplib $newdependency_libs"
-	    case "$tmp_libs " in
-	    *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	    esac
+	    if test "X$duplicate_deps" = "Xyes" ; then
+	      case "$tmp_libs " in
+	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	      esac
+	    fi
 	    tmp_libs="$tmp_libs $deplib"
 	  done
 
@@ -2196,7 +2211,7 @@ compiler."
       else
 
 	# Parse the version information argument.
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=':'
+	save_ifs="$IFS"; IFS=':'
 	set dummy $vinfo 0 0 0
 	IFS="$save_ifs"
 
@@ -2271,16 +2286,21 @@ compiler."
 	  versuffix=".$current";
 	  ;;
 
-	irix)
+	irix | nonstopux)
+	  case $version_type in
+	    nonstopux) verstring_prefix=nonstopux ;;
+	    *)         verstring_prefix=sgi ;;
+	  esac
+	  verstring="$verstring_prefix$major.$revision"
+
 	  major=`expr $current - $age + 1`
-	  verstring="sgi$major.$revision"
 
 	  # Add in all the interfaces that we are compatible with.
 	  loop=$revision
 	  while test $loop != 0; do
 	    iface=`expr $revision - $loop`
 	    loop=`expr $loop - 1`
-	    verstring="sgi$major.$iface:$verstring"
+	    verstring="$verstring_prefix$major.$iface:$verstring"
 	  done
 
 	  # Before this point, $major must not contain `.'.
@@ -2333,6 +2353,16 @@ compiler."
 	if test -z "$vinfo" && test -n "$release"; then
 	  major=
 	  verstring="0.0"
+	  case $version_type in
+	  darwin)
+	    # we can't check for "0.0" in archive_cmds due to quoting
+	    # problems, so we reset it completely
+	    verstring=""
+	    ;;
+	  *)
+	    verstring="0.0"
+	    ;;
+	  esac
 	  if test "$need_version" = no; then
 	    versuffix=
 	  else
@@ -2429,9 +2459,9 @@ compiler."
 	  *-*-netbsd*)
 	    # Don't link with libc until the a.out ld.so is fixed.
 	    ;;
-          *-*-openbsd*)
-            # Do not include libc due to us having libc/libc_r.
-            ;;
+	  *-*-openbsd* | *-*-freebsd*)
+	    # Do not include libc due to us having libc/libc_r.
+	    ;;
 	  *)
 	    # Add libc to deplibs on all other systems if necessary.
 	    if test $build_libtool_need_lc = "yes"; then
@@ -2490,18 +2520,20 @@ EOF
 		else
 		  droppeddeps=yes
 		  echo
-		  echo "*** Warning: This library needs some functionality provided by $i."
+		  echo "*** Warning: dynamic linker does not accept needed library $i."
 		  echo "*** I have the capability to make that library automatically link in when"
 		  echo "*** you link to this library.  But I can only do this if you have a"
-		  echo "*** shared version of the library, which you do not appear to have."
+		  echo "*** shared version of the library, which I believe you do not have"
+		  echo "*** because a test_compile did reveal that the linker did not use it for"
+		  echo "*** its dynamic dependency list that programs get resolved with at runtime."
 		fi
 	      else
 		newdeplibs="$newdeplibs $i"
 	      fi
 	    done
 	  else
-	    # Error occured in the first compile.  Let's try to salvage the situation:
-	    # Compile a seperate program for each library.
+	    # Error occured in the first compile.  Let's try to salvage
+	    # the situation: Compile a separate program for each library.
 	    for i in $deplibs; do
 	      name="`expr $i : '-l\(.*\)'`"
 	     # If $name is empty we are operating on a -L argument.
@@ -2520,10 +2552,12 @@ EOF
 		  else
 		    droppeddeps=yes
 		    echo
-		    echo "*** Warning: This library needs some functionality provided by $i."
+		    echo "*** Warning: dynamic linker does not accept needed library $i."
 		    echo "*** I have the capability to make that library automatically link in when"
 		    echo "*** you link to this library.  But I can only do this if you have a"
-		    echo "*** shared version of the library, which you do not appear to have."
+		    echo "*** shared version of the library, which you do not appear to have"
+		    echo "*** because a test_compile did reveal that the linker did not use this one"
+		    echo "*** as a dynamic dependency that programs can get resolved with at runtime."
 		  fi
 		else
 		  droppeddeps=yes
@@ -2580,10 +2614,17 @@ EOF
 	      if test -n "$a_deplib" ; then
 		droppeddeps=yes
 		echo
-		echo "*** Warning: This library needs some functionality provided by $a_deplib."
+		echo "*** Warning: linker path does not have real file for library $a_deplib."
 		echo "*** I have the capability to make that library automatically link in when"
 		echo "*** you link to this library.  But I can only do this if you have a"
-		echo "*** shared version of the library, which you do not appear to have."
+		echo "*** shared version of the library, which you do not appear to have"
+		echo "*** because I did check the linker path looking for a file starting"
+		if test -z "$potlib" ; then
+		  echo "*** with $libname but no candidates were found. (...for file magic test)"
+		else
+		  echo "*** with $libname and none of the candidates passed a file format test"
+		  echo "*** using a file magic. Last file checked: $potlib"
+		fi
 	      fi
 	    else
 	      # Add a -L argument.
@@ -2602,6 +2643,7 @@ EOF
 	      for i in $lib_search_path $sys_lib_search_path $shlib_search_path; do
 		potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
 		for potent_lib in $potential_libs; do
+		  potlib="$potent_lib" # see symlink-check below in file_magic test
 		  if eval echo \"$potent_lib\" 2>/dev/null \
 		      | sed 10q \
 		      | egrep "$match_pattern_regex" > /dev/null; then
@@ -2614,10 +2656,17 @@ EOF
 	      if test -n "$a_deplib" ; then
 		droppeddeps=yes
 		echo
-		echo "*** Warning: This library needs some functionality provided by $a_deplib."
+		echo "*** Warning: linker path does not have real file for library $a_deplib."
 		echo "*** I have the capability to make that library automatically link in when"
 		echo "*** you link to this library.  But I can only do this if you have a"
-		echo "*** shared version of the library, which you do not appear to have."
+		echo "*** shared version of the library, which you do not appear to have"
+		echo "*** because I did check the linker path looking for a file starting"
+		if test -z "$potlib" ; then
+		  echo "*** with $libname but no candidates were found. (...for regex pattern test)"
+		else
+		  echo "*** with $libname and none of the candidates passed a file format test"
+		  echo "*** using a regex pattern. Last file checked: $potlib"
+		fi
 	      fi
 	    else
 	      # Add a -L argument.
@@ -2808,7 +2857,7 @@ EOF
 	    export_symbols="$output_objdir/$libname.exp"
 	    $run $rm $export_symbols
 	    eval cmds=\"$export_symbols_cmds\"
-	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	    save_ifs="$IFS"; IFS='~'
 	    for cmd in $cmds; do
 	      IFS="$save_ifs"
 	      $show "$cmd"
@@ -2882,9 +2931,20 @@ EOF
 	if test -n "$export_symbols" && test -n "$archive_expsym_cmds"; then
 	  eval cmds=\"$archive_expsym_cmds\"
 	else
+          save_deplibs="$deplibs"
+          for conv in $convenience; do
+	    tmp_deplibs=
+            for test_deplib in $deplibs; do
+              if test "$test_deplib" != "$conv"; then
+                tmp_deplibs="$tmp_deplibs $test_deplib"
+              fi
+            done
+            deplibs="$tmp_deplibs"
+          done
 	  eval cmds=\"$archive_cmds\"
+          deplibs="$save_deplibs"
 	fi
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	save_ifs="$IFS"; IFS='~'
 	for cmd in $cmds; do
 	  IFS="$save_ifs"
 	  $show "$cmd"
@@ -3012,7 +3072,7 @@ EOF
 
       output="$obj"
       eval cmds=\"$reload_cmds\"
-      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+      save_ifs="$IFS"; IFS='~'
       for cmd in $cmds; do
 	IFS="$save_ifs"
 	$show "$cmd"
@@ -3048,7 +3108,7 @@ EOF
 	reload_objs="$libobjs $reload_conv_objs"
 	output="$libobj"
 	eval cmds=\"$reload_cmds\"
-	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	save_ifs="$IFS"; IFS='~'
 	for cmd in $cmds; do
 	  IFS="$save_ifs"
 	  $show "$cmd"
@@ -3516,7 +3576,7 @@ static const void *lt_preloaded_setup() {
 	    relink_command="$var=\"$var_value\"; export $var; $relink_command"
 	  fi
 	done
-	relink_command="cd `pwd`; $relink_command"
+	relink_command="(cd `pwd`; $relink_command)"
 	relink_command=`$echo "X$relink_command" | $Xsed -e "$sed_quote_subst"`
       fi
 
@@ -3642,7 +3702,7 @@ else
     if test -n \"\$relink_command\"; then
       if relink_command_output=\`eval \$relink_command 2>&1\`; then :
       else
-        $echo \"\$relink_command_output\" >&2
+	$echo \"\$relink_command_output\" >&2
 	$rm \"\$progdir/\$file\"
 	exit 1
       fi
@@ -3813,7 +3873,7 @@ fi\
 
 	eval cmds=\"$old_archive_cmds\"
       fi
-      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+      save_ifs="$IFS"; IFS='~'
       for cmd in $cmds; do
 	IFS="$save_ifs"
 	$show "$cmd"
@@ -3846,7 +3906,7 @@ fi\
 	fi
       done
       # Quote the link command for shipping.
-      relink_command="cd `pwd`; $SHELL $0 --mode=relink $libtool_args"
+      relink_command="(cd `pwd`; $SHELL $0 --mode=relink $libtool_args)"
       relink_command=`$echo "X$relink_command" | $Xsed -e "$sed_quote_subst"`
 
       # Only create the output if not a dry run.
@@ -4188,7 +4248,7 @@ relink_command=\"$relink_command\""
 	  # Do each command in the postinstall commands.
 	  lib="$destdir/$realname"
 	  eval cmds=\"$postinstall_cmds\"
-	  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	  save_ifs="$IFS"; IFS='~'
 	  for cmd in $cmds; do
 	    IFS="$save_ifs"
 	    $show "$cmd"
@@ -4261,19 +4321,27 @@ relink_command=\"$relink_command\""
 	fi
 
 	# Do a test to see if this is really a libtool program.
-	if (sed -e '4q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then
+	case $host in
+	*cygwin*|*mingw*)
+	    wrapper=`echo $file | sed -e 's,.exe$,,'`
+	    ;;
+	*)
+	    wrapper=$file
+	    ;;
+	esac
+	if (sed -e '4q' $wrapper | egrep "^# Generated by .*$PACKAGE")>/dev/null 2>&1; then
 	  notinst_deplibs=
 	  relink_command=
 
 	  # If there is no directory component, then add one.
 	  case $file in
-	  */* | *\\*) . $file ;;
-	  *) . ./$file ;;
+	  */* | *\\*) . $wrapper ;;
+	  *) . ./$wrapper ;;
 	  esac
 
 	  # Check the variables that should have been set.
 	  if test -z "$notinst_deplibs"; then
-	    $echo "$modename: invalid libtool wrapper script \`$file'" 1>&2
+	    $echo "$modename: invalid libtool wrapper script \`$wrapper'" 1>&2
 	    exit 1
 	  fi
 
@@ -4298,8 +4366,8 @@ relink_command=\"$relink_command\""
 	  relink_command=
 	  # If there is no directory component, then add one.
 	  case $file in
-	  */* | *\\*) . $file ;;
-	  *) . ./$file ;;
+	  */* | *\\*) . $wrapper ;;
+	  *) . ./$wrapper ;;
 	  esac
 
 	  outputname=
@@ -4375,7 +4443,7 @@ relink_command=\"$relink_command\""
 
       # Do each command in the postinstall commands.
       eval cmds=\"$old_postinstall_cmds\"
-      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+      save_ifs="$IFS"; IFS='~'
       for cmd in $cmds; do
 	IFS="$save_ifs"
 	$show "$cmd"
@@ -4413,7 +4481,7 @@ relink_command=\"$relink_command\""
 	if test -n "$finish_cmds"; then
 	  # Do each command in the finish commands.
 	  eval cmds=\"$finish_cmds\"
-	  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	  save_ifs="$IFS"; IFS='~'
 	  for cmd in $cmds; do
 	    IFS="$save_ifs"
 	    $show "$cmd"
@@ -4598,7 +4666,7 @@ relink_command=\"$relink_command\""
       fi
 
       # Now prepare to actually exec the command.
-      exec_cmd="\"$cmd\"$args"
+      exec_cmd="\$cmd$args"
     else
       # Display what would be done.
       if test -n "$shlibpath_var"; then
@@ -4660,14 +4728,14 @@ relink_command=\"$relink_command\""
 
       # Don't error if the file doesn't exist and rm -f was used.
       if (test -L "$file") >/dev/null 2>&1 \
-        || (test -h "$file") >/dev/null 2>&1 \
+	|| (test -h "$file") >/dev/null 2>&1 \
 	|| test -f "$file"; then
-        :
+	:
       elif test -d "$file"; then
-        exit_status=1
+	exit_status=1
 	continue
       elif test "$rmforce" = yes; then
-        continue
+	continue
       fi
 
       rmfiles="$file"
@@ -4689,7 +4757,7 @@ relink_command=\"$relink_command\""
 	    if test -n "$library_names"; then
 	      # Do each command in the postuninstall commands.
 	      eval cmds=\"$postuninstall_cmds\"
-	      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	      save_ifs="$IFS"; IFS='~'
 	      for cmd in $cmds; do
 		IFS="$save_ifs"
 		$show "$cmd"
@@ -4704,7 +4772,7 @@ relink_command=\"$relink_command\""
 	    if test -n "$old_library"; then
 	      # Do each command in the old_postuninstall commands.
 	      eval cmds=\"$old_postuninstall_cmds\"
-	      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
+	      save_ifs="$IFS"; IFS='~'
 	      for cmd in $cmds; do
 		IFS="$save_ifs"
 		$show "$cmd"

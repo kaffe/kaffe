@@ -52,6 +52,15 @@ char* dlerror(void);
  * MACH style shared library interface.
  */
 #if defined(HAVE_MACH_O_RLD_H)
+#if defined(__APPLE__)
+#if defined(HAVE_DLFCN_H)
+  /* Mac OS X has rld.h, but we don't want to use it if the dlcompat
+     package from the Fink project is installed. */
+#include <dlfcn.h>
+#else
+#error Please install dlcompat library from Fink project
+#endif
+#else 
 #include <mach-o/rld.h>
 #define	LIBRARYINIT()
 #define	LIBRARYLOAD(HAND, LIB)						\
@@ -62,6 +71,7 @@ char* dlerror(void);
 		filenames[1]=NULL;					\
 		HAND = rld_load(NULL,&new_header,filenames,NULL);	\
 	}
+
 /*
  * The following is for the NeXTStep - I don't like putting this kind
  * of system dependency here and I'll find an auto way to detect this
@@ -92,6 +102,7 @@ char* dlerror(void);
 	rld_lookup(NULL,SYM,&FUNC)
 #define	LIBRARYHANDLE	long
 #define	LIBRARYERROR()	"No specific error support"
+#endif
 #endif
 
 /* ------------------------------------------------------------------------ */

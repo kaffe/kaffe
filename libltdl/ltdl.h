@@ -34,6 +34,9 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 /* --- MACROS FOR PORTABILITY --- */
 
 
+/* Saves on those hard to debug '\0' typos....  */
+#define LT_EOS_CHAR	'\0'
+
 /* LTDL_BEGIN_C_DECLS should be used at the beginning of your declarations,
    so that C++ compilers don't mangle their names.  Use LTDL_END_C_DECLS at
    the end of C declarations. */
@@ -82,6 +85,8 @@ LT_BEGIN_C_DECLS
 #  define LT_CONC(s,t)	s/**/t
 #endif
 
+/* LT_STRLEN can be used safely on NULL pointers.  */
+#define LT_STRLEN(s)	(((s) && (s)[0]) ? strlen (s) : 0)
 
 
 
@@ -146,10 +151,16 @@ typedef	struct lt_dlhandle_struct *lt_dlhandle;	/* A loaded module.  */
 extern	int	    lt_dlinit		LT_PARAMS((void));
 extern	int	    lt_dlexit		LT_PARAMS((void));
 
-/* Module search path manipultation.  */
-extern	int	    lt_dladdsearchdir	LT_PARAMS((const char *search_dir));
-extern	int 	    lt_dlsetsearchpath	LT_PARAMS((const char *search_path));
-extern	const char *lt_dlgetsearchpath	LT_PARAMS((void));
+/* Module search path manipulation.  */
+extern	int	    lt_dladdsearchdir	 LT_PARAMS((const char *search_dir));
+extern	int	    lt_dlinsertsearchdir LT_PARAMS((const char *before,
+						    const char *search_dir));
+extern	int 	    lt_dlsetsearchpath	 LT_PARAMS((const char *search_path));
+extern	const char *lt_dlgetsearchpath	 LT_PARAMS((void));
+extern	int	    lt_dlforeachfile	 LT_PARAMS((
+			const char *search_path,
+			int (*func) (const char *filename, lt_ptr data),
+			lt_ptr data));
 
 /* Portable libltdl versions of the system dlopen() API. */
 extern	lt_dlhandle lt_dlopen		LT_PARAMS((const char *filename));
@@ -171,7 +182,7 @@ extern	int	    lt_dlisresident	LT_PARAMS((lt_dlhandle handle));
 
 typedef void	lt_dlmutex_lock		LT_PARAMS((void));
 typedef void	lt_dlmutex_unlock	LT_PARAMS((void));
-typedef void	lt_dlmutex_seterror	LT_PARAMS((const char *error));
+typedef void	lt_dlmutex_seterror	LT_PARAMS((const char *errmsg));
 typedef const char *lt_dlmutex_geterror	LT_PARAMS((void));
 
 extern	int	lt_dlmutex_register	LT_PARAMS((lt_dlmutex_lock *lock,
@@ -185,8 +196,13 @@ extern	int	lt_dlmutex_register	LT_PARAMS((lt_dlmutex_lock *lock,
 /* --- MEMORY HANDLING --- */
 
 
-/* Pointers to memory management functions to be used by libltdl. */
+/* By default, the realloc function pointer is set to our internal
+   realloc implementation which iself uses lt_dlmalloc and lt_dlfree.
+   libltdl relies on a featureful realloc, but if you are sure yours
+   has the right semantics then you can assign it directly.  Generally,
+   it is safe to assign just a malloc() and a free() function.  */
 LT_SCOPE  lt_ptr   (*lt_dlmalloc)	LT_PARAMS((size_t size));
+LT_SCOPE  lt_ptr   (*lt_dlrealloc)	LT_PARAMS((lt_ptr ptr, size_t size));
 LT_SCOPE  void	   (*lt_dlfree)		LT_PARAMS((lt_ptr ptr));
 
 
@@ -275,8 +291,8 @@ extern	lt_dlloader    *lt_dlloader_find    LT_PARAMS((
 extern	const char     *lt_dlloader_name    LT_PARAMS((lt_dlloader *place));
 extern	lt_user_data   *lt_dlloader_data    LT_PARAMS((lt_dlloader *place));
 extern	int		lt_dlloader_add     LT_PARAMS((lt_dlloader *place,
-						const struct lt_user_dlloader *dlloader,
-						const char *loader_name));
+				const struct lt_user_dlloader *dlloader,
+				const char *loader_name));
 extern	int		lt_dlloader_remove  LT_PARAMS((
 						const char *loader_name));
 
@@ -307,7 +323,8 @@ extern	int		lt_dlloader_remove  LT_PARAMS((
     LT_ERROR(INVALID_ERRORCODE,     "invalid errorcode")		\
     LT_ERROR(SHUTDOWN,		    "library already shutdown")		\
     LT_ERROR(CLOSE_RESIDENT_MODULE, "can't close resident module")	\
-    LT_ERROR(INVALID_MUTEX_ARGS,    "invalid mutex handler registration")
+    LT_ERROR(INVALID_MUTEX_ARGS,    "invalid mutex handler registration") \
+    LT_ERROR(INVALID_POSITION,	    "invalid search path insert position")
 
 /* Enumerate the symbolic error names. */
 enum {
