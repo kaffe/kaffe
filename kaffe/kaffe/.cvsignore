@@ -1,0 +1,7 @@
+.deps
+.libs
+*.lo
+Makefile
+*.la
+Kaffe
+version-info.h

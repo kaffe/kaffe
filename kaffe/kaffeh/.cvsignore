@@ -1,0 +1,10 @@
+.deps
+.libs
+*.lo
+Makefile
+*.la
+inflate.c
+jar.c
+kaffeh
+readClass.c
+utf8const.c

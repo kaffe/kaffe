@@ -1,0 +1,9 @@
+.deps
+.libs
+*.lo
+Makefile
+*.la
+gc-mem.c
+md.c
+stamp-h01
+stamp-h02
