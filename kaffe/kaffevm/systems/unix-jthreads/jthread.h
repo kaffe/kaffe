@@ -132,7 +132,6 @@ jthread_init(
 	int maxpr, 			/* maximum priority */
 	int minpr, 			/* minimum priority */
 	int mainthreadpr,		/* priority of current (main) thread */
-	void *jlmainThread,     	/* cookie for main thread */
 	size_t mainThreadStackSize,	/* assumed main stack size */
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */

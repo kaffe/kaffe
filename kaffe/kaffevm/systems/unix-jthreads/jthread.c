@@ -104,16 +104,7 @@ static void (*onstop)(void);		/* call when a thread is stopped */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
-/* 
- * Note: this comment applied to 0.9.2:
- *
- * The following is so that currentJava() returns NULL before the threading
- * system is initialized - some locks, as in processClass, are acquired before
- * the threading system is initialized (for instance:
- * initialiseKaffe->initBaseClasses->loadStaticClass->processClass
- */
-static jthread dummy_initializer;
-jthread* currentJThread = &dummy_initializer;	/* the current thread */
+jthread* currentJThread;
 
 /*
  * Function declarations.
@@ -674,6 +665,7 @@ jthread_walkLiveThreads(void (*func)(void *jlThread))
 void
 jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 {
+    assert(jtid);
 #if defined(STACK_GROWS_UP)
     *from = jtid->stackBase;
     *len = jtid->restorePoint - jtid->stackBase;
@@ -713,7 +705,6 @@ jthread_frames(jthread *thrd)
 jthread * 
 jthread_init(int pre,
 	int maxpr, int minpr, int mainthreadpr, 
-        void *jlmainThread,
 	size_t mainThreadStackSize,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
@@ -783,7 +774,6 @@ jthread_init(int pre,
 	if (!jtid)
 		return 0;
 
-        jtid->jlThread = jlmainThread;
         jtid->priority = mainthreadpr;
         jtid->status = THREAD_SUSPENDED;
         jtid->flags = THREAD_FLAGS_NOSTACKALLOC;
@@ -792,12 +782,18 @@ jthread_init(int pre,
         jtid->time = 0;
         liveThreads = jtid;
 
+	/*
+	 * Note: the stackBase and stackEnd values are used for two purposes:
+	 * - to report to the gc what area to scan (extract_stack)
+	 * - to help in determining whether the next frame in the link chain
+	 *   of frames is valid.  This is done by checking its range.
+	 */
 #if defined(STACK_GROWS_UP)
-	jtid->stackBase = (((void *)&jtid) - STACK_COPY);
+	jtid->stackBase = ((void *)&jtid);
 	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
 #else
-        jtid->stackEnd = (((void *)&jtid) + STACK_COPY);
+        jtid->stackEnd = ((void *)&jtid);
         jtid->stackBase = jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif

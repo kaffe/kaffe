@@ -50,6 +50,15 @@
 
 #include "jthread.h"
 
+/* 
+ * store the native thread for the main thread here 
+ * between init and createFirst 
+ */
+static struct Hkaffe_util_Ptr*	mainthread;
+static int threadStackSize;	/* native stack size */
+/* referenced by native/Runtime.c */
+jbool runFinalizerOnExit;	/* should we run finalizers? */
+
 static void 
 broadcastDeath(void *jlThread)
 {
@@ -79,8 +88,6 @@ thread_free(void *p)
 	gc_free(p);
 }
 
-jbool runFinalizerOnExit;
-
 static
 void
 runfinalizer()
@@ -91,35 +98,48 @@ runfinalizer()
 
 static
 void
-TcreateFirst(Hjava_lang_Thread* tid)
+Tinit(int nativestacksize)
 {
-	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)jthread_init(
+	threadStackSize = nativestacksize;
+	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
 		java_lang_Thread_NORM_PRIORITY,
-		tid,
 		threadStackSize,
 		thread_malloc,
 		thread_free,
 		broadcastDeath,
 		throwDeath);	
-	assert(unhand(tid)->PrivateInfo);
+	assert(mainthread);
+	gc_add_ref(mainthread);
+}
+
+static
+void
+TcreateFirst(Hjava_lang_Thread* tid)
+{
 	jthread_atexit(runfinalizer);
-	GC_WRITE(tid, unhand(tid)->PrivateInfo);
+	/* set Java thread associated with main thread */
+	GET_COOKIE() = tid;
+	GC_WRITE(tid, mainthread);
+	unhand(tid)->PrivateInfo = mainthread;
 }
 
 static
 void
 Tcreate(Hjava_lang_Thread* tid, void* func)
 {
-	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)jthread_create(
+	struct Hkaffe_util_Ptr* nativethread;
+
+	nativethread = (struct Hkaffe_util_Ptr*)jthread_create(
 		unhand(tid)->priority,
 		func,
 		unhand(tid)->daemon,
 		tid,
 		threadStackSize);
-	GC_WRITE(tid, unhand(tid)->PrivateInfo);
+	GC_WRITE(tid, nativethread);
+	unhand(tid)->PrivateInfo = nativethread;
 }
 
 static  
@@ -213,7 +233,7 @@ TnextFrame(void* fm)
 
         nfm = (exceptionFrame*)(((exceptionFrame*)fm)->retbp);
 	/* Note: this should obsolete the FRAMEOKAY macro */
-        if (jthread_on_current_stack((void *)nfm->retbp)) {
+        if (nfm && jthread_on_current_stack((void *)nfm->retbp)) {
                 return (nfm);
         }
         else {
@@ -352,6 +372,7 @@ int mkdir_with_int(const char *path, int m)
  */
 ThreadInterface Kaffe_ThreadInterface = {
 
+        Tinit,
         TcreateFirst,
         Tcreate,
         jthread_sleep,
