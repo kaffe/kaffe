@@ -19,7 +19,11 @@
 #define	JAVAMAGIC	0xCafeBabe
 #define	MAJOR_VERSION_V1_1	45
 #define	MINOR_VERSION_V1_1	3
-#define	MAJOR_VERSION_V1_4	46
+#define	MAJOR_VERSION_V1_2	46
+#define	MINOR_VERSION_V1_2	0
+#define	MAJOR_VERSION_V1_3	47
+#define	MINOR_VERSION_V1_3	0
+#define	MAJOR_VERSION_V1_4	48
 #define	MINOR_VERSION_V1_4	0
 
 typedef enum ReadAttrType {

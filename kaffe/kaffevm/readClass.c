@@ -60,6 +60,8 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 		);
 
 	if (! ((major_version == MAJOR_VERSION_V1_1 && minor_version == MINOR_VERSION_V1_1) ||
+	       (major_version == MAJOR_VERSION_V1_2 && minor_version == MINOR_VERSION_V1_2) ||
+	       (major_version == MAJOR_VERSION_V1_3 && minor_version == MINOR_VERSION_V1_3) ||
 	       (major_version == MAJOR_VERSION_V1_4 && minor_version == MINOR_VERSION_V1_4))) {
 		dprintf("Warning: Unrecognized version number %d/%d in classfile.\n",
 			major_version, minor_version);

@@ -1,3 +1,12 @@
+2003-05-11 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffevm/readClass.h:
+	(MAJOR_VERSION_1_2, MINOR_VERSION_1_2, MAJOR_VERSION_1_3,
+	MINOR_VERSION_1_3) new constants.
+
+	* kaffe/kaffevm/readClass.c:
+	(readClass) Added checks for more class file versions.
+	
 2003-05-11 Benja Fallenstein <b.fallenstein@gmx.de>
 
 	* libraries/javalib/java/lang/Class.java,
