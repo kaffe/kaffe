@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <name>kaffe</name>
+  <id>kaffe</id>
+  <currentVersion>@VERSION@</currentVersion>
+  <organization>
+    <name>Kaffe.org Project</name>
+    <ul>http://kaffe.org/</ul>
+  </organization>
+  <inceptionYear>1997</inceptionYear>
+  <package>org.kaffe</package>
+
+  <shortDescription>The Kaffe Virtual Machine</shortDescription>
+
+  <description>
+    Kaffe is a clean room implementation of the Java virtual machine, plus the associated class libraries needed to provide a Java runtime environment. The Kaffe virtual machine is free software, licensed under the terms of the GNU Public License.
+  </description>
+
+</project>

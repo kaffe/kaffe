@@ -1,3 +1,40 @@
+2003-12-09  Jim Pick <jim@kaffe.org>
+
+	* docs/src/docbook/port-kaffe/fdl.xml,
+	docs/src/docbook/port-kaffe/jit-icode.c,
+	docs/src/docbook/port-kaffe/port-kaffe.xml:
+	Add docbook sources for "Porting Kaffe to a new Platform"
+	document.
+
+	* docs/html/fdl.html,
+	docs/html/port-kaffe.html:
+	Add generated HTML.
+
+	* docs/html/index.html:
+	Add static XHTML index page.
+
+	* project.properties.in,
+	project.xml.in,
+	configure.in:
+	Add templates for Maven project descriptors.  We need
+	to generate the project.xml and project.projecties files
+	at configure time, because the build directory may not
+	be the same as the source directory.
+
+	* Makefile.am:
+	Add docs-docbook-html and docs-regen targets.
+
+	* Makefile.in,
+	aclocal.m4,
+	configure,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	test/internal/Makefile.in,
+	test/regression/Makefile.in:
+	Regenerated.
+
 2003-12-09  Bernhard Rosenkraenzer <bero@arklinux.org>
 
 	* libraries/extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c,

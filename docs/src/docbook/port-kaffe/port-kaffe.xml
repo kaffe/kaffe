@@ -1,0 +1,2560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD Simplified DocBook XML V1.0//EN"
+                  "http://www.oasis-open.org/docbook/xml/simple/1.0/sdocbook.dtd"
+[
+<!ENTITY fdl.xml SYSTEM "fdl.xml">
+
+<!ENTITY doc-project "port-kaffe">
+<!ENTITY doc-version "0.2">
+<!ENTITY doc-publish-date "August 30, 2001">
+
+<!ENTITY source.jit-icode.c SYSTEM "jit-icode.c">
+
+]>
+<!--
+Porting Kaffe to a new platform
+CVS: $Id: port-kaffe.xml,v 1.1 2003/12/10 23:11:51 jim Exp $
+
+Copyright 2001
+    Edouard G. Parmelan.  All right reserved.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+-->
+
+<book lang="en">
+  <bookinfo>
+    <title>Porting Kaffe to a new platform</title>
+
+    <authorgroup>
+      <author>
+	<firstname>Edouard</firstname>
+	<othername role="mi">G.</othername>
+	<surname>Parmelan</surname>
+      </author>
+    </authorgroup>
+
+    <revhistory>
+      <revision>
+	<revnumber>0.1</revnumber>
+	<date>Aug 19, 2001</date>
+	<revremark>First working draft</revremark>
+      </revision>
+    </revhistory>
+
+    <copyright>
+      <year>2001</year>
+      <holder>Edouard G. Parmelan</holder>
+    </copyright>
+
+    <legalnotice>
+      <para>
+	Permission is granted to copy, distribute and/or modify this document
+	under the terms of the GNU Free Documentation License, Version 1.1 or
+	any later version published by the Free Software Foundation; with no
+	Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+	Texts. A copy of the license is included in the section entitled "GNU
+	Free Documentation License".
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+
+  <preface>
+    <title>Preface</title>
+    <para>
+      <simplelist type="vert">
+	<member><literal>&doc-project; &doc-version;</literal></member>
+	<member><literal>&doc-publish-date;</literal></member>
+      </simplelist>
+
+      <literal>
+	$Id: port-kaffe.xml,v 1.1 2003/12/10 23:11:51 jim Exp $
+      </literal>
+    </para>
+
+    <para>
+      I had port <literal>JIT</literal> engine to Alpha Tru64 and GNU/Linux
+      Alpha in the past and I know how it's difficult to understand correctly
+      <literal>intrp</literal> and <literal>JIT</literal> engines with only
+      sources as documentation.  I had write this document latter while I was
+      porting <literal>intrp</literal> engine to Darwin (Mac OS X) operating
+      system.  In the same time I was writing <literal>JIT back-end</literal>
+      for PowerPC.
+    </para>
+
+    <para>
+      This document is written in SGML DocBook with <ulink
+	url="http://www.gnu.org/software/emacs">GNU Emacs</ulink> and
+      <literal>PSGML</literal> major mode.  Source of this document may be
+      found in <ulink url="http://www.kaffe.org/CVS.html">Kaffe CVS
+	Tree</ulink> or in <ulink url="http://egp.free.fr/kaffe">my Kaffe
+	repository</ulink>.
+    </para>
+
+    <para>
+      If you find some bullets in this document, send an email to
+      <email>egp@free.fr</email>.  All comments are welcome.  If you want to
+      fix typo or grammar use SGML sources only and send me "diff -u" result.
+      Never fill-paragraph NOR reformat them.
+    </para>
+
+    <para>
+      Preview current working draft here: <ulink url="http://egp.free.fr/port-kaffe/port-kaffe.html"><literal>http://egp.free.fr/port-kaffe/port-kaffe.html</literal></ulink>.
+    </para>
+
+    <para>
+      Preview older draft here: <ulink url="http://egp.free.fr/port-kaffe"><literal>http://egp.free.fr/port-kaffe</literal></ulink>.
+    </para>
+
+    <para>
+      Others persons have already written documents on this subject.  I some
+      time peek phrases, sections or inspiration from them.
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <ulink url="http://www.kaffe.org">Kaffe sources</ulink>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Kiyo Inaba, <ulink
+	      url="http://www2.biglobe.ne.jp/~inaba/trampolines.html">"What is
+	      trampoline code in Kaffe?"</ulink>, Aug 1998.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Kiyo Inaba, <ulink
+	      url="http://www2.biglobe.ne.jp/~inaba/sysdepCallMethod.html">"How
+	      sysdepCallMethod works?"</ulink>, Jul 1998.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Samuel K. Sanseri <email>sanseri@cs.pdx.edu</email>, <ulink
+	      url="http://www.cs.pdx.edu/~sanseri/kaffe/kaffe.html">"Porting
+	      Kaffe to the IA-64 Architecture"</ulink>, Feb 2000.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+  </preface>
+
+
+  <chapter>
+    <title>Overview</title>
+
+    <para>
+      The first step to port Kaffe to a new platform or new processor family
+      is to port <literal>intrp</literal> engine.  Then As soon as
+      <literal>intrp</literal> engine works, you can port
+      <literal>JIT</literal> engine (see <xref
+	linkend="port-jit-engine"/>).  The biggest task will be to write
+      <literal>JIT back-end</literal> for your processor family (see <xref
+	linkend="write-jit-back-end"/>).
+    </para>
+
+    <para>
+      I will try to covers all these tasks in this document.
+    </para>
+
+  </chapter>
+
+
+  <chapter id="port-intrp-engine">
+    <title>Port Kaffe <literal>intrp</literal> engine to a new
+      platform</title>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Quick presentation of all configuration files for a new platform.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Configuring <literal>unix-jthreads</literal> subsystem.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>Locks subsystem.</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Writing <function>sysdepCallMethod()</function> function.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Build <literal>intrp</literal> engine.
+	</para>
+      </listitem>
+
+    </itemizedlist>
+
+
+    <section id="intrp-config-files">
+      <title>Configuration files</title>
+
+      <para>
+	<variablelist>
+	  <varlistentry>
+	    <term><filename>config/config.alias</filename></term>
+	    <listitem>
+	      <para>
+		This shell script maps <filename>configure</filename>'s
+		variables <varname>$host_cpu</varname> and
+		<varname>$host_os</varname> to Kaffe cananical forms
+		<varname>$Khost_os</varname> and <varname>$Khost_os</varname>.
+		These variables define access paths to cpu family and platform
+		configuration files.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/Make.frag</filename></term>
+	    <listitem>
+	      <para>
+		Optional <filename>Makefile</filename> fragments required for
+		this cpu family.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/common.h</filename></term>
+	    <listitem>
+	      <para>
+		Common definitions for all platforms of this cpu family.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/thread.h</filename></term>
+	    <listitem>
+	      <para>
+		Common thread definitions for all platforms of this cpu
+		family.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/$Khost_os/config.frag</filename></term>
+	    <listitem>
+	      <para>
+		<filename>configure</filename>'s fragment for this platform.
+	      </para>
+	      <para>
+		It may holds specials <varname>$CFLAGS</varname> add-ons and
+		<emphasis>cross-compile</emphasis> definitions.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/$Khost_os/md.h</filename></term>
+	    <term><filename>config/$Khost_cpu/$Khost_os/md.c</filename></term>
+	    <listitem>
+	      <para>
+		Platform dependent header and functions.
+	      </para>
+	      <para>
+		File <filename>md.h</filename> typically includes
+		<filename>$Khost_cpu/common.h</filename> and
+		<filename>$Khost_cpu/thread.h</filename> and defines
+		<varname>SP_OFFSET</varname> macro.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+      </para>
+    </section>
+
+
+    <section id="ALIGNMENT-OF-SIZE">
+      <title>Alignment of various types</title>
+
+      <para>
+	Fields inside classe objects must follow the alignment constraints of
+	the C calling conventions.  If alignment of type
+	<replaceable>TYPE</replaceable> is not
+	<function>sizeof(<replaceable>TYPE</replaceable>)</function> you must
+	define macro
+	<function>ALIGNMENT_OF_SIZE(<replaceable>SIZE</replaceable>)</function>
+	in file <filename>config/$Khost_cpu/common.h</filename>.
+      </para>
+
+      <para>
+	The small C program
+	<filename>developers/alignment_of_size.c</filename> may helps you to
+	discover correct alignment.  Simply compiles it and runs it.
+      </para>
+    </section>
+
+
+    <section id="unix-jthread">
+      <title>Threads subsystem</title>
+
+      <para>
+	Sources of threads subsystems are located into directory
+	<filename>kaffe/kaffevm/systems/</filename>.
+      </para>
+
+      <para>
+	The common threads subsystem is <literal>unix-jthread</literal>.  It
+	uses <function>setjmp()</function> and <function>longjmp()</function>
+	functions.  In order to use it you must provide stack pointer offset
+	into <varname>jmp_env</varname>.
+      </para>
+
+      <para id="SP-OFFSET">
+	The small C program <filename>developers/sp_offset.c</filename> may
+	helps you to discover <literal>SP_OFFSET</literal>.  Simply compiles it
+	and runs it.  It may leaves <filename>core</filename> file in you
+	current directory.
+      </para>
+
+      <para id="FP-OFFSET">
+	Some platforms need to setup Frame-Pointer register when creating a
+	new thread stack.  In this case you must provide his offset
+	<literal>FP_OFFSET</literal> into <varname>jmp_env</varname>.
+      </para>
+
+      <para>
+	Macros <literal>SP_OFFSET</literal> and <literal>FP_OFFSET</literal>
+	should be defined in file
+	<filename>config/$Khost_cpu/$Kost_os/md.h</filename>.
+      </para>
+
+      <para id="THREADSTACKSIZE">
+	Define the macro <literal>THREADSTACKSIZE</literal> in file
+	<filename>config/$Khost_cpu/thread.h</filename> to the size in bytes
+	of each thread's stack.  This size may depends on
+	<literal>INTERPRETER</literal> defined as <literal>intrp</literal>
+	engine will need greater stack size than <literal>JIT</literal>
+	engine.  Commun values are 64K for <literal>intrp</literal> engine and
+	32K for <literal>JIT</literal> engine.
+      </para>
+
+      <para>
+	You may want to use another threads subsystem specific to your
+	platform.  It is possible but it's not cover by this document.  Read
+	files <filename>FAQ/FAQ.jsignal</filename> and
+	<filename>FAQ/FAQ.locks</filename>.
+      </para>
+
+      <para>
+	To select another threads subsystem, configure with option
+	<literal>--with-threads=<replaceable>thread-subsystem</replaceable></literal>.
+      </para>
+    </section>
+
+
+    <section>
+      <title>Locks subsystem</title>
+
+      <para id="COMPARE-AND-EXCHANGE">
+	Kaffe Fast Locking scheme (read <filename>FAQ/FAQ.locks</filename>)
+	need a macro to atomic compare and exchange a lock address.  This
+	macro <function>COMPARE_AND_EXCHANGE()</function> must be
+	implemented in assembler.
+      </para>
+
+      <para>
+	Macro <literal>COMPARE_AND_EXCHANGE()</literal> should be define in file
+	<filename>config/$Khost_cpu/common.h</filename>.  It is only used into
+	file <filename>kaffe/kaffevm/locks.c</filename>.
+      </para>
+
+      <para id="ATOMIC-EXCHANGE">
+	If you can't implement it but have an atomic exchange instruction,
+	defines macro <function>ATOMIC_EXCHANGE()</function> as in Sparc port.
+      </para>
+
+      <para>
+	Otherwise, fall back to plain C implementations as in MIPS I port. You
+	should note that it will fail on a multi-processors machine.
+      </para>
+    </section>
+
+
+    <section id="sysdepCallMethod">
+      <title>Function <function>sysdepCallMethod()</function></title>
+      <para>
+	Function <function>sysdepCallMethod()</function> setups standard
+	registers and stack parameters for your <acronym>ABI</acronym>.  It
+	obeys to the C calling conventions of your platform.
+      </para>
+
+      <para>
+	It makes a call to a native or Java (JIT) method.  This assembly code
+	should build a standard C call using the passed call information.  By
+	its nature this is highly processor specific.  This function is
+	mandatory for both JIT and Interpreter (since stubs have now been
+	deprecated).
+      </para>
+
+      <para>
+	It should be implemented in file
+	<filename>config/$Khost_cpu/sysdepCallMethod.h</filename>.
+      </para>
+
+      <para>
+	The <function>sysdepCallMethod()</function> macro takes a single
+	argument of type <literal>callMethodInfo*</literal> that describes
+	where the parameters are, where the return value should go and what
+	the signature of the method is.
+      </para>
+
+      <para>
+	The function <function>sysdepCallMethod()</function> is only used by
+	functions <function>callMethodA()</function> and
+	<function>callMethodV()</function> in file
+	<filename>kaffe/kaffevm/support.c</filename>.
+      </para>
+
+      <para>
+	The followings macros control the construction of
+	<literal>callMethodInfo</literal> structure.  Define or not define
+	some of them may help you to implements function
+	<function>sysdepCallMethod()</function>.
+
+	<variablelist>
+	  <varlistentry>
+	    <term><literal>NO_HOLES</literal></term>
+	    <listitem>
+	      <para>
+		This define causes all types to occupy only one slot in
+		callargs, but not affecting their callsizes, that can still be
+		used to distinguish among types.  It avoids introducing unused
+		slots after <literal>jlongs</literal> and
+		<literal>jdoubles</literal>.
+	      </para>
+
+	      <para>
+		<literal>NO_HOLES</literal> is incompatible with
+		<literal>ALIGN_AT_64bits</literal>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>PROMOTE_TO_64bits</literal></term>
+	    <listitem>
+	      <para>
+		It causes all integer arguments to be promoted to
+		<literal>jlong</literal>, and all <literal>jfloats</literal>
+		to be promoted to <literal>jdouble</literal>, unless
+		explicitly overridden.  It implies
+		<literal>NO_HOLES</literal>, unless explicitly defined
+		otherwise.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>PROMOTE_jint2jlong</literal></term>
+	    <listitem>
+	      <para>
+		If <literal>PROMOTE_jint2jlong</literal> is enabled, all
+		integer values are to be passed as jlongs.  It is only set by
+		<literal>PROMOTE_TO_64bits</literal>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>PROMOTE_jfloat2jdouble</literal></term>
+	    <listitem>
+	      <para>
+		If <literal>PROMOTE_jfloat2jdouble</literal> is enabled,
+		<literal>jfloats</literal> are to be passed as
+		<literal>jdoubles</literal>.  Note that, when a
+		<literal>jfloat</literal> is promoted, its calltype will be
+		marked as <literal>'D'</literal>.  No known port uses this. In
+		fact, alpha must explicitly set it to 0, to prevent
+		<literal>PROMOTE_TO_64bits</literal> from enabling it.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>ALIGN_AT_64bits</literal></term>
+	    <listitem>
+	      <para>
+		This causes all 64bit arguments to be aligned at even
+		arguments.  If a <literal>jlong</literal> or
+		<literal>jdouble</literal> appears as on odd argument, a
+		place-holder will be introduced.
+	      </para>
+
+	      <para>
+		<literal>ALIGN_AT_64bits</literal> is incompatible with
+		<literal>NO_HOLES</literal>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+
+      </para>
+
+
+      <section id="callMethodInfo">
+	<title>The <literal>callMethodInfo</literal> structure</title>
+
+	<para>
+	  The <literal>callMethodInfo</literal> structure describes the
+	  information necessary to invoke a native or just-in-time compiled
+	  method.
+	</para>
+
+	<para>
+	  <literal>jvalue</literal> is a union defined in
+	  <filename>include/jtypes.h</filename>.  It corresponds to an entry
+	  on the Java stack.  The suffixes <literal>i</literal>,
+	  <literal>j</literal>, <literal>b</literal>, <literal>c</literal>,
+	  <literal>s</literal>, <literal>l</literal>, <literal>f</literal>,
+	  <literal>d</literal> access the corresponding element of (Java) type
+	  <literal>int</literal>, <literal>long</literal>,
+	  <literal>boolean</literal>, <literal>char</literal>,
+	  <literal>short</literal>, <literal>ref</literal>,
+	  <literal>float</literal>, and <literal>double</literal>.
+	</para>
+
+	<para>
+	  <literal>args</literal> is an array containing the arguments passed
+	  to the function. It corresponds to the Java stack and has
+	  <literal>nrargs</literal> valid entries with the following property:
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		If two adjacent slots on the Java stack are combined to a
+		64bit value, it will also use two array entries, and not one.
+		However, the first entry will contain the 64bit value (in
+		<literal>j</literal> or <literal>d</literal>, depending on the
+		type), and the second entry will be undefined.  This allows
+		for easier access, while preserving indexing.  Thus, some
+		array entries will have 0, some 32 and some 64 bits of valid
+		data in them. The callsize array says which one it is.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<literal>callsize[i]</literal> may be 0, 1, or 2, depending on
+		the number of valid bits in <literal>args[i]</literal>.
+		Similarly, <literal>calltype[i]</literal> contains the
+		signature type of the argument in <literal>args[i]</literal>
+		(<literal>'J'</literal>, <literal>'F'</literal>, etc.)
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		To simplify 32 bit assembly code, we copy the last 32 bits of
+		a 64 bit arg into the next slot.  This allows you to treat
+		args as an array of 32 bit values.  This simplification also
+		makes a C version of <function>sysdepCallMethod()</function>
+		more viable.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Note that "<literal>callsize[i] == 2</literal> iff
+		<literal>callsize[i+1] == 0</literal>" -- this property can
+		also be exploited by function
+		<function>sysdepCallMethod()</function>.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+
+	<para>
+	  <literal>function</literal> is a pointer to the method to be
+	  invoked.
+	</para>
+
+	<para>
+	  <literal>retsize</literal> and <literal>rettype</literal> have the
+	  same value ranges as <literal>callsize[i]</literal> and
+	  <literal>calltype[i]</literal>, except they correspond to the return
+	  value.  The function <function>sysdepCallMethod()</function> must
+	  store the return value in the proper type at
+	  <literal>*ret</literal>.
+	</para>
+      </section>
+
+      <section id="libffi">
+	<title><literal>libffi</literal></title>
+
+	<para>
+	  If <ulink url="http://sourceware.cygnus.com/libffi">libffi</ulink>
+	  handle your platform, you can use it to implements function
+	  <function>sysdepCallMethod()</function>.  But it's better to
+	  implement it as described bellow.
+	</para>
+
+	<para>
+	  Configure Kaffe with option <literal>--with-libffi</literal>
+	  explicitly in order to use <literal>libffi</literal>.
+	</para>
+      </section>
+    </section>
+
+    <section id="libtool">
+      <title>GNU Libtool</title>
+
+      <para>
+	Kaffe use <ulink url="http://www.gnu.org/software/libtool">GNU
+	  libtool</ulink> to build dynamic libraries and modules.  If it is
+	not able to create them, configure Kaffe with options
+	<literal>--with-staticlib</literal> and
+	<literal>--with-staticvm</literal>.
+      </para>
+    </section>
+
+  </chapter>
+
+  <chapter id="port-jit-engine">
+    <title>Port Kaffe <literal>JIT</literal> engine to a new platform</title>
+
+    <para>
+      Before port <literal>JIT</literal> engine, Kaffe
+      <literal>intrp</literal> engine must work on your platform (see <xref
+	linkend="port-intrp-engine"/>).
+    </para>
+
+    <para>
+      If <literal>JIT back-end</literal> exists for your cpu family, porting
+      <literal>JIT</literal> engine to your platform will be a simple task.
+    </para>
+
+    <para>
+      If your platform use another C calling convensions (ABI) than those
+      handled by <literal>JIT back-end</literal> of your cpu family you must
+      change it to handle your ABI (see <xref linkend="write-jit-back-end"/>).
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Quick presentation of <literal>JIT</literal> engine configuration
+	  files.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  NullPointerException, ArithmeticException and signals.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Flush contents of data and/or instruction cache.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+
+    <section id="jit-config-files">
+      <title>Configuration files</title>
+
+      <variablelist>
+	<varlistentry>
+	  <term><filename>config/$Khost_cpu/jit.h</filename></term>
+	  <listitem>
+	    <para>
+	      Master <literal>JIT back-end</literal> configuration file for
+	      this cpu family.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><filename>config/$Khost_cpu/trampolines.c</filename></term>
+	  <term><filename>config/$Khost_cpu/jit-icode.h</filename></term>
+	  <term><filename>config/$Khost_cpu/jit-$Khost_cpu.def</filename></term>
+	  <term><filename>config/$Khost_cpu/jit3-icode.h</filename></term>
+	  <term><filename>config/$Khost_cpu/jit3-$Khost_cpu.def</filename></term>
+	  <listitem>
+	    <para>
+	      <literal>JIT back-end</literal> definitions and functions for
+	      this cpu family.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><filename>config/$Khost_cpu/$Khost_os/jit-md.h</filename></term>
+	  <term><filename>config/$Khost_cpu/$Khost_os/jit3-md.h</filename></term>
+	  <listitem>
+	    <para>
+	      Platform dependent JIT/JIT3 header.
+	    </para>
+	    <para>
+	      It includes <filename>$Khost_cpu/jit.h</filename> and defines
+	      <varname>EXCEPTIONPROTO</varname> and
+	      <varname>EXCEPTIONFRAME</varname> macros.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+    <section id="signal-handler">
+      <title>Signals and exceptions handling</title>
+
+      <para>
+	To handle <literal>NullPointerException</literal> and
+	<literal>ArithmeticException</literal> Kaffe <literal>JIT</literal>
+	engine computes Stack-Frame and Program-Counter from various signals
+	context (<literal>SIGSEGV</literal>, <literal>SIGBUS</literal>,
+	<literal>SIGFPE</literal>).
+      </para>
+
+      <para id="EXCEPTIONPROTO">
+	Macro <literal>EXCEPTIONPROTO</literal> is the function prototype for
+	signal handlers.  It must declare <literal>sig</literal> as signal
+	number parameter.  Others platform specific parameters are use
+	transparently but commun name for signal context is
+	<literal>ctx</literal>.
+      </para>
+
+      <para id="EXCEPTIONFRAME">
+	Macro <function>EXCEPTIONFRAME(<replaceable>frame</replaceable>,
+	  <replaceable>ctx</replaceable>)</function> computes exception frame
+	<replaceable>frame</replaceable> from signal context
+	<replaceable>ctx</replaceable>.  Parameter
+	<replaceable>frame</replaceable> is a pointer of type
+	<literal>exceptionFrame</literal> defined in file
+	<filename>config/$Khost_cpu/jit.h</filename>.  This macro may use
+	other parameters defined by <literal>EXCEPTIONPROTO</literal>.
+      </para>
+    </section>
+
+    <section id="FLUSH-DCACHE">
+      <title>Flush contents of data and/or instruction cache</title>
+
+      <para>
+	Some cpu family require to flush contents of data and/or instruction
+	cache before executing new generated code.
+      </para>
+
+      <para>
+	In this case, macro
+	<literal>FLUSH_DCACHE(<replaceable>start</replaceable>,
+	  <replaceable>end</replaceable>)</literal> must be defined in file
+	<filename>config/$Khost_cpu/$Khost_os/jit3-md.h</filename>.  Else,
+	this empty macro is defined in file
+	<filename>config/$Khost_cpu/jit.h</filename>.
+      </para>
+    </section>
+
+  </chapter>
+
+
+  <chapter id="write-jit-back-end">
+    <title>Write <literal>JIT back-end</literal> for a new processor
+      family</title>
+
+    <para>
+      Before write new <literal>JIT back-end</literal>, Kaffe
+      <literal>intrp</literal> engine must work on your platform (see <xref
+	linkend="port-intrp-engine"/>).
+    </para>
+
+    <para>
+      In order to port <literal>JIT back-end</literal>, you must understand some
+      parts of <literal>JIT</literal> engine.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Quick presentation of <literal>JIT back-end</literal> configuration
+	  files.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Quick description of JIT engine.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  All <literal>JIT back-end</literal> functions.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <function>buildStackTrace()</function> and stack inspection.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  retrieving lock object from a given exception frame.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Function trampoline.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <section  id="back-end-config-files">
+      <title>Configuration files</title>
+
+      <para>
+	To write new <literal>JIT back-end</literal>, you must implements the
+	following files:
+
+	<variablelist>
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/jit.h</filename></term>
+	    <listitem>
+	      <para>
+		Master <literal>JIT back-end</literal> configuration file for
+		this cpu family.
+	      </para>
+	      <para>
+	      It contains
+	      <simplelist type="inline ">
+		  <member>Exception handling information</member>
+		  <member>Method dispatch</member>
+		  <member>Register management information</member>
+		  <member>Opcode generation</member>
+		  <member>Slot management information</member>
+	      </simplelist>
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/trampolines.c</filename></term>
+	    <listitem>
+	      <para>
+		Implementation of trampoline function
+		<function><replaceable>CPU</replaceable>_do_fixup_trampoline()</function>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/jit3-$Khost_cpu.def</filename></term>
+	    <listitem>
+	      <para>
+		This file is the main implementation of the <literal>JIT
+		  back-end</literal>.  It contains all back-end functions with
+		special marker
+		<function>define_inst(<replaceable>function_name</replaceable>,
+		  <replaceable>internal_name</replaceable>)</function>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>config/$Khost_cpu/jit3-icode.h</filename></term>
+	    <listitem>
+	      <para>
+		This file contains definition of all <literal>JIT
+		  back-end</literal> functions.  There are in fact macro
+		<literal>HAVE_<replaceable>function_name</replaceable></literal>
+		define to back-end <replaceable>internal-name</replaceable>.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+      </variablelist>
+      </para>
+    </section>
+
+    <section id="trampoline">
+      <title>Method trampoline</title>
+
+      <para>
+	Kaffe <literal>JIT</literal> engine translates on the fly Java
+	methods into native code.  It assumes each methods in class
+	<emphasis>dispatch tables</emphasis> are natives.  This allows common
+	method invocations in functions <function>callMethodA()</function> and
+	<function>callMethodV()</function>.
+      </para>
+
+      <para>
+	In fact, Java method entries in dispatch tables are replaced by
+	<emphasis>trampoline</emphasis> functions.  First time a method is
+	invoked, his trampoline code is transparently called before real
+	method code is executed.
+      </para>
+
+      <para>
+	The task of the trampoline code is to translate Java method into
+	native code, to replace dispatch table entry with newly translated
+	method and to jump into it.
+      </para>
+
+      <para>
+	The common function <function>soft_fixup_trampoline()</function> in
+	file <filename>kaffe/kaffevm/soft.c</filename> calls translator,
+	replaces dispatch table entry and returns translated method.  The
+	trampoline code is only a glue to call it and jump into translated
+	method.
+      </para>
+
+      <para>
+	The common function <function>buildTrampoline()</function> in file
+	<filename>kaffe/kaffevm/classMethod.c</filename> allocates a
+	<literal>methodTrampoline</literal> variable per Java method and
+	initializes it with a call to macro
+	<function>FILL_IN_TRAMPOLINE()</function>.  This type and this macro
+	are defined in file <filename>config/$Khost_cpu/jit.h</filename>.
+      </para>
+
+      <variablelist>
+	<varlistentry id="methodTrampoline">
+	  <term><literal>struct _methodTrampoline</literal></term>
+	  <listitem>
+	    <para>
+	      This structure start with an array of native code and two
+	      pointers, <literal>meth</literal> and <literal>where</literal>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="FILL-IN-TRAMPOLINE ">
+	  <term><function>FILL_IN_TRAMPOLINE(<replaceable>tramp</replaceable>,
+	      <replaceable>meth</replaceable>,
+	      <replaceable>where</replaceable>)</function></term>
+	  <listitem>
+	    <para>
+	      Macro <function>FILL_IN_TRAMPOLINE()</function> initializes
+	      trampoline <replaceable>tramp</replaceable> for method
+	      <replaceable>meth</replaceable>.  The parameter
+	      <replaceable>where</replaceable> is the address in dispatch
+	      table.
+	    </para>
+
+	    <para>
+	      It setups native code to make a non standard call to assembler
+	      function
+	      <function><replaceable>CPU</replaceable>_do_fixup_trampoline()</function>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="do-fixup-trampoline">
+	  <term><function><replaceable>CPU</replaceable>_do_fixup_trampoline()</function></term>
+	  <listitem>
+
+	    <para>
+	      This assembler function, implemented into file
+	      <filename>config/$Khost_cpu/trampolines.c</filename>, saves
+	      standard call parameters registers, builds a correct stack frame
+	      to call C function <function>soft_fixup_trampoline()</function>.
+	      Then it restores parameters registers, clean up stack frame and
+	      jump into translated method.
+	    </para>
+
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="FIXUP-TRAMPOLINE-DECL">
+	  <term>Macro <literal>FIXUP_TRAMPOLINE_DECL</literal></term>
+	  <listitem>
+	    <para>
+	      This macro defines the parameters list of function
+	      <function>soft_fixup_trampoline()</function>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="FIXUP-TRAMPOLINE-INIT">
+	  <term>Macro <literal>FIXUP_TRAMPOLINE_INIT</literal></term>
+	  <listitem>
+	    <para>
+	      This macro initialize local variable <literal>meth</literal> and
+	      <literal>where</literal> from parameters to match same fields of
+	      current trampoline.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+
+    <section id="jit-functions">
+      <title>Overview of <literal>JIT back-end</literal> functions.</title>
+
+      <section id="reg-spill-reload">
+	<title>Register spills and reloads</title>
+
+	<section>
+	  <title><function>spill_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>
+	    Function
+	    <function>spill_<replaceable>TYPE</replaceable>()</function>
+	    spills <replaceable>TYPE</replaceable> register
+	    <literal>seq_slot(0)</literal> into its assigned frame location
+	    offset <literal>seq_slot(1)</literal>.
+	  </para>
+	  <para>
+	    It's roughly the same as function <function>store_offset<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+
+	  <programlisting>
+int o = const_int(1);
+int r = sreg_<replaceable>TYPE</replaceable>(0);
+
+*(<replaceable>TYPE</replaceable>*)($fp + o) = $r;
+	  </programlisting>
+
+	  <para>
+	    List of functions:
+
+	    <simplelist type="inline">
+	      <member>
+		<function>spill_int()</function>
+	      </member>
+	      <member>
+		<function>spill_ref()</function>
+	      </member>
+	      <member>
+		<function>spill_long()</function>
+	      </member>
+	      <member>
+		<function>spill_float()</function>
+	      </member>
+	      <member>
+		<function>spill_double()</function>
+	      </member>
+	    </simplelist>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>reload_TYPE()</function></title>
+
+	  <para>
+	    Function
+	    <function>reload_<replaceable>TYPE</replaceable>()</function>
+	    reloads <replaceable>TYPE</replaceable> register
+	    <literal>seq_slot(0)</literal> from given frame location offset
+	    <literal>seq_slot(1)</literal>.
+	  </para>
+	  <para>
+	    It's roughly the same as function <function>load_offset<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+
+	  <programlisting>
+int o = const_int(1);
+int r = lreg_<replaceable>TYPE</replaceable>(0);
+
+$r = *(<replaceable>TYPE</replaceable>*)($fp + o);
+	  </programlisting>
+
+	  <para>
+	    List of functions:
+
+	    <function>reload_int()</function>
+	    <function>reload_ref()</function>
+	    <function>reload_long()</function>
+	    <function>reload_float()</function>
+	    <function>reload_double()</function>
+	  </para>
+	</section>
+
+      </section>
+
+      <section>
+	<title>Prologues and epilogues</title>
+
+	<section>
+	  <title><function>prologue()</function></title>
+
+	  <para>TODO</para>
+	</section>
+
+	<section id="epilogue">
+	  <title><function>epilogue()</function></title>
+
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>exception_prologue()</function></title>
+
+	  <para>TODO</para>
+	</section>
+
+	<section id="check-stack-limit">
+	  <title><function>check_stack_limit()</function></title>
+
+	  <para>
+	    Required if <literal>defined(STACK_LIMIT)</literal> and
+	    <function>check_stack_limit_constpool()</function> is not defined.
+	    See <xref linkend="stack-limit"/>.
+	  </para>
+
+	  <programlisting>
+label *stackoverflow = const_label(2);
+int stacklimit = rreg_ref(1);
+
+if ($sp exceeds $stacklimit)
+    call stackoverflow
+	  </programlisting>
+	</section>
+
+	<section id="check-stack-limit-constpool">
+	  <title><function>check_stack_limit_constpool()</function></title>
+
+	  <para>
+	    Required if <literal>defined(STACK_LIMIT)</literal> and
+	    <function>check_stack_limit()</function> is not defined.  See
+	    <xref linkend="stack-limit"/>.
+	  </para>
+
+	  <programlisting>
+label *stackoverflow = const_label(2);
+int stacklimit = rreg_ref(1);
+
+if ($sp exceeds $stacklimit)
+    call stackoverflow
+	  </programlisting>
+	</section>
+
+      </section>
+
+
+      <section>
+	<title>Conditional monitor management</title>
+
+	<section>
+	  <title><function>mon_enter()</function></title>
+
+	  <para>Optional</para>
+	  <para>Inlined version of <function>lockObject()</function>.</para>
+	  <para>If missing, replaced by <literal>soft_call(lockObject)</literal>.</para>
+	</section>
+
+	<section>
+	  <title><function>mon_exit()</function></title>
+
+	  <para>Optional</para>
+	  <para>Inlined version of <function>unlockObject()</function>.</para>
+	  <para>If missing, replaced by <literal>soft_call(unlockObject)</literal>.</para>
+	</section>
+      </section>
+
+
+      <section>
+	<title>Moves</title>
+
+	<section>
+	  <title><function>move_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+
+	  <para>
+	    Move contents of register <literal>seq_slot(2)</literal> into
+	    register <literal>seq_slot(0)</literal>.
+	  </para>
+
+	  <programlisting>
+int r = rreg_<replaceable>TYPE</replaceable>(2);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r;
+	  </programlisting>
+
+	  <para>
+	    <function>move_int()</function>
+	    <function>move_ref()</function>
+	    <function>move_long()</function>
+	    <function>move_float()</function>
+	    <function>move_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>move_<replaceable>TYPE</replaceable>_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Require macro <function>HAVE_move_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+
+	  <para>
+	    Move constant of <literal>seq_slot(2)</literal> into register
+	    <literal>seq_slot(0)</literal>.
+	  </para>
+
+	  <programlisting>
+<replaceable>type</replaceable> val = const_<replaceable>TYPE</replaceable>(2);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = val;
+	  </programlisting>
+
+	  <para>Warning: test -0.0 and +0.0 with bit sign.</para>
+	  <para>
+	    <function>move_int_const()</function>
+	    <function>move_ref_const()</function>
+	    <function>move_long_const()</function>
+	    <function>move_float_const()</function>
+	    <function>move_double_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>move_any()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Move content of 32bit slot <literal>seq_slot(2)</literal> into
+	    slot <literal>seq_slot(0)</literal>.
+	  </para>
+	  <para>May be defined as an alias to <function>move_int()</function>.</para>
+	  <para>Internal name: <literal>movea_RxR</literal>.</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>move_anylong()</function></title>
+
+	  <para>Optional</para>
+	  <para>Not used yet.</para>
+	  <para>
+	    Move content of 64bit slot <literal>seq_slot(2)</literal> into
+	    slot <literal>seq_slot(0)</literal>.
+	  </para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>swap_any()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Exchange content of 32bit slot <literal>seq_slot(2)</literal> into
+	    slot <literal>seq_slot(0)</literal>.
+	  </para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>move_label_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Not need if all <function>load_constpool_<replaceable>TYPE</replaceable>()</function> are defined.
+	  </para>
+	  <para>
+	    Move address of constant label <literal>seq_slot(2)</literal> into
+	    register <literal>seq_slot(0)</literal>.  Final constant address
+	    will be compute later.
+	  </para>
+
+	  <programlisting>
+label *l = const_label(2);
+int w = wreg_reg(0);
+
+l->type |= <emphasis>Lhow-to-update-me</emphasis>;
+l->at = CODEPC;
+$w = l;
+	  </programlisting>
+	</section>
+      </section>
+
+
+      <section>
+	<title>Arithmetic operators</title>
+
+	<section>
+	  <title><function>add_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 + $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>add_int()</function>
+	    <function>add_ref()</function>
+	    <function>add_long()</function>
+	    <function>add_float()</function>
+	    <function>add_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>add_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>add_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>add_<replaceable>TYPE</replaceable>_const_rangecheck()</function>.
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r + o;
+	  </programlisting>
+
+	  <para>
+	    <function>add_int_const()</function>
+	    <function>add_ref_const()</function>
+	    <function>add_long_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>adc_int()</function></title>
+
+	  <para>Optional</para>
+	  <para>Required if <function>add_long()</function> is not implemented.</para>
+	  <programlisting>
+int r2 = rreg_int(2);
+int r1 = rreg_int(1);
+int w = wreg_int(0);
+
+$w = $r1 + $r2 with carry;
+	  </programlisting>
+	</section>
+
+
+	<section>
+	  <title><function>sub_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 - $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>sub_int()</function>
+	    <function>sub_long()</function>
+	    <function>sub_float()</function>
+	    <function>sub_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>sub_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>sub_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>sub_<replaceable>TYPE</replaceable>_const_rangecheck()</function>.
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r - o;
+	  </programlisting>
+
+	  <para>
+	    <function>sub_int_const()</function>
+	    <function>sub_long_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>sbc_int()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Required if <function>sub_long()</function> and
+	    <function>set_lt_int()</function> are not implemented.
+	  </para>
+	  <programlisting>
+int r2 = rreg_int(2);
+int r1 = rreg_int(1);
+int w = wreg_int(0);
+
+$w = $r1 - $r2 with carry;
+	  </programlisting>
+	</section>
+
+	<section>
+	  <title><function>set_lt_int()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Required if <function>sub_long()</function> and
+	    <function>sbc_int()</function> are not implemented.
+	  </para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>set_lt_int_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Used if <function>sub_long()</function> and
+	    <function>sbc_int()</function> are not implemented.
+	  </para>
+	  <para>TODO</para>
+	</section>
+
+
+	<section>
+	  <title><function>mul_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 * $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>mul_int()</function>
+	    <function>mul_long()</function>
+	    <function>mul_float()</function>
+	    <function>mul_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>mul_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>mul_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>mul_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r * o;
+	  </programlisting>
+
+	  <para>
+	    <function>mul_int_const()</function>
+	    <function>mul_long_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>div_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 / $r2;
+	  </programlisting>
+	  <para>
+	    <function>div_int()</function>
+	    <function>div_long()</function>
+	    <function>div_float()</function>
+	    <function>div_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>div_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>div_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>div_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r / o;
+	  </programlisting>
+
+	  <para>
+	    <function>div_int_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>rem_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 % $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>rem_int()</function>
+	    <function>rem_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>rem_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>rem_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>rem_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r % o;
+	  </programlisting>
+
+	  <para>
+	    <function>rem_int_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>neg_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r = rreg_<replaceable>TYPE</replaceable>(2);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = - $r;
+	  </programlisting>
+	  <para>
+	    <function>neg_int()</function>
+	    <function>neg_long()</function>
+	    <function>neg_float()</function>
+	    <function>neg_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>ngc_int()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+      </section>
+
+
+      <section>
+	<title>Logical operators</title>
+
+	<section>
+	  <title><function>and_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 &amp; $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>and_int()</function>
+	    <function>and_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>and_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>and_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>and_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r &amp; o;
+	  </programlisting>
+
+	  <para>
+	    <function>and_int_const()</function>
+	    <function>and_long_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>or_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 | $r2;
+	  </programlisting>
+	  <para>
+	    <function>or_int()</function>
+	    <function>or_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>or_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>or_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>or_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r | o;
+	  </programlisting>
+
+	  <para>
+	    <function>or_int_const()</function>
+	    <function>or_long_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>xor_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 ^ $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>xor_int()</function>
+	    <function>xor_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>xor_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>xor_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>xor_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r ^ o;
+	  </programlisting>
+
+	  <para>
+	    <function>xor_int_const()</function>
+	    <function>xor_long_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>lshl_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 &lt;&lt; $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>lshl_int()</function>
+	    <function>lshl_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>lshl_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>lshl_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>lshl_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r &lt;&lt; o;
+	  </programlisting>
+
+	  <para>
+	    <function>lshl_int_const()</function>
+	    <function>lshl_long_const()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>ashr_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 >> $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>ashr_int()</function>
+	    <function>ashr_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>ashr_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>ashr_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>ashr_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r >> o;
+	  </programlisting>
+
+	  <para>
+	    <function>ashr_int_const()</function>
+	    <function>ashr_long_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>lshr_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r2 = rreg_<replaceable>TYPE</replaceable>(2);
+int r1 = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r1 >>> $r2;
+	  </programlisting>
+
+	  <para>
+	    <function>lshr_int()</function>
+	    <function>lshr_long()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>lshr_<replaceable>TYPE</replaceable>_const()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Optimize <function>lshr_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Require macro <function>lshr_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <programlisting>
+<replaceable>type</replaceable> o = const_<replaceable>TYPE</replaceable>(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = $r >>> o;
+	  </programlisting>
+	  <para>
+	    <function>lshr_int_const()</function>
+	    <function>lshr_long_const()</function>
+	  </para>
+	</section>
+
+      </section>
+
+
+      <section>
+	<title>Load and store</title>
+
+	<section>
+	  <title><function>load_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int r = rreg_ref(2);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = *(<replaceable>type</replaceable>*)$r;
+	  </programlisting>
+
+	  <para>
+	    <function>load_int()</function>
+	    <function>load_ref()</function>
+	    <function>load_long()</function>
+	    <function>load_float()</function>
+	    <function>load_double()</function>
+	    <function>load_byte()</function>
+	    <function>load_char()</function>
+	    <function>load_short()</function>
+	  </para>
+	</section>
+
+
+	<section>
+	  <title><function>load_constpool_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    If not present, define functions
+	    <function>move_label_const()</function> and
+	    <function>load_<replaceable>TYPE</replaceable>()</function>.
+	  </para>
+	  <para>
+	    Load constant value from constpool.
+	  </para>
+
+	  <programlisting>
+label *val = const_label(2);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+l->type |= <emphasis>Lhow-to-update-me</emphasis>;
+l->at = CODEPC;
+$w = *(<replaceable>TYPE</replaceable> *) (constpool[val->to]);
+	  </programlisting>
+	  <para>
+	    <function>load_constpool_int()</function>
+	    <function>load_constpool_ref()</function>
+	    <function>load_constpool_long()</function>
+	    <function>load_constpool_double()</function>
+	    <function>load_constpool_float()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>load_offset_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <para>
+	    Require macro <function>load_offset_<replaceable>TYPE</replaceable>_rangecheck()</function>
+	  </para>
+	  <programlisting>
+int o = const_int(2);
+int r = rreg_ref(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = *(<replaceable>type</replaceable>*)($r + o);
+	  </programlisting>
+
+	  <para>
+	    <function>load_offset_int()</function>
+	    <function>load_offset_ref()</function>
+	    <function>load_offset_long()</function>
+	    <function>load_offset_float()</function>
+	    <function>load_offset_double()</function>
+	    <function>load_offset_byte()</function>
+	    <function>load_offset_char()</function>
+	    <function>load_offset_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>load_addr_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+<replaceable>type</replaceable> *a = const_ref(2);
+int w = sreg_<replaceable>TYPE</replaceable>(0);
+
+$w = *a;
+	  </programlisting>
+
+	  <para>
+	    <function>load_addr_int()</function>
+	    <function>load_addr_ref()</function>
+	    <function>load_addr_long()</function>
+	    <function>load_addr_float()</function>
+	    <function>load_addr_double()</function>
+	    <function>load_addr_byte()</function>
+	    <function>load_addr_char()</function>
+	    <function>load_addr_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>load_offset_scaled_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <programlisting>
+int o = const_int(3);
+int idx = rreg_int(2);
+int r = rreg_ref(1);
+int w = wreg_<replaceable>TYPE</replaceable>(0);
+
+$w = ((<replaceable>type</replaceable>*)($r + o))[idx];
+	  </programlisting>
+
+	  <para>
+	    <function>load_offset_scaled_int()</function>
+	    <function>load_offset_scaled_ref()</function>
+	    <function>load_offset_scaled_long()</function>
+	    <function>load_offset_scaled_float()</function>
+	    <function>load_offset_scaled_double()</function>
+	    <function>load_offset_scaled_byte()</function>
+	    <function>load_offset_scaled_char()</function>
+	    <function>load_offset_scaled_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>load_code_ref()</function></title>
+
+	  <para>Optional</para>
+	  <para>Alpha only ?</para>
+	  <para>
+	    Use for <literal>TABLESWITCH</literal> and
+	    <literal>LOOKUPSWITCH</literal>.
+	  </para>
+	  <para>
+	    Special form of <function>load_ref()</function>.
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <programlisting>
+int r = rreg_<replaceable>TYPE</replaceable>(2);
+int w = rreg_ref(1);
+
+*(<replaceable>type</replaceable>*)$w = $r;
+	  </programlisting>
+
+	  <para>
+	    <function>store_int()</function>
+	    <function>store_ref()</function>
+	    <function>store_long()</function>
+	    <function>store_float()</function>
+	    <function>store_double()</function>
+	    <function>store_byte()</function>
+	    <function>store_char()</function>
+	    <function>store_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_offset_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Require macro <function>store_offset_<replaceable>TYPE</replaceable>_rangecheck()</function>
+	  </para>
+	  <programlisting>
+int o = const_int(2);
+int w = rreg_ref(1);
+int r = rreg_<replaceable>TYPE</replaceable>(0);
+
+*(<replaceable>type</replaceable>*)($w + o) = $r;
+	  </programlisting>
+
+	  <para>
+	    <function>store_offset_int()</function>
+	    <function>store_offset_ref()</function>
+	    <function>store_offset_long()</function>
+	    <function>store_offset_float()</function>
+	    <function>store_offset_double()</function>
+	    <function>store_offset_byte()</function>
+	    <function>store_offset_char()</function>
+	    <function>store_offset_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_const_offset_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <programlisting>
+<replaceable>type</replaceable> val = const_<replaceable>TYPE</replaceable>(2);
+int o = const_int(1);
+int w = rreg_ref(0);
+
+*(<replaceable>type</replaceable>*)($w + o) = val;
+	  </programlisting>
+
+	  <para>
+	    <function>store_const_offset_int()</function>
+	    <function>store_const_offset_byte()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_addr_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <programlisting>
+<replaceable>type</replaceable> *a = const_ref(2);
+int r = rreg_<replaceable>TYPE</replaceable>(1);
+
+*a = $r;
+	  </programlisting>
+
+	  <para>
+	    <function>store_addr_int()</function>
+	    <function>store_addr_ref()</function>
+	    <function>store_addr_long()</function>
+	    <function>store_addr_float()</function>
+	    <function>store_addr_double()</function>
+	    <function>store_addr_byte()</function>
+	    <function>store_addr_char()</function>
+	    <function>store_addr_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_offset_scaled_<replaceable>TYPE</replaceable>()</function></title>
+	  <para>Optional</para>
+	  <programlisting>
+int o = const_int(3);
+int r = rreg_<replaceable>TYPE</replaceable>(2);
+int idx = rreg_int(1);
+int w = rreg_ref(0);
+
+((<replaceable>type</replaceable>*)($w + o))[idx] = $r;
+	  </programlisting>
+
+	  <para>
+	    <function>store_offset_scaled_int()</function>
+	    <function>store_offset_scaled_ref()</function>
+	    <function>store_offset_scaled_long()</function>
+	    <function>store_offset_scaled_float()</function>
+	    <function>store_offset_scaled_double()</function>
+	    <function>store_offset_scaled_byte()</function>
+	    <function>store_offset_scaled_char()</function>
+	    <function>store_offset_scaled_short()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>store_const_offset_scaled_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <programlisting>
+<replaceable>type</replaceable> val = const_<replaceable>TYPE</replaceable>(3);
+int o = const_int(2);
+int idx = rreg_int(1);
+int w = rreg_ref(0);
+
+((<replaceable>type</replaceable>*)($w + o))[idx] = val;
+	  </programlisting>
+
+	  <para>
+	    <function>store_const_offset_scaled_int()</function>
+	    <function>store_const_offset_scaled_byte()</function>
+	  </para>
+	</section>
+
+      </section>
+
+
+      <section>
+	<title>Function argument management</title>
+
+	<para>
+	  WRITE-ME: PUSHARG_FORWARDS <filename>kaffe/kaffevm/jni.c</filename>
+	  <filename>kaffe/kaffevm/jit3/icode.c</filename>
+	</para>
+
+	<section>
+	  <title><function>pusharg_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>pusharg_int()</function>
+	    <function>pusharg_ref()</function>
+	    <function>pusharg_long()</function>
+	    <function>pusharg_float()</function>
+	    <function>pusharg_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>pusharg_<replaceable>TYPE</replaceable>_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Require macro <function>pusharg_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <para>TODO</para>
+	  <para>
+	    <function>pusharg_int_const()</function>
+	    <function>pusharg_ref_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>popargs()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+      </section>
+
+
+      <section>
+	<title>Control flow changes</title>
+
+	<section>
+	  <title><function>branch()</function></title>
+
+	  <para>Optional</para>
+	  <para>Required for branch type <literal>ba</literal>.  See <xref linkend="epilogue"/>.</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>cbranch_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cbranch_int()</function>
+	    <function>cbranch_ref()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>cbranch_<replaceable>TYPE</replaceable>_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Require macro <function>cbranch_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cbranch_int_const()</function>
+	    <function>cbranch_ref_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>branch_indirect()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>call()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>call_indirect_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>call_soft()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>call_ref()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>ccall()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>fakecall()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>Require <function>set_label()</function></para>
+	</section>
+
+	<section>
+	  <title><function>fakecall_constpool()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+
+	  <para>Require <function>set_label()</function></para>
+	</section>
+
+	<section>
+	  <title><function>get_arg_ptr()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+
+	<section>
+	  <title><function>return_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>return_int()</function>
+	    <function>return_ref()</function>
+	    <function>return_long()</function>
+	    <function>return_float()</function>
+	    <function>return_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>returnarg_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>returnarg_int()</function>
+	    <function>returnarg_ref()</function>
+	    <function>returnarg_long()</function>
+	    <function>returnarg_float()</function>
+	    <function>returnarg_double()</function>
+	  </para>
+	</section>
+
+      </section>
+
+      <section>
+	<title>Labels</title>
+
+	<section>
+	  <title><function>set_label()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>build_code_ref()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>build_key()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	</section>
+      </section>
+
+      <section>
+	<title>Comparisons</title>
+
+	<section>
+	  <title><function>cmp_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Required if <function>cbranch_<replaceable>TYPE</replaceable>()</function> is missing.
+	  </para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cmp_int()</function>
+	    <function>cmp_ref()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>cmp_<replaceable>TYPE</replaceable>_const()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Required if <function>cbranch_<replaceable>TYPE</replaceable>_const()</function> is missing.
+	  </para>
+	  <para>
+	    Require macro <function>cmp_<replaceable>TYPE</replaceable>_const_rangecheck()</function>
+	  </para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cmp_int_const()</function>
+	    <function>cmp_ref_const()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>cmp_offset_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>
+	    Optional if <function>cmp_<replaceable>TYPE</replaceable>()</function> is defined.
+	  </para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cmp_offset_int()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>lcmp()</function></title>
+
+	  <para>Optional</para>
+	  <para>If missing, replaced by <function>soft_lcmp()</function></para>
+	  <para>TODO</para>
+	</section>
+
+	<section>
+	  <title><function>cmpl_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>If missing, replaced by <function>soft_fcmpl()</function> and
+	    <function>soft_dcmpl()</function>.</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cmpl_float()</function>
+	    <function>cmpl_double()</function>
+	  </para>
+	</section>
+
+	<section>
+	  <title><function>cmpg_<replaceable>TYPE</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>if missing <function>soft_fcmpg()</function>,
+	    <function>soft_dcmpg()</function></para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cmpg_float()</function>
+	    <function>cmpg_double()</function>
+	  </para>
+	</section>
+
+      </section>
+
+      <section>
+	<title>Conversions</title>
+
+	<section>
+	  <title><function>cvt_<replaceable>FROM</replaceable>_<replaceable>TO</replaceable>()</function></title>
+
+	  <para>Optional</para>
+	  <para>TODO</para>
+	  <para>
+	    <function>cvt_int_long()</function>
+	    <function>cvt_int_float()</function>
+	    <function>cvt_int_double()</function>
+	    <function>cvt_long_float()</function>
+	    <function>cvt_long_double()</function>
+	    <function>cvt_float_int()</function>
+	    <function>cvt_float_long()</function>
+	    <function>cvt_float_double()</function>
+	    <function>cvt_double_int()</function>
+	    <function>cvt_double_long()</function>
+	    <function>cvt_double_float()</function>
+	    <function>cvt_int_byte()</function>
+	    <function>cvt_int_short()</function>
+	  </para>
+	</section>
+      </section>
+    </section>
+
+
+    <section>
+      <title>Registers description.</title>
+
+      <para>TODO</para>
+
+      <section>
+	<title>Register types</title>
+
+	<para>
+	  Reserved
+	  Rint
+	  Rsubint
+	  Rref
+	  Rlong
+	  Rfloat
+	  Rdouble
+	</para>
+      </section>
+
+      <section>
+	<title>Register flags</title>
+
+	<variablelist>
+	  <varlistentry>
+	    <term><literal>Rreadonce</literal></term>
+	    <listitem>
+	      <para>
+		For stack register.  As soon as read, content is discared.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>Rnosaveoncall</literal></term>
+	    <listitem>
+	      <para>
+		Register is preserved across function call, it's not necessary
+		to save it on call.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><literal>Rglobal</literal></term>
+	    <listitem>
+	      <para>
+		Function global register.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+      </section>
+    </section>
+
+
+    <section>
+      <title>Slots usage.</title>
+
+      <para>TODO</para>
+
+      <section id="STACK-LIMIT">
+	<title>Macro <function>STACK_LIMIT()</function></title>
+
+	<para>
+	  If this macro is defined the result of function
+	  <function>jthread_stacklimit()</function> is passed as an extra
+	  argument to all methods.  This macro return the slot offset of this
+	  extra argument.
+	</para>
+
+	<para>
+	  One of the functions <function>check_stack_limit()</function> and
+	  <function>check_stack_limit_constpool()</function> must be defined.
+	  See <xref linkend="check-stack-limit"/> and  <xref linkend="check-stack-limit-constpool"/>
+	</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Tips</title>
+
+    <itemizedlist>
+
+      <listitem>
+	<para>
+	  Source file <filename>developers/jit-icode.c</filename> may helps you
+	  to discover correct implementation of various <literal>JIT
+	    back-end</literal> functions.  Compile it with
+	  <literal>-S</literal> option and read
+	  <filename>jit-icode.s</filename> or compile it with
+	  <literal>-g</literal> option and disassemble various functions with
+	  <literal>gdb</literal> or what ever debugger you have.
+	</para>
+      </listitem>
+
+     <listitem>
+	<para>
+	  Script <filename>developers/kaffe-test</filename>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Class <filename>VMDebug</filename>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>-vmdebug jit,morejit</para>
+      </listitem>
+
+    </itemizedlist>
+  </chapter>
+
+  <appendix>
+    <title><filename>jit-icode.c</filename></title>
+
+    <programlisting>
+&source.jit-icode.c;
+    </programlisting>
+  </appendix>
+  &fdl.xml;
+</book>
+
+<!--
+Local variables:
+fill-column: 78
+End:
+-->

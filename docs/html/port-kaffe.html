@@ -1,0 +1,1795 @@
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Porting Kaffe to a new platform</title><meta content="DocBook XSL Stylesheets V1.61.3" name="generator"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="N10002"></a>Porting Kaffe to a new platform</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Edouard</span> <span class="othername">G.</span> <span class="surname">Parmelan</span></h3></div></div></div><div><p class="copyright">Copyright &copy; 2001 Edouard G. Parmelan</p></div><div><div class="legalnotice"><p>
+	Permission is granted to copy, distribute and/or modify this document
+	under the terms of the GNU Free Documentation License, Version 1.1 or
+	any later version published by the Free Software Foundation; with no
+	Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+	Texts. A copy of the license is included in the section entitled "GNU
+	Free Documentation License".
+      </p></div></div><div><div class="revhistory"><table summary="Revision history" width="100%" border="1"><tr><th colspan="2" valign="top" align="left"><b>Revision History</b></th></tr><tr><td align="left">Revision 0.1</td><td align="left">Aug 19, 2001</td></tr><tr><td colspan="2" align="left">First working draft</td></tr></table></div></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#N10021">Preface</a></dt><dt>1. <a href="#N10095">Overview</a></dt><dt>2. <a href="#port-intrp-engine">Port Kaffe intrp engine to a new
+      platform</a></dt><dd><dl><dt><a href="#intrp-config-files">Configuration files</a></dt><dt><a href="#ALIGNMENT-OF-SIZE">Alignment of various types</a></dt><dt><a href="#unix-jthread">Threads subsystem</a></dt><dt><a href="#N101D2">Locks subsystem</a></dt><dt><a href="#sysdepCallMethod">Function sysdepCallMethod()</a></dt><dd><dl><dt><a href="#callMethodInfo">The callMethodInfo structure</a></dt><dt><a href="#libffi">libffi</a></dt></dl></dd><dt><a href="#libtool">GNU Libtool</a></dt></dl></dd><dt>3. <a href="#port-jit-engine">Port Kaffe JIT engine to a new platform</a></dt><dd><dl><dt><a href="#jit-config-files">Configuration files</a></dt><dt><a href="#signal-handler">Signals and exceptions handling</a></dt><dt><a href="#FLUSH-DCACHE">Flush contents of data and/or instruction cache</a></dt></dl></dd><dt>4. <a href="#write-jit-back-end">Write JIT back-end for a new processor
+      family</a></dt><dd><dl><dt><a href="#back-end-config-files">Configuration files</a></dt><dt><a href="#trampoline">Method trampoline</a></dt><dt><a href="#jit-functions">Overview of JIT back-end functions.</a></dt><dd><dl><dt><a href="#reg-spill-reload">Register spills and reloads</a></dt><dt><a href="#N1063B">Prologues and epilogues</a></dt><dt><a href="#N10679">Conditional monitor management</a></dt><dt><a href="#N1069E">Moves</a></dt><dt><a href="#N10769">Arithmetic operators</a></dt><dt><a href="#N1096C">Logical operators</a></dt><dt><a href="#N10B3D">Load and store</a></dt><dt><a href="#N10D34">Function argument management</a></dt><dt><a href="#N10D80">Control flow changes</a></dt><dt><a href="#N10E4A">Labels</a></dt><dt><a href="#N10E65">Comparisons</a></dt><dt><a href="#N10EFF">Conversions</a></dt></dl></dd><dt><a href="#N10F39">Registers description.</a></dt><dd><dl><dt><a href="#N10F3E">Register types</a></dt><dt><a href="#N10F43">Register flags</a></dt></dl></dd><dt><a href="#N10F5F">Slots usage.</a></dt><dd><dl><dt><a href="#STACK-LIMIT">Macro STACK_LIMIT()</a></dt></dl></dd></dl></dd><dt>5. <a href="#N10F7D">Tips</a></dt><dt>A. <a href="#N10FAD">jit-icode.c</a></dt><dt>B. <a href="#gfdl">GNU Free Documentation License</a></dt><dd><dl><dt>0. <a href="#N10FC1">PREAMBLE</a></dt><dt>1. <a href="#N10FCB">APPLICABILITY AND DEFINITIONS</a></dt><dt>2. <a href="#N10FDF">VERBATIM COPYING</a></dt><dt>3. <a href="#N10FE7">COPYING IN QUANTITY</a></dt><dt>4. <a href="#N10FF3">MODIFICATIONS</a></dt><dt>5. <a href="#N1102F">COMBINING DOCUMENTS</a></dt><dt>6. <a href="#N11039">COLLECTIONS OF DOCUMENTS</a></dt><dt>7. <a href="#N11041">AGGREGATION WITH INDEPENDENT WORKS</a></dt><dt>8. <a href="#N11049">TRANSLATION</a></dt><dt>9. <a href="#N1104F">TERMINATION</a></dt><dt>10. <a href="#N11055">FUTURE REVISIONS OF THIS LICENSE</a></dt><dt><a href="#N11061">How to use this License for your documents</a></dt></dl></dd></dl></div><div class="preface" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="N10021"></a>Preface</h2></div></div><div></div></div><p>
+      <table summary="Simple list" border="0" class="simplelist"><tr><td><tt class="literal">port-kaffe 0.2</tt></td></tr><tr><td><tt class="literal">August 30, 2001</tt></td></tr></table>
+
+      <tt class="literal">
+	$Id: port-kaffe.html,v 1.1 2003/12/10 23:11:51 jim Exp $
+      </tt>
+    </p><p>
+      I had port <tt class="literal">JIT</tt> engine to Alpha Tru64 and GNU/Linux
+      Alpha in the past and I know how it's difficult to understand correctly
+      <tt class="literal">intrp</tt> and <tt class="literal">JIT</tt> engines with only
+      sources as documentation.  I had write this document latter while I was
+      porting <tt class="literal">intrp</tt> engine to Darwin (Mac OS X) operating
+      system.  In the same time I was writing <tt class="literal">JIT back-end</tt>
+      for PowerPC.
+    </p><p>
+      This document is written in SGML DocBook with <a href="http://www.gnu.org/software/emacs" target="_top">GNU Emacs</a> and
+      <tt class="literal">PSGML</tt> major mode.  Source of this document may be
+      found in <a href="http://www.kaffe.org/CVS.html" target="_top">Kaffe CVS
+	Tree</a> or in <a href="http://egp.free.fr/kaffe" target="_top">my Kaffe
+	repository</a>.
+    </p><p>
+      If you find some bullets in this document, send an email to
+      <tt class="email">&lt;<a href="mailto:egp@free.fr">egp@free.fr</a>&gt;</tt>.  All comments are welcome.  If you want to
+      fix typo or grammar use SGML sources only and send me "diff -u" result.
+      Never fill-paragraph NOR reformat them.
+    </p><p>
+      Preview current working draft here: <a href="http://egp.free.fr/port-kaffe/port-kaffe.html" target="_top"><tt class="literal">http://egp.free.fr/port-kaffe/port-kaffe.html</tt></a>.
+    </p><p>
+      Preview older draft here: <a href="http://egp.free.fr/port-kaffe" target="_top"><tt class="literal">http://egp.free.fr/port-kaffe</tt></a>.
+    </p><p>
+      Others persons have already written documents on this subject.  I some
+      time peek phrases, sections or inspiration from them.
+
+      <div class="itemizedlist"><ul type="disc"><li><p>
+	    <a href="http://www.kaffe.org" target="_top">Kaffe sources</a>.
+	  </p></li><li><p>
+	    Kiyo Inaba, <a href="http://www2.biglobe.ne.jp/~inaba/trampolines.html" target="_top">"What is
+	      trampoline code in Kaffe?"</a>, Aug 1998.
+	  </p></li><li><p>
+	    Kiyo Inaba, <a href="http://www2.biglobe.ne.jp/~inaba/sysdepCallMethod.html" target="_top">"How
+	      sysdepCallMethod works?"</a>, Jul 1998.
+	  </p></li><li><p>
+	    Samuel K. Sanseri <tt class="email">&lt;<a href="mailto:sanseri@cs.pdx.edu">sanseri@cs.pdx.edu</a>&gt;</tt>, <a href="http://www.cs.pdx.edu/~sanseri/kaffe/kaffe.html" target="_top">"Porting
+	      Kaffe to the IA-64 Architecture"</a>, Feb 2000.
+	  </p></li></ul></div>
+    </p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="N10095"></a>Chapter&nbsp;1.&nbsp;Overview</h2></div></div><div></div></div><p>
+      The first step to port Kaffe to a new platform or new processor family
+      is to port <tt class="literal">intrp</tt> engine.  Then As soon as
+      <tt class="literal">intrp</tt> engine works, you can port
+      <tt class="literal">JIT</tt> engine (see <a href="#port-jit-engine" title="Chapter&nbsp;3.&nbsp;Port Kaffe JIT engine to a new platform">Chapter&nbsp;3, <i>Port Kaffe JIT engine to a new platform</i></a>).  The biggest task will be to write
+      <tt class="literal">JIT back-end</tt> for your processor family (see <a href="#write-jit-back-end" title="Chapter&nbsp;4.&nbsp;Write JIT back-end for a new processor
+      family">Chapter&nbsp;4, <i>Write JIT back-end for a new processor
+      family</i></a>).
+    </p><p>
+      I will try to covers all these tasks in this document.
+    </p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="port-intrp-engine"></a>Chapter&nbsp;2.&nbsp;Port Kaffe <tt class="literal">intrp</tt> engine to a new
+      platform</h2></div></div><div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#intrp-config-files">Configuration files</a></dt><dt><a href="#ALIGNMENT-OF-SIZE">Alignment of various types</a></dt><dt><a href="#unix-jthread">Threads subsystem</a></dt><dt><a href="#N101D2">Locks subsystem</a></dt><dt><a href="#sysdepCallMethod">Function sysdepCallMethod()</a></dt><dd><dl><dt><a href="#callMethodInfo">The callMethodInfo structure</a></dt><dt><a href="#libffi">libffi</a></dt></dl></dd><dt><a href="#libtool">GNU Libtool</a></dt></dl></div><div class="itemizedlist"><ul type="disc"><li><p>
+	  Quick presentation of all configuration files for a new platform.
+	</p></li><li><p>
+	  Configuring <tt class="literal">unix-jthreads</tt> subsystem.
+	</p></li><li><p>Locks subsystem.</p></li><li><p>
+	  Writing <tt class="function">sysdepCallMethod()</tt> function.
+	</p></li><li><p>
+	  Build <tt class="literal">intrp</tt> engine.
+	</p></li></ul></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="intrp-config-files"></a>Configuration files</h2></div></div><div></div></div><p>
+	<div class="variablelist"><dl><dt><span class="term"><tt class="filename">config/config.alias</tt></span></dt><dd><p>
+		This shell script maps <tt class="filename">configure</tt>'s
+		variables <tt class="varname">$host_cpu</tt> and
+		<tt class="varname">$host_os</tt> to Kaffe cananical forms
+		<tt class="varname">$Khost_os</tt> and <tt class="varname">$Khost_os</tt>.
+		These variables define access paths to cpu family and platform
+		configuration files.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/Make.frag</tt></span></dt><dd><p>
+		Optional <tt class="filename">Makefile</tt> fragments required for
+		this cpu family.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/common.h</tt></span></dt><dd><p>
+		Common definitions for all platforms of this cpu family.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/thread.h</tt></span></dt><dd><p>
+		Common thread definitions for all platforms of this cpu
+		family.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/$Khost_os/config.frag</tt></span></dt><dd><p>
+		<tt class="filename">configure</tt>'s fragment for this platform.
+	      </p><p>
+		It may holds specials <tt class="varname">$CFLAGS</tt> add-ons and
+		<span class="emphasis"><em>cross-compile</em></span> definitions.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/$Khost_os/md.h</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/$Khost_os/md.c</tt></span></dt><dd><p>
+		Platform dependent header and functions.
+	      </p><p>
+		File <tt class="filename">md.h</tt> typically includes
+		<tt class="filename">$Khost_cpu/common.h</tt> and
+		<tt class="filename">$Khost_cpu/thread.h</tt> and defines
+		<tt class="varname">SP_OFFSET</tt> macro.
+	      </p></dd></dl></div>
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ALIGNMENT-OF-SIZE"></a>Alignment of various types</h2></div></div><div></div></div><p>
+	Fields inside classe objects must follow the alignment constraints of
+	the C calling conventions.  If alignment of type
+	<i class="replaceable"><tt>TYPE</tt></i> is not
+	<tt class="function">sizeof(<i class="replaceable"><tt>TYPE</tt></i>)</tt> you must
+	define macro
+	<tt class="function">ALIGNMENT_OF_SIZE(<i class="replaceable"><tt>SIZE</tt></i>)</tt>
+	in file <tt class="filename">config/$Khost_cpu/common.h</tt>.
+      </p><p>
+	The small C program
+	<tt class="filename">developers/alignment_of_size.c</tt> may helps you to
+	discover correct alignment.  Simply compiles it and runs it.
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="unix-jthread"></a>Threads subsystem</h2></div></div><div></div></div><p>
+	Sources of threads subsystems are located into directory
+	<tt class="filename">kaffe/kaffevm/systems/</tt>.
+      </p><p>
+	The common threads subsystem is <tt class="literal">unix-jthread</tt>.  It
+	uses <tt class="function">setjmp()</tt> and <tt class="function">longjmp()</tt>
+	functions.  In order to use it you must provide stack pointer offset
+	into <tt class="varname">jmp_env</tt>.
+      </p><p><a name="SP-OFFSET"></a>
+	The small C program <tt class="filename">developers/sp_offset.c</tt> may
+	helps you to discover <tt class="literal">SP_OFFSET</tt>.  Simply compiles it
+	and runs it.  It may leaves <tt class="filename">core</tt> file in you
+	current directory.
+      </p><p><a name="FP-OFFSET"></a>
+	Some platforms need to setup Frame-Pointer register when creating a
+	new thread stack.  In this case you must provide his offset
+	<tt class="literal">FP_OFFSET</tt> into <tt class="varname">jmp_env</tt>.
+      </p><p>
+	Macros <tt class="literal">SP_OFFSET</tt> and <tt class="literal">FP_OFFSET</tt>
+	should be defined in file
+	<tt class="filename">config/$Khost_cpu/$Kost_os/md.h</tt>.
+      </p><p><a name="THREADSTACKSIZE"></a>
+	Define the macro <tt class="literal">THREADSTACKSIZE</tt> in file
+	<tt class="filename">config/$Khost_cpu/thread.h</tt> to the size in bytes
+	of each thread's stack.  This size may depends on
+	<tt class="literal">INTERPRETER</tt> defined as <tt class="literal">intrp</tt>
+	engine will need greater stack size than <tt class="literal">JIT</tt>
+	engine.  Commun values are 64K for <tt class="literal">intrp</tt> engine and
+	32K for <tt class="literal">JIT</tt> engine.
+      </p><p>
+	You may want to use another threads subsystem specific to your
+	platform.  It is possible but it's not cover by this document.  Read
+	files <tt class="filename">FAQ/FAQ.jsignal</tt> and
+	<tt class="filename">FAQ/FAQ.locks</tt>.
+      </p><p>
+	To select another threads subsystem, configure with option
+	<tt class="literal">--with-threads=<i class="replaceable"><tt>thread-subsystem</tt></i></tt>.
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N101D2"></a>Locks subsystem</h2></div></div><div></div></div><p><a name="COMPARE-AND-EXCHANGE"></a>
+	Kaffe Fast Locking scheme (read <tt class="filename">FAQ/FAQ.locks</tt>)
+	need a macro to atomic compare and exchange a lock address.  This
+	macro <tt class="function">COMPARE_AND_EXCHANGE()</tt> must be
+	implemented in assembler.
+      </p><p>
+	Macro <tt class="literal">COMPARE_AND_EXCHANGE()</tt> should be define in file
+	<tt class="filename">config/$Khost_cpu/common.h</tt>.  It is only used into
+	file <tt class="filename">kaffe/kaffevm/locks.c</tt>.
+      </p><p><a name="ATOMIC-EXCHANGE"></a>
+	If you can't implement it but have an atomic exchange instruction,
+	defines macro <tt class="function">ATOMIC_EXCHANGE()</tt> as in Sparc port.
+      </p><p>
+	Otherwise, fall back to plain C implementations as in MIPS I port. You
+	should note that it will fail on a multi-processors machine.
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sysdepCallMethod"></a>Function <tt class="function">sysdepCallMethod()</tt></h2></div></div><div></div></div><p>
+	Function <tt class="function">sysdepCallMethod()</tt> setups standard
+	registers and stack parameters for your <span class="acronym">ABI</span>.  It
+	obeys to the C calling conventions of your platform.
+      </p><p>
+	It makes a call to a native or Java (JIT) method.  This assembly code
+	should build a standard C call using the passed call information.  By
+	its nature this is highly processor specific.  This function is
+	mandatory for both JIT and Interpreter (since stubs have now been
+	deprecated).
+      </p><p>
+	It should be implemented in file
+	<tt class="filename">config/$Khost_cpu/sysdepCallMethod.h</tt>.
+      </p><p>
+	The <tt class="function">sysdepCallMethod()</tt> macro takes a single
+	argument of type <tt class="literal">callMethodInfo*</tt> that describes
+	where the parameters are, where the return value should go and what
+	the signature of the method is.
+      </p><p>
+	The function <tt class="function">sysdepCallMethod()</tt> is only used by
+	functions <tt class="function">callMethodA()</tt> and
+	<tt class="function">callMethodV()</tt> in file
+	<tt class="filename">kaffe/kaffevm/support.c</tt>.
+      </p><p>
+	The followings macros control the construction of
+	<tt class="literal">callMethodInfo</tt> structure.  Define or not define
+	some of them may help you to implements function
+	<tt class="function">sysdepCallMethod()</tt>.
+
+	<div class="variablelist"><dl><dt><span class="term"><tt class="literal">NO_HOLES</tt></span></dt><dd><p>
+		This define causes all types to occupy only one slot in
+		callargs, but not affecting their callsizes, that can still be
+		used to distinguish among types.  It avoids introducing unused
+		slots after <tt class="literal">jlongs</tt> and
+		<tt class="literal">jdoubles</tt>.
+	      </p><p>
+		<tt class="literal">NO_HOLES</tt> is incompatible with
+		<tt class="literal">ALIGN_AT_64bits</tt>.
+	      </p></dd><dt><span class="term"><tt class="literal">PROMOTE_TO_64bits</tt></span></dt><dd><p>
+		It causes all integer arguments to be promoted to
+		<tt class="literal">jlong</tt>, and all <tt class="literal">jfloats</tt>
+		to be promoted to <tt class="literal">jdouble</tt>, unless
+		explicitly overridden.  It implies
+		<tt class="literal">NO_HOLES</tt>, unless explicitly defined
+		otherwise.
+	      </p></dd><dt><span class="term"><tt class="literal">PROMOTE_jint2jlong</tt></span></dt><dd><p>
+		If <tt class="literal">PROMOTE_jint2jlong</tt> is enabled, all
+		integer values are to be passed as jlongs.  It is only set by
+		<tt class="literal">PROMOTE_TO_64bits</tt>.
+	      </p></dd><dt><span class="term"><tt class="literal">PROMOTE_jfloat2jdouble</tt></span></dt><dd><p>
+		If <tt class="literal">PROMOTE_jfloat2jdouble</tt> is enabled,
+		<tt class="literal">jfloats</tt> are to be passed as
+		<tt class="literal">jdoubles</tt>.  Note that, when a
+		<tt class="literal">jfloat</tt> is promoted, its calltype will be
+		marked as <tt class="literal">'D'</tt>.  No known port uses this. In
+		fact, alpha must explicitly set it to 0, to prevent
+		<tt class="literal">PROMOTE_TO_64bits</tt> from enabling it.
+	      </p></dd><dt><span class="term"><tt class="literal">ALIGN_AT_64bits</tt></span></dt><dd><p>
+		This causes all 64bit arguments to be aligned at even
+		arguments.  If a <tt class="literal">jlong</tt> or
+		<tt class="literal">jdouble</tt> appears as on odd argument, a
+		place-holder will be introduced.
+	      </p><p>
+		<tt class="literal">ALIGN_AT_64bits</tt> is incompatible with
+		<tt class="literal">NO_HOLES</tt>.
+	      </p></dd></dl></div>
+
+      </p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="callMethodInfo"></a>The <tt class="literal">callMethodInfo</tt> structure</h3></div></div><div></div></div><p>
+	  The <tt class="literal">callMethodInfo</tt> structure describes the
+	  information necessary to invoke a native or just-in-time compiled
+	  method.
+	</p><p>
+	  <tt class="literal">jvalue</tt> is a union defined in
+	  <tt class="filename">include/jtypes.h</tt>.  It corresponds to an entry
+	  on the Java stack.  The suffixes <tt class="literal">i</tt>,
+	  <tt class="literal">j</tt>, <tt class="literal">b</tt>, <tt class="literal">c</tt>,
+	  <tt class="literal">s</tt>, <tt class="literal">l</tt>, <tt class="literal">f</tt>,
+	  <tt class="literal">d</tt> access the corresponding element of (Java) type
+	  <tt class="literal">int</tt>, <tt class="literal">long</tt>,
+	  <tt class="literal">boolean</tt>, <tt class="literal">char</tt>,
+	  <tt class="literal">short</tt>, <tt class="literal">ref</tt>,
+	  <tt class="literal">float</tt>, and <tt class="literal">double</tt>.
+	</p><p>
+	  <tt class="literal">args</tt> is an array containing the arguments passed
+	  to the function. It corresponds to the Java stack and has
+	  <tt class="literal">nrargs</tt> valid entries with the following property:
+
+	  <div class="itemizedlist"><ul type="disc"><li><p>
+		If two adjacent slots on the Java stack are combined to a
+		64bit value, it will also use two array entries, and not one.
+		However, the first entry will contain the 64bit value (in
+		<tt class="literal">j</tt> or <tt class="literal">d</tt>, depending on the
+		type), and the second entry will be undefined.  This allows
+		for easier access, while preserving indexing.  Thus, some
+		array entries will have 0, some 32 and some 64 bits of valid
+		data in them. The callsize array says which one it is.
+	      </p></li><li><p>
+		<tt class="literal">callsize[i]</tt> may be 0, 1, or 2, depending on
+		the number of valid bits in <tt class="literal">args[i]</tt>.
+		Similarly, <tt class="literal">calltype[i]</tt> contains the
+		signature type of the argument in <tt class="literal">args[i]</tt>
+		(<tt class="literal">'J'</tt>, <tt class="literal">'F'</tt>, etc.)
+	      </p></li><li><p>
+		To simplify 32 bit assembly code, we copy the last 32 bits of
+		a 64 bit arg into the next slot.  This allows you to treat
+		args as an array of 32 bit values.  This simplification also
+		makes a C version of <tt class="function">sysdepCallMethod()</tt>
+		more viable.
+	      </p></li><li><p>
+		Note that "<tt class="literal">callsize[i] == 2</tt> iff
+		<tt class="literal">callsize[i+1] == 0</tt>" -- this property can
+		also be exploited by function
+		<tt class="function">sysdepCallMethod()</tt>.
+	      </p></li></ul></div>
+	</p><p>
+	  <tt class="literal">function</tt> is a pointer to the method to be
+	  invoked.
+	</p><p>
+	  <tt class="literal">retsize</tt> and <tt class="literal">rettype</tt> have the
+	  same value ranges as <tt class="literal">callsize[i]</tt> and
+	  <tt class="literal">calltype[i]</tt>, except they correspond to the return
+	  value.  The function <tt class="function">sysdepCallMethod()</tt> must
+	  store the return value in the proper type at
+	  <tt class="literal">*ret</tt>.
+	</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="libffi"></a><tt class="literal">libffi</tt></h3></div></div><div></div></div><p>
+	  If <a href="http://sourceware.cygnus.com/libffi" target="_top">libffi</a>
+	  handle your platform, you can use it to implements function
+	  <tt class="function">sysdepCallMethod()</tt>.  But it's better to
+	  implement it as described bellow.
+	</p><p>
+	  Configure Kaffe with option <tt class="literal">--with-libffi</tt>
+	  explicitly in order to use <tt class="literal">libffi</tt>.
+	</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="libtool"></a>GNU Libtool</h2></div></div><div></div></div><p>
+	Kaffe use <a href="http://www.gnu.org/software/libtool" target="_top">GNU
+	  libtool</a> to build dynamic libraries and modules.  If it is
+	not able to create them, configure Kaffe with options
+	<tt class="literal">--with-staticlib</tt> and
+	<tt class="literal">--with-staticvm</tt>.
+      </p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="port-jit-engine"></a>Chapter&nbsp;3.&nbsp;Port Kaffe <tt class="literal">JIT</tt> engine to a new platform</h2></div></div><div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#jit-config-files">Configuration files</a></dt><dt><a href="#signal-handler">Signals and exceptions handling</a></dt><dt><a href="#FLUSH-DCACHE">Flush contents of data and/or instruction cache</a></dt></dl></div><p>
+      Before port <tt class="literal">JIT</tt> engine, Kaffe
+      <tt class="literal">intrp</tt> engine must work on your platform (see <a href="#port-intrp-engine" title="Chapter&nbsp;2.&nbsp;Port Kaffe intrp engine to a new
+      platform">Chapter&nbsp;2, <i>Port Kaffe intrp engine to a new
+      platform</i></a>).
+    </p><p>
+      If <tt class="literal">JIT back-end</tt> exists for your cpu family, porting
+      <tt class="literal">JIT</tt> engine to your platform will be a simple task.
+    </p><p>
+      If your platform use another C calling convensions (ABI) than those
+      handled by <tt class="literal">JIT back-end</tt> of your cpu family you must
+      change it to handle your ABI (see <a href="#write-jit-back-end" title="Chapter&nbsp;4.&nbsp;Write JIT back-end for a new processor
+      family">Chapter&nbsp;4, <i>Write JIT back-end for a new processor
+      family</i></a>).
+    </p><div class="itemizedlist"><ul type="disc"><li><p>
+	  Quick presentation of <tt class="literal">JIT</tt> engine configuration
+	  files.
+	</p></li><li><p>
+	  NullPointerException, ArithmeticException and signals.
+	</p></li><li><p>
+	  Flush contents of data and/or instruction cache.
+	</p></li></ul></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jit-config-files"></a>Configuration files</h2></div></div><div></div></div><div class="variablelist"><dl><dt><span class="term"><tt class="filename">config/$Khost_cpu/jit.h</tt></span></dt><dd><p>
+	      Master <tt class="literal">JIT back-end</tt> configuration file for
+	      this cpu family.
+	    </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/trampolines.c</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/jit-icode.h</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/jit-$Khost_cpu.def</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/jit3-icode.h</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/jit3-$Khost_cpu.def</tt></span></dt><dd><p>
+	      <tt class="literal">JIT back-end</tt> definitions and functions for
+	      this cpu family.
+	    </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/$Khost_os/jit-md.h</tt>, </span><span class="term"><tt class="filename">config/$Khost_cpu/$Khost_os/jit3-md.h</tt></span></dt><dd><p>
+	      Platform dependent JIT/JIT3 header.
+	    </p><p>
+	      It includes <tt class="filename">$Khost_cpu/jit.h</tt> and defines
+	      <tt class="varname">EXCEPTIONPROTO</tt> and
+	      <tt class="varname">EXCEPTIONFRAME</tt> macros.
+	    </p></dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="signal-handler"></a>Signals and exceptions handling</h2></div></div><div></div></div><p>
+	To handle <tt class="literal">NullPointerException</tt> and
+	<tt class="literal">ArithmeticException</tt> Kaffe <tt class="literal">JIT</tt>
+	engine computes Stack-Frame and Program-Counter from various signals
+	context (<tt class="literal">SIGSEGV</tt>, <tt class="literal">SIGBUS</tt>,
+	<tt class="literal">SIGFPE</tt>).
+      </p><p><a name="EXCEPTIONPROTO"></a>
+	Macro <tt class="literal">EXCEPTIONPROTO</tt> is the function prototype for
+	signal handlers.  It must declare <tt class="literal">sig</tt> as signal
+	number parameter.  Others platform specific parameters are use
+	transparently but commun name for signal context is
+	<tt class="literal">ctx</tt>.
+      </p><p><a name="EXCEPTIONFRAME"></a>
+	Macro <tt class="function">EXCEPTIONFRAME(<i class="replaceable"><tt>frame</tt></i>, ,
+	  <i class="replaceable"><tt>ctx</tt></i>)</tt> computes exception frame
+	<i class="replaceable"><tt>frame</tt></i> from signal context
+	<i class="replaceable"><tt>ctx</tt></i>.  Parameter
+	<i class="replaceable"><tt>frame</tt></i> is a pointer of type
+	<tt class="literal">exceptionFrame</tt> defined in file
+	<tt class="filename">config/$Khost_cpu/jit.h</tt>.  This macro may use
+	other parameters defined by <tt class="literal">EXCEPTIONPROTO</tt>.
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="FLUSH-DCACHE"></a>Flush contents of data and/or instruction cache</h2></div></div><div></div></div><p>
+	Some cpu family require to flush contents of data and/or instruction
+	cache before executing new generated code.
+      </p><p>
+	In this case, macro
+	<tt class="literal">FLUSH_DCACHE(<i class="replaceable"><tt>start</tt></i>,
+	  <i class="replaceable"><tt>end</tt></i>)</tt> must be defined in file
+	<tt class="filename">config/$Khost_cpu/$Khost_os/jit3-md.h</tt>.  Else,
+	this empty macro is defined in file
+	<tt class="filename">config/$Khost_cpu/jit.h</tt>.
+      </p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="write-jit-back-end"></a>Chapter&nbsp;4.&nbsp;Write <tt class="literal">JIT back-end</tt> for a new processor
+      family</h2></div></div><div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#back-end-config-files">Configuration files</a></dt><dt><a href="#trampoline">Method trampoline</a></dt><dt><a href="#jit-functions">Overview of JIT back-end functions.</a></dt><dd><dl><dt><a href="#reg-spill-reload">Register spills and reloads</a></dt><dt><a href="#N1063B">Prologues and epilogues</a></dt><dt><a href="#N10679">Conditional monitor management</a></dt><dt><a href="#N1069E">Moves</a></dt><dt><a href="#N10769">Arithmetic operators</a></dt><dt><a href="#N1096C">Logical operators</a></dt><dt><a href="#N10B3D">Load and store</a></dt><dt><a href="#N10D34">Function argument management</a></dt><dt><a href="#N10D80">Control flow changes</a></dt><dt><a href="#N10E4A">Labels</a></dt><dt><a href="#N10E65">Comparisons</a></dt><dt><a href="#N10EFF">Conversions</a></dt></dl></dd><dt><a href="#N10F39">Registers description.</a></dt><dd><dl><dt><a href="#N10F3E">Register types</a></dt><dt><a href="#N10F43">Register flags</a></dt></dl></dd><dt><a href="#N10F5F">Slots usage.</a></dt><dd><dl><dt><a href="#STACK-LIMIT">Macro STACK_LIMIT()</a></dt></dl></dd></dl></div><p>
+      Before write new <tt class="literal">JIT back-end</tt>, Kaffe
+      <tt class="literal">intrp</tt> engine must work on your platform (see <a href="#port-intrp-engine" title="Chapter&nbsp;2.&nbsp;Port Kaffe intrp engine to a new
+      platform">Chapter&nbsp;2, <i>Port Kaffe intrp engine to a new
+      platform</i></a>).
+    </p><p>
+      In order to port <tt class="literal">JIT back-end</tt>, you must understand some
+      parts of <tt class="literal">JIT</tt> engine.
+    </p><div class="itemizedlist"><ul type="disc"><li><p>
+	  Quick presentation of <tt class="literal">JIT back-end</tt> configuration
+	  files.
+	</p></li><li><p>
+	  Quick description of JIT engine.
+	</p></li><li><p>
+	  All <tt class="literal">JIT back-end</tt> functions.
+	</p></li><li><p>
+	  <tt class="function">buildStackTrace()</tt> and stack inspection.
+	</p></li><li><p>
+	  retrieving lock object from a given exception frame.
+	</p></li><li><p>
+	  Function trampoline.
+	</p></li></ul></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="back-end-config-files"></a>Configuration files</h2></div></div><div></div></div><p>
+	To write new <tt class="literal">JIT back-end</tt>, you must implements the
+	following files:
+
+	<div class="variablelist"><dl><dt><span class="term"><tt class="filename">config/$Khost_cpu/jit.h</tt></span></dt><dd><p>
+		Master <tt class="literal">JIT back-end</tt> configuration file for
+		this cpu family.
+	      </p><p>
+	      It contains
+	      <table summary="Simple list" border="0" class="simplelist"><tr><td>Exception handling information</td></tr><tr><td>Method dispatch</td></tr><tr><td>Register management information</td></tr><tr><td>Opcode generation</td></tr><tr><td>Slot management information</td></tr></table>
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/trampolines.c</tt></span></dt><dd><p>
+		Implementation of trampoline function
+		<tt class="function"><i class="replaceable"><tt>CPU</tt></i>_do_fixup_trampoline()</tt>.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/jit3-$Khost_cpu.def</tt></span></dt><dd><p>
+		This file is the main implementation of the <tt class="literal">JIT
+		  back-end</tt>.  It contains all back-end functions with
+		special marker
+		<tt class="function">define_inst(<i class="replaceable"><tt>function_name</tt></i>, ,
+		  <i class="replaceable"><tt>internal_name</tt></i>)</tt>.
+	      </p></dd><dt><span class="term"><tt class="filename">config/$Khost_cpu/jit3-icode.h</tt></span></dt><dd><p>
+		This file contains definition of all <tt class="literal">JIT
+		  back-end</tt> functions.  There are in fact macro
+		<tt class="literal">HAVE_<i class="replaceable"><tt>function_name</tt></i></tt>
+		define to back-end <i class="replaceable"><tt>internal-name</tt></i>.
+	      </p></dd></dl></div>
+      </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="trampoline"></a>Method trampoline</h2></div></div><div></div></div><p>
+	Kaffe <tt class="literal">JIT</tt> engine translates on the fly Java
+	methods into native code.  It assumes each methods in class
+	<span class="emphasis"><em>dispatch tables</em></span> are natives.  This allows common
+	method invocations in functions <tt class="function">callMethodA()</tt> and
+	<tt class="function">callMethodV()</tt>.
+      </p><p>
+	In fact, Java method entries in dispatch tables are replaced by
+	<span class="emphasis"><em>trampoline</em></span> functions.  First time a method is
+	invoked, his trampoline code is transparently called before real
+	method code is executed.
+      </p><p>
+	The task of the trampoline code is to translate Java method into
+	native code, to replace dispatch table entry with newly translated
+	method and to jump into it.
+      </p><p>
+	The common function <tt class="function">soft_fixup_trampoline()</tt> in
+	file <tt class="filename">kaffe/kaffevm/soft.c</tt> calls translator,
+	replaces dispatch table entry and returns translated method.  The
+	trampoline code is only a glue to call it and jump into translated
+	method.
+      </p><p>
+	The common function <tt class="function">buildTrampoline()</tt> in file
+	<tt class="filename">kaffe/kaffevm/classMethod.c</tt> allocates a
+	<tt class="literal">methodTrampoline</tt> variable per Java method and
+	initializes it with a call to macro
+	<tt class="function">FILL_IN_TRAMPOLINE()</tt>.  This type and this macro
+	are defined in file <tt class="filename">config/$Khost_cpu/jit.h</tt>.
+      </p><div class="variablelist"><dl><dt><a name="methodTrampoline"></a><span class="term"><tt class="literal">struct _methodTrampoline</tt></span></dt><dd><p>
+	      This structure start with an array of native code and two
+	      pointers, <tt class="literal">meth</tt> and <tt class="literal">where</tt>.
+	    </p></dd><dt><a name="FILL-IN-TRAMPOLINE"></a><span class="term"><tt class="function">FILL_IN_TRAMPOLINE(<i class="replaceable"><tt>tramp</tt></i>, ,
+	      <i class="replaceable"><tt>meth</tt></i>, ,
+	      <i class="replaceable"><tt>where</tt></i>)</tt></span></dt><dd><p>
+	      Macro <tt class="function">FILL_IN_TRAMPOLINE()</tt> initializes
+	      trampoline <i class="replaceable"><tt>tramp</tt></i> for method
+	      <i class="replaceable"><tt>meth</tt></i>.  The parameter
+	      <i class="replaceable"><tt>where</tt></i> is the address in dispatch
+	      table.
+	    </p><p>
+	      It setups native code to make a non standard call to assembler
+	      function
+	      <tt class="function"><i class="replaceable"><tt>CPU</tt></i>_do_fixup_trampoline()</tt>.
+	    </p></dd><dt><a name="do-fixup-trampoline"></a><span class="term"><tt class="function"><i class="replaceable"><tt>CPU</tt></i>_do_fixup_trampoline()</tt></span></dt><dd><p>
+	      This assembler function, implemented into file
+	      <tt class="filename">config/$Khost_cpu/trampolines.c</tt>, saves
+	      standard call parameters registers, builds a correct stack frame
+	      to call C function <tt class="function">soft_fixup_trampoline()</tt>.
+	      Then it restores parameters registers, clean up stack frame and
+	      jump into translated method.
+	    </p></dd><dt><a name="FIXUP-TRAMPOLINE-DECL"></a><span class="term">Macro <tt class="literal">FIXUP_TRAMPOLINE_DECL</tt></span></dt><dd><p>
+	      This macro defines the parameters list of function
+	      <tt class="function">soft_fixup_trampoline()</tt>.
+	    </p></dd><dt><a name="FIXUP-TRAMPOLINE-INIT"></a><span class="term">Macro <tt class="literal">FIXUP_TRAMPOLINE_INIT</tt></span></dt><dd><p>
+	      This macro initialize local variable <tt class="literal">meth</tt> and
+	      <tt class="literal">where</tt> from parameters to match same fields of
+	      current trampoline.
+	    </p></dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="jit-functions"></a>Overview of <tt class="literal">JIT back-end</tt> functions.</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="reg-spill-reload"></a>Register spills and reloads</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N105B9"></a><tt class="function">spill_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>
+	    Function
+	    <tt class="function">spill_<i class="replaceable"><tt>TYPE</tt></i>()</tt>
+	    spills <i class="replaceable"><tt>TYPE</tt></i> register
+	    <tt class="literal">seq_slot(0)</tt> into its assigned frame location
+	    offset <tt class="literal">seq_slot(1)</tt>.
+	  </p><p>
+	    It's roughly the same as function <tt class="function">store_offset<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><pre class="programlisting">
+int o = const_int(1);
+int r = sreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+*(<i class="replaceable"><tt>TYPE</tt></i>*)($fp + o) = $r;
+	  </pre><p>
+	    List of functions:
+
+	    <span class="simplelist">
+		<tt class="function">spill_int()</tt>
+	      , 
+		<tt class="function">spill_ref()</tt>
+	      , 
+		<tt class="function">spill_long()</tt>
+	      , 
+		<tt class="function">spill_float()</tt>
+	      , 
+		<tt class="function">spill_double()</tt>
+	      </span>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10602"></a><tt class="function">reload_TYPE()</tt></h4></div></div><div></div></div><p>
+	    Function
+	    <tt class="function">reload_<i class="replaceable"><tt>TYPE</tt></i>()</tt>
+	    reloads <i class="replaceable"><tt>TYPE</tt></i> register
+	    <tt class="literal">seq_slot(0)</tt> from given frame location offset
+	    <tt class="literal">seq_slot(1)</tt>.
+	  </p><p>
+	    It's roughly the same as function <tt class="function">load_offset<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><pre class="programlisting">
+int o = const_int(1);
+int r = lreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$r = *(<i class="replaceable"><tt>TYPE</tt></i>*)($fp + o);
+	  </pre><p>
+	    List of functions:
+
+	    <tt class="function">reload_int()</tt>
+	    <tt class="function">reload_ref()</tt>
+	    <tt class="function">reload_long()</tt>
+	    <tt class="function">reload_float()</tt>
+	    <tt class="function">reload_double()</tt>
+	  </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N1063B"></a>Prologues and epilogues</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1063E"></a><tt class="function">prologue()</tt></h4></div></div><div></div></div><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="epilogue"></a><tt class="function">epilogue()</tt></h4></div></div><div></div></div><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1064B"></a><tt class="function">exception_prologue()</tt></h4></div></div><div></div></div><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="check-stack-limit"></a><tt class="function">check_stack_limit()</tt></h4></div></div><div></div></div><p>
+	    Required if <tt class="literal">defined(STACK_LIMIT)</tt> and
+	    <tt class="function">check_stack_limit_constpool()</tt> is not defined.
+	    See ???.
+	  </p><pre class="programlisting">
+label *stackoverflow = const_label(2);
+int stacklimit = rreg_ref(1);
+
+if ($sp exceeds $stacklimit)
+    call stackoverflow
+	  </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="check-stack-limit-constpool"></a><tt class="function">check_stack_limit_constpool()</tt></h4></div></div><div></div></div><p>
+	    Required if <tt class="literal">defined(STACK_LIMIT)</tt> and
+	    <tt class="function">check_stack_limit()</tt> is not defined.  See
+	    ???.
+	  </p><pre class="programlisting">
+label *stackoverflow = const_label(2);
+int stacklimit = rreg_ref(1);
+
+if ($sp exceeds $stacklimit)
+    call stackoverflow
+	  </pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10679"></a>Conditional monitor management</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1067C"></a><tt class="function">mon_enter()</tt></h4></div></div><div></div></div><p>Optional</p><p>Inlined version of <tt class="function">lockObject()</tt>.</p><p>If missing, replaced by <tt class="literal">soft_call(lockObject)</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1068D"></a><tt class="function">mon_exit()</tt></h4></div></div><div></div></div><p>Optional</p><p>Inlined version of <tt class="function">unlockObject()</tt>.</p><p>If missing, replaced by <tt class="literal">soft_call(unlockObject)</tt>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N1069E"></a>Moves</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N106A1"></a><tt class="function">move_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Move contents of register <tt class="literal">seq_slot(2)</tt> into
+	    register <tt class="literal">seq_slot(0)</tt>.
+	  </p><pre class="programlisting">
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r;
+	  </pre><p>
+	    <tt class="function">move_int()</tt>
+	    <tt class="function">move_ref()</tt>
+	    <tt class="function">move_long()</tt>
+	    <tt class="function">move_float()</tt>
+	    <tt class="function">move_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N106CE"></a><tt class="function">move_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Require macro <tt class="function">HAVE_move_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><p>
+	    Move constant of <tt class="literal">seq_slot(2)</tt> into register
+	    <tt class="literal">seq_slot(0)</tt>.
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> val = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = val;
+	  </pre><p>Warning: test -0.0 and +0.0 with bit sign.</p><p>
+	    <tt class="function">move_int_const()</tt>
+	    <tt class="function">move_ref_const()</tt>
+	    <tt class="function">move_long_const()</tt>
+	    <tt class="function">move_float_const()</tt>
+	    <tt class="function">move_double_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10708"></a><tt class="function">move_any()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Move content of 32bit slot <tt class="literal">seq_slot(2)</tt> into
+	    slot <tt class="literal">seq_slot(0)</tt>.
+	  </p><p>May be defined as an alias to <tt class="function">move_int()</tt>.</p><p>Internal name: <tt class="literal">movea_RxR</tt>.</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10725"></a><tt class="function">move_anylong()</tt></h4></div></div><div></div></div><p>Optional</p><p>Not used yet.</p><p>
+	    Move content of 64bit slot <tt class="literal">seq_slot(2)</tt> into
+	    slot <tt class="literal">seq_slot(0)</tt>.
+	  </p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10739"></a><tt class="function">swap_any()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Exchange content of 32bit slot <tt class="literal">seq_slot(2)</tt> into
+	    slot <tt class="literal">seq_slot(0)</tt>.
+	  </p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1074B"></a><tt class="function">move_label_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Not need if all <tt class="function">load_constpool_<i class="replaceable"><tt>TYPE</tt></i>()</tt> are defined.
+	  </p><p>
+	    Move address of constant label <tt class="literal">seq_slot(2)</tt> into
+	    register <tt class="literal">seq_slot(0)</tt>.  Final constant address
+	    will be compute later.
+	  </p><pre class="programlisting">
+label *l = const_label(2);
+int w = wreg_reg(0);
+
+l-&gt;type |= <span class="emphasis"><em>Lhow-to-update-me</em></span>;
+l-&gt;at = CODEPC;
+$w = l;
+	  </pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10769"></a>Arithmetic operators</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1076C"></a><tt class="function">add_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 + $r2;
+	  </pre><p>
+	    <tt class="function">add_int()</tt>
+	    <tt class="function">add_ref()</tt>
+	    <tt class="function">add_long()</tt>
+	    <tt class="function">add_float()</tt>
+	    <tt class="function">add_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10792"></a><tt class="function">add_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">add_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">add_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>.
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r + o;
+	  </pre><p>
+	    <tt class="function">add_int_const()</tt>
+	    <tt class="function">add_ref_const()</tt>
+	    <tt class="function">add_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N107C5"></a><tt class="function">adc_int()</tt></h4></div></div><div></div></div><p>Optional</p><p>Required if <tt class="function">add_long()</tt> is not implemented.</p><pre class="programlisting">
+int r2 = rreg_int(2);
+int r1 = rreg_int(1);
+int w = wreg_int(0);
+
+$w = $r1 + $r2 with carry;
+	  </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N107D3"></a><tt class="function">sub_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 - $r2;
+	  </pre><p>
+	    <tt class="function">sub_int()</tt>
+	    <tt class="function">sub_long()</tt>
+	    <tt class="function">sub_float()</tt>
+	    <tt class="function">sub_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N107F6"></a><tt class="function">sub_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">sub_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">sub_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>.
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r - o;
+	  </pre><p>
+	    <tt class="function">sub_int_const()</tt>
+	    <tt class="function">sub_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10826"></a><tt class="function">sbc_int()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Required if <tt class="function">sub_long()</tt> and
+	    <tt class="function">set_lt_int()</tt> are not implemented.
+	  </p><pre class="programlisting">
+int r2 = rreg_int(2);
+int r1 = rreg_int(1);
+int w = wreg_int(0);
+
+$w = $r1 - $r2 with carry;
+	  </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10837"></a><tt class="function">set_lt_int()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Required if <tt class="function">sub_long()</tt> and
+	    <tt class="function">sbc_int()</tt> are not implemented.
+	  </p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10847"></a><tt class="function">set_lt_int_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Used if <tt class="function">sub_long()</tt> and
+	    <tt class="function">sbc_int()</tt> are not implemented.
+	  </p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10857"></a><tt class="function">mul_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 * $r2;
+	  </pre><p>
+	    <tt class="function">mul_int()</tt>
+	    <tt class="function">mul_long()</tt>
+	    <tt class="function">mul_float()</tt>
+	    <tt class="function">mul_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1087A"></a><tt class="function">mul_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">mul_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">mul_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r * o;
+	  </pre><p>
+	    <tt class="function">mul_int_const()</tt>
+	    <tt class="function">mul_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N108AA"></a><tt class="function">div_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 / $r2;
+	  </pre><p>
+	    <tt class="function">div_int()</tt>
+	    <tt class="function">div_long()</tt>
+	    <tt class="function">div_float()</tt>
+	    <tt class="function">div_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N108CD"></a><tt class="function">div_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">div_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">div_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r / o;
+	  </pre><p>
+	    <tt class="function">div_int_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N108FA"></a><tt class="function">rem_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 % $r2;
+	  </pre><p>
+	    <tt class="function">rem_int()</tt>
+	    <tt class="function">rem_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10917"></a><tt class="function">rem_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">rem_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">rem_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r % o;
+	  </pre><p>
+	    <tt class="function">rem_int_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10944"></a><tt class="function">neg_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = - $r;
+	  </pre><p>
+	    <tt class="function">neg_int()</tt>
+	    <tt class="function">neg_long()</tt>
+	    <tt class="function">neg_float()</tt>
+	    <tt class="function">neg_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10964"></a><tt class="function">ngc_int()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N1096C"></a>Logical operators</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1096F"></a><tt class="function">and_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 &amp; $r2;
+	  </pre><p>
+	    <tt class="function">and_int()</tt>
+	    <tt class="function">and_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N1098C"></a><tt class="function">and_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">and_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">and_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r &amp; o;
+	  </pre><p>
+	    <tt class="function">and_int_const()</tt>
+	    <tt class="function">and_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N109BC"></a><tt class="function">or_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 | $r2;
+	  </pre><p>
+	    <tt class="function">or_int()</tt>
+	    <tt class="function">or_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N109D9"></a><tt class="function">or_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">or_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">or_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r | o;
+	  </pre><p>
+	    <tt class="function">or_int_const()</tt>
+	    <tt class="function">or_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10A09"></a><tt class="function">xor_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 ^ $r2;
+	  </pre><p>
+	    <tt class="function">xor_int()</tt>
+	    <tt class="function">xor_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10A26"></a><tt class="function">xor_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">xor_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">xor_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r ^ o;
+	  </pre><p>
+	    <tt class="function">xor_int_const()</tt>
+	    <tt class="function">xor_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10A56"></a><tt class="function">lshl_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 &lt;&lt; $r2;
+	  </pre><p>
+	    <tt class="function">lshl_int()</tt>
+	    <tt class="function">lshl_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10A73"></a><tt class="function">lshl_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">lshl_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">lshl_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r &lt;&lt; o;
+	  </pre><p>
+	    <tt class="function">lshl_int_const()</tt>
+	    <tt class="function">lshl_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10AA3"></a><tt class="function">ashr_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 &gt;&gt; $r2;
+	  </pre><p>
+	    <tt class="function">ashr_int()</tt>
+	    <tt class="function">ashr_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10AC0"></a><tt class="function">ashr_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">ashr_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">ashr_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r &gt;&gt; o;
+	  </pre><p>
+	    <tt class="function">ashr_int_const()</tt>
+	    <tt class="function">ashr_long_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10AF0"></a><tt class="function">lshr_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r2 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r1 = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r1 &gt;&gt;&gt; $r2;
+	  </pre><p>
+	    <tt class="function">lshr_int()</tt>
+	    <tt class="function">lshr_long()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10B0D"></a><tt class="function">lshr_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optimize <tt class="function">lshr_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Require macro <tt class="function">lshr_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> o = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = $r &gt;&gt;&gt; o;
+	  </pre><p>
+	    <tt class="function">lshr_int_const()</tt>
+	    <tt class="function">lshr_long_const()</tt>
+	  </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10B3D"></a>Load and store</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10B40"></a><tt class="function">load_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r = rreg_ref(2);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = *(<i class="replaceable"><tt>type</tt></i>*)$r;
+	  </pre><p>
+	    <tt class="function">load_int()</tt>
+	    <tt class="function">load_ref()</tt>
+	    <tt class="function">load_long()</tt>
+	    <tt class="function">load_float()</tt>
+	    <tt class="function">load_double()</tt>
+	    <tt class="function">load_byte()</tt>
+	    <tt class="function">load_char()</tt>
+	    <tt class="function">load_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10B6C"></a><tt class="function">load_constpool_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    If not present, define functions
+	    <tt class="function">move_label_const()</tt> and
+	    <tt class="function">load_<i class="replaceable"><tt>TYPE</tt></i>()</tt>.
+	  </p><p>
+	    Load constant value from constpool.
+	  </p><pre class="programlisting">
+label *val = const_label(2);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+l-&gt;type |= <span class="emphasis"><em>Lhow-to-update-me</em></span>;
+l-&gt;at = CODEPC;
+$w = *(<i class="replaceable"><tt>TYPE</tt></i> *) (constpool[val-&gt;to]);
+	  </pre><p>
+	    <tt class="function">load_constpool_int()</tt>
+	    <tt class="function">load_constpool_ref()</tt>
+	    <tt class="function">load_constpool_long()</tt>
+	    <tt class="function">load_constpool_double()</tt>
+	    <tt class="function">load_constpool_float()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10B9F"></a><tt class="function">load_offset_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Require macro <tt class="function">load_offset_<i class="replaceable"><tt>TYPE</tt></i>_rangecheck()</tt>
+	  </p><pre class="programlisting">
+int o = const_int(2);
+int r = rreg_ref(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = *(<i class="replaceable"><tt>type</tt></i>*)($r + o);
+	  </pre><p>
+	    <tt class="function">load_offset_int()</tt>
+	    <tt class="function">load_offset_ref()</tt>
+	    <tt class="function">load_offset_long()</tt>
+	    <tt class="function">load_offset_float()</tt>
+	    <tt class="function">load_offset_double()</tt>
+	    <tt class="function">load_offset_byte()</tt>
+	    <tt class="function">load_offset_char()</tt>
+	    <tt class="function">load_offset_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10BD3"></a><tt class="function">load_addr_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> *a = const_ref(2);
+int w = sreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = *a;
+	  </pre><p>
+	    <tt class="function">load_addr_int()</tt>
+	    <tt class="function">load_addr_ref()</tt>
+	    <tt class="function">load_addr_long()</tt>
+	    <tt class="function">load_addr_float()</tt>
+	    <tt class="function">load_addr_double()</tt>
+	    <tt class="function">load_addr_byte()</tt>
+	    <tt class="function">load_addr_char()</tt>
+	    <tt class="function">load_addr_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10BFF"></a><tt class="function">load_offset_scaled_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int o = const_int(3);
+int idx = rreg_int(2);
+int r = rreg_ref(1);
+int w = wreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+$w = ((<i class="replaceable"><tt>type</tt></i>*)($r + o))[idx];
+	  </pre><p>
+	    <tt class="function">load_offset_scaled_int()</tt>
+	    <tt class="function">load_offset_scaled_ref()</tt>
+	    <tt class="function">load_offset_scaled_long()</tt>
+	    <tt class="function">load_offset_scaled_float()</tt>
+	    <tt class="function">load_offset_scaled_double()</tt>
+	    <tt class="function">load_offset_scaled_byte()</tt>
+	    <tt class="function">load_offset_scaled_char()</tt>
+	    <tt class="function">load_offset_scaled_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10C2B"></a><tt class="function">load_code_ref()</tt></h4></div></div><div></div></div><p>Optional</p><p>Alpha only ?</p><p>
+	    Use for <tt class="literal">TABLESWITCH</tt> and
+	    <tt class="literal">LOOKUPSWITCH</tt>.
+	  </p><p>
+	    Special form of <tt class="function">load_ref()</tt>.
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10C42"></a><tt class="function">store_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int w = rreg_ref(1);
+
+*(<i class="replaceable"><tt>type</tt></i>*)$w = $r;
+	  </pre><p>
+	    <tt class="function">store_int()</tt>
+	    <tt class="function">store_ref()</tt>
+	    <tt class="function">store_long()</tt>
+	    <tt class="function">store_float()</tt>
+	    <tt class="function">store_double()</tt>
+	    <tt class="function">store_byte()</tt>
+	    <tt class="function">store_char()</tt>
+	    <tt class="function">store_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10C6E"></a><tt class="function">store_offset_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Require macro <tt class="function">store_offset_<i class="replaceable"><tt>TYPE</tt></i>_rangecheck()</tt>
+	  </p><pre class="programlisting">
+int o = const_int(2);
+int w = rreg_ref(1);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(0);
+
+*(<i class="replaceable"><tt>type</tt></i>*)($w + o) = $r;
+	  </pre><p>
+	    <tt class="function">store_offset_int()</tt>
+	    <tt class="function">store_offset_ref()</tt>
+	    <tt class="function">store_offset_long()</tt>
+	    <tt class="function">store_offset_float()</tt>
+	    <tt class="function">store_offset_double()</tt>
+	    <tt class="function">store_offset_byte()</tt>
+	    <tt class="function">store_offset_char()</tt>
+	    <tt class="function">store_offset_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10CA2"></a><tt class="function">store_const_offset_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> val = const_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int o = const_int(1);
+int w = rreg_ref(0);
+
+*(<i class="replaceable"><tt>type</tt></i>*)($w + o) = val;
+	  </pre><p>
+	    <tt class="function">store_const_offset_int()</tt>
+	    <tt class="function">store_const_offset_byte()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10CBF"></a><tt class="function">store_addr_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> *a = const_ref(2);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(1);
+
+*a = $r;
+	  </pre><p>
+	    <tt class="function">store_addr_int()</tt>
+	    <tt class="function">store_addr_ref()</tt>
+	    <tt class="function">store_addr_long()</tt>
+	    <tt class="function">store_addr_float()</tt>
+	    <tt class="function">store_addr_double()</tt>
+	    <tt class="function">store_addr_byte()</tt>
+	    <tt class="function">store_addr_char()</tt>
+	    <tt class="function">store_addr_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10CEB"></a><tt class="function">store_offset_scaled_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+int o = const_int(3);
+int r = rreg_<i class="replaceable"><tt>TYPE</tt></i>(2);
+int idx = rreg_int(1);
+int w = rreg_ref(0);
+
+((<i class="replaceable"><tt>type</tt></i>*)($w + o))[idx] = $r;
+	  </pre><p>
+	    <tt class="function">store_offset_scaled_int()</tt>
+	    <tt class="function">store_offset_scaled_ref()</tt>
+	    <tt class="function">store_offset_scaled_long()</tt>
+	    <tt class="function">store_offset_scaled_float()</tt>
+	    <tt class="function">store_offset_scaled_double()</tt>
+	    <tt class="function">store_offset_scaled_byte()</tt>
+	    <tt class="function">store_offset_scaled_char()</tt>
+	    <tt class="function">store_offset_scaled_short()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D17"></a><tt class="function">store_const_offset_scaled_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><pre class="programlisting">
+<i class="replaceable"><tt>type</tt></i> val = const_<i class="replaceable"><tt>TYPE</tt></i>(3);
+int o = const_int(2);
+int idx = rreg_int(1);
+int w = rreg_ref(0);
+
+((<i class="replaceable"><tt>type</tt></i>*)($w + o))[idx] = val;
+	  </pre><p>
+	    <tt class="function">store_const_offset_scaled_int()</tt>
+	    <tt class="function">store_const_offset_scaled_byte()</tt>
+	  </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10D34"></a>Function argument management</h3></div></div><div></div></div><p>
+	  WRITE-ME: PUSHARG_FORWARDS <tt class="filename">kaffe/kaffevm/jni.c</tt>
+	  <tt class="filename">kaffe/kaffevm/jit3/icode.c</tt>
+	</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D41"></a><tt class="function">pusharg_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>
+	    <tt class="function">pusharg_int()</tt>
+	    <tt class="function">pusharg_ref()</tt>
+	    <tt class="function">pusharg_long()</tt>
+	    <tt class="function">pusharg_float()</tt>
+	    <tt class="function">pusharg_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D5D"></a><tt class="function">pusharg_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Require macro <tt class="function">pusharg_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><p>TODO</p><p>
+	    <tt class="function">pusharg_int_const()</tt>
+	    <tt class="function">pusharg_ref_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D78"></a><tt class="function">popargs()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10D80"></a>Control flow changes</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D83"></a><tt class="function">branch()</tt></h4></div></div><div></div></div><p>Optional</p><p>Required for branch type <tt class="literal">ba</tt>.  See <a href="#epilogue" title="epilogue()">the section called &ldquo;epilogue()&rdquo;</a>.</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10D94"></a><tt class="function">cbranch_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>
+	    <tt class="function">cbranch_int()</tt>
+	    <tt class="function">cbranch_ref()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DA7"></a><tt class="function">cbranch_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Require macro <tt class="function">cbranch_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><p>TODO</p><p>
+	    <tt class="function">cbranch_int_const()</tt>
+	    <tt class="function">cbranch_ref_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DC2"></a><tt class="function">branch_indirect()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DCA"></a><tt class="function">call()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DD2"></a><tt class="function">call_indirect_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DDA"></a><tt class="function">call_soft()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DE2"></a><tt class="function">call_ref()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DEA"></a><tt class="function">ccall()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DF2"></a><tt class="function">fakecall()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>Require <tt class="function">set_label()</tt></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10DFE"></a><tt class="function">fakecall_constpool()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>Require <tt class="function">set_label()</tt></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E0A"></a><tt class="function">get_arg_ptr()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E12"></a><tt class="function">return_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>
+	    <tt class="function">return_int()</tt>
+	    <tt class="function">return_ref()</tt>
+	    <tt class="function">return_long()</tt>
+	    <tt class="function">return_float()</tt>
+	    <tt class="function">return_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E2E"></a><tt class="function">returnarg_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>
+	    <tt class="function">returnarg_int()</tt>
+	    <tt class="function">returnarg_ref()</tt>
+	    <tt class="function">returnarg_long()</tt>
+	    <tt class="function">returnarg_float()</tt>
+	    <tt class="function">returnarg_double()</tt>
+	  </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10E4A"></a>Labels</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E4D"></a><tt class="function">set_label()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E55"></a><tt class="function">build_code_ref()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E5D"></a><tt class="function">build_key()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10E65"></a>Comparisons</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E68"></a><tt class="function">cmp_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Required if <tt class="function">cbranch_<i class="replaceable"><tt>TYPE</tt></i>()</tt> is missing.
+	  </p><p>TODO</p><p>
+	    <tt class="function">cmp_int()</tt>
+	    <tt class="function">cmp_ref()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10E83"></a><tt class="function">cmp_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Required if <tt class="function">cbranch_<i class="replaceable"><tt>TYPE</tt></i>_const()</tt> is missing.
+	  </p><p>
+	    Require macro <tt class="function">cmp_<i class="replaceable"><tt>TYPE</tt></i>_const_rangecheck()</tt>
+	  </p><p>TODO</p><p>
+	    <tt class="function">cmp_int_const()</tt>
+	    <tt class="function">cmp_ref_const()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10EA6"></a><tt class="function">cmp_offset_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>
+	    Optional if <tt class="function">cmp_<i class="replaceable"><tt>TYPE</tt></i>()</tt> is defined.
+	  </p><p>TODO</p><p>
+	    <tt class="function">cmp_offset_int()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10EBE"></a><tt class="function">lcmp()</tt></h4></div></div><div></div></div><p>Optional</p><p>If missing, replaced by <tt class="function">soft_lcmp()</tt></p><p>TODO</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10ECA"></a><tt class="function">cmpl_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>If missing, replaced by <tt class="function">soft_fcmpl()</tt> and
+	    <tt class="function">soft_dcmpl()</tt>.</p><p>TODO</p><p>
+	    <tt class="function">cmpl_float()</tt>
+	    <tt class="function">cmpl_double()</tt>
+	  </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10EE5"></a><tt class="function">cmpg_<i class="replaceable"><tt>TYPE</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>if missing <tt class="function">soft_fcmpg()</tt>,
+	    <tt class="function">soft_dcmpg()</tt></p><p>TODO</p><p>
+	    <tt class="function">cmpg_float()</tt>
+	    <tt class="function">cmpg_double()</tt>
+	  </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10EFF"></a>Conversions</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N10F02"></a><tt class="function">cvt_<i class="replaceable"><tt>FROM</tt></i>, _<i class="replaceable"><tt>TO</tt></i>()</tt></h4></div></div><div></div></div><p>Optional</p><p>TODO</p><p>
+	    <tt class="function">cvt_int_long()</tt>
+	    <tt class="function">cvt_int_float()</tt>
+	    <tt class="function">cvt_int_double()</tt>
+	    <tt class="function">cvt_long_float()</tt>
+	    <tt class="function">cvt_long_double()</tt>
+	    <tt class="function">cvt_float_int()</tt>
+	    <tt class="function">cvt_float_long()</tt>
+	    <tt class="function">cvt_float_double()</tt>
+	    <tt class="function">cvt_double_int()</tt>
+	    <tt class="function">cvt_double_long()</tt>
+	    <tt class="function">cvt_double_float()</tt>
+	    <tt class="function">cvt_int_byte()</tt>
+	    <tt class="function">cvt_int_short()</tt>
+	  </p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10F39"></a>Registers description.</h2></div></div><div></div></div><p>TODO</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10F3E"></a>Register types</h3></div></div><div></div></div><p>
+	  Reserved
+	  Rint
+	  Rsubint
+	  Rref
+	  Rlong
+	  Rfloat
+	  Rdouble
+	</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N10F43"></a>Register flags</h3></div></div><div></div></div><div class="variablelist"><dl><dt><span class="term"><tt class="literal">Rreadonce</tt></span></dt><dd><p>
+		For stack register.  As soon as read, content is discared.
+	      </p></dd><dt><span class="term"><tt class="literal">Rnosaveoncall</tt></span></dt><dd><p>
+		Register is preserved across function call, it's not necessary
+		to save it on call.
+	      </p></dd><dt><span class="term"><tt class="literal">Rglobal</tt></span></dt><dd><p>
+		Function global register.
+	      </p></dd></dl></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10F5F"></a>Slots usage.</h2></div></div><div></div></div><p>TODO</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="STACK-LIMIT"></a>Macro <tt class="function">STACK_LIMIT()</tt></h3></div></div><div></div></div><p>
+	  If this macro is defined the result of function
+	  <tt class="function">jthread_stacklimit()</tt> is passed as an extra
+	  argument to all methods.  This macro return the slot offset of this
+	  extra argument.
+	</p><p>
+	  One of the functions <tt class="function">check_stack_limit()</tt> and
+	  <tt class="function">check_stack_limit_constpool()</tt> must be defined.
+	  See <a href="#check-stack-limit" title="check_stack_limit()">the section called &ldquo;check_stack_limit()&rdquo;</a> and  <a href="#check-stack-limit-constpool" title="check_stack_limit_constpool()">the section called &ldquo;check_stack_limit_constpool()&rdquo;</a>
+	</p></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="N10F7D"></a>Chapter&nbsp;5.&nbsp;Tips</h2></div></div><div></div></div><div class="itemizedlist"><ul type="disc"><li><p>
+	  Source file <tt class="filename">developers/jit-icode.c</tt> may helps you
+	  to discover correct implementation of various <tt class="literal">JIT
+	    back-end</tt> functions.  Compile it with
+	  <tt class="literal">-S</tt> option and read
+	  <tt class="filename">jit-icode.s</tt> or compile it with
+	  <tt class="literal">-g</tt> option and disassemble various functions with
+	  <tt class="literal">gdb</tt> or what ever debugger you have.
+	</p></li><li><p>
+	  Script <tt class="filename">developers/kaffe-test</tt>.
+	</p></li><li><p>
+	  Class <tt class="filename">VMDebug</tt>.
+	</p></li><li><p>-vmdebug jit,morejit</p></li></ul></div></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="N10FAD"></a>Appendix&nbsp;A.&nbsp;<tt class="filename">jit-icode.c</tt></h2></div></div><div></div></div><pre class="programlisting">
+/* jit-icode.c
+ * $Id: port-kaffe.html,v 1.1 2003/12/10 23:11:51 jim Exp $
+ *
+ * Copyright (c) 2001
+ *     Edouard G. Parmelan.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+typedef long jint;
+typedef unsigned long ujint;
+typedef long long jlong;
+typedef unsigned long long ujlong;
+typedef float jfloat;
+typedef double jdouble;
+typedef signed char jbyte;
+typedef short jshort;
+typedef unsigned short jchar;
+
+typedef unsigned char* uintp;
+
+
+/* Register spills and reloads */
+
+/* spill_TYPE() see store_offset_TYPE() */
+/* reload_TYPE() see load_offset_TYPE() */
+
+/* Prologues and epilogues */
+
+extern int do_some_job(int a0, int a1, int a2, int a3);
+
+extern int do_other_job(int a0, int a1, int a2, int a3,
+			int a4, int a5, int a6, int a7,
+			int a8, int a9, int a10, int a11,
+			int a12, int a13, int a14, int a15);
+
+int prologue_epilogue_4(int a0, int a1, int a2, int a3)
+{
+    int v0;
+
+    v0 = do_some_job (a0, a1, a2, a3);
+    return v0;
+}
+
+int prologue_epilogue_8(int a0, int a1, int a2, int a3,
+			int a4, int a5, int a6, int a7)
+{
+    int v0, v1;
+
+    v0 = do_some_job (a0, a1, a2, a3);
+    v1 = do_some_job (a4, a5, a6, a7);
+    return v0 + v1;
+}
+
+int prologue_epilogue_12(int a0, int a1, int a2, int a3,
+			 int a4, int a5, int a6, int a7,
+			 int a8, int a9, int a10, int a11)
+{
+    int v0, v1, v2;
+
+    v0 = do_some_job (a0, a1, a2, a3);
+    v1 = do_some_job (a4, a5, a6, a7);
+    v2 = do_some_job (a8, a9, a10, a11);
+    return v0 + v1 + v2;
+}
+
+int prologue_epilogue_16(int a0, int a1, int a2, int a3,
+			 int a4, int a5, int a6, int a7,
+			 int a8, int a9, int a10, int a11,
+			 int a12, int a13, int a14, int a15)
+{
+    int v0, v1, v2, v3;
+
+    v0 = do_some_job (a0, a1, a2, a3);
+    v1 = do_some_job (a4, a5, a6, a7);
+    v2 = do_some_job (a8, a9, a10, a11);
+    v3 = do_some_job (a12, a13, a14, a15);
+    return v0 + v1 + v2 + v3;
+}
+
+int prologue_epilogue_16_long(int a0, int a1, int a2, int a3,
+			      int a4, int a5, int a6, int a7,
+			      int a8, int a9, int a10, int a11,
+			      int a12, int a13, int a14, int a15)
+{
+    int v0, v1, v2, v3, v4;
+
+    v0 = do_some_job (a0, a1, a2, a3);
+    v1 = do_some_job (a4, a5, a6, a7);
+    v2 = do_some_job (a8, a9, a10, a11);
+    v3 = do_some_job (a12, a13, a14, a15);
+    v4 = do_other_job (a0, a1, a2, a3,
+		       a4, a5, a6, a7,
+		       a8, a9, a10, a11,
+		       a12, a13, a14, a15);
+    return do_some_job (v0, v1, v2, v3) + v4;
+}
+
+
+/* Moves */
+
+#define move_int_const(NAME, val) \
+	jint move_int_const_##NAME(void) { return val; }
+
+move_int_const(0, 0);
+move_int_const(32767, 32767)
+move_int_const(m32768, -32768)
+move_int_const(0x7fff, 0x7fff)
+move_int_const(m0x8000, -0x8000)
+move_int_const(0x8000, 0x8000)
+move_int_const(65535, 65535)
+move_int_const(65536, 65536)
+
+
+/* Arithmetic operators */
+
+#define add_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a + b; }
+
+add_TYPE(add_int, jint);
+// add_TYPE(add_ref, void*);
+add_TYPE(add_long, jlong);
+add_TYPE(add_float, jfloat);
+add_TYPE(add_double, jdouble);
+
+
+#define sub_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a - b; }
+
+sub_TYPE(sub_int, jint);
+// sub_TYPE(sub_ref, void*);
+sub_TYPE(sub_long, jlong);
+sub_TYPE(sub_float, jfloat);
+sub_TYPE(sub_double, jdouble);
+
+
+#define mul_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a * b; }
+
+mul_TYPE(mul_int, jint);
+mul_TYPE(mul_long, jlong);
+mul_TYPE(mul_float, jfloat);
+mul_TYPE(mul_double, jdouble);
+
+
+#define div_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a / b; }
+
+div_TYPE(div_int, jint);
+div_TYPE(div_long, jlong);
+div_TYPE(div_float, jfloat);
+div_TYPE(div_double, jdouble);
+
+
+#define rem_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a % b; }
+
+rem_TYPE(rem_int, jint);
+rem_TYPE(rem_long, jlong);
+
+
+#define neg_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a) { return -a; }
+
+neg_TYPE(neg_int, jint);
+neg_TYPE(neg_long, jlong);
+neg_TYPE(neg_float, jfloat);
+neg_TYPE(neg_double, jdouble);
+
+
+/* Logical operators */
+
+#define and_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a &amp; b; }
+
+and_TYPE(and_int, jint);
+and_TYPE(and_long, jlong);
+
+
+#define or_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a | b; }
+
+or_TYPE(or_int, jint);
+or_TYPE(or_long, jlong);
+
+
+#define xor_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a ^ b; }
+
+xor_TYPE(xor_int, jint);
+xor_TYPE(xor_long, jlong);
+
+
+#define lshl_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a &lt;&lt; b; }
+
+lshl_TYPE(lshl_int, jint);
+lshl_TYPE(lshl_long, jlong);
+
+#define lshl_int_const(NAME, VAL) \
+	jint lshl_int_const_##NAME(jint a) { return a &lt;&lt; VAL; }
+
+lshl_int_const(1, 1)
+lshl_int_const(2, 2)
+lshl_int_const(3, 3)
+lshl_int_const(4, 4)
+lshl_int_const(5, 5)
+lshl_int_const(6, 6)
+lshl_int_const(7, 7)
+lshl_int_const(8, 8)
+lshl_int_const(9, 9)
+lshl_int_const(10, 10)
+lshl_int_const(11, 11)
+lshl_int_const(12, 12)
+lshl_int_const(13, 13)
+lshl_int_const(14, 14)
+lshl_int_const(15, 15)
+lshl_int_const(16, 16)
+lshl_int_const(17, 17)
+lshl_int_const(18, 18)
+lshl_int_const(19, 19)
+lshl_int_const(20, 20)
+lshl_int_const(21, 21)
+
+#define ashr_TYPE(NAME, TYPE) \
+	TYPE NAME (TYPE a, TYPE b) { return a &gt;&gt; b; }
+
+ashr_TYPE(ashr_int, jint);
+ashr_TYPE(ashr_long, jlong);
+
+
+#define lshr_TYPE(NAME, TYPE) \
+	TYPE NAME (u##TYPE a, TYPE b) { return a &gt;&gt; b; }
+
+lshr_TYPE(lshr_int, jint);
+lshr_TYPE(lshr_long, jlong);
+
+
+/* Load and store */
+
+#define load_TYPE(NAME, TYPE) \
+	TYPE NAME (uintp r) { return *(TYPE *)r; }
+
+load_TYPE(load_int, jint);
+load_TYPE(load_ref, void*);
+load_TYPE(load_long, jlong);
+load_TYPE(load_float, jfloat);
+load_TYPE(load_double, jdouble);
+load_TYPE(load_byte, jbyte);
+load_TYPE(load_char, jchar);
+load_TYPE(load_short, jshort);
+
+// load_constpool_TYPE
+
+#define load_offset_TYPE(NAME, TYPE) \
+	TYPE NAME (uintp r, int o) { return *(TYPE *)(r + o); }
+
+load_offset_TYPE(load_offset_int, jint);
+load_offset_TYPE(load_offset_ref, void*);
+load_offset_TYPE(load_offset_long, jlong);
+load_offset_TYPE(load_offset_float, jfloat);
+load_offset_TYPE(load_offset_double, jdouble);
+load_offset_TYPE(load_offset_byte, jbyte);
+load_offset_TYPE(load_offset_char, jchar);
+load_offset_TYPE(load_offset_short, jshort);
+
+#define load_addr_TYPE(NAME, TYPE) \
+	TYPE NAME (void) { return *(TYPE *)(0x87654321); }
+
+load_addr_TYPE(load_addr_int, jint);
+load_addr_TYPE(load_addr_ref, void*);
+load_addr_TYPE(load_addr_long, jlong);
+load_addr_TYPE(load_addr_float, jfloat);
+load_addr_TYPE(load_addr_double, jdouble);
+load_addr_TYPE(load_addr_byte, jbyte);
+load_addr_TYPE(load_addr_char, jchar);
+load_addr_TYPE(load_addr_short, jshort);
+
+
+#define load_offset_scaled_TYPE(NAME, TYPE) \
+	TYPE NAME (uintp r, int idx, int o) { return ((TYPE *)(r + o))[idx]; }
+
+load_offset_scaled_TYPE(load_offset_scaled_int, jint);
+load_offset_scaled_TYPE(load_offset_scaled_ref, void*);
+load_offset_scaled_TYPE(load_offset_scaled_long, jlong);
+load_offset_scaled_TYPE(load_offset_scaled_float, jfloat);
+load_offset_scaled_TYPE(load_offset_scaled_double, jdouble);
+load_offset_scaled_TYPE(load_offset_scaled_byte, jbyte);
+load_offset_scaled_TYPE(load_offset_scaled_char, jchar);
+load_offset_scaled_TYPE(load_offset_scaled_short, jshort);
+
+
+#define store_TYPE(NAME, TYPE) \
+	void NAME (TYPE r, uintp w) { *(TYPE *)w = r; }
+
+store_TYPE(store_int, jint);
+store_TYPE(store_ref, void*);
+store_TYPE(store_long, jlong);
+store_TYPE(store_float, jfloat);
+store_TYPE(store_double, jdouble);
+store_TYPE(store_byte, jbyte);
+store_TYPE(store_char, jchar);
+store_TYPE(store_short, jshort);
+
+
+#define store_offset_TYPE(NAME, TYPE) \
+	void NAME (TYPE r, uintp w, int o) { *(TYPE *)(w + o) = r; }
+
+store_offset_TYPE(store_offset_int, jint);
+store_offset_TYPE(store_offset_ref, void*);
+store_offset_TYPE(store_offset_long, jlong);
+store_offset_TYPE(store_offset_float, jfloat);
+store_offset_TYPE(store_offset_double, jdouble);
+store_offset_TYPE(store_offset_byte, jbyte);
+store_offset_TYPE(store_offset_char, jchar);
+store_offset_TYPE(store_offset_short, jshort);
+
+// store_addr_TYPE
+
+#define store_offset_scaled_TYPE(NAME, TYPE) \
+	void NAME (TYPE r, uintp w, int idx, int o) { ((TYPE *)(w + o))[idx] = r; }
+
+store_offset_scaled_TYPE(store_offset_scaled_int, jint);
+store_offset_scaled_TYPE(store_offset_scaled_ref, void*);
+store_offset_scaled_TYPE(store_offset_scaled_long, jlong);
+store_offset_scaled_TYPE(store_offset_scaled_float, jfloat);
+store_offset_scaled_TYPE(store_offset_scaled_double, jdouble);
+store_offset_scaled_TYPE(store_offset_scaled_byte, jbyte);
+store_offset_scaled_TYPE(store_offset_scaled_char, jchar);
+store_offset_scaled_TYPE(store_offset_scaled_short, jshort);
+
+
+
+/* Function argument management */
+
+/* Control flow changes */
+
+/* Labels */
+
+/* Comparisons */
+
+/* Conversions */
+
+#define cvt_FROM_TO(NAME, FROM, TO) \
+	TO NAME(FROM a) { return (TO)a; }
+
+cvt_FROM_TO(cvt_int_long, jint, jlong);
+cvt_FROM_TO(cvt_int_float, jint, jfloat);
+cvt_FROM_TO(cvt_int_double, jint, jdouble);
+cvt_FROM_TO(cvt_long_float, jlong, jfloat);
+cvt_FROM_TO(cvt_long_double, jlong, jdouble);
+cvt_FROM_TO(cvt_float_int, jfloat, jint);
+cvt_FROM_TO(cvt_float_long, jfloat, jlong);
+cvt_FROM_TO(cvt_float_double, jfloat, jdouble);
+cvt_FROM_TO(cvt_double_int, jdouble, jint);
+cvt_FROM_TO(cvt_double_long, jdouble, jlong);
+cvt_FROM_TO(cvt_double_float, jdouble, jfloat);
+cvt_FROM_TO(cvt_int_byte, jint, jbyte);
+cvt_FROM_TO(cvt_int_short, jint, jshort);
+
+
+
+/*
+ * Local variables:
+ * compile-command: "gcc -O2 -fverbose-asm -S jit-icode.c"
+ * End:
+ */
+
+    </pre></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="gfdl"></a>Appendix&nbsp;B.&nbsp;GNU Free Documentation License</h2></div></div><div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>0. <a href="#N10FC1">PREAMBLE</a></dt><dt>1. <a href="#N10FCB">APPLICABILITY AND DEFINITIONS</a></dt><dt>2. <a href="#N10FDF">VERBATIM COPYING</a></dt><dt>3. <a href="#N10FE7">COPYING IN QUANTITY</a></dt><dt>4. <a href="#N10FF3">MODIFICATIONS</a></dt><dt>5. <a href="#N1102F">COMBINING DOCUMENTS</a></dt><dt>6. <a href="#N11039">COLLECTIONS OF DOCUMENTS</a></dt><dt>7. <a href="#N11041">AGGREGATION WITH INDEPENDENT WORKS</a></dt><dt>8. <a href="#N11049">TRANSLATION</a></dt><dt>9. <a href="#N1104F">TERMINATION</a></dt><dt>10. <a href="#N11055">FUTURE REVISIONS OF THIS LICENSE</a></dt><dt><a href="#N11061">How to use this License for your documents</a></dt></dl></div><p>Version 1.1, March 2000</p><div class="blockquote"><blockquote class="blockquote"><p>Copyright (C) 2000  Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.</p></blockquote></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10FC1"></a>PREAMBLE</h2></div></div><div></div></div><p>The purpose of this License is to make a manual, textbook,
+    or other written document "free" in the sense of freedom: to
+    assure everyone the effective freedom to copy and redistribute it,
+    with or without modifying it, either commercially or
+    noncommercially.  Secondarily, this License preserves for the
+    author and publisher a way to get credit for their work, while not
+    being considered responsible for modifications made by
+    others.</p><p>This License is a kind of "copyleft", which means that
+    derivative works of the document must themselves be free in the
+    same sense.  It complements the GNU General Public License, which
+    is a copyleft license designed for free software.</p><p>We have designed this License in order to use it for manuals
+    for free software, because free software needs free documentation:
+    a free program should come with manuals providing the same
+    freedoms that the software does.  But this License is not limited
+    to software manuals; it can be used for any textual work,
+    regardless of subject matter or whether it is published as a
+    printed book.  We recommend this License principally for works
+    whose purpose is instruction or reference.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10FCB"></a>APPLICABILITY AND DEFINITIONS</h2></div></div><div></div></div><p>This License applies to any manual or other work that
+    contains a notice placed by the copyright holder saying it can be
+    distributed under the terms of this License.  The "Document",
+    below, refers to any such manual or work.  Any member of the
+    public is a licensee, and is addressed as "you".</p><p>A "Modified Version" of the Document means any work
+    containing the Document or a portion of it, either copied
+    verbatim, or with modifications and/or translated into another
+    language.</p><p>A "Secondary Section" is a named appendix or a front-matter
+    section of the Document that deals exclusively with the
+    relationship of the publishers or authors of the Document to the
+    Document's overall subject (or to related matters) and contains
+    nothing that could fall directly within that overall subject.
+    (For example, if the Document is in part a textbook of
+    mathematics, a Secondary Section may not explain any mathematics.)
+    The relationship could be a matter of historical connection with
+    the subject or with related matters, or of legal, commercial,
+    philosophical, ethical or political position regarding
+    them.</p><p>The "Invariant Sections" are certain Secondary Sections
+    whose titles are designated, as being those of Invariant Sections,
+    in the notice that says that the Document is released under this
+    License.</p><p>The "Cover Texts" are certain short passages of text that
+    are listed, as Front-Cover Texts or Back-Cover Texts, in the
+    notice that says that the Document is released under this
+    License.</p><p>A "Transparent" copy of the Document means a
+    machine-readable copy, represented in a format whose specification
+    is available to the general public, whose contents can be viewed
+    and edited directly and straightforwardly with generic text
+    editors or (for images composed of pixels) generic paint programs
+    or (for drawings) some widely available drawing editor, and that
+    is suitable for input to text formatters or for automatic
+    translation to a variety of formats suitable for input to text
+    formatters.  A copy made in an otherwise Transparent file format
+    whose markup has been designed to thwart or discourage subsequent
+    modification by readers is not Transparent.  A copy that is not
+    "Transparent" is called "Opaque".</p><p>Examples of suitable formats for Transparent copies include
+    plain ASCII without markup, Texinfo input format, LaTeX input
+    format, SGML or XML using a publicly available DTD, and
+    standard-conforming simple HTML designed for human modification.
+    Opaque formats include PostScript, PDF, proprietary formats that
+    can be read and edited only by proprietary word processors, SGML
+    or XML for which the DTD and/or processing tools are not generally
+    available, and the machine-generated HTML produced by some word
+    processors for output purposes only.</p><p>The "Title Page" means, for a printed book, the title page
+    itself, plus such following pages as are needed to hold, legibly,
+    the material this License requires to appear in the title page.
+    For works in formats which do not have any title page as such,
+    "Title Page" means the text near the most prominent appearance of
+    the work's title, preceding the beginning of the body of the
+    text.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10FDF"></a>VERBATIM COPYING</h2></div></div><div></div></div><p>You may copy and distribute the Document in any medium,
+    either commercially or noncommercially, provided that this
+    License, the copyright notices, and the license notice saying this
+    License applies to the Document are reproduced in all copies, and
+    that you add no other conditions whatsoever to those of this
+    License.  You may not use technical measures to obstruct or
+    control the reading or further copying of the copies you make or
+    distribute.  However, you may accept compensation in exchange for
+    copies.  If you distribute a large enough number of copies you
+    must also follow the conditions in section 3.</p><p>You may also lend copies, under the same conditions stated
+    above, and you may publicly display copies.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10FE7"></a>COPYING IN QUANTITY</h2></div></div><div></div></div><p>If you publish printed copies of the Document numbering more
+    than 100, and the Document's license notice requires Cover Texts,
+    you must enclose the copies in covers that carry, clearly and
+    legibly, all these Cover Texts: Front-Cover Texts on the front
+    cover, and Back-Cover Texts on the back cover.  Both covers must
+    also clearly and legibly identify you as the publisher of these
+    copies.  The front cover must present the full title with all
+    words of the title equally prominent and visible.  You may add
+    other material on the covers in addition.  Copying with changes
+    limited to the covers, as long as they preserve the title of the
+    Document and satisfy these conditions, can be treated as verbatim
+    copying in other respects.</p><p>If the required texts for either cover are too voluminous to
+    fit legibly, you should put the first ones listed (as many as fit
+    reasonably) on the actual cover, and continue the rest onto
+    adjacent pages.</p><p>If you publish or distribute Opaque copies of the Document
+    numbering more than 100, you must either include a
+    machine-readable Transparent copy along with each Opaque copy, or
+    state in or with each Opaque copy a publicly-accessible
+    computer-network location containing a complete Transparent copy
+    of the Document, free of added material, which the general
+    network-using public has access to download anonymously at no
+    charge using public-standard network protocols.  If you use the
+    latter option, you must take reasonably prudent steps, when you
+    begin distribution of Opaque copies in quantity, to ensure that
+    this Transparent copy will remain thus accessible at the stated
+    location until at least one year after the last time you
+    distribute an Opaque copy (directly or through your agents or
+    retailers) of that edition to the public.</p><p>It is requested, but not required, that you contact the
+    authors of the Document well before redistributing any large
+    number of copies, to give them a chance to provide you with an
+    updated version of the Document.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N10FF3"></a>MODIFICATIONS</h2></div></div><div></div></div><p>You may copy and distribute a Modified Version of the
+    Document under the conditions of sections 2 and 3 above, provided
+    that you release the Modified Version under precisely this
+    License, with the Modified Version filling the role of the
+    Document, thus licensing distribution and modification of the
+    Modified Version to whoever possesses a copy of it.  In addition,
+    you must do these things in the Modified Version:</p><div class="orderedlist"><ol type="A"><li><p>Use in the Title Page
+      (and on the covers, if any) a title distinct from that of the
+      Document, and from those of previous versions (which should, if
+      there were any, be listed in the History section of the
+      Document).  You may use the same title as a previous version if
+      the original publisher of that version gives permission.</p></li><li><p>List on the Title Page,
+      as authors, one or more persons or entities responsible for
+      authorship of the modifications in the Modified Version,
+      together with at least five of the principal authors of the
+      Document (all of its principal authors, if it has less than
+      five).</p></li><li><p>State on the Title page
+      the name of the publisher of the Modified Version, as the
+      publisher.</p></li><li><p>Preserve all the
+      copyright notices of the Document.</p></li><li><p>Add an appropriate
+      copyright notice for your modifications adjacent to the other
+      copyright notices.</p></li><li><p>Include, immediately
+      after the copyright notices, a license notice giving the public
+      permission to use the Modified Version under the terms of this
+      License, in the form shown in the Addendum below.</p></li><li><p>Preserve in that license
+      notice the full lists of Invariant Sections and required Cover
+      Texts given in the Document's license notice.</p></li><li><p>Include an unaltered
+      copy of this License.</p></li><li><p>Preserve the section
+      entitled "History", and its title, and add to it an item stating
+      at least the title, year, new authors, and publisher of the
+      Modified Version as given on the Title Page.  If there is no
+      section entitled "History" in the Document, create one stating
+      the title, year, authors, and publisher of the Document as given
+      on its Title Page, then add an item describing the Modified
+      Version as stated in the previous sentence.</p></li><li><p>Preserve the network
+      location, if any, given in the Document for public access to a
+      Transparent copy of the Document, and likewise the network
+      locations given in the Document for previous versions it was
+      based on.  These may be placed in the "History" section.  You
+      may omit a network location for a work that was published at
+      least four years before the Document itself, or if the original
+      publisher of the version it refers to gives permission.</p></li><li><p>In any section entitled
+      "Acknowledgements" or "Dedications", preserve the section's
+      title, and preserve in the section all the substance and tone of
+      each of the contributor acknowledgements and/or dedications
+      given therein.</p></li><li><p>Preserve all the
+      Invariant Sections of the Document, unaltered in their text and
+      in their titles.  Section numbers or the equivalent are not
+      considered part of the section titles.</p></li><li><p>Delete any section
+      entitled "Endorsements".  Such a section may not be included in
+      the Modified Version.</p></li><li><p>Do not retitle any
+      existing section as "Endorsements" or to conflict in title with
+      any Invariant Section.</p></li></ol></div><p>If the Modified Version includes new front-matter sections
+    or appendices that qualify as Secondary Sections and contain no
+    material copied from the Document, you may at your option
+    designate some or all of these sections as invariant.  To do this,
+    add their titles to the list of Invariant Sections in the Modified
+    Version's license notice.  These titles must be distinct from any
+    other section titles.</p><p>You may add a section entitled "Endorsements", provided it
+    contains nothing but endorsements of your Modified Version by
+    various parties--for example, statements of peer review or that
+    the text has been approved by an organization as the authoritative
+    definition of a standard.</p><p>You may add a passage of up to five words as a Front-Cover
+    Text, and a passage of up to 25 words as a Back-Cover Text, to the
+    end of the list of Cover Texts in the Modified Version.  Only one
+    passage of Front-Cover Text and one of Back-Cover Text may be
+    added by (or through arrangements made by) any one entity.  If the
+    Document already includes a cover text for the same cover,
+    previously added by you or by arrangement made by the same entity
+    you are acting on behalf of, you may not add another; but you may
+    replace the old one, on explicit permission from the previous
+    publisher that added the old one.</p><p>The author(s) and publisher(s) of the Document do not by
+    this License give permission to use their names for publicity for
+    or to assert or imply endorsement of any Modified Version.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N1102F"></a>COMBINING DOCUMENTS</h2></div></div><div></div></div><p>You may combine the Document with other documents released
+    under this License, under the terms defined in section 4 above for
+    modified versions, provided that you include in the combination
+    all of the Invariant Sections of all of the original documents,
+    unmodified, and list them all as Invariant Sections of your
+    combined work in its license notice.</p><p>The combined work need only contain one copy of this
+    License, and multiple identical Invariant Sections may be replaced
+    with a single copy.  If there are multiple Invariant Sections with
+    the same name but different contents, make the title of each such
+    section unique by adding at the end of it, in parentheses, the
+    name of the original author or publisher of that section if known,
+    or else a unique number.  Make the same adjustment to the section
+    titles in the list of Invariant Sections in the license notice of
+    the combined work.</p><p>In the combination, you must combine any sections entitled
+    "History" in the various original documents, forming one section
+    entitled "History"; likewise combine any sections entitled
+    "Acknowledgements", and any sections entitled "Dedications".  You
+    must delete all sections entitled "Endorsements."</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N11039"></a>COLLECTIONS OF DOCUMENTS</h2></div></div><div></div></div><p>You may make a collection consisting of the Document and
+    other documents released under this License, and replace the
+    individual copies of this License in the various documents with a
+    single copy that is included in the collection, provided that you
+    follow the rules of this License for verbatim copying of each of
+    the documents in all other respects.</p><p>You may extract a single document from such a collection,
+    and distribute it individually under this License, provided you
+    insert a copy of this License into the extracted document, and
+    follow this License in all other respects regarding verbatim
+    copying of that document.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N11041"></a>AGGREGATION WITH INDEPENDENT WORKS</h2></div></div><div></div></div><p>A compilation of the Document or its derivatives with other
+    separate and independent documents or works, in or on a volume of
+    a storage or distribution medium, does not as a whole count as a
+    Modified Version of the Document, provided no compilation
+    copyright is claimed for the compilation.  Such a compilation is
+    called an "aggregate", and this License does not apply to the
+    other self-contained works thus compiled with the Document, on
+    account of their being thus compiled, if they are not themselves
+    derivative works of the Document.</p><p>If the Cover Text requirement of section 3 is applicable to
+    these copies of the Document, then if the Document is less than
+    one quarter of the entire aggregate, the Document's Cover Texts
+    may be placed on covers that surround only the Document within the
+    aggregate.  Otherwise they must appear on covers around the whole
+    aggregate.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N11049"></a>TRANSLATION</h2></div></div><div></div></div><p>Translation is considered a kind of modification, so you may
+    distribute translations of the Document under the terms of section
+    4.  Replacing Invariant Sections with translations requires
+    special permission from their copyright holders, but you may
+    include translations of some or all Invariant Sections in addition
+    to the original versions of these Invariant Sections.  You may
+    include a translation of this License provided that you also
+    include the original English version of this License.  In case of
+    a disagreement between the translation and the original English
+    version of this License, the original English version will
+    prevail.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N1104F"></a>TERMINATION</h2></div></div><div></div></div><p>You may not copy, modify, sublicense, or distribute the
+    Document except as expressly provided for under this License.  Any
+    other attempt to copy, modify, sublicense or distribute the
+    Document is void, and will automatically terminate your rights
+    under this License.  However, parties who have received copies, or
+    rights, from you under this License will not have their licenses
+    terminated so long as such parties remain in full
+    compliance.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N11055"></a>FUTURE REVISIONS OF THIS LICENSE</h2></div></div><div></div></div><p>The Free Software Foundation may publish new, revised
+    versions of the GNU Free Documentation License from time to time.
+    Such new versions will be similar in spirit to the present
+    version, but may differ in detail to address new problems or
+    concerns.  See <a href="http://www.gnu.org/copyleft/" target="_top">http://www.gnu.org/copyleft/</a>.</p><p>Each version of the License is given a distinguishing
+    version number.  If the Document specifies that a particular
+    numbered version of this License "or any later version" applies to
+    it, you have the option of following the terms and conditions
+    either of that specified version or of any later version that has
+    been published (not as a draft) by the Free Software Foundation.
+    If the Document does not specify a version number of this License,
+    you may choose any version ever published (not as a draft) by the
+    Free Software Foundation.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N11061"></a>How to use this License for your documents</h2></div></div><div></div></div><p>To use this License in a document you have written, include
+    a copy of the License in the document and put the following
+    copyright and license notices just after the title page:</p><div class="blockquote"><blockquote class="blockquote"><p>
+      Copyright (c)  YEAR  YOUR NAME.
+      Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1
+      or any later version published by the Free Software Foundation;
+      with the Invariant Sections being LIST THEIR TITLES, with the
+      Front-Cover Texts being LIST, and with the Back-Cover Texts being LIST.
+      A copy of the license is included in the section entitled "GNU
+      Free Documentation License".
+</p></blockquote></div><p>If you have no Invariant Sections, write "with no Invariant
+    Sections" instead of saying which ones are invariant.  If you have
+    no Front-Cover Texts, write "no Front-Cover Texts" instead of
+    "Front-Cover Texts being LIST"; likewise for Back-Cover
+    Texts.</p><p>If your document contains nontrivial examples of program
+    code, we recommend releasing these examples in parallel under your
+    choice of free software license, such as the GNU General Public
+    License, to permit their use in free software.</p></div></div></div></body></html>

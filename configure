@@ -45909,6 +45909,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files Makefile"
 
+                    ac_config_files="$ac_config_files project.xml project.properties"
+
           ac_config_files="$ac_config_files config/Makefile"
 
           ac_config_files="$ac_config_files include/Makefile"
@@ -46769,6 +46771,8 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "project.xml" ) CONFIG_FILES="$CONFIG_FILES project.xml" ;;
+  "project.properties" ) CONFIG_FILES="$CONFIG_FILES project.properties" ;;
   "config/Makefile" ) CONFIG_FILES="$CONFIG_FILES config/Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "replace/Makefile" ) CONFIG_FILES="$CONFIG_FILES replace/Makefile" ;;

@@ -1,0 +1,4 @@
+maven.docbook.src=@srcdir@/docs/src/docbook
+maven.sdocbook.src.dir=@srcdir@/docs/src/docbook
+
+

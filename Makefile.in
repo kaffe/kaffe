@@ -381,7 +381,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = project.xml project.properties
 SCRIPTS = $(noinst_SCRIPTS)
 
 DIST_SOURCES =
@@ -394,7 +394,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 DIST_COMMON = README $(srcdir)/Makefile.in $(srcdir)/configure \
 	./include/kaffe/jtypes.h.in AUTHORS ChangeLog INSTALL \
 	Makefile.am aclocal.m4 config.guess config.rpath config.sub \
-	configure.in depcomp install-sh ltmain.sh missing mkinstalldirs
+	configure.in depcomp install-sh ltmain.sh missing mkinstalldirs \
+	project.properties.in project.xml.in
 all: all-recursive
 
 .SUFFIXES:
@@ -431,6 +432,10 @@ $(srcdir)/./include/kaffe/jtypes.h.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/conf
 
 distclean-hdr:
 	-rm -f include/kaffe/jtypes.h include/kaffe/stamp-h2
+project.xml: $(top_builddir)/config.status project.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+project.properties: $(top_builddir)/config.status project.properties.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -582,7 +587,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/./include/kaffe $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
+	$(mkinstalldirs) $(distdir)/. $(distdir)/./include/kaffe $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/run_time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -833,6 +838,14 @@ dist-hook:
 	 make && \
 	 cp libraries/javalib/rt.jar ../$(distdir)/libraries/javalib/rt-precompiled.jar \
 	)
+
+# Build HTML docs (requires maven and maven-sddocbook-plugin)
+docs-docbook-html:
+	maven sdocbook:generate-html
+
+# Regenerate HTML docs and copy them to source tree
+docs-regen: docs-docbook-html
+	cp -f target/docs/docbook/*.html $(srcdir)/docs/html
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
