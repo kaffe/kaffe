@@ -1,0 +1,159 @@
+
+Kaffe: Signals & jthreads
+-------------------------
+
+	by Patrick Tullmann and Godmar Back
+	<tullmann@cs.utah.edu> and <gback@cs.utah.edu>.
+
+This document is an attempt to describe the behavior of signals and
+threads in Kaffe, specifically in the jthread threading system.  Other
+threading systems in Kaffe should be similar.  It is hoped that folks
+trying to port Kaffe to other operating systems will use this document
+to figure out just what Kaffe needs in terms of signal and
+setjmp/longjmp support so they can match it to what their OS provides.
+
+Kaffe uses signals for:
+
+	Timeslice expiration for pre-emption (SIGVTALRM).
+	Timeouts on Object.wait()s, Thread.sleep()s (SIGALRM).
+	Asynchronous notification of I/O readiness (SIGIO).
+	Synchronous processor errors (SIGFPE, SIGSEGV, SIGBUS). 
+	Asynchronous notification of a child's death (SIGCHLD).
+	Cleaning up fds before dying (SIGINT, SIGTERM).
+
+	SIGPIPE is ignored (see initExceptions() in baseClasses.c).
+
+	All other signals have their default behavior.
+
+	Neither of the user signals (SIGUSR1 and SIGUSR2) are used for
+	anything in jthreads.  (In Godmar's Linux threads port for
+	Kaffe, the user signals are used for stopping kernel threads.)
+	(Oh, and Godmar once used SIGUSR1 for prompting the VM to
+	dump all sorts of thread info when its received.)
+
+Signals can be grouped into two categories: asynchronous and
+synchronous.  Synchronous signals are a direct result of the current
+thread's immediate action: SIGFPE, SIGSEGV, and SIGBUS. Asynchronous
+signals are those that are not a direct and immediate result of the
+currently executing thread's actions: SIGVTALRM, SIGALRM, SIGIO,
+SIGCHLD.  SIGINT and SIGTERM are terminal signals and are not
+classified as either synchronous nor asynchronous.
+
+Signals are handled by whatever thread is currently executing.
+Signals are handled on the currently executing thread's stack.
+Several operating systems support a separate "signal stack" for
+handling signals.  Kaffe does not use separate signal stacks because
+the GC thread-stack-walk function requires that the registers in
+use when the signal arrived be visible.  In the current scheme those
+registers are pushed onto the thread's stack, so they are directly
+visible to the stack walking code.  This is believed to be the only
+barrier to using a separate signal stack.
+
+In this document "signal state" refers to whatever OS state is saved
+and restored when sigsetjmp() is given a non-zero second argument.  We
+assume that this signal state only includes the mask of blocked
+signals.  If a system includes other information in its signal state,
+the signal handlers will have to clean that state up before
+longjmp()'ing anywhere.
+
+
+Synchronous Signals
+-------------------
+
+For synchronous signals, the handling thread is the thread which
+caused the problem.  How the signal is transformed into a Java
+exception is different in the interpreter and the JIT.  The important
+point is that for synchronous signals, the signal handler *never*
+returns, it unilaterally jumps directly to the exception handler.
+
+For the interpreter, a setjmp() point was created for each exception
+handler entry point as the first bytecode covered by the handler was
+executed.  The signal handler will longjmp() to this point to handle
+the exception.  All of the setjmp()'s occur in the context of the
+virtualMachine() function in intrp/machine.c; virtualMachine()
+recurses for each Java method invocation, so the context of the
+setjmp() is always valid.  The longjmp() to the handler deals with
+"unwinding" the stack, if necessary.  The setjmp() need not include
+signal state as the signal handler will clean up the signal state
+before longjmp()'ing to the exception handler.
+
+The JIT keeps information on code ranges covered by each exception
+handler in a method.  When a synchronous exception is dispatched out
+of the signal handler, the appropriate location is looked up in the
+per-method exception tables, and CALL_KAFFE_EXCEPTION() is invoked.
+This method (on FreeBSD, at least) does an (asm) jmp to the
+appropriate native code to handle the exception after "unwinding" the
+stack.  Since the signal handler for synchronous signals in the JIT
+never returns, the signal handler must clean up the current signal
+state before jumping off into the exception handler.  This entails
+(potentially) restoring the signal handler and (potentially)
+unblocking the signal.  (Some OS's disable the signal handler on first
+use, others don't.  Some OS's block signals before entering a signal
+handler, others don't.)
+
+
+Asynchronous Signals
+--------------------
+
+Asynchronous signals are handled by a thread which is not necessarily
+involved in the action which triggered the signal.  For example, if a
+SIGIO comes in, the handler might put threads which are blocked on the
+appropriate I/O channel onto the runnable queue, and then return.  As
+another example if thread A is running and a SIGVTALRM signal is
+delivered, thread A might enter the thread scheduling code, pick a
+new thread, B, and longjmp() to B's setjmp() point from when it was
+preempted or blocked.  Eventually, thread A will be rescheduled and
+will return from the signal handler into the context where the
+original SIGVTALRM interrupted it.  (Note that rescheduling might
+happen as a result of a SIGIO---for example, if a higher priority
+thread was waiting on the IO channel.)
+
+Because a signal handler might longjmp() into any thread, the signal
+state of the Kaffe process must be clean before the longjmp().  If we
+jumped into a thread and left all the asynchronous signals blocked,
+the system would grind to a halt.
+
+
+The Optimization
+----------------
+
+When a thread blocks (for example on a mutex, in a wait(), due to
+yield(), or in a sleep()) the thread has no interesting signal state
+associated with it.  Saving and restoring this state is potentially a
+great waste of time.  (On FreeBSD the cost of a context switch
+decreases from 1,400 cycles to 240 cycles on a P2-300 when signal
+state is appropriately ignored.)  Thus, we make sure that the process
+signal state is clean before longjmp()'ing out of a signal handler.
+
+
+Signals, Setjmp() and Platform Dependencies
+---------------------------------
+
+Some platforms need to re-install a signal after it arrives.  By
+default, Kaffe calls reinstallSignalHandler() when it feels safe in
+re-enabling the signal.  On some platforms this call may be no-op'd.
+
+For integrity, Kaffe requires that when handling any asynchronous
+signal *all* other asynchronous signals are delayed.  Asynchronous
+signals should be delayed until the signal handler returns, or the
+signal handler explictly unblocks them (unblockAsyncSignals()).  (The
+set of signals to delay while handling signal X is specified by the
+sa_mask field used in the sigaction() call for signal X---see
+registerAsychSignalHandler() in exception.c.)  (NOTE: If delay of all
+asynchronous signals cannot be guaranteed, the race condition between
+checking blockints and disabling interrupts in interrupt() will have
+to be solved in some other fashion.)
+
+For synchronous signals, no signals should be delayed during the
+execution of the signal handler.  Most systems will always delay
+signal X when handling signal X.  The system must support explicitly
+re-enabling the signal as the synchronous signal handlers never return
+(thus, the OS will not get a chance to restore the signal state).
+
+Kaffe requires that sigsetjmp() and siglongjmp() save and restore
+signal state when indicated (the second parameter on the sigsetjmp is
+non-zero).  It is sufficient for correctness if all setjmp/longjmp
+calls save and restore signal state, its just overkill.  It should be
+true that the second parameter to sigsetjmp() is always zero, so the
+system should never have to save or restore signal state for a setjmp
+or longjmp.
