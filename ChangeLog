@@ -1,5 +1,14 @@
 2003-10-04  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.in:
+	Added warning message if mktemp is not found.
+
+	* configure, libraries/javalib/Makefile.am, 
+	libraries/javalib/Makefile.in:
+        Regenerated.
+
+2003-10-04  Dalibor Topic <robilad@kaffe.org>
+
 	* WHATSNEW: Updated to reflect some of the work done
 	since 1.0.7.
 

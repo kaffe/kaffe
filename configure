@@ -19364,6 +19364,10 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+if test  x"$MKTEMP" = x"" ; then
+   { echo "$as_me:$LINENO: WARNING: Warning: mktemp not found. You need mktemp to be able to debug kaffe." >&5
+echo "$as_me: WARNING: Warning: mktemp not found. You need mktemp to be able to debug kaffe." >&2;}
+fi
 # Extract the first word of "jasmin", so it can be a program name with args.
 set dummy jasmin; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
