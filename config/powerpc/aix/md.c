@@ -11,17 +11,6 @@
  * Used by Brad Harvey <b_harvey@hitachi.com>, 1997 for AIX port.
  */
 
-void
-thread_dummy(char *s, ...)
-{   /*
-     *  Dummy volatile function ...
-     */
-
-    volatile int n;
-    n = 0;
-}
-
-
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against
  * value 'O' and if they match it's exchanged with value 'N'.

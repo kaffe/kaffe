@@ -10,12 +10,3 @@
  * Written by Rick Greer <rick@sandpiper.com>, 1996.
  */
 
-void
-thread_dummy(char *s, ...)
-{   /*
-     *  Dummy volatile function ...
-     */
-
-    volatile int n;
-    n = 0;
-}

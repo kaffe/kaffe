@@ -1,5 +1,13 @@
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/powerpc/aix/md.c,
+	config/powerpc/linux/md.c,
+	config/powerpc/machten/md.c:
+	Removed unused thread_dummy function
+	from old Kaffe days.
+
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/locks.c (dumpObjectLocks):
 	Removed unused empty function.
 

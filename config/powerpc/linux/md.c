@@ -23,16 +23,6 @@ init_md(void)
 #endif
 }
 
-/*
- * Dummy volatile function.
- */
-void
-thread_dummy(char* s, ...)
-{
-	volatile int n;
-	n = 0;
-}
-
 #if defined(__GLIBC__)
 extern void * __libc_stack_end;
 
