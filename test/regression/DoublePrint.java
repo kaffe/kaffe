@@ -60,6 +60,8 @@ class DoublePrint {
   }
 }
 
+// Note: kaffe prints incorrect {Double,Float}.MIN_VALUE incorrectly
+
 /* Expected output:
 Double values:
   NaN -> 7ff8000000000000
@@ -68,7 +70,7 @@ Double values:
   NaN
   Infinity
   -Infinity
-  4.9406564584124654E-324	<--- kaffe is wrong
+  4.9406564584124654E-324
   1.7976931348623157E308
   123.75
   -9000000.0
@@ -83,7 +85,7 @@ Float values:
   NaN
   Infinity
   -Infinity
-  1.4012985E-45			<--- kaffe is wrong
+  1.4012985E-45
   3.4028235E38
   123.75
   1.0E7
