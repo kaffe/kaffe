@@ -26,6 +26,11 @@ class LinkedListIterator extends AbstractListIterator {
 	LinkedListIterator(LinkedList list, int index) {
 		super(list, index);
 		elem = list.head;
+		// Position elem to the index'th element.
+		// We know that index is a valid index, because that was 
+		// checked in the constructor in AbstractListIterator.
+		for (; index > 0; index--)
+		  elem = elem.next;
 	}
 
 	public Object next() {

@@ -1,5 +1,21 @@
 2003-05-21 Dalibor Topic <robilad@yahoo.com>
 
+	Regenerated *.in files using automake 1.7.5 and autoconf 2.57.
+
+	* test/regression/Makefile.am:
+	Added SubListTest.java.
+	
+2003-05-21  Daniel Bonniot  <bonniot@users.sourceforge.net>
+
+	* libraries/javalib/java/util/LinkedListIterator: 
+	(LinkedListIterator) make the iteration really take into account
+	the starting index.
+
+	* test/regression/SubListTest.java:
+	new test.
+	
+2003-05-21 Dalibor Topic <robilad@yahoo.com>
+
 	Merged in java/lang/reflect/Proxy implementation from GNU Classpath.
 	
 	* libraries/javalib/gnu/java/lang/reflect/TypeSignature.java:
