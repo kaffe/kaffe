@@ -1,5 +1,15 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/BufferedReader.java:
+	Resynced with GNU Classpath.
+	
+	2004-04-28  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/BufferedReader.java (skip): Removed unused
+	variable.
+
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
         * include/Makefile.am:
 	(NOINSTALL_DERIVED_HDRS) Added java_io_VMFile.h.
 	
