@@ -1,3 +1,19 @@
+2003-03-07 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	regenerated.
+	
+2003-03-07 Mark J Roberts <mjr@znex.org>
+
+	* libraries/clib/io/File.c:
+	(java_io_File_createNewFile0) added mode parameter. Use it instead
+	of a hardcoded mode.
+
+	* libraries/javalib/java/io/File.java
+	(createTempFile) create with mode 0600.
+	(createNewFile) create with mode 0666.
+	(createNewFile0) added mode parameter.
+	
 2003-03-01 Dalibor Topic <robilad@yahoo.com>
 
 	Further merges with JanosVM 1.0

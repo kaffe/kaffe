@@ -319,7 +319,7 @@ java_io_File_isAbsolute(struct Hjava_io_File* this)
 }
 
 jboolean
-java_io_File_createNewFile0(struct Hjava_io_File* this)
+java_io_File_createNewFile0(struct Hjava_io_File* this, jint mode)
 {
 	char str[MAXPATHLEN];
 	int fd;
@@ -327,7 +327,7 @@ java_io_File_createNewFile0(struct Hjava_io_File* this)
 
 	stringJava2CBuf(unhand(this)->path, str, sizeof(str));
 
-	rc = KOPEN(str, O_EXCL|O_WRONLY|O_CREAT, 0666, &fd);
+	rc = KOPEN(str, O_EXCL|O_WRONLY|O_CREAT, mode, &fd);
 	switch (rc) {
 	case 0:
 		break;

@@ -117,7 +117,9 @@ public static File createTempFile(String prefix, String suffix, File dir)
 		File f = new File(dir, prefix
 		    + Integer.toHexString(
 			random.nextInt(0x100000)).toUpperCase() + suffix);
-		if (f.createNewFile())
+
+		f.checkWriteAccess();
+		if (f.createNewFile0(0600))
 			return f;
 	}
 }
@@ -387,10 +389,10 @@ public File getCanonicalFile() throws IOException {
 
 public boolean createNewFile() throws IOException {
 	checkWriteAccess();
-	return createNewFile0();
+	return createNewFile0(0666);
 }
 
-native private boolean createNewFile0() throws IOException;
+native private boolean createNewFile0(int mode) throws IOException;
 
 public boolean setLastModified(long time) {
 	checkWriteAccess();
