@@ -15,27 +15,18 @@ package java.util.jar;
 import java.io.*;
 import java.util.zip.*;
 
-
 public class JarOutputStream extends ZipOutputStream
 {
     public JarOutputStream(OutputStream out, Manifest man) throws IOException
     {
 	super(out);
-
-	// FIXME : how do we write a manifest file?
-	// is there special processing that needs to be done?
-	// what if man is null, the JDK docs do not say anything
-	// about a NullPointerException being thrown.
-
-	if (man == null) {
-	    throw new NullPointerException("man");
+	if (man != null) {
+	    ZipEntry ze = new ZipEntry(JarFile.MANIFEST_NAME);
+	    ze.setMethod(ZipEntry.DEFLATED); // compressed entry
+	    putNextEntry(ze);
+	    man.write(out);
+	    closeEntry();
 	}
-
-	ZipEntry ze = new ZipEntry("META-INF/MANIFEST.MF");
-	ze.setMethod(ZipEntry.DEFLATED); // compressed entry
-	putNextEntry(ze);
-	man.write(out);
-	closeEntry();
     }
 
     public JarOutputStream(OutputStream out) throws IOException
@@ -59,3 +50,4 @@ public class JarOutputStream extends ZipOutputStream
 	super.putNextEntry(ze);
     }
 }
+
