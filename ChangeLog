@@ -1,5 +1,12 @@
 2004-09-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/inet/imap/IMAPConnection.java,
 	libraries/javalib/gnu/inet/pop3/POP3Connection.java,
 	libraries/javalib/gnu/inet/smtp/SMTPConnection.java,

@@ -525,8 +525,11 @@ gnu/inet/util/Logger.java
 gnu/inet/util/MessageInputStream.java
 gnu/inet/util/MessageOutputStream.java
 gnu/inet/util/SaslCallbackHandler.java
+gnu/inet/util/SaslCramMD5.java
 gnu/inet/util/SaslInputStream.java
+gnu/inet/util/SaslLogin.java
 gnu/inet/util/SaslOutputStream.java
+gnu/inet/util/SaslPlain.java
 gnu/inet/util/StderrLogger.java
 gnu/java/awt/BitMaskExtent.java
 gnu/java/awt/BitwiseXORComposite.java

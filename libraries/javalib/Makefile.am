@@ -900,8 +900,11 @@ gnu_inet_util_SRCS = \
 	gnu/inet/util/MessageInputStream.java \
 	gnu/inet/util/MessageOutputStream.java \
 	gnu/inet/util/SaslCallbackHandler.java \
+	gnu/inet/util/SaslCramMD5.java \
 	gnu/inet/util/SaslInputStream.java \
+	gnu/inet/util/SaslLogin.java \
 	gnu/inet/util/SaslOutputStream.java \
+	gnu/inet/util/SaslPlain.java \
 	gnu/inet/util/StderrLogger.java
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
