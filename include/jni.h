@@ -314,7 +314,7 @@ struct JNIEnv_ {
 	jboolean IsAssignableFrom(jclass, jclass);
 	jint Throw(jobject);
 	jint ThrowNew(jclass, const char*);
-	jthrowable ExceptionOccured(void);
+	jthrowable ExceptionOccurred(void);
 	void ExceptionDescribe(void);
 	void ExceptionClear(void);
 	void FatalError(const char*);

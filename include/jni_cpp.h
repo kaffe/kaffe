@@ -337,7 +337,7 @@ inline jobject JNIEnv::CallNonvirtualObjectMethod(jobject a, jclass b, jmethodID
 
 inline jobject JNIEnv::CallNonvirtualObjectMethodV(jobject a, jclass b, jmethodID c, va_list d)
 {
-	return (functions->CallNonvirtualObjectMethodV(this, a, b, c, c));
+	return (functions->CallNonvirtualObjectMethodV(this, a, b, c, d));
 }
 
 inline jobject JNIEnv::CallNonvirtualObjectMethodA(jobject a, jclass b, jmethodID c, jvalue* d)
