@@ -49,7 +49,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = include
-DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
+DIST_COMMON = $(am__include_HEADERS_DIST) $(noinst_HEADERS) \
 	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -80,6 +80,8 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+am__include_HEADERS_DIST = jni.h jni_cpp.h jvmpi.h kaffe_jni.h jawt.h \
+	jawt_md.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -548,6 +550,10 @@ LIBGTKPEER_JNI_HDRS = \
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
 @COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
+@COND_CLASSPATH_GTK_AWT_TRUE@JAWT_HDRS = \
+@COND_CLASSPATH_GTK_AWT_TRUE@  	jawt.h \
+@COND_CLASSPATH_GTK_AWT_TRUE@	jawt_md.h
+
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_ref_Reference.h \
@@ -605,7 +611,8 @@ include_HEADERS = \
 	jni.h \
 	jni_cpp.h \
 	jvmpi.h \
-	kaffe_jni.h
+	kaffe_jni.h \
+	$(JAWT_HDRS)
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \

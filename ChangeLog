@@ -1,3 +1,22 @@
+2005-02-15  Jim Huang  <jserv@kaffe.org>
+
+	* include/jawt.h,
+	include/jawt_md.h,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gtk_jawt.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/jawt.c,
+	libraries/clib/classpath/classpath_jawt.h:
+	New files.
+	Merge GCJ's AWT Native Interface implementation, which
+	was brought by Thomas Fitzsimmons <fitzsim@redhat.com>.
+
+	* include/Makefile.am,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	Add jawt headers and implementation.
+
+	* include/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in:
+	Regenerated.
+
 2005-02-14  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

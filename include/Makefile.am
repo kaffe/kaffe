@@ -208,6 +208,12 @@ if COND_CLASSPATH_GTK_AWT
 endif
 endif
 
+if COND_CLASSPATH_GTK_AWT
+  JAWT_HDRS = \
+  	jawt.h \
+	jawt_md.h
+endif
+
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_ref_Reference.h \
@@ -273,8 +279,8 @@ include_HEADERS = \
 	jni.h \
 	jni_cpp.h \
 	jvmpi.h \
-	kaffe_jni.h
-
+	kaffe_jni.h \
+	$(JAWT_HDRS)
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \

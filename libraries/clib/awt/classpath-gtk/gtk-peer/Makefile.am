@@ -1,4 +1,4 @@
-native_LTLIBRARIES = libgtkpeer.la
+native_LTLIBRARIES = libgtkpeer.la libjawt.la
 
 # Gtk/Cairo JNI sources.
 if GTK_CAIRO
@@ -48,7 +48,8 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c \
 	gthread-jni.c \
 	gthread-jni.h \
-	gtkpeer.h 
+	gtk_jawt.c \
+	gtkpeer.h
 
 libgtkpeer_la_CFLAGS = \
 	$(CFLAGS_PG)
@@ -75,3 +76,18 @@ libgtkpeer_la_LDFLAGS = \
 	@X_LIBS@ \
 	-lXtst
 
+libjawt_la_SOURCES = jawt.c
+libjawt_la_CFLAGS = \
+	$(CFLAGS_PG)
+
+libjawt_la_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	@X_CFLAGS@ \
+	-I$(top_srcdir)/libraries/clib/classpath/ \
+	-I$(top_builddir)/include/
+libjawt_la_LIBADD = \
+	libgtkpeer.la \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libjawt_la_LDFLAGS = \
+	@CLASSPATH_MODULE@ \
+	@X_LIBS@
