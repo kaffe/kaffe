@@ -1882,21 +1882,25 @@ class LightweightDispatcher implements Serializable
         && lastComponentEntered.isShowing()
         && lastComponentEntered != candidate)
       {
-        Point tp = 
-          SwingUtilities.convertPoint(nativeContainer, 
-                                      x, y, lastComponentEntered);
-        MouseEvent exited = new MouseEvent (lastComponentEntered, 
-                                            MouseEvent.MOUSE_EXITED,
-                                            me.getWhen (), 
-                                            me.getModifiersEx (), 
-                                            tp.x, tp.y,
-                                            me.getClickCount (),
-                                            me.isPopupTrigger (),
-                                            me.getButton ());
-        lastComponentEntered.dispatchEvent (exited); 
+        // Old candidate could have been removed from 
+        // the nativeContainer so we check first.
+        if (SwingUtilities.isDescendingFrom(lastComponentEntered, nativeContainer))
+        {
+          Point tp = 
+            SwingUtilities.convertPoint(nativeContainer, 
+                                        x, y, lastComponentEntered);
+          MouseEvent exited = new MouseEvent (lastComponentEntered, 
+                                              MouseEvent.MOUSE_EXITED,
+                                              me.getWhen (), 
+                                              me.getModifiersEx (), 
+                                              tp.x, tp.y,
+                                              me.getClickCount (),
+                                              me.isPopupTrigger (),
+                                              me.getButton ());
+          lastComponentEntered.dispatchEvent (exited); 
+        }
         lastComponentEntered = null;
       }
-
     // If we have a candidate, maybe enter it.
     if (candidate != null)
       {
@@ -1930,7 +1934,8 @@ class LightweightDispatcher implements Serializable
       //   - MOUSE_RELEASED
       //   - MOUSE_PRESSED: another button pressed while the first is held down
       //   - MOUSE_DRAGGED
-      mouseEventTarget = pressedComponent;
+      if (SwingUtilities.isDescendingFrom(pressedComponent, nativeContainer))
+        mouseEventTarget = pressedComponent;
     else if (me.getID() == MouseEvent.MOUSE_CLICKED)
       {
         // Don't dispatch CLICKED events whose target is not the same as the
@@ -1980,6 +1985,8 @@ class LightweightDispatcher implements Serializable
                     pressedComponent = null;
                   break;
               }
+              if (newEvt.isConsumed())
+                e.consume();
           }
       }
     else if (e instanceof KeyEvent && focus != null)

@@ -3028,6 +3028,7 @@ public abstract class Component
           mouseListener.mouseReleased(e);
         break;
       }
+      e.consume();
   }
 
   /**
@@ -3055,6 +3056,7 @@ public abstract class Component
           mouseMotionListener.mouseMoved(e);
         break;
       }
+      e.consume();
   }
 
   /**
@@ -3073,7 +3075,10 @@ public abstract class Component
   {
     if (mouseWheelListener != null
         && e.id == MouseEvent.MOUSE_WHEEL)
+    {
       mouseWheelListener.mouseWheelMoved(e);
+      e.consume();
+    }	
   }
 
   /**

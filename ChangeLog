@@ -1,5 +1,28 @@
 2004-08-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/javax/swing/RepaintManager.java:
+	Resynced with GNU Classpath.
+
+	2004-08-08  Kim Ho  <kho@redhat.com>
+
+        * java/awt/Component.java:
+        (processMouseEvent): Consume event after
+        listene rs process it.
+        (processMouseMotionEvent): ditto.
+        (processMouseWheelEvent): ditto.
+        * java/awt/Container.java:
+        (acquireComponentForMouseEvent):
+        Do not dispatch to events that have been
+        removed from the Container.
+        (handleEvent): Consume the MouseEvents.
+        * javax/swing/RepaintManager.java:
+        (paintDirtyRegions): Do not add to list of 
+        damaged areas if the component has no root.
+
+2004-08-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JLayeredPane.java,
 	libraries/javalib/javax/swing/Box.java:
 	Resynced with GNU Classpath
