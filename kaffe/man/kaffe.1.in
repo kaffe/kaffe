@@ -109,6 +109,8 @@ See
 for details. This needs to be set if Kaffe's shared libraries are
 installed in a location not part of the dynamic loader's default search
 path.
+.B LC_MESSAGES
+It changes the default locale name for Java application.
 .SH FILES
 .TP
 .B "@prefix@/share/kaffe/kafferc"

@@ -1,3 +1,19 @@
+2004-05-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/bootstrap.classlist: Added several missing classes
+	for SSA optimizer and exception reporting.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+	* libraries/javalib/kjc.jar: Regenerated.
+
+	* libraries/clib/native/System.c
+	(java_lang_System_initProperties): Use LC_MESSAGES instead of LC_ALL
+	because on newer GLIBC it returns a set of variables.
+
+	* kaffe/man/kaffe.1.in: Specify that the default locale is given
+	by LC_MESSAGES.
+
 2004-05-23  Kero van Gelder <kero@d4050.upc-d.chello.nl>
 
         * libraries/javalib/java/awt/AWTEvent.java:

@@ -334,7 +334,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	char *locale;
 	char lang[3];
 
-	locale = setlocale (LC_ALL, "");
+	locale = setlocale (LC_MESSAGES, "");
 
 	tmp = strchr (locale, '_');
 
