@@ -8,15 +8,13 @@
  * of this file. 
  */
 
-#define DEBUG
-
 #include "classMethod.h"
 #include "gtypes.h"
 
 
 #ifdef DEBUG
 int jit_debug;
-#define	debug(x)	(jit_debug ? printf("%x:\t", CODEPC), printf x : 0)
+#define	debug(x)	(jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
 #define	debug(x)
 #endif
