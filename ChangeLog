@@ -1,3 +1,35 @@
+Sun Dec  5 02:44:43 CET 1999  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/i386/jit-i386.def config/i386/jit3-i386.def
+	kaffe/kaffevm/jit3/icode.c kaffe/kaffevm/jit3/labels.h
+	kaffe/kaffevm/jit3/machine.h kaffe/kaffevm/jit3/machine.c: port i386
+	hardware profiler from JIT to JIT3.
+
+	* FAQ/FAQ.profiler: Add comments for porting to other arch. 
+
+	* config/i386/jit-i386.def: fix warning in debug output.
+	* kaffe/kaffevm/jit/machine.c: output profile results to "prof.out".
+
+	* kaffe/kaffevm/exception.c (unwindStackFrame): fixup self+children
+	profiler time, move it from dispatchException() for gcj.
+
+	* include/jmalloc.h (KFREE): evaluates parameter only one time.
+	* libraries/clib/native/ObjectStreamClassImpl.c kaffe/kaffevm/jni.c
+	kaffe/kaffevm/string.c: avoid cast in call of KFREE().
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h (jthread_stacklimit):
+	Use uintp in place of log.
+
+	* kaffe/kaffevm/jit3/basecode.h: fix compilation for NCR MP-RAS.
+
+	* config/alpha/trampolines.c (alpha_do_fixup_trampoline): Remove
+	unwanted coma in ldgp.
+
+Sun Dec  5 02:23:15 CET 1999  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* config/mips/netbsd1/md.c config/mips/netbsd1/md.h:
+	Makes 1.0.5 can be used on MIPS/NetBSD1.x.
+
 Mon Nov 29 16:51:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* numerous files: next stage of GCJ integration.
