@@ -42,7 +42,7 @@ public abstract class Buffer
   private int cap = 0;
   private int limit = 0;
   private int pos = 0;
-  private int mark = -1;
+  protected int mark = -1;
 
   // Creates a new Buffer.
   //
@@ -57,7 +57,7 @@ public abstract class Buffer
     limit (limit);
     position (position);
     
-    if (mark > 0)
+    if (mark >= 0)
     {
       if (mark > pos)
         throw new IllegalArgumentException ();

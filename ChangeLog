@@ -1,3 +1,36 @@
+2003-05-28  Ito Kazumitsu <kaz@maczuka.gcd.org>
+	* libraries/javalib/Makefile.in:
+	added gnu_classpath_SRCS required for compiling java/nio/*
+	and gnu/java/nio/*.java
+
+	* java/nio/Buffer.java,
+	java/nio/ByteBuffer.java,
+	java/nio/CharBuffer.java,
+	java/nio/DoubleBuffer.java,
+	java/nio/FloatBuffer.java,
+	java/nio/IntBuffer.java,
+	java/nio/LongBuffer.java,
+	java/nio/ShortBuffer.java,
+	gnu/java/nio/SelectionKeyImpl.java,
+	gnu/java/nio/SocketChannelImpl.java
+	Resynced with GNU Classpath.
+
+	* java/nio/ByteBufferImpl.java,
+	java/nio/CharBufferImpl.java,
+	java/nio/CharViewBufferImpl.java,
+	java/nio/DirectByteBufferImpl.java,
+	java/nio/DoubleBufferImpl.java,
+	java/nio/DoubleViewBufferImpl.java,
+	java/nio/FloatBufferImpl.java,
+	java/nio/FloatViewBufferImpl.java,
+	java/nio/IntBufferImpl.java,
+	java/nio/IntViewBufferImpl.java,
+	java/nio/LongBufferImpl.java,
+	java/nio/LongViewBufferImpl.java,
+	java/nio/ShortBufferImpl.java,
+	java/nio/ShortViewBufferImpl.java
+	New files copied from GNU Classpath
+
 2003-05-27  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java: 

@@ -310,6 +310,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_util_log_SRCS) \
+	$(gnu_classpath_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
@@ -405,6 +406,10 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EventModifier.java 
+
+gnu_classpath_SRCS = \
+	gnu/classpath/Configuration.java \
+	gnu/classpath/RawData.java
 
 gnu_java_lang_SRCS = \
 	gnu/java/lang/CharData.java
