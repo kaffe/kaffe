@@ -1,3 +1,8 @@
+Thu Nov  7 19:01:07 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* test/regression/InnerTest.java: Changed output again, as it
+	turns out that arraycopy's bugs had nothing to do with it.
+
 Thu Nov  7 17:45:40 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Klasses.jar.bootstrap:
