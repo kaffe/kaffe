@@ -9,17 +9,17 @@ import java.io.*;
 public class CLTestDelegate extends ClassLoader {
 	static boolean firstDead = false;
 	static boolean secondDead = false;
-	static boolean verbose = false;
+	public static boolean verbose = false;
 
 	static String CNAME = "CLTestDelegate$C";
 	static Class def = null;
 	static byte[] bytes = readin(CNAME + ".class");
 
 	static String DNAME = "CLTestDelegate$D";
-	static class C {
+	public static class C {
 	}
 
-	static class D {
+	public static class D {
 		static C dummy = new C();
 		static {
 			if (verbose)
@@ -93,11 +93,22 @@ public class CLTestDelegate extends ClassLoader {
 	public static void doit()
 	{
 		try {
+			CLTestDelegate ck;
+
 			// The first loader defines a class
-			new CLTestDelegate().loadClass(DNAME).newInstance();
+			ck = new CLTestDelegate();
+			int hk = System.identityHashCode(ck);
+			ck.loadClass(DNAME).newInstance();
 
 			// The second loader delagates to the first
-			new CLTestDelegate().loadClass(DNAME).newInstance();
+			ck = new CLTestDelegate();
+			if (verbose)
+			    System.out.println("first loader at " + hk);
+			hk = System.identityHashCode(ck);
+			if (verbose)
+			    System.out.println("second loader at " + hk);
+			ck.loadClass(DNAME).newInstance();
+			ck = null;
 
 			def = null;
 		}
@@ -135,8 +146,11 @@ public class CLTestDelegate extends ClassLoader {
 		// our loaders kept alive to be collected
 		for (int i = 0; i < gcCount; i++) 
 			System.gc();
-		if (!(firstDead && secondDead))
-			System.err.println("ClassLoaders not GCed");
+		if (!(firstDead))
+			System.err.println("First ClassLoader not GCed");
+		else
+		if (!(secondDead))
+			System.err.println("Second ClassLoader not GCed");
 		else
 			// If we didn't crash in destroyClass, life is
 			// good. 
