@@ -1,5 +1,5 @@
 /* java.beans.PropertyEditorSupport
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -50,8 +50,9 @@ package java.beans;
  ** the various methods do.
  **
  ** @author John Keiser
+ ** @author Robert Schuster
  ** @since JDK1.1
- ** @version 1.1.0, 29 Jul 1998
+ ** @status updated to 1.4
  **/
 
 public class PropertyEditorSupport implements PropertyEditor {
@@ -87,11 +88,12 @@ public class PropertyEditorSupport implements PropertyEditor {
 	 ** @param val the new value for the property.
 	 **/
 	public void setValue(Object val) {
-		Object oldVal = val;
 		this.val = val;
-		if(!oldVal.equals(val)) {
-			pSupport.firePropertyChange(null,oldVal,val);
-		}
+
+		// specification in java.beans.PropertyChangeEvent says 
+		// that without a property name (first argument) the
+		// new and the old value should always be null
+		pSupport.firePropertyChange(null, null, null);
 	}
 
 	/** Get the current value of the property.
