@@ -818,8 +818,6 @@ uninstall-info: uninstall-info-recursive
 @cpu_os_frag@
 @threads_frag@
 
-$(libkaffevm_la_SOURCES): $(libkaffevm_la_GEN_SRCS)
-
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
 	else :; fi
