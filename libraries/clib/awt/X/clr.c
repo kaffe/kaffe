@@ -775,9 +775,6 @@ Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz )
 	 * cm = (*env)->NewObject( env, cmClazz, cmCtorId, 8, rgbs, 0);
 	 */
 	break;
-
-  default:
-
   }
 
   return cm;

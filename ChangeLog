@@ -1,5 +1,11 @@
 2003-09-25  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/awt/X/clr.c:
+	(Java_java_awt_Toolkit_clrGetColorModel) Removed unnecessary empty
+	default statement at end of a switch statement.
+	
+2003-09-25  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/clib/awt/X/fnt.c:
 	(Java_java_awt_Toolkit_fntStringWidth)  Only declare n if
 	WORDS_BIGENDIAN is defined.
