@@ -21,17 +21,6 @@
 #include "java_lang_Double.h"
 
 /*
- * Convert string to float object. (JDK 1.0.2)
- */
-struct Hjava_lang_Float*
-java_lang_Float_valueOf(struct Hjava_lang_String* str)
-{
-	struct Hjava_lang_Float* obj;
-	obj = (struct Hjava_lang_Float*)execute_java_constructor("java.lang.Float", 0, "(F)V", (float)java_lang_Double_valueOf0(str));
-	return (obj);
-}
-
-/*
  * Convert float to bits.
  */
 jint

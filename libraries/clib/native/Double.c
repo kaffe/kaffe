@@ -195,17 +195,6 @@ bail:;
 }
 
 /*
- * Convert string into double class. (JDK 1.0.2)
- */
-struct Hjava_lang_Double*
-java_lang_Double_valueOf(struct Hjava_lang_String* str)
-{
-	struct Hjava_lang_Double* obj;
-	obj = (struct Hjava_lang_Double*)execute_java_constructor("java.lang.Double", 0, "(D)V", java_lang_Double_valueOf0(str));
-	return (obj);
-}
-
-/*
  * Convert double to jlong.
  */
 jlong
