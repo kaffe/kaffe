@@ -19,6 +19,7 @@
 #include <jsyscall.h>
 #include <native.h>
 #include <files.h>
+#include "../../../include/system.h"
 #include "kaffe_lang_UNIXProcess.h"
 
 static void
@@ -41,7 +42,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	int arglen;
 	int envlen;
 	int i;
-	int rc = 0;
+	int rc;
 	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
 	jclass proc_class;
 	/* the names given to the stream in Java */
@@ -72,6 +73,10 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
 		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
 		argv[i] = KMALLOC(strlen(argichars) + 1);
+		if (argv[i]) {
+			strcpy(argv[i], argichars);
+		}
+		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 		if (!argv[i]) {
 			errorInfo info;
 
@@ -79,8 +84,6 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 			postOutOfMemory(&info);
 			throwError(&info);
 		}
-		strcpy(argv[i], argichars);
-		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 	}
 
 	if (envlen > 0) {
@@ -102,6 +105,10 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
 		arge[i] = KMALLOC(strlen(envichars) + 1);
+		if (arge[i]) {
+			strcpy(arge[i], envichars);
+		}
+		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 		if (!arge[i]) {
 			errorInfo info;
 
@@ -110,11 +117,82 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 			postOutOfMemory(&info);
 			throwError(&info);
 		}
-		strcpy(arge[i], envichars);
-		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
 
-	rc = KFORKEXEC(argv, arge, ioes, &pid);
+	/* Search program in path */
+	rc = ENOENT;
+	if (strstr (argv[0], file_separator) == NULL) {
+		char **var;
+		char *ptr, *nptr;
+
+		/* Search PATH variable */
+		ptr = NULL;
+		for (var = arge; var != NULL; var++) {
+			if (strncmp (*var, "PATH=", 5) == 0) {
+				ptr = *var + 5;
+				break;
+			}
+		}
+		if (ptr == NULL) {
+			ptr = getenv ("PATH");
+		}
+
+		/* Search program in path */
+		for (; ptr != NULL; ptr = nptr) {
+			char *file;
+
+			nptr = strstr (ptr, path_separator);
+			if (nptr == NULL) {
+				file = KMALLOC (strlen (ptr)
+						+ strlen (file_separator)
+						+ strlen (argv[0]) + 1);
+				if (!file) {
+					errorInfo info;
+
+					freevec(argv);
+					freevec(arge);
+					postOutOfMemory(&info);
+					throwError(&info);
+				}
+				strcpy (file, ptr);
+				strcat (file, file_separator);
+			}
+			else if (nptr == ptr) {
+				/* Assume empty allow current dir */
+				file = KMALLOC (strlen (argv[0]) + 1);
+				nptr += strlen (path_separator);
+			}
+			else {
+				file = KMALLOC (nptr - ptr
+						+ strlen (file_separator)
+						+ strlen (argv[0]) + 1);
+				if (!file) {
+					errorInfo info;
+
+					freevec(argv);
+					freevec(arge);
+					postOutOfMemory(&info);
+					throwError(&info);
+				}
+				strncpy (file, ptr, nptr - ptr);
+				file[nptr - ptr] = 0;
+				strcat (file, file_separator);
+				nptr += strlen (path_separator);
+			}
+			strcat (file, argv[0]);
+			if (access (file, X_OK) != -1) {
+				rc = 0;
+				nptr = NULL;
+			}
+			KFREE (file);
+		}
+	}
+	else if (access (argv[0], X_OK) != -1) {
+		rc = 0;
+	}
+	if (!rc) {
+		rc = KFORKEXEC(argv, arge, ioes, &pid);
+	}
 
 	freevec(argv);
 	freevec(arge);
