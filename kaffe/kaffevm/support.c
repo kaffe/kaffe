@@ -310,9 +310,22 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 # endif
 #endif
 
+/* Make sure that undefined macros are defined as 0 */
+#if !defined(PROMOTE_jfloat2jdouble)
+#define PROMOTE_jfloat2jdouble 0
+#endif
+
+#if !defined(PROMOTE_jint2jlong)
+#define PROMOTE_jint2jlong 0
+#endif
+
+#if !defined(NO_HOLES)
+#define NO_HOLES 0
+#endif
+
 /* If PROMOTE_jint2jlong is enabled, all integer values are to be
    passed as jlongs.  It is only set by PROMOTE_TO_64bits.  */
-#if defined(PROMOTE_jint2jlong)
+#if PROMOTE_jint2jlong
 # define PROM_i j
 #else
 # define PROM_i i
@@ -323,7 +336,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    be marked as 'D'.  No known port uses this.  In fact, alpha must
    explicitly set it to 0, to prevent PROMOTE_TO_64bits from enabling
    it.  */
-#if defined(PROMOTE_jfloat2jdouble)
+#if PROMOTE_jfloat2jdouble
 # define PROM_f d
 #else
 # define PROM_f f
@@ -334,7 +347,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    padding integer argument. The argument DO is used to adjust the
    input argument list.  */
 #if defined(ALIGN_AT_64bits)
-# if defined(NO_HOLES)
+# if NO_HOLES
 #  error "ALIGN_AT_64bits is incompatible with NO_HOLES"
 # endif
 # define ENSURE_ALIGN64(DO) do { \
@@ -351,15 +364,6 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 #else
 # define ENSURE_ALIGN64(DO) do {} while (0)
 #endif
-
-/* Finally, make sure that undefined symbols are defined as 0 */
-#if ! defined(PROMOTE_jfloat2jdouble)
-#define PROMOTE_jfloat2jdouble	0
-#endif /* ! defined(PROMOTE_jfloat2jdouble) */ 
-
-#if ! defined(NO_HOLES)
-#define NO_HOLES	0
-#endif /*  ! defined(NO_HOLES) */
 
 /**
  * Generic routine to call a native or Java method (array style).

@@ -1,3 +1,10 @@
+2004-10-24  Eric Anholt  <eta@lclark.edu>
+
+	* kaffe/kaffevm/support.c: Fixup for the commit to avoid undefined
+	macro warnings for PROMOTE_* an NO_HOLES, because defined(MACRO) is true
+	even if MACRO is 0.  Set the macros to 0 when they're unset rather than
+	using defined().
+
 2004-10-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am,
