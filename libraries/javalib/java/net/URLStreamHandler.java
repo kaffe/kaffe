@@ -52,11 +52,9 @@ protected void parseURL(URL u, String spec0, int start, int limit) {
 			    slash != -1 ? slash : spec.length());
 			try {
 				port = Integer.parseInt(portString);
-				if (port < 0 || port > 65535) {
-					throw new NumberFormatException();
-				}
+				// JDK1.2 doesn't range check the port nr.
 			} catch (NumberFormatException e) {
-				port = u.getPort();
+				port = u.getPort();	
 			}
 		} else {
 			if (slash != -1) {

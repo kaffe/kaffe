@@ -59,7 +59,7 @@ public Enumeration findResources(String name) throws IOException {
 			file = new File(file, name);
 			if (file.isFile()) {
 				try {
-				    v.addElement(new URL("file", "", file.getCanonicalPath()));
+				    v.addElement(new URL("file", "", file.getCanonicalPath().replace(File.separatorChar, '/')));
 				} catch (MalformedURLException e) {
 				}
 			}

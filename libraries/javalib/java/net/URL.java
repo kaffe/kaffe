@@ -94,7 +94,7 @@ public URL(URL context, String spec, URLStreamHandler handler)
 		}
 	} else {	// Need to inherit the protocol from the context
 		if (context == null) {
-			throw new MalformedURLException("no protocol");
+			throw new MalformedURLException("no protocol: " + spec);
 		}
 		protocol = context.protocol;
 		host = context.host;
@@ -110,8 +110,13 @@ public URL(URL context, String spec, URLStreamHandler handler)
 	// Use handler to parse the rest, within
 	//   the context defined for this URL so far
 	setHandler(protocol, handler);
-	this.handler.parseURL(this, spec, firstColon + 1,
-	    lastHash != -1 ? lastHash : spec.length());
+	try {
+		this.handler.parseURL(this, spec, firstColon + 1,
+		    lastHash != -1 ? lastHash : spec.length());
+	}
+	catch (Error e) {
+		throw new MalformedURLException(e.getMessage());
+	}
 }
 
 // Check the supplied handler if any, otherwise compute default handler
