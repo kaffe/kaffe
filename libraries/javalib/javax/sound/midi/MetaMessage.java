@@ -55,8 +55,6 @@ extends MidiMessage
 
 
 
-	/**	TODO:
-	*/
 	/**	Create a container for a MIDI meta message.
 		This constructor does not create an object containing a legal
 		MIDI message. You have to use one of the setMessage() methods.
@@ -65,9 +63,7 @@ extends MidiMessage
 		getData()) may have
 		undesired results.
 
-		@see #setMessage(int)
-		@see #setMessage(int, int, int)
-		@see #setMessage(int, int, int, int)
+		@see #setMessage(int, byte[], int)
 	*/
 	public MetaMessage()
 	{

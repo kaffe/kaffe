@@ -60,13 +60,13 @@ public class TCircularBuffer
 	public void close()
 	{
 		m_bOpen = false;
+		// TODO: call notify() ?
 	}
 
 
 
 	public int availableRead()
 	{
-		// return (m_nWritePos - m_nReadPos) % m_nSize;
 		return m_nWritePos - m_nReadPos;
 	}
 
@@ -102,35 +102,35 @@ public class TCircularBuffer
 
 	public int read(byte[] abData, int nOffset, int nLength)
 	{
+		if (!m_bOpen)
+		{
+			if (availableRead() > 0)
+			{
+				nLength = Math.min(nLength, availableRead());
+			}
+			else
+			{
+				if (TDebug.TraceCircularBuffer) { TDebug.out("< not open. returning -1."); }
+				return -1;
+			}
+		}
 		if (TDebug.TraceCircularBuffer)
 		{
 			TDebug.out(">TCircularBuffer.read(): called.");
-			TDebug.out("m_nReadPos  = "+m_nReadPos+" ^= "+getReadPos());
-			TDebug.out("m_nWritePos = "+m_nWritePos+" ^= "+getWritePos());
-			TDebug.out("availableRead()  = "+availableRead());
-			TDebug.out("availableWrite() = "+availableWrite());
-		}
-		// TODO: shoudl be inside synchronized block?
-		if (!m_bOpen)
-		{
-			if (TDebug.TraceCircularBuffer)
-			{
-				TDebug.out("< not open. returning -1.");
-			}
-			return -1;
+			TDebug.out("m_nReadPos  = " + m_nReadPos + " ^= "+getReadPos());
+			TDebug.out("m_nWritePos = " + m_nWritePos + " ^= "+getWritePos());
+			TDebug.out("availableRead()  = " + availableRead());
+			TDebug.out("availableWrite() = " + availableWrite());
 		}
 		synchronized (this)
 		{
+			if (m_trigger != null && availableRead() < nLength)
+			{
+				if (TDebug.TraceCircularBuffer) { TDebug.out("executing trigger."); }
+				m_trigger.execute();
+			}
 			if (!m_bBlockingRead)
 			{
-				if (m_trigger != null && availableRead() < nLength)
-				{
-					if (TDebug.TraceCircularBuffer)
-					{
-						TDebug.out("executing trigger.");
-					}
-					m_trigger.execute();
-				}
 				nLength = Math.min(availableRead(), nLength);
 			}
 			int nRemainingBytes = nLength;
@@ -165,11 +165,8 @@ public class TCircularBuffer
 			if (TDebug.TraceCircularBuffer)
 			{
 				TDebug.out("After read:");
-				TDebug.out("m_nReadPos  = "+m_nReadPos+" ^= "+getReadPos());
-				TDebug.out("m_nWritePos = "+m_nWritePos+" ^= "+getWritePos());
-				TDebug.out("availableRead()  = "+availableRead());
-				TDebug.out("availableWrite() = "+availableWrite());
-				TDebug.out("< completed. Read "+nLength+" bytes");
+				dumpInternalState();
+				TDebug.out("< completed. Read " + nLength + " bytes");
 			}
 			return nLength;
 		}
@@ -188,17 +185,11 @@ public class TCircularBuffer
 		if (TDebug.TraceCircularBuffer)
 		{
 			TDebug.out(">TCircularBuffer.write(): called; nLength: " + nLength);
-			TDebug.out("m_nReadPos  = "+m_nReadPos+" ^= "+getReadPos());
-			TDebug.out("m_nWritePos = "+m_nWritePos+" ^= "+getWritePos());
-			TDebug.out("availableRead()  = "+availableRead());
-			TDebug.out("availableWrite() = "+availableWrite());
+			dumpInternalState();
 		}
 		synchronized (this)
 		{
-			if (TDebug.TraceCircularBuffer)
-			{
-				TDebug.out("entered synchronized block.");
-			}
+			if (TDebug.TraceCircularBuffer) { TDebug.out("entered synchronized block."); }
 			if (!m_bBlockingWrite)
 			{
 				nLength = Math.min(availableWrite(), nLength);
@@ -236,16 +227,22 @@ public class TCircularBuffer
 			if (TDebug.TraceCircularBuffer)
 			{
 				TDebug.out("After write:");
-				TDebug.out("m_nReadPos  = "+m_nReadPos+" ^= "+getReadPos());
-				TDebug.out("m_nWritePos = "+m_nWritePos+" ^= "+getWritePos());
-				TDebug.out("availableRead()  = "+availableRead());
-				TDebug.out("availableWrite() = "+availableWrite());
+				dumpInternalState();
 				TDebug.out("< completed. Wrote "+nLength+" bytes");
 			}
 			return nLength;
 		}
 	}
 
+
+
+	private void dumpInternalState()
+	{
+		TDebug.out("m_nReadPos  = " + m_nReadPos + " ^= "+getReadPos());
+		TDebug.out("m_nWritePos = " + m_nWritePos + " ^= "+getWritePos());
+		TDebug.out("availableRead()  = " + availableRead());
+		TDebug.out("availableWrite() = " + availableWrite());
+	}
 
 
 	public static interface Trigger

@@ -294,7 +294,7 @@ public class AlsaPcm
 	   @param lOffset Offset where the data should be read from
 	   the buffer, in bytes.
 
-	   @lFrameCount Length of the data to write, in number of PCM
+	   @param lFrameCount Length of the data to write, in number of PCM
 	   frames.
 
 	 */

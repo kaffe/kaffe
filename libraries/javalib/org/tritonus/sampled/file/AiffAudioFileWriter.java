@@ -35,6 +35,7 @@ import	javax.sound.sampled.AudioInputStream;
 import	javax.sound.sampled.AudioSystem;
 
 import	org.tritonus.share.TDebug;
+import	org.tritonus.share.sampled.Encodings;
 import	org.tritonus.share.sampled.file.AudioOutputStream;
 import	org.tritonus.share.sampled.file.TAudioFileWriter;
 import	org.tritonus.share.sampled.file.TDataOutputStream;
@@ -55,18 +56,23 @@ public class AiffAudioFileWriter extends TAudioFileWriter {
 	    };
 
 	private static final int ALL=AudioSystem.NOT_SPECIFIED;
+	private static final AudioFormat.Encoding	PCM_SIGNED = AudioFormat.Encoding.PCM_SIGNED;
+	private static final AudioFormat.Encoding	ULAW = AudioFormat.Encoding.ULAW;
+	private static final AudioFormat.Encoding	IMA_ADPCM = Encodings.getEncoding("IMA_ADPCM");
 
 	// IMPORTANT: this array depends on the AudioFormat.match() algorithm which takes
 	//            AudioSystem.NOT_SPECIFIED into account !
 	private static final AudioFormat[]	AUDIO_FORMATS =
 	    {
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 8, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 8, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, false),
-	        new AudioFormat(AudioFormat.Encoding.ULAW, ALL, 8, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 16, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 24, ALL, ALL, ALL, true),
-	        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, ALL, 32, ALL, ALL, ALL, true),
+	        new AudioFormat(PCM_SIGNED, ALL, 8, ALL, ALL, ALL, true),
+	        new AudioFormat(PCM_SIGNED, ALL, 8, ALL, ALL, ALL, false),
+	        new AudioFormat(ULAW, ALL, 8, ALL, ALL, ALL, false),
+	        new AudioFormat(ULAW, ALL, 8, ALL, ALL, ALL, true),
+	        new AudioFormat(PCM_SIGNED, ALL, 16, ALL, ALL, ALL, true),
+	        new AudioFormat(PCM_SIGNED, ALL, 24, ALL, ALL, ALL, true),
+	        new AudioFormat(PCM_SIGNED, ALL, 32, ALL, ALL, ALL, true),
+	        new AudioFormat(IMA_ADPCM, ALL, 4, ALL, ALL, ALL, true),
+	        new AudioFormat(IMA_ADPCM, ALL, 4, ALL, ALL, ALL, false),
 	    };
 
 	public AiffAudioFileWriter() {

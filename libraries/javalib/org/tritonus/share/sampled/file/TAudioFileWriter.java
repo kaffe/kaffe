@@ -98,8 +98,10 @@ public abstract class TAudioFileWriter
 	protected TAudioFileWriter(Collection fileTypes,
 				   Collection audioFormats)
 	{
+		if (TDebug.TraceAudioFileWriter) { TDebug.out("TAudioFileWriter.<init>(): begin"); }
 		m_audioFileTypes = fileTypes;
 		m_audioFormats = audioFormats;
+		if (TDebug.TraceAudioFileWriter) { TDebug.out("TAudioFileWriter.<init>(): end"); }
 	}
 
 	// implementing the interface

@@ -70,6 +70,9 @@ public class TDebug
 	public static boolean	TraceAlsaNative = getBooleanProperty("TraceAlsaNative");
 	public static boolean	TraceAlsaMixerNative = getBooleanProperty("TraceAlsaMixerNative");
 	public static boolean	TraceAlsaPcmNative = getBooleanProperty("TraceAlsaPcmNative");
+	public static boolean	TraceMixingAudioInputStream = getBooleanProperty("TraceMixingAudioInputStream");
+	public static boolean	TraceOggNative = getBooleanProperty("TraceOggNative");
+	public static boolean	TraceVorbisNative = getBooleanProperty("TraceVorbisNative");
 
 	// midi common implementation
 	public static boolean	TraceMidiSystem = getBooleanProperty("TraceMidiSystem");

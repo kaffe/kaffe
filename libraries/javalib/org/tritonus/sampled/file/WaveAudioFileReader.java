@@ -136,6 +136,7 @@ public class WaveAudioFileReader extends TAudioFileReader
 		int frameSize=0;
 		float frameRate=(float) sampleRate;
 
+		int cbSize = 0;
 		switch (formatCode) {
 		case WaveTool.WAVE_FORMAT_PCM:
 			if (chunkLength<WaveTool.MIN_FMT_CHUNK_LENGTH+2) {
@@ -168,7 +169,7 @@ public class WaveAudioFileReader extends TAudioFileReader
 				    "corrupt WAVE file: extra GSM bytes are missing");
 			}
 			sampleSizeInBits = readLittleEndianShort(dis); // sample Size (is 0 for GSM)
-			int cbSize=readLittleEndianShort(dis);
+			cbSize=readLittleEndianShort(dis);
 			if (cbSize < 2) {
 				throw new UnsupportedAudioFileException(
 				    "corrupt WAVE file: extra GSM bytes are corrupt");
@@ -185,6 +186,33 @@ public class WaveAudioFileReader extends TAudioFileReader
 			frameRate=((float) sampleRate)/((float) decodedSamplesPerBlock);
 			read+=6;
 			break;
+
+		case WaveTool.WAVE_FORMAT_IMA_ADPCM:
+			if (chunkLength < WaveTool.MIN_FMT_CHUNK_LENGTH + 2)
+			{
+				throw new UnsupportedAudioFileException(
+					"corrupt WAVE file: extra GSM bytes are missing");
+			}
+			sampleSizeInBits = readLittleEndianShort(dis);
+			cbSize = readLittleEndianShort(dis);
+			if (cbSize < 2)
+			{
+				throw new UnsupportedAudioFileException(
+				    "corrupt WAVE file: extra IMA ADPCM bytes are corrupt");
+			}
+			int samplesPerBlock = readLittleEndianShort(dis) & 0xFFFF; // unsigned
+			if (TDebug.TraceAudioFileReader) {
+				debugAdd+=", wBitsPerSample="+sampleSizeInBits
+				          +", cbSize="+cbSize
+				          +", wSamplesPerBlock=" + samplesPerBlock;
+			}
+			sampleSizeInBits = AudioSystem.NOT_SPECIFIED;
+			encoding = WaveTool.GSM0610;
+			frameSize = blockAlign;
+			frameRate = ((float) sampleRate)/((float) samplesPerBlock);
+			read += 6;
+			break;
+
 		default:
 			throw new UnsupportedAudioFileException(
 			    "unsupported WAVE file: unknown format code "+formatCode);
@@ -222,6 +250,8 @@ public class WaveAudioFileReader extends TAudioFileReader
 		           frameRate,
 		           false);
 	}
+
+
 
 	protected AudioFileFormat getAudioFileFormat(InputStream inputStream, long lFileLengthInBytes)
 	throws	UnsupportedAudioFileException, IOException {

@@ -1,5 +1,22 @@
 2003-09-19  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/javax/sound/midi/MetaMessage.java,
+	libraries/javalib/org/tritonus/lowlevel/alsa/AlsaPcm.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffAudioFileReader.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffAudioFileWriter.java,
+	libraries/javalib/org/tritonus/sampled/file/AiffTool.java,
+	libraries/javalib/org/tritonus/sampled/file/WaveAudioFileReader.java,
+	libraries/javalib/org/tritonus/sampled/file/WaveTool.java,
+	libraries/javalib/org/tritonus/share/TCircularBuffer.java,
+	libraries/javalib/org/tritonus/share/TDebug.java,
+	libraries/javalib/org/tritonus/share/sampled/FloatSampleBuffer.java,
+	libraries/javalib/org/tritonus/share/sampled/TVolumeUtils.java,
+	libraries/javalib/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java,
+	libraries/javalib/org/tritonus/share/sampled/file/TAudioFileWriter.java:
+	Resynced with tritonus.
+	
+2003-09-19  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit/machine.c,
 	kaffe/kaffevm/jit/machine.h:
 	Always declare and define globalMethod, which is used

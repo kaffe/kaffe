@@ -299,8 +299,8 @@ public class FloatSampleBuffer {
 		// save format for automatic dithering mode
 		originalFormatType=formatType;
 		for (int ch=0; ch<format.getChannels(); ch++) {
-			convertByteToFloat(buffer, offset, sampleCount, getChannel(ch),
-			                   bytesPerFrame, formatType);
+			convertByteToFloat(buffer, offset, bytesPerFrame, formatType, 
+			                   getChannel(ch), 0, sampleCount);
 			offset+=bytesPerSample; // next channel
 		}
 	}
@@ -598,6 +598,35 @@ public class FloatSampleBuffer {
 			removeChannel(ch);
 		}
 	}
+	
+	public void setSamplesFromBytes(byte[] srcBuffer, int srcOffset, AudioFormat format, 
+	                                int destOffset, int lengthInSamples) {
+		int bytesPerSample = (format.getSampleSizeInBits() + 7)/8;
+		int bytesPerFrame = bytesPerSample * format.getChannels();
+		
+		if (srcOffset + (lengthInSamples * bytesPerFrame) > srcBuffer.length) {
+			throw new IllegalArgumentException
+			("FloatSampleBuffer.setSamplesFromBytes: srcBuffer too small.");
+		}
+		if (destOffset + lengthInSamples > getSampleCount()) {
+			throw new IllegalArgumentException
+			("FloatSampleBuffer.setSamplesFromBytes: destBuffer too small.");
+		}
+		boolean signed = format.getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED);
+		boolean unsigned = format.getEncoding().equals(AudioFormat.Encoding.PCM_UNSIGNED);
+		if (!signed && !unsigned) {
+			throw new IllegalArgumentException
+			("FloatSampleBuffer: only PCM samples are possible.");
+		}
+		int formatType = getFormatType(format.getSampleSizeInBits(),
+		                               signed, format.isBigEndian());
+
+		for (int ch = 0; ch < format.getChannels(); ch++) {
+			convertByteToFloat(srcBuffer, srcOffset, bytesPerFrame, formatType,
+			                   getChannel(ch), destOffset, lengthInSamples);
+			srcOffset += bytesPerSample; // next channel
+		}
+	}
 
 	//////////////////////////////// properties /////////////////////////////////
 
@@ -730,66 +759,66 @@ public class FloatSampleBuffer {
 	private static final float invTwoPower31=1/twoPower31;
 
 	/*public*/
-	private static void convertByteToFloat(byte[] input, int offset, int sampleCount,
-	                                       float[] output, int bytesPerFrame,
-	                                       int formatType) {
+	private static void convertByteToFloat(byte[] input, int inputOffset, int bytesPerFrame, int formatType,
+	                                       float[] output, int outputOffset, int sampleCount) {
 		//if (TDebug.TraceAudioConverter) {
 		//    TDebug.out("FloatSampleBuffer.convertByteToFloat, formatType="
 		//           +formatType2Str(formatType));
 		//}
 		int sample;
-		for (sample=0; sample<sampleCount; sample++) {
+		int endCount = outputOffset + sampleCount;
+		for (sample = outputOffset; sample < endCount; sample++) {
 			// do conversion
 			switch (formatType) {
 			case CT_8S:
 				output[sample]=
-				    ((float) input[offset])*invTwoPower7;
+				    ((float) input[inputOffset])*invTwoPower7;
 				break;
 			case CT_8U:
 				output[sample]=
-				    ((float) ((input[offset] & 0xFF)-128))*invTwoPower7;
+				    ((float) ((input[inputOffset] & 0xFF)-128))*invTwoPower7;
 				break;
 			case CT_16SB:
 				output[sample]=
-				    ((float) ((input[offset]<<8)
-				              | (input[offset+1] & 0xFF)))*invTwoPower15;
+				    ((float) ((input[inputOffset]<<8)
+				              | (input[inputOffset+1] & 0xFF)))*invTwoPower15;
 				break;
 			case CT_16SL:
 				output[sample]=
-				    ((float) ((input[offset+1]<<8)
-				              | (input[offset] & 0xFF)))*invTwoPower15;
+				    ((float) ((input[inputOffset+1]<<8)
+				              | (input[inputOffset] & 0xFF)))*invTwoPower15;
 				break;
 			case CT_24SB:
 				output[sample]=
-				    ((float) ((input[offset]<<16)
-				              | ((input[offset+1] & 0xFF)<<8)
-				              | (input[offset+2] & 0xFF)))*invTwoPower23;
+				    ((float) ((input[inputOffset]<<16)
+				              | ((input[inputOffset+1] & 0xFF)<<8)
+				              | (input[inputOffset+2] & 0xFF)))*invTwoPower23;
 				break;
 			case CT_24SL:
 				output[sample]=
-				    ((float) ((input[offset+2]<<16)
-				              | ((input[offset+1] & 0xFF)<<8)
-				              | (input[offset] & 0xFF)))*invTwoPower23;
+				    ((float) ((input[inputOffset+2]<<16)
+				              | ((input[inputOffset+1] & 0xFF)<<8)
+				              | (input[inputOffset] & 0xFF)))*invTwoPower23;
 				break;
 			case CT_32SB:
 				output[sample]=
-				    ((float) ((input[offset]<<24)
-				              | ((input[offset+1] & 0xFF)<<16)
-				              | ((input[offset+2] & 0xFF)<<8)
-				              | (input[offset+3] & 0xFF)))*invTwoPower31;
+				    ((float) ((input[inputOffset]<<24)
+				              | ((input[inputOffset+1] & 0xFF)<<16)
+				              | ((input[inputOffset+2] & 0xFF)<<8)
+				              | (input[inputOffset+3] & 0xFF)))*invTwoPower31;
 				break;
 			case CT_32SL:
 				output[sample]=
-				    ((float) ((input[offset+3]<<24)
-				              | ((input[offset+2] & 0xFF)<<16)
-				              | ((input[offset+1] & 0xFF)<<8)
-				              | (input[offset] & 0xFF)))*invTwoPower31;
+				    ((float) ((input[inputOffset+3]<<24)
+				              | ((input[inputOffset+2] & 0xFF)<<16)
+				              | ((input[inputOffset+1] & 0xFF)<<8)
+				              | (input[inputOffset] & 0xFF)))*invTwoPower31;
 				break;
 			default:
 				throw new IllegalArgumentException
 				("Unsupported formatType="+formatType);
 			}
-			offset+=bytesPerFrame;
+			inputOffset += bytesPerFrame;
 		}
 	}
 

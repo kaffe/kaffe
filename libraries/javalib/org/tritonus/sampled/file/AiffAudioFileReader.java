@@ -35,8 +35,8 @@ import	java.io.IOException;
 import	javax.sound.sampled.AudioFormat;
 import	javax.sound.sampled.AudioFileFormat;
 import	javax.sound.sampled.AudioInputStream;
+import	javax.sound.sampled.AudioSystem;
 import	javax.sound.sampled.UnsupportedAudioFileException;
-import	javax.sound.sampled.spi.AudioFileReader;
 
 import	org.tritonus.share.sampled.file.TAudioFileFormat;
 import	org.tritonus.share.sampled.file.TAudioFileReader;
@@ -100,23 +100,35 @@ public class AiffAudioFileReader extends TAudioFileReader
 			if (nEncoding==AiffTool.AIFF_COMM_PCM) {
 				// PCM - nothing to do
 			}
-			else
-				if (nEncoding==AiffTool.AIFF_COMM_ULAW) {
-					// ULAW
-					encoding=AudioFormat.Encoding.ULAW;
-					nSampleSize=8;
-				} else {
-					throw new UnsupportedAudioFileException(
-					    "Encoding 0x"+Integer.toHexString(nEncoding)
-					    +" of AIFF file not supported");
-				}
+			else if (nEncoding==AiffTool.AIFF_COMM_ULAW) {
+				// ULAW
+				encoding=AudioFormat.Encoding.ULAW;
+				nSampleSize=8;
+			}
+			else if (nEncoding==AiffTool.AIFF_COMM_IMA_ADPCM) {
+				encoding = Encodings.getEncoding("IMA_ADPCM");
+				nSampleSize=4;
+			}
+			else {
+				throw new UnsupportedAudioFileException(
+					"Encoding 0x"+Integer.toHexString(nEncoding)
+					+" of AIFF file not supported");
+			}
 		}
+		/* In case of IMA ADPCM, frame size is 0.5 bytes (since it is
+		   always mono). A value of 1 as frame size would be wrong.
+		   Handling of frame size 0 in defined nowhere. So the best
+		   solution is to set the frame size to unspecified (-1).
+		*/
+		int nFrameSize = (nSampleSize == 4) ?
+			AudioSystem.NOT_SPECIFIED :
+			(nSampleSize * nNumChannels) / 8;
 		skipChunk(dataInputStream, chunkLength, nRead);
 		AudioFormat format = new AudioFormat(encoding,
 		                                     fSampleRate,
 		                                     nSampleSize,
 		                                     nNumChannels,
-		                                     (nSampleSize * nNumChannels) / 8,
+		                                     nFrameSize,
 		                                     fSampleRate,
 		                                     true);
 		return format;
@@ -139,9 +151,10 @@ public class AiffAudioFileReader extends TAudioFileReader
 
 
 	protected AudioFileFormat getAudioFileFormat(InputStream inputStream, long lFileSizeInBytes)
-	throws	UnsupportedAudioFileException, IOException {
-		DataInputStream	dataInputStream = new DataInputStream(inputStream);
+	throws	UnsupportedAudioFileException, IOException
+	{
 		if (TDebug.TraceAudioFileReader) {TDebug.out("AiffAudioFileReader.getAudioFileFormat(InputStream, long): begin"); }
+		DataInputStream	dataInputStream = new DataInputStream(inputStream);
 		int	nMagic = dataInputStream.readInt();
 		if (nMagic != AiffTool.AIFF_FORM_MAGIC) {
 			throw new UnsupportedAudioFileException(
