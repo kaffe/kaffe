@@ -839,7 +839,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			}
 			else {
 				if (arrayType->data.class == TOBJARR->data.class) {
-					*arrayType = *TOBJ;
+					*arrayType = *getTOBJ();
 				} else if (arrayType->data.class != TNULL->data.class) {
 					arrayType->tinfo = TINFO_SIG;
 					arrayType->data.sig = CLASS_CNAME(arrayType->data.class) + 1;

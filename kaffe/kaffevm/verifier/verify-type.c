@@ -64,7 +64,12 @@ isNull(const Type * t)
 
 static const char* OBJECT_SIG  = "Ljava/lang/Object;";
 static Type  verify_OBJ;
-Type* TOBJ = &verify_OBJ;
+static Type* TOBJ = &verify_OBJ;
+
+Type* getTOBJ(void)
+{
+  return TOBJ;
+}
 
 static const char* OBJARR_SIG = "[Ljava/lang/Object;";
 static Type  verify_OBJARR;

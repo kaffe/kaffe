@@ -599,7 +599,7 @@ checkMethodCall(Verifier* v,
 					t_uninit_super.data.class = uninit->type.data.class->superclass;
 					
 					if (!sameType(methodRefClass, &uninit->type) &&
-					    uninit->type.data.class != TOBJ->data.class &&
+					    uninit->type.data.class != getTOBJ()->data.class &&
 					    !sameType(methodRefClass, &t_uninit_super)) {
 						return verifyErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig, "incompatible receiving type for superclass constructor call");
 					}

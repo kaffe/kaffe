@@ -101,7 +101,8 @@ extern Type* TLONG;
 extern Type* TDOUBLE;
 extern Type* TNULL;
 extern Type* TWIDE;
-extern Type* TOBJ;
+
+extern Type* getTOBJ(void);
 
 extern Type* TOBJARR;
 extern Type* TCHARARR;

@@ -1,5 +1,19 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/verifier/verify-type.c
+	(TOBJ): Made static. 
+	(getTOBJ) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TOBJ) Removed prototype.
+	(getTOBJ) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-block.c (verifyBasicBlock), 
+	kaffe/kaffevm/verifier/verify.c (checkMethodCall): 
+	Use getTOBJ instead of using TOBJ directly.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c (KGC_BLOCKS): Added.
 	(gc_block_base) Made static.
 
