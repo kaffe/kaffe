@@ -436,7 +436,13 @@ final public void suspend() {
 }
 
 public String toString() {
-	return getName();
+	return new String("Thread["
+			  + getName() 
+			  + ","
+			  + getPriority()
+			  + ","
+			  + getThreadGroup().getName()
+			  + "]");
 }
 
 void waitOn(Object hold, long timeout) throws InterruptedException {
