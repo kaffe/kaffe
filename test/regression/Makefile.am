@@ -89,6 +89,7 @@ ALWAYS_TESTS = \
 ## simple test for InvocationTargetExceptions
 	InvTarExcTest.java \
 ## tests for ClassLoader
+	SystemLoaderTest.java \
 	CLTest.java \
 	CLTestConc.java \
 	CLTestJLock.java \

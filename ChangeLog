@@ -1,3 +1,10 @@
+Wed Aug 30 12:39:04 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/clib/native/SystemClassLoader.c: do not process to
+	state COMPLETE as it results in premature execution of static
+	initializers
+	* test/regression/SystemLoaderTest.java: new test for that
+
 Sat Aug 26 16:52:06 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/debug.c:

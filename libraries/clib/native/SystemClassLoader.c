@@ -81,7 +81,10 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 		KFREE(name);
 	}
 
-	if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
+	/* do not process to COMPLETE, it will run static initializers
+	 * prematurely!
+	 */
+	if (processClass(clazz, CSTATE_LINKED, &info) == false) {
 		throwError(&info);
 	}
 	return (clazz);
