@@ -1,3 +1,10 @@
+Tue May 12 09:51:42 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: avoid calling markObject with
+	NULL; added missing LOCK/UNLOCK for list manipulation
+	* kaffe/kaffevm/mem/gc-mem.c: released gc_lock if running out of
+	memory; filled freed objects with pattern to help debugging.
+
 Sun May 10 17:33:21 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
         * libraries/clib/native/Field.c (java_lang_reflect_Field_get):
