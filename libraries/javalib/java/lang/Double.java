@@ -21,6 +21,9 @@ public final class Double extends Number {
 
   private static final int DECIMAL_PRECISION = 16;  // ceiling (51 log 2)
 
+  /* This is what Sun's JDK1.1 "serialver java.lang.Double" spits out */
+  private static final long serialVersionUID = -9172774392245257468L;
+
   private final double value;
 
   public static native long doubleToLongBits(double value);

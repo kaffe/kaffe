@@ -93,7 +93,7 @@ public Object getContent() throws IOException {
 }
 
 protected void setContentTypeFromName() {
-	String ct = fileNameMap.getContentTypeFor( url.getFile());
+	String ct = getFileNameMap().getContentTypeFor( url.getFile());
 	headersValue[ContentType] = ct;
 	headersValue[ContentEncoding] = ct;
 }

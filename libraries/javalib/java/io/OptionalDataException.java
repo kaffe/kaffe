@@ -16,4 +16,5 @@ public class OptionalDataException
 	public int length;
 	public boolean eof;
 
+        private OptionalDataException() {}
 }

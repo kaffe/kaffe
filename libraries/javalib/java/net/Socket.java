@@ -31,6 +31,14 @@ public Socket(String host, int port) throws UnknownHostException, IOException {
 	this(InetAddress.getByName(host), port, true);
 }
 
+public Socket(InetAddress address, int port, InetAddress localAddr, int localPort) throws IOException {
+    throw new kaffe.util.NotImplemented();
+}
+    
+public Socket(String host, int port, InetAddress localAddr, int localPort) throws IOException {
+    throw new kaffe.util.NotImplemented();
+}
+
 /**
  * @deprecated.
  */

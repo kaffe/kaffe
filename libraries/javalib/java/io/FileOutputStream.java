@@ -50,10 +50,15 @@ public FileOutputStream(String name, boolean append) throws IOException
 
 native public void close() throws IOException;
 
-protected void finalize() throws Throwable
+protected void finalize() throws IOException
 {
 	close();
-	super.finalize();
+	try {
+	    super.finalize();
+	}
+	catch(Throwable e){
+	    throw new IOException(e.getMessage());
+	}
 }
 
 final public FileDescriptor getFD()  throws IOException

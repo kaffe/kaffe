@@ -1,3 +1,29 @@
+Tue Mar 23 13:14:09 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* libraries/javalib/java/io/BufferedReader.java,File.java,
+	FileInputStream.java,FileOutputStream.java,PipedInputStream.java,
+	PrintStream.java,WriteAbortedException.java,
+	libraries/javalib/java/net/ContentHandler.java, URL.java: changed
+	access modifiers, checked exceptions and implemented interfaces.
+
+	* libraries/javalib/java/io/OptionalDataException.java: added private
+	constructor.
+
+	* libraries/javalib/java/net/HttpURLConnection.java: fixed method name
+	setRequestMethod(String).
+
+	* libraries/javalib/java/net/Socket.java: add headers for JDK1.2
+	constructors.
+
+	* libraries/javalib/java/net/URLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/BasicURLConnection.java,
+	http/HttpURLConnection.java: fileNameMap is private as of JDK1.1.6.
+	streamMap should be private.
+
+	* libraries/javalib/java/text/ChoiceFormat.java: implement toPattern(),
+	parse(). Fix nextDouble(double), previousDouble(double),
+	format(double,StringBuffer,FieldPosition), applyPattern(String).
+
 Tue Mar 23 09:55:16 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java:

@@ -1,5 +1,6 @@
 package java.net;
 
+import java.io.IOException;
 
 /*
  * Java core library component.
@@ -15,5 +16,5 @@ abstract public class ContentHandler
 {
 public ContentHandler() {}
 
-abstract public Object getContent(URLConnection urlc);
+abstract public Object getContent(URLConnection urlc) throws IOException;
 }

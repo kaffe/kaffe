@@ -21,8 +21,8 @@ import kaffe.net.DefaultStreamMap;
 
 abstract public class URLConnection
 {
-	public static FileNameMap fileNameMap = new DefaultFileNameMap();
-	public static StreamMap streamMap = new DefaultStreamMap();
+	private static FileNameMap fileNameMap = new DefaultFileNameMap();
+	private static StreamMap streamMap = new DefaultStreamMap();
 
 	protected boolean allowUserInteraction = defaultAllowUserInteraction;
 	protected boolean connected = false;
@@ -90,6 +90,10 @@ public long getExpiration() {
 	return getHeaderFieldDate("expiration", -1);
 }
 
+public static FileNameMap getFileNameMap() {
+	return (fileNameMap);
+}
+    
 public String getHeaderField(String name) {
 	return (null);
 }
@@ -198,6 +202,10 @@ public void setDoOutput(boolean dooutput) {
 	doOutput = dooutput;
 }
 
+public static void setFileNameMap(FileNameMap filenameMap) {
+        fileNameMap = filenameMap;
+}
+    
 public void setIfModifiedSince(long ifmodifiedsince) {
 	ifModifiedSince = ifmodifiedsince;
 }

@@ -11,7 +11,7 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-class WriteAbortedException
+public class WriteAbortedException
   extends ObjectStreamException
 {
 	public Exception detail;

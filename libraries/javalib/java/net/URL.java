@@ -207,7 +207,7 @@ public URLConnection openConnection() throws IOException {
 	return (conn);
 }
 
-public InputStream openStream() throws IOException {
+public final InputStream openStream() throws IOException {
 	if (conn == null) {
 		openConnection();
 	}

@@ -59,7 +59,8 @@ public boolean markSupported() {
 	return (true);
 }
 
-protected void pushback() {
+//Used in java.io.BufferedLineReader
+void pushback() {
 	pos--;
 }
 

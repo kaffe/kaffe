@@ -79,7 +79,7 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 	return super.read(b, off, len);
 }
 
-protected synchronized void receive(int b) {
+protected synchronized void receive(int b) throws IOException {
 	while (out == in+1) {
 		try {
 			this.wait();
@@ -92,7 +92,8 @@ protected synchronized void receive(int b) {
 	this.notifyAll();
 }
 
-protected void receivedLast() {
+//Used in java.io.PipedOutputStream
+void receivedLast() {
 	closed = true;
 }
 }

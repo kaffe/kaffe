@@ -30,7 +30,7 @@ public boolean checkError() {
 	return error;
 }
 
-public void setError()
+protected void setError()
 {
 	error = true;
 }

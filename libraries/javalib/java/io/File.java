@@ -1,5 +1,6 @@
 package java.io;
 
+import java.io.Serializable;
 import java.lang.String;
 import java.util.Vector;
 
@@ -12,7 +13,7 @@ import java.util.Vector;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class File
+public class File implements Serializable
 {
 	final public static String separator = System.getProperty("file.separator");
 	final public static char separatorChar = separator.charAt(0);

@@ -86,7 +86,7 @@ public String getResponseMessage () throws IOException {
         return responseMessage;
 }
 
-public void setRequestMessage (String message) throws ProtocolException {
+public void setRequestMethod (String message) throws ProtocolException {
 	if (!message.equals("DELETE") &&
 	    !message.equals("GET") &&
 	    !message.equals("HEAD") &&
