@@ -15,7 +15,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import kaffe.net.DefaultSocketImplFactory;
 
-final public class ServerSocket {
+public class ServerSocket {
 
 private static SocketImplFactory factory = new DefaultSocketImplFactory();
 

@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import kaffe.net.DefaultSocketImplFactory;
 
-final public class Socket {
+public class Socket {
 
 private static SocketImplFactory factory = new DefaultSocketImplFactory();
 
