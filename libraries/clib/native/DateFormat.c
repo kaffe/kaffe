@@ -10,7 +10,7 @@
 
 #include "config.h"
 #include "config-std.h"
-#include <native.h>
+#include "java_text_DateFormat.h"
 #include <time.h>
 
 #if defined(HAVE_STRFTIME)

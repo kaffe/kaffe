@@ -13,7 +13,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
-#include <jni.h>
+#include "kaffe_management_JIT.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/support.h"
@@ -48,8 +48,8 @@ Java_kaffe_management_JIT_dumpActiveMethods(JNIEnv *env, jclass clazz, jobject p
  */
 void
 Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass, 
-	Hjava_lang_String* _cname, Hjava_lang_String* _mname, 
-	Hjava_lang_String* _signature, Hjava_lang_ClassLoader *loader)	
+	jstring _cname, jstring _mname, 
+	jstring _signature, jobject loader)	
 	/* JNI? what's that? */
 {
 	errorInfo info;

@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-std.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
-#include <native.h>
+#include "java_lang_String.h"
 
 Hjava_lang_String*
 java_lang_String_intern0(Hjava_lang_String* str)
@@ -29,7 +29,7 @@ java_lang_String_intern0(Hjava_lang_String* str)
 
 
 jint
-Java_java_lang_String_indexOf( JNIEnv* env, Hjava_lang_String* str, Hjava_lang_String* pat, jint offset )
+java_lang_String_indexOf(Hjava_lang_String* str, Hjava_lang_String* pat, jint offset)
 {
   jchar *a;
   jchar *p;

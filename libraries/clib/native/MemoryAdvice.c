@@ -11,7 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include <jni.h>
+#include "kaffe_lang_MemoryAdvice.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/gc.h"
 

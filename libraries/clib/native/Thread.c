@@ -11,7 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
-#include <native.h>
+#include "java_lang_Thread.h"
 #include "../../../kaffe/kaffevm/thread.h"
 #include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/support.h"

@@ -12,7 +12,7 @@
  * of this file. 
  */
 
-#include <jni.h>
+#include "kaffe_io_CharToByteDefault.h"
 
 jint
 Java_kaffe_io_CharToByteDefault_convert( JNIEnv* env, jobject _this, 

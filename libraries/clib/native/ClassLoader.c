@@ -24,7 +24,7 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/exception.h"
-#include <native.h>
+#include "java_lang_ClassLoader.h"
 #include "defs.h"
 
 /*

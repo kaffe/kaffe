@@ -14,12 +14,13 @@
 #include "files.h"
 #include "defs.h"
 #include "jsyscall.h"
-#include <native.h>
+#include "kaffe_applet_AudioPlayer.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 
 void
-kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
+kaffe_applet_AudioPlayer_playFile(struct Hjava_lang_String* jstr)
+{
 	char    fName[MAXPATHLEN];
 	int     bLen = 1024;
 	int     fin, dev, rc;

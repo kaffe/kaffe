@@ -19,7 +19,7 @@
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
-#include <native.h>
+#include "java_lang_Object.h"
 
 /*
  * Generate object hash code.

@@ -1,6 +1,11 @@
 /*
  * digest.c
  *
+ * kaffe.security.provider.MD2
+ * kaffe.security.provider.MD4
+ * kaffe.security.provider.MD5
+ * kaffe.security.provider.SHA
+ *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
@@ -21,6 +26,10 @@
 #include "../../../kaffe/kaffevm/fp.h"
 #include "../../../kaffe/kaffevm/sha-1.h"
 #include <native.h>
+#include "kaffe_security_provider_MD2.h"
+#include "kaffe_security_provider_MD4.h"
+#include "kaffe_security_provider_MD5.h"
+#include "kaffe_security_provider_SHA.h"
 
 /**************************** MD2 ***********************************/
 

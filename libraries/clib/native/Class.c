@@ -29,7 +29,7 @@
 #include "java_lang_reflect_Constructor.h"
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"
-#include <native.h>
+#include "java_lang_Class.h"
 #include "defs.h"
 
 extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
@@ -592,7 +592,7 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 }
 
 HArrayOfObject*
-java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
+java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 {
 	int count;
 	Hjava_lang_Class* clas;
@@ -633,7 +633,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 }
 
 HArrayOfObject*
-java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jint declared)
+java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declared)
 {
 	int count;
 	Hjava_lang_Class* clas;
@@ -664,7 +664,7 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jint declared)
 }
 
 HArrayOfObject*
-java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, int declared)
+java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
 {
 	int count;
 	Hjava_lang_Class* clas;
@@ -753,7 +753,7 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 }
 
 Hjava_lang_reflect_Method*
-java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_String* name, HArrayOfObject* arr, jint declared)
+java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_String* name, HArrayOfObject* arr, jboolean declared)
 {
 	Hjava_lang_Class* clas;
 
@@ -781,7 +781,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 }
 
 struct Hjava_lang_reflect_Constructor*
-java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* arr, jint declared) 
+java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* arr, jboolean declared) 
 {
 	Hjava_lang_Class* clas = this;
 
@@ -799,7 +799,7 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 }
 
 Hjava_lang_reflect_Field*
-java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, int declared)
+java_lang_Class_getField0(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jboolean declared)
 {
 	Hjava_lang_Class* clas;
 

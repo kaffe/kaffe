@@ -10,11 +10,11 @@
 
 #include "config.h"
 #include "config-std.h"
-#include <jni.h>
+#include "kaffe_lang_Application.h"
+#include "java_lang_SecurityManager.h"
 #include <native.h>
 
 extern void exitThread(void);
-extern HArrayOfObject* java_lang_SecurityManager_getClassContext0(void);
 
 void
 Java_kaffe_lang_Application_exit0(JNIEnv* env, jobject application)
@@ -26,8 +26,8 @@ Java_kaffe_lang_Application_exit0(JNIEnv* env, jobject application)
  * Generate an array of classes representing the classes on the current
  * threads stack.
  */
-HArrayOfObject*
-kaffe_lang_Application_classStack0(void)
+jarray
+Java_kaffe_lang_Application_classStack0(JNIEnv *env, jclass cls)
 {
 	return (java_lang_SecurityManager_getClassContext0());
 }

@@ -13,7 +13,7 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
-#include <native.h>
+#include "java_util_zip_ZipFile.h"
 #include "../../../kaffe/kaffevm/jar.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "java_util_zip_ZipEntry.h"
