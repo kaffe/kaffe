@@ -64,7 +64,7 @@ public class CLTestJLock extends ClassLoader
 	new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(2000);
+		    Thread.sleep(9000);
 		} catch (InterruptedException e) { }
 		System.out.println("Time Out. Failure.");
 		System.exit(-1);

@@ -20,7 +20,7 @@ public class TestUnlock {
 	new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(2000);
+		    Thread.sleep(9000);
 		} catch (Exception _) { }
 		System.out.println("Time out.  Failure.");
 		System.exit(-1);

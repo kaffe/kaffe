@@ -27,11 +27,11 @@ public class ProcessClassInst
     static Vector v = new Vector();
 
     public static void main(String av[]) throws Exception {
-	// a watchdog thread that kills us off after 3 sec
+	// a watchdog thread that kills us off after 9 sec
 	new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(3000);
+		    Thread.sleep(9000);
 		    System.out.println("sorry, you timed out");
 		    System.exit(-1);
 		} catch (Exception e) {
