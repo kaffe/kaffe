@@ -1,5 +1,5 @@
 /* VMAccessController.java -- VM-specific access controller methods.
-   Copyright (C) 2004  Casey Marshall <csm@gnu.org>
+   Copyright (C) 2004  Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ final class VMAccessController
     DEFAULT_CONTEXT = new AccessControlContext(domain);
   }
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
   private static void debug (String msg)
   {
     System.err.print (">>> VMAccessController: ");

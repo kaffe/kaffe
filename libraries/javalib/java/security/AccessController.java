@@ -113,7 +113,7 @@ public final class AccessController
    * @return the result of the <code>action.run()</code> method.
    */
   public static Object doPrivileged(PrivilegedAction action,
-                                    AccessControlContext context)
+				    AccessControlContext context)
   {
     VMAccessController.pushContext (context, action.getClass());
     try
@@ -148,11 +148,11 @@ public final class AccessController
 
     try
       {
-        return action.run();
+	return action.run();
       }
     catch (Exception e)
       {
-        throw new PrivilegedActionException(e);
+	throw new PrivilegedActionException(e);
       }
   }
 
@@ -175,18 +175,18 @@ public final class AccessController
    * is thrown in the <code>run()</code> method.
    */
   public static Object doPrivileged(PrivilegedExceptionAction action,
-                                    AccessControlContext context)
+				    AccessControlContext context)
     throws PrivilegedActionException
   {
     VMAccessController.pushContext (context, action.getClass());
 
     try
       {
-        return action.run();
+	return action.run();
       }
     catch (Exception e)
       {
-        throw new PrivilegedActionException(e);
+	throw new PrivilegedActionException(e);
       }
     finally
       {
@@ -203,7 +203,10 @@ public final class AccessController
    *
    * <p>Additionally, if a call was made to {@link
    * #doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)}
-   * that supplied an {@link AccessControlContext}, then that
+   * that supplied an {@link AccessControlContext}, then that context
+   * will be intersected with the calculated one.
+   *
+   * @return The context.
    */
   public static AccessControlContext getContext()
   {

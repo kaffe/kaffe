@@ -1,7 +1,64 @@
 2004-06-03  Dalibor Topic  <robilad@kaffe.org>
 
+        libraries/javalib/java/security/AccessControlContext.java,
+        libraries/javalib/java/security/AccessController.java,
+        libraries/javalib/java/security/IntersectingDomainCombiner.java,
+        libraries/javalib/java/security/ProtectionDomain.java,
+        libraries/javalib/java/security/SecureClassLoader.java,
+        libraries/javalib/java/security/VMAccessController.java,
+        libraries/javalib/java/util/PropertyPermissionCollection.java:
+	Resynced with GNU Classpath.
+
+	2004-06-03  Michael Koch  <konqueror@gmx.de>
+
+        * java/security/AccessControlContext.java
+        (equals): Renamed protectionDomain to protectionDomains.
+        (hashCode): Likewise.
+
+	2004-06-03  Casey Marshall  <csm@gnu.org>
+
+        * java/security/AccessController.java
+        (doPrivileged(PrivilegedAction,AccessControlContext)): call
+        VMAccessController.pushContext and popContext.
+        (doPrivileged(PrivilegedExceptionAction,AccessControlContext)):
+        likewise.
+        (getContext): call VMAccessController.getContext.
+        * java/security/IntersectingDomainCombiner.java: new file.
+        * vm/reference/java/security/VMAccessController.java: new file.
+
+	2004-06-03  Michael Koch  <konqueror@gmx.de>
+
+        * java/security/AccessControlContext.java,
+        java/security/ProtectionDomain.java,
+        java/security/SecureClassLoader.java,
+        java/util/PropertyPermissionCollection.java:
+        Fixed javadocs all over.
+
+	2004-06-03  Casey Marshall <csm@gnu.org>
+
+        * java/security/AccessControlContext.java
+        (protectionDomain): mark final.
+        (combiner): likewise.
+        (<init>(ProtectionDomain[])): use HashSet to uniquify domains.
+        (<init>(ProtectionDomain[],AccessControlContext,DomainCombiner)):
+        new constructor.
+        (checkPermission): only succeed if `perm' is implied by all
+        protection domains.
+        (equal): do unordered comparison.
+        * java/security/ProtectionDomain.java
+        (<init>(CodeSource,PermissionCollection)): set `staticBinding' to
+        `true'.
+        * java/security/SecureClassLoader.java
+        (defineClass): make protection domain dynamically bound.
+        (getPermissions): call `getCurrentPolicy' to avoid permission
+        check.
+        * java/util/PropertyPermissionCollection.java
+        (implies): avoid infinite loop.
+
+2004-06-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/ObjectInputStream.java:
-	 Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2004-06-03  Michael Koch  <konqueror@gmx.de>
 

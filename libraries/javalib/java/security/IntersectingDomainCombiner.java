@@ -1,5 +1,5 @@
 /* IntersectingDomainCombiner.java --
-   Copyright (C) 2004  Casey Marshall <csm@gnu.org>
+   Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 

@@ -40,18 +40,18 @@ package java.security;
 import java.util.HashSet;
 
 /**
- * <p>AccessControlContext makes system resource access decsion
- * based on permission rights.</p>
+ * AccessControlContext makes system resource access decsion 
+ * based on permission rights.  
  *
- * <p>It is used for a specific context and has only one method
- * checkPermission. It is similar to AccessController except that it
- * makes decsions based on the current context instead of the the current
- * thread.</p>
+ * It is used for a specific context and has only one method
+ * checkPermission. It is similar to AccessController except
+ * that it makes decsions based on the current context instead
+ * of the the current thread.
  *
- * <p>It is created by call AccessController.getContext method.</p>
+ * It is created by call AccessController.getContext method.
  *
  * @author Mark Benvenuto
- * @since JDK 1.2
+ * @since 1.2
  */
 public final class AccessControlContext
 {
@@ -60,12 +60,12 @@ public final class AccessControlContext
 
   /**
    * Construct a new AccessControlContext with the specified
-   * ProtectionDomains. <code>context</code> must not be null and
-   * duplicates will be removed.
+   * ProtectionDomains. <code>context</code> must not be 
+   * null and duplicates will be removed.
    *
    * @param context The ProtectionDomains to use
    */
-  public AccessControlContext (ProtectionDomain[] context)
+  public AccessControlContext(ProtectionDomain[]context)
   {
     HashSet domains = new HashSet (context.length);
     for (int i = 0; i < context.length; i++)
@@ -79,12 +79,10 @@ public final class AccessControlContext
    * Construct a new AccessControlContext with the specified
    * ProtectionDomains and DomainCombiner
    *
-   * @param acc The ProtectionDomains to use
-   * @param combiner The domain combiner.
-   * @since JDK 1.3
+   * @since 1.3
    */
   public AccessControlContext(AccessControlContext acc,
-                              DomainCombiner combiner)
+			      DomainCombiner combiner)
   {
     // XXX check permission to call this.
     AccessControlContext acc2 = AccessController.getContext();
@@ -112,9 +110,10 @@ public final class AccessControlContext
 
   /**
    * Determines whether or not the specific permission is granted
-   * depending on the context it is within.
+   * depending on the context it is within. 
    *
    * @param perm a permission to check
+   *
    * @throws AccessControlException if the permssion is not permitted
    */
   public void checkPermission(Permission perm) throws AccessControlException
@@ -125,22 +124,23 @@ public final class AccessControlContext
   }
 
   /**
-   * <p>Checks if two AccessControlContexts are equal.</p>
+   * Checks if two AccessControlContexts are equal.
    *
-   * <p>It first checks if obj is an AccessControlContext class, and then
-   * checks if each ProtectionDomain matches.</p>
+   * It first checks if obj is an AccessControlContext class, and
+   * then checks if each ProtectionDomain matches.
    *
-   * @param obj The object to compare this class to.
+   * @param obj The object to compare this class to
+   *
    * @return true if equal, false otherwise
    */
   public boolean equals(Object obj)
   {
     if (obj instanceof AccessControlContext)
       {
-        AccessControlContext acc = (AccessControlContext) obj;
+	AccessControlContext acc = (AccessControlContext) obj;
 
-        if (acc.protectionDomains.length != protectionDomains.length)
-          return false;
+	if (acc.protectionDomains.length != protectionDomains.length)
+	  return false;
 
         int i, j;
         for (i = 0; i < protectionDomains.length; i++)
@@ -159,7 +159,7 @@ public final class AccessControlContext
   }
 
   /**
-   * Computes a hash code of this class.
+   * Computes a hash code of this class
    *
    * @return a hash code representing this class
    */
