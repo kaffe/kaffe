@@ -12,6 +12,8 @@
 #ifndef __i386_jit_h
 #define __i386_jit_h
 
+#include "config.h"
+
 #if defined(HAVE_VALGRIND_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif
@@ -46,12 +48,6 @@ typedef struct _exceptionFrame {
 /**/
 
 #define HAVE_TRAMPOLINE
-
-#if defined(__GNUC__)
-#define	PACKED	__attribute__((packed))
-#else
-#define	PACKED
-#endif
 
 #if defined(_MSC_VER)
 #pragma pack ( push, 1 )

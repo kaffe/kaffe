@@ -116,3 +116,18 @@ AC_DEFUN([GCC_ATTRIBUTE_ALWAYS_INLINE],[
 #define ALWAYS_INLINE FUNCATTR((ATTRALWAYS_INLINE))
 #endif])
 ])
+AC_DEFUN([GCC_ATTRIBUTE_PACKED],[
+ AC_REQUIRE([GCC_ATTRIBUTE_SUPPORTED])
+ GCC_ATTRIBUTE(packed,packed,[int x],packed,PACKED,[Define if packing of struct members a la GCC 2.5 and higher is available.])
+ AH_BOTTOM([/* GNU C constant functions, or null. */
+#ifndef ATTRPACKED
+#ifdef HAVE_GNUC25_PACKED
+#define ATTRPACKED packed
+#else
+#define ATTRPACKED
+#endif
+#endif
+#ifndef PACKED
+#define PACKED FUNCATTR((ATTRPACKED))
+#endif])
+])

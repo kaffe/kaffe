@@ -15,6 +15,8 @@
 #ifndef __arm_jit_h
 #define __arm_jit_h
 
+#include "config.h"
+
 /* The stack backtrace structure is as follows:
 fp points to here:    |  save code pointer  |      
 		      |  return link value  |      [fp - 4 ]
@@ -100,11 +102,11 @@ typedef struct _exceptionFrame {
 //
 
 typedef struct _methodTrampoline {
-	unsigned int loadlr	__attribute__((packed));
-	unsigned int branch	__attribute__((packed));
-	struct _methods* meth	__attribute__((packed));
-	void** where		__attribute__((packed));
-	void** trampaddr	__attribute__((packed));
+	unsigned int loadlr	PACKED;
+	unsigned int branch	PACKED;
+	struct _methods* meth	PACKED;
+	void** where		PACKED;
+	void** trampaddr	PACKED;
 } methodTrampoline;
 
 extern void arm_do_fixup_trampoline(void);

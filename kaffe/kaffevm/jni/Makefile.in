@@ -361,7 +361,8 @@ libkaffejni_la_SOURCES = \
 
 noinst_HEADERS = \
 	jni_i.h \
-	jnirefs.h
+	jnirefs.h \
+	jni_funcs.h
 
 all: all-am
 

@@ -172,6 +172,10 @@
 /* Define if nonreturning functions a la GCC 2.5 and higher are available. */
 #undef HAVE_GNUC25_NORETURN
 
+/* Define if packing of struct members a la GCC 2.5 and higher is available.
+   */
+#undef HAVE_GNUC25_PACKED
+
 /* Define if printf-format argument lists a la GCC are available. */
 #undef HAVE_GNUC25_PRINTFFORMAT
 
@@ -824,30 +828,6 @@
 #define CONSTANT FUNCATTR((ATTRCONST))
 #endif
 
-/* GNU C nonreturning functions, or null. */
-#ifndef ATTRNORETURN
-#ifdef HAVE_GNUC25_NORETURN
-#define ATTRNORETURN noreturn
-#else /* ! HAVE_GNUC25_NORETURN */
-#define ATTRNORETURN
-#endif /* HAVE_GNUC25_NORETURN */
-#endif /* ATTRNORETURN */
-#ifndef NONRETURNING
-#define NONRETURNING FUNCATTR((ATTRNORETURN))
-#endif /* NONRETURNING */
-
-/* GNU C unused functions, or null. */
-#ifndef ATTRUNUSED
-#ifdef HAVE_GNUC25_UNUSED
-#define ATTRUNUSED unused
-#else
-#define ATTRUNUSED
-#endif
-#endif
-#ifndef UNUSED
-#define UNUSED FUNCATTR((ATTRUNUSED))
-#endif
-
 /* GNU C printf formats, or null. */
 #ifndef ATTRPRINTF
 #ifdef HAVE_GNUC25_PRINTFFORMAT
@@ -862,4 +842,40 @@
 
 #ifndef NONRETURNPRINTFFORMAT
 #define NONRETURNPRINTFFORMAT(si,tc) FUNCATTR((ATTRPRINTF(si,tc),ATTRNORETURN))
+#endif
+
+/* GNU C nonreturning functions, or null. */
+#ifndef ATTRNORETURN
+#ifdef HAVE_GNUC25_NORETURN
+#define ATTRNORETURN noreturn
+#else /* ! HAVE_GNUC25_NORETURN */
+#define ATTRNORETURN
+#endif /* HAVE_GNUC25_NORETURN */
+#endif /* ATTRNORETURN */
+#ifndef NONRETURNING
+#define NONRETURNING FUNCATTR((ATTRNORETURN))
+#endif /* NONRETURNING */
+
+/* GNU C constant functions, or null. */
+#ifndef ATTRPACKED
+#ifdef HAVE_GNUC25_PACKED
+#define ATTRPACKED packed
+#else
+#define ATTRPACKED
+#endif
+#endif
+#ifndef PACKED
+#define PACKED FUNCATTR((ATTRPACKED))
+#endif
+
+/* GNU C unused functions, or null. */
+#ifndef ATTRUNUSED
+#ifdef HAVE_GNUC25_UNUSED
+#define ATTRUNUSED unused
+#else
+#define ATTRUNUSED
+#endif
+#endif
+#ifndef UNUSED
+#define UNUSED FUNCATTR((ATTRUNUSED))
 #endif

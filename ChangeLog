@@ -1,3 +1,22 @@
+2004-06-23  Dalibor Topic  <robilad@kaffe.org>
+
+        * configure.ac:
+	Check for 'packed' gcc attribute.
+
+        * configure,
+        config/config.h.in,
+        kaffe/kaffevm/jni/Makefile.in:
+	Regenerated.
+
+        * config/arm/jit.h,
+        config/i386/jit.h,
+        config/m68k/jit.h:
+	Include config.h. Use PACKED instead of using gcc packed
+	attribute explicietely.
+
+        * m4/gcc_attribute.m4:
+	Added check for 'packed' gcc attribute.
+
 2004-06-22  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:
