@@ -777,7 +777,18 @@ checkMethodStaticConstraints(Method* method, errorInfo* einfo)
 	return(true);
 }
 
-
+static inline
+bool
+abstractMethodError(Method* method, errorInfo* einfo, const char * msg)
+{
+	postExceptionMessage(einfo, 
+			     JAVA_LANG(ClassFormatError),
+			     "in method \"%s.%s\": abstract methods cannot be %s",
+			     CLASS_CNAME(method->class),
+			     METHOD_NAMED(method),
+			     msg);
+	return(false);
+}
 
 /*
  * Given a method with its ACC_ABSTRACT flag set, this checks the the rest of the access flags
@@ -789,12 +800,6 @@ static
 bool
 checkAbstractMethod(Method* method, errorInfo* einfo)
 {
-#define ABSTRACT_METHOD_ERROR(_MSG) \
-	postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), \
-			     "in method \"%s.%s\": abstract methods cannot be %s", \
-			     CLASS_CNAME(method->class), \
-			     METHOD_NAMED(method), _MSG); \
-	return(false)
 	
 #ifdef ABSTRACT_METHOD_VS_ABSTRACT_CLASS	
 	/* This is commented out because Sun's verifier doesn't care if an abstract method
@@ -840,21 +845,19 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 	
 	
 	/* enforce access flag rules of the JVML spec. for abstract methods */
-	if (METHOD_IS_PRIVATE(method))           { ABSTRACT_METHOD_ERROR("private");      }
-	else if (METHOD_IS_FINAL(method))        { ABSTRACT_METHOD_ERROR("final");        }
-	else if (METHOD_IS_NATIVE(method))       { ABSTRACT_METHOD_ERROR("native");       }
-	else if (METHOD_IS_STATIC(method))       { ABSTRACT_METHOD_ERROR("static");       }
-	else if (METHOD_IS_STRICT(method))       { ABSTRACT_METHOD_ERROR("strictfp");     }
+	if (METHOD_IS_PRIVATE(method))           { return abstractMethodError(method, einfo, "private");      }
+	else if (METHOD_IS_FINAL(method))        { return abstractMethodError(method, einfo, "final");        }
+	else if (METHOD_IS_NATIVE(method))       { return abstractMethodError(method, einfo, "native");       }
+	else if (METHOD_IS_STATIC(method))       { return abstractMethodError(method, einfo, "static");       }
+	else if (METHOD_IS_STRICT(method))       { return abstractMethodError(method, einfo, "strictfp");     }
 	
 	/* not enforced by Sun's verifier
 	 *
-	else if (METHOD_IS_SYNCHRONISED(method)) { ABSTRACT_METHOD_ERROR("synchronized"); }
+	else if (METHOD_IS_SYNCHRONISED(method)) { return abstractMethodError(method, einfo, "synchronized"); }
 	*/
 	
 	
 	return(true);
-	
-#undef ABSTRACT_METHOD_ERROR
 }
 
 

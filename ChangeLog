@@ -1,5 +1,13 @@
 2004-02-11  Dalibor Topic <robilad@kaffe.org>
 
+        * kaffe/kaffevm/verify.c
+	(abstractMethodError): New static inline function.
+	(ABSTRACT_METHOD_ERROR) Removed.
+	(checkAbstractMethod) Use abstractMethodError instead of
+	ABSTRACT_METHOD_ERROR macro.
+
+2004-02-11  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/verify.c
 	(poolError): New static inline function.
 	(POOLERROR): Removed.
