@@ -4,21 +4,19 @@ FAQ for the AWT
 1.0.2 Event Model
 -----------------
 
-We do *not* support the old 1.0.2 Event Model since this has been deprecated.
-Beware that code exists which 'claims' to be JDK 1.1 compatiable but still
-uses some of the 1.0.2 features.
+We do support the old 1.0.2 event model - it should work as defined by Sun.
 
 1.0.2 Deprecated methods
 ------------------------
 
-We're adding in missing deprecated methods as we find them.  If you come
-across a missing one, send us a patch.
+We do support all deprecated methods - they should work as defined by Sun.
 
 Swing
 -----
 
+We completely support Swing (in its many forms and releases).
+
 Whatever Sun may tell you about Swing being 100% pure Java - just don't
 believe them.  Swing make a number of assumptions about the underlying AWT
 implementation and makes calls to a number of "banned" methods - oh and it
-makes extensive use of deprecates.  We're working toward Swing compatibility
-but since this stuff is *all* undocumented it may take a little time.
+makes extensive use of deprecates.
