@@ -27,6 +27,11 @@ else
 	DESTDIR="."
 fi
 
+echo_n_sp ()
+{
+	echo ${1+"$@"} | tr '\012' ' '
+}
+
 compile()
 {
 	echo ERROR > $RESULT
@@ -81,7 +86,7 @@ run()
 runtest()
 {
 	error=0
-	echo -n "$1 ... " 1>&2
+	echo_n_sp "$1 ..." 1>&2
 	if test "x$3" = "xdeprecated"; then
 	    compile_deprecated $1
 	else
@@ -420,7 +425,7 @@ runtest ProcessTest "ProcessTest: Success."
 runtest UDPTest "UDPTest: Success."
 
 runtest finaltest "3.1415926536"
-echo -n "finaltest2 ... " 1>&2
+echo_n_sp "finaltest2 ..." 1>&2
 compile finaltest2
 if test $error = 0 ; then
 	run finaltest "3.1415926536"

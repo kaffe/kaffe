@@ -1,3 +1,8 @@
+Sat Dec 12 05:48:17 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestScript (echo_n_sp): portable echo -n
+	* test/regression/TestScriptThread (echo_n_sp): ditto
+
 Fri Dec 11 22:55:41 1998  Archie Cobbs <archie@whistle.com>
 
       * config/alpha/jit-alpha.def include/jmalloc.h include/jsyscall.h

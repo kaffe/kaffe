@@ -27,6 +27,11 @@ else
 	DESTDIR="."
 fi
 
+echo_n_sp ()
+{
+	echo ${1+"$@"} | tr '\012' ' '
+}
+
 compile()
 {
 	echo ERROR > $RESULT
@@ -60,7 +65,7 @@ run()
 runtest()
 {
 	error=0
-	echo -n "$1 ... " 1>&2
+	echo_n_sp "$1 ..." 1>&2
 	compile $1
 	if test $error = 0 ; then
 		run $1 "$2"
