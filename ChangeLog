@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-07  Craig Black  <craig.black@aonix.com>
+
+        * native/jni/classpath/native_state.c
+        (add_node): Update head pointer when moving node to front of list.
+
+2005-02-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-06  Mark Wielaard  <mark@klomp.org>
 
         Reported by Timo Lindfors <timo.lindfors@iki.fi>

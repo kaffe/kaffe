@@ -151,6 +151,7 @@ add_node (struct state_node **head, jint obj_id, void *state)
 	    {
 	      back_ptr->next = node->next;
 	      node->next = *head;
+	      *head = node;
 	    }
 	  node->c_state = state;
 	  return;
