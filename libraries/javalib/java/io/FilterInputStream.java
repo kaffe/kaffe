@@ -71,7 +71,7 @@ public int read() throws IOException
 public int read(byte b[]) throws IOException
 {
 	try {
-		return (in.read(b, 0, b.length));
+		return (read(b, 0, b.length));
 	}
 	catch (NullPointerException _) {
 		throw new EOFException("null stream");
