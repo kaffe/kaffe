@@ -21,13 +21,6 @@
 #include <files.h>
 #include "kaffe_lang_UNIXProcess.h"
 
-typedef struct _child {
-	jobject 		proc;
-	jint			pid;
-	struct _child*		next;
-} child;
-static child* children;
-
 static void
 freevec(char **v)
 {
@@ -44,7 +37,6 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	jint pid;
 	char** argv;
 	char** arge;
-	child* newchild;
 	jint ioes[4];
 	int arglen;
 	int envlen;
@@ -122,21 +114,11 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
 
-	/* Allocate somewhere to keep the child data.  Make sure we
-	   can allocate this structure before creating the child. */
-	newchild = KMALLOC(sizeof(child));
-
-	if (newchild)
-		rc = KFORKEXEC(argv, arge, ioes, &pid);
+	rc = KFORKEXEC(argv, arge, ioes, &pid);
 
 	freevec(argv);
 	freevec(arge);
-	if (!newchild) {
-		errorInfo info;
-		postOutOfMemory(&info);
-		throwError(&info);
-	} else if (rc) {
-		KFREE(newchild);
+	if (rc) {
 		(*env)->ThrowNew(env, ioexc_class, SYS_ERROR(rc));
 		return (-1);
 	}
@@ -159,15 +141,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 		(*env)->SetIntField(env, fdi, fd_field, ioes[i]);
 	}
 
-	/* Note child data and add to children list */
-	newchild->proc = (*env)->NewGlobalRef(env, proc);
-	newchild->pid = pid;
-
-	/* XXX protect this list! */
-	newchild->next = children;
-	children = newchild;
-
-	return pid;
+	return (0);
 }
 
 void 
@@ -184,38 +158,14 @@ Java_kaffe_lang_UNIXProcess_destroy(JNIEnv* env, jobject proc)
 }
 
 /*
- * Demon thread.  This runs waiting for children to die and wakes anyone
- * interested in them.
+ * Wait for a process to exit.
  */
-void 
-Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
+jint
+Java_kaffe_lang_UNIXProcess_execWait(JNIEnv* env, jobject process)
 {
+        int status;
 	int npid;
-	int status;
-	int rc;
-	child* p;
-	child** pp;
-	jmethodID notify_method = (*env)->GetMethodID(env, 
-			(*env)->FindClass(env, "kaffe.lang.UNIXProcess"),
-			"processDied", "(I)V");
-
-	for (;;) {
-		rc = KWAITPID(-1, &status, 0, &npid);
-		if (rc) {
-			/* don't bother if waitpid failed */
-			continue;
-		}
-		for (pp = &children; *pp != 0; pp = &p->next) {
-			p = *pp;
-			if (p->pid == npid) {
-				(*env)->CallVoidMethod(env, 
-					p->proc, notify_method, status);
-				(*env)->DeleteGlobalRef(env, p->proc);
-				*pp = p->next;
-				KFREE(p);
-				break;
-			}
-		}
-	}
+        status = -1;
+	KWAITPID(-1, &status, 0, &npid);
+        return (status);
 }
-

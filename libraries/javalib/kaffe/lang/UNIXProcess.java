@@ -35,12 +35,6 @@ public class UNIXProcess
 	int numReaders;		// what's that for?
 	private static Thread tidy;
 
-static {
-	tidy = new Thread(new UNIXProcess());
-	tidy.setDaemon(true);
-	tidy.start();
-}
-
 public UNIXProcess() {
 }
 
@@ -51,34 +45,73 @@ public UNIXProcess(String argv[], String arge[]) {
 	stderr_fd = new FileDescriptor();
 	sync_fd = new FileDescriptor();
 
-	pid = forkAndExec(argv, arge);
-	isalive = true;
+	/* We first create a thread to start the new process in.  This
+	 * is because on some system we can only wait for the child from
+	 * it's parent (UNIX for example).  So, we have to create a thread
+	 * to do the waiting.
+	 */
+	final String _argv[] = argv;
+	final String _arge[] = arge;
+	Thread sitter = new Thread() {
+		public void run() {
+			if (forkAndExec(_argv, _arge) == 0) {
+				synchronized(this) {
+					isalive = true;
+					notify();
+				}
+				exit_code = execWait();
+			}
+			synchronized(this) {
+				isalive = false;
+				notifyAll();
+			}
+			synchronized(UNIXProcess.this) {
+				UNIXProcess.this.notifyAll();
+			}
+		}
+	};
 
-        // Create streams from the file descriptors
-	stdin_stream = new FileOutputStream(stdin_fd);
-	raw_stdout = new FileInputStream(stdout_fd);
-	raw_stderr = new FileInputStream(stderr_fd);
+	/* Start the sitter then wait until it says it's child has started.
+	 * We then retrieve the childs connection information.
+	 */
+	synchronized(sitter) {
+		sitter.start();
+		try {
+			sitter.wait();
+		}
+		catch (InterruptedException _) {
+		}
 
-	// now signal child to proceed
-	FileOutputStream sync = new FileOutputStream(sync_fd);
-	byte[] sbuf = new byte[1];
-	try {
-		sync.write(sbuf);
-	}
-	catch (IOException _) {
+		// Create streams from the file descriptors
+		stdin_stream = new FileOutputStream(stdin_fd);
+		raw_stdout = new FileInputStream(stdout_fd);
+		raw_stderr = new FileInputStream(stderr_fd);
+
+		// now signal child to proceed
+		FileOutputStream sync = new FileOutputStream(sync_fd);
+		byte[] sbuf = new byte[1];
+		try {
+			sync.write(sbuf);
+		}
+		catch (IOException _) {
+		}
 	}
 }
 
 native public void destroy();
 
 public int exitValue() {
-
-	if (isalive) 
+	if (isalive) {
 		throw new IllegalThreadStateException();
+	}
 	return exit_code;
 }
 
-native public int forkAndExec(Object cmd[], Object env[]);
+native private int forkAndExec(Object cmd[], Object env[]);
+native private int execWait();
+
+public void run() {
+}
 
 public InputStream getErrorStream() {
 	return raw_stderr;
@@ -91,8 +124,6 @@ public InputStream getInputStream() {
 public OutputStream getOutputStream() {
 	return stdin_stream;
 }
-
-native public void run();
 
 public int waitFor() throws InterruptedException {
 	synchronized(this) {
