@@ -1,3 +1,14 @@
+Mon Jul 26 17:26:37 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* config/config-setjmp.h, kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/systems/oskit-pthreads/pjthread.c,
+	kaffe/kaffevm/systems/oskit-pthreads/syscalls.c
+	config/i386/oskit/README, config/i386/oskit/config.frag,
+	config/i386/oskit/md.c:
+		Update for new OSKit snapshot release on 7-22-99.
+	* Added File config/i386/oskit/ld-oskit.sh:
+		Alternate linking scheme
+
 Fri Jul 23 17:43:44 PDT 1999	Tim Wilkinson <tim@transvirtual.com>
 
 	* Merge of TVT's current custom sources.
