@@ -388,11 +388,17 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	methblock = gc_malloc(constlen + CODEPC + align, GC_ALLOC_JITCODE);
+	/* Allocate some padding to align codebase if so desired 
+	 * NB: we assume the allocator returns at least 8-byte aligned 
+	 * addresses.   XXX: this should really be gc_memalign
+	 */  
+	methblock = gc_malloc(constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
 	codebase = methblock + constlen;
-	/* pad entry point if necessary */
-	if ((unsigned int)codebase % align != 0) {
+	/* align entry point if so desired */
+	if (align != 0 && (unsigned int)codebase % align != 0) {
 		int pad = (align - (unsigned int)codebase % align);
+		/* assert the allocator indeed returned 8 bytes aligned addrs */
+		assert(pad <= align - 8);	
 		codebase = (void*)codebase + pad;
 	}
 	memcpy(codebase, codeblock, CODEPC);
