@@ -427,7 +427,7 @@ public abstract class JComponent extends Container implements Serializable
    * @see #getClientProperties
    * @see #putClientProperty
    */
-  public Object getClientProperty(Object key)
+  public final Object getClientProperty(Object key)
   {
     return getClientProperties().get(key);
   }
@@ -444,7 +444,7 @@ public abstract class JComponent extends Container implements Serializable
    * @see #getClientProperties
    * @see #getClientProperty
    */
-  public void putClientProperty(Object key, Object value)
+  public final void putClientProperty(Object key, Object value)
   {
     getClientProperties().put(key, value);
   }

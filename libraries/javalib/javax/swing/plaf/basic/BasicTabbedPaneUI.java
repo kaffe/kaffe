@@ -1,5 +1,5 @@
-/* BasicTabbedPaneUI.java
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+/* BasicTabbedPaneUI.java --
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -34,6 +34,7 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
+
 
 package javax.swing.plaf.basic;
 
@@ -74,7 +75,6 @@ import javax.swing.plaf.PanelUI;
 import javax.swing.plaf.TabbedPaneUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.View;
-
 
 /**
  * This is the Basic Look and Feel's UI delegate for JTabbedPane.
@@ -1458,7 +1458,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    *
    * @return A layout manager given the tab layout policy.
    */
-  public LayoutManager createLayoutManager()
+  protected LayoutManager createLayoutManager()
   {
     if (tabPane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT)
       return new TabbedPaneLayout();

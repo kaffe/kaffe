@@ -117,7 +117,7 @@ public class PlainView extends View
     return rect;
   }
   
-  public void drawLine(int lineIndex, Graphics g, int x, int y)
+  protected void drawLine(int lineIndex, Graphics g, int x, int y)
   {
     try
       {
@@ -176,7 +176,7 @@ public class PlainView extends View
       }
   }
 
-  public int getTabSize()
+  protected int getTabSize()
   {
     return 8;
   }

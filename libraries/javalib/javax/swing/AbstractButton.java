@@ -661,7 +661,7 @@ public abstract class AbstractButton extends JComponent
    *
    * @param e The event signifying that the button's model changed state
    */
-  public void fireItemStateChanged(ItemEvent e)
+  protected void fireItemStateChanged(ItemEvent e)
   {
     e.setSource(this);
     ItemListener[] listeners = getItemListeners();
@@ -676,7 +676,7 @@ public abstract class AbstractButton extends JComponent
    *
    * @param e The event signifying that the button's model was clicked
    */
-  public void fireActionPerformed(ActionEvent e)
+  protected void fireActionPerformed(ActionEvent e)
   {
     e.setSource(this);
     ActionListener[] listeners = getActionListeners();
@@ -689,7 +689,7 @@ public abstract class AbstractButton extends JComponent
    * Calls {@link ChangeEvent.stateChanged} on each {@link ChangeListener}
    * in the button's listener list.
    */
-  public void fireStateChanged()
+  protected void fireStateChanged()
   {
     ChangeListener[] listeners = getChangeListeners();
 
@@ -806,7 +806,7 @@ public abstract class AbstractButton extends JComponent
   public void setRolloverEnabled(boolean r)
   {
     if (rollOverEnabled != r)
-  {
+      {
         rollOverEnabled = r;
         firePropertyChange(ROLLOVER_ENABLED_CHANGED_PROPERTY, !r, r);
         revalidate();

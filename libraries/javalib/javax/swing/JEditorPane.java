@@ -113,7 +113,7 @@ public class JEditorPane extends JTextComponent
     return null;
   }
 
-  public String getContentType()
+  public final String getContentType()
   {
     return getEditorKit().getContentType();
   }
@@ -243,7 +243,7 @@ public class JEditorPane extends JTextComponent
   {
   }
 
-  public void setContentType(String type)
+  public final void setContentType(String type)
   {
     if (editorKit != null
 	&& editorKit.getContentType().equals(type))

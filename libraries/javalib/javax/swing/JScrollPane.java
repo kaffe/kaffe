@@ -588,7 +588,7 @@ public class JScrollPane
     return new ScrollBar(SwingConstants.VERTICAL);
   }
     
-  public JViewport createViewport()
+  protected JViewport createViewport()
   {
     return new JViewport();
   }

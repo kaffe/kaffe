@@ -1,5 +1,5 @@
 /* JInternalFrame.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -780,9 +780,11 @@ public class JInternalFrame extends JComponent implements Accessible,
    * This method returns null because this must always be the root of a focus
    * traversal.
    *
-   * @return null.
+   * @return always null
+   *
+   * @since 1.4
    */
-  public Container getFocusCycleRootAncestor()
+  public final Container getFocusCycleRootAncestor()
   {
     // as defined.
     return null;
@@ -968,7 +970,7 @@ public class JInternalFrame extends JComponent implements Accessible,
    *
    * @return null.
    */
-  public String getWarningString()
+  public final String getWarningString()
   {
     // as defined.
     return null;
@@ -1019,9 +1021,11 @@ public class JInternalFrame extends JComponent implements Accessible,
   /**
    * This must always return true.
    *
-   * @return True
+   * @return always true
+   *
+   * @since 1.4
    */
-  public boolean isFocusCycleRoot()
+  public final boolean isFocusCycleRoot()
   {
     return true;
   }

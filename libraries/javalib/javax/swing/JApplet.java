@@ -1,5 +1,5 @@
 /* JApplet.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -59,16 +59,6 @@ public class JApplet extends Applet
 
   public JApplet()
   {
-    frameInit();
-  }
-
-  public JApplet(String title)
-  {
-    frameInit();
-  }
-
-  protected void frameInit()
-  {
     super.setLayout(new BorderLayout(1, 1));
     getRootPane(); // will do set/create
   }
@@ -100,7 +90,7 @@ public class JApplet extends Applet
     return rootPane;
   }
 
-  public void setRootPane(JRootPane root)
+  protected void setRootPane(JRootPane root)
   {
     if (rootPane != null)
       remove(rootPane);
@@ -109,7 +99,7 @@ public class JApplet extends Applet
     add(rootPane, BorderLayout.CENTER);
   }
 
-  public JRootPane createRootPane()
+  protected JRootPane createRootPane()
   {
     return new JRootPane();
   }

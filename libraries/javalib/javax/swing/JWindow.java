@@ -129,7 +129,7 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
     return rootPane;
   }
 
-  public void setRootPane(JRootPane root)
+  protected void setRootPane(JRootPane root)
   {
     if (rootPane != null)
       remove(rootPane);
@@ -138,7 +138,7 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
     add(rootPane, BorderLayout.CENTER);
   }
 
-  public JRootPane createRootPane()
+  protected JRootPane createRootPane()
   {
     return new JRootPane();
   }

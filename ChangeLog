@@ -2,6 +2,78 @@
 
         Resynced with GNU Classpath.
 
+	2005-01-25  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/AbstractButton.java
+        (fireItemStateChanged): Made protected.
+        (fireActionPerformed): Likewise.
+        (fireStateChanged): Likewise.
+        * javax/swing/DefaultButtonModel.java
+        (fireItemStateChanged): Likewise.
+        (fireActionPerformed): Likewise.
+        (fireStateChanged): Likewise.
+        * javax/swing/JApplet.java
+        (JApplet): Removed.
+        (frameInit): Likewise.
+        (setRootPane): Made protected.
+        (createRootPane): Likewise.
+        * javax/swing/JComponent.java
+        (getClientProperty): Likewise.
+        (putClientProperty): Likewise.
+        * javax/swing/JEditorPane.java
+        (getContentType): Likewise.
+        (setContentType): Likewise.
+        * javax/swing/JFrame.java
+        (setRootPane): Likewise.
+        (createRootPane): Likewise.
+        * javax/swing/JInternalFrame.java
+        (getFocusCycleRootAncestor): Made final. Added @since tag.
+        (isFocusCycleRoot): Likewise.
+        (getWarningString): Made final.
+        * javax/swing/JScrollBar.java
+        (changeListener): Removed.
+        (changeEvent): Likewise.
+        (createChangeListener): Likewise.
+        (fireStateChanged): Likewise.
+        (addChangeListener): Likewise.
+        (removeChangeListener): Likewise.
+        (getChangeListeners): Likewise.
+        * javax/swing/JScrollPane.java
+        (createViewport): Made protected.
+        * javax/swing/JViewport.java
+        (addImpl): Likewise.
+        (setBorder): New method.
+        * javax/swing/JWindow.java
+        (setRootPane): Made protected.
+        (createRootPane): Likewise.
+        * javax/swing/plaf/basic/BasicButtonUI.java
+        (installListeners): Likewise.
+        (uninstallListeners): Likewise.
+        * javax/swing/plaf/basic/BasicProgressBarUI.java
+        (incrementAnimationIndex): Likewise.
+        * javax/swing/plaf/basic/BasicTabbedPaneUI.java
+        (createLayoutManager): Likewise.
+        * javax/swing/table/DefaultTableCellRenderer.java
+        (firePropertyChange): Likewise.
+        * javax/swing/table/JTableHeader.java
+        (AccessibleJTableHeaderEntry.AccessibleJTableHeaderEntry):
+        New constructor.
+        * javax/swing/text/PlainDocument.java
+        (reindex): Made private.
+        * javax/swing/text/PlainView.java
+        (drawLine): Made protected.
+        (getTabSize): Likewise.
+        * javax/swing/text/View.java
+        (setSize): Removed.
+        (preferenceChanged): New method.
+        (getBreakWeight): Likewise.
+        (breakView): Likewise.
+        (getViewIndex): Likewise.
+
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-01-24  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/JScrollPane.java

@@ -80,12 +80,6 @@ public abstract class View implements SwingConstants
     return parent;
   }
     
-  public void setSize(int w, int h)
-  {
-    width = w;
-    height = h;
-  }
-
   public Container getContainer()
   {
     View parent = getParent();
@@ -241,6 +235,30 @@ public abstract class View implements SwingConstants
   public Graphics getGraphics()
   {
     return getContainer().getGraphics();
+  }
+
+  public void preferenceChanged(View child, boolean width, boolean height)
+  {
+    if (parent != null)
+      parent.preferenceChanged(this, width, height);
+  }
+
+  public int getBreakWeight(int axis, float pos, float len)
+  {
+    return BadBreakWeight;
+  }
+
+  public View breakView(int axis, int offset, float pos, float len)
+  {
+    return this;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public int getViewIndex(int pos, Position.Bias b)
+  {
+    return -1;
   }
 }
 

@@ -62,7 +62,7 @@ public class PlainDocument extends AbstractDocument
     rootElement = createDefaultRoot();
   }
 
-  protected void reindex()
+  private void reindex()
   {
     Element[] lines;
     try 

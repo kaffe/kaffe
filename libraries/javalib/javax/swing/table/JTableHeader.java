@@ -70,6 +70,11 @@ public class JTableHeader extends JComponent
     protected class AccessibleJTableHeaderEntry extends AccessibleContext
       implements Accessible, AccessibleComponent
     {
+      public AccessibleJTableHeaderEntry(int c, JTableHeader p, JTable t) 
+      {
+        throw new Error("not implemented");
+      }
+      
       public void addFocusListener(FocusListener l)
       {
         throw new Error("not implemented");
