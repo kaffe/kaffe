@@ -47,6 +47,8 @@ AC_PROG_CC
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 if test "$GCC" = "yes"; then
 	CFLAGS="$CFLAGS -Wall -Wstrict-prototypes"
+else
+	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi
 
 dnl Find the machine type and setup the relevant links

@@ -1,5 +1,8 @@
 2000-01-14  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* configure.in (GCC): If compiler is not GCC, bail out.
+	* configure: Rebuilt.
+
 	* test/regression/TestScript.in (KAFFEHOME): Ensure that, if
 	LC_ALL or LANG are set, that they are set to C.
 
