@@ -39,7 +39,8 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkMenuBarPeer.h"
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_create
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_create
   (JNIEnv *env, jobject obj)
 {
   GtkWidget *widget;
@@ -56,7 +57,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_create
   NSA_SET_PTR (env, obj, widget);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_addMenu
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_addMenu
   (JNIEnv *env, jobject obj, jobject menupeer)
 {
   void *mbar, *menu;
@@ -69,7 +71,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_addMenu
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMenu
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMenu
   (JNIEnv *env, jobject obj, jobject menupeer)
 {
   static void *helpmenu;
@@ -92,7 +95,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMe
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_delMenu
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_delMenu
   (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;

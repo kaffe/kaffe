@@ -69,13 +69,15 @@ enum java_awt_font_baseline {
   java_awt_font_HANGING_BASELINE = 2
 };
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_initStaticState 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkFontPeer_initStaticState 
   (JNIEnv *env, jclass clazz)
 {
   NSA_FONT_INIT (env, clazz);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_initState
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkFontPeer_initState
   (JNIEnv *env, jobject self)
 {
   struct peerfont *pfont = NULL;
@@ -88,7 +90,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_initState
 }
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose
   (JNIEnv *env, jobject self)
 {
   struct peerfont *pfont = NULL;
@@ -108,7 +111,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   (JNIEnv *env, jobject self, jstring family_name_str, jint style_int, jint size, jboolean useGraphics2D)
 {
   struct peerfont *pfont = NULL;

@@ -39,7 +39,8 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkMenuPeer.h"
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_setupAccelGroup
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuPeer_setupAccelGroup
   (JNIEnv *env, jobject obj, jobject parent)
 {
   void *ptr1, *ptr2;
@@ -67,7 +68,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_setupAccelGroup
 }
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_create
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuPeer_create
   (JNIEnv *env, jobject obj, jstring label)
 {
   GtkWidget *menu_title, *menu, *toplevel;
@@ -105,7 +107,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_create
   (*env)->ReleaseStringUTFChars (env, label, str);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addTearOff
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addTearOff
   (JNIEnv *env, jobject obj)
 {
   void *ptr1;
@@ -123,7 +126,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addTearOff
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addItem
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addItem
   (JNIEnv *env, jobject obj, jobject menuitempeer, jint key, jboolean shift)
 {
   void *ptr1, *ptr2;
@@ -149,7 +153,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addItem
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_delItem
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuPeer_delItem
   (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;

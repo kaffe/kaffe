@@ -41,11 +41,12 @@ exception statement from your version. */
 #include <libart_lgpl/art_rgb_affine.h>
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkImagePainter_drawPixels
-(JNIEnv *env, jobject obj __attribute__((unused)), jobject gc_obj,
- jint bg_red, jint bg_green, jint bg_blue, jint x, jint y, jint width,
- jint height, jintArray jpixels, jint offset, jint scansize,
- jdoubleArray jaffine)
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkImagePainter_drawPixels
+  (JNIEnv *env, jobject obj __attribute__((unused)), jobject gc_obj,
+   jint bg_red, jint bg_green, jint bg_blue, jint x, jint y, jint width,
+   jint height, jintArray jpixels, jint offset, jint scansize,
+   jdoubleArray jaffine)
 {
   struct graphics *g;
   jint *pixels, *elems;

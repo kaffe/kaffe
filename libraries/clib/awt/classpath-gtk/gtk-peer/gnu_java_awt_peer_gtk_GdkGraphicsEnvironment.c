@@ -48,7 +48,8 @@ cmp_families (const void *a, const void *b)
   return g_utf8_collate (a_name, b_name);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetFontFamilies
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetFontFamilies
 (JNIEnv *env, jobject  self __attribute__((unused)), jobjectArray family_name)
 {
   PangoContext *context;
@@ -74,7 +75,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeG
   gdk_threads_leave ();
 }
 
-JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetNumFontFamilies
+JNIEXPORT jint JNICALL
+Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetNumFontFamilies
 (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
   PangoContext *context;

@@ -1,5 +1,50 @@
 2004-10-28  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkCanvasPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c:
+	Resynced with GNU Classpath.
+
+	2004-10-28  Michael Koch  <konqueror@gmx.de>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontMetrics.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCanvasPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c:
+        Fixed method names to start at begin of line. This is desired by GNU
+        coding style guide.
+
+2004-10-28  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in,
 	libraries/javalib/all.files:

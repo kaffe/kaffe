@@ -171,7 +171,8 @@ closed (GdkPixbufLoader *loader __attribute__((unused)), jobject *decoder)
 
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initState
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initState
   (JNIEnv *env, jobject obj)
 {
   GdkPixbufLoader *loader = NULL;
@@ -192,7 +193,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initState
   NSA_SET_PB_PTR (env, obj, loader);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initStaticState 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initStaticState 
   (JNIEnv *env, jclass clazz)
 {
   (*env)->GetJavaVM(env, &vm);
@@ -208,7 +210,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initStaticSta
 }
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
   (JNIEnv *env, jobject obj)
 {
   GdkPixbufLoader *loader = NULL;
@@ -224,7 +227,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
 }
 
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpBytes
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpBytes
   (JNIEnv *env, jobject obj, jbyteArray jarr, jint len)
 {
   GdkPixbufLoader *loader = NULL;

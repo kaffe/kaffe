@@ -43,7 +43,8 @@ exception statement from your version. */
 static void item_activate (GtkMenuItem *item __attribute__((unused)),
                            jobject peer_obj);
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_create
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_create
   (JNIEnv *env, jobject obj, jstring label)
 {
   GtkWidget *widget;
@@ -124,7 +125,8 @@ Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_gtkWidgetModifyFont
   (*env)->ReleaseStringUTFChars (env, name, font_name);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_setEnabled
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_setEnabled
   (JNIEnv *env, jobject obj, jboolean enabled)
 {
   void *ptr;
@@ -136,7 +138,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_setEnabled
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_setLabel
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_setLabel
   (JNIEnv *env, jobject obj, jstring label)
 {
   void *ptr;

@@ -777,7 +777,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetPreferredDimensions
   (*env)->ReleaseIntArrayElements (env, jdims, dims, 0);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setNativeBounds
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setNativeBounds
   (JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height)
 {
   GtkWidget *widget;
@@ -994,7 +995,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_modalHasGrab
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals
   (JNIEnv *env, jobject obj)
 {
   void *ptr;

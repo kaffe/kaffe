@@ -44,13 +44,15 @@
 
 struct state_table *native_text_layout_state_table;
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_initStaticState 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_initStaticState 
   (JNIEnv *env, jclass clazz)
 {
   NSA_TEXT_LAYOUT_INIT (env, clazz);
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_initState
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_initState
   (JNIEnv *env, jobject self)
 {
   struct textlayout *tl;
@@ -65,7 +67,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_initState
   gdk_threads_leave ();
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
   (JNIEnv *env, jobject self, jstring text)
 {
   struct textlayout *tl;
@@ -90,7 +93,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
   gdk_threads_leave ();  
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_indexToPos
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_indexToPos
   (JNIEnv *env, jobject self, jint idx, jdoubleArray javaPos)
 {
   struct textlayout *tl;
@@ -120,7 +124,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_indexToPos
   gdk_threads_leave ();  
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_getExtents
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_getExtents
   (JNIEnv *env, jobject self, jdoubleArray javaInkExtents, jdoubleArray javaLogExtents)
 {
   struct textlayout *tl;
@@ -161,7 +166,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_getExtents
   gdk_threads_leave ();    
 }
 
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkTextLayout_dispose
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkTextLayout_dispose
   (JNIEnv *env, jobject self)
 {
   struct textlayout *tl;
