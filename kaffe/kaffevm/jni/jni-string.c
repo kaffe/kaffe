@@ -184,7 +184,7 @@ KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const jb
 }
 
 void
-KaffeJNI_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jchar *buf)
+KaffeJNI_GetStringRegion(JNIEnv UNUSED *env, jstring data, jsize start, jsize len, jchar *buf)
 {
   Hjava_lang_String* const str = (Hjava_lang_String*)data;
   jchar *str_ptr;
@@ -208,7 +208,7 @@ KaffeJNI_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jcha
 }
 
 void
-KaffeJNI_GetStringUTFRegion(JNIEnv *env, jstring data, jsize start, jsize len, char *buf)
+KaffeJNI_GetStringUTFRegion(JNIEnv UNUSED *env, jstring data, jsize start, jsize len, char *buf)
 {
   Hjava_lang_String* const str = (Hjava_lang_String*)data;
   jchar *str_ptr;

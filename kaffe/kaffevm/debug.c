@@ -55,8 +55,8 @@ static int bufferOutput = 0;
 
 /* Don't waste space with the debugging functions */
 
-void dbgSetMask(debugmask_t m) { }
-int dbgSetMaskStr(const char *s) { return 0; }
+void dbgSetMask(debugmask_t UNUSED m) { }
+int dbgSetMaskStr(const char UNUSED *s) { return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */

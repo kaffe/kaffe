@@ -1,5 +1,13 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/debug.c, kaffe/kaffevm/jni/jni-string.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	  kaffe/kaffevm/jni/jni.c, libraries/clib/math/BigInteger.c,
+	  replace/getaddrinfo.c:
+	  Add some UNUSED annotations.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/sort-warnings.pl, scripts/LogWarning.pm,
 	  scripts/WarningDescription.pm, scripts/JikesWarning.pm,
 	  scripts/GCCWarning.pm, scripts/Registry.pm:

@@ -504,7 +504,7 @@ getaddrinfo(nodename, servname, hints, res)
 int
 getnameinfo(sa, salen, node, nodelen, serv, servlen, flags)
     const struct sockaddr *sa;
-    socklen_t salen;
+    socklen_t UNUSED salen;
     char *node;
     socklen_t nodelen;
     char *serv;

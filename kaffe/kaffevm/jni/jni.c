@@ -146,7 +146,7 @@ Kaffe_IsSameObject(JNIEnv* env UNUSED, jobject obj1, jobject obj2)
 
 
 static jint
-Kaffe_GetVersion(JNIEnv* env)
+Kaffe_GetVersion(JNIEnv* UNUSED env)
 {
        return Kaffe_JavaVMArgs.version;
 }
@@ -217,7 +217,7 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
  */
 
 static jclass
-Kaffe_FindClass(JNIEnv* env, const char* name)
+Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 {
 	jstring nameString;
 	Utf8Const* utf8;

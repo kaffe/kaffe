@@ -31,7 +31,7 @@ bi_alloc(size_t size)
 
 static void *
 /* ARGUSED */
-bi_realloc(void *ptr, size_t old_size, size_t new_size)
+bi_realloc(void *ptr, size_t UNUSED old_size, size_t new_size)
 {
 	void *p = KREALLOC(ptr, new_size);
 	return (p);
@@ -39,7 +39,7 @@ bi_realloc(void *ptr, size_t old_size, size_t new_size)
 
 static void
 /* ARGUSED */
-bi_free(void *ptr, size_t size) 
+bi_free(void *ptr, size_t UNUSED size) 
 {
 	KFREE(ptr);
 }
@@ -224,7 +224,7 @@ Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 }
 
 void
-Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls, jobject r1, jobject r2, jobject s1, jobject s2)
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass UNUSED cls, jobject r1, jobject r2, jobject s1, jobject s2)
 {
 	mpz_ptr res1;
 	mpz_ptr res2;
@@ -474,7 +474,7 @@ Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
 
 
 jint
-Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
+Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass UNUSED cls, jobject s1, jobject s2)
 {
 	mpz_srcptr src1;
 	mpz_srcptr src2;

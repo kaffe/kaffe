@@ -528,7 +528,7 @@ tSetupFirstNative(void)
  */
 void
 jthread_init(UNUSED int pre,
-        int maxpr, int minpr,
+        int maxpr, int UNUSED minpr,
 	Collector *thread_collector,
 	void (*destructor)(void *),
         void (*_onstop)(void) UNUSED,
