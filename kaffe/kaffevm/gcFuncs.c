@@ -321,8 +321,7 @@ DBG(JTHREAD,
          */
         if (jthread_extract_stack(jtid, &from, &len)) {
 DBG(JTHREAD|DBG_GCWALK,
-                dprintf("walking stack of `%s' thread\n", 
-			nameNativeThread(jtid));
+                dprintf("walking stack of `%s' thread\n", nameThread(tid));
     )
                 /* and walk it if needed */
                 GC_walkConservative(collector, from, len);
