@@ -921,22 +921,58 @@ soft_cvtdf(jdouble v)
 jlong
 soft_cvtfl(jfloat v)
 {
+	jint vbits;
+
+	vbits = floatToInt(v);
+        if (FISNAN(vbits)) {
+		return ((jlong)0);
+	}
+
 	if (v < 0.0) {
-		return ((jlong)ceil(v));
+		v = ceil(v);
 	}
 	else {
-		return ((jlong)floor(v));
+		v = floor(v);
+	}
+	/* If too small return smallest long */
+	if (v <= -9223372036854775808.0) {
+	    return ((jlong)1) << 63;
+	}
+	/* If too big return biggest long */
+	else if (v >= 9223372036854775807.0) {
+	    return ~(((jlong)1) << 63);
+	}
+	else {
+	    return ((jlong)v);
 	}
 }
 
 jlong
 soft_cvtdl(jdouble v)
 {
+	jlong vbits;
+
+	vbits = doubleToLong(v);
+        if (DISNAN(vbits)) {
+		return ((jlong)0);
+	}
+
 	if (v < 0.0) {
-		return ((jlong)ceil(v));
+		v = ceil(v);
 	}
 	else {
-		return ((jlong)floor(v));
+		v = floor(v);
+	}
+	/* If too small return smallest long */
+	if (v <= -9223372036854775808.0) {
+	    return ((jlong)1) << 63;
+	}
+	/* If too big return biggest long */
+	else if (v >= 9223372036854775807.0) {
+	    return ~(((jlong)1) << 63);
+	}
+	else {
+	    return ((jlong)v);
 	}
 }
 
@@ -957,11 +993,11 @@ soft_cvtfi(jfloat v)
 		v = floor(v);
 	}
 	/* If too small return smallest int */
-	if (v < -2147483648.0) {
+	if (v <= -2147483648.0) {
 		return (-2147483647-1);
 	}
 	/* If too big return biggest int */
-	else if (v > 2147483647) {
+	else if (v >= 2147483647.0) {
 		return (2147483647);
 	}
 	else {
@@ -986,11 +1022,11 @@ soft_cvtdi(jdouble v)
 		v = floor(v);
 	}
 	/* If too small return smallest int */
-	if (v < -2147483648.0) {
+	if (v <= -2147483648.0) {
 		return (-2147483647-1);
 	}
 	/* If too big return biggest int */
-	else if (v > 2147483647) {
+	else if (v >= 2147483647.0) {
 		return (2147483647);
 	}
 	else {
