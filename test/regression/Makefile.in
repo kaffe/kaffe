@@ -163,7 +163,7 @@ SIMPLE_HEALTH_CHECK =  	HelloWorldApp.class.save
 TEST_COMPILER =  	HelloWorldApp.java 
 
 
-TEST_INTS_LONGS_FLOATS_DOUBLES =  	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	NegativeDivideTest.java 	divtest.java 
+TEST_INTS_LONGS_FLOATS_DOUBLES =  	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	NegativeDivideConst.java 	divtest.java 
 
 
 TEST_STRINGS =  	Str.java 	Str2.java 	InternHog.java 
