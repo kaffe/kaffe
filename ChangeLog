@@ -1,7 +1,8 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
-	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
-	  tools/gjdoc/javalib/Makefile.am, tools/gjdoc/javalib/Makefile.in:
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.am.in,
+	  libraries/javalib/Makefile.in, tools/gjdoc/javalib/Makefile.am,
+	  tools/gjdoc/javalib/Makefile.in:
 	  Reworked jar creation stuff, to not be verbose, and handle the
 	  case if ctrl-c is hit before all the jar cmds from completing.
 
