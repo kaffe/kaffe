@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#       Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 srcdir = @srcdir@
@@ -101,8 +104,16 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
+COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
+COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
+COND_KAFFE_QT_AWT_TRUE = @COND_KAFFE_QT_AWT_TRUE@
+COND_KAFFE_X_AWT_FALSE = @COND_KAFFE_X_AWT_FALSE@
+COND_KAFFE_X_AWT_TRUE = @COND_KAFFE_X_AWT_TRUE@
 COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
 COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
+COND_NATIVE_AWT_FALSE = @COND_NATIVE_AWT_FALSE@
+COND_NATIVE_AWT_TRUE = @COND_NATIVE_AWT_TRUE@
 COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
 COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
 COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
@@ -329,8 +340,10 @@ with_engine = @with_engine@
 
 # Build libxmlj only desired
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ = libxmlj
+@COND_NATIVE_AWT_FALSE@MAYBE_AWT = 
+@COND_NATIVE_AWT_TRUE@MAYBE_AWT = awt
+SUBDIRS = native io nio net zip math security management $(MAYBE_LIBXMLJ) $(MAYBE_AWT)
 DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
-SUBDIRS = native io nio net zip math security management
 all: all-recursive
 
 .SUFFIXES:

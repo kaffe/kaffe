@@ -192,8 +192,7 @@ DIRECTORIES_BEFORE_RTJAR = \
 DIRECTORIES_AFTER_RTJAR = \
 	tools \
 	test \
-	$(RUN_PO) \
-	libraries/clib/awt
+	$(RUN_PO)
 
 if MAY_RUN_PO
 RUN_PO=po
@@ -212,6 +211,19 @@ if COND_SOUND_ESD
 DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
 endif
 endif
+
+if COND_NATIVE_AWT
+if COND_KAFFE_X_AWT
+DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/X
+endif
+if COND_KAFFE_QT_AWT
+DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/qt
+endif
+if COND_CLASSPATH_GTK_AWT
+DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/classpath-gtk
+endif
+endif
+
 
 .PHONY: kaffe-build-order
 

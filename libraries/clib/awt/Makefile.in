@@ -19,8 +19,18 @@
 # Copyright (c) 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
+
+# This section used to be a simple series of if conditionals, 
+# but automake 1.8.5 and 1.8d decided to mangle it to death.
+# so, you get this undebuggable, redundancy-ridden nested 
+# conditionals that will hopefully just plain work with automake.
+#
+#
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -79,7 +89,6 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -102,8 +111,16 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
+COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
+COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
+COND_KAFFE_QT_AWT_TRUE = @COND_KAFFE_QT_AWT_TRUE@
+COND_KAFFE_X_AWT_FALSE = @COND_KAFFE_X_AWT_FALSE@
+COND_KAFFE_X_AWT_TRUE = @COND_KAFFE_X_AWT_TRUE@
 COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
 COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
+COND_NATIVE_AWT_FALSE = @COND_NATIVE_AWT_FALSE@
+COND_NATIVE_AWT_TRUE = @COND_NATIVE_AWT_TRUE@
 COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
 COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
 COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
@@ -326,7 +343,22 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-SUBDIRS = X qt classpath-gtk
+@COND_KAFFE_X_AWT_FALSE@MAYBE_KAFFE_X_AWT = 
+@COND_KAFFE_X_AWT_TRUE@MAYBE_KAFFE_X_AWT = X
+@COND_KAFFE_QT_AWT_FALSE@MAYBE_KAFFE_QT_AWT = 
+@COND_KAFFE_QT_AWT_TRUE@MAYBE_KAFFE_QT_AWT = qt
+@COND_CLASSPATH_GTK_AWT_FALSE@MAYBE_CLASSPATH_GTK_AWT = 
+@COND_CLASSPATH_GTK_AWT_TRUE@MAYBE_CLASSPATH_GTK_AWT = classpath-gtk
+SUBDIRS = \
+	$(MAYBE_KAFFE_X_AWT) \
+	$(MAYBE_KAFFE_QT_AWT) \
+	$(MAYBE_CLASSPATH_GTK_AWT)
+
+DIST_SUBDIRS = \
+	X \
+	qt \
+	classpath-gtk
+
 EXTRA_DIST = \
 	win32/btn.cpp \
 	win32/cbd.cpp \
@@ -544,7 +576,7 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	list='$(SUBDIRS)'; for subdir in $$list; do \
+	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d "$(distdir)/$$subdir" \
 	    || mkdir "$(distdir)/$$subdir" \

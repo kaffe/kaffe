@@ -3,10 +3,46 @@
 # Copyright (c) 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = X qt classpath-gtk
+# This section used to be a simple series of if conditionals, 
+# but automake 1.8.5 and 1.8d decided to mangle it to death.
+# so, you get this undebuggable, redundancy-ridden nested 
+# conditionals that will hopefully just plain work with automake.
+#
+#
+
+if COND_KAFFE_X_AWT
+MAYBE_KAFFE_X_AWT = X
+else
+MAYBE_KAFFE_X_AWT =
+endif
+
+if COND_KAFFE_QT_AWT
+MAYBE_KAFFE_QT_AWT = qt
+else
+MAYBE_KAFFE_QT_AWT =
+endif
+
+if COND_CLASSPATH_GTK_AWT
+MAYBE_CLASSPATH_GTK_AWT = classpath-gtk
+else
+MAYBE_CLASSPATH_GTK_AWT =
+endif
+
+SUBDIRS = \
+	$(MAYBE_KAFFE_X_AWT) \
+	$(MAYBE_KAFFE_QT_AWT) \
+	$(MAYBE_CLASSPATH_GTK_AWT)
+
+DIST_SUBDIRS = \
+	X \
+	qt \
+	classpath-gtk
 
 EXTRA_DIST = \
 	win32/btn.cpp \

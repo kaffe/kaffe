@@ -490,7 +490,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS VM_LIBS GC_NAME BOEHMGC_SPECIFIC_FLAGS JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK PKG_CONFIG GTK_CFLAGS GTK_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS VM_LIBS GC_NAME BOEHMGC_SPECIFIC_FLAGS JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE COND_NATIVE_AWT_TRUE COND_NATIVE_AWT_FALSE COND_KAFFE_X_AWT_TRUE COND_KAFFE_X_AWT_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS COND_KAFFE_QT_AWT_TRUE COND_KAFFE_QT_AWT_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK COND_CLASSPATH_GTK_AWT_TRUE COND_CLASSPATH_GTK_AWT_FALSE PKG_CONFIG GTK_CFLAGS GTK_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag gc_frag'
 
 # Initialize some variables set by options.
@@ -1129,7 +1129,7 @@ Optional Packages:
   --without-kaffe-x-awt   disable build of Kaffe's Xlib-based AWT engine
                           (built by default)
   --with-x                use the X Window System
-  --without-kaffe-qte-awt disable build of Kaffe's Qt2/3/embedded-based AWT
+  --without-kaffe-qt-awt  disable build of Kaffe's Qt2/3/embedded-based AWT
                           engine (built by default)
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --without-classpath-gtk-awt
@@ -50447,14 +50447,24 @@ _ACEOF
 fi
 
 
-# Check whether --enable-awt or --disable-awt was given.
-if test "${enable_awt+set}" = set; then
-  enableval="$enable_awt"
+# Check whether --enable-native-awt or --disable-native-awt was given.
+if test "${enable_native_awt+set}" = set; then
+  enableval="$enable_native_awt"
 
 else
   enable_native_awt=yes
 
 fi;
+
+
+
+if test x"$enable_native_awt" != x"no"; then
+  COND_NATIVE_AWT_TRUE=
+  COND_NATIVE_AWT_FALSE='#'
+else
+  COND_NATIVE_AWT_TRUE='#'
+  COND_NATIVE_AWT_FALSE=
+fi
 
 
 
@@ -50466,6 +50476,17 @@ else
   with_kaffe_x_awt=yes
 
 fi;
+
+
+
+if test x"$with_kaffe_x_awt" != x"no"; then
+  COND_KAFFE_X_AWT_TRUE=
+  COND_KAFFE_X_AWT_FALSE='#'
+else
+  COND_KAFFE_X_AWT_TRUE='#'
+  COND_KAFFE_X_AWT_FALSE=
+fi
+
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_x_awt" = x"yes"; then
@@ -52722,14 +52743,25 @@ echo "$as_me: error: Configuration --with-kaffe-x-awt not supported - missing X 
 fi
 
 
-# Check whether --with-kaffe-qte-awt or --without-kaffe-qte-awt was given.
-if test "${with_kaffe_qte_awt+set}" = set; then
-  withval="$with_kaffe_qte_awt"
+# Check whether --with-kaffe-qt-awt or --without-kaffe-qt-awt was given.
+if test "${with_kaffe_qt_awt+set}" = set; then
+  withval="$with_kaffe_qt_awt"
 
 else
   with_kaffe_qt_awt=yes
 
 fi;
+
+
+
+if test x"$with_kaffe_qt_awt" != x"no"; then
+  COND_KAFFE_QT_AWT_TRUE=
+  COND_KAFFE_QT_AWT_FALSE='#'
+else
+  COND_KAFFE_QT_AWT_TRUE='#'
+  COND_KAFFE_QT_AWT_FALSE=
+fi
+
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_qt_awt" = x"yes"; then
@@ -53172,6 +53204,17 @@ else
   with_classpath_gtk_awt=yes
 
 fi;
+
+
+
+if test x"$with_classpath_gtk_awt" != x"no"; then
+  COND_CLASSPATH_GTK_AWT_TRUE=
+  COND_CLASSPATH_GTK_AWT_FALSE='#'
+else
+  COND_CLASSPATH_GTK_AWT_TRUE='#'
+  COND_CLASSPATH_GTK_AWT_FALSE=
+fi
+
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_classpath_gtk_awt" = x"yes"; then
@@ -56035,6 +56078,34 @@ echo "$as_me: error: conditional \"USE_COMPAT_IFADDRS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${COND_NATIVE_AWT_TRUE}" && test -z "${COND_NATIVE_AWT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_NATIVE_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_NATIVE_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_KAFFE_X_AWT_TRUE}" && test -z "${COND_KAFFE_X_AWT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_KAFFE_X_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_KAFFE_X_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_KAFFE_QT_AWT_TRUE}" && test -z "${COND_KAFFE_QT_AWT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_KAFFE_QT_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_KAFFE_QT_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_CLASSPATH_GTK_AWT_TRUE}" && test -z "${COND_CLASSPATH_GTK_AWT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_CLASSPATH_GTK_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_CLASSPATH_GTK_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${COND_SOUND_ALSA_TRUE}" && test -z "${COND_SOUND_ALSA_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COND_SOUND_ALSA\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -56873,17 +56944,25 @@ s,@HAVE_GCJ_SUPPORT_FALSE@,$HAVE_GCJ_SUPPORT_FALSE,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@USE_COMPAT_IFADDRS_TRUE@,$USE_COMPAT_IFADDRS_TRUE,;t t
 s,@USE_COMPAT_IFADDRS_FALSE@,$USE_COMPAT_IFADDRS_FALSE,;t t
+s,@COND_NATIVE_AWT_TRUE@,$COND_NATIVE_AWT_TRUE,;t t
+s,@COND_NATIVE_AWT_FALSE@,$COND_NATIVE_AWT_FALSE,;t t
+s,@COND_KAFFE_X_AWT_TRUE@,$COND_KAFFE_X_AWT_TRUE,;t t
+s,@COND_KAFFE_X_AWT_FALSE@,$COND_KAFFE_X_AWT_FALSE,;t t
 s,@X_CFLAGS@,$X_CFLAGS,;t t
 s,@X_PRE_LIBS@,$X_PRE_LIBS,;t t
 s,@X_LIBS@,$X_LIBS,;t t
 s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@AWT_LIBS@,$AWT_LIBS,;t t
+s,@COND_KAFFE_QT_AWT_TRUE@,$COND_KAFFE_QT_AWT_TRUE,;t t
+s,@COND_KAFFE_QT_AWT_FALSE@,$COND_KAFFE_QT_AWT_FALSE,;t t
 s,@MOC@,$MOC,;t t
 s,@UIC@,$UIC,;t t
 s,@QEMBED@,$QEMBED,;t t
 s,@QT_CXXFLAGS@,$QT_CXXFLAGS,;t t
 s,@QT_LDADD@,$QT_LDADD,;t t
 s,@QT_GUILINK@,$QT_GUILINK,;t t
+s,@COND_CLASSPATH_GTK_AWT_TRUE@,$COND_CLASSPATH_GTK_AWT_TRUE,;t t
+s,@COND_CLASSPATH_GTK_AWT_FALSE@,$COND_CLASSPATH_GTK_AWT_FALSE,;t t
 s,@PKG_CONFIG@,$PKG_CONFIG,;t t
 s,@GTK_CFLAGS@,$GTK_CFLAGS,;t t
 s,@GTK_LIBS@,$GTK_LIBS,;t t

@@ -1469,13 +1469,14 @@ dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE([awt],
+AC_ARG_ENABLE([native-awt],
 	AS_HELP_STRING([--disable-native-awt],
 		       [disable build of Kaffe's all native AWT backends (enabled by default)]),
 	[],
 	[enable_native_awt=yes]
 )
 
+AM_CONDITIONAL(COND_NATIVE_AWT, test x"$enable_native_awt" != x"no")
 
 AC_ARG_WITH([kaffe-x-awt],
 	AS_HELP_STRING([--without-kaffe-x-awt],
@@ -1483,6 +1484,8 @@ AC_ARG_WITH([kaffe-x-awt],
 	[],
 	[with_kaffe_x_awt=yes]
 )
+
+AM_CONDITIONAL(COND_KAFFE_X_AWT, test x"$with_kaffe_x_awt" != x"no")
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_x_awt" = x"yes"; then
@@ -1555,12 +1558,14 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
-AC_ARG_WITH([kaffe-qte-awt],
-            AS_HELP_STRING([--without-kaffe-qte-awt],
+AC_ARG_WITH([kaffe-qt-awt],
+            AS_HELP_STRING([--without-kaffe-qt-awt],
                            [disable build of Kaffe's Qt2/3/embedded-based AWT engine (built by default)]),
         [],
         [with_kaffe_qt_awt=yes]
 )
+
+AM_CONDITIONAL(COND_KAFFE_QT_AWT, test x"$with_kaffe_qt_awt" != x"no")
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_qt_awt" = x"yes"; then
@@ -1576,6 +1581,8 @@ AC_ARG_WITH([classpath-gtk-awt],
         [],
         [with_classpath_gtk_awt=yes]
 )
+
+AM_CONDITIONAL(COND_CLASSPATH_GTK_AWT, test x"$with_classpath_gtk_awt" != x"no")
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_classpath_gtk_awt" = x"yes"; then
