@@ -26,7 +26,8 @@
 #include <native.h>
 #include "defs.h"
 
-extern classFile findInJar(char*);
+extern classFile findInJar(char*, errorInfo*);
+
 
 /*
  * Initialise this class loader.
@@ -193,9 +194,10 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	char* name;
 	classFile hand;
 	HArrayOfByte* data;
+	errorInfo err;
 
 	name = makeCString(str);
-	hand = findInJar(name);
+	hand = findInJar(name, &err);
 	free(name);
 	if (hand.type == 0) {
 		return (NULL);
@@ -211,4 +213,33 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	}
 
 	return (data);
+}
+
+/*
+ * Find a loaded class.
+ */
+struct Hjava_lang_Class*
+java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
+{
+        int len = javaStringLength(str);
+        Utf8Const* c;
+        char* name;
+        char buffer[100];
+        classEntry* entry;
+
+        if (len <= 100) {
+                name = buffer;
+        }
+        else {
+                name = malloc (len);
+        }
+        javaString2CString(str, name, len+1);
+        classname2pathname (name, name);
+        c = makeUtf8Const (name, len);
+        if (name != buffer) {
+                free(name);
+        }
+
+        entry = lookupClassEntry(c, this);
+        return (entry->class);
 }
