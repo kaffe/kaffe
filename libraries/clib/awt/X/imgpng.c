@@ -10,10 +10,6 @@
 
 #include "toolkit.h"
 
-#if ! HAVE_LIBPNG
-#undef HAVE_PNG_H
-#endif
-
 #if defined(HAVE_PNG_H) && defined(HAVE_LIBZ)
 
 #include "png.h"
@@ -26,16 +22,6 @@ void createXImage ( Toolkit* X, Image* img );
 void createXMaskImage ( Toolkit* X, Image* img );
 void createAlphaImage ( Toolkit* X, Image* img );
 void reduceAlpha ( Toolkit* X, Image* img, int threshold );
-
-/* internal functions */
-static void readRowData ( png_structp png_ptr, png_infop info_ptr,
-		png_bytep row, Image *img );
-static void readImageData ( png_structp png_ptr, png_infop info_ptr,
-		png_bytepp rows, Image *img );
-#ifdef OPTIMIZE_SPACE
-static void readInterlacedData ( png_structp png_ptr, png_infop info_ptr,
-		png_bytep row, Image *img );
-#endif
 
 
 /**************************************************************************************
@@ -81,7 +67,7 @@ setPixel ( Image* img, unsigned long argb, int row, int col )
 }
 
 
-static void
+void
 readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int            i, j;
@@ -98,7 +84,7 @@ readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img
   }
 }
 
-static void
+void
 readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image *img )
 {
   int            i, j;
@@ -136,13 +122,12 @@ readbackRow ( Image *img, unsigned char* rowBuf, int row )
   }
 }
 
-#ifdef OPTIMIZE_SPACE
 /*
  * THIS DOESN'T WORK YET. The idea is to avoid allocating temporary
  * memory for the WHOLE image in ARGB pels (but ADAM7 seems to require
  * neighbor rows, too)
  */
-static void
+void
 readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int   i, j, pass;
@@ -164,26 +149,25 @@ readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Ima
 	}
   }
 }
-#endif
 
 
 Image*
 readPng ( png_structp png_ptr, png_infop info_ptr )
 {
-  Image          *volatile img = 0;
+  Image          *img = 0;
   double         screen_gamma = 1.2, file_gamma;
-  int            i, intent, number_passes;
+  int            i, number_passes;
   int            row_bytes;
-  png_bytepp     volatile rows = 0;
-  png_bytep      volatile data = 0;
+  png_bytepp     rows = 0;
+  png_bytep      data = 0;
 
   if ( setjmp(png_ptr->jmpbuf) ) {
 	if ( img )
 	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
 	if ( rows )
-	  KFREE( rows);
+	  AWT_FREE( rows);
 	if ( data )
-	  KFREE( data);
+	  AWT_FREE( data);
 	return 0;
   }
 
@@ -227,25 +211,25 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 	 * store the whole transformed data (passes need prev. results). Unfortunately,
 	 * interlacing is used for large images, and this might require a LOT of memory.
 	 */
-	rows = KMALLOC( sizeof(png_bytep) * info_ptr->height);
-	data = KMALLOC( row_bytes * info_ptr->height);
+	rows = AWT_MALLOC( sizeof(png_bytep) * info_ptr->height);
+	data = AWT_MALLOC( row_bytes * info_ptr->height);
 	for ( i=0; i<info_ptr->height; i++ )
 	  rows[i] = (data + i*row_bytes);
 
 	readImageData( png_ptr, info_ptr, rows, img);
 
-	KFREE( rows);
-	KFREE( data);
+	AWT_FREE( rows);
+	AWT_FREE( data);
 #else
-	data = KMALLOC( row_bytes);
+	data = AWT_MALLOC( row_bytes);
 	readInterlacedData( png_ptr, info_ptr, data, img);
-	KFREE( data);
+	AWT_FREE( data);
 #endif
   }
   else {
-	data = KMALLOC( row_bytes);
+	data = AWT_MALLOC( row_bytes);
 	readRowData( png_ptr, info_ptr, data, img);
-	KFREE( data);
+	AWT_FREE( data);
   }
 
   /* read rest of file, and get additional chunks in info_ptr */

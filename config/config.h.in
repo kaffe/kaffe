@@ -388,6 +388,9 @@
 /* Define if you have the gif library (-lgif).  */
 #undef HAVE_LIBGIF
 
+/* Define if you have the ungif library (-lungif).  */
+#undef HAVE_LIBUNGIF
+
 /* Define if you have the gmp library (-lgmp).  */
 #undef HAVE_LIBGMP
 

@@ -27,9 +27,11 @@ Image* readPngData ( unsigned char*, long len );
 Image*
 createImage ( int width, int height )
 {
-  Image * img = KCALLOC( 1, sizeof( Image));
-  img->trans  = -1;
-  img->width = width;
+  Image * img = AWT_CALLOC( 1, sizeof( Image));
+
+  img->trans  = -1;     /* default to no alpha */
+
+  img->width = width;   /* we need to (temp) store them for subsequent X image creation */
   img->height = height;
 
   return img;
@@ -112,7 +114,7 @@ destroyShmXImage ( Toolkit* X, Image* img, int isMask )
   XDestroyImage( xim);
   /* we created it as 'deleted', so we just have to detach here */
   shmdt( shmi->shmaddr);
-  KFREE( shmi);
+  AWT_FREE( shmi);
 
   /* if we have suspended shm, give it a try again */
   if ( X->shm == SUSPEND_SHM )
@@ -174,7 +176,7 @@ createXMaskImage ( Toolkit* X, Image* img )
 	}
   }
 
-  data = KMALLOC( nBytes);
+  data = AWT_MALLOC( nBytes);
   memset( data, 0xff, nBytes);
 
   img->xMask = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
@@ -188,11 +190,11 @@ createAlphaImage ( Toolkit* X, Image *img )
 {
   int nBytes = img->width * img->height;
 
-  img->alpha = KMALLOC( sizeof( AlphaImage));
+  img->alpha = AWT_MALLOC( sizeof( AlphaImage));
 
   img->alpha->width  = img->width;
   img->alpha->height = img->height;
-  img->alpha->buf = KMALLOC( nBytes);
+  img->alpha->buf = AWT_MALLOC( nBytes);
   memset( img->alpha->buf, 0xff, nBytes);
 }
 
@@ -270,8 +272,8 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 	}
   }
 
-  KFREE( img->alpha->buf);
-  KFREE( img->alpha);
+  AWT_FREE( img->alpha->buf);
+  AWT_FREE( img->alpha);
   img->alpha = 0;
 }
 
@@ -462,7 +464,7 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jarray rgbPels, jint off, jint scan)
 {
   register int    row, col;
-  unsigned long   pix;
+  unsigned long   pix = 0;
   jboolean        isCopy;
   jint            *rgbs = (*env)->GetIntArrayElements( env, rgbPels, &isCopy);
   jint            *rgb = rgbs + off;
@@ -473,8 +475,8 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
   for ( row = y; row < maxRow; row++) {
     for ( col = x; col < maxCol; col++) {
 	  val = rgb[col + row * scan];
-	  pix = pixelValue( X, val);
 	  if ( (val & 0xff000000) == 0xff000000 ) {
+		pix = pixelValue( X, val);
 		XPutPixel( img->xImg, col, row, pix);
 	  }
 	  else {
@@ -525,6 +527,7 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	  XFreePixmap( X->dsp, img->pix);
 	  img->pix = 0;
 	}
+
 	/*
 	 * note that XDestroyImage automatically frees any non-NULL data pointer
 	 * (since we explicitly allocated the data, we better free it explicitly, too)
@@ -563,13 +566,13 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	}
 
 	if ( img->alpha ) {
-	  KFREE( img->alpha->buf);
-	  KFREE( img->alpha);
+	  AWT_FREE( img->alpha->buf);
+	  AWT_FREE( img->alpha);
 	  img->alpha = 0;
 	}
 
 	next = img->next;
-	KFREE( img);
+	AWT_FREE( img);
 	img = next;
   } while ( (img != 0) && (img != first) );
 }

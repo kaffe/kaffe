@@ -321,18 +321,26 @@ mouseNotify ( JNIEnv* env, Toolkit* X )
 jobject
 focusNotify ( JNIEnv* env, Toolkit* X )
 {
+  int et = X->event.xany.type;
+  int sIdx = X->srcIdx;
+
   /*
    * get rid of all these fancy intermediate focus events (the real thing should
-   * come last)
+   * come last), but be aware of that we might get events for already unregistered windows
+   * (in case the app isn't particulary careful with disposing windows), ending up in
+   * ArrayOutOfBoundsExceptions in the getFocusEvent
    */
   while ( XCheckMaskEvent( X->dsp, FocusChangeMask, &X->event) ){
 	X->pending--;
-	X->srcIdx = getSourceIdx( X, X->event.xfocus.window);
+	if ( getSourceIdx( X, X->event.xfocus.window) >= 0 ) {
+	  et = X->event.xany.type;
+	  sIdx = X->srcIdx;
+	}
   }
 
-  X->evtId = (X->event.xany.type == FocusIn) ? FOCUS_GAINED : FOCUS_LOST;
+  X->evtId = (et == FocusIn) ? FOCUS_GAINED : FOCUS_LOST;
 
-  return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent, X->srcIdx, X->evtId);
+  return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent, sIdx, X->evtId);
 }
 
 
@@ -467,11 +475,11 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 {
   Window    window, parent, root, owner;
   jclass    clazz = 0;
-  jmethodID setDecoInsets = NULL;
+  jmethodID setDecoInsets = 0;
   int       left, top, right, bottom;
   int       x, y, w, h, bw, d;
   int       xc, yc, wc, hc;
-  DecoInset *in = NULL;
+  DecoInset *in = 0;
   XSizeHints wmHints;
   long      supHints;
 
@@ -608,7 +616,7 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 												 "(II)Ljava/awt/WMEvent;");
 
   X->nWindows = 47;
-  X->windows = KCALLOC( X->nWindows, sizeof(Window));
+  X->windows = AWT_CALLOC( X->nWindows, sizeof(Window));
 
 #if defined(UNIX_JTHREADS)
   /*
@@ -652,8 +660,8 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 	}
   }
 
-  DBG( awt_evt, ("..getNextEvent: %d (%s) %x, %x\n",
-				 X->evtId, eventStr( X->evtId), jEvt, X->event.xany.window));
+  DBG( awt_evt, ("..getNextEvent: %d (%s) %d, %x, %x\n",
+				 X->evtId, eventStr( X->evtId), X->srcIdx, jEvt, X->event.xany.window));
 
   return jEvt;
 }

@@ -11,7 +11,7 @@
 #include "toolkit.h"
 #include <stdio.h>
 
-#if ! HAVE_LIBGIF
+#if !defined(HAVE_LIBGIF) && !defined(HAVE_LIBUNGIF)
 #undef HAVE_GIF_LIB_H
 #endif
 
@@ -19,15 +19,16 @@
 #include "gif_lib.h"
 #endif
 
+
+static int iOffset[] = { 0, 4, 2, 1 };
+static int iJumps[] = { 8, 8, 4, 2 };
+
+
 /**************************************************************************************
  * internal functions
  */
 
 #if defined(HAVE_GIF_LIB_H)
-
-static int iOffset[] = { 0, 4, 2, 1 };
-static int iJumps[] = { 8, 8, 4, 2 };
-
 void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {
@@ -53,7 +54,7 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 #define CHECK(gifOp) \
   if ( gifOp == GIF_ERROR ) { \
     if ( img )    Java_java_awt_Toolkit_imgFreeImage( 0, 0, img); \
-    if ( rowBuf ) KFREE( rowBuf); \
+    if ( rowBuf ) AWT_FREE( rowBuf); \
     return 0; \
   }
 
@@ -62,12 +63,12 @@ Image*
 readGif ( GifFileType *gf )
 {
   Image           *firstImg = 0, *img;
-  int             i, extCode, width, height, row, col, cmapSize, nFrames = 0;
+  int             i, extCode, width, height, row, cmapSize, nFrames = 0;
   GifRecordType   rec;
   GifByteType     *ext;
   ColorMapObject  *cmap;
   GifColorType    *clrs;
-  GifPixelType    *rowBuf = (GifPixelType*) KMALLOC( gf->SWidth * sizeof( GifPixelType) );
+  GifPixelType    *rowBuf = (GifPixelType*) AWT_MALLOC( gf->SWidth * sizeof( GifPixelType) );
 
   img = createImage( gf->SWidth, gf->SHeight);
 
@@ -212,23 +213,9 @@ readGifData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
 #if defined(HAVE_GIF_LIB_H)
+  BufferSource   bufSrc;
+  GifFileType    *gf;
 
-#ifndef DIST_gif
-  /*
-   * we don't have a enhanced GIF lib (capable of alternate input methods), backup
-   * to a plain old temp file
-   */
-  char  *tmp = "tmp.gif";
-  FILE  *tmpFile = fopen( tmp, "w+");
-
-  fwrite( buf, len, 1, tmpFile);
-  fflush( tmpFile);
-  rewind( tmpFile);
-
-  img = readGifFile( tmpFile);
-  fclose( tmpFile);
-  remove( tmp);
-#else
   bufSrc.buf = bufSrc.p = buf;
   bufSrc.remain = len;
 
@@ -239,7 +226,6 @@ readGifData ( unsigned char* buf, long len )
 
   DGifCloseFile( gf);
   
-#endif /* DIST_gif */
 #endif /* HAVE_GIF_LIB_H */
 
   return img;

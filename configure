@@ -4929,7 +4929,7 @@ fi
 GIF_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
-  LIBS=$OLIBS
+    LIBS=$OLIBS
       if test "$PNG_LIBS" != "" ; then
 	if test "$ZIP_LIBS" != "" ; then
 		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"

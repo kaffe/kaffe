@@ -13,10 +13,6 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-#if ! HAVE_LIBJPEG
-#undef HAVE_JPEGLIB_H
-#endif
-
 #ifdef HAVE_JPEGLIB_H
 #include "jpeglib.h"
 #include "jerror.h"
@@ -190,11 +186,11 @@ jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
  */
 
 Image*
-readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
+readJpeg ( struct jpeg_decompress_struct* cinfo, int colors )
 {
   struct error_mgr jerr;
   JSAMPARRAY buffer;
-  Image      *volatile img = 0;
+  Image      *img = 0;
   int        row_stride;
 
   cinfo->err = jpeg_std_error(&jerr.pub);

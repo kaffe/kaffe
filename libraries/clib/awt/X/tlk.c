@@ -12,9 +12,10 @@
 #define MAIN
 
 #include "toolkit.h"
+#include "tlkprops.h"
 
 
-/*******************************************************************************
+/********************************************************************************
  * auxiliary functions
  */
 
@@ -53,32 +54,36 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   DBG( awt, ("  request:    %s\n", buf));
   DBG( awt, ("  resource:   %X\n", err->resourceid));
 
-#if 0
-  DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
-#endif
+  //DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
 
   return 0;
 }
 
 
 /********************************************************************************
- *
+ * exported functions
  */
 
-jstring
-Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
+jint 
+Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env, jclass clazz )
 {
-  return (*env)->NewStringUTF( env, "X-1.0");
+  jint    props = TLK_EXTERNAL_DECO;
+
+#if defined(USE_THREADED_AWT)
+  props |= TLK_IS_BLOCKING;
+  props |= TLK_NEEDS_FLUSH;
+#endif
+
+  return props;
 }
 
-
-void
+jboolean
 Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 {
   char    *dspName;
 
   X->nBuf = 128;
-  X->buf = KMALLOC( X->nBuf);
+  X->buf = AWT_MALLOC( X->nBuf);
 
   JniEnv = env;
   AWTError = (*env)->FindClass( env, "java/awt/AWTError");
@@ -94,12 +99,12 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   }
 
   if ( !(X->dsp = XOpenDisplay( dspName)) ) {
-	fprintf( stderr, "XOpenDisplay failed: %s\n", dspName);
-	return;
+	DBG( awt, ("XOpenDisplay failed: %s\n", dspName));
+	return JNI_FALSE;
   }
 
-DBG( awt, ("synchronize X\n"));
-DBG_ACTION(awt, XSynchronize( X->dsp, True));
+  DBG( awt, ("synchronize X\n"));
+  DBG_ACTION(awt, XSynchronize( X->dsp, True));
 
   X->root   = DefaultRootWindow( X->dsp);
 
@@ -124,6 +129,8 @@ DBG_ACTION(awt, XSynchronize( X->dsp, True));
   WM_TAKE_FOCUS    = XInternAtom( X->dsp, "WM_TAKE_FOCUS", False);
   WAKEUP           = XInternAtom( X->dsp, "WAKEUP", False);
   RETRY_FOCUS      = XInternAtom( X->dsp, "RETRY_FOCUS", False);
+
+  return JNI_TRUE;
 }
 
 void
@@ -147,6 +154,12 @@ Java_java_awt_Toolkit_tlkTerminate ( JNIEnv* env, jclass clazz )
 }
 
 
+jstring
+Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
+{
+  return (*env)->NewStringUTF( env, "X-1.0");
+}
+
 jint
 Java_java_awt_Toolkit_tlkGetResolution ( JNIEnv* env, jclass clazz )
 {
@@ -158,64 +171,16 @@ Java_java_awt_Toolkit_tlkGetResolution ( JNIEnv* env, jclass clazz )
   return ((WidthOfScreen( scr) * 254) + 5) / (WidthMMOfScreen( scr) *10);
 }
 
-
 jint
 Java_java_awt_Toolkit_tlkGetScreenHeight ( JNIEnv* env, jclass clazz )
 {
   return DisplayHeight( X->dsp, DefaultScreen( X->dsp));
 }
 
-
 jint
 Java_java_awt_Toolkit_tlkGetScreenWidth ( JNIEnv* env, jclass clazz )
 {
   return DisplayWidth( X->dsp, DefaultScreen( X->dsp));
-}
-
-
-jboolean
-Java_java_awt_Toolkit_tlkIsBlocking ( JNIEnv* env, jclass clazz )
-{
-  /*
-   * 'isBlocking' means that we suspend the dispatcher thread in
-   * evtGetNextEvent() until the next Java event becomes available
-   */
-#if defined(USE_THREADED_AWT)
-  return JNI_TRUE;
-#else
-  return JNI_FALSE;
-#endif
-}
-
-
-jboolean
-Java_java_awt_Toolkit_tlkIsDispatchExclusive ( JNIEnv* env, jclass clazz )
-{
-  /*
-   * 'isDispatchExclusive' means that we have a native window system requiring
-   * us to create, event-dispatch and destroy windows exclusivly from one thread
-   * (the 'dispatcher' thread). The OS/2 presentation manager is an example of such
-   * a beast
-   */
-  return JNI_FALSE;
-}
-
-jboolean
-Java_java_awt_Toolkit_tlkNeedsFlush ( JNIEnv* env, jclass clazz )
-{
-  /*
-   * 'needsFlush' means we don't execute graphics requests directly, they are
-   * queued by the graphics lib in a way that requires frequent
-   * queue flushing (e.g. for 'isBlocking' and Xlib). Without this, we have
-   * to make sure that a blocked AWT IO doesn't defer auto-flush (e.g. by XNextEvent)
-   * until doomsday. The XFLUSH macro (to be called in graphics ops) is a hook for an
-   * alternative mechanism (e.g. by "elapsed time since last flush")
-   */
-#if defined(USE_THREADED_AWT)
-  return JNI_TRUE;
-#else
-  return JNI_FALSE;
-#endif
 }
 
 void

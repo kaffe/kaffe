@@ -72,7 +72,7 @@ Java_java_awt_Toolkit_graInitGraphics ( JNIEnv* env, jclass clazz,
 	XChangeGC( X->dsp, gr->gc, valueMask, &values);
   }
   else {
-	gr = (Graphics*) KMALLOC( sizeof(Graphics));
+	gr = (Graphics*) AWT_MALLOC( sizeof(Graphics));
 	gr->gc = XCreateGC( X->dsp, drw, valueMask, &values);
 
 	DBG( awt_gra, (" ->gr: %x (%x)\n", gr, gr->gc));
@@ -107,7 +107,7 @@ Java_java_awt_Toolkit_graFreeGraphics ( JNIEnv* env, jclass clazz, Graphics* gr 
   DBG( awt_gra, ("freeGraphics: %x\n", gr));
 
   XFreeGC( X->dsp, gr->gc);
-  KFREE( gr);
+  AWT_FREE( gr);
 }
 
 
