@@ -570,9 +570,13 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	 * but Double.<clinit> also jumps through the same trampoline
 	 * before it is patched.
 	 */
+	jthread_spinon(0);
 	if (*where != *(void**)PMETHOD_NATIVECODE(meth)) {
 		*where = METHOD_NATIVECODE(meth);
+		jthread_spinoff(0);
 		KFREE(tramp);
+	} else {
+		jthread_spinoff(0);
 	}
 
 #if 0
