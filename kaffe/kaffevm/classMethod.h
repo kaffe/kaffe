@@ -170,7 +170,7 @@ struct Hjava_lang_Class {
 	HArrayOfObject*		signers;
 
 	/** The protection domain */
-	struct Hjava_lang_Object*	protectionDomain;
+	struct Hjava_security_ProtectionDomain*	protectionDomain;
 };
 
 #ifndef __DEFINED_CLASS

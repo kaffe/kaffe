@@ -33,7 +33,7 @@
  */
 struct Hjava_lang_Class*
 java_lang_VMClassLoader_defineClass(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_String* name,
-				    HArrayOfByte* data, jint offset, jint length, struct Hjava_lang_Object* protectionDomain)
+				    HArrayOfByte* data, jint offset, jint length, struct Hjava_security_ProtectionDomain* protectionDomain)
 {
 	Hjava_lang_Class *clazz, *dup_clazz;
 	classFile hand;

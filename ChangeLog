@@ -1,5 +1,17 @@
 2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h
+	(protectionDomain): Changed declaration to use the right type.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jsignal.h
+	(registerAsyncSignalHandler, registerSyncSignalHandler): Fixed
+	declaration.
+
+	* libraries/clib/native/ClassLoader.c
+	(java_lang_VMClassLoader_defineClass): Fixed declaration.
+
+2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/intrp/methodcalls.c,
 	kaffe/kaffevm/jit/methodcalls.c
 	(engine_callMethod): Clear the return value to be sure that no
