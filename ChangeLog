@@ -1,5 +1,9 @@
 2004-08-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/gc.c: Include jmalloc.h to fix compiler warnings.
+
+2004-08-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: 
 	(stat_act, stat_susp, stat_block) Only define if debugging is enabled.
 

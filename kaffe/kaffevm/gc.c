@@ -12,6 +12,7 @@
 /* Use the incremental garbage collector */
 #include "config-std.h"
 #include "gc.h"
+#include "kaffe/jmalloc.h"
 
 Collector* main_collector;
 
