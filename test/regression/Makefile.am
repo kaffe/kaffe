@@ -153,7 +153,7 @@ XFAIL_TESTS =
 
 EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \
-	ZipVerifyUtils.java
+	ZipVerifyUtils.java \
 	ClassGCTest.java \
 	ClassGCLater.java \
 	LoaderTest_Class0.java \
