@@ -62,6 +62,7 @@ public class ArrayList extends AbstractList
 			Object[] newa = new Object[len];
 			System.arraycopy(a, off, newa, 0, len);
 			modCount++;
+			off = 0;
 			a = newa;
 		}
 	}
@@ -139,7 +140,8 @@ public class ArrayList extends AbstractList
 
 	public Object[] toArray(Object[] ary) {
 		if (ary.length < len) {
-			ary = (Object[])Array.newInstance(ary.getClass().getComponentType(), len);
+			ary = (Object[])Array.newInstance(
+				ary.getClass().getComponentType(), len);
 		}
 		System.arraycopy(a, off, ary, 0, len);
 		if (ary.length > len) {
@@ -174,9 +176,15 @@ public class ArrayList extends AbstractList
 			throw new IndexOutOfBoundsException();
 		}
 		final int initialModCount = modCount;
-		ensureCapacity(len + 1);
+		if (off > 0 && index < len / 2) {
+			System.arraycopy(a, off, a, off - 1, index);
+			off--;
+		} else {
+			ensureCapacity(len + 1);
+			System.arraycopy(a, off + index,
+				a, off + index + 1, len - index);
+		}
 		modCount = initialModCount + 1;
-		System.arraycopy(a, off + index, a, off + index + 1, len - index);
 		a[off + index] = element;
 		len++;
 	}
@@ -204,9 +212,16 @@ public class ArrayList extends AbstractList
 		final Iterator i = c.iterator();
 		final int increase = c.size();
 		final int initialModCount = modCount;
-		ensureCapacity(len + increase);
-		modCount = initialModCount + 1;
-		System.arraycopy(a, off + index, a, off + index + increase, len - index);
+		if (off >= increase && index < len / 2) {
+			modCount++;
+			System.arraycopy(a, off, a, off - increase, index);
+			off -= increase;
+		} else {
+			ensureCapacity(len + increase);
+			modCount = initialModCount + 1;
+			System.arraycopy(a, off + index,
+				a, off + index + increase, len - index);
+		}
 		for (int index2 = off + index; i.hasNext(); index2++) {
 			a[index2] = i.next();
 		}
@@ -223,8 +238,12 @@ public class ArrayList extends AbstractList
 			return;
 		}
 		modCount++;
-		System.arraycopy(a, off + toIndex,
-			a, off + fromIndex, len - toIndex);
+		if (fromIndex == 0) {
+			off += toIndex;
+		} else {
+			System.arraycopy(a, off + toIndex,
+				a, off + fromIndex, len - toIndex);
+		}
 		len -= decrease;
 	}
 }
