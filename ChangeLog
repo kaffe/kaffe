@@ -1,5 +1,12 @@
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	  Call unprotectThreadList *before* calling pthread_exit.  This
+	  prevents deadlocks during shutdown(discovered while getting xprof
+	  to work).
+
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffe/main.c: Add call to enableXProfiling.
 
 2004-12-08  Adam Heath  <doogie@brainfood.com>

@@ -1048,10 +1048,8 @@ jthread_exit ( void )
 		pthread_cancel( firstThread->tid);
 	  }
 
-	  pthread_exit( 0);
-
-	  /* pretty useless, but clean */
 	  unprotectThreadList(cur);
+	  pthread_exit( 0);
 
 	  /* we shouldn't get here, this is a last safeguard */
 	  EXIT(0);
