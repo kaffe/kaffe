@@ -27,10 +27,10 @@ What's New in Kaffe OpenVM 1.0.5
 
 * New JDK 1.2 java.util Collections classes
 
+* New JDK 1.2 java.security classes
+
 * Improved i18n support.
 
 * New utilities: serialver, rmiregistry, rmic, javap
-
-* ....
 
 * Lots of bug fixes.
