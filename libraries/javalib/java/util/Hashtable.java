@@ -161,6 +161,7 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 
     int posn = calculateBucket(key);
     int limit = keys.length;
+    int space = -1;
     for (int i = posn; i < limit; i++) {
       Object mkey = keys[i];
       if (key.equals(mkey)) {
@@ -168,9 +169,17 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 	elements[i] = value;
 	return (oldElement);
       }
-      if (mkey == free || mkey == removed) {
-	keys[i] = key;
-	elements[i] = value;
+      if (mkey == removed) {
+	if (space == -1) {
+	  space = i;
+	}
+      }
+      else if (mkey == free) {
+	if (space == -1) {
+	  space = i;
+	}
+	keys[space] = key;
+	elements[space] = value;
 	numberOfKeys++;
 	return (null);
       }
@@ -182,9 +191,17 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 	elements[i] = value;
 	return (oldElement);
       }
-      if (mkey == free || mkey == removed) {
-	keys[i] = key;
-	elements[i] = value;
+      if (mkey == removed) {
+	if (space == -1) {
+	  space = i;
+	}
+      }
+      else if (mkey == free) {
+	if (space == -1) {
+	  space = i;
+	}
+	keys[space] = key;
+	elements[space] = value;
 	numberOfKeys++;
 	return (null);
       }
