@@ -1,3 +1,8 @@
+2003-07-30  Ito Kazumitsu <kas@maczuka.gcd.org>
+
+	* developers/autogen.sh:
+	changed /bin/true to true.
+
 2003-07-30  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c

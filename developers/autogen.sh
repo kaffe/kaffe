@@ -109,7 +109,7 @@ cp libltdl/acinclude.m4 libtool.m4
 
 aclocal -I .
 autoheader -Wall
-automake --add-missing --copy -Wall || /bin/true  # ignore warnings
+automake --add-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall
 patch < developers/patch-config.sub-superh.diff
 
