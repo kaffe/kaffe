@@ -443,6 +443,8 @@ public class SimpleTimeZone extends TimeZone
    * @exception IllegalArgumentException if parameters are out of range.
    * @see SimpleTimeZone
    */
+  /* This is not implemented. We are waiting for the last patch
+   * for GNU Classpath to be merged. 
   public void setStartRule(int startMonth,
 			   int startDay,
 			   int startDayOfWeek,
@@ -450,6 +452,7 @@ public class SimpleTimeZone extends TimeZone
 			   boolean after)
   {
   }
+  */
 
   /**
    * Sets the daylight savings end rule.  You must also set the

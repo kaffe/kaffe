@@ -224,24 +224,20 @@ getRunLimit(Set attribute_set)
   boolean hit = false;
   int runLimit = ci.getEndIndex ();
   int pos = ci.getIndex ();
- 
+
   for (int i = 0; i < attribs.length; ++i)
     {
       if (pos >= attribs[i].begin_index &&
           pos <= attribs[i].end_index)
-	{
-	  Map attribute_map = getAttributes();
-	  
-	  boolean found = false;
-	  Iterator iter = attribute_set.iterator();
-	  while(iter.hasNext()) 
-	    if (!attribute_map.containsKey(iter.next()))
-	      if (attribs[i].attribs.containsKey(iter.next()))
-		{
-		  hit = true;
-		  runLimit = Math.min(runLimit, attribs[i].end_index);
-		}
-	}
+        {
+          Iterator iter = attribute_set.iterator();
+          while(iter.hasNext()) 
+            if (attribs[i].attribs.containsKey(iter.next()))
+              {
+                hit = true;
+                runLimit = Math.min(runLimit, attribs[i].end_index);
+              }
+        }
     }
   if (hit)
     return runLimit;
