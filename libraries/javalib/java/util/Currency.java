@@ -169,7 +169,8 @@ public final class Currency
     if (countryCode.equals(""))
       {
         throw new
-	  IllegalArgumentException("The specified country code is invalid");
+	  IllegalArgumentException("Invalid (empty) country code for locale:"
+			  	   + loc);
       }
     /* Construct the key for the currency */
     currencyKey = countryCode + ".currency";
