@@ -64,12 +64,14 @@ protected Class loadClass(String name, boolean resolve)
 		try {
 			if (parent != null) {
 				c = parent.loadClass(name, resolve);
+				break search;
 			} else if (this != getSystemClassLoader()) {
 				c = getSystemClassLoader()
 					.loadClass(name, resolve);
+				break search;
 			}
-			break search;
-		} catch (ClassNotFoundException e) { }
+		} catch (ClassNotFoundException e) {
+		}
 
 		// Third, try findClass()
 		if ((c = findClass(name)) == null) {
