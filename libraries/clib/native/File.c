@@ -19,7 +19,7 @@
 #include <jsyscall.h>
 #include "defs.h"
 #include "files.h"
-#include "system.h"
+#include "../../../include/system.h"
 #include "File.h"
 #include "../../../kaffe/kaffevm/support.h"
 

@@ -28,7 +28,7 @@
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/soft.h"
-#include "system.h"
+#include "../../../include/system.h"
 #include "defs.h"
 #include "InputStream.h"
 #include "PrintStream.h"
