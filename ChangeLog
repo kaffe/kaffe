@@ -1,3 +1,19 @@
+Tue Jun 29 17:34:27 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* developers/gdbinit: update gcmem2block for current gc layout
+	* kaffe/kaffevm/classMethod.c: More messages for malloc failures
+	during init.
+	* kaffe/kaffevm/code-analyse.c: Maintain verified flag after malloc failure
+	* kaffe/kaffevm/jni.c: jni monitorenter can use lockJavaMutex, since
+	jni catches all exceptions.
+	* kaffe/kaffevm/utf8const.c: Fix KMALLOC checks
+	* kaffe/kaffevm/mem/gc-mem.c: Don't count memory reserved for
+	outOfMemory clean twice, also allocate exactly up to gc_heap_limit
+	when we would execede it.
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: Only do
+	  jthread_destroy consistency check with -vmdebug JTHREAD 
+	* libraries/clib/native/ClassLoader.c: Remove ugly blank line
+
 Tue Jun 29 12:40:28 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/jar.c: Not only was it not calling closeJarFile,
