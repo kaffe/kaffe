@@ -363,7 +363,21 @@ toolslibdir = @toolslibdir@
 uudecode = @uudecode@
 with_engine = @with_engine@
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_DIR = libxmlj
-SUBDIRS = classpath native io nio net zip math security management $(MAYBE_LIBXMLJ_DIR) awt sound
+@COND_NATIVE_AWT_TRUE@MAYBE_NATIVE_AWT_DIR = awt
+SUBDIRS = \
+	classpath \
+	native \
+	io \
+	nio \
+	net \
+	zip \
+	math \
+	security \
+	management \
+	$(MAYBE_LIBXMLJ_DIR) \
+	$(MAYBE_NATIVE_AWT_DIR) \
+	sound
+
 all: all-recursive
 
 .SUFFIXES:

@@ -13,4 +13,20 @@ if COND_LIBXMLJ
   MAYBE_LIBXMLJ_DIR = libxmlj
 endif
 
-SUBDIRS = classpath native io nio net zip math security management $(MAYBE_LIBXMLJ_DIR) awt sound
+if COND_NATIVE_AWT
+  MAYBE_NATIVE_AWT_DIR = awt
+endif
+
+SUBDIRS = \
+	classpath \
+	native \
+	io \
+	nio \
+	net \
+	zip \
+	math \
+	security \
+	management \
+	$(MAYBE_LIBXMLJ_DIR) \
+	$(MAYBE_NATIVE_AWT_DIR) \
+	sound
