@@ -19,6 +19,17 @@
 # pobjecttype, vmdebug_state, vmdebug_list, vmdebug_setopt
 #
 
+# X-debugging is your friend.  (See FAQ/FAQ.xdebugging) Just startup
+# the VM with `-Xxdebug' and then run this gdb macro
+# whenever you want a full backtrace:
+define xdb
+    shell as xdb.as -o xdb.o
+    add-symbol-file xdb.o 0
+end
+document xdb
+    Load xdebugging symbol information from xdb.as
+end
+
 # Kaffe ignores SIGPIPE, so we should too (on systems that have SIGPIPE)
 #handle SIGPIPE nostop noprint
 

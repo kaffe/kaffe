@@ -1,3 +1,15 @@
+2003-04-22 Tim Stack <stack@cs.utah.edu>
+
+	* FAQ/FAQ.xdebugging:
+	Update to mention '-Xxdebug' and the 'xdb' macro.
+
+	* kaffe/kaffe/main.c:
+	Add '-Xxdebug' argument to make it easier to turn on xdebugging.
+
+	* developers/gdbinit:
+	Add 'xdb' macro to make it easier to load xdebugging information
+	into gdb.
+
 2003-04-18 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/ObjectStreamConstants.java:

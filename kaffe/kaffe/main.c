@@ -472,6 +472,10 @@ options(char** argv)
 		}
 #endif
 #if defined(KAFFE_XDEBUGGING)
+		else if (strcmp(argv[i], "-Xxdebug") == 0) {
+			/* Use a default name */
+			machine_debug_filename = "xdb.as";
+		}
 		else if (strcmp(argv[i], "-Xxdebug_file") == 0) {
 			i++;
 			if (argv[i] == 0) {

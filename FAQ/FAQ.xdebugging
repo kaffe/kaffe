@@ -2,24 +2,27 @@
 Documentation about cross language debugging support for Kaffe's JIT
 By the University of Utah Flux Group <http://www.cs.utah.edu/flux>,
 Mar 22, 2000
+Updated Apr 22, 2003
 
 Introduction
 ------------
 
-The cross language debugging support is basically an offshoot of the
-xprofiler code.  Since the profiler already generated symbols for the
-JIT'ed code it seemed easy enough to also generate `.stabs' debugging
-information for gdb.  The result allows the gdb to report the file and
-line number of the current location in the code, however, the
-implementation has several limitations:
+Cross language debugging support allows developers to see Java
+debugging information alongside C debugging information in GDB.  The
+extra information can help regular debugging and is invaluable when
+working with the jitter.  The implementation is basically an offshoot
+of the xprofiler code.  Since the profiler already generated symbols
+for the JIT'ed code it seemed easy enough to also generate `.stabs'
+debugging information for gdb.  The result allows gdb to report the
+file and line number of the current location in the code, however, the
+implementation has some limitations:
 
   - Only line number debugging information is generated, variable
     locations and types aren't handled yet.
 
-  - The debugging information is generated at runtime, so you need to
-    process the assembler output and manually load the symbol file
-    into gdb.  This can turn into a real hassle and makes its harder
-    to do other things (e.g. breakpoints).
+  - The debugging information is generated at runtime, so the output
+    must be sent through an assembler and loaded into GDB.  We provide
+    the macro 'xdb' in developers/gdbinit to ease this burden.
 
   - The java symbol names are mangled and only seem to be deciphered by
     gdb 4.18, and even then it doesn't always work.
@@ -34,28 +37,31 @@ implementation has several limitations:
   - There may be some problems with backtracing not working properly,
     i don't know why though...
 
+
 Configure
 ---------
 
 The xdebugging code can be enabled by using the --enable-xdebugging
-flag when running configure.  This will add a command line option for
-specifying the debugging output file and enable code for translating
-java debugging information to assembler `.stabs' directives.
+flag when running configure.
 
 
 Usage
 -----
 
-The xdebugging output isn't generated unless the `-Xxdebug_file' flag
-is specified on the command line.  The flag takes one argument, the
-name of the generated assembler file.  The generated file will have
+The xdebugging output isn't generated unless the `-Xxdebug' or
+`-Xxdebug_file' flags are specified on the command line.  The
+`-Xxdebug' flag uses the default file name `xdb.as', while the other
+flag takes the file name as an argument.  The generated file will have
 symbols for JIT'ed functions and whatever line debugging information
-that was taken from the java debugging information.
+that was taken from the java debugging information.  Finally, you can
+load the file into gdb using 'xdb' or manually by running the output
+through an assembler and loading it into gdb with 'add-symbol-file'
 
 Example:
 
   > setenv KAFFE_DEBUG gdb
-  > java -Xxdebug_file HelloWorld.s HelloWorld
+  > setenv KAFFE_DEBUG_TEMPFILE /tmp/kaffe.gdb
+  > java -Xxdebug HelloWorld
 
   Copyright 1998 Free Software Foundation, Inc.
   GDB is free software, covered by the GNU General Public License, and you are
@@ -63,19 +69,13 @@ Example:
   Type "show copying" to see the conditions.
   There is absolutely no warranty for GDB.  Type "show warranty" for details.
   This GDB was configured as "i386-redhat-linux".
-  (gdb)
+  (gdb) run
 
   <something goes horribly horribly wrong>
 
-  [From another terminal]
-  > as HelloWorld.s -o HelloWorld.o
-
-  [Back in gdb terminal]
-  (gdb) add-symbol-file HelloWorld.o 0
-  add symbol table from file "nm.o" at text_addr = 0x0?
-  (y or n) y
+  (gdb) xdb
+  Current language:  auto; currently java
   (gdb) bt
-
   #0 0x8008329 in HelloWorld.main() at HelloWorld.java:12 
   ...
 
@@ -85,18 +85,21 @@ Implementation
 
 Added Files:
 
-  xprof/debugFile.*: Does the majority of the work in generating the
-    assembler file with the debugging symbols.
+  FAQ/FAQ.xdebugging: This file.
 
-  xprof/mangle.*: Mangles the java method names into a gnu style
+  kaffe/xprof/debugFile.*: Does the majority of the work in generating
+    the assembler file with the debugging symbols.
+
+  kaffe/xprof/mangle.*: Mangles the java method names into a GNU style
     format.
 
 Modified Files:
 
-  kaffe/main.c: Added `-Xxdebug_file' command line arg
+  kaffe/kaffe/main.c: Added `-Xxdebug' and `-Xxdebug_file' command
+    line args.
 
-  kaffevm/jit3/machine.c: Added code to generate debugging information
-    for JIT'ed methods that had java debugging information.
+  kaffe/kaffevm/jit3/machine.c: Added code to generate debugging
+    information for JIT'ed methods that had java debugging information.
 
 Control Flow:
 
@@ -110,4 +113,4 @@ Future:
 
   Add more debugging information, types and variable locations.
 
-  Automate the process of getting the information into gdb.
+  Automate the process of getting the information into gdb. (DONE)
