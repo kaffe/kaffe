@@ -1,4 +1,4 @@
-AC_INIT([Kaffe Virtual Machine],[1.1.x-cvs],[kaffe@kaffe.org],[kaffe])
+AC_INIT([Kaffe Virtual Machine],[1.1.4],[kaffe@kaffe.org],[kaffe])
 
 AC_PREREQ([2.59])
 
@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ])
 
-AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
+AM_INIT_AUTOMAKE(kaffe, 1.1.4)
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 

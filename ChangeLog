@@ -2,6 +2,16 @@
 
         (On Release 1.1.4 Branch)
 
+	* configure.in:
+	Bump version number.
+
+	* configure:
+	Regenerated.
+
+2004-02-18  Jim Pick  <jim@kaffe.org>
+
+        (On Release 1.1.4 Branch)
+
 	* Merged updates from HEAD to 1.1.4 branch.
 
 	* WHATSNEW:
