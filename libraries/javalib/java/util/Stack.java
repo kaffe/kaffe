@@ -1,6 +1,5 @@
 package java.util;
 
-
 /*
  * Java core library component.
  *
@@ -13,9 +12,7 @@ package java.util;
 public class Stack
   extends Vector
 {
-	int topOfStack = 0;
 
-/* Next empty space */
 public Stack() {
 }
 
@@ -23,32 +20,33 @@ public boolean empty() {
 	return isEmpty();
 }
 
-public Object peek() {
-	if (empty()) throw new EmptyStackException();
-
-	return elementAt(topOfStack-1);
+public synchronized Object peek() throws EmptyStackException {
+	try {
+		return elementAt(size() - 1);
+	} catch (ArrayIndexOutOfBoundsException _) {
+		throw new EmptyStackException();
+	}
 }
 
-public Object pop() {
-	if (empty()) throw new EmptyStackException();
-	else {
-		Object peeked=peek();
+public synchronized Object pop() throws EmptyStackException {
+	Object peeked = peek();
 
-		topOfStack--;
-		removeElementAt(topOfStack);
-
-		return peeked;
-	}
+	removeElementAt(size() - 1);
+	return peeked;
 }
 
 public Object push(Object item) {
 	addElement(item);
-	topOfStack++;
-
 	return item;
 }
 
-public int search(Object o) {
-	return lastIndexOf(o)+1;
+public synchronized int search(Object o) {
+	int index = lastIndexOf(o);
+
+	if (index == -1) {
+		return -1;
+	}
+	return size() - index;
 }
 }
+
