@@ -261,7 +261,7 @@ public byte[] getBytes() {
 private byte[] getBytes( CharToByteConverter encoding) {
 	ByteArrayOutputStream out = new ByteArrayOutputStream( value.length);
 
-	byte[] buf = new byte[512];
+	byte[] buf = new byte[value.length*7];
 	int buflen = encoding.convert( value, offset, count, buf, 0, buf.length);
 	while (buflen > 0) {
 		out.write(buf, 0, buflen);

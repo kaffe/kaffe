@@ -46,6 +46,7 @@ public void actionPerformed( ActionEvent e) {
 }
 
 public void addTextListener( TextListener l) {
+	textListener = AWTEventMulticaster.add( textListener, l);
 	eventMask |= AWTEvent.TEXT_EVENT_MASK;
 }
 

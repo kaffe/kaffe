@@ -18,6 +18,16 @@ import kaffe.util.Ptr;
 public class FontMetrics
   implements java.io.Serializable
 {
+        // We store the font because the font metrics
+        // depends on the native data maintained by the font
+        // in this way the original font object will not be
+        // finalized (and the native data freed).
+        // Note that since fontmetrics instances are cached
+        // their life span is higher than the Font object one.
+        // (Maurizio De Cecco maurizio@mandrakesoft.com).
+
+        Font font;  
+
 	transient Ptr nativeData;
 	protected String fontSpec;
 	transient int height;
@@ -34,6 +44,7 @@ public class FontMetrics
 	final private static long serialVersionUID = 1681126225205050147L;
 
 protected FontMetrics ( Font font ) {
+        this.font = font;
 	fontSpec = font.encode();
 
 	nativeData = Toolkit.fntInitFontMetrics( font.nativeData);	

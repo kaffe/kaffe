@@ -22,9 +22,14 @@
  * events.
  * Note that we can't mix in latin keycodes, because even upper case letters would
  * overlap (XK_P = 0x50, XK_home = 0xff50), we have to keep them in a separate table
+ *
+ * Changed the FKeyCode from char to short; on a system where the char is 8bit, some
+ * of the code become negative (because they are bigger than 127) and
+ * produce a keytyped of unrelated characters (like "Ins", produce an 'e');
+ * (MDC, Mandrakesoft).
  */
 
-signed char FKeyCode [256] = {
+signed short FKeyCode [256] = {
 0,
 0,
 0,
@@ -437,3 +442,8 @@ signed char LKeyCode [256] = {
 };
 
 #endif
+
+
+
+
+

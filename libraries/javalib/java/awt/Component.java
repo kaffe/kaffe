@@ -1718,18 +1718,17 @@ public void transferFocus() {
 		/* Look for next focusable component after me */
 		for (start++; start < end; start++) {
 			Component c = parent.getComponent(start);
-			if (!(c.isEnabled() && ((c.flags & IS_VISIBLE) !=0) && c.isFocusTraversable())) {
-				continue;
-			}
-			if (!(c instanceof Container)) {
-				c.requestFocus();
-				return;
-			}
 
-			/* We found a new container, drop into it */
+			if (c.isEnabled() && ((c.flags & IS_VISIBLE) !=0) && c.isFocusTraversable()) {
+			  // Then if it is enabled, visible and focus traversable set the focus to it
+			  c.requestFocus();
+			  return;
+			} else if (c instanceof Container) {
+			  // If it is a container drop into it
 			parent = (Container)c;
 			end = parent.getComponentCount();
 			start = -1;
+			}
 		}
 
 		curr = parent;

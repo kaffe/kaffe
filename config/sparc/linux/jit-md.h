@@ -23,18 +23,15 @@
 #if defined(HAVE_FEATURES_H)
 #include <features.h>
 #endif 
-#if defined(HAVE_ASM_SIGCONTEXT_H) && !defined(__GLIBC)
-#include <asm/sigcontext.h>
-#endif
 #if defined(HAVE_SIGCONTEXT_H)
 #include <sigcontext.h> 
 #endif
 
-#include <asm/sigcontext.h>
+#include <asm/ptrace.h>
 
 /* Function prototype for signal handlers */
 #define	EXCEPTIONPROTO							\
-	int sig, __siginfo_t* ctx
+	int sig, struct sigcontext* ctx
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\

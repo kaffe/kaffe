@@ -11,6 +11,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
 #include "toolkit.h"
 #include "keysyms.h"
 
@@ -218,19 +219,97 @@ static jobject
 keyNotify ( JNIEnv* env, Toolkit* X )
 {
   KeySym          keysym;
+  KeySym          keysym2;
   XComposeStatus  ioStatus;
-  int             n, keyCode, keyChar, mod, idx;
+  int             n, keyCode, keyChar, mod, idx, nchar;
 
   /*
    * We should eventually support input methods here.
    * Note that 'keysym' is queried separately (with a standard state), to
    * ensure the "one physical key -> one keycode" invariant
    */
-  n = XLookupString( &X->event.xkey, X->buf, X->nBuf, 0, &ioStatus);
+  n = XLookupString( &X->event.xkey, X->buf, X->nBuf, &keysym2, &ioStatus);
   keysym = XKeycodeToKeysym( X->dsp, X->event.xkey.keycode, 0);
+
+
+  // Bug fix: the keypad numbers where not handled correctly.
+  // In X, numlock is a modifier, and XKeycodeToKeysym do
+  // not do any modifier interpretation (in order to
+  // build the correct Java KeyEvent).
+  // But, as a result, since there is no NumLock modifier
+  // in Java, the information was lost, and the keypad could
+  // not work with NumLock selected.
+  // The "solution" is to use the returned keysym from XLookupString
+  // (which interpret the modifiers) if and only if it 
+  // the original keysym correspond to the keypad; this should
+  // code will all the case where the numlock alter the interpretation
+  // of the keypad; also, if the keysums are the xk_xp_<num> 
+  // we set the keychar to the correspoding digit.
+
+  if ((keysym >= XK_KP_Space) && (keysym <= XK_KP_9)) {
+      keysym = keysym2;
+      
+      switch (keysym)
+	{
+	case XK_KP_Multiply:
+	  nchar = '*';
+	  break;
+	case XK_KP_Add:
+	  nchar = '+';
+	  break;
+	case XK_KP_Separator:
+	  nchar = ',';
+	  break;
+	case XK_KP_Subtract:
+	  nchar = '-';
+	  break;
+	case XK_KP_Decimal:
+	  nchar = '.';
+	  break;
+	case XK_KP_Divide:
+	  nchar = '/';
+	  break;
+	case XK_KP_0:
+	  nchar = '0';
+	  break;
+	case XK_KP_1:
+	  nchar = '1';
+	  break;
+	case XK_KP_2:
+	  nchar = '2';
+	  break;
+	case XK_KP_3:
+	  nchar = '3';
+	  break;
+	case XK_KP_4:
+	  nchar = '4';
+	  break;
+	case XK_KP_5:
+	  nchar = '5';
+	  break;
+	case XK_KP_6:
+	  nchar = '6';
+	  break;
+	case XK_KP_7:
+	  nchar = '7';
+	  break;
+	case XK_KP_8:
+	  nchar = '8';
+	  break;
+	case XK_KP_9:
+	  nchar = '9';
+	  break;
+	default:
+	  nchar = -1;
+	  break;
+	}
+  }
+  else
+    nchar = -1;
 
   if ( (keysym >= 0xff00) || (n == 0) ) {
 	keyCode = FKeyCode[keysym & 0xff];
+
 	/*
 	 * There are some "control keys" that should generate KEY_TYPED events
 	 * (enter, cancel, backspace, del, tab). This is flagged by a negative keyCode
@@ -238,6 +317,8 @@ keyNotify ( JNIEnv* env, Toolkit* X )
 	 */
 	if ( keyCode < 0 ){
 	  keyChar = keyCode = -keyCode;
+	} else if (nchar >= 0) {
+	  keyChar = nchar;
 	}
 	else {  /* a "pure" function key */
 	  keyChar = 0;

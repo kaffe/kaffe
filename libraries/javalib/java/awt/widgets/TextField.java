@@ -203,6 +203,7 @@ public String getText() {
 }
 
 public void keyPressed( KeyEvent e) {
+        boolean changed = false;
 	int mods = e.getModifiers();
 	boolean shift = e.isShiftDown();
 	int code = e.getKeyCode();
@@ -219,6 +220,7 @@ public void keyPressed( KeyEvent e) {
 	case KeyEvent.VK_ESCAPE:
 		if (isEditable) {
 			setText( "");
+			changed = true;
 		}
 		break;
 	case KeyEvent.VK_HOME:
@@ -257,10 +259,12 @@ public void keyPressed( KeyEvent e) {
 		if (isEditable) {
 			if ( selStart != selEnd) {
 				deleteSelection();
+				changed = true;
 			}
 			else if ( tCursor.index > 0) {
 				textBuf.remove( tCursor.index-1, 1);
 				shiftTextCursor( -1, true);
+				changed = true;
 			}
 		}
 		break;
@@ -268,10 +272,12 @@ public void keyPressed( KeyEvent e) {
 		if (isEditable) {
 			if ( selStart != selEnd) {
 				deleteSelection();
+				changed = true;
 			}
 			else if ( tCursor.index < textBuf.len) {
 				textBuf.remove( tCursor.index, 1);
 				repaintTrailing();
+				changed = true;
 			}
 		}
 		break;
@@ -279,6 +285,11 @@ public void keyPressed( KeyEvent e) {
 		return;
 	}
 	
+	if (changed && ((textListener != null) || (eventMask & AWTEvent.TEXT_EVENT_MASK) != 0))
+	{
+	  Toolkit.eventQueue.postEvent( TextEvt.getEvent( this, TextEvt.TEXT_VALUE_CHANGED));		
+	}
+
 	e.consume();
 }
 
