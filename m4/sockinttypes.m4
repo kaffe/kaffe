@@ -31,11 +31,11 @@ dnl * Check for socklen_t.
 dnl * 
 AC_DEFUN([AC_TYPE_SOCKLEN_T],
 [AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
-#include <sys/socket.h>], [
+#include <sys/socket.h>]], [[
 socklen_t socklen;
-], [ac_cv_type_socklen_t=yes], [ac_cv_type_socklen_t=no])])
+]])],[ac_cv_type_socklen_t=yes],[ac_cv_type_socklen_t=no])])
 if test "$ac_cv_type_socklen_t" != yes; then
     AC_DEFINE(socklen_t, int,
 [Define to `int' if <sys/types.h> or <sys/socket.h> does not define.])
@@ -46,15 +46,15 @@ dnl * Check for in_port_t.
 dnl * 
 AC_DEFUN([AC_TYPE_IN_PORT_T],
 [AC_CACHE_CHECK([for in_port_t], ac_cv_type_in_port_t,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>], [
+#include <netinet/in.h>]], [[
 in_port_t in_port;
-], [ac_cv_type_in_port_t=yes], [ac_cv_type_in_port_t=no])])
+]])],[ac_cv_type_in_port_t=yes],[ac_cv_type_in_port_t=no])])
 if test "$ac_cv_type_in_port_t" != yes; then
     ac_cv_sin_port_size=unknown
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -62,8 +62,8 @@ if test "$ac_cv_type_in_port_t" != yes; then
 	struct sockaddr_in addr;
 	return (sizeof(addr.sin_port) == sizeof(long)) ? 0 : 1;
     }
-    ], [ac_cv_sin_port_size=long])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sin_port_size=long],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -71,8 +71,8 @@ if test "$ac_cv_type_in_port_t" != yes; then
 	struct sockaddr_in addr;
 	return (sizeof(addr.sin_port) == sizeof(int)) ? 0 : 1;
     }
-    ], [ac_cv_sin_port_size=int])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sin_port_size=int],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -80,8 +80,8 @@ if test "$ac_cv_type_in_port_t" != yes; then
 	struct sockaddr_in addr;
 	return (sizeof(addr.sin_port) == sizeof(short)) ? 0 : 1;
     }
-    ], [ac_cv_sin_port_size=short])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sin_port_size=short],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -89,7 +89,7 @@ if test "$ac_cv_type_in_port_t" != yes; then
 	struct sockaddr_in addr;
 	return (sizeof(addr.sin_port) == sizeof(char)) ? 0 : 1;
     }
-    ], [ac_cv_sin_port_size=char])
+    ]])],[ac_cv_sin_port_size=char],[],[])
     if test "ac_cv_sin_port_size" = unknown; then
 	AC_MSG_ERROR([Failed to get size of sin_port in struct sockaddr_in.])
     fi
@@ -105,45 +105,45 @@ dnl * Check for sa_family_t.
 dnl * 
 AC_DEFUN([AC_TYPE_SA_FAMILY_T],
 [AC_CACHE_CHECK([for sa_family_t], ac_cv_type_sa_family_t,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
-#include <sys/socket.h>], [
+#include <sys/socket.h>]], [[
 sa_family_t sa_family;
-], [ac_cv_type_sa_family_t=yes], [ac_cv_type_sa_family_t=no])])
+]])],[ac_cv_type_sa_family_t=yes],[ac_cv_type_sa_family_t=no])])
 if test "$ac_cv_type_sa_family_t" != yes; then
     ac_cv_sa_family_size=unknown
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     int main() {
 	struct sockaddr addr;
 	return (sizeof(addr.sa_family) == sizeof(long)) ? 0 : 1;
     }
-    ], [ac_cv_sa_family_size=long])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sa_family_size=long],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     int main() {
 	struct sockaddr addr;
 	return (sizeof(addr.sa_family) == sizeof(int)) ? 0 : 1;
     }
-    ], [ac_cv_sa_family_size=int])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sa_family_size=int],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     int main() {
 	struct sockaddr addr;
 	return (sizeof(addr.sa_family) == sizeof(short)) ? 0 : 1;
     }
-    ], [ac_cv_sa_family_size=short])
-    AC_TRY_RUN([
+    ]])],[ac_cv_sa_family_size=short],[],[])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
     #include <sys/types.h>
     #include <sys/socket.h>
     int main() {
 	struct sockaddr addr;
 	return (sizeof(addr.sa_family) == sizeof(char)) ? 0 : 1;
     }
-    ], [ac_cv_sa_family_size=char])
+    ]])],[ac_cv_sa_family_size=char],[],[])
     if test "ac_cv_sa_family_size" = unknown; then
 	AC_MSG_ERROR([Failed to get size of sa_family in struct sockaddr.])
     fi

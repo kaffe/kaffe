@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# $Id: gnu-crypto.m4,v 1.1 2003/12/24 19:07:24 dalibor Exp $
+# $Id: gnu-crypto.m4,v 1.2 2004/03/22 14:25:53 dalibor Exp $
 #
 # Copyright (C) 2003 Free Software Foundation, Inc.
 #
@@ -43,7 +43,7 @@
 #
 # GNU Crypto m4 macro for use by VM Providers
 #
-# $Revision: 1.1 $
+# $Revision: 1.2 $
 #
 
 # process --with-gnu-crypto configure option.
@@ -62,9 +62,8 @@
 # -----------------------------------------------------------------------------
 AC_DEFUN([CHECK_GNU_CRYPTO],[
 AC_ARG_WITH([gnu-crypto],
-            AC_HELP_STRING([--with-gnu-crypto],
-                           [path to GNU Crypto install directory.  if unspecified, /usr/local/gnu-crypto, /usr/local, /usr, /opt/gnu-crypto, and /opt are considered, in that order]),
-
+            AS_HELP_STRING([--with-gnu-crypto],
+			   [path to GNU Crypto install directory.  if unspecified, /usr/local/gnu-crypto, /usr/local, /usr, /opt/gnu-crypto, and /opt are considered, in that order]),
             [if test "x${withval}" != x && test "x${withval}" != xyes && test "x${withval}" != xno; then
               AC_MSG_CHECKING([${withval}])
               _CHECK_GNU_CRYPTO_HOME(${withval})

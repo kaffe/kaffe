@@ -31,10 +31,10 @@ dnl * Check for h_errno.
 dnl *
 AC_DEFUN([AC_DECL_H_ERRNO],
 [AC_CACHE_CHECK(for h_errno declaration in netdb.h, ac_cv_decl_h_errno,
-[AC_TRY_COMPILE([
-#include <netdb.h>],[
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <netdb.h>]], [[
 h_errno = 0;
-], [ac_cv_decl_h_errno=yes], [ac_cv_decl_h_errno=no])])
+]])],[ac_cv_decl_h_errno=yes],[ac_cv_decl_h_errno=no])])
 if test "$ac_cv_decl_h_errno" = yes; then
     AC_DEFINE(H_ERRNO_DECLARED, 1,
 [Define to 1 if `h_errno' is declared by <netdb.h>])

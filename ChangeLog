@@ -1,5 +1,19 @@
 2004-03-22  Dalibor Topic <robilad@kaffe.org>
 
+        m4/alsa.m4,
+        m4/gnu-crypto.m4,
+        m4/herrno.m4,
+        m4/in6addr.m4,
+        m4/sockaddrin6.m4,
+        m4/sockinttypes.m4,
+        m4/valist.m4:
+	Updated using autoupdate to fix automake warnings.
+
+	*  configure:
+	Regenerated.
+
+2004-03-22  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
 	(MAX_SYS_THREADS): Define it using POSIX_THREADS_MAX.
 	Fixes a compilation error on sparc-openbsd.
