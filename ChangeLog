@@ -1,5 +1,7 @@
 2004-07-29  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 	* include/Makefile.am: Added header generation for
 	java/lang/VMObject and java/lang/VMThread.
 
