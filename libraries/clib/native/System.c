@@ -519,8 +519,28 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 	dclass = OBJECT_CLASS(dst);
 
 	/* Must be arrays */ 	 
-	if (!CLASS_IS_ARRAY(sclass) || !CLASS_IS_ARRAY(dclass)) { 	 
-		throwException (ArrayStoreException);
+	if (!CLASS_IS_ARRAY(sclass)) {
+		Hjava_lang_Throwable* asexc;
+		const char* f = "source not an array `%s'";
+		const char *type = CLASS_CNAME(sclass);
+		char *b;
+		b = checkPtr(KMALLOC(strlen(type)+strlen(f)));
+		sprintf(b, f, type);
+		asexc = ArrayStoreException(b);
+		KFREE(b);
+		throwException(asexc);
+	}
+
+	if(!CLASS_IS_ARRAY(dclass)) { 	 
+		Hjava_lang_Throwable* asexc;
+		const char* f = "destination not an array `%s'";
+		const char *type = CLASS_CNAME(dclass);
+		char *b;
+		b = checkPtr(KMALLOC(strlen(type)+strlen(f)));
+		sprintf(b, f, type);
+		asexc = ArrayStoreException(b);
+		KFREE(b);
+		throwException(asexc);
 	} 	 
 
 	/* Make sure we'll keep in the array boundaries */ 	 
@@ -567,13 +587,31 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 #endif 	 
 	} else {
 		if (CLASS_IS_PRIMITIVE(sclass) || CLASS_IS_PRIMITIVE(dclass)) {
-			throwException (ArrayStoreException);
+		  Hjava_lang_Throwable* asexc;
+		  const char* f = "incompatible array types `%s' and `%s'";
+		  const char *stype = CLASS_CNAME(sclass);
+		  const char *dtype = CLASS_CNAME(dclass);
+		  char *b;
+		  b = checkPtr(KMALLOC(strlen(stype)+strlen(dtype)+strlen(f)));
+		  sprintf(b, f, stype, dtype);
+		  asexc = ArrayStoreException(b);
+		  KFREE(b);
+		  throwException(asexc);
 		}
 
 		for (; len > 0; len -= sizeof(Hjava_lang_Object*)) { 	 
 			Hjava_lang_Object* val = *(Hjava_lang_Object**)in; 	 
 			if (val != 0 && !instanceof(dclass, OBJECT_CLASS(val))) { 	 
-				throwException (ArrayStoreException);
+			  Hjava_lang_Throwable* asexc;
+			  const char* f = "can't store `%s' in array of type `%s'";
+			  const char *vtype = CLASS_CNAME(OBJECT_CLASS(val));
+			  const char *atype = CLASS_CNAME(dclass);
+			  char *b;
+			  b = checkPtr(KMALLOC(strlen(vtype)+strlen(atype)+strlen(f)));
+			  sprintf(b, f, vtype, atype);
+			  asexc = ArrayStoreException(b);
+			  KFREE(b);
+			  throwException(asexc);
 			}
 			*(Hjava_lang_Object**)out = val; 	 
 			in += sizeof(Hjava_lang_Object*); 	 

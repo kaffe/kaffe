@@ -584,7 +584,16 @@ void
 soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 {
 	if (obj != 0 && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
-		throwException(ArrayStoreException);
+		Hjava_lang_Throwable* asexc;
+		const char* f = "can't store `%s' in `%s'";
+		const char *otype = CLASS_CNAME(OBJECT_CLASS(obj));
+		const char *atype = CLASS_CNAME(OBJECT_CLASS(array));
+		char *b;
+		b = checkPtr(KMALLOC(strlen(otype)+strlen(atype)+strlen(f)));
+		sprintf(b, f, otype, atype);
+		asexc = ArrayStoreException(b);
+		KFREE(b);
+		throwException(asexc);
 	}
 }
 

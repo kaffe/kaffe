@@ -1,3 +1,12 @@
+2004-11-13  Mark Wielaard  <mark@klomp.org>
+
+        * include/errors.h
+        (ArrayStoreException): Define to take a message.
+        * kaffe/kaffevm/soft.c
+        (soft_checkarraystore): Add message to ArrayStoreException.
+        * libraries/clib/native/System.c
+        (java_lang_System_arraycopy): Likewise.
+
 2004-11-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/swing/plaf/basic/BasicTextUI.java,
