@@ -43,7 +43,6 @@ public class ConverterAlias {
 	alias.put("ISO-8859-7",		"8859_7");
 	alias.put("ISO-8859-8",		"8859_8");
 	alias.put("ISO-8859-9",		"8859_9");
-	alias.put("ISO-2022-JP",	"EUC_JP");
 	alias.put("EBCDIC",		"CP1046");
 	alias.put("UTF-8",		"UTF8");
 	alias.put("KOI8-R",		"KOI8_R");
