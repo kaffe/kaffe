@@ -1,3 +1,13 @@
+2004-09-01	jrandom <jrandom@i2p.net>
+
+	* kaffe/libraries/clib/zip/Inflater.c: 
+	(inflate0): Check for memory allocation error.
+	(init): Likewise.
+	
+	* kaffe/libraries/clib/zip/Deflater.c: 
+	(deflate): Likewise.
+	(init): Likewise.
+
 2004-09-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.h (ASSERT_ONBLOCK): 

@@ -70,6 +70,13 @@ DBG(	dprintf("Deflate: in %d left %d out %d status %d\n", ilen, dstream->avail_i
 		unhand(this)->finished = 1;
 		break;
 
+	case Z_MEM_ERROR:
+		{
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+		}
+
 	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 	}
@@ -138,6 +145,11 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
  	z_stream* dstream;
 
 	dstream = KMALLOC(sizeof(*dstream));
+	if (!dstream) {
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+	}
 	dstream->next_in = 0;
 	dstream->zalloc = kaffe_zalloc;
 	dstream->zfree = kaffe_zfree;
@@ -145,7 +157,18 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
 
 	r = deflateInit2(dstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, (val ? -WSIZEBITS : WSIZEBITS), 9, Z_DEFAULT_STRATEGY);
 
-	if (r != Z_OK) {
+	switch (r) {
+	case Z_OK:
+		break;
+
+	case Z_MEM_ERROR:
+		{
+		errorInfo info;
+		postOutOfMemory(&info);
+		throwError(&info);
+		}
+
+	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "");
 	}
 

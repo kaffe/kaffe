@@ -71,6 +71,13 @@ java_util_zip_Inflater_inflate0(struct Hjava_util_zip_Inflater* this, HArrayOfBy
 	case Z_NEED_DICT:
 		unhand(this)->needsDictionary = 1;
 		break;
+	
+	case Z_MEM_ERROR:
+		{
+		errorInfo info;
+                postOutOfMemory(&info);
+                throwError(&info);
+		}
 
 	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
@@ -149,7 +156,19 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 	dstream->opaque = 0;
 
 	r = inflateInit2(dstream, val ? -WSIZEBITS : WSIZEBITS);
-	if (r != Z_OK) {
+
+	switch (r) {
+        case Z_OK:
+                break;
+	
+	case Z_MEM_ERROR:
+		{
+		errorInfo info;
+                postOutOfMemory(&info);
+                throwError(&info);
+		}
+
+	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "");
 	}
 	GET_STREAM(this) = dstream;
