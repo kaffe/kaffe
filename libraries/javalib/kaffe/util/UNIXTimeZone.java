@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 /**
@@ -57,10 +58,10 @@ public class UNIXTimeZone extends TimeZone {
 	private static final int SECSPERDAY = 24 * SECSPERHOUR;
 
 	private Transition[] trans;	// transition times
+	private TimeInfo defaultInfo;	// default TimeInfo
 	private Leap[] leaps;		// leap second times
 	private boolean[] standard;	// transition times standard, not wall
 	private boolean[] gmt;		// transition times GMT, not local
-	private int rawOffset;
 
 	// Info about a transition time (i.e., change in the time offset)
 	private static class Transition {
@@ -114,7 +115,7 @@ public class UNIXTimeZone extends TimeZone {
 	}
 
 	public int getRawOffset() {
-		return rawOffset;
+		return defaultInfo.offset;
 	}
 
 	public boolean useDaylightTime() {
@@ -134,7 +135,7 @@ public class UNIXTimeZone extends TimeZone {
 
 		// Convert to GMT time
 		GregorianCalendar cal = new GregorianCalendar(
-		    TimeZone.getTimeZone("GMT"));
+		    new SimpleTimeZone(0, "_temp"));
 		cal.set(Calendar.ERA, era);
 		cal.set(Calendar.YEAR, year);
 		cal.set(Calendar.MONTH, month);
@@ -171,6 +172,8 @@ public class UNIXTimeZone extends TimeZone {
 	}
 
 	private TimeInfo getTimeInfo(Date date) {
+		if (trans.length == 0)
+			return defaultInfo;
 		long when = date.getTime();
 		int i;
 		for (i = 0; i < trans.length - 1
@@ -236,7 +239,7 @@ public class UNIXTimeZone extends TimeZone {
 			if (abidx[i] < 0 || abidx[i] > charcnt)
 				return false;
 		}
-		rawOffset = infos[0].offset;
+		defaultInfo = infos[0];
 
 		// Resolve time info indicies
 		for (int i = 0; i < timecnt; i++)
