@@ -654,7 +654,7 @@ popdef([AC_DEFINE_SAVED])
 
 dnl -------------------------------------------------------------------------
 
-AC_DEFUN(AC_CHECK_LIBRARY, [dnl
+AC_DEFUN([AC_CHECK_LIBRARY], [dnl
 KSAVE_LIBS="$LIBS"
 LIBS="$$3 $KSAVE_LIBS"
 AC_CHECK_LIB($1,$2)

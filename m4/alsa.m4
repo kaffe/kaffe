@@ -2,7 +2,7 @@ dnl Configure Paths for Alsa
 dnl Some modifications by Richard Boulton <richard-alsa@tartarus.org>
 dnl Christopher Lansdown <lansdoct@cs.alfred.edu>
 dnl Jaroslav Kysela <perex@suse.cz>
-dnl Last modification: $Id: alsa.m4,v 1.1 2004/01/11 22:07:16 jim Exp $
+dnl Last modification: $Id: alsa.m4,v 1.2 2004/01/15 04:25:20 dalibor Exp $
 dnl AM_PATH_ALSA([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for libasound, and define ALSA_CFLAGS and ALSA_LIBS as appropriate.
 dnl enables arguments --with-alsa-prefix=
@@ -12,7 +12,7 @@ dnl
 dnl For backwards compatibility, if ACTION_IF_NOT_FOUND is not specified,
 dnl and the alsa libraries are not found, a fatal AC_MSG_ERROR() will result.
 dnl
-AC_DEFUN(AM_PATH_ALSA,
+AC_DEFUN([AM_PATH_ALSA],
 [dnl Save the original CFLAGS, LDFLAGS, and LIBS
 alsa_save_CFLAGS="$CFLAGS"
 alsa_save_LDFLAGS="$LDFLAGS"
