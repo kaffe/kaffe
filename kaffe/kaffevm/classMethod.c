@@ -1029,7 +1029,7 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
  * Read in InnerClasses declares for a class
  */
 bool
-addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
+addInnerClasses(Hjava_lang_Class* c, uint32 len UNUSED, classFile* fp,
 		errorInfo *einfo)
 {
 	int i;
@@ -1251,7 +1251,7 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 }
 
 void
-setFieldValue(Hjava_lang_Class* unused, Field* ft, u2 idx)
+setFieldValue(Hjava_lang_Class* this UNUSED, Field* ft, u2 idx)
 {
 	/* Set value index */
 	FIELD_CONSTIDX(ft) = idx;
@@ -2539,7 +2539,7 @@ resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
  */
 static
 bool
-resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
+resolveConstants(Hjava_lang_Class* class UNUSED, errorInfo *einfo UNUSED)
 {
 	bool success = true;
 #ifdef EAGER_LOADING

@@ -562,7 +562,7 @@ SCHK(	sanityCheck();						)
  * If the slot is in a register, it is spilled.
  */
 int
-slotOffset(SlotData* slot, int type, int use)
+slotOffset(SlotData* slot, int type, int use UNUSED)
 {
 SCHK(	sanityCheck();						)
 

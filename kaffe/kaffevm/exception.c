@@ -212,7 +212,7 @@ checkNoClassDefFoundError(errorInfo* einfo)
  * dump error info to stderr
  */
 void
-dumpErrorInfo(errorInfo *einfo)
+dumpErrorInfo(errorInfo *einfo UNUSED)
 {
 	/* XXX */
 }

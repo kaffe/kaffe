@@ -453,7 +453,7 @@ done3:;
  * Generate the code.
  */
 jboolean
-finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo* einfo)
+finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 {
 	uint32 constlen;
 	nativecode* methblock;
@@ -522,7 +522,7 @@ getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo *code)
  * Returns true if successful
  */
 void
-installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
+installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 {
 	uint32 i;
 	jexceptionEntry* e;
@@ -750,7 +750,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
  * Init instruction generation.
  */
 jboolean
-initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo* einfo)
+initInsnSequence(Method* meth, int codesize UNUSED, int localsz, int stacksz, errorInfo* einfo)
 {
 	/* Clear various counters */
 	tmpslot = 0;
@@ -1485,7 +1485,7 @@ static profiler_click_t click_divisor;
 static FILE *prof_output;
 
 static int
-profilerClassStat(Hjava_lang_Class *clazz, void *param)
+profilerClassStat(Hjava_lang_Class *clazz, void *param UNUSED)
 {
 	Method *meth;
 	int mindex;

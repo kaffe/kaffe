@@ -625,7 +625,7 @@ addMethod(Hjava_lang_Class* this,
 }
 
 void
-finishMethods (Hjava_lang_Class *this)
+finishMethods (Hjava_lang_Class *this UNUSED)
 {
 	const char *str;
 	const char *tsig;

@@ -236,7 +236,7 @@ DBG(CLASSGC,
  */
 void
 /* ARGSUSED */
-destroyClassLoader(Collector *c, void* _loader)
+destroyClassLoader(Collector *c UNUSED, void* _loader)
 {
 	Hjava_lang_ClassLoader* loader = _loader;
         int rmoved;

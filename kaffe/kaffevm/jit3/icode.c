@@ -299,7 +299,7 @@ exception_prologue(void)
 }
 
 void
-epilogue(Method* meth)
+epilogue(Method* meth UNUSED)
 {
 	label* l;
 	
@@ -506,7 +506,7 @@ _end_basic_block(void)
 }
 
 void
-_syncRegisters(uintp stk, uintp temp)
+_syncRegisters(uintp stk UNUSED, uintp temp UNUSED)
 {
 	_slot_const_const(0, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
 }
@@ -3529,7 +3529,7 @@ pusharg_long(SlotInfo* src, int idx)
 }
 
 void
-popargs_internal(int does_return)
+popargs_internal(int does_return UNUSED)
 {
  	if (argcount != 0) {
 #if defined(HAVE_popargs)
@@ -3886,7 +3886,7 @@ returnarg_double(SlotInfo* src)
 /*									   */
 
 label*
-reference_label(int32 i, int32 n)
+reference_label(int32 i UNUSED, int32 n)
 {
 	label* l;
 
@@ -3952,7 +3952,7 @@ table_code_label(SlotInfo* dst)
 
 #if defined(HAVE_set_label)
 void
-set_label(int i, int n)
+set_label(int i UNUSED, int n)
 {
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
@@ -4676,23 +4676,27 @@ explicit_check_null(int x, SlotInfo* obj, int y)
 	}
 }
 
+#if defined(CREATE_NULLPOINTER_CHECKS)
 void
 check_null(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_NULLPOINTER_CHECKS)
 	explicit_check_null(x, obj, y);
+}
 #else
+void
+check_null(int x UNUSED, SlotInfo* obj UNUSED, int y UNUSED)
+{
 	if (canCatch(ANY)) {
 		begin_func_sync();
 		end_func_sync();
 	}
-#endif
 }
+#endif
 
+#if defined(CREATE_DIVZERO_CHECKS)
 void
 check_div(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_DIVZERO_CHECKS)
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_int_const(obj, 0, newFakeCall(soft_divzero, pc), eq | blink);
@@ -4706,18 +4710,22 @@ check_div(int x, SlotInfo* obj, int y)
 		start_sub_block();
 		set_label(x, y);
 	}
+}
 #else
+void
+check_div(int x UNUSED, SlotInfo* obj UNUSED, int y UNUSED)
+{
 	if (canCatch(ANY)) {
 		begin_func_sync();
 		end_func_sync();
 	}
-#endif
 }
+#endif
 
+#if defined(CREATE_DIVZERO_CHECKS)
 void
 check_div_long(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_DIVZERO_CHECKS)
 #if 0
 	THE CODE BELOW DOES NOT WORK - !!! FIX ME !!!
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
@@ -4737,13 +4745,17 @@ check_div_long(int x, SlotInfo* obj, int y)
 		set_label(x, y+1);
 		set_label(x, y+0);
 	}
+}
 #else
+void
+check_div_long(int x UNUSED, SlotInfo* obj UNUSED, int y UNUSED)
+{
 	if (canCatch(ANY)) {
 		begin_sync();
 		end_sync();
 	}
-#endif
 }
+#endif
 
 #if defined(HAVE_ccall)
 void

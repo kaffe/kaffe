@@ -279,7 +279,7 @@ walkMethods(Collector* collector, Method* m, int nm)
  * Walk a class object.
  */
 static void
-walkClass(Collector* collector, void* base, uint32 size)
+walkClass(Collector* collector, void* base, uint32 size UNUSED)
 {
         Hjava_lang_Class* class;
         Field* fld;
@@ -399,7 +399,7 @@ DBG(GCPRECISE,
  */
 static
 void
-walkRefArray(Collector* collector, void* base, uint32 size)
+walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
 {
         Hjava_lang_Object* arr;
         int i;
@@ -514,7 +514,7 @@ walkLoader(Collector* collector, void* base, uint32 size)
 static
 void
 /* ARGSUSED */
-finalizeObject(Collector* collector, void* ob)
+finalizeObject(Collector* collector UNUSED, void* ob)
 {
 	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_Class* objclass;
