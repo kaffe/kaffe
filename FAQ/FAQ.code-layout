@@ -1,0 +1,78 @@
+Kaffe source code modules
+=========================
+Author: Dalibor Topic <robilad@yahoo.com>
+
+kaffe/FAQ
+        developer and user docs
+kaffe/test
+        tests
+kaffe/test/awt
+        AWT test applications
+kaffe/test/regression
+        regression tests
+kaffe/test/internal
+        internal (jitter) tests
+kaffe/compat-include
+        gcj compatibility headers
+kaffe/replace
+        replacement functions for broken C libs
+kaffe/kaffe
+        main VM directory
+kaffe/kaffe/man
+        man pages
+kaffe/kaffe/kaffevm
+        the VM
+kaffe/kaffe/kaffevm/gcj
+        gcj bindings
+kaffe/kaffe/kaffevm/jit
+        first generation jitter engine
+kaffe/kaffe/kaffevm/mem
+        garbage collection implementation
+kaffe/kaffe/kaffevm/jit3
+        third generation jitter engine
+kaffe/kaffe/kaffevm/intrp
+        interpreter engine
+kaffe/kaffe/kaffevm/systems
+        threading subsystem implementations
+kaffe/kaffe/kaffe
+        main program
+kaffe/kaffe/xprof
+        xprofiling support
+kaffe/kaffe/scripts
+        java, kaffe, javac, and other wrapper shell scripts
+kaffe/kaffe/scripts/bat
+        ?
+kaffe/kaffe/scripts/compat
+        ?
+kaffe/kaffe/kaffeh
+        javah replacement
+kaffe/libraries
+        kaffe's class library
+kaffe/libraries/clib
+        native portion of the class library
+kaffe/libraries/clib/awt
+        different AWT implementations
+kaffe/libraries/extensions
+        extension libraries
+kaffe/libraries/javalib
+        java portion of the class library
+kaffe/libraries/javalib/pure-java
+        pure java replacements for portion of the native implementation
+kaffe/libltdl
+        libtool support machinery
+kaffe/config
+        platform dependant bits and pieces
+kaffe/developers
+        tools for developer support
+kaffe/include
+        headers used or provided by kaffe/kaffeh
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,9 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	* FAQ/FAQ.code-layout: new file.
+	
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* configure.in: check for inet_ntop and inet_pton.
 
 	* config/config.h.in, configure,
