@@ -8,9 +8,9 @@ are hardcoded in HotJava's code.
 
 To make matters worse, it not only relies on classes that have 
 native methods (which would allow the kaffe user to simply use Sun's 
-classes.zip by appending it to the CLASSPATh), but it relies on classes 
-that do have undocumented native methods, for instance for gif image 
-processing or inquiring about the state of the VM. 
+classes.zip by appending it to the CLASSPATH), but it relies on classes 
+that have undocumented native methods, for instance for gif image 
+processing or inqueries about the state of the VM. 
 HotJava even bypasses equivalent, documented interfaces provided by
 classes in the java.awt hierarchy.
 
