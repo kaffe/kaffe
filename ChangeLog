@@ -1,3 +1,9 @@
+2003-10-06  Helmer Kraemer <hkraemer@kaffe.org>
+
+	* config/superh/linux/md.h:
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+	
 2003-10-06  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/native/System.c:

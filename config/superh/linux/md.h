@@ -39,4 +39,11 @@
  */
 #define	HAVE_NO_FLOATING_POINT	1
 
+#undef SA_SIGINFO
+
+#define SIGNAL_ARGS(sig, sc) int sig, int d1, int d2, int d3, struct  sigcontext sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) &sc
+#define SIGNAL_PC(scp) scp->sc_pc
+
 #endif
