@@ -82,18 +82,12 @@ public int size()
 
 protected void finalize() throws IOException
 {
-	try {
-		close();
-	}
-	finally {
-		try {
-			super.finalize();
-		}
-		catch (Throwable t) {
-			/* just print the stack trace */
-			t.printStackTrace();
-		}
-	}
+	/* We don't need to call super.finalize(),
+	 * since super class is java.lang.Object, and
+	 * java.lang.Object.finalize() just returns
+	 * to caller.
+	 */
+	close();
 }
 
 private static native Ptr openZipFile0(String fname);

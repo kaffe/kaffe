@@ -92,12 +92,13 @@ public class Inflater {
 
   protected void finalize() throws Throwable
   {
-    try {
-      end();
-    }
-    finally {
-      super.finalize();
-    }
+    /* We don't need to call super.finalize(),
+     * since super class is java.lang.Object, and
+     * java.lang.Object.finalize() just returns
+     * to caller.
+     */
+
+    end();
   }
 
   public native synchronized void setDictionary(byte b[], int off, int len);

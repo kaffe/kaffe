@@ -1,3 +1,16 @@
+Thu Jul  4 03:25:32 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/zip/Deflater.java,
+	libraries/javalib/java/util/zip/Inflater.java,
+	libraries/javalib/java/util/zip/ZipFile.java :
+	simplified finalize method as it only called Object.finalize,
+	which just returns to caller. That fixed some verification errors
+	with the JustIce verifier, which has some stricter checks than
+	Sun's implementations.
+	* libraries/javalib/kaffe/util/zip/SwitchInflater.java:
+	removed finalize method, as it is a kaffe.* class, and it only
+	called the super.finalize() method.
+
 Thu Jul  4 03:19:53 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/EventQueue.java: Use isDispatchThread
