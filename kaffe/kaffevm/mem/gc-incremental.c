@@ -85,6 +85,7 @@ static struct {
 } objectStats;
 
 static void objectStatsChange(gc_unit*, int);
+static void objectStatsPrint(void);
 
 #define	OBJECTSTATSADD(M)	objectStatsChange(M, 1)
 #define	OBJECTSTATSREMOVE(M)	objectStatsChange(M, -1)
@@ -217,6 +218,13 @@ typedef struct _refTable {
 static refTable			refObjects;
 #define	REFOBJHASH(V)		((((uintp)(V))/(2*sizeof(uintp)))%REFOBJHASHSZ)
 
+/* For statistics gathering, record how many objects and how 
+ * much memory was marked.
+ */
+#define RECORD_MARKED(nr_of_objects, size)	\
+        gcStats.markedobj += nr_of_objects;	\
+	gcStats.markedmem += size;
+
 struct _gcStats gcStats;
 extern size_t gc_heap_total;
 extern Hjava_lang_Class* ThreadClass;
@@ -288,11 +296,9 @@ DBG(GCWALK,
 	dprintf("walkConservative: %x-%x\n", base, base+size);
     )
 
-	gcStats.markedobj += 1;
+	RECORD_MARKED(1, size)
 
 	if (size > 0) {
-		gcStats.markedmem += size;
-
 		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
 			void *p = *(void **)mem;
 			if (p)
@@ -337,8 +343,7 @@ DBG(GCWALK,
 	assert(CLASS_FSIZE(clazz) > 0);
 	assert(size > 0);
 
-	gcStats.markedobj += 1;
-	gcStats.markedmem += size;
+	RECORD_MARKED(1, size)
 
 	mem = (int8 *)base;
 
@@ -388,8 +393,7 @@ static
 void
 walkNull(void* base, uint32 size)
 {
-	gcStats.markedobj += 1;
-        gcStats.markedmem += size;
+	RECORD_MARKED(1, size)
 }
 
 /*
@@ -410,6 +414,8 @@ walkMemory(void* mem)
 	UAPPENDLIST(gclists[black], unit);
 	GC_SET_COLOUR(info, idx, GC_COLOUR_BLACK);
 
+	assert(GC_GET_FUNCS(info, idx) < 
+		sizeof(gcFunctions)/sizeof(gcFunctions[0]));
 	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
 }
 
@@ -428,6 +434,7 @@ walkMethods(void* base, uint32 size)
 	Method* m = (Method*)base;
 	int nm = size/sizeof(Method);
 
+	RECORD_MARKED(1, size)		
 	while (nm-- > 0) {
 		MARK_IFNONZERO(m, name)
 		MARK_IFNONZERO(m, signature)
@@ -453,6 +460,8 @@ walkFields(void* base, uint32 size)
 {
 	Field* fld = (Field*)base;
 	int nf = size/sizeof(Field);
+
+	RECORD_MARKED(1, size)
 	while (nf-- > 0) {
 		MARK_IFNONZERO(fld, name)
 		MARK_IFNONZERO(fld, type)
@@ -472,8 +481,7 @@ walkClass(void* base, uint32 size)
 	Field* fld;
 	int n;
 
-	gcStats.markedobj += 1;
-	gcStats.markedmem += size;
+	RECORD_MARKED(1, size)
 
 	class = (Hjava_lang_Class*)base;
 
@@ -514,8 +522,7 @@ walkRefArray(void* base, uint32 size)
 	int i;
 	Hjava_lang_Object** ptr;
 
-	gcStats.markedobj += 1;
-	gcStats.markedmem += size;
+	RECORD_MARKED(1, size)
 
 	arr = (Hjava_lang_Object*)base;
 	if (arr->dtable != 0) {
@@ -577,7 +584,7 @@ gcMan(void* arg)
 		finishGC();
 
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
-			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, (gcStats.totalmem > gcStats.markedmem ? (gcStats.totalmem - gcStats.markedmem)/1024 : 0));
+			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, gcStats.freedmem/1024);
 		}
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
@@ -721,10 +728,6 @@ finishGC(void)
 		OBJECTSTATSREMOVE(unit);
 		gc_heap_free(unit);
 	}
-
-
-DBG(GCSTAT,	dprintf("Freed %d objects of %dK\n", gcStats.freedobj,
-		gcStats.freedmem/1024);					)
 
 	/* If there's stuff to be finalised then we'd better do it */
 	if (gclists[finalise].cnext != &gclists[finalise]) {
@@ -966,6 +969,7 @@ gcFree(void* mem)
 		}
 		else {
 			/* We just ignore this - it'll get GCed */
+			assert(!!!"Attempt to explicitly free nonfixed object");
 		}
 	}
 }
@@ -1094,7 +1098,7 @@ objectStatsChange(gc_unit* unit, int diff)
 
 }
 
-void
+static void
 objectStatsPrint(void)
 {
 	int cnt = 0;

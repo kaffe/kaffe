@@ -371,7 +371,6 @@ DBG(GCSTAT,
 			/* Free block into the system */
 			gc_primitive_free(blk);
 		}
-DBG(GCSTAT,	objectStatsPrint();	/* XXX */		)
 		break;
 
 	default:
