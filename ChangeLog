@@ -1,3 +1,9 @@
+Thu Feb 11 14:25:46 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/zip/ZipEntry.java,
+	libraries/javalib/java/util/zip/ZipInputStream.java: added missing
+	methods, fixed initial time value.
+
 Thu Feb 11 18:26:44 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/Makefile.am (DERIVED_HDRS): rework rule so as to

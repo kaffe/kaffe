@@ -43,13 +43,31 @@ public class ZipEntry implements ZipConstants {
       throw new IllegalArgumentException("name length > 0xFFFF");
     }
     name = nm;
-    time = 0;
+    time = -1;
     crc = 0;
     size = -1;
     method = -1;
     extra = null;
     comment = null;
     csize = -1;
+  }
+
+  /**
+   * Create a new ZipEntry with fields taken from the specified zip entry.
+   */
+  public ZipEntry(ZipEntry entry)
+  {
+    name = entry.name;
+    time = entry.time;
+    crc  = entry.crc;
+    size = entry.size;
+    method = entry.method;
+    extra = entry.extra;
+    comment = entry.comment;
+    flag = entry.flag;
+    version = entry.version;
+    csize = entry.csize;
+    offset = entry.offset;
   }
 
   public String getName()
@@ -67,12 +85,12 @@ public class ZipEntry implements ZipConstants {
     return (time);
   }
 
-  public void setSize(long sz)
+  public void setSize(long size)
   {
-    if (size > 0xFFFFFFFF) {
-      throw new IllegalArgumentException("size > 0xFFFFFFFF");
+    if (size < 0 || size > 0xFFFFFFFFL) {
+      throw new IllegalArgumentException("size < 0 or size > 0xFFFFFFFF");
     }
-    size = sz;
+    this.size = size;
   }
 
   public long getSize()
@@ -132,6 +150,15 @@ public class ZipEntry implements ZipConstants {
     return (comment);
   }
 
+  public void setCompressedSize(long csize)
+  {
+    if (csize < 0 || csize > 0xFFFFFFFFL) {
+	throw new IllegalArgumentException("csize < 0 or csize > 0xFFFFFFFF");
+    }
+
+    this.csize = csize;
+  }
+  
   public long getCompressedSize()
   {
     return (csize);
