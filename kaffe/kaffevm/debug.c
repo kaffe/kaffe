@@ -176,11 +176,6 @@ dbgSetMaskStr(char *mask_str)
 		return 1;
 	}
 
-#if defined(JTHREAD_RESTORE_FD)
-	jthreadRestoreFD(0);
-	jthreadRestoreFD(1);
-	jthreadRestoreFD(2);
-#endif
 	/* Special target 'list' lists all the defined options */
 	if (!strcasecmp(opt, "list")) {
 		dprintf("Available debug opts: \n");
@@ -243,10 +238,12 @@ dbgSetMaskStr(char *mask_str)
 	}
 	return 1;
 }
+#endif
 
 static char *debugBuffer;
 static int bufferBegin = 0;
-static int bufferSz = 0;
+static int bufferSz = 1024;
+static int bufferOutput = 0;
 
 /*
  * create a buffer in which debugging output is written
@@ -256,6 +253,7 @@ debugToBuffer(int size)
 {
 	bufferSz = size;
 	debugBuffer = malloc(size);
+	bufferOutput = 1;
 	assert(debugBuffer);
 }
 
@@ -320,46 +318,46 @@ kaffe_dprintf(const char *fmt, ...)
 {
 
 	int n;
+	int max;
 	va_list args;
 
 	va_start(args, fmt);
+	if (!debugBuffer)
+		debugBuffer = malloc(bufferSz);
 
-	if (bufferSz != 0)
-	{
 #ifdef HAVE_VSNPRINTF
-		int max = bufferSz - bufferBegin - 1;
-		n = vsnprintf(debugBuffer + bufferBegin, max, fmt, args);
+	max = bufferSz - bufferBegin - 1;
+	n = vsnprintf(debugBuffer + bufferBegin, max, fmt, args);
 
-		/* The return value is bytes *needed* not bytes *used* */
-		if (n > max)
-			n = max;
+	/* The return value is bytes *needed* not bytes *used* */
+	if (n > max)
+		n = max;
 #else
-		n = vsprintf(debugBuffer + bufferBegin, fmt, args);
+	n = vsprintf(debugBuffer + bufferBegin, fmt, args);
 #endif
-		bufferBegin += n;
-		assert(bufferBegin < bufferSz);/* XXX */
+	bufferBegin += n;
+	assert(bufferBegin < bufferSz);/* XXX */
 
+	if (bufferOutput) {
 		if (bufferBegin >= (bufferSz - 60))
 			bufferBegin = 0;
+	} else {
+		/* Keep trying to write.  Should we pause(), or
+		 * sigsuspend(), or do something based on config
+		 * defintions?
+		 */
+		max = 0;
+		while (max < n) {
+			int w =  write(2,
+				       debugBuffer + max,
+				       n - max);
+			if (w >= 0)
+				/* ignore errors */
+				max += w;
+		}
+		bufferBegin = 0;
 	}
-	else
-	{
-#if 0
-		intsDisable();
-		jthreadRestoreFD(2);
-#endif
-		/* Boring. Print to stderr */
-		n = vfprintf(stderr, fmt, args);
-		fflush(stderr);
-#if 0
-		jthreadedFileDescriptor(2);
-		intsRestore();
-#endif
-	}
-
 	va_end(args);
 
 	return n;
 }
-#endif
-
