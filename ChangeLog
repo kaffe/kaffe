@@ -1,3 +1,9 @@
+Tue Mar 14 12:21:47 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/kaffe/Makefile.am, kaffe/kaffe/Makefile.in,
+	kaffe/kaffe/main.c: add ``-fullversion'' command line option
+	* kaffe/kaffe/version.c, kaffe/kaffe/version.h: new files
+
 Tue Mar 14 12:08:37 PST 2000  Mo DeJong <mdejong@cygnus.com>
 
 	* test/regression/ZipVerify.java: update test
