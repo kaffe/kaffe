@@ -116,6 +116,11 @@ final class ShortViewBufferImpl extends ShortBuffer
         position (count);
         limit (capacity ());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
   

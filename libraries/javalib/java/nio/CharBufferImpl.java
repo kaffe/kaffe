@@ -98,6 +98,7 @@ final class CharBufferImpl extends CharBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

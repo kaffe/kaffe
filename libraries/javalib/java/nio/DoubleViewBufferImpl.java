@@ -116,6 +116,11 @@ final class DoubleViewBufferImpl extends DoubleBuffer
         position (count);
         limit (capacity ());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
   

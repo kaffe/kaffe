@@ -91,6 +91,7 @@ final class IntBufferImpl extends IntBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

@@ -2,6 +2,32 @@
 
 	Resynced with GNU Classpath.
 
+	2004-12-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* java/nio/ByteBufferImpl.java (compact):
+	Set position and limit even if no bytes were moved.
+
+	2004-12-30  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/CharViewBufferImpl.java (compact): Likewise.
+	* java/nio/DirectByteBufferImpl.java (compact): Likewise.
+	* java/nio/DoubleViewBufferImpl.java (compact): Likewise.
+	* java/nio/FloatViewBufferImpl.java (compact): Likewise.
+	* java/nio/IntViewBufferImpl.java (compact): Likewise.
+	* java/nio/LongViewBufferImpl.java (compact): Likewise.
+	* java/nio/MappedByteBufferImpl.java (compact): Likewise.
+	* java/nio/ShortViewBufferImpl.java (compact): Likewise.
+	* java/nio/FloatBufferImpl.java (compact): Set position.
+	* java/nio/CharBufferImpl.java (compact): Likewise.
+	* java/nio/DoubleBufferImpl.java (compact): Likewise.
+	* java/nio/IntBufferImpl.java (compact): Likewise.
+	* java/nio/LongBufferImpl.java (compact): Likewise.
+	* java/nio/ShortBufferImpl.java (compact): Likewise.
+	
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-12-30  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/JFormattedTextField.java

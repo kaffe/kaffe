@@ -91,6 +91,7 @@ final class ShortBufferImpl extends ShortBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

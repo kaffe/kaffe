@@ -118,6 +118,11 @@ class CharViewBufferImpl extends CharBuffer
         position (count);
         limit (capacity ());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
   

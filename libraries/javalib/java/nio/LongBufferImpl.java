@@ -91,6 +91,7 @@ final class LongBufferImpl extends LongBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

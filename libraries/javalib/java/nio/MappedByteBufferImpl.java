@@ -129,6 +129,11 @@ final class MappedByteBufferImpl extends MappedByteBuffer
 	position(count);
 	limit(capacity());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
 

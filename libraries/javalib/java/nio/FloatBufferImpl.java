@@ -91,6 +91,7 @@ final class FloatBufferImpl extends FloatBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

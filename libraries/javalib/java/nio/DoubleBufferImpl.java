@@ -91,6 +91,7 @@ final class DoubleBufferImpl extends DoubleBuffer
       }
 
     position (copied);
+    limit(capacity());
     return this;
   }
   

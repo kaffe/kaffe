@@ -122,6 +122,11 @@ final class ByteBufferImpl extends ByteBuffer
 	position(count);
 	limit(capacity());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
   

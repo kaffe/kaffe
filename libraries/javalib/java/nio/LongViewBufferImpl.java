@@ -116,6 +116,11 @@ final class LongViewBufferImpl extends LongBuffer
         position (count);
         limit (capacity ());
       }
+    else
+      {
+	position(limit());
+	limit(capacity());
+      }
     return this;
   }
   
