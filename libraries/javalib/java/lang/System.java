@@ -47,13 +47,17 @@ static {
 	}
 
 	// Initialise the I/O
-	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
-	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
-	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
+	if (props.getProperty("kaffe.embedded", "false").equals("false")) {
 
-	//in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
-	//out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
-	//err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
+		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
+		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
+		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
+	}
+	else {
+		in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
+		out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
+		err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
+	}
 
 	// Initiate the default timezone implementation & default calendar implementation.  
 	try
