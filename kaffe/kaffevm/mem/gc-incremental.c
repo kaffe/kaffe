@@ -1055,7 +1055,11 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 					 * thrown.  If we fail to allocate memory for it, all
 					 * is lost.
 					 */
+
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 					static int ranout;
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
+
 					assert (ranout++ == 0 || !!!"Ran out of memory!");
 				}
 				/* Guess we've really run out */
