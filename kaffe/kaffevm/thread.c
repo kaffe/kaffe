@@ -64,7 +64,6 @@ initThreads(void)
 	unhand(standardGroup)->maxPriority = java_lang_Thread_MAX_PRIORITY;
 	unhand(standardGroup)->destroyed = 0;
 	unhand(standardGroup)->daemon = 0;
-	unhand(standardGroup)->vmAllowSuspension = 0;
 	unhand(standardGroup)->nthreads = 0;
 	unhand(standardGroup)->threads = (HArrayOfObject*)newArray(ThreadClass, 0);
 	unhand(standardGroup)->ngroups = 0;

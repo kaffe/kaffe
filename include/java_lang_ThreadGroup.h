@@ -16,7 +16,6 @@ typedef struct Classjava_lang_ThreadGroup {
   jint maxPriority;
   jbool destroyed;
   jbool daemon;
-  jbool vmAllowSuspension;
   jint nthreads;
   HArrayOfObject* threads;
   jint ngroups;
