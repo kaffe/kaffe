@@ -36,9 +36,10 @@ public abstract class AbstractSet extends AbstractCollection implements Set {
 
 	public int hashCode() {
 		int sum = 0;
-		for (Iterator i = iterator();
-		    i.hasNext();
-		    sum += i.next().hashCode());
+		for (Iterator i = iterator(); i.hasNext(); ) {
+			Object next = i.next();
+			sum += next == null ? 0 : next.hashCode();
+		}
 		return sum;
 	}
 
