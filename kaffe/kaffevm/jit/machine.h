@@ -121,7 +121,7 @@ typedef struct _nativeCodeInfo {
 } nativeCodeInfo;
 
 struct codeinfo;
-bool initInsnSequence(int codesize, int localsz, int stacksz,
+bool initInsnSequence(Method *meth, int codesize, int localsz, int stacksz,
 		      struct _errorInfo *einfo);
 bool finishInsnSequence(struct codeinfo*, nativeCodeInfo*, errorInfo*);
 void installMethodCode(struct codeinfo*, Method*, nativeCodeInfo*);

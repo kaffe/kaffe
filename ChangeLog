@@ -1,3 +1,8 @@
+1999-09-09  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jit/machine.h (initInsnSequence): Added `meth'
+	back, as did Tim to machine.c.
+
 Tue Sep  7 17:45:57 EDT 1999  Alan L. Batongbacal  <alanlb@vt.edu>
 
 	* Added JIT3 support and assorted speedups
