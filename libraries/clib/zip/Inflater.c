@@ -70,6 +70,10 @@ java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByt
 		unhand(this)->finished = 1;
 		break;
 
+	case Z_NEED_DICT:
+		unhand(this)->needsDictionary = 1;
+		break;
+
 	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 	}
@@ -129,7 +133,7 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
 	dstream->zfree = 0; 
 	dstream->opaque = 0;
 
-	r = inflateInit2(dstream, -WSIZEBITS);
+	r = inflateInit2(dstream, val ? -WSIZEBITS : WSIZEBITS);
 	if (r != Z_OK) {
 		SignalError("java.lang.Error", dstream ? dstream->msg : "");
 	}
