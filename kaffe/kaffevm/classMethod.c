@@ -743,7 +743,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 			Hjava_lang_String* str;
 			JNIEnv *env = &Kaffe_JNIEnv;
 			jmethodID meth;
-			jthrowable excobj;
+			jthrowable excobj, excpending;
 
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: loading %s\n", name->data); 
@@ -751,6 +751,13 @@ DBG(VMCLASSLOADER,
 			str = makeReplaceJavaStringFromUtf8(name->data, 
 							    name->length, 
 							    '/', '.');
+			/* If an exception is already pending, for instance
+			 * because we're resolving one that has occurred,
+			 * save it and clear it for the upcall.
+			 */
+			excpending = (*env)->ExceptionOccurred(env);
+			(*env)->ExceptionClear(env);
+
 			/*
 			 * We use JNI here so that all exceptions are caught
 			 * and we'll always return.
@@ -766,7 +773,9 @@ DBG(VMCLASSLOADER,
 							str, true);
 
 			/*
-			 * check whether an exception occurred
+			 * Check whether an exception occurred.
+			 * If one was pending, the new exception will
+			 * override this one.
 			 */
 			excobj = (*env)->ExceptionOccurred(env);
 			(*env)->ExceptionClear(env);
@@ -793,6 +802,10 @@ DBG(VMCLASSLOADER,
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: done %p\n", clazz);			
     )
+			/* rethrow pending exception */
+			if (excpending != NULL) {
+				(*env)->Throw(env, excpending);
+			}
 			/* NB: it is possible for a thread to both return
 			 * null from loadClass, yet actually have succeeded
 			 * in adding the class.  For this reason, we MUST not

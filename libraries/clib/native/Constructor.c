@@ -19,6 +19,7 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "Constructor.h"
 #include "Method.h"
 #include <native.h>
@@ -58,14 +59,21 @@ Java_java_lang_reflect_Constructor_newInstance(JNIEnv* env, jobject _this, jarra
 	Hjava_lang_reflect_Method meth[1];
 
 	Hjava_lang_reflect_Constructor* this = (Hjava_lang_reflect_Constructor*)_this;
+	Hjava_lang_Class* clazz = unhand(this)->clazz;
 
-	unhand(meth)->clazz = unhand(this)->clazz;
+	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = unhand(this)->slot;
 	unhand(meth)->name = 0; /* It's a constructor!! */
-	unhand(meth)->returnType = unhand(this)->clazz;
+	unhand(meth)->returnType = clazz;
 	unhand(meth)->parameterTypes = unhand(this)->parameterTypes;
 	unhand(meth)->exceptionTypes = unhand(this)->exceptionTypes;
 
+	if (clazz->state < CSTATE_USABLE) {
+		errorInfo info;
+		if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
+			throwError(&info);
+		}
+	}
 	return Java_java_lang_reflect_Method_invoke(env, (jobject)meth, 
 			(jobject)NULL, argobj);
 }
