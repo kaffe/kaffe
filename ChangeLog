@@ -1,3 +1,7 @@
+1999-06-04  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/system.h: NetBSD's gcc 2.7.2.2 does not define `unix'.
+
 Tue Jun  1 18:54:36 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: fix bugs in corner
