@@ -66,7 +66,7 @@ private static String escape(String str, boolean isKey) {
 			break;
 		default:
 			if (ch > 0x7e) {
-				sb.append("\\\\u");
+				sb.append("\\u");
 				sb.append(Character.forDigit((ch >> 12) & 0xf, 16));
 				sb.append(Character.forDigit((ch >> 8) & 0xf, 16));
 				sb.append(Character.forDigit((ch >> 4) & 0xf, 16));
@@ -270,9 +270,8 @@ private static int getEscapedChar(PushbackInputStream in) throws IOException {
 			return '\r';
 		case 't':
 			return '\t';
-		case '\\':
-			switch ((ch = in.read())) {
-			case 'u':
+		case 'u':
+			{
 				int[] dig = new int[4];
 				int n;
 			    getUnicode:
@@ -290,10 +289,8 @@ private static int getEscapedChar(PushbackInputStream in) throws IOException {
 				}
 				// not unreachable, break getUnicode go here
 				while (n > 0)
-				    in.unread(dig[--n]);	// fall through
-			default:
-				in.unread(ch);
-				return '\\';
+				    in.unread(dig[--n]);
+				return 'u';
 			}
 
 		// not fall through, previous switch always return
