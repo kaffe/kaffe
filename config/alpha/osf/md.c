@@ -113,7 +113,7 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 }
 
 /* Construct JIT Exception information and register it.  */
-void __alpha_osf_register_jit (void *methblock, void *codebase, int codelen)
+void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen)
 {
 	extern int maxLocal, maxStack, maxTemp, maxArgs, maxPush;
 	struct {
@@ -123,7 +123,7 @@ void __alpha_osf_register_jit (void *methblock, void *codebase, int codelen)
 	int framesize;			/* frame size in 64 bit words */
 	int rsa_offset;			/* rsa offset from $sp in 64 bit words */
 
-	assert (sizeof (*pdsc) == REGISTER_JIT_METHOD_LENGTH);
+	assert (sizeof (*pdsc) == MD_JIT_EXCEPTION_INFO_LENGTH);
 
 	/* same as LABEL_Lframe() and LABEL_Lrsa() */
 	framesize = maxLocal + maxStack +
@@ -172,7 +172,7 @@ void __alpha_osf_register_jit (void *methblock, void *codebase, int codelen)
 	exc_add_gp_range ((exc_address) codebase, codelen, (exc_address) codebase);
 }
 
-void __alpha_osf_unregister_jit (void *methblock, void *codebase, int codelen)
+void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, int codelen)
 {
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_unregister_jit() 0x%p pc [0x%p - 0x%p[\n",

@@ -478,8 +478,15 @@ DBG(STATICINIT,
 		/* Since we'll never run this again we might as well
 		 * lose it now.
 		 */
-#if defined(TRANSLATOR) && defined(JIT3)
+#if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
+#if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
+		MD_UNREGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
+			meth->ncode,
+			meth->c.ncode.ncode_end - meth->ncode);
+#endif
+#if defined(JIT3)
 		makeMethodInactive(meth);
+#endif
 #endif
 		METHOD_NATIVECODE(meth) = 0;
 		KFREE(meth->c.ncode.ncode_start);

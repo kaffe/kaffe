@@ -431,10 +431,10 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 #else
 	int align = 0;
 #endif
-#if defined(REGISTER_JIT_METHOD_LENGTH)
-	int jitlen = REGISTER_JIT_METHOD_LENGTH;
+#if defined(MD_JIT_EXCEPTION_INFO_LENGTH)
+	int exc_len = MD_JIT_EXCEPTION_INFO_LENGTH;
 #else
-	int jitlen = 0;
+	int exc_len = 0;
 #endif
 	uint32 constlen;
 	nativecode* methblock;
@@ -449,12 +449,12 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	 * NB: we assume the allocator returns at least 8-byte aligned 
 	 * addresses.   XXX: this should really be gc_memalign
 	 */  
-	methblock = gc_malloc(jitlen + constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
-	codebase = methblock + jitlen + constlen;
+	codebase = methblock + exc_len + constlen;
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned long)codebase % align != 0) {
 		int pad = (align - (unsigned long)codebase % align);
@@ -468,13 +468,13 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	gc_free(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(methblock + jitlen);
+	establishConstants(methblock + exc_len);
 
 	/* Link it */
 	linkLabels(codeInfo, (uintp)codebase);
 
-#if defined(REGISTER_JIT_METHOD)
-	REGISTER_JIT_METHOD (methblock, codebase, CODEPC);
+#if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
+	MD_REGISTER_JIT_EXCEPTION_INFO (methblock, codebase, CODEPC);
 #endif
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;

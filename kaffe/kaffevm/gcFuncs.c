@@ -108,9 +108,16 @@ DBG(CLASSGC,
         if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
                 Method *m = CLASS_METHODS(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
-#if defined(TRANSLATOR) && defined (JIT3)
+#if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 			if (METHOD_JITTED(m)) {
+#if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
+				MD_UNREGISTER_JIT_EXCEPTION_INFO (m->c.ncode.ncode_start,
+					m->ncode,
+					m->c.ncode.ncode_end - m->ncode);
+#endif
+#if defined(JIT3)
 				makeMethodInactive(m);
+#endif
 			}
 #endif
                         utf8ConstRelease(m->name);
