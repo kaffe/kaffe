@@ -1,5 +1,9 @@
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* po/fr.po: Fixed typos.
+
+2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* po/fr.po: Updated translation.
 
 	* WHATSNEW: Added some entries for Kaffe 1.1.5.

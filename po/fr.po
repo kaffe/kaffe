@@ -235,12 +235,12 @@ msgstr "\t-Xnative-big-math\t Utiliser GMP pour des calculs BigNum natifs et plu
 #: kaffe/kaffe/main.c:897
 #, c-format
 msgid "\t-Xkaffe-xlib-awt\tUse Kaffe's Xlib AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t Utiliser le système graphique Xlib AWT de Kaffe."
+msgstr "\t-Xkaffe-xlib-awt\t Utiliser le système graphique Xlib AWT de Kaffe.\n"
 
 #: kaffe/kaffe/main.c:898
 #, c-format
 msgid "\t-Xkaffe-qte-awt\t\tUse Kaffe's Qt2/3/Embedded AWT backend\n"
-msgstr "\t-Xkaffe-qte-awt\t\t Utiliser le système graphique Qt2/3/E AWT de Kaffe."
+msgstr "\t-Xkaffe-qte-awt\t\t Utiliser le système graphique Qt2/3/E AWT de Kaffe.\n"
 
 #: kaffe/kaffe/main.c:900
 #, c-format
