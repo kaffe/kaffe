@@ -1,8 +1,25 @@
+Wed Aug 26 14:27:44 1998  Benjamin Reed  <breed@almaden.ibm.com>
+
+	* libraries/javalib/kaffe/lang/UNIXProcess.java: throw 
+	IllegalThreadStateException in exitValue if proc is alive.
+
+Tue Aug 25 15:17:38 1998  Archie Cobbs  <archie@whistle.com>
+
+	* libraries/javalib/java/io/FileInputStream.java: declare native
+	open to throw IOException.
+	* libraries/javalib/java/util/Stack.java: fixes for synchronization
+	and search.
+	* libraries/clib/native/*: removed warning for -Wall, in particular
+	libraries/clib/native/Field.c: fixed use of == instead of =.
+	libraries/clib/native/FileInputStream.c: fixed missing return value.
+	include/*: -Wall fixes, added prototypes & includes.
+	* kaffe/kaffevm/systems/unix-jthreads/*: -Wall fixes.
+	* kaffe/kaffevm/*, kaffe/kaffevm/jit/*: -Wall fixes, jit only
+
 Tue Aug 25 14:39:35 1998  Lee Iverson  <leei@Canada.AI.SRI.COM>
 
-        * configure.in (LD): Define to $CC when $GCC = yes.
-          (NET_LIBRARIES): Insert -lnsl and -lsocket only if functions not
-          already provided by libc.
+        * configure.in (NET_LIBRARIES): Insert -lnsl and -lsocket only if 
+	functions are not already provided by libc.
 
         * include/jmalloc.h: Change references to __malloc and __free to
           jmalloc and jfree.
