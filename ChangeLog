@@ -1,3 +1,17 @@
+2004-02-04  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2004-02-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/GridBagLayout.java, java/awt/LayoutManager2.java,
+        java/awt/image/renderable/RenderContext.java: 
+	Fix handling of alias methods, where a
+        method has been deprecated in favour of a new one with the same
+        funtion but a different name.  Put the method implementation in
+        the deprecated method and have the new method call the
+        deprecated one.  Make all other code call the new method.
+
 2004-02-03  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/nio/Makefile.am
