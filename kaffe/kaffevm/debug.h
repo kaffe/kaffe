@@ -85,6 +85,7 @@
 # define DBG_NEWOBJECT		DBG_BIT(41)
 # define DBG_FINALIZE		DBG_BIT(42)
 # define DBG_LIBTOOL		DBG_BIT(43)
+# define DBG_NATIVENET		DBG_BIT(44)
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 

@@ -260,6 +260,14 @@ AC_SUBST(ENGINE_NAME)
 AC_SUBST_FILE(engine_frag)dnl
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
+dnl =========================================================================
+
+AC_MSG_CHECKING(library type)
+if test "$dynamic_libraries" = "no" ; then
+	AC_MSG_RESULT(static)
+else
+	AC_MSG_RESULT(shared)
+fi
 AC_CHECK_FUNCS(getpagesize)
 
 dnl =========================================================================
@@ -676,6 +684,7 @@ AC_CHECK_FUNCS(select socket getsockname)
 AC_CHECK_FUNCS(memcpy memmove)
 AC_CHECK_FUNCS(mkdir)
 AC_CHECK_FUNCS(getcwd getwd gettimeofday ftime time uname getuid)
+AC_CHECK_FUNCS(ctime localtime)
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"

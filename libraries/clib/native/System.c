@@ -138,6 +138,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	char* jhome;
 	char* cpath;
 	char* dir;
+	char* tzone;
 	userProperty* prop;
 #if defined(HAVE_SYS_UTSNAME_H)
 	struct utsname system;
@@ -277,7 +278,19 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	/* We should try to work this stuff out really - XXX */
 	setProperty(p, "user.language", "EN");
 	setProperty(p, "user.region", "US");
-	setProperty(p, "user.timezone", "PST");
+
+	/* Figure out the local time zone; fallback to GMT if we can't */
+	tzone = "GMT";
+#if defined(HAVE_CTIME) && defined(HAVE_LOCALTIME)
+	{
+		const time_t now = time(NULL);
+
+		if (now != (time_t) -1) {
+			tzone = localtime(&now)->tm_zone;
+		}
+	}
+#endif
+	setProperty(p, "user.timezone", tzone);
 
 	setProperty(p, "file.encoding.pkg", "kaffe.io");
 	setProperty(p, "file.encoding", "Default");

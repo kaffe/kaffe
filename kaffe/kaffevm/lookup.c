@@ -223,6 +223,7 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 {
 	Method* mptr;
 	int n;
+
 	/*
 	 * Lookup method - this could be alot more efficient but never mind.
 	 * Also there is no attempt to honour PUBLIC, PRIVATE, etc.
@@ -234,10 +235,19 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 				SET_METHOD_NATIVECODE(mptr, (void*)throwAbstractMethodError);
 				mptr->accflags |= ACC_NATIVE;
 			}
+DBG(MLOOKUP,
+			dprintf("findMethodLocal(%s,%s,%s) -> %p\n",
+				class->name->data, name->data, signature->data, mptr); )
+
 			return (mptr);
 		}
 	}
-	return (0);
+
+DBG(MLOOKUP,
+	dprintf("findMethodLocal(%s,%s,%s) -> NOT FOUND\n",
+		class->name->data, name->data, signature->data, mptr); )
+
+	return NULL;
 }
 
 /*

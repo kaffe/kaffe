@@ -1,3 +1,43 @@
+Sun May 16 15:22:39 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* config/config-setjmp.h: add assert() protection for corrupted
+	longjmp buffer for FreeBSD/i386 [temporary hack to catch a bug]
+
+Sun May 16 14:30:20 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* configure.in: be verbose about static/shared libraries,
+	add check for ctime() and localtime() (for timezone check).
+	* kaffe/kaffevm/debug.c,kaffe/kaffevm/debug.h: add NATIVENET
+	flag for debugging network accesses.
+	* kaffe/kaffevm/lookup.c: add more printf for the MLOOKUP
+	debug method
+	* kaffe/kaffevm/stackTrace.c,kaffe/kaffevm/stackTrace.h:
+	clean up stale debug stuff, change 0 to NULL.
+	* kaffe/kaffevm/support.c: add a number of asserts for 
+	sanity checking method lookups and invocations.
+	* libraries/clib/native/System.c: try to figure out the
+	local timezone via localtime().  Default to 'GMT'.  Not perfect.
+	* libraries/clib/net/PlainSocketImpl.c: add a lot of debugging
+	support via NATIVENET switch.
+	* libraries/javalib/java/lang/System.java: Tweak static
+	initializer to init SimpleTimeZone and GregorianCalendar
+	without wasting time/space creating objects.
+	* libraries/javalib/java/text/SimpleDateFormat.java: change
+	order of field modifiers (cosmetic).
+	* libraries/javalib/java/util/GregorianCalendar.java: 
+	directly create the desired Calendar, instead of generic one
+	plus modification to it.
+	* libraries/javalib/java/util/SimpleTimeZone.java: add 
+	daylight savings info to MST description.
+	* libraries/javalib/java/util/TimeZone.java: throw an
+	InternalError() if a defaultTimeZone cannot be found.
+	getTimeZone(): use Hashtable.get() instead of iteration to lookup
+	a timezone.
+	* libraries/javalib/kaffe/text/dateformat/locale_en_US.java:
+	Tweak time and date formats to match JDK 1.1.7 formats.
+	* libraries/javalib/java/util/Date.java: change format of the
+	toString() method to match JDK
+
 Sat May 15 14:14:46 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* object.c: Allocate arrays of kaffe.util.Ptr as primative arrays.

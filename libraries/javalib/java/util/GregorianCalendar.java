@@ -15,7 +15,7 @@ import kaffe.util.NotImplemented;
 public class GregorianCalendar
   extends Calendar
 {
-	private static Calendar stdDateChange;
+	private static final Calendar stdDateChange;
 	private static final long serialVersionUID = -8125100834729963327L;
 	final public static int BC = 0;
 	final public static int AD = 1;
@@ -29,8 +29,9 @@ public class GregorianCalendar
 	private Calendar dateChange = null;
 
 static {
-	stdDateChange = new GregorianCalendar();
-	stdDateChange.set(1582, Calendar.OCTOBER, 15);
+	// Initialize the day that time switched from Julian
+	//  to Gregorian date keeping
+	stdDateChange = new GregorianCalendar(1582, Calendar.OCTOBER, 15);
 }
 
 public GregorianCalendar()

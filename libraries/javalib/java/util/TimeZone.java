@@ -17,8 +17,9 @@ abstract public class TimeZone
   implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 3581463369166924961L;
-	private static TimeZone defaultTimeZone;
+	private static TimeZone defaultTimeZone = null;
 	private static Hashtable zones = new Hashtable();
+
 	private String timezoneID = null;
 
 public TimeZone()
@@ -87,6 +88,9 @@ public static synchronized TimeZone getDefault()
 		if (defaultTimeZone == null) {
 			defaultTimeZone = getTimeZone("GMT");
 		}
+		if (defaultTimeZone == null) {
+			throw new InternalError("Cannot intialize timezone.  GMT & " +zne+ " zones are undefined.");
+		}
 	}
 	return (defaultTimeZone);
 }
@@ -102,16 +106,8 @@ abstract public int getRawOffset();
 
 public static synchronized TimeZone getTimeZone(String ID)
 {
-	Enumeration e = zones.elements();
-
-	while (e.hasMoreElements()) {
-		TimeZone tz = (TimeZone)e.nextElement();
-		if (ID.equals(tz.getID())) {
-			return (tz);
-		}
-	}
-
-	return (null);
+	TimeZone tz = (TimeZone)zones.get(ID);
+	return tz;
 }
 
 abstract public boolean inDaylightTime(Date date);

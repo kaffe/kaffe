@@ -11,8 +11,8 @@ private Object[][] contents = {
 	 */
 
 	// Full, Long, Medium, Short
-	{ "date", new String[]{ "EEEE, MMMM d, yyyy", "MMMM d, yyyy", "d-MMM-yy", "M/d/yy" } },
-	{ "time", new String[]{ "h:mm:ss;SS 'o''''clock' a z", "h:mm:ss a z", "h:mm:ss a", "h:mm a" } },
+	{ "date", new String[]{ "EEEE, MMMM d, yyyy", "MMMM d, yyyy", "dd-MMM-yy", "M/d/yy" } },
+	{ "time", new String[]{ "h:mm:ss 'o''''clock' a z", "h:mm:ss a z", "h:mm:ss a", "h:mm a" } },
 
 	/*
 	 * DateFormatSymbols information

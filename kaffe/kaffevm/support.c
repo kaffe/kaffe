@@ -65,6 +65,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 	errorInfo info;
 
 	if (mb == 0) {
+		assert(method_name != 0 && signature != 0);
 		if (isStaticCall) {
 			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature, &info);
 		}
@@ -72,6 +73,7 @@ do_execute_java_method_v(void* obj, const char* method_name, const char* signatu
 			mb = lookupObjectMethod((Hjava_lang_Object*)obj, method_name, signature, &info);
 		}
 	}
+
 	/* No method or wrong type - throw exception */
 	if (mb == 0) {
 		throwError(&info);
@@ -93,6 +95,8 @@ do_execute_java_method(void* obj, const char* method_name, const char* signature
 {
 	va_list argptr;
 	jvalue retval;
+
+	assert(method_name != 0 || mb != 0);
 
 	va_start(argptr, isStaticCall);
 	retval = do_execute_java_method_v(obj, method_name, signature, mb, isStaticCall, argptr);
@@ -686,6 +690,8 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 	Method *meth;
 	Utf8Const *name_utf8, *sig_utf8;
 
+	assert(cls != 0 && name != 0 && sig != 0);
+
 	name_utf8 = utf8ConstNew(name, -1);
 	sig_utf8 = utf8ConstNew(sig, -1);
 	meth = findMethod(cls, name_utf8, sig_utf8, einfo);
@@ -700,6 +706,7 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 Method*
 lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)
 {
+	assert(obj != 0 && name != 0 && sig != 0);
 	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
 }
 

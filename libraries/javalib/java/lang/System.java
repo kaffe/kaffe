@@ -17,9 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.GregorianCalendar;
 import java.util.Properties;
-import java.util.SimpleTimeZone;
 
 final public class System
 {
@@ -31,18 +29,28 @@ final public class System
 	private static SecurityManager security;
 
 static {
+		// XXX what are the constraints on the initialization order in here?
+
 	security = defaultSecurityManager;
 
 	props = initProperties(new Properties());
-
-	// Initiate the timezone & calendar.
-	new SimpleTimeZone(0, "GMT");
-	new GregorianCalendar();
 
 	// Initialise the I/O
 	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
+
+	// Initiate the default timezone implementation & default calendar implementation.  
+	try
+	{
+		Class.forName("java.util.SimpleTimeZone");
+		Class.forName("java.util.GregorianCalendar");
+	}
+	catch (ClassNotFoundException _)
+	{
+		// Kaffe won't let exceptions be thrown this early in
+		// the init process, anyway...
+	}
 }
 
 private System() { }

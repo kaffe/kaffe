@@ -35,7 +35,7 @@ static {
 	new SimpleTimeZone(-9*60*60*1000, "AST");
 	new SimpleTimeZone(-8*60*60*1000, "PST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
 	new SimpleTimeZone(-7*60*60*1000, "PNT");
-	new SimpleTimeZone(-7*60*60*1000, "MST");
+	new SimpleTimeZone(-7*60*60*1000, "MST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
 	new SimpleTimeZone(-6*60*60*1000, "CST");
 	new SimpleTimeZone(-5*60*60*1000, "EST");
 	new SimpleTimeZone(-5*60*60*1000, "IET");
@@ -69,7 +69,9 @@ public SimpleTimeZone(int rawOffset, String ID)
 	useDaylight = false;
 }
 
-public SimpleTimeZone(int rawOffset, String ID, int startMonth, int startDayOfWeekInMonth, int startDayOfWeek, int startTime, int endMonth, int endDayOfWeekInMonth, int endDayOfWeek, int endTime)
+public SimpleTimeZone(int rawOffset, String ID,
+  int startMonth, int startDayOfWeekInMonth, int startDayOfWeek, int startTime,
+  int endMonth, int endDayOfWeekInMonth, int endDayOfWeek, int endTime)
 	{
 	this.startYear = 0;
 	this.rawOffset = rawOffset;

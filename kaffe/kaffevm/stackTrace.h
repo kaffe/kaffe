@@ -52,7 +52,7 @@ typedef struct _stackTrace {
 	}
 #define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		(PCFRAME((S).frame))
-#define	STACKTRACEMETHCREATE(S)	(0)
+#define	STACKTRACEMETHCREATE(S)	(NULL)
 #define	STACKTRACEEND(S)	((S).frame == 0)
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -108,6 +108,7 @@ static struct debug_opts
 	D(NEWOBJECT, 	"Show when new objects are allocated."),
 	D(FINALIZE, 	"Debug finalization."),
 	D(LIBTOOL, 	"Debug libtool stuff."),
+	D(NATIVENET,	"Show network accesses from the native code."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 

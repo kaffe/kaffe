@@ -22,6 +22,7 @@
 #include "java_net_SocketOptions.h"
 #include "nets.h"
 #include <jsyscall.h>
+#include "../../../kaffe/kaffevm/debug.h"
 
 /*
  * Supported socket options
@@ -48,6 +49,50 @@
 #endif
   };
 
+#ifdef DEBUG
+/*
+ * Option names (for debugging only)
+ */
+  static const struct {
+	  int opt;
+	  char *name;
+  } optionNames[] = {
+#ifdef SO_SNDBUF
+    { java_net_SocketOptions_SO_SNDBUF, "SO_SNDBUF" },
+#endif
+#ifdef SO_RCVBUF
+    { java_net_SocketOptions_SO_RCVBUF, "SO_RCVBUF" },
+#endif
+#ifdef SO_LINGER
+    { java_net_SocketOptions_SO_LINGER, "SO_LINGER" },
+#endif
+#ifdef SO_REUSEADDR
+    { java_net_SocketOptions_SO_REUSEADDR, "SO_REUSEADDR" },
+#endif
+#ifdef TCP_NODELAY
+    { java_net_SocketOptions_TCP_NODELAY, "TCP_NODELAY" },
+#endif
+    { java_net_SocketOptions_SO_BINDADDR, "SO_BINDADDR" },
+    { java_net_SocketOptions_SO_TIMEOUT, "SO_TIMEOUT" },
+    { java_net_SocketOptions_IP_MULTICAST_IF, "IP_MULTICAST_IF" }
+  };
+#endif /* DEBUG */
+
+#ifdef DEBUG
+static char *
+ip2str(jint addr) 
+{
+	static char addrbuf[16];
+
+	sprintf(addrbuf, "%u.%u.%u.%u",
+	  (addr >> 24) & 0xff,
+	  (addr >> 16) & 0xff,
+	  (addr >>  8) & 0xff,
+	  (addr      ) & 0xff);
+	return addrbuf;
+}
+#endif /* DEBUG */
+
 /*
  * Create a stream or datagram socket.
  */
@@ -65,11 +110,21 @@ java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jb
 		type = SOCK_STREAM;
 	}
 
+	DBG(NATIVENET,
+	    dprintf("socketCreate(%p, %s)\n", this, stream ? "stream" : "datagram");
+	    )
+
 	rc = KSOCKET(AF_INET, type, 0, &fd);
 	if (rc) {
 		unhand(unhand(this)->fd)->fd = -1;
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
+
+	DBG(NATIVENET,
+	    dprintf("socketCreate(%p, %s) -> fd=%d\n", 
+		    this, stream ? "stream" : "datagram", fd);
+	    )
+
 	unhand(unhand(this)->fd)->fd = fd;
 }
 
@@ -77,12 +132,19 @@ java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jb
  * Connect the socket to someone.
  */
 void
-java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, struct Hjava_net_InetAddress* daddr, jint dport)
+java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
+				       struct Hjava_net_InetAddress* daddr, 
+				       jint dport)
 {
 	int fd;
 	int r;
 	struct sockaddr_in addr;
 	size_t alen;
+
+	DBG(NATIVENET,
+	    dprintf("socketConnect(%p, %s, %d)\n", 
+		    this, ip2str(unhand(daddr)->address), dport);
+	    )
 
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
@@ -105,6 +167,13 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, s
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 
+	DBG(NATIVENET,
+	    dprintf("socketConnect(%p, %s, %d) -> (lport: %d)\n",
+		    this, ip2str(unhand(daddr)->address), dport,
+		    ntohs(addr.sin_port)
+		    );
+	    )
+
 	unhand(this)->address = daddr;
 	unhand(this)->port = dport;
 	unhand(this)->localport = ntohs(addr.sin_port);
@@ -114,13 +183,20 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, s
  * Bind this socket to an address.
  */
 void
-java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this, struct Hjava_net_InetAddress* laddr, jint lport)
+java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this,
+				    struct Hjava_net_InetAddress* laddr, 
+				    jint lport)
 {
 	int r;
 	struct sockaddr_in addr;
 	int fd;
 	int on = 1;
 	size_t alen;
+
+	DBG(NATIVENET,
+	    dprintf("socketBind(%p, %s, %d)\n", 
+		    this, ip2str(unhand(laddr)->address), lport);
+	    )
 
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
@@ -150,6 +226,11 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this, stru
 		lport = ntohs(addr.sin_port);
 	}
 	unhand(this)->localport = lport;
+
+	DBG(NATIVENET,
+	    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
+		    ip2str(unhand(laddr)->address), lport);
+	    );
 }
 
 /*
@@ -159,6 +240,10 @@ void
 java_net_PlainSocketImpl_socketListen(struct Hjava_net_PlainSocketImpl* this, jint count)
 {
 	int r;
+
+	DBG(NATIVENET,
+	    dprintf("socketListen(%p, count=%d)\n", this, count);
+	    )
 
 	r = KLISTEN(unhand(unhand(this)->fd)->fd, count);
 	if (r) {
@@ -185,6 +270,11 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	addr.sin_port = htons(unhand(sock)->localport);
 	addr.sin_addr.s_addr = htonl(unhand(unhand(sock)->address)->address);
 
+	DBG(NATIVENET,
+	    dprintf("socketAccept(%p, localport=%d, addr=%s)\n", 
+		    this, addr.sin_port, ip2str(ntohl(addr.sin_addr.s_addr)));
+	    )
+
 	alen = sizeof(addr);
 	rc = KACCEPT(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
 	if (rc == EINTR) {
@@ -205,6 +295,11 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	unhand(unhand(sock)->address)->address = ntohl(addr.sin_addr.s_addr);
 	unhand(sock)->port = ntohs(addr.sin_port);
+
+	DBG(NATIVENET,
+	    dprintf("socketAccept(%p, localport=-, addr=-) -> (sock: %p; addr: %s; port:%d)\n", 
+		    this, sock, ip2str(ntohl(addr.sin_addr.s_addr)), addr.sin_port);
+	    )
 }
 
 /*
@@ -215,6 +310,10 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 {
 	int r;
 	jint len;
+
+	DBG(NATIVENET,
+	    dprintf("socketAvailable(%p)\n", this);
+	    )
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
 	/* XXX make part of system call interface to protect errno */
@@ -241,6 +340,11 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
 		len = 0;
 	}
 #endif
+
+	DBG(NATIVENET,
+	    dprintf("socketAvailable(%p) -> %d\n", this, len);
+	    )
+
 	return (len);
 }
 
@@ -252,6 +356,10 @@ java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
 {
 	int r;
 
+	DBG(NATIVENET,
+	    dprintf("socketClose(%p)\n", this);
+	    )
+
 	if (unhand(unhand(this)->fd)->fd != -1) {
 		r = KSOCKCLOSE(unhand(unhand(this)->fd)->fd);
 		unhand(unhand(this)->fd)->fd = -1;
@@ -262,9 +370,19 @@ java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
 }
 
 void
-java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
+java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
+					 jint opt, 
+					 struct Hjava_lang_Object* arg)
 {
 	int k, r, v;
+
+	DBG(NATIVENET,
+	    char *optstr = "UNKNOWN";
+	    for (k = 0; k < sizeof(optionNames) / sizeof(optionNames[0]); k++) 
+		    if (optionNames[k].opt == opt)
+			    optstr = optionNames[k].name;
+	    dprintf("socketSetOption(%p, %s, arg=%p)\n", this, optstr, arg);
+	    )
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -301,6 +419,14 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 	int k, r, v;
 	int vsize = sizeof(v);
 
+	DBG(NATIVENET,
+	    char *optstr = "UNKNOWN";
+	    for (k = 0; k < sizeof(optionNames) / sizeof(optionNames[0]); k++) 
+		    if (optionNames[k].opt == opt)
+			    optstr = optionNames[k].name;
+	    dprintf("socketGetOption(%p, %s)\n", this, optstr);
+	    )
+
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
@@ -310,6 +436,9 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 			if (r) {
 				SignalError("java.net.SocketException", SYS_ERROR(r));
 			}
+			DBG(NATIVENET,
+			    dprintf("socketGetOption(%p, -) -> %d\n", this, v);
+			    )
 			return v;
 		}
 	}
@@ -329,6 +458,9 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 	default:
 		SignalError("java.net.SocketException", "Unimplemented socket option");    
 	} 
+	DBG(NATIVENET,
+	    dprintf("socketGetOption(%p, -) -> %d\n", this, r);
+	    )
 	return (r);
 }
 
@@ -338,6 +470,11 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
         ssize_t r;
 	int rc;
 	int fd;
+
+	DBG(NATIVENET,
+	    dprintf("socket_read(%p, %p, %d, %d)\n", 
+		    this, buf, offset, len);
+	    )
 
 	fd = unhand(unhand(this)->fd)->fd;
 	if (fd < 0) {
@@ -363,8 +500,14 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
 void
 java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
-	int r, fd;
+	int r;
+	int fd;
 	ssize_t nw;
+
+	DBG(NATIVENET,
+	    dprintf("socket_write(%p, %p, %d, %d)\n", 
+		    this, buf, offset, len);
+	    )
 
 	fd = unhand(unhand(this)->fd)->fd;
 	if (fd >= 0) {
