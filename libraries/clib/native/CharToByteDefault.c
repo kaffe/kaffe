@@ -15,7 +15,7 @@
 #include <jni.h>
 
 jint
-Java_kaffe_io_CharToByteDefault_convert ( JNIEnv* env, jobject _this, 
+Java_kaffe_io_CharToByteDefault_convert( JNIEnv* env, jobject _this, 
 										  jarray fromChars, jint fromPos, jint fromLen,
 										  jarray toBytes, jint toPos, jint toLen )
 {
