@@ -116,10 +116,7 @@ void jthread_stop(jthread_t tid)
  * 
  * @param tid the thread to interrupt
  */
-static inline
-void jthread_interrupt(jthread_t tid)
-{
-}
+void jthread_interrupt(jthread_t tid);
 
 /**
  * Register a function to be called when the vm exits.

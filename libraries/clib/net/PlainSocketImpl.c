@@ -164,6 +164,10 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
 
 	fd = unhand(unhand(this)->fd)->fd;
 	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), unhand(this)->timeout);
+	if (r == EINTR || r == ETIMEDOUT) {
+		SignalError("java.io.InterruptedIOException", 
+			    "Connect timed out or was interrupted");
+	}
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
@@ -297,7 +301,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	alen = sizeof(addr);
 	rc = KACCEPT(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
-	if (rc == EINTR) {
+	if (rc == EINTR || rc == ETIMEDOUT) {
 		SignalError("java.io.InterruptedIOException", 
 			    "Accept timed out or was interrupted");
 	}
@@ -553,7 +557,7 @@ java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArr
 	}
 
         rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
-	if (rc == EINTR) {
+	if (rc == EINTR || rc == ETIMEDOUT) {
 		SignalError("java.io.InterruptedIOException", 
 			    "Read timed out or was interrupted");
 	}

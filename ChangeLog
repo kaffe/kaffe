@@ -1,3 +1,23 @@
+2003-07-08  Timothy S. Stack <stack@cs.utah.edu>'
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c:
+	Handle large timeout values correctly.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	Handle timeouts/interrupts correctly for accept/read.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(jthread_interrupt) Implemented using pthread_kill(SIG_RESUME).
+	(suspend_signal_handler) Use setjmp to dump register state to the
+	stack.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	Moved jthread_interrupt implementation to thread-impl.c.
+
+	* libraries/clib/net/PlainSocketImpl.c:
+	Throw an exception when connect times out or is interrupted.  Pay
+	attention to ETIMEDOUT error value.
+
 2003-07-08  Ito Kazumitsu <kaz@maczuka.gcd.org>
 	
 	* test/regression/TestScript.in

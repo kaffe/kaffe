@@ -75,8 +75,8 @@ waitForTimeout(int fd, int timeout){
 
 	FD_ZERO(&rset);
 	FD_SET(fd,&rset);
-	tv.tv_sec = 0; 
-	tv.tv_usec = timeout*1000;
+	tv.tv_sec = timeout / 1000;
+	tv.tv_usec = (timeout % 1000) * 1000;
 
 	if (timeout == NOTIMEOUT) 
 		ret = select(fd+1,&rset,NULL,NULL,NULL);
@@ -433,6 +433,15 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
         if (!ret) {
 		ret = accept (fd, addr, len);
 		setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, &old_tv, sizeof (old_tv));
+		if( ret < 0 )
+		{
+		    switch( errno )
+		    {
+		    case EAGAIN:
+			errno = EINTR;
+			break;
+		    }
+		}
 	}
 	SET_RETURN_OUT(ret, out, ret)
 	return ret;
@@ -465,7 +474,7 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 	int ret;
 	
 	ret = waitForTimeout(fd,timeout);
-	if (ret) {
+	if (ret > 0) {
 		r = read(fd, buf, len);
 	}
 	
@@ -479,7 +488,11 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 int
 jthreadedRead(int fd, void* buf, size_t len, ssize_t *out)
 {
-	return (jthreadedTimedRead(fd, buf, len, NOTIMEOUT, out));
+	ssize_t r = -1;
+
+	r = read(fd, buf, len);
+	SET_RETURN_OUT(r, out, r);
+	return (r);
 }
 
 /*

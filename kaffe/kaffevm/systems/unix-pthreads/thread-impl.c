@@ -11,6 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-signal.h"
+#include "config-setjmp.h"
 
 #include "locks.h"
 #include "thread-impl.h"
@@ -328,7 +329,7 @@ tInitSignalHandlers (void)
 
   sigaction( SIG_SUSPEND, &sigSuspend, NULL);
 
-  sigResume.sa_flags = flags;
+  sigResume.sa_flags = 0; // Note that we do not want restart here.
   sigResume.sa_handler = resume_signal_handler;
   sigResume.sa_mask = sigSuspend.sa_mask;
   sigaction( SIG_RESUME, &sigResume, NULL);
@@ -479,6 +480,11 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   return (nt);
 }
 
+void jthread_interrupt(jthread_t tid)
+{
+	/* We need to send some signal to interrupt syscalls. */
+	pthread_kill(tid->tid, SIG_RESUME);
+}
 
 /*
  * This is our thread function wrapper, which we need because of two
@@ -882,16 +888,24 @@ suspend_signal_handler ( int sig )
 	return;
 
   if ( cur->suspendState == SS_PENDING_SUSPEND ){
+	JTHREAD_JMPBUF env;
+
+	/*
+	 * Note: We're not gonna do a longjmp to this place, we just want
+	 * to do something that will save all of the registers onto the stack.
+	 */
+	JTHREAD_SETJMP(env);
 
 	/* assuming we are executing on the thread stack, we record our current pos */
-	cur->stackCur     = (void*)&cur;
+	cur->stackCur     = (void*)&env;
 	cur->suspendState = SS_SUSPENDED;
 
 	/* notify the critSect owner that we are now suspending in the handler */
 	sem_post( &critSem);
 
 	/* freeze until we get a subsequent SIG_RESUME */
-	sigsuspend( &suspendSet);
+	while( cur->suspendState == SS_SUSPENDED )
+		sigsuspend( &suspendSet);
 
 	DBG( JTHREADDETAIL, dprintf("sigsuspend return: %p\n", cur))
 
