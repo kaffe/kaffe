@@ -44,6 +44,7 @@ typedef enum {
 struct _classEntry;
 struct _innerClass;
 struct Hjava_lang_String;
+struct _jitCodeHeader;
 
 #include <java_lang_ClassLoader.h>
 
@@ -278,7 +279,7 @@ typedef struct _methods {
 	nativecode*		ncode;
 	union {
 	  struct {
-		nativecode*	ncode_start;
+		struct _jitCodeHeader*	ncode_start;
 		nativecode*	ncode_end;
 	  } ncode;
 	  struct {

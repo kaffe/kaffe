@@ -1,6 +1,6 @@
 
-#ifndef __powerpc_darwin_jit3_md_h
-#define __powerpc_darwin_jit3_md_h
+#ifndef __powerpc_linux_jit3_md_h
+#define __powerpc_linux_jit3_md_h
 
 #include "config.h"
 #include "powerpc/jit.h"
@@ -11,7 +11,7 @@
  */
 #define EXCEPTIONFRAME(f, c) \
 do { \
-	(f).sp = (ppc_stack_frame_t *)((register_storage_t *)c->sc_regs)[3]; \
+	(f).sp = (ppc_stack_frame_t *)((register_storage_t *)c->regs)[3]; \
 } while( 0 )
 
 /*
@@ -24,8 +24,8 @@ do { \
  * code_start - The start of the code, no special alignment required.
  * code_end - The end of the code.
  */
-#define FLUSH_DCACHE darwin_flush_cache
-static inline void darwin_flush_cache(void *code_start, void *code_end)
+#define FLUSH_DCACHE linux_flush_cache
+static inline void linux_flush_cache(void *code_start, void *code_end)
 {
 	/*
 	 * The size of a block in the cache, we need to align the flushed

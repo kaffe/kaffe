@@ -1,7 +1,7 @@
 /*
  * jitBasic.c
  *
- * Copyright (c) 2003 University of Utah and the Flux Group.
+ * Copyright (c) 2003, 2004 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -174,26 +174,54 @@ int testMethod(Hjava_lang_Class *cl, Field *field)
 		if( translate(meth, &einfo) )
 		{
 			jvalue args[MAX_TEST_FIELD_COMPONENTS];
+			jvalue rc, actual;
 			void *methblock;
-			jvalue rc;
 
 			field2values(args, METHOD_PSIG(meth), &tf);
 			methblock = KGC_getObjectBase(main_collector,
 						     METHOD_NATIVECODE(meth));
+			memset(&rc, 0, sizeof(rc));
+			memset(&actual, 0, sizeof(actual));
 			callMethodA(meth,
 				    METHOD_NATIVECODE(meth),
 				    0,
 				    args,
 				    &rc,
 				    0);
-			if( !memcmp(&rc, field->info.addr, field->bsize) )
+			switch( field->bsize )
+			{
+			case sizeof(jbyte):
+				actual.i = ((char *)field->info.addr)[0];
+				break;
+			case sizeof(jshort):
+				actual.i = ((short *)field->info.addr)[0];
+				break;
+			case sizeof(jint):
+				memcpy(&actual.i,
+				       field->info.addr,
+				       field->bsize);
+				break;
+			case sizeof(jdouble):
+				memcpy(&actual.d,
+				       field->info.addr,
+				       field->bsize);
+				break;
+			default:
+				assert(0);
+				break;
+			}
+			if( !memcmp(&rc, &actual, sizeof(rc)) )
 			{
 				kaffe_dprintf("Success %08x\n", rc.i);
 				retval = 1;
 			}
 			else
 			{
-				kaffe_dprintf("Failure %08x %f\n", rc.i, rc.d);
+				kaffe_dprintf("Failure for %s, got: %08x %f\n"
+					      "  expected: %08x %f\n",
+					      field->name->data,
+					      rc.i, rc.d,
+					      actual.i, actual.d);
 			}
 		}
 		else

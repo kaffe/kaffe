@@ -2,7 +2,7 @@
  * powerpc/linux/md.c
  * Linux PowerPC specific functions.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -10,6 +10,9 @@
  */
 
 #include "config.h"
+#include "gtypes.h"
+#include "md.h"
+
 #include <malloc.h>
 
 void
@@ -29,3 +32,14 @@ thread_dummy(char* s, ...)
 	volatile int n;
 	n = 0;
 }
+
+#if defined(__GLIBC__)
+extern void * __libc_stack_end;
+
+void *mdGetStackEnd(void)
+{
+  long sz = sysconf(_SC_PAGESIZE);
+  
+  return (void *)(((uintp)__libc_stack_end + sz - 1) & (-sz));
+}
+#endif

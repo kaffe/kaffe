@@ -94,13 +94,18 @@ buildStackTrace(struct _exceptionFrame* base)
 }
 
 #if defined(TRANSLATOR)
+#include "machine.h"
+
 static Method*
 stacktraceFindMethod(uintp fp UNUSED, uintp pc)
 {
 	void *pc_base = KGC_getObjectBase(main_collector, (void *)pc);
 
 	if (pc_base) {
-		return *(Method **)pc_base;
+		jitCodeHeader *jch;
+
+		jch = pc_base;
+		return jch->method;
 	}
 	return NULL;
 }

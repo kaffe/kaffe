@@ -3,7 +3,7 @@
 # Interprets a "defs" file filled with definitions for a processor instruction
 # set architecture (ISA).
 #
-# Copyright (c) 2002 The University of Utah and the Flux Group.
+# Copyright (c) 2002, 2004 The University of Utah and the Flux Group.
 # All rights reserved.
 #
 # @JANOSVM_TOOL_LICENSE@
@@ -354,7 +354,7 @@ BEGIN {
 	}
     }
     printf(") \\\n");
-    printf("\t((void)%s_op_debug((%s_op_ctxt, \"%s ", prefix, prefix, name);
+    printf("\t((void)%s_op_debug((%s_op_ctxt, \"%%s:%s ", prefix, prefix, name);
     for( lpc = 3; lpc <= NF; lpc++ )
     {
 	if( $lpc in op_options )
@@ -365,7 +365,7 @@ BEGIN {
 	    printf("%s(%%d) ", $lpc);
 	}
     }
-    printf("\"");
+    printf("\", __FUNCTION__");
     for( lpc = 3; lpc <= NF; lpc++ )
     {
 	if( $lpc in op_options )

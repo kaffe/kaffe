@@ -119,7 +119,7 @@ static jboolean generateInsnSequence(errorInfo*);
  */
 static void checkCaughtExceptions(Method* meth, uint32 _pc);
 
-static void initFakeCalls(void);
+void initFakeCalls(void);
 static void makeFakeCalls(void);
 static void relinkFakeCalls(void);
 
@@ -171,6 +171,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
 	codeinfo* mycodeInfo;
+	jitCodeHeader *jch;
 
 	nativeCodeInfo ncode;
 
@@ -184,6 +185,7 @@ translate(Method* xmeth, errorInfo* einfo)
 
 	lockClass(xmeth->class);
 
+	jch = xmeth->c.ncode.ncode_start;
 	if (METHOD_TRANSLATED(xmeth)) {
 		goto done3;
 	}
@@ -478,8 +480,8 @@ jboolean
 finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 {
 	uint32 constlen;
+	jitCodeHeader *jch;
 	nativecode* methblock;
-	nativecode* codebase;
 	jboolean success;
 
 	/* Emit pending instructions */
@@ -492,26 +494,32 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	methblock = gc_malloc(constlen + CODEPC, KGC_ALLOC_JITCODE);
+	methblock = gc_malloc(sizeof(jitCodeHeader) +
+			      constlen +
+			      CODEPC,
+			      KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
 
-	codebase = methblock + constlen;
-	memcpy(codebase, codeblock, CODEPC);
+	jch = (jitCodeHeader *)methblock;
+	jch->pool = (void *)(jch + 1);
+	jch->code_start = ((char *)jch->pool) + constlen;
+	jch->code_len = CODEPC;
+	memcpy(jch->code_start, codeblock, jch->code_len);
 	gc_free(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(methblock);
+	establishConstants(jch->pool);
 
 	/* Link it */
-	linkLabels((uintp)codebase);
+	linkLabels((uintp)jch->code_start);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
 	code->memlen = constlen + CODEPC;
-	code->code = codebase;
+	code->code = jch->code_start;
 	code->codelen = CODEPC;
 
 	return (true);
@@ -550,6 +558,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 {
 	uint32 i;
 	jexceptionEntry* e;
+	jitCodeHeader *jch;
 	void *tramp;
 
 #if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
@@ -570,6 +579,9 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 		codeperbytecode = code_generated / bytecode_processed;
 	}
 	//KGC_WRITE(meth, code->mem);
+
+	jch = (jitCodeHeader *)code->mem;
+	jch->method = meth;
 
 	tramp = METHOD_NATIVECODE(meth);
 
@@ -791,12 +803,6 @@ initInsnSequence(Method* meth, int codesize UNUSED, int localsz, int stacksz, er
 		return (false);
 	}
 	CODEPC = 0;
-
-	/*
-	 * add the method as the first entry to the constant pool to speed up
-	 * finding a method for a given pc.
-	 */
-	newConstant(CPref, meth);
 	
 	return (true);
 }
@@ -1365,7 +1371,6 @@ static fakeCall** lastFake = &firstFake;
 static fakeCall* fakePool;
 static fakeCall* redundantFake;
 
-static
 void
 initFakeCalls(void)
 {
@@ -1424,8 +1429,8 @@ newFakeCall(void* func, uintp currpc)
 	else
 	{
 		fc = KGC_malloc(main_collector,
-			       sizeof(fakeCall),
-			       KGC_ALLOC_JIT_FAKE_CALL);
+				sizeof(fakeCall),
+				KGC_ALLOC_JIT_FAKE_CALL);
 	}
 #if defined(HAVE_branch_and_link)
 	fc->parent = findFakeCall(func);
@@ -1433,7 +1438,7 @@ newFakeCall(void* func, uintp currpc)
 	fc->from = from;
 	fc->to = to;
 	fc->func = func;
-	if( fc->parent )
+	if( fc->parent != NULL )
 	{
 		fc->next = redundantFake;
 		redundantFake = fc;

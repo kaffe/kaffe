@@ -61,7 +61,7 @@ class StaticFields
 	double_field0 = a;
 	return retval;
     }
-    
+
     private StaticFields()
     {
     }

@@ -1,7 +1,7 @@
 /*
  * ppc_stack_frame.h
  *
- * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * Copyright (c) 2002, 2004 The University of Utah and the Flux Group.
  * All rights reserved.
  *
  * @JANOSVM_KAFFE_JANOSVM_LICENSE@
@@ -10,6 +10,8 @@
 #define _ppc_stack_frame_h
 
 typedef unsigned long register_storage_t;
+
+#if defined(__APPLE__)
 
 #define PPC_ARG_REGISTER_COUNT 8
 #define PPC_FARG_REGISTER_COUNT 13
@@ -20,6 +22,9 @@ typedef unsigned long register_storage_t;
  * sp - Link to the previous stack frame.
  * cr - The condition code register.
  * lr - The link register.
+ * reserved1,reserved2 - OS X uses these with composite arguments.
+ * gpr2 - Hmm, don't remember
+ * args - Storage for function arguments in GPR3 through GPR10.
  */
 typedef struct _ppc_stack_frame_t {
 	struct _ppc_stack_frame_t *sp;
@@ -31,6 +36,18 @@ typedef struct _ppc_stack_frame_t {
 	register_storage_t args[PPC_ARG_REGISTER_COUNT];
 	register_storage_t scratch[0];
 } ppc_stack_frame_t;
+#else
+
+#define PPC_ARG_REGISTER_COUNT 8
+#define PPC_FARG_REGISTER_COUNT 8
+
+typedef struct _ppc_stack_frame_t {
+	struct _ppc_stack_frame_t *sp;
+	ppc_code_t *lr;
+	register_storage_t args[PPC_ARG_REGISTER_COUNT];
+	register_storage_t scratch[0];
+} ppc_stack_frame_t;
+#endif
 
 #define PPC_FRAME_FORMAT "sp=%p cr=0x%x lr=%p"
 #define PPC_FRAME_FORMAT_ARGS(sf)  (sf)->sp, (sf)->sp->cr, (sf)->sp->lr
@@ -90,14 +107,5 @@ do { \
 
 /* Arguments for the signal handler. */
 #define EXCEPTIONPROTO int sig, int code, struct sigcontext *ctx
-
-/*
- * Initialize the exceptionFrame object "f" with the stack frame captured in
- * the given sigcontext structure.
- */
-#define EXCEPTIONFRAME(f, c) \
-do { \
-	(f).sp = (ppc_stack_frame_t *)((register_storage_t *)c->sc_regs)[3]; \
-} while( 0 )
 
 #endif

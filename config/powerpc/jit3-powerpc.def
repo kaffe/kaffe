@@ -2,13 +2,14 @@
 /*
  * jit3-powerpc.def
  *
- * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * Copyright (c) 2002, 2004 The University of Utah and the Flux Group.
  * All rights reserved.
  *
  * @JANOSVM_KAFFE_JANOSVM_LICENSE@
  */
 
 #include "jit.h"
+#include "jit-labels.h"
 #include "icode.h"
 #include "ppc_isa.h"
 #include "code-analyse.h"
@@ -30,12 +31,12 @@
 #define ppc_op_ctxt CODEPC
 #undef ppc_op_debug
 #define ppc_op_debug(args) my_op_debug args
-int my_op_debug(int ctxt, char *fmt, ...)
+int my_op_debug(int ctxt, const char *fmt, ...)
 {
     va_list args;
     
     va_start(args, fmt);
-    fprintf(stderr, "%x\t", ctxt - 4);
+    fprintf(stderr, "%d\t", ctxt);
     vfprintf(stderr, fmt, args);
     fprintf(stderr, "\n");
     va_end(args);
@@ -44,7 +45,7 @@ int my_op_debug(int ctxt, char *fmt, ...)
 }
 #define DBOUT stderr
 
-#define debug(x) fprintf##x
+#define debug(x) fprintf x
 #else
 #define debug(x)
 #endif
@@ -99,12 +100,12 @@ define_insn(prologue, prologue_xxx)
 
 		localRegs = maxLocal + maxTemp + 1;
 		/*
-		 * We atleast need to save R31 because its used to hold the
+		 * We atleast need to save R31 because it's used to hold the
 		 * function base and thus the base for the constpool.
 		 */
 		if( localRegs == 1 )
 		{
-			LOUT(ppc_op_stw(PPC_R31, PPC_RSP, -SLOTSIZE));
+			LOUT(ppc_op_stw(PPC_R31, PPC_RSP, -SLOTSIZE-72));
 		}
 		else
 		{
@@ -121,15 +122,21 @@ define_insn(prologue, prologue_xxx)
 		}
 
 		/* Stuff the LR in the caller's linkage area. */
-		LOUT(ppc_op_stw(PPC_R0, PPC_RSP, PPC_FRAME_LR));		
-	}
-	if( has_pool )
-	{
+		LOUT(ppc_op_stw(PPC_R0, PPC_RSP, PPC_FRAME_LR));
+		
+		pl->type = Lnegframe | Labsolute | Lgeneral;
+		pl->at = CODEPC;
+		/*
+		 * Only update the stack pointer if we're not a
+		 * leaf.
+		 */
+		LOUT(ppc_op_stwu(PPC_RSP, PPC_RSP, 0)); // XXX
+		
 		/* Branch to the next instruction (no cost... i think) */
 		LOUT(ppc_op_bc(PPC_BO_ALWAYS,
-				 0,
-				 ppc_bd16(sizeof(ppc_code_t))) |
-			PPC_OPTION_LK);
+			       0,
+			       ppc_bd16(sizeof(ppc_code_t))) |
+		     PPC_OPTION_LK);
 		/*
 		 * The link register points to the internals of this method
 		 * save it and the offset from the start of the function.
@@ -148,6 +155,12 @@ define_insn(prologue, prologue_xxx)
 		int dbl_skip = 0, limit = PPC_ARG_REGISTER_COUNT;
 		int lpc, gpr_off = 0, fpr_off;
 
+		
+	{
+		void printSlots(FILE *file);
+
+		// printSlots(stderr);
+	}
 		if( !isStatic )
 		{
 			/* Prepend "this" argument. */
@@ -159,6 +172,8 @@ define_insn(prologue, prologue_xxx)
 		/* Figure out the number of arguments in registers. */
 		if( METHOD_NARGS(meth) < limit )
 			limit = METHOD_NARGS(meth);
+
+#if defined(__APPLE__)
 		/*
 		 * Force argument slots to correspond to the appropriate
 		 * registers.  On darwin, this means we skip gpr's when floats
@@ -205,6 +220,52 @@ define_insn(prologue, prologue_xxx)
 				break;
 			}
 		}
+#else
+		for( lpc = 0, fpr_off = 0; lpc < limit; lpc++ )
+		{
+			switch( *METHOD_ARG_TYPE(meth, lpc) )
+			{
+			case 'D':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rdouble,
+						PPC_FPRARG0 + fpr_off);
+				dbl_skip++;
+				fpr_off++;
+				break;
+			case 'F':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rfloat,
+						PPC_FPRARG0 + fpr_off);
+				fpr_off++;
+				break;
+			case 'L':
+			case '[':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rref,
+						PPC_RARG0 + gpr_off);
+				gpr_off++;
+				break;
+			case 'J':
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rint,
+						PPC_RARG0 + gpr_off);
+				gpr_off++;
+				dbl_skip++;
+				/* FALLTHROUGH */
+			default:
+				preloadRegister(localinfo[lpc + dbl_skip].slot,
+						Rint,
+						PPC_RARG0 + gpr_off);
+				gpr_off++;
+				break;
+			}
+		}
+#endif
+	{
+		void printSlots(FILE *file);
+
+		// printSlots(stderr);
+	}
 	}
 }
 
@@ -212,6 +273,14 @@ define_insn(exception_prologue, eprologue_xxx)
 {
 	if( r31FunctionStartOffset > 0 )
 	{
+#if 1
+#elif 1
+		label *l = newLabel();
+
+		l->type = Lframe | Labsolute | Lgeneral;
+		l->at = CODEPC;
+		LOUT(ppc_op_lmw(14, PPC_RSP, 0));
+#else
 		label *l = const_label(1);
 
 		l->type = Linternal | Labsolute | Llong16x16;
@@ -220,15 +289,14 @@ define_insn(exception_prologue, eprologue_xxx)
 		l->to = r31FunctionStartOffset;
 		LOUT(ppc_op_li(PPC_RCONST_POOL, 0));
 		LOUT(ppc_op_addis(PPC_RCONST_POOL, PPC_RCONST_POOL, 0));
+#endif
 
-		debug((DBOUT,"epilogue %s\n",getLabelName(l)));
+		// debug((DBOUT,"exception_prologue %s\n",getLabelName(l)));
 	}
 }
 
 define_insn(epilogue, epilogue_xxx)
 {
-	extern label *getLastEpilogueLabel(void);
-	
 	label *el;
 
 	if( (el = getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
@@ -246,6 +314,51 @@ define_insn(epilogue, epilogue_xxx)
 	}
 	setEpilogueLabel(CODEPC);
 	
+	if( (firstConst != currConst) ||
+	    maxLocal ||
+	    maxTemp )
+	{
+		int lrOffset = 0, localRegs;
+		label *fl;
+
+		fl = newLabel();
+		fl->type = Lframe | Lrelative | Lgeneral;
+		fl->at = CODEPC;
+		fl->from = PPC_FRAME_LR;
+		fl->to = 0;
+
+		/*
+		 * Load the original LR back into R0.
+		 *
+		 * Note: We do the load early so it can run in parallel while
+		 * we readjust the stack pointer.
+		 */
+		LOUT(ppc_op_lwz(PPC_R0, PPC_RSP, lrOffset));
+		fl = newLabel();
+		fl->type = Lframe | Labsolute | Lgeneral;
+		fl->at = (uintp)CODEPC;
+		LOUT(ppc_op_addi(PPC_RSP, PPC_RSP, 0));
+		LOUT(ppc_op_mtlr(PPC_R0));
+		/* Restore and local registers. */
+		localRegs = maxLocal + maxTemp + 1;
+		if( localRegs == 1 )
+		{
+			LOUT(ppc_op_lwz(PPC_R31, PPC_RSP, -4-72));
+		}
+		else
+		{
+			label *l;
+
+			l = newLabel();
+			l->type = Lsavedregs | Labsolute | Lgeneral;
+			l->at = CODEPC;
+			l->to = 0;
+			l = newLabel();
+			l->type = Lreg_s | Labsolute | Lgeneral;
+			l->at = CODEPC;
+			LOUT(ppc_op_lmw(0, PPC_RSP, 0));
+		}
+	}
 	/* Branch back to the caller. */
 	LOUT(ppc_op_blr());
 }
@@ -281,14 +394,18 @@ define_insn(spill_int, spill_Rxx)
 	int r = sreg_int(0);
 	int o = const_int(1);
 	label *l;
-
+	
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	LOUT(ppc_op_stw(r, PPC_RSP, 0));
-
+	
+	{
+		void printSlots(FILE *file);
+		
+		// printSlots(stderr);
+	}
 	debug((DBOUT,"spill_int %d, [FP, %d(%p)]\n", r, o,
 	       seq_slot(s, 1)));
 }
@@ -300,10 +417,9 @@ define_insn(spill_float, fspill_Rxx)
 	label *l;
 
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	LOUT(ppc_op_stfs(r, PPC_RSP, 0));
 
 	debug((DBOUT,"spill_float %d, [FP, %d]\n", r, o));
@@ -316,10 +432,9 @@ define_insn(spill_double, fspilll_Rxx)
 	label *l;
 
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	/* XXX Alignment needed here?  e.g. o >> 2 */
 	LOUT(ppc_op_stfd(r, PPC_RSP, 0));
 
@@ -331,12 +446,11 @@ define_insn(reload_int, reload_Rxx)
 	int r = lreg_int(0);
 	int o = const_int(1);
 	label *l;
-
+		
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	LOUT(ppc_op_lwz(r, PPC_RSP, 0));
 	
 	debug((DBOUT,"reload_int %d, [FP, %d(%p)]\n", r, o,
@@ -350,10 +464,9 @@ define_insn(reload_float, freload_Rxx)
 	label *l;
 
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	LOUT(ppc_op_lfs(r, PPC_RSP, 0));
 
 	debug((DBOUT,"reload_float %d, [FP, %d]\n", r, o));
@@ -366,10 +479,9 @@ define_insn(reload_double, freloadl_Rxx)
 	label *l;
 
 	l = newLabel();
-	l->type = Lframe | Lrelative | Lgeneral;
+	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
-	l->to = 0;
-	l->from = o;
+	l->to = o;
 	LOUT(ppc_op_lfd(r, PPC_RSP, 0));
 	
 	debug((DBOUT,"reload_double %d, [FP, %d]\n", r, o));
@@ -1231,8 +1343,8 @@ define_insn(cvt_int_float, cvtif_RxR)
 	tmp_gpr = tmp_si_gpr->slot;
 	slot_alloc2tmp(tmp_si_fpr);
 	tmp_fpr = tmp_si_fpr->slot;
-	hi_offset = 0;
-	lo_offset = 0;
+	hi_offset = -8;
+	lo_offset = -4;
 	/* Build the most significant bits. */
 	LOUT(ppc_op_lis(PPC_R0, 0x4330));
 	/* Store them as if making a double. */
@@ -1302,8 +1414,8 @@ define_insn(cvt_int_double, cvtid_RxR)
 	tmp_gpr = tmp_si_gpr->slot;
 	slot_alloc2tmp(tmp_si_fpr);
 	tmp_fpr = tmp_si_fpr->slot;
-	hi_offset = 0;
-	lo_offset = 0;
+	hi_offset = -8;
+	lo_offset = -4;
 	LOUT(ppc_op_lis(PPC_R0, 0x4330));
 	if( !hi_offset )
 	{
@@ -1365,8 +1477,8 @@ define_insn(cvt_float_int, cvtfi_RxR)
 	/* Allocate a temporary float to store the converted number. */
 	slot_alloc2tmp(tmp_si);
 	tmp = tmp_si->slot;
-	hi_offset = 0;
-	lo_offset = 0;
+	hi_offset = -8;
+	lo_offset = -4;
 
 	/* Bind to a register. */
 	i = slotRegister(tmp, Rdouble, rwrite, NOREG);
@@ -1418,8 +1530,8 @@ define_insn(cvt_double_int, cvtdi_RxR)
 	/* Allocate a temporary float to store the converted number. */
 	slot_alloc2tmp(tmp_si);
 	tmp = tmp_si->slot;
-	hi_offset = 0;
-	lo_offset = 0;
+	hi_offset = -8;
+	lo_offset = -4;
 
 	/* Bind to a register. */
 	i = slotRegister(tmp, Rdouble, rwrite, NOREG);
@@ -1603,36 +1715,36 @@ define_insn(branch_and_link, branchl_xCC)
 		 * be the case.
 		 */
 		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
-				 PPC_BI_CR_0 | PPC_BI_EQ,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_EQ,
+			       0) | PPC_OPTION_LK);
 		break;
 	case bne:
 		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
-				 PPC_BI_CR_0 | PPC_BI_EQ,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_EQ,
+			       0) | PPC_OPTION_LK);
 		break;
 	case blt:
 	case bult:
 		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
-				 PPC_BI_CR_0 | PPC_BI_LT,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_LT,
+			       0) | PPC_OPTION_LK);
 		break;
 	case ble:
 		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
-				 PPC_BI_CR_0 | PPC_BI_GT,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_GT,
+			       0) | PPC_OPTION_LK);
 		break;
 	case bgt:
 	case bugt:
 		LOUT(ppc_op_bc(PPC_BO_TRUE(0),
-				 PPC_BI_CR_0 | PPC_BI_GT,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_GT,
+			       0) | PPC_OPTION_LK);
 		break;
 	case bge:
 	case buge:
 		LOUT(ppc_op_bc(PPC_BO_FALSE(0),
-				 PPC_BI_CR_0 | PPC_BI_LT,
-				 0) | PPC_OPTION_LK);
+			       PPC_BI_CR_0 | PPC_BI_LT,
+			       0) | PPC_OPTION_LK);
 		break;
 	default:
 		ABORT();
@@ -1647,45 +1759,32 @@ define_insn(branch_and_link, branchl_xCC)
 //
 define_insn(call_ref, call_xCC)
 {
-#if 1
-#else
-	label* l = const_label(1);
-	unsigned long dest = 0;
-	long relative = CODEPC-dest;
-	long highpart = relative & 0xffffff;
-	
-	assert(const_int(2) == dest);
+	label *sl, *l = const_label(1);
 
-	//
-	// Determine if the relative address will fit in a 24-bit displacement
-	//
-	if (  highpart == 0xff000000 || highpart == 0 ) {
-	  //
-	  // Yes, it's likely to fit
-	  //
-	  l->type |= Llong26|Lrelative;
-	  l->at = CODEPC;
-	  l->from = CODEPC + 8;
-	  op_branch_linked(CC_AL, 0);
-	} else {
-	  int w = 0;
-	  assert("Should not happen");
-	  //
-	  // No, it's not going to fit..
-	  //
-	  op_mov_c(w, dest & 0x000000FF, 0);
-	  op_add_c(w, w, (dest >> 8) & 0x000000FF, 24);
-	  op_add_c(w, w, (dest >> 16) & 0x000000FF, 16);
-	  op_add_c(w, w, (dest >> 24) & 0x000000FF, 8);
-	}
-#endif
-	debug((DBOUT,"call_ref\n"));
+	sl = newLabel();
+	sl->type = Lframe | Lrelative | Lgeneral;
+	sl->at = CODEPC;
+	sl->from = -72;
+	LOUT(ppc_op_stmw(14, PPC_RSP, 0));
+
+	l->type |= Lrelative | Llong26;
+	l->at = CODEPC;
+	l->from = CODEPC;
+	LOUT(ppc_op_b(0) | PPC_OPTION_LK);
+	
+	debug((DBOUT,"call_ref %p\n",l->to));
 }
 
 define_insn(call, call_xRC)
 {
+	label *l = newLabel();
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
+
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->from = -72;
+	LOUT(ppc_op_stmw(14, PPC_RSP, 0));
 
 	LOUT(ppc_op_mtctr(r));
 	LOUT(ppc_op_bctrl());
@@ -1695,8 +1794,14 @@ define_insn(call, call_xRC)
 
 define_insn(branch_indirect, branch_indirect_xRC)
 {
+	label *l = newLabel();
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
+
+	l->type = Lframe | Lrelative | Lgeneral;
+	l->at = CODEPC;
+	l->from = -72;
+	LOUT(ppc_op_stmw(14, PPC_RSP, 0));
 
 	LOUT(ppc_op_mtctr(r));
 	LOUT(ppc_op_bctr());
@@ -1861,9 +1966,9 @@ define_insn(pusharg_int, push_xRC)
 		/* Out of argument registers, need to use the stack. */
 		r = rreg_int(1);
 		LOUT(ppc_op_stw(r,
-				  PPC_RSP,
-				  PPC_FRAME_ARGS +
-				  (a * sizeof(register_storage_t))));
+				PPC_RSP,
+				PPC_FRAME_ARGS +
+				(a * sizeof(register_storage_t))));
 	}
 #endif
 }

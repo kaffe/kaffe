@@ -1,3 +1,72 @@
+2004-12-20  Timothy S. Stack  <stack@cs.utah.edu>
+
+	* config/powerpc/jit-labels.h:
+	Moved label handling code into here so it's easier to change
+	without having to recompile the whole tree.
+
+	* config/powerpc/jit.h:
+	Linux-specific changes, will probably break OS X compat.  Moved
+	out label handling macros.  Fixed SLOT2LOCALOFFSET macro for
+	linux.
+
+	* config/powerpc/jit3-icode.h: 
+	Fix broken I26const_rangecheck macro.  Don't undef HAVE_call_ref.
+
+	* config/powerpc/jit3-powerpc.def:
+	Updates for linux/ppc.
+
+	* config/powerpc/ppc_isa.h:
+	Macros now print the current function name.
+
+	* config/powerpc/ppc_macros.h:
+	Add ppc_b26 macro.
+
+	* config/powerpc/ppc_stack_frame.h:
+	Add linux specific stack frame structure.
+
+	* config/powerpc/sysdepCallMethod.h:
+	Break sysdepCallMethod function into __APPLE__ and non-Apple
+	functions, so I can wrap my puny brain around what's going on.
+
+	* config/powerpc/trampolines.c, config/powerpc/linux/jit3-md.h,
+	config/powerpc/linux/md.h, config/powerpc/linux/md.c:
+	Updates for linux/ppc.
+
+	* developers/mnemonicizer.awk:
+	Add the function name to the debugging printfs.
+
+	* kaffe/kaffevm/classMethod.h, kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/jit3/machine.h, kaffe/kaffevm/jit3/machine.c:
+	Add an explicit header structure to jitted code.
+
+	* kaffe/kaffevm/jit/native-wrapper.c:
+	Must call initFakeCalls() to reinitialize fake-call state.
+
+	* test/internal/ControlFlowMethods.java,
+	test/internal/Exceptions.java:
+	Move stuff that throws exceptions to Exceptions.java since they
+	require more things to work correctly.
+
+	* test/internal/Makefile.am, test/internal/Makefile.in:
+	Add NativeMethodCall and Exceptions tests.
+
+	* test/internal/NativeMethodCall.java, test/internal/System.java:
+	Test for calling native methods.
+
+	* test/internal/ObjectFields.java:
+	More test cases.
+
+	* test/internal/TypeConversion.java:
+	Add critical comment so that certain dummies don't make changes
+	that distort the test case.
+
+	* test/internal/jitBasic.c:
+	Deal better with endianess when comparing things.
+
+	* test/internal/jit_stub.c:
+	Statically load java.lang.System (our stripped version atleast),
+	java.lang.Float, and java.lang.Double.
+
 2004-12-20  Adam Heath  <doogie@brainfood.com>
 
 	* TODO:

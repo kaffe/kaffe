@@ -1,7 +1,7 @@
 /* ppc/jit-icode.h
  * Define the instructions which are present on the PPC.
  *
- * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * Copyright (c) 2002, 2004 The University of Utah and the Flux Group.
  * All rights reserved.
  *
  * @JANOSVM_KAFFE_JANOSVM_LICENSE@
@@ -25,7 +25,9 @@
 //
 #define	__U5const_rangecheck(v)		((v) >= 0 && (v) < 32)
 
-#define __I26const_rangecheck(x) ((((x) & 0xfc000000) == 0xffc000000) || (((x) & 0xffc000000) == 0))
+#define __I26const_rangecheck(x) \
+	(((((x) >> 2) & 0xfc000000) == 0xfc000000) || \
+	 ((((x) >> 2) & 0xfc000000) == 0))
 
 #define __S16const_rangecheck(v) ((-32768 <= (v)) && ((v) <= 32767))
 
@@ -118,7 +120,7 @@
 //
 #define	HAVE_call_ref			call_xCC
 #define	HAVE_call_ref_rangecheck(v)	__I26const_rangecheck(v)
-#undef HAVE_call_ref
+// #undef HAVE_call_ref
 
 #define	HAVE_call			call_xRC
 #define	HAVE_branch_indirect		branch_indirect_xRC

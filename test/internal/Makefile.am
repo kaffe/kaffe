@@ -71,7 +71,9 @@ JAVA_CLASSES = \
 	StaticFields.class \
 	PrimitiveArrays.class \
 	ObjectFields.class \
-	MethodOptimizations.class
+	MethodOptimizations.class \
+	NativeMethodCall.class \
+	Exceptions.class
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
@@ -114,7 +116,16 @@ ObjectFields.class: $(srcdir)/ObjectFields.java
 MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
 	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/MethodOptimizations.java
 
-jit_stub.o: $(JAVA_CLASSES)
+NativeMethodCall.class: $(srcdir)/NativeMethodCall.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/NativeMethodCall.java
+
+Exceptions.class: $(srcdir)/Exceptions.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/Exceptions.java
+
+java/lang/System.class: $(srcdir)/System.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
+
+jit_stub.o: java/lang/System.class $(JAVA_CLASSES)
 
 TESTS = $(check_PROGRAMS)
 
@@ -133,6 +144,8 @@ EXTRA_DIST = \
 	StaticFields.java \
 	PrimitiveArrays.java \
 	ObjectFields.java \
-	MethodOptimizations.java
+	MethodOptimizations.java \
+	NativeMethodCall.java \
+	Exceptions.java
 
 CLEANFILES = *.fail *.out core *.core *.class

@@ -73,6 +73,15 @@ class ObjectFields
 	return of.o.i;
     }
 
+    public static final int test__six_ints = 6;
+    
+    public static int six_ints()
+    {
+	ObjectFields of = new ObjectFields(1, 2, 3, 4, 5, 6);
+	
+	return of.i6;
+    }
+    
     private boolean z;
     private byte b;
     private char c;
@@ -81,6 +90,13 @@ class ObjectFields
     private float f;
     private double d;
     private ObjectFields o;
+	
+    private int i1;
+    private int i2;
+    private int i3;
+    private int i4;
+    private int i5;
+    private int i6;
 
     private ObjectFields(boolean z)
     {
@@ -120,5 +136,15 @@ class ObjectFields
     private ObjectFields(ObjectFields o)
     {
 	this.o = o;
+    }
+
+    private ObjectFields(int i1, int i2, int i3, int i4, int i5, int i6)
+    {
+	this.i1 = i1;
+	this.i2 = i2;
+	this.i3 = i3;
+	this.i4 = i4;
+	this.i5 = i5;
+	this.i6 = i6;
     }
 }

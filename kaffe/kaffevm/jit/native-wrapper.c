@@ -29,6 +29,8 @@
 #include "feedback.h"
 #endif
 
+void initFakeCalls(void);
+
 static void*
 startJNIcall(void)
 {
@@ -108,6 +110,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
 	maxStack = 0;
+	initFakeCalls();
 	success = initInsnSequence(xmeth, 0, maxLocal, maxStack, &info);
 	if (!success) {
 		goto done;

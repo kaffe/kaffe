@@ -433,7 +433,7 @@ enum {
 
 // rd = ra + rb
 #define ppc_op_add(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "add rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:add rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -441,7 +441,7 @@ enum {
 	  (266UL << 1)))
 
 #define ppc_op_addc(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addc rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addc rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -449,7 +449,7 @@ enum {
 	  (10UL << 1)))
 
 #define ppc_op_adde(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "adde rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:adde rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -457,28 +457,28 @@ enum {
 	  (138UL << 1)))
 
 #define ppc_op_addi(rd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addi rd(%d) ra(%d) simm(%d) ", rd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addi rd(%d) ra(%d) simm(%d) ", __FUNCTION__, rd, ra, simm)), \
 	 (PPC_SET_OPCD(14) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_addic(rd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addic rd(%d) ra(%d) simm(%d) ", rd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addic rd(%d) ra(%d) simm(%d) ", __FUNCTION__, rd, ra, simm)), \
 	 (PPC_SET_OPCD(12) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_addis(rd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addis rd(%d) ra(%d) simm(%d) ", rd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addis rd(%d) ra(%d) simm(%d) ", __FUNCTION__, rd, ra, simm)), \
 	 (PPC_SET_OPCD(15) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_addme(rd, ra) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addme rd(%d) ra(%d) ", rd, ra)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addme rd(%d) ra(%d) ", __FUNCTION__, rd, ra)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -486,7 +486,7 @@ enum {
 	  (234UL << 1)))
 
 #define ppc_op_addze(rd, ra) \
-	((void)ppc_op_debug((ppc_op_ctxt, "addze rd(%d) ra(%d) ", rd, ra)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:addze rd(%d) ra(%d) ", __FUNCTION__, rd, ra)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -494,7 +494,7 @@ enum {
 	  (202UL << 1)))
 
 #define ppc_op_and(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "and ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:and ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -502,7 +502,7 @@ enum {
 	  (28UL << 1)))
 
 #define ppc_op_andc(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "andc ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:andc ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -510,47 +510,47 @@ enum {
 	  (60UL << 1)))
 
 #define ppc_op_andi(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "andi ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:andi ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(28) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_andis(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "andis ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:andis ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(29) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_b(li) \
-	((void)ppc_op_debug((ppc_op_ctxt, "b li(%d) ", li)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:b li(%d) ", __FUNCTION__, li)), \
 	 (PPC_SET_OPCD(18) | \
 	  PPC_SET_LI(li)))
 
 #define ppc_op_bc(bo, bi, bd) \
-	((void)ppc_op_debug((ppc_op_ctxt, "bc bo(%d) bi(%d) bd(%d) ", bo, bi, bd)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:bc bo(%d) bi(%d) bd(%d) ", __FUNCTION__, bo, bi, bd)), \
 	 (PPC_SET_OPCD(16) | \
 	  PPC_SET_BO(bo) | \
 	  PPC_SET_BI(bi) | \
 	  PPC_SET_BD(bd)))
 
 #define ppc_op_bcctr(bo, bi) \
-	((void)ppc_op_debug((ppc_op_ctxt, "bcctr bo(%d) bi(%d) ", bo, bi)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:bcctr bo(%d) bi(%d) ", __FUNCTION__, bo, bi)), \
 	 (PPC_SET_OPCD(19) | \
 	  PPC_SET_BO(bo) | \
 	  PPC_SET_BI(bi) | \
 	  (528UL << 1)))
 
 #define ppc_op_bctr() \
-	((void)ppc_op_debug((ppc_op_ctxt, "bctr ")), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:bctr ", __FUNCTION__)), \
 	 (PPC_SET_OPCD(19) | \
 	  PPC_SET_BO(20) | \
 	  PPC_SET_BI(0) | \
 	  (528UL << 1)))
 
 #define ppc_op_bctrl() \
-	((void)ppc_op_debug((ppc_op_ctxt, "bctrl ")), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:bctrl ", __FUNCTION__)), \
 	 (PPC_SET_OPCD(19) | \
 	  PPC_SET_BO(20) | \
 	  PPC_SET_BI(0) | \
@@ -558,21 +558,21 @@ enum {
 	  PPC_OPTION_LK))
 
 #define ppc_op_bclr(bo, bi) \
-	((void)ppc_op_debug((ppc_op_ctxt, "bclr bo(%d) bi(%d) ", bo, bi)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:bclr bo(%d) bi(%d) ", __FUNCTION__, bo, bi)), \
 	 (PPC_SET_OPCD(19) | \
 	  PPC_SET_BO(bo) | \
 	  PPC_SET_BI(bi) | \
 	  (16UL << 1)))
 
 #define ppc_op_blr() \
-	((void)ppc_op_debug((ppc_op_ctxt, "blr ")), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:blr ", __FUNCTION__)), \
 	 (PPC_SET_OPCD(19) | \
 	  PPC_SET_BO(20) | \
 	  PPC_SET_BI(0) | \
 	  (16UL << 1)))
 
 #define ppc_op_cmp(crfd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "cmp crfd(%d) ra(%d) rb(%d) ", crfd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:cmp crfd(%d) ra(%d) rb(%d) ", __FUNCTION__, crfd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_CRFD(crfd) | \
 	  (0UL << 22) | \
@@ -581,7 +581,7 @@ enum {
 	  0))
 
 #define ppc_op_cmpi(crfd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "cmpi crfd(%d) ra(%d) simm(%d) ", crfd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:cmpi crfd(%d) ra(%d) simm(%d) ", __FUNCTION__, crfd, ra, simm)), \
 	 (PPC_SET_OPCD(11) | \
 	  PPC_SET_CRFD(crfd) | \
 	  (0UL << 22) | \
@@ -589,7 +589,7 @@ enum {
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_cmpl(crfd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "cmpl crfd(%d) ra(%d) rb(%d) ", crfd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:cmpl crfd(%d) ra(%d) rb(%d) ", __FUNCTION__, crfd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_CRFD(crfd) | \
 	  (0UL << 22) | \
@@ -598,7 +598,7 @@ enum {
 	  (32UL << 1)))
 
 #define ppc_op_cmpli(crfd, ra, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "cmpli crfd(%d) ra(%d) uimm(%d) ", crfd, ra, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:cmpli crfd(%d) ra(%d) uimm(%d) ", __FUNCTION__, crfd, ra, uimm)), \
 	 (PPC_SET_OPCD(10) | \
 	  PPC_SET_CRFD(crfd) | \
 	  (0UL << 22) | \
@@ -606,7 +606,7 @@ enum {
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_divw(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "divw rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:divw rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -614,7 +614,7 @@ enum {
 	  (491UL << 1)))
 
 #define ppc_op_divwu(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "divwu rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:divwu rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -622,7 +622,7 @@ enum {
 	  (459UL << 1)))
 
 #define ppc_op_fabs(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fabs frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fabs frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -630,7 +630,7 @@ enum {
 	  (264UL << 1)))
 
 #define ppc_op_fadd(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fadd frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fadd frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -638,7 +638,7 @@ enum {
 	  (21UL << 1)))
 
 #define ppc_op_fadds(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fadds frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fadds frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(59) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -646,7 +646,7 @@ enum {
 	  (21UL << 1)))
 
 #define ppc_op_fctiw(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fctiw frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fctiw frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -654,7 +654,7 @@ enum {
 	  (14UL << 1)))
 
 #define ppc_op_fctiwz(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fctiwz frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fctiwz frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -662,7 +662,7 @@ enum {
 	  (15UL << 1)))
 
 #define ppc_op_fdiv(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fdiv frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fdiv frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -670,7 +670,7 @@ enum {
 	  (18UL << 1)))
 
 #define ppc_op_fdivs(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fdivs frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fdivs frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(59) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -678,7 +678,7 @@ enum {
 	  (18UL << 1)))
 
 #define ppc_op_fmul(frd, fra, frc) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fmul frd(%d) fra(%d) frc(%d) ", frd, fra, frc)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fmul frd(%d) fra(%d) frc(%d) ", __FUNCTION__, frd, fra, frc)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -687,7 +687,7 @@ enum {
 	  (25UL << 1)))
 
 #define ppc_op_fmuls(frd, fra, frc) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fmuls frd(%d) fra(%d) frc(%d) ", frd, fra, frc)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fmuls frd(%d) fra(%d) frc(%d) ", __FUNCTION__, frd, fra, frc)), \
 	 (PPC_SET_OPCD(59) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -696,7 +696,7 @@ enum {
 	  (25UL << 1)))
 
 #define ppc_op_fneg(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fneg frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fneg frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -704,7 +704,7 @@ enum {
 	  (40UL << 1)))
 
 #define ppc_op_frsp(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "frsp frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:frsp frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -712,7 +712,7 @@ enum {
 	  (12UL << 1)))
 
 #define ppc_op_fsub(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fsub frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fsub frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -720,7 +720,7 @@ enum {
 	  (20UL << 1)))
 
 #define ppc_op_fsubs(frd, fra, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fsubs frd(%d) fra(%d) frb(%d) ", frd, fra, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fsubs frd(%d) fra(%d) frb(%d) ", __FUNCTION__, frd, fra, frb)), \
 	 (PPC_SET_OPCD(59) | \
 	  PPC_SET_FRD(frd) | \
 	  PPC_SET_FRA(fra) | \
@@ -728,7 +728,7 @@ enum {
 	  (20UL << 1)))
 
 #define ppc_op_fmr(frd, frb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "fmr frd(%d) frb(%d) ", frd, frb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:fmr frd(%d) frb(%d) ", __FUNCTION__, frd, frb)), \
 	 (PPC_SET_OPCD(63) | \
 	  PPC_SET_FRD(frd) | \
 	  (0UL << 16) | \
@@ -736,21 +736,21 @@ enum {
 	  (72UL << 1)))
 
 #define ppc_op_lbz(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lbz rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lbz rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(34) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lbzu(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lbzu rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lbzu rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(35) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lbzux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lbzux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lbzux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -758,7 +758,7 @@ enum {
 	  (119UL << 1)))
 
 #define ppc_op_lbzx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lbzx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lbzx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -766,21 +766,21 @@ enum {
 	  (87UL << 1)))
 
 #define ppc_op_lfd(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfd rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfd rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(50) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lfdu(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfdu rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfdu rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(51) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lfdux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfdux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfdux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -788,7 +788,7 @@ enum {
 	  (631UL << 1)))
 
 #define ppc_op_lfdx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfdx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfdx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -796,21 +796,21 @@ enum {
 	  (599UL << 1)))
 
 #define ppc_op_lfs(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfs rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfs rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(48) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lfsu(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfsu rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfsu rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(49) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lfsux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfsux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfsux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -818,7 +818,7 @@ enum {
 	  (567UL << 1)))
 
 #define ppc_op_lfsx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lfsx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lfsx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -826,21 +826,21 @@ enum {
 	  (535UL << 1)))
 
 #define ppc_op_lha(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lha rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lha rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(42) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lhau(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhau rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhau rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(43) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lhaux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhaux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhaux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -848,7 +848,7 @@ enum {
 	  (375UL << 1)))
 
 #define ppc_op_lhax(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhax rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhax rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -856,7 +856,7 @@ enum {
 	  (343UL << 1)))
 
 #define ppc_op_lhbrx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhbrx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhbrx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -864,21 +864,21 @@ enum {
 	  (790UL << 1)))
 
 #define ppc_op_lhz(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhz rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhz rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(40) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lhzu(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhzu rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhzu rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(40) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lhzux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhzux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhzux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -886,7 +886,7 @@ enum {
 	  (311UL << 1)))
 
 #define ppc_op_lhzx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lhzx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lhzx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -894,28 +894,28 @@ enum {
 	  (279UL << 1)))
 
 #define ppc_op_lmw(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lmw rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lmw rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(46) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lwz(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lwz rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lwz rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(32) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lwzu(rd, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lwzu rd(%d) ra(%d) d(%d) ", rd, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lwzu rd(%d) ra(%d) d(%d) ", __FUNCTION__, rd, ra, d)), \
 	 (PPC_SET_OPCD(33) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_lwzux(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lwzux rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lwzux rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -923,7 +923,7 @@ enum {
 	  (55UL << 1)))
 
 #define ppc_op_lwzx(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lwzx rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lwzx rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -931,7 +931,7 @@ enum {
 	  (23UL << 1)))
 
 #define ppc_op_mfspr(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mfspr rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mfspr rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -939,7 +939,7 @@ enum {
 	  (339UL << 1)))
 
 #define ppc_op_mflr(rd) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mflr rd(%d) ", rd)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mflr rd(%d) ", __FUNCTION__, rd)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(8) | \
@@ -947,7 +947,7 @@ enum {
 	  (339UL << 1)))
 
 #define ppc_op_mr(ra, rs) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mr ra(%d) rs(%d) ", ra, rs)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mr ra(%d) rs(%d) ", __FUNCTION__, ra, rs)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -955,7 +955,7 @@ enum {
 	  (444UL << 1)))
 
 #define ppc_op_mtspr(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mtspr rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mtspr rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -963,7 +963,7 @@ enum {
 	  (467UL << 1)))
 
 #define ppc_op_mtctr(rs) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mtctr rs(%d) ", rs)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mtctr rs(%d) ", __FUNCTION__, rs)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(9) | \
@@ -971,7 +971,7 @@ enum {
 	  (467UL << 1)))
 
 #define ppc_op_mtlr(rs) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mtlr rs(%d) ", rs)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mtlr rs(%d) ", __FUNCTION__, rs)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(8) | \
@@ -979,7 +979,7 @@ enum {
 	  (467UL << 1)))
 
 #define ppc_op_mulhw(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mulhw rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mulhw rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -987,7 +987,7 @@ enum {
 	  (75UL << 1)))
 
 #define ppc_op_mulhwu(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mulhwu rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mulhwu rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -995,14 +995,14 @@ enum {
 	  (11UL << 1)))
 
 #define ppc_op_mulli(rd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mulli rd(%d) ra(%d) simm(%d) ", rd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mulli rd(%d) ra(%d) simm(%d) ", __FUNCTION__, rd, ra, simm)), \
 	 (PPC_SET_OPCD(7) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_mullw(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "mullw rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:mullw rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1010,21 +1010,21 @@ enum {
 	  (235UL << 1)))
 
 #define ppc_op_neg(rd, ra) \
-	((void)ppc_op_debug((ppc_op_ctxt, "neg rd(%d) ra(%d) ", rd, ra)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:neg rd(%d) ra(%d) ", __FUNCTION__, rd, ra)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  (104UL << 1)))
 
 #define ppc_op_nop() \
-	((void)ppc_op_debug((ppc_op_ctxt, "nop ")), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:nop ", __FUNCTION__)), \
 	 (PPC_SET_OPCD(24) | \
 	  PPC_SET_RA(PPC_R0) | \
 	  PPC_SET_RS(PPC_R0) | \
 	  0))
 
 #define ppc_op_or(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "or ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:or ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1032,7 +1032,7 @@ enum {
 	  (444UL << 1)))
 
 #define ppc_op_orc(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "orc ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:orc ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1040,21 +1040,21 @@ enum {
 	  (412UL << 1)))
 
 #define ppc_op_ori(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "ori ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:ori ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(24) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_oris(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "oris ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:oris ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(24) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_rlwimi(ra, rs, sh, mb, me) \
-	((void)ppc_op_debug((ppc_op_ctxt, "rlwimi ra(%d) rs(%d) sh(%d) mb(%d) me(%d) ", ra, rs, sh, mb, me)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:rlwimi ra(%d) rs(%d) sh(%d) mb(%d) me(%d) ", __FUNCTION__, ra, rs, sh, mb, me)), \
 	 (PPC_SET_OPCD(20) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1063,7 +1063,7 @@ enum {
 	  PPC_SET_ME(me)))
 
 #define ppc_op_rlwinm(ra, rs, sh, mb, me) \
-	((void)ppc_op_debug((ppc_op_ctxt, "rlwinm ra(%d) rs(%d) sh(%d) mb(%d) me(%d) ", ra, rs, sh, mb, me)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:rlwinm ra(%d) rs(%d) sh(%d) mb(%d) me(%d) ", __FUNCTION__, ra, rs, sh, mb, me)), \
 	 (PPC_SET_OPCD(21) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1072,7 +1072,7 @@ enum {
 	  PPC_SET_ME(me)))
 
 #define ppc_op_slwi(ra, rs, sh) \
-	((void)ppc_op_debug((ppc_op_ctxt, "slwi ra(%d) rs(%d) sh(%d) ", ra, rs, sh)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:slwi ra(%d) rs(%d) sh(%d) ", __FUNCTION__, ra, rs, sh)), \
 	 (PPC_SET_OPCD(21) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1081,7 +1081,7 @@ enum {
 	  PPC_SET_ME(31-sh)))
 
 #define ppc_op_slw(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "slw ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:slw ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1089,7 +1089,7 @@ enum {
 	  (24UL << 1)))
 
 #define ppc_op_sraw(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sraw ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sraw ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1097,7 +1097,7 @@ enum {
 	  (792UL << 1)))
 
 #define ppc_op_srawi(ra, rs, sh) \
-	((void)ppc_op_debug((ppc_op_ctxt, "srawi ra(%d) rs(%d) sh(%d) ", ra, rs, sh)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:srawi ra(%d) rs(%d) sh(%d) ", __FUNCTION__, ra, rs, sh)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1105,7 +1105,7 @@ enum {
 	  (824UL << 1)))
 
 #define ppc_op_srw(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "srw ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:srw ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1113,21 +1113,21 @@ enum {
 	  (536UL << 1)))
 
 #define ppc_op_stb(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stb rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stb rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(38) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stbu(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stbu rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stbu rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(39) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stbux(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stbux rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stbux rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1135,7 +1135,7 @@ enum {
 	  (247UL << 1)))
 
 #define ppc_op_stbx(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stbx rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stbx rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1143,21 +1143,21 @@ enum {
 	  (215UL << 1)))
 
 #define ppc_op_stfd(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfd rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfd rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(54) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stfdu(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfdu rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfdu rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(55) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stfdux(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfdux rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfdux rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1165,7 +1165,7 @@ enum {
 	  (759UL << 1)))
 
 #define ppc_op_stfdx(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfdx rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfdx rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1173,21 +1173,21 @@ enum {
 	  (727UL << 1)))
 
 #define ppc_op_stfs(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfs rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfs rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(52) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stfsu(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfsu rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfsu rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(53) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stfsux(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfsux rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfsux rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1195,7 +1195,7 @@ enum {
 	  (695UL << 1)))
 
 #define ppc_op_stfsx(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stfsx rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stfsx rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1203,14 +1203,14 @@ enum {
 	  (663UL << 1)))
 
 #define ppc_op_sth(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sth rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sth rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(44) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_sthbrx(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sthbrx rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sthbrx rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1218,14 +1218,14 @@ enum {
 	  (918UL << 1)))
 
 #define ppc_op_sthu(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sthu rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sthu rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(45) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_sthux(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sthux rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sthux rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1233,7 +1233,7 @@ enum {
 	  (439UL << 1)))
 
 #define ppc_op_sthx(rs, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "sthx rs(%d) ra(%d) rb(%d) ", rs, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:sthx rs(%d) ra(%d) rb(%d) ", __FUNCTION__, rs, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
@@ -1241,28 +1241,28 @@ enum {
 	  (407UL << 1)))
 
 #define ppc_op_stmw(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stmw rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stmw rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(47) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stw(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stw rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stw rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(36) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_stwu(rs, ra, d) \
-	((void)ppc_op_debug((ppc_op_ctxt, "stwu rs(%d) ra(%d) d(%d) ", rs, ra, d)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:stwu rs(%d) ra(%d) d(%d) ", __FUNCTION__, rs, ra, d)), \
 	 (PPC_SET_OPCD(37) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_D(d)))
 
 #define ppc_op_subf(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subf rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subf rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1270,7 +1270,7 @@ enum {
 	  (40UL << 1)))
 
 #define ppc_op_subfc(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subfc rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subfc rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1278,7 +1278,7 @@ enum {
 	  (8UL << 1)))
 
 #define ppc_op_subfe(rd, ra, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subfe rd(%d) ra(%d) rb(%d) ", rd, ra, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subfe rd(%d) ra(%d) rb(%d) ", __FUNCTION__, rd, ra, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1286,14 +1286,14 @@ enum {
 	  (136UL << 1)))
 
 #define ppc_op_subfic(rd, ra, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subfic rd(%d) ra(%d) simm(%d) ", rd, ra, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subfic rd(%d) ra(%d) simm(%d) ", __FUNCTION__, rd, ra, simm)), \
 	 (PPC_SET_OPCD(8) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_subfme(rd, ra) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subfme rd(%d) ra(%d) ", rd, ra)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subfme rd(%d) ra(%d) ", __FUNCTION__, rd, ra)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1301,7 +1301,7 @@ enum {
 	  (232UL << 1)))
 
 #define ppc_op_subfze(rd, ra) \
-	((void)ppc_op_debug((ppc_op_ctxt, "subfze rd(%d) ra(%d) ", rd, ra)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:subfze rd(%d) ra(%d) ", __FUNCTION__, rd, ra)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(ra) | \
@@ -1309,21 +1309,21 @@ enum {
 	  (200UL << 1)))
 
 #define ppc_op_li(rd, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "li rd(%d) simm(%d) ", rd, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:li rd(%d) simm(%d) ", __FUNCTION__, rd, simm)), \
 	 (PPC_SET_OPCD(14) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(PPC_R0) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_lis(rd, simm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "lis rd(%d) simm(%d) ", rd, simm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:lis rd(%d) simm(%d) ", __FUNCTION__, rd, simm)), \
 	 (PPC_SET_OPCD(15) | \
 	  PPC_SET_RD(rd) | \
 	  PPC_SET_RA(PPC_R0) | \
 	  PPC_SET_SIMM(simm)))
 
 #define ppc_op_xor(ra, rs, rb) \
-	((void)ppc_op_debug((ppc_op_ctxt, "xor ra(%d) rs(%d) rb(%d) ", ra, rs, rb)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:xor ra(%d) rs(%d) rb(%d) ", __FUNCTION__, ra, rs, rb)), \
 	 (PPC_SET_OPCD(31) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
@@ -1331,14 +1331,14 @@ enum {
 	  (316UL << 1)))
 
 #define ppc_op_xori(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "xori ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:xori ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(26) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
 #define ppc_op_xoris(ra, rs, uimm) \
-	((void)ppc_op_debug((ppc_op_ctxt, "xoris ra(%d) rs(%d) uimm(%d) ", ra, rs, uimm)), \
+	((void)ppc_op_debug((ppc_op_ctxt, "%s:xoris ra(%d) rs(%d) uimm(%d) ", __FUNCTION__, ra, rs, uimm)), \
 	 (PPC_SET_OPCD(27) | \
 	  PPC_SET_RA(ra) | \
 	  PPC_SET_RS(rs) | \

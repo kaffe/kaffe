@@ -2,7 +2,7 @@
  * powerpc/linux/md.h
  * Linux PowerPC configuration information.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -55,6 +55,11 @@ extern void init_md(void);
 
 /* align data types to their size */
 #define   ALIGNMENT_OF_SIZE(S)    (S)
+
+#if defined(__GLIBC__)
+#define KAFFEMD_STACKEND
+extern void *mdGetStackEnd(void);
+#endif
 
 
 #endif

@@ -16,6 +16,11 @@ class TypeConversion
     }
 
     public static final int test__float_nan_to_int = 0;
+    
+    /*
+     * NB: This must _not_ be final, otherwise the java compiler will optimize
+     * it away.
+     */
     public static float mynanf = Float.NaN;
 
     public static int float_nan_to_int()
