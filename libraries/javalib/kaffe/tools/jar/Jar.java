@@ -494,9 +494,7 @@ public class Jar {
 
 	    if (! tmp.isAbsolute()) {
 		tmp = new XPFile(parent,files[i]);
-	    }
-
-	    if (tmp.isAbsolute()) {
+	    } else {
 		// Find and remove the first '/' in the short name
 		String name = files[i];
 		int index = name.indexOf('/');
