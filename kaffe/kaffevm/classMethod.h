@@ -183,7 +183,7 @@ typedef struct _fields {
 #define FIELD_UNRESOLVED_FLAG	0x8000
 #define	FIELD_CONSTANT_VALUE	0x4000
 
-#define FIELD_RESOLVED(FLD)	(! ((FLD)->accflags & FIELD_UNRESOLVED_FLAG))
+#define FIELD_RESOLVED(FLD)	((FLD)->type != 0 && !((FLD)->accflags & FIELD_UNRESOLVED_FLAG))
 
 /* Type of field FLD.  Only valid if FIELD_RESOLVED(FLD). */
 #define FIELD_TYPE(FLD)		((FLD)->type)
