@@ -21,6 +21,7 @@
 #include "hashtab.h"
 #include "stringSupport.h"
 #include "stats.h"
+#include "debug.h"
 
 /* For kaffeh, don't use the hash table. Instead, just make these
    function calls into macros in such a way as to avoid compiler
