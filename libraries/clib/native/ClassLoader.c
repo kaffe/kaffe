@@ -116,7 +116,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 void
 java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_Class* class)
 {
-	processClass(class, CSTATE_LINKED);
+	processClass(class, CSTATE_OK);
 }
 
 /*
