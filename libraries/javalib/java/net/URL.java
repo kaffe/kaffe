@@ -40,22 +40,36 @@ public URL(String spec) throws MalformedURLException {
 	}
 	protocol = spec.substring(0, pend);
 
-	int hstart = pend+3;
-	if (spec.substring(pend+1, hstart).equals("//")) {
+	boolean hasHostPart = false;
+	try {
+		hasHostPart = spec.substring(pend + 1, pend + 3).equals("//");
+	} catch (IndexOutOfBoundsException e) { }
+
+	if (hasHostPart) {
+		int hstart = pend + 3;
 		int hend = spec.indexOf(':', hstart);
+
 		if (hend == -1) {
 			hend = spec.indexOf('/', hstart);
 			if (hend == -1) {
-				throw new MalformedURLException("no host");
+				throw new MalformedURLException("no file");
 			}
 			host = spec.substring(hstart, hend);
 			port = getDefaultPort(protocol);
 		}
 		else {
 			host = spec.substring(hstart, hend);
-			int postart = hend+1;
+			int postart = hend + 1;
 			int poend = spec.indexOf('/', postart);
-			port = Integer.parseInt(spec.substring(postart, poend));
+			if (poend == -1) {
+				throw new MalformedURLException("no file");
+			}
+			try {
+				port = Integer.parseInt(
+					spec.substring(postart, poend));
+			} catch (NumberFormatException e) {
+				throw new MalformedURLException("bad port");
+			}
 		}
 		fstart = spec.indexOf( '/', hstart);
 	}
