@@ -41,6 +41,7 @@
 #include "code-analyse.h"
 #include "external.h"
 #include "soft.h"
+#include "stringSupport.h"
 #include "jni.h"
 #include "thread.h"
 #include "jthread.h"
@@ -442,6 +443,12 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	bytecode_processed += meth->c.bcode.codelen;
 	codeperbytecode = code_generated / bytecode_processed;
 
+	/* We must free the trampoline for <clinit> methods of interfaces 
+	 * before overwriting it.
+	 */
+	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
+		KFREE(METHOD_NATIVECODE(meth));
+	}
 	SET_METHOD_NATIVECODE(meth, code->code);
 	/* Free bytecode before replacing it with native code */
 	if (meth->c.bcode.code != 0) {

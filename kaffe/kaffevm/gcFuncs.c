@@ -91,6 +91,13 @@ DBG(CLASSGC,
                         KFREE(m->declared_exceptions);
                         KFREE(m->exception_table);
                         KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
+
+			/* Free ncode if necessary: this only concerns
+			 * trampolines for interface <clinit> methods
+			 */
+			if (GC_getObjectIndex(collector, m->ncode) != -1) {
+				KFREE(m->ncode);
+			}
 			m++;
                 }
                 KFREE(CLASS_METHODS(clazz));
@@ -160,11 +167,6 @@ walkMethods(Collector* collector, Method* m, int nm)
                                         GC_markObject(collector, c);
                                 }
                         }
-                }
-
-                /* NB: need to mark ncode only if it points to a trampoline */
-                if(!METHOD_TRANSLATED(m) && (m->ncode != 0)) {
-                        GC_markAddress(collector, m->ncode);           /* XXX */
                 }
                 m++;
         }
