@@ -103,7 +103,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 				break;
 			}
 		}
-#if 0
+
                 /* If we've not found anything and we're searching interfaces,
                  * search them too.
                  */
@@ -117,7 +117,6 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
                                 }
                         }
                 }
-#endif
 	}
 
 	/* Calculate in's and out's */
