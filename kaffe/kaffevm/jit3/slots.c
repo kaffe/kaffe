@@ -27,7 +27,9 @@ SlotInfo stack_limit[1];	/* Used to represent the stack limit */
 
 static SlotData* basicdatas;
 static int lastnrslots = 0;
+#if defined(STACK_LIMIT)
 static SlotData stack_limit_data;
+#endif
 
 /*
  * Initiate slots.

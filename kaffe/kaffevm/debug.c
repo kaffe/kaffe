@@ -120,10 +120,15 @@ static struct debug_opts
 	D(AWT_FNT,	"AWT subsystem."),
 	D(AWT,		"Debug all of AWT."),
 
+	D(GCJ,		"Debug GCJ support."),
+	D(GCJMORE,	"Debug GCJ support (additional msg)."),
+
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
 			"Various lookup operations" },
 
+	{ "gcj", DBG_GCJ|DBG_GCJMORE,
+			"Debug GCJ support in detailed" },
 	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 
 			"Thread operations and locking operations" },
 

@@ -378,7 +378,7 @@ stringCharArray2Java(const jchar *data, int len)
 	}
 
 	/* Create a new String object */
-	ary = (HArrayOfChar*)newArrayChecked(_Jv_charClass, len,
+	ary = (HArrayOfChar*)newArrayChecked(charClass, len,
 					     &info);
 	if (!ary) return 0;
 	

@@ -108,12 +108,13 @@ DBG(CLASSGC,
         if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
                 Method *m = CLASS_METHODS(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
+			void *ncode = METHOD_NATIVECODE(m);
 #if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 			if (METHOD_JITTED(m)) {
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
 				MD_UNREGISTER_JIT_EXCEPTION_INFO (m->c.ncode.ncode_start,
-					m->ncode,
-					m->c.ncode.ncode_end - m->ncode);
+					ncode,
+					m->c.ncode.ncode_end - ncode);
 #endif
 #if defined(JIT3)
 				makeMethodInactive(m);
@@ -128,11 +129,11 @@ DBG(CLASSGC,
                         KFREE(m->exception_table);
                         KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
 
-			/* Free ncode if necessary: this only concerns
-			 * trampolines for interface <clinit> methods
+			/* Free ncode if necessary: this concerns
+			 * any uninvoked trampolines
 			 */
-			if (GC_getObjectIndex(collector, m->ncode) != -1) {
-				KFREE(m->ncode);
+			if (GC_getObjectIndex(collector, ncode) != -1) {
+				KFREE(ncode);
 			}
 			m++;
                 }
@@ -268,7 +269,9 @@ DBG(GCPRECISE,
                         if (FIELD_RESOLVED(fld) 
 				&& !CLASS_IS_PRIMITIVE(fld->type)) 
 			{
-                                GC_markObject(collector, fld->type);
+				if (!CLASS_GCJ(fld->type)) {
+					GC_markObject(collector, fld->type);
+				}
                         } /* else it's an Utf8Const that is not subject to gc */
                         fld++;
                 }
@@ -277,12 +280,8 @@ DBG(GCPRECISE,
                 fld = CLASS_SFIELDS(class);
                 for (n = 0; n < CLASS_NSFIELDS(class); n++) {
                         if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
-				/* 
-				 * NB: This would break if static fields could
-				 * refer to non gc-allocated objects.
-				 * Check when doing GCJ.
-				 */
-                                GC_markObject(collector, *(void**)FIELD_ADDRESS(fld));
+				void **faddr = (void**)FIELD_ADDRESS(fld);
+				GC_markObject(collector, *faddr);
                         }
                         fld++;
                 }

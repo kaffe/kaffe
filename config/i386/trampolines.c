@@ -59,4 +59,27 @@ i386_dft1:							\n
 
 #endif
 
+#if defined (HAVE_GCJ_SUPPORT)
+/*
+ * Warning: These trampolines are so twisted they may not
+ * be legal in some states.  Basically, what we're doing here is rely 
+ * on the way cross-shared library calls are made.
+ */
+asm(
+	START_ASM_FUNC() C_FUNC_NAME(__kaffe_i386_gcj_fixup) "\n"
+C_FUNC_NAME(__kaffe_i386_gcj_fixup) ":
+	mov	(%esp), %eax	# get return address
+	add	-4(%eax), %eax	# add jump relative offset from previous instr.
+				# this points at at jmp *$off(%ebx) instr.
+	mov	2(%eax), %eax	# extract 'off'
+	add	%ebx, %eax	# compute $off(%ebx)
+	pushl	%eax		# pass as first argument
+	call	" C_FUNC_NAME(gcj_fixup_trampoline) " # returns target
+	addl	$4, %esp	# remove argument
+	jmp	*%eax		# jump to target
+"
+	END_ASM_FUNC()
+);
+#endif
+
 #endif

@@ -87,8 +87,8 @@ struct Hjava_lang_Class {
 
 	/* all interfaces supported by this class */
         struct Hjava_lang_Class** interfaces;
-	short*			if2itable;
-	short*			itable2dtable;
+	short*			if2itable;	// redundant now
+	void**			itable2dtable;
 	short			interface_len;
 	short			total_interface_len;
 	/* indices for all classes implementing this interface */
@@ -108,6 +108,8 @@ struct Hjava_lang_Class {
 
 	/* array containing static data */
 	void*			static_data;
+
+	void*			gcjPeer;	/* only needed if GCJ_SUPPORT */
 };
 
 #ifndef __DEFINED_CLASS
@@ -117,11 +119,22 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
 #define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
-#define	METHOD_NATIVECODE(M)		((M)->ncode)
+
+#define	METHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
+		(M)->ncode : \
+		(M)->class->dtable->method[(M)->idx])
+
+/* Like METHOD_NATIVECODE, except we take the address ---
+ * gcc doesn't compile &( ? : ) expressions for some reason
+ */
+#define	PMETHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
+		(void*)&((M)->ncode) : \
+		&((M)->class->dtable->method[(M)->idx]))
+
 #define	METHOD_CODE_START(M)		((M)->c.ncode.ncode_start)
-#define	SET_METHOD_NATIVECODE(M, C)	(M)->ncode = (C); \
+#define	SET_METHOD_NATIVECODE(M, C)	METHOD_NATIVECODE(M) = (C); \
 					(M)->accflags |= ACC_TRANSLATED
-#define	SET_METHOD_JITCODE(M, C)	(M)->ncode = (C); \
+#define	SET_METHOD_JITCODE(M, C)	METHOD_NATIVECODE(M) = (C); \
 					(M)->accflags |= ACC_TRANSLATED|ACC_JITTED
 
 #if defined(TRANSLATOR)
@@ -157,7 +170,8 @@ typedef struct _methods {
 	short			idx;	/* Index into class->dtable */
 	u2			stacksz;
 	u2			localsz;
-	nativecode*		ncode;	/* Must be here for trampolines */
+	/* Only used for static/final/constructor methods */
+	nativecode*		ncode;  
 	union {
 	  struct {
 		nativecode*	ncode_start;
@@ -221,8 +235,8 @@ typedef struct _fields {
 	} info;
 } fields;
 
-#define FIELD_UNRESOLVED_FLAG	0x8000
-#define	FIELD_CONSTANT_VALUE	0x4000
+#define FIELD_UNRESOLVED_FLAG   0x8000
+#define FIELD_CONSTANT_VALUE    0x4000
 
 #define FIELD_RESOLVED(FLD)	((FLD)->type != 0 && !((FLD)->accflags & FIELD_UNRESOLVED_FLAG))
 
@@ -292,6 +306,7 @@ struct _classFile;
 
 #define	CLASS_IS_INTERFACE(CL) ((CL)->accflags & ACC_INTERFACE)
 #define	CLASS_IS_ABSTRACT(CL) ((CL)->accflags & ACC_ABSTRACT)
+#define	CLASS_IS_FINAL(CL) ((CL)->accflags & ACC_FINAL)
 
 /* For an array type, the types of the elements. */
 #define CLASS_ELEMENT_TYPE(ARRAYCLASS) (*(Hjava_lang_Class**)&(ARRAYCLASS)->methods)
@@ -305,6 +320,8 @@ struct _classFile;
 
 #define	METHOD_IS_STATIC(METH) ((METH)->accflags & ACC_STATIC)
 #define	METHOD_IS_CONSTRUCTOR(METH) ((METH)->accflags & ACC_CONSTRUCTOR)
+#define	METHOD_IS_FINAL(METH) ((METH)->accflags & ACC_FINAL)
+#define	METHOD_IS_PRIVATE(METH) ((METH)->accflags & ACC_PRIVATE)
 
 #define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
 #define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ
@@ -331,6 +348,7 @@ Field*        		addField(Hjava_lang_Class*, struct _field_info*);
 void			addInterfaces(Hjava_lang_Class*, int, Hjava_lang_Class**);
 void			setFieldValue(Field*, u2);
 Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
+bool			getInheritedMethodIndex(Hjava_lang_Class *clazz, Method *meth);
 
 classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
 			     errorInfo *info);

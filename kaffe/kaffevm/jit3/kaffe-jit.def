@@ -2263,7 +2263,12 @@ define_insn(INVOKEVIRTUAL)
 		METHOD_RETURN_VALUE();
 	}
 	else {
-		slot_alloctmp(tmp);
+		int is_virtual = method_method()->idx >= 0;
+		if (is_virtual) {
+			slot_alloctmp(tmp);
+		} else {
+			tmp = 0;	/* for compiler warning */
+		}
 
 		idx = method_nargs();
 
@@ -2271,32 +2276,41 @@ define_insn(INVOKEVIRTUAL)
 
 		check_stack_ref(idx);
 
-		/* Find dispatch table in object */
-		load_offset_ref(tmp, stack(idx), method_dtable_offset);
+		if (is_virtual) {
+			/* Find dispatch table in object */
+			load_offset_ref(tmp, stack(idx), method_dtable_offset);
 
-		/* Check method table for cached entry */
-		load_offset_ref(tmp, tmp,
-			DTABLE_METHODOFFSET + method_idx() * DTABLE_METHODSIZE);
+			/* Check method table for cached entry */
+			load_offset_ref(tmp, tmp,
+				DTABLE_METHODOFFSET + 
+				method_idx() * DTABLE_METHODSIZE);
+		}
 
 		/* Push arguments & object */
 		build_call_frame(method_sig(), stack(idx), idx);
 		idx++;
 
-		slot_nowriteback(tmp);
+		if (is_virtual) {
+			slot_nowriteback(tmp);
+		}
 		pop(idx);
 		begin_func_sync();
 
 		/* Call it */
 		low = method_returntype();
-		call(tmp);
-		slot_freetmp(tmp);
+		if (is_virtual) {
+			call(tmp);
+			slot_freetmp(tmp);
+		} else {
+			call_indirect_method(method_method());
+		}
 
 		/* Pop args */
 		popargs();
 
 		end_func_sync();
 		METHOD_RETURN_VALUE();
-	}
+	} 
 }
 
 define_insn(INVOKESPECIAL)
@@ -2362,14 +2376,14 @@ define_insn(INVOKESTATIC)
 
 	get_method_info_noerror(idx);
 
-	/* If class doesn't exists, call 'NoSuchClassError' */
+	/* If class doesn't exist, call 'NoSuchClassError' */
 	if (method_class() == 0) {
 		softcall_nosuchclass(method_classname());
 		low = method_returntype();
 		pop(method_nargs());
 		METHOD_RETURN_VALUE();
 	}
-	/* If method doesn't exists, call 'NoSuchMethodError' */
+	/* If method doesn't exist, call 'NoSuchMethodError' */
 	else if (method_method() == 0) {
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());
 		low = method_returntype();

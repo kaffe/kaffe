@@ -88,28 +88,28 @@ java_lang_reflect_Field_get(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-	if ( fld->type == _Jv_intClass ) {
+	if ( fld->type == intClass ) {
 		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",*((jint*)base));
 	}
-	else if ( fld->type == _Jv_shortClass ) {
+	else if ( fld->type == shortClass ) {
 		return execute_java_constructor(0,javaLangShortClass,"(S)V",*(jshort*)base);
 	}
-	else if ( fld->type == _Jv_longClass ) {
+	else if ( fld->type == longClass ) {
 		return execute_java_constructor(0,javaLangLongClass,"(J)V",*(jlong*)base);
 	}
-	else if ( fld->type == _Jv_byteClass ) {
+	else if ( fld->type == byteClass ) {
 		return execute_java_constructor(0,javaLangByteClass,"(B)V",*(jbyte*)base);
 	}
-	else if ( fld->type == _Jv_booleanClass ) {
+	else if ( fld->type == booleanClass ) {
 		return execute_java_constructor(0,javaLangBooleanClass,"(Z)V",*(jbool*)base);
 	}
-	else if ( fld->type == _Jv_charClass ) {
+	else if ( fld->type == charClass ) {
 		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",*(jchar*)base);
 	}
-	else if ( fld->type == _Jv_floatClass ) {
+	else if ( fld->type == floatClass ) {
 		return execute_java_constructor(0,javaLangFloatClass,"(F)V",*(jfloat*)base);
 	}
-	else if ( fld->type == _Jv_doubleClass ) {
+	else if ( fld->type == doubleClass ) {
 		return execute_java_constructor(0,javaLangDoubleClass,"(D)V",*(jdouble*)base);
 	}
 	else {
@@ -132,7 +132,7 @@ java_lang_reflect_Field_getBoolean(struct Hjava_lang_reflect_Field* this, struct
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_booleanClass ) {
+        if ( fld->type == booleanClass ) {
                 return *(jbool*)base;
 	}
         else {
@@ -152,7 +152,7 @@ java_lang_reflect_Field_getByte(struct Hjava_lang_reflect_Field* this, struct Hj
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_byteClass ) {
+        if ( fld->type == byteClass ) {
                 return *(jbyte*)base;
 	}
         else {
@@ -171,7 +171,7 @@ java_lang_reflect_Field_getChar(struct Hjava_lang_reflect_Field* this, struct Hj
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_charClass ) {
+        if ( fld->type == charClass ) {
                 return *(jchar*)base;
 	}
         else {
@@ -191,10 +191,10 @@ java_lang_reflect_Field_getShort(struct Hjava_lang_reflect_Field* this, struct H
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_shortClass ) {
+        if ( fld->type == shortClass ) {
                 return *(jshort*)base;
 	}
-        else if ( fld->type == _Jv_byteClass ) {
+        else if ( fld->type == byteClass ) {
                 return (jshort)(*(jbyte*)base);
 	}
         else {
@@ -213,16 +213,16 @@ java_lang_reflect_Field_getInt(struct Hjava_lang_reflect_Field* this, struct Hja
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_intClass ) {
+        if ( fld->type == intClass ) {
                 return *(jint*)base;
 	}
-        else if ( fld->type == _Jv_shortClass ) {
+        else if ( fld->type == shortClass ) {
                 return (jint)(*(jshort*)base);
 	}
-        else if ( fld->type == _Jv_byteClass ) {
+        else if ( fld->type == byteClass ) {
                 return (jint)(*(jbyte*)base);
 	}
-        else if ( fld->type == _Jv_charClass ) {
+        else if ( fld->type == charClass ) {
                 return (jint)(*(jchar*)base);
 	}
         else {
@@ -241,19 +241,19 @@ java_lang_reflect_Field_getLong(struct Hjava_lang_reflect_Field* this, struct Hj
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_longClass ) {
+        if ( fld->type == longClass ) {
                 return *(jlong*)base;
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 return (jlong)(*(jint*)base);
 	}
-        else if ( fld->type == _Jv_shortClass ) {
+        else if ( fld->type == shortClass ) {
                 return (jlong)(*(jshort*)base);
 	}
-        else if ( fld->type == _Jv_byteClass ) {
+        else if ( fld->type == byteClass ) {
                 return (jlong)(*(jbyte*)base);
 	}
-        else if ( fld->type == _Jv_charClass ) {
+        else if ( fld->type == charClass ) {
                 return (jlong)(*(jchar*)base);
 	}
         else {
@@ -272,22 +272,22 @@ java_lang_reflect_Field_getFloat(struct Hjava_lang_reflect_Field* this, struct H
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_floatClass ) {
+        if ( fld->type == floatClass ) {
                 return *(jfloat*)base;
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 return (jfloat)(*(jlong*)base);
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 return (jfloat)(*(jint*)base);
 	}
-        else if ( fld->type == _Jv_shortClass ) {
+        else if ( fld->type == shortClass ) {
                 return (jfloat)(*(jshort*)base);
 	}
-        else if ( fld->type == _Jv_byteClass ) {
+        else if ( fld->type == byteClass ) {
                 return (jfloat)(*(jbyte*)base);
 	}
-        else if ( fld->type == _Jv_charClass ) {
+        else if ( fld->type == charClass ) {
                 return (jfloat)(*(jchar*)base);
 	}
         else {
@@ -306,25 +306,25 @@ java_lang_reflect_Field_getDouble(struct Hjava_lang_reflect_Field* this, struct 
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
         base = getFieldAddress(this, obj);
 
-        if ( fld->type == _Jv_doubleClass ) {
+        if ( fld->type == doubleClass ) {
                 return *(jdouble*)base;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 return (jdouble)(*(jfloat*)base);
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 return (jdouble)(*(jlong*)base);
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 return (jdouble)(*(jint*)base);
 	}
-        else if ( fld->type == _Jv_shortClass ) {
+        else if ( fld->type == shortClass ) {
                 return (jdouble)(*(jshort*)base);
 	}
-        else if ( fld->type == _Jv_byteClass ) {
+        else if ( fld->type == byteClass ) {
                 return (jdouble)(*(jbyte*)base);
 	}
-        else if ( fld->type == _Jv_charClass ) {
+        else if ( fld->type == charClass ) {
                 return (jdouble)(*(jchar*)base);
 	}
         else {
@@ -348,7 +348,7 @@ java_lang_reflect_Field_setBoolean(struct Hjava_lang_reflect_Field* this, struct
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_booleanClass ) {
+        if ( fld->type == booleanClass ) {
                 *(jbool*)base = val;
 	}
         else {
@@ -371,22 +371,22 @@ java_lang_reflect_Field_setByte(struct Hjava_lang_reflect_Field* this, struct Hj
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_byteClass ) {
+        if ( fld->type == byteClass ) {
                 *(jbyte*)base = val;
 	}
-        else if ( fld->type == _Jv_shortClass ) {
+        else if ( fld->type == shortClass ) {
                 *(jshort*)base = (jshort)val;
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 *(jint*)base = (jint)val;
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 *(jlong*)base = (jlong)val;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base =(jdouble)val;
 	}
         else {
@@ -409,19 +409,19 @@ java_lang_reflect_Field_setChar(struct Hjava_lang_reflect_Field* this, struct Hj
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_charClass ) {
+        if ( fld->type == charClass ) {
                 *(jchar*)base = val;
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 *(jint*)base = (jint)val;
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 *(jlong*)base = (jlong)val;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base =(jdouble)val;
 	}
         else {
@@ -444,19 +444,19 @@ java_lang_reflect_Field_setShort(struct Hjava_lang_reflect_Field* this, struct H
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_shortClass ) {
+        if ( fld->type == shortClass ) {
                 *(jshort*)base = val;
 	}
-        else if ( fld->type == _Jv_intClass ) {
+        else if ( fld->type == intClass ) {
                 *(jint*)base = (jint)val;
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 *(jlong*)base = (jlong)val;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base =(jdouble)val;
 	}
         else {
@@ -479,16 +479,16 @@ java_lang_reflect_Field_setInt(struct Hjava_lang_reflect_Field* this, struct Hja
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_intClass ) {
+        if ( fld->type == intClass ) {
                 *(jint*)base = val;
 	}
-        else if ( fld->type == _Jv_longClass ) {
+        else if ( fld->type == longClass ) {
                 *(jlong*)base = (jlong)val;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base =(jdouble)val;
 	}
         else {
@@ -511,13 +511,13 @@ java_lang_reflect_Field_setLong(struct Hjava_lang_reflect_Field* this, struct Hj
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_longClass ) {
+        if ( fld->type == longClass ) {
                 *(jlong*)base = val;
 	}
-        else if ( fld->type == _Jv_floatClass ) {
+        else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base = (jdouble)val;
 	}
         else {
@@ -540,10 +540,10 @@ java_lang_reflect_Field_setFloat(struct Hjava_lang_reflect_Field* this, struct H
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_floatClass ) {
+        if ( fld->type == floatClass ) {
                 *(jfloat*)base = val;
 	}
-        else if ( fld->type == _Jv_doubleClass ) {
+        else if ( fld->type == doubleClass ) {
                 *(jdouble*)base =(jdouble)val;
 	}
         else {
@@ -566,7 +566,7 @@ java_lang_reflect_Field_setDouble(struct Hjava_lang_reflect_Field* this, struct 
                 SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
-        if ( fld->type == _Jv_doubleClass ) {
+        if ( fld->type == doubleClass ) {
                 *(jdouble*)base = val;
 	}
         else {

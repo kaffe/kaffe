@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-hacks.h"
 #include "gtypes.h"
 #include "slots.h"
 #include "access.h"
@@ -46,8 +47,7 @@
 #define	METHOD_PRE_COMPILED(METH)		((int16)(METH)->localsz < 0)
 #define	SET_METHOD_PRE_COMPILED(METH, VAL)	((METH)->localsz = -(VAL))
 #endif
-#define METHOD_NEEDS_TRAMPOLINE(meth) \
-	(!METHOD_TRANSLATED(meth) || (((meth)->accflags & ACC_STATIC) && (meth)->class->state < CSTATE_DOING_INIT))
+
 
 /* interfaces supported by arrays */
 static Hjava_lang_Class* arr_interfaces[2];
@@ -60,13 +60,15 @@ extern bool verify3(Hjava_lang_Class*, errorInfo*);
 static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, Hjava_lang_ClassLoader*);
 
 static bool buildDispatchTable(Hjava_lang_Class*, errorInfo *info);
+static bool buildInterfaceDispatchTable(Hjava_lang_Class*, errorInfo *);
 static bool checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo);
-static bool buildInterfaceDispatchTable(Hjava_lang_Class*, errorInfo*);
+static bool prepareInterface(Hjava_lang_Class*, errorInfo*);
 static bool computeInterfaceImplementationIndex(Hjava_lang_Class*, errorInfo*);
 static bool allocStaticFields(Hjava_lang_Class*, errorInfo *einfo);
-static void resolveObjectFields(Hjava_lang_Class*);
+static bool resolveObjectFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
+static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 
 #if !defined(ALIGNMENT_OF_SIZE)
 #define	ALIGNMENT_OF_SIZE(S)	(S)
@@ -85,12 +87,8 @@ bool
 processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 {
 	int i;
-	int j;
-	int k;
-	int totalilen;
 	Method* meth;
 	Hjava_lang_Class* nclass;
-	Hjava_lang_Class** newifaces;
 	bool success = true;	/* optimistic */
 #ifdef DEBUG
 	static int depth;
@@ -174,8 +172,19 @@ retry:
 			 * classLock here.
 			 */
 			unlockMutex(&class->head);
-			class->superclass = getClass((uintp)class->superclass, 
-						     class, einfo);
+#if defined(HAVE_GCJ_SUPPORT)
+			if (CLASS_GCJ(class)) {
+				class->superclass 
+					= gcjGetClass((void*)class->superclass,
+						      einfo);
+			} else {
+#endif
+				class->superclass 
+					= getClass((uintp)class->superclass, 
+						          class, einfo);
+#if defined(HAVE_GCJ_SUPPORT)
+			}
+#endif
 			lockMutex(&class->head);
 			if (class->superclass == 0) {
 				success = false;
@@ -195,92 +204,56 @@ retry:
 			assert(class->superclass->state >= CSTATE_LINKED);
 		}
 
-		/* Load all the implemented interfaces. */
-		j = class->interface_len;
-		nclass = class->superclass;
-		if (nclass != 0 && nclass != ObjectClass) {
-			/* If class is an interface, its superclass must
-			 * be java.lang.Object or the class file is broken.
-			 */
-			if (CLASS_IS_INTERFACE(class)) {
-				postException(einfo, JAVA_LANG(VerifyError));
-				success = false;
-				goto done;
-			}
-			j += class->superclass->total_interface_len;
-		}
-		for (i = 0; i < class->interface_len; i++) {
-			uintp iface = (uintp)class->interfaces[i];
-			unlockMutex(&class->head);
-			class->interfaces[i] = getClass(iface, class, einfo);
-			lockMutex(&class->head);
-			if (class->interfaces[i] == 0) {
-				success = false;
-				goto done;
-			}
-			j += class->interfaces[i]->total_interface_len;
-		}
-		totalilen = j;
-
-		/* We build a list of *all* interfaces this class can use */
-		if (class->interface_len != j) {
-			newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, GC_ALLOC_INTERFACE);
-			if (newifaces == 0) {
-				postOutOfMemory(einfo);
-				success = false;
-				goto done;
-			}
-			for (i = 0; i < class->interface_len; i++) {
-				newifaces[i] = class->interfaces[i];
-			}
-			nclass = class->superclass;
-			if (nclass != 0 && nclass != ObjectClass) {
-				for (j = 0; j < nclass->total_interface_len; j++, i++) {
-					newifaces[i] = nclass->interfaces[j];
-				}
-			}
-			for (k = 0; k < class->interface_len; k++) {
-				nclass = class->interfaces[k];
-				for (j = 0; j < nclass->total_interface_len; j++, i++) {
-					newifaces[i] = nclass->interfaces[j];
-				}
-			}
-			/* free old list of interfaces */
-			if (class->interfaces != 0) {
-				KFREE(class->interfaces);
-			}
-			class->interfaces = newifaces;
-		}
-
-		/* don't set total_interface_len before interfaces to avoid
-		 * having walkClass attempting to walk interfaces
-		 */
-		class->total_interface_len = totalilen;
-
-		resolveObjectFields(class);
-		success = resolveStaticFields(class, einfo);
-		if (!success) goto done;
-
 #if defined(HAVE_GCJ_SUPPORT)
 		if (CLASS_GCJ(class)) {
-			gcjProcessClass(class);
+			success = gcjProcessClass(class, class->gcjPeer, einfo);
+			if (success == false) {
+				goto done;
+			}
 		}
+#else
+#warning No GCJ Support
 #endif
+		success = resolveObjectFields(class, einfo);
+		if (success == false) {
+			goto done;
+		}
+
+		success = resolveStaticFields(class, einfo);
+		if (success == false) {
+			goto done;
+		}
+
+		success = resolveInterfaces(class, einfo);
+		if (success == false) {
+			goto done;
+		}
 
 		/* Build dispatch table.  We must handle interfaces a little
 		 * differently since they only have a <clinit> method.
 		 */
 		if (!CLASS_IS_INTERFACE(class)) {
+
 			success = buildDispatchTable(class, einfo);
-			if (success == true) {
-				success = checkForAbstractMethods(class, einfo);
+			if (success == false) {
+				goto done;
 			}
-			if (success == true) {
-				success = computeInterfaceImplementationIndex(class, einfo);
+
+			success = buildInterfaceDispatchTable(class, einfo);
+			if (success == false) {
+				goto done;
 			}
+
+			success = checkForAbstractMethods(class, einfo);
+			if (success == false) {
+				goto done;
+			}
+
+			success = computeInterfaceImplementationIndex(class, 
+								      einfo);
 		}
 		else {
-			success = buildInterfaceDispatchTable(class, einfo);
+			success = prepareInterface(class, einfo);
 		}
 		if (success == false) {
 			goto done;
@@ -486,8 +459,8 @@ DBG(STATICINIT,
 #if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
 		MD_UNREGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
-			meth->ncode,
-			meth->c.ncode.ncode_end - meth->ncode);
+			METHOD_NATIVECODE(meth),
+			meth->c.ncode.ncode_end - METHOD_NATIVECODE(meth));
 #endif
 #if defined(JIT3)
 		makeMethodInactive(meth);
@@ -520,6 +493,92 @@ DBG(RESERROR,
 		jthread_current(), class->name->data,
 		success ? "success" : "failure");
     )
+	return (success);
+}
+
+static bool
+resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
+{
+	int iLockRoot;
+	int i, j, k;
+	int totalilen;
+	Hjava_lang_Class** newifaces;
+	Hjava_lang_Class* nclass;
+	bool success = true;	/* optimistic */
+
+	/* Load all the implemented interfaces. */
+	j = class->interface_len;
+	nclass = class->superclass;
+	if (nclass != 0 && nclass != ObjectClass) {
+		/* If class is an interface, its superclass must
+		 * be java.lang.Object or the class file is broken.
+		 */
+		if (CLASS_IS_INTERFACE(class)) {
+			postException(einfo, JAVA_LANG(VerifyError));
+			success = false;
+			goto done;
+		}
+		j += class->superclass->total_interface_len;
+	}
+	for (i = 0; i < class->interface_len; i++) {
+		uintp iface = (uintp)class->interfaces[i];
+		unlockMutex(&class->head);
+
+#if defined(HAVE_GCJ_SUPPORT)
+		if (CLASS_GCJ(class)) {
+			nclass = gcjGetClass((void*)iface, einfo);
+		} else {
+			nclass = getClass(iface, class, einfo);
+		}
+#else
+		nclass = getClass(iface, class, einfo);
+#endif /* HAVE_GCJ_SUPPORT */
+
+		class->interfaces[i] = nclass;
+		lockMutex(&class->head);
+		if (class->interfaces[i] == 0) {
+			success = false;
+			goto done;
+		}
+		j += class->interfaces[i]->total_interface_len;
+	}
+	totalilen = j;
+
+	/* We build a list of *all* interfaces this class can use */
+	if (class->interface_len != j) {
+		newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, GC_ALLOC_INTERFACE);
+		if (newifaces == 0) {
+			postOutOfMemory(einfo);
+			success = false;
+			goto done;
+		}
+		for (i = 0; i < class->interface_len; i++) {
+			newifaces[i] = class->interfaces[i];
+		}
+		nclass = class->superclass;
+		if (nclass != 0 && nclass != ObjectClass) {
+			for (j = 0; j < nclass->total_interface_len; j++, i++) {
+				newifaces[i] = nclass->interfaces[j];
+			}
+		}
+		for (k = 0; k < class->interface_len; k++) {
+			nclass = class->interfaces[k];
+			for (j = 0; j < nclass->total_interface_len; j++, i++) {
+				newifaces[i] = nclass->interfaces[j];
+			}
+		}
+		/* free old list of interfaces */
+		if (class->interfaces != 0) {
+			KFREE(class->interfaces);
+		}
+		class->interfaces = newifaces;
+	}
+
+	/* don't set total_interface_len before interfaces to avoid
+	 * having walkClass attempting to walk interfaces
+	 */
+	class->total_interface_len = totalilen;
+done:
 	return (success);
 }
 
@@ -690,7 +749,7 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 		return (0);
 	}
 
-	--CLASS_FSIZE(c);
+	--CLASS_FSIZE(c);	/* holds field count initially */
 	if (f->access_flags & ACC_STATIC) {
 		index = CLASS_NSFIELDS(c);
 	}
@@ -799,7 +858,10 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	int iLockRoot;
 
         centry = lookupClassEntry(name, loader, einfo);
-	if (!centry) return 0;
+	if (!centry) {
+		return 0;
+	}
+
 	/*
 	 * An invariant for classEntries is that if centry->class != 0, then
 	 * the corresponding class object has been read completely and it is
@@ -913,9 +975,23 @@ DBG(VMCLASSLOADER,
 			}
 		}
 #if defined(HAVE_GCJ_SUPPORT)
-		else if (gcjFindClass(centry) == true) {
-			clazz = centry->class;
+		/* XXX should this better be part of findClass!? 
+		 * NB: we're only here if classloader == null
+		 */
+		else if ((clazz = gcjFindClassByUtf8Name(centry->name->data, einfo))) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
+				/* XXX could say from where */
+				fprintf(stderr, "Loading precompiled %s\n", clazz->name->data);
+			}
+DBG(GCJ, 		dprintf(__FUNCTION__": adding class %s to pool@%p\n",
+				clazz->name->data, centry); 
+    )
+			centry->class = clazz;
+			clazz->centry = centry;
+			assert(CLASS_GCJ(clazz));
 		}
+#else
+#warning No GCJ Support
 #endif
 		else {
 			/* no classloader, use findClass */
@@ -1082,8 +1158,8 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 }
 
 static
-void
-resolveObjectFields(Hjava_lang_Class* class)
+bool
+resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	int fsize;
 	int align;
@@ -1147,6 +1223,11 @@ resolveObjectFields(Hjava_lang_Class* class)
 	 * inherited from the superclass.
 	 */
 	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP);
+	if (map == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
+
 	if (offset > 0) {
 		nbits = offset/ALIGNMENTOF_VOIDP;
 		BITMAP_COPY(map, class->gc_layout, nbits);
@@ -1205,6 +1286,7 @@ DBG(GCPRECISE,
     )
 		offset += fsize;
 	}
+	return (true);
 }
 
 /*
@@ -1212,7 +1294,7 @@ DBG(GCPRECISE,
  */
 static
 bool
-allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
+allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo) 
 {
 	int fsize;
 	int align;
@@ -1255,7 +1337,21 @@ allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	for (; --n >= 0; fld++) {
 		offset = FIELD_SIZE(fld);
 		FIELD_SIZE(fld) = FIELD_CONSTIDX(fld);	/* Keep idx in size */
+#if defined(HAVE_GCJ_SUPPORT)
+		/* Check whether gcj code refers to this field.  If so,
+		 * we'll have storage for this field in a fixup module.
+		 * gcjGetFieldAddr retrieves the address for the storage
+		 */
+		FIELD_ADDRESS(fld) = 
+			gcjGetFieldAddr(CLASS_CNAME(class), fld->name->data);
+
+		/* not a field for which gcj provides storage */
+		if (FIELD_ADDRESS(fld) == 0) {
+			FIELD_ADDRESS(fld) = mem + offset;
+		}
+#else
 		FIELD_ADDRESS(fld) = mem + offset;
+#endif
 	}
 	return (true);
 }
@@ -1283,31 +1379,31 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 			switch (CONST_TAG(idx, pool)) {
 			case CONSTANT_Integer:
-				if (FIELD_TYPE(fld) == _Jv_booleanClass ||
-				    FIELD_TYPE(fld) == _Jv_byteClass) {
+				if (FIELD_TYPE(fld) == booleanClass ||
+				    FIELD_TYPE(fld) == byteClass) {
 					*(jbyte*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_byteClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(byteClass);
 				}
-				else if (FIELD_TYPE(fld) == _Jv_charClass ||
-					 FIELD_TYPE(fld) == _Jv_shortClass) {
+				else if (FIELD_TYPE(fld) == charClass ||
+					 FIELD_TYPE(fld) == shortClass) {
 					*(jshort*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_shortClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(shortClass);
 				}
 				else {
 					*(jint*)mem = CLASS_CONST_INT(class, idx);
-					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_intClass);
+					FIELD_SIZE(fld) = TYPE_PRIM_SIZE(intClass);
 				}
 				break;
 
 			case CONSTANT_Float:
 				*(jint*)mem = CLASS_CONST_INT(class, idx);
-				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_floatClass);
+				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(floatClass);
 				break;
 
 			case CONSTANT_Long:
 			case CONSTANT_Double:
 				*(jlong*)mem = CLASS_CONST_LONG(class, idx);
-				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(_Jv_longClass);
+				FIELD_SIZE(fld) = TYPE_PRIM_SIZE(longClass);
 				break;
 
 			case CONSTANT_String:
@@ -1316,13 +1412,13 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 
 					utf8 = WORD2UTF(pool->data[idx]);
 					st = utf8Const2Java(utf8);
+					utf8ConstRelease(utf8);
 					if (!st) {
 						postOutOfMemory(einfo);
 						return false;
 					}
 					pool->data[idx] = (ConstSlot)st;
 					pool->tags[idx] = CONSTANT_ResolvedString;
-					utf8ConstRelease(utf8);
 				}
 				/* ... fall through ... */
 			case CONSTANT_ResolvedString:
@@ -1335,6 +1431,97 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	return true;
 }
 
+/*
+ * Build a trampoline if necessary, return the address of the native code
+ * to either the trampoline or the translated or native code.
+ *
+ * Sets *where to the address of the native code.
+ *
+ * Return the address of the native code or 0 on failure
+ */
+static void *
+/* ARGSUSED */
+buildTrampoline(Method *meth, void **where, errorInfo *einfo)
+{
+	void *ret;
+
+#if defined(TRANSLATOR)
+	methodTrampoline *tramp;
+
+#define METHOD_NEEDS_TRAMPOLINE(meth) \
+	(!METHOD_TRANSLATED(meth) || \
+	 (((meth)->accflags & ACC_STATIC) && \
+	   (meth)->class->state < CSTATE_DOING_INIT && \
+	   !CLASS_GCJ((meth)->class)))
+
+	/* When do we need a trampoline? 
+	 * - if the method hasn't been translated (naturally)
+	 * - Or, if the method has been translated, we may
+	 *   still need one if it's a static method and the class 
+	 *   hasn't been initialized, because such method invocation
+	 *   would constitute a first active use.
+	 *   Exception: gcj's classes don't need trampolines, they
+	 *   call _Jv_InitClass before invoking any static method.
+	 */
+	if (METHOD_NEEDS_TRAMPOLINE(meth)) {
+		/* XXX don't forget to pick those up at class gc time */
+		tramp = (methodTrampoline*)KMALLOC(sizeof(methodTrampoline));
+		if (tramp == 0) {
+			postOutOfMemory(einfo);
+			return (0);
+		}
+		FILL_IN_TRAMPOLINE(tramp, meth, where);
+
+		/* a disadvantage of building trampolines individually---as
+		 * opposed to allocating them in a contiguous region---is that
+		 * we have flush the dcache individually for each trampoline
+		 */
+		FLUSH_DCACHE(tramp, tramp+1);
+
+		assert(*where == 0 || !!!"Cannot override trampoline anchor");
+		ret = tramp;
+	} else {
+		if (CLASS_GCJ((meth)->class)) {
+			METHOD_NATIVECODE(meth) = meth->ncode;
+		}
+		assert(METHOD_NATIVECODE(meth) != 0);
+		ret = METHOD_NATIVECODE(meth);
+	}
+#else
+	ret = meth;
+#endif
+
+	*where = ret;
+	return (ret);
+}
+
+/*
+ * Check whether there exists a method with the same name and signature
+ * ``meth'' in class ``clazz'' or any of its superclasses.
+ * If so, return set the ``meth'''s index to its index and return true.
+ * Otherwise return false.
+ */
+bool                     
+getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
+{
+	/* Search superclasses for equivalent method name.
+	 * If found extract its index nr.
+	 */
+	for (; super != NULL;  super = super->superclass) {
+		int j = CLASS_NMETHODS(super);
+		Method* mt = CLASS_METHODS(super);
+		for (; --j >= 0;  ++mt) {
+			if (utf8ConstEqual (mt->name, meth->name) && 
+			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth))) 
+			{
+				meth->idx = mt->idx;
+				return (true);
+			}
+		}
+	}
+	return (false);
+}
+
 static
 bool
 buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
@@ -1342,11 +1529,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	Method* meth;
 	void** mtab;
 	int i;
-	int j;
-#if defined(TRANSLATOR)
-	int ntramps = 0;
-	methodTrampoline* tramp;
-#endif
+	Hjava_lang_Class *cc;
 
 	if (class->superclass != NULL) {
 		class->msize = class->superclass->msize;
@@ -1359,98 +1542,109 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	i = CLASS_NMETHODS(class);
 	for (; --i >= 0; meth++) {
 		Hjava_lang_Class* super = class->superclass;
-#if defined(TRANSLATOR)
-		if (METHOD_NEEDS_TRAMPOLINE(meth)) {
-			ntramps++;
-		}
-#endif
-		if ((meth->accflags & ACC_STATIC)
-		    || utf8ConstEqual(meth->name, constructor_name)) {
+
+		/* Do not assign dtable indices for static, private
+		 * and constructor methods. 
+	         */
+		if (METHOD_IS_STATIC(meth) || METHOD_IS_PRIVATE(meth)
+		    || utf8ConstEqual(meth->name, constructor_name)) 
+		{
 			meth->idx = -1;
 			continue;
 		}
+
 		/* Search superclasses for equivalent method name.
 		 * If found extract its index nr.
 		 */
-		for (; super != NULL;  super = super->superclass) {
-			int j = CLASS_NMETHODS(super);
-			Method* mt = CLASS_METHODS(super);
-			for (; --j >= 0;  ++mt) {
-				if (utf8ConstEqual (mt->name, meth->name)
-				    && utf8ConstEqual (METHOD_SIG(mt),
-							METHOD_SIG(meth))) {
-					meth->idx = mt->idx;
-					goto foundmatch;
-				}
+		if (getInheritedMethodIndex(super, meth) == false) {
+
+			/* No match found so allocate a new index number --- 
+			 * except if the method or class is final in which 
+			 * case it doesn't need one.
+			 */
+
+			if (METHOD_IS_FINAL(meth) || CLASS_IS_FINAL(class)) {
+				meth->idx = -1;
+			} else {
+				meth->idx = class->msize++;
 			}
 		}
-		/* No match found so allocate a new index number */
-		meth->idx = class->msize++;
-		foundmatch:;
 	}
 
-#if defined(TRANSLATOR)
-	/* Allocate the dispatch table and this class' trampolines all in
-	   one block of memory.  This is primarily done for GC reasons in
-	   that I didn't want to add another slot on class just for holding
-	   the trampolines, but it also works out for space reasons.  */
-	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) + class->msize * sizeof(void*) + ntramps * sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
-#else
-	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) + (class->msize * sizeof(void*)), GC_ALLOC_DISPATCHTABLE);
-#endif
+	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) + 
+		class->msize * sizeof(void*), GC_ALLOC_DISPATCHTABLE);
+
 	if (class->dtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
-#if defined(TRANSLATOR)
-	tramp = (methodTrampoline*) &class->dtable->method[class->msize];
-#endif
 
 	class->dtable->class = class;
 	mtab = class->dtable->method;
 
-	/* Install inherited methods into dispatch table. */
-	if (class->superclass != NULL) {
-		Method** super_mtab = (Method**)class->superclass->dtable->method;
-		for (i = 0; i < class->superclass->msize; i++) {
-			mtab[i] = super_mtab[i];
+	/* now build a trampoline for each and every method */
+	meth = CLASS_METHODS(class);
+	i = CLASS_NMETHODS(class);
+
+	for (; --i >= 0; meth++) {
+		void **where;
+			
+		/* 
+		 * Build trampoline and set the method's native code to 
+		 * point to this trampoline.
+		 */
+		where = (void**)PMETHOD_NATIVECODE(meth);
+		if (buildTrampoline(meth, where, einfo) == 0) {
+			return (false);
 		}
 	}
 
-	meth = CLASS_METHODS(class);
-	i = CLASS_NMETHODS(class);
-#if defined(TRANSLATOR)
-	for (; --i >= 0; meth++) {
-		if (METHOD_NEEDS_TRAMPOLINE(meth)) {
-#if 0
-			if (METHOD_TRANSLATED(meth)) {
-				SET_METHOD_PRE_COMPILED(meth, 1);
-				METHOD_TRUE_NCODE(meth) = METHOD_NATIVECODE(meth);
+	/* trampolines are also needed for all virtual inherited 
+	 * methods so they can be patched up independently 
+	 */
+	for (cc = class->superclass; cc != 0; cc = cc->superclass) {
+		meth = CLASS_METHODS(cc);
+		i = CLASS_NMETHODS(cc);
+		for (; --i >= 0; meth++) {
+			void **where;
+
+			/* skip static and overridden methods */
+			if (meth->idx < 0 || mtab[meth->idx] != 0) {
+				continue;
 			}
-#endif
-			FILL_IN_TRAMPOLINE(tramp, meth);
-			METHOD_NATIVECODE(meth) = (nativecode*)tramp;
-			tramp++;
-		}
-		if (meth->idx >= 0) {
-			mtab[meth->idx] = METHOD_NATIVECODE(meth);
-		}
-	}
-	FLUSH_DCACHE(class->dtable, tramp);
-#else
-	for (;  --i >= 0; meth++) {
-		if (meth->idx >= 0) {
-			mtab[meth->idx] = meth;
+
+			/* else it's an inherited method.  Build a trampoline,
+			 * but do not update METHOD_NATIVECODE.
+			 */
+			where = &mtab[meth->idx];
+			if (buildTrampoline(meth, where, einfo) == 0) {
+				return (false);
+			}
 		}
 	}
-#endif
+	return (true);
+}
+
+/*
+ * Build the table used by this class for dispatching the interfaces
+ * it implements.
+ */
+static
+bool
+buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
+{
+	int i, j;
+
 	/* Construct two tables:
 	 * This first table maps interfaces to indices in itable.
 	 * The itable maps the indices for each interface method to the
 	 * index in the dispatch table that corresponds to this interface
 	 * method.  If a class does not implement an interface it declared,
-	 * or if it attempts to implement it with improper methods, the second 
-	 * table will have a -1 index.  This will cause a NoSuchMethodError
+	 * or if it attempts to implement it with improper methods, the 
+	 * dispatch table will have a 0xffffffff index.   
+	 * (XXX is this 64bit safe?)
+	 *
+	 * This will cause a NoSuchMethodError
 	 * to be thrown later, in soft_lookupinterfacemethod.
 	 */
 	/* don't bother if we don't implement any interfaces */
@@ -1469,60 +1663,79 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
 		class->if2itable[i] = j;
+		j += 1;		/* add one word to store interface class */
 		j += class->interfaces[i]->msize;
 	}
-	if (j == 0) {	/* this means only pseudo interfaces without methods
-			 * are implemented, such as Serializable or Cloneable
-			 */
-		return (true);
-	}
-	class->itable2dtable = KMALLOC(j * sizeof(short));
+	class->itable2dtable = KMALLOC(j * sizeof(void *));
 	if (class->itable2dtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
-		int nm = CLASS_NMETHODS(class->interfaces[i]);
-		Method *meth = CLASS_METHODS(class->interfaces[i]);
-		for (; nm--; meth++) {
+		int inm = CLASS_NMETHODS(class->interfaces[i]);
+		Method *imeth = CLASS_METHODS(class->interfaces[i]);
+
+		/* store interface as first word for type inclusion test */
+		class->itable2dtable[j++] = class->interfaces[i];
+		for (; inm--; imeth++) {
 			Hjava_lang_Class* ncl;
-			Method *mt = 0;
-			int idx = -1;
+			Method *cmeth = 0;
 
 			/* ignore static methods in interface --- can an
 			 * interface have any beside <clinit>?
 			 */
-			if (meth->accflags & ACC_STATIC) {
+			if (imeth->accflags & ACC_STATIC) {
 				continue;
 			}
 
-			/* Search the real method that implements this
+			/* Search the actual method that implements this
 			 * interface method by name.
 			 */
 			for (ncl = class; ncl != NULL;  ncl = ncl->superclass) {
 				int k = CLASS_NMETHODS(ncl);
-				mt = CLASS_METHODS(ncl);
-				for (; --k >= 0;  ++mt) {
-					if (utf8ConstEqual (mt->name, 
-							     meth->name)
-					    && utf8ConstEqual (METHOD_SIG(mt),
-							METHOD_SIG(meth))) 
+				cmeth = CLASS_METHODS(ncl);
+				for (; --k >= 0;  ++cmeth) {
+					if (utf8ConstEqual (cmeth->name, 
+							    imeth->name) && 
+					     utf8ConstEqual (METHOD_SIG(cmeth),
+							     METHOD_SIG(imeth)))
 					{
-						idx = mt->idx;
 						goto found;
 					}
 				}
 			}
+			/* not found */
+			cmeth = 0;
 
 		    found:;
-			/* idx may be -1 here if 
-			 * a) class attempts to implement an interface 
-			 *    method with a static method or constructor.
-			 * b) class does not implement the interface at all.
+
+			/* constructors and static methods cannot implement
+			 * interface methods
 			 */
-			/* store method table index of real method */
-			class->itable2dtable[j++] = idx;
+			if (cmeth && (METHOD_IS_STATIC(cmeth) || 
+				      METHOD_IS_CONSTRUCTOR(cmeth))) 
+			{
+				cmeth = 0;
+			}
+
+			/* cmeth == 0 if
+			 * This class does not implement the interface at all.
+			 * Or if the class attempts to implement an interface 
+			 * method with a static method or constructor.
+			 */
+			if (cmeth == 0) {
+				/* 64bit? */
+				class->itable2dtable[j] = (void*)0xffffffff;
+			} else {
+				if (buildTrampoline(cmeth, 
+					    class->itable2dtable + j, 
+					    einfo) == 0) 
+				{
+					return (false);
+				}
+			}
+			j++;
 		}
 	}
 	return (true);
@@ -1645,7 +1858,7 @@ checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
 	void **mtab = class->dtable->method;
 
 	if ((class->accflags & ACC_ABSTRACT) == 0) {
-		for (i = class->msize - 1; i >= 0; i--) {
+		for (i = 0; i < class->msize; i++) {
 			if (mtab[i] == NULL) {
 				postException(einfo, 
 					JAVA_LANG(AbstractMethodError));
@@ -1656,9 +1869,16 @@ checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
 	return (true);
 }
 
+/*
+ * This functions simply assign indices to the virtual methods in an
+ * interface.
+ *
+ * In addition, if the interface has a <clinit> method, it builds a
+ * trampoline for it.
+ */
 static
 bool
-buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
+prepareInterface(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	Method* meth;
 	int i;
@@ -1672,17 +1892,13 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			meth->idx = -1;
 #if defined(TRANSLATOR)
 			/* Handle <clinit> */
-			if (utf8ConstEqual(meth->name, init_name) && 
-				METHOD_NEEDS_TRAMPOLINE(meth)) 
-			{
-				methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
-				if (tramp == 0) {
-					postOutOfMemory(einfo);
+			if (utf8ConstEqual(meth->name, init_name)) {
+				void **where;
+				where = (void**)PMETHOD_NATIVECODE(meth);
+
+				if (buildTrampoline(meth, where, einfo) == false) {
 					return (false);
 				}
-				FILL_IN_TRAMPOLINE(tramp, meth);
-				METHOD_NATIVECODE(meth) = (nativecode*)tramp;
-				FLUSH_DCACHE(tramp, tramp+1);
 			}
 #endif
 		}

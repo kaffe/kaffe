@@ -15,6 +15,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-signal.h"
+#include "config-hacks.h"
 #include "gtypes.h"
 #include "access.h"
 #include "object.h"
@@ -146,10 +147,15 @@ initialiseKaffe(void)
 #if defined(HAVE_GCJ_SUPPORT)
 	/* Init GCJ support */
 	gcjInit();
+#else
+#warning No GCJ Support
 #endif
 
 	/* Read in base classes */
 	initBaseClasses();
+
+	/* tell gcj where primitive classes are */
+	gcjInitPrimitiveClasses();
 
 	/* Setup exceptions */
 	initExceptions();

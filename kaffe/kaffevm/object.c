@@ -133,12 +133,12 @@ newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
 	if (obj) {
 		class = lookupArray(elclass, info);
 	} else {
-	    postOutOfMemory(info);
+		postOutOfMemory(info);
 	}
 
 	if (class) {
-	    obj->dtable = class->dtable;
-	    ARRAY_SIZE(obj) = count;
+		obj->dtable = class->dtable;
+		ARRAY_SIZE(obj) = count;
 	}
 	return (obj);
 }
@@ -168,7 +168,7 @@ newMultiArray(Hjava_lang_Class* clazz, int* dims)
 	Hjava_lang_Object* obj;
 	Hjava_lang_Object** array;
 	int i;
-	
+
 	obj = newArray(CLASS_ELEMENT_TYPE(clazz), dims[0]);
 	if (dims[1] >= 0) {
 		array = OBJARRAY_DATA(obj);

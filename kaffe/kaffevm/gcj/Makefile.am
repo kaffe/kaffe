@@ -11,9 +11,10 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENG
 noinst_LTLIBRARIES = libgcj.la
 
 libgcj_la_SOURCES = \
-	gcj-class.c \
+	gcj-class.cc \
+	gcj-soft.cc \
 	gcj-except.c \
-	gcj-soft.c
+	gcj-glue.c
 
 EXTRA_DIST = \
 	gcj-except.h \

@@ -491,7 +491,9 @@ DBG(GCFREE,
 		info->size = msz;
 		gc_primitive_free(info);
 	}
-
+DBG(GCDIAG,
+	gc_heap_check();
+    )
 }
 
 /*

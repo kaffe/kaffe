@@ -98,8 +98,9 @@
 				 | DBG_AWT_IMG | DBG_AWT_WND | DBG_AWT_GRA  \
 				 | DBG_AWT_FNT)
 
-/* let's reserve 51-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(52) 
+# define DBG_GCJ		DBG_BIT(53) 
+# define DBG_GCJMORE		DBG_BIT(54) 
 
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL
@@ -147,13 +148,11 @@
 #elif !defined(KAFFEH) 
 /* --- Debugging is enabled --- */
 
-#include "jtypes.h"
-
 /* Defines what debugging output is seen. Needs to be 64-bit. */
-extern jlong kaffevmDebugMask;
+extern long long kaffevmDebugMask;
 
 /* Set the debugging mask to use. (give the mask) */
-void dbgSetMask(jlong mask);
+void dbgSetMask(long long mask);
 
 /* 
  * Set the debugging mask to use. (give a string, useful for
@@ -181,7 +180,12 @@ void dbgSetMaskStr(char *mask_str);
 /* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
 # define dprintf       kaffe_dprintf
 
-extern int kaffe_dprintf(const char *fmt, ...);
+#ifdef __cplusplus
+extern "C"
+#else
+extern
+#endif
+int kaffe_dprintf(const char *fmt, ...);
 
 #else	/* !defined(KAFFEH) */
 

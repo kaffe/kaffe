@@ -71,6 +71,7 @@ CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
@@ -137,9 +138,10 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENG
 noinst_LTLIBRARIES = libgcj.la
 
 libgcj_la_SOURCES = \
-	gcj-class.c \
+	gcj-class.cc \
+	gcj-soft.cc \
 	gcj-except.c \
-	gcj-soft.c
+	gcj-glue.c
 
 
 EXTRA_DIST = \
@@ -162,8 +164,14 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libgcj_la_LDFLAGS = 
 libgcj_la_LIBADD = 
-am_libgcj_la_OBJECTS =  gcj-class.lo gcj-except.lo gcj-soft.lo
+am_libgcj_la_OBJECTS =  gcj-class.lo gcj-soft.lo gcj-except.lo \
+gcj-glue.lo
 libgcj_la_OBJECTS =  $(am_libgcj_la_OBJECTS)
+CXXFLAGS = @CXXFLAGS@
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -177,13 +185,13 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 DEP_FILES =  @AMDEP@ $(DEPDIR)/gcj-class.Plo $(DEPDIR)/gcj-except.Plo \
-$(DEPDIR)/gcj-soft.Plo
+$(DEPDIR)/gcj-glue.Plo $(DEPDIR)/gcj-soft.Plo
 SOURCES = $(libgcj_la_SOURCES)
 OBJECTS = $(am_libgcj_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .c .lo .o
+.SUFFIXES: .c .cc .lo .o
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffevm/gcj/Makefile
 
@@ -221,11 +229,12 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 gcj-class.lo:
-gcj-except.lo:
 gcj-soft.lo:
+gcj-except.lo:
+gcj-glue.lo:
 
 libgcj.la: $(libgcj_la_OBJECTS) $(libgcj_la_DEPENDENCIES)
-	$(LINK)  $(libgcj_la_LDFLAGS) $(libgcj_la_OBJECTS) $(libgcj_la_LIBADD) $(LIBS)
+	$(CXXLINK)  $(libgcj_la_LDFLAGS) $(libgcj_la_OBJECTS) $(libgcj_la_LIBADD) $(LIBS)
 
 tags: TAGS
 
@@ -274,6 +283,7 @@ distdir: $(DISTFILES)
 
 @AMDEP@include $(DEPDIR)/gcj-class.Plo
 @AMDEP@include $(DEPDIR)/gcj-except.Plo
+@AMDEP@include $(DEPDIR)/gcj-glue.Plo
 @AMDEP@include $(DEPDIR)/gcj-soft.Plo
 
 mostlyclean-depend:
@@ -298,6 +308,21 @@ maintainer-clean-depend:
 @AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
+
+@AMDEP@CXXDEPMODE = @CXXDEPMODE@
+
+.cc.o:
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXXCOMPILE) -c $<
+
+.cc.lo:
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(LTCXXCOMPILE) -c -o $@ $<
 
 info-am:
 info: info-am

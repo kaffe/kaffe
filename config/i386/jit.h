@@ -67,21 +67,25 @@ typedef struct _methodTrampoline {
 	unsigned char call PACKED;
 	int fixup PACKED;
 	struct _methods* meth PACKED;
+	void** where PACKED;
 } methodTrampoline;
 
 #if defined(_MSC_VER)
 #pragma pack ( pop )
 #endif
 
-#define FILL_IN_TRAMPOLINE(t,m)						\
+/* NB: the E8 jmp instruction uses relative addressing */
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
 	do {								\
 		(t)->call = 0xe8;					\
 		(t)->fixup = (int)i386_do_fixup_trampoline - (int)(t) - 5; \
 		(t)->meth = (m);					\
+		(t)->where = (w);					\
 	} while (0)
 
-#define FIXUP_TRAMPOLINE_DECL	Method** _pmeth
-#define FIXUP_TRAMPOLINE_INIT	(meth = *_pmeth)
+#define FIXUP_TRAMPOLINE_DECL	void** _data
+#define FIXUP_TRAMPOLINE_INIT	(meth = (Method*)_data[0], \
+				 where = (void**)_data[1])
 
 /**/
 /* Register management information. */
@@ -139,7 +143,7 @@ typedef struct _methodTrampoline {
 #define SLOT2LOCALOFFSET(_n)	(-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
 #endif
 
-#if defined(JIT3)
+#if defined(JIT3) && !defined(HAVE_GCJ_SUPPORT)
 /* Generate the slot offset to the stack limit */
 #define	STACK_LIMIT()		SLOT2ARGOFFSET(maxArgs)
 #endif

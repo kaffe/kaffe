@@ -214,6 +214,7 @@ prologue(Method* meth)
 void
 check_stack_limit(void)
 {
+#if defined(STACK_LIMIT)
 #if defined(HAVE_check_stack_limit_constpool)
 	label* l;
 	constpool* c;
@@ -237,6 +238,7 @@ check_stack_limit(void)
 
 	slot_slot_const(0, stack_limit, (jword)l, HAVE_check_stack_limit, Tnull);
 #endif
+#endif /* STACK_LIMIT */
 }
 
 void
@@ -3544,7 +3546,7 @@ call_indirect_method(Method *meth)
 		call_soft(METHOD_NATIVECODE(meth));
 	}
 	else {
-		ptr = &METHOD_NATIVECODE(meth);
+		ptr = PMETHOD_NATIVECODE(meth);
 
 #if defined(HAVE_call_indirect_const)
 		slot_const_const(0, (jword)ptr, ba, HAVE_call_indirect_const, Tnull);

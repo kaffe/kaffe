@@ -163,9 +163,8 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 
 #if defined(TRANSLATOR)
 void*
-soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
+soft_vmultianewarray(Hjava_lang_Class* class, jint dims, va_list ap)
 {
-	va_list ap;
 	int array[MAXDIMS];
 	int i;
 	jint arg;
@@ -180,11 +179,9 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	}
 
 	/* Extract the dimensions into an array */
-	va_start(ap, dims);
 	for (i = 0; i < dims; i++) {
 		arg = va_arg(ap, jint);
 		if (arg < 0) {
-			va_end(ap);
 			if (arraydims != array) {
 				KFREE(arraydims);
 			}
@@ -193,7 +190,6 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 		arraydims[i] = arg;
 	}
 	arraydims[i] = -1;
-	va_end(ap);
 
 	/* Mmm, okay now build the array using the wonders of recursion */
         obj = newMultiArray(class, arraydims);
@@ -203,6 +199,17 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	}
 
 	/* Return the base object */
+	return (obj);
+}
+
+void*
+soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
+{
+	void* obj;
+	va_list ap;
+	va_start(ap, dims);
+	obj = soft_vmultianewarray(class, dims, ap);
+	va_end(ap);
 	return (obj);
 }
 #endif
@@ -217,7 +224,6 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	Method* meth;
 	void*	ncode;
 	register int i;
-	int dtableidx;
 	register short* implementors;
 
 	cls = OBJECT_CLASS(obj);
@@ -236,13 +242,11 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 		goto notfound;
 	}
 
-	dtableidx = cls->itable2dtable[implementors[i] + idx];
-	if (dtableidx == -1) {
+	/* skip word at the beginning of itable2dtable */
+	ncode = cls->itable2dtable[implementors[i] + idx + 1];
+	if (ncode == (void*)0xffffffff) {
 		goto notfound;
 	}
-
-	ncode = *(void**)((char*)cls->dtable 
-			+ DTABLE_METHODOFFSET + dtableidx * DTABLE_METHODSIZE);
 	assert(ncode);
 	return (ncode);
 
@@ -521,8 +525,13 @@ nativecode*
 soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 {
 	Method* meth;
+	void **where;
+	void *tramp;
 	errorInfo info;
+
+	/* FIXUP_TRAMPOLINE_INIT sets tramp and where */
 	FIXUP_TRAMPOLINE_INIT;
+	tramp = *where;
 
 	/* If this class needs initializing, do it now.  */
 	if (meth->class->state < CSTATE_USABLE &&
@@ -537,9 +546,17 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 		}
 	}
 
-	/* Update dispatch table */
-	if (meth->idx >= 0) {
-		meth->class->dtable->method[meth->idx] = METHOD_NATIVECODE(meth);
+	/* Update the origin of this trampoline --- this could be a 
+	 * dispatch table, interface dispatch table, or a gcj trampoline
+	 *
+	 * This is rather tricky.  We may jump through the same trampoline
+	 * twice.  For instance, class A refers to Double.longBitsToDouble,
+	 * but Double.<clinit> also jumps through the same trampoline
+	 * before it is patched.
+	 */
+	if (*where != *(void**)PMETHOD_NATIVECODE(meth)) {
+		*where = METHOD_NATIVECODE(meth);
+		KFREE(tramp);
 	}
 
 #if 0

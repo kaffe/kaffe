@@ -108,7 +108,7 @@ makeMethodActive(Method* meth)
 
 #if defined(JIT3) && defined(DEBUG)
 	/* paranoia */
-	assert(findMethodFromPC(pc_key) == (Method*)0);
+	assert(findMethodFromPC((unsigned int)pc_key) == (Method*)0);
 #endif
 
 	entry = (methCacheEntry*)KMALLOC(sizeof(methCacheEntry));

@@ -2563,7 +2563,7 @@ call_indirect_method(Method *meth)
 {
 	void* ptr;
 
-	ptr = &METHOD_NATIVECODE(meth);
+	ptr = PMETHOD_NATIVECODE(meth);
 
 #if defined(HAVE_call_indirect_const)
 	slot_const_const(0, (jword)ptr, ba, HAVE_call_indirect_const, Tnull);

@@ -20,8 +20,12 @@ import java.net.URL;
 import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
-
-private static final long serialVersionUID = 3206093459760846163L;
+/* For GCJ compatibility, we cannot define any fields in
+ * java.lang.Class at this point.  Valid as of 10/28/99 
+ * We special case it instead in clib/native/ObjectStreamClassImpl.c
+ * --gback
+ */
+// private static final long serialVersionUID = 3206093459760846163L;
 
 private Class() { /* this class is not instantiable by the general public */ }
 

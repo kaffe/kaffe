@@ -29,15 +29,15 @@
 
 extern struct Hjava_lang_Class* types[MAXTYPES];
 
-extern struct Hjava_lang_Class* _Jv_intClass;
-extern struct Hjava_lang_Class* _Jv_longClass;
-extern struct Hjava_lang_Class* _Jv_booleanClass;
-extern struct Hjava_lang_Class* _Jv_charClass;
-extern struct Hjava_lang_Class* _Jv_floatClass; 
-extern struct Hjava_lang_Class* _Jv_doubleClass;
-extern struct Hjava_lang_Class* _Jv_byteClass; 
-extern struct Hjava_lang_Class* _Jv_shortClass;     
-extern struct Hjava_lang_Class* _Jv_voidClass;
+extern struct Hjava_lang_Class* intClass;
+extern struct Hjava_lang_Class* longClass;
+extern struct Hjava_lang_Class* booleanClass;
+extern struct Hjava_lang_Class* charClass;
+extern struct Hjava_lang_Class* floatClass; 
+extern struct Hjava_lang_Class* doubleClass;
+extern struct Hjava_lang_Class* byteClass; 
+extern struct Hjava_lang_Class* shortClass;     
+extern struct Hjava_lang_Class* voidClass;
 
 #define	TYPE_CLASS(t)		types[t]
 

@@ -458,7 +458,15 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	jshort tmp;
 	char *classname;
 
+	/* For GCJ compatibility, we cannot hardcode this in java/lang/Class 
+	 * This number won't change as long as the universe exists, so it's
+	 * safe to keep it here.
+	 */
+	if (cls == ClassClass) {
+		return (3206093459760846163L);
+	}
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
+
 	if (fld != 0 && (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
 		return (*(jlong*)FIELD_ADDRESS((Field*)fld));
 	} else {

@@ -15,6 +15,7 @@
 #include "config-signal.h"
 #include "config-mem.h"
 #include "config-setjmp.h"
+#include "config-hacks.h"
 #include "jtypes.h"
 #include "access.h"
 #include "object.h"
@@ -241,6 +242,7 @@ throwExternalException(Hjava_lang_Throwable* eobj)
 	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(0));
 }
 
+#if 0
 void
 throwOutOfMemory(void)
 {
@@ -253,6 +255,7 @@ throwOutOfMemory(void)
 	fprintf(stderr, "(Insufficient memory)\n");
 	EXIT(-1);
 }
+#endif
 
 void*
 nextFrame(void* fm)
@@ -387,6 +390,8 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 			if (einfo.method != 0 && CLASS_GCJ(einfo.method->class)) {
 				gcjDispatchException(frame, &einfo, eobj);
 			}
+#else
+#warning No GCJ Support
 #endif
 
 			/* Handler found - dispatch exception */

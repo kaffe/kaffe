@@ -37,6 +37,7 @@
 #include "classpath.h"
 #include "stringSupport.h"
 #include "stats.h"
+#include "gcj/gcj.h"
 
 #define KLASSES_JAR	"Klasses.jar"
 
@@ -308,6 +309,18 @@ initClasspath(void)
 	}
 }
 
+void
+gcjInit(void)
+{
+        classpathEntry* entry;
+
+        /* Load any shared objects into VM now */
+        for (entry = classpath; entry != 0; entry = entry->next) {
+                if (entry->type == CP_SOFILE) {
+			gcjLoadSharedObject(entry->path);
+		}
+	}
+}
 
 /*
  * Build classpathEntries from the given classpath.
