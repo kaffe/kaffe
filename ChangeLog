@@ -1,3 +1,13 @@
+2003-10-05  Stuart Ballard <stuart.ballard@corp.fast.net>
+
+	* libraries/javalib/java/util/HashMap.java:
+	(putAll, putAllInternal) Iterate over collection using hasNext()
+	instead of using size().
+
+	* libraries/javalib/java/util/Hashtable.java
+	(putAll, putAllInternal) Iterate over collection using hasNext()
+	instead of using size().
+	
 2003-10-05  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/stackTrace.c:
