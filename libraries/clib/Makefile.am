@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = native io net zip math management awt
+SUBDIRS = native io net zip math security management awt
