@@ -1,5 +1,15 @@
 2004-10-11  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/logging/LogManager.java:
+        Resynced with GNU Classpath.
+
+	2004-10-11  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/util/logging/LogManager.java
+        (findAncestor): Fixed IndexOutOfBoundsException.
+
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/SecurityManager.java,
 	libraries/javalib/java/security/Security.java:
 	Resynced with GNU Classpath.
