@@ -1,5 +1,10 @@
 2003-11-29  Dalibor Topic <robilad@kaffe.org>
 
+	* THIRDPARTY: Updated with information on licenses of
+	third party sources, as well as their URLs.
+
+2003-11-29  Dalibor Topic <robilad@kaffe.org>
+
 	* Makefile.in,
 	aclocal.m4,
 	config/Makefile.in,

@@ -7,23 +7,50 @@ in license*.terms files in the top directory.
 
 This code has been merged in from tritonus.org. The tritonus project
 offers many other codecs beside those shipped with kaffe, most notably
-GSM, MP3 and ogg support. Kaffe is tracking this project's CVS HEAD.
+GSM, MP3 and ogg support. Kaffe tracks this project's CVS HEAD.
 
 Thanks to Matthias Pfisterer from the tritonus project, who was very
 helpful during the merge.
+
+Tritonus is distrubuted under the GNU Library General Public License. 
+See license-lesser.terms for details.
+
+More information on tritonus is available from http://tritonus.org.
 
 * JAXP
 
 This code has been merged in from the GNU JAXP project. Kaffe is
 tracking this project's CVS HEAD.
 
+GNU JAXP is distributed under the GNU General Public License, with 
+the "library exception" which permits its use as a library in 
+conjunction with non-Free software:
+
+  "As a special exception, if you link this library with other 
+   files to produce an executable, this library does not by itself 
+   cause the resulting executable to be covered by the GNU General 
+   Public License. This exception does not however invalidate any 
+   other reasons why the executable file might be covered by the GNU 
+   General Public License."
+
+See license.terms for the text of the GNU General Public License.
+
+More information on GNU JAXP can be found at 
+http://www.gnu.org/software/classpathx/jaxp/.
+
 * java.util.regex
 
-This code has been merged in from GNU regexp. Kaffe is tracking this
+This code has been merged in from GNU regexp. Kaffe tracks this
 project's CVS HEAD.
 
 Thanks to Wes Biggs for providing kaffe with a working java.util.regex
 implementation over GNU regexp.
+
+The GNU regexp library is distributed under the terms of the GNU 
+Lesser General Public License. See license-lesser.terms for details.
+
+More information on GNU regexp can be found at 
+http://www.cacas.org/java/gnu/regexp/.
 
 * Class library
 
@@ -35,6 +62,31 @@ this projects's CVS HEAD.
 Thanks to Stuart Ballard and Ito Kazumitsu, who started the merge
 effort, and Mark Wielaard, who provided a lot of useful advice on GNU
 Classpath's implementation.
+
+GNU Classpath is licensed under the terms of the GNU General Public 
+License  with the following clarification and special exception:
+
+   "Linking this library statically or dynamically with other modules 
+  is making a combined work based on this library. Thus, the terms and 
+  conditions of the GNU General Public License cover the whole 
+  combination.
+
+    As a special exception, the copyright holders of this library give 
+  you permission to link this library with independent modules to 
+  produce an executable, regardless of the license terms of these 
+  independent modules, and to copy and distribute the resulting 
+  executable under terms of your choice, provided that you also meet, 
+  for each linked independent module, the terms and conditions of the 
+  license of that module. An independent module is a module which is 
+  not derived from or based on this library. If you modify this library, 
+  you may extend this exception to your version of the library, but you 
+  are not obligated to do so. If you do not wish to do so, delete this 
+  exception statement from your version."
+
+See license.terms for the text of the GNU General Public License.
+
+More information on GNU Classpath is available from 
+http://www.gnu.org/software/classpath/classpath.html.
 
 * Replacement functions for getaddrinfo
 
@@ -73,3 +125,64 @@ At the time of writing, Kaffe uses getaddrinfo 1.6.1.
 
 Taken from Sablotron 1.0, which is dually licensed licensed under MPL 1.1 
 and GPL. It is available from http://www.gingerall.cz/charlie/ga/xml/p_sab.xml
+
+* valist.m4
+
+Based on code taken from Quakeforge's CVS. Quakeforge is licensed under the
+GNU General Public License. See license.terms for details.
+
+Many thanks to Bill Currie from Quakeforge for the macros.
+
+More information on Quakeforge is available at http://www.quakeforge.net/.
+
+* gnu-crypto.m4
+
+Autoconf macros for GNU Crypto. Written by Raif S. Naffah from GNU Crypto.
+Licensed under the GNU General Public License with a special exception:
+
+  "Linking this library statically or dynamically with other modules is
+  making a combined work based on this library.  Thus, the terms and
+  conditions of the GNU General Public License cover the whole
+  combination.
+
+  As a special exception, the copyright holders of this library give
+  you permission to link this library with independent modules to
+  produce an executable, regardless of the license terms of these
+  independent modules, and to copy and distribute the resulting
+  executable under terms of your choice, provided that you also meet,
+  for each linked independent module, the terms and conditions of the
+  license of that module.  An independent module is a module which is
+  not derived from or based on this library.  If you modify this
+  library, you may extend this exception to your version of the
+  library, but you are not obligated to do so.  If you do not wish to
+  do so, delete this exception statement from your version."
+
+See license.terms for details of the GNU GPL.
+
+* iconv.m4, lib-ld.m4, lib-link.m4, lib-prefix.m4
+
+Autoconf macros for libiconv. Taken from GNU gettext CVS. Licensed under
+the GNU General Public License with a special exception:
+
+  " As a special exception to the GNU General
+  Public License, this file may be distributed as part of a program
+  that contains a configuration script generated by Autoconf, under
+  the same distribution terms as the rest of that program."
+
+See license.terms for details of the GNU GPL.
+
+More information on GNU gettext is available from 
+http://www.gnu.org/software/gettext/.
+
+* libraries/javalib/kjc.jar
+
+Kopi Java Compiler 2.1B with kaffe specific patches and bugfixes. Kjc is
+part of the Kopi project from DMS. It is licensed under the GNU General
+Public License. See license.terms for details.
+
+More information on the Kopi project is available from 
+http://www.dms.at/kopi/index.html.
+
+The sources for the original kjc 2.1B compiler are available from DMS at 
+the above URL. Patches from kaffe developers to kjc are available in the 
+kaffe-extras repository of the kaffe.org CVS server.
