@@ -1,3 +1,9 @@
+Wed Aug  5 21:38:12 1998 Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedFileDescriptor): ENOTTY is an acceptable error for an
+	ioctl FIOASYNC call
+	
 Wed Aug  5 15:39:40 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/javalib/java/lang/String.java:

@@ -1507,8 +1507,8 @@ jthreadedFileDescriptor(int fd)
 	 * (Solaris sets errno to ENXIO in this case.)
 	 */
 	r = ioctl(fd, FIOASYNC, &on);
-	if (r < 0 && errno != ENXIO) {
-		/* Defines ENXIO to be an acceptable error */
+	if (r < 0 && errno != ENXIO && errno != ENOTTY) {
+		/* Defines ENXIO and ENOTTY to be acceptable errors */
 		perror("FIOASYNC");
 		return (r);
         }
