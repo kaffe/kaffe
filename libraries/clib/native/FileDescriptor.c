@@ -11,6 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-io.h"
+#include "files.h"
 #include "FileDescriptor.h"
 #include "jsyscall.h"
 #include "../../../kaffe/kaffevm/support.h"
@@ -45,14 +46,14 @@ java_io_FileDescriptor_valid(struct Hjava_io_FileDescriptor* this)
 void
 java_io_FileDescriptor_sync(struct Hjava_io_FileDescriptor* this)
 {
-#if defined(HAVE_fsync)
+#if defined(HAVE_FSYNC)
 	if (unhand(this)->fd >= 0) {
 		int r = fsync(unhand(this)->fd);
 		if (r < 0) {
 			SignalError("java.io.SyncFailedException", SYS_ERROR);
 		}
 	}
-#elif defined(HAVE_sync)
+#elif defined(HAVE_SYNC)
 	/* Fallback on a full sync */
 	sync();
 #else
