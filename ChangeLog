@@ -1,7 +1,15 @@
-Tue Nov 24 22:42:13 1998 Tim Wilkinson	<tim@transvirtual.com>
+Fri Nov 27 10:50:34 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* libraries/javalib/java/net/MulticastSocket.java: fix for
+	constructor.
+	libraries/javalib/java/net/SocketImpl.java: fix for getInetAddress
+
+Tue Nov 24 22:42:13 1998  Tim Wilkinson	<tim@transvirtual.com>
 
 	* include/jni.h, include/jni_cpp.h: added C++ binding for JNI.
-	kaffe/kaffevm/external.c: renamed librarypath -> libraryhome
+	kaffe/kaffevm/external.c, kaffe/kaffe/main.c: renamed 
+	librarypath -> libraryhome
+	kaffe/kaffevm/jni.c: added verboseCalls to jni.c
 
 Tue Nov 24 19:45:47 1998  Godmar Back  <gback@cs.utah.edu>
 

@@ -42,11 +42,7 @@ protected FileDescriptor getFileDescriptor() {
 }
 
 protected InetAddress getInetAddress() {
-	try {
-		return (InetAddress) getOption(SO_BINDADDR);
-	} catch (SocketException e) {
-		return address;
-	}
+	return address;
 }
 
 abstract protected InputStream getInputStream() throws IOException;

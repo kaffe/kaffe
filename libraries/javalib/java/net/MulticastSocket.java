@@ -24,6 +24,7 @@ public MulticastSocket() throws IOException
 public MulticastSocket(int port) throws IOException
 {
 	impl = new PlainDatagramSocketImpl();
+	impl.create();
 	impl.bind(port, InetAddress.getByName("224.0.0.0"));
 }
 
