@@ -1,5 +1,5 @@
-/* Chromaticity.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+/* MediaSize.java -- 
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,49 +38,77 @@ exception statement from your version. */
 
 package javax.print.attribute.standard;
 
-import javax.print.attribute.DocAttribute;
-import javax.print.attribute.EnumSyntax;
-import javax.print.attribute.PrintJobAttribute;
-import javax.print.attribute.PrintRequestAttribute;
+import java.util.ArrayList;
 
-/**
- * @author Michael Koch (konqueror@gmx.de)
- */
-public final class Chromaticity extends EnumSyntax
-  implements DocAttribute, PrintRequestAttribute, PrintJobAttribute
+import javax.print.attribute.Attribute;
+import javax.print.attribute.Size2DSyntax;
+
+public class MediaSize extends Size2DSyntax
+  implements Attribute
 {
-  private static final long serialVersionUID = 4660543931355214012L;
+  private static final long serialVersionUID = -1967958664615414771L;
 
-  public static final Chromaticity MONOCHROME = new Chromaticity(0);
-  public static final Chromaticity COLOR = new Chromaticity(1);
-
-  /**
-   * Creates a <code>Chromaticity</code> object.
-   *
-   * @param value the enum value
-   */
-  protected Chromaticity(int value)
+  private static ArrayList mediaCache = new ArrayList();
+  
+  private MediaSizeName media;
+  
+  public MediaSize(float x, float y, int units)
   {
-    super(value);
+    super(x, y, units);
   }
-
+  
+  public MediaSize(float x, float y, int units, MediaSizeName media)
+  {
+    super(x, y, units);
+    this.media = media;
+  }
+  
+  public MediaSize(int x, int y, int units)
+  {
+    super(x, y, units);
+  }
+  
+  public MediaSize(int x, int y, int units, MediaSizeName media)
+  {
+    super(x, y, units);
+    this.media = media;
+  }
+  
   /**
    * Returns category of this class.
    *
-   * @return the class <code>Sides</code> itself
+   * @return the class <code>MediaSize</code> itself
    */
   public Class getCategory()
   {
-    return Chromaticity.class;
+    return MediaSize.class;
+  }
+
+  public static MediaSize getMediaSizeForName(MediaSizeName media)
+  {
+    for (int i = 0; i < mediaCache.size(); i++)
+      {
+	MediaSize size = (MediaSize) mediaCache.get(i);
+	
+	if (size.getMediaSizeName().equals(media))
+	  return size;
+      }
+
+    return null;
+  }
+  
+  public MediaSizeName getMediaSizeName()
+  {
+    return media;
   }
 
   /**
-   * Returns the name of this attribute.
+   * Returns name of this class.
    *
-   * @return the name
+   * @return the string "media-size"
    */
   public String getName()
   {
-    return "chromaticity";
+    return "media-size";
   }
 }

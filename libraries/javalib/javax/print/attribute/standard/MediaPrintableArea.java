@@ -1,5 +1,5 @@
-/* Chromaticity.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+/* MediaPrintableArea.java -- 
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,48 +39,108 @@ exception statement from your version. */
 package javax.print.attribute.standard;
 
 import javax.print.attribute.DocAttribute;
-import javax.print.attribute.EnumSyntax;
 import javax.print.attribute.PrintJobAttribute;
 import javax.print.attribute.PrintRequestAttribute;
 
 /**
  * @author Michael Koch (konqueror@gmx.de)
  */
-public final class Chromaticity extends EnumSyntax
-  implements DocAttribute, PrintRequestAttribute, PrintJobAttribute
+public final class MediaPrintableArea
+  implements DocAttribute, PrintJobAttribute, PrintRequestAttribute
 {
-  private static final long serialVersionUID = 4660543931355214012L;
+  private static final long serialVersionUID = -1597171464050795793L;
 
-  public static final Chromaticity MONOCHROME = new Chromaticity(0);
-  public static final Chromaticity COLOR = new Chromaticity(1);
+  public static final int INCH = 25400;
+  public static final int MM = 1000;
+  
+  private float x;
+  private float y;
+  private float width;
+  private float height;
+  
+  /**
+   * Creates a new <code>MediaPrintableArea</code> object.
+   * 
+   * @throws IllegalArgumentException if x i&lt; 0 or y i&lt; 0 or w i&lt;= 0
+   * or h i&lt;= 0 or units i&lt; 1
+   */
+  public MediaPrintableArea(float x, float y, float w, float h, int units)
+  {
+    if (x < 0.0f || y < 0.0f || w <= 0.0f || h <= 0.0f)
+      throw new IllegalArgumentException();
+
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+  }
 
   /**
-   * Creates a <code>Chromaticity</code> object.
-   *
-   * @param value the enum value
+   * Creates a new <code>MediaPrintableArea</code> object.
+   * 
+   * @throws IllegalArgumentException if x i&lt; 0 or y i&lt; 0 or w i&lt;= 0
+   * or h i&lt;= 0 or units i&lt; 1
    */
-  protected Chromaticity(int value)
+  public MediaPrintableArea(int x, int y, int w, int h, int units)
   {
-    super(value);
+    if (x < 0 || y < 0 || w <= 0 || h <= 0)
+      throw new IllegalArgumentException();
+
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
   }
 
   /**
    * Returns category of this class.
    *
-   * @return the class <code>Sides</code> itself
+   * @return the class <code>MediaPrintableArea</code> itself
    */
   public Class getCategory()
   {
-    return Chromaticity.class;
+    return MediaPrintableArea.class;
   }
 
   /**
-   * Returns the name of this attribute.
+   * Returns name of this class.
    *
-   * @return the name
+   * @return the string "media-printable-area"
    */
   public String getName()
   {
-    return "chromaticity";
+    return "media-printable-area";
+  }
+
+  public float getHeight(int units)
+  {
+    if (units < 1)
+      throw new IllegalArgumentException();
+
+    return height * units;
+  }
+
+  public float getWidth(int units)
+  {
+    if (units < 1)
+      throw new IllegalArgumentException();
+
+    return width * units;
+  }
+
+  public float getX(int units)
+  {
+    if (units < 1)
+      throw new IllegalArgumentException();
+
+    return x * units;
+  }
+
+  public float getY(int units)
+  {
+    if (units < 1)
+      throw new IllegalArgumentException();
+
+    return y * units;
   }
 }

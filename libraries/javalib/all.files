@@ -2741,6 +2741,8 @@ javax/print/attribute/standard/JobState.java
 javax/print/attribute/standard/JobStateReason.java
 javax/print/attribute/standard/JobStateReasons.java
 javax/print/attribute/standard/Media.java
+javax/print/attribute/standard/MediaPrintableArea.java
+javax/print/attribute/standard/MediaSize.java
 javax/print/attribute/standard/MediaSizeName.java
 javax/print/attribute/standard/MultipleDocumentHandling.java
 javax/print/attribute/standard/NumberOfDocuments.java

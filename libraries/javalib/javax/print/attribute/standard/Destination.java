@@ -1,5 +1,5 @@
 /* Destination.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -50,7 +50,7 @@ import javax.print.attribute.URISyntax;
 public final class Destination extends URISyntax
   implements PrintJobAttribute, PrintRequestAttribute
 {
-  private static final long serialVersionUID = 7923912792485606497L;
+  private static final long serialVersionUID = 6776739171700415321L;
 
   /**
    * Constructs a <code>Destination</code> object.
