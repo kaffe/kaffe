@@ -43,5 +43,6 @@ libmd:
     other operating systems. It supplies implementations of the MD2,
     MD4, and MD5 hashing algorithms. If this library is not found by
     configure, then SHA is the only hashing algorithm that will be
-    available.
+    available. The FreeBSD version of this library is available here:
+        http://www.freebsd.org/cgi/cvsweb.cgi/src/lib/libmd/
 
