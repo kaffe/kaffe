@@ -29,7 +29,7 @@ init_md(void)
 #if defined(__GLIBC__)
 extern void * __libc_stack_end;
 
-void *mdGetStackBase(void)
+void *mdGetStackEnd(void)
 {
   long sz = sysconf(_SC_PAGESIZE);
   

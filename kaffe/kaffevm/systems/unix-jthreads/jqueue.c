@@ -33,6 +33,7 @@ KaffePool *KaffeCreatePool()
   assert(gs_default_reallocator != NULL);
 
   pool = (KaffePool *)gs_default_allocator(sizeof(KaffePool));
+  assert(pool != NULL);
   
   pool->num_nodes_in_pool = DEFAULT_NUMBER_OF_NODES_IN_POOL;
   pool->num_free_nodes = pool->num_nodes_in_pool;
@@ -59,6 +60,8 @@ KaffePool *KaffeCreatePool()
 void KaffeDestroyPool(KaffePool *pool)
 {
   int i;
+  
+  assert(pool != NULL);
 
   pool->deallocator(pool->pools);
   for (i=0;i<pool->num_pools;i++)

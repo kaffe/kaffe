@@ -1,3 +1,38 @@
+2004-07-08  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/i386/linux/md.[ch]: Fixed use of stack base/end.
+
+	* kaffe/kaffevm/external.c
+	(discoverLibraryHome, initNative): binreloc support for native libraries.
+
+	* kaffe/kaffevm/jni/jni-base.c: Added inclusion of support.h for
+	userProperty.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c
+	(KaffeDestroyPool): Added an assertion checking to ease debug.
+	(KaffeCreatePool): Likewise.
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c:
+	(detectStackBoundaries) Cleaned some weird code I have written.
+
+	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c:
+	(registerSyncHandler, registerAsyncHandler): Made them return a
+	pointer to the previous handler.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_attach_current_thread): Detect stack boundaries for the
+	thread to be attached.
+
+	* configure.ac: Check for sys/param.h
+
+	* config/config-io.h: If sys/param.h is available include it.
+
+	* config/config.h.in, configure: Regenerated.
+
+	* po/fr.po, po/zh_TW.po, po/kaffe.pot: Regenerated.
+
 2004-07-08  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* Makefile.am (kaffe-build-order): new target invoking make in the

@@ -29,10 +29,10 @@
 
 #include "thread-internal.h"
 
-void registerSyncSignalHandler(int sig, void* handler);
+void *registerSyncSignalHandler(int sig, void* handler);
 void restoreSyncSignalHandler(int sig, void* handler);
 
-void registerAsyncSignalHandler(int sig, void* handler);
+void *registerAsyncSignalHandler(int sig, void* handler);
 void restoreAsyncSignalHandler(int sig, void* handler);
 
 void registerTerminalSignal(int sig, void* handler);

@@ -47,6 +47,9 @@
 #include "feedback.h"
 #endif
 #include "jni_i.h"
+#ifdef ENABLE_BINRELOC
+#include "prefix.h"
+#endif
 
 #ifdef __riscos__
 #include <unixlib/local.h>
@@ -139,6 +142,30 @@ error_stub(void)
 	return (0);
 }
 
+static
+const char *discoverLibraryHome()
+{
+  static char libraryHome[MAXPATHLEN];
+  char *entryPoint;
+
+  strcpy(libraryHome, SELFPATH);
+  
+  if (strlen(file_separator) != 1)
+    {
+      fprintf(stderr, "WARNING: Impossible to auto-discover the home of native libraries\n");
+      return NULL;
+    }
+
+  entryPoint = strrchr(libraryHome, file_separator[0]);
+  if (entryPoint == NULL)
+    // Abnormal. We may return ".".
+    return ".";
+
+  *entryPoint = 0;
+  
+  return libraryHome;
+}
+
 void
 initNative(void)
 {
@@ -153,6 +180,11 @@ initNative(void)
 	lpath = (char*)Kaffe_JavaVMArgs.libraryhome;
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
+#ifdef ENABLE_BINRELOC
+		if (lpath == 0) {
+			lpath = discoverLibraryHome();
+		}
+#endif
 	}
 #ifdef __riscos__
         __unixify(lpath, 0, lib, MAXLIBPATH, __RISCOSIFY_FILETYPE_NOTSPECIFIED);

@@ -22,6 +22,7 @@
 #include "thread.h"
 #include "baseClasses.h"
 #include "kaffe_jni.h"
+#include "support.h"
 
 /*
  * Keep track of how many VM's are active. Right now

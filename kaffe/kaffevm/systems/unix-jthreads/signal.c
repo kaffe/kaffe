@@ -393,15 +393,9 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 
 	setupSigAltStack();
 
-#if defined(STACK_GROWS_UP)
 	jtid->stackBase = stackPointer;
 	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
-#else
-	jtid->stackEnd = stackPointer;
-        jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
-        jtid->restorePoint = jtid->stackBase;
-#endif
 
 }
 
@@ -420,17 +414,10 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	setupSigAltStack();
 
 	stackPointer = mdGetStackEnd();
-	fprintf(stderr,"stackPointer=%p\n", stackPointer);
 
-#if defined(STACK_GROWS_UP)
 	jtid->stackEnd = stackPointer;
 	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
-#else
-	jtid->stackBase = stackPointer;
-        jtid->stackEnd = (char *) jtid->stackBase + mainThreadStackSize;
-        jtid->restorePoint = jtid->stackBase;
-#endif
 }
 
 #elif defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)

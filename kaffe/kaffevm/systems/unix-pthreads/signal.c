@@ -134,7 +134,7 @@ floatingException(EXCEPTIONPROTO)
  * OS signal handling code.  See FAQ/FAQ.jsignal for information.
  * ----------------------------------------------- */
 
-static void
+static void *
 registerSignalHandler(int sig, void* handler, int isAsync)
 {
 #if defined(HAVE_SIGACTION)
@@ -163,11 +163,13 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 #if defined(SA_RESTART)
 	newact.sa_flags |= SA_RESTART;
 #endif
-	sigaction(sig, &newact, NULL);
+	sigaction(sig, &newact, &oldact);
 
+	return oldact.sa_handler;
+	
 #elif defined(HAVE_SIGNAL)
 #warning The default signal() semantics may not be sufficient for Kaffe.
-	signal(sig, (SIG_T)handler);
+	return signal(sig, (SIG_T)handler);
 
 #else
 #error No signal handler support.  Jthreads requires signal support.	
@@ -178,7 +180,7 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 /*
  * Register a handler for an asynchronous signal.
  */
-void
+void *
 registerAsyncSignalHandler(int sig, void* handler)
 {
 	int validSig = 
@@ -198,13 +200,13 @@ registerAsyncSignalHandler(int sig, void* handler)
 	 * Register an asynchronous signal handler that will block all
 	 * other asynchronous signals while the handler is running.
 	 */
-	registerSignalHandler(sig, handler, true);
+	return registerSignalHandler(sig, handler, true);
 }
 
 /*
  * Register a signal handler for a synchronous signal.
  */
-void
+void *
 registerSyncSignalHandler(int sig, void* handler)
 {
 	int validSig = 0
@@ -223,7 +225,7 @@ registerSyncSignalHandler(int sig, void* handler)
 	assert(validSig);
 	
 	/* Register a synchronous signal handler */
-	registerSignalHandler(sig, handler, false);
+	return registerSignalHandler(sig, handler, false);
 }
 
 /*
@@ -385,16 +387,9 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 
 	setupSigAltStack();
 
-#if defined(STACK_GROWS_UP)
 	jtid->stackMin = stackPointer;
 	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
         jtid->stackCur = jtid->stackMax;
-#else
-	jtid->stackMax = stackPointer;
-        jtid->stackMin = (char *) jtid->stackMax - mainThreadStackSize;
-        jtid->stackCur = jtid->stackMin;
-#endif
-
 }
 
 #elif defined(KAFFEMD_STACKEND) // KAFFEMD_STACKBASE
@@ -412,17 +407,10 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	setupSigAltStack();
 
 	stackPointer = mdGetStackEnd();
-	fprintf(stderr,"stackPointer=%p\n", stackPointer);
 
-#if defined(STACK_GROWS_UP)
 	jtid->stackMax = stackPointer;
 	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
         jtid->stackCur = jtid->stackMax;
-#else
-	jtid->stackBase = stackPointer;
-        jtid->stackEnd = (char *) jtid->stackMin + mainThreadStackSize;
-        jtid->stackCur = jtid->stackMin;
-#endif
 }
 
 #elif defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
@@ -454,14 +442,15 @@ void
 detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
 	char *guessPointer;
+	void *handler_segv, *handler_bus;
 
 	setupSigAltStack();
 
 #if defined(SIGSEGV)
-	registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
+	handler_segv = registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
 #endif
 #if defined(SIGBUS)
-	registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
+	handler_bus = registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
 #endif
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
@@ -494,6 +483,13 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	jtid->stackMax = guessPointer;
 	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
 	jtid->stackCur = jtid->stackMin;
+#endif
+
+#if defined(SIGSEGV)
+	registerSyncSignalHandler(SIGSEGV, handler_segv);
+#endif
+#if defined(SIGBUS)
+	registerSyncSignalHandler(SIGBUS, handler_bus);
 #endif
 }
 

@@ -20,6 +20,7 @@
 #include "locks.h"
 #include "thread-impl.h"
 #include "debug.h"
+#include "md.h"
 
 static char stat_act[]   = { ' ', 'a' };
 static char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
@@ -493,14 +494,31 @@ void jthread_interrupt(jthread_t tid)
 bool jthread_attach_current_thread (bool daemon)
 {
   jthread_t		nt;
+  rlim_t		stackSize;
 
   /* create the jthread* thingy */
   nt = thread_malloc( sizeof(struct _jthread) );
 
   nt->func         = 0;
   nt->suspendState = 0;
-  nt->stackMin     = (void *)((uintp)&nt - 0x8000);
-  nt->stackMax     = (void *)((uintp)&nt + 0x400);
+#if defined(KAFFEMD_STACKSIZE)
+  stackSize = mdGetStackSize();
+  
+  if (stackSize == KAFFEMD_STACK_ERROR)
+    {
+      fprintf(stderr, "WARNING: Impossible to retrieve the real stack size\n");
+      fprintf(stderr, "WARNING: You may experience deadlocks\n");
+    }
+  else if (stackSize == KAFFEMD_STACK_INFINITE)
+    {
+      fprintf(stderr, "WARNING: Kaffe may experience problems with unlimited\n"
+	      "WARNING: stack sizes (e.g. deadlocks).\n");
+      stackSize = MAINSTACKSIZE;
+    }
+#else
+  stackSize = MAINSTACKSIZE;
+#endif
+  detectStackBoundaries(nt, stackSize);
   nt->stackCur     = 0; 
   nt->daemon       = daemon;
 
