@@ -705,6 +705,60 @@ if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then
   AC_DEFINE(LONG_LONG_MODULO_BROKEN, 1, [Define if LONG_LONG_MIN % -1ll produces an arithmetic exception])
 fi
 
+dnl Test whether strtod("-0.0") is broken
+AC_CACHE_CHECK([whether strtod(\"-0.0\") is broken],
+  ac_cv_strtod_m0_broken, [dnl
+    AC_TRY_RUN([
+#include <stdlib.h>
+/* definition DOUBLE_ORDER_OPPOSITE from config/config-hacks.h */
+#if defined(arm32) || (defined(arm) && defined(linux))
+#define DOUBLE_ORDER_OPPOSITE
+#endif
+/* definition of uint32 from kaffe/kaffevm/gtypes.h */
+#if SIZEOF_INT == 4
+#define uint32	unsigned int
+#elif SIZEOF_LONG == 4
+#define uint32	unsigned long
+#else
+#define uint32	int
+#endif
+/* definition of uint64 from kaffe/kaffevm/gtypes.h */
+#if SIZEOF_LONG == 8
+#define uint64	unsigned long
+#elif SIZEOF_LONG_LONG == 8
+#define uint64	unsigned long long
+#elif SIZEOF___INT64 == 8
+#define uint64	unsigned __int64
+#else
+#define uint64	int
+#endif
+int main()
+{
+    union { double d; uint32 i; uint64 j; } d;
+    if (sizeof(uint64) != 8) return 2;
+#if defined(HAVE_STRTOD)
+    d.d = strtod("-0.0", 0);
+#else
+    d.d = atof("-0.0");
+#endif
+    /* doubleToLong() from kaffe/kaffevm/fp.c */
+#if defined(DOUBLE_ORDER_OPPOSITE)
+    {
+	/* swap low and high word */
+	uint32 r = *(uint32*)&d.j;
+	uint32 *s = (uint32*)&d.j + 1;
+	d.i = *s;
+	*s = r;
+    }
+#endif
+    if ((d.j >> 63) & 1) return 0; else return 1;
+}
+], ac_cv_strtod_m0_broken=no, ac_cv_strtod_m0_broken=yes,
+   ac_cv_strtod_m0_broken=cross)])
+if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
+  AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
+fi
+
 AC_CHECK_FUNCS([dnl
 strerror hstrerror dnl
 fcntl ioctl dnl

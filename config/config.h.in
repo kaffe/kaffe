@@ -484,6 +484,9 @@
 /* Define if LONG_LONG_MIN % -1ll produces an arithmetic exception */
 #undef LONG_LONG_MODULO_BROKEN
 
+/* Define if strtod("-0.0") is broken */
+#undef STRTOD_m0_BROKEN
+
 /* Do we have amask instruction on alpha */
 #undef HAVE_ALPHA_ASM_AMASK
 

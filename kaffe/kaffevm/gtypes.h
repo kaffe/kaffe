@@ -44,6 +44,9 @@ typedef	unsigned short		uint16;
 #error "sizeof(short) must be 2"
 #endif
 
+/* If you change these definitions, also change strtod("-0.0") check
+ * in configure.in
+ */
 #if SIZEOF_INT == 4
 #if !defined(HAVE_INT32)
 typedef	int			int32;
@@ -62,6 +65,9 @@ typedef	unsigned long		uint32;
 #error "sizeof(int) or sizeof(long) must be 4"
 #endif
 
+/* If you change these definitions, also change strtod("-0.0") check
+ * in configure.in
+ */
 #if SIZEOF_LONG == 8
 #if !defined(HAVE_INT64)
 typedef	long			int64;

@@ -106,20 +106,46 @@ double
 java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 {
 	double value;
-	char buf[MAXNUMLEN];
+	char buf0[MAXNUMLEN];
+	char *buf;
 	char* endbuf;
 	char* msg = "Bad float/double format";
+#if defined(STRTOD_m0_BROKEN)
+	int negate;
+#endif
 
 	/* stringJava2CBuf would silently promote 0 to an empty string */
 	if (str == 0) {
 		SignalError("java.lang.NullPointerException", "");
 	}
+	stringJava2CBuf(str, buf0, sizeof(buf0));
 
-	stringJava2CBuf(str, buf, sizeof(buf));
+	/* Skip initial white space */
+	for (buf = buf0; isspace(*buf); buf++)
+		;
 
 #if defined(HAVE_STRTOD)
+
+#if defined(STRTOD_m0_BROKEN)
+	/* Handle negative sign manually */
+	negate = (*buf == '-');
+	if (negate) {
+		buf++;
+		if (*buf == '-') {	/* disallow double negative */
+			goto bail;
+		}
+	}
+#endif
+
+	/* Parse value; check for empty parse */
 	value = strtod(buf, &endbuf);
-	while (*endbuf != 0) {
+	if (endbuf == buf) {
+		msg = buf0;		/* this is what JDK 1.1.6 does */
+		goto bail;
+	}
+
+	/* Skip trailing whitespace and/or type suffixes */
+	while (*endbuf != '\0') {
 		switch (*endbuf) {
 		case ' ':
 		case '\t':
@@ -135,11 +161,8 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 			goto bail;
 		}
 	}
-	/* don't return 0 if string was empty */
-	if (endbuf == buf) {
-		msg = "empty string";
-		goto bail;
-	}
+
+	/* Check for overflow/underflow */
 	if (errno == ERANGE) {
 		if (value == HUGE_VAL || value == -HUGE_VAL) {
 			msg = "Overflow";
@@ -150,11 +173,19 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 			goto bail;
 		}
 	} 
-#else
+
+#if defined(STRTOD_m0_BROKEN)
+	if (negate) {
+		value = -value;
+	}
+#endif
+
+#else  /* HAVE_STRTOD */
 	/* Fall back on old atof - no error checking */
 	value = atof(buf);
 #endif
 
+	/* Got a good value; return it */
 	return (value);
 
 bail:;

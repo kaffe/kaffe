@@ -22,6 +22,9 @@
 
 /*
  * Convert double to jlong.
+ *
+ * If you change this function, also change strtod("-0.0") check in
+ * configure.in.
  */
 jlong
 doubleToLong(jdouble val)
