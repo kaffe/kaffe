@@ -1,3 +1,8 @@
+Wed May 26 14:59:03 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c: look for fields in superclasses too,
+	see discussion on mailing list.
+
 1999-05-25  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* kaffe/kaffevm/*, libraries/clib/zip/Deflater.c: printf replaced
