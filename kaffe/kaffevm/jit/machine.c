@@ -926,7 +926,7 @@ getEngine(void)
 
 void initEngine(void)
 {
-  initStaticLock(&translatorLock);
+  initStaticLock(&translatorlock);
 }
 
 #if defined(KAFFE_PROFILER)

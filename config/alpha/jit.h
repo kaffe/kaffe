@@ -33,7 +33,7 @@ typedef struct _alpha_jit_info {
 	int	ieee;
 } alpha_jit_info_t;
 
-/* Protected by translatorLock */
+/* Protected by translatorlock */
 extern alpha_jit_info_t alpha_jit_info;
 
 
