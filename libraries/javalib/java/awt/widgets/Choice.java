@@ -302,9 +302,21 @@ protected String paramString() {
  * @deprecated
  */
 public Dimension preferredSize () {
-	Dimension d = entry.getPreferredSize();
-	d.width += BTN_WIDTH + 2*BORDER_WIDTH;
-	return d;
+    /* Instead of simply asking the current selection's size,
+     * we better find the maximum...
+     */
+    //Dimension d = entry.getPreferredSize();
+    Dimension d = new Dimension();
+    for (int i = items.size(); --i >= 0; ) {
+       Dimension d2 = entry.getPreferredSize(
+          ((String) items.elementAt(i)).length());
+       if (d2.width > d.width)
+           d.width = d2.width;
+       if (d2.height > d.height)
+           d.height = d2.height;
+    }
+    d.width += BTN_WIDTH + 2*BORDER_WIDTH;
+    return d;
 }
 
 void process ( ItemEvent e ) {
