@@ -1019,7 +1019,11 @@ public class SimpleDateFormat extends DateFormat
 			    found_zone = true;
 			    saw_timezone = true;
 			    TimeZone tz = TimeZone.getTimeZone (strings[0]);
-			    calendar.set (Calendar.DST_OFFSET, tz.getDSTSavings());
+			    // Check if it's a DST zone or ordinary 
+			    if(k == 3 || k == 4)
+			      calendar.set (Calendar.DST_OFFSET, tz.getDSTSavings());
+			    else
+			      calendar.set (Calendar.DST_OFFSET, 0);
                             offset = tz.getRawOffset ();
 			    pos.setIndex(index + strings[k].length());
 			    break;
