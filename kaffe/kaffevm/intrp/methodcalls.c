@@ -21,6 +21,7 @@
 #include "thread.h"
 #include "slots.h"
 #include "soft.h"
+#include "external.h"
 
 void *
 engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo UNUSED)

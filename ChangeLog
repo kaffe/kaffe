@@ -1,5 +1,10 @@
 2004-10-21  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/intrp/methodcalls.c:
+	Added missing extern.h include to fix crash on amd64.
+
+2004-10-21  Eric Anholt  <eta@lclark.edu>
+
 	* config/config.alias:
 	Added amd64 alias for x86-64.
 
