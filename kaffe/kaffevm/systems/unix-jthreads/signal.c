@@ -130,6 +130,9 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 #if defined(SA_SIGINFO)
 	newact.sa_flags |= SA_SIGINFO;
 #endif
+#if defined(SA_RESTART)
+	newact.sa_flags |= SA_RESTART;
+#endif
 	sigaction(sig, &newact, NULL);
 
 #elif defined(HAVE_SIGNAL)
