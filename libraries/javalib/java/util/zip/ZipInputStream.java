@@ -63,7 +63,7 @@ public class ZipInputStream extends InflaterInputStream
       readFully(extra, 0, extra.length);
 
       // Setup new entry
-      entry = new ZipEntry(UTF8.decode(nameBuf));
+      entry = createZipEntry(UTF8.decode(nameBuf));
       entry.version = get16(zheader, LOCVER);
       entry.flag    = get16(zheader, LOCFLG);
 
@@ -211,8 +211,7 @@ public class ZipInputStream extends InflaterInputStream
   }
 
   protected ZipEntry createZipEntry(String name) {
-	// XXX FIXME what is this supposed to do?
-	return null;
+	return new ZipEntry(name);
   }
 }
 

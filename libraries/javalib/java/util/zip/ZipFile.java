@@ -51,6 +51,12 @@ public ZipFile(File f) throws ZipException, IOException
 	this(f.getPath());
 }
 
+public ZipFile(File f, int mode) throws ZipException, IOException
+{
+	// XXX ignoring mode for now
+	this(f);
+}
+
 public void close() throws IOException
 {
 	if (zip != null) {
