@@ -92,7 +92,7 @@ struct Hjava_lang_Class {
 	   The MSB corresponds to the dtable field.
 	 */
 	int*			gc_layout;
-	char			state;
+	signed char		state;
 	void*			processingThread;
 	Method*			finalizer;
 };

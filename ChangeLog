@@ -1,3 +1,8 @@
+Tue Dec 15 14:11:32 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.h: made state signed char cause we
+	use -1 as a value.
+
 Tue Dec 15 01:22:27 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: save and restore pending exceptions
