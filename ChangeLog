@@ -1,3 +1,9 @@
+2003-07-20 Fabio.di.Fabio <abel@lmib.org>
+
+	* libraries/kaffe/appletAppletTag.java:
+	(parseParam) keep '"' and '\'' as quote characters.
+	(parseForApplets) keep '\'' as a quote character.
+
 2003-07-18 Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/text/MessageFormat.java:

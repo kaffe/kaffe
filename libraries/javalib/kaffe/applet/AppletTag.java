@@ -134,7 +134,9 @@ void parseParam( StreamTokenizer st) throws IOException {
 		 * so we can parse unquoted file names
 		 * as a single token.
 		 */
-		st.wordChars('!', '/');
+		st.wordChars('!', '!');
+		st.wordChars('#', '&');
+		st.wordChars('(', '/');                
 		st.wordChars('{', '~');
 		st.wordChars('[', '_');
 		if (st.sval == null) {
@@ -171,7 +173,9 @@ void parseParam( StreamTokenizer st) throws IOException {
 	}
 
 	/* Reset non-alphabetic word chars to ordinary chars. */
-	st.ordinaryChars('!', '/');
+	st.ordinaryChar('!');
+	st.ordinaryChars('#', '&');
+	st.ordinaryChars('(', '/');
 	st.ordinaryChars('{', '~');
 	st.ordinaryChars('[', '_');
 }
@@ -257,7 +261,6 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
 
     st.lowerCaseMode( true);
     st.ordinaryChar('/');
-    st.ordinaryChar('\'');
 
     while ( (ttype = st.nextToken()) != st.TT_EOF ) {
         if ( ttype == '<' ) {
