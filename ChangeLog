@@ -1,3 +1,9 @@
+2003-04-03 Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/scripts/kaffe.in:
+	Try to automatically find a unique name for the
+	KAFFE_DEBUG_TEMPFILE.
+	
 2003-04-03 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/Vector.java:
