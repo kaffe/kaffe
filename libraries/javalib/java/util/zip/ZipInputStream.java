@@ -144,4 +144,9 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
     return (count);
   }
 
+  protected ZipEntry createZipEntry(String name) {
+	// XXX FIXME what is this supposed to do?
+	return null;
+  }
 }
+
