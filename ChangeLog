@@ -1,6 +1,13 @@
 Fri Mar  5 16:51:19 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* config/config.alias: add alias for freebsd4
+	* libraries/javalib/java/awt/AWTEvent.java: make setSource()
+	method public to avoid illegal access compilation error
+	* libraries/javalib/java/lang/Float.java, Double.java,
+	libraries/clib/native/Float.c, Double.c: fix broken toString()
+	methods to print according to spec; fix bugs converting NaN's
+	in intBitsToFloat() and longBitsToDouble().
+	* test/regression/Makefile.{am,in}, DoublePrint.java: add new test
 
 Fri Mar  5 12:08:57 1999  Godmar Back  <gback@cs.utah.edu>
 
