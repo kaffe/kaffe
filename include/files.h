@@ -22,10 +22,10 @@
 #endif
 
 #if defined(HAVE_STRERROR)
-#define	SYS_ERROR	(char*)strerror(errno)
+#define	SYS_ERROR(x)	(char*)strerror(x)
 #else
 extern char* sys_errlist[];
-#define	SYS_ERROR	sys_errlist[errno]
+#define	SYS_ERROR(x)	sys_errlist[x]
 #endif
 
 /* Define access() flags if not already defined */

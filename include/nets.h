@@ -23,16 +23,16 @@ extern int h_errno;
 #define	MAXHOSTNAME	128
 
 #if defined(HAVE_STRERROR)
-#define	SYS_ERROR	strerror(errno)
+#define	SYS_ERROR(x)	strerror(x)
 #else
 extern char* sys_errlist[];
-#define	SYS_ERROR	sys_errlist[errno]
+#define	SYS_ERROR(x)	sys_errlist[x]
 #endif
 
 #if defined(HAVE_HSTRERROR)
-#define	SYS_HERROR	hstrerror(h_errno)
+#define	SYS_HERROR(x)	hstrerror(x)
 #else
-#define	SYS_HERROR	"Network error"
+#define	SYS_HERROR(x)	"Network error"
 #endif
 
 #endif
