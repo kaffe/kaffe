@@ -1,3 +1,13 @@
+Wed Jan  6 15:50:32 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-block-hash.[ch]: removed from CVS repos.
+	kaffe/kaffevm/mem/gc-block-mmap.[ch]: merged in gc-mem.c
+	configure, configure.in, FAQ/FAQ.gcblock
+	kaffe/kaffevm/Makefile.in, kaffe/kaffevm/mem/gc-incremental.c
+	kaffe/kaffevm/mem/gc-mem.[ch]: 
+	- removed old hash-based allocation scheme in favor of new,
+	address-arithmetic based scheme.
+
 Wed Jan  6 11:04:00 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.h: test for zero class->name in

@@ -1,10 +1,6 @@
 The new gc_block allocation scheme optimizes virtual memory and
 cache behavior.
 
-It has been tested on a variety of systems, and although we believe it 
-to be reasonably robust, you may enable the old gc-block allocation for
-now with ./configure --with-gcblock=hash.
-
 Previously, each page of the heap had a header, struct gc_block.
 The conservative GC tested whether a pointer pointed into the heap by
 searching a simple hash table called gc_object_hash.  The new
@@ -51,15 +47,5 @@ This adds a wrinkle to any work on a concurrent GC:  There can be no
 gc_block *'s on any stack when the array is realloced (inside
 gc_heap_malloc).
 
-mem/gc-mem.c and mem/gc-incremental.c have been modified to work with
-either heap layout.  mem/gc-block-mmap.[hc] and mem/gc-block-hash.[hc]
-contain code for the new and old heap layouts respectively.  The
-contents of the files are as follows:
- 
-gc-block-*.h: defines gc_block struct, accessor macros and
-        gc_heap_isobject inline function.
-gc-block-*.c: defines gc_block_init, gc_block_add, gc_block_rm and
-        gc_block_alloc.
- 
 Jason Baker <jbaker@cs.utah.edu>
-Dec 17, 1998
+Jan  6, 1999
