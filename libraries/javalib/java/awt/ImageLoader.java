@@ -147,7 +147,6 @@ public void setColorModel ( ColorModel model ) {
 }
 
 public void setDimensions ( int width, int height ) {
-	System.err.println("dims="+width+","+height);
 	img.width = width;
 	img.height = height;
 
