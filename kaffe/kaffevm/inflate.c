@@ -821,8 +821,7 @@ static
 int
 huft_free(huft* t)
 {
-  register huft *p, *q;
-
+  huft *p, *q;
 
   /* Go through linked list, freeing from the malloced (t[-1]) address. */
   p = t;
