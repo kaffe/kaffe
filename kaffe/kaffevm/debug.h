@@ -107,6 +107,7 @@
 # define DBG_CLASSLOOKUP        DBG_BIT(56)
 
 # define DBG_REGFORCE		DBG_BIT(57)
+# define DBG_SYSDEPCALLMETHOD   DBG_BIT(58)
 
 # define DBG_ALL		((debugmask_t)(-1))
 # define DBG_ANY                DBG_ALL

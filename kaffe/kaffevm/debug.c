@@ -86,6 +86,7 @@ static struct debug_opts
 	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT,
 			"All allocation and free operations in gc-mem" },
 	D(SLACKANAL,   "Print internal fragmentation statistics."),
+	D(SYSDEPCALLMETHOD,	"Debug system-dependent call method."),
 
 	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
 	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),

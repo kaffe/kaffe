@@ -1,4 +1,19 @@
-Wed May 29 12:45:06 PDT 2002  Jim Pick  <jim@jimpick.com>
+Wed May 29 12:59:24 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* config/s390/common.h: new file.
+	* config/s390/linux/config.frag: new file.
+	* config/s390/linux/md.c: new file.
+	* config/s390/linux/md.h: new file.
+	* config/s390/threads.h: new file.
+	* kaffe/kaffevm/debug.c: Added SYSDEPCALLMETHOD, used by s390
+	port.
+	* kaffe/kaffevm/debug.h: Added SYSDEPCALLMETHOD, used by s390
+	port.
+	
+	Port to s390 by Ross Patterson <Ross.Patterson@CA.Com>
+	Taken from Debian's 1.0.6-6.1.src.deb	
+
+Wed May 29 12:45:06 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffe/main.c:
 	(options) recognize support for -ia32 option.
