@@ -1,3 +1,20 @@
+Sun Dec 20 10:34:21 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* config/i386/jit-i386.def: added debug() to nop instruction.
+	* kaffe/kaffevm/locks.h: added staticLockIsInitialized macro
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/jit/machine.h: eliminated local init variables
+	in favor of staticLockIsInitialized.
+	* kaffe/kaffevm/jni.c, kaffe/kaffevm/jit/machine.c: protected
+	translator when called from Kaffe_JNI_Wrapper.  New functions
+	enterTranslator() and leaveTranslator().
+	* kaffe/kaffevm/jit/icode.c: fixed warning in softcall_lookupmethod
+	* kaffe/kaffevm/code-analyse.h, kaffe/kaffevm/jit/machine.c:
+	added code to align branch targets and function call entry points.
+	This code depends on MD macros (CALLTARGET_ALIGNMENT and 
+	JUMPTARGET_ALIGNMENT) which are currently not defined for any
+	architecture.
+
 Sat Dec 19 17:31:22 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/awt/Component.java: use Toolkit.class
