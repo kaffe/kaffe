@@ -4005,7 +4005,6 @@ javax_swing_SRCS = \
 	javax/swing/AbstractButton.java \
 	javax/swing/AbstractCellEditor.java \
 	javax/swing/AbstractListModel.java \
-	javax/swing/AbstractSet.java \
 	javax/swing/AbstractSpinnerModel.java \
 	javax/swing/Action.java \
 	javax/swing/ActionMap.java \
