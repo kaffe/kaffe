@@ -218,6 +218,7 @@ public int hashCode() {
 protected void removeRange(int fromIndex, int toIndex) {
   final ListIterator i = listIterator(fromIndex);
   while (fromIndex < toIndex && i.hasNext()) {
+    i.next();
     i.remove();
     fromIndex++;
   }
