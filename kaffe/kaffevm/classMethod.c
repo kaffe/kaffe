@@ -561,7 +561,7 @@ DBG(STATICINIT,
 			dprintf("using JNI\n");
 )
 			(*env)->ExceptionClear(env);
-			(*env)->CallStaticVoidMethodA(env, class, meth, 0);
+			(*env)->CallStaticVoidMethodA(env, class, (jmethodID)meth, 0);
 			exc = (*env)->ExceptionOccurred(env);
 			(*env)->ExceptionClear(env);
 		} else {

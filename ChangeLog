@@ -1,5 +1,10 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffevm/classMethod.c:
+	Cast appropriately to avoid a warning.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/access.c,
 	kaffe/kaffevm/soft.c,
 	replace/getaddrinfo.c:
