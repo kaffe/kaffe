@@ -67,7 +67,17 @@ public final class Currency implements Serializable
   {
     try
       {
-	return res.getString ("intlCurrencySymbol");
+	ResourceBundle bundle =
+	  ResourceBundle.getBundle("gnu.java.locale.iso4217", locale);
+	
+	String currencyCode = bundle.getString (locale.getCountry());
+	// If currencyCode is null we get a NPE which will make the function return a null.
+	int sep = currencyCode.indexOf(',');
+	
+	if (sep > 0)
+	  return currencyCode.substring(0, sep);
+
+	return currencyCode;
       }
     catch (Exception _)
       {
@@ -156,13 +166,13 @@ public final class Currency implements Serializable
 	if (res.equals(this.res))
 	  return res.getString ("currencySymbol");
 	else
-	  return res.getString ("intlCurrencySymbol");
+	  return getCurrencyCode();
       }
     catch (Exception e1)
       {
 	try
 	  {
-	    return res.getString ("intlCurrencySymbol");
+	    return getCurrencyCode();
 	  }
 	catch (Exception e2)
 	  {
@@ -180,7 +190,7 @@ public final class Currency implements Serializable
   {
     try
       {
-	return res.getString ("intlCurrencySymbol");
+	return getCurrencyCode();
       }
     catch (Exception _)
       {

@@ -137,7 +137,8 @@ gnu_java_locale_bundles = \
 	gnu/java/locale/iso639_de.properties \
 	gnu/java/locale/iso639_fr.properties \
 	gnu/java/locale/iso639_ga.properties \
-	gnu/java/locale/iso639.properties
+	gnu/java/locale/iso639.properties \
+	gnu/java/locale/iso4217.properties
 
 gnu_getopt_message_bundles = \
 	gnu/getopt/MessagesBundle_cs.properties \
