@@ -1,3 +1,8 @@
+Mon Feb  8 20:08:25 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: update from libtool, improved inter-library
+	dependencies for IRIX
+
 Mon Feb  8 19:17:13 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/Makefile.am: do not create java_lang_Cloneable.h
