@@ -1,5 +1,11 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/gnu/java/io/encode/Encoder.java:
+	  close() now calls flush(), in case extending classes do buffering(like
+	  KaffeEncoder now does).
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaBaseDataLine.java,
 	  libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaSourceDataLine.java,
 	  libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaTargetDataLine.java,

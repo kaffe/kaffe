@@ -260,6 +260,7 @@ convertToBytes(char[] buf, int buf_offset, int len, byte[] bbuf,
 public void
 close() throws IOException
 {
+  flush();
   out.close();
 }
 
