@@ -49,6 +49,7 @@ libkaffevm_la_CFLAGS = \
 	$(PTHREAD_CFLAGS)
 
 libkaffevm_la_LDFLAGS = \
+	$(PTHREAD_CFLAGS) \
         $(PTHREAD_LIBS) \
         $(SEMAPHORE_LIB) \
 	$(KVMLIBFLAGS) \

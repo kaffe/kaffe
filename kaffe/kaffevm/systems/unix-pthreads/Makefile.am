@@ -16,6 +16,7 @@ libkthread_la_LIBADD = \
 
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
+	$(PTHREAD_CFLAGS) \
 	$(PTHREAD_LIBS) \
 	$(SEMAPHORE_LIB)
 

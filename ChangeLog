@@ -1,3 +1,17 @@
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
+        * configure.ac: Added PTHREAD_CFLAGS to CFLAGS back. 
+	That fixes FreeBSD again. 'make CFLAGS=-Wall' still works now,
+	though.
+
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_LDFLAGS):
+	Added PTHREAD_CFLAGS.
+
+	* kaffe/kaffevm/systems/unix-pthreads/Makefile.am (libkthread_la_LDFLAGS):
+	Added PTHREAD_CFLAGS.
+
+	Reported by:  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
 2005-02-08  Jim Huang  <jserv@kaffe.org>
 
 	* WHATSNEW: Add some successes.

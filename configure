@@ -28174,6 +28174,7 @@ fi
 # Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
 if test x"$acx_pthread_ok" = xyes; then
         THREADLIBS="$PTHREAD_LIBS "
+		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"
         :
 else
