@@ -1,5 +1,17 @@
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/javac.in,
+	kaffe/scripts/javakey.in,
+	kaffe/scripts/jdb.in,
+	kaffe/scripts/kjc.in,
+	kaffe/scripts/kopi.in:
+	Removed unused scripts or scripts using sun.* classes.
+
+	* kaffe/scripts/Makefile.am,
+ 	configure.ac: Removed the deleted files.
+
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
         * configure.ac: Added PTHREAD_CFLAGS to CFLAGS back. 
 	That fixes FreeBSD again. 'make CFLAGS=-Wall' still works now,
 	though.

@@ -59177,21 +59177,11 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files kaffe/scripts/kaffexprof"
 
-          ac_config_files="$ac_config_files kaffe/scripts/javac"
-
-          ac_config_files="$ac_config_files kaffe/scripts/javakey"
-
           ac_config_files="$ac_config_files kaffe/scripts/jar"
 
           ac_config_files="$ac_config_files kaffe/scripts/javah"
 
           ac_config_files="$ac_config_files kaffe/scripts/javap"
-
-          ac_config_files="$ac_config_files kaffe/scripts/jdb"
-
-          ac_config_files="$ac_config_files kaffe/scripts/kjc"
-
-          ac_config_files="$ac_config_files kaffe/scripts/kopi"
 
           ac_config_files="$ac_config_files kaffe/scripts/javadoc"
 
@@ -60081,14 +60071,9 @@ do
   "kaffe/scripts/install-jar" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/install-jar" ;;
   "kaffe/scripts/kaffe" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kaffe" ;;
   "kaffe/scripts/kaffexprof" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kaffexprof" ;;
-  "kaffe/scripts/javac" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javac" ;;
-  "kaffe/scripts/javakey" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javakey" ;;
   "kaffe/scripts/jar" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/jar" ;;
   "kaffe/scripts/javah" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javah" ;;
   "kaffe/scripts/javap" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javap" ;;
-  "kaffe/scripts/jdb" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/jdb" ;;
-  "kaffe/scripts/kjc" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kjc" ;;
-  "kaffe/scripts/kopi" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kopi" ;;
   "kaffe/scripts/javadoc" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javadoc" ;;
   "kaffe/scripts/appletviewer" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/appletviewer" ;;
   "kaffe/scripts/rmic" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/rmic" ;;

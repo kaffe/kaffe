@@ -47,12 +47,10 @@ host_triplet = @host@
 subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/appletviewer.in $(srcdir)/install-jar.in \
-	$(srcdir)/jar.in $(srcdir)/javac.in $(srcdir)/javadoc.in \
-	$(srcdir)/javah.in $(srcdir)/javakey.in $(srcdir)/javap.in \
-	$(srcdir)/jdb.in $(srcdir)/kaffe.in $(srcdir)/kaffexprof.in \
-	$(srcdir)/kjc.in $(srcdir)/kopi.in $(srcdir)/native2ascii.in \
-	$(srcdir)/rmic.in $(srcdir)/rmiregistry.in \
-	$(srcdir)/serialver.in
+	$(srcdir)/jar.in $(srcdir)/javadoc.in $(srcdir)/javah.in \
+	$(srcdir)/javap.in $(srcdir)/kaffe.in $(srcdir)/kaffexprof.in \
+	$(srcdir)/native2ascii.in $(srcdir)/rmic.in \
+	$(srcdir)/rmiregistry.in $(srcdir)/serialver.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_antlr.m4 \
@@ -78,9 +76,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jni_md.h
-CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javac javakey jar \
-	javah javap jdb kjc kopi javadoc appletviewer rmic rmiregistry \
-	serialver native2ascii
+CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof jar javah javap \
+	javadoc appletviewer rmic rmiregistry serialver native2ascii
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -370,11 +367,8 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 DIST_SUBDIRS = bat compat
 EXTRA_DIST = nm2as.awk
-SCRIPTFILES_KJC = \
-		kjc kopi
-
 SCRIPTFILES_SUN = \
-		jar javah javakey javap jdb \
+		jar javah javap \
 		native2ascii rmic serialver
 
 @SUN_COMPAT_TRUE@SUBDIRS = compat
@@ -429,21 +423,11 @@ kaffe: $(top_builddir)/config.status $(srcdir)/kaffe.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 kaffexprof: $(top_builddir)/config.status $(srcdir)/kaffexprof.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-javac: $(top_builddir)/config.status $(srcdir)/javac.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-javakey: $(top_builddir)/config.status $(srcdir)/javakey.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 jar: $(top_builddir)/config.status $(srcdir)/jar.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javah: $(top_builddir)/config.status $(srcdir)/javah.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javap: $(top_builddir)/config.status $(srcdir)/javap.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-kjc: $(top_builddir)/config.status $(srcdir)/kjc.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-kopi: $(top_builddir)/config.status $(srcdir)/kopi.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

@@ -1,6 +1,0 @@
-#! /bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS sun.security.provider.Main ${1+"$@"}
-exit $?
-

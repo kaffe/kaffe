@@ -10,11 +10,8 @@ DIST_SUBDIRS = bat compat
 
 EXTRA_DIST = nm2as.awk
 
-SCRIPTFILES_KJC=\
-		kjc kopi
-
 SCRIPTFILES_SUN=\
-		jar javah javakey javap jdb \
+		jar javah javap \
 		native2ascii rmic serialver
 
 if SUN_COMPAT
