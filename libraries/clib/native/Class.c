@@ -178,7 +178,7 @@ java_lang_Class_getName(struct Hjava_lang_Class* c)
 	char ch;
 
 	len = c->name->length;
-	name = len > 100 ? (char*)malloc(len) : buffer;
+	name = len > 100 ? (char*)jmalloc(len) : buffer;
 	ptr = c->name->data;
 	for (i = 0; i < len; i++) {
 		ch = *ptr++;
@@ -189,7 +189,7 @@ java_lang_Class_getName(struct Hjava_lang_Class* c)
 	}
 	str = makeJavaString(name, len);
 	if (name != buffer) {
-		free (name);
+		jfree (name);
 	}
 	return (str);
 }

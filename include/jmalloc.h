@@ -1,6 +1,6 @@
 /*
  * jmalloc.h
- * Redirect the malloc/free functions
+ * Define the jmalloc/jfree functions
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -16,14 +16,7 @@
 
 extern void*	jmalloc(size_t);
 extern void	jfree(void*);
-
-#undef malloc
-#undef calloc
-#undef free
-
-#define	malloc(A)	jmalloc(A)
-#define	calloc(A, B)	jmalloc((A)*(B))
-#define	free(A)		jfree(A)
+#define jcalloc(A, B)	jmalloc((A) * (B))
 
 #endif
 

@@ -1,3 +1,19 @@
+Fri Dec 11 18:38:52 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-block-hash.c, include/jmalloc.h,
+	kaffe/kaffe/main.c, libraries/clib/awt/X/*.c,
+	libraries/clib/io/AudioPlayer.c, libraries/clib/io/File.c,
+	libraries/clib/math/BigInteger.c, libraries/clib/native/*.c,
+	libraries/clib/zip/Deflater.c, libraries/clib/zip/Inflater.c:
+	removed dangerous #redefine of malloc, calloc, and free and replaced
+	it with calls to jmalloc, jcalloc, and jfree where appropriate.
+
+Fri Dec 11 18:36:52 1998  Jason Baker  <jbaker@cs.utah.edu>
+
+	* config/i386/common.h, config/sparc/common.h,
+	kaffe/kaffevm/support.[ch]:  simplified sysdepCallMacro.
+	Improved timing system.
+
 Fri Dec 11 09:40:17 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.[ch], kaffe/kaffevm/mem/gc-incremental.c:

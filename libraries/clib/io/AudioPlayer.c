@@ -23,7 +23,7 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 	int     bRead, fin, dev;
 	void	*buf;
 
-	buf = malloc( bLen);
+	buf = jmalloc( bLen);
 
 	javaString2CString( jstr, fName, sizeof(fName));
 
@@ -36,6 +36,6 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 
 	close( dev);
 	close( fin);
-	free( buf);
+	jfree( buf);
 }
 

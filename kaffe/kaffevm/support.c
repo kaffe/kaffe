@@ -293,6 +293,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		case 'J':
 			call.callsize[i] = 2;
 			in[i] = args[i];
+			in[i+1].i = (&args[i].i)[1];
 			i++;
 			call.callsize[i] = 0;
 			break;
@@ -462,6 +463,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'D':
 			call.callsize[i] = 2;
 			in[i].d = va_arg(args, jdouble);
+			in[i+1].i = (&in[i].i)[1];
 			i++;
 			call.callsize[i] = 0;
 			s += 2;
@@ -469,6 +471,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'J':
 			call.callsize[i] = 2;
 			in[i].j = va_arg(args, jlong);
+			in[i+1].i = (&in[i].i)[1];
 			i++;
 			call.callsize[i] = 0;
 			s += 2;
@@ -757,13 +760,19 @@ print_time_spent(void)
 	struct rusage tot_usage;
 
 	getrusage(RUSAGE_SELF, &tot_usage);
-	fprintf(stderr, "total user time = %ld.%06ld\n",
-	       tot_usage.ru_utime.tv_sec, tot_usage.ru_utime.tv_usec);
+	fprintf(stderr, "FACILITY\tUSER TIME\tSYSTEM TIME\tCALLS\n"
+		"--------------- --------------- "
+		"--------------- ---------------\n");
 	for (p = counters; p; p = p->next) {
-		fprintf(stderr, "time spent in %s = %ld.%06ld (%d calls)\n",
+		fprintf(stderr, "%-15s %8d.%06d %8d.%06d %15d\n",
 			p->name, p->total.tv_sec, p->total.tv_usec,
+			p->stotal.tv_sec, p->stotal.tv_usec,
 			p->calls);
 	}
+	fprintf(stderr, "%-15s %8d.%06d %8d.%06d\n",
+		"TOTAL",
+		tot_usage.ru_utime.tv_sec, tot_usage.ru_utime.tv_usec,
+		tot_usage.ru_stime.tv_sec, tot_usage.ru_stime.tv_usec);
 }
 
 /* Disable interrupts and start timing some portion of JVM activity.
@@ -785,6 +794,28 @@ startTiming(timespent *counter, char *name)
 	counter->calls++;
 	getrusage(RUSAGE_SELF, &ru);
 	counter->current = ru.ru_utime;
+	counter->scurrent = ru.ru_stime;
+}
+
+/* timeval arithmetic macros */
+#define DECF(D, S)				\
+{						\
+	(D).tv_usec -= (S).tv_usec;		\
+	if ((D).tv_usec < 0) {			\
+		(D).tv_usec += 1000000;		\
+		(D).tv_sec -= 1;		\
+	}					\
+	(D).tv_sec -= (S).tv_sec;		\
+}
+
+#define INCF(D,S)				\
+{						\
+	(D).tv_usec += (S).tv_usec;		\
+	if ((D).tv_usec > 1000000) {		\
+		(D).tv_usec -= 1000000;		\
+		(D).tv_sec += 1;		\
+	}					\
+	(D).tv_sec += (S).tv_sec;		\
 }
 
 /* End a timing run.  Adjust total time for this counter and enable
@@ -796,24 +827,9 @@ stopTiming(timespent *counter)
 	struct rusage ru;
 
 	getrusage(RUSAGE_SELF, &ru);
-	ru.ru_utime.tv_usec -= counter->current.tv_usec;
-	if (ru.ru_utime.tv_usec < 0) {
-		ru.ru_utime.tv_usec += 1000000;
-		ru.ru_utime.tv_sec -= 1;
-	}
-	ru.ru_utime.tv_sec -= counter->current.tv_sec;
-
-	/* fprintf(stderr, "%s pass %d: %ld.%06ld + %ld.%06ld = ",
-	        counter->name, counter->calls,
-		counter->total.tv_sec, counter->total.tv_usec,
-		ru.ru_utime.tv_sec, ru.ru_utime.tv_usec); */
-	counter->total.tv_usec += ru.ru_utime.tv_usec;
-	if (counter->total.tv_usec > 1000000) {
-		counter->total.tv_usec -= 1000000;
-		counter->total.tv_sec += 1;
-	}
-	counter->total.tv_sec += ru.ru_utime.tv_sec;
-	/* fprintf(stderr, "%ld.%06ld\n",
-		counter->total.tv_sec, counter->total.tv_usec); */
+	DECF(ru.ru_utime, counter->current);
+	INCF(counter->total, ru.ru_utime);
+	DECF(ru.ru_stime, counter->scurrent);
+	INCF(counter->stotal, ru.ru_stime);
 }
 #endif /* TIMING */

@@ -55,7 +55,7 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 #define CHECK(gifOp) \
   if ( gifOp == GIF_ERROR ) { \
     if ( img )    Java_java_awt_Toolkit_imgFreeImage( 0, 0, img); \
-    if ( rowBuf ) free( rowBuf); \
+    if ( rowBuf ) jfree( rowBuf); \
     return 0; \
   }
 
@@ -69,7 +69,7 @@ readGif ( GifFileType *gf )
   GifByteType     *ext;
   ColorMapObject  *cmap;
   GifColorType    *clrs;
-  GifPixelType    *rowBuf = (GifPixelType*) malloc( gf->SWidth * sizeof( GifPixelType) );
+  GifPixelType    *rowBuf = (GifPixelType*) jmalloc( gf->SWidth * sizeof( GifPixelType) );
 
   img = createImage( gf->SWidth, gf->SHeight);
   img->xImg = createXImage( X, gf->SWidth, gf->SHeight);

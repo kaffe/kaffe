@@ -98,9 +98,6 @@ gc_block_alloc(size_t size)
 	 * Allocate memory using malloc and align by hand.
 	 */
 	size += gc_pgsize;
-#ifdef malloc
-#undef malloc
-#endif
         ptr = malloc(size);
 	CHECK_OUT_OF_MEMORY(ptr);
 	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -gc_pgsize);

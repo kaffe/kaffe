@@ -55,20 +55,20 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	}
 
 	/* Build arguments and environment */
-	argv = calloc(arglen + 1, sizeof(jbyte*));
+	argv = jcalloc(arglen + 1, sizeof(jbyte*));
 	for (i = 0; i < arglen; i++) {
 		jstring argi;
 		const jbyte *argichars;
 
 		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
 		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
-		argv[i] = malloc(strlen(argichars));
+		argv[i] = jmalloc(strlen(argichars));
 		strcpy(argv[i], argichars);
 		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 	}
 
 	if (envlen > 0)
-		arge = calloc(envlen + 1, sizeof(jbyte*));
+		arge = jcalloc(envlen + 1, sizeof(jbyte*));
 	else
 		arge = NULL;
 
@@ -78,7 +78,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
-		arge[i] = malloc(strlen(envichars));
+		arge[i] = jmalloc(strlen(envichars));
 		strcpy(arge[i], envichars);
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}
@@ -87,14 +87,14 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 	/* free before returning on error */
 	for (i = 0; i < arglen; i++) {
-		free(argv[i]);
+		jfree(argv[i]);
 	}
-	free(argv);
+	jfree(argv);
 
 	for (i = 0; i < envlen; i++) {
-		free(arge[i]);
+		jfree(arge[i]);
 	}
-	free(arge);
+	jfree(arge);
 
 	if (pid == -1) {
 		(*env)->ThrowNew(env, ioexc_class, "Fork&Exec failed");
@@ -120,7 +120,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	}
 
 	/* Allocate somewhere to keep the child data */
-	newchild = malloc(sizeof(child));
+	newchild = jmalloc(sizeof(child));
 
 	/* Note child data and add to children list */
 	newchild->proc = (*env)->NewGlobalRef(env, proc);
@@ -186,7 +186,7 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 				(*env)->MonitorExit(env, p->proc);
 				(*env)->DeleteGlobalRef(env, p->proc);
 				*pp = p->next;
-				free(p);
+				jfree(p);
 				break;
 			}
 		}

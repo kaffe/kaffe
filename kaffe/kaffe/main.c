@@ -20,11 +20,6 @@
 #include "errors.h"
 #include "thread.h"
 
-/* HACK - we cannot use the internal VM malloc system at this point so
- * turn it off.  We should fix this properly.
- */
-#undef	malloc
-
 extern char* engine_name;
 extern char* engine_version;
 static char* java_version;

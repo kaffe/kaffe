@@ -13,7 +13,7 @@
 #define __sparc_common_h
 
 #define	sysdepCallMethod(CALL) do {					\
-  /* allocates variable arrays one word past the minimum stack frame */ \
+  /* allocates variable arrays one word past the minimum stack frame */	\
   int extraargs[((CALL)->nrargs>6)?((CALL)->nrargs-6):0];		\
   switch((CALL)->nrargs) {						\
     register int o0 asm("o0");						\
@@ -25,42 +25,25 @@
     register double f0d asm("f0");					\
     register float f0f asm("f0");					\
     int *res;								\
+									\
   default:								\
     {									\
       int *args = extraargs-1;						\
-      int argidx = 6; 							\
+      int argidx = 6;							\
       for(; argidx < (CALL)->nrargs; ++argidx, ++args) {		\
-	if ((CALL)->callsize[argidx])					\
-	  *args = (CALL)->args[argidx].i;				\
-	else								\
-	  *args = (CALL)->args[argidx-1].j;				\
+	*args = (CALL)->args[argidx].i;					\
       }									\
     }									\
   case 6:								\
-    if ((CALL)->callsize[5])						\
-      o5 = (CALL)->args[5].i;						\
-    else								\
-      o5 = (CALL)->args[4].j;						\
+    o5 = (CALL)->args[5].i;						\
   case 5:								\
-    if ((CALL)->callsize[4])						\
-      o4 = (CALL)->args[4].i;						\
-    else								\
-      o4 = (CALL)->args[3].j;						\
+    o4 = (CALL)->args[4].i;						\
   case 4:								\
-    if ((CALL)->callsize[3])						\
-      o3 = (CALL)->args[3].i;						\
-    else								\
-      o3 = (CALL)->args[2].j;						\
+    o3 = (CALL)->args[3].i;						\
   case 3:								\
-    if ((CALL)->callsize[2])						\
-      o2 = (CALL)->args[2].i;						\
-    else								\
-      o2 = (CALL)->args[1].j;						\
+    o2 = (CALL)->args[2].i;						\
   case 2:								\
-    if ((CALL)->callsize[1])						\
-      o1 = (CALL)->args[1].i;						\
-    else								\
-      o1 = (CALL)->args[0].j;						\
+    o1 = (CALL)->args[1].i;						\
   case 1:								\
   case 0:								\
     asm ("call %2,0\n							\
@@ -96,6 +79,6 @@
     }									\
     break;								\
   }									\
-} while (0)								\
+} while (0)
 
 #endif

@@ -32,12 +32,6 @@
 		cmpl $0,%0						\n\
 		je 3f							\n\
 		decl %0							\n\
-		cmpb $0,(%2,%0)						\n\
-		je 1b							\n\
-		cmpb $1,(%2,%0)						\n\
-		je 2f							\n\
-		pushl 4(%1,%0,8)					\n\
-2:									\n\
 		pushl (%1,%0,8)						\n\
 		jmp 1b							\n\
 3:									\n\
@@ -70,5 +64,4 @@
 	asm volatile ("							\n\
 		subl %0,%%esp						\n\
 	" : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
-
 #endif

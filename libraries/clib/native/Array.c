@@ -766,7 +766,7 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 	Hjava_lang_Object* array;
 
 	s = obj_length(sizes);
-	dims = calloc(s+1, sizeof(int));
+	dims = jcalloc(s+1, sizeof(int));
 
 	/* Copy dimentions into array */
 	for( i = 0; i < s; i++ ) {
@@ -776,7 +776,7 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 
 	/* Create multi-dimension array */
 	array = newMultiArray(clazz, dims);
-	free(dims);
+	jfree(dims);
 
 	return (array);
 }

@@ -72,8 +72,14 @@ struct _errorInfo;
  * in args[i].  Similarly, calltype[i] contains the signature type of the
  * argument in args[i] ('J', 'F', etc.)
  *
- * Porters note that "callsize[i] == 2 iff callsize[i+1] == 0" -- this 
- * property is exploited by some sysdepCallMethod macros (sparc).
+ * To simplify 32 bit assembly code, we copy the last 32 bits of a 64
+ * bit arg into the next slot.  This allows you to treat args as an
+ * array of 32 bit values.  This simplification also makes a C version
+ * of sysdepCallMethod more viable, and such a function is defined in
+ * mi.c.
+ *
+ * Note that "callsize[i] == 2 iff callsize[i+1] == 0" -- this 
+ * property can also be exploited by a sysdepCallMethod macros. 
  *
  * `function' is a pointer to the method to be invoked.
  *
@@ -164,7 +170,9 @@ struct _timespent {
 	timespent *next;
 	int calls;
 	struct timeval total;
+	struct timeval stotal;
 	struct timeval current;
+	struct timeval scurrent;
 };
 
 extern void startTiming(timespent *counter, char *name);

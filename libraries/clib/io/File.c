@@ -245,7 +245,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 		    strcmp("..", entry->d_name) == 0) {
 			continue;
 		}
-		mentry = malloc(sizeof(struct dentry) + NAMLEN(entry));
+		mentry = jmalloc(sizeof(struct dentry) + NAMLEN(entry));
 		assert(mentry != 0);
 		strcpy(mentry->name, entry->d_name);
 		mentry->next = dirlist;
@@ -260,7 +260,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 		mentry = dirlist;
 		dirlist = mentry->next;
 		unhand(array)->body[i] = (Hjava_lang_Object*)makeJavaString(mentry->name, strlen(mentry->name));
-		free(mentry);
+		jfree(mentry);
 	}
 
 	return (array);

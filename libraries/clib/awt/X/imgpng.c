@@ -177,9 +177,9 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 	if ( img )
 	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
 	if ( rows )
-	  free( rows);
+	  jfree( rows);
 	if ( data )
-	  free( data);
+	  jfree( data);
 	return 0;
   }
 
@@ -223,25 +223,25 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 	 * store the whole transformed data (passes need prev. results). Unfortunately,
 	 * interlacing is used for large images, and this might require a LOT of memory.
 	 */
-	rows = malloc( sizeof(png_bytep) * info_ptr->height);
-	data = malloc( row_bytes * info_ptr->height);
+	rows = jmalloc( sizeof(png_bytep) * info_ptr->height);
+	data = jmalloc( row_bytes * info_ptr->height);
 	for ( i=0; i<info_ptr->height; i++ )
 	  rows[i] = (data + i*row_bytes);
 
 	readImageData( png_ptr, info_ptr, rows, img);
 
-	free( rows);
-	free( data);
+	jfree( rows);
+	jfree( data);
 #else
-	data = malloc( row_bytes);
+	data = jmalloc( row_bytes);
 	readInterlacedData( png_ptr, info_ptr, data, img);
-	free( data);
+	jfree( data);
 #endif
   }
   else {
-	data = malloc( row_bytes);
+	data = jmalloc( row_bytes);
 	readRowData( png_ptr, info_ptr, data, img);
-	free( data);
+	jfree( data);
   }
 
   /* read rest of file, and get additional chunks in info_ptr */

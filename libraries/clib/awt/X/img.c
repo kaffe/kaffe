@@ -27,7 +27,7 @@ Image* readPngData ( unsigned char*, long len );
 Image*
 createImage ( int width, int height )
 {
-  Image * img = calloc( 1, sizeof( Image));
+  Image * img = jcalloc( 1, sizeof( Image));
   img->trans  = -1;
   img->width = width;
   img->height = height;
@@ -47,7 +47,7 @@ createXMaskImage ( Toolkit* X, int width, int height )
   bytes_per_line = (width + 7) / 8;
   nBytes = bytes_per_line * height;
 
-  data = malloc( nBytes);
+  data = jmalloc( nBytes);
   memset( data, 0xff, nBytes);
 
   xim = XCreateImage( X->dsp, vis, 1, XYBitmap, 0,
@@ -75,7 +75,7 @@ createXImage ( Toolkit* X, int width, int height )
   bytes_per_line = bytes_per_pix * width;
   bitmap_pad = bytes_per_pix * 8;
 
-  data = calloc( width * height, bytes_per_pix);
+  data = jcalloc( width * height, bytes_per_pix);
 
   xim = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
 					  data, width, height, bitmap_pad, bytes_per_line);
@@ -87,12 +87,12 @@ AlphaImage*
 createAlphaImage ( Toolkit* X, int width, int height )
 {
   int nBytes = width * height;
-  AlphaImage    *img = malloc( sizeof( AlphaImage));
+  AlphaImage    *img = jmalloc( sizeof( AlphaImage));
 
   img->width  = width;
   img->height = height;
 
-  img->buf = malloc( nBytes);
+  img->buf = jmalloc( nBytes);
   memset( img->buf, 0xff, nBytes);
   
   return img;
@@ -172,8 +172,8 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 	}
   }
 
-  free( img->alpha->buf);
-  free( img->alpha);
+  jfree( img->alpha->buf);
+  jfree( img->alpha);
   img->alpha = 0;
 }
 
@@ -405,10 +405,9 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
   /*
    * note that XDestroyImage automatically frees any non-NULL data pointer
    * (since we explicitly allocated the data, we better free t explicitly, too)
-   * malloc, free might be resolved
    */
   if ( img->xImg ){
-	free( img->xImg->data);
+	jfree( img->xImg->data);
 	img->xImg->data = 0;
 
     XDestroyImage( img->xImg);
@@ -416,7 +415,7 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
   }
 
   if ( img->xMask ){
-	free( img->xMask->data);
+	jfree( img->xMask->data);
 	img->xMask->data = 0;
 
     XDestroyImage( img->xMask);
@@ -424,12 +423,12 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
   }
 
   if ( img->alpha ) {
-	free( img->alpha->buf);
-	free( img->alpha);
+	jfree( img->alpha->buf);
+	jfree( img->alpha);
 	img->alpha = 0;
   }
 
-  free( img);
+  jfree( img);
 }
 
 
