@@ -1,7 +1,7 @@
 Tue Apr  6 15:26:25 PDT 1999  Archie Cobbs <archie@whistle.com>
 
-	* libraries/clib/io/FileOutputStream.c, RandomAccessFile.c:
-	make sure we write out the entire buffer
+	* libraries/clib/io/FileOutputStream.c, io/RandomAccessFile.c,
+	net/PlainSocketImpl.c: make sure we write out the entire buffer
 
 Tue Apr  6 13:21:34 1999  Godmar Back  <gback@cs.utah.edu>
 
