@@ -90,6 +90,8 @@ translateSig(const char* str, const char** nstr, int* argp)
 			while (*str++ != ';')
 				;
 			break;
+		default:
+		        abort();
 		}
 		break;
 	case 'B':

@@ -59,7 +59,9 @@ struct GarbageCollectorInterface_Ops GC_Ops = {
 	NULL,
 	NULL,
 	NULL,
-	NULL
+	NULL,
+	NULL,
+	NULL,
 };
 
 struct _Collector c = { & GC_Ops }, *main_collector = &c;

@@ -1618,7 +1618,7 @@ void jthread_atexit(void (* func)(void))
   runOnExit = func;
 }
 
-int KaffePThread_getSuspendSignal()
+int KaffePThread_getSuspendSignal(void)
 {
   return sigSuspend;
 }
