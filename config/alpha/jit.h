@@ -27,6 +27,7 @@ typedef struct _alpha_jit_info {
 	int	entry_length;		/* # of insts in prologue */
 	int	imask;
 	int	fmask;
+	int	ieee;
 } alpha_jit_info_t;
 
 /* Protected by translatorLock */
@@ -41,17 +42,10 @@ extern alpha_jit_info_t alpha_jit_info;
  * move to $os/jit-md.h.  */
 
 /* Extract the object argument from given frame */
-#define FRAMEOBJECT(obj, f, einfo)	do {				\
+#define FRAMEOBJECT(obj, f, einfo)					\
 	/* rebuild alpha_slot2argoffset[0] as in jit-alpha.def */	\
-	const char *str;						\
-	int maxArgs, aspill;						\
-	str = METHOD_SIGD(einfo.method);				\
-	maxArgs = sizeofSig(&str, false);				\
-	aspill = (maxArgs < 6 ? maxArgs : 6);				\
-	obj = ((Hjava_lang_Object**)(f))[-(aspill-0)];			\
-} while (0)
+	(obj) = *((Hjava_lang_Object**)((uintp)(f) - 8))
 
-	
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
 #define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
@@ -73,39 +67,26 @@ extern alpha_jit_info_t alpha_jit_info;
 /* The layout of this struct are known by inline assembly.  */
 
 typedef struct _methodTrampoline {
-#if 0
 	unsigned code[2];
-#else
-	unsigned code[4];
-#endif
 	void *fixup;
 	struct _methods *meth;
+	void **where;
 } methodTrampoline;
 
 extern void alpha_do_fixup_trampoline(void);
 
-#if 0
-#define FILL_IN_TRAMPOLINE(t,m)						\
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
 	do {								\
-		(t)->code[0] = 0xa77b0008;	/* ldq $27,8($27) */	\
-		(t)->code[1] = 0x683b0000;	/* jmp $1,($27),0 */	\
-		(t)->fixup = alpha_do_fixup_trampoline;			\
-		(t)->meth = (m);					\
+/* 0 */		(t)->code[0] = 0xa77b0008;	/* ldq $27,8($27) */	\
+/* 4 */		(t)->code[1] = 0x683b0000;	/* jmp $1,($27),0 */	\
+/* 8 */		(t)->fixup = alpha_do_fixup_trampoline;			\
+/* 16 */	(t)->meth = (m);					\
+/* 24 */	(t)->where = (w);					\
 	} while (0)
-#else
-#define FILL_IN_TRAMPOLINE(t,m)						\
-	do {								\
-/* 0 */		(t)->code[0] = 0xa43b0018;	/* ldq $1,24($27) */	\
-/* 4 */		(t)->code[1] = 0xa77b0010;	/* ldq $27,16($27) */	\
-/* 8 */		(t)->code[2] = 0x6bfb0000;	/* jmp $31,($27),0 */	\
-/* 12 */	(t)->code[3] = 0x47ff041f;	/* nop */		\
-/* 16 */	(t)->fixup = alpha_do_fixup_trampoline;			\
-/* 24 */	(t)->meth = (m);					\
-	} while (0)
-#endif
 
-#define FIXUP_TRAMPOLINE_DECL	Method *_meth
-#define FIXUP_TRAMPOLINE_INIT	(meth = _meth)
+#define FIXUP_TRAMPOLINE_DECL	void** _data
+#define FIXUP_TRAMPOLINE_INIT	(meth = (Method*)_data[0], \
+				 where = (void**)_data[1])
 
 
 /* Wrap up a native call for the JIT */
@@ -222,7 +203,8 @@ extern void alpha_do_fixup_trampoline(void);
 	} while (0)
 #define LABEL_Lrsa(P,V,L)						\
 	do {								\
-		int frameoffset = (maxPush <= 6 ? 0 : maxPush - 6);	\
+		int frameoffset =					\
+			SLOTSIZE * (maxPush <= 6 ? 0 : maxPush - 6);	\
 		assert(frameoffset < 0x8000);				\
 		*(short *)(P) += frameoffset;				\
 	} while (0)
@@ -264,6 +246,9 @@ extern void alpha_do_fixup_trampoline(void);
 
 #define	FRAMEALIGN		16
 #define	STACKALIGN(v)		(((v) + FRAMEALIGN - 1) & -FRAMEALIGN)
+
+/* We push arguments low to high. */
+#define	PUSHARG_FORWARDS	1
 
 
 /* Generate slot offset for an argument (relative to fp) */
