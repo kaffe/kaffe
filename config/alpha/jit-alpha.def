@@ -2089,7 +2089,8 @@ define_insn(lshr_int_const, lshri_RRC)
 	int r = rreg_int(1);
 	int w = wreg_int(0);
 
-	op_srl_i(r, o, w);
+	op_zapnot_i(r, 15, w);
+	op_srl_i(w, o, w);
 }
 
 define_insn(lshr_long_const, lshrl_RRC)
@@ -2107,7 +2108,8 @@ define_insn(lshr_int, lshri_RRR)
 	int r1 = rreg_int(1);
 	int w = wreg_int(0);
 
-	op_srl(r1, r2, w);
+	op_zapnot_i(r1, 15, w);
+	op_srl(w, r2, w);
 }
 
 define_insn(lshr_long, lshrl_RRR)
@@ -2527,6 +2529,9 @@ define_insn(cvt_long_double, cvtld_RxR)
 	}
 }
 
+#if 0
+/* These functions does not work correctly, use soft_cvtXX */
+
 define_insn(cvt_float_int, cvtfi_RxR)
 {
 	int r = rreg_float(2);
@@ -2596,6 +2601,7 @@ define_insn(cvt_double_long, cvtdl_RxR)
 		op_fmov(t, w);
 	}
 }
+#endif
 
 define_insn(cvt_float_double, cvtfd_RxR)
 {
