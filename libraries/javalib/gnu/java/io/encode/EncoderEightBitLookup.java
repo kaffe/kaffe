@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package gnu.java.io.encode;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
   * Numerous character encodings utilize only eight bits.  These can

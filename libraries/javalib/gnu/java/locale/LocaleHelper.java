@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package gnu.java.locale;
 
-import java.util.Locale;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -48,18 +48,18 @@ import java.util.ResourceBundle;
  * for handling localized data.
  *
  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
+ *
  * @see java.util.Locale
  * @see java.util.ResourceBundle
  */
 public class LocaleHelper
 {
-
   /**
    * This method is used by the localized name lookup methods to retrieve
    * the localized name of a particular piece of locale data.    
    * If the display name can not be localized to the supplied
    * locale, it will fall back on other output in the following order:
-   * </p>
+   *
    * <ul>
    * <li>the localized name in the default locale</li>
    * <li>the localized name in English (optional)</li>
