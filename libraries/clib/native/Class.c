@@ -386,32 +386,23 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jint declared)
 	int i;
 
 	count = 0;
-	for (clas = this; clas != NULL; clas = clas->superclass) {
-		mth = CLASS_METHODS(clas);
-		for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
-			if (((mth[i].accflags & ACC_PUBLIC) || declared) && (mth[i].accflags & ACC_CONSTRUCTOR)) {
-				count++;
-			}
-		}
-		if (declared) {
-			break;
+	clas = this;
+	mth = CLASS_METHODS(clas);
+	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && (mth[i].accflags & ACC_CONSTRUCTOR)) {
+			count++;
 		}
 	}
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Constructor;");
 	ptr = (Hjava_lang_reflect_Constructor**)&unhand(array)->body[0];
-	for (clas = this; clas != NULL; clas = clas->superclass) {
-		mth = CLASS_METHODS(clas);
-		for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
-			if (((mth[i].accflags & ACC_PUBLIC) || declared) && (mth[i].accflags & ACC_CONSTRUCTOR)) {
-				*ptr = makeConstructor(clas, i);
-				ptr++;
-			}
-		}
-		if (declared) {
-			break;
+	clas = this;
+	mth = CLASS_METHODS(clas);
+	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared) && (mth[i].accflags & ACC_CONSTRUCTOR)) {
+			*ptr = makeConstructor(clas, i);
+			ptr++;
 		}
 	}
-
 	return (array);
 }
 
@@ -509,27 +500,28 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 		clas = clas->superclass;
 	} while (!declared && clas != NULL);
 
-	SignalError("java.lang.NoSuchMethodException", ""); /* FIXME */
+	/* like SignalError, except that the name of the class that is
+	 * not found becomes the error message 
+	 */
+	throwException(execute_java_constructor(
+		"java.lang.NoSuchMethodException", 0, 
+		"(Ljava/lang/String;)V", name));
 }
 
 struct Hjava_lang_reflect_Constructor*
 java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* arr, jint declared) 
 {
-	Hjava_lang_Class* clas;
+	Hjava_lang_Class* clas = this;
 
-	clas = this;
-	do {
-		Method* mth = CLASS_METHODS(clas);
-		int n = CLASS_NMETHODS(clas);
-		int i;
-		for (i = 0;  i < n;  ++mth, ++i) {
-			if (((mth->accflags & ACC_PUBLIC) || declared) && (mth->accflags & ACC_CONSTRUCTOR)) {
-				if (checkParameters(mth, arr))
-					return (makeConstructor(clas, i));
-			}
+	Method* mth = CLASS_METHODS(clas);
+	int n = CLASS_NMETHODS(clas);
+	int i;
+	for (i = 0;  i < n;  ++mth, ++i) {
+		if (((mth->accflags & ACC_PUBLIC) || declared) && (mth->accflags & ACC_CONSTRUCTOR)) {
+			if (checkParameters(mth, arr))
+				return (makeConstructor(clas, i));
 		}
-		clas = clas->superclass;
-	} while (!declared && clas != NULL);
+	}
 
 	SignalError("java.lang.NoSuchMethodException", ""); /* FIXME */
 }
