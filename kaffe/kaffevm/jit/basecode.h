@@ -82,9 +82,9 @@ enum {
 /* Conditional monitors */
 
 #define	monitor_enter() \
-	(meth->accflags & ACC_SYNCHRONISED ? mon_enter(meth, local(0)) : 0)
+	(meth->accflags & ACC_SYNCHRONISED ? mon_enter(meth, local(0)) : (void)0)
 #define	monitor_exit()	\
-	(meth->accflags & ACC_SYNCHRONISED ? mon_exit(meth, local(0)) : 0)
+	(meth->accflags & ACC_SYNCHRONISED ? mon_exit(meth, local(0)) : (void)0)
 
 /* -------------------------------------------------------------------- */
 /* Instruction formats */

@@ -50,11 +50,11 @@ void printCodeLabels(void)
 	}
 }
 #undef OUT
-#define	OUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),codeblock[CODEPC] = v; CODEPC++; } while (0)
-#define	BOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint8*)&codeblock[CODEPC] = v; CODEPC++; } while (0)
-#define	WOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
-#define	LOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
-#define	QOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),0),*(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
+#define	OUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),(void)0),codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	BOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),(void)0),*(uint8*)&codeblock[CODEPC] = v; CODEPC++; } while (0)
+#define	WOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),(void)0),*(uint16*)&codeblock[CODEPC] = v; CODEPC += 2; } while (0)
+#define	LOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),(void)0),*(uint32*)&codeblock[CODEPC] = v; CODEPC += 4; } while (0)
+#define	QOUT(v)	do { DBGEXPR(JIT,(void)printCodeLabels(),(void)0),*(uint64*)&codeblock[CODEPC] = v; CODEPC += 8; } while (0)
 #else /* !  defined(KAFFE_VMDEBUG) */
 #undef OUT
 #define	OUT(v)	do { codeblock[CODEPC] = v; CODEPC++; } while (0)

@@ -1,5 +1,11 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jit/basecode.h, kaffe/kaffevm/jit/codeproto.h
+	  kaffe/kaffevm/jit/funcs.c, kaffe/kaffevm/jit3/funcs.c:
+	  Miscellaenous sparse fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/SparseWarning.pm:
 	  Add another warning.
 

@@ -244,5 +244,5 @@ void softcall_initialise_class(struct Hjava_lang_Class*);
 void softcall_checkarraystore(SlotInfo*, SlotInfo*);
 void softcall_addreference(SlotInfo*, SlotInfo*);
 void softcall_addreference_static(void*, SlotInfo*);
-
+void softcall_abstractmethod(Utf8Const*, Utf8Const*);
 #endif
