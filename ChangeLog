@@ -1,5 +1,12 @@
 2005-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/arm/linux/config.frag (CFLAGS):
+	Added -fno-omit-frame-pointer.
+
+	Reported by:  Jari Korva <jpkorva@iki.fi>
+
+2005-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/arm/jit-arm.def,
 	config/arm/jit3-arm.def,
 	config/mips/jit3-mips.def,
