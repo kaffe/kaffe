@@ -86,8 +86,8 @@ public class GZIPOutputStream extends DeflaterOutputStream
     byte[] gzipHeader =
       {
 	/* The two magic bytes */
-	(byte) (GZIPInputStream.GZIP_MAGIC >> 8),
 	(byte) GZIPInputStream.GZIP_MAGIC,
+	(byte) (GZIPInputStream.GZIP_MAGIC >> 8),
 	  
 	/* The compression type */
 	(byte) Deflater.DEFLATED,

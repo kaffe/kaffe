@@ -55,7 +55,7 @@ public class GZIPInputStream
   /**
    * The magic number found at the start of a GZIP stream.
    */
-  public static final int GZIP_MAGIC = 0x1f8b;
+  public static final int GZIP_MAGIC = 0x8b1f;
 
   /**
    * The mask for bit 0 of the flag byte.
@@ -198,12 +198,12 @@ public class GZIPInputStream
       return;
     }
     headCRC.update(magic);
-    if (magic != (GZIP_MAGIC >> 8))
-      throw new IOException("Error in GZIP header, first byte doesn't match");
-    
-    magic = in.read();
     if (magic != (GZIP_MAGIC & 0xff))
       throw new IOException("Error in GZIP header, second byte doesn't match");
+    
+    magic = in.read();
+    if (magic != (GZIP_MAGIC >> 8))
+      throw new IOException("Error in GZIP header, first byte doesn't match");
     headCRC.update(magic);
     
     /* 2. Check the compression type (must be 8) */
