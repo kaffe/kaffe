@@ -19,7 +19,7 @@ public class Constructor
 	private Class clazz;
 	private int slot;
 	private Class[] parameterTypes;
-	private Class[] exceptiontypes;
+	private Class[] exceptionTypes;
 
 public boolean equals(Object obj)
 	{
@@ -62,7 +62,7 @@ public Class getDeclaringClass()
 
 public Class[] getExceptionTypes()
 	{
-	return (exceptiontypes);
+	return (exceptionTypes);
 }
 
 native public int getModifiers();
@@ -86,17 +86,17 @@ native public Object newInstance(Object initargs[]) throws InstantiationExceptio
 
 public String toString()
 	{
-	StringBuffer str = new StringBuffer();;
+	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 
 	// Modifier
-	if ((mod & 1) == 1) {
+	if (Modifier.isPublic(mod)) {
 		str.append("public ");
 	}
-	else if ((mod & 2) == 2) {
+	else if (Modifier.isPrivate(mod)) {
 		str.append("private ");
 	}
-	else if ((mod & 4) == 4) {
+	else if (Modifier.isProtected(mod)) {
 		str.append("protected ");
 	}
 
@@ -112,7 +112,17 @@ public String toString()
 		}
 	}
 	str.append(")");
+	
+        if (exceptionTypes.length > 0) {
+	        str.append(" throws ");
+                for (int i = 0; i < exceptionTypes.length; i++) {
+                        str.append(exceptionTypes[i].getName());
+                        if (i+1 < exceptionTypes.length) {
+			        str.append(",");
+                        }
+                }
+        }
 
 	return (new String(str));
-}
+	}
 }

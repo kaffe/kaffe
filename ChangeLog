@@ -1,3 +1,10 @@
+Fri Feb  5 09:09:36 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* config/i386/oskit/md.c, kaffe/kaffevm/systems/beos-native/bjthread.c,
+	kaffe/kaffevm/debug.c: removed C++ style comments.
+	libraries/javalib/java/lang/reflect/Constructor.java: fixed
+	toString() to be like in Method.
+
 Thu Feb  4 21:50:39 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/itypes.c, libraries/clib/native/Class.c:
