@@ -1,6 +1,23 @@
 2005-01-08  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-07  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/Buffer.java (address): New field.
+	* java/nio/DirectByteBufferImpl.java (address): Removed.
+	* java/nio/MappedByteBufferImpl.java (address): Likewise..
+	* java/nio/CharViewBufferImpl.java (CharViewBufferImpl): Explicitely
+	initialize Buffer.address if needed.
+	* java/nio/DoubleViewBufferImpl.java (DoubleViewBufferImpl): Likewise.
+	* java/nio/FloatViewBufferImpl.java (FloatViewBufferImpl): Likewise.
+	* java/nio/IntViewBufferImpl.java (IntViewBufferImpl): Likewise.
+	* java/nio/LongViewBufferImpl.java (LongViewBufferImpl): Likewise.
+	* java/nio/ShortViewBufferImpl.java (ShortViewBufferImpl): Likewise.
+
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-07  Olga Rodimina  <rodimina@redhat.com>
 
