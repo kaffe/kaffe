@@ -125,7 +125,12 @@ public class CLTestDelegate extends ClassLoader {
 		// As of 10-25-00, it takes a minimum of 3 gcs to
 		// manifest the problem, and this argument parsing
 		// code seems to be needed to clean up the stack. 
-		int gcCount = 6;
+		// As of 10-29-00, gcCount=6 does work from the cmdline
+		// but not when run in the test harness.
+		//
+		// Since none of this is really deterministic, it's kind
+		// of silly to make this a test anyway....
+		int gcCount = 101;
 		int idx = 0;
 		while (args.length > idx) {
 			if (args[idx].equals("-c")
