@@ -1,3 +1,28 @@
+2004-06-05  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/gnu/regexp/MessagesBundle_it.properties:
+	New file from GNU Classpath.
+
+        * libraries/javalib/Makefile.am.in:
+	Added gnu/regexp/MessagesBundle_it.properties.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+        * libraries/javalib/gnu/regexp/MessagesBundle.properties,
+        libraries/javalib/gnu/regexp/MessagesBundle_fr.properties,
+	Resynced with GNUClasspath.
+
+	2004-06-04  Steven Augart  <augart@watson.ibm.com>
+
+        * resource/gnu/regexp/MessagesBundle.properties,
+          resource/gnu/regexp/MessagesBundle_fr.properties:
+        Corrected apostrophes.
+        Replaced "expected" with "unexpected".
+
+        * resource/gnu/regexp/MessagesBundle_it.properties: New file.
+
 2004-06-05  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/m68k/linux/md.h: Added some missing headers.
