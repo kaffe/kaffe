@@ -2,11 +2,14 @@
  * alpha/linux/md.c
  * Linux Alpha specific functions.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 2001
+ *	Edouard G. Parmelan.  All rights reserved.
+ *
+ * Copyright (c) 1996, 1997, 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -56,4 +59,8 @@ void alpha_disable_uac()
   buf[1] = UAC_SIGBUS;
   syscall(__NR_setsysinfo, SSI_NVPAIRS, buf, 1, 0, 0);
 }
+#endif
+
+#if defined(TRANSLATOR)
+#include "alpha/alpha.c"
 #endif

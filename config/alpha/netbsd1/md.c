@@ -2,7 +2,10 @@
  * alpha/netbsd1/md.c
  * NetBSD alpha specific functions.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 2001
+ *	Edouard G. Parmelan.  All rights reserved.
+ *
+ * Copyright (c) 1996, 1997, 2001
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -59,3 +62,7 @@ init_md(void)
         ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
 #endif
 }
+
+#if defined(TRANSLATOR)
+#include "alpha/alpha.c"
+#endif
