@@ -1,7 +1,7 @@
 // Attributes2Impl.java - extended AttributesImpl
 // http://www.saxproject.org
 // Public Domain: no warranty.
-// $Id: Attributes2Impl.java,v 1.1 2002/12/02 15:04:14 dalibor Exp $
+// $Id: Attributes2Impl.java,v 1.2 2003/11/13 12:48:23 dalibor Exp $
 
 package org.xml.sax.ext;
 
@@ -32,6 +32,7 @@ public class Attributes2Impl extends AttributesImpl implements Attributes2
 {
     private boolean	flags [];
 
+    private boolean     declaredFlags[];
 
     /**
      * Construct a new, empty Attributes2Impl object.
@@ -59,6 +60,52 @@ public class Attributes2Impl extends AttributesImpl implements Attributes2
     ////////////////////////////////////////////////////////////////////
     // Implementation of Attributes2
     ////////////////////////////////////////////////////////////////////
+
+
+
+    /*
+      note(1)
+      The implementation of the isDeclared methods is wrong. It's only here
+      to make the class compile, it's not intended to work yet.
+    */
+
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *   When the supplied index does not identify an attribute.
+     */    
+    public boolean isDeclared (int index)
+    {
+	if (index < 0 || index >= getLength ())
+	    throw new ArrayIndexOutOfBoundsException ("No attribute at index: " + index);
+	return declaredFlags [index];
+    }
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.IllegalArgumentException
+     *   When the supplied names do not identify an attribute.
+     */
+    public boolean isDeclared (java.lang.String qName)
+    {
+	int index = getIndex (qName);
+	if (index < 0)
+	    throw new IllegalArgumentException ("No such attribute: " + qName);
+	return declaredFlags [index];
+    }
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.IllegalArgumentException
+     *   When the supplied names do not identify an attribute.
+     */
+    public boolean isDeclared (java.lang.String uri, java.lang.String localName)
+    {
+	int index = getIndex (uri, localName);
+	if (index < 0)
+	    throw new IllegalArgumentException ("No such attribute: local="
+						+ localName
+						+ ", namespace=" + uri);
+	return declaredFlags [index];
+    }
 
 
     /**
@@ -137,14 +184,19 @@ public class Attributes2Impl extends AttributesImpl implements Attributes2
 
 	super.setAttributes (atts);
 	flags = new boolean [length];
+	declaredFlags = new boolean[length];
 
 	if (atts instanceof Attributes2) {
 	    Attributes2	a2 = (Attributes2) atts;
-	    for (int i = 0; i < length; i++)
+	    for (int i = 0; i < length; i++) {
 		flags [i] = a2.isSpecified (i);
+		declaredFlags[i] = a2.isDeclared(i);
+	    }
 	} else {
-	    for (int i = 0; i < length; i++)
+	    for (int i = 0; i < length; i++) {
 		flags [i] = true;
+		declaredFlags[i] = getType(i).equals("CDATA");
+	    }
 	}
 
     }
@@ -168,9 +220,13 @@ public class Attributes2Impl extends AttributesImpl implements Attributes2
 	    boolean	newFlags [] = new boolean [length];
 	    System.arraycopy (flags, 0, newFlags, 0, flags.length);
 	    flags = newFlags;
+	    boolean     newDeclFlags[] = new boolean[length];
+	    System.arraycopy (declaredFlags, 0, newDeclFlags, 0, declaredFlags.length);
+	    declaredFlags = newDeclFlags;
 	}
 
 	flags [length - 1] = true;
+	declaredFlags[length - 1] = type.equals("CDATA");
     }
 
 
@@ -186,6 +242,23 @@ public class Attributes2Impl extends AttributesImpl implements Attributes2
     }
 
 
+
+    /**
+     * Assign a value to the "declared" flag of a specific attribute.
+     * This is the only way this flag can be cleared, except clearing
+     * by initialization with the copy constructor.
+     *
+     * @param index The index of the attribute (zero-based).
+     * @param value The desired flag value.
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *    When the supplied index does not identify an attribute.
+     */
+    public void setDeclared (int index, boolean value)
+    {
+	if (index < 0 || index >= getLength ())
+	    throw new ArrayIndexOutOfBoundsException ("No attribute at index: " + index);
+	declaredFlags [index] = value;
+    }
 
     /**
      * Assign a value to the "specified" flag of a specific attribute.

@@ -1,5 +1,13 @@
 2003-11-13  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/xml/pipeline/XIncludeFilter.java,
+	libraries/javalib/org/xml/sax/ext/Attributes2.java,
+	libraries/javalib/org/xml/sax/ext/Attributes2Impl.java,
+	libraries/javalib/org/xml/sax/helpers/XMLReaderFactory.java:
+	Resynced with GNU JAXP.
+
+2003-11-13  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/net/protocol/file/Connection.java:
 	Added imports for java.io.FilePermission and 
 	java.security.Permission.
@@ -12,7 +20,7 @@
 
 2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
-	libraries/javalib/profiles/allatonce/all.files,
+	* libraries/javalib/profiles/allatonce/all.files,
 	libraries/javalib/profiles/default/core.files,
 	libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in:
@@ -20,12 +28,12 @@
 
 2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
-	kaffe/kaffevm/acces.c:
+	* kaffe/kaffevm/acces.c:
 	(checkAccess) corrected to avoid java.lang.IllegalAccessError.
 
 2003-11-12 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
-	libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
+	* libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
 	libraries/javalib/kaffe/io/ChartoByteSHIFT_JIS.java:
 	New Files.
 
@@ -47,7 +55,7 @@
 
 2003-11-06 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
-	libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
 	libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
 	Resynced with GNU Classpathx.
 

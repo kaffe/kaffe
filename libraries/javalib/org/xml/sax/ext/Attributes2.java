@@ -1,7 +1,7 @@
 // Attributes2.java - extended Attributes
 // http://www.saxproject.org
 // Public Domain: no warranty.
-// $Id: Attributes2.java,v 1.1 2002/12/02 15:04:14 dalibor Exp $
+// $Id: Attributes2.java,v 1.2 2003/11/13 12:48:23 dalibor Exp $
 
 package org.xml.sax.ext;
 
@@ -31,6 +31,27 @@ import org.xml.sax.Attributes;
  */
 public interface Attributes2 extends Attributes
 {
+
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *   When the supplied index does not identify an attribute.
+     */    
+    public boolean isDeclared (int index);
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.IllegalArgumentException
+     *   When the supplied names do not identify an attribute.
+     */
+    public boolean isDeclared (java.lang.String qName);
+
+    /** @return false unless the attribute was declared in the DTD.
+     * @throws java.lang.IllegalArgumentException
+     *   When the supplied names do not identify an attribute.
+     */
+    public boolean isDeclared (java.lang.String uri, java.lang.String localName);
+
+    
     /**
      * Returns true unless the attribute value was provided
      * by DTD defaulting.
