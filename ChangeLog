@@ -1,5 +1,10 @@
 2004-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/config.alias:
+	Recognize armv5b.
+
+2004-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Fixed cross-compilation for alpha-linux.
 
         * config/alpha/sysdepCallMethod.h:
