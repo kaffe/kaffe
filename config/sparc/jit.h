@@ -60,12 +60,12 @@ typedef struct _exceptionFrame {
 #define CALL_KAFFE_EXCEPTION(F, H, O)					\
 do {									\
 	register int o1 asm("o1"), o2 asm("o2"), o3 asm("o3");		\
-	asm volatile("							\n\
-		ta 3							\n\
-		sub %%sp,64,%%sp					\n\
-		mov %2,%%fp						\n\
-		jmpl %1,%%g0						\n\
-		restore	%0,0,%%o0					\n\
+	asm volatile(							\
+"		ta 3 \n"						\
+"		sub %%sp,64,%%sp \n"					\
+"		mov %2,%%fp \n"						\
+"		jmpl %1,%%g0 \n"					\
+"		restore	%0,0,%%o0 \n"					\
 	" : : "r" (o1=(int)(O)), "r" (o2=(int)(H)), "r" (o3=(int)(F))); \
         asm volatile("" : : "r"(o1), "r"(o2), "r"(o3)); 		\
 } while (0)
