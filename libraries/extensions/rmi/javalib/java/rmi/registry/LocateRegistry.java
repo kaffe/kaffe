@@ -18,6 +18,7 @@ import java.rmi.server.ObjID;
 import java.net.Socket;
 
 import kaffe.rmi.server.UnicastRef;
+import kaffe.rmi.server.UnicastServerRef;
 import kaffe.rmi.registry.RegistryImpl;
 import kaffe.rmi.registry.RegistryImpl_Stub;
 
@@ -49,7 +50,9 @@ public static Registry createRegistry(int port) throws RemoteException {
 }
 
 public static Registry createRegistry(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
-	throw new kaffe.util.NotImplemented();
+	RegistryImpl impl = new RegistryImpl(port, csf, ssf);
+	((UnicastServerRef)impl.getRef()).exportObject(impl);
+	return (impl);
 }
 
 }

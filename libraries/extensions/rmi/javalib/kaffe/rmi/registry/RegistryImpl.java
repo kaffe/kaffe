@@ -19,6 +19,8 @@ import java.rmi.server.ObjID;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.rmi.server.RMISocketFactory;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import kaffe.rmi.server.UnicastServerRef;
 
 public class RegistryImpl
@@ -27,7 +29,11 @@ public class RegistryImpl
 private Hashtable bindings = new Hashtable();
 
 public RegistryImpl(int port) throws RemoteException {
-	super(new UnicastServerRef(new ObjID(ObjID.REGISTRY_ID), port, RMISocketFactory.getSocketFactory()));
+	this(port, RMISocketFactory.getSocketFactory(), RMISocketFactory.getSocketFactory());
+}
+
+public RegistryImpl(int port, RMIClientSocketFactory cf, RMIServerSocketFactory sf) throws RemoteException {
+	super(new UnicastServerRef(new ObjID(ObjID.REGISTRY_ID), port, sf));
 }
 
 public Remote lookup(String name) throws RemoteException, NotBoundException, AccessException {
