@@ -504,8 +504,9 @@ need_libxprof=no
 
 AC_ARG_ENABLE([xprofiling],
               AS_HELP_STRING([--enable-xprofiling],
-                             [Enable profiling for C and jitted code]))
-
+                             [Enable profiling for C and jitted code. 
+			     It is disabled by default.]),
+[
 if test "x$NOSIGCONTEXT" = "xtrue"; then
   echo "XProfiling does not support Cygwin"
   enable_xprofiling=no
@@ -515,6 +516,14 @@ case "$enable_xprofiling" in
 no) xprofiling=no ;;
 *)  xprofiling=yes; need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XPROFILER";;
 esac
+],
+[
+enable_xprofiling=no
+xprofiling=no
+])
+
+AC_MSG_CHECKING([whether to enable profiling for C and jitted code])
+
 dnl ENABLE_XPROF controls installation of xprof scripts in kaffe/scripts/Makefile.am
 AM_CONDITIONAL(ENABLE_XPROF, test x"$xprofiling" = x"yes")
 
@@ -526,6 +535,8 @@ if test x"$xprofiling" = x"yes"; then
     AC_MSG_ERROR(Profiling not supported in $Khost_cpu-$Khost_os)
   fi
 fi
+
+AC_MSG_RESULT($enable_xprofiling)
 
 dnl =========================================================================
 dnl Allow support for debugging of C/jitted code
