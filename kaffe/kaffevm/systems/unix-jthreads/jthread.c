@@ -47,7 +47,7 @@
 #define THREAD_FLAGS_USERSUSPEND        8
 #define THREAD_FLAGS_DONTSTOP        	16
 #define THREAD_FLAGS_DYING        	32
-#define THREAD_FLAGS_BLOCKEDEXTERNAL   64
+#define THREAD_FLAGS_BLOCKEDEXTERNAL	64
 
 #if DETECT_DEADLOCK
 #define BLOCKED_ON_EXTERNAL(t)						\
@@ -184,7 +184,8 @@ internalYield()
 {
         int priority = currentJThread->priority; 
    
-        if (threadQhead[priority] != threadQtail[priority])
+        if (threadQhead[priority] &&
+		threadQhead[priority] != threadQtail[priority])
         {
                 /* Get the first thread and move it to the end */
 		jthread *firstThread = threadQhead[priority];
