@@ -131,7 +131,6 @@ extern void kprintf(FILE*, const char*, ...) PRINTFFORMAT(2,3);
 extern int addClasspath(const char*);
 extern int prependClasspath(const char*);
 
-void replacechar(const char* from, char* to, char old, char newch);
 void classname2pathname(const char* from, char* to);
 void pathname2classname(const char* from, char* to);
 int bitCount(int bits);
