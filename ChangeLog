@@ -1,3 +1,15 @@
+Thu Mar 30 13:52:54 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/thread.c: comment out too-strict assert() in intrp
+	* test/regresssion/LoaderTest.java: check for Introspector bug
+	* libraries/javalib/java/awt/Color.java: Class.forName() doesn't
+	allow slashes
+	* libraries/javalib/java/beans/Introspector.java,
+	libraries/javalib/java/beans/PropertyEditorManager.java:
+	use the right ClassLoader
+	* libraries/javalib/java/io/ObjectInputStream.java: add comment
+	note describing ClassLoader bug here
+
 Wed Mar 29 18:22:48 CEST 2000  Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
 
 	* config/m68k/trampolines.c: fix m68k compiles again (Debian bug#59420).
@@ -28,7 +40,6 @@ Tue Mar 28 15:02:57 PST 2000  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/lang/System.java: use getStackClass(1)
 	instead of getCallingClass()
 	* libraries/javalib/kaffe/jar/ExecJar.java: remove unused variable
-	* kaffe/kaffevm/thread.c: comment out too-strict assert() in intrp
 
 Wed Mar 22 17:46:57 PST 2000  Archie Cobbs <archie@whistle.com>
 
