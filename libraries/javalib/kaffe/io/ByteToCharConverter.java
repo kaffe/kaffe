@@ -22,7 +22,20 @@ abstract public class ByteToCharConverter
 	protected int blen;
 
 static {
-	encodingRoot = System.getProperty("file.encoding.pkg");
+	/* NB.: encodingRoot = System.getProperty("file.encoding.pkg");
+	 * would be pointless.  Either file.encoding.pkg == kaffe.io, in
+	 * which it does not matter, or if file.encoding.pkg is set to
+	 * something else, then these other implementations would have to be
+	 * subclasses of kaffe.io.ByteToCharConverter.  However, if someone
+	 * subclasses kaffe.io.ByteToCharConverter, he might as well put it
+	 * in this package.  There's no documented way to add converters
+	 * to Java, since Sun implements this internally in sun.io.*;
+	 *
+	 * Secondly, by ignoring the file.encoding.pkg property, we're
+	 * free to redefine it.  This helps not 100% pure Java apps such
+	 * as HotJava that access sun.io.* directly.
+	 */
+	encodingRoot = "kaffe.io";
 	encodingDefault = System.getProperty("file.encoding");
 }
 
