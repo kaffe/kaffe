@@ -98,7 +98,7 @@ fi
 
 dnl If the vm is static or all libraries are static then make sure we set
 dnl the no-share-vmlibrary flag.
-if test "$vm_dynamic_library" = "no" || test "$dynamic_libraries" = "no"; then
+if test x"$vm_dynamic_library" = x"no" || test x"$dynamic_libraries" = x"no"; then
 	AC_DEFINE(NO_SHARED_VMLIBRARY, 1, [If the vm is static or all libraries are static])
 fi
 
@@ -116,7 +116,7 @@ if test -f $srcdir/config/$Khost_cpu/$Khost_os/config.frag ; then
 	known=yes
 	. $srcdir/config/$Khost_cpu/$Khost_os/config.frag
 fi
-if test "$known" = "no" ; then
+if test x"$known" = x"no" ; then
 	AC_MSG_ERROR(Configuration $Khost_cpu-$Khost_os not supported)
 fi
 
@@ -433,17 +433,25 @@ dnl =========================================================================
 dnl Use jikes instead of kjc?
 dnl =========================================================================
 
+AC_CHECK_PROG(JIKESPROG, jikes, jikes)
 AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler [default=no]],[JIKES="$withval"],[JIKES=""])
 AC_MSG_CHECKING([whether to use jikes])
-if test x"$with_jikes" = x"" ; then
-	use_jikes=no
-	JIKES=
-elif test x"$with_jikes" = x"yes" ; then
-	AC_CHECK_PROG(JIKES, jikes, jikes)
-else
-	JIKES=$with_jikes
+
+case $with_jikes in
+yes)
 	use_jikes="yes ($JIKES)"
-fi
+	JIKES=$JIKESPROG
+	;;
+no)
+	use_jikes="no"
+	JIKES=
+	;;
+*)
+	use_jikes="yes ($JIKES)"
+	JIKES="$withval"
+	;;
+esac
+
 AC_MSG_RESULT($use_jikes)
 AC_SUBST(JIKES)
 
@@ -451,7 +459,7 @@ dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
 dnl -------------------------------------------------------------------------
 KAFFEVM_TRAMPOLINES_C=
-if test "$with_engine" != "intrp" ; then
+if test x"$with_engine" != x"intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$Khost_cpu/trampolines.c ; then
 		KAFFEVM_TRAMPOLINES_C="\$(top_srcdir)/config/$Khost_cpu/trampolines.c"
@@ -481,7 +489,7 @@ AC_SUBST(JAVA_LIBS)
 AC_SUBST(with_engine)
 AC_SUBST(THREAD_SYSTEM)
 AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER", [Kaffe version number])
-if test "$program_prefix" = "NONE" ; then
+if test x"$program_prefix" = x"NONE" ; then
 	KPREFIX=""
 else
 	KPREFIX=$program_prefix
@@ -502,13 +510,13 @@ AC_PROG_MAKE_SET
 AC_CHECK_PROG(ZIP, zip, zip)
 
 dnl If symlink is overridden then don't bother with the test.
-if test "$LN_S" = "" ; then
+if test x"$LN_S" = x"" ; then
 	AC_PROG_LN_S
 fi
 dnl This shell macro caches uses of ln -s in the generated script and
 dnl converts them to LN_S
 ln() {
-	if test "$1" = "-s" ; then
+	if test x"$1" = x"-s" ; then
 		$LN_S $2 $3
 	else
 		ln $1 $2
@@ -572,7 +580,7 @@ int main() {
 ], kaffe_cv_signal_one_shot=no, kaffe_cv_signal_one_shot=yes,
 	kaffe_cv_signal_one_shot=cross)
 ])
-if test "$kaffe_cv_signal_one_shot" != "no"; then
+if test x"$kaffe_cv_signal_one_shot" != x"no"; then
   AC_DEFINE(KAFFE_SIGNAL_ONE_SHOT, 1, [Define if signal handlers must be reset upon delivery])
 fi
 
@@ -809,8 +817,8 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH(stats,[  --with-stats            Gather statistics on vm execution])
 
-if test "$with_stats" = "yes" ; then
-	if test $have_rusage = "no" ; then
+if test x"$with_stats" = x"yes" ; then
+	if test x"$have_rusage" = x"no" ; then
 		echo "Need rusage to build stats version"
 	else
 		AC_DEFINE(KAFFE_STATS, 1, [Do we enable stats in the vm?])
@@ -851,7 +859,7 @@ fi
 AC_ARG_ENABLE(gcj,[  --enable-gcj            Enable GCJ support])
 AC_MSG_CHECKING([whether to enable GCJ support])
 AC_MSG_RESULT($enable_gcj)
-AM_CONDITIONAL(HAVE_GCJ_SUPPORT, test "$enable_gcj" = "yes")
+AM_CONDITIONAL(HAVE_GCJ_SUPPORT, test x"$enable_gcj" = x"yes")
 
 dnl -------------------------------------------------------------------------
 
@@ -861,7 +869,7 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE(mips2, [  --disable-mips2         Disable MIPS II instructions])
 AC_MSG_CHECKING([whether to enable MIPS II instructions])
-if test "x$enable_mips2" != "xno"; then
+if test x"$enable_mips2" != x"no"; then
     AC_DEFINE([HAVE_MIPSII_INSTRUCTIONS], 1, [Enable MIPS II instructions])
 fi
 AC_MSG_RESULT($enable_mips2)
@@ -884,39 +892,39 @@ dnl =========================================================================
 dnl Check for [u]int{8,16,32,64} and bool.
 dnl -------------------------------------------------------------------------
 
-if test x"$ac_cv_typedef_int8" = xyes; then
+if test x"$ac_cv_typedef_int8" = x"yes"; then
   AC_DEFINE(HAVE_INT8, 1, [Do we have int8])
 fi
 
-if test x"$ac_cv_typedef_uint8" = xyes; then
+if test x"$ac_cv_typedef_uint8" = x"yes"; then
   AC_DEFINE(HAVE_UINT8, 1, [Do we have uint8])
 fi
 
-if test x"$ac_cv_typedef_int16" = xyes; then
+if test x"$ac_cv_typedef_int16" = x"yes"; then
   AC_DEFINE(HAVE_INT16, 1, [Do we have int16])
 fi
 
-if test x"$ac_cv_typedef_uint16" = xyes; then
+if test x"$ac_cv_typedef_uint16" = x"yes"; then
   AC_DEFINE(HAVE_UINT16, 1, [Do we have uint16])
 fi
 
-if test x"$ac_cv_typedef_int32" = xyes; then
+if test x"$ac_cv_typedef_int32" = x"yes"; then
   AC_DEFINE(HAVE_INT32, 1, [Do we have int32])
 fi
 
-if test x"$ac_cv_typedef_uint32" = xyes; then
+if test x"$ac_cv_typedef_uint32" = x"yes"; then
   AC_DEFINE(HAVE_UINT32, 1, [Do we have uint32])
 fi
 
-if test x"$ac_cv_typedef_int64" = xyes; then
+if test x"$ac_cv_typedef_int64" = x"yes"; then
   AC_DEFINE(HAVE_INT64, 1, [Do we have int64])
 fi
 
-if test x"$ac_cv_typedef_uint64" = xyes; then
+if test x"$ac_cv_typedef_uint64" = x"yes"; then
   AC_DEFINE(HAVE_UINT64, 1, [Do we have uint64])
 fi
 
-if test x"$ac_cv_typedef_bool" = xyes; then
+if test x"$ac_cv_typedef_bool" = x"yes"; then
   AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
 fi
 
@@ -1100,13 +1108,13 @@ AC_CHECK_FUNCS([waitpid kill fork execve execvp])
 AC_CHECK_FUNCS([sync fsync])
 AC_CHECK_FUNCS([atexit on_exit vsnprintf snprintf])
 
-if test "$Khost_cpu" = "alpha" ; then
+if test x"$Khost_cpu" = x"alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
     ac_cv_alpha_asm_amask,
   [AC_TRY_COMPILE(, [ long r; __asm__("amask 1,%0" : "=r"(r)); return !r; ],
     ac_cv_alpha_asm_amask=yes, ac_cv_alpha_asm_amask=no)
   ])
-  if test "$ac_cv_alpha_asm_amask" = "yes" ; then
+  if test x"$ac_cv_alpha_asm_amask" = x"yes" ; then
     AC_DEFINE(HAVE_ALPHA_ASM_AMASK, 1, [Do we have amask instruction on alpha])
   fi
 fi
@@ -1132,7 +1140,7 @@ AC_CACHE_CHECK([for declaration of select],
 ], [ void *foo = select; ],
   ac_cv_declared_select=yes, ac_cv_declared_select=no)
 ])
-if test "x$ac_cv_declared_select" = "xyes"; then
+if test x"$ac_cv_declared_select" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared])
 fi
 
@@ -1155,7 +1163,7 @@ AC_CACHE_CHECK([for declaration of swab],
 ], [ void *foo = swab; ],
   ac_cv_declared_swab=yes, ac_cv_declared_swab=no)
 ])
-if test "x$ac_cv_declared_swab" = "xyes"; then
+if test x"$ac_cv_declared_swab" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared])
 fi
 
@@ -1166,10 +1174,10 @@ dnl -------------------------------------------------------------------------
 AC_ARG_WITH(awt,[  --with-awt=GRAPHICSYS	  specify AWT engine (no, [X], qt)])
 
 dnl If no AWT defined, choose an appropriate default.
-if test "$with_awt" = "no" ; then
+if test x"$with_awt" = x"no" ; then
 	with_awt=no
 fi
-if test "$with_awt" = "" ; then
+if test x"$with_awt" = x"" ; then
 	with_awt=X
 fi
 
@@ -1243,7 +1251,7 @@ case $with_alsa in
 no)
 	;;
 *)
-	if test "$have_alsa" = "yes"; then
+	if test x"$have_alsa" = x"yes"; then
 		ALSA_DIR=alsa
 	fi
 	;;
@@ -1258,7 +1266,7 @@ case $with_esd in
 no)
 	;;
 *)
-	if test "$have_esd" = "yes" && test "$have_esd_h" = "yes"; then
+	if test x"$have_esd" = x"yes" && test x"$have_esd_h" = x"yes"; then
 		ESD_DIR=esd
 	fi
 	;;
@@ -1319,7 +1327,7 @@ dnl  Otherwise use pure java implementation.
 ]
 )
 
-if test x$pure_java_math = xtrue ; then
+if test x"$pure_java_math" = x"true" ; then
 	java_math_SRCS="pure_java_math_SRCS"
 	NATIVE_MATH_DIR=""
 	MATH_LIB=""
@@ -1343,7 +1351,7 @@ dnl                    Support for different class library profiles
 dnl -----------------------------------------------------------------------
 AC_ARG_WITH(class_library_profile, [  --with-class-library-profile=PROFILE	specify class library profile])
 
-if test "$with_class_library_profile" = "" ; then
+if test x"$with_class_library_profile" = x"" ; then
 	PROFILE=default
 else
 	PROFILE=$with_class_library_profile
@@ -1370,21 +1378,21 @@ for lib in $JAVA_LIBS; do
 done
 AC_SUBST(DLOPEN_JAVA_LIBS)
 
-if test "$dynamic_libraries" = no; then
+if test x"$dynamic_libraries" = x"no"; then
 	KLIBFLAGS=-static
 else
 	KLIBFLAGS=
 fi
 AC_SUBST(KLIBFLAGS)
 
-if test "$vm_dynamic_binary" = no; then
+if test x"$vm_dynamic_binary" = x"no"; then
 	KVMBINFLAGS=-all-static
 else
 	KVMBINFLAGS=
 fi
 AC_SUBST(KVMBINFLAGS)
 
-if test "$vm_dynamic_library" = no; then
+if test x"$vm_dynamic_library" = x"no"; then
 	KVMLIBFLAGS=-static
 else
 	KVMLIBFLAGS=
@@ -1395,7 +1403,7 @@ dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling
 dnl -------------------------------------------------------------------------
 
-if test "$cross_compiling" = yes; then
+if test x"$cross_compiling" = x"yes"; then
   dnl check for variables that, if not defined in config.frag or config.cache,
   dnl may take wrong values
   if test x"${ac_cv_c_bigendian+set}" != x"set"; then

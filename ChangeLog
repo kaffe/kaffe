@@ -1,3 +1,26 @@
+2003-02-06 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am:
+	(CLASSPATH) prepend ($srcdir) to Klasses.jar.bootstrap to fix
+	building in a directory other than the source.
+
+	Reported by: Timothy S Stack <stack@cs.utah.edu>
+	
+	* configure.in:
+	changed test "$someting" = "something_else" to use x"$something" =
+	x"something_else".
+
+	* configure.in:
+	(JIKES) rewritten to use case statements instead of a sequence of
+	if statements.
+
+	Based on a patch by: Timothy S Stack <stack@cs.utah.edu>
+
+2003-02-05 Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* include/.cvsignore:
+	Added org_* files to the list of ignored files.
+	
 2003-02-03 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java:

@@ -1,5 +1,6 @@
 jtypes.h
 kaffe_*.h
 java_*.h
+org_*.h
 Makefile
 stamp-*

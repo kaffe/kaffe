@@ -15,7 +15,7 @@ SRCDIRS = gnu java javax kaffe org
 ## taken from top level Makefile.am
 JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
-CLASSPATH=$(LIBDIR):Klasses.jar.bootstrap
+CLASSPATH=$(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar

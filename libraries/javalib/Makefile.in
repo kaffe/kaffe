@@ -94,6 +94,7 @@ EXEEXT = @EXEEXT@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
+JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
@@ -156,7 +157,7 @@ SRCDIRS = gnu java javax kaffe org
 
 JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
-CLASSPATH = $(LIBDIR):Klasses.jar.bootstrap
+CLASSPATH = $(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
