@@ -491,7 +491,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_lock(JNIEnv *env UNUSED, jobject file
 						jlong size UNUSED, jboolean shared UNUSED, 
 						jboolean wait_lock UNUSED)
 {
-  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.lang.UnsupportedOperationException"), "gnu.java.nio.channels.FileChannelImpl.lock");
+  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.io.IOException"), "java.nio.FileChannelImpl.lock(): not implemented");
   return false;
 }
 
@@ -499,7 +499,7 @@ void JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_unlock(JNIEnv *env UNUSED, jobject filechannel UNUSED, jlong position UNUSED,
 						  jlong size UNUSED)
 {
-  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.lang.UnsupportedOperationException"), "gnu.java.nio.channels.FileChannelImpl.lock");
+  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.io.IOException"), "java.nio.FileChannelImpl.unlock(): not implemented");
 }
 
 /*
