@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#define	JNIEXPORT
+#define	JNIEXPORT extern
 #define	JNICALL
 
 struct JNIEnv_;

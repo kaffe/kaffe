@@ -382,7 +382,7 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 	}
 
 	if (jni_include != 0) {
-		fprintf(jni_include, "extern ");
+		fprintf(jni_include, "JNIEXPORT ");
 		switch (*ret) {
 		case '[':
 			fprintf(jni_include, "jarray");
@@ -431,7 +431,7 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 				className, name);
 			exit(0);
 		}
-		fprintf(jni_include, " Java_%s_%s(JNIEnv*", className, name);
+		fprintf(jni_include, " JNICALL Java_%s_%s(JNIEnv*", className, name);
 		if ((m.access_flags & ACC_STATIC)) {
 			fprintf(jni_include, ", jclass");
 		}

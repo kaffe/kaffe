@@ -42,8 +42,7 @@ int
 main(int argc, char* argv[])
 {
 	char* nm;
-	int i;
-	int j;
+	int i, first = 1;
 	int farg;
 
 	/* Process arguments */
@@ -54,45 +53,28 @@ main(int argc, char* argv[])
 		exit(1);
 	}
 
-	/* If we specify an output file, use that instead */
-	if (outputName != 0) {
-		FILE* file = fopen(outputName, "w");;
-		if (file == 0) {
-			fprintf(stderr, "Failed to create '%s'.\n", outputName);
-			exit(1);
-		}
-		if (flag_jni != 0) {
-			jni_include = file;
-			strcpy(className, outputName);
-			initJniInclude();
-		}
-		else {
-			include = file;
-			strcpy(className, outputName);
-			initInclude();
-		}
-	}
-
+	/* Process each class */
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {
-		j = 0;
+
+		/* Derive various names from class name */
 		for (i = 0; nm[i] != 0; i++) {
 			switch (nm[i]) {
 			case '/':
 			case '.':
 				className[i] = '_';
 				pathName[i] = '/';
-				includeName[j+i] = '_';
+				includeName[i] = '_';
 				break;
 			default:
 				className[i] = nm[i];
 				pathName[i] = nm[i];
-				includeName[j+i] = nm[i];
+				includeName[i] = nm[i];
 				break;
 			}
 		}
 		className[i] = 0;
 		pathName[i] = 0;
-		includeName[j+i] = 0;
+		includeName[i] = 0;
 
 		/* If we are in 'base' mode, truncate the include name
 		 * to just the basename.
@@ -121,35 +103,43 @@ main(int argc, char* argv[])
 			strcat(includeName, tmpName);
 		}
 
+		/* Add suffix */
 		strcat(includeName, ".h");
 
-		if (outputName == 0) {
-			if (flag_jni != 0) {
-				jni_include = fopen(includeName, "w");
-				if (jni_include == 0) {
-					fprintf(stderr, "Failed to create '%s'.\n", includeName);
-					exit(1);
-				}
+		/* Open output file */
+		if (first || outputName == 0) {
+			char *fileName = outputName ? outputName : includeName;
+			FILE *fp;
+
+			if ((fp = fopen(fileName, "w")) == NULL) {
+				fprintf(stderr,
+				    "Failed to create '%s'.\n", fileName);
+				exit(1);
+			}
+			if (flag_jni) {
+				jni_include = fp;
 				initJniInclude();
 			}
 			else {
-				include = fopen(includeName, "w");
-				if (include == 0) {
-					fprintf(stderr, "Failed to create '%s'.\n", includeName);
-					exit(1);
-				}
+				include = fp;
 				initInclude();
 			}
+			first = 0;
 		}
-		if (flag_jni != 0) {
+
+		/* Preamble for this class */
+		if (flag_jni) {
 			startJniInclude();
 		}
 		else {
 			startInclude();
 		}
+
+		/* Process class */
 		findClass(pathName);
 
-		if (outputName == 0) {
+		/* Finalize */
+		if (outputName == 0 || argv[farg + 1] == 0) {
 			if (include != 0) {
 				endInclude();
 				fclose(include);
@@ -160,17 +150,6 @@ main(int argc, char* argv[])
 				fclose(jni_include);
 				jni_include = 0;
 			}
-		}
-	}
-
-	if (outputName != 0) {
-		if (include != 0) {
-			endInclude();
-			fclose(include);
-		}
-		if (jni_include != 0) {
-			endJniInclude();
-			fclose(jni_include);
 		}
 	}
 
