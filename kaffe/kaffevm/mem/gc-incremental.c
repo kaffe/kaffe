@@ -323,6 +323,8 @@ walkObject(void* base, uint32 size)
 	if (obj->dtable == 0)
 		return;
 
+	MARK_OBJECT(obj->dtable->class);
+
 	/* retrieve the layout of this object from its class */
 	clazz = obj->dtable->class;
 	layout = clazz->gc_layout;
@@ -525,6 +527,7 @@ walkRefArray(void* base, uint32 size)
 	arr = (Hjava_lang_Object*)base;
 
 	ptr = OBJARRAY_DATA(arr);
+	MARK_OBJECT(arr->dtable->class);
 	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
 		Hjava_lang_Object* el = *ptr++;
 		MARK_OBJECT(el);
