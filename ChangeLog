@@ -1,3 +1,45 @@
+Sun Jan  9 16:37:34 CET 2000  Edouard G. Parmelan  <egp@free.fr>
+
+	* WHATSNEW: Some news since release 1.0.5.
+
+Sun Jan  9 16:25:38 CET 2000  Igor Khavkine  <i_khavki@alcor.concordia.ca> 
+
+	* config/config.alias: Add alias for GNU Hurd.
+	* config/i386/gnu/config.frag config/i386/gnu/jit-md.h
+	config/i386/gnu/jit3-md.h config/i386/gnu/md.c
+	config/i386/gnu/md.h: new files for GNU Hurd.
+	* kaffe/kaffevm/system/unix-jthread/jthread.c: quick fix to not
+	set ASYNC mode on stdin, stdout and stderr (to be fixed).
+	* README: add GNU Hurd entry.
+
+Sun Jan  9 02:50:29 CET 2000  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/scripts/kopi.in kaffe/scripts/Makefile.am configure.in:
+	Add KOPI generic wrapper.
+
+	* kaffe/kaffevm/systems/beos-native/syscalls.c (beos_native_forkexec)
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c (jthreadedForkExec)
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c (jthreadedForkExec):
+	Save errno an unblock signals on fork() error.
+	* libraries/clib/native/UNIXProcess.c (forkAndExec): call
+	ReleaseStringUTFChars() before throw OutOfMemoryException.  Search
+	program in PATH to be able to throw IOException (Debian bug#51230).
+	* libraries/javalib/kaffe/lang/UNIXProcess.java: Save throwable in
+	sitter thread to rethrow it in real thread (Debian bug#51230).
+
+	* libraries/javalib/java/util/zip/ZipEntry.java: add new package method
+	setDosTime().
+	* libraries/javalib/java/util/zip/ZipInputStream.java (getNextEntry):
+	Use setDosTime() to set time entry.
+	
+	* libraries/javalib/java/util/jar/Manifest.java (read): handler file
+	without empty last line.
+
+	* configure.in: use AC_ARG_ENABLE() for --enable-debug.
+
+	* configure kaffe/scripts/Makefile.in: regen
+	* libraries/javalib/Klasses.jar: regen with kjc-1.4B
+
 Thu Jan  6 14:19:49 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h,
@@ -67,7 +109,7 @@ Tue Dec 28 10:14:16 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 	* config/config.alias, config/*/config.frag: Likewise.
 	* configure, */Makefile.in: Rebuilt.
 	
-Mon Dec 13 23:06:59 CET 1999  Edouard G. Parmelan  <egp.free.fr>
+Mon Dec 13 23:06:59 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/Makefile.am: exclude Overflow.java when gcj
 	is enabled.
