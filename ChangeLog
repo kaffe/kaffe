@@ -1,5 +1,12 @@
 2003-05-07 Dalibor Topic <robilad@yahoo.com>
 
+	* FAQ/FAQ.awt:
+	Added information on third party AWT backends.
+
+	Reported by: Kiyo Inaba <inaba@src.ricoh.co.jp>
+	
+2003-05-07 Dalibor Topic <robilad@yahoo.com>
+
 	* test/regression/FileTest.java:
 	Removed broken test.
 	

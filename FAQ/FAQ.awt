@@ -99,3 +99,23 @@ contact us on the Kaffe Mailing List kaffe@kaffe.org.
 
 The list of backends from PocketLinux includes Gtk, grx, peg, Allegro
 and a few others.
+
+There are other AWT backends written by third party developers that
+haven't been merged in yet:
+
+* Microwindows
+
+Available at http://web.media.mit.edu/~lifton/proj/E-book/technical/ .
+
+* DirectFB
+
+See this post for more information:
+http://www.kaffe.org/pipermail/kaffe/2002-December/028462.html .
+
+* nano-X
+
+Available at
+http://www.sinby.com/en/developer/VirtualMachine/nano-X.html .
+
+If you are interested in merging them in, contact the Kaffe Mailing
+List on kaffe@kaffe.org.
