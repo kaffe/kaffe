@@ -1439,6 +1439,7 @@ gnu_java_net_protocol_jar_SRCS = \
 gnu_java_nio_SRCS = \
 	gnu/java/nio/ChannelInputStream.java \
 	gnu/java/nio/ChannelOutputStream.java \
+	gnu/java/nio/ChannelReader.java \
 	gnu/java/nio/DatagramChannelImpl.java \
 	gnu/java/nio/DatagramChannelSelectionKey.java \
 	gnu/java/nio/FileLockImpl.java \

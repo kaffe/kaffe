@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.nio.channels;
 
+import gnu.java.nio.ChannelReader;
 import gnu.java.nio.InputStreamChannel;
 import gnu.java.nio.OutputStreamChannel;
 
@@ -102,7 +103,7 @@ public final class Channels
   public static Reader newReader(ReadableByteChannel ch, CharsetDecoder dec,
                                  int minBufferCap)
   {
-    throw new Error("not implemented");
+    return new ChannelReader(ch, dec, minBufferCap);
   }
 
   /**
@@ -124,6 +125,7 @@ public final class Channels
   public static Writer newWriter(WritableByteChannel ch, CharsetEncoder enc,
                                  int minBufferCap)
   {
+    // FIXME: implement java.nio.channels.Channel.newWriter(WritableByteChannel, CharsetEncoder, int) 
     throw new Error("not implemented");
   }
 

@@ -38,6 +38,10 @@ exception statement from your version. */
 
 package java.io;
 
+import java.nio.channels.Channels;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+
 import gnu.java.io.EncodingManager;
 import gnu.java.io.decode.Decoder;
 
@@ -92,8 +96,10 @@ public class InputStreamReader extends Reader
    * This is the byte-character decoder class that does the reading and
    * translation of bytes from the underlying stream.
    */
-  private Decoder in;
+  private Reader in;
 
+  private String encoding;
+  
   /**
    * This method initializes a new instance of <code>InputStreamReader</code>
    * to read from the specified stream using the default encoding.
@@ -104,7 +110,11 @@ public class InputStreamReader extends Reader
   {
     if (in == null)
       throw new NullPointerException();
-    this.in = EncodingManager.getDecoder(in);
+    
+    Decoder decoder =  EncodingManager.getDecoder(in);
+    encoding = decoder.getSchemeName();
+    
+    this.in = decoder;
   }
 
   /**
@@ -126,9 +136,40 @@ public class InputStreamReader extends Reader
         || encoding_name == null)
       throw new NullPointerException();
     
-    this.in = EncodingManager.getDecoder(in, encoding_name);
+    Decoder decoder = EncodingManager.getDecoder(in, encoding_name);
+    encoding = decoder.getSchemeName();
+    
+    this.in = decoder;
+    
   }
 
+  /**
+   * Creates an InputStreamReader that uses a decoder of the given
+   * charset to decode the bytes in the InputStream into
+   * characters.
+   */
+  public InputStreamReader(InputStream in, Charset charset) {
+    /* FIXME: InputStream is wrapped in Channel which is read by a
+     * Reader-implementation for channels. However to fix this we
+     * need to completely move to NIO-style character
+     * encoding/decoding.
+     */
+    this.in = Channels.newReader(Channels.newChannel(in), charset.newDecoder(), -1);
+    
+    encoding = charset.name();
+  }
+
+  /**
+   * Creates an InputStreamReader that uses the given charset decoder
+   * to decode the bytes in the InputStream into characters.
+   */
+  public InputStreamReader(InputStream in, CharsetDecoder decoder) {
+    // FIXME: see {@link InputStreamReader(InputStream, Charset)
+    this.in = Channels.newReader(Channels.newChannel(in), decoder, -1);
+    
+    encoding = decoder.charset().name();
+  }
+  
   /**
    * This method closes this stream, as well as the underlying 
    * <code>InputStream</code>.
@@ -154,7 +195,7 @@ public class InputStreamReader extends Reader
    */
   public String getEncoding()
   {
-    return in != null ? in.getSchemeName() : null;
+    return in != null ? encoding : null;
   }
 
   /**

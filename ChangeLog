@@ -2,6 +2,29 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-22  Robert Schuster  <thebohemian@gmx.net>
+
+        * java/io/InputStreamReader.java: Fixed compilation
+        problem.
+
+	2005-02-21  Robert Schuster  <thebohemian@gmx.net>
+
+        * gnu/java/nio/ChannelReader: Fixed comments.
+
+	2005-02-21  Robert Schuster  <thebohemian@gmx.net>
+
+        * java/nio/channels/Channels: Added FIXMEs about
+        stub method implementation.
+        (newReader): Implemented.
+        * java/io/InputStreamReader:
+        (InputStreamReader(InputStream, Charset)): Implemented.
+        (InputStreamReader(InputStream, CharsetDecoder)): Implemented.
+        * gnu/java/nio/ChannelReader: New class.
+
+2005-02-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-21  Michael Koch  <konqueror@gmx.de>
 
         * java/lang/SecurityManager.java,
