@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ClassNotFoundException;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collection;
 
 /* Hashtable (NOT tree) with simple clustering */
 
@@ -79,7 +76,7 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 
     return (new HashtableEnumeration(vector));
   }
-  
+
 
   public synchronized Enumeration elements() {
     Vector vector = new Vector(numberOfKeys);
@@ -374,16 +371,110 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
     }
   }
 
-  public Set entrySet() {
-    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".entrySet()");
+  public synchronized Set entrySet() {
+    final Vector kvec = new Vector(numberOfKeys);
+    final Vector vals = new Vector(numberOfKeys);
+
+    // Snapshot key list and corresponding value list
+    for (int pos = keys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != free && keys[pos] != removed) {
+	kvec.addElement(keys[pos]);
+	vals.addElement(get(keys[pos]));
+      }
+    }
+
+    // Return unmodifiable Set view (XXX should be modifyable)
+    return new AbstractSet() {
+      public int size() {
+	return kvec.size();
+      }
+      public Iterator iterator() {
+	return new Iterator() {
+	  private int index = 0;
+	  public boolean hasNext() {
+	    return index < kvec.size();
+	  }
+	  public Object next() {
+	    final Object key = kvec.elementAt(index);
+	    final Object val = vals.elementAt(index);
+	    index++;
+	    return new AbstractMapEntry(key, val) {
+	      public void changeValue(Object newValue) {
+		throw new UnsupportedOperationException();
+	      }
+	    };
+	  }
+	  public void remove() {
+	    throw new UnsupportedOperationException();
+	  }
+	};
+      }
+    };
   }
 
   public Set keySet() {
-    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".keySet()");
+    final Vector kvec = new Vector(numberOfKeys);
+
+    // Snapshot key list
+    for (int pos = keys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != free && keys[pos] != removed) {
+	kvec.addElement(keys[pos]);
+      }
+    }
+
+    // Return unmodifiable Set view (XXX should be modifyable)
+    return new AbstractSet() {
+      private int index;
+      public int size() {
+	return kvec.size();
+      }
+      public Iterator iterator() {
+	return new Iterator() {
+	  private int index = 0;
+	  public boolean hasNext() {
+	    return index < kvec.size();
+	  }
+	  public Object next() {
+	    return kvec.elementAt(index++);
+	  }
+	  public void remove() {
+	    throw new UnsupportedOperationException();
+	  }
+	};
+      }
+    };
   }
 
   public Collection values() {
-    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".values()");
+    final Vector vals = new Vector(numberOfKeys);
+
+    // Snapshot key list
+    for (int pos = keys.length-1; pos >= 0; pos--) {
+      if (keys[pos] != free && keys[pos] != removed) {
+	vals.addElement(get(keys[pos]));
+      }
+    }
+
+    // Return unmodifiable Collection view (XXX should be modifyable)
+    return new AbstractCollection() {
+      public int size() {
+	return vals.size();
+      }
+      public Iterator iterator() {
+	return new Iterator() {
+	  private int index = 0;
+	  public boolean hasNext() {
+	    return index < vals.size();
+	  }
+	  public Object next() {
+	    return vals.elementAt(index++);
+	  }
+	  public void remove() {
+	    throw new UnsupportedOperationException();
+	  }
+	};
+      }
+    };
   }
 
   /*
