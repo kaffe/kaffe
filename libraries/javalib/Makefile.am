@@ -1586,9 +1586,6 @@ java_text_SRCS = \
 	java/text/ParsePosition.java \
 	java/text/RuleBasedCollator.java \
 	java/text/SimpleDateFormat.java \
-	java/text/SimpleLineIterator.java \
-	java/text/SimpleSentenceIterator.java \
-	java/text/SimpleWordIterator.java \
 	java/text/StringCharacterIterator.java
 java_util_SRCS = \
 	java/util/AbstractCollection.java \

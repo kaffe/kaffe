@@ -225,9 +225,6 @@ java/text/CollationElementIterator.java
 java/text/CollationKey.java
 java/text/Collator.java
 java/text/RuleBasedCollator.java
-java/text/SimpleLineIterator.java
-java/text/SimpleSentenceIterator.java
-java/text/SimpleWordIterator.java
 java/text/StringCharacterIterator.java
 java/util/EmptyStackException.java
 java/util/EventListener.java
