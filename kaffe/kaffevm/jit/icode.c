@@ -244,7 +244,7 @@ mon_enter(methods* meth, SlotInfo* obj)
 	else {
 		pusharg_ref(obj, 0);
 	}
-	call_soft(lockJavaMutex);
+	call_soft(lockObject);
 	popargs();
 	start_sub_block();
 }
@@ -259,7 +259,7 @@ mon_exit(methods* meth, SlotInfo* obj)
 	else {
 		pusharg_ref(obj, 0);
 	}
-	call_soft(unlockJavaMutex);
+	call_soft(unlockObject);
 	popargs();
 	start_sub_block();
 }
@@ -3501,7 +3501,7 @@ softcall_monitorenter(SlotInfo* mon)
 	slot_nowriteback(mon);
 	prepare_function_call();
 	pusharg_ref(mon, 0);
-	call_soft(lockJavaMutex);
+	call_soft(lockObject);
 	popargs();
 	fixup_function_call();
 }
@@ -3512,7 +3512,7 @@ softcall_monitorexit(SlotInfo* mon)
 	slot_nowriteback(mon);
 	prepare_function_call();
 	pusharg_ref(mon, 0);
-	call_soft(unlockJavaMutex);
+	call_soft(unlockObject);
 	popargs();
 	fixup_function_call();
 }

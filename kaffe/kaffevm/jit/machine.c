@@ -53,7 +53,7 @@
 char* engine_name = "Just-in-time";
 char* engine_version = KVER;
 
-iLock translatorlock;		/* lock to protect the variables below */
+iLock* translatorlock;		/* lock to protect the variables below */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -187,7 +187,6 @@ translate(Method* meth, errorInfo *einfo)
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
 	bool success = true;
-	iLock* lock;
 
 	nativeCodeInfo ncode;
 	codeinfo* codeInfo;
@@ -195,10 +194,12 @@ translate(Method* meth, errorInfo *einfo)
 	int64 tms = 0;
 	int64 tme;
 
+	int iLockRoot;
+
 	static Method* jitting = 0;	/* DEBUG */
 
 	/* lock class to protect the method */
-	lock = lockMutex(meth->class);
+	lockMutex(&meth->class->head);
 	/* Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
@@ -412,7 +413,7 @@ done1:
 	stopTiming(&jit_time);
 	leaveTranslator();
 done2:
-	unlockKnownMutex(lock);
+	unlockMutex(&meth->class->head);
 	return (success);
 }
 
