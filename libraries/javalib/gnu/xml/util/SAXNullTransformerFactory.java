@@ -636,7 +636,7 @@ public class SAXNullTransformerFactory extends SAXTransformerFactory
           // preserve original namespace prefixes
           try
             {
-              producer.setFeature(handler.FEATURE_URI + "namespace-prefixes",
+              producer.setFeature(NullHandler.FEATURE_URI + "namespace-prefixes",
                                   true);
             }
           catch (Exception e)
@@ -647,7 +647,7 @@ public class SAXNullTransformerFactory extends SAXTransformerFactory
           
           // arrange the output
           handler.setResult (out);
-          handler.bind (producer, handler);
+          NullHandler.bind (producer, handler);
           
           // then parse ... single element pipeline
           producer.parse (input);

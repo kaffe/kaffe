@@ -1,4 +1,14 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
+	* libraries/javalib/gnu/crypto/der/DERReader.java,
+	  libraries/javalib/gnu/xml/util/SAXNullTransformerFactory.java,
+	  libraries/javalib/gnu/xml/xpath/Predicate.java,
+	  libraries/javalib/java/lang/System.java,
+	  libraries/javalib/org/metastatic/jessie/pki/der/DERReader.java,
+	  libraries/javalib/org/metastatic/jessie/provider/DERReader.java:
+	  Access static variables/methods thru the class, not an instance of
+	  the class.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
 
 	* libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Skel.java,
 	  libraries/javalib/gnu/java/rmi/dgc/DGCImpl_Stub.java,

@@ -142,7 +142,7 @@ public static void runFinalization() {
 }
 
 public static void runFinalizersOnExit(boolean value) {
-	Runtime.getRuntime().runFinalizersOnExit(value);
+	Runtime.runFinalizersOnExit(value);
 }
 
 private static void exitJavaCleanup() {
