@@ -1,6 +1,11 @@
 2004-02-15  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+	Removed undef for unused macro RETURN_3b.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (verifyErrorInVerifyMethod3b): New static inline function.
         (VERIFY_ERROR) Removed.
         Replaced use of VERIFY_ERROR by verifyErrorInVerifyMethod3b.

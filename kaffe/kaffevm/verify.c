@@ -2340,8 +2340,6 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 	DBG(VERIFY3, dprintf("    Verifier Pass 3b: Complete\n"); );
 	KFREE(curBlock);
 	return(true);
-	
-#undef RETURN_3B
 }
 
 
