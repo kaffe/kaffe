@@ -757,7 +757,7 @@ DBG(VMCLASSLOADER,
 			 */
 			meth = (*env)->GetMethodID(env,
 				    (*env)->GetObjectClass(env, loader),
-				    "loadClassVM",
+				    "loadClass",
 				    "(Ljava/lang/String;Z)Ljava/lang/Class;");
 			assert(meth != 0);
 
@@ -780,6 +780,9 @@ DBG(VMCLASSLOADER,
 			} else
 			if (clazz == NULL || 
 			    strcmp(clazz->name->data, name->data)) {
+				/* 1.2 says: 
+				 * Bad class name (expect: THIS, get: THAT) 
+				 */
 DBG(VMCLASSLOADER,		
 				dprintf("clazz == NULL or wrong name!\n");
     )

@@ -48,8 +48,9 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 */
 	clazz->centry = NULL;
 	clazz = readClass(clazz, &hand, this, &info);
-	if (clazz == 0)
+	if (clazz == 0) {
 		throwError(&info);
+	}
 
 	/* 
 	 * If a name was given, but the name we found in the class file
@@ -62,8 +63,13 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 
 		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
 			memcmp(STRING_DATA(temp), STRING_DATA(name), 
-				STRING_SIZE(temp)) != 0)
+			       STRING_SIZE(temp)) != 0) 
+		{
+			/* 1.2 says: "XXX (wrong name: YYY)" 
+			 * where XXX == name and YYY == temp
+			 */
 			SignalError("java.lang.ClassFormatError", "Wrong name");
+		}
 	}
 
 	/*
@@ -79,6 +85,8 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	lockMutex(centry);
 	if (centry->class != NULL) {
 		unlockMutex(centry);
+		/* 1.2 says: "trying to refine class XXX (bad class loader?)"
+		 */
 		SignalError("java.lang.ClassFormatError", "Duplicate name");
 	}
 
@@ -201,4 +209,41 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	}
 
 	return (data);
+}
+
+/*
+ * Find a loaded class.
+ *
+ * Note that this means to find a class for which we were the defining
+ * classloader.  We must not report classes for which we were merely the
+ * initiating loader.
+ */
+struct Hjava_lang_Class*
+java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
+{
+        int len = javaStringLength(str);
+        Utf8Const* c;
+        char* name;
+        char buffer[100];
+        classEntry* entry;
+
+        if (len <= 100) {
+                name = buffer;
+        }
+        else {
+                name = KMALLOC (len);
+        }
+        javaString2CString(str, name, len+1);
+        classname2pathname (name, name);
+        c = makeUtf8Const (name, len);
+        if (name != buffer) {
+                KFREE(name);
+        }
+
+        entry = lookupClassEntryInternal(c, this);
+	if (entry != 0) {
+		return (entry->class);
+	} else {
+		return (0);
+	}
 }
