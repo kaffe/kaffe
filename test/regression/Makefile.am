@@ -34,7 +34,7 @@ ALWAYS_TESTS = \
 ## Test exceptions
 	IndexTest.java \
 	StackDump.java \
-# note that the following can be compiled from CatchLimits.j by Jasmin
+## note that the following can be compiled from CatchLimits.j by Jasmin
 	CatchLimits.class.save \
 ## Test threads
 	tname.java \

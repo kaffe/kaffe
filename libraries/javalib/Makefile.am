@@ -10,7 +10,7 @@
 # Class libraries are not currently part of the integrate Make cycle. 
 #
 
-SRCDIRS = java kaffe gnu
+SRCDIRS = gnu java javax kaffe
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
@@ -80,6 +80,21 @@ Rest_SRCS = \
 	$(kaffe_text_dateformat_SRCS) \
 	$(kaffe_text_numberformat_SRCS) \
 	$(kaffe_util_locale_SRCS) 
+RMI_SRCS = \
+	$(java_rmi_SRCS) \
+	$(java_rmi_activation_SRCS) \
+	$(java_rmi_dgc_SRCS) \
+	$(java_rmi_registry_SRCS) \
+	$(java_rmi_server_SRCS) \
+	$(javax_transaction_SRCS) \
+	$(javax_transaction_xa_SRCS) \
+	$(kaffe_rmi_dgc_SRCS) \
+	$(kaffe_rmi_registry_SRCS) \
+	$(kaffe_rmi_rmic_SRCS) \
+	$(kaffe_rmi_server_SRCS) \
+	$(kaffe_tools_compiler_SRCS) \
+	$(kaffe_tools_jar_SRCS) \
+	$(kaffe_tools_serialver_SRCS)
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
@@ -646,6 +661,76 @@ java_nio_SRCS = \
 	java/nio/MappedByteBuffer.java \
 	java/nio/ReadOnlyBufferException.java \
 	java/nio/ShortBuffer.java
+java_rmi_SRCS = \
+	java/rmi/AccessException.java \
+	java/rmi/AlreadyBoundException.java \
+	java/rmi/ConnectException.java \
+	java/rmi/ConnectIOException.java \
+	java/rmi/MarshalException.java \
+	java/rmi/MarshalledObject.java \
+	java/rmi/Naming.java \
+	java/rmi/NoSuchObjectException.java \
+	java/rmi/NotBoundException.java \
+	java/rmi/RemoteException.java \
+	java/rmi/Remote.java \
+	java/rmi/RMISecurityException.java \
+	java/rmi/RMISecurityManager.java \
+	java/rmi/ServerError.java \
+	java/rmi/ServerException.java \
+	java/rmi/ServerRuntimeException.java \
+	java/rmi/StubNotFoundException.java \
+	java/rmi/UnexpectedException.java \
+	java/rmi/UnknownHostException.java \
+	java/rmi/UnmarshalException.java
+java_rmi_activation_SRCS = \
+	java/rmi/activation/Activatable.java \
+	java/rmi/activation/ActivateFailedException.java \
+	java/rmi/activation/ActivationDesc.java \
+	java/rmi/activation/ActivationException.java \
+	java/rmi/activation/ActivationGroupDesc.java \
+	java/rmi/activation/ActivationGroupID.java \
+	java/rmi/activation/ActivationGroup.java \
+	java/rmi/activation/ActivationID.java \
+	java/rmi/activation/ActivationInstantiator.java \
+	java/rmi/activation/ActivationMonitor.java \
+	java/rmi/activation/ActivationSystem.java \
+	java/rmi/activation/Activator.java \
+	java/rmi/activation/UnknownGroupException.java \
+	java/rmi/activation/UnknownObjectException.java
+java_rmi_dgc_SRCS = \
+	java/rmi/dgc/DGC.java \
+	java/rmi/dgc/Lease.java \
+	java/rmi/dgc/VMID.java
+java_rmi_registry_SRCS = \
+	java/rmi/registry/LocateRegistry.java \
+	java/rmi/registry/RegistryHandler.java \
+	java/rmi/registry/Registry.java
+java_rmi_server_SRCS = \
+	java/rmi/server/ExportException.java \
+	java/rmi/server/LoaderHandler.java \
+	java/rmi/server/LogStream.java \
+	java/rmi/server/ObjID.java \
+	java/rmi/server/Operation.java \
+	java/rmi/server/RemoteCall.java \
+	java/rmi/server/RemoteObject.java \
+	java/rmi/server/RemoteRef.java \
+	java/rmi/server/RemoteServer.java \
+	java/rmi/server/RemoteStub.java \
+	java/rmi/server/RMIClassLoader.java \
+	java/rmi/server/RMIClientSocketFactory.java \
+	java/rmi/server/RMIFailureHandler.java \
+	java/rmi/server/RMIServerSocketFactory.java \
+	java/rmi/server/RMISocketFactory.java \
+	java/rmi/server/ServerCloneException.java \
+	java/rmi/server/ServerNotActiveException.java \
+	java/rmi/server/ServerRef.java \
+	java/rmi/server/Skeleton.java \
+	java/rmi/server/SkeletonMismatchException.java \
+	java/rmi/server/SkeletonNotFoundException.java \
+	java/rmi/server/SocketSecurityException.java \
+	java/rmi/server/UID.java \
+	java/rmi/server/UnicastRemoteObject.java \
+	java/rmi/server/Unreferenced.java
 java_security_SRCS = \
 	java/security/AccessControlContext.java \
 	java/security/AccessControlException.java \
@@ -932,6 +1017,14 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
+javax_transaction_SRCS = \
+	javax/transaction/InvalidTransactionException.java \
+	javax/transaction/TransactionRequiredException.java \
+	javax/transaction/TransactionRolledbackException.java
+javax_transaction_xa_SRCS = \
+	javax/transaction/xa/XAException.java \
+	javax/transaction/xa/XAResource.java \
+	javax/transaction/xa/Xid.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletTag.java \
 	kaffe/applet/AppletViewer.java \
@@ -1026,6 +1119,30 @@ kaffe_net_www_protocol_jar_SRCS = \
 kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
+kaffe_rmi_dgc_SRCS = \
+	kaffe/rmi/dgc/DGCImpl.java \
+	kaffe/rmi/dgc/DGCImpl_Skel.java \
+	kaffe/rmi/dgc/DGCImpl_Stub.java
+kaffe_rmi_registry_SRCS = \
+	kaffe/rmi/registry/RegistryImpl.java \
+	kaffe/rmi/registry/RegistryImpl_Skel.java \
+	kaffe/rmi/registry/RegistryImpl_Stub.java
+kaffe_rmi_rmic_SRCS = \
+	kaffe/rmi/rmic/RMIC.java \
+	kaffe/rmi/rmic/TabbedWriter.java
+kaffe_rmi_server_SRCS = \
+	kaffe/rmi/server/ProtocolConstants.java \
+	kaffe/rmi/server/RMIDefaultSocketFactory.java \
+	kaffe/rmi/server/RMIHashes.java \
+	kaffe/rmi/server/RMIObjectInputStream.java \
+	kaffe/rmi/server/RMIObjectOutputStream.java \
+	kaffe/rmi/server/UnicastConnection.java \
+	kaffe/rmi/server/UnicastConnectionManager.java \
+	kaffe/rmi/server/UnicastRef.java \
+	kaffe/rmi/server/UnicastRemoteCall.java \
+	kaffe/rmi/server/UnicastRemoteStub.java \
+	kaffe/rmi/server/UnicastServer.java \
+	kaffe/rmi/server/UnicastServerRef.java 
 kaffe_security_SRCS = \
 	kaffe/security/Engine.java
 kaffe_security_provider_SRCS = \
@@ -1045,6 +1162,21 @@ kaffe_text_dateformat_SRCS = \
 kaffe_text_numberformat_SRCS = \
 	kaffe/text/numberformat/locale.java \
 	kaffe/text/numberformat/locale_en_US.java
+kaffe_tools_compiler_SRCS = \
+	kaffe/tools/compiler/Compiler_default.java \
+	kaffe/tools/compiler/Compiler.java \
+	kaffe/tools/compiler/Compiler_jikes.java \
+	kaffe/tools/compiler/Compiler_kjc.java \
+	kaffe/tools/compiler/Compiler_pizza.java
+kaffe_tools_jar_SRCS = \
+	kaffe/tools/jar/Jar.java \
+	kaffe/tools/jar/XPFileInputStream.java \
+	kaffe/tools/jar/XPFile.java \
+	kaffe/tools/jar/XPFileOutputStream.java \
+	kaffe/tools/jar/XPFileReader.java \
+	kaffe/tools/jar/XPFileWriter.java
+kaffe_tools_serialver_SRCS = \
+	kaffe/tools/serialver/SerialVer.java
 kaffe_util_SRCS = \
 	kaffe/util/Assert.java \
 	kaffe/util/Base64.java \
@@ -1218,7 +1350,7 @@ serialized_converters = \
 	kaffe/io/CharToByteKOI8_R.ser
 
 EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
-	$(Awt_SRCS) $(Rest_SRCS) \
+	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -1240,12 +1372,13 @@ rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
 	$(SHELL) $(rebuildLib) $(Awt_SRCS)
 	$(SHELL) $(rebuildLib) $(Rest_SRCS)
+	$(SHELL) $(rebuildLib) $(RMI_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist

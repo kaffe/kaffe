@@ -138,7 +138,7 @@ securitydir = @securitydir@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-SRCDIRS = java kaffe gnu
+SRCDIRS = gnu java javax kaffe
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
@@ -148,6 +148,8 @@ Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	
 Awt_SRCS =  	$(gnu_java_awt_SRCS) 	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_color_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_dnd_SRCS) 	$(java_awt_dnd_peer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_font_SRCS) 	$(java_awt_geom_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_print_SRCS) 	$(java_awt_widgets_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_util_log_SRCS)
 
 Rest_SRCS =  	$(gnu_java_nio_SRCS) 	$(gnu_java_util_prefs_SRCS) 	$(java_beans_SRCS) 	$(java_beans_beancontext_SRCS) 	$(java_nio_SRCS) 	$(java_util_logging_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_prefs_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_locale_SRCS) 
+
+RMI_SRCS =  	$(java_rmi_SRCS) 	$(java_rmi_activation_SRCS) 	$(java_rmi_dgc_SRCS) 	$(java_rmi_registry_SRCS) 	$(java_rmi_server_SRCS) 	$(javax_transaction_SRCS) 	$(javax_transaction_xa_SRCS) 	$(kaffe_rmi_dgc_SRCS) 	$(kaffe_rmi_registry_SRCS) 	$(kaffe_rmi_rmic_SRCS) 	$(kaffe_rmi_server_SRCS) 	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS)
 
 gnu_java_awt_SRCS =  	gnu/java/awt/BitMaskExtent.java 	gnu/java/awt/Buffers.java 	gnu/java/awt/EventModifier.java
 
@@ -201,6 +203,16 @@ java_net_SRCS =  	java/net/Authenticator.java 	java/net/BindException.java 	java
 
 java_nio_SRCS =  	java/nio/Buffer.java 	java/nio/ByteBuffer.java 	java/nio/ByteOrder.java 	java/nio/CharBuffer.java 	java/nio/DoubleBuffer.java 	java/nio/FloatBuffer.java 	java/nio/IntBuffer.java 	java/nio/InvalidMarkException.java 	java/nio/LongBuffer.java 	java/nio/MappedByteBuffer.java 	java/nio/ReadOnlyBufferException.java 	java/nio/ShortBuffer.java
 
+java_rmi_SRCS =  	java/rmi/AccessException.java 	java/rmi/AlreadyBoundException.java 	java/rmi/ConnectException.java 	java/rmi/ConnectIOException.java 	java/rmi/MarshalException.java 	java/rmi/MarshalledObject.java 	java/rmi/Naming.java 	java/rmi/NoSuchObjectException.java 	java/rmi/NotBoundException.java 	java/rmi/RemoteException.java 	java/rmi/Remote.java 	java/rmi/RMISecurityException.java 	java/rmi/RMISecurityManager.java 	java/rmi/ServerError.java 	java/rmi/ServerException.java 	java/rmi/ServerRuntimeException.java 	java/rmi/StubNotFoundException.java 	java/rmi/UnexpectedException.java 	java/rmi/UnknownHostException.java 	java/rmi/UnmarshalException.java
+
+java_rmi_activation_SRCS =  	java/rmi/activation/Activatable.java 	java/rmi/activation/ActivateFailedException.java 	java/rmi/activation/ActivationDesc.java 	java/rmi/activation/ActivationException.java 	java/rmi/activation/ActivationGroupDesc.java 	java/rmi/activation/ActivationGroupID.java 	java/rmi/activation/ActivationGroup.java 	java/rmi/activation/ActivationID.java 	java/rmi/activation/ActivationInstantiator.java 	java/rmi/activation/ActivationMonitor.java 	java/rmi/activation/ActivationSystem.java 	java/rmi/activation/Activator.java 	java/rmi/activation/UnknownGroupException.java 	java/rmi/activation/UnknownObjectException.java
+
+java_rmi_dgc_SRCS =  	java/rmi/dgc/DGC.java 	java/rmi/dgc/Lease.java 	java/rmi/dgc/VMID.java
+
+java_rmi_registry_SRCS =  	java/rmi/registry/LocateRegistry.java 	java/rmi/registry/RegistryHandler.java 	java/rmi/registry/Registry.java
+
+java_rmi_server_SRCS =  	java/rmi/server/ExportException.java 	java/rmi/server/LoaderHandler.java 	java/rmi/server/LogStream.java 	java/rmi/server/ObjID.java 	java/rmi/server/Operation.java 	java/rmi/server/RemoteCall.java 	java/rmi/server/RemoteObject.java 	java/rmi/server/RemoteRef.java 	java/rmi/server/RemoteServer.java 	java/rmi/server/RemoteStub.java 	java/rmi/server/RMIClassLoader.java 	java/rmi/server/RMIClientSocketFactory.java 	java/rmi/server/RMIFailureHandler.java 	java/rmi/server/RMIServerSocketFactory.java 	java/rmi/server/RMISocketFactory.java 	java/rmi/server/ServerCloneException.java 	java/rmi/server/ServerNotActiveException.java 	java/rmi/server/ServerRef.java 	java/rmi/server/Skeleton.java 	java/rmi/server/SkeletonMismatchException.java 	java/rmi/server/SkeletonNotFoundException.java 	java/rmi/server/SocketSecurityException.java 	java/rmi/server/UID.java 	java/rmi/server/UnicastRemoteObject.java 	java/rmi/server/Unreferenced.java
+
 java_security_SRCS =  	java/security/AccessControlContext.java 	java/security/AccessControlException.java 	java/security/AccessController.java 	java/security/AlgorithmParameterGenerator.java 	java/security/AlgorithmParameterGeneratorSpi.java 	java/security/AlgorithmParameters.java 	java/security/AlgorithmParametersSpi.java 	java/security/AllPermission.java 	java/security/BasicPermission.java 	java/security/Certificate.java 	java/security/CodeSource.java 	java/security/DigestException.java 	java/security/DigestInputStream.java 	java/security/DigestOutputStream.java 	java/security/DomainCombiner.java 	java/security/GeneralSecurityException.java 	java/security/Guard.java 	java/security/GuardedObject.java 	java/security/Identity.java 	java/security/IdentityScope.java 	java/security/InvalidAlgorithmParameterException.java 	java/security/InvalidKeyException.java 	java/security/InvalidParameterException.java 	java/security/Key.java 	java/security/KeyException.java 	java/security/KeyFactory.java 	java/security/KeyFactorySpi.java 	java/security/KeyManagementException.java 	java/security/KeyPair.java 	java/security/KeyPairGenerator.java 	java/security/KeyPairGeneratorSpi.java 	java/security/KeyStore.java 	java/security/KeyStoreException.java 	java/security/KeyStoreSpi.java 	java/security/MessageDigest.java 	java/security/MessageDigestSpi.java 	java/security/NoSuchAlgorithmException.java 	java/security/NoSuchProviderException.java 	java/security/Permission.java 	java/security/PermissionCollection.java 	java/security/Principal.java 	java/security/PrivateKey.java 	java/security/PrivilegedAction.java 	java/security/PrivilegedActionException.java 	java/security/PrivilegedExceptionAction.java 	java/security/ProtectionDomain.java 	java/security/Provider.java 	java/security/ProviderException.java 	java/security/PublicKey.java 	java/security/SecureClassLoader.java 	java/security/SecureRandom.java 	java/security/SecureRandomSpi.java 	java/security/Security.java 	java/security/SecurityPermission.java 	java/security/Signature.java 	java/security/SignatureException.java 	java/security/SignatureSpi.java 	java/security/SignedObject.java 	java/security/Signer.java 	java/security/UnrecoverableKeyException.java 	java/security/UnresolvedPermission.java
 
 java_security_acl_SRCS =  	java/security/acl/Acl.java 	java/security/acl/AclEntry.java 	java/security/acl/AclNotFoundException.java 	java/security/acl/Group.java 	java/security/acl/LastOwnerException.java 	java/security/acl/NotOwnerException.java 	java/security/acl/Owner.java 	java/security/acl/Permission.java
@@ -226,6 +238,10 @@ java_util_mime_SRCS =  	java/util/mime/MimeType.java 	java/util/mime/MimeTypePar
 java_util_prefs_SRCS =  	java/util/prefs/AbstractPreferences.java 	java/util/prefs/BackingStoreException.java 	java/util/prefs/InvalidPreferencesFormatException.java 	java/util/prefs/NodeChangeEvent.java 	java/util/prefs/NodeChangeListener.java 	java/util/prefs/PreferenceChangeEvent.java 	java/util/prefs/PreferenceChangeListener.java 	java/util/prefs/Preferences.java 	java/util/prefs/PreferencesFactory.java
 
 java_util_zip_SRCS =  	java/util/zip/Adler32.java 	java/util/zip/CRC32.java 	java/util/zip/CheckedInputStream.java 	java/util/zip/CheckedOutputStream.java 	java/util/zip/Checksum.java 	java/util/zip/DataFormatException.java 	java/util/zip/Deflater.java 	java/util/zip/DeflaterOutputStream.java 	java/util/zip/GZIPInputStream.java 	java/util/zip/GZIPOutputStream.java 	java/util/zip/Inflater.java 	java/util/zip/InflaterInputStream.java 	java/util/zip/ZipConstants.java 	java/util/zip/ZipEntry.java 	java/util/zip/ZipException.java 	java/util/zip/ZipFile.java 	java/util/zip/ZipInputStream.java 	java/util/zip/ZipOutputStream.java
+
+javax_transaction_SRCS =  	javax/transaction/InvalidTransactionException.java 	javax/transaction/TransactionRequiredException.java 	javax/transaction/TransactionRolledbackException.java
+
+javax_transaction_xa_SRCS =  	javax/transaction/xa/XAException.java 	javax/transaction/xa/XAResource.java 	javax/transaction/xa/Xid.java
 
 kaffe_applet_SRCS =  	kaffe/applet/AppletTag.java 	kaffe/applet/AppletViewer.java 	kaffe/applet/AudioPlayer.java
 
@@ -255,6 +271,14 @@ kaffe_net_www_protocol_jar_SRCS =  	kaffe/net/www/protocol/jar/Handler.java 	kaf
 
 kaffe_net_www_protocol_system_SRCS =  	kaffe/net/www/protocol/system/Handler.java 	kaffe/net/www/protocol/system/SystemURLConnection.java
 
+kaffe_rmi_dgc_SRCS =  	kaffe/rmi/dgc/DGCImpl.java 	kaffe/rmi/dgc/DGCImpl_Skel.java 	kaffe/rmi/dgc/DGCImpl_Stub.java
+
+kaffe_rmi_registry_SRCS =  	kaffe/rmi/registry/RegistryImpl.java 	kaffe/rmi/registry/RegistryImpl_Skel.java 	kaffe/rmi/registry/RegistryImpl_Stub.java
+
+kaffe_rmi_rmic_SRCS =  	kaffe/rmi/rmic/RMIC.java 	kaffe/rmi/rmic/TabbedWriter.java
+
+kaffe_rmi_server_SRCS =  	kaffe/rmi/server/ProtocolConstants.java 	kaffe/rmi/server/RMIDefaultSocketFactory.java 	kaffe/rmi/server/RMIHashes.java 	kaffe/rmi/server/RMIObjectInputStream.java 	kaffe/rmi/server/RMIObjectOutputStream.java 	kaffe/rmi/server/UnicastConnection.java 	kaffe/rmi/server/UnicastConnectionManager.java 	kaffe/rmi/server/UnicastRef.java 	kaffe/rmi/server/UnicastRemoteCall.java 	kaffe/rmi/server/UnicastRemoteStub.java 	kaffe/rmi/server/UnicastServer.java 	kaffe/rmi/server/UnicastServerRef.java 
+
 kaffe_security_SRCS =  	kaffe/security/Engine.java
 
 kaffe_security_provider_SRCS =  	kaffe/security/provider/Kaffe.java 	kaffe/security/provider/MD2.java 	kaffe/security/provider/MD4.java 	kaffe/security/provider/MD5.java 	kaffe/security/provider/SHA.java 	kaffe/security/provider/SHA1PRNG.java 	kaffe/security/provider/UpdateDigest.java
@@ -264,6 +288,12 @@ kaffe_text_collator_SRCS =  	kaffe/text/collator/locale.java 	kaffe/text/collato
 kaffe_text_dateformat_SRCS =  	kaffe/text/dateformat/locale.java 	kaffe/text/dateformat/locale_en_US.java
 
 kaffe_text_numberformat_SRCS =  	kaffe/text/numberformat/locale.java 	kaffe/text/numberformat/locale_en_US.java
+
+kaffe_tools_compiler_SRCS =  	kaffe/tools/compiler/Compiler_default.java 	kaffe/tools/compiler/Compiler.java 	kaffe/tools/compiler/Compiler_jikes.java 	kaffe/tools/compiler/Compiler_kjc.java 	kaffe/tools/compiler/Compiler_pizza.java
+
+kaffe_tools_jar_SRCS =  	kaffe/tools/jar/Jar.java 	kaffe/tools/jar/XPFileInputStream.java 	kaffe/tools/jar/XPFile.java 	kaffe/tools/jar/XPFileOutputStream.java 	kaffe/tools/jar/XPFileReader.java 	kaffe/tools/jar/XPFileWriter.java
+
+kaffe_tools_serialver_SRCS =  	kaffe/tools/serialver/SerialVer.java
 
 kaffe_util_SRCS =  	kaffe/util/Assert.java 	kaffe/util/Base64.java 	kaffe/util/DateParser.java 	kaffe/util/DateScanner.java 	kaffe/util/Deprecated.java 	kaffe/util/DoubleLinkedObject.java 	kaffe/util/IdentityHashtable.java 	kaffe/util/IntegerHashtable.java 	kaffe/util/IntegerIntegerHashtable.java 	kaffe/util/LongHashtable.java 	kaffe/util/NotImplemented.java 	kaffe/util/NotImplementedReport.java 	kaffe/util/Ptr.java 	kaffe/util/SupportDisabled.java 	kaffe/util/Timer.java 	kaffe/util/TimerClient.java 	kaffe/util/UNIXTimeZone.java 	kaffe/util/UTF8.java 	kaffe/util/VectorSnapshot.java
 
@@ -281,7 +311,7 @@ java_awt_win32_SRCS =  	java/awt/win32/ActionEvt.java 	java/awt/win32/Button.jav
 serialized_converters =  	kaffe/io/ByteToChar8859_2.ser 	kaffe/io/ByteToChar8859_3.ser 	kaffe/io/ByteToChar8859_4.ser 	kaffe/io/ByteToChar8859_5.ser 	kaffe/io/ByteToChar8859_6.ser 	kaffe/io/ByteToChar8859_7.ser 	kaffe/io/ByteToChar8859_8.ser 	kaffe/io/ByteToChar8859_9.ser 	kaffe/io/ByteToCharASCII.ser 	kaffe/io/ByteToCharCP037.ser 	kaffe/io/ByteToCharCP1026.ser 	kaffe/io/ByteToCharCP1046.ser 	kaffe/io/ByteToCharCP1250.ser 	kaffe/io/ByteToCharCP1251.ser 	kaffe/io/ByteToCharCP1252.ser 	kaffe/io/ByteToCharCP1253.ser 	kaffe/io/ByteToCharCP1254.ser 	kaffe/io/ByteToCharCP1255.ser 	kaffe/io/ByteToCharCP1256.ser 	kaffe/io/ByteToCharCP1257.ser 	kaffe/io/ByteToCharCP1258.ser 	kaffe/io/ByteToCharCP850.ser 	kaffe/io/ByteToCharCP852.ser 	kaffe/io/ByteToCharCP855.ser 	kaffe/io/ByteToCharCP857.ser 	kaffe/io/ByteToCharCP860.ser 	kaffe/io/ByteToCharCP861.ser 	kaffe/io/ByteToCharCP862.ser 	kaffe/io/ByteToCharCP863.ser 	kaffe/io/ByteToCharCP864.ser 	kaffe/io/ByteToCharCP865.ser 	kaffe/io/ByteToCharCP866.ser 	kaffe/io/ByteToCharCP868.ser 	kaffe/io/ByteToCharCP869.ser 	kaffe/io/ByteToCharCP870.ser 	kaffe/io/ByteToCharCP871.ser 	kaffe/io/ByteToCharCP875.ser 	kaffe/io/ByteToCharCP918.ser 	kaffe/io/ByteToCharKOI8_R.ser 	kaffe/io/CharToByte8859_2.ser 	kaffe/io/CharToByte8859_3.ser 	kaffe/io/CharToByte8859_4.ser 	kaffe/io/CharToByte8859_5.ser 	kaffe/io/CharToByte8859_6.ser 	kaffe/io/CharToByte8859_7.ser 	kaffe/io/CharToByte8859_8.ser 	kaffe/io/CharToByte8859_9.ser 	kaffe/io/CharToByteASCII.ser 	kaffe/io/CharToByteCP037.ser 	kaffe/io/CharToByteCP1026.ser 	kaffe/io/CharToByteCP1046.ser 	kaffe/io/CharToByteCP1250.ser 	kaffe/io/CharToByteCP1251.ser 	kaffe/io/CharToByteCP1252.ser 	kaffe/io/CharToByteCP1253.ser 	kaffe/io/CharToByteCP1254.ser 	kaffe/io/CharToByteCP1255.ser 	kaffe/io/CharToByteCP1256.ser 	kaffe/io/CharToByteCP1257.ser 	kaffe/io/CharToByteCP1258.ser 	kaffe/io/CharToByteCP850.ser 	kaffe/io/CharToByteCP852.ser 	kaffe/io/CharToByteCP855.ser 	kaffe/io/CharToByteCP857.ser 	kaffe/io/CharToByteCP860.ser 	kaffe/io/CharToByteCP861.ser 	kaffe/io/CharToByteCP862.ser 	kaffe/io/CharToByteCP863.ser 	kaffe/io/CharToByteCP864.ser 	kaffe/io/CharToByteCP865.ser 	kaffe/io/CharToByteCP866.ser 	kaffe/io/CharToByteCP868.ser 	kaffe/io/CharToByteCP869.ser 	kaffe/io/CharToByteCP870.ser 	kaffe/io/CharToByteCP871.ser 	kaffe/io/CharToByteCP875.ser 	kaffe/io/CharToByteCP918.ser 	kaffe/io/CharToByteCP861.ser 	kaffe/io/CharToByteCP862.ser 	kaffe/io/CharToByteCP863.ser 	kaffe/io/CharToByteCP864.ser 	kaffe/io/CharToByteCP865.ser 	kaffe/io/CharToByteCP866.ser 	kaffe/io/CharToByteCP868.ser 	kaffe/io/CharToByteCP869.ser 	kaffe/io/CharToByteCP870.ser 	kaffe/io/CharToByteCP871.ser 	kaffe/io/CharToByteCP875.ser 	kaffe/io/CharToByteCP918.ser 	kaffe/io/CharToByteKOI8_R.ser
 
 
-EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) 	$(Awt_SRCS) $(Rest_SRCS)         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
+EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) 	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS)         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
 
 
 LIBDIR = lib
@@ -375,14 +405,17 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/io $(distdir)/java/lang \
 	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
 	   $(distdir)/java/math $(distdir)/java/net $(distdir)/java/nio \
-	   $(distdir)/java/security $(distdir)/java/security/acl \
-	   $(distdir)/java/security/cert \
+	   $(distdir)/java/rmi $(distdir)/java/rmi/activation \
+	   $(distdir)/java/rmi/dgc $(distdir)/java/rmi/registry \
+	   $(distdir)/java/rmi/server $(distdir)/java/security \
+	   $(distdir)/java/security/acl $(distdir)/java/security/cert \
 	   $(distdir)/java/security/interfaces \
 	   $(distdir)/java/security/spec $(distdir)/java/sql \
 	   $(distdir)/java/text $(distdir)/java/util \
 	   $(distdir)/java/util/jar $(distdir)/java/util/logging \
 	   $(distdir)/java/util/mime $(distdir)/java/util/prefs \
-	   $(distdir)/java/util/zip $(distdir)/kaffe/applet \
+	   $(distdir)/java/util/zip $(distdir)/javax/transaction \
+	   $(distdir)/javax/transaction/xa $(distdir)/kaffe/applet \
 	   $(distdir)/kaffe/awt $(distdir)/kaffe/beans/editors \
 	   $(distdir)/kaffe/io $(distdir)/kaffe/jar \
 	   $(distdir)/kaffe/lang $(distdir)/kaffe/management \
@@ -392,10 +425,14 @@ distdir: $(DISTFILES)
 	   $(distdir)/kaffe/net/www/protocol/http \
 	   $(distdir)/kaffe/net/www/protocol/jar \
 	   $(distdir)/kaffe/net/www/protocol/system \
+	   $(distdir)/kaffe/rmi/dgc $(distdir)/kaffe/rmi/registry \
+	   $(distdir)/kaffe/rmi/rmic $(distdir)/kaffe/rmi/server \
 	   $(distdir)/kaffe/security $(distdir)/kaffe/security/provider \
 	   $(distdir)/kaffe/text/collator \
 	   $(distdir)/kaffe/text/dateformat \
-	   $(distdir)/kaffe/text/numberformat $(distdir)/kaffe/util \
+	   $(distdir)/kaffe/text/numberformat \
+	   $(distdir)/kaffe/tools/compiler $(distdir)/kaffe/tools/jar \
+	   $(distdir)/kaffe/tools/serialver $(distdir)/kaffe/util \
 	   $(distdir)/kaffe/util/locale $(distdir)/kaffe/util/log \
 	   $(distdir)/kaffe/util/zip
 	@for file in $(DISTFILES); do \
@@ -480,12 +517,13 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 .PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
 	$(SHELL) $(rebuildLib) $(Awt_SRCS)
 	$(SHELL) $(rebuildLib) $(Rest_SRCS)
+	$(SHELL) $(rebuildLib) $(RMI_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist

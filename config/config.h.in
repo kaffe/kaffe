@@ -43,11 +43,11 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
-/* The number of bytes in a __int64.  */
-#undef SIZEOF___INT64
-
 /* The number of bytes in a int.  */
 #undef SIZEOF_INT
+
+/* The number of bytes in a __int64.  */
+#undef SIZEOF___INT64
 
 /* The number of bytes in a long.  */
 #undef SIZEOF_LONG
@@ -60,24 +60,6 @@
 
 /* The number of bytes in a void*.  */
 #undef SIZEOF_VOIDP
-
-/* Define if you have the MD2Init function.  */
-#undef HAVE_MD2INIT
-
-/* Define if you have the MD4Init function.  */
-#undef HAVE_MD4INIT
-
-/* Define if you have the MD5Init function.  */
-#undef HAVE_MD5INIT
-
-/* Define if you have the __get_eh_info function.  */
-#undef HAVE___GET_EH_INFO
-
-/* Define if you have the __terminate_func function.  */
-#undef HAVE___TERMINATE_FUNC
-
-/* Define if you have the __throw function.  */
-#undef HAVE___THROW
 
 /* Define if you have the alarm function.  */
 #undef HAVE_ALARM
@@ -127,6 +109,9 @@
 /* Define if you have the getcwd function.  */
 #undef HAVE_GETCWD
 
+/* Define if you have the __get_eh_info function.  */
+#undef HAVE___GET_EH_INFO
+
 /* Define if you have the getpagesize function.  */
 #undef HAVE_GETPAGESIZE
 
@@ -168,6 +153,15 @@
 
 /* Define if you have the mallopt function.  */
 #undef HAVE_MALLOPT
+
+/* Define if you have the MD2Init function.  */
+#undef HAVE_MD2INIT
+
+/* Define if you have the MD4Init function.  */
+#undef HAVE_MD4INIT
+
+/* Define if you have the MD5Init function.  */
+#undef HAVE_MD5INIT
 
 /* Define if you have the memalign function.  */
 #undef HAVE_MEMALIGN
@@ -241,6 +235,12 @@
 /* Define if you have the sync function.  */
 #undef HAVE_SYNC
 
+/* Define if you have the __terminate_func function.  */
+#undef HAVE___TERMINATE_FUNC
+
+/* Define if you have the __throw function.  */
+#undef HAVE___THROW
+
 /* Define if you have the time function.  */
 #undef HAVE_TIME
 
@@ -255,9 +255,6 @@
 
 /* Define if you have the waitpid function.  */
 #undef HAVE_WAITPID
-
-/* Define if you have the <X11/extensions/XShm.h> header file.  */
-#undef HAVE_X11_EXTENSIONS_XSHM_H
 
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
@@ -274,11 +271,11 @@
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
 
-/* Define if you have the <dl.h> header file.  */
-#undef HAVE_DL_H
-
 /* Define if you have the <dlfcn.h> header file.  */
 #undef HAVE_DLFCN_H
+
+/* Define if you have the <dl.h> header file.  */
+#undef HAVE_DL_H
 
 /* Define if you have the <fcntl.h> header file.  */
 #undef HAVE_FCNTL_H
@@ -418,14 +415,14 @@
 /* Define if you have the <wtypes.h> header file.  */
 #undef HAVE_WTYPES_H
 
+/* Define if you have the <X11/extensions/XShm.h> header file.  */
+#undef HAVE_X11_EXTENSIONS_XSHM_H
+
 /* Define if you have the <zlib.h> header file.  */
 #undef HAVE_ZLIB_H
 
 /* Define if you have the Csup library (-lCsup).  */
 #undef HAVE_LIBCSUP
-
-/* Define if you have the Xext library (-lXext).  */
-#undef HAVE_LIBXEXT
 
 /* Define if you have the ffi library (-lffi).  */
 #undef HAVE_LIBFFI
@@ -462,6 +459,9 @@
 
 /* Define if you have the ungif library (-lungif).  */
 #undef HAVE_LIBUNGIF
+
+/* Define if you have the Xext library (-lXext).  */
+#undef HAVE_LIBXEXT
 
 /* Define if you have the z library (-lz).  */
 #undef HAVE_LIBZ
