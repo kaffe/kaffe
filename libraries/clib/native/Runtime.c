@@ -66,7 +66,7 @@ java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this UNUSED)
 	jlong max = KGC_getHeapLimit(main_collector);
 
 	if (max <= 0) {
-		return 0x7fffffffffffffffL;
+		return 0x7fffffffffffffffLL;
 	}
 	else {
 		return max;

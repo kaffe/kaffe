@@ -1,3 +1,8 @@
+2004-12-16  Adam Heath  <doogieg@brainfood.com>
+
+	* libraries/clib/native/Runtime.c:
+	  Use LL suffix instead of just L for long long constant.
+
 2004-12-16  Michael Koch  <konqueror@gmx.de>
 
 	* libraries/javalib/javax/swing/JTable.java,
