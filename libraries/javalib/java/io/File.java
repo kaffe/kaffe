@@ -201,9 +201,12 @@ native private boolean mkdir0();
 
 public boolean mkdirs() {
 	if (!toString().equals(separator)) {
-		File parent = new File(getParent());
-		if (parent.mkdirs() == false) {
-			return (false);
+		String parentString = getParent();
+		if (parentString != null) {
+			File parent = new File(parentString);
+			if (parent.mkdirs() == false) {
+				return (false);
+			}
 		}
 	}
 	return (mkdir());

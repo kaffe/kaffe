@@ -1,3 +1,7 @@
+Thu Sep 24 11:30:20 1998  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/File.java: fix bug in mkdirs()
+
 Sat Sep 18 16:04:46 1998  Petter Reinholdtsen <pere@td.org.uit.no>
 
 	* libraries/javalib/java/lang/Byte.java: add missing shortValue()
