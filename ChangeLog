@@ -1,3 +1,8 @@
+Fri Feb  5 19:56:40 1999  Henk Blik <hjblik@dds.nl>
+
+	* libraries/javalib/java/awt/widgets/TextArea, RowCanvas:
+	various fixes.
+
 Fri Feb  5 19:33:33 1999  Stephen Crane  <jscrane@maths.tcd.ie>
 
 	* libraries/javalib/java/net/URLStreamHandler.java: fixed signature
