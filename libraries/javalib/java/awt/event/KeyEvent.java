@@ -1,6 +1,7 @@
 package java.awt.event;
 
 import java.awt.Component;
+import java.awt.Event;
 
 /**
  *
@@ -150,83 +151,12 @@ public KeyEvent ( Component src, int evtId, long time, int mods, int kCode, char
 	keyChar = kChar;
 }
 
-protected void dispatch () {
-	if ( keyTgt != null ) // do we have a focus window?
-		source = keyTgt;
-
-	if ( id == KEY_PRESSED ) {
-		accelHint = true;
-		processKeyEvent( this);
-		
-		if ( keyChar != 0 ) {          // printable key
-			id = KEY_TYPED;
-			keyCode = 0;
-			processKeyEvent( this);
-		}
-		else {                         // function key, update modifiers
-			switch ( keyCode ) {
-			case VK_SHIFT:        inputModifier |= SHIFT_MASK; break;
-			case VK_CONTROL:      inputModifier |= CTRL_MASK;  break;
-			case VK_ALT:          inputModifier |= ALT_MASK;   break;
-			case VK_META:         inputModifier |= META_MASK;
-			}
-		}
-	}
-	else if ( id == KEY_RELEASED ) {
-		accelHint = false;
-		processKeyEvent( this);
-	
-	 	if ( keyChar == 0 ) {
-			switch ( keyCode ) {
-			case VK_SHIFT:        inputModifier &= ~SHIFT_MASK; break;
-			case VK_CONTROL:      inputModifier &= ~CTRL_MASK;  break;
-			case VK_ALT:          inputModifier &= ~ALT_MASK;   break;
-			case VK_META:         inputModifier &= ~META_MASK;
-			}
-		}
-	}
-	
-	recycle();
-}
-
 public char getKeyChar() {
 	return keyChar;
 }
 
 public int getKeyCode() {
 	return keyCode;
-}
-
-static KeyEvent getKeyEvent ( int srcIdx, int id, int keyCode, int keyChar, int modifier ) {
-	Component source = sources[srcIdx];
-	long      when = System.currentTimeMillis();
-	
-	synchronized ( evtLock ) {
-		// Check for modifier keystrokes which have been "eaten" by the native window system.
-		// Unfortunately, this can happen if the window manager temporarily grabs the keyboard
-		// (e.g. fvwm2 during an initial window positioning)
-		if ( (modifier == 0) && (inputModifier != 0) )
-			inputModifier = 0;
-	
-		if ( keyEvtCache == null ) {
-			return new KeyEvent( source, id, when, inputModifier, keyCode, (char)keyChar);
-		}
-		else {
-			KeyEvent e = keyEvtCache;
-			keyEvtCache = (KeyEvent) e.next;
-			e.next = null;
-	
-			e.id         = id;
-			e.source     = source;
-			e.when       = when;
-			e.modifiers  = inputModifier;
-			e.keyCode    = keyCode;
-			e.keyChar    = (char)keyChar;
-			e.consumed	 = false;
-	
-			return e;
-		}
-	}
 }
 
 public static String getKeyModifiersText ( int modifiers ) {
@@ -329,6 +259,20 @@ public static String getKeyText ( int keyCode ) {
 	return "Unknown keyCode: 0x" + Integer.toString(keyCode, 16);
 }
 
+protected Event initOldEvent ( Event e ) {
+	if ( keyChar == 0 )
+		return null;
+
+	e.target = source;
+	e.id = id;
+	
+	e.when = when;
+	e.modifiers = modifiers;
+	e.key = keyChar;
+	
+	return e;
+}
+
 public boolean isActionKey () {
 	int kc = keyCode;
 
@@ -371,15 +315,6 @@ public String paramString () {
 	}
 	
 	return s;
-}
-
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = keyEvtCache;	
-		keyEvtCache = this;
-	}
 }
 
 public void setKeyChar ( char kChar ) {

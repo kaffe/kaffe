@@ -15,6 +15,8 @@ typedef struct Classjava_net_PlainSocketImpl {
   struct Hjava_net_InetAddress* address;
   jint port;
   jint localport;
+  struct Hjava_io_InputStream* in;
+  struct Hjava_io_OutputStream* out;
 } Classjava_net_PlainSocketImpl;
 HandleTo(java_net_PlainSocketImpl);
 

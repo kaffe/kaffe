@@ -41,14 +41,9 @@ LLIB=		$(LIBNAME)$(LIBEXT)
 WRAPPER_CMD=	"s%^\([Jj]ava_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
 
 OBJECT.IO=\
-		FileDescriptor$(OBJEXT) \
-		FileInputStream$(OBJEXT) \
-		FileOutputStream$(OBJEXT) \
-		File$(OBJEXT) \
 		ObjectInputStream$(OBJEXT) \
 		ObjectOutputStream$(OBJEXT) \
-		ObjectStreamClass$(OBJEXT) \
-		RandomAccessFile$(OBJEXT)
+		ObjectStreamClass$(OBJEXT)
 
 OBJECT.LANG=\
 		ClassLoader$(OBJEXT) \

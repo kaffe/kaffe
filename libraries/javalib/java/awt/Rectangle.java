@@ -104,7 +104,7 @@ public boolean contains ( Point p ) {
 }
 
 public boolean contains ( int x, int y ) {
-	return (this.x <= x) && ((this.x+width) >= x) && (this.y <= y) && ((this.y+height) >= y);
+	return (inside(x, y));
 }
 
 public boolean equals ( Object obj ) {
@@ -144,26 +144,24 @@ public int hashCode () {
  * @deprecated (use contains() )
  */
 public boolean inside ( int x, int y ) {
-	return contains( x, y);
+	return (this.x <= x) && ((this.x+width) >= x) && (this.y <= y) && ((this.y+height) >= y);
 }
 
 public Rectangle intersection ( Rectangle r ) {
-	int xw, yh, rxw, ryh, u, v, w, h;
-
-	xw  = x + width;
-	yh  = y + height;
-	rxw = r.x + r.width;
-	ryh = r.y + r.height;
+	int xw  = x + width;
+	int yh  = y + height;
+	int rxw = r.x + r.width;
+	int ryh = r.y + r.height;
 
 	if ( (x > rxw) || (y > ryh) || (xw < r.x) || (yh < r.y) ) { // no intersection
 		return new Rectangle();
 	}
 	else {
-		u = (x > r.x) ? x : r.x;
-		v = (y > r.y) ? y : r.y;
+		int u = (x > r.x) ? x : r.x;
+		int v = (y > r.y) ? y : r.y;
 	
-		w = ((xw < rxw) ? xw : rxw) - u;
-		h = ((yh < ryh) ? yh : ryh) - v;
+		int w = ((xw < rxw) ? xw : rxw) - u;
+		int h = ((yh < ryh) ? yh : ryh) - v;
 
 		return new Rectangle( u, v, w, h);
 	}
@@ -187,37 +185,35 @@ public boolean isEmpty () {
  * @deprecated ( use setLocation() )
  */
 public void move ( int xNew, int yNew ) {
-	setLocation( xNew, yNew);
+	x = xNew;
+	y = yNew;
 }
 
 /**
  * @deprecated (use setBounds() )
  */
 public void reshape ( int x, int y, int width, int height ) {
-	setBounds( x, y, width, height);
+	this.x      = x;
+	this.y      = y;
+
+	this.width  = width;
+	this.height = height;
 }
 
 /**
  * @deprecated (use setSize() )
  */
 public void resize ( int width, int height ) {
-	setSize( width, height);
+	this.width  = width;
+	this.height = height;
 }
 
 public void setBounds ( Rectangle r ) {
-	x      = r.x;
-	y      = r.y;
-
-	width  = r.width;
-	height = r.height;
+	setBounds(r.x, r.y, r.width, r.height);
 }
 
 public void setBounds ( int x, int y, int width, int height ) {
-	this.x      = x;
-	this.y      = y;
-
-	this.width  = width;
-	this.height = height;
+	reshape(x, y, width, height);
 }
 
 public void setLocation ( Point pt ) {
@@ -226,18 +222,15 @@ public void setLocation ( Point pt ) {
 }
 
 public void setLocation ( int xNew, int yNew ) {
-	x = xNew;
-	y = yNew;
+	move (xNew, yNew);
 }
 
 public void setSize ( Dimension d ) {
-	width  = d.width;
-	height = d.height;
+	setSize(d.width, d.height);
 }
 
 public void setSize ( int width, int height ) {
-	this.width  = width;
-	this.height = height;
+	resize(width, height);
 }
 
 public String toString() {

@@ -13,9 +13,6 @@ package java.awt;
  */
 public class Cursor
 {
-	int type;
-	protected static Cursor[] predefined = new Cursor[14];
-	static Cursor defaultCursor;
 	final public static int DEFAULT_CURSOR = 0;
 	final public static int CROSSHAIR_CURSOR = 1;
 	final public static int TEXT_CURSOR = 2;
@@ -30,6 +27,10 @@ public class Cursor
 	final public static int E_RESIZE_CURSOR = 11;
 	final public static int HAND_CURSOR = 12;
 	final public static int MOVE_CURSOR = 13;
+
+	int type;
+	protected static Cursor[] predefined = new Cursor[14];
+	static Cursor defaultCursor;
 
 static {
 	defaultCursor = predefined[DEFAULT_CURSOR] = new Cursor( DEFAULT_CURSOR);

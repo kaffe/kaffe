@@ -33,9 +33,17 @@ public Timer () {
 	start();
 }
 
-public synchronized void addClient ( TimerClient tc, int startWait, int interval ) {
+public synchronized boolean addClient ( TimerClient tc, int startWait, int interval ) {
 	TimerClientEntry tce;
 	int i;
+
+	// we allow just a single instance of a client
+	// (otherwise we would need client ids to distinguish
+	// notifications and removes)
+	for ( i=0; i<nClients; i++ ){
+		if ( clients[i].client == tc )
+			return false;
+	}
 
 	if ( nClients == clients.length ){
 		TimerClientEntry[] newClients = new TimerClientEntry[clients.length+10];
@@ -50,16 +58,18 @@ public synchronized void addClient ( TimerClient tc, int startWait, int interval
 	tce.nextNotify = System.currentTimeMillis() + startWait;
 	tce.interval = interval;
 
-	if ( nClients == 1 ) {
-		notify();
-	}
-
 	// If interval is smaller than current resolution, drop current
 	// resolution and wake the timer thread.
 	if (interval < resolution) {
 		resolution = interval;
 		interrupt();
 	}
+
+	if ( nClients == 1 ) {
+		notify();
+	}
+	
+	return true;
 }
 
 public static Timer getDefaultTimer () {
@@ -70,29 +80,41 @@ public static Timer getDefaultTimer () {
 	return defaultTimer;
 }
 
-public synchronized void removeClient ( TimerClient tc ) {
-
-	int newres = Integer.MAX_VALUE;
+public synchronized boolean removeClient ( TimerClient tc ) {
+	int newres;
 
 	for (int i=0; i < nClients; i++ ) {
 		TimerClientEntry tce = clients[i];
-		if (tce.interval < newres) {
-			newres = tce.interval;
-		}
+
 		if ( tce.client == tc ) {
-			tce.client = null;
 			int i1 = i+1;
-			nClients--;
-			if (i1 < nClients) {
-				System.arraycopy( clients, i1, clients, i, (nClients-i));
-				clients[nClients] = tce;
+			int nmax = nClients-1;
+
+			tce.client = null;  // don't leak
+			
+			if (i1 < nmax)
+				System.arraycopy( clients, i1, clients, i, (nmax-i));
+			clients[--nClients] = tce;
+			
+			// adapt the timer resolution to the lowest remaining interval
+			if ( resolution == tce.interval ) {
+				for ( i=0, newres=Integer.MAX_VALUE; i<nClients; i++ ){
+					if ( clients[i].interval < newres )
+						newres = clients[i].interval;
+				}
+				// No need to interrupt, this just increases the interval
+				// and takes effect after the next tick automatically.
+				// in case it was the last entry, we go to wait, anyway
+				// (but NOT here, we might be in a different thread)
+				if ( newres != resolution )
+					resolution = newres;
 			}
-			break;
+
+			return true;
 		}
 	}
-
-	// Reset the resultion - takes effect after next timer tick
-	resolution = newres;
+	
+	return false;
 }
 
 public void run () {
@@ -115,12 +137,14 @@ public void run () {
 						}
 					}
 				}
-				try {
+
+				if ( nClients > 0 ){ // otherwise we go waiting, anyway
 					Thread.sleep(resolution);
 				}
-				catch (InterruptedException _) {
-				}
 			}
+		}
+		catch ( InterruptedException _ ) {
+			// deliberately tolerated
 		}
 		catch ( Exception x ) {
 			x.printStackTrace();

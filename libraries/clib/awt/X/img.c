@@ -9,7 +9,6 @@
  */
 
 
-#include "config.h"
 #include "toolkit.h"
 
 
@@ -136,12 +135,15 @@ countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
   for ( i=0; i<img->height; i++ ) {
 	for ( j=0; j<img->width; j++ ) {
 	  a = GetAlpha( img->alpha, j, i);
-	  if ( a == 0 )
+	  if ( a == 0 ) {
 		(*noAlpha)++;
-	  else if ( a == 0xff )
+	  }
+	  else if ( a == 0xff ) {
 		(*fullAlpha)++;
-	  else
+	  }
+	  else {
 		(*partAlpha)++;
+	  }
 	}
   }
 }
@@ -208,7 +210,7 @@ long
 getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
-  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b;
+  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b, a;
   int            xi = (dx) ? x+1 : x;
   int            yi = (dy) ? y+1 : y;
 
@@ -310,7 +312,6 @@ Java_java_awt_Toolkit_imgCreateScreenImage ( JNIEnv* env, jclass clazz, jint wid
   int    depth = DefaultDepth(  X->dsp, DefaultScreen( X->dsp));
 
   img->pix  = XCreatePixmap( X->dsp, X->root, width, height, depth);
-
   return img;
 }
 
@@ -323,25 +324,27 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jarray clrMap, jarray idxPels, jint trans,
 									  jint off, jint scan)
 {
-  register int    row, col;
+  register        row, col;
   unsigned long   pix;
   jint            rgb;
   jboolean        isCopy;
   jint            *clr = (*env)->GetIntArrayElements( env, clrMap, &isCopy);
   jbyte           *pel = (*env)->GetByteArrayElements( env, idxPels, &isCopy);
-  jbyte           *idx = pel + off;
+  unsigned char   *idx = (unsigned char*)(pel + off);
   int             maxCol = x + w;
   int             maxRow = y + h;
+  unsigned char   curPel;
 
   if ( (trans >= 0) && !img->xMask )
 	img->xMask = createXMaskImage( X, img->width, img->height);
 
   for ( row = y; row < maxRow; row++) {
-    for ( col = x; col < maxCol; col++, idx++) {
-      rgb = clr[(int)*idx];
+    for ( col = x; col < maxCol; col++) {
+      curPel = idx[col + row * scan];
+      rgb = clr[curPel];
       pix = pixelValue( X, rgb);
       if ( trans >= 0 ) {
-		if ( *idx == trans ){
+		if ( curPel == trans ){
 		  pix = 0;
 		  XPutPixel( img->xMask, col, row, 0);
 		}
@@ -361,18 +364,20 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jint x, jint y, jint w, jint h,
 									  jarray rgbPels, jint off, jint scan)
 {
-  register int    row, col;
+  register        row, col;
   unsigned long   pix;
   jboolean        isCopy;
   jint            *rgbs = (*env)->GetIntArrayElements( env, rgbPels, &isCopy);
   jint            *rgb = rgbs + off;
   int             maxCol = x + w;
   int             maxRow = y + h;
+  jint		  val;
 
   for ( row = y; row < maxRow; row++) {
-    for ( col = x; col < maxCol; col++, rgb++) {
-	  if ( *rgb & 0xff000000 ) {
-		pix = pixelValue( X, *rgb);
+    for ( col = x; col < maxCol; col++) {
+	  val = rgb[col + row * scan];
+	  if ( val & 0xff000000 ) {
+		pix = pixelValue( X, val);
 		XPutPixel( img->xImg, col, row, pix);
 	  }
 	  else {
@@ -455,8 +460,7 @@ Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
 
 
 void
-Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz,
-										jobject producer, Image* img )
+Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject producer, Image* img )
 {
   int       i, j;
   int       r, g, b;
@@ -465,47 +469,40 @@ Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz,
   jclass    prodClazz  = (*env)->GetObjectClass( env, producer);
   jclass    modelClazz = (*env)->FindClass( env, "java/awt/image/ColorModel");
 
-  jmethodID modelCtor = (*env)->GetStaticMethodID( env, modelClazz, "getRGBdefault",
-												   "()Ljava/awt/image/ColorModel;");
+  jmethodID modelCtor = (*env)->GetStaticMethodID( env, modelClazz, "getRGBdefault", "()Ljava/awt/image/ColorModel;");
   jmethodID setDim    = (*env)->GetMethodID( env, prodClazz, "setDimensions", "(II)V");
-  jmethodID setCM     = (*env)->GetMethodID( env, prodClazz, "setColorModel",
-											 "(Ljava/awt/image/ColorModel;)V");
+  jmethodID setCM     = (*env)->GetMethodID( env, prodClazz, "setColorModel", "(Ljava/awt/image/ColorModel;)V");
   jmethodID setHints  = (*env)->GetMethodID( env, prodClazz, "setHints", "(I)V");
-  jmethodID setPix    = (*env)->GetMethodID( env, prodClazz, "setPixels",
-											 "(IIIILjava/awt/image/ColorModel;[III)V");
+  jmethodID setPix    = (*env)->GetMethodID( env, prodClazz, "setPixels", "(IIIILjava/awt/image/ColorModel;[III)V");
   jmethodID imgCompl  = (*env)->GetMethodID( env, prodClazz, "imageComplete", "(I)V");
 
   jobject   model     = (*env)->CallStaticObjectMethod( env, modelClazz, modelCtor);
 
-  jarray    scanLine  = (*env)->NewIntArray( env, img->width);
-  jint*     pels = (*env)->GetIntArrayElements( env, scanLine, &isCopy);
+  jarray    allLines  = (*env)->NewIntArray( env, img->width * img->height);
+  jint*     pels = (*env)->GetIntArrayElements( env, allLines, &isCopy);
 
   (*env)->CallVoidMethod( env, producer, setDim, img->width, img->height);
   (*env)->CallVoidMethod( env, producer, setCM, model);
   (*env)->CallVoidMethod( env, producer, setHints, 6); /* TOPDOWNLEFTRIGHT | COMPLETESCANLINES */
 
-  for ( j=0; j<img->height; j++ ){
+  for ( j=0; j<img->height; j++ ) {
 	for ( i=0; i<img->width; i++ ) {
 	  if ( (img->xMask == 0) || XGetPixel( img->xMask, i, j) ) {
 		pix = XGetPixel( img->xImg, i, j);
 		rgbValues( X, pix, &r, &g, &b);
-		pels[i] = (0xff000000 | (r << 16) | (g << 8) | b);
+		pels[j*img->width+i] = (0xff000000 | (r << 16) | (g << 8) | b);
 	  }
 	  else {
-		pels[i] = 0;
+		pels[j*img->width+i] = 0;
 	  }
 	}
-
-	if ( isCopy )
-	  (*env)->ReleaseIntArrayElements( env, scanLine, pels, JNI_COMMIT);
-	(*env)->CallVoidMethod( env, producer, setPix,
-						0, j, img->width, 1, model, scanLine, 0, img->width);
+  }
+  if ( isCopy ) {
+    (*env)->ReleaseIntArrayElements( env, allLines, pels, JNI_COMMIT);
   }
 
+  (*env)->CallVoidMethod( env, producer, setPix, 0, 0, img->width, img->height, model, allLines, 0, img->width);
   (*env)->CallVoidMethod( env, producer, imgCompl, 3); /* 3 = STATICIMAGEDONE */
-
-  if ( isCopy )
-	(*env)->ReleaseIntArrayElements( env, scanLine, pels, JNI_ABORT);
 }
 
 

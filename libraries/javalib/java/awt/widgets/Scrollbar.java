@@ -21,6 +21,8 @@ public class Scrollbar
   extends Component
   implements Adjustable, MouseListener, MouseMotionListener, TimerClient
 {
+	final public static int HORIZONTAL = 0;
+	final public static int VERTICAL = 1;
 	int min;
 	int max;
 	int vis;
@@ -34,8 +36,6 @@ public class Scrollbar
 	Rectangle dragRect = new Rectangle();
 	static int currentOp;
 	static Point dragOffs = new Point();
-	final public static int HORIZONTAL = 0;
-	final public static int VERTICAL = 1;
 	static int SCROLLBAR_WIDTH = 14;
 
 public Scrollbar() {
@@ -61,7 +61,11 @@ public synchronized void addAdjustmentListener( AdjustmentListener al) {
 }
 
 public int getBlockIncrement() {
-	return blockInc;
+	return (getPageIncrement());
+}
+
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
 int getCurrentOp ( int x, int y) {
@@ -93,6 +97,13 @@ int getCurrentOp ( int x, int y) {
 	return 0;
 }
 
+/**
+ * @deprecated
+ */
+public int getLineIncrement() {
+	return unitInc;
+}
+
 public int getMaximum() {
 	return max;
 }
@@ -105,23 +116,30 @@ public int getOrientation() {
 	return ori;
 }
 
-public Dimension getPreferredSize() {
-	if ( ori == VERTICAL )
-		return new Dimension( SCROLLBAR_WIDTH, 100);
-	else
-		return new Dimension( 100, SCROLLBAR_WIDTH);
+/**
+ * @deprecated
+ */
+public int getPageIncrement() {
+	return blockInc;
 }
 
 public int getUnitIncrement() {
-	return unitInc;
+	return (getLineIncrement());
 }
 
 public int getValue() {
 	return val;
 }
 
-public int getVisibleAmount() {
+/**
+ * @deprecated
+ */
+public int getVisible() {
 	return vis;
+}
+
+public int getVisibleAmount() {
+	return (getVisible());
 }
 
 public boolean isFocusTraversable() {
@@ -145,7 +163,7 @@ public void mouseClicked( MouseEvent e) {
 }
 
 public void mouseDragged( MouseEvent e) {
-	if ( currentOp != AdjustmentEvent.TRACK )
+	if ( (currentOp != AdjustmentEvent.TRACK) || (dragGr == null) )
 		return;
 
 	int dx, dy;
@@ -271,7 +289,7 @@ public void mousePressed( MouseEvent e) {
 		case AdjustmentEvent.UNIT_DECREMENT:
 		case AdjustmentEvent.UNIT_INCREMENT:
 			timerExpired( null);
-			Timer.getDefaultTimer().addClient( this, 300, 100);
+			Timer.getDefaultTimer().addClient( this, 300, 50);
 			break;
 		default:
 	}
@@ -296,9 +314,9 @@ public void mouseReleased( MouseEvent e) {
 }
 
 void notifyAdjust() {
-	if ( hasToNotify( AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ) {
-		AdjustmentEvent ae = AWTEvent.getAdjustmentEvent( this, 0);
-		ae.setAdjustmentEvent( currentOp, val);
+	if ( hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) || oldEvents ) {
+		AdjustmentEvt ae = AdjustmentEvt.getEvent( this, AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED,
+		                                           currentOp, val);
 		Toolkit.eventQueue.postEvent( ae);
 	}
 }
@@ -318,8 +336,9 @@ public void paint ( Graphics g ) {
 		y = height/2 -1;
 		xw = slRect.x + slRect.width;
 	
-		if ( slRect.x > 0 )
+		if ( slRect.x > 0 ) {
 			g.draw3DRect( 0, y, slRect.x, 1, true);
+		}
 		if ( xw < width ) {
 			x = xw -1;
 			g.draw3DRect( x, y, width-x-1, 1, true);
@@ -337,23 +356,33 @@ public void paint ( Graphics g ) {
 		}
 	}
 
-	if ( slRect.width > 0)
+	if ( slRect.width > 0) {
 		g.fill3DRect( slRect.x, slRect.y, slRect.width, slRect.height, true);
+	}
 }
 
 protected String paramString() {
 	return super.paramString() + ",Value: " + val + ",Visible: " + vis + ",Min: " + min + ",Max: " + max; 
 }
 
-protected void processAdjustmentEvent ( AdjustmentEvent e) {
-	aListener.adjustmentValueChanged( e);
+/**
+ * @deprecated
+ */
+public Dimension preferredSize() {
+	if ( ori == VERTICAL ) {
+		return new Dimension( SCROLLBAR_WIDTH, 100);
+	}
+	else {
+		return new Dimension( 100, SCROLLBAR_WIDTH);
+	}
 }
 
-protected void processEvent ( AWTEvent e) {
-	if ( e instanceof AdjustmentEvent)
-		processAdjustmentEvent( (AdjustmentEvent) e);
-	else
-		super.processEvent( e);
+protected void processAdjustmentEvent ( AdjustmentEvent e) {
+	if (  hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ) {
+		aListener.adjustmentValueChanged( e);
+	}
+
+	if ( oldEvents ) postEvent( Event.getEvent( e));
 }
 
 public synchronized void removeAdjustmentListener( AdjustmentListener al) {
@@ -361,12 +390,19 @@ public synchronized void removeAdjustmentListener( AdjustmentListener al) {
 }
 
 public synchronized void setBlockIncrement( int inc) {
-	setValues( val, inc, min, max);
+	setPageIncremental(inc);
 }
 
 public void setBounds( int x, int y, int width, int height) {
 	super.setBounds( x, y, width, height);
 	updateSliderRect();
+}
+
+/**
+ * @deprecated
+ */
+public void setLineIncrement(int inc) {
+	unitInc = inc;
 }
 
 public synchronized void setMaximum( int max) {
@@ -383,13 +419,21 @@ public synchronized void setOrientation( int ori) throws IllegalArgumentExceptio
 	this.ori = ori;
 }
 
-public synchronized void setUnitIncrement( int inc) {
-	unitInc = inc;
+/**
+ * @deprecated
+ */
+public void setPageIncremental(int inc) {
+	setValues( val, inc, min, max);
+}
+
+public void setUnitIncrement( int inc) {
+	setLineIncrement(inc);
 }
 
 public synchronized void setValue( int value) {
-	if ( val != value)
+	if ( val != value) {
 		setValues( value, vis, min, max);
+	}
 }
 
 public synchronized void setValues( int value, int visible, int min, int max) {
@@ -454,11 +498,11 @@ public void timerExpired( Timer t) {
 }
 
 void update() {
-	Graphics g;
+	Graphics g = null;
 	
 	if ( dragGr != null )
 		g = dragGr;
-	else
+	else if ( isVisible )
 		g = getGraphics();
 	
 	if ( g != null ){
@@ -468,10 +512,13 @@ void update() {
 		updateSliderRect();
 		
 		paint( g);	
-		if ( g != dragGr ) g.dispose();
+		if ( g != dragGr ) {
+			g.dispose();
+		}
 	}
-	else
+	else {
 		updateSliderRect();
+	}
 }
 
 void updateSliderRect () {
@@ -495,7 +542,7 @@ void updateSliderRect () {
 	else {
 		//total amount is max - min + vis, for contents cannot be scrolled out
 		int dy = Math.max( vis * height / (delta + vis), 10);
-		int y0 = (val - min) * ( height - dy ) / delta;
+		int y0 = (val - min) * ( height - dy ) / delta;	
 		if ( y0 >= 0 )
 			slRect.setBounds( 2, y0, width-4, dy);
 		else

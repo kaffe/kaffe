@@ -8,8 +8,8 @@
  * of this file.
  */
 
+package java.applet;
 
-package java.applet; 
 import java.net.URL;
 import java.awt.Image;
 import java.util.Enumeration;

@@ -110,7 +110,7 @@ public class GregorianCalendar extends Calendar {
 	long rawoffset = getTimeZone().getRawOffset();
 	computeFields(this.time + rawoffset);
 
-	long offset = getTimeZone().getOffset(fields[ERA], fields[YEAR], fields[MONTH], fields[DATE], fields[DAY_OF_WEEK], fields[MILLISECOND]);
+	long offset = getTimeZone().getOffset(fields[ERA], fields[YEAR], fields[MONTH], fields[DAY_OF_MONTH], fields[DAY_OF_WEEK], fields[MILLISECOND]);
 
 	// If we're in daylight saving, recompute based on this time
 	if (offset != rawoffset) {
@@ -122,7 +122,8 @@ public class GregorianCalendar extends Calendar {
 
   protected void computeTime()
   {
-	time = computeDateTime();
+	long offset = getTimeZone().getOffset(fields[ERA], fields[YEAR], fields[MONTH], fields[DAY_OF_MONTH], fields[DAY_OF_WEEK], fields[MILLISECOND]);
+	time = computeDateTime() - offset;
 	isTimeSet = true;
   }
 
@@ -203,7 +204,7 @@ public class GregorianCalendar extends Calendar {
       return (1);
     case WEEK_OF_MONTH:
       return (1);
-    case DATE: // DAY_OF_MONTH:
+    case DAY_OF_MONTH: // DATE
       return (1);
     case DAY_OF_YEAR:
       return (1);
@@ -243,7 +244,7 @@ public class GregorianCalendar extends Calendar {
       return (52);
     case WEEK_OF_MONTH:
       return (5);
-    case DATE: // DAY_OF_MONTH
+    case DAY_OF_MONTH: // DATE
       return (31);
     case DAY_OF_YEAR:
       return (366);
@@ -279,7 +280,7 @@ public class GregorianCalendar extends Calendar {
   public int getLeastMaximum(int field)
   {
     switch (field) {
-    case DATE: // DAY_OF_MONTH
+    case DAY_OF_MONTH: // DATE
       return (28);
     default:
       return (getMaximum(field));
@@ -353,7 +354,6 @@ public class GregorianCalendar extends Calendar {
 	}
 	set(Calendar.YEAR, years);
 	set(Calendar.MONTH, months);
-	set(Calendar.DATE, 1+(int)days);
 	set(Calendar.DAY_OF_MONTH, 1+(int)days);
 	set(Calendar.DAY_OF_YEAR, yday);
 	set(Calendar.DAY_OF_WEEK, wday + Calendar.SUNDAY);
@@ -386,9 +386,11 @@ public class GregorianCalendar extends Calendar {
   private long computeDateTime()
   {
 	long time = 0L;
+	int end;
 
 	if (isSet[YEAR]) {
-		for (int year = fields[YEAR]; year >= EPOCH_YEAR; year--) {
+		end = fields[YEAR];
+		for (int year = EPOCH_YEAR; year < end; year++) {
 			if (isLeapYear(year)) {
 				time += 366;
 			}
@@ -398,7 +400,8 @@ public class GregorianCalendar extends Calendar {
 		}
 
 		if (isSet[MONTH]) {
-			for (int month = fields[MONTH]; month >= 0; month--) {
+			end = fields[MONTH];
+			for (int month = Calendar.JANUARY; month < end; month++) {
 				switch (month) {
 				case Calendar.JANUARY:
 				case Calendar.MARCH:
@@ -428,7 +431,7 @@ public class GregorianCalendar extends Calendar {
 			}
 
 			if (isSet[DAY_OF_MONTH]) {
-				time += fields[DAY_OF_MONTH];
+				time += fields[DAY_OF_MONTH] - 1;
 			}
 			else if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK]) {
 				throw new NotImplemented();
@@ -443,6 +446,9 @@ public class GregorianCalendar extends Calendar {
 		else if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR]) {
 			throw new NotImplemented();
 		}
+	}
+	else {
+		throw new NotImplemented();
 	}
 	time *= 24;
 
@@ -463,7 +469,7 @@ public class GregorianCalendar extends Calendar {
 	time *= 60;
 
 	if (isSet[SECOND]) {
-		time += fields[MINUTE];
+		time += fields[SECOND];
 	}
 	time *= 1000;
 

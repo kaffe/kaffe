@@ -6,12 +6,12 @@ import java.applet.AppletStub;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Label;
-import java.awt.Font;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.Panel;
@@ -53,17 +53,16 @@ public class AppletViewer
 	String archive = "";
 	String code;
 	Hashtable paramDict = new Hashtable();
-	Panel client = new Panel();
 	Label state = new Label();
 	Dimension appletSize = new Dimension( 200, 200);
 
 public AppletViewer ( File html) {
 	super( "AppletViewer: " + html);
 	
-	setLayout( null);
+	setLayout( null );
 	setMenus();
 	state.setFont(new Font("SansSerif", Font.BOLD, 12));
-	add( "South", state);
+	add( state);
 	addWindowListener(this);
 
 	try {
@@ -73,6 +72,7 @@ public AppletViewer ( File html) {
 
 		st.lowerCaseMode( true);
 		st.ordinaryChar('/');
+		st.ordinaryChar('\'');
 
 		while ( (ttype = st.nextToken()) != st.TT_EOF ) {
 			if ( ttype == '<' ){
@@ -104,33 +104,35 @@ public AppletViewer ( File html) {
 
 		add( app);
 
-		appletResize( appletSize.width, appletSize.height);
 		addNotify(); // a hack, in case the applet creates Graphics during init (no joke)
+		appletResize( appletSize.width, appletSize.height);
 
 		app.init();
 		app.validate();
-		
 		app.start();
 
 		setVisible( true);		
-		showStatus( "applet started");
+		showStatus( "Applet started");
 	}
 	catch ( Exception e) {
 		e.printStackTrace();
 		showStatus( "cannot start applet");
-		e.printStackTrace();
 	}
 }
 
 public void actionPerformed ( ActionEvent e ) {
 	String cmd = e.getActionCommand();
 	if ( "Quit".equals( cmd)) {
-		app.stop();
-		app.destroy();
+		if (app != null) {
+			app.stop();
+			app.destroy();
+		}
 		dispose();
 	}
 	else if ( "Stop".equals( cmd)) {
-		app.stop();
+		if (app != null) {
+			app.stop();
+		}
 		showStatus( "applet stopped");
 	}
 	else if ( "Start".equals( cmd)) {
@@ -140,26 +142,24 @@ public void actionPerformed ( ActionEvent e ) {
 }
 
 public void appletResize ( int width, int height ) {
-	Insets in = getInsets();
-	int w, h;
-	
-	w = width + in.left + in.right + 20;
-	h = height + in.top + in.bottom + getStateHeight() + 40;
-
 	appletSize.setSize( width, height);
-
-	setBounds( 100, 100, w, h);
+	
+	Insets in = getInsets();
+	int h = height + in.top + in.bottom;
+	int w = width + in.left + in.right;
+	
+	setSize( w, h);
 }
 
 public void doLayout () {
-	Insets     in = getInsets();
-	Dimension  d = getSize();
-	int        sh = getStateHeight();
+	Insets in = getInsets();
+	Dimension s = getSize();
+	Dimension d = state.getPreferredSize();
+	int cw = s.width - in.left - in.right;
 	
 	super.doLayout();
-	app.setBounds( in.left + 10, in.top + 10, appletSize.width, appletSize.height);
-	
-	state.setBounds( in.left, d.height - in.bottom - sh, d.width - (in.left+in.right), sh);
+	app.setBounds( in.left, in.top, cw, s.height - in.top - in.bottom - d.height); 
+	state.setBounds( in.left, s.height - in.bottom - d.height, cw, d.height );
 }
 
 public Applet getApplet ( String name) {
@@ -175,7 +175,7 @@ public Enumeration getApplets () {
 }
 
 public AudioClip getAudioClip ( URL url) {
-	return null;
+	return new AudioPlayer( url);
 }
 
 public URL getCodeBase () {
@@ -203,7 +203,7 @@ public String getParameter ( String name) {
 }
 
 private int getStateHeight() {
-        return 2 * state.getFontMetrics( state.getFont()).getHeight();
+	return 2 * state.getFontMetrics( state.getFont()).getHeight();
 }
 
 public boolean isActive () {
@@ -225,6 +225,9 @@ public static void main ( String[] args) {
 void parseApplet( StreamTokenizer st ) throws IOException {
 
 	while ( st.nextToken() != '>' ) {
+		if (st.sval == null) {
+			continue;
+		}
 		switch (st.ttype) {
 		case StreamTokenizer.TT_WORD:
 			if ( st.sval.equals("codebase") ) {
@@ -254,12 +257,22 @@ void parseApplet( StreamTokenizer st ) throws IOException {
 			else if ( st.sval.equals( "height") ) {
 				st.nextToken();
 				st.nextToken();
-				appletSize.height = (int)st.nval;
+				if (st.ttype == st.TT_NUMBER) {
+					appletSize.height = (int)st.nval;
+				}
+				else {
+					appletSize.height = Integer.parseInt(st.sval);
+				}
 			}
 			else if ( st.sval.equals( "width") ) {
 				st.nextToken();
 				st.nextToken();
-				appletSize.width = (int)st.nval;
+				if (st.ttype == st.TT_NUMBER) {
+					appletSize.width = (int)st.nval;
+				}
+				else {
+					appletSize.width = Integer.parseInt(st.sval);
+				}
 			}
 			break;
 
@@ -274,6 +287,9 @@ void parseParam( StreamTokenizer st) throws IOException {
 	String val = null;
 
 	while ( st.nextToken() != '>' ) {
+		if (st.sval == null) {
+			continue;
+		}
 		if ( st.sval.equals( "name") ) {
 			st.nextToken();
 			st.nextToken();
@@ -283,15 +299,18 @@ void parseParam( StreamTokenizer st) throws IOException {
 			st.nextToken();
 			st.lowerCaseMode( false);
 			st.nextToken();
-			if ( st.ttype == st.TT_NUMBER)
+			if ( st.ttype == st.TT_NUMBER) {
 				val = Double.toString( st.nval);
-			else
+			}
+			else {
 				val = new String( st.sval);
+			}
 			st.lowerCaseMode( true);
 		}
 	}
 
-	if ( ( key != null) && ( val != null) ) {
+	if ( key != null && val != null ) {
+		key = key.toLowerCase();
 //System.out.println( "put: " + key + " " + val);
 		paramDict.put( key, val);
 	}
@@ -328,9 +347,15 @@ void setMenus () {
 }
 
 public void showDocument ( URL url) {
+	System.out.println( url);
 }
 
 public void showDocument ( URL url, String target) {
+	try {
+		showDocument( new URL( url, target));
+	}
+	catch ( MalformedURLException _x ) {
+	}
 }
 
 public void showStatus ( String str) {
@@ -347,8 +372,10 @@ public void windowClosed ( WindowEvent evt ) {
 }
 
 public void windowClosing(WindowEvent e) {
-	app.stop();
-	app.destroy();
+	if (app != null) {
+		app.stop();
+		app.destroy();
+	}
 	dispose();
 }
 

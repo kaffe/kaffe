@@ -17,7 +17,7 @@ HandleTo(java_net_InetAddressImpl);
 
 extern struct Hjava_lang_String* java_net_InetAddressImpl_getLocalHostName(struct Hjava_net_InetAddressImpl*);
 extern void java_net_InetAddressImpl_makeAnyLocalAddress(struct Hjava_net_InetAddressImpl*, struct Hjava_net_InetAddress*);
-extern HArrayOfArray* java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl*, struct Hjava_lang_String*);
+extern HArrayOfInt* java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl*, struct Hjava_lang_String*);
 extern struct Hjava_lang_String* java_net_InetAddressImpl_getHostByAddr(struct Hjava_net_InetAddressImpl*, jint);
 extern jint java_net_InetAddressImpl_getInetFamily(struct Hjava_net_InetAddressImpl*);
 

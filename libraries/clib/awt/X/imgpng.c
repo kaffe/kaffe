@@ -8,10 +8,10 @@
  * of this file. 
  */
 
-#include "config.h"
 #include "toolkit.h"
 
-#if defined(HAVE_PNG_H)
+#if defined(HAVE_PNG_H) && defined(HAVE_LIBZ)
+
 #include "png.h"
 
 
@@ -67,7 +67,7 @@ setPixel ( Image* img, unsigned long argb, int row, int col )
 }
 
 
-static void
+int
 readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int            i, j;
@@ -84,7 +84,7 @@ readRowData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img
   }
 }
 
-static void
+int
 readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image *img )
 {
   int            i, j;
@@ -104,7 +104,7 @@ readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image 
 void
 readbackRow ( Image *img, unsigned char* rowBuf, int row )
 {
-  int            i;
+  int            i, j;
   unsigned char  *p;
   int            r, g, b, a;
   unsigned long  pix;
@@ -127,7 +127,7 @@ readbackRow ( Image *img, unsigned char* rowBuf, int row )
  * memory for the WHOLE image in ARGB pels (but ADAM7 seems to require
  * neighbor rows, too)
  */
-static void
+int
 readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Image *img )
 {
   int   i, j, pass;
@@ -281,7 +281,7 @@ Image*
 readPngFile ( FILE* infile )
 {
   Image          *img = 0;
-#if defined(HAVE_PNG_H)
+#ifdef HAVE_PNG_H
   png_structp    png_ptr;
   png_infop      info_ptr;
 
@@ -306,7 +306,7 @@ Image*
 readPngData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
-#if defined(HAVE_PNG_H)
+#ifdef HAVE_PNG_H
   png_structp    png_ptr;
   png_infop      info_ptr;
   BufferSource   source;

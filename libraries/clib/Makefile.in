@@ -8,7 +8,7 @@
 
 srcdir=		@srcdir@
 MKDIR=		@MKDIR@
-subdirs=	native net zip math management awt
+subdirs=	native io net zip math management awt
 
 #
 # only recurse into subdirectories that contain generated makefiles.

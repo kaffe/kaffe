@@ -10,47 +10,53 @@
 
 package java.lang;
 
-public class Object {
-  public final native Class  getClass();
-  public       native int    hashCode();
-  protected    native Object clone() throws CloneNotSupportedException;
-  public final native void   notify();
-  public final native void   notifyAll();
-  
-  public boolean equals(Object obj) {
-    return (this==obj);  /* Well either its equal or it aint! */
-  }
-  
-  public String toString() {
-    return getClass().getName()+'@'+Integer.toHexString(hashCode());
-  }
-  
-  public final void wait(long timeout, int nanos) throws InterruptedException {
-    /* Ignore nanos, except avoid clipping a non-zero quantity to zero */
-    if (timeout == 0 && nanos > 0)
-       timeout++;
 
-    wait(timeout);    
-  }
-  
-  public final void wait() throws InterruptedException {
-    /* Just wait forever */
-    wait(0);
-  }
+public class Object
+{
+native protected Object clone() throws CloneNotSupportedException;
 
-  public final void wait(long timeout) throws InterruptedException {
-    if (Thread.interrupted()) {
-      throw new InterruptedException();
-    }
-    wait0(timeout);
-    if (Thread.interrupted()) {
-      throw new InterruptedException();
-    }
-  }
-  
-  protected void finalize() throws Throwable {
-    /* Does nothing for Object class */
-  }
+public boolean equals(Object obj) {
+	return (this==obj);  /* Well either its equal or it aint! */
+}
 
-  private final native void wait0(long timeout);
+protected void finalize() throws Throwable {
+	/* Does nothing for Object class */
+}
+
+final native public Class  getClass();
+
+native public int    hashCode();
+
+final native public void   notify();
+
+final native public void   notifyAll();
+
+public String toString() {
+	return ("@" + Integer.toString(hashCode()));
+}
+
+final public void wait() throws InterruptedException {
+	/* Just wait forever */
+	wait(0);
+}
+
+final public void wait(long timeout) throws InterruptedException {
+	if (Thread.interrupted()) {
+		throw new InterruptedException();
+	}
+	wait0(timeout);
+	if (Thread.interrupted()) {
+		throw new InterruptedException();
+	}
+}
+
+final public void wait(long timeout, int nanos) throws InterruptedException {
+	/* Ignore nanos, except avoid clipping a non-zero quantity to zero */
+	if (timeout == 0 && nanos > 0)
+		timeout++;
+
+	wait(timeout);    
+}
+
+final native private void wait0(long timeout);
 }

@@ -21,6 +21,9 @@ public String getContentTypeFor(String filename) {
 	if (filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".jpe")) {
 		return ("image/jpeg");
 	}
+	if (filename.endsWith(".png")) {
+		return ("image/png");
+	}
 	if (filename.endsWith(".html") || filename.endsWith(".htm")) {
 		return ("text/html");
 	}

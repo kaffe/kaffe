@@ -11,13 +11,23 @@ import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
+/**
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author J.Mehlitz
+ */
 public class TextArea
   extends TextComponent
 {
+	final public static int SCROLLBARS_BOTH = 0;
 	final public static int SCROLLBARS_VERTICAL_ONLY = 1;
 	final public static int SCROLLBARS_HORIZONTAL_ONLY = 2;
-	final public static int SCROLLBARS_NONE = 0;
-	final public static int SCROLLBARS_BOTH = 3;
+	final public static int SCROLLBARS_NONE = 3;
 	int tabWidth;
 	int crows;
 	int ccols;
@@ -36,7 +46,7 @@ public TextPane () {
 	xOffs = 4;
 
 	setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR));
-	tCursor.setPos( xOffs, rowHeight + BORDER_WIDTH - 1);
+	tCursor.setPos( xOffs, rowHeight + BORDER_WIDTH);
 	insertLine( "", 0);
 	addKeyListener( this);
 	addMouseListener( this);
@@ -44,6 +54,13 @@ public TextPane () {
 }
 
 void append( String s) {
+	appendText(s);
+}
+
+/**
+ * @deprecated
+ */
+void appendText(String s) {
 	cursorTextEnd( false);
 	insert( s, true);
 }
@@ -64,14 +81,16 @@ void backspace() {
 	}
 }
 
-void blankCursor( Graphics g) {
+void blankCursor() {
 	TextBuffer tb;
 		
-	g.setColor( getBackground() );
-	tCursor.blank( g, xOffs, getRowYPos( tCursor.yindex) );
-	g.setColor( getForeground() );
-	tb = (TextBuffer)rows.elementAt( tCursor.yindex );
-	tb.paint( g, xOffs, tCursor.y, rowHeight, tCursor.index, 1);
+	if ( rgr != null ) {
+		rgr.setColor( getBackground() );
+		tCursor.blank( rgr, xOffs, getRowYPos( tCursor.yindex) );
+		rgr.setColor( getForeground() );
+		tb = (TextBuffer)rows.elementAt( tCursor.yindex );
+		tb.paint( rgr, xOffs, tCursor.y, rowHeight, tCursor.index, 1);
+	}
 }
 
 void cursorDown( int steps, boolean extend) {
@@ -215,20 +234,12 @@ void deleteSel() {
 }
 
 public void focusGained( FocusEvent e) {
-	Graphics g = getClippedGraphics();
-	if ( g != null ) {
-		repaintCursor( g);
-		g.dispose();
-	}
+	repaintCursor();
 	super.focusGained( e);
 }
 
 public void focusLost( FocusEvent e) {
-	Graphics g = getClippedGraphics();
-	if ( g != null ) {
-		paintInactiveCursor( g);
-		g.dispose();
-	}
+	paintInactiveCursor();
 	super.focusLost( e);
 	
 	if ( hasSel() )
@@ -252,7 +263,7 @@ Point get2D( int pos) {
 	int xt = 0;
 	TextBuffer tb = null;
 
-	if ( rs == 0 )
+  if ( rs == 0 )
 		return new Point( -1, -1);
 
 	for ( int i=0; i<rs; i++) {
@@ -307,14 +318,13 @@ boolean hasSel( int row) {
 }
 
 void insert( String s, boolean keepCursor) {
-
 	if ( (s == null) || (s.length() == 0) )
 		return;
 		
 	String[] lns = breakLines( s);
 	int lnsi = 0;
 	TextBuffer tb = (TextBuffer)rows.elementAt( tCursor.yindex);
-	
+
 	if ( lns.length == 0 )
 		return;
 		
@@ -342,11 +352,7 @@ void insert( String s, boolean keepCursor) {
 }
 
 void insert( String s, int pos) {
-
-	Point p = get2D( pos);
-	setCursorPos( p.x, p.y, true, true);
-	
-	insert( s, false);
+	insertText(s, pos);
 }
 
 void insertChar( char c) {
@@ -370,6 +376,16 @@ TextBuffer insertLine( String str, int lIdx) {
 	tb.setMetrics( fm, tabWidth);
 	rows.insertElementAt( tb, lIdx);
 	return tb;
+}
+
+/**
+ * @deprecated
+ */
+void insertText(String s, int pos) {
+	Point p = get2D( pos);
+	setCursorPos( p.x, p.y, true, true);
+	
+	insert( s, false);
 }
 
 public void keyPressed( KeyEvent e) {
@@ -519,12 +535,11 @@ void newline() {
 	
 	TextBuffer tbNew = insertLine( s, tCursor.yindex+1);
 	tbNew.copyLevelFrom( tb);
-	
+
 	updateVScroll();
 	
 	setCursorPos( tbNew.getLevel(), tCursor.yindex+1, true, true);
 	repaintRows( tCursor.yindex-1, getVisibleRows() );
-
 }
 
 void pageDown( boolean extend) {
@@ -547,35 +562,24 @@ void pageUp( boolean extend) {
 
 public void paint( Graphics g) {
 	paintBorder( g);
-
-	int d = BORDER_WIDTH;
-	g.clipRect( d, d, width -2*d, height -2*d);
-
-	repaintRows( g, first, rows.size()-first );		
+	repaintRows( first, rows.size()-first );		
 }
 
-void paintInactiveCursor( Graphics g) {
-	g.setColor( Defaults.TextCursorInactiveClr );
-	tCursor.blank( g, xOffs, getRowYPos( tCursor.yindex) );
+void paintInactiveCursor() {
+	rgr.setColor( Defaults.TextCursorInactiveClr );
+	tCursor.blank( rgr, xOffs, getRowYPos( tCursor.yindex) );
 }
 
-void repaintCursor( Graphics g) {
-	if ( AWTEvent.keyTgt == this)
-		tCursor.paint( g, xOffs, getRowYPos( tCursor.yindex) );
-	else
-		paintInactiveCursor( g);
-}
-
-void repaintLine( int row, int startX, TextBuffer tb ) {
-	Graphics g = getClippedGraphics();
-
-	if ( g != null ) {
-		repaintLine( row, startX, tb, g);
-		g.dispose();
+void repaintCursor() {
+	if ( rgr != null ) {
+		if ( AWTEvent.keyTgt == this)
+			tCursor.paint( rgr, xOffs, getRowYPos( tCursor.yindex) );
+		else
+			paintInactiveCursor();
 	}
 }
 
-void repaintLine( int row, int startX, TextBuffer tb, Graphics g) {
+void repaintLine( int row, int startX, TextBuffer tb) {
 	int x0, w;
 	int d = BORDER_WIDTH;
 	
@@ -590,45 +594,45 @@ void repaintLine( int row, int startX, TextBuffer tb, Graphics g) {
 	if ( ss == se ) {
 		x0 = (startX == 0) ? 0 : tb.getPos( startX) + xOffs;
 		w = width - x0;
-		g.setColor( getBackground() );
-		g.fillRect( x0, y0, w-d, rowHeight);
-		g.setColor( getForeground() );
-		tb.paint( g, xOffs, y0, rowHeight, startX);
+		rgr.setColor( getBackground() );
+		rgr.fillRect( x0, y0, w-d, rowHeight);
+		rgr.setColor( getForeground() );
+		tb.paint( rgr, xOffs, y0, rowHeight, startX);
 	}
 	else {
 		if ( ss > startX ) {
 			x0 = tb.getPos( startX) + xOffs;
 			w = tb.getWidth( startX, ss);
-			g.setColor( getBackground() );
-			g.fillRect( x0, y0, w, rowHeight);
-			g.setColor( getForeground() );			
-			tb.paint( g, xOffs, y0, rowHeight, startX, ss-startX);
+			rgr.setColor( getBackground() );
+			rgr.fillRect( x0, y0, w, rowHeight);
+			rgr.setColor( getForeground() );			
+			tb.paint( rgr, xOffs, y0, rowHeight, startX, ss-startX);
 		}
 		if ( se > startX ) {
 			x0 = tb.getPos( ss) + xOffs;
 			w = tb.getWidth( ss, se); 
-			g.setColor( Defaults.TextAreaSelBgClr );
-			g.fill3DRect( x0, y0, w, rowHeight, true);
-			g.setColor( Defaults.TextAreaSelTxtClr );			
-			tb.paint( g, xOffs, y0, rowHeight, ss, se-ss);
+			rgr.setColor( Defaults.TextAreaSelBgClr );
+			rgr.fill3DRect( x0, y0, w, rowHeight, true);
+			rgr.setColor( Defaults.TextAreaSelTxtClr );			
+			tb.paint( rgr, xOffs, y0, rowHeight, ss, se-ss);
 		}
 		x0 = tb.getPos( se) + xOffs;
 		w = width - x0;
-		g.setColor( getBackground() );
-		g.fillRect( x0, y0, w, rowHeight);
+		rgr.setColor( getBackground() );
+		rgr.fillRect( x0, y0, w, rowHeight);
 		if ( se < tb.len ) {
-			g.setColor( getForeground() );			
-			tb.paint( g, xOffs, y0, rowHeight, se);
+			rgr.setColor( getForeground() );			
+			tb.paint( rgr, xOffs, y0, rowHeight, se);
 		}
 	}
 
 	if ( tCursor.yindex == row )
-		repaintCursor( g);
+		repaintCursor();
 		
 }
 
-void repaintRow( Graphics g, int idx) {
-	repaintLine( idx, 0, null, g);
+void repaintRow( int idx) {
+	repaintLine( idx, 0, null);
 }
 
 void replaceRange( String s, int start, int end) {
@@ -704,16 +708,13 @@ void setContents( String s) {
 void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 	TextBuffer tb;
 	int xPos;
-	Graphics g = null;
 	int lastX = tCursor.index;
 	
 	if ( resetSel )
 		resetSel( repaint);
 		
 	if ( repaint) {
-		g = getClippedGraphics();
-		if ( g != null)
-			blankCursor( g);
+		blankCursor();
 	}
 
 	makeVisible( y);
@@ -725,10 +726,7 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 	xPos = tb.getPos( x);
 	tCursor.setIndex( x, xPos );
 
-	if ( g != null) {
-		repaintCursor( g);
-		g.dispose();
-	}
+	repaintCursor();
 		
 	if ( resetSel)
 		resetSel( false);
@@ -738,12 +736,16 @@ void setCursorPos( int x, int y, boolean repaint, boolean resetSel) {
 		int dx = 10;
 		if ( (x > lastX) && (xPos - xOffs > width -dx) ){
 			xOffs = width - xPos - dx;
-			hScroll.setValue( -xOffs);
+			if (hScroll != null) {
+				hScroll.setValue( -xOffs);
+			}
 			repaint();
 		}
 		else if ( xPos + xOffs < xOffsInit ) {
 			xOffs = -xPos + xOffsInit;
-			hScroll.setValue( -xOffs);
+			if (hScroll != null) {
+				hScroll.setValue( -xOffs);
+			}
 			repaint();
 		}
 	}
@@ -756,7 +758,7 @@ public void setFont( Font f) {
 	fm = getFontMetrics( f);
 	
 	tabWidth = 3*fm.charWidth( 'x');
-	rowHeight = 4*fm.getHeight()/3;
+	rowHeight = fm.getHeight() + 2;
 
 	for ( int i=0; i<s; i++) {
 		tb = (TextBuffer)rows.elementAt( i);
@@ -764,7 +766,7 @@ public void setFont( Font f) {
 	}
 	
 	tb = (TextBuffer)rows.elementAt( tCursor.yindex);
-	tCursor.setHeight( rowHeight - 1 );
+	tCursor.setHeight( rowHeight-1 );
 	tCursor.setYIndex( tCursor.yindex, getRowYPos( tCursor.yindex) );
 	tCursor.setIndex( tCursor.index, tb.getPos( tCursor.index) );
 
@@ -813,11 +815,11 @@ public TextArea( String text, int rows, int cols, int scrolls) {
 	setLayout( null);
 	setFont( Defaults.TextAreaFont);
 
-	if ( (scrolls & SCROLLBARS_VERTICAL_ONLY) > 0 ) {
+	if (scrolls == SCROLLBARS_VERTICAL_ONLY || scrolls == SCROLLBARS_BOTH) {
 		tp.vScroll = new Scrollbar( Scrollbar.VERTICAL);
 		add( tp.vScroll);
 	}
-	if ( (scrolls & SCROLLBARS_HORIZONTAL_ONLY) > 0 ){
+	if (scrolls == SCROLLBARS_HORIZONTAL_ONLY || scrolls == SCROLLBARS_BOTH) {
 		tp.hScroll = new Scrollbar( Scrollbar.HORIZONTAL);
 		tp.hScroll.setValues( 0, 5 * tabWidth, 0,  100 * tp.fm.charWidth( 'x'));
 		tp.hScroll.setUnitIncrement( tp.fm.charWidth( 'x'));
@@ -880,7 +882,7 @@ String[] breakLines( String str) {
 		v.addElement( new String( cbuf, i0, i-i0));
 	}
 	
-	sbuf = new String[v.size()+1];
+	sbuf = new String[v.size()];
 	v.copyInto( sbuf);
 	
 	return sbuf;
@@ -900,19 +902,19 @@ public int getColumns() {
 }
 
 public Dimension getMinimumSize() {
-	return getMinimumSize( crows, ccols);
+	return (minimumSize());
 }
 
 public Dimension getMinimumSize( int rows, int cols) {
-	return new Dimension( cols*tp.fm.charWidth( 'x'), rows*tp.fm.getHeight() );
+	return (minimumSize(rows, cols));
 }
 
 public Dimension getPreferredSize() {
-	return getPreferredSize( crows, ccols);
+	return preferredSize();
 }
 
 public Dimension getPreferredSize( int rows, int cols) {
-	return new Dimension( cols*tp.fm.charWidth( 'x'), rows*tp.fm.getHeight() );
+	return preferredSize(rows, cols);
 }
 
 public int getRows() {
@@ -963,17 +965,16 @@ public int getSelectionStart() {
 }
 
 public String getText() {
-	StringBuffer sb = new StringBuffer();
+	int i, imax = tp.rows.size()-1;
+	StringBuffer sb = new StringBuffer( (imax+1) * 80);
 	
-	int len = tp.rows.size();
-	
-	for ( int i = 0; i < len; i++) {
+	for ( i = 0; i <= imax; ) {
 		TextBuffer tb = (TextBuffer) tp.rows.elementAt(i);
-		sb.append(tb.buf);
-		if ( i < len )
-			sb.append( " ");
+		sb.append( tb.buf, 0, tb.len);
+		if ( i++ < imax )
+			sb.append( '\n');
 	}
-	
+
 	return sb.toString();
 }
 
@@ -985,20 +986,55 @@ public synchronized void insert( String str, int pos) {
 	tp.insert( str, pos);
 }
 
+/**
+ * @deprecated
+ */
+public Dimension minimumSize() {
+	return (minimumSize(crows, ccols));
+}
+
+/**
+ * @deprecated
+ */
+public Dimension minimumSize( int rows, int cols) {
+	return new Dimension( cols*tp.fm.charWidth( 'x'), rows*tp.fm.getHeight() );
+}
+
 protected String paramString() {
 	return super.paramString();
 }
 
-void repaintRow( Graphics g, int row) {
-	tp.repaintLine( row, 0, null, g);
+/**
+ * @deprecated
+ */
+public Dimension preferredSize() {
+	return preferredSize( crows, ccols);
+}
+
+/**
+ * @deprecated
+ */
+public Dimension preferredSize( int rows, int cols) {
+	return new Dimension( cols*tp.fm.charWidth( 'x'), rows*tp.fm.getHeight() );
+}
+
+public void repaintRow( int row) {
+	tp.repaintLine( row, 0, null);
 }
 
 public synchronized void replaceRange( String str, int start, int end) {
-	tp.replaceRange( str, start, end);
+	replaceText(str, start, end);
 }
 
 void replaceSelectionWith ( String s ) {
 	tp.replaceSelectionWith( s);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void replaceText( String str, int start, int end) {
+	tp.replaceRange( str, start, end);
 }
 
 public void requestFocus() {

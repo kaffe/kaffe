@@ -6,10 +6,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 /**
@@ -111,18 +111,23 @@ public void doLayout () {
 	entry.setBounds( 0, 0, width-BTN_WIDTH-2*d, height);
 }
 
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
+}
+
 public String getItem ( int index) {
 	return (String)items.elementAt( index);
 }
 
 public int getItemCount () {
-	return items.size();
+	return (getItems());
 }
 
-public Dimension getPreferredSize () {
-	Dimension d = entry.getPreferredSize();
-	d.width += BTN_WIDTH;
-	return d;
+/**
+ * @deprecated
+ */
+public int getItems() {
+	return items.size();
 }
 
 public int getSelectedIndex () {
@@ -166,10 +171,10 @@ public void keyPressed( KeyEvent e) {
 		openPrompt();
 }
 
-public void keyTyped( KeyEvent e) {
+public void keyReleased( KeyEvent e) {
 }
 
-public void keyReleased( KeyEvent e) {
+public void keyTyped( KeyEvent e) {
 }
 
 public void mouseClicked ( MouseEvent e) {
@@ -196,9 +201,9 @@ public void mouseReleased ( MouseEvent e) {
 }
 
 void notifyItem() {
-	if ( hasToNotify( AWTEvent.ITEM_EVENT_MASK, iListener) ) {
-		ItemEvent ie = AWTEvent.getItemEvent( this, 0);
-		ie.setItemEvent( selection, ItemEvent.SELECTED);
+	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ) {
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
+		                                   selection, ItemEvent.SELECTED);
 		Toolkit.eventQueue.postEvent( ie);
 	}
 }
@@ -222,8 +227,8 @@ public void paint ( Graphics g) {
 }
 
 void paintButton() {
-	Graphics g = getGraphics();
-	if ( g != null ) {
+	if ( isShowing() ) {
+		Graphics g = getGraphics();
 		paintButton( g);
 		g.dispose();
 	}
@@ -259,11 +264,13 @@ protected String paramString() {
 	return super.paramString();
 }
 
-protected void processEvent( AWTEvent e) {
-	if ( e instanceof ItemEvent)
-		processItemEvent( (ItemEvent) e);
-	else
-		super.processEvent( e);
+/**
+ * @deprecated
+ */
+public Dimension preferredSize () {
+	Dimension d = entry.getPreferredSize();
+	d.width += BTN_WIDTH;
+	return d;
 }
 
 protected void processItemEvent( ItemEvent e) {
@@ -297,6 +304,8 @@ public synchronized void select ( String item) {
 }
 
 public synchronized void select ( int index) {
-	select( (String)items.elementAt( index));
+	if (index >= 0 && index < items.size()) {
+		select((String)items.elementAt(index));
+	}
 }
 }

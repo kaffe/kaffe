@@ -1,8 +1,3 @@
-package java.net;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-
 /*
  * Java core library component.
  *
@@ -12,26 +7,50 @@ import java.io.IOException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.net;
+
+import java.io.InputStream;
+import java.io.IOException;
+
 class SocketInputStream
-  extends FileInputStream
-{
-	boolean eof;
-	SocketImpl impl;
-	byte[] temp;
+  extends InputStream {
+
+private SocketImpl impl;
+private byte[] buf;
 
 public SocketInputStream(SocketImpl impl) {
-	super(impl.fd);
-	this.impl=impl;
+	this.impl = impl;
 }
 
 public int read(byte b[]) throws IOException {
-	return read(b, 0, b.length);
+	return (read(b, 0, b.length));
 }
 
 public int read(byte b[], int off, int length) throws IOException {
-	return socketRead(b, off, length);
+	synchronized (this) {
+		return (impl.read(b, off, length));
+	}
 }
 
-native private int socketRead(byte buf[], int offset, int len);
+public int read() throws IOException {
+	synchronized (this) {
+		if (buf == null) {
+			buf = new byte[1];
+		}
+		if (impl.read(buf, 0, 1) == 1) {
+			return (buf[0]);
+		}
+		return (-1);
+	}
+}
+
+public int available() throws IOException {
+	return (impl.available());
+}
+
+public void close() throws IOException {
+	impl.close();
+}
 
 }

@@ -126,7 +126,7 @@ public class SimpleTimeZone extends TimeZone {
 
     // Okay we did the easy stuff, now we have to do the hard stuff.
 
-    int dayofweekinmonth = (6 + dayOfWeek - Calendar.SUNDAY + day) / 7;
+    int dayofweekinmonth = (6 + dayOfWeek - Calendar.SUNDAY + day - 1) / 7;
 
     int mdays;
     switch (month) {

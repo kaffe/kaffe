@@ -1,6 +1,3 @@
-package java.awt.image;
-
-
 /**
  * ImageProducer - 
  *
@@ -12,15 +9,15 @@ package java.awt.image;
  *
  * @author P. Mehlitz
  */
-public interface ImageProducer
-{
+
+package java.awt.image;
+
+public interface ImageProducer {
+
 public void addConsumer ( ImageConsumer consumer );
-
 public boolean isConsumer ( ImageConsumer consumer );
-
 public void removeConsumer ( ImageConsumer consumer );
-
 public void requestTopDownLeftRightResend ( ImageConsumer consumer );
-
 public void startProduction ( ImageConsumer consumer );
+
 }

@@ -11,6 +11,7 @@ extern "C" {
 /* Header for class java_util_Vector */
 
 typedef struct Classjava_util_Vector {
+  jint modCount;
   HArrayOfObject* elementData;
   jint elementCount;
   jint capacityIncrement;

@@ -1,5 +1,5 @@
 /**
- * clr.c - 
+ * clr.c - color management
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
@@ -8,9 +8,6 @@
  * of this file. 
  */
 
-#include "config.h"
-#include "config-std.h"
-#include "config-mem.h"
 #include "toolkit.h"
 #include <limits.h>
 #include <math.h>
@@ -246,8 +243,8 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
   memset( *mp, 0, 8*8*8);
 
-  /* get the java.awt.Defaults.RgbRequests field */
-  if ( (clazz = (*env)->FindClass( env, "java/awt/Defaults")) ){
+  /* get the java.awt.DefaultsRGB.RgbRequests field */
+  if ( (clazz = (*env)->FindClass( env, "java/awt/DefaultsRGB")) ){
 	if ( (fid = (*env)->GetStaticFieldID( env, clazz, "RgbRequests", "[I")) ){
 	  if ( (rgbRequests = (*env)->GetStaticObjectField( env, clazz, fid)) ){
 		jrgbs = (*env)->GetIntArrayElements( env, rgbRequests, &isCopy);
@@ -377,39 +374,225 @@ initRgb2Pseudo ( JNIEnv* env, Toolkit* X )
   }
 
   initColormap( env, X, dcm, map);
+  X->colorMode = CM_PSEUDO_256;
 
   return map;
 }
 
 
 /********************************************************************************
- * DirectColor (RGB) visual
+ * TrueColor (RGB) visual
  */
 
 Rgb2True*
 initRgb2True ( Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  unsigned int n, m;
+  unsigned m;
   int      nRed, nGreen, nBlue;
+  int      iRed, iGreen, iBlue;
+  int      n;
+  Rgb2True *map = 0;
 
-  Rgb2True *map = (Rgb2True*) malloc( sizeof( Rgb2True));
+  if ( (v->blue_mask == 0xff) && (v->green_mask == 0xff00) && (v->red_mask == 0xff0000) ){
+	/*
+	 * This is our favourite case - a direct 8-8-8 native rgb. It could be handled as
+	 * a 0,0 TrueColor conversion, but (esp. for image manipulations) we can save a lot
+	 * of computation by a special TrueColor mode
+	 */
+	DBG( awt_clr, ("AWT color mode: CM_TRUE_888\n"));
+	X->colorMode = CM_TRUE_888;
+  }
+  else {
+	/*
+	 * There is either a rearrangement or a non-8 bit color component involved,
+	 * get start index and length of each color component. Note that the Rgb2True
+	 * struct is used to compute pixelvalues from Java rgbs, i.e. the mask and shift
+	 * values are relative to the Java 8-8-8 RGB.
+	 */
+	map = (Rgb2True*) malloc( sizeof( Rgb2True));
 
-  for ( nBlue=0, m=v->blue_mask; m; nBlue++, m >>= 1 );
-  for ( nGreen=0, m=v->green_mask >> nBlue; m; nGreen++, m >>= 1 );
-  for ( nRed=0, m=v->red_mask >> (nBlue+nGreen); m; nRed++, m >>= 1 );
+	for ( iBlue=0, m=v->blue_mask; (m & 1) == 0; iBlue++, m >>= 1);
+	for ( nBlue=0; m; nBlue++, m >>= 1 );
 
-  n = 8 - nBlue;
-  map->blueMask = (0xff >> n) << n;
-  map->blueShift = n;
+	for ( iGreen=0, m=v->green_mask; (m & 1) == 0; iGreen++, m >>= 1);
+	for ( nGreen=0; m; nGreen++, m >>= 1 );
 
-  n = 16 - nGreen;
-  map->greenMask = (0xff00 >> n) << n;
-  map->greenShift = 16 - (nBlue + nGreen);
+	for ( iRed=0, m=v->red_mask; (m & 1) == 0; iRed++, m >>= 1);
+	for ( nRed=0; m; nRed++, m >>= 1 );
 
-  n = 24 - nRed;
-  map->redMask = (0xff0000 >> n) << n;
-  map->redShift = 24 - (nBlue + nGreen + nRed);
+	map->blueShift = 8 - (iBlue + nBlue);
+	if ( nBlue < 8 ){  /* color reduction */
+	  n = 8 - nBlue;
+	  map->blueMask = (0xff >> n) << n;
+	}
+	else {             /* color expansion */
+	  map->blueMask = 0xff;
+	}
+
+	map->greenShift = 16 - (iGreen + nGreen);
+	if ( nGreen < 8 ){ /* color reduction */
+	  n = 8 + (8 - nGreen);
+	  map->greenMask = (0xff00 >> n) << n;
+	}
+	else {             /* color expansion */
+	  map->greenMask = 0xff00;
+	}
+
+	map->redShift = 24 - (iRed + nRed);
+	if ( nRed < 8 ){  /* color reduction */
+	  n = 16 + (8 - nRed);
+	  map->redMask = (0xff0000 >> n) << n;
+	}
+	else {            /* color expansion */
+	  map->redMask = 0xff0000;
+	}
+
+	X->colorMode = CM_TRUE;
+
+	DBG( awt_clr, ("AWT color mode: CM_TRUE\n"));
+	DBG( awt_clr, ("    red:   %8x, %d\n", map->redMask, map->redShift));
+	DBG( awt_clr, ("    green: %8x, %d\n", map->greenMask, map->greenShift));
+	DBG( awt_clr, ("    blue:  %8x, %d\n", map->blueMask, map->blueShift));
+  }
+
+  return map;
+}
+
+
+/********************************************************************************
+ * DirectColor (RGB) visual: each pixel value is composed of three, non-overlapping
+ * colormap indices.
+ * Again, our policy is to go with the default colormap, and not to swap it (so that
+ * we don't disturb other desktop citizens).
+ * This rather simple implementation does not allocate cells for mismatches yet
+ *
+ * We could save some space in case we have a DirectColor visual with a depth < 24,
+ * but that would complicate pixelValue() and probably is rather unusual, anyway
+ * (since DirectVisual is a expensive beast to be found on high-end HW)
+ *
+ * However, we do make some assumptions here which might be a bit too optimistic
+ * (black being at index 0, free cells being concentracted at the end of the cmap,
+ * with a 0-value)
+ */
+
+void fillUpPartMap ( unsigned char* pix, unsigned char* val )
+{
+  int i, j, k, i2;
+
+  for ( i=1, k=0; i < N_DIRECT; i++ ) {
+	if ( pix[i] == 0 ) {
+	  for ( j=i+1; (j < N_DIRECT) && (pix[j] == 0); j++ );
+	  if ( j == N_DIRECT ) { /* last one, fill up rest */
+		for ( ; i < j; i++ ) {
+		  pix[i] = pix[k];
+		  val[ pix[i] ] = k;
+		}		
+	  }
+	  else {
+		i2 = (i + j) / 2;
+		for ( ; i < i2; i++ ){
+		  pix[i] = pix[k];
+		  val[ pix[i] ] = k;
+		}
+		for ( ; i < j; i++ ) {
+		  pix[i] = pix[j];
+		  val[ pix[i] ] = j;
+		  k = j;
+		}
+	  }
+	}
+	else {
+	  k = i;
+	}
+  }
+}
+
+void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
+						  int component, int nIdx, int idxShift,
+						  unsigned char* pix, unsigned char* val )
+{
+  XColor          xclr;
+  int             i, idx;
+  unsigned short  *v;
+
+  if ( component == 0 )      /* red */
+	v = &xclr.red;
+  else if ( component == 1 ) /* green */
+	v = &xclr.green;
+  else                       /* blue */
+	v = &xclr.blue;
+
+  for ( i=0; i < nIdx; i++ ) {
+	xclr.pixel = i << idxShift;
+	XQueryColor( X->dsp, dcm, &xclr);
+
+	if ( i && !*v )
+	  break;       /* skip free cells (assuming 0: black) */
+
+	idx = ROUND_SHORT2CHAR( *v);
+	pix[idx] = i;
+	val[i] = idx;
+  }
+}
+
+Rgb2Direct*
+initRgb2Direct ( Toolkit* X )
+{
+  Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  Rgb2Direct  *map = (Rgb2Direct*) malloc( sizeof( Rgb2Direct));
+  Colormap    dcm = DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp));
+  int         iBlue, nBlue, iGreen, nGreen, iRed, nRed;
+  int         i, n, m;
+
+  for ( i=0; i<N_DIRECT; i++ ) {
+	map->bluePix[i] = map->greenPix[i] = map->redPix[i] = 0;
+  }
+
+  for ( iBlue=0, m=v->blue_mask; (m & 1) == 0; iBlue++, m >>= 1);
+  for ( nBlue=0; m; nBlue++, m >>= 1 );
+
+  for ( iGreen=0, m=v->green_mask; (m & 1) == 0; iGreen++, m >>= 1);
+  for ( nGreen=0; m; nGreen++, m >>= 1 );
+
+  for ( iRed=0, m=v->red_mask; (m & 1) == 0; iRed++, m >>= 1);
+  for ( nRed=0; m; nRed++, m >>= 1 );
+
+  /* we simply get the sizes of component colormaps from the visual masks */
+  map->nBlue  = v->blue_mask  >> iBlue;
+  map->nGreen = v->green_mask >> iGreen;
+  map->nRed   = v->red_mask   >> iRed;
+
+  /* the shifts are to convert component indices into a compound pixelvalue */
+  map->blueShift  = iBlue;
+  map->greenShift = iGreen;
+  map->redShift   = iRed;
+
+  /*
+   * phase 1: start to populate our component maps (R/G/B -> index) from dcm
+   */
+  setPartMapFromDMap( X, dcm, 0, map->nRed, map->redShift, map->redPix, map->red);
+  setPartMapFromDMap( X, dcm, 1, map->nGreen, map->greenShift, map->greenPix, map->green);
+  setPartMapFromDMap( X, dcm, 2, map->nBlue, map->blueShift, map->bluePix, map->blue);
+
+  /*
+   * phase 2: fill up missing entries
+   * (based on the somewhat optimistic assumption that free cells are at the upper end)
+   */
+  fillUpPartMap( map->bluePix, map->blue);
+  fillUpPartMap( map->greenPix, map->green);
+  fillUpPartMap( map->redPix, map->red);
+
+#ifdef NEVER
+  for ( i = 0; i<N_DIRECT; i++ ) {
+	printf( "%2x :   %3d,%2x  %3d,%2x  %3d,%2x\n", i,
+			map->redPix[i], map->red[ map->redPix[i] ],
+			map->greenPix[i], map->green[ map->greenPix[i] ],
+			map->bluePix[i], map->blue[ map->bluePix[i] ]);
+  }
+#endif
+
+  X->colorMode = CM_DIRECT;
 
   return map;
 }
@@ -423,25 +606,32 @@ void
 initColorMapping ( JNIEnv* env, Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
-  
-  X->visualClass = v->class;
 
-#ifdef DEBUG
-  fprintf( stderr, "visual:\n");
-  fprintf( stderr, "  id:          %d\n", (int)v->visualid);
-  fprintf( stderr, "  class:       %d\n", v->class);
-  fprintf( stderr, "  red_mask     %x\n", (int)v->red_mask);
-  fprintf( stderr, "  green_mask   %x\n", (int)v->green_mask);
-  fprintf( stderr, "  blue_mask    %x\n", (int)v->blue_mask);
-  fprintf( stderr, "  bits_per_rgb %x\n", v->bits_per_rgb);
-  fprintf( stderr, "  map_entries  %d\n", v->map_entries);
-#endif
+  DBG( awt_clr, ("X visual:\n"));
+  DBG( awt_clr, ("  id:          %d\n", v->visualid));
+  DBG( awt_clr, ("  class:       %d\n", v->class));
+  DBG( awt_clr, ("  red_mask     %x\n", v->red_mask));
+  DBG( awt_clr, ("  green_mask   %x\n", v->green_mask));
+  DBG( awt_clr, ("  blue_mask    %x\n", v->blue_mask));
+  DBG( awt_clr, ("  bits_per_rgb %x\n", v->bits_per_rgb));
+  DBG( awt_clr, ("  map_entries  %d\n", v->map_entries));
 
+  X->colorMode = CM_GENERIC;
+
+  /* check for directly supported color modes / visuals */
   switch ( v->class ) {
   case DirectColor:
-  case TrueColor:	 X->tclr = initRgb2True( X); break;
-  case PseudoColor:  X->pclr = initRgb2Pseudo( env, X); break;
+	X->dclr = initRgb2Direct( X);
+	break;
+  case TrueColor:
+	X->tclr = initRgb2True( X);
+	break;
+  case PseudoColor:  
+	X->pclr = initRgb2Pseudo( env, X); 
+	break;
   }
+
+  DBG( awt_clr, ("colorMode: %d\n", X->colorMode));
 }
 
 
@@ -452,7 +642,10 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
 jint
 Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
 {
-  return pixelValue( X, rgb);
+  jint pix = pixelValue( X, rgb);
+  DBG( awt_clr, ("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pix, pix));
+
+  return pix;
 }
 
 void
@@ -497,8 +690,8 @@ Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jarray sys
 /*
  * we need to implement brighter / darker in the native layer because the usual
  * arithmetic Rgb brightening/darkening isn't really useful if it comes to
- * PseudoColor visuals (e.g. a primitive 16 color VGA wouldn't produce any
- * usable results). Even 256 colormaps suffer from 
+ * limited PseudoColor visuals (e.g. a primitive 16 color VGA wouldn't produce any
+ * usable results). Even 256 colormaps suffer from that
  */
 jlong
 Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
@@ -510,27 +703,16 @@ Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
   g = JGREEN( rgb);
   b = JBLUE( rgb);
 
-  switch ( X->visualClass ) {
-  case TrueColor:
-  case DirectColor:
-  case PseudoColor:
-	r = (r * 4) / 3;
-	g = (g * 4) / 3;
-	b = (b * 4) / 3;
+  r = (r * 4) / 3;
+  g = (g * 4) / 3;
+  b = (b * 4) / 3;
 	
-	if ( r > 0xff ) r = 0xff;
-	if ( g > 0xff ) g = 0xff;
-	if ( b > 0xff ) b = 0xff;
+  if ( r > 0xff ) r = 0xff;
+  if ( g > 0xff ) g = 0xff;
+  if ( b > 0xff ) b = 0xff;
 
-	modRgb = JRGB( r, g, b);
-	modPix = pixelValue( X, modRgb);
-
-	break;
-
-  default:
-	modRgb = 0xffffffff;
-	modPix = WhitePixel( X->dsp, DefaultScreen( X->dsp));
-  }
+  modRgb = JRGB( r, g, b);
+  modPix = pixelValue( X, modRgb);
 
   return (((jlong)modPix << 32) | modRgb);
 }
@@ -545,23 +727,12 @@ Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb )
   g = JGREEN( rgb);
   b = JBLUE( rgb);
 
-  switch ( X->visualClass ) {
-  case TrueColor:
-  case DirectColor:
-  case PseudoColor:
-	r = (r * 2) / 3;
-	g = (g * 2) / 3;
-	b = (b * 2) / 3;
+  r = (r * 2) / 3;
+  g = (g * 2) / 3;
+  b = (b * 2) / 3;
 	
-	modRgb = JRGB( r, g, b);
-	modPix = pixelValue( X, modRgb);
-
-	break;
-
-  default:
-	modRgb = 0xff000000;
-	modPix = BlackPixel( X->dsp, DefaultScreen( X->dsp));
-  }
+  modRgb = JRGB( r, g, b);
+  modPix = pixelValue( X, modRgb);
 
   return (((jlong)modPix << 32) | modRgb);
 }

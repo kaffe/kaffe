@@ -12,6 +12,7 @@
 #include "../../config/config.h"
 
 #include "native/external_wrappers.h"
+#include "io/external_wrappers.h"
 #include "math/external_wrappers.h"
 #include "net/external_wrappers.h"
 #include "zip/external_wrappers.h"

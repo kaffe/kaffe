@@ -23,6 +23,7 @@ final public class String implements Serializable
 	int offset;
 	int count;
 	int hash;
+	boolean interned;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	static final long serialVersionUID = -6849794470754667710L;
@@ -54,8 +55,10 @@ public String( byte[] bytes, String enc) throws UnsupportedEncodingException
 	initString( bytes, 0, bytes.length, ByteToCharConverter.getConverter(enc));
 }
 
-public String( byte ascii[], int hibyte)
-	{
+/**
+ * @deprecated
+ */
+public String( byte ascii[], int hibyte) {
 	this( ascii, hibyte, 0, ascii.length);
 }
 
@@ -69,22 +72,23 @@ public String( byte[] bytes, int offset, int length, String enc) throws Unsuppor
 	initString( bytes, offset, length, ByteToCharConverter.getConverter(enc));
 }
 
-public String( byte ascii[], int hibyte, int offset, int count)
-	{
+/**
+ * @deprecated
+ */
+public String( byte ascii[], int hibyte, int offset, int count) {
 	value = new char[count];
 	this.count = count;
 
-	for (int pos=0; pos<count; pos++)
+	for (int pos=0; pos<count; pos++) {
 		value[pos]=(char )(((hibyte & 0xFF) << 8) | (ascii[pos+offset] & 0xFF));	
+	}
 }
 
-public String( char other[])
-	{
+public String( char other[]) {
 	this( other, 0, other.length);
 }
 
-public String( char other[], int offset, int count)
-	{
+public String( char other[], int offset, int count) {
 	value = new char[count];
 	this.count = count;    
 
@@ -105,8 +109,7 @@ public char charAt ( int index ) {
 	return value[offset+index];
 }
 
-public int compareTo( String s1)
-	{
+public int compareTo( String s1) {
 	/* lexicographical comparison, assume they mean English lexiographical, since Character has no ordering */
 
 	int minLen = Math.min( count, s1.count);
@@ -131,13 +134,11 @@ public String concat(String str) {
 	return new String(0, buf.length, buf); 
 }
 
-public static String copyValueOf( char data[])
-	{
+public static String copyValueOf( char data[]) {
 	return copyValueOf( data, 0, data.length);
 }
 
-public static String copyValueOf(char data[], int offset, int count)
-	{
+public static String copyValueOf(char data[], int offset, int count) {
 	char buf[]=new char[count];
 	if ( count > 0)
 		System.arraycopy( data, offset, buf, 0, count);
@@ -190,18 +191,18 @@ public boolean equalsIgnoreCase (String other) {
 	return (true);
 }
 
-protected void finalize()
-	{
-	unintern();
+protected void finalize() throws Throwable {
+	if (interned) {
+		unintern0(this);
+	}
+	super.finalize();
 }
 
-public byte[] getBytes()
-	{
+public byte[] getBytes() {
 	return ( getBytes( CharToByteConverter.getDefault()));
 }
 
-private byte[] getBytes( CharToByteConverter encoding)
-	{
+private byte[] getBytes( CharToByteConverter encoding) {
 	ByteArrayOutputStream out = new ByteArrayOutputStream( value.length);
 
 	byte[] buf = new byte[512];
@@ -219,16 +220,17 @@ public byte[] getBytes( String enc) throws UnsupportedEncodingException
 	return ( getBytes( CharToByteConverter.getConverter(enc)));
 }
 
-public void getBytes( int srcBegin, int srcEnd, byte dst[], int dstBegin)
-	{
+/**
+ * @deprecated
+ */
+public void getBytes( int srcBegin, int srcEnd, byte dst[], int dstBegin) {
 	int len = srcEnd-srcBegin;
 	for (int pos = 0; pos < len; pos++) {
 		dst[dstBegin+pos] = (byte)value[offset+srcBegin+pos];
 	}
 }
 
-public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)
-	{
+public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
 	System.arraycopy( value, offset+srcBegin, dst, dstBegin, srcEnd-srcBegin);
 }
 
@@ -288,8 +290,7 @@ public int indexOf( int ch, int sIdx) {
 	return -1;
 }
 
-private void initString( byte[] bytes, int offset, int length, ByteToCharConverter encoding)
-	{
+private void initString( byte[] bytes, int offset, int length, ByteToCharConverter encoding) {
 	StringBuffer sbuf = new StringBuffer( length);
 	char[] out = new char[512];
 	int outlen = encoding.convert( bytes, offset, length, out, 0, out.length);
@@ -304,8 +305,6 @@ private void initString( byte[] bytes, int offset, int length, ByteToCharConvert
 	offset = str.offset;
 	count  = str.count;
 }
-
-final native public String intern();
 
 public int lastIndexOf( String str) {
 	return lastIndexOf( str, count);
@@ -342,8 +341,9 @@ public int lastIndexOf( int ch) {
 
 public int lastIndexOf( int ch, int eIdx) {
 	char c = (char)ch;
-	if ( eIdx >= count)
+	if ( eIdx >= count) {
 		eIdx = count-1;
+	}
 	for (int pos=eIdx; pos>=0; pos--) {
 		if ( value[offset+pos] == c)
 			return pos;
@@ -352,13 +352,11 @@ public int lastIndexOf( int ch, int eIdx) {
 	return -1;
 }
 
-public int length()
-	{
+public int length() {
 	return count;
 }
 
-public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len)
-	{
+public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len) {
 	if (toffset < 0 || ooffset < 0) {
 		return false;
 	}
@@ -380,8 +378,7 @@ public boolean regionMatches(boolean ignoreCase, int toffset, String other, int 
 	return true;
 }
 
-public boolean regionMatches( int toffset, String other, int ooffset, int len)
-	{
+public boolean regionMatches( int toffset, String other, int ooffset, int len) {
 	return regionMatches( false, toffset, other, ooffset, len);
 }
 
@@ -426,8 +423,7 @@ public String substring( int sIdx, int eIdx) {
 
 }
 
-public char[] toCharArray()
-	{
+public char[] toCharArray() {
 	char buf[] = new char[count];
 	if ( count > 0)
 		getChars( 0, count, buf, 0);
@@ -435,13 +431,11 @@ public char[] toCharArray()
 	return buf;
 }
 
-public String toLowerCase()
-	{
+public String toLowerCase() {
 	return toLowerCase( Locale.getDefault());
 }
 
-public String toLowerCase( Locale lcl)
-	{
+public String toLowerCase( Locale lcl) {
 	char buf[] = new char[count];
 	for (int pos = 0; pos < count; pos++)
 		buf[pos] = Character.toLowerCase( value[offset+pos]);
@@ -449,18 +443,15 @@ public String toLowerCase( Locale lcl)
 	return new String( 0, count, buf);
 }
 
-public String toString()
-	{
+public String toString() {
 	return this;
 }
 
-public String toUpperCase()
-	{
+public String toUpperCase() {
 	return toUpperCase( Locale.getDefault());
 }
 
-public String toUpperCase( Locale lcl)
-	{
+public String toUpperCase( Locale lcl) {
 	char buf[] = new char[count];
 	for (int pos=0; pos < count; pos++)
 		buf[pos] = Character.toUpperCase( value[offset+pos]);
@@ -479,8 +470,6 @@ public String trim() {
 	return substring( i0-offset, i1+1-offset);
 }
 
-final native private void unintern();
-
 public static String valueOf( Object obj) {
 	if (obj==null) {
 		return "null";
@@ -498,13 +487,11 @@ public static String valueOf( char c) {
 	return new String( ca);
 }
 
-public static String valueOf(char data[])
-	{
+public static String valueOf(char data[]) {
 	return new String(data);
 }
 
-public static String valueOf( char data[], int offset, int count)
-	{
+public static String valueOf( char data[], int offset, int count) {
 	return new String( data, offset, count);
 }
 
@@ -523,4 +510,17 @@ public static String valueOf( int i) {
 public static String valueOf( long l) {
 	return ( new Long(l)).toString();
 }
+
+final public String intern() {
+	if (interned == false) {
+		return (intern0(this));
+	}
+	else {
+		return (this);
+	}
+}
+
+final native static public synchronized String intern0(String str);
+final native static private synchronized void unintern0(String str);
+
 }

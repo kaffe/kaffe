@@ -63,25 +63,21 @@ protected void pushback() {
 }
 
 public int read () throws IOException {
-	synchronized ( lock ) {
-		if (pos < size || refillBuffer() > 0) {
-			return (inbuf[pos++]);
-		}
-		return (-1);
+	if (pos < size || refillBuffer() > 0) {
+		return (inbuf[pos++]);
 	}
+	return (-1);
 }
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
 	synchronized(lock) {
-
 		// Do read directly in this case, according to JDK 1.2 docs
 		if (pos == size && !markset && len >= inbuf.length) {
 			return rd.read(cbuf, off, len);
 		}
-
-		int nread, chunk;
+		int nread;	
+		int chunk;
 		for (nread = 0; nread < len; nread += chunk) {
-
 			// Make sure there's something in the buffer
 			if (pos == size) {
 				// Avoid unneccesary blocking
@@ -116,12 +112,12 @@ public String readLine () throws IOException {
 		while ( true ) {
 
 			// Find next newline or carriage return
-			while (pos < size
-				&& (c = inbuf[pos]) != '\n' && c != '\r')
-			    pos++;
+			while (pos < size && (c = inbuf[pos]) != '\n' && c != '\r') {
+				pos++;
+			}
 
 			// Did we see one?
-			if (pos == size) {	// nothing found yet
+			if (pos == size) {      // nothing found yet
 				if (pos > start) {
 					if (s == null) {
 						s = new String(inbuf, start, pos-start);
@@ -167,7 +163,7 @@ private int refillBuffer () throws IOException {
 		n = rd.read( inbuf, 0, inbuf.length);
 		pos = 0;
 		markset = false;
-
+			
 		if (n > 0) {
 			size = n;
 			return (n);
@@ -184,12 +180,13 @@ public void reset() throws IOException {
 		if (!markset) {
 			throw new IOException("invalid mark");
 		}
-		pos = 0;	// reset to the beginning of the buffer
+		pos = 0;
+
 	}
 }
 
 public long skip(long n) throws IOException {
-	synchronized(lock) {
+        synchronized(lock) {
 		long bufskip;
 
 		// Skip from within the buffer first
@@ -197,7 +194,7 @@ public long skip(long n) throws IOException {
 		if (bufskip > n) {
 			bufskip = n;
 		}
-		pos += (int)bufskip;		// cast is OK
+		pos += (int)bufskip;            // cast is OK
 
 		// Anything more to skip?
 		if (bufskip == n) {

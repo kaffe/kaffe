@@ -1,8 +1,3 @@
-package java.awt;
-
-import java.util.Enumeration;
-import java.util.Vector;
-
 /**
  * class MenuBar -
  *
@@ -14,6 +9,12 @@ import java.util.Vector;
  *
  * @author J.Mehlitz
  */
+
+package java.awt;
+
+import java.util.Enumeration;
+import java.util.Vector;
+
 public class MenuBar
   extends MenuComponent
   implements MenuContainer
@@ -26,11 +27,20 @@ public MenuBar() {
 
 public Menu add( Menu m) {
 	menus.addElement( m);
+	m.parent = this;
 	updateView();
-	return m;
+
+	return (m);
 }
 
 public void addNotify() {
+}
+
+/**
+ * @deprecated
+ */
+public int countMenus() {
+	return menus.size();
 }
 
 public void deleteShortcut( MenuShortcut s) {
@@ -51,7 +61,7 @@ public Menu getMenu( int idx) {
 }
 
 public int getMenuCount() {
-	return menus.size();
+	return (countMenus());
 }
 
 public MenuItem getShortcutMenuItem( MenuShortcut s) {
@@ -63,6 +73,18 @@ public MenuItem getShortcutMenuItem( MenuShortcut s) {
 			return mi;
 	}
 	return null;
+}
+
+protected void propagateOldEvents ( boolean isOldEventClient ) {
+	super.propagateOldEvents( isOldEventClient);
+
+	// hand this down to all menus attached to us
+	for (int i = menus.size() - 1; i >= 0; i--) {
+		((Menu)menus.elementAt(i)).propagateOldEvents( isOldEventClient);
+	}
+	if (helpMenu != null) {
+		helpMenu.propagateOldEvents( isOldEventClient);
+	}
 }
 
 public void remove( MenuComponent m) {
@@ -98,13 +120,5 @@ public synchronized Enumeration shortcuts() {
 }
 
 void updateView() {
-}
-
-/**
- * HotJava 1.1.5 uses this.
- * @deprecated As of JDK version 1.1, replaced by getMenuCount().
- */
-public int countMenus() {
-	return getMenuCount();
 }
 }

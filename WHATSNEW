@@ -1,19 +1,12 @@
-What's New in Kaffe OpenVM 1.0 Beta 2
+What's New in Kaffe OpenVM 1.0 Beta 3
 -------------------------------------
 
-* New ports for:
-   * Cobalt Qube (Linux/MIPS)
-   * Corel Netwinder (Linux/StrongARM)
+* New java.awt - now implements old event model (JDK 1.0.2) and will support
+  Swing.
 
-* java.sql package now provided.
+* New java.net implementation - fixes many bugs and generally much cleaner.
 
-* java.math package partially complete (no BigDecimal yet).
+* Initial implementation of Collections API (only Vector and Hashtable
+  currently conform).
 
-* Now support for JPEG, GIF and PNG images via external libraries (so
-  avoiding silly image patent problems).
-
-* Many ports have been updated and fixed.
-
-* Upgrade Pizza to 0.39g.
-
-* Many bug fixes and improvments.
+* Lots of bug fixes.

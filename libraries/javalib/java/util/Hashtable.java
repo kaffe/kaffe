@@ -15,10 +15,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ClassNotFoundException;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
 /* Hashtable (NOT tree) with simple clustering */
 
-public class Hashtable extends Dictionary implements Cloneable, Serializable {
+public class Hashtable extends Dictionary implements Map, Cloneable, Serializable {
   transient private Object keys[];
   transient private Object elements[];
   transient private float loadFactor;
@@ -339,6 +342,30 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     return (result.toString());
   }
+
+  public boolean containsValue(Object o) {
+    return (contains(o));
+  }
+
+  public void putAll(Map m) {
+    Object[] keys = m.keySet().toArray();
+    for (int i = 0; i < keys.length; i++) {
+      put(keys[i], m.get(keys[i]));
+    }
+  }
+
+  public Set entrySet() {
+    throw new kaffe.util.NotImplemented();
+  }
+
+  public Set keySet() {
+    throw new kaffe.util.NotImplemented();
+  }
+
+  public Collection values() {
+    throw new kaffe.util.NotImplemented();
+  }
+
 }
 
 class HashtableEnumeration

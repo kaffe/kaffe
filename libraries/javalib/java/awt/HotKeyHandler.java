@@ -31,16 +31,14 @@ boolean process( KeyEvent e) {
 	int cc = e.getKeyCode();
 
 	if (cc == keyCode ) {
-		ActionEvent ae;
+		ActionEvt ae;
 		if ( mi != null ) {
-			ae = AWTEvent.getActionEvent( mi, ActionEvent.ACTION_PERFORMED );
-			ae.setActionEvent( sel, mods );
+			ae = ActionEvt.getEvent( mi, ActionEvent.ACTION_PERFORMED, sel, mods );
 			mi.processActionEvent( ae);
 		}
 		else {
-			ae = AWTEvent.getActionEvent( tgt, ActionEvent.ACTION_PERFORMED );
-			ae.setActionEvent( sel, mods);
-			tgt.processActionEvent( ae);
+			ae = ActionEvt.getEvent( tgt, ActionEvent.ACTION_PERFORMED, sel, mods );
+			tgt.processEvent( ae);
 		}
 		return true;
 	}
@@ -145,7 +143,6 @@ static boolean handle( KeyEvent e) {
 			return true;
 	}
 
-		
 	return false;
 }
 

@@ -1,6 +1,3 @@
-package java.awt;
-
-
 /**
  * OpaqueComponent - 
  *
@@ -12,6 +9,9 @@ package java.awt;
  *
  * @author P. Mehlitz
  */
+
+package java.awt;
+
 public interface OpaqueComponent
 {
 }

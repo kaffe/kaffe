@@ -1,6 +1,3 @@
-package java.awt.image;
-
-
 /**
  * ColorModel - 
  *
@@ -12,6 +9,9 @@ package java.awt.image;
  *
  * @author P. Mehlitz
  */
+
+package java.awt.image;
+
 abstract public class ColorModel
 {
 	protected int pixel_bits;

@@ -1,3 +1,11 @@
+package kaffe.net.www.protocol.file;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 /*
  * FileURLConnection -
  *  Simple file URL handler.
@@ -8,18 +16,10 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package kaffe.net.www.protocol.file;
-
-import java.net.URLConnection;
-import java.net.URL;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
-public class FileURLConnection extends URLConnection {
-
-final static private String headers[] = {
+public class FileURLConnection
+  extends URLConnection
+{
+	final private static String[] headers = {
 	"content-encoding",
 	"content-length",
 	"content-type",
@@ -28,17 +28,14 @@ final static private String headers[] = {
 	"If-Modified-Since",
 	"lastModified",
 };
-private String headersValue[] = new String[headers.length];
-
-final static private int ContentEncoding = 0;
-final static private int ContentLength = 1;
-final static private int ContentType = 2;
-final static private int Date = 3;
-final static private int Expiration = 4;
-final static private int IfModifiedSince = 5;
-final static private int LastModified = 6;
-
-private FileInputStream in;
+	private String[] headersValue = new String[headers.length];
+	final private static int ContentEncoding = 0;
+	final private static int ContentLength = 1;
+	final private static int ContentType = 2;
+	final private static int Date = 3;
+	final private static int Expiration = 4;
+	final private static int IfModifiedSince = 5;
+	final private static int LastModified = 6;
 
 public FileURLConnection(URL url)
 {
@@ -47,12 +44,17 @@ public FileURLConnection(URL url)
 
 public void connect() throws IOException
 {
-	in = new FileInputStream(url.getFile());
+	setHeaderField("content-type", guessContentTypeFromName(url.getFile()));
 }
 
-public InputStream getInputStream() throws IOException
+public String getHeaderField(String name)
 {
-	return (in);
+	for (int i = 0; i < headers.length; i++) {
+		if (headers[i].equals( name)) {
+			return (getHeaderField(i));
+		}
+	}
+	return (null);
 }
 
 public String getHeaderField(int pos)
@@ -63,16 +65,6 @@ public String getHeaderField(int pos)
 	return (headersValue[pos]);
 }
 
-public String getHeaderField(String name)
-{
-	for (int i = 0; i < headers.length; i++) {
-		if (name == headers[i]) {
-			return (getHeaderField(i));
-		}
-	}
-	return (null);
-}
-
 public String getHeaderFieldKey(int pos)
 {
 	if (pos < 0 || pos >= headers.length) {
@@ -81,4 +73,17 @@ public String getHeaderFieldKey(int pos)
 	return (headers[pos]);
 }
 
+public InputStream getInputStream() throws IOException
+{
+	return (new FileInputStream(url.getFile()));
+}
+
+void setHeaderField( String key, String value) {
+	for ( int i=0; i<headers.length; i++ ) {
+		if ( headers[i].equals( key) ) {
+			headersValue[i] = value;
+			break;
+		}
+	}
+}
 }

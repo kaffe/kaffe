@@ -12,12 +12,9 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
-#include <netinet/in.h>
-#if defined(HAVE_NETINET_TCP_H)
-#include <netinet/tcp.h>
-#endif
+#include "config-net.h"
 #include <native.h>
-#include "../native/FileDescriptor.h"
+#include "../io/FileDescriptor.h"
 #include "../native/Integer.h"
 #include "SocketImpl.h"
 #include "InetAddress.h"
@@ -181,7 +178,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 #endif
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(unhand(sock)->localport);
-	addr.sin_addr.s_addr = unhand(unhand(sock)->address)->address;
+	addr.sin_addr.s_addr = htonl(unhand(unhand(sock)->address)->address);
 
 	r = accept(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen);
 	if (r < 0) {
@@ -328,4 +325,36 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 		SignalError("java.net.SocketException", "Unimplemented socket option");    
 	} 
 	return (r);
+}
+
+jint
+java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+{
+        int r;
+
+        r = sockread(unhand(unhand(this)->fd)->fd, &unhand(buf)->body[offset], len);
+        if (r < 0) {
+                SignalError("java.io.IOException", SYS_ERROR);
+        }
+        else if (r == 0 && len > 0) {
+                return (-1);    /* EOF */
+        }
+        else {
+                return (r);
+        }
+}
+
+void
+java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+{
+        int r;
+	int fd;
+
+	fd = unhand(unhand(this)->fd)->fd;
+        if (fd >= 0) {
+		r = sockwrite(fd, &unhand(buf)->body[offset], len);
+		if (r < 0) {
+			SignalError("java.io.IOException", SYS_ERROR);
+		}
+	}
 }

@@ -36,8 +36,7 @@ public StringBuffer(int length)
 	buffer=new char[length];
 }
 
-public synchronized StringBuffer append(Object obj)
-	{
+public synchronized StringBuffer append(Object obj) {
 	return append(String.valueOf(obj));
 }
 
@@ -221,11 +220,10 @@ public synchronized void setCharAt(int index, char ch)
 	buffer[index]=ch;
 }
 
-public synchronized void setLength(int newLength)
-	{
-	if (newLength < 0)
+public synchronized void setLength(int newLength) {
+	if (newLength < 0) {
 		throw new StringIndexOutOfBoundsException();
-
+	}
 	if (newLength > used) {
 		/* buffer expands */
 		if (newLength > buffer.length) {
@@ -233,19 +231,18 @@ public synchronized void setLength(int newLength)
 			char oldBuffer[] = buffer;
 			buffer = new char[newLength];
 			System.arraycopy(oldBuffer, 0, buffer, 0, used);
-		} else {
+		}
+		else {
 			/* Pad buffer */
 			for (int pos = used; pos < newLength; pos++) {
 				buffer[pos]='\u0000';
 			}
 		}
 	}
-
 	used = newLength;
 }
 
 public String toString() {
 	return new String(this);
 }
-
 }

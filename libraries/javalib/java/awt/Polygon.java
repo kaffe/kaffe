@@ -62,6 +62,13 @@ public boolean contains ( Point p ) {
 }
 
 public boolean contains ( int x, int y ) {
+	return (inside( x, y ));
+}
+
+/**
+ * @deprecated ,use contains(x,y)
+ */
+public boolean inside ( int x, int y ) {
 	int   i, j, k=0;
 	int   x0, x1, y0, y1;
 	float m;
@@ -96,14 +103,14 @@ public boolean contains ( int x, int y ) {
 	return ((k & 1) != 0);
 }
 
+public Rectangle getBounds() {
+	return (getBoundingBox());
+}
+
 /**
  * @deprecated , use getBounds()
  */
 public Rectangle getBoundingBox() {
-	return getBounds();
-}
-
-public Rectangle getBounds() {
 	if ( bounds != null )
 		return bounds;
 
@@ -139,13 +146,6 @@ void grow () {
 	a = new int[n];
 	System.arraycopy( ypoints, 0, a, 0, npoints);
 	ypoints = a;
-}
-
-/**
- * @deprecated ,use contains(x,y)
- */
-public boolean inside ( int x, int y ) {
-	return contains( x, y);
 }
 
 public void translate ( int dx, int dy ) {

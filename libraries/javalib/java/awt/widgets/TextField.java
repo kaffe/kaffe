@@ -35,6 +35,7 @@ public class TextField
 	TextBuffer textBuf = new TextBuffer();
 	TextBuffer hiddenBuf;
 	int first;
+	Graphics rgr;
 
 public TextField() {
 	this( "", 1);
@@ -67,6 +68,14 @@ public TextField( int cols) {
 public void addActionListener ( ActionListener al) {
 	aListener = AWTEventMulticaster.add( aListener, al);
 	eventMask |= AWTEvent.ACTION_EVENT_MASK;
+}
+
+public void addNotify () {
+	super.addNotify();
+	if ( rgr == null ) {
+		rgr = getGraphics();
+		updateClip( rgr);
+	}
 }
 
 void blankSelection() {
@@ -115,16 +124,12 @@ public void focusGained( FocusEvent e) {
 }
 
 public void focusLost( FocusEvent e) {
-	Graphics g = getGraphics();
-	if ( g != null ) {
-		paintBorder( g);
-		if ( Defaults.ShowInactiveCursor ) {
-			paintInactiveCursor( g);
-		}
-		else {
-			repaint( g, 0);
-		}
-		g.dispose();
+	paintBorder();
+	if ( Defaults.ShowInactiveCursor ) {
+		paintInactiveCursor();
+	}
+	else {
+		repaint( 0);
 	}
 	
 	if ( selStart < selEnd )
@@ -155,29 +160,31 @@ public char getEchoChar() {
 	return echoChar;
 }
 
-public Dimension getMinimumSize( int cols) {
-	FontMetrics fm = getFontMetrics( font);
-	int w = cols * fm.charWidth( 'x');
-	int h = fm.getHeight() * 3/2;
-	return new Dimension( w, h);
+public Graphics getGraphics() {
+	Graphics g = super.getGraphics();
+	if ( g != null ) {
+		g.setTarget( this);
+	}
+	return g;
 }
 
-public Dimension getPreferredSize() {
-	int cx = 80;
-	int cy = 20;
-	if ( font != null ){
-		FontMetrics fm = getFontMetrics( font);
-		cx = Math.max( cx, 15* fm.charWidth( 'm'));
-		cy = Math.max( cy, 3*fm.getHeight()/2 );
-	}
+public Dimension getMinimumSize() {
+	return (minimumSize());
+}
 
-	return new Dimension( cx, cy);
+public Dimension getMinimumSize(int cols) {
+	return (minimumSize(cols));
+}
+
+public Dimension getPreferredSize(int cols) {
+	return (preferredSize(cols));
 }
 
 public String getSelectedText() {
-	if ( selStart != selEnd)
+	if ( selStart != selEnd) {
 		return textBuf.getString( selStart, selEnd-selStart);
-	return null;
+	}
+	return (null);
 }
 
 public int getSelectionEnd() {
@@ -305,6 +312,25 @@ void makeVisible( int idx) {
 		repaint();
 }
 
+/**
+ * @deprecated
+ */
+public Dimension minimumSize() {
+	return (minimumSize(cols));
+}
+
+/**
+ * @deprecated
+ */
+public Dimension minimumSize(int cols) {
+	FontMetrics  fm = getFontMetrics( font);
+	int          n = (cols < 10) ? 10 : cols;
+	int          w = n * fm.charWidth( 'x');
+	int          h = fm.getHeight() + 6;
+	
+	return new Dimension( w, h);
+}
+
 public void mouseClicked ( MouseEvent evt ) {
 }
 
@@ -343,9 +369,9 @@ public void mouseReleased( MouseEvent e) {
 }
 
 void notifyAction(){
-	if ( hasToNotify( AWTEvent.ACTION_EVENT_MASK, aListener)) {
-		ActionEvent ae = AWTEvent.getActionEvent( this, ActionEvent.ACTION_PERFORMED);
-		ae.setActionEvent( getText(), 0 );
+	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener)) {
+		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                   getText(), 0);
 		Toolkit.eventQueue.postEvent( ae);
 	}
 }
@@ -357,38 +383,57 @@ public void paint( Graphics g) {
 	g.setColor( bgClr);
 	g.fillRect( d, d, width-2*d, height-2*d);
 
-	repaint( g, 0);
-	
+	repaint( 0);	
 }
 
-void paintInactiveCursor( Graphics g) {
-	g.setColor( Defaults.TextCursorInactiveClr);
-	tCursor.blank( g);
+public void paintInactiveCursor() {
+	rgr.setColor( Defaults.TextCursorInactiveClr);
+	tCursor.blank( rgr);
 }
 
 protected String paramString() {
 	return super.paramString();
 }
 
-protected void processActionEvent( ActionEvent e) {
-	aListener.actionPerformed( e);
+/**
+ * @deprecated
+ */
+public Dimension preferredSize() {
+	return (preferredSize(cols));
 }
 
-protected void processEvent( AWTEvent e) {
-	if ( hasToNotify( AWTEvent.ACTION_EVENT_MASK, aListener))
-		processActionEvent( (ActionEvent) e);
-	else
-		super.processEvent( e);
+/**
+ * @deprecated
+ */
+public Dimension preferredSize(int cols) {
+	return (getMinimumSize(cols));
+}
+
+protected void processActionEvent ( ActionEvent e) {
+	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener))
+		aListener.actionPerformed( e);
 }
 
 public void removeActionListener( ActionListener al) {
 	aListener = AWTEventMulticaster.remove( aListener, al);
 }
 
-void repaint( Graphics g, TextBuffer tb, int start, int end, boolean invert) {
+public void removeNotify () {
+	super.removeNotify();
+
+	if ( rgr != null ) {
+		rgr.dispose();
+		rgr = null;
+	}
+}
+
+void repaint( TextBuffer tb, int start, int end, boolean invert) {
 	int x0, x1;
 	int db = BORDER_WIDTH;
 	
+	if ( rgr == null )
+		return;
+		
 	if ( start < first )
 		start = first;
 		
@@ -396,57 +441,45 @@ void repaint( Graphics g, TextBuffer tb, int start, int end, boolean invert) {
 	x1 = x0 + tb.getWidth ( start, end);
 
 	if ( invert) {
-		g.setColor( Defaults.TextFieldSelBgClr );
+		rgr.setColor( Defaults.TextFieldSelBgClr );
 		if ( end == tb.len )
 			x1 += tCursor.width;
-		g.fill3DRect( x0, tCursor.y, x1-x0, tCursor.height+1, true);
-		g.setColor( Defaults.TextFieldSelTxtClr);
+		rgr.fill3DRect( x0, tCursor.y, x1-x0, tCursor.height+1, true);
+		rgr.setColor( Defaults.TextFieldSelTxtClr);
 	}
 	else {
-		g.setColor( bgClr );
+		rgr.setColor( bgClr );
 		if ( end == tb.len )
-			x1 = width - db - xOffs;
-		g.fillRect( x0, tCursor.y, x1-x0, tCursor.height+1);
-		g.setColor( fgClr);
+			x1 = width - db;
+		rgr.fillRect( x0, tCursor.y, x1-x0, tCursor.height+1);
+		rgr.setColor( fgClr);
 	}
 
-	tb.paintFrom( g, db + xOffs, 0, height, first, start, end-start);
+	tb.paintFrom( rgr, db + xOffs, 0, height, first, start, end-start);
 }
 
-void repaint( Graphics g, int start){
-	int db = BORDER_WIDTH;
+void repaint( int start){
 	TextBuffer tb = getBuffer();
-
-	g.clipRect( db + xOffs, db, width - 2*db - 2*xOffs, height - 2*db);
-	g.setFont( font);
 
 	if ( start > 0 )
 		start = start -1;
 		
 	if ( (selStart == selEnd) || (start > selEnd) )
-		repaint( g, tb, start, tb.len, false);
+		repaint( tb, start, tb.len, false);
 	else {
 		if ( selStart > start)
-			repaint( g, tb, start, selStart, false);
+			repaint( tb, start, selStart, false);
 		if ( selEnd > start)
-			repaint( g, tb, Math.max( selStart, start), selEnd, true);
+			repaint( tb, Math.max( selStart, start), selEnd, true);
 		if ( textBuf.len > selEnd)
-			repaint( g, tb, selEnd, textBuf.len, false);
+			repaint( tb, selEnd, textBuf.len, false);
 	}
 
 	if ( AWTEvent.keyTgt == this)
-		tCursor.paint( g);
+		tCursor.paint( rgr);
 	else if ( Defaults.ShowInactiveCursor )
-		paintInactiveCursor( g);
+		paintInactiveCursor();
 
-}
-
-void repaint( int start){
-	Graphics g = getGraphics();
-	if ( g != null) {
-		repaint( g, start);
-		g.dispose();
-	}
 }
 
 void repaintTrailing() {
@@ -465,6 +498,11 @@ void replaceSelectionWith ( String s ) {
 void resetSelIdxs( int idx) {
 	selStart = idx;
 	selEnd = idx;
+}
+
+public void reshape( int x, int y, int w, int h) {
+	super.reshape( x, y, w, h);
+	updateClip( rgr);
 }
 
 public void select( int start, int end) {
@@ -494,6 +532,13 @@ public void setColumns( int cols) {
 }
 
 public void setEchoChar( char echoChar) {
+	setEchoCharacter(echoChar);
+}
+
+/**
+ * @deprecated
+ */
+public void setEchoCharacter(char echoChar) {
 	this.echoChar = echoChar;
 	if ( echoChar != 0 ) {
 		if ( hiddenBuf == null ) {
@@ -509,7 +554,6 @@ public void setEchoChar( char echoChar) {
 }
 
 public void setFont( Font f) {
-	super.setFont( f);
 	fm = getFontMetrics( f);
 	textBuf.setMetrics( fm, 20);
 	if ( hiddenBuf != null )
@@ -520,8 +564,7 @@ public void setFont( Font f) {
 	tCursor.setPos( (height - h)/2, h);
 	tCursor.setIndex( tCursor.index, getCursorPos( tb, tCursor.index) );
 	
-	if ( isShowing() )
-		repaint();
+	super.setFont( f);
 }
 
 public void setSelectionEnd( int end) {
@@ -570,5 +613,12 @@ protected void shiftTextCursor( int d, boolean resetSel) {
 		setTextCursor( textBuf.len, resetSel, false);
 	else
 		setTextCursor( tCursor.index + d, resetSel, false);
+}
+
+void updateClip( Graphics g) {
+	if ( g != null ) {
+		g.setClip( BORDER_WIDTH+xOffs, BORDER_WIDTH,
+							 width-2*BORDER_WIDTH-xOffs, height-2*BORDER_WIDTH);
+	}
 }
 }

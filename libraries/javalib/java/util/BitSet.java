@@ -8,408 +8,267 @@
  * of this file.
  */
 
-/**
- * @author Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
- */
 package java.util;
 
-final public class BitSet
-    implements Cloneable, java.io.Serializable
+import java.io.Serializable;
+
+public class BitSet
+  implements Cloneable, Serializable
 {
-    /**
-     * The bits in this BitSet.
-     * @serial The ith bit is stored in bits[i/64] (aka bits[i>>6])
-     * at bit position (i%64) (aka i & 0x3F).
-     */
-    private long bits[];
+	int[] bits;
+	int size;
+	static int[] mask = {
+	0x00000001,
+	0x00000002,
+	0x00000004,
+	0x00000008,
+	0x00000010,
+	0x00000020,
+	0x00000040,
+	0x00000080,
+	0x00000100,
+	0x00000200,
+	0x00000400,
+	0x00000800,
+	0x00001000,
+	0x00002000,
+	0x00004000,
+	0x00008000,
+	0x00010000,
+	0x00020000,
+	0x00040000,
+	0x00080000,
+	0x00100000,
+	0x00200000,
+	0x00400000,
+	0x00800000,
+	0x01000000,
+	0x02000000,
+	0x04000000,
+	0x08000000,
+	0x10000000,
+	0x20000000,
+	0x40000000,
+	0x80000000
+};
+	static int[] invMask = {
+	0xfffffffe,
+	0xfffffffd,
+	0xfffffffb,
+	0xfffffff7,
+	0xffffffef,
+	0xffffffdf,
+	0xffffffbf,
+	0xffffff7f,
+	0xfffffeff,
+	0xfffffdff,
+	0xfffffbff,
+	0xfffff7ff,
+	0xffffefff,
+	0xffffdfff,
+	0xffffbfff,
+	0xffff7fff,
+	0xfffeffff,
+	0xfffdffff,
+	0xfffbffff,
+	0xfff7ffff,
+	0xffefffff,
+	0xffdfffff,
+	0xffbfffff,
+	0xff7fffff,
+	0xfeffffff,
+	0xfdffffff,
+	0xfbffffff,
+	0xf7ffffff,
+	0xefffffff,
+	0xdfffffff,
+	0xbfffffff,
+	0x7fffffff
+};
 
+public BitSet () {
+	this( 32);
+}
 
-    /**
-     * return the offset in bits[].
-     */
-    private static int bitOffset(int bit) {
-	return bit >> 6;
-    }
-
-    /**
-     * return the mask of the bit in bits[bitOffset(bit)].
-     */
-    private static long bitMask(int bit) {
-	return 1L << (bit & 0x3F);
-    }
-
-    /**
-     * ensure bits can hold nr bit.
-     */
-    private void ensureSize(int nr) {
-	int len = bitOffset(nr + 0x3F);
-	if (len > bits.length) {
-	    long b[] = new long[len];
-	    System.arraycopy(bits, 0, b, 0, bits.length);
-	    bits = b;
+public BitSet ( int size ) {
+	if ( size <= 32 ) {
+		bits = new int[1];
+		this.size = 32;
 	}
-    }
+	else {
+		int n = (size+31) >> 5;
+		bits = new int[n];
+		this.size = n << 5;
+	}
+}
 
+public void and ( BitSet other ) {
+	int[]  ob = other.bits;
+	int    i, n = ob.length;
 
-    /**
-     * Create a new BitSet.
-     */
-    public BitSet() {
-	this(64);
-    }
+	if ( n > bits.length )
+		grow( n << 5);
+		
+	for ( i=0; i<n; i++ )
+		bits[i] &= ob[i];
+}
 
+public void clear ( int bit ) {
+	if ( bit < 32 ) {
+		bits[0] &= invMask[bit];
+	}
+	else {
+		if ( bit >= size )
+			grow( bit+1);
 
-    /**
-     * Create a new BitSet that can hold nr bits.
-     * All bits are initialized to false.
-     *
-     * @param nr the inital size of the set.
-     */
-    public BitSet(int nr) {
-	if (nr < 0)
-	    throw new NegativeArraySizeException();
-	bits = new long[bitOffset(nr + 0x3F)];
-    }
+		int n = bit >> 5;
+		int i = bit - (n << 5);
+	
+		bits[n] &= invMask[i];
+	}
+}
 
+public Object clone () {
+	BitSet other = new BitSet( size);
+	System.arraycopy( bits, 0, other.bits, 0, bits.length);
+	return other;
+}
 
-    /**
-     * Set a bit in the set.
-     * @param bit the bit to set.
-     */
-    public synchronized void set(int bit) {
-	if (bit < 0)
-	    throw new IndexOutOfBoundsException();
-	ensureSize(bit+1);
-	bits[bitOffset(bit)] |= bitMask(bit);
-    }
+public boolean equals ( Object obj ) {
+	if ( obj instanceof BitSet ) {
+		BitSet other = (BitSet) obj;
 
-    /**
-     * Clear a bit in the set.
-     * @param bit the bit to clear.
-     */
-    public synchronized void clear(int bit) {
-	if (bit < 0)
-	    throw new IndexOutOfBoundsException();
-	ensureSize(bit+1);
-	bits[bitOffset(bit)] &= ~bitMask(bit);
-    }
+		int[]  ob = other.bits;
+		int    i, n = ob.length;
 
-    /**
-     * Returns the value of the bit in the set.
-     * @param bit the bit to check.
-     * @return the value of the bit.
-     */
-    public synchronized boolean get(int bit) {
-	if (bit < 0)
-	    throw new IndexOutOfBoundsException();
-	int k = bitOffset(bit);
-	if (k < bits.length)
-	    return ((bits[k] & bitMask(bit)) != 0);
+		if ( n != bits.length )
+			return false;
+		
+		if ( n == 1 ){
+			return (bits[0] == ob[0]);
+		}
+		else {
+			for ( i=0; i<n; i++ ){
+				if ( bits[i] != ob[i] ) return false;
+			}	
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+public boolean get ( int bit ) {
+	if ( bit < 32 ) {
+		return ((bits[0] & mask[bit]) != 0);
+	}
+	else {
+		if ( bit >= size )
+			return false;
+
+		int n = bit >> 5;
+		int i = bit - (n << 5);
+
+		return ((bits[n] & mask[i]) != 0);
+	}
+}
+
+void grow ( int newSize ) {
+	int n = (newSize+31) >> 5;
+	int[] newBits;
+	
+	// no need to play the stop and go game if this is continously incremented
+	if ( n < (bits.length<<1) )
+		n = bits.length<<1;
+	
+	newBits = new int[n];
+	
+	System.arraycopy( bits, 0, newBits, 0, bits.length);
+	bits = newBits;
+	size = n << 5;
+}
+
+public int hashCode () {
+	// Hmm, is this specified ? We use a very simple scheme here
+	int i, h, b, n = bits.length;
+	
+	if ( n == 1 ){
+		return bits[0];
+	}
+	else {
+		h = (bits[0] == 0) ? 19 : bits[0];
+	
+		for ( i=1; i<n; i++ ) {
+			if ( (b = bits[i]) == 0 )
+				b = i;
+			h ^= (h * 65599) + b;
+		}
+		return h;
+	}
+}
+
+public void or ( BitSet other ) {
+	int[]  ob = other.bits;
+	int    i, n = ob.length;
+
+	if ( n > bits.length )
+		grow( n << 5);
+		
+	for ( i=0; i<n; i++ )
+		bits[i] |= ob[i];
+}
+
+public void set ( int bit ) {
+	if ( bit < 32 ) {
+		bits[0] |= mask[bit];
+	}
+	else {
+		if ( bit >= size )
+			grow( bit+1);
+
+		int n = bit >> 5;
+		int i = bit - (n << 5);
+
+		bits[n] |= mask[i];
+	}
+}
+
+public int size () {
+	return size;
+}
+
+public String toString () {
+	StringBuffer s = new StringBuffer( size); // rough guess
+	int b, i, j, k, n = bits.length;
+	
+	s.append( '{');
+	for ( i=0; i<n; i++ ) {
+		if ( (b = bits[i]) != 0 ) {
+			k = i << 5;
+			for ( j=0; j<32; j++ ){
+				if ( (b & mask[j]) != 0 ){
+					s.append( k + j);
+					s.append( ',');
+				}
+			}
+		}
+	}
+	if ( (i = s.length()) > 1 )
+		s.setCharAt( i - 1, '}');
 	else
-	    return false;
-    }
+		s.append( '}');
+	
+	return s.toString();
+}
 
+public void xor ( BitSet other ) {
+	int[]  ob = other.bits;
+	int    i, n = ob.length;
 
-    /**
-     * Returns the index of the highest set bit in the set plus one.
-     *
-     * @return the logical size of this set.
-     * @since JDK1.2
-     */
-    public synchronized int length() {
-	long b[] = bits;
-	int n = b.length - 1;
-	while ((n >= 0) && (b[n] == 0L))
-	    n--;
-	if (n < 0)
-	    return 0;
-
-	long m = b[n];
-	long k = 1L << 63;
-	n = (n + 1) << 6;
-
-	// k never 0 because m != 0
-	while ((m & k) == 0L) {
-	    n--;
-	    k >>= 1;
-	}
-	return n;
-    }
-
-
-    /**
-     * @return the number of bits in the set.
-     */
-    public int size() {
-	// don't need synchronization
-	return bits.length << 6;
-    }
-
-
-    /**
-     * Compares this object againts the specified object.
-     * The result is true if and only if the argument is not null and is
-     * a BitSet object that has exactly the same set of bits set to true.
-     * The current sizes of the two sets are not compared.
-     * @return true if the objects are the same; false otherwise.
-     */
-    public boolean equals(Object obj) {
-	if (obj == this)
-	    return true;
-	if ((obj == null) || !(obj instanceof BitSet))
-	    return false;
-
-	Object lock1, lock2;
-	if (System.identityHashCode(this) < System.identityHashCode(obj)) {
-	    lock1 = this;
-	    lock2 = obj;
-	}
-	else {
-	    lock1 = obj;
-	    lock2 = this;
-	}
-	synchronized(lock1) {
-	    synchronized(lock2) {
-		long a[] = bits;
-		long b[] = ((BitSet)obj).bits;
-
-		// Check commun bits
-		int nr = Math.min(a.length, b.length);
-		for (int i = nr; i-- > 0; ) {
-		    if (a[i] != b[i])
-			return false;
-		}
-
-		// Check upper bits
-		if (nr != b.length)
-		    a = b;
-		else if (nr == a.length)
-		    return true;
-		for(int i = a.length; i-- > nr; ) {
-		    if (a[i] != 0L)
-			return false;
-		}
-		return true;
-	    }
-	}
-    }
-
-
-    /**
-     * Performs a logical AND of this set and the argument bit set.
-     * Result of the mathematical intersection of two sets.
-     * @param set a bit set.
-     */
-    public void and(BitSet bitset) {
-	if (this == bitset)
-	    return;
-	Object lock1, lock2;
-	if (System.identityHashCode(this) < System.identityHashCode(bitset)) {
-	    lock1 = this;
-	    lock2 = bitset;
-	}
-	else {
-	    lock1 = bitset;
-	    lock2 = this;
-	}
-	synchronized(lock1) {
-	    synchronized(lock2) {
-		// a = a and b
-		long a[] = bits;
-		long b[] = bitset.bits;
-
-		int nr = Math.min(a.length, b.length);
-		for (int i = nr; i-- > 0; )
-		    a[i] &= b[i];
-		// clear upper bits
-		for (int i = a.length; i-- > nr; )
-		    a[i] = 0;
-	    }
-	}
-    }
-
-
-    /**
-     * Performs a logical AND of this set and the COMPLEMENT of the argument
-     * bit set.
-     * Result of the mathematical substaction of two set.
-     * @param set a bit set.
-     * @since JDK1.2
-     */
-    public void andNot(BitSet bitset) {
-	if(this == bitset) {
-	    synchronized(this) {
-		long a[] = bits;
-		for (int i = a.length; i-- > 0; )
-		    a[i] = 0;
-	    }
-	    return;
-	}
-	Object lock1, lock2;
-	if (System.identityHashCode(this) < System.identityHashCode(bitset)) {
-	    lock1 = this;
-	    lock2 = bitset;
-	}
-	else {
-	    lock1 = bitset;
-	    lock2 = this;
-	}
-	synchronized(lock1) {
-	    synchronized(lock2) {
-		// a = a and (not b)
-		long a[] = bits;
-		long b[] = bitset.bits;
-
-		int nr = Math.min(a.length, b.length);
-		for (int i = nr; i-- > 0; )
-		    a[i] &= ~b[i];
-		// don't nead to check upper bits
-	    }
-	}
-    }
-
-
-    /**
-     * Performs a logical OR of this set and the argument bit set.
-     * Result of the mathematical union of two sets.
-     * @param set a bit set.
-     */
-    public void or(BitSet bitset) {
-	if (this == bitset)
-	    return;
-	Object lock1, lock2;
-	if (System.identityHashCode(this) < System.identityHashCode(bitset)) {
-	    lock1 = this;
-	    lock2 = bitset;
-	}
-	else {
-	    lock1 = bitset;
-	    lock2 = this;
-	}
-	synchronized(lock1) {
-	    synchronized(lock2) {
-		// a = a or b
-		long a[] = bits;
-		long b[] = bitset.bits;
-
-		int nr = Math.min(a.length, b.length);
-		for (int i = nr; i-- > 0; )
-		    a[i] |= b[i];
-		// Set upper bits
-		if (a.length < b.length) {
-		    // grow only for set bits
-		    ensureSize(bitset.length());
-		    a = bits;
-		    for (int i = bits.length; i-- > nr; )
-			a[i] = b[i];
-		}
-	    }
-	}
-    }
-
-
-    /**
-     * Performs a logical EXCLUSIVE OR of this set and the argument bit set.
-     *
-     * @param set a bit set.
-     */
-    public void xor(BitSet bitset) {
-	if(this == bitset) {
-	    synchronized(this) {
-		long a[] = bits;
-		for (int i = a.length; i-- > 0; )
-		    a[i] = 0;
-	    }
-	    return;
-	}
-	Object lock1, lock2;
-	if (System.identityHashCode(this) < System.identityHashCode(bitset)) {
-	    lock1 = this;
-	    lock2 = bitset;
-	}
-	else {
-	    lock1 = bitset;
-	    lock2 = this;
-	}
-	synchronized(lock1) {
-	    synchronized(lock2) {
-		// a = a xor b
-		long a[] = bits;
-		long b[] = bitset.bits;
-
-		int nr = Math.min(a.length, b.length);
-		for (int i = nr; i-- > 0; )
-		    a[i] ^= b[i];
-		// Set upper bits,  X ^ 0 == 0 ^ X == X
-		if (a.length < b.length) {
-		    // grow only for set bits
-		    ensureSize(bitset.length());
-		    a = bits;
-		    for (int i = bits.length; i-- > nr; )
-			a[i] = b[i];
-		}
-	    }
-	}
-    }
-
-
-    /**
-     * Returns a hash code value for this bit set.
-     */
-    public synchronized int hashCode() {
-	long h = 1234L;
-	for (int i = bits.length; --i >= 0; ) {
-	    h ^= bits[i] * (i + 1);
-	}
-	return (int)((h >> 32) ^ h);
-    }
-
-
-    /**
-     * Cloning this BitSet produces a new BitSet that is equal to it.
-     * The clone of the bit set is another bit set that has exactly the same
-     * bits set to true as this bit set and the same current size.
-     */
-    public synchronized Object clone() {
-	BitSet bitset;
-	try {
-	    bitset = (BitSet)super.clone();
-	}
-	catch (CloneNotSupportedException _) {
-	    return null;
-	}
-	bitset.bits = new long[bits.length];
-	// if clone could reduce the size: copy up to last set bit
-	// bitset.bits = new long[bitOffset(length() + 0x3F)];
-	System.arraycopy(bits, 0, bitset.bits, 0, bitset.bits.length);
-	return bitset;
-    }
-
-
-    /**
-     * Returns a string representation of this bit set.
-     * For every index for which this BitSet contains a bit in the set state,
-     * the decimal representation of that index is included in the result.
-     * Such indeces are listed in order from lowest to highest, separated by
-     * ",&nbsp;" (a comma and a space) and surrounded by braces, resulting in
-     * the usual mathematical notation for a set of integers.
-     */
-    public synchronized String toString() {
-	int bit;
-	int nbits = length();
-	boolean first = true;
-	StringBuffer sb = new StringBuffer();
-	sb.append('{');
-	for (bit = 0; bit < nbits; bit++) {
-	    if (get(bit)) {
-		if (!first)
-		    sb.append(", ");
-		else
-		    first = false;
-		sb.append(bit);
-	    }
-	}
-	sb.append('}');
-	return sb.toString();
-    }
+	if ( n > bits.length )
+		grow( n << 5);
+		
+	for ( i=0; i<n; i++ )
+		bits[i] ^= ob[i];
+}
 }

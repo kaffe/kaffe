@@ -24,12 +24,11 @@ public static String decapitalize(String name)
 	if (name.length() > 2 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
 		return (name);
 	}
+	else if (name.length() > 0) {        /* empty string */
+		return (Character.toLowerCase(name.charAt(0)) + name.substring(1));
+	}
 	else {
-		if (name.length() > 0) {	/* empty string */
-			return (Character.toLowerCase(name.charAt(0)) + name.substring(1));
-		} else {
-			return (name);
-		}
+		return (name);
 	}
 }
 
@@ -101,7 +100,7 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 		Method add = (Method)addMethods.get(key);
 		Method remove = (Method)removeMethods.get(key);
 		if (add != null && remove != null) {
-			props[i] = new EventSetDescriptor(decapitalize(key), (Class)null, new Method[] {}, add, remove);
+			props[i] = new EventSetDescriptor(decapitalize(key), (Class)null, new Method[]{}, add, remove);
 			Class except[] = add.getExceptionTypes();
 			if (except != null) {
 				for (int j = 0; j < except.length; j++) {

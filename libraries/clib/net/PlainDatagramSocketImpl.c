@@ -11,15 +11,11 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include <sys/types.h>
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-#include <netinet/in.h>
+#include "config-net.h"
 #include "config-io.h"
 #include <native.h>
 #include "../native/Integer.h"
-#include "../native/FileDescriptor.h"
+#include "../io/FileDescriptor.h"
 #include "DatagramPacket.h"
 #include "PlainDatagramSocketImpl.h"
 #include "InetAddress.h"
@@ -30,11 +26,11 @@
 /*
  * Supported socket options
  */
-  static const struct {
-	  int jopt;
-	  int level;
-	  int copt;
-  } socketOptions[] = {
+static const struct {
+    int jopt;
+    int level;
+    int copt;
+} socketOptions[] = {
 #ifdef SO_SNDBUF
     { java_net_SocketOptions_SO_SNDBUF,		SOL_SOCKET,	SO_SNDBUF },
 #endif
@@ -157,12 +153,7 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 
 	unhand(pkt)->length = r;
 	unhand(pkt)->port = ntohs(addr.sin_port);
-	fromaddr = &unhand(pkt)->address;
-	if (*fromaddr == 0) {
-		*fromaddr = (struct Hjava_net_InetAddress *)
-				AllocObject("java/net/InetAddress");
-	}
-	unhand(*fromaddr)->address = ntohl(addr.sin_addr.s_addr);
+	unhand(unhand(pkt)->address)->address = ntohl(addr.sin_addr.s_addr);
 }
 
 /*

@@ -10,8 +10,7 @@
 
 package java.io;
 
-abstract public class InputStream extends Object
-{
+abstract public class InputStream extends Object {
 
 public int available() throws IOException {
 	return 0;

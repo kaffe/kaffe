@@ -1,0 +1,77 @@
+# File system (IO) support for Java libraries
+#
+# Copyright (c) 1996, 1997, 1998
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+@VPATHOPT@=	@srcdir@
+srcdir=		@srcdir@
+prefix=		@prefix@
+exec_prefix=	@exec_prefix@
+nativedir=	@nativedir@
+CC=		@CC@
+LD=		@LD@
+AR=		@AR@
+RANLIB=		@RANLIB@
+INCLUDES=	-I$(srcdir) -I../../../include -I$(srcdir)/../../../include -I../../../config -I$(srcdir)/../../../config
+CFLAGS=		@CFLAGS@
+ALL_CFLAGS=	$(CFLAGS) @KAFFEVMFLAGS@ $(INCLUDES) $(EXTRA_CFLAGS)
+INSTALL=	@INSTALL@
+INSTALL_DATA=	@INSTALL_DATA@
+MKDIR=		@MKDIR@
+LN=		@LN_S@
+DLLTOOL=	@DLLTOOL@
+PIC=		@PIC@
+LDFLAGS=	@LIBSHARE@
+LIBS=		@LIBS@
+LDTAIL=		@LDTAIL@ @STD_LIBRARIES@
+KVER=		@KVER@
+OBJEXT=		@OBJEXT@
+LIBEXT=		@LIBEXT@
+
+LIBNAME=	libio
+LIB=		$(LIBNAME)$(LIBEXT)
+LIBV=		$(LIBNAME)$(LIBEXT).$(KVER)
+
+WRAPPER_CMD=	"s%^\([Jj]ava_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
+WRAPPER_CMD2=	"s%^\(kaffe_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
+
+OBJECT.IO=\
+		FileDescriptor$(OBJEXT) \
+		File$(OBJEXT) \
+		FileInputStream$(OBJEXT) \
+		FileOutputStream$(OBJEXT) \
+		RandomAccessFile$(OBJEXT) \
+		AudioPlayer$(OBJEXT)
+
+OBJECT=		$(OBJECT.IO)
+
+all:		$(LIB)
+
+$(LIB):		$(OBJECT) lib.exp external_wrappers.h
+		@LINKLIB@
+
+.c$(OBJEXT):
+		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
+
+external_wrappers.h:	$(OBJECT)
+		sed -n $(WRAPPER_CMD) $(srcdir)/*.c > external_wrappers.h
+		sed -n $(WRAPPER_CMD2) $(srcdir)/*.c >> external_wrappers.h
+
+clean:
+		rm -f $(LIB) $(OBJECT) lib.exp external_wrappers.h
+
+distclean:	clean
+		rm -f Makefile
+
+install:
+		test -d $(nativedir) || $(MKDIR) $(nativedir)
+		rm -f $(nativedir)/$(LIB) $(nativedir)/$(LIBV)
+		$(INSTALL_DATA) $(LIB) $(nativedir)/$(LIBV)
+		$(LN) $(LIBV) $(nativedir)/$(LIB)
+
+lib.exp:
+		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LIB)
+		touch lib.exp

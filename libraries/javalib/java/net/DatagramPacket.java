@@ -1,6 +1,3 @@
-package java.net;
-
-
 /*
  * Java core library component.
  *
@@ -10,37 +7,96 @@ package java.net;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class DatagramPacket
-{
-	private byte[] buf = null;
-	private int length = 0;
-	private InetAddress address = null;
-	private int port = -1;
 
+package java.net;
+
+final public class DatagramPacket {
+
+private byte[] buf;
+private int length;
+private InetAddress address;
+private int port;
+
+/**
+ * Receive buffer.
+ */
 public DatagramPacket(byte ibuf[], int ilength) {
-	this(ibuf, ilength, null, -1);
+	buf = ibuf;
+	if (ilength < buf.length) {
+		length = ilength;
+	}
+	else {
+		length = buf.length;
+	}
+	try {
+		address = InetAddress.getLocalHost();
+	}
+	catch (UnknownHostException _) {
+	}
+	port = -1;
 }
 
+/**
+ * Send buffer.
+ */
 public DatagramPacket(byte ibuf[], int ilength, InetAddress iaddr, int iport) {
-	buf=ibuf;
-	length=Math.min(ilength, ibuf.length);
-	address=iaddr;
-	port=iport;
+	buf = ibuf;
+	if (ilength < buf.length) {
+		length = ilength;
+	}
+	else {
+		length = buf.length;
+	}
+	address = iaddr;
+	port = iport;
 }
 
-public InetAddress getAddress() {
-	return address;
+public synchronized InetAddress getAddress() {
+	if (port == -1) {
+		return (null);
+	}
+	else {
+		return (address);
+	}
 }
 
-public byte[] getData() {
-	return buf;
+public synchronized byte[] getData() {
+	return (buf);
 }
 
-public int getLength() {
-	return length;
+public synchronized int getLength() {
+	if (port == -1) {
+		return (0);
+	}
+	else {
+		return (length);
+	}
 }
 
-public int getPort() {
-	return port;
+public synchronized int getPort() {
+	return (port);
 }
+
+public synchronized void setAddress(InetAddress addr) {
+	address = addr;
+}
+
+public synchronized void setData(byte[] newbuf) {
+	buf = newbuf;
+}
+
+public synchronized void setLength(int newlen) {
+	if (newlen > buf.length) {
+		throw new IllegalArgumentException();
+	}
+	length = newlen;
+}
+
+public synchronized void setPort(int newport) {
+	if (newport < 0 || newport > 65535) {
+		throw new IllegalArgumentException();
+	}
+	port = newport;
+}
+
 }

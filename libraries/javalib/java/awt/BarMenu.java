@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 1998
+ *    Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author P.C.Mehlitz
+ */
+
 package java.awt;
 
 import java.awt.event.KeyEvent;
@@ -73,12 +83,9 @@ public void mouseReleased ( MouseEvent evt ) {
 }
 }
 
-public BarMenu () {
-	this( null);
-}
-
 public BarMenu ( MenuBar mb) {
 	this.mb = mb;
+	mb.bMenu = this;
 	
 	fgClr = Defaults.MenuTxtClr;
 	bgClr = Defaults.MenuBgClr;
@@ -87,11 +94,28 @@ public BarMenu ( MenuBar mb) {
 	new BarMenuListener();
 }
 
+public void addNotify () {
+	super.addNotify();
+
+	mb.propagateOldEvents( oldEvents);
+}
+
 void disposeCurrent () {
 	if ( current != null){
 		current.dispose();
 		current = null;
 	}
+}
+
+public Graphics getGraphics () {
+	// we can't use Component.getGraphics() here, because this is clipped on the
+	// insetted parents. Since Frame insets include the BarMenu, we need to bypass
+	// this (to avoid getting clipped away)
+	return NativeGraphics.getGraphics( parent, ((Window)parent).nativeData,
+	                                   NativeGraphics.TGT_TYPE_WINDOW,
+	                                   0, 0,
+	                                   0, 0, width, height,
+	                                   parent.fgClr, parent.bgClr, parent.font, false);
 }
 
 int getX ( Menu m) {
@@ -128,7 +152,7 @@ public void paint ( Graphics g) {
 	int sz = mb.menus.size();
 	int x0 = Dx;
 	int y0;
-	
+
 	g.setColor( getBackground());
 	g.fill3DRect( 0, 0, width, height, true);
 	
@@ -180,7 +204,7 @@ void processSelection () {
 void selectMenu ( Menu m) {
 	Menu ms;
 	Graphics g = getGraphics();
-	
+
 	if ( m == null) {
 		if ( selection != null) {
 			ms = selection;

@@ -1,8 +1,3 @@
-package java.lang;
-
-import java.io.File;
-import java.io.FileDescriptor;
-
 /*
  * Java core library component.
  *
@@ -12,11 +7,17 @@ import java.io.FileDescriptor;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class NullSecurityManager
-  extends SecurityManager
-{
 
-protected boolean inCheck = false;
+package java.lang;
+
+import java.io.FileDescriptor;
+import java.lang.Thread;
+import java.lang.Class;
+import java.lang.SecurityManager;
+import java.net.InetAddress;
+
+public class NullSecurityManager 
+  extends SecurityManager {
 
 NullSecurityManager() {
 }
@@ -24,10 +25,13 @@ NullSecurityManager() {
 public void checkAccept(String host, int port) {
 }
 
-public void checkAccess(Thread other) {
+public void checkAccess(Thread g) {
 }
 
 public void checkAccess(ThreadGroup g) {
+}
+
+public void checkAwtEventQueueAccess() {
 }
 
 public void checkConnect(String host, int port) {
@@ -57,10 +61,19 @@ public void checkListen(int port) {
 public void checkMemberAccess ( Class clazz, int which ) {
 }
 
+public void checkMulticast(InetAddress maddr) {
+}
+
+public void checkMulticast(InetAddress maddr, byte ttl) {
+}
+
 public void checkPackageAccess(String pkg) {
 }
 
 public void checkPackageDefinition(String pkg) {
+}
+
+public void checkPrintJobAccess() {
 }
 
 public void checkPropertiesAccess() {
@@ -81,11 +94,13 @@ public void checkRead(String file) {
 public void checkRead(String file, Object context) {
 }
 
-public void checkSecurityAccess(String action)
-	{
+public void checkSecurityAccess(String action) {
 }
 
 public void checkSetFactory() {
+}
+
+public void checkSystemClipboardAccess() {
 }
 
 public boolean checkTopLevelWindow(Object window) {
@@ -98,27 +113,4 @@ public void checkWrite(FileDescriptor fd) {
 public void checkWrite(String file) {
 }
 
-native protected int classDepth(String name);
-
-native protected int classLoaderDepth();
-
-native protected ClassLoader currentClassLoader();
-
-native protected Class[] getClassContext();
-
-public boolean getInCheck() {
-	return inCheck;
-}
-
-public Object getSecurityContext() {
-	return null;
-}
-
-protected boolean inClass(String name) {
-	return (classDepth(name)>0);
-}
-
-protected boolean inClassLoader() {
-	return (classLoaderDepth()>0);
-}
 }

@@ -43,12 +43,12 @@ public synchronized void write(byte b[], int off, int len) throws IOException {
 		int left = buf.length - count;
 		System.arraycopy(b, off, buf, count, left);
 		count += left;
-                writeBuffer();
+		writeBuffer();
 		off += left;
 		len -= left;
-        }
-        System.arraycopy(b, off, buf, count, len);
-        count += len;
+	}
+	System.arraycopy(b, off, buf, count, len);
+	count += len;
 }
 
 public synchronized void write(int b) throws IOException {

@@ -1,7 +1,3 @@
-package java.io;
-
-import java.util.Vector;
-
 /*
  * Java core library component.
  *
@@ -11,13 +7,22 @@ import java.util.Vector;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class File
-{
+
+package java.io;
+
+import java.util.Vector;
+
+public class File {
+
 	final public static String separator = System.getProperty("file.separator");
 	final public static char separatorChar = separator.charAt(0);
 	final public static String pathSeparator = System.getProperty("path.separator");
 	final public static char pathSeparatorChar = pathSeparator.charAt(0);
 	private String path;
+
+static {
+	System.loadLibrary("io");
+}
 
 public File(File dir, String name) {
 	if (dir == null) {
@@ -54,8 +59,6 @@ public boolean canWrite() {
 }
 
 native private boolean canWrite0();
-
-native private String canonPath(String str) throws IOException;
 
 private void checkReadAccess() {
 	System.getSecurityManager().checkRead(getPath());
@@ -99,9 +102,15 @@ public String getAbsolutePath() {
 	}
 }
 
-public String getCanonicalPath() throws IOException
-{
-	return (canonPath(path));
+public String getCanonicalPath() throws IOException {
+	String str = getAbsolutePath();
+	// The only processing at the moment is to remove any appended file
+	// seperator.
+	int len = str.length();
+	if (len > 1 && str.charAt(len-1) == separatorChar) {
+		str = str.substring(0, len-1);
+	}
+	return (str);
 }
 
 public String getName() {
@@ -170,6 +179,10 @@ public String[] list() {
 public String[] list(FilenameFilter filter) {
 	Vector filtered = new Vector();
 	String all[] = list();
+
+	if (all == null) {
+		return (null);
+	}
 
 	for (int idx = 0; idx < all.length; idx++) {
 		String fn = all[idx];

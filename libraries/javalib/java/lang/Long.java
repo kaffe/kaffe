@@ -20,7 +20,7 @@ final public class Long
 	final public static Class TYPE = Class.getPrimitiveClass("long");
 
 public Long(String s) throws NumberFormatException {
-	this(valueOf(s).intValue());
+	this(valueOf(s).longValue());
 }
 
 public Long(long value) {
@@ -138,32 +138,16 @@ public static long parseLong(String s, int radix) {
 	}			
 }
 
-private static String toUnsignedString(long i, int bits) {
-	if (i == 0) {
-		return ("0");
-	}
-
-	StringBuffer buf = new StringBuffer();
-	int radix = 1 << bits, mask = radix-1;
-	while (i != 0) {
-		char digit = Character.forDigit(((int)i) & mask, radix);
-		i >>>= bits;
-		buf.append(digit);
-	}
-	buf.reverse();
-	return (buf.toString());
-}
-
 public static String toBinaryString ( long i ) {
-	return toUnsignedString(i, 1);
+	return toUnsignedString(i, 2);
 }
 
 public static String toHexString ( long i ) {
-	return toUnsignedString(i, 4);
+	return toUnsignedString(i, 16);
 }
 
 public static String toOctalString ( long i ) {
-	return toUnsignedString(i, 3);
+	return toUnsignedString(i, 8);
 }
 
 public String toString() {
@@ -174,8 +158,7 @@ public static String toString(long i) {
 	return toString(i, 10);
 }
 
-public static String toString(long i, int radix)
-	{
+public static String toString(long i, int radix) {
 	if (i == 0) {
 		return ("0");
 	}
@@ -196,6 +179,22 @@ public static String toString(long i, int radix)
 	}
 	if (sign == -1) {
 		buf.append('-');
+	}
+	buf.reverse();
+	return (buf.toString());
+}
+
+private static String toUnsignedString(long i, int bits) {
+	if (i == 0) {
+		return ("0");
+	}
+
+	StringBuffer buf = new StringBuffer();
+	int radix = 1 << bits, mask = radix-1;
+	while (i != 0) {
+		char digit = Character.forDigit(((int)i) & mask, radix);
+		i >>>= bits;
+		buf.append(digit);
 	}
 	buf.reverse();
 	return (buf.toString());

@@ -20,10 +20,17 @@ public CardLayout ( int hgap, int vgap) {
 }
 
 public void addLayoutComponent ( Component comp, Object constraints) {
-	if ( constraints instanceof String)
+	if ( constraints instanceof String) {
 		addLayoutComponent( (String)constraints, comp);
+	}
+	else {
+		throw new IllegalArgumentException("non-string constraint");
+	}
 }
 
+/**
+ * @deprecated
+ */
 public void addLayoutComponent ( String name, Component comp) {
 	comptable.put( name, comp);
 	if ( comptable.size() > 1 )
@@ -53,11 +60,11 @@ public int getHgap () {
 }
 
 public float getLayoutAlignmentX ( Container parent ) {
-	return (float)0.5;
+	return (Component.CENTER_ALIGNMENT);
 }
 
 public float getLayoutAlignmentY ( Container parent ) {
-	return (float)0.5;
+	return (Component.CENTER_ALIGNMENT);
 }
 
 Dimension getLayoutSize (  Container parent, boolean preferred) {

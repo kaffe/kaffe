@@ -8,19 +8,16 @@
  * of this file. 
  */
 
+#include "toolkit.h"
 #include <stdio.h>
-#include "config.h"
 
 #if defined(HAVE_GIF_LIB_H)
 #include "gif_lib.h"
 #endif
 
-#include "toolkit.h"
 
-#if defined(HAVE_GIF_LIB_H)
 static int iOffset[] = { 0, 4, 2, 1 };
 static int iJumps[] = { 8, 8, 4, 2 };
-#endif
 
 /* references to img.c */
 Image* createImage ( int width, int height );
@@ -147,23 +144,6 @@ typedef struct {
   unsigned char *p;
   long          remain;
 } BufferSource;
-
-int
-readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
-{
-  BufferSource *psource = (BufferSource*)gf->UserData;
-
-  if ( psource && (psource->remain >= length) ) {
-	memcpy( buf, psource->p, length);
-	psource->p += length;
-	psource->remain -= length;
-
-	return length;
-  }
-  else {
-	return 0;
-  }
-}
 
 #endif /* HAVE_GIF_LIB_H */
 

@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <native.h>
-#include "FileDescriptor.h"
-#include "FileOutputStream.h"
+#include "../io/FileDescriptor.h"
+#include "../io/FileOutputStream.h"
 #include "PrintStream.h"
 #include "Throwable.h"
 #include "../../../kaffe/kaffevm/support.h"

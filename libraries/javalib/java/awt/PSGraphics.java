@@ -266,8 +266,9 @@ public void fillRoundRect ( int x, int y, int width, int height, int arcWidth, i
 	psRoundRect( x, y, width, height, arcWidth, arcHeight, true);
 }
 
-protected void finalize (){
+protected void finalize () throws Throwable {
 	dispose();
+	super.finalize();
 }
 
 public Shape getClip (){

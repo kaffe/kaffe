@@ -1,6 +1,3 @@
-package java.net;
-
-
 /*
  * Java core library component.
  *
@@ -10,17 +7,20 @@ package java.net;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class InetAddressImpl
-{
-native public String getHostByAddr(int addr) throws UnknownHostException;
+
+package java.net;
+
+public class InetAddressImpl {
+
+static {
+	System.loadLibrary("net");
+}
 
 native public int getInetFamily();
-
+native public int[] lookupAllHostAddr(String host) throws UnknownHostException;
+native public int lookupHostAddr(String host) throws UnknownHostException;
+native public String getHostByAddr(int addr) throws UnknownHostException;
 native public String getLocalHostName();
-
-native public byte[][] lookupAllHostAddr(String host) throws UnknownHostException;
-
-native public byte[] lookupHostAddr(String host) throws UnknownHostException;
-
 native public void makeAnyLocalAddress(InetAddress addr);
+
 }

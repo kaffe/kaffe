@@ -258,11 +258,11 @@ public GridBagConstraints getConstraints( Component c) {
 }
 
 public float getLayoutAlignmentX( Container parent) {
-	return (float)Component.CENTER_ALIGNMENT;
+	return Component.CENTER_ALIGNMENT;
 }
 
 public float getLayoutAlignmentY( Container parent) {
-	return (float)Component.CENTER_ALIGNMENT;
+	return Component.CENTER_ALIGNMENT;
 }
 
 public int[][] getLayoutDimensions() {
@@ -520,6 +520,7 @@ public void layoutContainer( Container parent) {
 				cx += (dx - cw) / 2;
 				break;
 			}
+			break;
 		}
 		c.setBounds( cx, cy, cw, ch);
 

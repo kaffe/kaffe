@@ -83,19 +83,17 @@ public static CharToByteConverter getConverter(String enc) throws UnsupportedEnc
 	}
 }
 
-public static CharToByteConverter getDefault()
-	{
+public static CharToByteConverter getDefault() {
+	String enc = encodingDefault;
+	if (ClassLoader.getSystemResourceAsStream(encodingRoot + ".CharToByte" + enc) == null) {
+		enc = "Default";
+	}
 	try {
-		return (getConverter(encodingDefault));
+		return (getConverter(enc));
 	}
 	catch (UnsupportedEncodingException _) {
-		try {
-			return (getConverter("Default"));
-		}
-		catch (UnsupportedEncodingException __) {
-		}
+		return (null);
 	}
-	return (null);
 }
 
 abstract public int getNumberOfBytes ( char[] from, int fpos, int flen );

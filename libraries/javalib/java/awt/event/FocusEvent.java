@@ -1,6 +1,7 @@
 package java.awt.event;
 
 import java.awt.Component;
+import java.awt.Event;
 import java.awt.Frame;
 import java.awt.Window;
 
@@ -31,69 +32,11 @@ public FocusEvent ( Component src, int evtId, boolean isTemporary ) {
 	this.isTemporary = isTemporary;
 }
 
-protected void dispatch () {
-	WindowEvent  we;
-	Component    src = (Component) source;
-
-	if ( id == FOCUS_GAINED ) {
-		if ( keyTgtRequest != null ) {
-			src = keyTgtRequest;
-			keyTgtRequest = null;
-		}
-		
-		if ( keyTgt == src ) return; // nothing to do
-		
-		if ( (keyTgt != null) && (keyTgt != src) ) {
-			id = FOCUS_LOST;
-			source = keyTgt;
-			keyTgt = src;
-			processFocusEvent( this);
-		  id = FOCUS_GAINED;
-		}
-
-		// we should make the next active window known (within java.awt)
-		// prior to sending the DEACTIVATED messages because RootWindow
-		// instances might have to react on this
-		newActiveWindow = (Window) getToplevel( src);
-		if ( (activeWindow != null) && (newActiveWindow != activeWindow)
-		       && ((newActiveWindow instanceof Frame) || (newActiveWindow == root)) ) {
-			we = getWindowEvent( activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			processWindowEvent( we);
-		}
-
-		keyTgt = src;
-		source = src;
-		processFocusEvent( this);
-		
-		if ( (newActiveWindow != activeWindow) && (newActiveWindow instanceof Frame) ) {
-			we = getWindowEvent( newActiveWindow, WindowEvent.WINDOW_ACTIVATED);
-			processWindowEvent( we);
-			activeWindow = (Window) newActiveWindow;
-		}
-		else if ( newActiveWindow == root )
-			activeWindow = null;
-	}
-	else if ( id == FOCUS_LOST ) {
-		if ( src == activeWindow ) { // native generated focus lost
-			we = getWindowEvent( activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			processWindowEvent( we);
-			activeWindow = null;
-		}
-
-		if ( keyTgt != null ) {
-			source = keyTgt;
-			keyTgt = null;
-			inputModifier = 0; // just a matter of safety (a reset point)
-
-			processFocusEvent( this);			
-		}
-	}
+protected Event initOldEvent ( Event e ) {
+	e.target = source;
+	e.id = id;
 	
-	recycle();
-}
-
-static FocusEvent getFocusEvent ( int srcIdx, int id ) {
-	return getFocusEvent( sources[srcIdx], id);
+	return e;
 }
 
 public boolean isTemporary() {
@@ -110,14 +53,5 @@ public String paramString() {
 	}
 	
 	return s;
-}
-
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = focusEvtCache;	
-		focusEvtCache = this;
-	}
 }
 }

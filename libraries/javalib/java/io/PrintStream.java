@@ -16,13 +16,17 @@ public class PrintStream
 	private PrintWriter strm;
 	private boolean error;
 
-public PrintStream(OutputStream out)
-	{
+/**
+ * @deprecated - replaced by PrintWriter
+ */
+public PrintStream(OutputStream out) {
 	this(out, false);
 }
 
-public PrintStream(OutputStream out, boolean autoflush)
-	{
+/**
+ * @deprecated - replaced by PrintWriter
+ */
+public PrintStream(OutputStream out, boolean autoflush) {
 	super(out);
 	strm = new PrintWriter(out, autoflush);
 	error = false;

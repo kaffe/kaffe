@@ -27,6 +27,7 @@ class Defaults
 	static boolean AutoStop = true;
 	static int ClickInterval = 250;
 	static int EventPollingRate = 30;
+	static int GraFlushRate = 250;
 /**
  * physical screen size in 1/10 inches (used for various scaling purposes)
  */
@@ -35,10 +36,9 @@ class Defaults
 	static int ScreenHeight;
 	static int XResolution;
 	static int YResolution;
-	static int TitleBarHeight = 20;
 	static int MenuBarHeight = 20;
-	static int FrameBorderWidth = 4;
-	static int BottomBarHeight;
+	static Insets FrameInsets = new Insets( 24, 4, 4, 4);
+	static Insets DialogInsets = new Insets( 24, 4, 4, 4);
 	static String FsDefault;
 	static String FsMonospaced;
 	static String FsSansSerif;
@@ -157,8 +157,9 @@ static {
 		FsZapfDingbats = "helv%d%s%s.fnt";
 	}
 	else if ( version.startsWith( "X") ) {
-		FsDefault = "-b&h-lucida-%s-%s-*-*-%d-*-*-*-*-*-*-*";
-		FsMonospaced = "-misc-fixed-%s-%s-*-*-%d-*-*-*-*-*-*-*";
+		//FsDefault = "-b&h-lucida-%s-%s-*-*-%d-*-*-*-*-*-*-*";
+		FsDefault = "-adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*";
+		FsMonospaced = "-adobe-courier-%s-%s-*-*-%d-*-*-*-*-*-*-*";
 		FsSansSerif = "-adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*";
 		FsSerif = "-adobe-times-%s-%s-*-*-%d-*-*-*-*-*-*-*";
 		FsDialog = "-misc-fixed-%s-%s-*-*-%d-*-*-*-*-*-*-*";
@@ -170,11 +171,11 @@ static {
 	}
 
 	WndFont = new Font( "Default", Font.BOLD, 12);
-	MenuFont = new Font( "Default", Font.BOLD, 10);
-	TextFont = new Font( "Default", Font.BOLD, 10);
-	TextAreaFont = new Font( "Default", Font.BOLD, 11);
-	TextFieldFont = new Font( "Default", Font.BOLD, 11);
-	ListFont = new Font( "Default", Font.BOLD, 11);
+	MenuFont = new Font( "Default", Font.BOLD, 11);
+	TextFont = new Font( "Default", Font.BOLD, 12);
+	TextAreaFont = new Font( "Dialog", Font.BOLD, 12);
+	TextFieldFont = new Font( "Default", Font.BOLD, 12);
+	ListFont = new Font( "Default", Font.BOLD, 12);
 	LabelFont = new Font( "Default", Font.BOLD, 11);
 	BtnFont = new Font( "Default", Font.BOLD, 11);
 	

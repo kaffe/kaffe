@@ -39,6 +39,10 @@ void copyToClipboard () {
 
 abstract public int getCaretPosition();
 
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
+}
+
 abstract public String getSelectedText();
 
 abstract public int getSelectionEnd();
@@ -105,15 +109,8 @@ void pasteFromClipboard () {
 	}
 }
 
-protected void processEvent( AWTEvent e) {
-	if ( e instanceof TextEvent)
-		processTextEvent( (TextEvent) e);
-	else
-		super.processEvent( e);
-}
-
 protected void processTextEvent( TextEvent e) {
-	if ( hasToNotify( AWTEvent.TEXT_EVENT_MASK, textListener))
+	if ( hasToNotify( this, AWTEvent.TEXT_EVENT_MASK, textListener))
 		textListener.textValueChanged( e);
 }
 

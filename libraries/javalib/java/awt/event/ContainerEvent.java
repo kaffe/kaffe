@@ -15,7 +15,7 @@ import java.awt.Container;
 public class ContainerEvent
   extends ComponentEvent
 {
-	Component child;
+	protected Component child;
 	final public static int CONTAINER_FIRST = 300;
 	final public static int CONTAINER_LAST = 301;
 	final public static int COMPONENT_ADDED = CONTAINER_FIRST;
@@ -25,10 +25,6 @@ public ContainerEvent ( Component src, int evtId, Component child ) {
 	super( src, evtId);
 	
 	this.child = child;
-}
-
-protected void dispatch () {
-	processContainerEvent( this);
 }
 
 public Component getChild() {
@@ -44,9 +40,7 @@ public String paramString () {
 
 	switch ( id ) {
 	case COMPONENT_ADDED:  s += "ADDED";
-		break;
 	case COMPONENT_REMOVED: s += "REMOVED";
-		break;
 	default: s += "?";
 	}
 

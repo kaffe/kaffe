@@ -18,5 +18,6 @@ static {
 }
 
 public native static void add(String pathelem);
+public native static void alias(String frompkg, String topkg);
 
 }

@@ -11,9 +11,23 @@
 package java.lang;
 
 public final class Compiler {
-  public static native boolean compileClass(Class aClass);
-  public static native boolean compileClasses(String string);
-  public static native Object command(Object any);
-  public static native void enable();
-  public static native void disable();
+
+public static boolean compileClass(Class aClass) {
+	return (false);
+}
+
+public static boolean compileClasses(String string) {
+	return (false);
+}
+
+public static Object command(Object any) {
+	return (null);
+}
+
+public static void enable() {
+}
+
+public static void disable() {
+}
+
 }

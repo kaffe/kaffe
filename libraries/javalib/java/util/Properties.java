@@ -54,14 +54,19 @@ private String escape(String str) {
 }
 
 public String getProperty(String key) {
-	// use hashtable's get here in case some subclass overrides get
-	Object propSearch=super.get(key);
-
-	if (propSearch==null) { /* Not found */
-		if (defaults!=null) return defaults.getProperty(key); else return null;
+	// Apparently we should use the superclass get method rather than
+	// our own because it may be overridden
+	// Software: HotJava
+// if (System.out != null) System.out.println("getProperty: " + key);
+	Object propSearch = super.get(key);
+	if (propSearch != null) {
+		return ((String)propSearch);
+	}
+	else if (defaults != null) {
+		return (defaults.getProperty(key));
 	}
 	else {
-		return (String )propSearch;
+		return (null);
 	}
 }
 

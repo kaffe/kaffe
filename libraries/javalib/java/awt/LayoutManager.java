@@ -1,6 +1,3 @@
-package java.awt;
-
-
 /**
  * interface LayoutManager - 
  *
@@ -12,15 +9,15 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
-public interface LayoutManager
-{
+
+package java.awt;
+
+public interface LayoutManager {
+
 void addLayoutComponent ( String name, Component child );
-
 void layoutContainer ( Container parent );
-
 Dimension minimumLayoutSize ( Container parent );
-
 Dimension preferredLayoutSize ( Container parent );
-
 void removeLayoutComponent ( Component child );
+
 }

@@ -1,5 +1,15 @@
-package java.awt;
+/**
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author J.Mehlitz
+ */
 
+package java.awt;
 
 public class GridLayout
   implements LayoutManager
@@ -10,7 +20,7 @@ public class GridLayout
 	int vgap;
 
 public GridLayout () {
-	this( 1, 1, 0, 0);
+	this( 1, 0, 0, 0);
 }
 
 public GridLayout (int rows, int cols) {
@@ -32,31 +42,25 @@ public void addLayoutComponent ( String name, Component comp) {
 
 Dimension adjustDim ( Container parent) {
   Dimension d = new Dimension( cols, rows);
-	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
+  int nChildren = parent.getComponentCount(); // beware of Frame Menubars
 
-  if ( rows == 0 ) {
-    d.width = cols;
-    d.height = nChildren / cols;
-    if ( (nChildren % cols) != 0 )
-      d.height++;
-  }
-  else if ( cols == 0 ) {
+  // If rows > 0 then ignore cols.
+  if (rows > 0) {
     d.height = rows;
     d.width = nChildren / rows;
-    if ( (nChildren % rows) != 0 )
+    if (nChildren % rows != 0) {
       d.width++;
-  }
-  else {
-    boolean extCol = true;
-    while ( nChildren > (d.width * d.height) ) {
-      if ( extCol )
-	      d.width++;
-      else
-	      d.height++;
-      extCol = !extCol;  
     }
   }
-  
+  // Just work from cols
+  else {
+    d.width = cols;
+    d.height = nChildren / cols;
+    if (nChildren % cols != 0) {
+      d.height++;
+    }
+  }
+
   return d;
 }
 

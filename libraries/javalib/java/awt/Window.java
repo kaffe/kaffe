@@ -12,7 +12,8 @@
 
 package java.awt;
 
-import java.awt.event.PaintEvent;
+import java.awt.BorderLayout;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.peer.ComponentPeer;
@@ -32,23 +33,34 @@ Window () {
 	fgClr = Defaults.WndForeground;
 	bgClr = Defaults.WndBackground;
 	font  = Defaults.WndFont;
+
+	setLayout(new BorderLayout());
 }
 
 public Window ( Frame owner ) {
 	this();
-
 	this.owner = owner;
 }
 
 public void addNotify () {
+	// even if this could be done in a central location, we defer this
+	// as much as possible because it might involve polling (for non-threaded
+	// AWTs), slowing down the startup time
+	Toolkit.startDispatch();
+
 	if ( nativeData == null ) {
-		// some native windowing systems require windows to be created in
-		// the thread that does the event dispatching
-		if ( Toolkit.isWrongThread() ){
-			WMEvent e =  new WMEvent( this, WMEvent.WM_CREATE);
+		// Some native windowing systems require windows to be created in
+		// the thread that does the event dispatching. We force a context
+		// switch by means of a WMEvent in this case
+		if ( Toolkit.isDispatchExclusive &&
+		     (Thread.currentThread() != Toolkit.eventThread) ){
+			WMEvent e =  WMEvent.getEvent( this, WMEvent.WM_CREATE);
 			Toolkit.eventQueue.postEvent( e);
+
 			while ( nativeData == null ) {
-				try { e.wait(); } catch ( InterruptedException x ) {}
+				synchronized ( e ) {
+					try { e.wait(); } catch ( InterruptedException x ) {}
+				} 
 			}
 		}
 		else {
@@ -66,9 +78,9 @@ public void addNotify () {
 			
 			super.addNotify();
 
-			if ( hasToNotify( AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
-				Toolkit.eventQueue.postEvent( new WindowEvent( this,
-				                                             WindowEvent.WINDOW_OPENED));
+			if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
+				AWTEvent.sendEvent( WindowEvt.getEvent( this,
+				                        WindowEvent.WINDOW_OPENED), false);
 			}
 		}
 	}
@@ -106,7 +118,8 @@ public void dispose () {
 		// simulate sync what has to be processed anyway (this error typically shows
 		// up in a KaffeServer context)
 		if ( AWTEvent.activeWindow == this ){
-			AWTEvent.sendFocusEvent( AWTEvent.keyTgt, false, true);
+			AWTEvent.sendEvent( FocusEvt.getEvent( AWTEvent.keyTgt,
+			                                       FocusEvent.FOCUS_LOST), true);
 		}
 
 		Toolkit.wndDestroyWindow( nativeData);
@@ -120,16 +133,43 @@ public void freeResource() {
 	dispose();
 }
 
-LayoutManager getDefaultLayout() {
-	return new BorderLayout();
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
 public Component getFocusOwner () {
 	return ( this == AWTEvent.activeWindow ) ? AWTEvent.keyTgt : null;
 }
 
+public Graphics getGraphics () {
+	if ( nativeData != null ){
+		return NativeGraphics.getGraphics( this, nativeData,
+		                                   NativeGraphics.TGT_TYPE_WINDOW,
+		                                   -deco.x, -deco.y,
+		                                   deco.x, deco.y,
+		                                   width - deco.width,
+		                                   height - deco.height,
+		                                   fgClr, bgClr, font, false);
+	}
+	else {
+		return null;
+	}
+}
+
 public Container getParent () {
 	return owner;
+}
+
+final public String getWarningString() {
+	if (System.getSecurityManager().checkTopLevelWindow(this) == true) {
+		return (null);
+	}
+	return (System.getProperty("awt.appletWarning"));
+}
+
+public void hide() {
+	super.hide();
+	Toolkit.wndSetVisible( nativeData, false);
 }
 
 public boolean isShowing () {
@@ -137,30 +177,17 @@ public boolean isShowing () {
 }
 
 public void pack () {
-	if ( (width == 0) || (height == 0) )
-		setSize( getPreferredSize());
-		
-	if ( nativeData == null )
+	if ( nativeData == null ) {
 		addNotify();
-}
-
-void processPaintEvent ( PaintEvent e ) {
-	if ( isVisible && (width > 0) ) {
-		Rectangle r = e.getUpdateRect();
-		Graphics g = Graphics.getGraphics( this,  0,0,
-                                       r.x, r.y, r.width, r.height,
-                                       fgClr, bgClr, font, true);
-
-		if ( g != null ) {
-			paint( g);
-			g.dispose();
-		}
 	}
-
+	setSize( getPreferredSize());
+	
+	// this happens to be one of the automatic validation points
+	validate();
 }
 
 protected void processWindowEvent ( WindowEvent event ) {
-	if ( hasToNotify( AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
+	if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
 		switch ( event.getID() ) {
 		case WindowEvent.WINDOW_OPENED:
 			wndListener.windowOpened( event);
@@ -189,10 +216,13 @@ protected void processWindowEvent ( WindowEvent event ) {
 
 public void removeNotify () {
 	if ( nativeData != null ) {
-		// some native windowing systems require windows to be created in
-		// the thread that does the event dispatching
-		if ( Toolkit.isWrongThread() ){
-			WMEvent e = new WMEvent( this, WMEvent.WM_DESTROY);
+		// Some native windowing systems require windows to be destroyed from
+		// the thread which created them. Even though this should be ensured
+		// by calling removeNotify via the WindowEvt.dispatch(), it is more safe
+		// to check (since this is a public method)
+		if ( Toolkit.isDispatchExclusive &&
+		     (Thread.currentThread() != Toolkit.eventThread) ){
+			WMEvent e = WMEvent.getEvent( this, WMEvent.WM_DESTROY);
 			Toolkit.eventQueue.postEvent( e);
 			while ( nativeData == null ) {
 				try { e.wait(); } catch ( InterruptedException x ) {}
@@ -203,6 +233,11 @@ public void removeNotify () {
 
 			AWTEvent.unregisterSource( this, nativeData);
 			nativeData = null;
+			
+			if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
+				AWTEvent.sendEvent( WindowEvt.getEvent( this,
+				                        WindowEvent.WINDOW_CLOSED), false);
+			}
 		}
 	}
 }
@@ -211,25 +246,20 @@ public void removeWindowListener ( WindowListener listener ) {
 	wndListener = AWTEventMulticaster.remove( wndListener, listener);
 }
 
-public void repaint ( int x, int y, int width, int height ) {
-	if ( isVisible && (width > 0) ) {
-		Graphics g = Graphics.getGraphics( this,  0,0,
-                                       x, y, width, height,
-                                       fgClr, bgClr, font, true);
-		if ( g != null ) {
-			update( g);
-			g.dispose();
-		}
-	}
-}
-
 public void requestFocus () {
 	if ( (nativeData != null) && isVisible )
 		Toolkit.wndRequestFocus( nativeData);
 }
 
-public void setBounds ( int xNew, int yNew, int wNew, int hNew ) {
+public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
+	// DEP - this should be in setBounds (the deprecated ripple effect!)
 	// this is never called by a native toplevel resize
+
+	// Some people don't trust the automatic validation and call validate() explicitly
+	// right after a reshape. We wouldn't get this is we wait for the automatic
+	// invalidation during ComponentEvt.getEvent() (hello again, SwingSet..)
+	if ( (wNew != width) || (hNew != height) )
+		invalidate();
 
 	x      = xNew;
 	y      = yNew;
@@ -237,9 +267,8 @@ public void setBounds ( int xNew, int yNew, int wNew, int hNew ) {
 	height = hNew;
 
 	if ( nativeData != null )
-		Toolkit.wndSetWindowBounds( nativeData, xNew, yNew, wNew, hNew);
-	else
-		doLayout();
+		Toolkit.wndSetBounds( nativeData, xNew +deco.x, yNew +deco.y,
+		                                  wNew -deco.width, hNew -deco.height);
 }
 
 void setNativeCursor ( Cursor cursor ) {
@@ -247,29 +276,20 @@ void setNativeCursor ( Cursor cursor ) {
 		Toolkit.wndSetCursor( nativeData, cursor.type);
 }
 
-public void setVisible ( boolean showIt ) {
+public void show() {
 	if ( nativeData == null )
 		addNotify();
 
-	super.setVisible( showIt);
-		
-	// There is a subtle problem with some apps doing lengthy sync ops
-	// or even explicit drawing directly after issuing a setVisible( true)
-	// the dispatcher has no chance to process a pending native paint event
-	// until this sync processing is finished, possibly causing inconsistent
-	// screen representations. Note that we can't directly call wndSetVisible
-	// since we don't know if we are in the dsptcher thread (if not, the
-	// high priority dispatcher might process a paint before we start to wait
-	// for it, extending the wait until doomesday
-	if ( showIt )
-		Toolkit.eventThread.show( this);
-	else
-		Toolkit.wndSetVisible( nativeData, showIt);
-}
+	// this happens to be one of the automatic validation points, and it should
+	// cause a layout *before* we get visible
+	validate();
 
-public void show()
-{
-	setVisible(true);
+	super.show();
+		
+	// Some apps carelessly start to draw (or do other display related things)
+	// immediately after a show(), which is usually not called from the
+	// event dispatcher thread
+	Toolkit.eventThread.show( this);
 }
 
 public void toBack () {
@@ -278,5 +298,13 @@ public void toBack () {
 
 public void toFront () {
 	if ( nativeData != null ) Toolkit.wndToFront( nativeData);
+}
+
+public void update ( Graphics g ) {
+	paint( g);
+	
+	// we need this here because paint might be resolved (without calling
+	// super.paint), and our childs wouldn't be painted that way
+	paintChildren( g);
 }
 }

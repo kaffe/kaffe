@@ -21,20 +21,20 @@ public class ScrollPane
   extends Container
   implements AdjustmentListener, FocusListener
 {
-	int policy;
-	ScrollPane.Adjustable hScroll;
-	ScrollPane.Adjustable vScroll;
-	Point pos;
-	Component child;
-	ChildWrapper wrapper;
 	final static int SCROLLBARS_AS_NEEDED = 0;
 	final static int SCROLLBARS_ALWAYS = 1;
 	final static int SCROLLBARS_NEVER = 2;
+	int policy;
+	SPAdjustable hScroll;
+	SPAdjustable vScroll;
+	Point pos;
+	Component child;
+	ChildWrapper wrapper;
 
-class Adjustable
+class SPAdjustable
   extends Scrollbar
 {
-Adjustable ( int orientation ) {
+SPAdjustable ( int orientation ) {
 	super( orientation);
 }
 
@@ -60,7 +60,7 @@ class ChildWrapper
   extends Container
 {
 ChildWrapper () {
-	layout = null;
+	layoutm = null;
 }
 
 public void doLayout () {
@@ -74,7 +74,7 @@ public ScrollPane () {
 public ScrollPane ( int policy ) {
 	int bw = BORDER_WIDTH;
 
-	layout = null;
+	layoutm = null;
 	
 	if ( (policy >= 0) && (policy <= 2) )
 		this.policy = policy;
@@ -82,8 +82,8 @@ public ScrollPane ( int policy ) {
 		throw new IllegalArgumentException( "illegal ScrollPane policy");
 	
 	pos = new Point();
-	hScroll = new ScrollPane.Adjustable( Scrollbar.HORIZONTAL);
-	vScroll = new ScrollPane.Adjustable( Scrollbar.VERTICAL);
+	hScroll = new SPAdjustable( Scrollbar.HORIZONTAL);
+	vScroll = new SPAdjustable( Scrollbar.VERTICAL);
 	
 	add( hScroll);
 	add( vScroll);
@@ -129,8 +129,10 @@ public void adjustmentValueChanged ( AdjustmentEvent e) {
 	int      w = width - (insets.left + insets.right);
 	int      h = height - (insets.top + insets.bottom);
 	int      delta;
-	Graphics g = Graphics.getClippedGraphics( this, insets.left, insets.top,
-	                                          w, h, false);
+	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this,
+	                                                      0, 0,
+	                                                      insets.left, insets.top,
+														                            w, h, false);
 	if ( src == vScroll){
 		delta = val - pos.y;
 		pos.y = val;
@@ -205,8 +207,59 @@ void checkScrollbarVisibility ( Dimension cd ) {
 }
 
 public void doLayout () {
-	if ( child == null )
+	layout();
+}
+
+public void focusGained ( FocusEvent e ) {
+	if ( hScroll.isVisible )
+		hScroll.setBackground( Defaults.FocusClr);
+	if ( vScroll.isVisible )
+		vScroll.setBackground( Defaults.FocusClr);
+}
+
+public void focusLost ( FocusEvent e ) {
+	if ( hScroll.isVisible )
+		hScroll.setBackground( Defaults.BtnClr);
+	if ( vScroll.isVisible )
+		vScroll.setBackground( Defaults.BtnClr);
+}
+
+public Adjustable getHAdjustable () {
+	return hScroll;
+}
+
+public int getHSrollbarHeight () {
+	return (hScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;
+}
+
+public Point getScrollPosition () {
+	return pos;
+}
+
+public int getScrollbarDisplayPolicy () {
+	return policy;
+}
+
+public Adjustable getVAdjustable () {
+	return vScroll;
+}
+
+public int getVScrollbarWidth () {
+	return (vScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;
+}
+
+public Dimension getViewportSize () {
+	return new Dimension( width - (insets.left + insets.right),
+	                      height - (insets.top + insets.bottom));
+}
+
+/**
+ * @deprecated
+ */
+public void layout() {
+	if ( child == null ) {
 		return;
+	}
 
 	int sw = Scrollbar.SCROLLBAR_WIDTH;
 	Dimension cd = child.getPreferredSize();
@@ -235,51 +288,8 @@ public void doLayout () {
 	isLayouting = false;
 }
 
-public void focusGained ( FocusEvent e ) {
-	if ( hScroll.isVisible )
-		hScroll.setBackground( Defaults.FocusClr);
-	if ( vScroll.isVisible )
-		vScroll.setBackground( Defaults.FocusClr);
-}
-
-public void focusLost ( FocusEvent e ) {
-	if ( hScroll.isVisible )
-		hScroll.setBackground( Defaults.BtnClr);
-	if ( vScroll.isVisible )
-		vScroll.setBackground( Defaults.BtnClr);
-}
-
-public java.awt.Adjustable getHAdjustable () {
-	return hScroll;
-}
-
-public int getHSrollbarHeight () {
-	return (hScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;;
-}
-
-public Point getScrollPosition () {
-	return pos;
-}
-
-public int getScrollbarDisplayPolicy () {
-	return policy;
-}
-
-public java.awt.Adjustable getVAdjustable () {
-	return vScroll;
-}
-
-public int getVScrollbarWidth () {
-	return (vScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;;
-}
-
-public Dimension getViewportSize () {
-	return new Dimension( width - (insets.left + insets.right),
-	                      height - (insets.top + insets.bottom));
-}
-
 public void paint ( Graphics g ) {
-	Rectangle clip = g.clip;
+	Rectangle clip = g.getClipBounds();
 	int       xClip = clip.x;
 	int       yClip = clip.y;
 	int       xwClip = xClip + clip.width;

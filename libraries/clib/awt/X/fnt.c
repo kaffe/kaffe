@@ -11,7 +11,6 @@
 
 #include <X11/Xlib.h>
 #include <string.h>
-#include "config.h"
 #include "toolkit.h"
 
 /*******************************************************************************
@@ -36,7 +35,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, ji
   fs = XLoadQueryFont( X->dsp, buf);
 
   if ( ! fs ){
-	fprintf( stderr, "cannot load font: %s (backup to %s)\n", buf, backupFont);
+DBG(awt,("cannot load font: %s (backup to %s)\n", buf, backupFont));
 	if ( !(fs = XLoadQueryFont( X->dsp, backupFont)) ) {
 	  fprintf( stderr, "font panic, no default font!\n");
 	}
@@ -89,7 +88,7 @@ Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, XFontStruct*
 jint
 Java_java_awt_Toolkit_fntGetHeight ( JNIEnv* env, jclass clazz, XFontStruct* fs )
 {
-  return fs->ascent + fs->descent;
+  return fs->ascent + fs->descent +1;
 }
 
 jint
@@ -129,7 +128,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
   jarray    widths;
   jint      *jw;
   jboolean isCopy;
-  register int i, j;
+  register  i, j;
 
   widths = (*env)->NewIntArray( env, 256);
   jw = (*env)->GetIntArrayElements( env, widths, &isCopy);
@@ -210,15 +209,13 @@ Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* f
   jboolean isCopy;
   const jchar    *jc = (*env)->GetStringChars( env, jStr, &isCopy);
   int      len = (*env)->GetStringLength( env, jStr);
-  int      w;
+  int      w, n;
   XChar2b  *b;
 
 #ifndef WORDS_BIGENDIAN
-  {
-    int n = sizeof(XChar2b)*len;
-    b = (XChar2b*) getBuffer( X, n);
-    swab( jc, b, n);
-  }
+  n = sizeof(XChar2b)*len;
+  b = (XChar2b*) getBuffer( X, n);
+  swab( jc, b, n);
 #else
   b = (XChar2b*) jc;
 #endif

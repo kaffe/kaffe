@@ -28,6 +28,7 @@ final static SecurityManager defaultSecurityManager = new NullSecurityManager();
 public static InputStream in;
 public static PrintStream out;
 public static PrintStream err;
+
 private static Properties props;
 private static SecurityManager security;
 
@@ -79,7 +80,7 @@ public static SecurityManager getSecurityManager() {
 }
 
 public static String getenv(String name) {
-	throw new Error();
+	throw new Error("System.getenv no longer supported");
 }
 
 public static void load(String filename) {
@@ -120,8 +121,9 @@ public static void setSecurityManager(SecurityManager s) {
 	if (security != defaultSecurityManager) {
 		throw new SecurityException();
 	}
-	if (s != null)
+	if (s != null) {
 		security = s;
+	}
 }
 
 native public static long currentTimeMillis();

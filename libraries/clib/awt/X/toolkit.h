@@ -20,17 +20,39 @@
 #include <string.h>
 #endif
 
+#include "config.h"
+
+#define DBG(x,y)
+#define DBG_ACTION(x,y)
+
 /*******************************************************************************
- *
+ * common data structures
  */
+
+#define N_DIRECT 256
+
+typedef struct _Rgb2Direct {
+  unsigned char red[N_DIRECT];
+  unsigned char redPix[N_DIRECT];
+  int           redShift;
+  int           nRed;
+  unsigned char green[N_DIRECT];
+  unsigned char greenPix[N_DIRECT];  
+  int           greenShift;
+  int           nGreen;
+  unsigned char blue[N_DIRECT];
+  unsigned char bluePix[N_DIRECT];
+  int           blueShift;
+  int           nBlue;
+} Rgb2Direct;
 
 typedef struct _Rgb2True {
   unsigned int   redMask;
   unsigned int   greenMask;
   unsigned int   blueMask;
-  char           blueShift;
-  char           redShift;
-  char           greenShift;
+  int            blueShift;
+  int            redShift;
+  int            greenShift;
 } Rgb2True;
 
 
@@ -62,6 +84,15 @@ typedef struct _Image {
 } Image;
 
 
+typedef struct _DecoInset {
+  int            left;
+  int            top;
+  int            right;
+  int            bottom;
+  char           guess;
+} DecoInset;           
+
+
 typedef struct _Toolkit {
   Display        *dsp;
   Window         root;
@@ -69,20 +100,19 @@ typedef struct _Toolkit {
   char           *buf;
   unsigned int   nBuf;
 
-  int            visualClass;
+  int            colorMode;      /* refers to CM_xx constants, not X visuals */
   Rgb2True       *tclr;
   Rgb2Pseudo     *pclr;
+  Rgb2Direct     *dclr;
 
   Cursor         cursors[14];
 
-  int            titleBarHeight;
-  int            menuBarHeight;
-  int            bottomBarHeight;
-  int            borderWidth;
+  DecoInset      frameInsets;
+  DecoInset      dialogInsets;
 
   XEvent         event;
   char           preFetched;
-  char           peek;
+  char           blocking;
   int            pending;
   int            evtId;
 
@@ -92,13 +122,15 @@ typedef struct _Toolkit {
   int            nWindows;
 
   Window         cbdOwner;
+  Window         wakeUp;
+  Window         banner;
 
   Window         newWindow;
 } Toolkit;
 
 
 /*******************************************************************************
- *
+ * global data def/decl
  */
 #ifdef MAIN
 
@@ -113,9 +145,9 @@ Atom RETRY_FOCUS;
 Atom SELECTION_DATA;
 Atom JAVA_OBJECT;
 
-/*******************************************************************************
- *
- */
+jclass  AWTError;
+JNIEnv  *JniEnv;
+
 #else
 
 extern Toolkit* X;
@@ -128,7 +160,10 @@ extern Atom RETRY_FOCUS;
 extern Atom SELECTION_DATA;
 extern Atom JAVA_OBJECT;
 
-#endif
+extern jclass AWTError;
+extern JNIEnv* JniEnv;
+
+#endif /* MAIN */
 
 extern long StdEvents;
 
@@ -139,7 +174,7 @@ extern long StdEvents;
 
 static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
   jboolean isCopy;
-  register int i;
+  register i;
   int      n = (*env)->GetStringLength( env, jstr);
   const jchar    *jc = (*env)->GetStringChars( env, jstr, &isCopy);
 
@@ -158,7 +193,7 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
 }
 
 static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
-  register int i;
+  register i;
   int      n = len+1;
   
   if ( n > X->nBuf ) {
@@ -186,8 +221,22 @@ static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
 
 
 /*****************************************************************************************
- * color functions
+ * color functions & defines
  */
+
+/*
+ * These are our directly supported visuals / color modes. Note that there is
+ * no more 1-1 correspondence to X visuals, since we do a categorisation with
+ * respect to our internal RGB <-> pixel conversion. All visuals not listed
+ * explicitly are handled via the generic XAllocColor/XQueryColor (which might
+ * slow down images considerably)
+ */
+#define CM_PSEUDO_256   0  /* PseudoColor visual */
+#define CM_TRUE         1  /* general TrueColor visual */
+#define CM_TRUE_888     2  /* special 8-8-8 bit TrueColor visual */
+#define CM_DIRECT       3
+#define CM_GENERIC      4  /* grays, DirectColor (packed) etc. */
+
 
 void initColorMapping ( JNIEnv* env, Toolkit* X);
 jlong Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb );
@@ -204,26 +253,42 @@ jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb );
 #define JI8(_v) (int)((_v + D16) / D8)
 #define XI8(_v) (int)(((_v>>8) + D16) / D8)
 
+#define ROUND_SHORT2CHAR(_n) \
+  ((unsigned short)_n >= 0xff70 ) ? 0xff : (unsigned char)(((unsigned short)_n + 0x80) >> 8)
+
 static __inline__ jint
 pixelValue ( Toolkit* X, jint rgb )
 {
-  switch ( X->visualClass ) {
-  case TrueColor:
-	return (((rgb & X->tclr->blueMask)  >> X->tclr->blueShift) +
-            ((rgb & X->tclr->greenMask) >> X->tclr->greenShift) +
-            ((rgb & X->tclr->redMask)   >> X->tclr->redShift));
+  XColor   xclr;
 
-  case DirectColor:
-	return (rgb & 0xffffff);
-
-  case PseudoColor:
+  switch ( X->colorMode ) {
+  case CM_PSEUDO_256:
 	return X->pclr->pix [JI8(JRED(rgb))] [JI8(JGREEN(rgb))] [JI8(JBLUE(rgb))];
 
-  case StaticGray:
-    return (JRED(rgb)+ JGREEN(rgb)+ JBLUE(rgb) < 196);
+  case CM_TRUE:
+	return (((rgb & X->tclr->blueMask)  >> X->tclr->blueShift) |
+            ((rgb & X->tclr->greenMask) >> X->tclr->greenShift) |
+            ((rgb & X->tclr->redMask)   >> X->tclr->redShift));
+
+  case CM_TRUE_888:
+	return (rgb & 0xffffff);
+
+  case CM_DIRECT:
+	return (((jint)X->dclr->redPix[JRED(rgb)]     << X->dclr->redShift) |
+			((jint)X->dclr->greenPix[JGREEN(rgb)] << X->dclr->greenShift) |
+			((jint)X->dclr->bluePix[JBLUE(rgb)]   << X->dclr->blueShift));
 
   default:
-    return (0);
+	/*
+	 * this is a generic fallback for "exotic" visuals and might be *awefully*
+	 * slow (esp. for images) because XAllocColor is a roundtrip
+	 */
+	xclr.red = (rgb & 0xff0000) >> 8;
+	xclr.green = (rgb & 0xff00);
+	xclr.blue = (rgb & 0xff) << 8;
+	xclr.flags = DoRed | DoGreen | DoBlue;
+	XAllocColor( X->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp)), &xclr);
+	return xclr.pixel;
   }
 }
 
@@ -231,33 +296,46 @@ static __inline__ void
 rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 {
   Visual         *v;
+  XColor         xclr;
 
-  switch ( X->visualClass ) {
-  case TrueColor:
+  switch ( X->colorMode ) {
+  case CM_PSEUDO_256:
+	*r = X->pclr->rgb[(unsigned char)pixel].r;
+	*g = X->pclr->rgb[(unsigned char)pixel].g;
+	*b = X->pclr->rgb[(unsigned char)pixel].b;
+	break;
+
+  case CM_TRUE:
 	v = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
 	*r = ((pixel & v->red_mask)   << X->tclr->redShift)   >> 16;
 	*g = ((pixel & v->green_mask) << X->tclr->greenShift) >> 8;
 	*b = ((pixel & v->blue_mask)  << X->tclr->blueShift);
 	break;
 
-  case DirectColor:
+  case CM_TRUE_888:
 	*r = JRED( pixel);
 	*g = JGREEN( pixel);
 	*b = JBLUE( pixel);
 	break;
 
-  case PseudoColor:
-	*r = X->pclr->rgb[(unsigned char)pixel].r;
-	*g = X->pclr->rgb[(unsigned char)pixel].g;
-	*b = X->pclr->rgb[(unsigned char)pixel].b;
+  case CM_DIRECT:
+	v = DefaultVisual( X->dsp, DefaultScreen( X->dsp));
+	*r = X->dclr->red[   ((pixel & v->red_mask) >> X->dclr->redShift) ];
+	*g = X->dclr->green[ ((pixel & v->green_mask) >> X->dclr->greenShift) ];
+	*b = X->dclr->blue[  ((pixel & v->blue_mask) >> X->dclr->blueShift) ];
 	break;
 
-  case StaticGray:
-    *r = *g = *b = (JRED(pixel)+JGREEN(pixel)+JBLUE(pixel)/3);
-    break;
-
   default:
-    *r = *g = *b = 0;
+	/*
+	 * this is a generic fallback for "exotic" visuals and might be *awefully*
+	 * slow (esp. for images) because XAllocColor is a roundtrip
+	 */
+	xclr.pixel = pixel;
+	XQueryColor( X->dsp, DefaultColormapOfScreen( DefaultScreenOfDisplay( X->dsp)), &xclr);
+	*r = xclr.red >> 8;
+	*g = xclr.green >> 8;
+	*b = xclr.blue >> 8;
+
     break;
   }
 }
@@ -293,6 +371,16 @@ GetAlpha ( AlphaImage* img, int col, int row )
 
 jobject selectionClear ( JNIEnv* env, Toolkit* X );
 jobject selectionRequest ( JNIEnv* env, Toolkit* X );
+
+
+/*****************************************************************************************
+ * async (multithreaded) macros
+ * this can be used to solve the problem of deferred drawing requests, not being
+ * flushed because of infrequent (non-polled) XNextEvent calls.
+ * (for now, we go with a backgound flush thread)
+ */
+
+#define XFLUSH(_X,_force)
 
 
 #endif

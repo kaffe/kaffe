@@ -12,7 +12,7 @@
 #define	__gc_mem_h
 
 #define	MIN_HEAPSIZE	0
-#define	MAX_HEAPSIZE	(32*1024*1024)
+#define	MAX_HEAPSIZE	(64*1024*1024)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
 #ifndef gc_pgsize

@@ -2,6 +2,7 @@ package java.awt.event;
 
 import java.awt.AWTEvent;
 import java.awt.Adjustable;
+import java.awt.Event;
 
 /**
  * class AdjustmentEvent - 
@@ -17,8 +18,8 @@ import java.awt.Adjustable;
 public class AdjustmentEvent
   extends AWTEvent
 {
-	int adjType;
-	int adjVal;
+	protected int adjType;
+	protected int adjVal;
 	final public static int UNIT_INCREMENT = 1;
 	final public static int UNIT_DECREMENT = 2;
 	final public static int BLOCK_DECREMENT = 3;
@@ -35,11 +36,6 @@ public AdjustmentEvent ( Adjustable src, int evtId, int type, int value ) {
 	adjVal = value;
 }
 
-protected void dispatch() {
-	processAdjustmentEvent( this);
-	recycle();
-}
-
 public Adjustable getAdjustable () {
 	return (Adjustable) source;
 }
@@ -50,6 +46,14 @@ public int getAdjustmentType () {
 
 public int getValue () {
 	return adjVal;
+}
+
+protected Event initOldEvent ( Event e ) {
+	e.target = source;
+	e.id = id;
+	e.arg = new Integer( adjVal);
+	
+	return e;
 }
 
 public String paramString () {
@@ -71,19 +75,5 @@ public String paramString () {
 	}
 
 	return s + ", val:" + adjVal;
-}
-
-protected void recycle() {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = adjEvtCache;	
-		adjEvtCache = this;
-	}
-}
-
-protected void setAdjustmentEvent( int adjType, int adjVal) {
-	this.adjType = adjType;
-	this.adjVal = adjVal;
 }
 }

@@ -14,6 +14,13 @@
 #include "toolkit.h"
 #include "keysyms.h"
 
+#if defined(USE_THREADED_AWT)
+#include "jsyscall.h"
+void jthreadedBlockEAGAIN(int fd);   /* move to SysCallInterface ? */
+int jthreadedFileDescriptor(int fd);
+extern void* currentJThread;
+#endif
+
 /*******************************************************************************
  *
  */
@@ -21,7 +28,7 @@
 __inline__ int getSourceIdx ( Toolkit* X, Window w )
 {
   int      n;
-  register int i;
+  register i;
 
   if ( w == X->lastWindow ){
 	return X->srcIdx;
@@ -42,23 +49,66 @@ __inline__ int getSourceIdx ( Toolkit* X, Window w )
   }
 }
 
-__inline__ int nextEvent ( Toolkit *X )
+
+int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 {
   if ( X->preFetched )
 	return 1;
 
-  if ( X->pending <= 0 )
-	X->pending = XEventsQueued( X->dsp, QueuedAfterFlush);
+#if defined(USE_THREADED_AWT)
+  /*
+   * We can't use QueuedAfterFlush since it seems to rely on blocked IO. At least
+   * XFree86-3.3.2 subsequently hangs in _XFlushInt. This is the weak point of
+   * our multithreaded X support, which depends on the Xlib in use
+   */
+  if ( blockIt ) {                /* this is from a getNextEvent */
+	while ( X->pending <= 0 ) {
+	  XFlush( X->dsp);
+	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 ) {
+		if ( !X->wakeUp )
+		  return 0;
 
-  if ( !X->pending ) {
-	return 0;
+		/* give up the lock on the Toolkit class, or we probably end up in a deadlock */
+		X->blocking = 1;
+		(*env)->MonitorExit( env, clazz);
+		jthreadedBlockEAGAIN( ConnectionNumber( X->dsp));
+		/*
+		 * getting here just means we got input, it doesn't mean we have events. It also
+		 * doesn't mean there currently is no other thread doing X requests
+		 */
+		(*env)->MonitorEnter( env, clazz);
+		X->blocking = 0;
+		X->pending = XEventsQueued( X->dsp, QueuedAfterReading);
+	  }
+	}
   }
-  else {
-	XNextEvent( X->dsp, &X->event);
-	X->pending--;
-	return 1;
+  else {                         /* this is from a peekEvent */
+	if ( X->blocking )           /* nothing to expect, there is a pending getNextEvent */
+	  return 0;
+
+	if ( X->pending <= 0 ) {
+	  XFlush( X->dsp);
+	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 )
+		return 0;
+	}
   }
+#else
+  /*
+   * We need to use this one for Solaris.  We have problems trying to unblock the
+   * AWT thread off the X server connection.
+   */
+  if ( X->pending <= 0 ) {
+	if ( (X->pending = XEventsQueued( X->dsp, QueuedAfterFlush)) == 0 )
+	  return 0;
+  }
+#endif
+
+  XNextEvent( X->dsp, &X->event);
+  X->pending--;
+
+  return 1;
 }
+
 
 
 /* X-to-Java key modifier mapping
@@ -80,6 +130,7 @@ __inline__ int keyMod ( int keyState )
 }
 
 
+jclass     AWTEvent;
 jclass     ComponentEvent;
 jclass     MouseEvent;
 jclass     FocusEvent;
@@ -115,6 +166,34 @@ jmethodID  getPaintEvent;
 #define    FOCUS_GAINED        1004
 #define    FOCUS_LOST          1005
 
+#if defined(DEBUG)
+static char *eventStr ( int evtId )
+{
+  switch (evtId) {
+  case COMPONENT_RESIZED: return "ComponentResized";
+
+  case WINDOW_CLOSING: return "WindowClosing";
+  case WINDOW_CLOSED: return "WindowClosed";
+  case WINDOW_ICONIFIED: return "WindowIconified";
+  case WINDOW_DEICONIFIED: return "WindowDeiconified";
+
+  case KEY_PRESSED: return "KeyPressed";
+  case KEY_RELEASED: return "KeyReleased";
+
+  case MOUSE_PRESSED: return "MousePressed";
+  case MOUSE_RELEASED: return "MouseReleased";
+  case MOUSE_MOVED: return "MouseMoved";
+  case MOUSE_ENTERED: return "MouseEntered";
+  case MOUSE_EXITED: return "MouseExited";
+
+  case PAINT: return "Paint";
+	
+  case FOCUS_GAINED: return "FocusGained";
+  case FOCUS_LOST: return "FocusLost";
+  default: return "<unknown>";
+  }
+};
+#endif
 
 jobject
 skip ( JNIEnv* env, Toolkit* X )
@@ -180,8 +259,8 @@ jobject
 motionNotify ( JNIEnv* env, Toolkit* X )
 {
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
-										 X->srcIdx, (X->evtId = MOUSE_MOVED),
-										 0, X->event.xmotion.x, X->event.xmotion.y);
+											  X->srcIdx, (X->evtId = MOUSE_MOVED),
+											  0, X->event.xmotion.x, X->event.xmotion.y);
 }
 
 
@@ -335,6 +414,69 @@ clientMessage ( JNIEnv* env, Toolkit* X )
   return NULL;
 }
 
+jobject
+reparentNotify ( JNIEnv* env, Toolkit* X )
+{
+  Window    window, parent, root, owner;
+  jclass    clazz = 0;
+  jmethodID setDecoInsets;
+  int       left, top, right, bottom;
+  int       x, y, w, h, bw, d;
+  int       xc, yc, wc, hc;
+  int       dw, dh;
+  DecoInset *in;
+
+  if ( X->frameInsets.guess || X->dialogInsets.guess ) {
+	window = X->event.xreparent.window;
+	parent = X->event.xreparent.parent;
+
+	XGetGeometry( X->dsp, parent, &root, &x, &y, &w, &h, &bw, &d);
+	XGetGeometry( X->dsp, window, &root, &xc, &yc, &wc, &hc, &bw, &d);
+
+	left   = X->event.xreparent.x;
+	top    = X->event.xreparent.y;
+	right  = w - wc - left;
+	bottom = h - hc - top;
+
+	if ( XGetTransientForHint( X->dsp, window, &owner) && X->dialogInsets.guess ) {
+	  in = &(X->dialogInsets);
+	  if ( (left != in->left) || (top != in->top) ||
+		   (right != in->right) || (bottom != in->bottom) ){
+		clazz = (*env)->FindClass( env, "java/awt/Dialog");
+		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIII)V");
+	  }
+	  in->guess = 0;
+	}
+	else if ( X->frameInsets.guess ) {
+	  in = &(X->frameInsets);
+	  if ( (left != in->left) || (top != in->top) ||
+		   (right != in->right) || (bottom != in->bottom) ){
+		clazz = (*env)->FindClass( env, "java/awt/Frame");
+		setDecoInsets = (*env)->GetStaticMethodID( env, clazz, "setDecoInsets","(IIII)V");
+	  }
+	  in->guess = 0;
+	}
+
+	if ( clazz ) {
+	  dw = (left + right) - (in->left + in->right);
+	  dh = (top + bottom) - (in->top + in->bottom);
+
+	  XCheckTypedWindowEvent( X->dsp, window, ConfigureNotify, &X->event);
+	  XCheckTypedWindowEvent( X->dsp, window, Expose, &X->event);
+	  XResizeWindow( X->dsp, window, wc + dw, hc + dh);
+
+	  in->left = left;
+	  in->top = top;
+	  in->right = right;
+	  in->bottom = bottom;
+
+	  (*env)->CallStaticVoidMethod( env, clazz, setDecoInsets, 
+									in->top, in->left, in->bottom, in->right);
+	}
+  }
+
+  return NULL;
+}
 
 typedef jobject (*EventFunc)(JNIEnv*,Toolkit*);
 
@@ -359,7 +501,7 @@ static EventFunc  processEvent[LASTEvent] = {
   mapNotify,            /* UnmapNotify             18 */
   mapNotify,            /* MapNotify               19 */
   skip,                 /* MapRequest              20 */
-  skip,                 /* ReparentNotify          21 */
+  reparentNotify,       /* ReparentNotify          21 */
   configureNotify,      /* ConfigureNotify         22 */
   skip,                 /* ConfigureRequest        23 */
   skip,                 /* GravityNotify           24 */
@@ -384,29 +526,43 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
+  int r;
 
-  ComponentEvent = (*env)->FindClass( env, "java/awt/event/ComponentEvent");
-  MouseEvent     = (*env)->FindClass( env, "java/awt/event/MouseEvent");
-  FocusEvent     = (*env)->FindClass( env, "java/awt/event/FocusEvent");
-  WindowEvent    = (*env)->FindClass( env, "java/awt/event/WindowEvent");
-  KeyEvent       = (*env)->FindClass( env, "java/awt/event/KeyEvent");
-  PaintEvent     = (*env)->FindClass( env, "java/awt/event/PaintEvent");
+  ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
+  MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");
+  FocusEvent     = (*env)->FindClass( env, "java/awt/FocusEvt");
+  WindowEvent    = (*env)->FindClass( env, "java/awt/WindowEvt");
+  KeyEvent       = (*env)->FindClass( env, "java/awt/KeyEvt");
+  PaintEvent     = (*env)->FindClass( env, "java/awt/PaintEvent");
 
-  getComponentEvent = (*env)->GetStaticMethodID( env, ComponentEvent, "getComponentEvent", 
-												 "(IIIIII)Ljava/awt/event/ComponentEvent;");
-  getMouseEvent     = (*env)->GetStaticMethodID( env, MouseEvent, "getMouseEvent",
-												 "(IIIII)Ljava/awt/event/MouseEvent;");
-  getFocusEvent     = (*env)->GetStaticMethodID( env, FocusEvent, "getFocusEvent",
-												 "(II)Ljava/awt/event/FocusEvent;");
-  getWindowEvent    = (*env)->GetStaticMethodID( env, WindowEvent, "getWindowEvent",
-												 "(II)Ljava/awt/event/WindowEvent;");
-  getKeyEvent       = (*env)->GetStaticMethodID( env, KeyEvent, "getKeyEvent",
-												 "(IIIII)Ljava/awt/event/KeyEvent;");
-  getPaintEvent     = (*env)->GetStaticMethodID( env, PaintEvent, "getPaintEvent",
-												 "(IIIIII)Ljava/awt/event/PaintEvent;");
+  getComponentEvent = (*env)->GetStaticMethodID( env, ComponentEvent, "getEvent", 
+												 "(IIIIII)Ljava/awt/ComponentEvt;");
+  getMouseEvent     = (*env)->GetStaticMethodID( env, MouseEvent, "getEvent",
+												 "(IIIII)Ljava/awt/MouseEvt;");
+  getFocusEvent     = (*env)->GetStaticMethodID( env, FocusEvent, "getEvent",
+												 "(II)Ljava/awt/FocusEvt;");
+  getWindowEvent    = (*env)->GetStaticMethodID( env, WindowEvent, "getEvent",
+												 "(II)Ljava/awt/WindowEvt;");
+  getKeyEvent       = (*env)->GetStaticMethodID( env, KeyEvent, "getEvent",
+												 "(IIIII)Ljava/awt/KeyEvt;");
+  getPaintEvent     = (*env)->GetStaticMethodID( env, PaintEvent, "getEvent",
+												 "(IIIIII)Ljava/awt/PaintEvent;");
 
   X->nWindows = 47;
   X->windows = calloc( X->nWindows, sizeof(Window));
+
+  if ( X->banner )
+	XUnmapWindow( X->dsp, X->banner);
+
+#if defined(UNIX_JTHREADS)
+  /*
+   * make X connection non-blocking (to get SIGIOs)
+   * NOTE: this requires all Xlib calls doing IO via the X conn to be synced! In addition,
+   * no Xlib function doing blocked reads on the connection should be called without
+   * ensuring that there is input available.
+   */
+  jthreadedFileDescriptor( ConnectionNumber(X->dsp));
+#endif
 
   Component = (*env)->FindClass( env, "java/awt/Component");
   return (*env)->NewObjectArray( env, X->nWindows, Component, NULL);
@@ -418,7 +574,9 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  while ( nextEvent( X) &&
+  DBG( awt_evt, ("getNextEvent..\n"));
+
+  while ( nextEvent( env, clazz, X, True) &&
 		  ((getSourceIdx( X, X->event.xany.window) >= 0) || 
 		   (X->event.xany.window == X->cbdOwner)) ) {
 	X->preFetched = 0;
@@ -426,6 +584,9 @@ Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz )
 	  break;
 	}
   }
+
+  DBG( awt_evt, ("..getNextEvent: %d (%s) %x, %x\n",
+				 X->evtId, eventStr( X->evtId), jEvt, X->event.xany.window));
 
   return jEvt;
 }
@@ -435,12 +596,14 @@ Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  X->peek = 1;
-  if ( (jEvt = Java_java_awt_Toolkit_evtGetNextEvent( env, clazz)) ) {
-	X->preFetched = 1;
-  }
-  X->peek = 0;
+  DBG( awt_evt, ("peekEvent..\n"));
 
+  if ( nextEvent( env, clazz, X, False) && ((getSourceIdx( X, X->event.xany.window) >= 0)) ) {
+	if ( (jEvt = (processEvent[X->event.xany.type])( env, X)) )
+	  X->preFetched = 1;
+  }
+
+  DBG( awt_evt, ("..peekEvent: %s %x, %x\n", eventStr(X->evtId), jEvt, X->event.xany.window));
   return jEvt;
 }
 
@@ -466,23 +629,47 @@ Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id )
  * This is just used to wakeup the getNextEvent call if we are multithreaded,
  * and we post an event from outside the dispatcher thread (which might be blocked
  * in a native getNextEvent). This is a tribute to the fact that we actually have
- * two different queues - the native one, and the queue for self-posted events
+ * two different queues - the native one, and the queue for self-posted events.
+ * We could also do a round trip here, but this would wake up the event dispatcher
+ * immediately (i.e. before this func returns), which is probably a crude side effect
+ * of postEvent().
+ * Using a ClientMessage might be a bit dangerous if Xlib tries to be too smart by
+ * just dispatching this to the local queue (without passing to the server)
  */
 void
 Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
 {
   XEvent event;
 
+  DBG( awt_evt, ("evtWakeup\n"));
+  DBG_ACTION( awt, XSynchronize( X->dsp, False));
+
+  if ( !X->wakeUp ) {
+	unsigned long mask = CWEventMask;
+	XSetWindowAttributes attrs;
+
+	attrs.override_redirect = True;
+	attrs.event_mask = StructureNotifyMask;
+
+	X->wakeUp = XCreateWindow( X->dsp, X->root, -1000, -1000, 1, 1, 0, CopyFromParent,
+							   InputOutput, CopyFromParent, mask, &attrs);
+  }
+
+  event.xclient.type = ClientMessage; 
   event.xclient.message_type = WAKEUP;
   event.xclient.format = 8;
+  event.xclient.window = X->wakeUp;
 
-  XSendEvent( X->dsp, X->event.xany.window, False, -1, &event);
+  XSendEvent( X->dsp, X->wakeUp, False, 0, &event);
+  XFlush( X->dsp);
+
+  DBG_ACTION( awt, XSynchronize( X->dsp, True));
 }
 
 jint
 Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, void* wnd )
 {
-  register int i;
+  register i;
   int      n;
 
   /*

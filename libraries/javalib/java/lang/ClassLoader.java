@@ -12,45 +12,42 @@ package java.lang;
 
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.SystemClassLoader;
-import java.util.Hashtable;
+import java.util.Enumeration;
 
-abstract public class ClassLoader
-{
+public abstract class ClassLoader {
 
-private boolean initialized = false;
-private Hashtable loader;
+private ClassLoader parent;
 
 protected ClassLoader() {
+	this(getBaseClassLoader());
+}
+
+protected ClassLoader(ClassLoader parent) {
 	System.getSecurityManager().checkCreateClassLoader();
-	loader = new Hashtable();
-	init();
-	initialized = true;
+	this.parent = parent;
 }
 
 final protected Class defineClass(String name, byte data[], int offset, int length) {
-	Class cls = defineClass0(name, data, offset, length);
-	loader.put(cls.getName(), cls);
-	return (cls);
+	return (defineClass0(name, data, offset, length));
 }
 
+/**
+ * @deprecated
+ */
 final protected Class defineClass(byte data[], int offset, int length) {
 	return (defineClass(null, data, offset, length));
 }
 
-native private Class defineClass0(String name, byte data[], int offset, int length);
-
 final protected Class findLoadedClass(String name) {
-	return ((Class)loader.get(name));
+	return (findLoadedClass0(name));
 }
 
 final protected Class findSystemClass(String name) throws ClassNotFoundException {
 	return (findSystemClass0(name));
 }
-
-native private Class findSystemClass0(String name);
 
 public URL getResource(String name) {
 	return (null);	// Default implementation just returns null
@@ -79,16 +76,96 @@ public static final InputStream getSystemResourceAsStream(String name) {
 	}
 }
 
+public Class loadClass(String name) throws ClassNotFoundException {
+	return (loadClass(name, true));
+}
+
+protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+	Class cls = findLoadedClass(name);
+	if (cls == null) {
+		try {
+			if (parent != null) {
+				cls = parent.loadClass(name, resolve);
+			}
+			else {
+				cls = findSystemClass(name);
+			}
+		}
+		catch (ClassNotFoundException _) {
+			cls = findLocalClass(name);
+		}
+	}
+	if (resolve) {
+		resolveClass(cls);
+	}
+	return (cls);
+}
+
+protected void checkPackageAccess(String name) throws SecurityException {
+}
+
+protected Class findLocalClass(String name) throws ClassNotFoundException {
+	throw new ClassNotFoundException(name);
+}
+
+final protected void resolveClass(Class c) {
+	resolveClass0(c);
+}
+
+final protected void setSigners(Class cl, Object signers[]) {
+	// Signer's are not currently supported.
+}
+
+public ClassLoader getParent() {
+	return (parent);
+}
+
+public final Enumeration getResources(String name) throws IOException {
+	throw new kaffe.util.NotImplemented();
+}
+
+
+public Enumeration getLocalResources(String name) throws IOException {
+	return (null);
+}
+
+public URL getLocalResource(String name) {
+	return (null);
+}
+
+public Enumeration getSystemResources(String name) throws IOException {
+	throw new kaffe.util.NotImplemented();
+}
+
+public static ClassLoader getBaseClassLoader() {
+	return (null);
+}
+
+protected Package definePackage(String name, String specTitle, String specVersion, String specVendor, String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
+	throw new kaffe.util.NotImplemented();
+}
+
+protected Package getPackage(String name) {
+	throw new kaffe.util.NotImplemented();
+}
+
+protected Package[] getPackages() {
+	throw new kaffe.util.NotImplemented();
+}
+
+native private Class defineClass0(String name, byte data[], int offset, int length);
+native private Class findSystemClass0(String name);
+native private Class findLoadedClass0(String name);
+native private void resolveClass0(Class cls);
 /**
  *  This is not part of the public interface.
  */
 native public static byte[] getSystemResourceAsBytes0(String name);
 
-native private void init();
-
 /**
  * The VM will always call loadClassVM, and never loadClass directly
  * because otherwise an exception might go uncaught.
+ * This is for the desktop system only.
  */
 private Class loadClassVM(String name, boolean resolve) {
 	Class clazz = null;
@@ -96,22 +173,6 @@ private Class loadClassVM(String name, boolean resolve) {
 		clazz = loadClass(name, resolve);
 	} catch (Throwable _) { }
 	return clazz;
-}
-
-public Class loadClass(String name) throws ClassNotFoundException {
-	return (loadClass(name, true));
-}
-
-abstract protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException;
-
-final protected void resolveClass(Class c) {
-	resolveClass0(c);
-}
-
-native private void resolveClass0(Class cls);
-
-final protected void setSigners(Class cl, Object signers[]) {
-	// Signer's are not currently supported.
 }
 
 }

@@ -8,7 +8,6 @@
  * of this file.
  */
 
-
 package java.applet;
 
 public interface AudioClip {

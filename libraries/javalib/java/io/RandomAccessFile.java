@@ -1,6 +1,3 @@
-package java.io;
-
-
 /*
  * Java core library component.
  *
@@ -10,10 +7,18 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.io;
+
+
 public class RandomAccessFile
   implements DataOutput, DataInput
 {
 	private FileDescriptor fd = new FileDescriptor();
+
+static {
+        System.loadLibrary("io");
+}
 
 public RandomAccessFile(File file, String mode) throws IOException {
 	this(file.getPath(), mode);
@@ -126,10 +131,9 @@ final public String readLine() throws IOException {
 		if (data == -1)
 			break;
 		nread++;
-
 		if (ch == '\n')
 			break;
-		if (ch == '\r') {	// Check for '\r\n'
+		if (ch == '\r') {       // Check for '\r\n'
 			final int data2 = read();
 			final char ch2 = (char) (data & 0xff);
 

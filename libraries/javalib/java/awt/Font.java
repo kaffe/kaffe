@@ -1,9 +1,3 @@
-package java.awt;
-
-import java.awt.peer.FontPeer;
-import java.util.Hashtable;
-import kaffe.util.Ptr;
-
 /**
  * Font - class to access native Fonts suitable for rendering text
  *
@@ -12,8 +6,16 @@ import kaffe.util.Ptr;
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
+ *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.peer.FontPeer;
+import java.util.Hashtable;
+import kaffe.util.Ptr;
+
 public class Font
 {
 	Ptr nativeData;
@@ -115,11 +117,12 @@ public boolean equals ( Object o ) {
 	return false;	
 }
 
-protected void finalize () {
+protected void finalize () throws Throwable {
   if ( nativeData != null ) {
     Toolkit.fntFreeFont( nativeData);
     nativeData = null;
   }
+  super.finalize();
 }
 
 public String getFamily() {

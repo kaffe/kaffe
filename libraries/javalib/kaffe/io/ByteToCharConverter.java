@@ -85,17 +85,16 @@ public static ByteToCharConverter getConverter ( String enc )
 }
 
 public static ByteToCharConverter getDefault() {
+	String enc = encodingDefault;
+	if (ClassLoader.getSystemResourceAsStream(encodingRoot + ".ByteToChar" + enc) == null) {
+		enc = "Default";
+	}
 	try {
-		return (getConverter(encodingDefault));
+		return (getConverter(enc));
 	}
-	catch (UnsupportedEncodingException _) {
-		try {
-			return (getConverter("Default"));
-		}
-		catch (UnsupportedEncodingException __) {
-		}
+	catch (UnsupportedEncodingException __) {
+		return (null);
 	}
-	return (null);
 }
 
 abstract public int getNumberOfChars ( byte[] from, int fpos, int flen );

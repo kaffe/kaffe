@@ -17,18 +17,15 @@ public class EventObject extends Object
 {
 	protected transient Object source;
 
-public EventObject(Object src)
-	{
+public EventObject(Object src) {
 	source = src;
 }
 
-public Object getSource()
-	{
+public Object getSource() {
 	return (source);
 }
 
-public String toString()
-	{
+public String toString() {
 	return (source.toString());
 }
 }

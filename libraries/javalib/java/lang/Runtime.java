@@ -75,10 +75,16 @@ native public long freeMemory();
 
 native public void gc();
 
+/**
+ * @deprecated
+ */
 public InputStream getLocalizedInputStream(InputStream in) {
 	return (in);
 }
 
+/**
+ * @deprecated
+ */
 public OutputStream getLocalizedOutputStream(OutputStream out) {
 	return (out);
 }

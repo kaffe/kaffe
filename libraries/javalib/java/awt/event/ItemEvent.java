@@ -17,8 +17,8 @@ import java.awt.ItemSelectable;
 public class ItemEvent
   extends AWTEvent
 {
-	Object obj;
-	int op;
+	protected Object obj;
+	protected int op;
 	final public static int ITEM_FIRST = 701;
 	final public static int ITEM_LAST = 701;
 	final public static int ITEM_STATE_CHANGED = ITEM_FIRST;
@@ -29,11 +29,6 @@ public ItemEvent ( ItemSelectable src, int evtId, Object item, int stateChange) 
 	super( src, evtId);
 	obj = item;
 	op = stateChange;
-}
-
-protected void dispatch () {
-	processItemEvent( this);
-	recycle();
 }
 
 public Object getItem () {
@@ -59,19 +54,5 @@ public String paramString() {
 	}
 	
 	return s;
-}
-
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = itmEvtCache;	
-		itmEvtCache = this;
-	}
-}
-
-protected void setItemEvent( Object obj, int op) {
-	this.obj = obj;
-	this.op = op;
 }
 }

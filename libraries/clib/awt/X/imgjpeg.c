@@ -8,18 +8,15 @@
  * of this file. 
  */
 
-#include "config.h"
+#include "toolkit.h"
 
 #include <stdio.h>
 #include <setjmp.h>
-#include <sys/types.h>
 
-#if defined(HAVE_JPEGLIB_H)
+#ifdef HAVE_JPEGLIB_H
 #include "jpeglib.h"
 #include "jerror.h"
 #endif
-
-#include "toolkit.h"
 
 
 #define MAX_JPEG_COLORS 256
@@ -39,7 +36,7 @@ void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 XImage* createXImage ( Toolkit* X, int width, int height );
 
 
-#if defined(HAVE_JPEGLIB_H)
+#ifdef HAVE_JPEGLIB_H
 
 /*******************************************************************************************
  * required typedefs and structs
@@ -245,9 +242,9 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, int colors )
 Image*
 readJpegFile ( FILE* infile )
 {
-  Image *img = 0;
+  Image *img;
 
-#if defined(HAVE_JPEGLIB_H)
+#ifdef HAVE_JPEGLIB_H
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);
@@ -267,7 +264,7 @@ readJpegData ( unsigned char* buf, long len )
 {
   Image *img = 0;
 
-#if defined(HAVE_JPEGLIB_H)
+#ifdef HAVE_JPEGLIB_H
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);

@@ -8,10 +8,8 @@
  * of this file. 
  */
 
-
 #define MAIN
 
-#include "config.h"
 #include "toolkit.h"
 
 
@@ -45,13 +43,16 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
 
   sprintf( key, "%d", err->error_code);
   XGetErrorDatabaseText( dsp, "XProtoError", key, "", buf, sizeof( buf));
-  fprintf( stderr, "X error:      %s\n", buf);
+
+  DBG( awt,("X error:      %s\n", buf));
 
   sprintf( key, "%d", err->request_code);
   XGetErrorDatabaseText( dsp, "XRequest", key, "", buf, sizeof( buf));
-  fprintf( stderr, "  request:    %s\n", buf);
 
-  fprintf( stderr, "  resource:   %X\n", (unsigned int) err->resourceid);
+  DBG( awt, ("  request:    %s\n", buf));
+  DBG( awt, ("  resource:   %X\n", err->resourceid));
+
+  //DBG_ACTION( awt, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
 
   return 0;
 }
@@ -67,25 +68,29 @@ Java_java_awt_Toolkit_tlkVersion ( JNIEnv* env, jclass clazz )
   return (*env)->NewStringUTF( env, "X-1.0");
 }
 
+
 /*
  * we do this native because of two reasons: (1) this should appear as fast as
  * possible (without being deferred by potential lengthy Java inits), (2) in
  * native window systems we can't draw to the "root-window" from within Java
  */
-void
+Window
 displayBanner ( JNIEnv* env, jclass clazz, jstring banner )
 {
-  /* no X banner yet */
+  return 0;
 }
 
 
 void
 Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name, jstring banner )
 {
-  char *dspName;
+  char    *dspName;
 
   X->nBuf = 128;
   X->buf = malloc( X->nBuf);
+
+  JniEnv = env;
+  AWTError = (*env)->FindClass( env, "java/awt/AWTError");
 
   XSetErrorHandler( xErrorHandler);
 
@@ -101,12 +106,13 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name, jstring
 	fprintf( stderr, "XOpenDisplay failed: %s\n", dspName);
 	return;
   }
-  
-#ifdef DEBUG
-  XSynchronize( X->dsp, True);
-#endif
 
-  X->root = DefaultRootWindow( X->dsp);
+DBG( awt, ("synchronize X\n"));
+DBG_ACTION(awt, XSynchronize( X->dsp, True));
+
+  X->root   = DefaultRootWindow( X->dsp);
+  X->banner = displayBanner( env, clazz, banner);
+
   initColorMapping( env, X);
 
   WM_PROTOCOLS     = XInternAtom( X->dsp, "WM_PROTOCOLS", False);
@@ -115,9 +121,6 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name, jstring
   WM_TAKE_FOCUS    = XInternAtom( X->dsp, "WM_TAKE_FOCUS", False);
   WAKEUP           = XInternAtom( X->dsp, "WAKEUP", False);
   RETRY_FOCUS      = XInternAtom( X->dsp, "RETRY_FOCUS", False);
-
-  if ( banner )
-	displayBanner( env, clazz, banner);
 }
 
 void
@@ -163,9 +166,13 @@ Java_java_awt_Toolkit_tlkGetScreenWidth ( JNIEnv* env, jclass clazz )
 
 
 jboolean
-Java_java_awt_Toolkit_tlkIsMultiThreaded ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_tlkIsBlocking ( JNIEnv* env, jclass clazz )
 {
-#ifdef USE_NATIVE_THREADS
+  /*
+   * 'isBlocking' means that we suspend the dispatcher thread in
+   * evtGetNextEvent() until the next Java event becomes available
+   */
+#if defined(USE_THREADED_AWT)
   return JNI_TRUE;
 #else
   return JNI_FALSE;
@@ -173,10 +180,51 @@ Java_java_awt_Toolkit_tlkIsMultiThreaded ( JNIEnv* env, jclass clazz )
 }
 
 
+jboolean
+Java_java_awt_Toolkit_tlkIsDispatchExclusive ( JNIEnv* env, jclass clazz )
+{
+  /*
+   * 'isDispatchExclusive' means that we have a native window system requiring
+   * us to create, event-dispatch and destroy windows exclusivly from one thread
+   * (the 'dispatcher' thread). The OS/2 presentation manager is an example of such
+   * a beast
+   */
+  return JNI_FALSE;
+}
+
+jboolean
+Java_java_awt_Toolkit_tlkNeedsFlush ( JNIEnv* env, jclass clazz )
+{
+  /*
+   * 'needsFlush' means we don't execute graphics requests directly, they are
+   * queued by the graphics lib in a way that requires frequent
+   * queue flushing (e.g. for 'isBlocking' and Xlib). Without this, we have
+   * to make sure that a blocked AWT IO doesn't defer auto-flush (e.g. by XNextEvent)
+   * until doomsday. The XFLUSH macro (to be called in graphics ops) is a hook for an
+   * alternative mechanism (e.g. by "elapsed time since last flush")
+   */
+#if defined(USE_THREADED_AWT)
+  return JNI_TRUE;
+#else
+  return JNI_FALSE;
+#endif
+}
+
 void
 Java_java_awt_Toolkit_tlkSync ( JNIEnv* env, jclass clazz )
 {
+  /*
+   * this one flushes the request buffer and waits until all reqs have been processed
+   * (a roundtrip for input based on prior requests)
+   */
   XSync( X->dsp, False);
+}
+
+void
+Java_java_awt_Toolkit_tlkFlush ( JNIEnv* env, jclass clazz )
+{
+  /* simply flush request buffer (mainly for background threads and blocked AWT) */
+  XFlush( X->dsp);
 }
 
 

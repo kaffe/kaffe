@@ -26,23 +26,8 @@ public ComponentEvent ( Component source, int id ) {
 	super( source, id);
 }
 
-protected void dispatch () {
-	processComponentEvent( this);
-	
-	recycle();
-}
-
 public Component getComponent() {
 	return (Component) source;
-}
-
-static ComponentEvent getComponentEvent ( int srcIdx, int id, int x, int y, int width, int height ){
-	Component      source = sources[srcIdx];
-	ComponentEvent e = getComponentEvent( source, id);
-	
-	updateToplevelBounds( source, x, y, width, height);
-
-	return e;
 }
 
 public String paramString () {
@@ -56,14 +41,5 @@ public String paramString () {
 	}
 	
 	return prefix + '?';
-}
-
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = cmpEvtCache;	
-		cmpEvtCache = this;
-	}
 }
 }

@@ -29,6 +29,7 @@ class PopupWindow
 	Component client;
 	PopupWindow sub;
 	static boolean disposeOnLost;
+	static Window popup;
 
 class PopupListener
   implements MouseListener, MouseMotionListener, KeyListener, FocusListener
@@ -89,24 +90,22 @@ public void mouseClicked ( MouseEvent evt ) {
 public void mouseDragged ( MouseEvent evt ) {
 	int u = evt.getX();
 	int v = evt.getY();
+
 	firstEvent = false;
 
 	if ( contains( u, v) ) {
 		selectItem( itemAt( v ));
 
-		if ( (selection != null) && (selection instanceof Menu) ){
+		if ( (selection != null) && (selection instanceof Menu) )
 			openSubMenu();
-		}
 	}
 	else {
 		if ( client instanceof PopupWindow ) {
 			PopupWindow master = (PopupWindow) client;
 			u -= (master.x - x);
 			v -= (master.y - y);
-			if ( master.contains( u, v) && (master.itemAt( v) != master.selection) ){
+			if ( master.contains( u, v) && (master.itemAt( v) != master.selection) )
 				master.disposeSubMenus();
-				AWTEvent.revertDragGrab( master);
-			}
 		}
 	}
 }
@@ -115,7 +114,7 @@ public void mouseEntered ( MouseEvent evt ) {
 	disposeOnLost = false;
 	requestFocus();
 	
-	selectItem( itemAt( evt.getY() ));
+	//selectItem( itemAt( evt.getY() ));
 }
 
 public void mouseExited ( MouseEvent evt ) {
@@ -129,13 +128,18 @@ public void mouseMoved ( MouseEvent evt ) {
 
 public void mousePressed ( MouseEvent evt ) {
 	firstEvent = false;
+	selectItem( itemAt( evt.getY() ));
 }
 
 public void mouseReleased ( MouseEvent evt ) {
-	if ( contains( evt.getX(), evt.getY()) )
+	if ( contains( evt.getX(), evt.getY()) && (selection != null) )  // action!
 		processSelection();
-	else if ( !firstEvent ) // maybe we were triggered by a click
-		disposeAll();
+	else {
+		if ( PopupWindow.this == MouseEvt.getGrab() )
+			MouseEvt.releaseMouse();
+		else
+			disposeAll();
+	}
 }
 }
 
@@ -147,15 +151,31 @@ public PopupWindow ( Component client, Frame fr, Vector items) {
 	new PopupListener();
 
 	if ( !(client instanceof PopupWindow) )
-		AWTEvent.setPopup( this);
+		setPopup( this);
+}
+
+static boolean checkPopup ( Object src ) {
+	if ( popup == null ) {
+		return true;
+	}
+	if ( (src instanceof PopupWindow) && (((PopupWindow)src).rootWnd() == popup) ) {
+		return true;
+	}
+
+	popup.dispose();
+	popup = null;
+	return false;
 }
 
 public void dispose () {
 	if ( !(client instanceof PopupWindow) )
-		AWTEvent.resetPopup( this);
+		resetPopup( this);
 
 	disposeSubMenus();		
 	super.dispose();
+
+	if ( this == MouseEvt.getGrab() )
+		MouseEvt.releaseMouse();
 }
 
 void disposeAll() {
@@ -176,23 +196,6 @@ void disposeSubMenus() {
 	for ( PopupWindow p = sub; p != null; p = p.sub)
 		p.dispose();
 	sub = null;
-}
-
-public Dimension getPreferredSize() {
-	int s = (items != null) ? items.size() : 0;
-	int th = 0;
-	int tw = 0;
-	int cs = 2;
-	
-	for ( int i=0; i<s; i++) {
-		MenuItem mi = (MenuItem)items.elementAt( i);
-		if ( mi instanceof Menu)
-			cs = 3;
-		tw = Math.max( tw, mi.getWidth() );
-		th += mi.getHeight();
-	}
-
-	return new Dimension( tw+cs*xOffs +4, th +4);  // border width
 }
 
 int getY ( MenuItem mi) {
@@ -285,9 +288,32 @@ public void popupAt ( int x, int y ) {
 		y = wd.height - md.height;
 
 	setBounds( x, y, md.width, md.height);
-
 	setVisible( true);
-	AWTEvent.grabMouseDrag( this);
+
+	// in case we still have a pressed button, let the popup grab the mouse
+	// so that we can handle drags
+	if ( MouseEvt.buttonPressed )
+		MouseEvt.grabMouse( this);
+}
+
+/**
+ * @deprecated, use getPreferredSize()
+ */
+public Dimension preferredSize() {
+	int s = (items != null) ? items.size() : 0;
+	int th = 0;
+	int tw = 0;
+	int cs = 2;
+	
+	for ( int i=0; i<s; i++) {
+		MenuItem mi = (MenuItem)items.elementAt( i);
+		if ( mi instanceof Menu)
+			cs = 3;
+		tw = Math.max( tw, mi.getWidth() );
+		th += mi.getHeight();
+	}
+
+	return new Dimension( tw+cs*xOffs +4, th +4);  // border width
 }
 
 void processSelection () {
@@ -300,6 +326,14 @@ void processSelection () {
 	else {
 		disposeAll(); // clean up before doing any popup triggered actions
 		selection.process();
+	}
+}
+
+static void resetPopup ( Window oldPopup ) {
+
+	// just reset if this is the one that is still active
+	if ( (popup != null) && (popup == oldPopup) ) {
+		popup = null;
 	}
 }
 
@@ -384,5 +418,13 @@ void selectUpper() {
 		p.requestFocus();
 		p.sub = null;
 	}
+}
+
+static void setPopup ( Window newPopup ) {
+	if ( popup != null ) { // it has to be one
+		popup.dispose();
+	}
+	
+	popup = newPopup;
 }
 }

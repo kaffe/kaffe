@@ -1,3 +1,13 @@
+/**
+ * class Button - 
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
 package java.awt;
 
 import java.awt.event.ActionEvent;
@@ -11,15 +21,6 @@ import java.awt.event.MouseListener;
 import kaffe.awt.ImageDict;
 import kaffe.awt.ImageSpec;
 
-/**
- * class Button - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
 public class Button
   extends Component
   implements MouseListener, KeyListener, FocusListener
@@ -115,22 +116,12 @@ public String getActionCommand () {
 	return ( (aCmd != null) ? aCmd : label);
 }
 
-public String getLabel() {
-	return label;
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
-public Dimension getPreferredSize () {
-	int cx = 40;
-	int cy = 20;
-	if ( imgs != null ) {
-		cx = imgs.getImage().getWidth( this) + 2*BORDER_WIDTH;
-		cy = imgs.getImage().getHeight( this) + 2*BORDER_WIDTH;
-	}
-	else if ( fm != null ){
-		cx = Math.max( cx, 4*fm.stringWidth( label)/3);
-		cy = Math.max( cy, 2*fm.getHeight() );
-	}
-	return new Dimension( cx, cy);
+public String getLabel() {
+	return label;
 }
 
 public void keyPressed ( KeyEvent evt ) {
@@ -193,9 +184,9 @@ public void mouseReleased ( MouseEvent evt ) {
 }
 
 void notifyAction() {
-	if ( hasToNotify( AWTEvent.ACTION_EVENT_MASK, aListener)) {
-		ActionEvent ae = AWTEvent.getActionEvent( this, ActionEvent.ACTION_PERFORMED);
-		ae.setActionEvent( getActionCommand(), 0 );
+	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener) || oldEvents ) {
+		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                   getActionCommand(), 0);
 		Toolkit.eventQueue.postEvent( ae);
 	}
 }
@@ -228,17 +219,29 @@ protected String paramString() {
 	return (super.paramString() + ",Label: " + label);
 }
 
+public Dimension preferredSize () {
+	int cx = 40;
+	int cy = 20;
+	if ( imgs != null ) {
+		cx = imgs.getImage().getWidth( this) + 2*BORDER_WIDTH;
+		cy = imgs.getImage().getHeight( this) + 2*BORDER_WIDTH;
+	}
+	else if ( fm != null ){
+		cx = Math.max( cx, 4*fm.stringWidth( label)/3);
+		cy = Math.max( cy, 2*fm.getHeight() );
+	}
+	return new Dimension( cx, cy);
+}
+
 protected void processActionEvent( ActionEvent e) {
 	if ( AWTEvent.keyTgt != this )
 		activate();
-	aListener.actionPerformed( e);
-}
+		
+	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener) ) {
+		aListener.actionPerformed( e);
+	}
 
-protected void processEvent( AWTEvent e) {
-	if ( e instanceof ActionEvent)
-		processActionEvent( (ActionEvent)e);
-	else
-		super.processEvent( e);
+	if ( oldEvents ) postEvent( Event.getEvent( e));
 }
 
 public void removeActionListener ( ActionListener a) {
@@ -250,10 +253,8 @@ public void setActionCommand ( String aCmd) {
 }
 
 public void setFont ( Font f) {
-	super.setFont( f);
 	fm = getFontMetrics( f);
-	if ( isVisible() )
-		repaint();
+	super.setFont( f);
 }
 
 public void setLabel ( String label) {

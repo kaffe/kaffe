@@ -1,3 +1,9 @@
+package java.awt;
+
+import java.awt.event.InputEvent;
+import java.util.Enumeration;
+import kaffe.util.Ptr;
+
 /**
  * Frame - 
  *
@@ -9,13 +15,6 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
-import java.awt.event.InputEvent;
-import java.util.Enumeration;
-import kaffe.util.Ptr;
-
 public class Frame
   extends Window
 {
@@ -23,29 +22,59 @@ public class Frame
 	Image icon;
 	boolean isResizable = true;
 	BarMenu bMenu;
+	static Insets frameInsets;
+	static Insets menuFrameInsets;
+	static Rectangle frameDeco;
+
+static {
+	// these are just the guesses (to be overwritten by a subsequent
+	// setFrameInsets() from the native layer)
+	Insets guess = Defaults.FrameInsets;
+	
+	frameInsets = new Insets( guess.top, guess.left, guess.bottom, guess.right);
+	menuFrameInsets = new Insets( guess.top + Defaults.MenuBarHeight, guess.left,
+	                              guess.bottom, guess.right);	
+	frameDeco = new Rectangle( guess.left, guess.top,
+	                           (guess.left+guess.right), (guess.top+guess.bottom));
+	
+	Toolkit.wndSetFrameInsets( guess.top, guess.left, guess.bottom, guess.right);
+}
 
 public Frame () {
-	this( "");
+	this( null, null);
 }
 
 Frame ( Frame owner, String title ) {
 	super( owner);
-	this.title = title;
+	
+	this.title = (title == null) ? "" : title;	
+	deco = frameDeco;
 }
 
 public Frame ( String title ) {
-	this.title = title;
+	this( null, title);
+}
+
+public int countComponents() {
+	if ( bMenu == null )
+		return nChildren;
+	
+	return nChildren-1;
 }
 
 Ptr createNativeWindow () {
-	return Toolkit.wndCreateFrame( title, x, y, width, height,
-	                               cursor.type, bgClr.nativeValue, isResizable);
-}
+	// This is the terminal class addNotify() part. DANGER: ptr isn't a real object
 
-public void doLayout () {
-	super.doLayout();
-	if ( bMenu != null)
-		bMenu.setBounds( 0, 0, width-insets.right-insets.left, insets.top );
+	// Insets seem to be set by the JDK during addNotify
+	// (no need to create fresh objects since they are insets()-copied anyway <sigh>).
+	// Note that the global inset objects might be changed if the native layer
+	// has to compute the real deco offsets during window creation
+	insets = (bMenu != null) ? menuFrameInsets : frameInsets;
+
+	return Toolkit.wndCreateFrame( title, x + deco.x, y + deco.y,
+                                 width - deco.width,
+                                 height - deco.height,
+	                               cursor.type, bgClr.nativeValue, isResizable);
 }
 
 public Component getComponent( int index) {
@@ -55,13 +84,6 @@ public Component getComponent( int index) {
 		return children[index];
 	
 	return children[index+1];
-}
-
-public int getComponentCount() {
-	if ( bMenu == null )
-		return nChildren;
-	
-	return nChildren-1;
 }
 
 public Component[] getComponents() {
@@ -76,24 +98,19 @@ public Component[] getComponents() {
 	return ca;
 }
 
+/**
+ * @deprecated, use Component.getCursor()
+ */
+public int getCursorType() {
+	return (getCursor().getType());
+}
+
 public Image getIconImage() {
 	return icon;
 }
 
 public MenuBar getMenuBar () {
 	return (bMenu != null) ? bMenu.mb : null;
-}
-
-public Dimension getPreferredSize () {
-	Dimension d = super.getPreferredSize();
-	
-	d.width  += 2*Defaults.FrameBorderWidth;
-	d.height += Defaults.TitleBarHeight + Defaults.BottomBarHeight;
-	
-	if ( bMenu != null )
-		d.height += Defaults.MenuBarHeight;
-		
-	return d;
 }
 
 public String getTitle() {
@@ -104,21 +121,58 @@ public boolean isResizable () {
 	return isResizable;
 }
 
+public void layout () {
+	super.layout();
+
+	if ( bMenu != null){
+		bMenu.setBounds( frameDeco.x, frameDeco.y,
+		                 width-(frameDeco.width), Defaults.MenuBarHeight);
+  }		
+}
+
+/**
+ * @deprecated, use getPreferredSize()
+ */
+public Dimension preferredSize () {
+	Insets    in = Defaults.FrameInsets;
+	Dimension d = super.preferredSize();
+	
+	d.width  += (in.left + in.right);
+	d.height += (in.top + in.bottom);
+	
+	if ( bMenu != null ) {
+		d.height += Defaults.MenuBarHeight;
+	}
+	return (d);
+}
+
 public void remove ( MenuComponent mc ) {
 }
 
-public void setBounds ( int xNew, int yNew, int wNew, int hNew ) {
-	// this is never called by a native toplevel resize
+/**
+ * @deprecated, use Component.setCursor()
+ */
+public void setCursor(int cursorType) {
+	setCursor(Cursor.getPredefinedCursor(cursorType));
+}
 
-	x      = xNew;
-	y      = yNew;
-	width  = wNew;
-	height = hNew;
+static void setDecoInsets ( int top, int left, int bottom, int right ){
+	// this is the native callBack to set exact (calculated) Frame deco extends
 
-	if ( nativeData != null )
-		Toolkit.wndSetFrameBounds( nativeData, xNew, yNew, wNew, hNew);
-	else
-		doLayout();
+	frameInsets.top    = top;
+	frameInsets.left   = left;
+	frameInsets.bottom = bottom;
+	frameInsets.right  = right;
+	
+	menuFrameInsets.top  = top + Defaults.MenuBarHeight;
+	menuFrameInsets.left = left;
+	menuFrameInsets.bottom = bottom;
+	menuFrameInsets.right = right;
+	
+	frameDeco.x = left;
+	frameDeco.y = top;
+	frameDeco.width = left + right;
+	frameDeco.height = top + bottom;
 }
 
 public void setIconImage ( Image icon ) {
@@ -147,10 +201,10 @@ public void setMenuBar ( MenuBar mb ) {
 	nChildren++;
 	bMenu.parent = this;
 
-	insets = new Insets( Defaults.MenuBarHeight, 0, 0, 0);
-	
-	if ( nativeData != null )
+	if ( nativeData != null ) {
+		insets = menuFrameInsets;
 		doLayout();
+	}
 		
 	for ( Enumeration e = mb.shortcuts(); e.hasMoreElements(); ) {
 		MenuShortcut s = (MenuShortcut) e.nextElement();

@@ -12,27 +12,20 @@ package java.net;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import kaffe.net.DefaultSocketImplFactory;
 
-public class ServerSocket
-{
-	private static SocketImplFactory factory = null;
-	private SocketImpl impl;
+final public class ServerSocket {
 
-ServerSocket() {
-	if (factory==null) {
-		impl=new PlainSocketImpl();
-	}
-	else {
-		impl=factory.createSocketImpl();
-	}
-}
+private static SocketImplFactory factory = new DefaultSocketImplFactory();
+
+private SocketImpl impl;
 
 public ServerSocket(int port) throws IOException {
-	this(port, 50, InetAddress.anyLocalAddress);
+	this(port, 50);
 }
 
 public ServerSocket(int port, int backlog) throws IOException {
-	this(port, backlog, InetAddress.anyLocalAddress);
+	this(port, backlog, null);
 }
 
 /**
@@ -48,27 +41,26 @@ public ServerSocket(int port, int backlog) throws IOException {
  * @param bindAddr 	the local InetAddress the server will bind to
  */
 public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
-	this();
-
 	System.getSecurityManager().checkListen(port);
 
-	if (bindAddr == null)
-		bindAddr = InetAddress.anyLocalAddress;
+	if (bindAddr == null) {
+		bindAddr = InetAddress.getAnyAddress();
+	}
+	impl = factory.createSocketImpl();
 	impl.create(true);
 	impl.bind(bindAddr, port);
 	impl.listen(backlog);
 }
 
 public Socket accept() throws IOException {
-	Socket result=new Socket();
-	result.impl.fd=new FileDescriptor();
-	result.impl.address=new InetAddress();
+	Socket s = new Socket();
+	implAccept(s);
+	return (s);
+}
 
-	impl.accept(result.impl);
-
-	System.getSecurityManager().checkAccept(result.getInetAddress().getHostName(), result.getPort());
-
-	return result;
+protected final void implAccept(Socket s) throws IOException {
+	impl.accept(s.impl);
+	System.getSecurityManager().checkAccept(s.getInetAddress().getHostName(), s.getPort());
 }
 
 public void close() throws IOException {
@@ -76,27 +68,31 @@ public void close() throws IOException {
 }
 
 public InetAddress getInetAddress() {
-	return impl.getInetAddress();
+	return (impl.getInetAddress());
 }
 
 public int getLocalPort() {
-	return impl.getLocalPort();
+	return (impl.getLocalPort());
 }
 
-public SocketImpl newSocketImpl() {
-	return impl;
+public synchronized int getSoTimeout() throws SocketException {
+	return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+}
+
+public synchronized void setSoTimeout(int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
 }
 
 public static synchronized void setSocketFactory(SocketImplFactory fac) throws IOException {
-	if (factory==null) {
-		factory=fac;
-	}
-	else {
-		throw new SocketException();
-	}
+	factory = fac;
+}
+
+public SocketImpl newSocketImpl() {
+	return (impl);
 }
 
 public String toString() {
-	return impl.toString();
+	return (impl.toString());
 }
+
 }

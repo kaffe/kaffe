@@ -1,6 +1,3 @@
-package java.awt;
-
-
 /**
  *
  * Copyright (c) 1998
@@ -10,6 +7,10 @@ package java.awt;
  * of this file.
  *
  */
+
+package java.awt;
+
+
 public class FlowLayout
   implements LayoutManager
 {
@@ -21,7 +22,7 @@ public class FlowLayout
 	int vgap;
 
 public FlowLayout() {
-	this( CENTER, 5, 5);
+	this(CENTER, 5, 5);
 }
 
 public FlowLayout( int align) {
@@ -82,7 +83,7 @@ public void layoutContainer( Container target) {
 	Insets in = target.insets;
 	int mw = target.width - in.left - in.right;
 	int width = hgap;
-	int ypos = vgap;
+	int ypos = vgap + in.top;
 	int rowfirst = 0;
 	int cc = target.getComponentCount();
 
@@ -130,7 +131,9 @@ private Dimension preferredSize( Container parent, boolean min) {
 		if ( c.isVisible) {
 			Dimension dc = min ? c.getMinimumSize() : c.getPreferredSize();
 			w += dc.width + hgap;
-			if ( h < dc.height) h = dc.height;
+			if ( h < dc.height) {
+				h = dc.height;
+			}
 		}
 	}
 
@@ -158,9 +161,9 @@ public void setVgap( int vgap) {
 public String toString() {
 	String s = getClass().getName() + ",vgap=" + vgap + ",hgap=" + hgap + ",align=";
 	switch( align) {
-		case LEFT:   s += "left";   break;
-		case CENTER: s += "center"; break;
-		case RIGHT:  s += "right";  break;
+	case LEFT:   s += "left";   break;
+	case CENTER: s += "center"; break;
+	case RIGHT:  s += "right";  break;
 	}
 	return s;
 }

@@ -8,7 +8,6 @@
  * of this file. 
  */
 
-#include "config.h"
 #include "toolkit.h"
 
 typedef struct {
@@ -112,6 +111,7 @@ Java_java_awt_Toolkit_graCopyArea ( JNIEnv* env, jclass clazz, Graphics* gr,
 {
   x += gr->x0; y += gr->y0;
   XCopyArea( X->dsp, gr->drw, gr->drw, gr->gc, x, y, width, height, x + xDelta, y + yDelta);
+  XFLUSH( X, False);
 }
 
 
@@ -122,6 +122,7 @@ Java_java_awt_Toolkit_graClearRect ( JNIEnv* env, jclass clazz, Graphics* gr,
   XSetForeground( X->dsp, gr->gc, gr->bg);
   XFillRectangle( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height);
   XSetForeground( X->dsp, gr->gc, gr->fg);
+  XFLUSH( X, False);
 }
 
 
@@ -143,6 +144,7 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz, Graphics* gr,
   XDrawString( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, (jb+offset), len);
 
   (*env)->ReleaseByteArrayElements( env, jBytes, jb, JNI_ABORT);
+  XFLUSH( X, False);
 }
 
 
@@ -173,6 +175,7 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz, Graphics* gr,
   XDrawString16( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, b, len);  
 
   (*env)->ReleaseCharArrayElements( env, jChars, jc, JNI_ABORT);
+  XFLUSH( X, False);
 }
 
 
@@ -181,7 +184,7 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
 									  Graphics* gr, jstring str, jint x, jint y )
 {
   jboolean     isCopy;
-  int          len;
+  int          n, len;
   const jchar  *jc;
   XChar2b      *b;
 
@@ -191,11 +194,9 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
   jc = (*env)->GetStringChars( env, str, &isCopy);
 
 #ifndef WORDS_BIGENDIAN
-  {
-    int n = sizeof(XChar2b)*len;
-    b = (XChar2b*) getBuffer( X, n);
-    swab( jc, b, n);
-  }
+  n = sizeof(XChar2b)*len;
+  b = (XChar2b*) getBuffer( X, n);
+  swab( jc, b, n);
 #else
   b = (XChar2b*) jc;
 #endif
@@ -203,6 +204,7 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
   XDrawString16( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, b, len);  
 
   (*env)->ReleaseStringChars( env, str, jc);
+  XFLUSH( X, False);
 }
 
 
@@ -211,6 +213,7 @@ Java_java_awt_Toolkit_graDrawLine ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x1, jint y1, jint x2, jint y2 )
 {
   XDrawLine( X->dsp, gr->drw, gr->gc, x1 + gr->x0, y1 + gr->y0, x2 + gr->x0, y2 + gr->y0);
+  XFLUSH( X, False);
 }
 
 
@@ -220,6 +223,7 @@ Java_java_awt_Toolkit_graDrawArc ( JNIEnv* env, jclass clazz, Graphics* gr,
 								   jint angle1, jint angle2 )
 {
   XDrawArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, angle1<<6, angle2<<6);
+  XFLUSH( X, False);
 }
 
 
@@ -229,6 +233,7 @@ Java_java_awt_Toolkit_graFillArc ( JNIEnv* env, jclass clazz, Graphics* gr,
 								   jint angle1, jint angle2 )
 {
   XFillArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, angle1<<6, angle2<<6);
+  XFLUSH( X, False);
 }
 
 
@@ -237,6 +242,7 @@ Java_java_awt_Toolkit_graDrawOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
   XDrawArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, 0, 23040);
+  XFLUSH( X, False);
 }
 
 
@@ -245,13 +251,14 @@ Java_java_awt_Toolkit_graFillOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
   XFillArc( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height, 0, 23040);
+  XFLUSH( X, False);
 }
 
 
 int jarray2Points ( JNIEnv* env, Toolkit* X, XPoint** pp, int x0, int y0,
 					jarray xPoints, jarray yPoints, int nPoints )
 {
-  register int i;
+  register i;
   int      n;
   jboolean isCopy;
   jint     *jx = (*env)->GetIntArrayElements( env, xPoints, &isCopy);
@@ -293,6 +300,7 @@ Java_java_awt_Toolkit_graDrawPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
   }
 
   XDrawLines( X->dsp, gr->drw, gr->gc, p, nPoints, CoordModeOrigin);
+  XFLUSH( X, False);
 }
 
 
@@ -306,6 +314,7 @@ Java_java_awt_Toolkit_graDrawPolyline ( JNIEnv* env, jclass clazz, Graphics* gr,
 
   nPoints = jarray2Points( env, X, &p, gr->x0, gr->y0, xPoints, yPoints, nPoints);
   XDrawLines( X->dsp, gr->drw, gr->gc, p, nPoints, CoordModeOrigin);
+  XFLUSH( X, False);
 }
 
 
@@ -319,6 +328,7 @@ Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz, Graphics* gr,
 
   nPoints = jarray2Points( env, X, &p, gr->x0, gr->y0, xPoints, yPoints, nPoints);
   XFillPolygon( X->dsp, gr->drw, gr->gc, p, nPoints, Nonconvex, CoordModeOrigin);
+  XFLUSH( X, False);
 }
 
 
@@ -335,6 +345,7 @@ Java_java_awt_Toolkit_graFillRect ( JNIEnv* env, jclass clazz, Graphics* gr,
 									jint x, jint y, jint width, jint height )
 {
   XFillRectangle( X->dsp, gr->drw, gr->gc, x+gr->x0, y+gr->y0, width, height);
+  XFLUSH( X, False);
 }
 
 
@@ -369,6 +380,8 @@ Java_java_awt_Toolkit_graDrawRoundRect ( JNIEnv* env, jclass clazz, Graphics* gr
   XDrawArc( X->dsp, gr->drw, gr->gc, x2, y2, wArc, hArc, 0, -90*64);
 
   XDrawArc( X->dsp, gr->drw, gr->gc, x, y2, wArc, hArc, 180*64, 90*64);
+
+  XFLUSH( X, False);
 }
 
 void
@@ -400,6 +413,8 @@ Java_java_awt_Toolkit_graFillRoundRect ( JNIEnv* env, jclass clazz, Graphics* gr
   XFillArc( X->dsp, gr->drw, gr->gc, x2, y2, wArc, hArc, 0, -90*64);
 
   XFillArc( X->dsp, gr->drw, gr->gc, x, y2, wArc, hArc, 180*64, 90*64);
+
+  XFLUSH( X, False);
 }
 
 
@@ -428,6 +443,8 @@ Java_java_awt_Toolkit_graDraw3DRect ( JNIEnv* env, jclass clazz, Graphics* gr,
   XDrawLine( X->dsp, gr->drw, gr->gc, xw, y, xw, yh);
 
   XSetForeground( X->dsp, gr->gc, gr->fg);
+
+  XFLUSH( X, False);
 }
 
 void
@@ -510,6 +527,23 @@ Java_java_awt_Toolkit_graSetXORMode ( JNIEnv* env, jclass clazz, Graphics* gr, j
   XSetFunction( X->dsp, gr->gc, GXxor);
 }
 
+void
+Java_java_awt_Toolkit_graSetVisible ( JNIEnv* env, jclass clazz, Graphics* gr, jint isVisible )
+{
+	/*
+	 * This is rather a hack to "defuse" a Graphics object, but we don't want to
+	 * add checks on every draw op to test if the target is invisible
+	 */
+	if ( !isVisible ) {
+		if ( gr->y0 >= -10000 ) 
+			gr->y0 -= 100000;
+	}
+	else {
+		if ( gr->y0 <= -10000 )
+			gr->y0 += 100000;
+	}
+}
+
 
 /************************************************************************************
  * image rendering
@@ -522,7 +556,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
 {
   XImage *dstImg;
   int    i, j, si, sj, alpha;
-  unsigned long dpix, spix, bgpix = 0;
+  unsigned long dpix, spix, bgpix;
   int    sr, sg, sb, dr, dg, db;
 
   dstImg = XGetImage( X->dsp, gr->drw, dstX, dstY, width, height, 0xffffffff, ZPixmap);
@@ -537,18 +571,22 @@ drawAlphaImage ( Graphics* gr, Image* img,
 		alpha = GetAlpha( img->alpha, si, sj);
 
 		rgbValues( X, dpix, &dr, &dg, &db);
-		rgbValues( X, spix, &sr, &sg, &sb);
 
-		dr = ((alpha * sr + (255 - alpha) * dr) + 128) >> 8;
-		dg = ((alpha * sg + (255 - alpha) * dg) + 128) >> 8;
-		db = ((alpha * sb + (255 - alpha) * db) + 128) >> 8;
+		if ( alpha ) {
+		  rgbValues( X, spix, &sr, &sg, &sb);
+		  dr = ((alpha * sr + (255 - alpha) * dr) + 128) / 255;
+		  dg = ((alpha * sg + (255 - alpha) * dg) + 128) / 255;
+		  db = ((alpha * sb + (255 - alpha) * db) + 128) / 255;
 
-		XPutPixel( dstImg, i, j, pixelValue( X, (dr << 16)|(dg << 8)|(db) ));
+		  XPutPixel( dstImg, i, j, pixelValue( X, (dr << 16)|(dg << 8)|(db) ));
+		}
 	  }
 	}
 
 	XPutImage( X->dsp, gr->drw, gr->gc, dstImg, 0, 0, dstX, dstY, width, height);
 	XDestroyImage( dstImg);
+
+	XFLUSH( X, True);
   }
 }
 
@@ -603,6 +641,8 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 	if ( img->xMask )
 	  XSetFunction( X->dsp, gr->gc, values.function);
   }
+
+  XFLUSH( X, True);
 }
 
 
@@ -611,14 +651,24 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
 										   jint dx0, jint dy0, jint dx1, jint dy1,
 										   jint sx0, jint sy0, jint sx1, jint sy1, jint bgval )
 {
-  int        x0, y0, x1, y1;
-  int        iw = img->xImg->width;
+  int        iw, x0, y0, x1, y1;
   Image      tgt;
+  jboolean   tmpXImg = (img->xImg == NULL);
 
+  /* screen images don't have an XImage, we have to get the data first */
+  if ( tmpXImg ) {
+  	img->xImg = XGetImage( X->dsp, img->pix, 0, 0, img->width, img->height, 0xffffffff, ZPixmap);
+  }
+
+  iw = img->xImg->width;
+
+  /* we don't have to apply the gr offsets here since this is done in graDrawImage */
+  /*
   dx0 += gr->x0;
   dx1 += gr->x0;
   dy0 += gr->y0;
   dy1 += gr->y0;
+  */
 
   if ( dx1 > dx0 ) {
 	x0 = dx0; x1 = dx1;
@@ -646,18 +696,22 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   tgt.alpha = (img->alpha) ? createAlphaImage( X, tgt.width, tgt.height) : 0;
 
   initScaledImage( X, &tgt, img, dx0-x0, dy0-y0, dx1-x0, dy1-y0, sx0, sy0, sx1, sy1);
-
   Java_java_awt_Toolkit_graDrawImage ( env, clazz, gr, &tgt, 0, 0,
-									   x0, y0, tgt.width, tgt.height, bgval);
+					x0, y0, tgt.width, tgt.height, bgval);
 
   /* since malloc / free might be redirected, we better clean up manually */
   free( tgt.xImg->data);
   tgt.xImg->data = 0;
   XDestroyImage( tgt.xImg);
 
+  if ( tmpXImg ) {
+	XDestroyImage( img->xImg);
+	img->xImg = NULL;
+  }
+
   if ( tgt.xMask ) {
 	free( tgt.xMask->data);
 	tgt.xMask->data = 0;
-    XDestroyImage( tgt.xMask);
+    	XDestroyImage( tgt.xMask);
   }
 }

@@ -126,7 +126,7 @@ public Object clone()
 		cal.fields[i] = fields[i];
 		cal.isSet[i] = isSet[i];
 	}
-	cal.isTimeSet = areFieldsSet;
+	cal.isTimeSet = isTimeSet;
 	cal.areFieldsSet = areFieldsSet;
 
 	return ((Object)cal);
@@ -246,6 +246,7 @@ final public void set(int field, int value)
 {
 	isSet[field] = true;
 	fields[field] = value;
+	isTimeSet = false;
 }
 
 final public void set(int year, int month, int date)
@@ -256,6 +257,7 @@ final public void set(int year, int month, int date)
 	isSet[YEAR] = true;
 	isSet[MONTH] = true;
 	isSet[DATE] = true;
+	isTimeSet = false;
 }
 
 final public void set(int year, int month, int date, int hour, int minute)
@@ -270,6 +272,7 @@ final public void set(int year, int month, int date, int hour, int minute)
 	isSet[DATE] = true;
 	isSet[HOUR] = true;
 	isSet[MINUTE] = true;
+	isTimeSet = false;
 }
 
 final public void set(int year, int month, int date, int hour, int minute, int second)
@@ -286,6 +289,7 @@ final public void set(int year, int month, int date, int hour, int minute, int s
 	isSet[HOUR] = true;
 	isSet[MINUTE] = true;
 	isSet[SECOND] = true;
+	isTimeSet = false;
 }
 
 public void setFirstDayOfWeek(int value)
@@ -313,6 +317,7 @@ protected void setTimeInMillis(long millis)
 	time = millis;
 	isTimeSet = true;
 	areFieldsSet = false;
+	computeFields();
 }
 
 public void setTimeZone(TimeZone value)

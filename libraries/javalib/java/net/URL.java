@@ -1,3 +1,11 @@
+package java.net;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.StringTokenizer;
+import kaffe.net.DefaultURLStreamHandlerFactory;
+
 /*
  * Java core library component.
  *
@@ -7,15 +15,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.net;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.StringTokenizer;
-import kaffe.net.DefaultURLStreamHandlerFactory;
-
 final public class URL
   implements Serializable
 {
@@ -34,56 +33,51 @@ public URL(String spec) throws MalformedURLException {
 
 	/* URL -> <protocol>:[//<hostname>[:port]]/<file> */
 
+//System.out.println("Parsing URL " + spec);
+
 	int pend = spec.indexOf(':', 0);
 	if (pend == -1) {
-		throw new MalformedURLException("no protocol");
+		// Although it doesn't say in the spec, it appears that
+		// the protocol defaults to 'file' if it's missing.
+		protocol = "file";
+		host = "";
+		port = -1;
+		file = spec;
 	}
-	protocol = spec.substring(0, pend);
+	else {
+		protocol = spec.substring(0, pend);
 
-	boolean hasHostPart = false;
-	try {
-		hasHostPart = spec.substring(pend + 1, pend + 3).equals("//");
-	} catch (IndexOutOfBoundsException e) { }
-
-	if (hasHostPart) {
-		int hstart = pend + 3;
-		int hend = spec.indexOf(':', hstart);
-
-		if (hend == -1) {
-			hend = spec.indexOf('/', hstart);
+		int hstart = pend+3;
+		if (spec.substring(pend+1, hstart).equals("//")) {
+			int hend = spec.indexOf(':', hstart);
 			if (hend == -1) {
-				throw new MalformedURLException("no file");
+				hend = spec.indexOf('/', hstart);
+				if (hend == -1) {
+					throw new MalformedURLException("no host");
+				}
+				host = spec.substring(hstart, hend);
+				port = -1;
 			}
-			host = spec.substring(hstart, hend);
-			port = getDefaultPort(protocol);
+			else {
+				host = spec.substring(hstart, hend);
+				int postart = hend+1;
+				int poend = spec.indexOf('/', postart);
+				port = Integer.parseInt(spec.substring(postart, poend));
+			}
+			fstart = spec.indexOf( '/', hstart);
 		}
 		else {
-			host = spec.substring(hstart, hend);
-			int postart = hend + 1;
-			int poend = spec.indexOf('/', postart);
-			if (poend == -1) {
-				throw new MalformedURLException("no file");
-			}
-			try {
-				port = Integer.parseInt(
-					spec.substring(postart, poend));
-			} catch (NumberFormatException e) {
-				throw new MalformedURLException("bad port");
-			}
+			host = "";
+			port = -1;
+			fstart = pend + 1;
 		}
-		fstart = spec.indexOf( '/', hstart);
-	}
-	else {
-		host = "";
-		port = getDefaultPort(protocol);
-		fstart = pend;
-	}
 
-	if (fstart != -1) {
-		file = spec.substring(fstart+1);
-	}
-	else {
-		file = "";
+		if (fstart != -1) {
+			file = spec.substring(fstart);
+		}
+		else {
+			file = "";
+		}
 	}
 }
 
@@ -95,14 +89,11 @@ public URL(String protocol, String host, int port, String file) throws Malformed
 	this.protocol = protocol;
 	this.host = host;
 	this.file = file;
-	if (port == -1) {
-		port = getDefaultPort(protocol);
-	}
 	this.port = port;
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
-	this (context.toString() + spec);
+	this (context == null ? spec : context.toString() + spec);
 }
 
 public boolean equals(Object obj) {
@@ -123,36 +114,7 @@ public boolean equals(Object obj) {
 
 final public Object getContent() throws IOException {
 	openConnection();
-	conn.connect();
 	return (conn.getContent());
-}
-
-private static int getDefaultPort(String protocol)
-{
-	int port;
-
-	if (protocol.equals("ftp")) {
-		port = 21;
-	}
-	else if (protocol.equals("telnet")) {
-		port = 23;
-	}
-	else if (protocol.equals("gopher")) {
-		port = 70;
-	}
-	else if (protocol.equals("http")) {
-		port = 80;
-	}
-	else if (protocol.equals("news")) {
-		port = 119;
-	}
-	else if (protocol.equals("smtp")) {
-		port = 25;
-	}
-	else {
-		port = 0;
-	}
-	return (port);
 }
 
 public String getFile() {
@@ -177,7 +139,6 @@ public String getRef() {
 
 private static URLStreamHandler getURLStreamHandler(String protocol) throws MalformedURLException {
 	URLStreamHandler handler = null;
-
 	if (factory != null) {
 		handler = factory.createURLStreamHandler(protocol);
 		if (handler != null) {
@@ -202,6 +163,7 @@ public URLConnection openConnection() throws IOException {
 			handler = getURLStreamHandler(protocol);
 		}
 		conn = handler.openConnection(this);
+		conn.connect();
 	}
 	return (conn);
 }
@@ -209,7 +171,6 @@ public URLConnection openConnection() throws IOException {
 public InputStream openStream() throws IOException {
 	if (conn == null) {
 		openConnection();
-		conn.connect();
 	}
 	return (conn.getInputStream());
 }
@@ -246,6 +207,18 @@ public String toExternalForm() {
 }
 
 public String toString() {
-	return (protocol + "://" + host + ":" + port + "/" + file);
+	StringBuffer buf = new StringBuffer();
+	buf.append(protocol);
+	buf.append(":");
+	if (!host.equals("")) {
+		buf.append("//");
+		buf.append(host);
+		if (port != -1) {
+			buf.append(":");
+			buf.append(Integer.toString(port));
+		}
+	}
+	buf.append(file);
+	return (buf.toString());
 }
 }

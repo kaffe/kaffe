@@ -63,6 +63,8 @@ Java_java_awt_Toolkit_wndSetTitle ( JNIEnv* env, jclass clazz, void* wnd, jstrin
 
   if ( jTitle ) {
 	buf = java2CString( env, X, jTitle);
+
+	DBG( awt_wnd, ("setTitle: %x, \"%s\"\n", wnd, buf));
 	XStoreName( X->dsp, (Window)wnd, buf);
   }
 }
@@ -73,6 +75,8 @@ Java_java_awt_Toolkit_wndSetResizable ( JNIEnv* env, jclass clazz, void* wnd, jb
 										int x, int y, int width, int height )
 {
   XSizeHints hints;
+
+  DBG( awt_wnd, ("setResizable: %x, %d, %d,%d,%d,%d\n", wnd, isResizable, x,y,width,height));
 
   if ( !isResizable ) {
 	hints.min_width  = hints.max_width = width;
@@ -113,19 +117,16 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   else {
 	attributes.backing_store = WhenMapped;
 	valueMask |= CWBackingStore;
-
-	x      += X->borderWidth;
-	y      += X->titleBarHeight;
-	width  -= 2 * X->borderWidth;
-	height -= X->titleBarHeight + X->bottomBarHeight;
   }
 
   if ( width <= 0 )  width = 1;
   if ( height <= 0 ) height = 1;
 
+  DBG( awt_wnd, ("XCreateWindow %d,%d,%d,%d\n", x, y, width, height));
   wnd = XCreateWindow( X->dsp, parent, x, y, width, height, 0,
 					   CopyFromParent, InputOutput, CopyFromParent,
 					   valueMask, &attributes);
+  DBG( awt_wnd, (" -> %x\n", wnd));
 
   if ( wnd ) {
 	X->newWindow = wnd;
@@ -148,7 +149,6 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
 	return wnd;
   }
   else {
-	fprintf( stderr, "XCreateFrame failed\n");
 	return 0;
   }
 }
@@ -159,6 +159,8 @@ Java_java_awt_Toolkit_wndCreateFrame ( JNIEnv* env, jclass clazz, jstring jTitle
 									   jint x, jint y, jint width, jint height,
 									   jint jCursor, jint clrBack, jboolean isResizable )
 {
+  DBG( awt_wnd, ("createFrame( %p, %d,%d,%d,%d,..)\n", jTitle,x,y,width,height));
+
   return (void*) createWindow( env, clazz, DefaultRootWindow( X->dsp), 0, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
@@ -170,6 +172,7 @@ Java_java_awt_Toolkit_wndCreateWindow ( JNIEnv* env, jclass clazz, void* owner,
 										jint x, jint y, jint width, jint height,
 										jint jCursor, jint clrBack )
 {
+  DBG( awt_wnd, ("createWindow( %p, %d,%d,%d,%d,..)\n", owner,x,y,width,height));
   return (void*) createWindow( env, clazz, X->root, owner, NULL,
 							   x, y, width, height,
 							   jCursor, clrBack, JNI_TRUE);
@@ -181,6 +184,7 @@ Java_java_awt_Toolkit_wndCreateDialog ( JNIEnv* env, jclass clazz, void* owner, 
 										jint x, jint y, jint width, jint height,
 										jint jCursor, jint clrBack, jboolean isResizable )
 {
+  DBG( awt_wnd, ("createDialog( %p,%p, %d,%d,%d,%d,..)\n", owner,jTitle,x,y,width,height));
   return (void*) createWindow( env, clazz, DefaultRootWindow( X->dsp), owner, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
@@ -192,6 +196,8 @@ Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, void* wnd )
 {
   /* this is just a last defense against multiple destroy requests causing X errors */
   static Window lastDestroyed;
+
+  DBG( awt_wnd, ("destroy window: %x\n", wnd));
 
   if ( (Window)wnd != lastDestroyed ) {
 	XSync( X->dsp, False); /* maybe we still have pending requests for wnd */
@@ -207,6 +213,7 @@ Java_java_awt_Toolkit_wndRequestFocus ( JNIEnv* env, jclass clazz, void* wnd )
 {
   XEvent event;
 
+  DBG( awt_wnd, ("request focus: %x\n", wnd));
   /*
    * If this is the most recently created window, there is a good chance that
    * it is not mapped yet. In this case, we avoid getting annoying BadMatch errors
@@ -227,41 +234,62 @@ Java_java_awt_Toolkit_wndRequestFocus ( JNIEnv* env, jclass clazz, void* wnd )
 }
 
 
+/*
+ * We shift possible Frame / Dialog deco adaptions back to Java, because (in
+ * order to get more compatible with JDK behavior) we not only have to apply
+ * offsets in wndSetWindowBounds, but also when getting back via ComponentEvents
+ * (ConfigureNotify), and during recursive child painting (to adapt the toplevel Graphics).
+ * Since we don't have the window type info (frame / dialog / window)
+ * in the native lib, this has to be done in the Java layer. In order to do it
+ * all on one side, this means to shift the size adaption out of wndSetWindowBounds, too.
+ *
+ * Therefor Default frame/dialog Insets become the pivotal info, being passed into
+ * the native lib as a (configurable 'Defaults') guess, turned into exact values
+ * (of Frame.frameInsets, Dialog.dialogInsets) by means of native-to-Java callbacks,
+ * computed during initial Frame/Dialog creation
+ */
+
 void
-Java_java_awt_Toolkit_wndSetWindowBounds ( JNIEnv* env, jclass clazz, void* wnd,
-										   jint x, jint y, jint width, jint height )
+Java_java_awt_Toolkit_wndSetFrameInsets ( JNIEnv* env, jclass clazz,
+										  jint top, jint left, jint bottom, jint right )
 {
-  if ( width < 0 )  width = 0;
-  if ( height < 0 ) height = 0;
+  X->frameInsets.top  = top;
+  X->frameInsets.left = left;
+  X->frameInsets.bottom = bottom;
+  X->frameInsets.right = right;
+  X->frameInsets.guess = 1;
+}
+
+void
+Java_java_awt_Toolkit_wndSetDialogInsets ( JNIEnv* env, jclass clazz,
+										  jint top, jint left, jint bottom, jint right )
+{
+  X->dialogInsets.top  = top;
+  X->dialogInsets.left = left;
+  X->dialogInsets.bottom = bottom;
+  X->dialogInsets.right = right;
+  X->dialogInsets.guess = 1;
+}
+
+void
+Java_java_awt_Toolkit_wndSetBounds ( JNIEnv* env, jclass clazz, void* wnd,
+									 jint x, jint y, jint width, jint height )
+{
+  DBG( awt_wnd, ("setBounds: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
+
+  if ( width < 0 )  width = 1;
+  if ( height < 0 ) height = 1;
   XMoveResizeWindow( X->dsp, (Window)wnd, x, y, width, height);
 }
 
-
 void
-Java_java_awt_Toolkit_wndSetFrameBounds ( JNIEnv* env, jclass clazz, void* wnd,
-										  jint x, jint y, jint width, jint height )
+Java_java_awt_Toolkit_wndRepaint ( JNIEnv* env, jclass clazz, void* wnd,
+								   jint x, jint y, jint width, jint height )
 {
-  /* apply offsets, Frame.setBounds pretends to include decorations */
-  x      += X->borderWidth;
-  y      += X->titleBarHeight;
-  width  -= 2 * X->borderWidth;
-  height -= X->titleBarHeight + X->bottomBarHeight;
+  DBG( awt_wnd, ("wndRepaint: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
 
-  XMoveResizeWindow( X->dsp, (Window)wnd, x, y, width, height);
+  XClearArea( X->dsp, (Window)wnd, x, y, width, height, True);
 }
-
-
-void
-Java_java_awt_Toolkit_wndSetFrameOffsets ( JNIEnv* env, jclass clazz,
-																					 jint titleBarHeight, jint menuBarHeight,
-																					 jint bottomBarHeight, jint borderWidth )
-{
-  X->titleBarHeight  = titleBarHeight;
-  X->menuBarHeight   = menuBarHeight;
-  X->bottomBarHeight = bottomBarHeight;
-  X->borderWidth     = borderWidth;
-}
-
 
 void
 Java_java_awt_Toolkit_wndSetIcon ( JNIEnv* env, jclass clazz, void* wnd, void* img )
@@ -273,6 +301,7 @@ void
 Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, void* wnd, jboolean showIt )
 {
   Window owner = 0;
+  DBG( awt_wnd, ("setVisible: %x %d\n", wnd, showIt));
 
   if ( showIt ){
 	XMapWindow( X->dsp, (Window)wnd);
@@ -301,6 +330,7 @@ Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, void* wnd, jboo
 void
 Java_java_awt_Toolkit_wndToBack ( JNIEnv* env, jclass clazz, void* wnd )
 {
+  DBG( awt_wnd, ("toBack: %x\n", wnd));
   XLowerWindow( X->dsp, (Window)wnd);
 }
 
@@ -308,6 +338,7 @@ Java_java_awt_Toolkit_wndToBack ( JNIEnv* env, jclass clazz, void* wnd )
 void
 Java_java_awt_Toolkit_wndToFront ( JNIEnv* env, jclass clazz, void* wnd )
 {
+  DBG( awt_wnd, ("toFront: %x\n", wnd));
   XRaiseWindow( X->dsp, (Window)wnd);
 }
 
@@ -315,5 +346,6 @@ Java_java_awt_Toolkit_wndToFront ( JNIEnv* env, jclass clazz, void* wnd )
 void
 Java_java_awt_Toolkit_wndSetCursor ( JNIEnv* env, jclass clazz, void* wnd, jint jCursor )
 {
+  DBG( awt_wnd, ("setCursor: %x, %d\n", wnd, jCursor));
   XDefineCursor( X->dsp, (Window)wnd, getCursor( jCursor));
 }

@@ -1,3 +1,15 @@
+/**
+ * Component - abstract root of all widgets
+ *
+ * Copyright (c) 1998
+ *    Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author P.C.Mehlitz
+ */
+
 package java.awt;
 
 import java.util.Hashtable;
@@ -86,11 +98,12 @@ public int charsWidth ( char data[], int off, int len ) {
 	}
 }
 
-protected void finalize () {
-  if ( nativeData != null ) {
+protected void finalize () throws Throwable {
+	if ( nativeData != null ) {
 		Toolkit.fntFreeFontMetrics( nativeData);
 		nativeData = null;
 	}
+	super.finalize();
 }
 
 public int getAscent() {
@@ -99,6 +112,10 @@ public int getAscent() {
 
 public int getDescent() {
 	return descent;
+}
+
+public Font getFont() {
+	return font;
 }
 
 static FontMetrics getFontMetrics ( Font font ) {
@@ -126,6 +143,13 @@ public int getMaxAdvance() {
 
 public int getMaxAscent() {
 	return maxAscent;
+}
+
+/**
+ * @deprecated, use getMaxDescent()
+ */
+public int getMaxDecent() {
+	return (getMaxDescent());
 }
 
 public int getMaxDescent() {

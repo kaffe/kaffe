@@ -59,7 +59,7 @@ void run ( Window modalWindow ) {
 	// check if we are outside of the dispatcher thread (to prevent 
 	// race conditions)
 	if ( Thread.currentThread() != Toolkit.eventThread ) {
-		e = new WMEvent( modalWindow, WMEvent.WM_DISPATCH_MODAL);
+		e = WMEvent.getEvent( modalWindow, WMEvent.WM_DISPATCH_MODAL);
 		Toolkit.eventQueue.postEvent( e);
 		synchronized ( e ) { // no need to loop, nobody else knows 'e'
 			try { e.wait(); } catch ( InterruptedException x ) {}
@@ -103,8 +103,9 @@ void show ( Window window ) {
 	// check if we are outside of the dispatcher thread (to prevent 
 	// race conditions)
 	if ( Thread.currentThread() != Toolkit.eventThread ) {
-		e = new WMEvent( window, WMEvent.WM_SHOW);
+		e = WMEvent.getEvent( window, WMEvent.WM_SHOW);
 		Toolkit.eventQueue.postEvent( e);
+
 		synchronized ( e ) { // no need to loop, nobody else knows 'e'
 			try { e.wait(); } catch ( InterruptedException x ) {}
 		}
@@ -114,7 +115,7 @@ void show ( Window window ) {
 		// (otherwise there is a good chance that we get a paint in the dispatcher
 		// thread before we start to wait for it)
 		Toolkit.wndSetVisible( window.nativeData, true);
-	
+
 		while ( !stop ) {
 			// the inner loop protects us from being disrupted by
 			// an exception (we should continue to dispatch as long as possible)

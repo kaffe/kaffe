@@ -76,8 +76,8 @@ public String paramString() {
 void process() {
 	setState( !isChecked );
 	if ( hasToNotify( iListener) ) {
-		ItemEvent ie = AWTEvent.getItemEvent( this, ItemEvent.ITEM_STATE_CHANGED );
-		ie.setItemEvent( getLabel(), isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
+                     isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
 		Toolkit.eventQueue.postEvent( ie);
 	}
 }

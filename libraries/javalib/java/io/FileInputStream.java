@@ -12,9 +12,13 @@ package java.io;
 
 
 public class FileInputStream
-  extends InputStream
-{
-	private FileDescriptor fd = new FileDescriptor();
+  extends InputStream {
+
+private FileDescriptor fd = new FileDescriptor();
+
+static {
+        System.loadLibrary("io");
+}
 
 public FileInputStream(File file) throws FileNotFoundException {
 	this(file.getPath());
@@ -42,8 +46,9 @@ native public int available() throws IOException;
 
 native public void close() throws IOException;
 
-protected void finalize() throws IOException {
+protected void finalize() throws Throwable {
 	close();
+	super.finalize();
 }
 
 final public FileDescriptor getFD() throws IOException {

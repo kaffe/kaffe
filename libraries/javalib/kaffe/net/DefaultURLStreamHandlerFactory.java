@@ -22,45 +22,45 @@ public URLStreamHandler createURLStreamHandler(String protocol)
 {
 	URLStreamHandler handler;
 
-        String pkgs = System.getProperty("java.protocol.handler.pkgs");
-        if (pkgs != null) {
-                StringTokenizer tokenizer = new StringTokenizer(pkgs, "|");
-                while (tokenizer.hasMoreTokens()) {
-                        String theClass = tokenizer.nextToken()+"."+protocol+".Handler";
-                        handler = tryClass(theClass);
-                        if (handler != null) {
-                                return (handler);
-                        }
-                }
-        }
+	String pkgs = System.getProperty("java.protocol.handler.pkgs");
+	if (pkgs != null) {
+		StringTokenizer tokenizer = new StringTokenizer(pkgs, "|");
+		while (tokenizer.hasMoreTokens()) {
+			String theClass = tokenizer.nextToken()+"."+protocol+".Handler";
+			handler = tryClass(theClass);
+			if (handler != null) {
+				return (handler);
+			}
+		}
+	}
 
-        /* Try the default name */
-        String classPath = defaultName + protocol + ".Handler";
-        handler = tryClass(classPath);
-        if (handler != null) {
-                return (handler);
-        }
+	/* Try the default name */
+	String classPath = defaultName + protocol + ".Handler";
+	handler = tryClass(classPath);
+	if (handler != null) {
+		return (handler);
+	}
 
 	return (null);
 }
 
 private static URLStreamHandler tryClass(String theClass) {
-        try {
-                Class cl = Class.forName(theClass);
-                Object obj = cl.newInstance();
-                if (obj instanceof URLStreamHandler) {
-                        return (URLStreamHandler )obj;
-                }
-        }
-        catch (UnsatisfiedLinkError e) {
-        }
-        catch (ClassNotFoundException e) {
-        }
-        catch (IllegalAccessException e) {
-        }
-        catch (InstantiationException e) {
-        }
-        return (null);
+	try {
+		Class cl = Class.forName(theClass);
+		Object obj = cl.newInstance();
+		if (obj instanceof URLStreamHandler) {
+			return (URLStreamHandler )obj;
+		}
+	}
+	catch (UnsatisfiedLinkError e) {
+	}
+	catch (ClassNotFoundException e) {
+	}
+	catch (IllegalAccessException e) {
+	}
+	catch (InstantiationException e) {
+	}
+	return (null);
 }
 
 }

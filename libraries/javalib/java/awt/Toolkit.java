@@ -15,6 +15,7 @@
 
 package java.awt;
 
+import java.awt.ImageNativeProducer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
@@ -32,6 +33,34 @@ import java.net.URL;
 import java.util.Properties;
 import kaffe.util.Ptr;
 
+class FlushThread
+  extends Thread
+{
+	boolean stop;
+	int flushInterval;
+
+FlushThread ( int interval ) {
+	super( "AWT-Flusher");
+	
+	flushInterval = interval;
+	setPriority( Thread.MIN_PRIORITY + 1);
+}
+
+public void run () {
+	while ( !stop ) {
+		Toolkit.tlkFlush();
+		try {
+			Thread.sleep( flushInterval);
+		}
+		catch ( Exception x ) {}
+	}
+}
+
+void stopFlushing () {
+	stop = true;
+}
+}
+
 public class Toolkit
 {
 	static Toolkit singleton;
@@ -39,12 +68,18 @@ public class Toolkit
 	static int resolution;
 	static EventQueue eventQueue;
 	static EventDispatchThread eventThread;
-	static boolean isMultiThreaded;
 	static NativeClipboard clipboard;
 	static LightweightPeer lightweightPeer = new LightweightPeer() {};
 	static WindowPeer windowPeer = new WindowPeer() {};
+	static boolean isBlocking;
+	static boolean isDispatchExclusive;
+	static FlushThread flushThread;
+	static boolean needsFlush;
 
 static {
+	Insets in;
+	int ret;
+
 	System.loadLibrary( "awt");
 
 	String tkName = System.getProperty( "display");
@@ -53,7 +88,10 @@ static {
 
 	screenSize = new Dimension( tlkGetScreenWidth(), tlkGetScreenHeight());
 	resolution = tlkGetResolution();
-	isMultiThreaded = tlkIsMultiThreaded();
+	
+	isBlocking = tlkIsBlocking();
+	isDispatchExclusive = tlkIsDispatchExclusive();
+	needsFlush = tlkNeedsFlush();
 
 	// we do this here to keep the getDefaultToolkit() method as simple
 	// as possible (since it might be called frequently). This is a
@@ -65,9 +103,6 @@ static {
 	// directly or indirectly refer to Toolkit.singleton)
 	if ( Defaults.RedirectStreams )
 		redirectStreams();
-
-	wndSetFrameOffsets( Defaults.TitleBarHeight, Defaults.MenuBarHeight,
-	                    Defaults.BottomBarHeight, Defaults.FrameBorderWidth);
 	
 	eventQueue = new EventQueue();
 }
@@ -87,8 +122,8 @@ native static synchronized Ptr cbdInitClipboard ();
 
 native static synchronized boolean cbdSetOwner ( Ptr cbdData );
 
-public int checkImage ( Image image, int width, int height, ImageObserver observer) {
-	return Image.checkImage( image, width, height, observer, false);
+public int checkImage(Image image, int width, int height, ImageObserver observer) {
+	return (image.checkImage(width, height, observer));
 }
 
 native static synchronized long clrBright ( int rgbValue );
@@ -141,7 +176,7 @@ native static synchronized int evtRegisterSource ( Ptr wndData );
 
 native static synchronized int evtUnregisterSource ( Ptr wndData );
 
-native static synchronized void evtWakeup ();
+native static void evtWakeup ();
 
 native static synchronized int fntBytesWidth ( Ptr fmData, byte[] data, int off, int len );
 
@@ -303,6 +338,8 @@ native static synchronized void graSetOffset ( Ptr grData, int xOffset, int yOff
 
 native static synchronized void graSetPaintMode ( Ptr grData );
 
+native static synchronized void graSetVisible ( Ptr grData, boolean isVisible );
+
 native static synchronized void graSetXORMode ( Ptr grData, int xClr );
 
 native static synchronized Ptr imgCreateFromData( byte[] buf, int offset, int len);
@@ -321,23 +358,18 @@ native static int imgGetHeight( Ptr imgData);
 
 native static int imgGetWidth( Ptr imgData);
 
-native static void imgProduceImage( Image.NativeProducer prod, Ptr imgData);
+native static void imgProduceImage( ImageNativeProducer prod, Ptr imgData);
 
 native static void imgSetIdxPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
 
 native static void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
-
-static boolean isWrongThread () {
-	return isMultiThreaded && (Thread.currentThread() != eventThread);
-}
 
 protected void loadSystemColors ( int[] sysColors ) {
 	clrSetSystemColors( sysColors);
 }
 
 public boolean prepareImage ( Image image, int width, int height, ImageObserver observer ) {
-	return ((Image.checkImage( image, width, height, observer, true) &
-	           ImageObserver.ALLBITS) != 0);
+	return (image.loadImageAsync(width, height, observer));
 }
 
 static void redirectStreams () {
@@ -355,12 +387,22 @@ static void startDispatch () {
 		eventThread = new EventDispatchThread( eventQueue);
 		eventThread.start();
 	}
+
+	if ( needsFlush && (flushThread == null) ){
+		flushThread = new FlushThread( Defaults.GraFlushRate);
+		flushThread.start();
+	}
 }
 
 static void stopDispatch () {
 	if ( eventThread != null ) {
 		eventThread.stopDispatching();
 		eventThread = null;
+	}
+	
+	if ( flushThread != null ){
+		flushThread.stopFlushing();
+		flushThread = null;
 	}
 }
 
@@ -378,6 +420,8 @@ static void terminate () {
 
 native static synchronized void tlkBeep ();
 
+native static synchronized void tlkFlush ();
+
 native static synchronized int tlkGetResolution ();
 
 native static synchronized int tlkGetScreenHeight ();
@@ -386,7 +430,11 @@ native static synchronized int tlkGetScreenWidth ();
 
 native static synchronized void tlkInit ( String displayName, String bannerFile );
 
-native static synchronized boolean tlkIsMultiThreaded();
+native static synchronized boolean tlkIsBlocking();
+
+native static synchronized boolean tlkIsDispatchExclusive();
+
+native static synchronized boolean tlkNeedsFlush();
 
 native static synchronized void tlkSync ();
 
@@ -405,14 +453,17 @@ native static synchronized Ptr wndCreateWindow ( Ptr ownerData, int x, int y, in
 
 native static synchronized void wndDestroyWindow ( Ptr wndData );
 
+native static synchronized void wndRepaint ( Ptr wndData, int x, int y, int width, int height );
+
 native static synchronized void wndRequestFocus ( Ptr wndData );
+
+native static synchronized void wndSetBounds ( Ptr wndData, int x, int y, int width, int height );
 
 native static synchronized void wndSetCursor ( Ptr wndData, int cursorType );
 
-native static synchronized void wndSetFrameBounds ( Ptr wndData, int x, int y, int width, int height );
+native static synchronized int wndSetDialogInsets ( int top, int left, int bottom, int right);
 
-native static synchronized void wndSetFrameOffsets ( int titleBarHeight, int menuBarHeight, 
-			  int bottomBarHeight, int borderWidth );
+native static synchronized int wndSetFrameInsets ( int top, int left, int bottom, int right);
 
 native static synchronized void wndSetIcon ( Ptr wndData, Ptr iconData );
 
@@ -422,8 +473,6 @@ native static synchronized void wndSetResizable ( Ptr wndData, boolean isResizab
 native static synchronized void wndSetTitle ( Ptr wndData, String title );
 
 native static synchronized void wndSetVisible ( Ptr wndData, boolean showIt );
-
-native static synchronized void wndSetWindowBounds ( Ptr wndData, int x, int y, int width, int height );
 
 native static synchronized void wndToBack ( Ptr wndData );
 

@@ -17,6 +17,16 @@ public class SystemClassLoader
   extends ClassLoader
 {
 
+static private ClassLoader singleton;
+
+static {
+	singleton = new SystemClassLoader();
+}
+
+public static ClassLoader getClassLoader() {
+	return (singleton);
+}
+
 public URL getResource(String name) {
 	return (getSystemResource(name));
 }

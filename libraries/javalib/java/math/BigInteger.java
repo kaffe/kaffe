@@ -306,8 +306,9 @@ public double doubleValue() {
 	return (toDouble0());
 }
 
-protected void finalize() {
+protected void finalize() throws Throwable {
 	finalize0();
+	super.finalize();
 }
 
 private native void init0();

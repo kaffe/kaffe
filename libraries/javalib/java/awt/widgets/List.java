@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.BitSet;
 import java.util.Vector;
 
 /**
@@ -28,8 +29,11 @@ public class List
 	ItemListener iListener;
 	ItemPane ip = new ItemPane();
 	Vector selections = new Vector( 1);
-	boolean multipleMode;
+	boolean multipleMode = false;
 	boolean selMouse;
+	int sel = -1;
+	BitSet multiSel;
+	int nSel;
 
 class ItemPane
   extends RowCanvas
@@ -57,25 +61,25 @@ public void keyPressed( KeyEvent e) {
 	switch ( e.getKeyCode() ) {
 		case e.VK_DOWN:
 			nIdx = getSelectedIndex() + 1;
-			makeVisible( nIdx);
+			this.makeVisible( nIdx);
 			select( nIdx);
 			break;
 		case e.VK_UP:
 			nIdx = getSelectedIndex() - 1;
-			makeVisible( nIdx);
+			this.makeVisible( nIdx);
 			select( nIdx);
 			break;
 		case e.VK_ENTER:
 			notifyAction();
 			break;
 		case e.VK_PAGE_UP:
-			makeVisible( first - getVisibleRows());
+			this.makeVisible( first - getVisibleRows());
 			break;
 		case e.VK_PAGE_DOWN:
-			makeVisible( first + 2 * getVisibleRows() - 1);
+			this.makeVisible( first + 2 * getVisibleRows() - 1);
 			break;
 		case e.VK_ESCAPE:
-			selections.removeAllElements();
+			clearSelections();
 			repaint();
 			break;
 		default:
@@ -115,7 +119,11 @@ public void mouseClicked( MouseEvent e) {
 		int idx = getRowIdx( e.getY() );
 		if ( idx > -1 ) {
 			selMouse = true;
-			select( idx);
+			
+			if ( isIndexSelected( idx) )
+				deselect( idx);
+			else
+				select( idx);
 		}	
 	}
 	else
@@ -155,7 +163,7 @@ public void paint ( Graphics g ) {
 	repaintRows( first, getVisibleRows() );
 }
 
-void repaintItem( Graphics g, int idx) {
+void repaintItem( int idx) {
 	int d = BORDER_WIDTH;		
 	int x0 = xOffs + d +2;
 	int y0 = d + ( idx - first) * rowHeight;
@@ -163,32 +171,34 @@ void repaintItem( Graphics g, int idx) {
 		
 	String s = (String)rows.elementAt( idx);
 
-	if ( selections.contains( s) ) {
-		g.setColor( Defaults.ListSelBgClr);
-		g.fill3DRect( d, y0, width-2*d, rowHeight, true);
-		g.setColor( Defaults.ListSelTxtClr);
+	if ( isIndexSelected( idx) ) {
+		rgr.setColor( Defaults.ListSelBgClr);
+		rgr.fill3DRect( d, y0, width-2*d, rowHeight, true);
+		rgr.setColor( Defaults.ListSelTxtClr);
 	}
 	else if ( idx == idxFlyOver ) {
-		g.setColor( Defaults.ListFlyOverBgClr);
-		g.fill3DRect( d, y0, width-2*d, rowHeight, !Defaults.ListFlyOverInset);
-		g.setColor( Defaults.ListFlyOverTxtClr);
+		rgr.setColor( Defaults.ListFlyOverBgClr);
+		rgr.fill3DRect( d, y0, width-2*d, rowHeight, !Defaults.ListFlyOverInset);
+		rgr.setColor( Defaults.ListFlyOverTxtClr);
 	}
 	else {
-		g.setColor( bgClr );
-		g.fillRect( d, y0, width-2*d, rowHeight);
-		g.setColor( fgClr );
+		rgr.setColor( bgClr );
+		rgr.fillRect( d, y0, width-2*d, rowHeight);
+		rgr.setColor( fgClr );
 	}
 	
-	g.drawString( s, x0, y1);
+	rgr.drawString( s, x0, y1);
 }
 
-void repaintRow( Graphics g, int idx) {
-	repaintItem( g, idx);
+void repaintRow( int idx) {
+	if ( rgr != null )
+		repaintItem( idx);
 }
 
 public void setFont( Font fnt) {
 	fm = getFontMetrics( fnt);
-	rowHeight = 3*fm.getHeight()/2;
+	rowHeight = fm.getHeight() + 1;
+	
 	super.setFont( fnt);
 }
 
@@ -199,14 +209,10 @@ void updateFlyOver( int newIdx) {
 	if ( lov == newIdx )
 		return;
 		
-	Graphics g = getClippedGraphics();
-	if ( g != null) {
-		if ( (lov > -1) && (lov < rows.size() ) )
-			repaintItem( g, lov);
-		if ( newIdx > -1 )
-			repaintItem( g, newIdx);
-		g.dispose();
-	}
+	if ( (lov > -1) && (lov < rows.size() ) )
+		repaintItem( lov);
+	if ( newIdx > -1 )
+		repaintItem( newIdx);
 }
 
 void updateHScroll( String as) {
@@ -283,8 +289,63 @@ public synchronized void addItemListener ( ItemListener l) {
 	eventMask |= AWTEvent.ITEM_EVENT_MASK;
 }
 
+/**
+ * @deprecated
+ */
+public boolean allowsMultipleSelections() {
+	return multipleMode;
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void clear() {
+	clearSelections();
+
+	ip.rows.removeAllElements();
+	ip.first = 0;
+	ip.updateVScroll();
+	ip.repaint();
+}
+
+void clearSelection ( int index ) {
+	if ( sel == index )
+		sel = -1;
+		
+	if ( multipleMode ) {
+		multiSel.clear( index);
+		nSel--;
+	}
+}
+
+void clearSelections () {
+	sel = -1;
+	nSel = 0;
+
+	if ( multipleMode ){
+		nSel = 0;
+		multiSel = new BitSet( ip.rows.size());
+	}
+}
+
+/**
+ * @deprecated
+ */
+public int countItems() {
+	return ip.rows.size();
+}
+
 public synchronized void delItem ( int index) {
 	removeElement( index);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void delItems ( int start, int end ) {
+	for (int i = end; i >= start; i--) {
+		remove(i);
+	}
 }
 
 public synchronized void deselect ( int index) {
@@ -295,7 +356,7 @@ void deselectElement ( int index, boolean repaint) {
 
 	try {
 		Object item = ip.rows.elementAt( index);
-		selections.removeElement( item);
+		clearSelection( index);
 
 		if ( repaint)
 			ip.repaintRows( index, 1);
@@ -309,35 +370,24 @@ public void doLayout () {
 	ip.innerLayout();
 }
 
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
+}
+
 public String getItem ( int index) {
 	return (String)ip.rows.elementAt( index);
 }
 
 public int getItemCount () {
-	return ip.rows.size();
+	return (countItems());
 }
 
 public synchronized String[] getItems () {
 	String[] si = new String[ ip.rows.size() ];
-	for ( int i=0; i<si.length; i++)
+	for ( int i=0; i<si.length; i++) {
 		si[i] = (String)ip.rows.elementAt( i);
+	}
 	return si;
-}
-
-public Dimension getMinimumSize () {
-	return new Dimension( 50, 50);
-}
-
-public Dimension getMinimumSize ( int rows) {
-	return getMinimumSize();
-}
-
-public Dimension getPreferredSize () {
-	return new Dimension( 100, 100);
-}
-
-public Dimension getPreferredSize ( int rows) {
-	return getPreferredSize();
 }
 
 public int getRows () {
@@ -345,43 +395,124 @@ public int getRows () {
 }
 
 public synchronized int getSelectedIndex () {
-	if ( selections.size() == 0 )
-		return -1;
-	return ip.rows.indexOf( selections.firstElement() );
+	return sel;
 }
 
 public synchronized int[] getSelectedIndexes () {
-	int il = selections.size();
-	int[] ia = new int[ il];
+	int[] r;
+	int   i, j, n;
 
-	for ( int i=0; i<il; i++)
-		ia[i] = ip.rows.indexOf( selections.elementAt( i));
-
-	return ia;
+	if ( multipleMode ) {
+		if ( nSel == 0 )
+			return new int[0];
+		else if ( (nSel == 1) && (sel >= 0) ){
+			r = new int[1];
+			r[0] = sel;
+			return r;
+		}
+		else {
+			r = new int[nSel];
+			n = Math.min( ip.rows.size(), multiSel.size());
+		
+			for ( i=0, j=0; i<n; i++ ) {
+				if ( multiSel.get( i) ){
+					r[j++] = i;
+					if ( j == nSel )
+						break;
+				}	
+			}
+			return r;
+		}
+	}
+	else {
+		if ( sel >= 0 ) {
+			r = new int[1];
+			r[0] = sel;
+			return r;
+		}
+		else {
+			return new int[0];
+		}
+	}
 }
 
 public synchronized String getSelectedItem () {
-	return (selections.size() > 0 ) ? (String)selections.firstElement() : null;
+	if ( sel >= 0 ) {
+		return (String) ip.rows.elementAt( sel);
+	}
+	else if ( nSel > 0 ) {
+		int  n = Math.min( multiSel.size(), ip.rows.size());
+		int  i;
+
+		for ( i=0; i<n; i++ ){
+			if ( multiSel.get(i) )
+				return (String) ip.rows.elementAt( i);
+		}
+	}
+
+	return null;
 }
 
 public synchronized String[] getSelectedItems () {
-	int il = selections.size();
-	String[] sta = new String[ il];
+	// Not very nice to copy this from getSelectedIndexes, but some people
+	// don't care how many items they have in their lists, and creating this
+	// from a temporary int[] might produce a lot of garbage. Moreover, some
+	// people just don't care for if they are in multiMode and use this
+	// as a default (i.e. also in single mode)
 
-	for ( int i=0; i<il; i++)
-		sta[i] = (String)selections.elementAt( i);
+	String[] r;
+	int   i, j, n;
 
-	return sta;
+	if ( multipleMode ) {
+		if ( nSel == 0 )
+			return new String[0];
+		else if ( (nSel == 1) && (sel >= 0) ){
+			r = new String[1];
+			r[0] = (String) ip.rows.elementAt( sel);
+			return r;
+		}
+		else {
+			r = new String[nSel];
+			n = Math.min( ip.rows.size(), multiSel.size());
+		
+			for ( i=0, j=0; i<n; i++ ) {
+				if ( multiSel.get( i) ){
+					r[j++] = (String) ip.rows.elementAt( i);
+					if ( j == nSel )
+						break;
+				}	
+			}
+			return r;
+		}
+	}
+	else {
+		if ( sel >= 0 ) {
+			r = new String[1];
+			r[0] = (String) ip.rows.elementAt( sel);
+			return r;
+		}
+		else {
+			return new String[0];
+		}
+	}
 }
 
 public Object[] getSelectedObjects () {
-	int il = selections.size();
-	Object[] oa = new Object[ il];
+	// Now what is this - we can't put arbitrary Objects in there, but we can get
+	// them out? Seems like somebody finally discovered the potential of Lists,
+	// but didn't finish on it.
+	// Since we don't consider this the default access method (unfortunately), we
+	// don't do the same expensive processing like in getSelectedItems
 
-	for ( int i=0; i<il; i++)
-		oa[i] = selections.elementAt( i);
-
-	return oa;
+	int      i;
+	int[]    selIdx = getSelectedIndexes();
+	Object[] selObj = new Object[selIdx.length];
+	
+	for ( i=0; i<selIdx.length; i++ ) {
+		selObj[i] = ip.rows.elementAt( selIdx[i]);
+	}
+	
+	return selObj;
 }
 
 public int getVisibleIndex () {
@@ -393,27 +524,50 @@ void hPosChange () {
 }
 
 public boolean isIndexSelected ( int index) {
-	Object o = ip.rows.elementAt( index);
-	return selections.contains( o);
+	return (isSelected(index));
 }
 
 public boolean isMultipleMode () {
-	return multipleMode;
+	return (allowsMultipleSelections());
+}
+
+/**
+ * @deprecated
+ */
+public boolean isSelected ( int index ) {
+	if ( sel == index )
+		return true;
+		
+	if ( multipleMode )
+		return multiSel.get( index);
+		
+	return false;
+}
+
+public void makeVisible ( int idx ) {
+	ip.makeVisible( idx);
+}
+
+public Dimension minimumSize () {
+	return minimumSize(0);
+}
+
+public Dimension minimumSize (int rows) {
+	return preferredSize(rows);
 }
 
 void notifyAction () {
-	String s = selections.size() > 0 ? (String)selections.firstElement() : null;
-	if ( ( s != null) && (hasToNotify( AWTEvent.ACTION_EVENT_MASK, aListener)) ){
-		ActionEvent ae = AWTEvent.getActionEvent( this, ActionEvent.ACTION_PERFORMED);
-		ae.setActionEvent( s, 0);
+	String s = (sel >= 0) ? (String) ip.rows.elementAt( sel) : null;
+	
+	if ( ( s != null) && (hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener)) ){
+		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED, s, 0);
 		Toolkit.eventQueue.postEvent( ae);
 	}
 }
 
 void notifyItem ( Object item, int op) {
-	if ( hasToNotify( AWTEvent.ITEM_EVENT_MASK, iListener) ){
-		ItemEvent ie = AWTEvent.getItemEvent( this, 0);
-		ie.setItemEvent( item, op);
+	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ){
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, item, op);
 		Toolkit.eventQueue.postEvent( ie);
 	}
 }
@@ -422,17 +576,19 @@ protected String paramString() {
 	return super.paramString();
 }
 
-protected void processActionEvent( ActionEvent e) {
-	aListener.actionPerformed( e);
+public Dimension preferredSize () {
+	return preferredSize(0);
 }
 
-protected void processEvent( AWTEvent e) {
-	if ( e instanceof ActionEvent )
-		processActionEvent( (ActionEvent) e);
-	else if ( e instanceof ItemEvent )
-		processItemEvent( (ItemEvent) e);
-	else
-		super.processEvent( e);
+public Dimension preferredSize (int rows) {
+	if (rows <= 0) {
+		rows = getRows();
+	}
+	return new Dimension(ip.width, ip.rowHeight * rows);
+}
+
+protected void processActionEvent( ActionEvent e) {
+	aListener.actionPerformed( e);
 }
 
 protected void processItemEvent( ItemEvent e) {
@@ -452,11 +608,7 @@ public synchronized void removeActionListener ( ActionListener l) {
 }
 
 public synchronized void removeAll () {
-	selections.removeAllElements();
-	ip.rows.removeAllElements();
-	ip.first = 0;
-	ip.updateVScroll();
-	ip.repaint();
+	clear();
 }
 
 void removeElement ( int index) {
@@ -479,17 +631,14 @@ public synchronized void removeItemListener ( ItemListener l) {
 	iListener = AWTEventMulticaster.remove( iListener, l);
 }
 
-void repaintRow ( Graphics g, int idx) {
-	ip.repaintItem( g, idx);
+public synchronized void repaintRow ( int idx) {
+	ip.repaintItem( idx);
 }
 
 public synchronized void replaceItem ( String newValue, int index) {
 	try {
 		Object o = ip.rows.elementAt( index);
 		ip.rows.setElementAt( newValue, index);
-		if ( selections.contains( o) ) {
-			selections.setElementAt( newValue, selections.indexOf( o) );
-		}
 		ip.repaintRows( index, 1);
 	}
 	catch ( Exception e) {
@@ -500,23 +649,27 @@ public void requestFocus () {
 	ip.requestFocus();
 }
 
-public void select ( int index) {
+public void select ( int index ) {
 	if ( (index < 0) || (index > ip.rows.size() - 1) )
 		return;
 
-	Object o = ip.rows.elementAt( index);
-	if ( selections.contains( o) )
+	if ( isIndexSelected( index) )
 		return;
 
-	if ( ! multipleMode && ( selections.size() > 0) ) {
-		Object po = selections.firstElement();
-		int pIdx = ip.rows.indexOf( po);
-		selections.removeAllElements();
-		ip.repaintRows( pIdx, 1);
-		notifyItem( new Integer( pIdx), ItemEvent.DESELECTED);
+	if ( multipleMode ) {
+		sel = index;
+		multiSel.set( index);
+		nSel++;
 	}
+	else if ( sel >= 0 ) {
+		int oldSel = sel;
+		sel = index;
+		ip.repaintRows( oldSel, 1);
+		notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);		
+	}
+	else
+		sel = index;
 
-	selections.addElement( o);
 	ip.makeVisible( index);
 	ip.repaintRows( index, 1);
 	notifyItem( new Integer( index), ItemEvent.SELECTED);
@@ -544,7 +697,28 @@ public void setForeground ( Color c) {
 }
 
 public synchronized void setMultipleMode ( boolean b) {
-	multipleMode = b;
+	setMultipleSelections(b);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void setMultipleSelections ( boolean b ) {
+	if ( multipleMode == b )
+		return;
+		
+	if ( multipleMode ){
+		multiSel = null;
+		nSel = 0;
+		
+		multipleMode = false;
+	}
+	else {
+		multiSel = new BitSet();
+		nSel = 0;
+		
+		multipleMode = true;
+	}
 }
 
 void vPosChange ( int dy) {

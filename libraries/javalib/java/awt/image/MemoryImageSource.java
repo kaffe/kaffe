@@ -1,8 +1,3 @@
-package java.awt.image;
-
-import java.util.Hashtable;
-import java.util.Vector;
-
 /**
  * MemoryImageSource - 
  *
@@ -14,6 +9,12 @@ import java.util.Vector;
  *
  * @author J. Mehlitz
  */
+
+package java.awt.image;
+
+import java.util.Hashtable;
+import java.util.Vector;
+
 public class MemoryImageSource
   implements ImageProducer
 {
@@ -66,15 +67,16 @@ public MemoryImageSource( int w, int h, int[] pix, int off, int scan, Hashtable 
 }
 
 public void addConsumer( ImageConsumer ic) {
-	if ( ! consumers.contains( ic) )
+	if ( ! consumers.contains( ic) ) {
 		consumers.addElement( ic);
+	}
 }
 
-protected void initializeConsumer( ImageConsumer ic) {
-	if ( isConsumer( ic))	ic.setDimensions( width, height);	
-	if ( isConsumer( ic))	ic.setColorModel( model);
-	if ( isConsumer( ic))	ic.setProperties( props);
-	if ( isConsumer( ic))	ic.setHints( ic.TOPDOWNLEFTRIGHT | ic.SINGLEPASS | ic.SINGLEFRAME | ic.COMPLETESCANLINES);
+private void initializeConsumer( ImageConsumer ic) {
+	ic.setDimensions( width, height);	
+	ic.setColorModel( model);
+	ic.setProperties( props);
+	ic.setHints( ic.TOPDOWNLEFTRIGHT | ic.SINGLEPASS | ic.SINGLEFRAME | ic.COMPLETESCANLINES);
 }
 
 public boolean isConsumer( ImageConsumer ic) {
@@ -99,16 +101,22 @@ public void newPixels( int x, int y, int w, int h) {
 }
 
 public void newPixels( int x, int y, int w, int h, boolean framenotify) {
-	if ( ! animated )
+	if ( ! animated ) {
 		return;
-	if ( fullbuffers ) {
-		x = 0; y = 0; w = width; h = height;
 	}
-	for ( int i=0; i<consumers.size(); i++) {
+	if ( fullbuffers ) {
+		x = 0;
+		y = 0;
+		w = width;
+		h = height;
+	}
+	int sz = consumers.size();
+	for ( int i = 0; i < sz; i++) {
 		ImageConsumer ic = (ImageConsumer) consumers.elementAt( i);
 		transferPels( ic, x, y, w, h);
-		if ( framenotify && isConsumer( ic) )
+		if ( framenotify && isConsumer( ic) ) {
 			ic.setHints( ic.SINGLEFRAMEDONE);
+		}
 	}
 }
 
@@ -144,26 +152,23 @@ public void setFullBufferUpdates( boolean fullbuffers) {
 }
 
 public void startProduction( ImageConsumer ic) {
-	addConsumer( ic);
-	initializeConsumer( ic);
-	transferPels( ic, 0, 0, width, height);
-	terminateConsumer( ic);
+	addConsumer(ic);
+	initializeConsumer(ic);
+	transferPels(ic, 0, 0, width, height);
+	terminateConsumer(ic);
 }
 
-protected void terminateConsumer( ImageConsumer ic) {
-	if ( isConsumer( ic)) {
-		ic.imageComplete( ic.STATICIMAGEDONE);
-		consumers.removeElement( ic);
+private void terminateConsumer(ImageConsumer ic) {
+	ic.imageComplete(ic.STATICIMAGEDONE);
+}
+
+private void transferPels( ImageConsumer ic, int x, int y, int w, int h) {
+	if ( bpels != null ) {
+		ic.setPixels( x, y, w, h, model, bpels, offset, scan );
+	}
+	else if ( ipels != null ) {
+		ic.setPixels( x, y, w, h, model, ipels, offset, scan );
 	}
 }
 
-protected void transferPels( ImageConsumer ic, int x, int y, int w, int h) {
-	if ( isConsumer( ic)) {
-		int fractOffs = offset + x + scan*y;
-		if ( bpels != null )
-			ic.setPixels( x, y, w, h, model, bpels, fractOffs, scan );
-		else if ( ipels != null )
-			ic.setPixels( x, y, w, h, model, ipels, fractOffs, scan );
-	}
-}
 }

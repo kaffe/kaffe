@@ -17,13 +17,11 @@ final public class Boolean
 	final public static Class TYPE = Class.getPrimitiveClass("boolean");
 	private boolean value;
 
-public Boolean(String s)
-	{
+public Boolean(String s) {
 	value = (s != null && s.toLowerCase().equals("true"));
 }
 
-public Boolean(boolean value)
-	{
+public Boolean(boolean value) {
 	this.value=value;
 }
 

@@ -13,7 +13,6 @@ extern "C" {
 typedef struct Classjava_net_PlainDatagramSocketImpl {
   jint localPort;
   struct Hjava_io_FileDescriptor* fd;
-  jint timeout;
 } Classjava_net_PlainDatagramSocketImpl;
 HandleTo(java_net_PlainDatagramSocketImpl);
 

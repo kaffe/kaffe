@@ -99,19 +99,12 @@ public CheckboxGroup getCheckboxGroup () {
 	return group;
 }
 
-public String getLabel () {
-	return label;
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
-public Dimension getPreferredSize () {
-	int cx = 50;
-	int cy = 20;
-	if ( font != null ){
-		FontMetrics fm = getFontMetrics( font);
-		cx = Math.max( cx, fm.stringWidth( label) + 2 * fm.getHeight() );
-		cy = Math.max( cy, 3*fm.getHeight()/2 );
-	}
-	return new Dimension( cx, cy);
+public String getLabel () {
+	return label;
 }
 
 public Object[] getSelectedObjects () {
@@ -174,9 +167,9 @@ public void mouseReleased ( MouseEvent e) {
 }
 
 void notifyItem () {
-	if ( hasToNotify( AWTEvent.ITEM_EVENT_MASK, iListener) ){
-		ItemEvent ie = AWTEvent.getItemEvent( this, 0);
-		ie.setItemEvent( label, state ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
+	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ){
+		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label,
+		                         (state ? ItemEvent.SELECTED : ItemEvent.DESELECTED));
 		Toolkit.eventQueue.postEvent( ie);
 	}
 }
@@ -216,11 +209,18 @@ protected String paramString() {
 	return super.paramString();
 }
 
-protected void processEvent( AWTEvent e) {
-	if ( e instanceof ItemEvent) 
-		processItemEvent( (ItemEvent) e);
-	else
-		super.processEvent( e);
+/** 
+ * @deprecated
+ */
+public Dimension preferredSize () {
+	int cx = 50;
+	int cy = 20;
+	if ( font != null ){
+		FontMetrics fm = getFontMetrics( font);
+		cx = Math.max( cx, fm.stringWidth( label) + 2 * fm.getHeight() );
+		cy = Math.max( cy, 3*fm.getHeight()/2 );
+	}
+	return new Dimension( cx, cy);
 }
 
 protected void processItemEvent( ItemEvent e) {

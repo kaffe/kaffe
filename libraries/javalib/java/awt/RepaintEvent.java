@@ -1,3 +1,6 @@
+package java.awt;
+
+
 /**
  * RepaintEvent -
  *
@@ -9,9 +12,6 @@
  *
  * @author P.C.Mehlitz
  */
-
-package java.awt;
-
 class RepaintEvent
   extends AWTEvent
 {
@@ -21,6 +21,7 @@ class RepaintEvent
 	int y;
 	int width;
 	int height;
+	static RepaintEvent cache;
 
 RepaintEvent ( Component src, long ms, int x, int y, int width, int height ) {
 	super( src, 0);
@@ -36,9 +37,44 @@ RepaintEvent ( Component src, long ms, int x, int y, int width, int height ) {
 protected void dispatch () {
 	if ( (System.currentTimeMillis() - issued) >= ms ){
 		((Component)source).repaint( x, y, width, height);
+		recycle();
 	}
 	else {
 		Toolkit.eventQueue.postEvent( this);
+	}
+}
+
+protected static RepaintEvent getRepaintEvent( Component src, long tm, int x, int y, int w, int h ) {
+	synchronized ( evtLock ) {
+		if ( cache == null ) {
+			return new RepaintEvent( src, tm, x, y, w, h);
+		}
+		else {
+			RepaintEvent e = cache;
+			cache = (RepaintEvent) e.next;
+			e.next = null;
+		
+			e.source = src;
+			e.id = 0;
+	
+			e.issued = System.currentTimeMillis();
+			e.ms = tm;
+			e.x = x;
+			e.y = y;
+			e.width = w;
+			e.height = h;
+
+			return e;
+		}
+	}
+}
+
+protected void recycle () {
+	synchronized ( evtLock ) {
+		source = null;
+		
+		next = cache;
+		cache = this;
 	}
 }
 }

@@ -137,8 +137,11 @@ final public synchronized void destroy() {
 		}
 	}
 	ngroups = 0;
-	if (parent != null)
+
+	if (parent != null) {
 		parent.remove(this);
+	}
+
 	destroyed = true;
 }
 
@@ -272,16 +275,16 @@ public void remove(ThreadGroup group) {
  * @deprecated
  */
 final public synchronized void resume() {
-        for (int i = 0; i < threads.length; i++) {
-                if (threads[i] != null) {
-                        threads[i].resume();
-                }
-        }
-        for (int i = 0; i < groups.length; i++) {
-                if (groups[i] != null) {
-                        groups[i].resume();
-                }
-        }
+	for (int i = 0; i < threads.length; i++) {
+		if (threads[i] != null) {
+			threads[i].resume();
+		}
+	}
+	for (int i = 0; i < groups.length; i++) {
+		if (groups[i] != null) {
+			groups[i].resume();
+		}
+	}
 }
 
 final public void setDaemon(boolean d) {
@@ -300,32 +303,32 @@ final public synchronized void setMaxPriority(int pri) {
  * @deprecated
  */
 final public synchronized void stop() {
-        for (int i = 0; i < threads.length; i++) {
-                if (threads[i] != null) {
-                        threads[i].stop();
-                }
-        }
-        for (int i = 0; i < groups.length; i++) {
-                if (groups[i] != null) {
-                        groups[i].stop();
-                }
-        }
+	for (int i = 0; i < threads.length; i++) {
+		if (threads[i] != null) {
+			threads[i].stop();
+		}
+	}
+	for (int i = 0; i < groups.length; i++) {
+		if (groups[i] != null) {
+			groups[i].stop();
+		}
+	}
 }
 
 /**
- *  deprecated
+ * @deprecated
  */
 final public synchronized void suspend() {
-        for (int i = 0; i < threads.length; i++) {
-                if (threads[i] != null) {
-                        threads[i].suspend();
-                }
-        }
-        for (int i = 0; i < groups.length; i++) {
-                if (groups[i] != null) {
-                        groups[i].suspend();
-                }
-        }
+	for (int i = 0; i < threads.length; i++) {
+		if (threads[i] != null) {
+			threads[i].suspend();
+		}
+	}
+	for (int i = 0; i < groups.length; i++) {
+		if (groups[i] != null) {
+			groups[i].suspend();
+		}
+	}
 }
 
 public String toString() {

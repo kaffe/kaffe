@@ -74,8 +74,10 @@ public String toString(String enc) throws UnsupportedEncodingException
 	return (toString(ByteToCharConverter.getConverter(enc)));
 }
 
-public String toString(int hibyte)
-	{
+/**
+ * @deprecated
+ */
+public String toString(int hibyte) {
 	return new String(buf, hibyte, 0, count);
 }
 

@@ -1,6 +1,3 @@
-package java.io;
-
-
 /*
  * Java core library component.
  *
@@ -10,10 +7,17 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.io;
+
 public class FileOutputStream
-  extends OutputStream
-{
-	private FileDescriptor fd = new FileDescriptor();
+  extends OutputStream {
+
+static {
+        System.loadLibrary("io");
+}
+
+private FileDescriptor fd = new FileDescriptor();
 
 public FileOutputStream(File file) throws IOException
 {
@@ -44,9 +48,10 @@ public FileOutputStream(String name, boolean append) throws IOException
 
 native public void close() throws IOException;
 
-protected void finalize() throws IOException
+protected void finalize() throws Throwable
 {
 	close();
+	super.finalize();
 }
 
 final public FileDescriptor getFD()  throws IOException

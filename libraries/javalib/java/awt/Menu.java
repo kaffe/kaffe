@@ -1,8 +1,3 @@
-package java.awt;
-
-import java.awt.event.KeyEvent;
-import java.util.Vector;
-
 /**
  * class Menu -
  *
@@ -14,6 +9,12 @@ import java.util.Vector;
  *
  * @author J.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.KeyEvent;
+import java.util.Vector;
+
 public class Menu
   extends MenuItem
   implements MenuContainer
@@ -35,12 +36,20 @@ public Menu( String label, boolean tearOff) {
 }
 
 public synchronized MenuItem add( MenuItem mi) {
+	if (mi.getLabel().equals("-")) {
+		mi = MenuItem.separator;
+	}
 	insert( mi, -1);
 	return mi;
 }
 
 public void add( String label) {
-	insert( label, -1);
+	if (label.equals("-")) {
+		addSeparator();
+	}
+	else {
+		insert( label, -1);
+	}
 }
 
 public void addNotify() {
@@ -60,21 +69,24 @@ Vector addShortcuts ( Vector v) {
 	return v;	
 }
 
-public MenuItem getItem( int idx) {
-	try { return (MenuItem)items.elementAt( idx); }
-	catch( Exception e) { return null; }
-}
-
 /**
  * @deprecated, use getItemCount()
  */
 public int countItems() {
-	return (getItemCount());
+	return (items.size());
+}
+
+public MenuItem getItem( int idx) {
+	try {
+		return (MenuItem)items.elementAt( idx);
+	}
+	catch( Exception e) {
+		return null;
+	}
 }
 
 public int getItemCount() {
-	try { return items.size(); }
-	catch( Exception e) { return 0; }
+	return (countItems());
 }
 
 MenuItem getShortcutMenuItem( MenuShortcut s) {
@@ -125,6 +137,15 @@ public boolean isTearOff() {
 
 public String paramString() {
 	return super.paramString();
+}
+
+protected void propagateOldEvents ( boolean isOldEventClient ) {
+	super.propagateOldEvents( isOldEventClient);
+
+	for (int i = getItemCount() - 1; i >= 0; i--) {
+		MenuComponent comp = getItem(i);
+		comp.propagateOldEvents( isOldEventClient);
+	}
 }
 
 public synchronized void remove( MenuComponent m) {

@@ -12,21 +12,36 @@ package java.awt;
 
 import java.util.Vector;
 
-public class CheckboxGroup
-{
-	Checkbox selection;
-	Vector boxes = new Vector();
+public class CheckboxGroup {
+
+Checkbox selection;
+Vector boxes = new Vector();
 
 public CheckboxGroup () {
 }
 
-public Checkbox getSelectedCheckbox () {
+/**
+ * @deprecated
+ */
+public Checkbox getCurrent() {
 	return selection;
 }
 
+public Checkbox getSelectedCheckbox () {
+	return (getCurrent());
+}
+
 public synchronized void setSelectedCheckbox ( Checkbox box) {
-	if ( selection == box)
+	setCurrent(box);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void setCurrent(Checkbox box) {
+	if ( selection == box) {
 		return;
+	}
 	selection = box;
 	selection.group = null;
 	for ( int i=0; i<boxes.size(); i++) {

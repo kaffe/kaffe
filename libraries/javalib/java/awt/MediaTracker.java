@@ -1,3 +1,8 @@
+package java.awt;
+
+import java.awt.image.ImageObserver;
+import java.io.Serializable;
+
 /**
  * MediaTracker - 
  *
@@ -8,12 +13,6 @@
  * of this file. 
  *
  */
-
-package java.awt;
-
-import java.awt.image.ImageObserver;
-import java.io.Serializable;
-
 public class MediaTracker
   implements Serializable
 {
@@ -47,7 +46,7 @@ public boolean checkAll()
 
 public synchronized boolean checkAll ( boolean load ) {
 	for ( MediaTrackerEntry e = images; e != null; e = e.next) {
-		if ((Image.checkImage( e.img, e.w, e.h, e, load) & LOADED) == 0) {
+		if ((e.img.checkImage( e.w, e.h, e, load) & LOADED) == 0) {
 			return (false);
 		}
 	}
@@ -61,7 +60,7 @@ public boolean checkID(int id)
 
 public synchronized boolean checkID ( int id, boolean load ) {
 	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e= getNextEntry( id, e) ) {
-		if ( (Image.checkImage( e.img, e.w, e.h, e, load) & LOADED) == 0)
+		if ( (e.img.checkImage( e.w, e.h, e, load) & LOADED) == 0)
 			return false;
 	}
 	return true;
@@ -169,7 +168,7 @@ public synchronized int statusAll ( boolean load ) {
 	int ic, ret = 0;
 
 	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		ic = Image.checkImage( e.img, e.w, e.h, e, load);
+		ic = e.img.checkImage( e.w, e.h, e, load);
 
 		if ( (ic & ImageObserver.ALLBITS) != 0 )
 			ret |= COMPLETE;
@@ -189,7 +188,7 @@ public synchronized int statusID ( int id, boolean load ) {
 	int ic, ret = 0;
 
 	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		ic = Image.checkImage( e.img, e.w, e.h, e, load);
+		ic = e.img.checkImage( e.w, e.h, e, load);
 
 		if ( (ic & ImageObserver.ALLBITS) != 0 )
 			ret |= COMPLETE;
@@ -201,13 +200,14 @@ public synchronized int statusID ( int id, boolean load ) {
 		if ( (ic & ImageObserver.ERROR) != 0 )
 			ret |= ERRORED;
 	}
-	
+
 	return ret;
+
 }
 
 public synchronized void waitForAll() throws InterruptedException {
 	for ( MediaTrackerEntry e = images; e != null; e = e.next ) {
-		if ((Image.checkImage( e.img, e.w, e.h, e, true) & LOADED) == 0) {
+		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
 			synchronized ( e ) {
 				e.wait();
 			}
@@ -223,7 +223,7 @@ public synchronized boolean waitForAll ( long ms ) throws InterruptedException {
 		if ( now > end )
 			return false;
 	
-		if ((Image.checkImage( e.img, e.w, e.h, e, true) & LOADED) == 0) {
+		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
 			synchronized ( e ) {
 				e.wait( ms);
 			}
@@ -236,7 +236,7 @@ public synchronized boolean waitForAll ( long ms ) throws InterruptedException {
 
 public synchronized void waitForID ( int id ) throws InterruptedException {
 	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		if ((Image.checkImage( e.img, e.w, e.h, e, true) & LOADED) == 0) {
+		if ((e.img.checkImage( e.w, e.h, e, true) & LOADED) == 0) {
 			synchronized ( e ) {
 				e.wait();
 			}
@@ -248,11 +248,12 @@ public synchronized boolean waitForID ( int id, long ms) throws InterruptedExcep
 	long now = System.currentTimeMillis();
 	long end = now + ms;
 	
-	for ( MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
-		if ( now > end )
+	for (MediaTrackerEntry e = getNextEntry( id, null); e != null; e = getNextEntry( id, e) ) {
+		if ( now > end ) {
 			return false;
+		}
 	
-		if ((Image.checkImage( e.img, e.w, e.h, e, true) & LOADED) == 0) {
+		if ((e.img.checkImage(e.w, e.h, e, true) & LOADED) == 0) {
 			synchronized ( e ) {
 				e.wait( ms);
 			}
@@ -282,10 +283,15 @@ MediaTrackerEntry(Image img, int id, int w, int h)
 }
 
 public synchronized boolean imageUpdate ( Image img, int infoflags, int x, int y, int width, int height ) {
+	if ( (infoflags & (ImageObserver.WIDTH | ImageObserver.HEIGHT )) != 0 ) {
+		w = width;
+		h = height;
+	}
 	if ( (infoflags & (ALLBITS | ABORT)) != 0 ) {
 		notify();
+		return (false);
 	}
 	
-	return true;
+	return (true);
 }
 }

@@ -73,8 +73,9 @@ public Object getContent() throws IOException {
 	 * We only understand a limited number of things so far
 	 */
 	if (headersValue[ContentEncoding].equals("image/gif") ||
-	    headersValue[ContentEncoding].equals("image/jpeg")) {
-		return (Toolkit.getDefaultToolkit().createImage(data));
+	    headersValue[ContentEncoding].equals("image/jpeg") ||
+	    headersValue[ContentEncoding].equals("image/png")) {
+		return (Toolkit.getDefaultToolkit().createImage(data).getSource());
 	}
 
 	// Return null if we don't understand

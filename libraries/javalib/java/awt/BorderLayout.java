@@ -1,6 +1,3 @@
-package java.awt;
-
-
 /**
  * class BorderLayout - 
  *
@@ -12,6 +9,9 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
 public class BorderLayout
   implements LayoutManager2
 {
@@ -32,6 +32,7 @@ public class BorderLayout
  * Constructs a new BorderLayout with no gaps between components.
  */
 public BorderLayout() {
+	this(0, 0);
 }
 
 /**
@@ -51,30 +52,40 @@ public BorderLayout ( int hgap, int vgap ) {
  * @param constraints  where/how the component is added to the layout.
  */
 public void addLayoutComponent ( Component cmp, Object position ) {
-	if ( position == null )
-		position = CENTER;
-		
-	if ( position instanceof String )
-		addLayoutComponent( (String)position, cmp);
-	else
-		throw new IllegalArgumentException( getClass().getName()
-		                                      + ": invalid constraint " + position );
+	try {
+		addLayoutComponent((String)position, cmp);
+	}
+	catch (ClassCastException _) {
+		throw new IllegalArgumentException( getClass().getName() + ": invalid constraint " + position );
+	}
 }
 
 /**
  * Replaced by addLayoutComponent(Component, Object).
  * @deprecated
  */
-public void addLayoutComponent ( String position, Component cmp ) {
-
-	if ( (position == null) || CENTER.equalsIgnoreCase( position) ) center = cmp;
-	else if (NORTH.equalsIgnoreCase(position))	north = cmp;
-	else if (WEST.equalsIgnoreCase(position))		west = cmp;
-	else if (SOUTH.equalsIgnoreCase(position))	south = cmp;
-	else if (EAST.equalsIgnoreCase(position))		east = cmp;
-	else
-		throw new IllegalArgumentException( getClass().getName() + 
-		                                    ": invalid position: " + position);
+public void addLayoutComponent ( String pos, Component cmp ) {
+	if ( pos == null ) {
+		pos = CENTER;
+	}
+	if (CENTER.equalsIgnoreCase(pos)) {
+		center = cmp;
+	}
+	else if (NORTH.equalsIgnoreCase(pos)) {
+		north = cmp;
+	}
+	else if (WEST.equalsIgnoreCase(pos)) {
+	 	west = cmp;
+	}
+	else if (SOUTH.equalsIgnoreCase(pos)) {
+		south = cmp;
+	}
+	else if (EAST.equalsIgnoreCase(pos)) {
+		east = cmp;
+	}
+	else {
+		throw new IllegalArgumentException( getClass().getName() + ": invalid position: " + pos);
+	}
 }
 
 /**
@@ -92,7 +103,7 @@ public int getHgap() {
  * the furthest away from the origin, 0.5 is centered, etc.
  */
 public float getLayoutAlignmentX ( Container cntr ) {
-	return (float)0.5;
+	return (Component.CENTER_ALIGNMENT);
 }
 
 /**
@@ -103,7 +114,7 @@ public float getLayoutAlignmentX ( Container cntr ) {
  * the furthest away from the origin, 0.5 is centered, etc.
  */
 public float getLayoutAlignmentY ( Container cntr ) {
-	return (float)0.5;
+	return (Component.CENTER_ALIGNMENT);
 }
 
 /**
@@ -135,27 +146,27 @@ public void layoutContainer ( Container cntr ) {
 	int right = cntr.width - insets.right;
 	Dimension pd;
 	
-	if ((north != null) && north.isVisible() ) {
+	if ((north != null) && north.isVisible ) {
 		pd = north.getPreferredSize();
 		north.setBounds(left, top, right - left, pd.height);
 		top += pd.height + vGap;
 	}
-	if ((south != null) && south.isVisible() ) {
+	if ((south != null) && south.isVisible ) {
 		pd = south.getPreferredSize();
 		south.setBounds(left, bottom - pd.height, right - left, pd.height);
 		bottom -= pd.height + vGap;
 	}
-	if ((east != null) && east.isVisible() ) {
+	if ((east != null) && east.isVisible ) {
 		pd = east.getPreferredSize();
 		east.setBounds(right - pd.width, top, pd.width, bottom - top);
 		right -= pd.width + hGap;
 	}
-	if ((west != null) && west.isVisible() ) {
+	if ((west != null) && west.isVisible ) {
 		pd = west.getPreferredSize();
 		west.setBounds(left, top, pd.width, bottom - top);
 		left += pd.width + hGap;
 	}
-	if ((center != null) && center.isVisible() )
+	if ((center != null) && center.isVisible )
 		center.setBounds(left, top, right - left, bottom - top);
 }
 
@@ -181,27 +192,27 @@ public Dimension maximumLayoutSize ( Container cntr ) {
 public Dimension minimumLayoutSize ( Container cntr ) {
 	Dimension md, d = new Dimension();
 
-	if ((east != null) && east.isVisible() ) {
+	if ((east != null) && east.isVisible ) {
 		md = east.getMinimumSize();
 		d.width += md.width + hGap;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((west != null) && west.isVisible() ){
+	if ((west != null) && west.isVisible ){
 		md = west.getMinimumSize();
 		d.width += md.width + hGap;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((center != null) && center.isVisible() ){
+	if ((center != null) && center.isVisible ){
 		md = center.getMinimumSize();
 		d.width += md.width;
 		d.height = Math.max( md.height, d.height);
 	}
-	if ((north != null) && north.isVisible() ){
+	if ((north != null) && north.isVisible ){
 		md = north.getMinimumSize();
 		d.width = Math.max( md.width, d.width);
 		d.height += md.height + vGap;
 	}
-	if ((south != null) && south.isVisible() ) {
+	if ((south != null) && south.isVisible ) {
 		md = south.getMinimumSize();
 		d.width = Math.max( md.width, d.width);
 		d.height += md.height + vGap;
@@ -224,27 +235,27 @@ public Dimension minimumLayoutSize ( Container cntr ) {
 public Dimension preferredLayoutSize ( Container cntr ) {
 	Dimension pd, d = new Dimension();
 
-	if ((east != null) && east.isVisible() ) {
+	if ((east != null) && east.isVisible ) {
 		pd = east.getPreferredSize();
 		d.width += pd.width + hGap;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((west != null) && west.isVisible() ) {
+	if ((west != null) && west.isVisible ) {
 		pd = west.getPreferredSize();
 		d.width += pd.width + hGap;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((center != null) && center.isVisible() ) {
+	if ((center != null) && center.isVisible ) {
 		pd = center.getPreferredSize();
 		d.width += pd.width;
 		d.height = Math.max( pd.height, d.height);
 	}
-	if ((north != null) && north.isVisible() ) {
+	if ((north != null) && north.isVisible ) {
 		pd = north.getPreferredSize();
 		d.width = Math.max( pd.width, d.width);
 		d.height += pd.height + vGap;
 	}
-	if ((south != null) && south.isVisible() ){
+	if ((south != null) && south.isVisible ){
 		pd = south.getPreferredSize();
 		d.width = Math.max( pd.width, d.width);
 		d.height += pd.height + vGap;
@@ -262,11 +273,21 @@ public Dimension preferredLayoutSize ( Container cntr ) {
  * @param comp the component to be removed
  */
 public void removeLayoutComponent ( Component cmp ) {
-	if (cmp == center)			center = null;
-	else if (cmp == north)	north  = null;
-	else if (cmp == west)	  west   = null;
-	else if (cmp == south)	south  = null;
-	else if (cmp == east)	  east   = null;
+	if (cmp == center) {
+		center = null;
+	}
+	else if (cmp == north) {
+		north = null;
+	}
+	else if (cmp == west) {
+		west = null;
+	}
+	else if (cmp == south) {
+		south = null;
+	}
+	else if (cmp == east) {
+		east = null;
+	}
 }
 
 /**
@@ -291,4 +312,5 @@ public void setVgap ( int vgap ) {
 public String toString() {
 	return getClass().getName() + " [" + hGap + ',' + vGap + ']';
 }
+
 }

@@ -1,6 +1,3 @@
-package java.awt;
-
-
 /**
  * LayoutManager2 - 
  *
@@ -12,16 +9,16 @@ package java.awt;
  *
  * @author P. Mehlitz
  */
+
+package java.awt;
+
 public interface LayoutManager2
-  extends LayoutManager
-{
+  extends LayoutManager {
+
 void addLayoutComponent ( Component child, Object constraints );
-
 public float getLayoutAlignmentX ( Container parent );
-
 public float getLayoutAlignmentY ( Container parent );
-
 public void invalidateLayout ( Container parent );
-
 public Dimension maximumLayoutSize ( Container parent );
+
 }

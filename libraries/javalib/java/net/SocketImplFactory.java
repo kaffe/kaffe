@@ -1,6 +1,3 @@
-package java.net;
-
-
 /*
  * Java core library component.
  *
@@ -10,7 +7,11 @@ package java.net;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public interface SocketImplFactory
-{
+
+package java.net;
+
+public interface SocketImplFactory {
+
 abstract public SocketImpl createSocketImpl();
+
 }

@@ -20,87 +20,120 @@ abstract public class Container
 {
 	Component[] children;
 	int nChildren;
-	LayoutManager layout = dummyLayout;
+	LayoutManager layoutm;
 	boolean isLayouting;
 	ContainerListener cntrListener;
 	Insets insets = Insets.noInsets;
-	private static LayoutManager dummyLayout = new FlowLayout();
 
 protected Container () {
-
 }
 
-public Component add ( Component child ) {
-	addImpl( child, null, -1);
-	return child;
+public Component add (Component child) {
+	add(child, null, -1);
+	return (child);
 }
 
-public void add ( Component child, Object constraints ) {
-	addImpl( child, constraints, -1);
+public void add(Component child, Object constraints) {
+	add(child, constraints, -1);
 }
 
-public void add ( Component child, Object constraints, int index ) {
+public void add(Component child, Object constraints, int index) {
+
+	if ( child.parent != null ) {
+		child.parent.remove(child);
+	}
+
 	addImpl(child, constraints, index);
+	
+	if ( layoutm != null ) {
+		if ( layoutm instanceof LayoutManager2 ) {
+			((LayoutManager2)layoutm).addLayoutComponent( child, constraints);
+		}
+		if (constraints instanceof String) {
+			layoutm.addLayoutComponent( (String)constraints, child);
+		}
+	}
 }
 
-public Component add ( Component child, int index ) {
-	addImpl( child, null, index);
-	return child;
+public Component add(Component child, int index) {
+	add(child, null, index);
+	return (child);
 }
 
-public Component add ( String name, Component child) {
-	addImpl( child, name, -1);
-	if ( layout != null)
-		layout.addLayoutComponent(name, child);
-	return child;
+public Component add(String name, Component child) {
+	add(child, (Object)name, -1);
+	return (child);
 }
 
 public void addContainerListener ( ContainerListener newListener ) {
 	cntrListener = AWTEventMulticaster.add( cntrListener, newListener);
+				// no need to traverse upwards
 	eventMask |= AWTEvent.CONTAINER_EVENT_MASK;
 }
 
-protected void addImpl ( Component child, Object constraints, int index ) {
-	if ( child.parent != null )
-		child.parent.remove( child);
+protected void addImpl(Component child, Object constraints, int index ) {
 
-	if ( children == null )
+	if (index < -1 || index > nChildren) {
+		throw new IllegalArgumentException("bad index: " + index);
+	}
+	// This test isn't done because we actually need this functionality
+	// for the native windowing system
+	//else if (child instanceof Window) {
+	//	throw new IllegalArgumentException("component is Window");
+	//}
+	else if (child instanceof Container && this.parent == child) {
+		throw new IllegalArgumentException("child is a bad container");
+	}
+
+	if ( children == null ) {
 		children= new Component[3];
+	}
 	else if ( nChildren == children.length ) {
 		Component[] old = children;
 		children = new Component[ nChildren * 2];
 		System.arraycopy( old, 0, children, 0, nChildren);
 	}
 		
-	if ( (index < 0) || (nChildren == 0) || (index == nChildren) ) {  // append
+	if (index < 0 || nChildren == 0 || index == nChildren) {  // append
 		children[nChildren] = child;
 	}
-	else if ( index < nChildren ) {     // insert at index
+	else if (index < nChildren) {     // insert at index
 		System.arraycopy( children, index, children, index+1, nChildren - index);
 		children[index] = child;
 	}
+	
 	nChildren++;
-	
 	child.parent = this;
-	
-	if ( layout == dummyLayout )
-		layout = getDefaultLayout();
-		
-	if ( (layout != null) && (layout instanceof LayoutManager2) )
-			((LayoutManager2)layout).addLayoutComponent( child, constraints);
 
-	if ( hasToNotify( AWTEvent.CONTAINER_EVENT_MASK, cntrListener) )
-		Toolkit.eventQueue.postEvent( new ContainerEvent( this, ContainerEvent.COMPONENT_ADDED, child));
+	if ( isValid )
+		invalidate();
+
+	// if we are already addNotified (this is a subsequent add),
+	// we immediately have to addNotify the child, too
+	if (peer != null) {
+		child.addNotify();
+		
+		// This isn't required in case we are subsequently validated (what is the
+		// correct thing to do), but native widgets would cause a repaint regardless
+		// of that. Comment this out if you believe in correct apps
+		if ( child.props.isNativeLike )
+			child.repaint();
+	}
+
+	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+		AWTEvent.sendEvent( ContainerEvt.getEvent( this,
+		                       ContainerEvent.COMPONENT_ADDED, child), false);
+	}
 }
 
 public void addNotify() {
 	super.addNotify();
-
-	for ( int i=0; i<nChildren; i++ )
+	for ( int i=0; i<nChildren; i++ ) {
 		children[i].addNotify();
+	}
 }
 
-Graphics clipSiblings ( Component child, Graphics g ) {
+Graphics clipSiblings ( Component child, NativeGraphics g ) {
 	int        i, xClip, yClip, xwClip, yhClip, cxw, cyh;
 	Component  c;
 
@@ -125,39 +158,41 @@ Graphics clipSiblings ( Component child, Graphics g ) {
 	return g;
 }
 
-public void doLayout() {
-	if ( (layout != null) && (nChildren > 0) && !isLayouting ) {
-		isLayouting = true;
-		layout.layoutContainer( this);
-		isLayouting = false;
+/**
+ * @deprecated, use getComponentCount()
+ */
+public int countComponents() {
+	return nChildren;
+}
 
-		if ( isShowing() ) {
-			if ( parent != null ){
-				if ( !parent.isLayouting ) { // no need to traverse upwards
-					if ( this instanceof  OpaqueComponent )
-						repaint();
-					else
-						parent.repaint( x, y, width, height);
-				}
-			}
-			else
-				repaint();
-		}
+public void doLayout() {
+	layout();
+}
+
+void dumpChildren () {
+	for ( int i=0; i<nChildren; i++ ) {
+		System.out.print( i);
+		System.out.print( ": ");
+		System.out.println( children[i]);
 	}
 }
 
 public float getAlignmentX () {
-	if ( layout instanceof LayoutManager2 )
-		return ((LayoutManager2)layout).getLayoutAlignmentX( this);
-	else
+	if ( layoutm instanceof LayoutManager2 ) {
+		return ((LayoutManager2)layoutm).getLayoutAlignmentX( this);
+	}
+	else {
 		return super.getAlignmentX();
+	}
 }
 
 public float getAlignmentY () {
-	if ( layout instanceof LayoutManager2 )
-		return ((LayoutManager2)layout).getLayoutAlignmentY( this);
-	else
+	if ( layoutm instanceof LayoutManager2 ) {
+		return ((LayoutManager2)layoutm).getLayoutAlignmentY( this);
+	}
+	else {
 		return super.getAlignmentY();
+	}
 }
 
 public Component getComponent ( int index ) {
@@ -169,6 +204,117 @@ public Component getComponentAt ( Point pt ) {
 }
 
 public Component getComponentAt ( int x, int y ) {
+	return locate ( x, y);
+}
+
+public int getComponentCount() {
+	return countComponents();
+}
+
+public Component[] getComponents () {
+	Component ca[] = new Component[nChildren];
+	
+	if ( nChildren > 0 )
+		System.arraycopy( children, 0, ca, 0, nChildren);
+	
+	return ca;
+}
+
+public Insets getInsets () {
+	return insets();
+}
+
+public LayoutManager getLayout () {
+	return (layoutm);
+}
+
+public Dimension getMaximumSize () {
+	if (layoutm instanceof LayoutManager2) {
+		return (((LayoutManager2)layoutm).maximumLayoutSize(this));
+	}
+	else {
+		return (super.getMaximumSize());
+	}
+}
+
+public Dimension getMinimumSize () {
+	return (minimumSize());
+}
+
+public Dimension getPreferredSize () {
+	return (preferredSize());
+}
+
+/**
+ * @deprecated, use getInsets()
+ */
+public Insets insets () {
+	// DEP - this should be in getInsets()
+
+	// a Swing LabelPane outcoming (since peers seem to return
+	// the *real* inset object, it wouldn't be necessary to copy, otherwise)
+	return new Insets( insets.top, insets.left, insets.bottom, insets.right);
+}
+
+public void invalidate () {
+
+	if ( isValid ) {
+		// apparently, the JDK does inform the layout *before* invalidation
+		if ( layoutm instanceof LayoutManager2 ) {
+			((LayoutManager2)layoutm).invalidateLayout( this);
+		}
+		
+		isValid = false;
+		
+		// we have to check the parent since we might be a Window
+		if ( (parent != null) && !parent.isValid )
+			parent.invalidate();
+	}
+}
+
+public boolean isAncestorOf ( Component c ) {
+	for ( c = c.parent; c != null; c = c.parent) {
+		if ( c == this ) return true;
+	}
+
+	return false;
+}
+
+public void layout() {
+	// DEP - this should be in doLayout() (another nasty compat issue)
+	// We keep the 'isLayouting' regardless of the validation scheme, since it is
+	// the way to prevent lots of redraws during recursive layout descents
+
+	if ( (layoutm != null) && (nChildren > 0) && !isLayouting ) {
+		isLayouting = true;
+		layoutm.layoutContainer( this);
+		isLayouting = false;
+
+/*
+		if ( isShowing() ) {
+			if ( parent != null ){
+				// no need to traverse upwards
+				if ( !parent.isLayouting ) {
+					if (this instanceof OpaqueComponent) {
+						repaint();
+					}
+					else {
+						parent.repaint( x, y, width, height);
+					}
+				}
+			}
+			else {
+				repaint();
+			}
+		}
+*/
+	}
+}
+
+/**
+ * @deprecated, use getComponentAt().
+ */
+public Component locate ( int x, int y ) {
 	Component c;
 
 	if ( !isShowing() || (x<0) || (x > this.x+width) || (y<0) || (y > this.y+height) )
@@ -184,88 +330,37 @@ public Component getComponentAt ( int x, int y ) {
 	return this;
 }
 
-public int getComponentCount() {
-	return nChildren;
-}
-
-public Component[] getComponents () {
-	Component ca[] = new Component[nChildren];
-	
-	if ( nChildren > 0 )
-		System.arraycopy( children, 0, ca, 0, nChildren);
-	
-	return ca;
-}
-
-LayoutManager getDefaultLayout() {
-	return null;
-}
-
-public Insets getInsets () {
-	return insets;
-}
-
-public LayoutManager getLayout () {
-	return layout;
-}
-
-public Dimension getMaximumSize () {
-	// 'LayoutManager' does not have a maximumLayoutSize()
-	if ( (layout != null) && (layout instanceof LayoutManager2) ) 
-		return ((LayoutManager2) layout).maximumLayoutSize( this);
-	else
-		return super.getMaximumSize();			
-}
-
-public Dimension getMinimumSize () {
-	if ( layout != null )
-		return layout.minimumLayoutSize( this);
-	else
-		return super.getMinimumSize();
-}
-
-public Dimension getPreferredSize() {
-	if ( layout != null )
-		return layout.preferredLayoutSize( this);
-	else
-		return super.getPreferredSize();
-}
-
 /**
- * @deprecated, use getInsets()
+ * @deprecated, use getMinimumSize()
  */
-public Insets insets () {
-	return getInsets();
-}
-
-public boolean isAncestorOf ( Component c ) {
-	for ( c = c.parent; c != null; c = c.parent) {
-		if ( c == this ) return true;
+public Dimension minimumSize () {
+	if ( layoutm != null ) {
+		return layoutm.minimumLayoutSize( this);
 	}
-
-	return false;
-}
-
-public boolean isValid () {
-	return true;
+	else {
+		return super.minimumSize();
+	}
 }
 
 public void paint ( Graphics g ) {
+	paintChildren( g);
+}
+
+void paintChildren ( Graphics g ) {
 
 	if ( g == null ) return;  // not visible
 
 	int         i;
 	Component   c;
-	Rectangle   clip = g.clip;
+	Rectangle   clip = g.getClipBounds();
 	int         xClip  = clip.x;
 	int         yClip  = clip.y;
 	int         xwClip = xClip + clip.width;
 	int         yhClip = yClip + clip.height;
-	int         cx, cy;
-	int         cxw, cyh, clx, cly, clw, clh;
-	Font        fnt = g.fnt;
-	Color       fg = g.fg;
-	Color       bg = g.bg;
+	int         cx, cy, cxw, cyh, clx, cly, clw, clh;
+	Font        fnt = g.getFont();
+	Color       fg = g.getColor();
+	Color       bg = g.getBackColor();
 
 	// standard JDK behavior is to paint last added childs first, simulating
 	// a first-to-last z order
@@ -296,7 +391,14 @@ public void paint ( Graphics g ) {
 		if ( c.fgClr != null ) g.setColor( c.fgClr);
 		if ( c.bgClr != null ) g.setBackColor( c.bgClr);
 
-		c.paint( g);
+		// we can't call paint directly in case we have a Panel
+		// (which wouldn't get its children drawn)
+
+		if ( c instanceof Panel ) {
+			c.paintChild( g);
+		}
+		else
+			c.paint( g);
 		
 		g.translate( -cx, -cy);
 		g.setFont( fnt);
@@ -307,11 +409,23 @@ public void paint ( Graphics g ) {
 	g.setClip( xClip, yClip, (xwClip - xClip), (yhClip - yClip));
 }
 
+/**
+ * @deprecated, use getPreferredSize().
+ */
+public Dimension preferredSize () {
+	if ( layoutm != null ) {
+		return (layoutm.preferredLayoutSize(this));
+	}
+	else {
+		return (super.preferredSize());
+	}
+}
+
 public void printComponents ( Graphics g ) {
 }
 
 public void processContainerEvent ( ContainerEvent event ) {
-	if ( hasToNotify( AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ) {
+	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ) {
 		switch ( event.getID() ) {
 		case ContainerEvent.COMPONENT_ADDED:
 			cntrListener.componentAdded( event);
@@ -324,11 +438,10 @@ public void processContainerEvent ( ContainerEvent event ) {
 }
 
 public void remove ( Component c ) {
-
 	// usually children are added/removed in a stack like fashion
 	for ( int i=nChildren-1; i>=0; i-- ){
 		if ( children[i] == c ) {
-			remove( i);
+			remove(i);
 			break;
 		}
 	}
@@ -337,46 +450,50 @@ public void remove ( Component c ) {
 public void remove ( int index ) {
 	int n = nChildren - 1;
 
-	if ( (index < 0) && (index > n)  )
+	if (index < 0 && index > n) {
 		return;
+	}
 		
 	Component c = children[index];
+	
+	if ( c.peer != null ) {
+		c.removeNotify();
+	}
 
-	if ( layout != null )
-		layout.removeLayoutComponent( c);
+	if ( layoutm != null ) {
+		layoutm.removeLayoutComponent( c);
+	}
 
-	if ( (index < n) && (index > -1) )
-		System.arraycopy( children, index+1, children, index, n-index);
+	// Remove from container
+	c.parent = null;
+	if (index > -1 && index < n) {
+		System.arraycopy(children, index+1, children, index, n-index);
+	}
 	children[n] = null;
 	nChildren--;
 	
-	c.removeNotify();
-
-	if ( hasToNotify( AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
-		Toolkit.eventQueue.postEvent( new ContainerEvent( this, ContainerEvent.COMPONENT_REMOVED, c));
+	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+		AWTEvent.sendEvent( ContainerEvt.getEvent( this,
+		                       ContainerEvent.COMPONENT_REMOVED, c), false);
 	}
 
-	doLayout();
+	if ( isValid )
+		invalidate();
+		
+	// Like in addImpl, this wouldn't be required in case we are subsequently
+	// validated, again. However, native widgets cause a repaint regardless
+	// of this validation
+	if ( c.props.isNativeLike )
+		repaint( c.x, c.y, c.width, c.height);
 }
 
 public void removeAll () {
-	Component c;
-
-	for ( int i=nChildren -1; i>=0; i-- ) {
-		c = children[i];
-		c.removeNotify();
-
-		if ( layout != null )  // maybe the layout stores private references
-			layout.removeLayoutComponent( c);
-
-		children[i] = null;       // we leave the array in case of subsequent adds
-
-		if ( ((eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0) && (cntrListener != null) )
-			cntrListener.componentRemoved( new ContainerEvent( this, ContainerEvent.COMPONENT_REMOVED, c));
+	// Nice though it might be to optimize this, we can't without
+	// breaking those who might inherit this class and overload
+	// things  ...
+	for ( int i = nChildren-1; i >= 0; i-- ) {
+		remove(i);
 	}
-	
-	nChildren = 0;
-	repaint();  // no need to layout again, we are empty
 }
 
 public void removeContainerListener ( ContainerListener listener ) {
@@ -384,9 +501,11 @@ public void removeContainerListener ( ContainerListener listener ) {
 }
 
 public void removeNotify() {
-	for ( int i=0; i<nChildren; i++ )
-		children[i].removeNotify();
-		
+	for ( int i=0; i<nChildren; i++ ) {
+		if (children[i].peer != null) {
+			children[i].removeNotify();
+		}
+	}
 	super.removeNotify();
 }
 
@@ -398,13 +517,25 @@ public void setEnabled ( boolean isEnable ) {
 }
 
 public void setLayout ( LayoutManager newLayout ) {
-	layout = newLayout;
+	layoutm = newLayout;
 	
-	if ( (layout != null) && (nChildren > 0) ) // doLayout() might be resolved (incorrectly)
-		doLayout();
+	// this doesn't directly cause a doLayout in JDK, it just enables it
+	if ( isValid )
+		invalidate();
 }
 
-protected void validateTree() {
+public void validate() {
+	if ( !isValid && (peer != null) ){
+		// we have to descent before validating ourself
+		validateTree();
+		isValid = true;
+	}
+}
+
+protected void validateTree () {
 	doLayout();
+	
+	for ( int i=0; i<nChildren; i++ )
+		children[i].validate();
 }
 }

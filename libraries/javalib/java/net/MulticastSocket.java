@@ -1,7 +1,3 @@
-package java.net;
-
-import java.io.IOException;
-
 /*
  * Java core library component.
  *
@@ -11,59 +7,54 @@ import java.io.IOException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.net;
+
+import java.io.IOException;
+
 public class MulticastSocket
-  extends DatagramSocket
-{
-	private DatagramSocketImpl impl;
+  extends DatagramSocket {
 
-public MulticastSocket() throws IOException
-{
-	impl = null;
+private InetAddress iface;
+
+public MulticastSocket() throws IOException {
+	this(0);
 }
 
-public MulticastSocket(int port) throws IOException
-{
-	impl = new PlainDatagramSocketImpl();
-	impl.create();
-	impl.bind(port, InetAddress.getByName("224.0.0.0"));
+public MulticastSocket(int port) throws IOException {
+	super(port, InetAddress.getByName("224.0.0.0"));
+	iface = InetAddress.getLocalHost();
 }
 
-public InetAddress getInterface() throws SocketException
-{
-	// Not sure what to do with this ...
-	return (null);
+public InetAddress getInterface() throws SocketException {
+	return (iface);
 }
 
-public byte getTTL() throws IOException
-{
+public byte getTTL() throws IOException {
 	return (impl.getTTL());
 }
 
-public void joinGroup(InetAddress mcastaddr) throws IOException
-{
+public void joinGroup(InetAddress mcastaddr) throws IOException {
 	impl.join(mcastaddr);
 }
 
-public void leaveGroup(InetAddress mcastaddr) throws IOException
-{
+public void leaveGroup(InetAddress mcastaddr) throws IOException {
 	impl.leave(mcastaddr);
 }
 
-public synchronized void send(DatagramPacket p, byte ttl) throws IOException
-{
-	byte ottl = impl.getTTL();
-	impl.setTTL(ttl);
-	impl.send(p);
-	impl.setTTL(ottl);
+public synchronized void send(DatagramPacket p, byte ttl) throws IOException {
+	byte ottl = getTTL();
+	setTTL(ttl);
+	super.send(p);
+	setTTL(ottl);
 }
 
-public void setInterface(InetAddress inf) throws SocketException
-{
-	// Not sure what to do with this ...
+public void setInterface(InetAddress inf) throws SocketException {
+	iface = inf;
 }
 
-public void setTTL(byte ttl) throws IOException
-{
+public void setTTL(byte ttl) throws IOException {
 	impl.setTTL(ttl);
 }
+
 }

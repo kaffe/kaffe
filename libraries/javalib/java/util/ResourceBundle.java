@@ -1,8 +1,3 @@
-package java.util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.Class;
 
 /*
  * Java core library component.
@@ -13,22 +8,27 @@ import java.lang.Class;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class ResourceBundle
-{
-	protected ResourceBundle parent;
 
-public ResourceBundle()
-	{
+package java.util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.Class;
+
+abstract public class ResourceBundle {
+
+protected ResourceBundle parent;
+
+public ResourceBundle() {
 	parent = null;
 }
 
-final public static ResourceBundle getBundle(String baseName) throws MissingResourceException
-{
+final public static ResourceBundle getBundle(String baseName) throws MissingResourceException {
 	return (getBundle(baseName, Locale.getDefault()));
 }
 
-final public static ResourceBundle getBundle(String baseName, Locale locale) throws MissingResourceException
-{
+final public static ResourceBundle getBundle(String baseName, Locale locale) throws MissingResourceException {
+
 	String lang = locale.getLanguage();
 	String cntry = locale.getCountry();
 	String var = locale.getVariant();
@@ -77,15 +77,14 @@ final public static ResourceBundle getBundle(String baseName, Locale locale) thr
 	}
 
 	if (bundle == null) {
-		throw new MissingResourceException("no bundles found", "ResourceBundle", baseName);
+		throw new MissingResourceException("no bundles found: " + baseName, "ResourceBundle", baseName);
 	}
 	return (bundle);
 }
 
 abstract public Enumeration getKeys();
 
-final public Object getObject(String key) throws MissingResourceException
-{
+final public Object getObject(String key) throws MissingResourceException {
 	try {
 		Object obj = handleGetObject(key);
 		if (obj != null) {
@@ -100,8 +99,7 @@ final public Object getObject(String key) throws MissingResourceException
 	return (parent.getObject(key));
 }
 
-final private static ResourceBundle getSpecificBundle(String baseName) throws MissingResourceException
-{
+final private static ResourceBundle getSpecificBundle(String baseName) throws MissingResourceException {
 	baseName = baseName.replace('.', '/');
 	try {
 		Class cls = Class.forName(baseName);
@@ -109,8 +107,9 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 		 * Only call newInstance if the cast to resource bundle 
 		 * will indeed succeed.
 		 */
-		if (ResourceBundle.class.isAssignableFrom(cls))
+		if (ResourceBundle.class.isAssignableFrom(cls)) {
 			return ((ResourceBundle)cls.newInstance());
+		}
 	}
 	catch (Exception _) {
 	}
@@ -119,10 +118,12 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 	ClassLoader sysclassloader = System.class.getClassLoader();
 	InputStream strm = null;
 
-	if (sysclassloader != null)
+	if (sysclassloader != null) {
 		strm = sysclassloader.getResourceAsStream(baseName + ".properties");
-	else
+	}
+	else {
 		strm = ClassLoader.getSystemResourceAsStream(baseName + ".properties");
+	}
 	if (strm != null) {
 		try {
 			return (new PropertyResourceBundle(strm));
@@ -133,20 +134,18 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 	throw new MissingResourceException("bundle not found", "ResourceBundle", baseName);
 }
 
-final public String getString(String key) throws MissingResourceException
-{
+final public String getString(String key) throws MissingResourceException {
 	return ((String)getObject(key));
 }
 
-final public String[] getStringArray(String key) throws MissingResourceException
-{
+final public String[] getStringArray(String key) throws MissingResourceException {
 	return ((String[])getObject(key));
 }
 
 abstract protected Object handleGetObject(String key) throws MissingResourceException;
 
-protected void setParent(ResourceBundle par)
-	{
+protected void setParent(ResourceBundle par) {
 	parent = par;
 }
+
 }

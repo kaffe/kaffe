@@ -4,16 +4,15 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "lib-license.terms" for information on usage and redistribution 
+ * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
 
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include <netinet/in.h>
+#include "config-net.h"
 #include "config-io.h"
-#include <netdb.h>
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/object.h"
 #include <native.h>
@@ -21,9 +20,6 @@
 #include "InetAddress.h"
 #include "InetAddressImpl.h"
 #include "nets.h"
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 #define	HOSTNMSZ	80
 
@@ -48,19 +44,18 @@ void
 java_net_InetAddressImpl_makeAnyLocalAddress(struct Hjava_net_InetAddressImpl* none, struct Hjava_net_InetAddress* this)
 {
 	unhand(this)->hostName = 0;
-	unhand(this)->address = htonl(INADDR_ANY);
+	unhand(this)->address = INADDR_ANY;
 	unhand(this)->family = AF_INET;
 }
 
 /*
  * Convert a hostname to the primary host address.
  */
-HArrayOfByte*
+jint
 java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, struct Hjava_lang_String* str)
 {
 	char name[MAXHOSTNAME];
 	struct hostent* ent;
-	Hjava_lang_Object* obj;
 
 	javaString2CString(str, name, sizeof(name));
 
@@ -68,25 +63,19 @@ java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, 
 	if (ent == 0) {
 		SignalError("java.net.UnknownHostException", SYS_HERROR);
 	}
-
-	/* Copy in the network address */
-	obj = AllocArray(sizeof(jint), TYPE_Byte);
-	assert(obj != 0);
-	*(jint*)ARRAY_DATA(obj) = *(jint*)ent->h_addr_list[0];
-
-	return ((HArrayOfByte*)obj);
+	return (ntohl(*(jint*)ent->h_addr_list[0]));
 }
 
 /*
  * Convert a hostname to an array of host addresses.
  */
-HArrayOfArray* /* HArrayOfArrayOfBytes */
+HArrayOfInt*
 java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* none, struct Hjava_lang_String* str)
 {
 	char name[MAXHOSTNAME];
 	struct hostent* ent;
 	Hjava_lang_Object* obj;
-	Hjava_lang_Object* array;
+	HArrayOfInt* array;
 	int i;
 	int alength;
 
@@ -98,20 +87,17 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 	}
 
 	for (alength = 0; ent->h_addr_list[alength]; alength++)
-	  ;
+		;
 
-	array = AllocObjectArray(alength, "[[B");
+	array = (HArrayOfInt*)AllocArray(alength, TYPE_Int);
 	assert(array != 0);
 
 	for (i = 0; i < alength; i++) {
 		/* Copy in the network address */
-		obj = AllocArray(sizeof(jint), TYPE_Byte);
-		assert(obj != 0);
-		*(jint*)ARRAY_DATA(obj) = *(jint*)ent->h_addr_list[i];
-		OBJARRAY_DATA(array)[i] = obj;
+		unhand(array)->body[i] = ntohl(*(jint*)ent->h_addr_list[i]);
 	}
 
-	return ((HArrayOfArray*)array);
+	return (array);
 }
 
 /*

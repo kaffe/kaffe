@@ -18,12 +18,26 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.SystemClassLoader;
 
-final public class Class
-{
-
-final static ClassLoader defaultClassLoader = new SystemClassLoader();
+final public class Class {
 
 native public static Class forName(String className) throws ClassNotFoundException;
+
+private String fullResourceName(String name) {
+	if (name.charAt(0) != '/') {
+		String cname = getName();
+		StringBuffer buf = new StringBuffer();
+		int tail = cname.lastIndexOf('.');
+		if (tail != -1) {
+			buf.append(cname.substring(0, tail+1).replace('.', '/'));
+		}
+		else {
+			buf.append('/');
+		}
+		buf.append(name);
+		name = buf.toString();
+	}
+	return (name);
+}
 
 /**
  * Determines the class loader for the class.
@@ -171,7 +185,7 @@ public URL getResource(String name) {
 		return (loader.getResource(fullResourceName(name)));
 	}
 	else {
-		return (defaultClassLoader.getResource(fullResourceName(name)));
+		return (SystemClassLoader.getClassLoader().getResource(fullResourceName(name)));
 	}
 }
 
@@ -196,22 +210,8 @@ public InputStream getResourceAsStream(String name) {
 		return (loader.getResourceAsStream(fullResourceName(name)));
 	}
 	else {
-		return (defaultClassLoader.getResourceAsStream(fullResourceName(name)));
+		return (SystemClassLoader.getClassLoader().getResourceAsStream(fullResourceName(name)));
 	}
-}
-
-private String fullResourceName(String name) {
-	if (name.charAt(0) != '/') {
-		String cname = getName();
-		StringBuffer buf = new StringBuffer();
-		int tail = cname.lastIndexOf('.');
-		if (tail != -1) {
-			buf.append(cname.substring(0, tail+1).replace('.', '/'));
-		}
-		buf.append(name);
-		name = buf.toString();
-	}
-	return (name);
 }
 
 native public Object[] getSigners();
@@ -230,8 +230,7 @@ native public boolean isPrimitive();
 
 native public Object newInstance() throws InstantiationException, IllegalAccessException;
 
-public String toString()
-	{
+public String toString() {
 	Class cls = this;
 	StringBuffer str = new StringBuffer();
 	for (int count = 0;; count++) {

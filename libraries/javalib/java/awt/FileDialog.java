@@ -405,17 +405,15 @@ void setUserDir() {
 	setDirectory( System.getProperty( "user.dir") );
 }
 
-public void setVisible( boolean isVisible) {
-	if ( isVisible ) {
-		if ( (width == 0) || (height == 0) )
-			setBounds( (Defaults.ScreenWidth - 400) / 2,
-								 (Defaults.ScreenHeight - 300) / 2,
-								  400, 300 );
-		if (dir == null)
-			setUserDir();
-	}
-	
-	super.setVisible( isVisible);
+public void addNotify() {
+	if ( (width == 0) || (height == 0) )
+		setBounds( (Defaults.ScreenWidth - 400) / 2,
+			 (Defaults.ScreenHeight - 300) / 2,
+			  400, 300 );
+	if (dir == null)
+		setUserDir();
+
+	super.addNotify();
 }
 
 static int sortIdx( Vector v, String pathName) {

@@ -29,20 +29,8 @@ public WindowEvent ( Window  src, int evtId ) {
 	super( src, evtId);
 }
 
-protected void dispatch () {
-	if ( id == WINDOW_CLOSED )
-		((Component)source).removeNotify();
-
-	processWindowEvent( this);
-	recycle();
-}
-
 public Window getWindow () {
 	return (Window) source;
-}
-
-static WindowEvent getWindowEvent ( int srcIdx, int id ) {
-	return getWindowEvent( (Window) sources[srcIdx], id);
 }
 
 public String paramString() {
@@ -57,13 +45,5 @@ public String paramString() {
 	}
 	
 	return "?";
-}
-
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-		next = wndEvtCache;
-		wndEvtCache = this;
-	}
 }
 }

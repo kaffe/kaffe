@@ -1,92 +1,58 @@
 package java.awt.event;
 
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 
-/**
- *
- * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- * @author P.C.Mehlitz
- */
 public class PaintEvent
   extends ComponentEvent
 {
-	protected Rectangle updateRect;
+	protected int x;
+	protected int y;
+	protected int width;
+	protected int height;
 	final public static int PAINT_FIRST = 800;
 	final public static int PAINT = 800;
 	final public static int UPDATE = 801;
-	final public static int PAINT_LAST = 801;
+	final public static int PAINT_LAST = 802;
 
-public PaintEvent ( Component src, int evtId, Rectangle rect ) {
+public PaintEvent ( Component src, int evtId, Rectangle updateRect ) {
 	super( src, evtId);
 
-	updateRect = rect;
+	x = updateRect.x;
+	y = updateRect.y;
+	width = updateRect.width;
+	height = updateRect.height;
 }
 
-protected void dispatch () {
-	processPaintEvent( this);
-	recycle();
-}
+protected PaintEvent ( Component src, int evtId, int x, int y, int width, int height ) {
+	super( src, evtId);
 
-static PaintEvent getPaintEvent ( int srcIdx, int id, int x, int y, int width, int height ) {
-	Component source = sources[srcIdx];
-	Rectangle r;
-
-	synchronized ( evtLock ) {
-		if ( paintEvtCache == null ) {
-			return new PaintEvent( source, id, new Rectangle( x, y, width, height));
-		}
-		else {
-			PaintEvent e = paintEvtCache;
-			paintEvtCache = (PaintEvent) e.next;
-			e.next = null;
-		
-			e.source = source;
-			e.id = id;
-
-			r = e.updateRect;
-			r.x = x;
-			r.y = y;
-			r.width = width;
-			r.height = height;
-
-			return e;
-		}
-	}
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 }
 
 public Rectangle getUpdateRect() {
-	return updateRect;
+	return new Rectangle( x, y, width, height);
 }
 
-public String paramString() {
+public String paramString () {
 	String ps;
 	
-	if ( id == PAINT )       ps = "PAINT";
+	if ( id == PAINT ) ps = "PAINT";
 	else if ( id == UPDATE ) ps = "UPDATE";
-	else                     ps = "Paint: " + id;
-
-	ps += " [" + updateRect.x + ',' + updateRect.y +
-	          ',' + updateRect.width + ',' + updateRect.height + ']';
-
+	else ps = "unknown Paint";
+	
+	ps += " ["+x+','+y+','+width+','+height+"]";
+	
 	return ps;
 }
 
-protected void recycle () {
-	synchronized ( evtLock ) {
-		source = null;
-
-		next = paintEvtCache;	
-		paintEvtCache = this;
-	}
-}
-
-public void setUpdateRect ( Rectangle rect ) {
-	updateRect = rect;
+public void setUpdateRect( Rectangle r ) {
+	x = r.x;
+	y = r.y;
+	width = r.width;
+	height = r.height;
 }
 }

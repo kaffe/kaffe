@@ -12,7 +12,7 @@ package java.util;
 
 import java.io.Serializable;
 
-public class Vector
+public class Vector extends AbstractList
   implements Cloneable, Serializable
 {
 	protected Object[] elementData;
@@ -45,17 +45,16 @@ public Vector ( int initialCapacity ) {
 }
 
 /* May be 0 indicating doubling on reallocation */
-public Vector(int initialCapacity, int increment)
-	{
+public Vector(int initialCapacity, int increment) {
 	elementData = new Object[initialCapacity];
 	elementCount = 0;
 	capacityIncrement = increment;
 }
 
 final public synchronized void addElement(Object obj) {
-	if ( elementCount == elementData.length )
-		ensureCapacity( elementCount+1);
-
+	if (elementCount == elementData.length) {
+		increaseCapacity();
+	}
 	elementData[elementCount++] = obj;
 }
 
@@ -63,20 +62,13 @@ final public int capacity() {
 	return elementData.length;
 }
 
-public synchronized Object clone() {
-	Vector v;
+public synchronized Object clone () {
+	Vector v = new Vector( elementData.length, capacityIncrement);
+	
+	System.arraycopy( elementData, 0, v.elementData, 0, elementCount);
+	v.elementCount = elementCount;
 
-	// we must invoke super.clone() to ensure that subclasses
-	// such as Stack are cloned properly.
-	try {
-		v = (Vector)super.clone();
-		v.elementData = (Object[]) elementData.clone();
-		
-		return v;
-	}
-	catch (CloneNotSupportedException _) {
-		return null;
-	}
+	return v;
 }
 
 final public boolean contains(Object elem)
@@ -101,36 +93,45 @@ final public synchronized Enumeration elements () {
 	return new Vector.Enumerator();
 }
 
-final public synchronized void ensureCapacity ( int minCapacity ) { 
-	if ( elementData.length < minCapacity ) {
-		int newCapacity = elementData.length + 
-						((capacityIncrement > 0) ? capacityIncrement : elementData.length);
-
-		if ( newCapacity < minCapacity ) newCapacity = minCapacity;
-		
+final public synchronized void ensureCapacity(int newCapacity) { 
+	if (elementData.length < newCapacity) {
 		Object oldBuffer[] = elementData;
 		elementData = new Object[newCapacity];
-
-		System.arraycopy( oldBuffer, 0, elementData, 0, elementCount);
+		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
 	}
 }
 
 final public synchronized Object firstElement () {
-	if ( elementCount <= 0 )
+	if ( elementCount <= 0 ) {
 		throw new NoSuchElementException();
-
+	}
 	return elementData[0];
 }
 
-final public int indexOf(Object elem)
-	{
+private void increaseCapacity() {
+	int newCapacity = elementData.length;
+	if (capacityIncrement > 0) {
+		newCapacity += capacityIncrement;
+	}
+	else if (newCapacity == 0) {
+		newCapacity = 10;
+	}
+	else {
+		newCapacity *= 2;
+	}
+	Object oldBuffer[] = elementData;
+	elementData = new Object[newCapacity];
+	System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
+}
+
+final public int indexOf(Object elem) {
 	return indexOf(elem, 0);
 }
 
-final public synchronized int indexOf(Object elem, int index)
-	{
+final public synchronized int indexOf(Object elem, int index) {
 	for (int pos = index; pos < elementCount; pos++) {
-		if (elem.equals(elementData[pos])) {
+		Object obj = elementData[pos];
+		if (elem == obj || elem.equals(obj)) {
 			return (pos);
 		}
 	}
@@ -139,8 +140,9 @@ final public synchronized int indexOf(Object elem, int index)
 
 final public synchronized void insertElementAt ( Object obj, int index ) {
 
-	if ( elementCount == elementData.length )
-		ensureCapacity( elementCount+1);
+	if ( elementCount == elementData.length ) {
+		increaseCapacity();
+	}
 
 	if ( (index > elementCount) || (index < 0) ) {
 		throw new ArrayIndexOutOfBoundsException();
@@ -158,21 +160,20 @@ final public boolean isEmpty () {
 }
 
 final public synchronized Object lastElement () {
-	if ( elementCount == 0 )
+	if ( elementCount == 0 ) {
 		throw new NoSuchElementException();
-
+	}
 	return elementData[elementCount-1];
 }
 
-final public int lastIndexOf(Object elem)
-	{
+final public int lastIndexOf(Object elem) {
 	return (lastIndexOf(elem, size()-1));
 }
 
-final public synchronized int lastIndexOf(Object elem, int index)
-	{
+final public synchronized int lastIndexOf(Object elem, int index) {
 	for (int pos = index; pos >= 0; pos--) {
-		if (elem.equals(elementData[pos])) {
+		Object obj = elementData[pos];
+		if (elem == obj || elem.equals(obj)) {
 			return (pos);
 		}
 	}
@@ -180,14 +181,13 @@ final public synchronized int lastIndexOf(Object elem, int index)
 }
 
 final public synchronized void removeAllElements () {
-	for ( int i=elementCount-1; i>= 0; i-- )
+	for ( int i=elementCount-1; i>= 0; i-- ) {
 		elementData[i] = null;
-
-	elementCount=0;
+	}
+	elementCount = 0;
 }
 
-final public synchronized boolean removeElement(Object obj)
-	{
+final public synchronized boolean removeElement(Object obj) {
 	if (contains(obj)) {
 		removeElementAt(indexOf(obj));
 		return (true);
@@ -198,8 +198,9 @@ final public synchronized boolean removeElement(Object obj)
 }
 
 final public synchronized void removeElementAt ( int index ) {
-	if ( index >= elementCount )
+	if ( index >= elementCount ) {
 		throw new ArrayIndexOutOfBoundsException();
+	}
 
 	System.arraycopy( elementData, index+1, elementData, index, elementCount-index-1);
 	elementCount--;
@@ -215,29 +216,41 @@ final public synchronized void setElementAt(Object obj, int index)
 	elementData[index] = obj;
 }
 
-final public synchronized void setSize(int newSize)
-	{
+final public synchronized void setSize(int newSize) {
 	ensureCapacity(newSize);
 	elementCount = newSize;
 }
 
-final public int size()
-	{
+final public int size() {
 	return elementCount;
 }
 
 final public synchronized String toString() {
-	String result=new String();
+	StringBuffer result = new StringBuffer();
 
-	for (int pos=0; pos<size(); pos++) {
-		result=result+elementData[pos].toString();
+	for (int pos = 0; pos < elementCount; pos++) {
+		result.append(elementData[pos].toString());
 	}
 
-	return result;
+	return (result.toString());
 }
 
-final public synchronized void trimToSize()
-	{
-	setSize(size());
+final public synchronized void trimToSize() {
+	if (elementCount != elementData.length) {
+		Object oldBuffer[] = elementData;
+		elementData = new Object[elementCount];
+		System.arraycopy(oldBuffer, 0, elementData, 0, elementCount);
+	}
 }
+
+public Object remove(int idx) {
+	Object obj = elementAt(idx);
+	removeElementAt(idx);
+	return (obj);
+}
+
+public Object get(int idx) {
+	return (elementAt(idx));
+}
+
 }

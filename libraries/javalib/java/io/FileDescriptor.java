@@ -11,11 +11,16 @@
 package java.io;
 
 public final class FileDescriptor {
+
   public static FileDescriptor in=initSystemFD(new FileDescriptor(), 0);
   public static FileDescriptor out=initSystemFD(new FileDescriptor(), 1);
   public static FileDescriptor err=initSystemFD(new FileDescriptor(), 2);
 
   private int fd;
+
+  static {
+        System.loadLibrary("io");
+  }
 
   private static native FileDescriptor initSystemFD(FileDescriptor fd, int stream);
   public native boolean valid();

@@ -1,6 +1,6 @@
 package java.net;
 
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 
 /*
@@ -13,23 +13,35 @@ import java.io.IOException;
  * of this file.
  */
 class SocketOutputStream
-  extends FileOutputStream
-{
-	private SocketImpl impl;
-	private byte[] temp;
+  extends OutputStream {
+
+private SocketImpl impl;
+private byte[] buf;
 
 public SocketOutputStream(SocketImpl impl) {
-	super(impl.fd);
-	this.impl=impl;
+	this.impl = impl;
 }
-
-native private void socketWrite(byte buf[], int off, int len);
 
 public void write(byte b[]) throws IOException {
 	write(b, 0, b.length);
 }
 
 public void write(byte b[], int off, int len) throws IOException {
-	socketWrite(b, off, len);
+	synchronized (this) {
+		impl.write(b, off, len);
+	}
 }
+
+public void write(int b) throws IOException {
+	if (buf == null) {
+		buf = new byte[1];
+	}
+	buf[0] = (byte)b;
+	write(buf);
+}
+
+public void close() throws IOException {
+	impl.close();
+}
+
 }

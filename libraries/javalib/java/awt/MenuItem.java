@@ -60,6 +60,27 @@ public void deleteShortcut() {
 	shortcut = null;
 }
 
+/**
+ * @deprecated
+ */
+public synchronized void disable() {
+	setEnabled(false);
+}
+
+/**
+ * @deprecated
+ */
+public synchronized void enable() {
+	setEnabled(true);
+}
+
+/**
+ * @deprecated
+ */
+public void enable(boolean on) {
+	setEnabled(on);
+}
+
 public String getActionCommand() {
 	return (aCmd != null) ? aCmd : label;
 }
@@ -87,11 +108,12 @@ int getWidth() {
 }
 
 boolean handleShortcut ( KeyEvent e) {
-	if ( shortcut == null)
+	if ( shortcut == null) {
 		return false;
-	if ( shortcut.key != e.getKeyChar() + 96 )	//ctrl offset
+	}
+	if ( shortcut.key != e.getKeyChar() + 96 ) {	//ctrl offset
 		return false;
-
+	}
 	process();
 	return true;
 }
@@ -140,44 +162,35 @@ public String paramString() {
 }
 
 void process () {
-	if ( hasToNotify( aListener) ) {
-		ActionEvent ae = AWTEvent.getActionEvent( this, ActionEvent.ACTION_PERFORMED);
-		ae.setActionEvent( getActionCommand(), 0);
+	if ( hasToNotify( aListener) || oldEvents ) {
+		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                   getActionCommand(), 0);
 		Toolkit.eventQueue.postEvent( ae);
+		return;
 	}
-	// Otherwise we send the ActionEvent to out parent, but only if it's
-	// a Menu.
-	else if (parent instanceof Menu) {
-		for ( Menu mp = (Menu)parent; mp != null; mp = (Menu)mp.parent ) {
-			if (mp.hasToNotify(mp.aListener)) {
-				ActionEvent ae = AWTEvent.getActionEvent( mp, ActionEvent.ACTION_PERFORMED);
-				ae.setActionEvent( getActionCommand(), 0);
-				Toolkit.eventQueue.postEvent( ae);
-				return;
-			}
+
+	MenuContainer mp = parent;
+	for (;;) {
+		if (!(mp instanceof Menu)) {
+			break;
 		}
+		Menu m = (Menu)mp;
+		if (m.hasToNotify(m.aListener)) {
+			ActionEvt ae = ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
+			                                   getActionCommand(), 0);
+			Toolkit.eventQueue.postEvent( ae);
+			return;
+		}
+		mp = m.parent;
 	}
 }
 
 void processActionEvent ( ActionEvent e ) {
-	aListener.actionPerformed( e);
-}
-
-void processActionEvent_X ( ActionEvent e ) {
-	ActionListener al = aListener;
-	
-	if ( al == null) {
-		for( MenuContainer mc = parent; al == null;) {
-			if (! ( mc instanceof Menu))
-				break;
-			Menu m = (Menu)mc;
-			al = m.aListener;
-			mc = m.parent;
-		}
+	if (aListener != null) {
+		aListener.actionPerformed( e);
 	}
-					
-	if ( al != null )
-		al.actionPerformed( e);
+
+	if ( oldEvents ) postEvent( Event.getEvent( e));
 }
 
 public synchronized void removeActionListener( ActionListener l) {
@@ -186,27 +199,6 @@ public synchronized void removeActionListener( ActionListener l) {
 
 public void setActionCommand( String cmd) {
 	aCmd = cmd;
-}
-
-/**
- * @deprecated
- */
-public void enable(boolean on) {
-	setEnabled(on);
-}
-
-/**
- * @deprecated
- */
-public synchronized void enable() {
-	setEnabled(true);
-}
-
-/**
- * @deprecated
- */
-public synchronized void disable() {
-	setEnabled(false);
 }
 
 public synchronized void setEnabled( boolean b) {

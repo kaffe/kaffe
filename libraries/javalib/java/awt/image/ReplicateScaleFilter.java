@@ -25,11 +25,19 @@ public void setDimensions ( int width, int height) {
 	srcWidth = width;
 	srcHeight = height;
 	
-	if ( scaleX > 0)	destWidth = (int)(scaleX * destWidth);
-	else							destWidth = srcWidth;
+	if ( scaleX > 0) {
+		destWidth = (int)(scaleX * destWidth);
+	}
+	else {
+		destWidth = srcWidth;
+	}
 
-	if ( scaleY > 0)	destHeight = (int)(scaleY * destHeight);
-	else							destHeight = srcHeight;
+	if ( scaleY > 0) {
+		destHeight = (int)(scaleY * destHeight);
+	}
+	else {
+		destHeight = srcHeight;
+	}
 	
 	consumer.setDimensions( destWidth, destHeight);
 }

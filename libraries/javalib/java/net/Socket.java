@@ -13,49 +13,40 @@ package java.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import kaffe.net.DefaultSocketImplFactory;
 
-public class Socket
-{
-	private static SocketImplFactory factory = null;
-/* This must be a public member, since ServerSocket accept has to access it to setup the socket!
-     This is NOT part of the SUN spec.. Thanks AGAIN SUN! */
-	SocketImpl impl;
+final public class Socket {
 
-protected Socket() {
-	if (factory==null) {
-		impl=new PlainSocketImpl();
-	}
-	else {
-		impl=factory.createSocketImpl();
-	}
-}
+private static SocketImplFactory factory = new DefaultSocketImplFactory();
 
-/**
- * Creates an unconnected Socket with a user-specified SocketImpl. 
- * The impl parameter is an instance of a SocketImpl the subclass wishes 
- * to use on the Socket.
- */
-protected Socket(SocketImpl impl) throws SocketException {
-	this.impl = impl;
-}
+SocketImpl impl;
 
 public Socket(InetAddress address, int port) throws IOException {
 	this(address, port, true);
 }
 
-public Socket(InetAddress address, int port, boolean stream) throws IOException {
-	this();
+public Socket(String host, int port) throws IOException {
+	this(InetAddress.getByName(host), port, true);
+}
 
+/**
+ * @deprecated.
+ */
+public Socket(String host, int port, boolean stream) throws IOException {
+	this(InetAddress.getByName(host), port, stream);
+}
+
+/**
+ * @deprecated.
+ */
+public Socket(InetAddress address, int port, boolean stream) throws IOException {
+	impl = factory.createSocketImpl();
 	impl.create(stream);
 	impl.connect(address, port);
 }
 
-public Socket(String host, int port) throws IOException {
-	this(host, port, true);
-}
-
-public Socket(String host, int port, boolean stream) throws IOException {
-	this(InetAddress.getByName(host), port, stream);
+Socket() throws IOException {
+	impl = factory.createSocketImpl();
 }
 
 public synchronized void close() throws IOException {
@@ -82,19 +73,8 @@ public int getPort() {
 	return impl.getPort();
 }
 
-public InetAddress getLocalAddress() {
-	InetAddress localAddress;
-	try {
-		localAddress =
-			(InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
-	} catch (Exception e) {
-		localAddress = InetAddress.anyLocalAddress;
-	}
-	return localAddress;
-}
-
 public static synchronized void setSocketImplFactory(SocketImplFactory fac) throws IOException {
-	factory=fac;
+	factory = fac;
 }
 
 public void setSoLinger(boolean on, int timeout) throws SocketException {

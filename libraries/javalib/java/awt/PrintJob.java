@@ -12,15 +12,12 @@
 
 package java.awt;
 
-abstract public class PrintJob
-{
+abstract public class PrintJob {
+
 public PrintJob() {
 }
 
 abstract public void end();
-
-public void finalize() {
-}
 
 abstract public Graphics getGraphics();
 

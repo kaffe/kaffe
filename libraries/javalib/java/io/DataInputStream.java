@@ -1,6 +1,3 @@
-package java.io;
-
-
 /*
  * Java core library component.
  *
@@ -10,6 +7,9 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package java.io;
+
 public class DataInputStream
   extends FilterInputStream
   implements DataInput
@@ -23,26 +23,28 @@ final public int read(byte b[]) throws IOException {
 }
 
 final public int read(byte b[], int off, int len) throws IOException {
-	return super.read(b, off, len);
+	return in.read(b, off, len);
 }
 
 final public boolean readBoolean() throws IOException {
-	return (readByte()!=0);
+	return (readUnsignedByte() != 0);
 }
 
 final public byte readByte() throws IOException {
-	int value=super.read();
-
-	if (value==-1) throw new EOFException();
-
-	return (byte )value;
+	int value = in.read();
+	if (value == -1) {
+		throw new EOFException();
+	}
+	return ((byte)value);
 }
 
 final public char readChar() throws IOException {
-	int b1=readUnsignedByte();
-	int b2=readUnsignedByte();
-
-	return (char )((b1 << 8) | b2);
+	int val = in.read() << 8;
+	val |= in.read();
+	if (val == -1) {
+		throw new EOFException();
+	}
+	return ((char)val);
 }
 
 final public double readDouble() throws IOException {
@@ -69,16 +71,19 @@ final public void readFully(byte b[], int off, int len) throws IOException {
 }
 
 final public int readInt() throws IOException {
-	int b1=readUnsignedByte();
-	int b2=readUnsignedByte();
-	int b3=readUnsignedByte();
-	int b4=readUnsignedByte();
-
-	int temp=(b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
-
-	return temp;
+	int v1 = in.read() << 24;
+	v1 |= in.read() << 16;
+	v1 |= in.read() << 8;
+	int v2 = in.read();
+	if (v2 == -1) {
+		throw new EOFException();
+	}
+	return (v1 | v2);
 }
 
+/**
+ * @deprecated
+ */
 final public String readLine() throws IOException {
 	final StringBuffer buffer = new StringBuffer();
 	int nread = 0;
@@ -87,25 +92,27 @@ final public String readLine() throws IOException {
 		final int data = super.read();
 		final char ch = (char) (data & 0xff);
 
-		if (data == -1)
+		if (data == -1) {
 			break;
+		}
 		nread++;
 
-		if (ch == '\n')
+		if (ch == '\n') {
 			break;
+		}
 
-		if (ch == '\r') {	// Check for '\r\n'
+		if (ch == '\r') {       // Check for '\r\n'
 			int data2;
 
-		    // Note that we don't know whether the InputStream
-		    // implements mark() and reset(), but we're using
-		    // them anyway. If they don't, then characters
-		    // after a lone '\r' will be elided from the input
-		    // (ie, this is a bug). We could override mark()
-		    // and reset() to always provide at least a
-		    // one-character buffer, but then we'd violate
-		    // the spec, which says to inherit these from
-		    // FilterInputStream...
+			// Note that we don't know whether the InputStream
+			// implements mark() and reset(), but we're using
+			// them anyway. If they don't, then characters
+			// after a lone '\r' will be elided from the input
+			// (ie, this is a bug). We could override mark()
+			// and reset() to always provide at least a
+			// one-character buffer, but then we'd violate
+			// the spec, which says to inherit these from
+			// FilterInputStream...
 
 			super.mark(1);
 			data2 = super.read();
@@ -122,17 +129,27 @@ final public String readLine() throws IOException {
 }
 
 final public long readLong() throws IOException {
-	int i1=readInt(); /* b1-4 */
-	int i2=readInt(); /* b5-8 */
-
-	return (((long)i1) << 32) | (((long)i2) & 0xFFFFFFFF);
+	long v1 = (long)in.read() << 56;
+	v1 |= (long)in.read() << 48;
+	v1 |= (long)in.read() << 40;
+	v1 |= (long)in.read() << 32;
+	v1 |= (long)in.read() << 24;
+	v1 |= (long)in.read() << 16;
+	v1 |= (long)in.read() << 8;
+	int v2 = in.read();
+	if (v2 == -1) {
+		throw new EOFException();
+	}
+	return (v1 | (long)v2);
 }
 
 final public short readShort() throws IOException {
-	int b1=readUnsignedByte();
-	int b2=readUnsignedByte();
-
-	return (short)((b1 << 8)|b2);		
+	int val = in.read() << 8;
+	val |= in.read();
+	if (val == -1) {
+		throw new EOFException();
+	}
+	return ((short)val);
 }
 
 final public String readUTF() throws IOException {
@@ -192,22 +209,26 @@ final public static synchronized String readUTF(DataInput in) throws IOException
 }
 
 final public int readUnsignedByte() throws IOException {
-	int value=super.read();
+	int value=in.read();
 
-	if (value==-1) throw new EOFException();
-	return (value & 0xFF);
+	if (value == -1) {
+		throw new EOFException();
+	}
+	return (value);
 }
 
 final public int readUnsignedShort() throws IOException {
-	int b1=readUnsignedByte();
-	int b2=readUnsignedByte();
-
-	return (int )(b1 << 8) | b2;
+	int val = in.read() << 8;
+	val |= in.read();
+	if (val == -1) {
+		throw new EOFException();
+	}
+	return (val);
 }
 
 final public int skipBytes(int n) throws IOException
 {
-	int skipped = (int)super.skip((long)n);
+	int skipped = (int)in.skip((long)n);
 	if (skipped != n) {
 		throw new EOFException();
 	}

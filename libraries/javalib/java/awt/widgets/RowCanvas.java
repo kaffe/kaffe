@@ -28,6 +28,15 @@ class RowCanvas
 	int xOffsInit;
 	FontMetrics fm;
 	int initVis = -1;
+	Graphics rgr;
+
+public void addNotify() {
+	super.addNotify();
+	if ( rgr == null ) {
+		rgr = getGraphics();
+		updateClip( rgr);
+	}
+}
 
 public void adjustmentValueChanged( AdjustmentEvent e) {
 	Object src = e.getSource();
@@ -73,14 +82,11 @@ public void focusLost( FocusEvent e) {
 	}
 }
 
-Graphics getClippedGraphics() {
-	Graphics g = getGraphics();
-	
-	if ( g != null) {
-		int d = BORDER_WIDTH;
-		g.clipRect( d, d, width -2*d, height -2*d);
+public Graphics getGraphics() {
+	Graphics g = super.getGraphics();
+	if ( g != null ) {
+		g.setTarget( this);
 	}
-
 	return g;
 }
 
@@ -183,43 +189,42 @@ void makeVisible ( int row) {
 	}
 }
 
-void repaintRow( Graphics g, int idx) {
+public void removeNotify() {
+	super.removeNotify();
+	if ( rgr != null ) {
+		rgr.dispose();
+		rgr = null;
+	}
 }
 
-int repaintRows( Graphics g, int sIdx, int len) {
+void repaintRow( int idx) {
+}
+
+int repaintRows( int sIdx, int len) {
 	int rs = rows.size();
 	int d = BORDER_WIDTH;
 	int y = d;
 	
 	for ( int i=first; i<rs; i++) {
 		if ( (i >= sIdx) && (i <= sIdx + len) )
-			repaintRow( g, i);
+			repaintRow( i);
 		y += rowHeight;
 		if ( y > height)
 			break;
 	}
 	
 	if (y < height) {
-		g.setColor( getBackground()  );
-		g.fillRect( d, y, width- 2*d , height - y -d);
+		rgr.setColor( getBackground()  );
+		rgr.fillRect( d, y, width- 2*d , height - y -d);
 	}
 	
 	return y;
 
 }
 
-int repaintRows( int sIdx, int len) {
-	int ret;
-	Graphics g = getClippedGraphics();
-	
-	if ( g == null)
-		return 0;
-
-	ret = repaintRows( g, sIdx, len);
-	g.dispose();
-	
-	return ret;
-
+public void reshape( int x, int y, int w, int h) {
+	super.reshape( x, y, w, h);
+	updateClip( rgr);
 }
 
 void setListeners() {
@@ -233,29 +238,30 @@ void setListeners() {
 void shiftVertical( int rows, boolean updScroll) {
 	if ( rows == 0 )
 		return;
-		
-	Graphics g = getClippedGraphics();
-	
-	if ( g == null )
-		return;
-		
-	if ( updScroll)
+
+	if ( updScroll && vScroll != null) {
 		vScroll.setValue( first);
+	}
 
 	int d = BORDER_WIDTH;
-	g.copyArea( d, d, width- 2*d, height- 2*d, 0, rows * rowHeight );
+	rgr.copyArea( d, d, width- 2*d, height- 2*d, 0, rows * rowHeight );
 
 	if ( rows < 0 ){
 		int sIdx = first + getVisibleRows() + rows;
 		int len = -rows + 1;
-		repaintRows( g, sIdx, len ); 
+		repaintRows( sIdx, len ); 
 	}
 	else {
-		repaintRows( g, first, rows-1);
+		repaintRows( first, rows-1);
 	}
-		
-	g.dispose();
 
+}
+
+void updateClip( Graphics g) {
+	if ( g != null ) {
+		g.setClip( BORDER_WIDTH, BORDER_WIDTH,
+							 width-2*BORDER_WIDTH, height-2*BORDER_WIDTH);
+	}
 }
 
 void updateVScroll() {

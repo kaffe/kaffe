@@ -1,5 +1,14 @@
-package java.awt.image;
+/**
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author P. Mehlitz
+ */
 
+package java.awt.image;
 
 abstract public class RGBImageFilter
   extends ImageFilter
@@ -34,17 +43,16 @@ public IndexColorModel filterIndexColorModel( IndexColorModel icm) {
 abstract public int filterRGB( int x, int y, int rgb );
 
 public void filterRGBPixels( int x, int y, int w, int h, int[] pels, int off, int scan) {
-	ColorModel newModel = ColorModel.getRGBdefault();
-	int px, py;
-	int pIdx = off;
-	
-	for ( py = 0; py < h; py++) {
-		for ( px = 0; px < w; px++)
-			pels[pIdx++] = filterRGB( x+px, y+py, pels[pIdx] );
-		pIdx += scan-w;
+	int xw = x + w;
+	int yh = y + h;
+	for ( int py = y; py < yh; py++) {
+		for ( int px = x; px < xw; px++) {
+			int pIdx = px + py * scan + off;
+			pels[pIdx] = filterRGB(px, py, pels[pIdx]);
+		}
 	}
 	
-	consumer.setPixels( x, y, w, h, newModel, pels, off, scan);
+	consumer.setPixels( x, y, w, h, ColorModel.getRGBdefault(), pels, off, scan);
 }
 
 public void setColorModel( ColorModel model) {
@@ -58,37 +66,37 @@ public void setColorModel( ColorModel model) {
 }
 
 public void setPixels( int x, int y, int w, int h, ColorModel cm, byte[] pels, int off, int scan) {
-	if ( cm == origmodel )
+	if ( cm == origmodel ) {
 		consumer.setPixels( x, y, w, h, newmodel, pels, off, scan);
+	}
 	else {
-		int px, py;
-		int pIdx = 0;
-		int[] fPels = new int[w*h];
-		
-		for ( py = 0; py < h; py++) {
-			for ( px = 0; px < w; px++)
-				fPels[pIdx++] = cm.getRGB( pels[pIdx+off]);
-			pIdx += scan-w;
+		int xw = x + w;
+		int yh = y + h;
+		int[] fPels = new int[pels.length];
+		for ( int py = y; py < yh; py++) {
+			for ( int px = x; px < xw; px++) {
+				int pIdx = px + py * scan + off;
+				fPels[pIdx] = cm.getRGB(pels[pIdx]);
+			}
 		}
-		
 		filterRGBPixels( x, y, w, h, fPels, 0, w);
 	}
 }
 
 public void setPixels( int x, int y, int w, int h, ColorModel cm, int[] pels, int off, int scan) {
-	if ( cm == origmodel )
+	if ( cm == origmodel ) {
 		consumer.setPixels( x, y, w, h, newmodel, pels, off, scan);
+	}
 	else {
-		int px, py;
-		int pIdx = 0;
-		int[] fPels = new int[w*h];
-		
-		for ( py = 0; py < h; py++) {
-			for ( px = 0; px < w; px++)
-				fPels[pIdx++] = cm.getRGB( pels[pIdx+off]);
-			pIdx += scan-w;
+		int xw = x + w;
+		int yh = y + h;
+		int[] fPels = new int[pels.length];
+		for ( int py = y; py < yh; py++) {
+			for ( int px = x; px < xw; px++) {
+				int pIdx = px + py * scan + off;
+				fPels[pIdx] = cm.getRGB(pels[pIdx]);
+			}
 		}
-		
 		filterRGBPixels( x, y, w, h, fPels, 0, w);
 	}
 }

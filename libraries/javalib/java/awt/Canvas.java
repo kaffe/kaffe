@@ -18,9 +18,20 @@ public class Canvas
 public Canvas() {
 }
 
-public void paint( Graphics g) {
-	g.setColor( bgClr);
-	g.fillRect( 0, 0, width, height);
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), true);
 }
 
+public Graphics getGraphics () {
+	Graphics g = super.getGraphics();
+	if ( g != null )
+		g.setTarget( this);
+	
+	return g;
+}
+
+public void paint( Graphics g) {
+	g.setColor( getBackground());
+	g.fillRect( 0, 0, width, height);
+}
 }
