@@ -1,3 +1,8 @@
+Tue Oct 13 16:36:07 1998  Stephen Clawson  <sclawson@cs.utah.edu>
+
+	* libraries/javalib/java/util/Vector.java: fix clone() to invoke
+	super.clone()
+
 Mon Oct 12 22:07:24 PDT 1998	Andrew Raymond Trick <a-trick@students.uiuc.edu>
 
 	* java.io.DataInputStream: don't append \n
