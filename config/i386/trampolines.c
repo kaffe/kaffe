@@ -31,8 +31,6 @@ TRAMPOLINE_FUNCTION()
 #define	C_FUNC_NAME(FUNC) #FUNC
 #endif
 
-#if 1 /*defined(NO_SHARED_VMLIBRARY)*/
-
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(i386_do_fixup_trampoline) "\n"
 C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n
@@ -41,23 +39,6 @@ C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n
 	jmp	*%eax"
 	END_ASM_FUNC()
 );
-
-#else
-
-asm(
-	START_ASM_FUNC() C_FUNC_NAME(i386_do_fixup_trampoline) "\n"
-C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n
-	call	i386_dft1					\n
-i386_dft1:							\n
-	popl	%ebx						\n
-	addl	$_GLOBAL_OFFSET_TABLE_+[.-i386_dft1],%ebx	\n
-	call	" C_FUNC_NAME(soft_fixup_trampoline) "@PLT	\n
-	popl	%ecx						\n
-	jmp	*%eax"
-	END_ASM_FUNC()
-);
-
-#endif
 
 #if defined (HAVE_GCJ_SUPPORT)
 /*
@@ -80,6 +61,13 @@ C_FUNC_NAME(__kaffe_i386_gcj_fixup) ":
 "
 	END_ASM_FUNC()
 );
+
+int 
+arch_is_trampoline_frame(void *pc) 
+{
+	extern void (*f)() asm(C_FUNC_NAME(i386_do_fixup_trampoline));
+	return ((char*)pc == ((char*)&f + 4));
+}
 #endif
 
 #endif
