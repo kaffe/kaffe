@@ -1,3 +1,10 @@
+2003-04-03 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/ZipFile.c:
+	(java_util_zip_ZipFile_openZipFile0,
+	java_util_zip_ZipFile_getZipEntry0) replaced use of gc_free by
+	KMALLOC.
+	
 2003-04-02 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Component.java:
