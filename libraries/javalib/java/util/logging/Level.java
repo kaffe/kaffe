@@ -56,17 +56,94 @@ public class Level
   implements java.io.Serializable
 {
   /* The integer values are the same as in the Sun J2SE 1.4.
-   * They have been obtained with a test program.
+   * They have been obtained with a test program. In J2SE 1.4.1,
+   * Sun has amended the API documentation; these values are now
+   * publicly documented.
+   */
+
+  /**
+   * The <code>OFF</code> level is used as a threshold for filtering
+   * log records, meaning that no message should be logged.
+   *
+   * @see Logger#setLevel(java.util.logging.Level)
    */
   public static final Level OFF = new Level ("OFF", Integer.MAX_VALUE);
+
+  /**
+   * Log records whose level is <code>SEVERE</code> indicate a serious
+   * failure that prevents normal program execution.  Messages at this
+   * level should be understandable to an inexperienced, non-technical
+   * end user.  Ideally, they explain in simple words what actions the
+   * user can take in order to resolve the problem.
+   */
   public static final Level SEVERE = new Level ("SEVERE", 1000);
+
+
+  /**
+   * Log records whose level is <code>WARNING</code> indicate a
+   * potential problem that does not prevent normal program execution.
+   * Messages at this level should be understandable to an
+   * inexperienced, non-technical end user.  Ideally, they explain in
+   * simple words what actions the user can take in order to resolve
+   * the problem.
+   */
   public static final Level WARNING = new Level ("WARNING", 900);
+
+
+  /**
+   * Log records whose level is <code>INFO</code> are used in purely
+   * informational situations that do not constitute serious errors or
+   * potential problems. In the default logging configuration, INFO
+   * messages will be written to the system console.  For this reason,
+   * the INFO level should be used only for messages that are
+   * important to end users and system administrators.  Messages at
+   * this level should be understandable to an inexperienced,
+   * non-technical user.
+   */
   public static final Level INFO = new Level ("INFO", 800);
+
+
+  /**
+   * Log records whose level is <code>CONFIG</code> are used for
+   * describing the static configuration, for example the windowing
+   * environment, the operating system version, etc.
+   */
   public static final Level CONFIG = new Level ("CONFIG", 700);
+
+
+  /**
+   * Log records whose level is <code>FINE</code> are typically used
+   * for messages that are relevant for developers using
+   * the component generating log messages.  Examples include minor,
+   * recoverable failures, or possible inefficiencies.
+   */
   public static final Level FINE = new Level ("FINE", 500);
+
+
+  /**
+   * Log records whose level is <code>FINER</code> are intended for
+   * rather detailed tracing, for example entering a method, returning
+   * from a method, or throwing an exception.
+   */
   public static final Level FINER = new Level ("FINER", 400);
+
+
+  /**
+   * Log records whose level is <code>FINEST</code> are used for
+   * highly detailed tracing, for example to indicate that a certain
+   * point inside the body of a method has been reached.
+   */
   public static final Level FINEST = new Level ("FINEST", 300);
+
+
+  /**
+   * The <code>ALL</code> level is used as a threshold for filtering
+   * log records, meaning that every message should be logged.
+   *
+   * @see Logger#setLevel(java.util.logging.Level)
+   */
   public static final Level ALL = new Level ("ALL", Integer.MIN_VALUE);
+
 
   private static final Level[] knownLevels = {
     ALL, FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE, OFF
@@ -304,6 +381,10 @@ public class Level
   }
 
 
+  /**
+   * Returns a hash code for this Level which is based on its numeric
+   * value.
+   */
   public int hashCode()
   {
     return value;

@@ -1,5 +1,5 @@
 /* DropTargetContext.java --
-   Copyright (C) 2002 Free Software Foundation
+   Copyright (C) 2002, 2003 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -44,59 +44,75 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Michael Koch <konqueror@gmx.de>
+ * @since 1.2
+ */
 public class DropTargetContext implements Serializable
 {
   static final long serialVersionUID = -634158968993743371L;
 
-  protected class TransferableProxy implements Transferable
+  /** @specnote According to the online documentation, this is
+   * protected, but in reality it is public.  */
+  public class TransferableProxy implements Transferable
   {
     protected boolean isLocal;
     protected Transferable transferable;
 
+    TransferableProxy (Transferable t, boolean local)
+    {
+      this.transferable = t;
+      this.isLocal = local;
+    }
+    
     public DataFlavor[] getTransferDataFlavors ()
     {
-      // FIXME: implement this
-      return null;
+      return transferable.getTransferDataFlavors ();
     }
 
     public boolean isDataFlavorSupported (DataFlavor flavor)
     {
-      // FIXME: implement this
-      return false;
+      return transferable.isDataFlavorSupported (flavor);
     }
 
     public Object getTransferData (DataFlavor flavor)
       throws UnsupportedFlavorException, IOException
     {
-      // FIXME: implement this
-      return null;
+      return transferable.getTransferData (flavor);
     }
   }
 
+  private DropTarget dropTarget;
   private int targetActions;
+  private java.awt.dnd.peer.DropTargetContextPeer dtcp;
+
+  // package private
+  DropTargetContext (DropTarget dropTarget)
+  {
+    this.dropTarget = dropTarget;
+  }
 
   public DropTarget getDropTarget ()
   {
-    // FIXME: implement this
-    return null;
+    return dropTarget;
   }
 
   public Component getComponent ()
   {
-    // FIXME: implement this
-    return null;
+    return dropTarget.getComponent ();
   }
 
   public void addNotify (java.awt.dnd.peer.DropTargetContextPeer dtcp)
   {
-    // FIXME: implement this
+    this.dtcp = dtcp;
   }
 
   public void removeNotify ()
   {
-    // FIXME: implement this
+    this.dtcp = null;
   }
 
   protected void setTargetActions (int actions)
@@ -110,9 +126,9 @@ public class DropTargetContext implements Serializable
   }
 
   /**
-   * FIXME
+   * Signals that the drop is completed.
    *
-   * @exception InvalidDnDOperationException FIXME
+   * @exception InvalidDnDOperationException If a drop is not outstanding.
    */
   public void dropComplete (boolean success)
   {
@@ -147,20 +163,18 @@ public class DropTargetContext implements Serializable
 
   protected List getCurrentDataFlavorsAsList ()
   {
-    // FIXME: implement this
-    return null;
+    return Arrays.asList (getCurrentDataFlavors ());
   }
 
   protected boolean isDataFlavorSupported (DataFlavor flavor)
   {
-    // FIXME: implement this
-    return false;
+    return getCurrentDataFlavorsAsList ().contains (flavor);
   }
 
   /**
-   * FIXME
+   * Return the <code>Transferable</code> operandof this operation.
    *
-   * @exception InvalidDnDOperationException FIXME
+   * @exception InvalidDnDOperationException If a drag is not outstanding.
    */
   protected Transferable getTransferable() throws InvalidDnDOperationException
   {
@@ -170,7 +184,6 @@ public class DropTargetContext implements Serializable
 
   protected Transferable createTransferableProxy(Transferable t, boolean local)
   {
-    // FIXME: implement this
-    return null;
+    return new TransferableProxy (t, local);
   }
 } // class DropTargetContext

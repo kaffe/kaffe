@@ -41,12 +41,12 @@ import gnu.java.nio.ShortBufferImpl;
 
 public abstract class ShortBuffer extends Buffer implements Comparable
 {
-  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   protected short [] backing_buffer;
+  protected int array_offset;
 
   public static ShortBuffer allocateDirect(int capacity)
   {
-    return new ShortBufferImpl(capacity, 0, capacity);
+    throw new Error ("direct buffers not implemented");
   }
 
   public static ShortBuffer allocate(int capacity)
@@ -77,7 +77,13 @@ public abstract class ShortBuffer extends Buffer implements Comparable
     return wrap(array, 0, array.length);
   }
 
-  public ShortBuffer get(short[] dst, int offset, int length)
+  protected ShortBuffer (int capacity, int limit, int position, int mark)
+  {
+    super (capacity, limit, position, mark);
+    array_offset = 0;
+  }
+  
+  public ShortBuffer get (short[] dst, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       {
@@ -87,12 +93,12 @@ public abstract class ShortBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public ShortBuffer get(short[] dst)
+  public ShortBuffer get (short[] dst)
   {
     return get(dst, 0, dst.length);
   }
 
-  public ShortBuffer put(ShortBuffer src)
+  public ShortBuffer put (ShortBuffer src)
   {
     while (src.hasRemaining())
       put(src.get());
@@ -100,7 +106,7 @@ public abstract class ShortBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public ShortBuffer put(short[] src, int offset, int length)
+  public ShortBuffer put (short[] src, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       put(src[i]);
@@ -115,17 +121,30 @@ public abstract class ShortBuffer extends Buffer implements Comparable
 
   public final boolean hasArray()
   {
-    return (backing_buffer != null);
+    return (backing_buffer != null
+            && !isReadOnly ());
   }
 
   public final short[] array()
   {
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
     return backing_buffer;
   }
 
   public final int arrayOffset()
   {
-    return 0;
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
+    return array_offset;
   }
 
   public int hashCode()
@@ -173,17 +192,7 @@ public abstract class ShortBuffer extends Buffer implements Comparable
     return 0;
   }
 
-  public ByteOrder order()
-  {
-    return endian;
-  }
-
-  public final ShortBuffer order(ByteOrder bo)
-  {
-    endian = bo;
-    return this;
-  }
-
+  public abstract ByteOrder order ();
   public abstract short get();
   public abstract java.nio. ShortBuffer put(short b);
   public abstract short get(int index);

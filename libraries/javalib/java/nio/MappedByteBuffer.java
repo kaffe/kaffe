@@ -43,23 +43,23 @@ package java.nio;
  */
 public abstract class MappedByteBuffer extends ByteBuffer
 {
-    private static native void sync();
-
-    public final MappedByteBuffer force()
-    {
-	sync();
-	return this;
-    }
+  protected MappedByteBuffer (int capacity, int limit, int position, int mark)
+  {
+    super (capacity, limit, position, mark);
+  }
+  
+  public final MappedByteBuffer force ()
+  {
+    return this;
+  }
     
-    public final boolean isLoaded()
-    {
-	return true;
-    }
+  public final boolean isLoaded ()
+  {
+    return true;
+  }
     
-    public final MappedByteBuffer load()
-    {
-	sync();
-	return this;
-    }
- 
+  public final MappedByteBuffer load ()
+  {
+    return this;
+  }
 }

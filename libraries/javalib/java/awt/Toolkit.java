@@ -2,6 +2,9 @@ package java.awt;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragGestureRecognizer;
+import java.awt.dnd.DragSource;
 import java.awt.event.InputEvent;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
@@ -605,6 +608,16 @@ static void terminate () {
 	stopDispatch();
 	tlkTerminate();
 }
+
+  /* taken from GNU Classpath */
+
+  public DragGestureRecognizer
+    createDragGestureRecognizer(Class recognizer, DragSource ds,
+                                Component comp, int actions,
+                                DragGestureListener l)
+  {
+    return null;
+  }
 
 native static synchronized void tlkBeep ();
 

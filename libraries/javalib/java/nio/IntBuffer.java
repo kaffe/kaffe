@@ -41,12 +41,12 @@ import gnu.java.nio.IntBufferImpl;
 
 public abstract class IntBuffer extends Buffer implements Comparable
 {
-  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   protected int [] backing_buffer;
+  protected int array_offset;
 
   public static IntBuffer allocateDirect(int capacity)
   {
-    return new IntBufferImpl (capacity, 0, capacity);
+    throw new Error ("direct buffers not implemented");
   }
 
   public static IntBuffer allocate(int capacity)
@@ -77,6 +77,12 @@ public abstract class IntBuffer extends Buffer implements Comparable
     return wrap(array, 0, array.length);
   }
 
+  protected IntBuffer (int capacity, int limit, int position, int mark)
+  {
+    super (capacity, limit, position, mark);
+    array_offset = 0;
+  }
+  
   public IntBuffer get(int[] dst, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
@@ -87,12 +93,12 @@ public abstract class IntBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public IntBuffer get(int[] dst)
+  public IntBuffer get (int[] dst)
   {
     return get(dst, 0, dst.length);
   }
 
-  public IntBuffer put(IntBuffer src)
+  public IntBuffer put (IntBuffer src)
   {
     while (src.hasRemaining())
       put(src.get());
@@ -100,7 +106,7 @@ public abstract class IntBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public IntBuffer put(int[] src, int offset, int length)
+  public IntBuffer put (int[] src, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       put(src[i]);
@@ -115,17 +121,30 @@ public abstract class IntBuffer extends Buffer implements Comparable
 
   public final boolean hasArray()
   {
-    return (backing_buffer != null);
+    return (backing_buffer != null
+            && !isReadOnly ());
   }
 
   public final int[] array()
   {
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
     return backing_buffer;
   }
 
   public final int arrayOffset()
   {
-    return 0;
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
+    return array_offset;
   }
 
   public int hashCode()
@@ -172,17 +191,7 @@ public abstract class IntBuffer extends Buffer implements Comparable
     return 0;
   }
 
-  public ByteOrder order()
-  {
-    return endian;
-  }
-
-  public final IntBuffer order(ByteOrder bo)
-  {
-    endian = bo;
-    return this;
-  }
-
+  public abstract ByteOrder order();
   public abstract int get();
   public abstract IntBuffer put(int b);
   public abstract int get(int index);

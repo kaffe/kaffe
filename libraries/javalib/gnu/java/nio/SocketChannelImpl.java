@@ -46,6 +46,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AlreadyConnectedException;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import gnu.classpath.Configuration;
 
 public class SocketChannelImpl extends SocketChannel
 {
@@ -75,7 +76,7 @@ public class SocketChannelImpl extends SocketChannel
         System.err.println("failed to create socket:"+fd);
 	    }
   }
-    
+
   public void finalizer()
   {
     if (connected)

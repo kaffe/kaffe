@@ -56,7 +56,7 @@ public final class Channels
    */
   public static InputStream newInputStream (ReadableByteChannel ch)
   {
-    return null;
+    throw new Error ("not implemented");
   }
   
   /**
@@ -64,7 +64,7 @@ public final class Channels
    */
   public static OutputStream newOutputStream (WritableByteChannel ch) 
   {
-    return null;
+    throw new Error ("not implemented");
   }
   
   /**
@@ -72,7 +72,7 @@ public final class Channels
    */
   public static ReadableByteChannel newChannel (InputStream in)
   {
-    return null;
+    throw new Error ("not implemented");
   }
   
   /**
@@ -80,7 +80,7 @@ public final class Channels
    */
   public static WritableByteChannel newChannel (OutputStream out)
   {
-    return null;	
+    throw new Error ("not implemented");
   }
 
   /**
@@ -90,7 +90,7 @@ public final class Channels
   public static Reader newReader (ReadableByteChannel ch, CharsetDecoder dec,
                                   int minBufferCap)
   {
-    return null;
+    throw new Error ("not implemented");
   }
 
   /**
@@ -112,7 +112,7 @@ public final class Channels
   public static Writer newWriter (WritableByteChannel ch, CharsetEncoder enc,
                                   int minBufferCap)
   {
-    return null;
+    throw new Error ("not implemented");
   }
 
   /**

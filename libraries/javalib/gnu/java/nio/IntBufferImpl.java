@@ -38,47 +38,45 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.nio.ReadOnlyBufferException;
 
+/**
+ * This is a Heap memory implementation
+ */
 public final class IntBufferImpl extends IntBuffer
 {
-  private int array_offset;
-  private boolean ro;
+  private boolean readOnly;
   
   public IntBufferImpl(int cap, int off, int lim)
   {
+    super (cap, lim, off, 0);
     this.backing_buffer = new int[cap];
-    this.cap = cap;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
 
-  public IntBufferImpl(int[] array, int off, int lim)
+  public IntBufferImpl(int[] array, int offset, int length)
   {
+    super (array.length, length, offset, 0);
     this.backing_buffer = array;
-    this.cap = array.length;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
 
   public IntBufferImpl(IntBufferImpl copy)
   {
+    super (copy.capacity (), copy.limit (), copy.position (), 0);
     backing_buffer = copy.backing_buffer;
-    ro = copy.ro;
-    limit(copy.limit());
-    position(copy.position());
-  }
-
-  void inc_pos(int a)
-  {
-    position(position() + a);
+    readOnly = copy.isReadOnly ();
   }
 
   private static native int[] nio_cast (byte[] copy);
 
   IntBufferImpl (byte[] copy)
   {
+    super (copy.length, copy.length, 0, 0);
     this.backing_buffer = copy != null ? nio_cast (copy) : null;
+    readOnly = false;
   }
 
   private static native byte nio_get_Byte (IntBufferImpl b, int index, int limit);
@@ -94,14 +92,12 @@ public final class IntBufferImpl extends IntBuffer
 
   public boolean isReadOnly()
   {
-    return ro;
+    return readOnly;
   }
 
   public IntBuffer slice()
   {
-    IntBufferImpl A = new IntBufferImpl(this);
-    A.array_offset = position();
-    return A;
+    return new IntBufferImpl (this);
   }
 
   public IntBuffer duplicate()
@@ -111,9 +107,9 @@ public final class IntBufferImpl extends IntBuffer
 
   public IntBuffer asReadOnlyBuffer()
   {
-    IntBufferImpl a = new IntBufferImpl(this);
-    a.ro = true;
-    return a;
+    IntBufferImpl result = new IntBufferImpl (this);
+    result.readOnly = true;
+    return result;
   }
 
   public IntBuffer compact()
@@ -123,7 +119,7 @@ public final class IntBufferImpl extends IntBuffer
 
   public boolean isDirect()
   {
-    return backing_buffer != null;
+    return false;
   }
 
   final public int get()
@@ -135,6 +131,9 @@ public final class IntBufferImpl extends IntBuffer
 
   final public IntBuffer put(int b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[position()] = b;
     position(position()+1);
     return this;
@@ -147,7 +146,15 @@ public final class IntBufferImpl extends IntBuffer
 
   final public IntBuffer put(int index, int b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[index] = b;
     return this;
+  }
+  
+  final public ByteOrder order ()
+  {
+    return ByteOrder.BIG_ENDIAN;
   }
 }

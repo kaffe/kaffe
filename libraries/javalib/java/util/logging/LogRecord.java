@@ -1,7 +1,7 @@
 /* LogRecord.java
    -- a class for the state associated with individual logging events
 
-Copyright (C) 2002 Free Software Foundation, Inc.
+Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -167,7 +167,7 @@ public class LogRecord
   /**
    * Determined with the serialver tool of the Sun J2SE 1.4.
    */
-  static final long serialVersionUID = 744274793776429013L;
+  static final long serialVersionUID = 5372048053134512534L;
 
   private void readObject(java.io.ObjectInputStream in)
     throws java.io.IOException, java.lang.ClassNotFoundException

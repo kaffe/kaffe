@@ -294,4 +294,11 @@ synchronized void postPaintEvent ( int id, Component c, int x, int y, int width,
 		}
 	}
 }
+
+  /* taken from GNU Classpath */
+  public static long getMostRecentEventTime()
+  {
+    // XXX For now, this ONLY does the current time.
+    return System.currentTimeMillis();
+  }
 }

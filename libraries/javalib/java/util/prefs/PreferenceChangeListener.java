@@ -55,6 +55,6 @@ public interface PreferenceChangeListener extends EventListener {
      * Fired when a entry has been added, changed or removed from the
      * preference node.
      */
-    void PreferenceChange(PreferenceChangeEvent event);
+    void preferenceChange(PreferenceChangeEvent event);
 
 }

@@ -1,5 +1,5 @@
 /* Time.java -- Wrapper around java.util.Date
-   Copyright (C) 1999, 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -62,7 +62,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public int getDate() throws IllegalArgumentException {
+  public int getDate() throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -72,7 +73,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public int getDay() throws IllegalArgumentException {
+  public int getDay() throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -82,7 +84,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public int getMonth() throws IllegalArgumentException {
+  public int getMonth() throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -92,7 +95,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public int getYear() throws IllegalArgumentException {
+  public int getYear() throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -102,7 +106,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public void setDate(int newValue) throws IllegalArgumentException {
+  public void setDate(int newValue) throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -112,7 +117,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public void setMonth(int newValue) throws IllegalArgumentException {
+  public void setMonth(int newValue) throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -122,7 +128,8 @@ public class Time extends java.util.Date
    * @throws IllegalArgumentException when it's called.
    * @deprecated
    */
-  public void setYear(int newValue) throws IllegalArgumentException {
+  public void setYear(int newValue) throws IllegalArgumentException
+  {
     throw new IllegalArgumentException();
   }
 
@@ -141,12 +148,10 @@ public class Time extends java.util.Date
       {
 	java.util.Date d = (java.util.Date) sdf.parseObject(str);
 
-	if (d == null) {
+	if (d == null)
 	  throw new IllegalArgumentException(str);
-	}
-	else {
+	else
 	  return new Time(d.getTime());
-	}
       }
     catch (ParseException e)
       {

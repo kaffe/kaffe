@@ -1,4 +1,5 @@
 core.files
+nio.files
 coreawt.files
 awt.files
 moreawt.files

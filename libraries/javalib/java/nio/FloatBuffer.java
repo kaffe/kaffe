@@ -41,12 +41,12 @@ import gnu.java.nio.FloatBufferImpl;
 
 public abstract class FloatBuffer extends Buffer implements Comparable
 {
-  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   protected float [] backing_buffer;
+  protected int array_offset;
 
   public static FloatBuffer allocateDirect(int capacity)
   {
-    return new FloatBufferImpl (capacity, 0, capacity);
+    throw new Error ("direct buffers not implemented");
   }
 
   public static FloatBuffer allocate(int capacity)
@@ -77,7 +77,13 @@ public abstract class FloatBuffer extends Buffer implements Comparable
     return wrap(array, 0, array.length);
   }
 
-  public FloatBuffer get(float[] dst, int offset, int length)
+  protected FloatBuffer (int capacity, int limit, int position, int mark)
+  {
+    super (capacity, limit, position, mark);
+    array_offset = 0;                    
+  }
+  
+  public FloatBuffer get (float[] dst, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       {
@@ -87,12 +93,12 @@ public abstract class FloatBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public FloatBuffer get(float[] dst)
+  public FloatBuffer get (float[] dst)
   {
     return get(dst, 0, dst.length);
   }
 
-  public FloatBuffer put(FloatBuffer src)
+  public FloatBuffer put (FloatBuffer src)
   {
     while (src.hasRemaining())
       put(src.get());
@@ -100,7 +106,7 @@ public abstract class FloatBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public FloatBuffer put(float[] src, int offset, int length)
+  public FloatBuffer put (float[] src, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       put(src[i]);
@@ -115,17 +121,30 @@ public abstract class FloatBuffer extends Buffer implements Comparable
 
   public final boolean hasArray()
   {
-    return (backing_buffer != null);
+    return (backing_buffer != null
+            && !isReadOnly ());
   }
 
   public final float[] array()
   {
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
     return backing_buffer;
   }
 
   public final int arrayOffset()
   {
-    return 0;
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
+    return array_offset;
   }
 
   public int hashCode()
@@ -139,6 +158,7 @@ public abstract class FloatBuffer extends Buffer implements Comparable
       {
         return compareTo(obj) == 0;
       }
+
     return false;
   }
 
@@ -171,17 +191,7 @@ public abstract class FloatBuffer extends Buffer implements Comparable
     return 0;
   }
 
-  public ByteOrder order()
-  {
-    return endian;
-  }
-
-  public final FloatBuffer order(ByteOrder bo)
-  {
-    endian = bo;
-    return this;
-  }
-
+  public abstract ByteOrder order ();
   public abstract float get();
   public abstract java.nio. FloatBuffer put(float b);
   public abstract float get(int index);

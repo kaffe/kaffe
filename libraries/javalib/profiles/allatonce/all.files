@@ -1,3 +1,5 @@
+gnu/classpath/Configuration.java
+gnu/classpath/RawData.java
 gnu/java/awt/BitMaskExtent.java
 gnu/java/awt/Buffers.java
 gnu/java/awt/ComponentDataBlitOp.java
@@ -141,6 +143,7 @@ java/awt/datatransfer/FlavorMap.java
 java/awt/datatransfer/FlavorTable.java
 java/awt/datatransfer/MimeTypeParseException.java
 java/awt/datatransfer/StringSelection.java
+java/awt/datatransfer/SystemFlavorMap.java
 java/awt/datatransfer/Transferable.java
 java/awt/datatransfer/UnsupportedFlavorException.java
 java/awt/Defaults.java
@@ -150,6 +153,7 @@ java/awt/Dimension.java
 java/awt/DisplayMode.java
 java/awt/dnd/Autoscroll.java
 java/awt/dnd/DnDConstants.java
+java/awt/dnd/DnDEventMulticaster.java
 java/awt/dnd/DragGestureEvent.java
 java/awt/dnd/DragGestureListener.java
 java/awt/dnd/DragGestureRecognizer.java
@@ -192,6 +196,8 @@ java/awt/event/HierarchyBoundsListener.java
 java/awt/event/HierarchyEvent.java
 java/awt/event/HierarchyListener.java
 java/awt/event/InputEvent.java
+java/awt/event/InputMethodEvent.java
+java/awt/event/InputMethodListener.java
 java/awt/event/ItemEvent.java
 java/awt/event/ItemListener.java
 java/awt/Event.java
@@ -218,7 +224,11 @@ java/awt/FileDialog.java
 java/awt/FlowLayout.java
 java/awt/FocusEvt.java
 java/awt/FocusTraversalPolicy.java
+java/awt/font/FontRenderContext.java
 java/awt/FontFormatException.java
+java/awt/font/GlyphJustificationInfo.java
+java/awt/font/GlyphMetrics.java
+java/awt/font/GlyphVector.java
 java/awt/Font.java
 java/awt/FontMetrics.java
 java/awt/font/TextHitInfo.java
@@ -268,6 +278,7 @@ java/awt/image/DataBuffer.java
 java/awt/image/DataBufferUShort.java
 java/awt/image/DirectColorModel.java
 java/awt/image/FilteredImageSource.java
+java/awt/ImageFrameLoader.java
 java/awt/image/ImageConsumer.java
 java/awt/image/ImageFilter.java
 java/awt/image/ImageObserver.java
@@ -275,10 +286,9 @@ java/awt/image/ImageProducer.java
 java/awt/image/ImagingOpException.java
 java/awt/image/IndexColorModel.java
 java/awt/Image.java
-java/awt/ImageFrameLoader.java
 java/awt/ImageLoader.java
-java/awt/ImageNativeProducer.java
 java/awt/image/MemoryImageSource.java
+java/awt/ImageNativeProducer.java
 java/awt/image/PackedColorModel.java
 java/awt/image/PixelGrabber.java
 java/awt/image/RasterFormatException.java
@@ -444,7 +454,6 @@ java/io/PipedWriter.java
 java/io/PushbackReader.java
 java/io/RandomAccessFile.java
 java/io/SequenceInputStream.java
-java/io/SerializablePermission.java
 java/io/StreamTokenizer.java
 java/io/StringBufferInputStream.java
 java/io/StringReader.java

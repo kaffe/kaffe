@@ -64,6 +64,7 @@ class ServerSocketChannelImpl extends ServerSocketChannel
   }
 
   protected ServerSocketChannelImpl (SelectorProvider provider)
+    throws IOException
   {
     super (provider);
     fd = SocketChannelImpl.SocketCreate ();
@@ -92,15 +93,16 @@ class ServerSocketChannelImpl extends ServerSocketChannel
 	    }
   }
 
-  protected void implCloseSelectableChannel ()
+  protected void implCloseSelectableChannel () throws IOException
   {
     connected = false;
     SocketChannelImpl.SocketClose (fd);
     fd = SocketChannelImpl.SocketCreate ();
   }
 
-  protected void implConfigureBlocking (boolean block)
+  protected void implConfigureBlocking (boolean block) throws IOException
   {
+    blocking = block;
   }
 
   public SocketChannel accept ()

@@ -50,6 +50,8 @@ import java.util.EventObject;
  */
 public class NodeChangeEvent extends EventObject {
 
+  private static final long serialVersionUID =8068949086596572957L; 
+  
     /**
      * The sub node that was added or removed.
      * Defined transient just like <code>EventObject.source</code> since

@@ -83,7 +83,8 @@ public abstract class SelectorProvider
   /**
    * Opens a server socket channel.
    */
-  public abstract ServerSocketChannel openServerSocketChannel () throws IOException;
+  public abstract ServerSocketChannel openServerSocketChannel ()
+    throws IOException;
   
   /**
    * Opens a socket channel.

@@ -38,47 +38,45 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.nio.ReadOnlyBufferException;
 
+/**
+ * This is a Heap memory implementation
+ */
 public final class ShortBufferImpl extends ShortBuffer
 {
-  private int array_offset;
-  private boolean ro;
+  private boolean readOnly;
 
   public ShortBufferImpl(int cap, int off, int lim)
   {
-    this.backing_buffer = new short[cap];
-    this.cap = cap ;
-    this.limit(lim);
-    this.position(off);
+    super (cap, lim, off, 0);
+    this.backing_buffer = new short [cap];
+    readOnly = false;
   }
 
-  public ShortBufferImpl(short[] array, int off, int lim)
+  public ShortBufferImpl(short[] array, int offset, int length)
   {
+    super (array.length, length, offset, 0);
     this.backing_buffer = array;
-    this.cap = array.length;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
 
   public ShortBufferImpl(ShortBufferImpl copy)
   {
+    super (copy.capacity (), copy.limit (), copy.position (), 0);
     backing_buffer = copy.backing_buffer;
-    ro = copy.ro;
-    limit(copy.limit());
-    position(copy.position());
-  }
-
-  void inc_pos(int a)
-  {
-    position(position() + a);
+    readOnly = copy.isReadOnly ();
   }
 
   private static native short[] nio_cast (byte[] copy);
 
   ShortBufferImpl (byte[] copy)
   {
+    super (copy.length, copy.length, 0, 0);
     this.backing_buffer = copy != null ? nio_cast (copy) : null;
+    readOnly = false;
   }
   
   private static native byte nio_get_Byte (ShortBufferImpl b, int index, int limit);
@@ -94,14 +92,12 @@ public final class ShortBufferImpl extends ShortBuffer
 
   public boolean isReadOnly()
   {
-    return ro;
+    return readOnly;
   }
 
   public ShortBuffer slice()
   {
-    ShortBufferImpl a = new ShortBufferImpl(this);
-    a.array_offset = position();
-    return a;
+    return new ShortBufferImpl (this);
   }
 
   public ShortBuffer duplicate()
@@ -111,9 +107,9 @@ public final class ShortBufferImpl extends ShortBuffer
 
   public ShortBuffer asReadOnlyBuffer()
   {
-    ShortBufferImpl a = new ShortBufferImpl(this);
-    a.ro = true;
-    return a;
+    ShortBufferImpl result = new ShortBufferImpl (this);
+    result.readOnly = true;
+    return result;
   }
 
   public ShortBuffer compact()
@@ -123,7 +119,7 @@ public final class ShortBufferImpl extends ShortBuffer
 
   public boolean isDirect()
   {
-    return backing_buffer != null;
+    return false;
   }
 
   final public short get()
@@ -135,6 +131,9 @@ public final class ShortBufferImpl extends ShortBuffer
 
   final public ShortBuffer put(short b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[position()] = b;
     position(position()+1);
     return this;
@@ -147,7 +146,15 @@ public final class ShortBufferImpl extends ShortBuffer
 
   final public ShortBuffer put(int index, short b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[index] = b;
     return this;
+  }
+  
+  final public ByteOrder order ()
+  {
+    return ByteOrder.BIG_ENDIAN;
   }
 }

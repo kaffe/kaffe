@@ -1,5 +1,5 @@
 /* DropTarget.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,6 +39,8 @@ package java.awt.dnd;
 
 import java.awt.Point;
 import java.awt.Component;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.awt.datatransfer.FlavorMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,19 +48,35 @@ import java.io.Serializable;
 import java.util.EventListener;
 import java.util.TooManyListenersException;
 
-/** STUB CLASS ONLY */
+/**
+ * @author Michael Koch
+ * @since 1.2
+ */
 public class DropTarget
   implements DropTargetListener, EventListener, Serializable
 {
-  protected static class DropTargetAutoScroller
+  /**
+   * Compatible with JDK 1.2+
+   */
+  private static final long serialVersionUID = -6283860791671019047L;
+
+  /** @specnote According to the online documentation, this is
+   * protected, but in reality it is public.  */
+  public static class DropTargetAutoScroller
     implements ActionListener
   {
+    private Component component;
+    private Point point;
+    
     protected DropTargetAutoScroller (Component c, Point p)
     {
+      component = c;
+      point = p;
     }
 
     protected void updateLocation (Point newLocn)
     {
+      point = newLocn;
     }
 
     protected void stop ()
@@ -69,94 +87,139 @@ public class DropTarget
     {
     }
   }
-  
-  // FIXME: check the correctness of default value.
-  private boolean isActive = false;
+
+  private Component component;
+  private FlavorMap flavorMap;
+  private int actions;
+  private DropTargetContext dropTargetContext;
+  private DropTargetListener dropTargetListener;
+  private boolean active = true;
     
   /**
-   * FIXME
+   * Creates a <code>DropTarget</code> object.
    *
-   * @exception HeadlessException FIXME
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
    */
   public DropTarget ()
   {
+    this (null, 0, null, true, null);
   }
   
   /**
-   * FIXME
+   * Creates a <code>DropTarget</code> object.
    *
-   * @exception HeadlessException FIXME
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
    */
   public DropTarget (Component c, DropTargetListener dtl)
   {
+    this (c, 0, dtl, true, null);
   }
   
   /**
-   * FIXME
+   * Creates a <code>DropTarget</code> object.
    *
-   * @exception HeadlessException FIXME
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
    */
   public DropTarget (Component c, int i, DropTargetListener dtl)
   {
+    this (c, i, dtl, true, null);
   }
   
   /**
-   * FIXME
+   * Creates a <code>DropTarget</code> object.
    *
-   * @exception HeadlessException FIXME
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
    */
   public DropTarget (Component c, int i, DropTargetListener dtl, boolean b)
   {
+    this (c, i, dtl, b, null);
   }
   
   /**
-   * FIXME
+   * Creates a <code>DropTarget</code> object.
    *
-   * @exception HeadlessException FIXME
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * returns true.
    */
   public DropTarget (Component c, int i, DropTargetListener dtl, boolean b,
-		     FlavorMap fm)
+                     FlavorMap fm)
   {
+    if (GraphicsEnvironment.isHeadless ())
+      throw new HeadlessException ();
+
+    component = c;
+    actions = i;
+    dropTargetListener = dtl;
+    flavorMap = fm;
+    
+    setActive (b);
   }
 
+  /**
+   * Sets the component associated with this drop target object.
+   */
   public void setComponent (Component c)
   {
+    component = c;
   }
 
+  /**
+   * Returns the component associated with this drop target object.
+   */
   public Component getComponent ()
   {
-    return null;
+    return component;
   }
 
+  /**
+   * Sets the default actions.
+   */
   public void setDefaultActions (int ops)
   {
+    actions = ops;
   }
 
+  /**
+   * Returns the default actions.
+   */
   public int getDefaultActions ()
   {
-    return 0;
+    return actions;
   }
 
-  public void setActive(boolean isActive)
+  public void setActive (boolean active)
   {
-    this.isActive = isActive;
+    this.active = active;
   }
 
   public boolean isActive()
   {
-    return this.isActive;
+    return active;
   }
 
   /**
-   * @exception TooManyListenersException FIXME
+   * Adds a new <code>DropTargetListener</code>.
+   * 
+   * @exception TooManyListenersException If there is already a
+   * <code>DropTargetListener</code>.
    */
   public void addDropTargetListener (DropTargetListener dtl)
     throws TooManyListenersException
   {
+    if (dtl != null)
+      throw new TooManyListenersException ();
+    
+    dropTargetListener = dtl;
   }
 
   public void removeDropTargetListener(DropTargetListener dtl)
   {
+    // FIXME: Do we need to do something with dtl ?
+    dropTargetListener = null;
   }
 
   public void dragEnter(DropTargetDragEvent dtde)
@@ -181,11 +244,12 @@ public class DropTarget
 
   public FlavorMap getFlavorMap()
   {
-    return null;
+    return flavorMap;
   }
 
   public void setFlavorMap(FlavorMap fm)
   {
+    flavorMap = fm;
   }
 
   public void addNotify(java.awt.peer.ComponentPeer peer)
@@ -198,18 +262,21 @@ public class DropTarget
 
   public DropTargetContext getDropTargetContext()
   {
-    return null;
+    if (dropTargetContext == null)
+      dropTargetContext = createDropTargetContext ();
+    
+    return dropTargetContext;
   }
 
   protected DropTargetContext createDropTargetContext()
   {
-    return null;
+    return new DropTargetContext (this);
   }
 
   protected DropTarget.DropTargetAutoScroller createDropTargetAutoScroller
                                                        (Component c, Point p)
   {
-    return null;
+    return new DropTarget.DropTargetAutoScroller (c, p);
   }
 
   protected void initializeAutoscrolling(Point p)

@@ -171,7 +171,8 @@ public abstract class DatagramChannel
    * @exception SecurityException If a security manager has been installed and
    * it does not permit datagrams to be sent to the given address.
    */
-  public abstract int send (ByteBuffer src, SocketAddress target) throws IOException;
+  public abstract int send (ByteBuffer src, SocketAddress target)
+    throws IOException;
  
   /**
    * Retrieves the channel's socket.

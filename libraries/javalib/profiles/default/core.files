@@ -1,3 +1,4 @@
+gnu/classpath/Configuration.java
 gnu/java/util/EmptyEnumeration.java
 gnu/regexp/REFilterInputStream.java
 gnu/regexp/REFilterReader.java

@@ -38,45 +38,43 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
+import java.nio.ReadOnlyBufferException;
 
+/**
+ * This is a Heap memory implementation
+ */
 public final class DoubleBufferImpl extends DoubleBuffer
 {
-  private int array_offset;
-  private boolean ro;
+  private boolean readOnly;
   
   public DoubleBufferImpl(int cap, int off, int lim)
   {
+    super (cap, lim, off, 0);
     this.backing_buffer = new double[cap];
-    this.cap = cap;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
   
-  public DoubleBufferImpl(double[] array, int off, int lim)
+  public DoubleBufferImpl(double[] array, int offset, int length)
   {
+    super (array.length, length, offset, 0);
     this.backing_buffer = array;
-    this.cap = array.length;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
 
   public DoubleBufferImpl(DoubleBufferImpl copy)
   {
+    super (copy.capacity (), copy.limit (), copy.position (), 0);
     backing_buffer = copy.backing_buffer;
-    ro = copy.ro;
-    limit(copy.limit());
-    position(copy.position());
-  }
-  
-  void inc_pos(int a)
-  {
-    position(position() + a);
+    readOnly = copy.isReadOnly ();
   }
   
   DoubleBufferImpl (byte[] copy)
   {
+    super (copy.length, copy.length, 0, 0);
     this.backing_buffer = copy != null ? nio_cast (copy) : null;
+    readOnly = false;
   }
 
   private static native byte nio_get_Byte (DoubleBufferImpl b, int index, int limit);
@@ -92,16 +90,14 @@ public final class DoubleBufferImpl extends DoubleBuffer
 
   private static native double[] nio_cast (byte[] copy);
 
-  public boolean isReadOnly()
+  public boolean isReadOnly ()
   {
-    return ro;
+    return readOnly;
   }
 
-  public DoubleBuffer slice()
+  public DoubleBuffer slice ()
   {
-    DoubleBufferImpl A = new DoubleBufferImpl(this);
-    A.array_offset = position();
-    return A;
+    return new DoubleBufferImpl (this);
   }
 
   public DoubleBuffer duplicate()
@@ -111,9 +107,9 @@ public final class DoubleBufferImpl extends DoubleBuffer
 
   public DoubleBuffer asReadOnlyBuffer()
   {
-    DoubleBufferImpl a = new DoubleBufferImpl(this);
-    a.ro = true;
-    return a;
+    DoubleBufferImpl result = new DoubleBufferImpl (this);
+    result.readOnly = true;
+    return result;
   }
 
   public DoubleBuffer compact()
@@ -123,7 +119,7 @@ public final class DoubleBufferImpl extends DoubleBuffer
 
   public boolean isDirect()
   {
-    return backing_buffer != null;
+    return false;
   }
 
   final public double get()
@@ -135,6 +131,9 @@ public final class DoubleBufferImpl extends DoubleBuffer
 
   final public DoubleBuffer put(double b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[position()] = b;
     position(position()+1);
     return this;
@@ -147,7 +146,15 @@ public final class DoubleBufferImpl extends DoubleBuffer
 
   final public DoubleBuffer put(int index, double b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[index] = b;
     return this;
+  }
+  
+  final public ByteOrder order ()
+  {
+    return ByteOrder.BIG_ENDIAN;
   }
 }

@@ -38,47 +38,45 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ReadOnlyBufferException;
 
+/**
+ * This is a Heap memory implementation
+ */
 public final class FloatBufferImpl extends FloatBuffer
 {
-  private int array_offset;
-  private boolean ro;
+  private boolean readOnly;
   
   public FloatBufferImpl(int cap, int off, int lim)
   {
-    this.backing_buffer = new float[cap];
-    this.cap = cap;
-    this.limit(lim);
-    this.position(off);
+    super (cap, lim, off, 0);
+    this.backing_buffer = new float [cap];
+    readOnly = false;
   }
   
-  public FloatBufferImpl(float[] array, int off, int lim)
+  public FloatBufferImpl(float[] array, int offset, int length)
   {
+    super (array.length, length, offset, 0);
     this.backing_buffer = array;
-    this.cap = array.length;
-    this.limit(lim);
-    this.position(off);
+    readOnly = false;
   }
   
   public FloatBufferImpl(FloatBufferImpl copy)
   {
+    super (copy.capacity (), copy.limit (), copy.position (), 0);
     backing_buffer = copy.backing_buffer;
-    ro = copy.ro;
-    limit(copy.limit());
-    position(copy.position());
-  }
-  
-  void inc_pos(int a)
-  {
-    position(position() + a);
+    readOnly = copy.isReadOnly ();
   }
   
   private static native float[] nio_cast (byte[] copy);
   
   FloatBufferImpl (byte[] copy)
   {
+    super (copy.length, copy.length, 0, 0);
     this.backing_buffer = copy != null ? nio_cast  (copy) : null;
+    readOnly = false;
   }
 
   private static native byte nio_get_Byte (FloatBufferImpl b, int index, int limit);
@@ -92,16 +90,14 @@ public final class FloatBufferImpl extends FloatBuffer
     return res;
   }
   
-  public boolean isReadOnly()
+  public boolean isReadOnly ()
   {
-    return ro;
+    return readOnly;
   }
   
   public FloatBuffer slice()
   {
-    FloatBufferImpl A = new FloatBufferImpl(this);
-    A.array_offset = position();
-    return A;
+    return new FloatBufferImpl (this);
   }
   
   public FloatBuffer duplicate()
@@ -111,9 +107,9 @@ public final class FloatBufferImpl extends FloatBuffer
   
   public FloatBuffer asReadOnlyBuffer()
   {
-    FloatBufferImpl a = new FloatBufferImpl(this);
-    a.ro = true;
-    return a;
+    FloatBufferImpl result = new FloatBufferImpl (this);
+    result.readOnly = true;
+    return result;
   }
   
   public FloatBuffer compact()
@@ -123,7 +119,7 @@ public final class FloatBufferImpl extends FloatBuffer
   
   public boolean isDirect()
   {
-    return backing_buffer != null;
+    return false;
   }
   
   final public float get()
@@ -135,6 +131,9 @@ public final class FloatBufferImpl extends FloatBuffer
   
   final public FloatBuffer put(float b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[position()] = b;
     position(position()+1);
     return this;
@@ -147,7 +146,15 @@ public final class FloatBufferImpl extends FloatBuffer
   
   final public FloatBuffer put(int index, float b)
   {
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    
     backing_buffer[index] = b;
     return this;
+  }
+  
+  final public ByteOrder order ()
+  {
+    return ByteOrder.BIG_ENDIAN;
   }
 }

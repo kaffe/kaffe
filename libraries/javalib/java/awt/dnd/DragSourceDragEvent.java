@@ -41,10 +41,16 @@ package java.awt.dnd;
 import gnu.java.awt.EventModifier;
 
 /**
- * STUBBED
+ * @author Michael Koch
+ * @since 1.2
  */
 public class DragSourceDragEvent extends DragSourceEvent
 {
+  /**
+   * Compatible with JDK 1.2+
+   */
+  private static final long serialVersionUID = 481346297933902471L;
+
   private final int dropAction;
   private final int targetActions;
   private final int gestureModifiers;
@@ -89,7 +95,8 @@ public class DragSourceDragEvent extends DragSourceEvent
 
   public int getDropAction()
   {
-    return dropAction & targetActions
-      & ((DragSourceContext) source).getSourceActions();
+    return (dropAction
+            & targetActions
+            & ((DragSourceContext) source).getSourceActions());
   }
 } // class DragSourceDragEvent

@@ -41,12 +41,12 @@ import gnu.java.nio.LongBufferImpl;
 
 public abstract class LongBuffer extends Buffer implements Comparable
 {
-  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   protected long [] backing_buffer;
+  protected int array_offset;
 
   public static LongBuffer allocateDirect(int capacity)
   {
-    return new LongBufferImpl(capacity, 0, capacity);
+    throw new Error ("direct buffers not implemented");
   }
 
   public static LongBuffer allocate(int capacity)
@@ -77,7 +77,13 @@ public abstract class LongBuffer extends Buffer implements Comparable
     return wrap(array, 0, array.length);
   }
 
-  public LongBuffer get(long[] dst, int offset, int length)
+  protected LongBuffer (int capacity, int limit, int position, int mark)
+  {
+    super (capacity, limit, position, mark);
+    array_offset = 0;
+  }
+  
+  public LongBuffer get (long[] dst, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       {
@@ -87,12 +93,12 @@ public abstract class LongBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public LongBuffer get(long[] dst)
+  public LongBuffer get (long[] dst)
   {
     return get(dst, 0, dst.length);
   }
 
-  public LongBuffer put(LongBuffer src)
+  public LongBuffer put (LongBuffer src)
   {
     while (src.hasRemaining())
       put(src.get());
@@ -100,7 +106,7 @@ public abstract class LongBuffer extends Buffer implements Comparable
     return this;
   }
 
-  public LongBuffer put(long[] src, int offset, int length)
+  public LongBuffer put (long[] src, int offset, int length)
   {
     for (int i = offset; i < offset + length; i++)
       put(src[i]);
@@ -115,17 +121,30 @@ public abstract class LongBuffer extends Buffer implements Comparable
 
   public final boolean hasArray()
   {
-    return (backing_buffer != null);
+    return (backing_buffer != null
+            && !isReadOnly ());
   }
 
   public final long[] array()
   {
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
     return backing_buffer;
   }
 
   public final int arrayOffset()
   {
-    return 0;
+    if (backing_buffer == null)
+      throw new UnsupportedOperationException ();
+
+    if (isReadOnly ())
+      throw new ReadOnlyBufferException ();
+    
+    return array_offset;
   }
 
   public int hashCode()
@@ -173,17 +192,7 @@ public abstract class LongBuffer extends Buffer implements Comparable
     return 0;
   }
 
-  public ByteOrder order()
-  {
-    return endian;
-  }
-
-  public final LongBuffer order(ByteOrder bo)
-  {
-    endian = bo;
-    return this;
-  }
-
+  public abstract ByteOrder order();
   public abstract long get();
   public abstract java.nio. LongBuffer put(long b);
   public abstract long get(int index);

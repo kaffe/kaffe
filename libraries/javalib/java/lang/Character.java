@@ -1971,7 +1971,7 @@ public final class Character implements Serializable, Comparable
       {
         // Signedness doesn't matter; 0xffff vs. -1 are both rejected.
         int digit = numValue[attr >> 7];
-        return (digit >= 0 && digit < radix) ? digit : -1;
+        return (digit < radix) ? digit : -1;
       }
     return -1;
   }

@@ -1,7 +1,7 @@
 /* FileHandler.java
    -- a class for publishing log messages to log files
 
-Copyright (C) 2002 Free Software Foundation, Inc.
+Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -247,6 +247,17 @@ public class FileHandler
 
 	 LogManager.getBooleanProperty("java.util.logging.FileHandler.append",
 				       /* default */ false));
+  }
+
+
+  /* FIXME: Javadoc missing. */
+  public FileHandler(String pattern)
+    throws IOException, SecurityException
+  {
+    this(pattern,
+	 /* limit */ 0,
+	 /* count */ 1,
+	 /* append */ false);
   }
 
 

@@ -52,6 +52,9 @@ import java.util.EventObject;
  * @author Mark Wielaard (mark@klomp.org)
  */
 public class PreferenceChangeEvent extends EventObject {
+
+  private static final long serialVersionUID = 793724513368024975L;
+  
     /**
      * The key of the changed entry.
      */
