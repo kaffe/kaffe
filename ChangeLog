@@ -1,3 +1,9 @@
+Wed Mar 24 10:11:41 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/clib/native/Double.c: don't print '+' in front
+	of a positive exponent
+	* test/regression/DoublePrint.java: adjust expected output
+
 Wed Mar 24 09:44:03 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/i386/jit.h, config/m68k/jit.h, config/m68k/netbsd1/jit-md.h
