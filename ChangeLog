@@ -1,5 +1,14 @@
 2005-03-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/config.h.in, configure: Regenerated.
+
+	* config/mips/irix5/config.frag: Added need_stack_end=yes
+
+	* configure.ac: Check for need_stack_end in config.frag and
+	define SIGALTSTACK_NEEDS_END.
+
+2005-03-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/mips/common.h: Disabled atomicity.h
 
 2005-03-22  Guilhem Lavaux  <guilhem@kaffe.org>

@@ -274,6 +274,10 @@ if test x"$known" = x"no" ; then
 	AC_MSG_ERROR(Configuration $Khost_cpu-$Khost_os not supported)
 fi
 
+if test x"$needs_altstack_end_pointer" = x"yes"; then
+	AC_DEFINE(SIGALTSTACK_NEEDS_END, 1, [Defined if sigaltstack needs the stackbase+size pointer instead of stackbase])
+fi
+
 dnl =========================================================================
 
 dnl =========================================================================
