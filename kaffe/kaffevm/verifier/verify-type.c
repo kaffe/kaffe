@@ -86,7 +86,12 @@ Type* TSTRING = &verify_STRING;
 
 static const char* CHARARR_SIG = "[C";
 static Type  verify_CHARARR;
-Type* TCHARARR = &verify_CHARARR;
+static Type* TCHARARR = &verify_CHARARR;
+
+Type* getTCHARARR(void)
+{
+  return TCHARARR;
+}
 
 static const char* BYTEARR_SIG = "[B";
 static Type  verify_BYTEARR;

@@ -456,7 +456,7 @@ printType(const Type* t)
 			dprintf("TNULL");
 		}
 		
-		else if (type == TCHARARR->data.class) {
+		else if (type == getTCHARARR()->data.class) {
 			dprintf("TCHARARR");
 		}
 		else if (type == getTBOOLARR()->data.class) {

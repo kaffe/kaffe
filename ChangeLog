@@ -1,6 +1,20 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TCHARARR): Made static. 
+	(getTCHARARR) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TCHARARR) Removed prototype.
+	(getTCHARARR) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TCHARARR by getTCHARARR.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TBYTEARR): Made static. 
 	(getTBYTEARR) Added.
 

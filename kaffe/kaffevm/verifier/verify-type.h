@@ -105,7 +105,7 @@ extern Type* TWIDE;
 extern Type* getTOBJ(void);
 
 extern Type* TOBJARR;
-extern Type* TCHARARR;
+extern Type* getTCHARARR(void);
 extern Type* getTBYTEARR(void);
 extern Type* getTBOOLARR(void);
 extern Type* getTSHORTARR(void);
