@@ -455,7 +455,7 @@ _SemGet(void* sem, jlong timeout)
 
 	LOCK(lk);
 	if (lk->count == 0) {
-		WAIT(lk, timeout);
+		(void)WAIT(lk, timeout);
 	}
 	if (lk->count == 1) {
 		lk->count = 0;
@@ -479,7 +479,7 @@ _SemPut(void* sem)
 
 	LOCK(lk);
 	assert(lk->count == 0);
-        lk->count++;
+        lk->count = 1;
 	SIGNAL(lk);
 	UNLOCK(lk);
 }
