@@ -154,7 +154,7 @@ public int waitForMemoryAdvice(int level) throws InterruptedException {
 
 native public void runFinalization();
 
-native public void runFinalizersOnExit(boolean value);
+native public static void runFinalizersOnExit(boolean value);
 
 native public long totalMemory();
 
