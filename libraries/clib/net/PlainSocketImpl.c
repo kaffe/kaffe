@@ -84,6 +84,7 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, s
 	struct sockaddr_in addr;
 	size_t alen;
 
+	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
 #endif
@@ -121,6 +122,7 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this, stru
 	int on = 1;
 	size_t alen;
 
+	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
 #endif
@@ -175,7 +177,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	size_t alen;
 	struct sockaddr_in addr;
 
-	alen = sizeof(addr);
+	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
 #endif
@@ -183,6 +185,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	addr.sin_port = htons(unhand(sock)->localport);
 	addr.sin_addr.s_addr = htonl(unhand(unhand(sock)->address)->address);
 
+	alen = sizeof(addr);
 	rc = KACCEPT(unhand(unhand(this)->fd)->fd, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
 	if (rc == EINTR) {
 		SignalError("java.io.InterruptedIOException", 

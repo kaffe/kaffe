@@ -77,9 +77,9 @@ java_net_PlainDatagramSocketImpl_bind(struct Hjava_net_PlainDatagramSocketImpl* 
 	int r;
 	struct sockaddr_in addr;
 	size_t alen;
-	int fd;
+	const int fd = unhand(unhand(this)->fd)->fd;
 
-	fd = unhand(unhand(this)->fd)->fd;
+	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
 #endif
@@ -110,6 +110,7 @@ java_net_PlainDatagramSocketImpl_send(struct Hjava_net_PlainDatagramSocketImpl* 
 	ssize_t bsent;
 	struct sockaddr_in addr;
 
+	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
 #endif
@@ -205,6 +206,7 @@ java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramS
 	case java_net_SocketOptions_IP_MULTICAST_IF:
 #if defined(IP_MULTICAST_IF)
 		addrp = (struct Hjava_net_InetAddress*)arg;
+		memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 		addr.sin_len = sizeof(addr);
 #endif
