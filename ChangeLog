@@ -1,3 +1,14 @@
+Mon Jul 26 18:13:50 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/clib/awt/X/clr.c, evt.c, fnt.c, gra.c, img.c,
+	imggif.c, imgjpeg.c, imgpng.c, tlk.c, toolkit.h, wnd.c: fix
+	build failure when compiling with -DDEBUG; fix some compiler
+	warnings in the process
+	* kaffe/kaffevm/debug.c, debug.h: add missing AWT debug flags
+	* libraries/clib/security/Makefile.am: install java.security
+	* libraries/clib/security/Makefile.in: regen
+	* libraries/javalib/Makefile.am: regen
+
 Mon Jul 26 17:26:37 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* config/config-setjmp.h, kaffe/kaffevm/mem/gc-mem.c,
