@@ -363,6 +363,12 @@
 /* Define to 1 if you have the `sbrk' function. */
 #undef HAVE_SBRK
 
+/* Define to 1 if you have the `sched_get_priority_max' function. */
+#undef HAVE_SCHED_GET_PRIORITY_MAX
+
+/* Define to 1 if you have the `sched_get_priority_min' function. */
+#undef HAVE_SCHED_GET_PRIORITY_MIN
+
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 

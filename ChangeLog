@@ -1,5 +1,16 @@
 2004-03-22  Dalibor Topic <robilad@kaffe.org>
 
+        * configure.in:
+	Check for sched_get_priority_max and
+	sched_get_priority_min. They are unimplemented on
+	OpenBSD, at least.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+2004-03-22  Dalibor Topic <robilad@kaffe.org>
+
         m4/alsa.m4,
         m4/gnu-crypto.m4,
         m4/herrno.m4,

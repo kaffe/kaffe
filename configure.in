@@ -796,6 +796,7 @@ AC_SUBST(SECURITY_LIBS)
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	AC_CHECK_LIBRARY(pthread,pthread_create,VM_LIBS)
+
 	if test $ac_cv_lib_pthread_pthread_create = no; then
 		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
 	fi
@@ -1107,6 +1108,11 @@ AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
 
 AM_ICONV
+
+# sched_get_priority_* functions are not implemented on OpenBSD <= 3.4
+# at least.
+AC_CHECK_FUNCS([sched_get_priority_max])
+AC_CHECK_FUNCS([sched_get_priority_min])
 
 dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])
