@@ -376,7 +376,7 @@ void
 gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* this, struct Hjava_net_SocketImpl* sock)
 {
 	int r;
-	int rc;
+	int rc, rc1;
 	int alen;
 	struct sockaddr_in addr;
 	HArrayOfByte *remote_addr;
@@ -413,6 +413,13 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
+	if (unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd != -1) {
+		rc1 = KSOCKCLOSE(unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd);
+		if (rc1) {
+			SignalError("java.io.IOException", SYS_ERROR(rc1));
+		}
+	}
+
 	unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd = r;
 
 	/* Enter information into socket object */

@@ -1,3 +1,11 @@
+2004-04-23  Ito kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/net/Socket.java: Reverted.
+
+	* libraries/clib/net/PlainSocketImpl.c
+	gnu_java_net_PlainSocketImpl_socketAccept():
+	Close the socket if it has already been created.
+
 2004-04-23  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/i386/gnu/jit-md.h, config/i386/gnu/md.h,
