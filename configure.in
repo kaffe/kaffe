@@ -18,6 +18,7 @@ x/*)
 	abssrcdir=`pwd`/$srcdir
 	;;
 esac
+AC_SUBST(abssrcdir)
 
 dnl Setup version number.
 KVER=$VERSION
@@ -82,7 +83,7 @@ if test x"$with_staticlib" = x"yes" ; then
 	fi
 fi
 
-AC_ARG_WITH(staticbin,[  --with-staticbin        Force the the creation of a static virtual machine binary])
+AC_ARG_WITH(staticbin,[  --with-staticbin        Force the creation of a static virtual machine binary])
 if test x"$with_staticbin" = x"yes" ; then
 	vm_dynamic_binary=no
 	if test x"${with_staticvm+set}" != x"set"; then
@@ -788,12 +789,19 @@ dnl windows headers
 winbase.h windows.h winnt.h winsock.h wintypes.h wtypes.h \
 zlib.h)
 
+dnl needed for ia64
+AC_CHECK_HEADERS(ia64intrin.h)
+
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 
 dnl We need both getrusage and the header containing its decls.
 have_rusage=no
-AC_CHECK_HEADERS(sys/resource.h, AC_CHECK_FUNCS(getrusage, have_rusage=yes))
+have_resource_h=no
+AC_CHECK_HEADERS(sys/resource.h, have_resource_h=yes)
+if test x"$have_resource_h" = x"yes"; then
+   AC_CHECK_FUNCS(getrusage, have_rusage=yes)
+fi
 
 dnl =========================================================================
 dnl Do we build a vm that collects statistics?
@@ -1213,6 +1221,10 @@ AC_CHECK_LIB(
 
 dnl Check for esd
 
+have_esd_h=no
+AC_CHECK_HEADER([esd.h],
+		[have_esd_h=yes],
+		[AC_MSG_RESULT([Warning: Could not find Enlightened Sound Daemon header file])])
 AC_CHECK_LIB(
 	esd,
 	esd_open_sound,
@@ -1246,7 +1258,7 @@ case $with_esd in
 no)
 	;;
 *)
-	if test "$have_esd" = "yes"; then
+	if test "$have_esd" = "yes" && test "$have_esd_h" = "yes"; then
 		ESD_DIR=esd
 	fi
 	;;

@@ -122,6 +122,8 @@ noinst_HEADERS = \
 	thread.h \
 	utf8const.h
 
+$(libkaffevm_la_SOURCES): $(libkaffevm_la_GEN_SRCS)
+
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
 	else :; fi
@@ -135,15 +137,9 @@ stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
 
 CLEANFILES = so_locations
-DISTCLEANFILES = $(libkaffevm_la_GEN_SRCS)
 
 ## This avoids that dependencies produced by `make dist' in a jit
 ## configuration prevents intrp builds.
 jit/icode.h:
 
 include $(top_srcdir)/include/distclean-hack
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done

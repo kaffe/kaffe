@@ -8,7 +8,7 @@
 
 SUBDIRS = $(AWT_DIR)
 
-DIST_SUBDIRS = X qte
+DIST_SUBDIRS = X qt
 
 EXTRA_DIST = \
 	win32/btn.cpp \

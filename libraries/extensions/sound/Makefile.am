@@ -7,3 +7,5 @@
 # of this file. 
 
 SUBDIRS = common $(ALSA_DIR) $(ESD_DIR)
+
+DIST_SUBDIRS = common alsa esd

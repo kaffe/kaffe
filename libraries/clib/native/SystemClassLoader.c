@@ -78,7 +78,8 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 		 * upgrade error to an exception if *this* class wasn't found.
 		 * See discussion in Class.forName()
 		 */
-		if (!strcmp(info.classname, "java.lang.NoClassDefFoundError")) {
+		if ((info.type & KERR_EXCEPTION)
+		    && !strcmp(info.classname, "java.lang.NoClassDefFoundError")) {
 			/*
 			 * However, we don't upgrade if it is a second attempt
 			 * to load a class whose loading has already failed.
@@ -105,11 +106,6 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 						     "%s", info.mess);
 				discardErrorInfo(&info_tmp);
 			}
-		}
-		else if ((info.type & KERR_EXCEPTION)
-			 && !strcmp(info.classname, "java.lang.NoClassDefFoundError"))
-                {
-
 		}
 
 		if (name != buffer) {

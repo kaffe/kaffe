@@ -14,8 +14,4 @@ libtritonusesd_la_SOURCES = \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.c \
 	org_tritonus_lowlevel_esd_EsdStream.c
 
-noinst_HEADERS = \
-       common.h
-
-
 CLEANFILES = so_locations

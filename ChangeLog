@@ -1,3 +1,58 @@
+2003-02-03 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kaffe/tools/jar/Jar.java:
+	(updateFilesInJar) implemented.
+	
+2003-02-02 Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in:
+	Check for ia64intrin.h.
+
+	* libraries/javalib/Makefile.am:
+	Use kaffe's jar tool instead of $ZIP.
+	
+	* libraries/javalib/Makefile.in:
+	regenerated.
+	
+2003-01-02 Timothy S Stack <stack@cs.utah.edu>
+
+	* Makefile.am, 
+	config/Makefile.am,
+	kaffe/kaffevm/Makefile.am,
+	libraries/clib/awt/Makefile.am,
+	libraries/clib/awt/qt/Makefile.am,
+	libraries/extensions/sound/Makefile.am,
+	libraries/extensions/sound/common/Makefile.am,
+	libraries/extensions/sound/esd/Makefile.am:
+	Fixes for 'make dist'
+
+	* test/regression/Makefile.am:
+	Add 'all-am' target that has TestScript as a dependency
+	so it will be regenerated automatically.
+
+	* configure.in:
+	Add AC_SUBST() for abssrcdir (used by javalib make file).  Fix
+	typo in --with-staticbin comment help.  Split checks for
+	resource.h and getrusage to make it work with current automake.
+	Add explicit check for esd.h.
+
+	* developers/autogen.sh:
+	Change autoheader command line to work with the latest
+	version.
+
+	* kaffe/scripts/compat/Makefile.am:
+	Define *_SCRIPTS variables when SUN_COMPAT is not true.
+
+	* libraries/javalib/Makefile.am:
+	Fixes for 'make dist'.  The profiles path should use
+	$(srcdir) so it works when building in a separate
+	directory.  The bootstrap.classlist should use $(abssrcdir)
+	so it works when building in a separate directory (the 'cd
+	$(LIBDIR)' changes the path and invalidates $(srcdir)).
+
+	* libraries/clib/native/SystemClassLoader.c:
+	(kaffe_lang_SystemClassLoader_findClass0) removed redundant code.
+	
 2003-02-02 Dalibor Topic <robilad@yahoo.com>
 
         * FAQ/FAQ.classlibrary-compile: Added information on class library

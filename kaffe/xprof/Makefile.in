@@ -140,6 +140,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+abssrcdir = @abssrcdir@
 java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@

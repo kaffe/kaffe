@@ -136,6 +136,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+abssrcdir = @abssrcdir@
 java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@
@@ -148,6 +149,8 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 SUBDIRS = common $(ALSA_DIR) $(ESD_DIR)
+
+DIST_SUBDIRS = common alsa esd
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -277,7 +280,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-	for subdir in $(SUBDIRS); do \
+	for subdir in $(DIST_SUBDIRS); do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \

@@ -136,6 +136,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+abssrcdir = @abssrcdir@
 java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@
@@ -151,6 +152,9 @@ native_LTLIBRARIES = libtritonuscommon.la
 
 libtritonuscommon_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe|org)_"
 libtritonuscommon_la_SOURCES = common.c
+
+noinst_HEADERS =  	common.h 	debug.h 	HandleFieldHandler.h
+
 
 CLEANFILES = so_locations
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -173,6 +177,8 @@ CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -361,7 +367,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-nativeLTLIBRARIES
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install

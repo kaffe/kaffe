@@ -136,6 +136,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+abssrcdir = @abssrcdir@
 java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@
@@ -148,8 +149,10 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 @USE_JIT_TRUE@ENGINE_GEN_HDRS = jit-md.h
 @USE_JIT_FALSE@ENGINE_GEN_HDRS = 
+@ENABLE_XPROF_TRUE@XPROF_HDRS = xprofile-md.h
+@ENABLE_XPROF_FALSE@XPROF_HDRS = 
 
-GEN_HDRS = md.h xprofile-md.h $(ENGINE_GEN_HDRS)
+GEN_HDRS = md.h $(XPROF_HDRS) $(ENGINE_GEN_HDRS)
 
 DISTCLEANFILES = $(GEN_HDRS)
 

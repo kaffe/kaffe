@@ -316,6 +316,9 @@
 /* Define if you have the <gmp.h> header file.  */
 #undef HAVE_GMP_H
 
+/* Define if you have the <ia64intrin.h> header file.  */
+#undef HAVE_IA64INTRIN_H
+
 /* Define if you have the <iconv.h> header file.  */
 #undef HAVE_ICONV_H
 

@@ -12,7 +12,13 @@ else
 ENGINE_GEN_HDRS =
 endif
 
-GEN_HDRS = md.h xprofile-md.h $(ENGINE_GEN_HDRS)
+if ENABLE_XPROF
+XPROF_HDRS = xprofile-md.h
+else
+XPROF_HDRS =
+endif
+
+GEN_HDRS = md.h $(XPROF_HDRS) $(ENGINE_GEN_HDRS)
 
 DISTCLEANFILES = $(GEN_HDRS)
 

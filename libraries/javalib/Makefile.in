@@ -140,6 +140,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+abssrcdir = @abssrcdir@
 java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@
@@ -152,6 +153,10 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 SRCDIRS = gnu java javax kaffe org
+
+JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
+KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
+CLASSPATH = $(LIBDIR):Klasses.jar.bootstrap
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
@@ -443,7 +448,7 @@ serialized_converters =  	kaffe/io/ByteToChar8859_2.ser 	kaffe/io/ByteToChar8859
 gnu_regexp_message_bundles =  	gnu/regexp/MessagesBundle_fr.properties 	gnu/regexp/MessagesBundle.properties
 
 
-EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS)         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	$(gnu_regexp_message_bundles) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
+EXTRA_DIST =  	Klasses.jar.bootstrap 	$(jrelib_DATA) 	$(toolslib_DATA) 	META-INF 	gnu 	java 	javax 	kaffe 	org 	pure-java 	essential.files 	profiles         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	$(gnu_regexp_message_bundles) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
 
 
 LIBDIR = lib
@@ -524,95 +529,8 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/javalib/Makefile
-	$(mkinstalldirs) $(distdir)/gnu/java/awt $(distdir)/gnu/java/nio \
-	   $(distdir)/gnu/java/nio/charset $(distdir)/gnu/java/util \
-	   $(distdir)/gnu/java/util/prefs $(distdir)/gnu/javax/rmi \
-	   $(distdir)/gnu/javax/rmi/CORBA $(distdir)/gnu/regexp \
-	   $(distdir)/gnu/xml/aelfred2 $(distdir)/gnu/xml/dom \
-	   $(distdir)/gnu/xml/pipeline $(distdir)/gnu/xml/util \
-	   $(distdir)/java/applet $(distdir)/java/awt \
-	   $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer \
-	   $(distdir)/java/awt/dnd $(distdir)/java/awt/dnd/peer \
-	   $(distdir)/java/awt/event $(distdir)/java/awt/font \
-	   $(distdir)/java/awt/geom $(distdir)/java/awt/im \
-	   $(distdir)/java/awt/image \
-	   $(distdir)/java/awt/image/renderable \
-	   $(distdir)/java/awt/peer $(distdir)/java/awt/print \
-	   $(distdir)/java/awt/widgets $(distdir)/java/awt/win32 \
-	   $(distdir)/java/beans $(distdir)/java/beans/beancontext \
-	   $(distdir)/java/io $(distdir)/java/lang \
-	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
-	   $(distdir)/java/math $(distdir)/java/net $(distdir)/java/nio \
-	   $(distdir)/java/nio/channels \
-	   $(distdir)/java/nio/channels/spi $(distdir)/java/nio/charset \
-	   $(distdir)/java/nio/charset/spi $(distdir)/java/rmi \
-	   $(distdir)/java/rmi/activation $(distdir)/java/rmi/dgc \
-	   $(distdir)/java/rmi/registry $(distdir)/java/rmi/server \
-	   $(distdir)/java/security $(distdir)/java/security/acl \
-	   $(distdir)/java/security/cert \
-	   $(distdir)/java/security/interfaces \
-	   $(distdir)/java/security/spec $(distdir)/java/sql \
-	   $(distdir)/java/text $(distdir)/java/util \
-	   $(distdir)/java/util/jar $(distdir)/java/util/logging \
-	   $(distdir)/java/util/mime $(distdir)/java/util/prefs \
-	   $(distdir)/java/util/regex $(distdir)/java/util/zip \
-	   $(distdir)/javax/accessibility $(distdir)/javax/naming \
-	   $(distdir)/javax/naming/directory \
-	   $(distdir)/javax/naming/event $(distdir)/javax/naming/ldap \
-	   $(distdir)/javax/naming/spi $(distdir)/javax/rmi \
-	   $(distdir)/javax/rmi/CORBA $(distdir)/javax/sound/midi \
-	   $(distdir)/javax/sound/midi/spi \
-	   $(distdir)/javax/sound/sampled \
-	   $(distdir)/javax/sound/sampled/spi $(distdir)/javax/sql \
-	   $(distdir)/javax/swing/text $(distdir)/javax/transaction \
-	   $(distdir)/javax/transaction/xa $(distdir)/javax/xml/parsers \
-	   $(distdir)/javax/xml/transform \
-	   $(distdir)/javax/xml/transform/dom \
-	   $(distdir)/javax/xml/transform/sax \
-	   $(distdir)/javax/xml/transform/stream \
-	   $(distdir)/kaffe/applet $(distdir)/kaffe/awt \
-	   $(distdir)/kaffe/beans/editors $(distdir)/kaffe/io \
-	   $(distdir)/kaffe/jar $(distdir)/kaffe/lang \
-	   $(distdir)/kaffe/management $(distdir)/kaffe/net \
-	   $(distdir)/kaffe/net/www/protocol \
-	   $(distdir)/kaffe/net/www/protocol/file \
-	   $(distdir)/kaffe/net/www/protocol/ftp \
-	   $(distdir)/kaffe/net/www/protocol/http \
-	   $(distdir)/kaffe/net/www/protocol/jar \
-	   $(distdir)/kaffe/net/www/protocol/system \
-	   $(distdir)/kaffe/rmi/dgc $(distdir)/kaffe/rmi/registry \
-	   $(distdir)/kaffe/rmi/rmic $(distdir)/kaffe/rmi/server \
-	   $(distdir)/kaffe/security $(distdir)/kaffe/security/provider \
-	   $(distdir)/kaffe/text/collator \
-	   $(distdir)/kaffe/text/dateformat \
-	   $(distdir)/kaffe/text/numberformat \
-	   $(distdir)/kaffe/tools/compiler $(distdir)/kaffe/tools/jar \
-	   $(distdir)/kaffe/tools/serialver $(distdir)/kaffe/util \
-	   $(distdir)/kaffe/util/locale $(distdir)/kaffe/util/log \
-	   $(distdir)/kaffe/util/zip $(distdir)/org/tritonus/core \
-	   $(distdir)/org/tritonus/lowlevel/alsa \
-	   $(distdir)/org/tritonus/lowlevel/esd \
-	   $(distdir)/org/tritonus/midi/device/alsa \
-	   $(distdir)/org/tritonus/midi/file \
-	   $(distdir)/org/tritonus/sampled/convert \
-	   $(distdir)/org/tritonus/sampled/file \
-	   $(distdir)/org/tritonus/sampled/mixer/alsa \
-	   $(distdir)/org/tritonus/sampled/mixer/esd \
-	   $(distdir)/org/tritonus/share \
-	   $(distdir)/org/tritonus/share/midi \
-	   $(distdir)/org/tritonus/share/sampled \
-	   $(distdir)/org/tritonus/share/sampled/convert \
-	   $(distdir)/org/tritonus/share/sampled/file \
-	   $(distdir)/org/tritonus/share/sampled/mixer \
-	   $(distdir)/org/w3c/dom $(distdir)/org/w3c/dom/css \
-	   $(distdir)/org/w3c/dom/events $(distdir)/org/w3c/dom/html \
-	   $(distdir)/org/w3c/dom/ranges \
-	   $(distdir)/org/w3c/dom/stylesheets \
-	   $(distdir)/org/w3c/dom/traversal \
-	   $(distdir)/org/w3c/dom/views $(distdir)/org/xml/sax \
-	   $(distdir)/org/xml/sax/ext $(distdir)/org/xml/sax/helpers \
-	   $(distdir)/pure-java/math/gnu/java/math \
-	   $(distdir)/pure-java/math/java/math
+	$(mkinstalldirs) $(distdir)/gnu/regexp $(distdir)/java/awt/win32 \
+	   $(distdir)/kaffe/io $(distdir)/kaffe/lang
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -623,6 +541,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
 info-am:
 info: info-am
 dvi-am:
@@ -687,6 +606,10 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name *~`
+
 clean-local:
 	-rm -rf $(LIBDIR) rt.jar
 
@@ -700,7 +623,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
 	$(SHELL) $(rebuildLib) $(@java_math_SRCS@)
-	for i in `cat profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
+	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
@@ -708,7 +631,7 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
-	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(srcdir)/bootstrap.classlist` \
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist` \
 	 kaffe/lang/unicode.idx \
 	 kaffe/lang/unicode.tbl \
 	) > $(srcdir)/Klasses.jar.bootstrap
@@ -723,8 +646,8 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
-	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
-	$(ZIP) -r rt.jar $(srcdir)/META-INF
+	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
+	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -uvf rt.jar $(srcdir)/META-INF
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

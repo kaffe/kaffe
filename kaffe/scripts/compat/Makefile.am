@@ -9,6 +9,9 @@
 if SUN_COMPAT
 jrebin_SCRIPTS = java
 bin_SCRIPTS = appletviewer javac javadoc
+else
+jrebin_SCRIPTS=
+bin_SCRIPTS=
 endif
 
 install-exec-local:

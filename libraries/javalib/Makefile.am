@@ -12,6 +12,11 @@
 
 SRCDIRS = gnu java javax kaffe org
 
+## taken from top level Makefile.am
+JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
+KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
+CLASSPATH=$(LIBDIR):Klasses.jar.bootstrap
+
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
@@ -2201,7 +2206,19 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle_fr.properties \
 	gnu/regexp/MessagesBundle.properties
 
-EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
+EXTRA_DIST = \
+	Klasses.jar.bootstrap \
+	$(jrelib_DATA) \
+	$(toolslib_DATA) \
+	META-INF \
+	gnu \
+	java \
+	javax \
+	kaffe \
+	org \
+	pure-java \
+	essential.files \
+	profiles \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -2210,6 +2227,10 @@ EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
 	kaffe/io/CharToByteEUC_JP.tbl \
 	kaffe/lang/unicode.idx \
 	kaffe/lang/unicode.tbl
+
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name *~`
 
 LIBDIR = lib
 
@@ -2229,7 +2250,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
 	$(SHELL) $(rebuildLib) $(@java_math_SRCS@)
-	for i in `cat profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
+	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
@@ -2237,7 +2258,7 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
-	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(srcdir)/bootstrap.classlist` \
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist` \
 	 kaffe/lang/unicode.idx \
 	 kaffe/lang/unicode.tbl \
 	) > $(srcdir)/Klasses.jar.bootstrap
@@ -2252,8 +2273,8 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
-	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
-	$(ZIP) -r rt.jar $(srcdir)/META-INF
+	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
+	CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar -uvf rt.jar $(srcdir)/META-INF
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

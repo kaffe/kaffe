@@ -19,6 +19,7 @@ import java.io.*;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
 import java.util.Date;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -323,8 +324,9 @@ public class Jar {
 		if (! archive_file.exists()) {
 		    System.out.println("archive \"" +
 				       archive_file.getPath() + "\" does not exist");
+		    System.out.flush();
+		    exit(1);
 		}
-		exit(1);
 	    }
 
 	    break;
@@ -837,15 +839,144 @@ public class Jar {
     void updateFilesInJar(String[] shortnames, String[] longnames)
 	throws IOException
     {
-	// How can an existing file be updated without just reading
-	// and writing a new file ???
+	    // TODO: Handle the Manifest argument.
 
-	throw new RuntimeException("not implemented yet");
+	    // create the jar output stream in memory.
+	    // rewrite not updated files into jar output stream.
+	    // write updated and fresh files into jar output stream.
+	    // write memory contents of jar outpur stream to previous
+	    // jar file.
 
+	    ZipFile zf = new ZipFile(archive);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream((int) new File(archive).length());
+	    ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(baos));
+	    Enumeration entries = zf.entries();
+	    
+	    //final boolean debug = true;
+
+	    if (debug) {
+		    System.out.println("opening archive \"" + archive + "\"");
+	    }
+	    
+	    try {
+		    while (entries.hasMoreElements()) { 
+			    // The ZIP file spec allows the entry data to be specified after the
+			    // compressed data for that entry. This means entry.getSize() can be 0.
+			    // A simple hack-around this is to mark the input stream with a
+			    // sufficient look ahead buffer (512 k in this case), get the next entry
+			    // and reset. This of course only works, if the files on the zip input stream
+
+			    ZipEntry entry = (ZipEntry) entries.nextElement();
+
+			    long size = entry.getSize();
+
+			    // see if the current ZipEntry's name equals 
+			    // the file we want to extract. If equal then
+			    // print the name of the file to stdout.
+			    
+			    String entry_name = entry.getName();
+			    boolean match = (shortnames == null);
+			    String longname = entry_name;
+			    
+			    if (! match) {
+				    if (debug) {
+					    System.out.println("looking for match for \"" +
+							       entry_name + "\"");
+				    }
+	    
+				    for (int i = 0; i < shortnames.length ; i++) {
+					    if (entry_name.equals(shortnames[i])) {
+						    match = true;
+						    longname = longnames[i];
+					    }
+				    }
+			    }
+			    
+			    if (match) {
+				    if (debug) {
+					    System.out.println("found match for \"" +
+							       entry_name + "\"");
+				    }
+				    
+				    // skip matching entries, removing them from the
+				    // output stream. So entries that need to be 
+				    // updated don't appear on the stream twice.
+				    continue;
+			    }
+			    
+			    ZipEntry new_entry = new ZipEntry(entry_name);
+			    
+			    // Copy values of fields over from original entry
+			    // except for compressedSize, which can change
+			    // depending on the zip compression implementation.
+			    
+			    new_entry.setComment(entry.getComment());
+			    new_entry.setExtra(entry.getExtra());
+			    new_entry.setMethod(entry.getMethod());
+			    new_entry.setTime(entry.getTime());
+			    new_entry.setSize(entry.getSize());
+
+			    // Directories have a CRC of 0
+			    if (size == 0) {
+				    new_entry.setCrc(0);
+			    }
+	  
+			    // write the entry out into jar output stream
+			    zos.putNextEntry(new_entry);
+
+			    InputStream in = zf.getInputStream(entry);
+
+			    try {
+				    readwriteStreams(in, zos);
+			    } finally {
+				    in.close();
+			    }
+
+			    zos.closeEntry();
+		    }
+
+		    // add the updated entries
+
+		    for (int i=0; i < shortnames.length ; i++) {
+			    
+			    XPFile infile = new XPFile(longnames[i]);
+			    
+			    if (infile.isFile()) {
+				    // add a regular file to the archive
+				    addEntry(zos, shortnames[i], infile);
+			    } else {
+				    // add a directory and its contents to the archive
+				    addEntryDir(zos, shortnames[i], infile);
+			    }
+		    }
+
+		    zos.close();
+
+		    // get the output stream
+		    OutputStream os;
+		    if (archive == null) {
+			    // use stdout
+			    os = System.out;
+		    }
+		    else {
+			    // update the archive file
+			    os = new XPFileOutputStream(archive);
+		    }
+		    
+		    // write the contents of the updated zip file
+		    try {
+			    os.write(baos.toByteArray(), 0, baos.size());
+		    }
+		    finally {
+			    os.close();
+		    }		    
+	    }
+	    finally {
+		    //		    zos.close();
+	    }
+	    
     }
-
-
-
+  
     void createJar(String[] shortnames, String[] longnames)
 	throws IOException
     {
@@ -1380,7 +1511,7 @@ public class Jar {
 
     // Size of read write buffers we will use
 
-    private static final int BUFFER_SIZE = 8 * 1024;
+    private static final int BUFFER_SIZE = 128 * 1024;
 
     // The actual read write buffer
 
