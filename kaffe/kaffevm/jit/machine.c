@@ -206,11 +206,8 @@ translate(Method* meth, errorInfo *einfo)
 
 	static Method* jitting = 0;	/* DEBUG */
 
-	/* lock class to protect the method.  Even though meth->class
-	   is a Java Object, this lock is not in the Java abstraction
-	   layer; it is just a detail of implementation, so we must
-	   use lockMutex instead of lockObject.  */
-	lockMutex(&meth->class->head);
+	lockClass(meth->class);
+
 	/* Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
@@ -427,7 +424,7 @@ done2:
 	stopTiming(&jit_time);
 	leaveTranslator();
 done3:
-	unlockMutex(&meth->class->head);
+	unlockClass(meth->class);
 	return (success);
 }
 
@@ -522,15 +519,12 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	bytecode_processed += meth->c.bcode.codelen;
 	codeperbytecode = code_generated / bytecode_processed;
 
-	/* We must free the trampoline for <clinit> methods of interfaces 
-	 * before overwriting it.
-	 */
-	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
-		/* Workaround for KFREE() ? : bug on gcc 2.7.2 */
-		void *nc = METHOD_NATIVECODE(meth);
-		KFREE(nc);
-	}
+	/* don't forget to free the trampoline before overwriting it */ 
+	gc_free(METHOD_NATIVECODE(meth));
+
+	/* install the jitted code */
 	SET_METHOD_JITCODE(meth, code->code);
+
 	/* Free bytecode before replacing it with native code */
 	if (meth->c.bcode.code != 0) {
 		KFREE(meth->c.bcode.code);

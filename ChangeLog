@@ -1,3 +1,17 @@
+2003-06-28  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/jit/machine.c:
+	(translate) use lockClass to guard translation so it doesn't
+	interfere with static synchronized methods
+	(installMethodCode) free the trampoline before overwriting it
+
+	* kaffe/kaffevm/jit3/machine.c:
+	(installMethodCode) free the trampoline before overwriting it
+
+	* kaffe/kaffevm/soft.c:
+	(soft_fixup_trampoline) use COMPARE_AND_EXCHANGE/ATOMIC_EXCHANGE
+	to update the trampoline; free the trampoline if necessary
+
 2003-06-27  Rob Gonzalez <rob@kaffe.org>
 
 	The following files were updated to provide additional macro

@@ -584,22 +584,29 @@ DBG(MOREJIT,
 		}
 	}
 
-	/* Update the origin of this trampoline --- this could be a
-	 * dispatch table, interface dispatch table, or a gcj trampoline
-	 *
-	 * This is rather tricky.  We may jump through the same trampoline
-	 * twice.  For instance, class A refers to Double.longBitsToDouble,
-	 * but Double.<clinit> also jumps through the same trampoline
-	 * before it is patched.
+	/*
+	 * Update the origin of the trampoline and free it if necessary. 
+	 * Another thread might have jumped through the same trampoline
+	 * while we were translating the method, so we have to make this
+	 * atomic.
 	 */
-	jthread_spinon(0);
-	if (*where != *(void**)PMETHOD_NATIVECODE(meth)) {
-		*where = METHOD_NATIVECODE(meth);
-		jthread_spinoff(0);
-		KFREE(tramp);
-	} else {
-		jthread_spinoff(0);
+#if defined(COMPARE_AND_EXCHANGE)
+	if (COMPARE_AND_EXCHANGE(where, tramp, METHOD_NATIVECODE(meth))) {
+		gc_free(tramp);
 	}
+#elif defined(ATOMIC_EXCHANGE)
+	{
+		void *tmp = METHOD_NATIVECODE(meth); 
+
+		ATOMIC_EXCHANGE(where, tmp);
+
+		if (tmp == tramp) {
+			gc_free(tramp);
+		}
+	}
+#else
+#error "You have to define either COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE"
+#endif
 
 #if 0
 	if (METHOD_PRE_COMPILED(meth)) {

@@ -512,6 +512,10 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 		codeperbytecode = code_generated / bytecode_processed;
 	}
 	//GC_WRITE(meth, code->mem);
+
+	/* free the trampoline before setting the native code */
+	gc_free (METHOD_NATIVECODE(meth));
+	
 	SET_METHOD_JITCODE(meth, code->code);
 	if( meth->c.bcode.code )
 		gc_free(meth->c.bcode.code);
