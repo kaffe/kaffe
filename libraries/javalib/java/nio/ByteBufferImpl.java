@@ -130,12 +130,19 @@ final class ByteBufferImpl extends ByteBuffer
 
   /**
    * Relative get method. Reads the next <code>byte</code> from the buffer.
+   *
+   * @exception BufferUnderflowException If there is no next byte to read
    */
   public byte get ()
   {
-    byte result = backing_buffer [position () + array_offset];
-    position (position () + 1);
-    return result;
+    try {
+	byte result = backing_buffer [position () + array_offset];
+    	position (position () + 1);
+    	return result;
+    }
+    catch (ArrayIndexOutOfBoundsException e) {
+	throw new BufferUnderflowException();
+    }
   }
   
   /**
