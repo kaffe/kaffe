@@ -43,5 +43,14 @@ to dlopen them.
 
 
 You may notice that, on some platforms, libtool compiles each file
-that may become part of a library twice.  It does so because, if a
-library is linked statically,
+that may become part of a library twice.  It does so because a file
+must be compiled with PIC (position independent code) in order to
+become part of a shared library, but this sometimes imposes some
+overhead, and libtool believes that a static library shouldn't impose
+this overhead.  Therefore, libtool uses an object file with PIC to
+build a shared library, and one without PIC for static libraries.
+
+If you do use static libraries but you don't care about this extra
+overhead, you may use the flag --disable-static at configure time.
+Don't use --disable-shared because this won't be handle correctly yet,
+use --with-staticlib instead.

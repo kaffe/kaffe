@@ -1,3 +1,8 @@
+Sun Jan 10 19:39:55 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.automake: update
+	* FAQ/FAQ.libtool: update; notes about --disable-{static,shared}
+
 Sun Jan 10 18:59:57 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config.guess, config.sub: updated from autoconf
