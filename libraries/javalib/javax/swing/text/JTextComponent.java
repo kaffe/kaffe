@@ -1258,7 +1258,6 @@ public abstract class JTextComponent extends JComponent
     catch (BadLocationException e)
       {
 	// This should never happen.
-	System.out.println("Michael: JTextComponent.replaceSelection: Error");
       }
   }
 
