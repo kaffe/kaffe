@@ -1,3 +1,19 @@
+2004-10-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* developers/patch-libtool-openbsd33.diff:
+	Fix for litbool on openbsd 3.3.
+
+	Patch by: Gary V. Vaughan  <gary@gnu.org>
+
+	Reported by: Riccardo Mottola <rmottola@users.sf.net>
+
+	* configure,
+	developers/autogen.sh,
+	libltdl/acinclude.m4,
+	libltdl/configure,
+	m4/libtool.m4:
+	Regenerated.
+
 2004-10-07  Noa Resare  <noa@resare.com>
 
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMainThread.c:
