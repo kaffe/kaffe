@@ -1,3 +1,10 @@
+Sat Mar  6 16:57:53 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/OutputStreamWriter.java: buffer output 
+	* libraries/javalib/java/io/InterruptedIOException.java: add
+	missing public field "bytesTransferred"
+	* libraries/javalib/java/io/PrintStream.java: rewrite
+
 Sat Mar  6 17:14:00 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libltdl/ltdl.c: update from libtool; use LAZY dlopening where
