@@ -1,3 +1,9 @@
+Fri Oct 23 12:52:05 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/config.alias: added ultrix4 alias
+	config/mips/ultrix4/: Make.frag, md.[ch], config.frag new files for
+	(currently) incomplete MIPS Ultrix4 port.
+
 Fri Oct 23 12:28:47 1998  Dirk Grunwald <grunwald@pa.dec.com>
 
 	* config/alpha/common.h: fixes for alpha port.
