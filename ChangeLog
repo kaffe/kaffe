@@ -1,3 +1,9 @@
+2003-04-24 Kapil Vaswani <kapil@csa.iisc.ernet.in>
+
+	* kaffe/kaffevm/external.c:
+	(loadNativeLibrary2) Fixed compilation problems on alpha-osf1 by
+	using an unsafe replacement for snprintf if it can't be found.
+
 2003-04-24 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am:

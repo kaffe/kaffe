@@ -265,9 +265,15 @@ DBG(NATIVELIB,
 					  strstr(err, "annot open")) )
 				{
                                 char *last_sep = strrchr (path, file_separator[0]);
-
-                                snprintf (errbuf, errsiz, "%s: not found", 
+#ifdef HAVE_SNPRINTF
+                                snprintf (errbuf, errsiz, "%s: not found",
                                           last_sep==NULL?path:last_sep+1);
+#else
+                                /* possible buffer overflow problem */
+                                if(errbuf != 0)
+                                    sprintf (errbuf, "%s: not found",
+                                          last_sep==NULL?path:last_sep+1);
+#endif
 				}
 				else
 				{
