@@ -5073,18 +5073,16 @@ EXTRA_DIST = \
 	META-INF \
 	all.files \
 	$(OMITTED_PACKAGES_SRCS) \
-	$(serialized_converters) \
-	$(gnu_regexp_message_bundles) \
-	$(gnu_getopt_message_bundles) \
-	$(installed_properties) \
-	com gnu java javax kaffe org
+	$(installed_properties)
 
 LIBDIR = lib
 
 dist-hook:
+	mkdir -p $(distdir)
+	cp -dfR $(srcdir)/com $(srcdir)/gnu $(srcdir)/java $(srcdir)/javax $(srcdir)/org $(srcdir)/kaffe $(distdir)
 	rm -rf `find $(distdir) -name CVS`
 	rm -rf `find $(distdir) -name *~`
-	rm $(distdir)/gnu/classpath/Configuration.java
+	rm -f  $(distdir)/gnu/classpath/Configuration.java
 
 clean-local:
 	rm -rf $(LIBDIR) rt.jar
