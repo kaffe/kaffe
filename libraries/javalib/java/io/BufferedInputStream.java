@@ -261,6 +261,9 @@ public class BufferedInputStream extends FilterInputStream
     if (off < 0 || len < 0 || b.length - off < len)
       throw new IndexOutOfBoundsException();
 
+    if (len == 0)
+      return 0;
+
     if (pos >= count && !refill())
       return -1;		// No bytes were read before EOF.
 
