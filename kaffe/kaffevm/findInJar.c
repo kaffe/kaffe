@@ -30,6 +30,7 @@
 #include "baseClasses.h"
 #include "external.h"
 #include "jar.h"
+#include "jsyscall.h"
 
 #define	MAXBUF		256
 #define	MAXPATHELEM	16
@@ -204,7 +205,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
 			strcat(buf, DIRSEP);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
-			fp = open(buf, O_RDONLY|O_BINARY);
+			fp = open(buf, O_RDONLY|O_BINARY, 0);
 			if (fp < 0) {
 				break;
 			}
@@ -396,7 +397,7 @@ getClasspathType(char* path)
 		return (CP_DIR);
 	}
 
-	h = open(path, O_RDONLY);
+	h = open(path, O_RDONLY, 0);
 	if (h < 0) {
 		return (CP_INVALID);
 	}
