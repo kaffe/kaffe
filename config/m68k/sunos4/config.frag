@@ -7,12 +7,6 @@ PIC=-fPIC
 LIBSHARE=-Bdynamic
 LIBEXT=.so
 if [ "$cross_compiling" = yes ]; then
-# if we use cross environment, set tools properly
-  ac_cv_prog_AR=${ac_cv_prog_AR='m68k-sun-sunos4.1.1-ar -r'}
-# CC should be set before invoking configure, rather than here.
-# ac_cv_prog_CC=${ac_cv_prog_CC='m68k-sun-sunos4.1.1-gcc'}
-  ac_cv_prog_CPP=${ac_cv_prog_CPP='m68k-sun-sunos4.1.1-gcc -E'}
-  ac_cv_prog_RANLIB=${ac_cv_prog_RANLIB='m68k-sun-sunos4.1.1-ranlib'}
 # if we use cross environment, following values may not be detected.
   ac_cv_alignmentof_voidp=${ac_cv_alignmentof_voidp='2'}
   ac_cv_c_bigendian=${ac_cv_c_bigendian='yes'}

@@ -1,5 +1,5 @@
 /*
- * m68k/netbsd/md.c
+ * m68k/netbsd1/md.c
  * netbsd specific functions.
  *
  * Copyright (c) 1996 Matthias Hopf <mshopf@informatik.uni-erlangen.de>

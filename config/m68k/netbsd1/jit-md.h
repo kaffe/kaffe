@@ -38,7 +38,7 @@
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\
 	do {								\
-		(f).retfp = (uintp)__builtin_frame_address(1);		\
+		(f).retbp = (uintp)__builtin_frame_address(1);		\
 		(f).retpc = (uintp)(c)->sc_pc;				\
 	} while (0)
 
