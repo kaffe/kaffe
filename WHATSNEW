@@ -14,6 +14,8 @@ executable (fr, zh_TW).
 * Verifier moved to its own directory.
 * JNI upgrades to 1.2
 * KJC fixes.
+* Added GNU EmbbededWindow extension from GNU Classpath.
+  * gcjwebplugin is known to work with the extension.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------

@@ -53,8 +53,8 @@ Currently you have the choice between:
 * --with-awt=qt
 
   a Qt based AWT backend. It uses Trolltech's cross-platform graphical
-  library. It works with Qt 3 and Qt 2, embedded or x11 version. It
-  should also work with Qtopia. 
+  library. It works with Qt 3 and Qt 2, Qt/Embedded or Qt/X11 version. 
+  It should also work with Qtopia. 
 
   It may work with other versions of Qt 3 or Qt 2 (Win32, OS X), but
   it has not been tested in such configurations. If you can test it in
@@ -76,7 +76,7 @@ Currently you have the choice between:
   You also have to make sure the moc compiler is in your $PATH. It can
   usually be found in the bin directory of your Qt installation. If
   you can not find it, you need to install the developer version of the
-  Qt libraries. How to do that is system dependant, on Linux you may
+  Qt libraries. How to do that is system dependent, on Linux you may
   have to get a libqt3-developer package for your distribution, or
   compile Qt from scratch.
 
@@ -86,7 +86,7 @@ Currently you have the choice between:
   Linux, that means you may have to add the lib directory to
   LD_LIBRARY_PATH.
 
-  The Qt based AWT backend has been written by Murphy Chen and Ken-Hao
+  The initial Qt based AWT backend was written by Murphy Chen and Ken-Hao
   Liu from Dialogue Technologies, Inc.
 
   More information on Qt is available from http://www.trolltech.com.
@@ -140,7 +140,15 @@ Troubleshooting
     found by the linker. Putting QTDIR/lib in LD_LIBRARY_PATH might
     help.
 
-  * Qt-embedded AWT doesn't work in console
+  * Qt AWT backend can't show GIF images
+
+    Currently, Qt AWT backend handles all images routines via Qt
+    toolkit, and this behavior is totolly different to X AWT backend.
+    The GIF support is disabled by Qt's default configuration, and
+    you need to reconfigure to enable the feature if you would like
+    to let Qt AWT backend support it.
+
+  * Qt/Embedded AWT doesn't work in console
 
     You need to redirect the stdout and stderr streams so that they
     don't interfere with the framebuffer. The Qt based AWT
@@ -219,5 +227,5 @@ If you want to contribute to kaffe's AWT developement, you could
   fastest AWT implementation would use the native toolkit.
 
   Or go the other way around, and write an AWT implementation for a
-  cross platform graphical toolkit, like wxWindows, or SDL, bringing
+  cross platform graphical toolkit, like wxWidgets, or SDL, bringing
   AWT to platforms where no Qt or X11 are available.

@@ -1,5 +1,13 @@
 2004-07-10  Jim Huang  <jserv@kaffe.org>
 
+	* FAQ/FAQ.awt:
+	Update some information about Qt AWT backend.
+	
+	* WHATSNEW:
+	Add new entry for gcjwebplugin
+
+2004-07-10  Jim Huang  <jserv@kaffe.org>
+
 	* libraries/clib/awt/qt/imggif.cc,
 	libraries/clib/awt/qt/imgjpeg.cc,
 	libraries/clib/awt/qt/imgpng.cc:
