@@ -52,4 +52,6 @@
 	ret;					\
 })
 
+#define   ALIGNMENT_OF_SIZE(S)    ((S) < 4 ? (S) : 4)
+
 #endif

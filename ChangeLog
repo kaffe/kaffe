@@ -1,5 +1,9 @@
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/powerpc/common.h: Define ALIGNMENT_OF_SIZE.
+
+2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* po/fr.po: Fixed typos.
 
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
