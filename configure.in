@@ -6,6 +6,17 @@ KVER=1.00
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
 
+dnl =========================================================================
+dnl Lee Iverson  <leei@Canada.AI.SRI.COM> says:
+dnl
+dnl For building shared libraries.  'gcc -shared' may pass extra argumets
+dnl to ld that are necessary to link a shared library.  For example, on
+dnl the SGI machines we need specify 'ld -n32' and also include libgcc.a
+dnl in the shared library link in order to ensure that it is properly
+dnl closed.
+dnl -------------------------------------------------------------------------
+if test "$GCC" = "yes"; then LD="$CC"; fi
+
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
 
@@ -403,8 +414,14 @@ dnl Check libraries for native library.
 dnl None required.
 
 dnl Check for libraries for net library.
-AC_CHECK_LIBRARY(nsl,dial,NET_LIBRARIES)
-AC_CHECK_LIBRARY(socket,socket,NET_LIBRARIES)
+AC_CHECK_FUNC(gethostbyname)
+if test $ac_cv_func_gethostbyname = no; then
+      AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBRARIES)
+fi
+AC_CHECK_FUNC(connect)
+if test $ac_cv_func_connect = no; then
+  AC_CHECK_LIBRARY(socket, connect, NET_LIBRARIES)
+fi
 AC_SUBST(NET_LIBRARIES)
 
 dnl Check for libraries for zip library.
