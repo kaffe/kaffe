@@ -47,6 +47,40 @@ public class GridBagConstraints
 public GridBagConstraints() {
 }
 
+/**
+ * Creates a GridBagConstraints object with all of its fields set to the
+ * passed-in arguments.
+ * Note: Because the use of this constructor hinders readability of source
+ * code, this constructor should only be used by automatic source code
+ * generation tools.
+ *
+ * @since JDK1.2
+ */
+public GridBagConstraints(int gridx,
+			  int gridy,
+			  int gridwidth,
+			  int gridheight,
+			  double weightx,
+			  double weighty,
+			  int anchor,
+			  int fill,
+			  Insets insets,
+			  int ipadx,
+			  int ipady)
+{
+	this.gridx = gridx;
+	this.gridy = gridy;
+	this.gridwidth = gridwidth;
+	this.gridheight = gridheight;
+	this.weightx = weightx;
+	this.weighty = weighty;
+	this.anchor = anchor;
+	this.fill = fill;
+	this.insets = insets;
+	this.ipadx = ipadx;
+	this.ipady = ipady;
+}
+
 public Object clone() {
 	try { 
 		GridBagConstraints gc = (GridBagConstraints) super.clone();
