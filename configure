@@ -46310,6 +46310,31 @@ _ACEOF
 fi
 done
 
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <
+#include <sched.h>
+#ifdef SCHED_OTHER
+Found_SCHED_OTHER
+#endif
+  >
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Found_SCHED_OTHER" >/dev/null 2>&1; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SCHED_OTHER_IN_SCHED 1
+_ACEOF
+
+
+fi
+rm -f conftest*
+
 
 
 

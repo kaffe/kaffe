@@ -66,7 +66,11 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  * stringent priorities), but it usually isn't available on desktop
  * OSes (or imposes certain restrictions, e.g. root privileges).
  */
+#if defined(HAVE_SCHED_OTHER_IN_SCHED)
 #define SCHEDULE_POLICY     SCHED_OTHER
+#else
+#undef SCHEDULE_POLICY
+#endif
 
 /* our upper limit for cached threads (0 = no caching at all) */
 #define MAX_CACHED_THREADS 0
@@ -321,12 +325,16 @@ static
 void tStartDeadlockWatchdog (void)
 {
   pthread_attr_t attr;
+#if defined(SCHEDULE_POLICY)
   struct sched_param sp;
 
   sp.sched_priority = priorities[0];  /* looow */
+#endif
 
   pthread_attr_init( &attr);
+#if defined(SCHEDULE_POLICY)
   pthread_attr_setschedparam( &attr, &sp);
+#endif
   pthread_attr_setstacksize( &attr, 4096);
 
   pthread_create( &deadlockWatchdog, &attr, tWatchdogRun, 0);
@@ -461,13 +469,13 @@ void tMapPriorities (int npr)
   int     d, max, min, i;
   float   r;
 
-#if defined(HAVE_SCHED_GET_PRIORITY_MIN)
+#if defined(HAVE_SCHED_GET_PRIORITY_MIN) && defined(SCHEDULE_POLICY)
   min = sched_get_priority_min( SCHEDULE_POLICY);
 #else
   min = 0;
 #endif /* defined(HAVE_SCHED_GET_PRIORITY_MIN) */
 
-#if defined(HAVE_SCHED_GET_PRIORITY_MAX)
+#if defined(HAVE_SCHED_GET_PRIORITY_MAX) && defined(SCHEDULE_POLICY)
   max = sched_get_priority_max( SCHEDULE_POLICY);
 #else
   max = 0;
@@ -817,7 +825,9 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 {
   jthread_t		cur = jthread_current();
   jthread_t		nt;
+#if defined(SCHEDULE_POLICY)
   struct sched_param	sp;
+#endif
 
   /* if we are the first one, it's seriously broken */
   assert( activeThreads != 0 );
@@ -833,7 +843,9 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	  sched_yield();
   }
 
+#if defined(SCHEDULE_POLICY)
   sp.sched_priority = priorities[pri];
+#endif
 
   protectThreadList(cur);
   if ( !isDaemon ) 
@@ -856,7 +868,9 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->func = func;
 	nt->stackCur = 0;
 
+#if defined(SCHEDULE_POLICY)
 	pthread_setschedparam( nt->tid, SCHEDULE_POLICY, &sp);
+#endif
 
 	DBG( JTHREAD, TMSG_SHORT( "create recycled ", nt))
 
@@ -873,10 +887,12 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	KGC_addRef(threadCollector, nt);
 
 	pthread_attr_init( &nt->attr);
+#if defined(SCHEDULE_POLICY)
 	pthread_attr_setschedparam( &nt->attr, &sp);
 #if defined(HAVE_PTHREAD_ATTR_SETSCHEDPOLICY)
 	pthread_attr_setschedpolicy( &nt->attr, SCHEDULE_POLICY);
 #endif /* defined(HAVE_PTHREAD_ATTR_SETSCHEDPOLICY) */
+#endif /* defined(SCHEDULE_POLICY) */
 	pthread_attr_setstacksize( &nt->attr, threadStackSize);
 
 	nt->data.jlThread       = jlThread;
@@ -1101,6 +1117,7 @@ jthread_sleep (jlong timeout)
 void
 jthread_setpriority (jthread_t cur, jint prio)
 {
+#if defined(SCHEDUL_POLICY)
   struct sched_param   sp;
 
   if ( cur ) {
@@ -1110,6 +1127,7 @@ jthread_setpriority (jthread_t cur, jint prio)
 			      cur, cur->tid, cur->data.jlThread, prio, priorities[prio]))
 	pthread_setschedparam( cur->tid, SCHEDULE_POLICY, &sp);
   }
+#endif
 }
 
 /*******************************************************************************

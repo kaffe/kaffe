@@ -1,3 +1,14 @@
+2004-11-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(tStartDeadlockWatchdog, jthread_setpriority, jthread_create): Only
+	use sched_param and related functions if SCHEDULE_POLICY is defined.
+	(SCHEDULE_POLICY): Only define if SCHED_OTHER is available.
+
+	* configure.ac: Check for SCHED_OTHER in sched.h
+
+	* configure, config/config.h.in: Regenerated.
+
 2004-11-14  Mark Wielaard  <mark@klomp.org>
 
 	libraries/clib/nio/FileChannelImpl.c

@@ -440,6 +440,9 @@
 /* Define to 1 if you have the <sched.h> header file. */
 #undef HAVE_SCHED_H
 
+/* Defined if SCHED_OTHER is in sched.h */
+#undef HAVE_SCHED_OTHER_IN_SCHED
+
 /* Define to 1 if you have the `sched_yield' function. */
 #undef HAVE_SCHED_YIELD
 
