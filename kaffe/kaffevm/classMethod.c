@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define DBG(s)
+#define SDBG(s)
 #define	CDBG(s)
 #define	MDBG(s)
 #define	FDBG(s)
@@ -244,8 +244,8 @@ processClass(Hjava_lang_Class* class, int tostate)
 
 		SET_CLASS_STATE(CSTATE_DOING_INIT);
 
-DBG(		printf("Initialising %s static %d\n", class->name->data,
-			CLASS_SSIZE(class)); fflush(stdout);		)
+SDBG(		dprintf("Initialising %s static %d\n", class->name->data,
+			CLASS_FSIZE(class)); 	)
 		meth = findMethodLocal(class, init_name, void_signature);
 		if (meth != NULL) {
 			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0);
@@ -1142,6 +1142,7 @@ lookupArray(Hjava_lang_Class* c)
 	char sig[CLASSMAXSIG];  /* FIXME! unchecked fixed buffer! */
 	classEntry* centry;
 	Hjava_lang_Class* arr_class;
+	int arr_flags;
 
 	/* Build signature for array type */
 	if (CLASS_IS_PRIMITIVE (c)) {
@@ -1179,14 +1180,19 @@ lookupArray(Hjava_lang_Class* c)
 
 	arr_class = newClass();
 	centry->class = arr_class;
-	internalSetupClass(arr_class, arr_name, 0, 0, c->loader);
+	/*
+	 * This is what Sun's JDK returns for A[].class.getModifiers();
+	 */
+	arr_flags = ACC_ABSTRACT | ACC_FINAL | ACC_PUBLIC;
+	internalSetupClass(arr_class, arr_name, arr_flags, 0, c->loader);
 	arr_class->superclass = ObjectClass;
 	buildDispatchTable(arr_class);
 	CLASS_ELEMENT_TYPE(arr_class) = c;
 	if (SerialInterface[0] == 0) {
-		SerialInterface[0] = ClassClass;
+		SerialInterface[0] = SerialClass;
 	}
 	addInterfaces(arr_class, 1, SerialInterface);
+	arr_class->total_interface_len = arr_class->interface_len;
 	arr_class->head.dtable = ClassClass->dtable;
 	arr_class->state = CSTATE_OK;
 	arr_class->centry = centry;
