@@ -1,3 +1,11 @@
+Thu Mar  9 12:45:14 CET 2000  Edouard G. Parmelan  <egp@free.fr>
+
+	* FAQ/FAQ.ncr: new file for NCR MP-RAS.
+
+	* libraries/javalib/kaffe/io/CharToByteUTF8.java: fix test of buffer
+	overflow.
+	Reported by Ito Kazumitsu <ito@htk.hitachi-cable.co.jp>.
+
 Mon Mar  6 17:17:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/code-analyse.[ch]: added missing postExceptionMessage
