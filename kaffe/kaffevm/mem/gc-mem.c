@@ -133,6 +133,9 @@ gc_heap_initialise(void)
 	gc_heap_initial_size = Kaffe_JavaVMArgs[0].minHeapSize;
 	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
+	/*
+	 * Perform some sanity checks.
+	 */
 	if (gc_heap_initial_size > gc_heap_limit) {
 		fprintf(stderr, 
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
@@ -220,6 +223,9 @@ DBG(SLACKANAL,
 
 	/* Round 'gc_heap_allocation_size' up to pagesize */
 	gc_heap_allocation_size = ROUNDUPPAGESIZE(gc_heap_allocation_size);
+
+	/* Round 'gc_heap_initial_size' up to pagesize */
+	gc_heap_initial_size = ROUNDUPPAGESIZE(gc_heap_initial_size);
 
 	/* allocate heap of initial size from system */
 	gc_system_alloc(gc_heap_initial_size);
