@@ -300,7 +300,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 		const time_t now = time(NULL);
 
 		if (now != (time_t) -1) {
-			tzone = localtime(&now)->tm_zone;
+			tzone = (char*)localtime(&now)->tm_zone;
 		}
 	}
 #endif
