@@ -720,7 +720,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		        OPSTACK_POP_T(TINT);   /* array size */
 			
 			switch(code[pc + 1]) {
-			case TYPE_Boolean: OPSTACK_PUSH(TBOOLARR);   break;
+			case TYPE_Boolean: OPSTACK_PUSH(getTBOOLARR());   break;
 			case TYPE_Char:    OPSTACK_PUSH(TCHARARR);   break;
 			case TYPE_Float:   OPSTACK_PUSH(getTFLOATARR());  break;
 			case TYPE_Double:  OPSTACK_PUSH(getTDOUBLEARR()); break;
@@ -796,7 +796,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			OPSTACK_POP_T(TINT);
 
 			if (!typecheck (v, TBYTEARR, getOpstackTop(block)) &&
-			    !typecheck (v, TBOOLARR, getOpstackTop(block))) {
+			    !typecheck (v, getTBOOLARR(), getOpstackTop(block))) {
                                 DBG(VERIFY3,
                                     dprintf("                OPSTACK_TOP: ");
                                     printType(getOpstackTop(block));
@@ -882,7 +882,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			OPSTACK_POP_T(TINT);
 
 			if ( !typecheck(v, TBYTEARR, getOpstackTop(block)) &&
-			     !typecheck(v, TBOOLARR, getOpstackTop(block))) {
+			     !typecheck(v, getTBOOLARR(), getOpstackTop(block))) {
 				DBG(VERIFY3,
 				    dprintf("                OPSTACK_TOP: ");
 				    printType(getOpstackTop(block));

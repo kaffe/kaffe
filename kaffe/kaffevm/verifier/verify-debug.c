@@ -459,13 +459,13 @@ printType(const Type* t)
 		else if (type == TCHARARR->data.class) {
 			dprintf("TCHARARR");
 		}
-		else if (type == TBOOLARR->data.class) {
+		else if (type == getTBOOLARR()->data.class) {
 			dprintf("TBOOLARR");
 		}
 		else if (type == TBYTEARR->data.class) {
 			dprintf("TBYTEARR");
 		}
-		else if (type == TSHORTARR->data.class) {
+		else if (type == getTSHORTARR()->data.class) {
 			dprintf("TSHORTARR");
 		}
 		else if (type == getTINTARR()->data.class) {

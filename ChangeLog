@@ -1,6 +1,20 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TBOOLARR): Made static. 
+	(getTBOOLARR) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TBOOLARR) Removed prototype.
+	(getTBOOLARR) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TBOOLARR by getTBOOLARR.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TSHORTARR): Made static. 
 	(getTSHORTARR) Added.
 
