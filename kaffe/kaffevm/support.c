@@ -463,7 +463,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			else {
 				syncobj = (Hjava_lang_Object*)call.args[0].l;
 			}
-			sync = lockMutex(syncobj);
+			sync = lockJavaMutex(syncobj);
 		}
 		else {
 			sync = 0;
@@ -473,7 +473,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		sysdepCallMethod(&call);
 
 		if (sync != 0) {
-			unlockKnownMutex(sync);
+			unlockKnownJavaMutex(sync);
 		}
 	}
 #endif
@@ -665,7 +665,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			else {
 				syncobj = (Hjava_lang_Object*)call.args[0].l;
 			}
-			sync = lockMutex(syncobj);
+			sync = lockJavaMutex(syncobj);
 		}
 		else {
 			sync = 0;
@@ -675,7 +675,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		sysdepCallMethod(&call);
 
 		if (sync != 0) {
-			unlockKnownMutex(sync);
+			unlockKnownJavaMutex(sync);
 		}
 	}
 #endif

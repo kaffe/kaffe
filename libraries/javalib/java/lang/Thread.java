@@ -37,6 +37,7 @@ public class Thread
 	private boolean dying;
 	private Hashtable threadLocals;
 	private Object suspendResume;
+	private int noStopCount = 0;
 
 public Thread() {
 	this (null, null, generateName());

@@ -282,8 +282,11 @@
 #define softcall_initialise_class(cl)		soft_initialise_class(cl)
 #define	softcall_instanceof(r, o, t)		(r)->v.tint = soft_instanceof(t, (o)->v.taddr)
 
-#define	softcall_monitorenter(o)		lockMutex((o)[0].v.taddr)
-#define	softcall_monitorexit(o)			unlockMutex((o)[0].v.taddr)
+/* Thread.stop() knows how to back out of java frames, so we do not
+ * want to disable stop here
+ */
+#define	softcall_monitorenter(o)		lockJavaMutex((o)[0].v.taddr)
+#define	softcall_monitorexit(o)			unlockJavaMutex((o)[0].v.taddr)
 
 #define	softcall_multianewarray(r, z, s, t)	(r)->v.taddr = soft_multianewarray(t, z, s)
 

@@ -14,21 +14,53 @@
 
 #include "md.h"
 
-#define	lockMutex			_lockMutex
-#define	unlockMutex			_unlockMutex
+/*
+ * These functions are declared here to avoid weird kaffeh problems.
+ */
+void	dontStopThread(void);
+void	canStopThread(void);
+
+/*
+ * Locks come in three varieties.  Normal locks are associated with
+ * java objects, and maintained by C code.  Static mutexs are not
+ * associated with java objects and are also maintained by C code.
+ * Java mutexes are assoicated with java objects and maintained by
+ * java code.
+ *
+ * When a lock is maintained by java code, dispatchException is aware
+ * of it and will release the lock as the stack is unwound.  But, when
+ * a lock is maintained by C code, dispatchException cannot release
+ * it.  For this reason, we must delay Thread.stop() until all normal
+ * and static mutexes are released.
+ */
+
+#define	lockMutex(THING) (dontStopThread(), _lockMutex((THING)))
+#define	unlockMutex(THING)			\
+	_unlockMutex((THING));			\
+	canStopThread()
 #define	waitCond			_waitCond
 #define	signalCond			_signalCond
 #define	broadcastCond			_broadcastCond
 #define	holdMutex			_holdMutex
-#define	unlockKnownMutex(THING)		_unlockMutexFree((THING))
+#define	unlockKnownMutex(THING)			\
+	_unlockMutexFree((THING));		\
+	canStopThread()
 
 #define	initStaticLock(THING)		__initLock((THING), #THING)
 #define staticLockIsInitialized(THING)	((THING)->ref == -1)
-#define	lockStaticMutex(THING)		__lockMutex((THING))
-#define	unlockStaticMutex(THING)	__unlockMutex((THING))
+#define	lockStaticMutex(THING)			\
+	dontStopThread();			\
+	__lockMutex((THING))
+#define	unlockStaticMutex(THING)		\
+	__unlockMutex((THING));			\
+	canStopThread()
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))
 #define	signalStaticCond(THING)		__signalCond((THING))
 #define	broadcastStaticCond(THING)	__broadcastCond((THING))
+
+#define lockJavaMutex		_lockMutex
+#define unlockJavaMutex		_unlockMutex
+#define unlockKnownJavaMutex	_unlockMutexFree
 
 struct Hjava_lang_Thread;
 
