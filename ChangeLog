@@ -11,6 +11,12 @@ Wed May 12 09:41:29 1999 Jason Baker  <jbaker@cs.utah.edu>
 	updated for current oskit, fixed Thread.stop and added
 	Thread.interrupt.
 
+Tue May 11 23:54:01 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c, libraries/javalib/java/lang/Class.java,
+	test/regression/forNameTest.java: implemented Class.forName(String,
+	boolean, ClassLoader) for JDK 1.2 functionality.
+
 Mon May 10 14:30:33 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/jar.c: fixed read openJarFile to not ignore the
