@@ -18,7 +18,9 @@ Treat it as an TODO list.
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
   mechanisms on this system.  Check the mailing list archive for more info.
 
-* Object serialization is broken because Class UIDs are not computed.
+* Object serialization is broken.  Even simple tests fail.  Many run-time 
+  classes do not properly serialize or deserialize.
+  Class UIDs are not computed.
 
 * Several classes do not have serialVersionUIDs hard-coded in them. This
   makes these classes not interoperable with Sun's classes.  Note, however,
@@ -59,13 +61,16 @@ Treat it as an TODO list.
   with compilers such as Visual C++.  Jongwon Kim <freefish@chollian.net>
   reports that FIELD_OFFSET in classMethod.h conflicts with winnt.h.
 
-* kaffe.util.Timer has several problems.  Peter has a fix in the pipeline.
+* kaffe.util.Timer has several problems.  Peter has a fix in the pipeline
+  that will come in with the next awt release.
 
 * JNI incompatibilities pointed out by Johannes Deisenhofer 
   <joe@dillingen.baynet.de>:
 
  - NewXXXArray() should return jXXXArray instead of jarray
    This is a problem in C++, since these types are not simply casted to jref
+
+  Note kaffe's jni.h doesn't even define these array types as of yet.
 
 * If a thread stops in a static initializer, then this will cause problems.
 
@@ -74,5 +79,8 @@ Treat it as an TODO list.
   Example:	Kaffe:	-mx 32m  Sun:  -mx32m
   Pointed out by David Tucker <dbtucker@acm.jhu.edu> on Sat, 21 Nov 1998
 
-* There is a problem with long remainders under FreeBSD.
+* There is a problem with long remainders under FreeBSD.  The problems lies
+  in FreeBSD's libc, and concerns versions up to and including 2.2.8 and 3.0.
+  You will see wrong signs in the result.
+
 
