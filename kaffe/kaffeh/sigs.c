@@ -35,6 +35,9 @@ translateSig(char* str, char** nstr, int* argp)
 			if (str[j] == '/') {
 				fp[k] = '_';
 			}
+			else if (str[j] == '$') {
+				fp[k] = '_';
+			}
 			else {
 				fp[k] = str[j];
 			}

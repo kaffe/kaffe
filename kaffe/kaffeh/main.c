@@ -67,6 +67,7 @@ main(int argc, char* argv[])
 			}
 			switch (nm[i]) {
 			case '/':
+			case '$':
 			case '.':
 				className[i] = '_';
 				pathName[i] = '/';
