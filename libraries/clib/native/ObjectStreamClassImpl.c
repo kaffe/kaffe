@@ -377,8 +377,12 @@ char*
 pathname2ClassnameCopy(const char *orig)
 {
 	char* str;
-	str = KMALLOC(strlen(orig) + 1);
-	if (str) pathname2classname(orig, str);
+	str = KMALLOC(strlen(orig) + 2);	/* Allow 2 extra - one for 0
+						 * and one for an extra ;.
+						 */
+	if (str != 0) {
+		pathname2classname(orig, str);
+	}
 	return (str);
 }
 
@@ -438,7 +442,16 @@ static
 char*
 getClassName(Hjava_lang_Class* cls)
 {
-	return (pathname2ClassnameCopy(cls->name->data));
+	char* str;
+	int l;
+
+	str = pathname2ClassnameCopy(cls->name->data);
+	if (CLASS_IS_ARRAY(cls) && !CLASS_IS_PRIMITIVE(CLASS_ELEMENT_TYPE(cls))) {
+		l = strlen(str);
+		str[l] = ';';
+		/* Will be a 0 at l+1 already */
+	}
+        return (str);
 }
 
 jlong
@@ -457,7 +470,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	char *classname;
 
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
-	if (fld != 0) {
+	if (fld != 0 && (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
 		return (*(jlong*)FIELD_ADDRESS((Field*)fld));
 	} else {
 		discardErrorInfo(&einfo);
@@ -484,8 +497,6 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	SHA1Init(&c);
 
 	/* Class -> name(UTF), modifier(INT) */
-	tmp = htons(strlen(cls->name->data));
-	SHA1Update(&c, (char*)&tmp, sizeof(tmp));
 	/* we store the classname with slashes as path names, 
 	 * but here we must use the dotted form
 	 */
@@ -495,6 +506,8 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		postOutOfMemory(&einfo);
 		throwError(&einfo);
 	}
+	tmp = htons(strlen(classname));
+	SHA1Update(&c, (char*)&tmp, sizeof(tmp));
 	SHA1Update(&c, classname, strlen(classname));
 	KFREE(classname);
 	mod = htonl((int)cls->accflags & (ACC_ABSTRACT|ACC_FINAL|ACC_INTERFACE|ACC_PUBLIC));
@@ -744,7 +757,6 @@ HArrayOfObject*
 getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 {
 	Hjava_lang_Class* clazz;
-	int offset;
 	int len;
 	Field* fld;
 	int cnt;
@@ -755,24 +767,18 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 	if (unhand(cls)->iclazz == 0) {
 		unhand(cls)->iclazz = findDefaultSerialization(unhand(cls)->clazz);
 	}
-	if (unhand(cls)->iclazz == unhand(cls)->clazz) {
-		clazz = unhand(cls)->clazz;
-		offset = 0;
-	}
-	else {
-		/* We skip the first inner class field since this is a
-		 * pointer to the outer class.
-		 */
-		clazz = unhand(cls)->iclazz;
-		offset = 1;
-	}
+	clazz = unhand(cls)->clazz;
 
 	/* Count the number of fields we need to store */
-	len = CLASS_NIFIELDS(clazz) - offset;
-	fld = CLASS_IFIELDS(clazz) + offset;
+	len = CLASS_NIFIELDS(clazz);
+	fld = CLASS_IFIELDS(clazz);
 	cnt = 0;
 	for (i = 0; i < len; i++, fld++) {
 		if ((fld->accflags & ACC_TRANSIENT) != 0) {
+			continue;
+		}
+		/* Skip innerclass nonsense */
+		if (strncmp(fld->name->data, "this$", 5) == 0) {
 			continue;
 		}
 		cnt++;
@@ -781,9 +787,13 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 	/* Build an array of those fields */
 	array = (HArrayOfObject*)newArray(ptrType, cnt);
 	cnt = 0;
-	fld = CLASS_IFIELDS(clazz) + offset;
+	fld = CLASS_IFIELDS(clazz);
 	for (i = 0; i < len; i++, fld++) {
 		if ((fld->accflags & ACC_TRANSIENT) != 0) {
+			continue;
+		}
+		/* Skip innerclass nonsense */
+		if (strncmp(fld->name->data, "this$", 5) == 0) {
 			continue;
 		}
 		unhand_array(array)->body[cnt] = (void*)fld;

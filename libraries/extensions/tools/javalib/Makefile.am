@@ -53,12 +53,13 @@ new-classes: $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(top_srcdir)/libraries/javalib/Klasses.jar
+tools_jar = $(top_srcdir)/libraries/extensions/tools/javalib/tools.jar
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
 compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(tools_jar_SRCS)
 	@echo $(SHELL) $(rebuildLib)
-	@CPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(tools_jar_SRCS)
+	@CPATH=$(Klasses_jar):$(tools_jar) $(SHELL) $(rebuildLib) $(tools_jar_SRCS)
 	@echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
