@@ -1,5 +1,12 @@
 2003-04-18 Dalibor Topic <robilad@yahoo.com>
 
+	* libraries/javalib/java/io/ObjectStreamConstants.java:
+	Replaced by more correct and complete version from GNU Classpath.
+
+	Reported by: Herve Roussain <Herve.Roussain@univ-ubs.fr>
+	
+2003-04-18 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/java/io/ObjectInputStream.java:
         (resolveClass) use resolveClassInternal.
         (resolveClassInternal) removed brokenness comment.
