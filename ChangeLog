@@ -1,3 +1,11 @@
+Sun Apr  4 03:43:31 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/gcFuncs.c
+	kaffe/kaffevm/object.c: set head.dtable in newClass instead of
+	processClass, hence avoid accidentally freeing it for newborn
+	classes.  
+	Added temporary sanity check for initiating loader gc bug.
+
 Fri Apr  2 13:55:43 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* include/system.h, libraries/clib/native/System.c: add

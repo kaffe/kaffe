@@ -189,8 +189,9 @@ retry:
 			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
 			class->gc_layout = class->superclass->gc_layout;
 		}
-		if (class->superclass)
+		if (class->superclass) {
 			assert(class->superclass->state >= CSTATE_LINKED);
+		}
 
 		/* Load all the implemented interfaces. */
 		j = class->interface_len;
@@ -243,9 +244,6 @@ retry:
 			}
 			class->interfaces = newifaces;
 		}
-
-		/* This shouldn't be necessary - but it is at the moment!! */
-		class->head.dtable = ClassClass->dtable;
 
 		resolveObjectFields(class);
 		resolveStaticFields(class);
@@ -1898,7 +1896,6 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entryp = &classEntryPool[ipool];
 		for (;  *entryp != NULL; entryp = &(*entryp)->next) {
-			totalent++;
 			entry = *entryp;
 			if (entry->loader == loader) {
 				/*
@@ -1916,6 +1913,7 @@ DBG(CLASSGC,
 				utf8ConstRelease(entry->name);
 				(*entryp) = entry->next;
 				KFREE(entry);
+				totalent++;
 			}
 			/* if this was the last item, break */
 			if (*entryp == 0)
@@ -1932,14 +1930,37 @@ DBG(CLASSGC,
 void
 finalizeClassLoader(Hjava_lang_ClassLoader* loader)
 {
-        int totalent;
+        int rmoved;
  
 DBG(CLASSGC,
         dprintf("Finalizing classloader @%p\n", loader);
     )
-        totalent = removeClassEntries(loader);
+        rmoved = removeClassEntries(loader);
    
 DBG(CLASSGC,
-        dprintf("removed entries from class entry pool: %d\n", totalent);
+        dprintf("removed entries from class entry pool: %d\n", rmoved);
     )
+}
+
+/*
+ * this is a diagnostic function that does a sanity check
+ */
+void
+checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
+{
+	classEntry* entry;
+	int ipool;
+
+	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
+		entry = classEntryPool[ipool];
+		for (; entry != NULL; entry = entry->next) {
+			if (entry->class == c) {
+				fprintf(stderr, 
+				    "unloaded class still referenced by "
+				    "defining loader.  Kaffe does not handle "
+				    "this yet.\n");
+				ABORT();
+			}
+		}
+	}
 }

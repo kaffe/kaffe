@@ -87,7 +87,7 @@ newClass(void)
 	}
 
         /* Fill in object information */
-	cls->dtable = ClassClass->dtable;
+	cls->head.dtable = ClassClass->dtable;
 
 DBG(NEWOBJECT,
 	dprintf("newClass @%p\n", cls);					

@@ -59,15 +59,19 @@ destroyClass(Collector *collector, void* c)
 	int idx;
 	Hjava_lang_Class* clazz = c;
 	constants* pool;
+	extern void checkClass(Hjava_lang_Class*, Hjava_lang_ClassLoader*);
 
 DBG(CLASSGC,
-        dprintf("destroying class %s @ %p\n", clazz->name->data, c);
+        dprintf("destroying class %s @ %p\n", 
+		clazz->name ? clazz->name->data : "newborn", c);
    )
+	checkClass(clazz, clazz->loader);	/* temporary! */
 	assert(!CLASS_IS_PRIMITIVE(clazz));
 
-	/* Make sure that we don't unload fully loaded classes without
-	 * classloaders.  
-	 * NB: otherwise, this function must destroy any partially
+	/* NB: Make sure that we don't unload fully loaded classes without
+	 * classloaders.  This is wrong and indicate of a bug.
+	 *
+	 * NB: Note that this function must destroy any partially
 	 * initialized class.  Class processing may fail at any
 	 * state, and the discarded class objects destroyed.
 	 */
