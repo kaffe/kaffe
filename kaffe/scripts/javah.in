@@ -1,0 +1,6 @@
+#! /bin/sh
+# Pretend kaffeh is javah
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/@kaffeh_TRANSF@ -jni ${1+"$@"}
+
