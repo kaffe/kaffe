@@ -1,4 +1,9 @@
-2004-06-04  Guilhem Lavaux <guilhem@kaffe.org>,
+2004-06-03  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/RuleBasedCollator.java:
+	Use ArrayList instead of Vector.
+
+2004-06-03  Guilhem Lavaux <guilhem@kaffe.org>,
 	dai shaowei <shwdai@hotmail.com>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
