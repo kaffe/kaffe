@@ -1,3 +1,17 @@
+2005-01-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-01-09  Mark Wielaard  <mark@klomp.org>
+
+	* java/security/AlgorithmParameterGenerator.java (getInstance):
+	Mention provider when throwing NoSuchProviderException.
+	* java/security/AlgorithmParameters.java (getInstance): Likewise.
+	* java/security/KeyFactory.java (getInstance): Likewise.
+	* java/security/KeyStore.java (getInstance): Likewise.
+	* java/security/SecureRandom.java (getInstance): Likewise.
+	* java/security/cert/CertificateFactory.java (getInstance): Likewise.
+	
 2005-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* Makefile.am: Fixed BUILD_ENVIRONMENT generation.
