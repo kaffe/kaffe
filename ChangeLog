@@ -1,3 +1,13 @@
+Wed Apr  5 10:02:29 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/String.java: fix race condition
+	in hashCode()
+
+Wed Apr  5 10:02:28 PDT 2000 Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* libraries/javalib/java/lang/String.java: allow 'value',
+	'offset', and 'count' fields to be final.
+
 Fri Mar 31 17:05:18 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/PlainSocketImpl.java: don't synchronize
