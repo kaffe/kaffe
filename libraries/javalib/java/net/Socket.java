@@ -99,8 +99,8 @@ public int getSoLinger() throws SocketException {
 	return ((Integer) impl.getOption(SocketOptions.SO_LINGER)).intValue();
 }
 
-public void setSoTimeout(boolean on, int timeout) throws SocketException {
-	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(on ? timeout : 0));
+public void setSoTimeout(int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
 }
 
 public int getSoTimeout() throws SocketException {

@@ -38,8 +38,8 @@ public synchronized void close() {
 	impl.close();
 }
 
-public void setSoTimeout(boolean on, int timeout) throws SocketException {
-	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(on ? timeout : 0));
+public void setSoTimeout(int timeout) throws SocketException {
+	impl.setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
 }
 
 public int getSoTimeout() throws SocketException {
@@ -68,6 +68,17 @@ protected synchronized void finalize() {
 
 public int getLocalPort() {
 	return localPort;
+}
+
+public InetAddress getLocalAddress() {
+	InetAddress localAddress;
+	try {
+		localAddress =
+			(InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
+	} catch (Exception e) {
+		localAddress = InetAddress.anyLocalAddress;
+	}
+	return localAddress;
 }
 
 public synchronized void receive(DatagramPacket p) throws IOException {
