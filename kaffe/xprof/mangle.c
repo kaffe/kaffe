@@ -17,12 +17,46 @@
 #include <string.h>
 #include <assert.h>
 
+#include "config.h"
 #include "jmalloc.h"
 #include "stringSupport.h"
 #include "classMethod.h"
 #include "xprofiler.h"
 
 #include "mangle.h"
+
+/*
+ * GCJ name mangling can confuse older tools.  It would be nice to be
+ * able to dectect whether gcj-aware versions of gdb and gprof are
+ * present, but we are already doing the next-best thing:  detecting
+ * whether GCJ itself is present.
+ *
+ * Our simplified mangler differs from gcj in two respects:  First, it
+ * it treats outer class names (left of a $), as qualifiers.  And
+ * second, it does not use U to indicate a unicode name part.
+ * Instead, is always escapes underscores preceding hex digits.
+ */
+#ifdef HAVE_GCJ_SUPPORT
+# define MANGLE_GCJ
+# define IS_SEP(c) ((c) == '/')
+
+  /* GCJ escapes out underscore iff this is a unicode word */
+  static inline int bad_underscore(char *p, char *end) { return 1; }
+#else
+# undef MANGLE_GJC
+# define IS_SEP(c) ((c) == '/' || (c) == '$')
+
+  /* In kaffe, everything is potential unicode-mangled, but underscores
+   * are only escaped out if they precede hex digits or underscores.
+   */
+  static inline int bad_underscore(char *p, char *end)
+  {
+	int next = UTF8_GET(p, end);
+	return   ((next >= '0' && next <= '9')
+		  || (next >= 'a' && next <= 'f')
+		  || next == '_');
+  }
+#endif
 
 struct mangled_method *createMangledMethod(void)
 {
@@ -251,8 +285,10 @@ int printMangledMethod(struct mangled_method *mm, FILE *file)
 		 * If the method name has escapes we need to append the `U' to
 		 * the end
 		 */
+#ifdef MANGLE_GCJ
 		if( mm->mm_flags & MMF_UNICODE_METHOD )
 			fprintf(file, "U");
+#endif
 		if( ferror(file) )
 			retval = 0;
 	}
@@ -312,7 +348,7 @@ char *mangleClassType(int prepend, void *cl, char *name)
 			end = curr - 1;
 			break;
 		}
-		else if( ch == '/' )
+		else if( IS_SEP(ch) )
 		{
 			/*
 			 * Its a qualified name, record the current counts for
@@ -332,12 +368,17 @@ char *mangleClassType(int prepend, void *cl, char *name)
 			if( num_chars == 0 )
 				need_escapes++;
 		}
-		else if( ch == '_' )
+		else if( ch == '_' && bad_underscore(curr, end))
 		{
+#ifdef MANGLE_GCJ
 			num_underscores++;
+#else
+			need_escapes++;
+#endif
 		}
 		else if( ((ch < 'a') || (ch > 'z')) &&
-			 ((ch < 'A') || (ch > 'Z')) )
+			 ((ch < 'A') || (ch > 'Z')) &&
+			 (ch != '_') )
 		{
 			/* Its a special char, we'll need an escape */
 			need_escapes++;
@@ -399,13 +440,17 @@ char *mangleClassType(int prepend, void *cl, char *name)
 		while( curr < end )
 		{
 			/* Figure out the length of this name segment */
-			if( (m_len = mangleLength(curr,
-						  quals ? -1 : end - curr,
-						  '/',
-						  &len)) )
+			char *equal = curr;
+			while (equal < end && !IS_SEP(*equal))
+				equal++;
+			m_len = mangleLength(curr, equal - curr, 0,
+					     &len);
+			if( m_len )
 			{
+#ifdef MANGLE_GCJ
 				*dest = 'U';
 				dest++;
+#endif
 			}
 			else
 				m_len = len;
@@ -486,15 +531,20 @@ int mangleLength(char *string, int len, char term, int *out_len)
 		else if( (ch >= '0') && (ch <= '9') )
 		{
 			/* If a number starts a name then we need an escape */
-			if( num_chars == 0 )
+			if( (curr - 1) == string)
 				need_escapes++;
 		}
-		else if( ch == '_' )
+		else if( ch == '_' && bad_underscore(curr, end))
 		{
+#ifdef MANGLE_GCJ
 			num_underscores++;
+#else
+			need_escapes++;
+#endif
 		}
 		else if( ((ch < 'a') || (ch > 'z')) &&
-			 ((ch < 'A') || (ch > 'Z')) )
+			 ((ch < 'A') || (ch > 'Z')) && 
+			 (ch != '_') )
 		{
 			/* Special character, we'll need an escape */
 			need_escapes++;
@@ -528,21 +578,24 @@ int mangleString(char *dest, char *src, int slen, int unicode)
 	while( (curr < end) && !error )
 	{
 		ch = UTF8_GET(curr, end);
+
 		if( ch < 0 )
 		{
 			error = 1;
 		}
 		else if( (ch >= '0') && (ch <= '9') )
 		{
-			if( curr == (src - 1) )
+			if( (curr - 1) == src )
 				need_escape = 1;
 			else
 				need_escape = 0;
 		}
 		else if( ch == '_' )
 		{
-			if( unicode )
+			if( unicode && bad_underscore(curr, end) )
+			{
 				need_escape = 1;
+			}
 		}
 		else if( ((ch < 'a') || (ch > 'z')) &&
 			 ((ch < 'A') || (ch > 'Z')) )
