@@ -244,7 +244,7 @@ sub printMethods {
     local(%class) = %{$r_cl};
 
     if ($class{methodCt} == 0) {
-	print "No fields.\n";
+	print "No methods.\n";
     } else {
 	$i = 0;
 	print "Methods:\n";
@@ -553,9 +553,11 @@ sub readClass {
     $class{superClass} = &read_u2();
     if ($class{superClass} != 0) {
       &checkIndex($class{superClass}, "super_class", $CONSTANT_Class);
-    } else {
-      print ("Warning: class has no super class.  Must be java.lang.Object\n"); 
-    }
+    } 
+    # so what if it's java.lang.Object
+    # else {
+    #  print ("Warning: class has no super class.  Must be java.lang.Object\n"); 
+    #}
     
     ###
     ### Direct super-interfaces
@@ -817,7 +819,7 @@ sub read_u8 {
     (read(CLASSIN, $long, 8) == 8) || die ("premature eof in read_u8()\n");
     my ($b1, $b2, $b3, $b4, $b5, $b6, $b7, $b8) = unpack("CCCCCCCC", $long);
     return (($b1 << 56) + ($b2 << 48) + ($b3 << 40) + ($b4 << 32)
-	    + ($b5 << 24) + ($b6 << 16) + ($b7 << 8) + $b4);
+	    + ($b5 << 24) + ($b6 << 16) + ($b7 << 8) + $b8);
 }
 
 sub read_u4 {
@@ -922,6 +924,19 @@ sub readAttributes {
 ###
 ### Write primitives
 ###
+
+sub write_u8 {
+    my $val = shift;
+    $b8 = $val & 255;
+    $b7 = ($val >> 8) & 255;
+    $b6 = ($val >> 16) & 255;
+    $b5 = ($val >> 24) & 255;
+    $b4 = ($val >> 32) & 255;
+    $b3 = ($val >> 40) & 255;
+    $b2 = ($val >> 48) & 255;
+    $b1 = ($val >> 56) & 255;
+    print CLASSOUT pack("CCCCCCCC", $b1, $b2, $b3, $b4, $b5, $b6, $b7, $b8);
+}
 
 sub write_u4 {
     my $val = shift;
