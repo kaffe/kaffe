@@ -44,6 +44,7 @@ Hjava_lang_Class* StringClass;
 Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
 Hjava_lang_Class* SerialClass;
+Hjava_lang_Class* CloneClass;
 
 Hjava_lang_Class* javaLangVoidClass;
 Hjava_lang_Class* javaLangBooleanClass;
@@ -60,6 +61,7 @@ Hjava_lang_Class* javaLangNullPointerException;
 
 #define SYSTEMCLASS "java/lang/System"
 #define	SERIALCLASS "java/io/Serializable"
+#define	CLONECLASS  "java/lang/Cloneable"
 
 #define	INIT			"<clinit>"
 #define	FINAL			"finalize"
@@ -136,6 +138,7 @@ initBaseClasses(void)
 	/* The base types */
 	loadStaticClass(&ObjectClass, OBJECTCLASS);
 	loadStaticClass(&SerialClass, SERIALCLASS);
+	loadStaticClass(&CloneClass, CLONECLASS);
 	loadStaticClass(&ClassClass, CLASSCLASS);
 	loadStaticClass(&StringClass, STRINGCLASS);
 	loadStaticClass(&SystemClass, SYSTEMCLASS);
@@ -143,6 +146,7 @@ initBaseClasses(void)
 	/* We must to a little cross tidying */
 	ObjectClass->head.dtable = ClassClass->dtable;
 	SerialClass->head.dtable = ClassClass->dtable;
+	CloneClass->head.dtable = ClassClass->dtable;
 	ClassClass->head.dtable = ClassClass->dtable;
 
 	/* Basic types classes */

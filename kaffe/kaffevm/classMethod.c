@@ -47,8 +47,8 @@ static classEntry* classEntryPool[CLASSHASHSZ];
 #define METHOD_NEEDS_TRAMPOLINE(meth) \
 	(!METHOD_TRANSLATED(meth) || (((meth)->accflags & ACC_STATIC) && (meth)->class->state < CSTATE_DOING_INIT))
 
-
-static Hjava_lang_Class* SerialInterface[1];
+/* interfaces supported by arrays */
+static Hjava_lang_Class* arr_interfaces[2];
 
 extern gcFuncs gcClassObject;
 
@@ -1269,10 +1269,16 @@ lookupArray(Hjava_lang_Class* c)
 	arr_class->superclass = ObjectClass;
 	buildDispatchTable(arr_class);
 	CLASS_ELEMENT_TYPE(arr_class) = c;
-	if (SerialInterface[0] == 0) {
-		SerialInterface[0] = SerialClass;
+
+	/* Add the interfaces that arrays implement.  Note that addInterface 
+	 * will hold on to arr_interfaces, so it must be a static variable.
+	 */
+	if (arr_interfaces[0] == 0) {
+		arr_interfaces[0] = SerialClass;
+		arr_interfaces[1] = CloneClass;
 	}
-	addInterfaces(arr_class, 1, SerialInterface);
+	addInterfaces(arr_class, 2, arr_interfaces);
+
 	arr_class->total_interface_len = arr_class->interface_len;
 	arr_class->head.dtable = ClassClass->dtable;
 	arr_class->state = CSTATE_OK;
