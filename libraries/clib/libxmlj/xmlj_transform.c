@@ -45,6 +45,7 @@
 #include "xmlj_error.h"
 #include "xmlj_node.h"
 #include "xmlj_sax.h"
+#include "xmlj_util.h"
 
 #include <math.h>
 #include <stdarg.h>
@@ -433,7 +434,7 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_newLibxsltStylesheet(
   /*xmljFreeParserContext (ctx);*/
   
   /* Return handle/address casted to Java int value */
-  return (jlong) nativeStylesheetHandle;
+  return xmljAsField (nativeStylesheetHandle);
 }
 
 /*
@@ -452,7 +453,7 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_freeLibxsltStylesheet
 
   xsltStylesheetPtr stylesheet;
  
-  stylesheet = (xsltStylesheetPtr) nativeStylesheetHandle;
+  stylesheet = (xsltStylesheetPtr) xmljAsPointer (nativeStylesheetHandle);
   stylesheet->_private = NULL;
   xmlFreeDoc (stylesheet->doc);
   stylesheet->doc = NULL;
@@ -493,7 +494,7 @@ Java_gnu_xml_libxmlj_transform_LibxsltStylesheet_libxsltTransform(
   xmlDocPtr sourceDoc;
   xmlDocPtr resultDoc;
   
-  stylesheet = ((xsltStylesheetPtr) xsltSource);
+  stylesheet = (xsltStylesheetPtr) xmljAsPointer (xsltSource);
   sourceDoc = (xmlDocPtr) xmljGetNodeID (env, jdocument);
   
   if (!(*env)->ExceptionOccurred (env) && NULL != sourceDoc)

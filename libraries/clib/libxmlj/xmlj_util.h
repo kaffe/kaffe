@@ -44,4 +44,8 @@ jmethodID xmljGetMethodID (JNIEnv *env,
                            const char *name,
                            const char *signature);
 
+void * xmljAsPointer (jlong field);
+
+jlong xmljAsField (void * ptr);
+
 #endif /* !defined XMLJ_UTIL_H */

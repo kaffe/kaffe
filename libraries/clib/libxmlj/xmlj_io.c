@@ -437,6 +437,17 @@ xmljParseDocument (JNIEnv * env,
   xmlParserCtxtPtr ctx;
   SAXParseContext *saxCtx;
   xmlSAXHandlerPtr sax;
+
+  /*printf ("validate=%d\ncoalesce=%d\nexpandEntities=%d\ncontentHandler=%d\ndtdHandler=%d\nentityResolver=%d\nerrorHandler=%d\ndeclarationHandler=%d\nlexicalHandler=%d\n",
+          validate,
+          coalesce,
+          expandEntities,
+          contentHandler,
+          dtdHandler,
+          entityResolver,
+          errorHandler,
+          declarationHandler,
+          lexicalHandler);*/
   
   ctx = xmljNewParserContext (env, in, detectBuffer, systemId, publicId,
                               validate, coalesce, expandEntities);
@@ -490,8 +501,9 @@ xmljParseDocument2 (JNIEnv * env,
               
   xmljSetThreadContext (saxCtx);
 
-  printf ("ctx=%d loadsubset=%d\n", ctx, ctx->loadsubset);
+  printf ("xmljParseDocument2 loadsubset=%d\n", ctx->loadsubset);
   ret = xmlParseDocument (ctx);
+  printf ("xmlParseDocument done\n");
   doc = ctx->myDoc;
   if (ret)
     {

@@ -99,7 +99,7 @@ Java_gnu_xml_libxmlj_dom_GnomeDocument_free (JNIEnv * env,
 {
   xmlDocPtr doc;
 
-  doc = (xmlDocPtr) id;
+  doc = (xmlDocPtr) xmljAsPointer (id);
   xmljFreeDoc (env, doc);
   xmlFree (doc);
 }
@@ -909,6 +909,10 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_getNodeName (JNIEnv * env, jobject self)
   xmlNodePtr node;
 
   node = xmljGetNodeID (env, self);
+  if (node == NULL)
+    {
+      return NULL;
+    }
   return xmljNewString (env, node->name);
 }
 
@@ -918,7 +922,6 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_getNodeValue (JNIEnv * env, jobject self)
   xmlNodePtr node;
   xmlBufferPtr buf;
   jstring ret;
-
 
   node = xmljGetNodeID (env, self);
 
@@ -1006,21 +1009,6 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_getNextSibling (JNIEnv * env, jobject self)
 
   node = xmljGetNodeID (env, self);
   return xmljGetNodeInstance (env, node->next);
-}
-
-JNIEXPORT jobject JNICALL
-Java_gnu_xml_libxmlj_dom_GnomeNode_getAttributes (JNIEnv * env, jobject self)
-{
-  xmlNodePtr node;
-  jclass cls;
-  jmethodID method;
-
-  node = xmljGetNodeID (env, self);
-
-  /* Construct named node map object */
-  cls = (*env)->FindClass (env, "gnu/xml/libxmlj/dom/GnomeNamedNodeMap");
-  method = (*env)->GetMethodID (env, cls, "<init>", "(J)V");
-  return (*env)->NewObject (env, cls, method, (jlong) node);
 }
 
 JNIEXPORT jobject JNICALL

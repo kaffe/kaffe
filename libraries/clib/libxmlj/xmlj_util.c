@@ -138,3 +138,35 @@ jmethodID xmljGetMethodID (JNIEnv *env,
     }
   return ret;
 }
+
+void * xmljAsPointer (jlong field)
+{
+  void * ptr;
+
+  ptr = (void *) field;
+
+  if (field != 0LL && ptr == NULL)
+    {
+      printf ("xmljAsPointer: casting killed %lld\n", field);
+    }
+  return ptr;
+}
+
+jlong xmljAsField (void * ptr)
+{
+  jlong field;
+
+  field = (jlong) ptr;
+
+  if (ptr == NULL)
+    {
+      printf ("WARNING: ptr is null\n");
+    }
+
+  if (ptr != NULL && field == 0LL)
+    {
+      printf ("xmljAsField: casting killed %d\n", ptr);
+    }
+  return field;
+}
+

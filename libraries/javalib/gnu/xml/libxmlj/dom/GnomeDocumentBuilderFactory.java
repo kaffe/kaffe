@@ -42,7 +42,6 @@ extends DocumentBuilderFactory
   public GnomeDocumentBuilderFactory ()
     {
       setNamespaceAware (true);
-      setValidating (true);
     }
 
   public Object getAttribute (String name)

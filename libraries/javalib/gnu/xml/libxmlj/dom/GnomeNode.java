@@ -58,8 +58,16 @@ implements Node
    * @param node the node pointer
    * @param type the node type
    */
-  static GnomeNode newInstance (long doc, long node, int type)
+  static GnomeNode newInstance (final long doc, final long node, final int type)
     {
+      if (doc == 0L)
+        {
+          throw new NullPointerException ("doc");
+        }
+      if (node == 0L)
+        {
+          throw new NullPointerException ("node");
+        }
       if (instances == null)
         {
           instances = new HashMap ();
@@ -129,7 +137,7 @@ implements Node
    * Frees the specified document.
    * This removes all its nodes from the cache.
    */
-  static void freeDocument (long doc)
+  static void freeDocument (final long doc)
     {
       if (instances == null)
         {
@@ -147,7 +155,7 @@ implements Node
 
   Map userData;
 
-  GnomeNode (long id)
+  GnomeNode (final long id)
     {
       this.id = id;
     }
@@ -177,7 +185,10 @@ implements Node
 
   public native Node getNextSibling ();
 
-  public native NamedNodeMap getAttributes ();
+  public NamedNodeMap getAttributes ()
+    {
+      return new GnomeNamedNodeMap (id);
+    }
 
   public native Document getOwnerDocument ();
 
