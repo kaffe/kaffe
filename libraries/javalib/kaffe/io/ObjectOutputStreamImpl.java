@@ -31,6 +31,14 @@ private ObjectOutputStream parent;
 private int nextKey = 0x007e0000;
 private IdentityHashtable objectReferences = new IdentityHashtable();
 
+/*
+ * XXX this is wrong.
+ *
+ * It does not handle the case of "write(new byte[2000]);"
+ * The problem is that the stream is not put in buffering mode by default.
+ * However, the BLOCKDATA token preceding plain data is only written if
+ * buffering is set.  See flush()
+ */
 class Output extends OutputStream {
 
 private OutputStream out;

@@ -40,6 +40,7 @@ private ObjectInputStream parent;
 class Input extends InputStream {
 
 private InputStream in;
+int    leftinblock;
 
 Input(InputStream in) {
         this.in = in;
@@ -56,18 +57,55 @@ public int read() throws IOException {
 	if (pos < len) {
 		return ((int)(buffer[pos++] & 0xFF));
 	}
+
+	/*
+	 * we're reading plain data and are still working on a long 
+	 * block that required multiple reads with our short buffer
+	 */ 
+	if (leftinblock > 0) {
+		int size = buffer.length;
+		if (size > leftinblock) {
+			size = leftinblock;
+		}
+		len = in.read(buffer, 0, size);
+		if (len != size) {
+			throw new StreamCorruptedException("bad blockdata size, read " + len + " expected " + size);
+		}
+		pos = 1;
+		leftinblock -= len;
+		return ((int)(buffer[0] & 0xFF));
+	}
+
+	// begin of plain data
 	int b = in.read();
-	if (b != ObjectStreamConstants.TC_BLOCKDATA) {
-		(new Throwable()).printStackTrace();
+	int size;
+	switch (b) {
+	case ObjectStreamConstants.TC_BLOCKDATA:
+		/* byte following tag indicates number of bytes */
+		leftinblock = in.read();
+		return (read());	// tail recursive call
+
+	case ObjectStreamConstants.TC_BLOCKDATALONG:
+		/* The doc says: 
+		 * long following tag indicates number of bytes 
+		 * but what they actually write is an int following the tag.
+		 */
+		int v1 = 0;
+		for (int i = 24; i >= 0; i -= 8) {
+			b = in.read();
+			if (b == -1) {
+				throw new StreamCorruptedException(
+					"reached eof while reading block size");
+			}
+			v1 |= (int)b << i;
+		}
+		leftinblock = v1;
+		return (read());	// tail recursive call
+
+	default:
+		(new Throwable()).printStackTrace();	// debug
 		throw new StreamCorruptedException("expected blockdata: " + b);
 	}
-	int size = in.read();
-	len = in.read(buffer, 0, size);
-	if (len != size) {
-		throw new StreamCorruptedException("bad blockdata size");
-	}
-	pos = 1;
-	return ((int)(buffer[0] & 0xFF));
 }
 
 }
@@ -128,6 +166,24 @@ public Object readObject() throws OptionalDataException, ClassNotFoundException,
 	case ObjectStreamConstants.TC_RESET:
 		resetObjectReferences();
 		break;
+
+	case ObjectStreamConstants.TC_BLOCKDATA:
+		int l = read();
+		if (l == -1) {
+			throw new StreamCorruptedException("incomplete block count");
+		}
+		throw new OptionalDataException(l);
+
+	case ObjectStreamConstants.TC_BLOCKDATALONG:
+		int l0 = read();
+		int l1 = read();
+		int l2 = read();
+		int l3 = read();
+		if (l0 == -1 || l1 == -1 || l2 == -1 || l3 == -1) {
+			throw new StreamCorruptedException("incomplete block count");
+		}
+		int ll = ((l0 << 24) | (l1 << 16) | (l2 << 8) | l3);
+		throw new OptionalDataException(ll);
 
 	default:
 		throw new StreamCorruptedException("unexpected token: " + tok);

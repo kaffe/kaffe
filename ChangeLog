@@ -1,3 +1,12 @@
+Thu Apr  1 18:54:24 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/io/OptionalDataException.java: made 
+	constructor public for now
+	* libraries/javalib/kaffe/io/ObjectInputStreamImpl.java: implemented
+	reading of long data blocks
+	* libraries/javalib/kaffe/io/ObjectOutputStreamImpl.java: added
+	XXX for bug
+
 Thu Apr  1 13:28:34 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/Makefile.{am,in}: distclean tweak

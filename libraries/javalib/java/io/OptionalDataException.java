@@ -18,15 +18,19 @@ public class OptionalDataException
 	public boolean eof;
 
 	/* The JDK doc doesn't show any constructors, but javap shows
-	 * two package private constructors.  We include them so that
-	 * the serial version id is properly computed without having
-	 * to hardcode the id
+	 * two package private constructors.  This may be because Sun
+	 * implements serialization within java.io.
+	 * We need to be able to construct OptionalDataExceptions from
+	 * kaffe.io, hence the public constructors for now.
+	 *
+	 * XXX fix this
+	 * XXX hardcode serialVersionUID for this class
 	 */
-        OptionalDataException(boolean eof) {
+        public OptionalDataException(boolean eof) {
 		this.eof = eof;
 	}
 
-        OptionalDataException(int length) {
+        public OptionalDataException(int length) {
 		this.length = length;
 		this.eof = false; /* ??? */
 	}
