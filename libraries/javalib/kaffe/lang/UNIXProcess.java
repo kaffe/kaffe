@@ -92,7 +92,22 @@ public UNIXProcess(final String argv[], final String arge[], File dir)
 		}
 		if (throwable != null) {
 			// rethrow in current thread
-			throw throwable.fillInStackTrace();
+			try {
+				/* Try to chain the exceptions.
+				 * The exception we want to chain may already
+				 * have its cause set, so we need a fresh instance
+				 * to work on.
+				 */
+				Throwable throw_me = (Throwable) throwable.getClass().newInstance();
+				throw_me.initCause(throwable);
+				throw throw_me;
+			}
+			catch (InstantiationException e) {
+				throw throwable.fillInStackTrace();
+			}
+			catch (IllegalAccessException e) {
+				throw throwable.fillInStackTrace();
+			}
 		}
 
 		// Create streams from the file descriptors
@@ -145,6 +160,14 @@ public int waitFor() throws InterruptedException {
 
 public void destroy() {
 	sendSignal(getKillSignal());
+	try {
+		raw_stdout.close();
+		raw_stderr.close();
+		stdin_stream.close();
+	}
+	catch (IOException e) {
+		e.printStackTrace();
+	}
 }
 
 public void sendSignal(int signum) {

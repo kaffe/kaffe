@@ -1,3 +1,15 @@
+2003-02-26 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kaffe/lang/UNIXProcess.java:
+	(UNIXProcess) Chain thrown exception.
+	
+2003-02-26 Timothy S Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/kaffe/lang/UNIXProcess.java:
+	(destroy) close file descriptors.
+
+	Reported by: Calvin Kaiwen <cal_kaiwen@hotmail.com>
+	
 2003-02-25 Dalibor Topic <robilad@yahoo.com>
 
 	* README, WHATSNEW:
