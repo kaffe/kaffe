@@ -1,3 +1,9 @@
+Fri Apr  7 23:51:12 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Throwable.java: toString() should
+	call getMessage()
+	* libraries/javalib/java/util/ArrayList.java: fix Arrays.asList()
+
 Thu Apr  6 10:59:38 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/StringBuffer.java,
@@ -11,8 +17,6 @@ Thu Apr  6 10:59:38 PDT 2000  Archie Cobbs <archie@whistle.com>
 	libraries/javalib/java/util/HashMap.java,
 	libraries/javalib/java/util/TreeMap.java: don't implement clone()
 	in AbstractMap in order to present the same API as JDK
-	* libraries/javalib/java/lang/Throwable.java: toString() should
-	call getMessage()
 
 Thu Apr  6 10:59:37 PDT 2000  Mo DeJong <mdejong@cygnus.com>
 
