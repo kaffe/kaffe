@@ -34,7 +34,9 @@
 void
 init_md(void)
 {
-#if 1 /* This doesn't seem to make any difference, but let's keep it.  */
+	/* `Alpha Architecture Handbook' say that's user mode _must
+           not_ change fpcr but use OS function as next one.  */
+#if 0
 	/* Set the bits in the hw fpcr for cpu's that implement
 	   all the bits.  */
 	__asm__ __volatile__(
@@ -74,10 +76,21 @@ void alpha_disable_uac(void)
 #include <excpt.h>
 
 #include "debug.h"
+#include "locks.h"
+
+static iLock *excLock;
 
 void __alpha_osf_firstFrame (exceptionFrame *frame)
 {
-	exc_capture_context(&frame->sc);
+	int iLockRoot;
+
+	/* Retreive caller frame as current one will be invalidate
+           after function exit. */
+	lockStaticMutex (&excLock);
+	exc_capture_context (&frame->sc);
+	exc_virtual_unwind (NULL, &frame->sc);
+	unlockStaticMutex (&excLock);
+	
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_firstFrame(0x%p) pc 0x%p fp 0x%p sp 0x%p\n", frame,
 		    (void*)frame->sc.sc_pc, (void*)frame->sc.sc_regs[15],
@@ -86,25 +99,27 @@ void __alpha_osf_firstFrame (exceptionFrame *frame)
 
 exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 {
-	PRUNTIME_FUNCTION pcrd;
+	int iLockRoot;
 
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_nextFrame(0x%p) pc 0x%p fp 0x%p sp 0x%p\n", frame,
 		    (void*)frame->sc.sc_pc, (void*)frame->sc.sc_regs[15],
 		    (void*)frame->sc.sc_regs[30]); );
-	pcrd = exc_lookup_function_table (frame->sc.sc_pc);
-	DBG(STACKTRACE,
-	    dprintf(" pcrd 0x%p\n", pcrd); );
-	if (pcrd == NULL) {
-		if (DBGEXPR(STACKTRACE, 1, 0)) {
-			return NULL;
-		}
-		else {
-			assert (!!"stack trace inspection broken !");
-		}
-
+	/* exc_virtual_unwind() will call last chance handler if RPD
+           is not found.  So lookup the corresponding table before
+           real unwind.  Note that exc_lookup_function_table() return
+           the table address, not the entry address that could be used
+           by exc_virtual_unwind().  */
+	lockStaticMutex (&excLock);
+	if (exc_lookup_function_table (frame->sc.sc_pc) == NULL) {
+		/* No table found ??? */
+		unlockStaticMutex (&excLock);
+		dprintf ("__alpha_osf_nextFrame(): no RPD for pc %p\n",
+			 (void*)frame->sc.sc_pc);
+		return NULL;
 	}
-	exc_virtual_unwind (pcrd, &frame->sc);
+	exc_virtual_unwind (NULL, &frame->sc);
+	unlockStaticMutex (&excLock);
 	DBG(STACKTRACE,
 	    dprintf(" -> pc 0x%p fp 0x%p sp 0x%p\n",
 		    (void*)frame->sc.sc_pc, (void*)frame->sc.sc_regs[15],
@@ -113,8 +128,9 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 }
 
 /* Construct JIT Exception information and register it.  */
-void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen)
+void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeend)
 {
+	int iLockRoot;
 	extern int maxLocal, maxStack, maxTemp, maxArgs, maxPush;
 	struct {
 		pdsc_crd crd[2];
@@ -122,6 +138,7 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen)
 	} *pdsc = methblock;
 	int framesize;			/* frame size in 64 bit words */
 	int rsa_offset;			/* rsa offset from $sp in 64 bit words */
+	int codelen = codeend - codebase;
 
 	assert (sizeof (*pdsc) == MD_JIT_EXCEPTION_INFO_LENGTH);
 
@@ -143,7 +160,10 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen)
 	pdsc->crd[1].words.rpd_offset = 0;
 
 	/* create Runtime Procedure Descriptor */
-	pdsc->rpd.flags = 0;
+	// pdsc->rpd.flags = (alpha_jit_info.ieee ? PDSC_EXC_IEEE : 0);
+	/* With -ieee, GCC alway add .eflag 48 event if function does
+           not use float nor double.  */
+	pdsc->rpd.flags = PDSC_EXC_IEEE;
 	pdsc->rpd.entry_ra = 26;
 	pdsc->rpd.rsa_offset = rsa_offset;
 	pdsc->rpd.sp_set = alpha_jit_info.sp_set;
@@ -168,17 +188,24 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, int codelen)
 		    framesize, rsa_offset, alpha_jit_info.rsa_size);
 	    );
 	/* Register this runtime procedure descriptor */
+	lockStaticMutex (&excLock);
 	exc_add_pc_range_table (methblock, 2);
 	exc_add_gp_range ((exc_address) codebase, codelen, (exc_address) codebase);
+	unlockStaticMutex (&excLock);
 }
 
-void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, int codelen)
+void __alpha_osf_unregister_jit_exc (void *methblock, void *codebase, void *codeend)
 {
+	int iLockRoot;
+	int codelen = codeend - codebase;
+
 	DBG(STACKTRACE,
 	    dprintf("__alpha_osf_unregister_jit() 0x%p pc [0x%p - 0x%p[\n",
 		    methblock, codebase, codebase + codelen) );
 	/* Unregister this runtime procedure descriptor */
+	lockStaticMutex (&excLock);
 	exc_remove_pc_range_table (methblock);
 	exc_remove_gp_range ((exc_address) codebase);
+	unlockStaticMutex (&excLock);
 }
 #endif
