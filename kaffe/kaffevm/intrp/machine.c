@@ -67,10 +67,15 @@ char* engine_version = KVER;
 #define CHECK_NULL(_i, _s, _n)
 #endif
 
+#if defined(KAFFE_PROFILER)
+int profFlag;			 /* flag to control profiling */
+Method *globalMethod;
+#endif
+
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid);
 
 void
-virtualMachine(methods* meth, slots* volatile arg, slots* volatile retval, Hjava_lang_Thread* volatile tid)
+virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retval, Hjava_lang_Thread* volatile tid)
 {
 	methods *volatile const vmeth = meth;
 	Hjava_lang_Object* volatile mobj;
