@@ -47,16 +47,14 @@ static nativeFunction null_funcs[1];
 nativeFunction* native_funcs = null_funcs;
 #endif
 
-
 /*
  * Call a Java method from native code.
  */
 jvalue
-do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
 	char* sig;
 	int args;
-	va_list argptr;
 	jvalue retval;
 
 	if (mb == 0) {
@@ -78,8 +76,19 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
 		throwException(NoSuchMethodError(method_name));
 	}
 
-	va_start(argptr, isStaticCall);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+
+	return (retval);
+}
+
+jvalue
+do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+{
+	va_list argptr;
+	jvalue retval;
+
+	va_start(argptr, isStaticCall);
+	retval = do_execute_java_method_v(obj, method_name, signature, mb, isStaticCall, argptr);
 	va_end(argptr);
 
 	return (retval);
@@ -89,11 +98,10 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
  * Call a Java static method on a class from native code.
  */
 jvalue
-do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+do_execute_java_class_method_v(char* cname, char* method_name, char* signature, va_list argptr)
 {
 	char* sig;
 	int args;
-	va_list argptr;
 	Method* mb;
 	jvalue retval;
 	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
@@ -109,8 +117,19 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
 	}
 
 	/* Make the call */
-	va_start(argptr, signature);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), 0, argptr, &retval);
+
+	return (retval);
+}
+
+jvalue
+do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+{
+	va_list argptr;
+	jvalue retval;
+
+	va_start(argptr, signature);
+	retval = do_execute_java_class_method_v(cname, method_name, signature, argptr);
 	va_end(argptr);
 
 	return (retval);
@@ -120,12 +139,11 @@ do_execute_java_class_method(char* cname, char* method_name, char* signature, ..
  * Allocate an object and execute the constructor.
  */
 Hjava_lang_Object*
-execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, va_list argptr)
 {
 	int args;
 	Hjava_lang_Object* obj;
 	char* sig;
-	va_list argptr;
 	Method* mb;
 	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
@@ -156,8 +174,19 @@ execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...
 	assert(obj != 0);
 
 	/* Make the call */
-	va_start(argptr, signature);
 	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+
+	return (obj);
+}
+
+Hjava_lang_Object*
+execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+{
+	va_list argptr;
+	Hjava_lang_Object* obj;
+
+	va_start(argptr, signature);
+	obj = execute_java_constructor_v(cname, cc, signature, argptr);
 	va_end(argptr);
 
 	return (obj);
@@ -172,7 +201,9 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	char* sig;
 	int i;
 	int s;
-	callMethodInfo call;
+	/* XXX call.callsize and call.calltype arrays are statically sized 
+	   and are not checked for running out of bounds */
+	callMethodInfo call;	
 	jvalue in[MAXMARGS];
 	jvalue tmp;
 	Hjava_lang_Object* sync;
@@ -315,6 +346,8 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	char* sig;
 	int i;
 	int s;
+	/* XXX call.callsize and call.calltype arrays are statically sized 
+	   and are not checked for running out of bounds */
 	callMethodInfo call;
 	jvalue in[MAXMARGS];
 	jvalue tmp;
@@ -343,24 +376,12 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		call.calltype[i] = *sig;
 		switch (*sig) {
 		case 'I':
-			call.callsize[i] = 1;
-			in[i].i = va_arg(args, jint);
-			break;
 		case 'Z':
-			call.callsize[i] = 1;
-			in[i].z = va_arg(args, jboolean);
-			break;
 		case 'S':
-			call.callsize[i] = 1;
-			in[i].s = va_arg(args, jshort);
-			break;
 		case 'B':
-			call.callsize[i] = 1;
-			in[i].b = va_arg(args, jbyte);
-			break;
 		case 'C':
 			call.callsize[i] = 1;
-			in[i].c = va_arg(args, jchar);
+			in[i].i = va_arg(args, jint);
 			break;
 		case 'F':
 			call.callsize[i] = 1;
@@ -369,10 +390,16 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'D':
 			call.callsize[i] = 2;
 			in[i].d = va_arg(args, jdouble);
+			i++;
+			call.callsize[i] = 0;
+			s += 2;
 			break;
 		case 'J':
 			call.callsize[i] = 2;
 			in[i].j = va_arg(args, jlong);
+			i++;
+			call.callsize[i] = 0;
+			s += 2;
 			break;
 		case '[':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;

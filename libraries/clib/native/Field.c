@@ -91,7 +91,7 @@ java_lang_reflect_Field_get(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
 		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",*((jint*)base));
 	}
 	else if ( fld->type == shortClass ) {
-		return execute_java_constructor(0,javaLangShortClass,"(S)V",*(jbool*)base);
+		return execute_java_constructor(0,javaLangShortClass,"(S)V",*(jshort*)base);
 	}
 	else if ( fld->type == longClass ) {
 		return execute_java_constructor(0,javaLangLongClass,"(J)V",*(jlong*)base);
@@ -576,7 +576,7 @@ java_lang_reflect_Field_setDouble(struct Hjava_lang_reflect_Field* this, struct 
 void
 java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj, struct Hjava_lang_Object* val)
 {
-        Hjava_lang_Class* clas;
+        Hjava_lang_Class* clas, *clazz;
         Field* fld;
         char* base;
 
@@ -587,34 +587,37 @@ java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
                 SignalError("java.lang.IllegalAccessException", "");
         }
 	
-	base = OBJECT_CLASS(val)->name->data;
-	if ( !strcmp(base, "java/lang/Integer") ) {
-		java_lang_reflect_Field_setInt(this, obj, unhand(((Hjava_lang_Integer *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Boolean") ) {
-		java_lang_reflect_Field_setBoolean(this, obj, unhand(((Hjava_lang_Boolean *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Byte") ) {
-		java_lang_reflect_Field_setByte(this, obj, unhand(((Hjava_lang_Byte *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Short") ) {
-		java_lang_reflect_Field_setShort(this, obj, unhand(((Hjava_lang_Short *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Character") ) {
-		java_lang_reflect_Field_setChar(this, obj, unhand(((Hjava_lang_Character *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Long") ) {
-		java_lang_reflect_Field_setLong(this, obj, unhand(((Hjava_lang_Long *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Float") ) {
-		java_lang_reflect_Field_setFloat(this, obj, unhand(((Hjava_lang_Float *)val))->value );
-	}
-	else if ( !strcmp(base,"java/lang/Double") ) {
-		java_lang_reflect_Field_setDouble(this, obj, unhand(((Hjava_lang_Double *)val))->value );
-	}
-	else if (FIELD_ISREF(fld) && (val == NULL || soft_instanceof(resolveFieldType(fld, clas), val))) {
+	if (FIELD_ISREF(fld) && (val == NULL || soft_instanceof(resolveFieldType(fld, clas), val))) {
 		base = getFieldAddress(this, obj);
 		*(struct Hjava_lang_Object**)base = val;
+		return;
+	}
+	
+	clazz = OBJECT_CLASS(val);
+
+	if ( clazz == javaLangIntegerClass ) {
+		java_lang_reflect_Field_setInt(this, obj, unhand(((Hjava_lang_Integer *)val))->value );
+	}
+	else if ( clazz == javaLangBooleanClass ) {
+		java_lang_reflect_Field_setBoolean(this, obj, unhand(((Hjava_lang_Boolean *)val))->value );
+	}
+	else if ( clazz == javaLangByteClass ) {
+		java_lang_reflect_Field_setByte(this, obj, unhand(((Hjava_lang_Byte *)val))->value );
+	}
+	else if ( clazz == javaLangShortClass ) {
+		java_lang_reflect_Field_setShort(this, obj, unhand(((Hjava_lang_Short *)val))->value );
+	}
+	else if ( clazz == javaLangCharacterClass ) {
+		java_lang_reflect_Field_setChar(this, obj, unhand(((Hjava_lang_Character *)val))->value );
+	}
+	else if ( clazz == javaLangLongClass ) {
+		java_lang_reflect_Field_setLong(this, obj, unhand(((Hjava_lang_Long *)val))->value );
+	}
+	else if ( clazz == javaLangFloatClass ) {
+		java_lang_reflect_Field_setFloat(this, obj, unhand(((Hjava_lang_Float *)val))->value );
+	}
+	else if ( clazz == javaLangDoubleClass ) {
+		java_lang_reflect_Field_setDouble(this, obj, unhand(((Hjava_lang_Double *)val))->value );
 	}
 	else {
 		SignalError("java.lang.IllegalArgumentException", base);

@@ -35,23 +35,23 @@
 		pushl 4(%1,%0,8)					\n\
 2:									\n\
 		pushl (%1,%0,8)						\n\
-		jmpl 1b							\n\
+		jmp 1b							\n\
 3:									\n\
 		call *%3						\n\
 		movl %5,%%ebx						\n\
 		movb %4,%%cl						\n\
-		cmpb $'F',%%cl						\n\
+		cmpb $0x46,%%cl						\n\
 		jne 4f							\n\
 		fstps (%%ebx)						\n\
-		jmpl 6f							\n\
+		jmp 6f							\n\
 4:									\n\
-		cmpb $'D',%%cl						\n\
+		cmpb $0x44,%%cl						\n\
 		jne 5f							\n\
 		fstpl (%%ebx)						\n\
-		jmpl 6f							\n\
+		jmp 6f							\n\
 5:									\n\
 		movl %%eax,(%%ebx)					\n\
-		cmpb $'J',%%cl						\n\
+		cmpb $0x4a,%%cl						\n\
 		jne 6f							\n\
 		movl %%edx,4(%%ebx)					\n\
 6:									\n\

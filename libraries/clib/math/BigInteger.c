@@ -15,6 +15,12 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include <native.h>
 
+void
+java_math_BigInteger_plumbInit(void)
+{
+	/* No init needed */
+}
+
 #if defined(HAVE_LIBGMP)
 
 #include <gmp.h>
@@ -56,12 +62,6 @@ mpz2bytes(HArrayOfByte** outp, MP_INT* val)
 	mpz_clear(&rem);
 
 	(*outp) = out;
-}
-
-void
-java_math_BigInteger_plumbInit(void)
-{
-	/* No init needed */
 }
 
 HArrayOfByte*
@@ -309,17 +309,109 @@ java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayO
 HArrayOfByte*
 java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
 {
-	unimp("bigint");
+	int res;
+	MP_INT r;
+	MP_INT s1;
+	MP_INT s2;
+	HArrayOfByte* result;
+
+	mpz_init(&r);
+	mpz_init(&s1);
+	mpz_init(&s2);
+
+	bytes2mpz(&s1, src1);
+	bytes2mpz(&s2, src2);
+
+	if ((res = mpz_invert(&r, &s1, &s2)) != 0)
+		mpz2bytes(&result, &r);
+
+	mpz_clear(&r);
+	mpz_clear(&s1);
+	mpz_clear(&s2);
+	
+	if (res)
+		return result;
+	else
+		SignalError("java/lang/ArithmeticException", "no modInverse");
 }
 
 HArrayOfByte*
 java_math_BigInteger_plumbSquare(HArrayOfByte* src)
 {
+	MP_INT s;
+	HArrayOfByte* result;
+
+	mpz_init(&s);
+
+	bytes2mpz(&s, src);
+
+	mpz_mul(&s, &s, &s);
+
+	mpz2bytes(&result, &s);
+
+	mpz_clear(&s);
+
+	return (result);
+}
+
+#else
+
+HArrayOfByte*
+java_math_BigInteger_plumbAdd(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+struct Hjava_math_BigInteger*
+java_math_BigInteger_plumbSubtract(HArrayOfByte* src1, HArrayOfByte* src2)
+{
 	unimp("bigint");
 }
 
 HArrayOfByte*
-java_math_BigInteger_plumbGeneratePrime(HArrayOfByte* src)
+java_math_BigInteger_plumbMultiply(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbDivide(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfArray*
+java_math_BigInteger_plumbDivideAndRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbGcd(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayOfByte* src3)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbSquare(HArrayOfByte* src)
 {
 	unimp("bigint");
 }

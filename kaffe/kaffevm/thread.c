@@ -9,8 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	SDBG(s)
+#include "debug.h"
 
 #include "config.h"
 #include "config-std.h"
@@ -40,8 +39,6 @@ Hjava_lang_Thread* finalman;
 Hjava_lang_ThreadGroup* standardGroup;
 
 int threadStackSize;
-int talive;
-int tdaemon;
 
 static void firstStartThread(void*);
 static void createInitialThread(char*);
@@ -77,7 +74,14 @@ initThreads(void)
 	unhand(standardGroup)->nthreads = 0;
 	unhand(standardGroup)->threads = 0;
 	unhand(standardGroup)->ngroups = 0;
-	unhand(standardGroup)->groups = (HArrayOfObject*)newArray(ThreadGroupClass, 0);
+	/* 
+	 * Note that groups must be set to null, and *not* to a zero-length
+	 * array.  Otherwise, creating a new ThreadGroup will throw an
+	 * ArrayOutOfBoundsException with Sun's classes.zip when the 
+	 * new ThreadGroup is added as a child to this thread group.
+	 * This is known to work as of 5/29/98 with 1.1.3's classes.zip
+	 */
+	unhand(standardGroup)->groups = 0;
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
@@ -118,11 +122,22 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 		SignalError("java.lang.ThreadDeath", "");
 	}
 	else {
+#ifdef LET_TIM_DECIDE_IF_HE_REALLY_WANTS_THAT
 		/* Stop the thread - and wait for it to terminate */
 		lockMutex(tid);
 		(*Kaffe_ThreadInterface.stop)(tid);
 		waitCond(tid, 0);
 		unlockMutex(tid);
+#else
+		/* 
+		 * Waiting for the thread to exit could cause a deadlock,
+		 * especially if the thread to be terminated waits to reacquire
+		 * a lock before it can exit.
+		 * See the ThreadStop example (ThreadStop_BlockThread)
+		 * It's also not necessary - or is it? What's the rationale?
+		 */
+		(*Kaffe_ThreadInterface.stop)(tid);
+#endif
 	}
 }
 
@@ -163,7 +178,7 @@ createDaemon(void* func, char* nm, int prio)
 {
 	Hjava_lang_Thread* tid;
 
-DBG(	printf("createDaemon %s\n", nm);				)
+DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
 	/* Keep daemon threads as root objects */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
@@ -191,11 +206,9 @@ firstStartThread(void* arg)
 {
 	Hjava_lang_Thread* tid;
 
-	(*Kaffe_ThreadInterface.init)(arg);
-
 	tid  = (*Kaffe_ThreadInterface.currentJava)();
 
-DBG(	printf("firstStartThread %x\n", tid);		)
+DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 
 	/* Find the run()V method and call it */
 	do_execute_java_method(tid, "run", "()V", 0, 0);
@@ -261,7 +274,7 @@ aliveThread(Hjava_lang_Thread* tid)
 {
 	bool status;
 
-DBG(	printf("aliveThread: tid 0x%x\n", tid);				)
+DBG(VMTHREAD,	dprintf("aliveThread: tid 0x%x\n", tid);		)
 
 	status = (*Kaffe_ThreadInterface.alive)(tid);
 

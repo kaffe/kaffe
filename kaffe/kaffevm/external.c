@@ -29,7 +29,7 @@
 #include "support.h"
 #include "md.h"
 #if defined(NO_SHARED_LIBRARIES)
-#include "../../packages/external_native.h"
+#include "../../libraries/clib/external_native.h"
 #endif
 
 #if defined(NO_SHARED_LIBRARIES)
@@ -218,6 +218,11 @@ DBG(	printf("Native stub = '%s'\n", stub);fflush(stdout);		)
 		SET_METHOD_NATIVECODE(m, func);
 		return;
 	}
+
+	/* Try to locate the nature function using the JNI interface */
+        if (Kaffe_JNI_native(m)) {
+                return;
+        }
 
 	fprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
 	fflush(stderr);

@@ -141,7 +141,7 @@ readFieldEnd(void)
  * Read and process a class field.
  */
 void
-readField(FILE* fp, Hjava_lang_Class* this, constants* cpool)
+readField(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 {
 	field_info f;
 	int argsize = 0;
@@ -198,7 +198,7 @@ readField(FILE* fp, Hjava_lang_Class* this, constants* cpool)
 			}
 		}
 		else {
-			fseek(fp, len, SEEK_CUR);
+			seekm(fp, len);
 		}
 	}
 
@@ -222,7 +222,7 @@ FDBG(		printf("Field: %s %s\n", arg, (char*)cpool->data[f.name_index]);			)
  * Read and process a method.
  */
 void
-readMethod(FILE* fp, Hjava_lang_Class* this, constants* cpool)
+readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 {
 	method_info m;
 	char* name;
@@ -291,7 +291,7 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 void
 findClass(char* nm)
 {
-	FILE* fp;
+	int fd;
 	jarFile* jfile;
 	jarEntry* jentry;
 	char superName[512];
@@ -300,6 +300,7 @@ findClass(char* nm)
 	char* end = (char*)1;
 	int j;
 	constants* savepool;
+	classFile hand;
 
 	/* If classpath isn't set, get it from the environment */
 	if (realClassPath[0] == 0) {
@@ -331,16 +332,31 @@ findClass(char* nm)
 			strcat(superName, "/");
 			strcat(superName, nm);
 			strcat(superName, ".class");
-			fp = fopen(superName, "rb");
-			if (fp != 0) {
-				objectDepth++;
-				savepool = constant_pool;
-				readClass(NULL, fp, NULL);
-				constant_pool = savepool;
-				objectDepth--;
-				fclose(fp);
-				return;
+			fd = open(superName, O_RDONLY|O_BINARY, 0);
+			if (fd < 0) {
+				continue;
 			}
+			if (fstat(fd, &sbuf) < 0) {
+				close(fd);
+				continue;
+			}
+
+			hand.size = sbuf.st_size;
+			hand.base = malloc(hand.size);
+			hand.buf = hand.base;
+
+			objectDepth++;
+			savepool = constant_pool;
+
+			readClass(NULL, &hand, NULL);
+
+			constant_pool = savepool;
+			objectDepth--;
+
+			free(hand.base);
+
+			close(fd);
+			return;
 		}
 		else {
 			/* JAR file */
@@ -353,17 +369,27 @@ findClass(char* nm)
 			strcat(superName, ".class");
 
 			jentry = lookupJarFile(jfile, superName);
-			if (jentry != 0) {
-				fseek(jfile->fp, jentry->dataPos, SEEK_SET);
-				objectDepth++;
-				savepool = constant_pool;
-				readClass(NULL, jfile->fp, NULL);
-				constant_pool = savepool;
-				objectDepth--;
+			if (jentry == 0) {
 				closeJarFile(jfile);
-				return;
+				continue;
 			}
+
+			hand.base = getDataJarFile(jfile, jentry);
+			hand.size = jentry->uncompressedSize;
+			hand.buf = hand.base;
+
+			objectDepth++;
+			savepool = constant_pool;
+
+			readClass(NULL, &hand, NULL);
+
+			constant_pool = savepool;
+			objectDepth--;
+
+			free(hand.base);
+
 			closeJarFile(jfile);
+			return;
 		}
 	}
 	fprintf(stderr, "Failed to open object '%s'\n", nm);

@@ -19,7 +19,6 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "flags.h"
 #include "classMethod.h"
 #include "locks.h"
 #include "thread.h"
@@ -28,8 +27,10 @@
 #include "external.h"
 #include "lookup.h"
 #include "md.h"
+#include "jni.h"
 
-static gcList gclists[4];
+static gcList gclists[5];
+static int mustfree = 4;		/* temporary list */
 static int white = 3;
 static int grey = 2;
 static int black = 1;
@@ -151,7 +152,7 @@ static gcFuncs gcFunctions[] = {
 #define	REFOBJHASHSZ	128
 typedef struct _refObject {
 	void*			mem;
-	uint			ref;
+	unsigned int		ref;
 	struct _refObject*	next;
 } refObject;
 typedef struct _refTable {
@@ -179,6 +180,7 @@ initGc(void)
 	URESETLIST(gclists[grey]);
 	URESETLIST(gclists[black]);
 	URESETLIST(gclists[finalise]);
+	URESETLIST(gclists[mustfree]);
 }
 
 /*
@@ -253,7 +255,9 @@ DBG(	printf("walkConservative: %x-%x\n", base, base+size);
 		gcStats.markedmem += size;
 
 		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
-			markObject(*(void**)mem);
+			void *p = *(void **)mem;
+			if (p)
+				markObject(p);
 		}
 	}
 }
@@ -265,10 +269,15 @@ static
 void
 walkObject(void* base, uint32 size)
 {
+	Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
 	walkConservative(base, size);
 
 	/* Special magic to handle thread objects */
-	if (soft_instanceof(ThreadClass, (Hjava_lang_Object*)base)) {
+	/* 
+	 * Note that there is a window after the object is allocated but
+	 * before dtable is set.
+	 */
+	if ((obj->dtable != 0) && soft_instanceof(ThreadClass, obj)) {
 		(*Kaffe_ThreadInterface.GcWalkThread)((Hjava_lang_Thread*)base);
 	}
 }
@@ -385,18 +394,13 @@ gcMan(void* arg)
 	gc_block* info;
 	int idx;
 
-	(*Kaffe_ThreadInterface.init)(arg);
-
-	initStaticMutex(&gcman);
-	initStaticCond(&gcman);
+	initStaticLock(&gcman);
 	lockStaticMutex(&gcman);
 
 	for(;;) {
 		gcRunning = false;
 		waitStaticCond(&gcman, 0);
 		assert(gcRunning == true);
-
-		LOCK();
 
 		startGC();
 
@@ -423,12 +427,10 @@ gcMan(void* arg)
 
 		finishGC();
 
-		UNLOCK();
-
-		if (flag_gc > 0) {
+		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			fprintf(stderr, "<GC: heap %dK, total %dK, alloc %dK, marked %dK, freeing %dK>\n", gc_heap_total/1024, gcStats.totalmem/1024, gcStats.allocmem/1024, gcStats.markedmem/1024, (gcStats.totalmem > gcStats.markedmem ? (gcStats.totalmem - gcStats.markedmem)/1024 : 0));
 		}
-		if (flag_gc > 1) {
+		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
 		}
 
@@ -460,6 +462,9 @@ startGC(void)
 	gcStats.markedobj = 0;
 	gcStats.markedmem = 0;
 
+	/* disable the mutator to protect colour lists */
+	LOCK();
+
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
 		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
@@ -488,7 +493,13 @@ finishGC(void)
 	/* There shouldn't be any grey objects at this point */
 	assert(gclists[grey].cnext == &gclists[grey]);
 
-	/* Any white objects should now be freed */
+	/* 
+	 * Any white objects should now be freed, but we cannot call
+	 * gc_heap_free here because we might block in gc_heap_free, 
+	 * which would leave the white list unprotected.
+	 * So we move them to a 'mustfree' list from where we'll pull off
+	 * them later.
+	 */
 	while (gclists[white].cnext != &gclists[white]) {
 		unit = gclists[white].cnext;
 		UREMOVELIST(unit);
@@ -501,12 +512,7 @@ finishGC(void)
 			UAPPENDLIST(gclists[finalise], unit);
 		}
 		else {
-FDBG(			printf("freeObject %p size %d\n", info, info->size);
-			fflush(stdout);					)
-			gcStats.freedmem += GCBLOCKSIZE(info);
-			gcStats.freedobj += 1;
-			OBJECTSTATSREMOVE(unit);
-			gc_heap_free(unit);
+			UAPPENDLIST(gclists[mustfree], unit);
 		}
 	}
 
@@ -524,6 +530,27 @@ FDBG(			printf("freeObject %p size %d\n", info, info->size);
 
 		UAPPENDLIST(gclists[white], unit);
 	}
+	/* 
+	 * Now that all lists that the mutator manipulates are in a
+	 * consistent state, we can reenable the mutator here 
+	 */
+	UNLOCK();
+
+	/* 
+	 * Now free the objects.  We can block here since we're the only
+	 * thread manipulating the "mustfree" list.
+	 */
+	while (gclists[mustfree].cnext != &gclists[mustfree]) {
+		unit = gclists[mustfree].cnext;
+		UREMOVELIST(unit);
+FDBG(		printf("freeObject %p size %d\n", info, info->size);
+		fflush(stdout);					)
+		gcStats.freedmem += GCBLOCKSIZE(info);
+		gcStats.freedobj += 1;
+		OBJECTSTATSREMOVE(unit);
+		gc_heap_free(unit);
+	}
+
 
 FTDBG(	printf("Freed %d objects of %dK\n", gcStats.freedobj,
 		gcStats.freedmem/1024);					)
@@ -551,10 +578,7 @@ finaliserMan(void* arg)
 	gc_unit* unit;
 	int idx;
 
-	(*Kaffe_ThreadInterface.init)(arg);
-
-	initStaticMutex(&finman);
-	initStaticCond(&finman);
+	initStaticLock(&finman);
 	lockStaticMutex(&finman);
 
 	for (;;) {
@@ -642,6 +666,7 @@ gcMalloc(size_t size, int fidx)
 	static int gc_init = 0;
 	gc_block* info;
 	gc_unit* unit;
+	void *mem;
 	int i;
 
 	/* Initialise GC */
@@ -651,6 +676,9 @@ gcMalloc(size_t size, int fidx)
 	}
 
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
+
+	/* keep pointer to object */
+	mem = UTOMEM(unit);
 	if (unit == 0) {
 		throwOutOfMemory();
 	}
@@ -684,10 +712,19 @@ ADBG(	printf("gcMalloc: 0x%x (%d)\n", unit, size);			)
 		GC_SET_COLOUR(info, i, GC_COLOUR_FIXED);
 	}
 	else {
+		/*
+		 * Note that as soon as we put the object on the white list,
+		 * the gc might come along and free the object if it can't
+		 * find any references to it.  This is why we need to keep
+		 * a reference in `mem'.  Note that keeping a reference in
+		 * `unit' will not do because markObject performs a UTOUNIT()!
+		 */
+		LOCK(); 
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
 		UAPPENDLIST(gclists[white], unit);
+		UNLOCK();
 	}
-	return (UTOMEM(unit));
+	return (mem);
 }
 
 /*
@@ -768,7 +805,7 @@ static
 void
 gcAddRef(void* mem)
 {
-	uint idx;
+	uint32 idx;
 	refObject* obj;
 
 	idx = REFOBJHASH(mem);
@@ -796,7 +833,7 @@ static
 bool
 gcRmRef(void* mem)
 {
-	uint idx;
+	uint32 idx;
 	refObject** objp;
 	refObject* obj;
 

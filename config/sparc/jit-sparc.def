@@ -850,7 +850,7 @@ define_insn(build_key, set_word_xxC)
 {
 	jint val = const_int(2);
 
-	LOUT = val
+	LOUT = val;
 
 	debug((".word %08x\n", val));
 }
@@ -939,7 +939,7 @@ define_insn(branch, branch_xCC)
 		debug(("bul ?\n"));
 		break;
 	case bugt:
-		insn_branch(0x0a, 0, 0);		/* WRONG!!! SIGNED!!! */
+		insn_branch(0x0c, 0, 0);
 		debug(("bugt ?\n"));
 		break;
 	default:
@@ -1139,7 +1139,17 @@ define_insn(returnarg_long, returnargl_xxR)
 		insn_RRR(2, REG_i0, r1, REG_g0);
 	}
 	else {
-		abort();
+		/* swap i0 <-> i1 */
+
+		insn_RRR(3, r1, r1, r2);
+
+		debug(("xor %s,%s,%s\n", regname(r1), regname(r2), regname(r1)));
+		insn_RRR(3, r2, r1, r2);
+
+		debug(("xor %s,%s,%s\n", regname(r1), regname(r2), regname(r2)));
+		insn_RRR(3, r1, r1, r2);
+
+		debug(("xor %s,%s,%s\n", regname(r1), regname(r2), regname(r1)));
 	}
 }
 

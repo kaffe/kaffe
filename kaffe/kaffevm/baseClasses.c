@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
+#include "debug.h"
 
 #include "config.h"
 #include "config-std.h"
@@ -160,20 +160,20 @@ initBaseClasses(void)
 void
 initExceptions(void)
 {
-DBG(	printf("initExceptions()\n");				)
-#if !defined(DEBUG)
-	/* Catch signal we need to convert to exceptions */
+DBG(INIT,	printf("initExceptions()\n");			)
+	if (DBGEXPR(EXCEPTION, false, true)) {
+	/* Catch signals we need to convert to exceptions */
 #if defined(SIGSEGV)
-	catchSignal(SIGSEGV, nullException);
+		catchSignal(SIGSEGV, nullException);
 #endif
 #if defined(SIGBUS)
-	catchSignal(SIGBUS, nullException);
+		catchSignal(SIGBUS, nullException);
 #endif
 #if defined(SIGFPE)
-	catchSignal(SIGFPE, arithmeticException);
+		catchSignal(SIGFPE, arithmeticException);
 #endif
 #if defined(SIGPIPE)
-	catchSignal(SIGPIPE, SIG_IGN);
+		catchSignal(SIGPIPE, SIG_IGN);
 #endif
-#endif
+	}
 }

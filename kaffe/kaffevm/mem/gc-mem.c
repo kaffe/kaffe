@@ -8,12 +8,9 @@
  * of this file. 
  */
 
-#define	ADBG(s)
-#define	FDBG(s)
-#define	SADBG(s)
-#define	FSDBG(s)
-#define	SYSDBG(s)
-#define	SDBG(s)
+#include "debug.h"
+/* undefine this to revert to old tile scheme */
+#define	PREDEFINED_NUMBER_OF_TILES
 
 #include "config.h"
 #include "config-std.h"
@@ -33,7 +30,34 @@ static void* gc_system_alloc(size_t);
 static struct {
 	gc_block*	list;
 	uint16		sz;
-} freelist[NR_FREELISTS+1];
+} freelist[NR_FREELISTS+1] 
+#ifdef PREDEFINED_NUMBER_OF_TILES
+	= {
+#define	S(sz)	{ 0, sz }
+	S(16),
+	S(24),
+	S(32),
+	S(40),
+	S(48),
+	S(56),
+	S(64),
+	S(80),
+	S(96),
+	S(112),
+	S(128),
+	S(160),
+	S(192),
+	S(224),
+	S(240),
+	S(496),
+	S(1000),
+	S(2016),
+	S(4040),
+	{ (gc_block *)0xffffffff, 0 }
+}
+#endif /* PREDEFINED_NUMBER_OF_TILES */
+;
+
 static struct {
 	uint16	list;
 } sztable[MAX_SMALL_OBJECT_SIZE+1];
@@ -54,6 +78,21 @@ extern struct Hjava_lang_Thread* garbageman;
 static void* pagealloc(size_t);
 extern void throwOutOfMemory(void);
 
+#ifdef DEBUG
+/*
+ * analyze the slack incurred by small objects
+ */
+static int totalslack;
+static int totalsmallobjs;
+
+static
+void printslack()
+{
+	printf("allocated %d small objects, total slack %d, slack/per "
+		"object %8.2f\n", 
+		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
+}
+#endif /* DEBUG */
 
 /*
  * Initialise allocator.
@@ -76,6 +115,10 @@ gc_heap_initialise(void)
 		gc_heap_limit = MAX_HEAPSIZE;
 	}
 
+#ifndef PREDEFINED_NUMBER_OF_TILES
+	/* old scheme, where number of tiles was approximated by a series
+	 * of powers of two
+	 */
 #define	OBJSIZE(NR) \
 	((gc_pgsize-sizeof(gc_block)-ROUNDUPALIGN(1)-(NR*(2+sizeof(void*))))/NR)
 
@@ -118,6 +161,36 @@ gc_heap_initialise(void)
 		sztable[l].list = i;
 	}
 	max_freelist = i;
+#else
+	/* PREDEFINED_NUMBER_OF_TILES */
+	{
+		/*
+		 * Use the preinitialized freelist table to initialize
+		 * the sztable.
+		 */
+		int sz = 0;
+		uint16 flidx = 0;
+		while (freelist[flidx].list == 0) {
+			for (; sz <= freelist[flidx].sz; sz++)
+				sztable[sz].list = flidx;
+			flidx++;
+		}
+		max_small_object_size = sz - 1;
+		max_freelist = flidx;
+	}
+#endif
+
+DBG(GCSTAT,
+	for (i = 0; i < max_small_object_size; i++)
+		printf("size %d list %d, list.size %d\n", i, sztable[i].list,
+			freelist[sztable[i].list].sz);
+	printf("max smobjsize %d, max freelist %d\n", 
+		max_small_object_size, max_freelist);
+    )
+
+DBG(SLACKANAL,
+	atexit(printslack);
+    )
 
 #undef	OBJSIZE
 
@@ -147,12 +220,19 @@ gc_heap_malloc(size_t sz)
 	if (gc_heap_init == 0) {
 		gc_heap_init = 1;
 		gc_heap_initialise();
-		initStaticMutex(&gc_lock);
+		initStaticLock(&gc_lock);
 	}
 
 	lockStaticMutex(&gc_lock);
 
 	times = 0;
+
+DBG(SLACKANAL,
+	if (GC_SMALL_OBJECT(sz)) {
+		totalslack += (freelist[sztable[sz].list].sz - sz);
+		totalsmallobjs++;
+	}
+    )
 
 	rerun:;
 	times++;
@@ -168,7 +248,7 @@ gc_heap_malloc(size_t sz)
 		if (*mptr != 0) {
 			blk = *mptr;
 			assert(blk->free != 0);
-ADBG(			printf("gc_heap_malloc: freelist %d at %p\n", sz, *mptr);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p\n", sz, *mptr);)
 		}
 		else {
 			blk = gc_small_block(nsz);
@@ -179,7 +259,7 @@ ADBG(			printf("gc_heap_malloc: freelist %d at %p\n", sz, *mptr);)
 			blk->nfree = *mptr;
 			*mptr = blk;
 
-ADBG(			printf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
 		}
 
 		/* Unlink free one and return it */
@@ -214,7 +294,7 @@ ADBG(			printf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
 		}
 		mem = GCBLOCK2FREE(blk, 0);
 		GC_SET_STATE(blk, 0, GC_STATE_NORMAL);
-ADBG(		printf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
+DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 		blk->avail--;
 		assert(blk->avail == 0);
 	}
@@ -237,7 +317,8 @@ ADBG(		printf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 	 * memory from somewhere.
 	 */
 
-SDBG(	printf("Demanding %d ...\n", sz);				)
+DBG(GCSTAT,
+	dprintf("Demanding %d ...\n", sz);				)
 
 	switch (times) {
 	case 1:
@@ -272,11 +353,22 @@ SDBG(	printf("Demanding %d ...\n", sz);				)
 			/* Free block into the system */
 			gc_primitive_free(blk);
 		}
-SDBG(		objectStatsPrint();	/* XXX */			)
+DBG(GCSTAT,	objectStatsPrint();	/* XXX */		)
 		break;
 
 	default:
+		if (DBGEXPR(CATCHOUTOFMEM, true, false))
+		{
+			/*
+			 * If we ran out of memory, a OutOfMemoryException is
+			 * thrown.  If we fail to allocate memory for it, all
+			 * is lost.
+			 */
+			static int ranout;
+			assert (ranout++ == 0 || !!!"Ran out of memory!");
+		}
 		/* Guess we've really run out */
+		unlockStaticMutex(&gc_lock);
 		return (0);
 	}
 
@@ -307,7 +399,8 @@ gc_heap_free(void* mem)
 #endif
 	GC_SET_COLOUR(info, idx, GC_COLOUR_FREE);
 
-FDBG(	printf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
+DBG(GCFREE,
+	dprintf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
 
 	if (GC_SMALL_OBJECT(info->size)) {
 		lnr = sztable[info->size].list;
@@ -319,6 +412,12 @@ FDBG(	printf("gc_heap_free: memory %p size %d\n", mem, info->size);	)
 			freelist[lnr].list = info;
 		}
 		info->avail++;
+#if defined(GC_DEBUG)
+		/* write pattern in memory to see when live objects were
+		 * freed - Note that (f4f4f4f4 == -185273100)
+		 */
+		memset(mem, 0xf4, info->size);
+#endif
 		obj = GCMEM2FREE(mem);
 		obj->next = info->free;
 		info->free = obj;
@@ -398,7 +497,11 @@ gc_small_block(size_t sz)
 	}
 	GCBLOCK2FREE(info, nr-1)->next = 0;
 	info->free = GCBLOCK2FREE(info, 0);
-
+DBG(SLACKANAL,
+	int slack = ((void *)info) 
+		+ gc_pgsize - (void *)(GCBLOCK2MEM(info, nr));
+	totalslack += slack;
+    )
 	return (info);
 }
 
@@ -480,7 +583,7 @@ gc_primitive_alloc(size_t sz)
 				ptr->next = nptr;
 			}
 			*pptr = ptr->next;
-SADBG(			printf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->size, ptr); )
+DBG(GCPRIM,		dprintf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->size, ptr); )
 			hidx = GC_OBJECT_HASHIDX(ptr);
 			ptr->next = gc_objecthash[hidx];
 			gc_objecthash[hidx] = ptr;
@@ -528,12 +631,12 @@ gc_primitive_free(gc_block* mem)
 		 * attached it to the beginning.
 		 */
 		if (GCBLOCKEND(mem) == gc_prim_freelist) {
-FSDBG(			printf("gc_primitive_free: Merging (%d,%p) beginning of freelist\n", mem->size, mem); )
+DBG(GCPRIM,	dprintf("gc_primitive_free: Merging (%d,%p) beginning of freelist\n", mem->size, mem); )
 			mem->size += gc_prim_freelist->size;
 			mem->next = gc_prim_freelist->next;
 		}
 		else {
-FSDBG(			printf("gc_primitive_free: Prepending (%d,%p) beginning of freelist\n", mem->size, mem); )
+DBG(GCPRIM,	dprintf("gc_primitive_free: Prepending (%d,%p) beginning of freelist\n", mem->size, mem); )
 			mem->next = gc_prim_freelist;
 		}
 		gc_prim_freelist = mem;
@@ -552,27 +655,27 @@ FSDBG(			printf("gc_primitive_free: Prepending (%d,%p) beginning of freelist\n",
 			if (GCBLOCKEND(lptr) == mem) {
 				if (GCBLOCKEND(mem) == nptr) {
 					/* Merge with last and next */
-FSDBG(					printf("gc_primitive_free: Merging (%d,%p) into list\n", mem->size, mem); )
+DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) into list\n", mem->size, mem); )
 					lptr->size += mem->size + nptr->size;
 					lptr->next = nptr->next;
 				}
 				else {
 					/* Merge with last but not next */
-FSDBG(					printf("gc_primitive_free: Merging (%d,%p) with last in list\n", mem->size, mem); )
+DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) with last in list\n", mem->size, mem); )
 					lptr->size += mem->size;
 				}
 			}
 			else {
 				if (GCBLOCKEND(mem) == nptr) {
 					/* Merge with next but not last */
-FSDBG(					printf("gc_primitive_free: Merging (%d,%p) with next in list\n", mem->size, mem); )
+DBG(GCPRIM,				dprintf("gc_primitive_free: Merging (%d,%p) with next in list\n", mem->size, mem); )
 					mem->size += nptr->size;
 					mem->next = nptr->next;
 					lptr->next = mem;
 				}
 				else {
 					/* Wont merge with either */
-FSDBG(					printf("gc_primitive_free: Inserting (%d,%p) into list\n", mem->size, mem); )
+DBG(GCPRIM,				dprintf("gc_primitive_free: Inserting (%d,%p) into list\n", mem->size, mem); )
 					mem->next = nptr;
 					lptr->next = mem;
 				}
@@ -586,11 +689,11 @@ FSDBG(					printf("gc_primitive_free: Inserting (%d,%p) into list\n", mem->size,
 	 * Otherwise, just add in onto the list at the end.
 	 */
 	if (GCBLOCKEND(lptr) == mem) {
-FSDBG(		printf("gc_primitive_free: Merge (%d,%p) onto last in list\n", mem->size, mem); )
+DBG(GCPRIM,	dprintf("gc_primitive_free: Merge (%d,%p) onto last in list\n", mem->size, mem); )
 		lptr->size += mem->size;
 	}
 	else {
-FSDBG(		printf("gc_primitive_free: Append (%d,%p) onto last in list\n", mem->size, mem); )
+DBG(GCPRIM,	dprintf("gc_primitive_free: Append (%d,%p) onto last in list\n", mem->size, mem); )
 		lptr->next = mem;
 	}
 }
@@ -614,7 +717,8 @@ gc_system_alloc(size_t sz)
 
 	mem = pagealloc(sz);
 
-SYSDBG(	printf("gc_system_alloc: %d byte at %p\n", sz, mem);		)
+DBG(GCSYSALLOC,
+	dprintf("gc_system_alloc: %d byte at %p\n", sz, mem);		)
 
 	return (mem);
 }

@@ -15,20 +15,15 @@
 
 #if defined(NO_SHARED_LIBRARIES)
 
-#if defined(TRANSLATOR)
 #define	KAFFE_NATIVE_PROTOTYPE(_f)	extern void _f();
 #define	KAFFE_NATIVE_METHOD(_n)		{ #_n, _n },
-#elif defined(INTERPRETER)
-#define	KAFFE_NATIVE_PROTOTYPE(_f)	extern void Kaffe_##_f##_stub();
-#define	KAFFE_NATIVE_METHOD(_n)		{ #_n, Kaffe_##_n##_stub },
-#endif
 
-#define	KAFFE_NATIVE(_f)	KAFFE_NATIVE_PROTOTYPE(_f)
+#define	KAFFE_NATIVE(_f)		KAFFE_NATIVE_PROTOTYPE(_f)
 
 #include "external_wrappers.h"
 
 #undef	KAFFE_NATIVE
-#define	KAFFE_NATIVE(_f)	KAFFE_NATIVE_METHOD(_f)
+#define	KAFFE_NATIVE(_f)		KAFFE_NATIVE_METHOD(_f)
 
 nativeFunction default_natives[] = {
 

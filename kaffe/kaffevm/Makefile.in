@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/unix-internal:@VPATHSEP@@srcdir@/mem
+@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/@THREAD_SYSTEM@:@VPATHSEP@@srcdir@/mem
 srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
@@ -20,6 +20,7 @@ LD=		@LD@
 AR=		@AR@
 RANLIB=		@RANLIB@
 DLLTOOL=	@DLLTOOL@
+DEPTOOL=	@DEPTOOL@
 PIC=		@PICVM@
 LDFLAGS=	@LIBSHARE@
 LIBS=		@LIBS@
@@ -53,7 +54,6 @@ COMMON=\
 		locks$(OBJEXT) \
 		support$(OBJEXT) \
 		soft$(OBJEXT) \
-		flags$(OBJEXT) \
 		string$(OBJEXT) \
 		verify$(OBJEXT) \
 		code-analyse$(OBJEXT) \
@@ -61,22 +61,20 @@ COMMON=\
 		stackTrace$(OBJEXT) \
 		jar$(OBJEXT) \
 		inflate$(OBJEXT) \
+		debug$(OBJEXT) \
+		jni$(OBJEXT) \
 		md$(OBJEXT)
-
-#
-# Use internal threads
-#
-COMMON+=	internal$(OBJEXT) \
-		internalCalls$(OBJEXT)
-
 
 all:		mkkaffevm
 
 @engine_frag@
 @cpu_frag@
 @cpu_os_frag@
+@threads_frag@
 
-OBJECT=		$(COMMON) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
+OBJECT=		$(COMMON) $(THREAD) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
+
+DEPENDS=       $(OBJECT:@OBJEXT@=.d)
 
 mkkaffevm:	$(LLIB)
 
@@ -88,19 +86,23 @@ $(LIB):		$(OBJECT) lib.exp
 		@LINKVMLIB@
 
 .c$(OBJEXT):
-		$(CC) $(ALL_CFLAGS) -c $(PIC) $<
+		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $@
 
-gc.o:		gc.h gc.c gc-incremental.c gc-incremental.h
+.SUFFIXES: .d
 
-external.o:	external.c external.h ../../libraries/clib/external_wrappers.h
+.c.d: 
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
 
 clean:
 		rm -f $(LIB) $(LLIB) $(OBJECT) lib.exp
+		rm -f $(DEPENDS)
+		rm -f .depend
+		touch .depend
 
 distclean:	clean
 		rm -f md.c jit.def icode.h trampolines.c
 		rm -f thread-native.h locks-native.h
-		rm -f Makefile
+		rm -f Makefile .depend
 
 install:
 		test -d $(libdir) || $(MKDIR) $(libdir)
@@ -108,6 +110,12 @@ install:
 		rm -f $(libdir)/$(LLIB)
 		$(LN) $(LIB) $(libdir)/$(LLIB)
 
+depend:         $(DEPENDS)
+		rm -f .depend
+		cat $(DEPENDS) > .depend
+
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LLIB)
 		touch lib.exp
+
+@INC_DEPEND@

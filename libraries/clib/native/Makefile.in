@@ -23,6 +23,7 @@ INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
 LN=		@LN_S@
 DLLTOOL=	@DLLTOOL@
+DEPTOOL=	@DEPTOOL@
 PIC=		@PIC@
 LDFLAGS=	@LIBSHARE@
 LIBS=		@LIBS@
@@ -75,8 +76,13 @@ OBJECT.UTIL=\
 OBJECT.TEXT=\
 		DateFormat$(OBJEXT)
 
+OBJECT.TEST=\
+		TestNative$(OBJEXT)
+
 OBJECT=		$(OBJECT.LANG) $(OBJECT.LANG.REFLECT) \
-		$(OBJECT.IO) $(OBJECT.UTIL) $(OBJECT.TEXT)
+		$(OBJECT.IO) $(OBJECT.UTIL) $(OBJECT.TEXT) $(OBJECT.TEST)
+
+DEPENDS=        $(OBJECT:@OBJEXT@=.d)
 
 all:		$(LLIB)
 
@@ -93,11 +99,18 @@ $(LIB):		$(OBJECT) lib.exp
 wrappers:
 		sed -n $(WRAPPER_CMD) *.c > external_wrappers.h
 
+.SUFFIXES: .d
+ 
+.c.d: 
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
+
 clean:
 		rm -f $(LLIB) $(LIB) $(OBJECT) lib.exp
+		rm -f $(DEPENDS) .depend
+		touch .depend
 
 distclean:	clean
-		rm -f Makefile
+		rm -f Makefile .depend
 		-rmdir java.io java.lang java.lang.reflect java.util
 
 install:
@@ -106,6 +119,12 @@ install:
 		rm -f $(libdir)/$(LLIB)
 		$(LN) $(LIB) $(libdir)/$(LLIB)
 
+depend:		$(DEPENDS)
+		rm -f .depend
+		cat $(DEPENDS) > .depend
+
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LLIB)
 		touch lib.exp
+
+@INC_DEPEND@

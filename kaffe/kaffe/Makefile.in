@@ -16,6 +16,7 @@ INSTALL=	@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
 MKDIR=		@MKDIR@
 CC=		@CC@
+DEPTOOL=	@DEPTOOL@
 INCLUDES=	-I. -I$(srcdir)/../kaffevm -I../../config -I$(srcdir)/../../config -I../../include -I$(srcdir)/../../include
 CFLAGS=		@CFLAGS@
 LDFLAGS=	@KAFFELINK@
@@ -25,10 +26,11 @@ OBJEXT=		@OBJEXT@
 EXEEXT=		@EXEEXT@
 
 OBJECT=		main$(OBJEXT)
+DEPENDS=	$(OBJECT:@OBJEXT@=.d)
 
 all:		kaffe$(EXEEXT)
 
-kaffe$(EXEEXT):	$(OBJECT)
+kaffe$(EXEEXT):	$(OBJECT) @KAFFE_LIBDEP@
 		$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o kaffe$(EXEEXT) $(OBJECT) $(LIBS)
 
 .c$(OBJEXT):
@@ -38,8 +40,21 @@ clean:
 		rm -f $(LIB) kaffe$(EXEEXT) kaffe.core $(OBJECT)
 
 distclean:	clean
+		rm -f $(DEPENDS)
 		rm -f Makefile
+		rm -f .depend
 
 install:
 		test -d $(bindir) || $(MKDIR) $(bindir)
 		$(INSTALL_PROGRAM) kaffe$(EXEEXT) $(bindir)/kaffe$(EXEEXT)
+
+.SUFFIXES:	.d
+
+.c.d:
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
+
+depend:	$(DEPENDS)
+		rm -f .depend
+		cat $(DEPENDS) > .depend
+
+@INC_DEPEND@

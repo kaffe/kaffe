@@ -86,15 +86,6 @@ extern void	classname2pathname(char*, char*);
 /*
  * Redirect the malloc/free functions
  */
-extern void*	__malloc(size_t);
-extern void	__free(void*);
-
-#undef malloc
-#undef calloc
-#undef free
-
-#define	malloc(A)	__malloc(A)
-#define	calloc(A, B)	__malloc((A)*(B))
-#define	free(A)		__free(A)
+#include "jmalloc.h"
 
 #endif

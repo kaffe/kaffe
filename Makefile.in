@@ -23,7 +23,11 @@ distclean:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) distclean) ; done
 	rm -f ENVIRONMENT ENVIRONMENT.BAT Makefile
 	rm -f config.cache config.log config.status
+	rm -f .depend
 	-rmdir @subdirs@
+
+depend:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) depend) ; done
 
 install:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done

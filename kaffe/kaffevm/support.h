@@ -34,8 +34,51 @@ extern userProperty* userProperties;
 
 struct _methods;
 
-#define	MAXMARGS		16
+/* 64 should put us on the safe side */
+#define	MAXMARGS		64
 
+/*
+ * The callMethodInfo structure describes the information necessary to 
+ * invoke a native or just-in-time compiled method.
+ *
+ * It is the task of the sysdepCallMethod macro, usually defined in 
+ * config/$arch/common.h, to generate a procedure call that conforms to 
+ * the calling convention of a particular architecture or set of build tools.
+ *
+ * The sysdepCallMethod macro takes a single argument of type callMethodInfo *
+ * that describes where the parameters are, where the return value should
+ * go and what the signature of the method is.
+ *
+ * `jvalue' is a union defined in include/jtypes.h.  It corresponds to an
+ * entry on the Java stack. 
+ * The suffixes i,j,b,c,s,l,f,d access the corresponding element of
+ * (Java) type int, long, boolean, char, short, ref, float, and double.
+ *
+ * `args' is an array containing the arguments passed to the function.
+ * It corresponds to the Java stack and has `nrargs' valid entries with 
+ * the following property:
+ *
+ * If two adjacent slots on the Java stack are combined to a 64bit value,
+ * it will also use two array entries, and not one.  However, the first 
+ * entry will contain the 64bit value (in j or d, depending on the type), 
+ * and the second entry will be undefined.  This allows for easier access, 
+ * while preserving indexing.  Thus, some array entries will have 0, some
+ * 32 and some 64 bits of valid data in them.  The callsize array says
+ * which one it is.  
+ *
+ * callsize[i] may be 0, 1, or 2, depending on the number of valid bits
+ * in args[i].  Similarly, calltype[i] contains the signature type of the
+ * argument in args[i] ('J', 'F', etc.)
+ *
+ * Porters note that "callsize[i] == 2 iff callsize[i+1] == 0" -- this 
+ * property is exploited by some sysdepCallMethod macros (sparc).
+ *
+ * `function' is a pointer to the method to be invoked.
+ *
+ * `retsize' and `rettype' have the same value ranges as callsize[i] and 
+ * calltype[i],  except they correspond to the return value.  The 
+ * sysdepCallMethod must store the return value in the proper type at *ret.
+ */
 typedef struct {
 	void*			function;
 	jvalue*			args;
@@ -59,7 +102,9 @@ extern char*		javaString2CString(struct Hjava_lang_String*, char*, int);
 extern char*		makeCString(struct Hjava_lang_String*);
 extern struct Hjava_lang_String* makeReplaceJavaStringFromUtf8(unsigned char*, int, int, int);
 extern jvalue		do_execute_java_method(void*, char*, char*, struct _methods*, int, ...);
-extern jvalue		do_execute_java_class_method(char* cname, char* method_name, char* signature, ...);
+extern jvalue		do_execute_java_method_v(void*, char*, char*, struct _methods*, int, va_list);
+extern jvalue		do_execute_java_class_method(char*, char*, char*, ...);
+extern jvalue		do_execute_java_class_method_v(char*, char*, char*, va_list);
 
 extern Hjava_lang_Object* execute_java_constructor(char*, struct Hjava_lang_Class*, char*, ...);
 extern jlong		currentTime(void);

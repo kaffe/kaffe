@@ -164,20 +164,21 @@ define_insn(exception_prologue, eprologue_xxx)
 	l->at = (uintp)CODEPC;
 	LOUT = 0;
 
+	OUT = 0x81;
+	OUT = 0xE8|REG_esp;
+	LOUT = 3*SLOTSIZE;
+
+	debug(("movl ebp,esp\n"));
+	debug(("subl #?,esp\n"));
+	debug(("subl #3*SLOTSIZE,esp\n"));
+
 	if (used_ieee_division == true && 0) {
 		OUT = 0x81;
 		OUT = 0xE8|REG_esp;
 		LOUT = SLOTSIZE;
-	}
 
-	debug(("movl ebp,esp\n"));
-	debug(("subl #?,esp\n"));
-	if (used_ieee_division == true && 0) {
 		debug(("subl #%d,esp\n", SLOTSIZE));
-	}
 
-	/* If this method uses IEEE, set up the mode here */
-	if (used_ieee_division == true && 0) {
 		OUT = 0x8B;
 		OUT = (REG_ebx<<3)|0x04;
 		OUT = 0x24;

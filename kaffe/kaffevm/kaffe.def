@@ -2246,8 +2246,6 @@ define_insn(INVOKESTATIC)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	slot_alloctmp(mtable);
-
 	get_method_info(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */

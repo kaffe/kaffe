@@ -76,7 +76,7 @@ typedef struct _jarEntry {
 
 typedef struct _jarFile {
 
-	FILE*			fp;
+	int			fp;
 	int			count;
 	jarEntry*		head;
 	char*			error;
@@ -112,16 +112,22 @@ typedef struct _jarFile {
 /*
  * Macros to read little-endian values.
  */
-#define	INITREADS()		int rtmp
-#define	READ8(F)		fgetc(F)
-#define	READ16(F)		(rtmp = fgetc(F), rtmp |= (fgetc(F) << 8),  \
-						  rtmp)
-#define	READ32(F)		(rtmp = fgetc(F), rtmp |= (fgetc(F) << 8),  \
-						  rtmp |= (fgetc(F) << 16), \
-						  rtmp |= (fgetc(F) << 24), \
-						  rtmp)
-#define	READBYTES(F,S,B)	fgets((B), (S)+1, (F))
-#define	SKIPBYTES(F,S)		fseek((F), (long)(S), SEEK_CUR)
+#define	INITREADS()		int rtmp; unsigned char rbuf[4]
+#define	READ8(F)		(rtmp = read(F, rbuf, 1), 		    \
+				 rtmp < 1 ? EOF : (unsigned)rbuf[0])
+
+#define	READ16(F)		(rtmp = read(F, rbuf, 2), 		    \
+				 rtmp < 2 ? EOF : (unsigned)rbuf[0] | 	    \
+						 ((unsigned)rbuf[1]) << 8)
+
+#define	READ32(F)		(rtmp = read(F, rbuf, 4), 		    \
+				 rtmp < 4 ? EOF : (unsigned)rbuf[0] | 	    \
+						 ((unsigned)rbuf[1]) << 8 |\
+						 ((unsigned)rbuf[2]) << 16|\
+						 ((unsigned)rbuf[3]) << 24)
+
+#define	READBYTES(F,S,B)	read(F, B, S)
+#define	SKIPBYTES(F,S)		lseek((F), (long)(S), SEEK_CUR)
 
 /*
  * Interface.

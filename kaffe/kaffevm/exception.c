@@ -9,7 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
+#include "debug.h"
 
 #include "config.h"
 #include "config-std.h"
@@ -53,6 +53,10 @@ static void dispatchException(Hjava_lang_Throwable*, struct _exceptionFrame*) __
 Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
 extern Hjava_lang_Object* exceptionObject;
+extern uintp Kaffe_JNI_estart;
+extern uintp Kaffe_JNI_eend;
+extern void Kaffe_JNIExceptionHandler(void);
+
 
 /*
  * Throw an internal exception.
@@ -107,10 +111,9 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 	/* Release the interrupts (in case they were held when this
 	 * happened - and hope this doesn't break anything).
+	 * XXX - breaks the thread abstraction model !!!
 	 */
-	extern int blockInts;
-	blockInts = 1;
-	Tspinoff();
+	Tspinoffall();
 
 	ct = getCurrentThread();
 
@@ -128,6 +131,18 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		bool res;
 
 		for (frame = (vmException*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
+
+			if (frame->meth == (Method*)1) {
+                                /* Don't allow JNI to catch thread death
+                                 * exceptions.  Might be bad but its going
+                                 * 1.2 anyway.
+                                 */
+                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
+                                        unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
+                                        Kaffe_JNIExceptionHandler();
+                                }
+			}
+
 			/* Look for handler */
 			res = findExceptionBlockInMethod(frame->pc, eobj->base.dtable->class, frame->meth, &einfo);
 
@@ -163,6 +178,16 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 		for (frame = baseframe; frame != 0; frame = GETNEXTFRAME(frame)) {
 			findExceptionInMethod(PCFRAME(frame), class, &einfo);
+
+                        if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
+                                /* Don't allow JNI to catch thread death
+                                 * exceptions.  Might be bad but its going
+                                 * 1.2 anyway.
+                                 */
+                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
+                                        Kaffe_JNIExceptionHandler();
+                                }
+                        }
 
 			/* Find the sync. object */
 			if (einfo.method == 0 || (einfo.method->accflags & ACC_SYNCHRONISED) == 0) {
@@ -222,9 +247,9 @@ nullException(EXCEPTIONPROTO)
 
 	DEFINEFRAME();
 
-#if !defined(DEBUG)
-	catchSignal(sig, nullException);
-#endif
+	/* don't catch the signal if debugging exceptions */
+	if (DBGEXPR(EXCEPTION, false, true))
+		catchSignal(sig, nullException);
 
 	EXCEPTIONFRAME(frame, ctx);
 	npe = (Hjava_lang_Throwable*)NullPointerException;
@@ -242,9 +267,9 @@ arithmeticException(EXCEPTIONPROTO)
 	sigset_t nsig;
 	DEFINEFRAME();
 
-#if !defined(DEBUG)
-	catchSignal(sig, arithmeticException);
-#endif
+	/* don't catch the signal if debugging exceptions */
+	if (DBGEXPR(EXCEPTION, false, true))
+		catchSignal(sig, arithmeticException);
 	EXCEPTIONFRAME(frame, ctx);
 	ae = (Hjava_lang_Throwable*)ArithmeticException;
 	unhand(ae)->backtrace = buildStackTrace(EXCEPTIONFRAMEPTR);

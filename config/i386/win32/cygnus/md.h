@@ -15,7 +15,12 @@
 /**/
 /* Thread handling */
 /**/
+#include "i386/common.h"
 #include "i386/threads.h"
+
+/* Redefine the stack pointer offset */
+#undef SP_OFFSET
+#define	SP_OFFSET	7
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

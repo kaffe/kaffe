@@ -17,7 +17,6 @@
 #include "icode.h"
 #include "basecode.h"
 #include "md.h"
-#include "flags.h"
 
 #define	ASSIGNSLOT(D, S)	(D).s.slot = (S); \
 				if ((S) != 0) (S)->info = SI_SLOT

@@ -30,7 +30,7 @@ java_io_ObjectOutputStream_outputClassFields(struct Hjava_io_ObjectOutputStream*
 
 #define	WRITE(FUNC,SIG,TYPE) \
 	do_execute_java_method(stream, #FUNC, #SIG, 0, 0, \
-		((jvalue*)obj)[unhand(arr)->body[i+1]].TYPE)
+		((jvalue*)(unhand(arr)->body[i+1] + (uintp)obj))->TYPE)
 
 	for (i = 0; i < obj_length(arr); i += 2) {
 		switch(unhand(arr)->body[i]) {

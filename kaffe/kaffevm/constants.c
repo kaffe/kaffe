@@ -14,6 +14,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-hacks.h"
 #include "gtypes.h"
 #include "slots.h"
 #include "access.h"
@@ -43,7 +44,8 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp)
 	u4 d4, d4b;
 	bool error;
 
-	assert(holdMutex(this->centry));
+	if (this->centry != 0)
+		assert(holdMutex(this->centry));
 
 	readu2(&info->size, fp);
 RDBG(	printf("constant_pool_count=%d\n", info->size);	)
@@ -92,7 +94,6 @@ RDBG(		printf("Constant type %d\n", type);			)
 			break;
 
 		case CONSTANT_Long:
-		case CONSTANT_Double:
 			readu4(&d4, fp);
 			readu4(&d4b, fp);
 #if SIZEOF_VOIDP == 8
@@ -103,7 +104,33 @@ RDBG(		printf("Constant type %d\n", type);			)
 			pool[i] = d4;
 			i++;
 			pool[i] = d4b;
-#endif
+#endif /* SIZEOF_VOIDP == 8 */
+			tags[i] = CONSTANT_Unknown;
+			break;
+
+		case CONSTANT_Double:
+			readu4(&d4, fp);
+			readu4(&d4b, fp);
+
+#if SIZEOF_VOIDP == 8
+#if defined(DOUBLE_ORDER_OPPOSITE)
+			pool[i] = WORDS_TO_LONG(d4b, d4);
+#else
+			pool[i] = WORDS_TO_LONG(d4, d4b);
+#endif /* DOUBLE_ORDER_OPPOSITE */
+			i++;
+			pool[i] = 0;
+#else
+#if defined(DOUBLE_ORDER_OPPOSITE)
+			pool[i] = d4b;
+			i++;
+			pool[i] = d4;
+#else
+			pool[i] = d4;
+			i++;
+			pool[i] = d4b;
+#endif /* DOUBLE_ORDER_OPPOSITE */
+#endif /* SIZEOF_VOIDP == 8 */
 			tags[i] = CONSTANT_Unknown;
 			break;
 

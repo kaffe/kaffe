@@ -92,7 +92,7 @@ typedef struct _gc_block {
 
 #define	MIN_OBJECT_SIZE		8
 #define	MAX_SMALL_OBJECT_SIZE	8192
-#define	NR_FREELISTS		13
+#define	NR_FREELISTS		20
 #define	GC_SMALL_OBJECT(S)	((S) <= max_small_object_size)
 
 #define	MEMALIGN		8

@@ -19,14 +19,14 @@ struct _huft;
 
 typedef struct _inflateInfo {
 	uint8*		slide;
-	uint		hufts;		/* track memory usage */
+	unsigned 	hufts;		/* track memory usage */
 	struct _huft*	fixed_tl;
 	struct _huft*	fixed_td;
 	int		fixed_bl;
 	int		fixed_bd;
-	uint		wp;		/* current position in slide */
+	unsigned	wp;		/* current position in slide */
 	uint32		bb;		/* bit buffer */
-	uint		bk;		/* bits in bit buffer */
+	unsigned	bk;		/* bits in bit buffer */
 	uint8*		inbuf;
 	int		insz;
 	uint8*		outbuf;

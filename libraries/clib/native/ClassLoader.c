@@ -18,7 +18,10 @@
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/object.h"
+#include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
 #include <native.h>
 #include "defs.h"
 
@@ -41,17 +44,69 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 {
 	Hjava_lang_Class* clazz;
 	classFile hand;
+	classEntry *centry;
+
 	hand.base = &unhand(data)->body[offset];
 	hand.buf = hand.base;
 	hand.size = length;
 
 	clazz = newClass();
+	/*
+	 * Make sure clazz->centry is NULL here, so that nobody will try to
+	 * assert that a lock on centry is held during readClass
+	 */
+	clazz->centry = NULL;
 	clazz = readClass(clazz, &hand, this);
 
+	/* 
+	 * If a name was given, but the name we found in the class file
+	 * was a different one, complain.
+	 */
 	if (name != NULL) {
-		/* Should check name == this->name */
+		/* The name uses dots, but clazz->name uses slashes */
+		Hjava_lang_String *temp = makeReplaceJavaStringFromUtf8(
+			clazz->name->data, clazz->name->length, '/', '.'); 
+
+		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
+			memcmp(STRING_DATA(temp), STRING_DATA(name), 
+				STRING_SIZE(temp)) != 0)
+			SignalError("java.lang.ClassFormatError", "Wrong name");
 	}
 
+	/*
+	 * See if an entry for that name and class loader already exists
+	 * create one if not.
+	 */
+	centry = lookupClassEntry(clazz->name, this);
+	assert(centry != 0);
+
+	/*
+	 * see if somebody loaded that class already
+	 */
+	lockMutex(centry);
+	if (centry->class != NULL) {
+		unlockMutex(centry);
+		SignalError("java.lang.ClassFormatError", "Duplicate name");
+	}
+
+	/* enter the class we loaded and return */
+	centry->class = clazz;
+	clazz->centry = centry;
+	unlockMutex(centry);
+
+	/*
+	 * While it is not necessary that one be able to actually *use*
+	 * the returned class object at this point, it is mandatory that
+	 * the returned clazz object is a functional Class object.
+	 *
+	 * The following call will make sure that the returned class object
+	 * has its dispatch table set.  The transition PRELOADED->PREPARED 
+	 * in processClass sets class->head.dtable.
+	 *
+	 * Presumably, it shouldn't be necessary here, but is at the
+	 * moment - XXX
+	 */
+	processClass(clazz, CSTATE_PREPARED);
 	return (clazz);
 }
 

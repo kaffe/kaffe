@@ -33,10 +33,11 @@
 #include "md.h"
 #include "stackTrace.h"
 
-/* This file breaks the thread encapsulation model - best fixed by rewriting
- * the thread class.
- */
-#include "systems/unix-internal/internal.h"
+#define	ENDOFSTACK		((Method*)-1)
+typedef struct _stackTraceInfo {
+	uintp	pc;
+	Method*	meth;
+} stackTraceInfo;
 
 Hjava_lang_Object*
 getClassContext(void* bulk)
@@ -120,24 +121,14 @@ classDepth(char* name)
 }
 
 /*
- * Build an array of char[] for the current stack backtrace.
+ * Build an array of stackTraceInfo[] for the current stack backtrace.
  */
 Hjava_lang_Object*
 buildStackTrace(struct _exceptionFrame* base)
 {
-	char buf[200];
-	Hjava_lang_Object* str;
-	Hjava_lang_Object* strarray;
 	int cnt;
-	int len;
-	int i;
-	Method* meth;
-	uintp pc;
-	int32 linenr;
-	uintp linepc;
 	struct _stackTrace trace;
-	char* esig;
-	jchar* cptr;
+	stackTraceInfo* info;
 
 	STACKTRACEINIT(trace, base, base);
 	cnt = 0;
@@ -146,26 +137,64 @@ buildStackTrace(struct _exceptionFrame* base)
 		cnt++;
 	}
 
-	/* Build an array of strings */
-	strarray = newArray(getClassFromSignature("[C", NULL), cnt);
-	assert(strarray != 0);
+	/* Build an array of stackTraceInfo */
+	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), GC_ALLOC_NOWALK);
 
 	cnt = 0;
 
 	STACKTRACEINIT(trace,base,base);
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
-		meth = STACKTRACEMETH(trace);
-		pc = STACKTRACEPC(trace);
+		info[cnt].pc = STACKTRACEPC(trace);
+#if defined(INTERPRETER)
+		info[cnt].meth = STACKTRACEMETH(trace);
+#endif
+#if defined(TRANSLATOR)
+		info[cnt].meth = 0;	/* We do this lazily */
+#endif
+		cnt++;
+	}
+	info[cnt].pc = 0;
+	info[cnt].meth = ENDOFSTACK;
 
+	return ((Hjava_lang_Object*)info);
+}
+
+void
+printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
+{
+	int i;
+	stackTraceInfo* info;
+	Method* meth;
+	uintp pc;
+	int32 linenr;
+	uintp linepc;
+	char buf[200];
+	int len;
+	int j;
+	Hjava_lang_Object* str;
+	jchar* cptr;
+
+	info = (stackTraceInfo*)unhand(o)->backtrace;
+	if (info == 0) {
+		return;
+	}
+	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		pc = info[i].pc;
+#if defined(INTERPRETER)
+		meth = info[i].meth; 
+#endif
+#if defined(TRANSLATOR)
+		meth = findMethodFromPC(pc);
+#endif
 		if (meth != 0) {
 			linepc = 0;
 			linenr = -1;
 			if (meth->lines != 0) {
-				for (i = 0; i < meth->lines->length; i++) {
-					if (pc >= meth->lines->entry[i].start_pc && linepc < meth->lines->entry[i].start_pc) {
-						linenr = meth->lines->entry[i].line_nr;
-						linepc = meth->lines->entry[i].start_pc;
+				for (j = 0; j < meth->lines->length; j++) {
+					if (pc >= meth->lines->entry[j].start_pc && linepc < meth->lines->entry[j].start_pc) {
+						linenr = meth->lines->entry[j].line_nr;
+						linepc = meth->lines->entry[j].start_pc;
 					}
 				}
 			}
@@ -182,18 +211,12 @@ buildStackTrace(struct _exceptionFrame* base)
 			}
 			len = strlen(buf);
 			str = newArray(TYPE_CLASS(TYPE_Char), len);
-			assert(str != 0);
 			cptr = (jchar*)OBJARRAY_DATA(str);
-			for (i = len;  --i >= 0; ) {
-				cptr[i] = (unsigned char) buf[i];
+			for (j = len;  --j >= 0; ) {
+				cptr[j] = (unsigned char)buf[j];
 			}
+			do_execute_java_method(p,"println","([C)V",0,0,str);
 		}
-		else {
-			str = 0;
-		}
-		OBJARRAY_DATA(strarray)[cnt] = str;
-
-		cnt++;
 	}
-	return (strarray);
+	do_execute_java_method(p, "flush", "()V", 0, 0);
 }

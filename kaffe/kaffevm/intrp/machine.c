@@ -9,11 +9,12 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	RDBG(s)
-#define	NDBG(s)
-#define	IDBG(s)
-#define	CHDBG(s)
+#include "debug.h"
+#define	CDBG(s) 	DBG(INT_VMCALL, s)
+#define	RDBG(s) 	DBG(INT_NATIVE, s)
+#define	NDBG(s) 	DBG(INT_NATIVE, s)
+#define	IDBG(s)		DBG(INT_INSTR, s)
+#define	CHDBG(s)	DBG(INT_CHECKS, s)
 
 #include "config.h"
 #include "config-std.h"
@@ -51,9 +52,9 @@ extern uint8 insnLen[];
 
 #define	define_insn(code)	break;					\
 				case code:				\
-				IDBG( printf("%03d: %s\n", pc, #code); )
+				IDBG( dprintf("%03d: %s\n", pc, #code); )
 #define	define_insn_alias(code)	case code:				\
-				IDBG( printf("%03d: %s\n", pc, #code); )
+				IDBG( dprintf("%03d: %s\n", pc, #code); )
 
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the
  * MMU for detecting null pointer accesses */
@@ -103,12 +104,12 @@ virtualMachine(methods* meth, slots* arg, slots* retval, Hjava_lang_Thread* tid)
 	Hjava_lang_Class* crinfo;
 	exceptionInfo info;
 
-DBG(	printf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); fflush(stdout); )
+CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
 
 	/* If this is native, then call the real function */
 	methaccflags = meth->accflags;
 	if (methaccflags & ACC_NATIVE) {
-NDBG(		printf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); fflush(stdout); )
+NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
 		if (methaccflags & ACC_STATIC) {
 			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval);
 		}
@@ -203,5 +204,5 @@ NDBG(		printf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
 	}
 
-RDBG(	printf("Returning from method %s%s.\n", meth->name->data, meth->signature->data); )
+RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, meth->signature->data); )
 }

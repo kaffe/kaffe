@@ -359,8 +359,6 @@ runtest KaffeVerifyBug "okay"
 runtest Schtum "Okay"
 
 runtest tthrd1 "main start
-thrd start
-thrd join
 true 1
 main end"
 
@@ -422,5 +420,112 @@ runtest Bean "BeanDescriptor:
   Property: type class [Ljava.lang.String;, read public java.lang.String[] Bean.getArray(), write public void Bean.setArray(java.lang.String[]), idx read public java.lang.String Bean.getArray(int), idx write public void Bean.setArray(int,java.lang.String)
   Editor: <unknown>"
 
+#
+# simple test for Method.invoke
+#
+runtest ReflectInvoke "2
+8"
+
+#
+# simple test for InvocationTargetExceptions
+#
+runtest InvTarExcTest "Caught itexception: null
+java.lang.reflect.InvocationTargetException
+	at InvTarExcTest.main(13)
+Target is: throwing inner exception"
+
+#
+# simple test for ClassLoader
+# this test must be compiled with 'nowarn' because it uses a
+# deprecated API (defineClass with 3 params)
+#
+OLDJAVAC=$JAVAC
+JAVAC="$OLDJAVAC -nowarn"
+
+# compile the example class
+compile Hello
+
+runtest CLTest "Load returned class -Hello-
+Trying to create new instance
+Hello World
+Trying same file under different name
+Duplicate name
+Trying file with wrong name
+Wrong name
+Now second load attempt for a
+Duplicate name
+Done."
+
+# restore JAVAC
+JAVAC=$OLDJAVAC
+
+# end of CLTest test
+
+#
+# this test must have its output sorted, because it is multi-threaded.
+# we do this by temporarily replacing JAVA with a routine that invokes
+# $JAVA, but pipes the output through sort
+#
+
+# save old JAVA
+OLDJAVA=$JAVA
+
+run_and_sort()
+{
+	$OLDJAVA $@ | sort
+}
+
+JAVA=run_and_sort
+
+runtest GCTest "[0]:  Success
+[10]:  Success
+[11]:  Success
+[12]:  Success
+[13]:  Success
+[14]:  Success
+[15]:  Success
+[16]:  Success
+[17]:  Success
+[18]:  Success
+[19]:  Success
+[1]:  Success
+[20]:  Success
+[21]:  Success
+[22]:  Success
+[23]:  Success
+[24]:  Success
+[25]:  Success
+[26]:  Success
+[27]:  Success
+[28]:  Success
+[29]:  Success
+[2]:  Success
+[30]:  Success
+[31]:  Success
+[32]:  Success
+[33]:  Success
+[34]:  Success
+[35]:  Success
+[36]:  Success
+[37]:  Success
+[38]:  Success
+[39]:  Success
+[3]:  Success
+[40]:  Success
+[41]:  Success
+[42]:  Success
+[43]:  Success
+[44]:  Success
+[4]:  Success
+[5]:  Success
+[6]:  Success
+[7]:  Success
+[8]:  Success
+[9]:  Success"
+
+# restore JAVA
+JAVA=$OLDJAVA
+
+# end of GCTest test
 # All done okay
 exit $overallerror

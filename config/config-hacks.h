@@ -47,3 +47,12 @@
 #if defined(__i386__)
 #define	HAVE_UNALIGNEDACCESS
 #endif
+
+/* The arm32, while being a little endian machine, uses a big endian
+ * word order for its doubles.  The arm32 uses software floating point 
+ * emulation.  We define this constant to declare that the word order
+ * in a 64bit double is the opposite of the word order in a 64bit int.
+ */
+#if defined(arm32)
+#define DOUBLE_ORDER_OPPOSITE
+#endif

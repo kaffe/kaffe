@@ -18,9 +18,9 @@ public class tthrd1
       System.err.println("main start");
       b = new btst1();
       b.start();
-      System.err.println("thrd start");
+      // System.err.println("thrd start");
 
-      System.err.println("thrd join");
+      // System.err.println("thrd join");
       try{b.join();}catch(InterruptedException e){}
       System.err.println("main end");
     }

@@ -37,13 +37,13 @@
 #include "access.h"
 #include "lookup.h"
 #include "exception.h"
-#include "flags.h"
 #include "errors.h"
 #include "md.h"
 #include "locks.h"
 #include "code-analyse.h"
 #include "external.h"
 #include "soft.h"
+#include "jni.h"
 
 /*
  * Define information about this engine.
@@ -145,7 +145,7 @@ translate(Method* meth)
 
 	if (init == false) {
 		init = true;
-		initStaticMutex(&translatorlock);
+		initStaticLock(&translatorlock);
 	}
 
 	/* Only one in the translator at once. Must check the translation
@@ -159,7 +159,7 @@ translate(Method* meth)
 
 	lockMutex(meth->class);
 
-	if (flag_jit) {
+	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tms = currentTime();
 	}
 
@@ -278,7 +278,7 @@ DBG(	printf("callinfo = 0x%x\n", &cinfo);	)
 
 MDBG(	printf("Translating %s.%s%s (%s) %p\n", meth->class->name->data, meth->name->data, meth->signature->data, isStatic ? "static" : "normal", meth->ncode);	)
 
-	if (flag_jit) {
+	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tme = currentTime();
 		jitStats.time += (tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p>\n",

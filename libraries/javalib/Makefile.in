@@ -36,7 +36,7 @@ clean:
 
 distclean:
 		rm -rf $(LIBDIR) klasses.zip
-		rm -f Makefile
+		rm -f Makefile .depend
 
 #############################################################################
 
@@ -60,3 +60,6 @@ build-classes:
 install-classes:
 		test -d $(classdir) || $(MKDIR) $(classdir)
 		$(INSTALL_DATA) $(CLASSFILE) $(classdir)/$(CLASSFILE)
+
+# not yet implemented
+depend:

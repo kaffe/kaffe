@@ -23,10 +23,26 @@ test:
 			exit 1 ;\
 		fi
 
+testthreads:
+		@echo "*** Running tests for new threading system"
+		@DESTDIR=`pwd` ; export DESTDIR ;\
+		. ../ENVIRONMENT ;\
+		cd $(srcdir)/regression &&\
+		if ./TestScriptThread ; then \
+			echo "*** Passed" ; \
+			exit 0 ;\
+		else \
+			echo "*** Failed" ; \
+			exit 1 ;\
+		fi
+
 clean:
 		rm -f *.class kaffe.core core
 
 distclean:
-		rm -f *.class Makefile kaffe.core core
+		rm -f *.class Makefile kaffe.core core .depend
 
 install:
+
+depend:
+

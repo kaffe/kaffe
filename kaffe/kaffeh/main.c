@@ -62,7 +62,6 @@ main(int argc, char* argv[])
 		include = file;
 		/* Setup the include ifdef name */
 		strcpy(className, outputName);
-		initInclude();
 	}
 
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {
@@ -121,8 +120,8 @@ main(int argc, char* argv[])
 				fprintf(stderr, "Failed to create '%s'.\n", includeName);
 				exit(1);
 			}
-			initInclude();
 		}
+		initInclude();
 		startInclude();
 		findClass(pathName);
 

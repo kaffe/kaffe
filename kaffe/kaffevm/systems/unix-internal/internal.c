@@ -651,7 +651,7 @@ TcreateFirst(Hjava_lang_Thread* tid)
 	ctx* c;
 
 	/* We do our general initialisation first */
-	initStaticMutex(&threadLock);
+	initStaticLock(&threadLock);
 
         /* Plug in the alarm handler */
 #if defined(SIGALRM)
@@ -717,18 +717,12 @@ Tcreate(Hjava_lang_Thread* tid, void* func)
 		c->func = func;
 	}
 	else {
+		/* Every thread starts with the interrupts off */
+		Tspinoff(0);
 		(*((ctx*)unhand(currentThread)->PrivateInfo)->func)(0);
 	}
 
 	resumeThread(tid);
-}
-
-static
-void
-Tsetup(void* arg)
-{
-	/* Every thread starts with the interrupts off */
-	Tspinoff(0);
 }
 
 static
@@ -997,9 +991,12 @@ static
 void
 Lwait(iLock* lk, jlong timeout)
 {
+	int count;
 	Hjava_lang_Thread* tid;
 
 	Tspinon(0);
+	count = lk->count;
+	lk->count = 0;
 	lk->holder = NULL;
 	if (lk->mux != NULL) {
 		tid = lk->mux;
@@ -1012,6 +1009,7 @@ Lwait(iLock* lk, jlong timeout)
 		suspendOnQThread(currentThread, (Hjava_lang_Thread**)&lk->mux, NOTIMEOUT);
 	}
 	lk->holder = currentThread;
+	lk->count = count;
 	Tspinoff(0);
 }
 
@@ -1063,6 +1061,13 @@ Tspinoff(void* arg)
 	blockInts--;
 }
 
+void
+Tspinoffall()
+{
+	blockInts = 1;
+	Tspinoff(0);
+}
+
 /*
  * Define the thread interface.
  */
@@ -1070,7 +1075,6 @@ ThreadInterface Kaffe_ThreadInterface = {
 
 	TcreateFirst,
 	Tcreate,
-	Tsetup,
 	Tsleep,
 	Tyield,
 	Tprio,

@@ -19,12 +19,14 @@ struct stat;
 
 typedef struct SystemCallInterface {
 
+	int	(*_fixfd)(int);
 	int	(*_open)(const char*, int, int);
-	ssize_t	(*_read)(int, char*, size_t);
-	ssize_t	(*_write)(int, const char*, size_t);
+	ssize_t	(*_read)(int, void*, size_t);
+	ssize_t	(*_write)(int, const void*, size_t);
 	off_t	(*_lseek)(int, off_t, int);
 	int	(*_close)(int);
-	int	(*_stat)(char*, struct stat*);
+	int	(*_fstat)(int, struct stat*);
+	int	(*_stat)(const char*, struct stat*);
 
 	int	(*_mkdir)(const char*, int);
 	int	(*_rmdir)(const char*);
@@ -34,16 +36,16 @@ typedef struct SystemCallInterface {
 	int	(*_socket)(int, int, int);
 	int	(*_connect)(int, struct sockaddr*, size_t);
 	int	(*_accept)(int, struct sockaddr*, size_t*);
-	ssize_t	(*_sockread)(int, char*, size_t);
-	ssize_t	(*_recvfrom)(int,char*,size_t,int,struct sockaddr*,size_t*);
-	ssize_t	(*_sockwrite)(int, const char*, size_t);
-	ssize_t (*_sendto)(int,const char*,size_t,int,struct sockaddr*,size_t);
-	int	(*_setsockopt)(int, int, int, const void*, size_t);
-	int	(*_getsockopt)(int, int, int, void*, size_t*);
-	int	(*_getsockname)(int, struct sockaddr*, size_t*);
-	int	(*_getpeername)(int, struct sockaddr*, size_t*);
+	ssize_t	(*_sockread)(int, void*, size_t);
+	ssize_t	(*_recvfrom)(int,void*,size_t,int,struct sockaddr*,int*);
+	ssize_t	(*_sockwrite)(int, const void*, size_t);
+	ssize_t (*_sendto)(int,const void*,size_t,int,const struct sockaddr*,int);
+	int	(*_setsockopt)(int, int, int, const void*, int);
+	int	(*_getsockopt)(int, int, int, void*, int*);
+	int	(*_getsockname)(int, struct sockaddr*, int*);
+	int	(*_getpeername)(int, struct sockaddr*, int*);
 
-	int	(*_select)(int, void*, void*, void*, struct timeval*);
+	int	(*_select)(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 
 	int	(*_waitpid)(int, int*, int);
 
@@ -56,11 +58,13 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
  * Define some 'UNIX' like macros to make things simpler.
  */
 
+#define fixfd(A)	(*Kaffe_SystemCallInterface._fixfd)(A)
 #define	open(A,B,C)	(*Kaffe_SystemCallInterface._open)(A,B,C)
 #define	read(A,B,C)	(*Kaffe_SystemCallInterface._read)(A,B,C)
 #define	write(A,B,C)	(*Kaffe_SystemCallInterface._write)(A,B,C)
 #define	lseek(A,B,C)	(*Kaffe_SystemCallInterface._lseek)(A,B,C)
 #define	close(A)	(*Kaffe_SystemCallInterface._close)(A)
+#define	fstat(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
 #define	stat(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
 
 #define	mkdir(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)

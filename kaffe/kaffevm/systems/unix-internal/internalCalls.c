@@ -78,7 +78,7 @@ threadedAccept(int fd, struct sockaddr* addr, size_t* len)
  */
 static
 ssize_t
-threadedRead(int fd, char* buf, size_t len)
+threadedRead(int fd, void* buf, size_t len)
 {
 	ssize_t r;
 
@@ -101,7 +101,7 @@ threadedRead(int fd, char* buf, size_t len)
  */
 static
 ssize_t
-threadedWrite(int fd, const char* buf, size_t len)
+threadedWrite(int fd, const void* buf, size_t len)
 {
 	ssize_t r;
 	const void* ptr;
@@ -133,7 +133,7 @@ threadedWrite(int fd, const char* buf, size_t len)
  */
 static
 ssize_t 
-threadedRecvfrom(int fd, char* buf, size_t len, int flags, struct sockaddr* from, size_t* fromlen)
+threadedRecvfrom(int fd, void* buf, size_t len, int flags, struct sockaddr* from, int* fromlen)
 {
 	ssize_t r;
  
@@ -176,16 +176,23 @@ threadedWaitpid(int wpid, int* status, int options)
 #endif
 }
 
+int threadedFileDescriptor(int fd)
+{
+	return (fd);
+}
+
 SystemCallInterface Kaffe_SystemCallInterface = {
 
-	open,
+	threadedFileDescriptor,
+	open,			/* warning because third argument is mode_t */
 	threadedRead,
 	threadedWrite,
 	lseek,
 	close,
+	fstat,
 	stat,
 
-	mkdir,
+	mkdir,			/* warning because second argument is mode_t */
 	rmdir,
 	rename,
 	remove,

@@ -22,9 +22,13 @@ clean:
 distclean:
 	@(cd $(csubdir) && $(MAKE) distclean)
 	@(cd $(jsubdir) && $(MAKE) distclean)
-	rm -f Makefile
+	rm -f Makefile .depend
 	-rmdir $(csubdir) $(jsubdir)
 
 install:
 	@(cd $(csubdir) && $(MAKE) install)
 	@(cd $(jsubdir) && $(MAKE) install)
+
+depend:
+	@(cd $(csubdir) && $(MAKE) depend)
+	@(cd $(jsubdir) && $(MAKE) depend)

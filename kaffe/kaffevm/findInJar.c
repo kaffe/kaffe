@@ -23,13 +23,14 @@
 #include "exception.h"
 #include "readClass.h"
 #include "paths.h"
-#include "flags.h"
 #include "errors.h"
 #include "lerrno.h"
 #include "locks.h"
 #include "baseClasses.h"
 #include "external.h"
 #include "jar.h"
+#include "jsyscall.h"
+#include "jni.h"
 
 #define	MAXBUF		256
 #define	MAXPATHELEM	16
@@ -159,7 +160,7 @@ findInJar(char* cname)
 	/* Initialise on first use */
 	if (init == false) {
 		init = true;
-		initStaticMutex(&jarlock);
+		initStaticLock(&jarlock);
 	}
 
 	/* Look for the class */
@@ -190,7 +191,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
 			}
 			hand.size = entry->uncompressedSize;
 			hand.buf = hand.base;
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s(%s)", cname, classpath[i].path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
 					fprintf(stderr, " [compressed]");
@@ -204,7 +205,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", classpath[i].path, cname); )
 			strcat(buf, DIRSEP);
 			strcat(buf, cname);
 FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
-			fp = open(buf, O_RDONLY|O_BINARY);
+			fp = open(buf, O_RDONLY|O_BINARY, 0);
 			if (fp < 0) {
 				break;
 			}
@@ -228,7 +229,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 				}
 			}
 			close(fp);
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s\n", cname);
 			}
 			goto okay;
@@ -245,7 +246,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			if (hand.base == NULL) {
 				break;
 			}
-			if (flag_classload) {
+			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Registering %s.\n", cname);
 			}
 			goto okay;
@@ -314,7 +315,8 @@ initClasspath(void)
 	int h;
 	int c;
 
-	cp = realClassPath;
+	cp = (char*)Kaffe_JavaVMArgs[0].classpath;
+
 	realClassPath = gc_malloc_fixed(strlen(cp) + 1);
 	strcpy(realClassPath, cp);
 
@@ -396,7 +398,7 @@ getClasspathType(char* path)
 		return (CP_DIR);
 	}
 
-	h = open(path, O_RDONLY);
+	h = open(path, O_RDONLY, 0);
 	if (h < 0) {
 		return (CP_INVALID);
 	}

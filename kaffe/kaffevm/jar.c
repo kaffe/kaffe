@@ -9,16 +9,17 @@
  * of this file.
  */
 
-#define DBG(s)
-
+#include "debug.h"
 #include "config.h"
 #include "config-std.h"
+#include "config-io.h"
 #include "config-mem.h"
 #include "gtypes.h"
 #include "jar.h"
 
 #if !defined(KAFFEH)
 #include "gc.h"
+#include "jsyscall.h"
 #else
 #define	gc_malloc_fixed(S)	calloc(S, 1)
 #define	gc_free_fixed(M)	free(M)
@@ -72,7 +73,8 @@ readCentralDirRecord(jarFile* file)
 	SKIPBYTES(file->fp, head.extraFieldLength);
 	SKIPBYTES(file->fp, head.fileCommentLength);
 
-DBG(	printf("Central record filename: %s\n", ret->fileName);		)
+DBG(JARFILES,	
+	dprintf("Central record filename: %s\n", ret->fileName);	)
 
 	ret->dataPos = head.relativeLocalHeaderOffset + SIZEOFLOCALHEADER + head.fileNameLength + head.extraFieldLength;
 	/* HACK HACK HACK */
@@ -97,7 +99,7 @@ findFirstCentralDirRecord(jarFile* file)
 	uint16 sz;
 	uint32 off;
 
-	if (fseek(file->fp, -SIZEOFCENTRALEND, SEEK_END) != 0) {
+	if (lseek(file->fp, -SIZEOFCENTRALEND, SEEK_END) == -1) {
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
@@ -115,7 +117,10 @@ findFirstCentralDirRecord(jarFile* file)
 	ign = READ32(file->fp);	/* Size of central directory */
 	off = READ32(file->fp);	/* Offset of central directory */
 
-	fseek(file->fp, off, SEEK_SET);
+	if (lseek(file->fp, (off_t)off, SEEK_SET) == -1) {
+		file->error = "Failed to seek into central directory offset";
+		return (0);
+	}
 
 	return (sz);
 }
@@ -129,8 +134,8 @@ openJarFile(char* name)
 
 	file = gc_malloc_fixed(sizeof(jarFile));
 
-	file->fp = fopen(name, "rb");
-	if (file->fp == 0) {
+	file->fp = open(name, O_RDONLY, 0);
+	if (file->fp == -1) {
 		return (0);
 	}
 
@@ -169,12 +174,12 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 	uint8* buf;
 	uint8* nbuf;
 
-	if (fseek(file->fp, entry->dataPos, SEEK_SET) != 0) {
+	if (lseek(file->fp, (off_t)entry->dataPos, SEEK_SET) == -1) {
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
 	buf = gc_malloc_fixed(entry->compressedSize);
-	if (fread(buf, sizeof(uint8), entry->compressedSize, file->fp) != entry->compressedSize) {
+	if (read(file->fp, buf, entry->compressedSize) != entry->compressedSize) {
 		file->error = "Failed to read from JAR file";
 		gc_free_fixed(buf);
 		return (0);
@@ -221,7 +226,7 @@ closeJarFile(jarFile* file)
 		gc_free_fixed(curr);
 	}
 
-	fclose(file->fp);
+	close(file->fp);
 
 	gc_free_fixed(file);
 }
