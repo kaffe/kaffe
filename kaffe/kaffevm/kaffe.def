@@ -2066,19 +2066,19 @@ define_insn(PUTFIELD)
 	case 'B':
 	case 'Z':
 		check_stack_ref(1);
-		CHECK_NULL(PUTFIELD, stack(1), 37);
+		CHECK_NULL(PUTFIELD, stack(1), 40);
 		store_offset_byte(stack(1), FIELD_OFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'C':
 		check_stack_ref(1);
-		CHECK_NULL(PUTFIELD, stack(1), 37);
+		CHECK_NULL(PUTFIELD, stack(1), 41);
 		store_offset_char(stack(1), FIELD_OFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'F':
 		check_stack_ref(1);
-		CHECK_NULL(PUTFIELD, stack(1), 37);
+		CHECK_NULL(PUTFIELD, stack(1), 42);
 		store_offset_float(stack(1), FIELD_OFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
