@@ -1,4 +1,4 @@
-/* java.util.zip.GZIPOutputStream
+/* GZIPOutputStream.java - Create a file in gzip format
    Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
