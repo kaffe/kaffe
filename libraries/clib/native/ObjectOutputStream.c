@@ -74,10 +74,15 @@ java_io_ObjectOutputStream_invokeObjectWriter(struct Hjava_io_ObjectOutputStream
 {
 	Method* meth;
 
-	meth = lookupClassMethod(cls, "writeObject", "(Ljava/io/ObjectOutputStream;)V");
+	/* do not look in super classes, see comment in
+	 * ObjectInputStream.invokeObjectReader  
+	 */
+	meth = findMethodLocal(cls, 
+		makeUtf8Const("writeObject", -1), 
+		makeUtf8Const("(Ljava/io/ObjectOutputStream;)V", -1));
+
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);
-
 		return (true); 
 	}
 	else {
