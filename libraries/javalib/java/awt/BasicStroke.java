@@ -77,40 +77,40 @@ public class BasicStroke implements Stroke
   public BasicStroke(float width, int cap, int join, float miterlimit,
                      float[] dash, float dashPhase)
   {
-    if (width < 0.0f ) {
+    if (width < 0.0f )
       throw new IllegalArgumentException("width " + width + " < 0");
-    }
-    else if (cap < CAP_BUTT || cap > CAP_SQUARE) {
-      throw new IllegalArgumentException("cap " + cap + " out of range [" + CAP_BUTT + ".." + CAP_SQUARE + "]");
-    }
-    else if (miterlimit < 1.0f && join == JOIN_MITER) {
-      throw new IllegalArgumentException("miterlimit " + miterlimit + " < 1.0f while join == JOIN_MITER");
-    }
-    else if (join < JOIN_MITER || join > JOIN_BEVEL) {
-      throw new IllegalArgumentException("join " + join + " out of range [" + JOIN_MITER + ".." + JOIN_BEVEL + "]");
-    }
-    else if (dashPhase < 0.0f && dash != null) {
-      throw new IllegalArgumentException("dashPhase " + dashPhase + " < 0.0f while dash != null");
-    }
-    else if (dash != null) {
-      if (dash.length == 0) {
+    else if (cap < CAP_BUTT || cap > CAP_SQUARE)
+      throw new IllegalArgumentException("cap " + cap + " out of range ["
+					 + CAP_BUTT + ".." + CAP_SQUARE + "]");
+    else if (miterlimit < 1.0f && join == JOIN_MITER)
+      throw new IllegalArgumentException("miterlimit " + miterlimit
+					 + " < 1.0f while join == JOIN_MITER");
+    else if (join < JOIN_MITER || join > JOIN_BEVEL)
+      throw new IllegalArgumentException("join " + join + " out of range ["
+					 + JOIN_MITER + ".." + JOIN_BEVEL
+					 + "]");
+    else if (dashPhase < 0.0f && dash != null)
+      throw new IllegalArgumentException("dashPhase " + dashPhase
+					 + " < 0.0f while dash != null");
+    else if (dash != null)
+      if (dash.length == 0)
 	throw new IllegalArgumentException("dash.length is 0");
-      }
-      else {
-	boolean allZero = true;
-
-	for ( int i = 0; i < dash.length; ++i) {
-	  if (dash[i] != 0.0f) {
-	    allZero = false;
-	    break;
-	  }
+      else
+	{
+	  boolean allZero = true;
+	  
+	  for ( int i = 0; i < dash.length; ++i)
+	    {
+	      if (dash[i] != 0.0f)
+		{
+		  allZero = false;
+		  break;
+		}
+	    }
+	  
+	  if (allZero)
+	    throw new IllegalArgumentException("all dashes are 0.0f");
 	}
-
-	if (allZero) {
-	  throw new IllegalArgumentException("all dashes are 0.0f");
-	}
-      }
-    }
 
     this.width = width;
     this.cap = cap;

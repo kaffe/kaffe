@@ -39,7 +39,7 @@ package java.security;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -154,7 +154,7 @@ public abstract class Policy
   private static void setup(final Policy policy)
   {
     if (policy.pd2pc == null)
-      policy.pd2pc = Collections.synchronizedMap(new HashMap());
+      policy.pd2pc = Collections.synchronizedMap(new LinkedHashMap());
 
     ProtectionDomain pd = policy.getClass().getProtectionDomain();
     if (pd.getCodeSource() != null)

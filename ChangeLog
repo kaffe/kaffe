@@ -1,3 +1,21 @@
+2003-09-16  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/rmi/rmic/Compile_gcj.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compile_jikes.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compile_kjc.java,
+	libraries/javalib/gnu/java/rmi/rmic/Compiler.java,
+	libraries/javalib/gnu/java/rmi/rmic/CompilerProcess.java,
+	libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+	libraries/javalib/gnu/java/rmi/rmic/RMICException.java,
+	libraries/javalib/java/awt/BasicStroke.java,
+	libraries/javalib/java/awt/Color.java,
+	libraries/javalib/java/security/acl/Acl.java,
+	libraries/javalib/java/security/Policy.java,
+	libraries/javalib/java/util/logging/LogManager.java,
+	libraries/javalib/java/util/logging/Logger.java,
+	libraries/javalib/java/util/logging/SimpleFormatter.java:
+	Resynced with GNU Classpath.
+	
 2003-09-15  Dalibor Topic <robilad@kaffe.org>
 
 	* developers/check-classpath-merge-status:

@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package gnu.java.rmi.rmic;
 
-/** Subclass of Compiler that can be used to invoke kjc.  */
+/** Subclass of Compiler that can be used to invoke jikes.  */
 public class Compile_jikes extends CompilerProcess
 {
-  /** Compiler arguments to invoke kjc */
+  /** Compiler arguments to invoke jikes */
   private static final String [] COMPILER_ARGS = 
   {
     "jikes"

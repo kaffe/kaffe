@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1996, 1997, 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+  Copyright (c) 1996, 1997, 1998, 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -222,7 +222,7 @@ private void generateStub() throws IOException {
 	ctrl.indent();
 	out.println("extends java.rmi.server.RemoteStub");
 	
-	// Output interface we implement
+	// Output interfaces we implement
 	out.print("implements ");
 	/* Scan implemented interfaces, and only print remote interfaces. */ 
         Class[] ifaces = clazz.getInterfaces(); 
