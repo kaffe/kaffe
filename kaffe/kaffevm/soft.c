@@ -264,12 +264,6 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 		}
 	}
 #endif
-
-	/* handle invocations on java.lang.Object methods via INVOKEINTERFACE */
-	if (implementors == 0 || i > implementors[0]) {
-		goto notfound;
-	}
-
 	/* skip word at the beginning of itable2dtable */
 	ncode = cls->itable2dtable[implementors[i] + idx + 1];
 
@@ -282,40 +276,10 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	 * given that they should be rare---minus possible DoS.)
 	 */
 	if (ncode == (void *)-1) {
-		goto notfound;
+		return NULL;
 	}
 	assert(ncode != NULL);
 	return (ncode);
-
-notfound:
-	/*
-	 * Compilers following the latest version of the JLS emit a
-	 * INVOKEINTERFACE instruction for methods that aren't defined in
-	 * an interface, but inherited from Object.
-	 *
-	 * In this case, the JVM must
-	 * a) check that the object really implements the interface given
-	 * b) find and invoke the method on object.
-	 *
-	 * The best way to jit that would be a checkcast <interface_type>
-	 * followed by an INVOKEVIRTUAL.
-	 *
-	 * For now, we simply detect the case where an object method is called
-	 * and find it by hand using its (name, signature).
-	 */
-	if (ifclass == ObjectClass) {
-		Method* objm = CLASS_METHODS(ifclass) + idx;
-		errorInfo info;
-
-		meth = findMethod(cls, objm->name, METHOD_SIG(objm), &info);
-		if (meth == 0) {
-			throwError(&info);
-		}
-		return (METHOD_INDIRECTMETHOD(meth));
-	}
-	meth = CLASS_METHODS(ifclass) + idx;
-	soft_nosuchmethod(cls, meth->name, METHOD_SIG(meth));
-	return (0);
 }
 
 inline

@@ -1,3 +1,19 @@
+2004-07-25  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/soft.c (soft_lookupinterfacemethod): 
+	Removed handling of invocations on java.lang.Object methods.
+
+	* kaffe/kaffevm/kaffe.def (INVOKEINTERFACE):
+	Simplified invocations on java.lang.Object methods by using
+	the object's dispatch table as in INVOKEVIRTUAL.
+
+	* kaffe/kaffevm/lookup.c (getMethodSignatureClass):
+	When resolving an interface method, search superinterfaces before
+	java.lang.Object. That way, we don't find the wrong method when
+	a superinterface overrides a method from java.lang.Object.
+
+	Reported by: Benja Fallenstein <b.fallenstein@gmx.de>
+	
 2004-07-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c

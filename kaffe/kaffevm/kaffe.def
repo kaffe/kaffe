@@ -2912,6 +2912,8 @@ define_insn(INVOKESTATIC)
 
 define_insn(INVOKEINTERFACE)
 {
+	Method *m;
+
 	/*
 	 * ..., obj, ..args.., -> ...
 	 */
@@ -2947,13 +2949,33 @@ define_insn(INVOKEINTERFACE)
 	else {
 		idx = (uint8)getpc(2) - 1;
 
+
+		/*
+		 * if we invoke a method from java.lang.Object, we can directly use the
+		 * dispatch table.
+		 */
+		m = findMethodLocal(ObjectClass, method_method()->name, method_sig());
+
 		check_null(INVOKEINTERFACE, stack(idx), 34);
 
 		check_stack_ref(idx);
 
 		slot_alloctmp(tmp);
-		softcall_lookupinterfacemethod(tmp, method_method(), stack(idx));
 
+		if (m != NULL) {
+			/* Find dispatch table in object */
+			load_offset_ref(tmp, stack(idx),
+					method_dtable_offset);
+
+			/* Check method table for cached entry */
+			load_offset_ref(tmp, tmp,
+					DTABLE_METHODOFFSET + 
+					m->idx *
+					DTABLE_METHODSIZE);
+		} else {
+			softcall_lookupinterfacemethod(tmp, method_method(), stack(idx));
+		}
+		
 		/* Push arguments & object */
 		build_call_frame(method_sig(), stack(idx), idx);
 		idx++;
@@ -2969,7 +2991,7 @@ define_insn(INVOKEINTERFACE)
 
 		/* Pop args */
 		popargs();
-
+		
 		end_func_sync();
 		METHOD_RETURN_VALUE();
 	}

@@ -99,28 +99,40 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		/* Find method - we don't use findMethod(...) yet since this
 		 * will initialise our class (and we don't want to do that).
 		 */
-		mptr = 0;
-		for (; class != 0; class = class->superclass) {
-			mptr = findMethodLocal(class, name, sig);
-			if (mptr != NULL) {
-				call->method = mptr;
-				break;
+		if (isSpecial != 2) {
+			/* method resolution for INVOKEVIRTUAL or INVOKESPECIAL.
+			 * Since we make sure that the dispatch table of a class
+			 * contains all methods of all implemented interfaces, we
+			 * don't need to search superinterfaces here.
+			 */
+			for (; class != 0; class = class->superclass) {
+				mptr = findMethodLocal(class, name, sig);
+				if (mptr != NULL) {
+					call->method = mptr;
+					break;
+				}
 			}
-		}
+		} else {
+			/* method resolution for INVOKEINTERFACE. First search the
+			 * interface itself, then its superinterfaces and finally
+			 * java.lang.Object.
+			 */
+			class = call->class;
+			mptr = findMethodLocal(class, name, sig);
+			if (mptr == NULL) {
+				for (i = class->total_interface_len - 1; i >= 0; i--) {
+					mptr = findMethodLocal(class->interfaces[i], name, sig);
+					if (mptr != 0) {
+						break;
+					}
+				}
 
-                /* If we've not found anything and we're searching interfaces,
-                 * search them too.
-                 */
-                if (mptr == 0 && isSpecial == 2) {
-                        class = call->class;
-                        for (i = class->total_interface_len - 1; i >= 0; i--) {
-                                mptr = findMethodLocal(class->interfaces[i], name, sig);
-                                if (mptr != 0) {
-                                        call->method = mptr;
-                                        break;
-                                }
-                        }
-                }
+				if (mptr == NULL) {
+					mptr = findMethodLocal(call->class->superclass, name, sig);
+				}
+			}
+			call->method = mptr;
+		}
 	}
 
 	/* Calculate in's and out's */
