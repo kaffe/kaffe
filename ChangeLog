@@ -1,4 +1,14 @@
-2004-03-09  Holger Schurig <h.schurig@mn-logistik.de>
+2004-03-11  Dalibor Topic <robilad@kaffe.org>
+
+	* configure.in:
+	Fixed intendation of some help strings.
+
+	* configure:
+	Regenerated.
+
+	Reported by: Holger Schurig <h.schurig@mn-logistik.de>
+
+2004-03-11  Holger Schurig <h.schurig@mn-logistik.de>
 
 	* head/config/arm/linux/md.c:
 	Fixed compilation problems.

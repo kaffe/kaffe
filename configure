@@ -1078,7 +1078,7 @@ Optional Features:
   --enable-feedback       Enable generation of feedback data
   --enable-gcj            Enable GCJ support
   --disable-mips2         Disable MIPS II instructions
-  --enable-pxa         Enable PXA/XScale support
+  --enable-pxa            Enable PXA/XScale support
   --disable-alsatest      Do not try to compile and run a test Alsa program
   --disable-esdtest       Do not try to compile and run a test ESD program
   --disable-sound         Disable javax.sound support
@@ -1108,7 +1108,7 @@ Optional Packages:
   --with-profiling        Compile with gprof(1) profiling support
   --without-suncompat     Don't include Sun compatibility scripts
   --with-threads=SYSTEM   Define which threading system to use [default=unix-jthreads]
-  --with-jikes=JIKES    Define to use jikes compiler [default=no]
+  --with-jikes=JIKES      Define to use jikes compiler [default=no]
   --with-libffi           Use libffi for sysdepCallMethod
   --with-x                use the X Window System
   --with-stats            Gather statistics on vm execution

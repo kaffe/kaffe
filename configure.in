@@ -499,7 +499,7 @@ dnl Use jikes instead of kjc?
 dnl =========================================================================
 
 AC_CHECK_PROG(JIKESPROG, jikes, jikes)
-AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler @<:@default=no@:>@],[JIKES="$withval"],[JIKES=""])
+AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]      Define to use jikes compiler @<:@default=no@:>@],[JIKES="$withval"],[JIKES=""])
 AC_MSG_CHECKING([whether to use jikes])
 
 case $with_jikes in
@@ -974,10 +974,10 @@ dnl =========================================================================
 dnl Do we enable XScale(PXA)
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE(pxa, [  --enable-pxa         Enable PXA/XScale support])
+AC_ARG_ENABLE(pxa, [  --enable-pxa            Enable PXA/XScale support])
 AC_MSG_CHECKING([whether to enable PXA/XScale support])
 if test x"$enable_pxa" != x"no"; then
-    AC_DEFINE([HAVE_XSCALE], 1, [Enable PXA?XScale support])
+    AC_DEFINE([HAVE_XSCALE], 1, [Enable PXA/XScale support])
 fi
 AC_MSG_RESULT($enable_pxa)
 
