@@ -244,7 +244,7 @@ EXTRA_DIST = \
 	s390/linux/config.frag \
 	s390/linux/md.c \
 	s390/linux/md.h \
-	s390/linux/threads.h \
+	s390/threads.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \
