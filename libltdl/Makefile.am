@@ -13,8 +13,12 @@ if CONVENIENCE_LTDL
 noinst_LTLIBRARIES = libltdlc.la
 endif
 
+## Make sure these will be cleaned even when they're not built by
+## default.
+CLEANFILES = libltdl.la libltdlc.la
+
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = -no-undefined -version-info 2:0:2
+libltdl_la_LDFLAGS = -no-undefined -version-info 3:0:0
 libltdl_la_LIBADD = $(LIBADD_DL)
 
 libltdlc_la_SOURCES = ltdl.c

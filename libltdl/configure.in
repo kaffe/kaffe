@@ -10,7 +10,7 @@ AC_ARG_WITH(auxdir,
 [AC_CONFIG_AUX_DIR_DEFAULT])
 
 if test -z "$enable_ltdl_install$enable_ltdl_convenience"; then
-  if test -f ${srcdir}/ltconfig && test -f ${srcdir}/ltmain.sh; then
+  if test -f ${srcdir}/ltmain.sh; then
     # if libltdl is libtoolized, it is assumed to be stand-alone and
     # installed unless the command line overrides it (tested above)
     enable_ltdl_install=yes
