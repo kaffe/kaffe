@@ -1,3 +1,12 @@
+2004-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c:
+	(nullException) Changed to use SIGNAL_ARGS in declaration.
+	Made static. Fixes build with pthreads and interpreter 
+	engine.
+
+	Reported by:  Fabien Renaud  <renaud@nentec.de>
+
 2004-07-07  Fabien Renaud  <renaud@nentec.de>
 
 	* kaffe/kaffevm/threadData.h:

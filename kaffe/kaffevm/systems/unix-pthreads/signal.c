@@ -44,7 +44,7 @@
 #define SIG_T   void*
 #endif
 
-void nullException(EXCEPTIONPROTO);
+static void nullException(SIGNAL_ARGS(sig, sc));
 static void floatingException(EXCEPTIONPROTO);
 
 static exchandler_t nullHandler;
@@ -83,8 +83,8 @@ jthread_initexceptions(exchandler_t _nullHandler,
 /*
  * Null exception - catches bad memory accesses.
  */
-void
-nullException(EXCEPTIONPROTO)
+static void
+nullException(SIGNAL_ARGS(sig, ctx))
 {
         void *stackptr;
 	jthread_t current_thread;
