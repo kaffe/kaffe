@@ -2,7 +2,7 @@
  * xprofiler.c
  * Interface functions to the profiling code
  *
- * Copyright (c) 2000 University of Utah and the Flux Group.
+ * Copyright (c) 2000, 2001 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -28,6 +28,7 @@
 
 #include "gtypes.h"
 #include "md.h"
+#include "xprofile-md.h"
 #include "exception.h"
 #include "jmalloc.h"
 #include "methodCache.h"
@@ -67,6 +68,9 @@ char *kaffe_syms_filename = "kaffe-jit-symbols.s";
 
 /* Debugging file for profiler symbols */
 struct debug_file *profiler_debug_file = 0;
+static struct xprofiler_extra *extraProfiles = 0;
+
+static int extraProfileCount = 0;
 
 /* Number of call_arc structures to preallocate */
 #define XPROFILE_ARCS (1024 * 64)
@@ -226,7 +230,7 @@ int enableXProfiling(void)
 	    !atexit(profilerAtExit) )
 	{
 #if defined(KAFFE_CPROFILER)
-		struct gmonparam *gp = &_gmonparam;
+		struct gmonparam *gp = getGmonParam();
 		int prof_rate;
 #endif
 		
@@ -240,7 +244,7 @@ int enableXProfiling(void)
 		if( !prof_rate )
 			prof_rate = 100;
 		/* Copy the hits leading up to now into our own counters */
-		if( gp->kcountsize > 0 )
+		if( gp && gp->kcountsize > 0 )
 		{
 			int lpc, len = gp->kcountsize / sizeof(HISTCOUNTER);
 			HISTCOUNTER *hist = gp->kcount;
@@ -288,43 +292,80 @@ void disableXProfiling(void)
 
 void xProfilingOn(void)
 {
+	xProfRecord++;
 #if defined(KAFFE_CPROFILER)
-	struct gmonparam *gp = &_gmonparam;
-
-	gp->state = GMON_PROF_ON;
+	{
+		struct gmonparam *gp = getGmonParam();
+		
+		if( xProfRecord && gp )
+			gp->state = GMON_PROF_ON;
+	}
 #endif
-	xProfRecord = 1;
 }
 
 void xProfilingOff(void)
 {
+	xProfRecord--;
 #if defined(KAFFE_CPROFILER)
-	struct gmonparam *gp = &_gmonparam;
-
-	gp->state = GMON_PROF_OFF;
+	{
+		struct gmonparam *gp = getGmonParam();
+		
+		if( !xProfRecord && gp )
+			gp->state = GMON_PROF_OFF;
+	}
 #endif
-	xProfRecord = 0;
+}
+
+static
+void xExtraSymbols(struct gmon_file *gf)
+{
+	struct xprofiler_extra *xe;
+	char *pos;
+	
+	pos = gf->gf_high - (extraProfileCount * HISTFRACTION);
+	addDebugInfo(profiler_debug_file,
+		     DIA_FunctionSymbolS, "_jit_end_", pos, -1,
+		     DIA_DONE);
+	xe = extraProfiles;
+	while( xe )
+	{
+		addDebugInfo(profiler_debug_file,
+			     DIA_FunctionSymbolS, xe->name, pos, -1,
+			     DIA_DONE);
+		pos += (xe->sampleCount * HISTFRACTION);
+		xe = xe->next;
+	}
+}
+
+static
+void xRecordExtras(struct gmon_file *gf)
+{
+	struct xprofiler_extra *xe;
+	char *pos;
+
+	pos = gf->gf_high - (extraProfileCount * HISTFRACTION);
+	xe = extraProfiles;
+	while( xe )
+	{
+		xe->handler(gf, pos);
+		pos += (xe->sampleCount * HISTFRACTION);
+		xe = xe->next;
+	}
 }
 
 void xProfileStage(char *stage_name)
 {
 	char *low, *high, *filename;
 	struct gmon_file *gf;
-	short misses;
 	int len;
 
 	if( !xProfFlag )
 		return;
 	xProfilingOff();
 	low = kaffe_memory_samples->ms_low;
-	high = kaffe_memory_samples->ms_high + 2;
-	misses = kaffe_memory_samples->ms_misses;
-	/* Dump some helpful symbols */
-	addDebugInfo(profiler_debug_file,
-		     DIA_FunctionSymbolS, "_unaccounted_", high - 2, -1,
-		     DIA_FunctionSymbolS, "_jit_end_", high, -1,
-		     DIA_DONE);
-	xProfilingOff(); /* addDebugInfo turns it back on */
+	high = kaffe_memory_samples->ms_high +
+		(extraProfileCount * HISTFRACTION);
+	jthread_suspendall();
 	len = strlen(kaffe_gmon_filename) +
 		(stage_name ? strlen(stage_name) + 1 : 0) +
 		1;
@@ -350,35 +391,51 @@ void xProfileStage(char *stage_name)
 						GRA_LowPC, low,
 						GRA_HighPC, high,
 						GRA_DONE);
+			/* The low/high might be aligned by writeGmonRecord */
+			low = gf->gf_low;
+			high = gf->gf_high;
+			/* Dump any extra symbols */
+			xExtraSymbols(gf);
 			walkMemorySamples(kaffe_memory_samples,
 					  low,
+					  high -
+					  (extraProfileCount * HISTFRACTION),
 					  &pgf,
 					  profilerSampleWalker);
 			if( pgf.pgf_file )
 			{
-				/*
-				 * Record the number of hits that were outside
-				 * of observed memory
-				 */
-				writeGmonSamples(pgf.pgf_file,
-						 high - 2, &misses, 1);
+				/* Record extra samples */
+				xRecordExtras(pgf.pgf_file);
 				/* Dump out the call graph data */
 				writeCallGraph(kaffe_call_graph, pgf.pgf_file);
-				/* Record the number of arcs we missed */
-				writeGmonRecord(pgf.pgf_file,
-						GRA_Type, GMON_TAG_CG_ARC,
-						GRA_FromPC, high - 2,
-						GRA_SelfPC, high - 2,
-						GRA_Count, kaffe_call_graph->
-						cg_misses,
-						GRA_DONE);
-				
+				/* Record extra cg data */
+				xRecordExtras(pgf.pgf_file);
 				deleteGmonFile(pgf.pgf_file);
 			}
+			else
+			{
+				resetMemorySamples(kaffe_memory_samples);
+			}
 		}
+		else
+		{
+			fprintf(stderr,
+				"XProf Notice: Cannot create gmon file %s\n",
+				filename);
+			gc_free(filename);
+			resetMemorySamples(kaffe_memory_samples);
+		}
+	}
+	else
+	{
+		fprintf(stderr,
+			"XProf Notice: Not enough memory to write "
+			"profiling data\n");
+		resetMemorySamples(kaffe_memory_samples);
 	}
 	resetCallGraph(kaffe_call_graph);
 	xProfilingOn();
+	jthread_unsuspendall();
 }
 
 int profileGmonFile(char *name)
@@ -395,6 +452,9 @@ int profileSymbolFile(char *name)
 }
 
 #if defined(KAFFE_XPROFILER)
+
+struct sigaction oldSigAction;
+
 static void profileTimerHandler(SIGNAL_ARGS(sig, sc))
 {
 	SIGNAL_CONTEXT_POINTER(scp) = GET_SIGNAL_CONTEXT_POINTER(sc);
@@ -423,7 +483,8 @@ int enableProfileTimer(void)
 	sa.sa_handler = (SIG_T)profileTimerHandler;
 	sigfillset(&sa.sa_mask);
 	sa.sa_flags = 0;
-	if( sigaction(SIGALRM, &sa, 0) >= 0 )
+#if 0
+	if( sigaction(SIGALRM, &sa, &oldSigAction) >= 0 )
 	{
 		struct itimerval new_value;
 		
@@ -437,6 +498,8 @@ int enableProfileTimer(void)
 			retval = true;
 		}
 	}
+#endif
+	retval = 1;
 	return( retval );
 }
 
@@ -482,7 +545,9 @@ int profileFunction(struct mangled_method *mm, char *code, int codelen)
 		xProfilingOn();
 	}
 	else
+	{
 		retval = true;
+	}
 	return( retval );
 }
 
@@ -500,7 +565,9 @@ int profileMemory(char *code, int codelen)
 		xProfilingOn();
 	}
 	else
+	{
 		retval = true;
+	}
 	return( retval );
 }
 
@@ -518,7 +585,9 @@ int profileSymbol(struct mangled_method *mm, char *addr, int size)
 		}
 	}
 	else
+	{
 		retval = true;
+	}
 	return( retval );
 }
 
@@ -552,9 +621,9 @@ _KAFFE_OVERRIDE_MCOUNT_DEF
 	profiler_sample_override_pc = (char *)selfpc;
 	if( kaffe_call_graph )
 	{
-		register struct gmonparam *gp = &_gmonparam;
+		register struct gmonparam *gp = getGmonParam();
 		
-		if( !xProfRecord || (gp->state != GMON_PROF_ON) )
+		if( !xProfRecord || (gp && (gp->state != GMON_PROF_ON)) )
 			goto fini;
 		arcHit(kaffe_call_graph, (char *)frompc, (char *)selfpc);
 	}
@@ -565,12 +634,12 @@ _KAFFE_OVERRIDE_MCOUNT_DEF
 		register struct gmonparam *p;
 		register long toindex;
 
-		p = &_gmonparam;
+		p = getGmonParam();
 		/*
 		 * check that we are profiling
 		 * and that we aren't recursively invoked.
 		 */
-		if( p->state != GMON_PROF_ON )
+		if( !p || (p->state != GMON_PROF_ON) )
 			goto fini;
 		p->state = GMON_PROF_BUSY;
 		

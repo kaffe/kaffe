@@ -1,3 +1,16 @@
+Wed May  8 15:47:30 CEST 2002 Tim Stack <stack@cs.utah.edu>
+	* config/Makefile.am,
+	config/Makefile.in,
+	config/i386/freebsd2/xprofile-md.h,
+	config/i386/linux/xprofile-md.h,
+	kaffe/xprof/callGraph.c,
+	kaffe/xprof/mangle.c,
+	kaffe/xprof/mangle.h,
+	kaffe/xprof/memorySamples.c,
+	kaffe/xprof/memorySamples.h,
+	kaffe/xprof/xprofiler.c: partially merged xprofiling with Janos
+	VM.
+
 Sun May  5 19:31:34 PST 2002  Jim Pick  <jim@kaffe.org>
 
 	* Updated automake and libtool + added a few tweaks to

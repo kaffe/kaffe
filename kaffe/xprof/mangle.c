@@ -27,6 +27,14 @@
 
 #include "mangle.h"
 
+#ifndef MANGLE_GCJ
+# ifdef HAVE_GCJ_SUPPORT
+#  define MANGLE_GCJ 1
+# else
+#  define MANGLE_GCJ 0
+# endif
+#endif
+
 /*
  * GCJ name mangling can confuse older tools.  It would be nice to be
  * able to dectect whether gcj-aware versions of gdb and gprof are
@@ -38,15 +46,15 @@
  * second, it does not use U to indicate a unicode name part.
  * Instead, is always escapes underscores preceding hex digits.
  */
-#ifdef HAVE_GCJ_SUPPORT
-# define MANGLE_GCJ
+#if MANGLE_GCJ
 # define IS_SEP(c) ((c) == '/')
+# define NAME_SEPARATORS "/"
 
   /* GCJ escapes out underscore iff this is a unicode word */
   static inline int bad_underscore(char *p, char *end) { return 1; }
 #else
-# undef MANGLE_GJC
 # define IS_SEP(c) ((c) == '/' || (c) == '$')
+# define NAME_SEPARATORS "/$"
 
   /* In kaffe, everything is potential unicode-mangled, but underscores
    * are only escaped out if they precede hex digits or underscores.
@@ -161,19 +169,19 @@ static int duplicateParameter(Method *meth, int curr_param)
 	int curr_len, lpc, retval = -1;
 
 	/* Figure out the length of the curr_param type string */
-	if( curr_param == meth->parsed_sig->nargs )
+	if( curr_param == METHOD_PSIG(meth)->nargs )
 	{
 		/*
 		 * Its the last arg, an ')' and the return type follow, so we
 		 * use them to find the length
 		 */
-		curr_len = (meth->parsed_sig->ret_and_args[0] - 1) -
-			meth->parsed_sig->ret_and_args[curr_param];
+		curr_len = (METHOD_PSIG(meth)->ret_and_args[0] - 1) -
+			METHOD_PSIG(meth)->ret_and_args[curr_param];
 	}
 	else
 	{
-		curr_len = meth->parsed_sig->ret_and_args[curr_param] -
-			meth->parsed_sig->ret_and_args[curr_param + 1];
+		curr_len = METHOD_PSIG(meth)->ret_and_args[curr_param] -
+			METHOD_PSIG(meth)->ret_and_args[curr_param + 1];
 	}
 	/*
 	 * Loop over the parameters searching for one that matches curr_param,
@@ -184,23 +192,23 @@ static int duplicateParameter(Method *meth, int curr_param)
 		int arg_len;
 
 		/* Figure out the length of the current parameter type */
-		if( lpc == meth->parsed_sig->nargs )
+		if( lpc == METHOD_PSIG(meth)->nargs )
 		{
-			arg_len = (meth->parsed_sig->ret_and_args[0] - 1) -
-				meth->parsed_sig->ret_and_args[lpc];
+			arg_len = (METHOD_PSIG(meth)->ret_and_args[0] - 1) -
+				METHOD_PSIG(meth)->ret_and_args[lpc];
 		}
 		else
 		{
-			arg_len = meth->parsed_sig->ret_and_args[lpc] -
-				meth->parsed_sig->ret_and_args[lpc + 1];
+			arg_len = METHOD_PSIG(meth)->ret_and_args[lpc] -
+				METHOD_PSIG(meth)->ret_and_args[lpc + 1];
 		}
 		if( arg_len > 1 )
 		{
-			if( (strncmp(&meth->parsed_sig->signature->
-				     data[meth->parsed_sig->
+			if( (strncmp(&METHOD_PSIG(meth)->signature->
+				     data[METHOD_PSIG(meth)->
 					 ret_and_args[curr_param]],
-				     &meth->parsed_sig->signature->
-				     data[meth->parsed_sig->ret_and_args[lpc]],
+				     &METHOD_PSIG(meth)->signature->
+				     data[METHOD_PSIG(meth)->ret_and_args[lpc]],
 				     arg_len) == 0) &&
 			    (curr_len == arg_len) )
 			{
@@ -237,8 +245,8 @@ int mangleMethodArgs(struct mangled_method *mm, Method *meth)
 			/* Unique parameter, mangle the type */
 			mm->mm_args[lpc - 1] = mangleType(
 				0,
-				(char *)&meth->parsed_sig->signature->
-				data[meth->parsed_sig->ret_and_args[lpc]]);
+				(char *)&METHOD_PSIG(meth)->signature->
+				data[METHOD_PSIG(meth)->ret_and_args[lpc]]);
 		}
 	}
 	return( retval );
@@ -254,7 +262,7 @@ int mangleMethod(struct mangled_method *mm, Method *meth)
 	    mangleMethodClass(mm,
 			      meth->class->loader,
 			      (char *)CLASS_CNAME(meth->class)) &&
-	    mangleMethodArgCount(mm, meth->parsed_sig->nargs) &&
+	    mangleMethodArgCount(mm, METHOD_PSIG(meth)->nargs) &&
 	    mangleMethodArgs(mm, meth) )
 	{
 		retval = 1;
@@ -287,7 +295,7 @@ int printMangledMethod(struct mangled_method *mm, FILE *file)
 		 * If the method name has escapes we need to append the `U' to
 		 * the end
 		 */
-#ifdef MANGLE_GCJ
+#if MANGLE_GCJ
 		if( mm->mm_flags & MMF_UNICODE_METHOD )
 			fprintf(file, "U");
 #endif
@@ -372,7 +380,7 @@ char *mangleClassType(int prepend, void *cl, char *name)
 		}
 		else if( ch == '_' && bad_underscore(curr, end))
 		{
-#ifdef MANGLE_GCJ
+#if MANGLE_GCJ
 			num_underscores++;
 #else
 			need_escapes++;
@@ -441,21 +449,20 @@ char *mangleClassType(int prepend, void *cl, char *name)
 		curr = name;
 		while( curr < end )
 		{
-			/* Figure out the length of this name segment */
-			char *equal = curr;
-			while (equal < end && !IS_SEP(*equal))
-				equal++;
-			m_len = mangleLength(curr, equal - curr, 0,
-					     &len);
-			if( m_len )
+			if( (m_len = mangleLength(curr,
+						  quals ? -1 : end - curr,
+						  NAME_SEPARATORS,
+						  &len)) )
 			{
-#ifdef MANGLE_GCJ
+#if MANGLE_GCJ
 				*dest = 'U';
 				dest++;
 #endif
 			}
 			else
+			{
 				m_len = len;
+			}
 			/* Write the length of the name */
 			sprintf(dest, "%d", m_len);
 			dest += strlen(dest);
@@ -506,7 +513,7 @@ char *mangleType(int prepend, char *type)
 	return( retval );
 }
 
-int mangleLength(char *string, int len, char term, int *out_len)
+int mangleLength(char *string, int len, char *term, int *out_len)
 {
 	int num_chars = 0, need_escapes = 0, num_underscores = 0;
 	int retval = -1, error = 0;
@@ -524,13 +531,25 @@ int mangleLength(char *string, int len, char term, int *out_len)
 		if( ch < 0 )
 		{
 			error = 1;
-		}
-		else if( ch == term )
-		{
-			/* Found the specified terminator */
 			break;
 		}
-		else if( (ch >= '0') && (ch <= '9') )
+		else if( term )
+		{
+			int found_term = 0;
+			int lpc;
+
+			for( lpc = 0; term[lpc]; lpc++ )
+			{
+				if( term[lpc] == ch )
+					found_term = 1;
+			}
+			if( found_term )
+			{
+				/* Found the specified terminator */
+				break;
+			}
+		}
+		if( (ch >= '0') && (ch <= '9') )
 		{
 			/* If a number starts a name then we need an escape */
 			if( (curr - 1) == string)
@@ -538,7 +557,7 @@ int mangleLength(char *string, int len, char term, int *out_len)
 		}
 		else if( ch == '_' && bad_underscore(curr, end))
 		{
-#ifdef MANGLE_GCJ
+#if MANGLE_GCJ
 			num_underscores++;
 #else
 			need_escapes++;

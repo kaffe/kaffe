@@ -99,6 +99,6 @@ int mangleString(char *dest, char *src, int slen, int unicode);
  * taken as the terminating character.  If `out_len' is non-NULL then it is
  * always set to the unmangled length of `string'.
  */
-int mangleLength(char *string, int len, char term, int *out_len);
+int mangleLength(char *string, int len, char *term, int *out_len);
 
 #endif /* __mangle_h */

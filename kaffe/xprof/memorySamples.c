@@ -308,7 +308,8 @@ void memoryHitCount(struct memory_samples *ms, char *addr, int count)
 /*
  * Recurses over the tree and calls the walker function on the leaf nodes.
  */
-static int walkHelper(struct memory_samples *ms, char **addr, void *handle,
+static int walkHelper(struct memory_samples *ms, char **addr, char *high_addr,
+		      void *handle,
 		      sample_walker_t walker, void **branches, int level)
 {
 	int retval = 0, lpc;
@@ -319,7 +320,7 @@ static int walkHelper(struct memory_samples *ms, char **addr, void *handle,
 		retval = walker(handle,
 				*addr,
 				(short *)branches,
-				min(ms->ms_high - (*addr),
+				min(high_addr - (*addr),
 				    SAMPLE_BRANCH_COUNT -
 				    SAMPLE_BRANCH(*addr,
 						  SAMPLE_BRANCH_LEVELS)) / 2);
@@ -341,6 +342,7 @@ static int walkHelper(struct memory_samples *ms, char **addr, void *handle,
 						       lpc);
 				retval = walkHelper(ms,
 						    addr,
+						    high_addr,
 						    handle,
 						    walker,
 						    branches[lpc],
@@ -353,10 +355,14 @@ static int walkHelper(struct memory_samples *ms, char **addr, void *handle,
 	return( retval );
 }
 
-void walkMemorySamples(struct memory_samples *ms, char *addr, void *handle,
+void walkMemorySamples(struct memory_samples *ms,
+		       char *low_addr,
+		       char *high_addr,
+		       void *handle,
 		       sample_walker_t walker)
 {
-	walkHelper(ms, &addr, handle, walker, ms->ms_samples, 0);
+	walkHelper(ms, &low_addr, high_addr,
+		   handle, walker, ms->ms_samples, 0);
 }
 
 /* A simple walker function that zeroes out the sample values */
@@ -368,7 +374,7 @@ static int resetBinsWalker(void *handle, char *addr, short *bins, int size)
 
 void resetMemorySamples(struct memory_samples *ms)
 {
-	walkMemorySamples(ms, 0, 0, resetBinsWalker);
+	walkMemorySamples(ms, 0, ms->ms_high, 0, resetBinsWalker);
 	ms->ms_misses = 0;
 }
 
@@ -401,7 +407,7 @@ static int printBinsWalker(void *handle, char *addr, short *bins, int size)
 
 void printMemorySamples(FILE *file, struct memory_samples *ms)
 {
-	walkMemorySamples(ms, 0, file, printBinsWalker);
+	walkMemorySamples(ms, 0, ms->ms_high, file, printBinsWalker);
 }
 
 #endif /* KAFFE_XPROFILER */

@@ -68,7 +68,10 @@ void memoryHitCount(struct memory_samples *ms, char *addr, int count);
 /*
  * Walk over the sample tree calling the walker function for each bin reached
  */
-void walkMemorySamples(struct memory_samples *ms, char *addr, void *handle,
+void walkMemorySamples(struct memory_samples *ms,
+		       char *low_addr,
+		       char *high_addr,
+		       void *handle,
 		       sample_walker_t walker);
 /*
  * Reset memory sample values

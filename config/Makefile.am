@@ -12,7 +12,7 @@ else
 ENGINE_GEN_HDRS =
 endif
 
-GEN_HDRS = md.h $(ENGINE_GEN_HDRS)
+GEN_HDRS = md.h xprofile-md.h $(ENGINE_GEN_HDRS)
 
 DISTCLEANFILES = $(GEN_HDRS)
 
@@ -81,6 +81,7 @@ EXTRA_DIST = \
 	i386/freebsd2/config.frag \
 	i386/freebsd2/jit-md.h \
 	i386/freebsd2/jit3-md.h \
+	i386/freebsd2/xprofile-md.h \
 	i386/freebsd2/md.c \
 	i386/freebsd2/md.h \
 	i386/gnu/config.frag \
@@ -280,6 +281,12 @@ md.h: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_MD_H) md.h $@
+
+xprofile-md.h: stamp-h03
+	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h02; \
+	else :; fi
+stamp-h03: $(top_builddir)/config.status
+	$(SHELL) $(REGEN_FORWARD) $(CONFIG_XPROFILE_MD_H) xprofile-md.h $@
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \
