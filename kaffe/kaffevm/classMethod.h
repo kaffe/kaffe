@@ -85,6 +85,7 @@ struct Hjava_lang_Class {
 	Hjava_lang_ClassLoader*	loader;
 	char			state;
 	char			final;
+	char			cfinal;
 };
 
 #ifndef __DEFINED_CLASS
@@ -234,6 +235,7 @@ struct _classFile;
   (CLASS_IS_PRIMITIVE(CL) ? TYPE_PRIM_SIZE (CL) : PTR_TYPE_SIZE)
 
 #define	METHOD_IS_STATIC(METH) ((METH)->accflags & ACC_STATIC)
+#define	METHOD_IS_CONSTRUCTOR(METH) ((METH)->accflags & ACC_CONSTRUCTOR)
 
 /*
  * 'processClass' is the core of the class initialiser and can prepare a
@@ -283,6 +285,7 @@ int32			hashUtf8String(char*, int);
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */
 extern Utf8Const* final_name;		/* "finalize" */
+extern Utf8Const* class_final_name;	/* "classFinalize" */
 extern Utf8Const* void_signature;	/* "()V" */
 extern Utf8Const* Code_name;		/* "Code" */
 extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */

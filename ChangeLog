@@ -1,3 +1,10 @@
+Sat Aug 29 16:30:41 1998  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/classMethod.[ch]:
+	make sure finalize() is not static; take a small step towards
+	supporting unloading classes
+	* kaffe/kaffevm/jni.c: don't construct with a non-constructor
+
 Fri Aug 28 21:44:06 1998  Archie Cobbs <archie@whistle.com>
 
 	* configure, configure.in, FAQ/FAQ.install-root: specify

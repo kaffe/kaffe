@@ -32,6 +32,7 @@
 Utf8Const* init_name;
 Utf8Const* void_signature;
 Utf8Const* final_name;
+Utf8Const* class_final_name;
 Utf8Const* constructor_name;
 Utf8Const* Code_name;
 Utf8Const* LineNumberTable_name;
@@ -64,6 +65,7 @@ Hjava_lang_Class* javaLangNullPointerException;
 #define	INIT			"<clinit>"
 #define	VOIDSIG			"()V"
 #define	FINAL			"finalize"
+#define	CLASSFINAL		"classFinalize"
 #define	CONSTRUCTOR_NAME	"<init>"
 
 /* Initialisation prototypes */
@@ -105,6 +107,7 @@ initialiseKaffe(void)
 	init_name = makeUtf8ConstFixed(INIT, -1);
 	void_signature = makeUtf8ConstFixed(VOIDSIG, -1);
 	final_name = makeUtf8ConstFixed(FINAL, -1);
+	class_final_name = makeUtf8ConstFixed(CLASSFINAL, -1);
 	constructor_name = makeUtf8ConstFixed(CONSTRUCTOR_NAME, -1);
 	Code_name = makeUtf8ConstFixed("Code", -1);
 	LineNumberTable_name = makeUtf8ConstFixed("LineNumberTable", -1);
