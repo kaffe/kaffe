@@ -11,6 +11,8 @@
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c
 	(detectStackBoundaries): Fix initialization of guessPointer on
 	64-bit platforms.
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(detectStackBoundaries): Likewise.
 
 2004-07-08  Helmer Kraemer  <hkraemer@freenet.de>
 

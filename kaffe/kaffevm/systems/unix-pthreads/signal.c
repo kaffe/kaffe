@@ -466,7 +466,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
 	{
-	  unsigned int pageSize = getpagesize();
+	  uintp pageSize = getpagesize();
 
 	  guessPointer = (char *)((uintp)(&jtid) & ~(pageSize-1));
 	  
