@@ -1,3 +1,14 @@
+Mon May 20 21:29:52 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/clib/native/Field.c:
+	(getObject0) The type of the value returned by getFieldAddress is
+	a pointer to an object pointer, instead of an object
+	pointer. Fixed.
+	* libraries/javalib/java/lang/reflect/Field.java:
+	(get) Added boolean fields.
+	(set) Use instanceof to compare types, fixing problems with
+	setting of primitive types.  Throw IllegalArgumentException when
+	trying to set an Object field with a non-matching value.
+
 Tue May 14 21:14:00 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/reflect/Method.java:

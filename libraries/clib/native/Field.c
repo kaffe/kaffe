@@ -83,7 +83,7 @@ java_lang_reflect_Field_getModifiers(struct Hjava_lang_reflect_Field * this)
 struct Hjava_lang_Object*
 java_lang_reflect_Field_getObject0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj)
 {
-	return ((struct Hjava_lang_Object*)getFieldAddress(this, obj));
+	return (*(struct Hjava_lang_Object**)getFieldAddress(this, obj));
 }
 
 jboolean

@@ -65,6 +65,9 @@ public Object get(Object obj) throws IllegalArgumentException, IllegalAccessExce
 	else if (type == Character.TYPE) {
 		return (new Character(getChar0(obj)));
 	}
+	else if (type == Boolean.TYPE) {
+	    return (new Boolean(getBoolean0(obj)));
+	}
 	else {
 		return (getObject0(obj));
 	}
@@ -209,33 +212,37 @@ public short getShort(Object obj) throws IllegalArgumentException, IllegalAccess
 }
 
 public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
-	Class valtype = value.getClass();
-
-	if (valtype == Boolean.TYPE) {
-		setBoolean0(obj, ((Boolean)value).booleanValue());
-	}
-	else if (valtype == Byte.TYPE) {
-		setByte0(obj, ((Byte)value).byteValue());
-	}
-	else if (valtype == Short.TYPE) {
-		setShort0(obj, ((Short)value).shortValue());
-	}
-	else if (valtype == Character.TYPE) {
-		setChar0(obj, ((Character)value).charValue());
-	}
-	else if (valtype == Integer.TYPE) {
-		setInt0(obj, ((Integer)value).intValue());
-	}
-	else if (valtype == Long.TYPE) {
-		setLong0(obj, ((Long)value).longValue());
-	}
-	else if (valtype == Float.TYPE) {
-		setFloat0(obj, ((Float)value).floatValue());
-	}
-	else if (valtype == Double.TYPE) {
-		setDouble0(obj, ((Double)value).doubleValue());
+	if (type.isPrimitive()) {
+		if (value instanceof Boolean) {
+			setBoolean(obj, ((Boolean)value).booleanValue());
+		}
+		else if (value instanceof Byte) {
+			setByte(obj, ((Byte)value).byteValue());
+		}
+		else if (value instanceof Short) {
+			setShort(obj, ((Short)value).shortValue());
+		}
+		else if (value instanceof Character) {
+			setChar(obj, ((Character)value).charValue());
+		}
+		else if (value instanceof Integer) {
+			setInt(obj, ((Integer)value).intValue());
+		}
+		else if (value instanceof Long) {
+			setLong(obj, ((Long)value).longValue());
+		}
+		else if (value instanceof Float) {
+			setFloat(obj, ((Float)value).floatValue());
+		}
+		else {
+			setDouble(obj, ((Double)value).doubleValue());
+		}
 	}
 	else {
+		if (!type.isInstance(value)) {
+			throw new IllegalArgumentException("field type mismatch");
+		}
+
 		setObject0(obj, value);
 	}
 }
