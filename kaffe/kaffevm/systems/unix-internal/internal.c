@@ -66,7 +66,6 @@ jbool runFinalizerOnExit;
 
 extern iLock waitlock;
 extern gcFuncs gcThread;
-int flag_preemption = false;
 
 void reschedule(void);
 void Tspinon(void*);

@@ -23,6 +23,7 @@
  * types, whereas jthread does not.
  */
 
+#include "debug.h"
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -78,7 +79,6 @@ thread_free(void *p)
 	gc_free(p);
 }
 
-int flag_preemption = true;
 jbool runFinalizerOnExit;
 
 static
@@ -94,7 +94,7 @@ void
 TcreateFirst(Hjava_lang_Thread* tid)
 {
 	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)jthread_init(
-		flag_preemption,
+		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
 		java_lang_Thread_NORM_PRIORITY,
