@@ -86,10 +86,13 @@ java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* this, HArr
 	int r, fd;
 	ssize_t nw;
 
+	if (off < 0 || off + len > obj_length(bytes)) {
+		SignalError("java.lang.IndexOutOfBoundsException", "");
+	}
 	fd = unhand(unhand(this)->fd)->fd;
 	while (len > 0) {
 		r = KWRITE(fd, &unhand_array(bytes)->body[off], len, &nw);
-		if (r) {
+		if (r != 0) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
 		off += nw;
