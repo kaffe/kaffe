@@ -1,3 +1,7 @@
+Fri Jul 31 19:22:58 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/io/File.java: made isAbsolute() public
+
 Thu Jul 30 22:00:49 1998  Archie Cobbs  <archie@whistle.com>
 
 	* libraries/clib/net/Plain*SocketImpl.[ch]|SocketOptions.h:
