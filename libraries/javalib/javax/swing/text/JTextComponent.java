@@ -1015,12 +1015,16 @@ public abstract class JTextComponent extends JComponent
   /**
    * Enables/disabled this text component's editability.
    *
-   * @param editable true to make it editable, false otherwise.
+   * @param newValue true to make it editable, false otherwise.
    */
-  public void setEditable(boolean editable)
+  public void setEditable(boolean newValue)
   {
-    firePropertyChange("editable", this.editable, editable);
-    this.editable = editable;
+    if (editable == newValue)
+      return;
+
+    boolean oldValue = editable;
+    editable = newValue;
+    firePropertyChange("editable", oldValue, newValue);
   }
 
   /**

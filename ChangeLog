@@ -1,5 +1,20 @@
 2004-12-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Component.java,
+	libraries/javalib/javax/swing/text/JTextComponent.java:
+	Resynced with GNU Classpath.
+
+	2004-11-23  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/Component.java:
+        Fixed argument names to match javadocs.
+        (setFont): Rewritten set property first and then fire event.
+        (setLocale): Likewise.
+        * javax/swing/text/JTextComponent.java
+        (setEditable): Likewise.
+
+2004-12-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/zip/InflaterInputStream.java:
 	Resynced with GNU Classpath.
 

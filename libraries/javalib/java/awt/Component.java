@@ -1046,16 +1046,21 @@ public abstract class Component
    * Sets the font for this component to the specified font. This is a bound
    * property.
    *
-   * @param font the new font for this component
+   * @param newFont the new font for this component
+   *
    * @see #getFont()
    */
-  public void setFont(Font f)
+  public void setFont(Font newFont)
   {
-    firePropertyChange("font", font, f);
+    if (font == newFont)
+      return;
+
+    Font oldFont = font;
+    font = newFont;
     if (peer != null)
-      peer.setFont(f);
+      peer.setFont(font);
+    firePropertyChange("font", oldFont, newFont);
     invalidate();
-    font = f;
   }
 
   /**
@@ -1092,12 +1097,16 @@ public abstract class Component
    * Sets the locale for this component to the specified locale. This is a
    * bound property.
    *
-   * @param locale the new locale for this component
+   * @param newLocale the new locale for this component
    */
-  public void setLocale(Locale l)
+  public void setLocale(Locale newLocale)
   {
-    firePropertyChange("locale", locale, l);
-    locale = l;
+    if (locale == newLocale)
+      return;
+
+    Locale oldLocale = locale;
+    locale = newLocale;
+    firePropertyChange("locale", oldLocale, newLocale);
     // New writing/layout direction or more/less room for localized labels.
     invalidate();
   }
@@ -2298,9 +2307,9 @@ public abstract class Component
    * @see #getComponentListeners()
    * @since 1.1
    */
-  public synchronized void addComponentListener(ComponentListener l)
+  public synchronized void addComponentListener(ComponentListener listener)
   {
-    componentListener = AWTEventMulticaster.add(componentListener, l);
+    componentListener = AWTEventMulticaster.add(componentListener, listener);
     if (componentListener != null)
       enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
   }
@@ -2315,9 +2324,9 @@ public abstract class Component
    * @see #getComponentListeners()
    * @since 1.1
    */
-  public synchronized void removeComponentListener(ComponentListener l)
+  public synchronized void removeComponentListener(ComponentListener listener)
   {
-    componentListener = AWTEventMulticaster.remove(componentListener, l);
+    componentListener = AWTEventMulticaster.remove(componentListener, listener);
   }
 
   /**
@@ -2346,9 +2355,9 @@ public abstract class Component
    * @see #getFocusListeners()
    * @since 1.1
    */
-  public synchronized void addFocusListener(FocusListener l)
+  public synchronized void addFocusListener(FocusListener listener)
   {
-    focusListener = AWTEventMulticaster.add(focusListener, l);
+    focusListener = AWTEventMulticaster.add(focusListener, listener);
     if (focusListener != null)
       enableEvents(AWTEvent.FOCUS_EVENT_MASK);
   }
@@ -2363,9 +2372,9 @@ public abstract class Component
    * @see #getFocusListeners()
    * @since 1.1
    */
-  public synchronized void removeFocusListener(FocusListener l)
+  public synchronized void removeFocusListener(FocusListener listener)
   {
-    focusListener = AWTEventMulticaster.remove(focusListener, l);
+    focusListener = AWTEventMulticaster.remove(focusListener, listener);
   }
 
   /**
@@ -2393,9 +2402,9 @@ public abstract class Component
    * @see #getHierarchyListeners()
    * @since 1.3
    */
-  public synchronized void addHierarchyListener(HierarchyListener l)
+  public synchronized void addHierarchyListener(HierarchyListener listener)
   {
-    hierarchyListener = AWTEventMulticaster.add(hierarchyListener, l);
+    hierarchyListener = AWTEventMulticaster.add(hierarchyListener, listener);
     if (hierarchyListener != null)
       enableEvents(AWTEvent.HIERARCHY_EVENT_MASK);
   }
@@ -2410,9 +2419,9 @@ public abstract class Component
    * @see #getHierarchyListeners()
    * @since 1.3
    */
-  public synchronized void removeHierarchyListener(HierarchyListener l)
+  public synchronized void removeHierarchyListener(HierarchyListener listener)
   {
-    hierarchyListener = AWTEventMulticaster.remove(hierarchyListener, l);
+    hierarchyListener = AWTEventMulticaster.remove(hierarchyListener, listener);
   }
 
   /**
@@ -2442,10 +2451,10 @@ public abstract class Component
    * @since 1.3
    */
   public synchronized void
-    addHierarchyBoundsListener(HierarchyBoundsListener l)
+    addHierarchyBoundsListener(HierarchyBoundsListener listener)
   {
     hierarchyBoundsListener =
-      AWTEventMulticaster.add(hierarchyBoundsListener, l);
+      AWTEventMulticaster.add(hierarchyBoundsListener, listener);
     if (hierarchyBoundsListener != null)
       enableEvents(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK);
   }
@@ -2461,10 +2470,10 @@ public abstract class Component
    * @since 1.3
    */
   public synchronized void
-    removeHierarchyBoundsListener(HierarchyBoundsListener l)
+    removeHierarchyBoundsListener(HierarchyBoundsListener listener)
   {
     hierarchyBoundsListener =
-      AWTEventMulticaster.remove(hierarchyBoundsListener, l);
+      AWTEventMulticaster.remove(hierarchyBoundsListener, listener);
   }
 
   /**
@@ -2493,9 +2502,9 @@ public abstract class Component
    * @see #getKeyListeners()
    * @since 1.1
    */
-  public synchronized void addKeyListener(KeyListener l)
+  public synchronized void addKeyListener(KeyListener listener)
   {
-    keyListener = AWTEventMulticaster.add(keyListener, l);
+    keyListener = AWTEventMulticaster.add(keyListener, listener);
     if (keyListener != null)
       enableEvents(AWTEvent.KEY_EVENT_MASK);
   }
@@ -2510,9 +2519,9 @@ public abstract class Component
    * @see #getKeyListeners()
    * @since 1.1
    */
-  public synchronized void removeKeyListener(KeyListener l)
+  public synchronized void removeKeyListener(KeyListener listener)
   {
-    keyListener = AWTEventMulticaster.remove(keyListener, l);
+    keyListener = AWTEventMulticaster.remove(keyListener, listener);
   }
 
   /**
@@ -2540,9 +2549,9 @@ public abstract class Component
    * @see #getMouseListeners()
    * @since 1.1
    */
-  public synchronized void addMouseListener(MouseListener l)
+  public synchronized void addMouseListener(MouseListener listener)
   {
-    mouseListener = AWTEventMulticaster.add(mouseListener, l);
+    mouseListener = AWTEventMulticaster.add(mouseListener, listener);
     if (mouseListener != null)
       enableEvents(AWTEvent.MOUSE_EVENT_MASK);
   }
@@ -2557,9 +2566,9 @@ public abstract class Component
    * @see #getMouseListeners()
    * @since 1.1
    */
-  public synchronized void removeMouseListener(MouseListener l)
+  public synchronized void removeMouseListener(MouseListener listener)
   {
-    mouseListener = AWTEventMulticaster.remove(mouseListener, l);
+    mouseListener = AWTEventMulticaster.remove(mouseListener, listener);
   }
 
   /**
@@ -2587,9 +2596,9 @@ public abstract class Component
    * @see #getMouseMotionListeners()
    * @since 1.1
    */
-  public synchronized void addMouseMotionListener(MouseMotionListener l)
+  public synchronized void addMouseMotionListener(MouseMotionListener listener)
   {
-    mouseMotionListener = AWTEventMulticaster.add(mouseMotionListener, l);
+    mouseMotionListener = AWTEventMulticaster.add(mouseMotionListener, listener);
     if (mouseMotionListener != null)
       enableEvents(AWTEvent.MOUSE_EVENT_MASK);
   }
@@ -2604,9 +2613,9 @@ public abstract class Component
    * @see #getMouseMotionListeners()
    * @since 1.1
    */
-  public synchronized void removeMouseMotionListener(MouseMotionListener l)
+  public synchronized void removeMouseMotionListener(MouseMotionListener listener)
   {
-    mouseMotionListener = AWTEventMulticaster.remove(mouseMotionListener, l);
+    mouseMotionListener = AWTEventMulticaster.remove(mouseMotionListener, listener);
   }
 
   /**
@@ -2636,9 +2645,9 @@ public abstract class Component
    * @see #getMouseWheelListeners()
    * @since 1.4
    */
-  public synchronized void addMouseWheelListener(MouseWheelListener l)
+  public synchronized void addMouseWheelListener(MouseWheelListener listener)
   {
-    mouseWheelListener = AWTEventMulticaster.add(mouseWheelListener, l);
+    mouseWheelListener = AWTEventMulticaster.add(mouseWheelListener, listener);
     if (mouseWheelListener != null)
       enableEvents(AWTEvent.MOUSE_WHEEL_EVENT_MASK);
   }
@@ -2654,9 +2663,9 @@ public abstract class Component
    * @see #getMouseWheelListeners()
    * @since 1.4
    */
-  public synchronized void removeMouseWheelListener(MouseWheelListener l)
+  public synchronized void removeMouseWheelListener(MouseWheelListener listener)
   {
-    mouseWheelListener = AWTEventMulticaster.remove(mouseWheelListener, l);
+    mouseWheelListener = AWTEventMulticaster.remove(mouseWheelListener, listener);
   }
 
   /**
@@ -2686,9 +2695,9 @@ public abstract class Component
    * @see #getInputMethodRequests()
    * @since 1.2
    */
-  public synchronized void addInputMethodListener(InputMethodListener l)
+  public synchronized void addInputMethodListener(InputMethodListener listener)
   {
-    inputMethodListener = AWTEventMulticaster.add(inputMethodListener, l);
+    inputMethodListener = AWTEventMulticaster.add(inputMethodListener, listener);
     if (inputMethodListener != null)
       enableEvents(AWTEvent.INPUT_METHOD_EVENT_MASK);
   }
@@ -2703,9 +2712,9 @@ public abstract class Component
    * @see #getInputMethodRequests()
    * @since 1.2
    */
-  public synchronized void removeInputMethodListener(InputMethodListener l)
+  public synchronized void removeInputMethodListener(InputMethodListener listener)
   {
-    inputMethodListener = AWTEventMulticaster.remove(inputMethodListener, l);
+    inputMethodListener = AWTEventMulticaster.remove(inputMethodListener, listener);
   }
 
   /**
