@@ -11,8 +11,12 @@
 INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include
 
 if HAVE_GCJ_SUPPORT
-noinst_LTLIBRARIES = libgcj.la
+libgcj = libgcj.la
+else
+libgcj = #
 endif
+
+noinst_LTLIBRARIES = $(libgcj)
 
 libgcj_la_SOURCES = \
 	gcj-class.cc \

@@ -31,7 +31,10 @@ lib_LTLIBRARIES = libkaffevm.la
 
 if HAVE_GCJ_SUPPORT
 libgcj = gcj/libgcj.la
+else
+libgcj = #
 endif
+
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \
