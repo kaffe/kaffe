@@ -1594,7 +1594,7 @@ if test x"$enable_native_awt" = x"yes"; then
 
 	dnl Check for AWT related gthread/gtk/libart_lgpl
 
-	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.2 gthread-2.0 >= 2.2 libart-2.0)
+	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 libart-2.0)
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
 
