@@ -66,7 +66,7 @@ OBJECT.LANG=\
 		UNIXProcess$(OBJEXT) \
 		CharToByteDefault$(OBJEXT) \
 		ByteToCharDefault$(OBJEXT) \
-		ZipFile$(OBJEXT) \
+		ZipFile$(OBJEXT)
 
 OBJECT.LANG.REFLECT=\
 		Array$(OBJEXT) \
