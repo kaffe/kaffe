@@ -1,3 +1,11 @@
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (jthread_current): 
+	(jthread_disable_stop, jthread_enable_stop, jthread_suspend,
+	jthread_resume, jthread_from_data, jthread_get_usage): 
+	Deinlined.
+	
 2005-02-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,

@@ -1693,3 +1693,108 @@ jthread_t jthread_current(void)
 {
   return (jthread_t)pthread_getspecific(ntKey);
 }
+
+/**
+ * Disable stopping the calling thread.
+ *
+ * Needed to avoid stopping a thread while it holds a lock.
+ */
+void jthread_disable_stop(void)
+{
+}
+
+/**
+ * Enable stopping the calling thread.
+ *
+ * Needed to avoid stopping a thread while it holds a lock.
+ */
+void jthread_enable_stop(void)
+{
+}
+
+/** 
+ * Stop a thread.
+ * 
+ * @param tid the thread to stop.
+ */
+void jthread_stop(UNUSED jthread_t tid)
+{
+}
+
+/**
+ * Dump some information about a thread to stderr.
+ *
+ * @param tid the thread whose info is to be dumped.
+ */
+void jthread_dumpthreadinfo(UNUSED jthread_t tid)
+{
+}
+
+/**
+ * Return the java.lang.Thread instance attached to a thread
+ *
+ * @param tid the native thread whose corresponding java thread
+ *            is to be returned.
+ * @return the java.lang.Thread instance.
+ */
+threadData *jthread_get_data(jthread_t tid)
+{
+        return (&tid->data);
+}
+
+/**
+ * Check for room on stack.
+ *
+ * @param left number of bytes that are needed
+ *
+ * @return true if @left bytes are free, otherwise false 
+ *
+ * Needed by intrp in order to implement stack overflow checking.
+ */
+bool jthread_stackcheck(int left)
+{
+	int rc;
+#if defined(STACK_GROWS_UP)
+        rc = jthread_on_current_stack((char*)&rc + left);
+#else
+        rc = jthread_on_current_stack((char*)&rc - left);
+#endif
+	return (rc);
+}
+
+/**
+ * Returns the upper bound of the stack of the calling thread.
+ *
+ * Needed by support.c in order to implement stack overflow checking. 
+ */
+void* jthread_stacklimit(void)
+{
+  jthread_t nt = jthread_current();
+#if defined(STACK_GROWS_UP)
+  return (void *)((uintp)nt->stackMax - STACKREDZONE);
+#else
+  return (void *)((uintp)nt->stackMin + STACKREDZONE);
+#endif
+}
+
+void jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender)
+{
+	/* TODO */
+}
+
+void jthread_resume(UNUSED jthread_t jt, UNUSED void *suspender)
+{
+	/* TODO */
+}
+
+jthread_t jthread_from_data(UNUSED threadData *td, UNUSED void *suspender)
+{
+	/* TODO */
+	return NULL;
+}
+
+jlong jthread_get_usage(UNUSED jthread_t jt)
+{
+	/* TODO */
+	return 0;
+}
