@@ -1,12 +1,26 @@
-What's New in Kaffe OpenVM 1.0 Beta 3
+What's New in Kaffe OpenVM 1.0 Beta 4
 -------------------------------------
 
-* New java.awt - now implements old event model (JDK 1.0.2) and will support
-  Swing.
+* New Java extensions:
 
-* New java.net implementation - fixes many bugs and generally much cleaner.
+	o Serial port stuff: javax.comm
 
-* Initial implementation of Collections API (only Vector and Hashtable
-  currently conform).
+	o Servelets: javax.servlet
+
+	o Personal Java extenstions
+
+* Revamped class loading, supports class unloading
+
+* Revamped much more efficient garbage collection
+
+* Cleaner threads interface
+
+* Use of libtool and automake for portability
+
+* Fully intern'd strings and UTF8 constants
+
+* Swing improvements - now supports Swing 1.1
+
+* Object Serialization fixed
 
 * Lots of bug fixes.
