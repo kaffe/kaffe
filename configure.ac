@@ -476,17 +476,25 @@ AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" != x"no")
 AC_MSG_RESULT($enable_jvmpi)
 
 dnl =========================================================================
-dnl Allow user to specify a dnsjava.jar file for class file testing.
+dnl Allow user to specify a dnsjava.jar file for pure java DNS.
 dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH([dnsjava],
               AS_HELP_STRING([--with-dnsjava=<jar>],
-                             [Use the specified DNS java Jar file.]),
+                             [Use the specified dnsjava Jar file for pure java DNS.
+			     It is not used by default.]),
   [ DNSJAVA_JAR="$withval" ],
-  [ DNSJAVA_JAR="" ])
+  [ 
+DNSJAVA_JAR="" 
+with_dnsjava="no"
+])
+
+AC_MSG_CHECKING([whether to use dnsjava for pure java DNS support])
 
 AC_SUBST(DNSJAVA_JAR)
 AM_CONDITIONAL(HAVE_DNSJAVA, test x"$DNSJAVA_JAR" != x"")
+
+AC_MSG_RESULT($with_dnsjava)
 
 dnl =========================================================================
 dnl Allow support for profiling of C/jitted code
