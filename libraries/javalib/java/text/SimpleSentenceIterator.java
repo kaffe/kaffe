@@ -1,6 +1,3 @@
-package java.text;
-
-import java.lang.String;
 
 /*
  * Java core library component.
@@ -11,29 +8,24 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-class SimpleSentenceIterator
-  extends BreakIterator
-{
+
+package java.text;
+
+class SimpleSentenceIterator extends BreakIterator {
 	CharacterIterator iterator = new StringCharacterIterator("");
 
 public int current() {
-	return (iterator.getIndex());
+	return iterator.getIndex();
 }
 
 public int first() {
 	iterator.first();
-	return (iterator.getIndex());		
+	return iterator.getIndex();
 }
 
-public int following( int offs) {
-System.out.println( "following: " + offs);
-	int pos = iterator.getIndex();
-	iterator.setIndex( iterator.getBeginIndex() + offs);
-	if ( iterator.current() == CharacterIterator.DONE ) {
-		iterator.setIndex( pos);
-		return DONE;
-	}
-	return (next());		
+public int following(int offs) {
+	iterator.setIndex(iterator.getBeginIndex() + offs);
+	return next();		
 }
 
 public CharacterIterator getText() {
@@ -42,48 +34,47 @@ public CharacterIterator getText() {
 
 public int last() {
 	iterator.last();
-	return (previous());		
+	return previous();		
 }
 
 public int next() {
-	int pos = iterator.getIndex();
-	boolean nl = false;
-	
-	for ( char c = iterator.next();;c = iterator.next() ) {
-		if ( c == CharacterIterator.DONE )
+
+	if (iterator.current() == CharacterIterator.DONE)
+		return DONE;
+
+	for (char c = iterator.next();
+	    c != CharacterIterator.DONE;
+	    c = iterator.next()) {
+		if (c == '.') {
+			iterator.next();
 			break;
-		if ( c == '.' )
-			nl = true;
-		else if ( nl )
-			return (iterator.getIndex());
+		}
 	}
-			
-	iterator.setIndex( pos);
-	return DONE;
+	return iterator.getIndex();
 }
 
 public int next( int num) {
 	int max = (num > 0) ? num : -num;
-	
-	for ( int idx=0; idx<max; idx++) {
-		if ( CharacterIterator.DONE == ((num > 0) ? next() : previous()) )
+
+	for (int idx = 0; idx < max; idx++) {
+		int c = (num > 0) ? next() : previous();
+		if (c == CharacterIterator.DONE)
 			return (DONE);
 	}
-	
-	return (iterator.getIndex());
+
+	return iterator.getIndex();
 }
 
 public int previous() {
 	int nl = 0;
 	
-	for ( char c = iterator.previous();;c = iterator.previous() ) {
-		if ( c == CharacterIterator.DONE )
-			break;
+	for (char c = iterator.previous();
+	    c != CharacterIterator.DONE;
+	    c = iterator.previous()) {
 		if ( c == '.' ) {
-			nl++;
-			if ( nl == 2) {
+			if (++nl == 2) {
 				iterator.next();
-				return (iterator.getIndex());
+				return iterator.getIndex();
 			}
 		}
 	}
@@ -94,4 +85,5 @@ public int previous() {
 public void setText( CharacterIterator ci) {
 	iterator = ci;
 }
+
 }
