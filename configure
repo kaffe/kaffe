@@ -5283,63 +5283,63 @@ esac
 
 
 
-if test $ac_cv_typedef_int8 = yes; then
+if test x"$ac_cv_typedef_int8" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_INT8 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_uint8 = yes; then
+if test x"$ac_cv_typedef_uint8" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_UINT8 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_int16 = yes; then
+if test x"$ac_cv_typedef_int16" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_INT16 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_uint16 = yes; then
+if test x"$ac_cv_typedef_uint16" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_UINT16 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_int32 = yes; then
+if test x"$ac_cv_typedef_int32" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_INT32 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_uint32 = yes; then
+if test x"$ac_cv_typedef_uint32" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_UINT32 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_int64 = yes; then
+if test x"$ac_cv_typedef_int64" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_INT64 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_uint64 = yes; then
+if test x"$ac_cv_typedef_uint64" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_UINT64 1
 EOF
 
 fi
 
-if test $ac_cv_typedef_bool = yes; then
+if test x"$ac_cv_typedef_bool" = xyes; then
   cat >> confdefs.h <<\EOF
 #define HAVE_BOOL 1
 EOF

@@ -474,39 +474,39 @@ dnl =========================================================================
 dnl Check for [u]int{8,16,32,64} and bool.
 dnl -------------------------------------------------------------------------
 
-if test $ac_cv_typedef_int8 = yes; then
+if test x"$ac_cv_typedef_int8" = xyes; then
   AC_DEFINE(HAVE_INT8, 1, [Do we have int8])
 fi
 
-if test $ac_cv_typedef_uint8 = yes; then
+if test x"$ac_cv_typedef_uint8" = xyes; then
   AC_DEFINE(HAVE_UINT8, 1, [Do we have uint8])
 fi
 
-if test $ac_cv_typedef_int16 = yes; then
+if test x"$ac_cv_typedef_int16" = xyes; then
   AC_DEFINE(HAVE_INT16, 1, [Do we have int16])
 fi
 
-if test $ac_cv_typedef_uint16 = yes; then
+if test x"$ac_cv_typedef_uint16" = xyes; then
   AC_DEFINE(HAVE_UINT16, 1, [Do we have uint16])
 fi
 
-if test $ac_cv_typedef_int32 = yes; then
+if test x"$ac_cv_typedef_int32" = xyes; then
   AC_DEFINE(HAVE_INT32, 1, [Do we have int32])
 fi
 
-if test $ac_cv_typedef_uint32 = yes; then
+if test x"$ac_cv_typedef_uint32" = xyes; then
   AC_DEFINE(HAVE_UINT32, 1, [Do we have uint32])
 fi
 
-if test $ac_cv_typedef_int64 = yes; then
+if test x"$ac_cv_typedef_int64" = xyes; then
   AC_DEFINE(HAVE_INT64, 1, [Do we have int64])
 fi
 
-if test $ac_cv_typedef_uint64 = yes; then
+if test x"$ac_cv_typedef_uint64" = xyes; then
   AC_DEFINE(HAVE_UINT64, 1, [Do we have uint64])
 fi
 
-if test $ac_cv_typedef_bool = yes; then
+if test x"$ac_cv_typedef_bool" = xyes; then
   AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
 fi
 

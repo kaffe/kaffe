@@ -1,3 +1,9 @@
+Wed Feb  3 03:48:27 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (ac_cv_typedef_*): properly quoted the tests, so
+	that configure doesn't just bail out
+	* configure, config/config.h.in: regen
+
 Tue Feb  2 17:37:02 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
 
 	* config/config-std.h, config/config.h.in

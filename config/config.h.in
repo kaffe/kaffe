@@ -43,33 +43,6 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
-/* Define if you have the int8 type. */
-#undef HAVE_INT8
-
-/* Define if you have the uint8 type. */
-#undef HAVE_UINT8
-
-/* Define if you have the int16 type. */
-#undef HAVE_INT16
-
-/* Define if you have the uint16 type. */
-#undef HAVE_UINT16
-
-/* Define if you have the int32 type. */
-#undef HAVE_INT32
-
-/* Define if you have the uint32 type. */
-#undef HAVE_UINT32
-
-/* Define if you have the int64 type. */
-#undef HAVE_INT64
-
-/* Define if you have the uint64 type. */
-#undef HAVE_UINT64
-
-/* Define if you have the bool type. */
-#undef HAVE_BOOL
-
 /* ssize_t may not be defined */
 #undef ssize_t
 
@@ -295,6 +268,9 @@
 /* Define if you have the <jpeglib.h> header file.  */
 #undef HAVE_JPEGLIB_H
 
+/* Define if you have the <kernel/OS.h> header file.  */
+#undef HAVE_KERNEL_OS_H
+
 /* Define if you have the <mach-o/rld.h> header file.  */
 #undef HAVE_MACH_O_RLD_H
 
@@ -427,9 +403,6 @@
 /* Define if you have the z library (-lz).  */
 #undef HAVE_LIBZ
 
-/* Define if you have the <kernel/OS.h> header file.  */
-#undef HAVE_KERNEL_OS_H
-
 /* Name of package */
 #undef PACKAGE
 
@@ -450,6 +423,33 @@
 
 /* Do we time various pieces of the vm? */
 #undef TIMING
+
+/* Do we have int8 */
+#undef HAVE_INT8
+
+/* Do we have uint8 */
+#undef HAVE_UINT8
+
+/* Do we have int16 */
+#undef HAVE_INT16
+
+/* Do we have uint16 */
+#undef HAVE_UINT16
+
+/* Do we have int32 */
+#undef HAVE_INT32
+
+/* Do we have uint32 */
+#undef HAVE_UINT32
+
+/* Do we have int64 */
+#undef HAVE_INT64
+
+/* Do we have uint64 */
+#undef HAVE_UINT64
+
+/* Do we have bool */
+#undef HAVE_BOOL
 
 /* Do we have sigcontext */
 #undef HAVE_STRUCT_SIGCONTEXT
