@@ -34,13 +34,18 @@ void Java_kaffe_management_XProfiler_off(JNIEnv *env UNUSED, jclass clazz UNUSED
 #endif
 }
 
+#if defined(KAFFE_XPROFILER)
 void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
 					   jstring _stage_name)
 {
-#if defined(KAFFE_XPROFILER)
 	char *stage_name = stringJava2C(_stage_name);
 
 	xProfileStage(stage_name);
 	gc_free(stage_name);
-#endif
 }
+#else
+void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
+					   jstring _stage_name UNUSED)
+{
+}
+#endif

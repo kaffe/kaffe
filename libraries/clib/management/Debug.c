@@ -40,11 +40,11 @@ Java_kaffe_management_Debug_setTracing
 	Kaffe_JavaVMArgs.enableVerboseCall = level;
 }
 
+#ifdef KAFFE_STATS
 void
 Java_kaffe_management_Debug_enableStats
 	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
-#ifdef KAFFE_STATS
 	static char *curStats;	/* kaffe expects this string to be
 				 * around at exit.
 				 */
@@ -56,8 +56,13 @@ Java_kaffe_management_Debug_enableStats
 	strcpy(curStats, real_list);
 	statsSetMaskStr(curStats);
 	(*env)->ReleaseStringUTFChars(env, list, real_list);
-#else
-	fputs("Kaffe is not configured for stats\n", stderr);
-#endif
 }
+#else
+void
+Java_kaffe_management_Debug_enableStats
+	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jobject list UNUSED)
+{
+	fputs("Kaffe is not configured for stats\n", stderr);
+}
+#endif
 

@@ -1120,10 +1120,10 @@ jthread_sleep (jlong timeout)
  * Change the scheduler priority of a running thread. Since we aren't
  * called directly, we can assume that 'prio' is within [MIN_PRIORITY..MAX_PRIORITY]
  */
+#if defined(SCHEDUL_POLICY)
 void
 jthread_setpriority (jthread_t cur, jint prio)
 {
-#if defined(SCHEDUL_POLICY)
   struct sched_param   sp;
 
   if ( cur ) {
@@ -1133,8 +1133,13 @@ jthread_setpriority (jthread_t cur, jint prio)
 			      cur, cur->tid, cur->data.jlThread, prio, priorities[prio]))
 	pthread_setschedparam( cur->tid, SCHEDULE_POLICY, &sp);
   }
-#endif
 }
+#else
+void
+jthread_setpriority (jthread_t cur UNUSED, jint prio UNUSED)
+{
+}
+#endif
 
 /*******************************************************************************
  * the suspend/resume mechanism
