@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 public class RemoteException 
 	extends IOException {
 
-public static final long serialVersionUID = -5148567311918794206l;
+private static final long serialVersionUID = -5148567311918794206l;
 
 public Throwable detail;
 

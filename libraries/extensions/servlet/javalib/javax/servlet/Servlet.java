@@ -14,10 +14,10 @@ import java.io.IOException;
 
 public interface Servlet {
 
-public abstract void init(ServletConfig config) throws ServletException;
-public abstract ServletConfig getServletConfig();
-public abstract void service(ServletRequest req, ServletResponse res) throws ServletException, IOException;
-public abstract String getServletInfo();
-public abstract void destroy();
+    void init(ServletConfig config) throws ServletException;
+    ServletConfig getServletConfig();
+    void service(ServletRequest req, ServletResponse res) throws ServletException, IOException;
+    String getServletInfo();
+    void destroy();
 
 }

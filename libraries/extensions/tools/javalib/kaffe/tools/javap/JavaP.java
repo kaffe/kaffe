@@ -10,9 +10,9 @@
 
 package kaffe.tools.javap;
 
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * JavaP prints structural information about classes.
@@ -20,7 +20,7 @@ import java.lang.reflect.*;
  * "Reflectance" is used to look up the information.
  *
  * @author      Ian Darwin, Ian@DarwinSys.com
- * @version     $Id: JavaP.java,v 1.1 1999/10/16 01:56:23 tim Exp $
+ * @version     $Id: JavaP.java,v 1.2 2002/07/03 22:59:45 dalibor Exp $
  */
 public class JavaP {
 
@@ -62,7 +62,7 @@ protected void doClass(String className) {
 			}
 		}
 		System.out.println(" {");
-		int i, mods;
+		int i;
 		Field fields[] = c.getDeclaredFields();
 		for (i = 0; i < fields.length; i++) {
 			if (!Modifier.isPrivate(fields[i].getModifiers())

@@ -12,12 +12,11 @@ import java.io.Serializable;
 import java.io.DataOutput;
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.Random;
 
 public final class UID
 	implements Serializable {
 
-public static final long serialVersionUID = 1086053664494604050L;
+private static final long serialVersionUID = 1086053664494604050L;
 
 private static final Object lock = UID.class;
 private static long baseTime = System.currentTimeMillis();

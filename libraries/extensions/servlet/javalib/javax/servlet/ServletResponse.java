@@ -15,9 +15,9 @@ import java.io.PrintWriter;
 
 public interface ServletResponse {
 
-public abstract void setContentType(String type);
-public abstract ServletOutputStream getOutputStream() throws IOException;
-public abstract PrintWriter getWriter() throws IOException;
-public abstract String getCharacterEncoding();
+    void setContentType(String type);
+    ServletOutputStream getOutputStream() throws IOException;
+    PrintWriter getWriter() throws IOException;
+    String getCharacterEncoding();
 
 }

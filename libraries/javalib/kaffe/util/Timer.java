@@ -16,11 +16,11 @@ package kaffe.util;
 public class Timer
   extends Thread
 {
-	TimerClientEntry[] clients;
-	int nClients;
-	int resolution;
-	boolean stop;
-	static Timer defaultTimer;
+	private TimerClientEntry[] clients;
+	private int nClients;
+	private int resolution;
+	private boolean stop;
+	private static Timer defaultTimer;
 
 public Timer () {
 	resolution = Integer.MAX_VALUE;

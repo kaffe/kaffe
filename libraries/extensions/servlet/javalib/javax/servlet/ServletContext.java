@@ -14,14 +14,14 @@ import java.util.Enumeration;
 
 public interface ServletContext {
 
-public abstract Servlet getServlet(String name) throws ServletException;
-public abstract Enumeration getServlets();
-public abstract Enumeration getServletNames();
-public abstract void log(String msg);
-public abstract void log(Exception exception, String msg);
-public abstract String getRealPath(String path);
-public abstract String getMimeType(String file);
-public abstract String getServerInfo();
-public abstract Object getAttribute(String name);
+    Servlet getServlet(String name) throws ServletException;
+    Enumeration getServlets();
+    Enumeration getServletNames();
+    void log(String msg);
+    void log(Exception exception, String msg);
+    String getRealPath(String path);
+    String getMimeType(String file);
+    String getServerInfo();
+    Object getAttribute(String name);
 
 }

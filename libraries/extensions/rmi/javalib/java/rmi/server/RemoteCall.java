@@ -15,12 +15,12 @@ import java.io.StreamCorruptedException;
 
 public interface RemoteCall {
 
-public ObjectOutput getOutputStream() throws IOException;
-public void releaseOutputStream() throws IOException;
-public ObjectInput getInputStream() throws IOException;
-public void releaseInputStream() throws IOException;
-public ObjectOutput getResultStream(boolean success) throws IOException, StreamCorruptedException;
-public void executeCall() throws Exception;
-public void done() throws IOException;
+    ObjectOutput getOutputStream() throws IOException;
+    void releaseOutputStream() throws IOException;
+    ObjectInput getInputStream() throws IOException;
+    void releaseInputStream() throws IOException;
+    ObjectOutput getResultStream(boolean success) throws IOException, StreamCorruptedException;
+    void executeCall() throws Exception;
+    void done() throws IOException;
 
 }

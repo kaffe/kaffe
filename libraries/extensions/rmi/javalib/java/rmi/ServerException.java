@@ -11,7 +11,7 @@ package java.rmi;
 public class ServerException
 	extends RemoteException {
 
-public static final long serialVersionUID = -4775845313121906682l;
+private static final long serialVersionUID = -4775845313121906682l;
 
 public ServerException(String s) {
 	super(s);

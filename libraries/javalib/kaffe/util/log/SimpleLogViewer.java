@@ -27,16 +27,13 @@ public class SimpleLogViewer
   extends Frame
   implements LogClient
 {
-	int lineHeight;
-	FontMetrics fm;
-	LogStream logStream;
-	boolean isEnabled;
-	PrintStream orgOut;
+	private int lineHeight;
+	private FontMetrics fm;
+	private LogStream logStream;
+	private boolean isEnabled;
 
 public SimpleLogViewer () {	
 	super( "Log");
-
-	orgOut = System.out;
 
 	Dimension d = getToolkit().getScreenSize();
 	setBounds( 0, d.height / 2, 2*d.width /3, d.height / 2);
@@ -107,7 +104,6 @@ public void paint ( Graphics g ) {
 	int u = in.left + 2;
 	int v = d.height - in.bottom;
 	int w = d.width - (in.left + in.right);
-	int asc = fm.getAscent();
 
 	if ( logStream != null ) {
 		ll = logStream.getLastLine();

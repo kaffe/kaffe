@@ -11,7 +11,7 @@ package java.rmi;
 public class AccessException 
 	extends RemoteException {
 
-public static final long serialVersionUID = 6314925228044966088l;
+private static final long serialVersionUID = 6314925228044966088l;
 
 public AccessException(String s) {
 	super(s);

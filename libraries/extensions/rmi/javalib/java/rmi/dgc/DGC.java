@@ -15,8 +15,8 @@ import java.rmi.server.ObjID;
 public interface DGC
 	extends Remote {
 
-public Lease dirty(ObjID[] ids, long sequenceNum, Lease lease) throws RemoteException;
+    Lease dirty(ObjID[] ids, long sequenceNum, Lease lease) throws RemoteException;
 
-public void clean(ObjID[] ids, long sequenceNum, VMID vmid, boolean strong) throws RemoteException;
+    void clean(ObjID[] ids, long sequenceNum, VMID vmid, boolean strong) throws RemoteException;
 
 }

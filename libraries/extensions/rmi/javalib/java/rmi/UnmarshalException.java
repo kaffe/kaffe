@@ -11,7 +11,7 @@ package java.rmi;
 public class UnmarshalException
 	extends RemoteException {
 
-public static final long serialVersionUID = 594380845140740218l;
+private static final long serialVersionUID = 594380845140740218l;
 
 public UnmarshalException(String s) {
 	super(s);

@@ -16,11 +16,14 @@
 package kaffe.tools.jar;
 
 import java.io.*;
-import java.security.*;
-import java.util.*;
-import java.util.jar.*;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 import java.util.zip.*;
-import kaffe.io.*;
 import kaffe.util.Base64;
 
 public class Jar {
@@ -166,7 +169,7 @@ public class Jar {
 	    case 'm': // Manifest file name
 
 		if (manifest != null || options_index >= argv.length ||
-		    create_manifest == false) {
+		    !create_manifest) {
 		    printUsage();
 		    exit(1);
 		}
@@ -398,15 +401,19 @@ public class Jar {
 	case 'c':
 	    createJar(files, absolute_files);
 	    exit(0);
+	    break;
 	case 't':
 	    listFilesInJar(files);
 	    exit(0);
+	    break;
 	case 'x':
 	    extractFilesInJar(files, absolute_files);
 	    exit(0);
+	    break;
 	case 'u':
 	    updateFilesInJar(files, absolute_files);
 	    exit(0);
+	    break;
 	default:
 	    System.out.println("Unexpected error, '" + mode + "' not matched");
 	    exit(1);
@@ -545,7 +552,7 @@ public class Jar {
 				      tmp.isDirectory() + "\"");
 	    }
 
-	    if (requireExistence && tmp.exists() == false) {
+	    if (requireExistence && !tmp.exists()) {
 		existenceError = true;
 		// Non existant file error message
 		System.out.println(tmp.getPath() + 
@@ -1327,66 +1334,66 @@ public class Jar {
 
     // command line arguments
 
-    String[] argv;
+    private String[] argv;
 
     // The file name of a manifest file
 
-    String manifest = null;
+    private String manifest;
 
     // If no manifest should be added to an archive this is false
 
-    boolean create_manifest = true;
+    private boolean create_manifest = true;
 
 
     // The file name of the archive, null if none was given with -f
 
-    String archive = null;
+    private String archive;
 
     // Files to be added, updated, or extracted from the archive
     // If no files were given these will be null
 
-    String[] files;
-    String[] absolute_files;
+    private String[] files;
+    private String[] absolute_files;
 
     // non null directory change name, cd is done at i'th index in files
 
-    String[] dir_changes;
+    private String[] dir_changes;
 
 
     // True if we are in verbose output mode
 
-    boolean verbose = false;
+    private boolean verbose = false;
 
 
     // True if created archive should be compressed
 
-    boolean compression = true;
+    private boolean compression = true;
 
 
     // One of 't' (list), 'c' (create), 'x' (extract), or 'u' (update)
-    char mode = (char) 0;
+    private char mode = (char) 0;
 
 
     // Non zero if System.exit() is allowed
 
-    int exitCode = 0;
+    private int exitCode = 0;
 
     // Size of read write buffers we will use
 
-    final int bufferSize = 8 * 1024;
+    private static final int BUFFER_SIZE = 8 * 1024;
 
     // The actual read write buffer
 
-    final byte[] buffer = new byte[bufferSize];
+    private final byte[] buffer = new byte[BUFFER_SIZE];
 
 
     // set to true to see extra debug output
 
-    final static boolean debug = false;
+    private final static boolean debug = false;
 
 
     // stream where verbose output will be going
 
-    PrintStream vout = System.out;
+    private PrintStream vout = System.out;
 
 }

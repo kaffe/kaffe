@@ -7,7 +7,7 @@ import java.util.Enumeration;
 
 public class MulticastDelegate extends Delegate {
 
-private Vector list = new Vector();;
+private Vector list = new Vector();
 
 protected MulticastDelegate(Object o, String m, String s) {
 	super(o, m, s);

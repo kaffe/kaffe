@@ -49,14 +49,14 @@ public class AppletViewer
   implements ActionListener, WindowListener
 {
     public static boolean debug;
-    static boolean showMenuBar = true;
-    static boolean showStatusBar = true;
+    private static boolean showMenuBar = true;
+    private static boolean showStatusBar = true;
 
-    Label 			statusBar = new Label();
+    private Label 		statusBar = new Label();
 
-    Applet 			app;
-    AppletTag 			tag;
-    AppletContext		context;
+    private Applet 		app;
+    private AppletTag 		tag;
+    private AppletContext	context;
     private static Vector 	applets = new Vector();
 
     // Our class loader
@@ -76,7 +76,7 @@ public class AppletViewer
 
 public static class DefaultAppletContext implements AppletContext {
     private Vector apps = new Vector();
-    Label	statusBar;
+    private Label	statusBar;
 
     public DefaultAppletContext(Label statusBar) {
 	this(new Vector(), statusBar);
@@ -127,11 +127,11 @@ public static class DefaultAppletContext implements AppletContext {
 }
 
 public static class DefaultAppletStub extends Panel implements AppletStub {
-    AppletContext	context;
-    URL			codebase;
-    URL			documentBase;
-    Hashtable		paramDict;
-    Dimension		preferredSize;
+    private AppletContext	context;
+    private URL			codebase;
+    private URL			documentBase;
+    private Hashtable		paramDict;
+    private Dimension		preferredSize;
 
     public DefaultAppletStub(URL documentBase, AppletTag tag,
 		AppletContext context)

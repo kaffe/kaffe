@@ -49,7 +49,7 @@ public RMIC(String[] a) {
 
 public static void main(String args[]) {
 	RMIC r = new RMIC(args);
-	if (r.run() == false) {
+	if (!r.run()) {
 		Exception exception = r.getException();
 		if (exception != null) {
 			exception.printStackTrace();
@@ -825,7 +825,7 @@ private void compile(String name) throws Exception {
 	}
 	comp.setDestination(destination);
 	boolean result = comp.compile(name);
-	if (result == false) {
+	if (!result) {
 		throw comp.getException();
 	}
 }

@@ -11,7 +11,7 @@ package java.rmi;
 public class NotBoundException 
 	extends Exception {
 
-public static final long serialVersionUID = -1857741824849069317l;
+private static final long serialVersionUID = -1857741824849069317l;
 
 public NotBoundException() {
 	super();

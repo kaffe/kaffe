@@ -8,17 +8,14 @@
 
 package java.rmi.registry;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.ObjID;
-import java.net.Socket;
 
 import kaffe.rmi.server.UnicastRef;
-import kaffe.rmi.server.UnicastServerRef;
 import kaffe.rmi.registry.RegistryImpl;
 import kaffe.rmi.registry.RegistryImpl_Stub;
 

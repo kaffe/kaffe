@@ -10,7 +10,6 @@ package java.rmi.server;
 
 import java.io.PrintStream;
 import java.io.OutputStream;
-import java.io.IOException;
 
 public class LogStream
 	extends PrintStream {

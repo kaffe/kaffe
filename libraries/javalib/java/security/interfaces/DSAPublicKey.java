@@ -21,7 +21,7 @@ import java.security.PublicKey;
 public interface DSAPublicKey
     extends DSAKey, PublicKey
 {
-    static final long serialVersionUID = 0x1121eb28ab28c7fcL;
+    long serialVersionUID = 0x1121eb28ab28c7fcL;
     
     BigInteger getY();
 }

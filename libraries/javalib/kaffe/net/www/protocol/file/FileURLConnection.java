@@ -21,7 +21,7 @@ import kaffe.net.www.protocol.BasicURLConnection;
 public class FileURLConnection
   extends BasicURLConnection
 {
-	InputStream file;
+	private InputStream file;
 
 public FileURLConnection(URL url) {
 	super(url);

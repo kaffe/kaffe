@@ -15,6 +15,6 @@ package com.sun.util;
 
 public interface PTimerWentOffListener {
 
-public abstract void timerWentOff(PTimerWentOffEvent e);
+    void timerWentOff(PTimerWentOffEvent e);
 
 }

@@ -14,8 +14,8 @@ import java.util.Enumeration;
 
 public interface ServletConfig {
 
-public abstract ServletContext getServletContext();
-public abstract String getInitParameter(String name);
-public abstract Enumeration getInitParameterNames();
+    ServletContext getServletContext();
+    String getInitParameter(String name);
+    Enumeration getInitParameterNames();
 
 }

@@ -14,12 +14,11 @@ import java.io.ObjectInput;
 import java.io.IOException;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.util.Random;
 
 public final class ObjID
 	implements Serializable {
 
-static final long serialVersionUID = -6386392263968365220L;
+private static final long serialVersionUID = -6386392263968365220L;
 
 private static long next = 0x8000000000000000L;
 private static final Object lock = ObjID.class;
@@ -44,13 +43,13 @@ public ObjID(int num) {
 }
 
 public void write(ObjectOutput out) throws IOException {
-	DataOutput dout = (DataOutput)out;
+	DataOutput dout = out;
 	dout.writeLong(objNum);
 	space.write(dout);
 }
 
 public static ObjID read(ObjectInput in) throws IOException {
-	DataInput din = (DataInput)in;
+	DataInput din = in;
 	ObjID id = new ObjID();
 	id.objNum = din.readLong();
 	id.space = UID.read(din);

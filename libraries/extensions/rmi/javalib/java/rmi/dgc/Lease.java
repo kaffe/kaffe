@@ -14,7 +14,7 @@ import java.rmi.dgc.VMID;
 public final class Lease
 	implements Serializable {
 
-static final long serialVersionUID = -5713411624328831948L;
+private static final long serialVersionUID = -5713411624328831948L;
 
 private VMID vmid;
 private long value;

@@ -11,7 +11,7 @@ package java.rmi.server;
 public abstract class RemoteStub
 	extends RemoteObject {
 
-public static final long serialVersionUID = -1585587260594494182l;
+private static final long serialVersionUID = -1585587260594494182l;
 
 protected RemoteStub() {
 	super();

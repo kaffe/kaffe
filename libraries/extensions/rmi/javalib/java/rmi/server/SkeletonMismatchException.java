@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 public class SkeletonMismatchException
 	extends RemoteException {
 
-public static final long serialVersionUID = -7780460454818859281l;
+private static final long serialVersionUID = -7780460454818859281l;
 
 public SkeletonMismatchException(String s) {
 	super(s);

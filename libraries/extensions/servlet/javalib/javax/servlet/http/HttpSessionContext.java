@@ -14,7 +14,7 @@ import java.util.Enumeration;
 
 public interface HttpSessionContext {
 
-public abstract HttpSession getSession(String sessionId);
-public abstract Enumeration getIds();
+    HttpSession getSession(String sessionId);
+    Enumeration getIds();
 
 }

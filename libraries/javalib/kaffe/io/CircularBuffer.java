@@ -15,29 +15,29 @@ package kaffe.io;
 
 public class CircularBuffer {
     /* the buffer where chars are stored. */
-    char [] buffer;
+    private char [] buffer;
 
     /* the index right after the last char that has been read, or 0 if we
      * are at buffer's end.
      */
-    int in;
+    private int in;
 
     /* the index right after the last char that has been written, or 0 if we
      * are at buffer's end.
      */
-    int out;
+    private int out;
 
     /* a flag to distinguish full from empty buffers. If it is true the buffer
      * is empty, if it is false the buffer may be full.
      */
-    boolean empty = true;
+    private boolean empty = true;
 
     /* a flag to denote a closed circular buffer. It can still be read from, as
      * long as it is not empty. When it is empty, the buffer returns EOF to all
      * read requests.
      */
 
-    boolean closed;
+    private boolean closed;
 
     /* creates a new buffer of the given size. */
     public CircularBuffer(int size) {

@@ -17,16 +17,16 @@ import java.io.ObjectOutput;
 public interface RemoteRef
 	extends Externalizable {
 
-public static final long serialVersionUID = 0;
-public static final String packagePrefix = "kaffe.rmi.server";
+    long serialVersionUID = 0;
+    String packagePrefix = "kaffe.rmi.server";
 
-public void invoke(RemoteCall call) throws Exception;
-public Object invoke(Remote obj, Method method, Object[] params, long opnum) throws Exception;
-public RemoteCall newCall(RemoteObject obj, Operation[] op, int opnum, long hash) throws RemoteException;
-public void done(RemoteCall call) throws RemoteException;
-public boolean remoteEquals(RemoteRef ref);
-public int remoteHashCode();
-public String getRefClass(ObjectOutput out);
-public String remoteToString();
+    void invoke(RemoteCall call) throws Exception;
+    Object invoke(Remote obj, Method method, Object[] params, long opnum) throws Exception;
+    RemoteCall newCall(RemoteObject obj, Operation[] op, int opnum, long hash) throws RemoteException;
+    void done(RemoteCall call) throws RemoteException;
+    boolean remoteEquals(RemoteRef ref);
+    int remoteHashCode();
+    String getRefClass(ObjectOutput out);
+    String remoteToString();
 
 }

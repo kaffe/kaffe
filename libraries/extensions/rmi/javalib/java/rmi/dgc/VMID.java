@@ -16,9 +16,9 @@ import java.net.UnknownHostException;
 public final class VMID
 	implements Serializable {
 
-static final long serialVersionUID = -538642295484486218L;
-static final boolean areWeUnique;
-static byte[] localAddr;
+private static final long serialVersionUID = -538642295484486218L;
+private static final boolean areWeUnique;
+private static byte[] localAddr;
 
 private byte[] addr;
 private UID uid;

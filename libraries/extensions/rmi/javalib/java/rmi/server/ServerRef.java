@@ -16,9 +16,9 @@ import java.rmi.server.ServerNotActiveException;
 public interface ServerRef
 	extends RemoteRef {
 
-public static final long serialVersionUID = 0;
+    long serialVersionUID = 0;
 
-public RemoteStub exportObject(Remote obj, Object data) throws RemoteException;
-public String getClientHost() throws ServerNotActiveException;
+    RemoteStub exportObject(Remote obj, Object data) throws RemoteException;
+    String getClientHost() throws ServerNotActiveException;
 
 }

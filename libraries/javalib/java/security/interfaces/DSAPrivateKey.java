@@ -21,7 +21,7 @@ import java.security.PrivateKey;
 public interface DSAPrivateKey
     extends DSAKey, PrivateKey
 {
-    static final long serialVersionUID = 0x6bebab423b256247L;
+    long serialVersionUID = 0x6bebab423b256247L;
     
     BigInteger getX();
 }

@@ -16,21 +16,21 @@ import java.io.IOException;
 
 public interface ServletRequest {
 
-public abstract int getContentLength();
-public abstract String getContentType();
-public abstract String getProtocol();
-public abstract String getScheme();
-public abstract String getServerName();
-public abstract int getServerPort();
-public abstract String getRemoteAddr();
-public abstract String getRemoteHost();
-public abstract String getRealPath(String path);
-public abstract ServletInputStream getInputStream() throws IOException;
-public abstract String getParameter(String name);
-public abstract String[] getParameterValues(String name);
-public abstract Enumeration getParameterNames();
-public abstract Object getAttribute(String name);
-public abstract BufferedReader getReader() throws IOException;
-public abstract String getCharacterEncoding();
+    int getContentLength();
+    String getContentType();
+    String getProtocol();
+    String getScheme();
+    String getServerName();
+    int getServerPort();
+    String getRemoteAddr();
+    String getRemoteHost();
+    String getRealPath(String path);
+    ServletInputStream getInputStream() throws IOException;
+    String getParameter(String name);
+    String[] getParameterValues(String name);
+    Enumeration getParameterNames();
+    Object getAttribute(String name);
+    BufferedReader getReader() throws IOException;
+    String getCharacterEncoding();
 
 }

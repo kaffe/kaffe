@@ -17,16 +17,16 @@ import java.rmi.Remote;
 public interface Registry
 	extends Remote {
 
-public static int REGISTRY_PORT = 1099;
+    int REGISTRY_PORT = 1099;
 
-public Remote lookup(String name) throws RemoteException, NotBoundException, AccessException;
+    Remote lookup(String name) throws RemoteException, NotBoundException, AccessException;
 
-public void bind(String name, Remote obj) throws RemoteException, AlreadyBoundException, AccessException;
+    void bind(String name, Remote obj) throws RemoteException, AlreadyBoundException, AccessException;
 
-public void unbind(String name) throws RemoteException, NotBoundException, AccessException;
+    void unbind(String name) throws RemoteException, NotBoundException, AccessException;
 
-public void rebind(String name, Remote obj) throws RemoteException, AccessException;
+    void rebind(String name, Remote obj) throws RemoteException, AccessException;
 
-public String[] list() throws RemoteException, AccessException;
+    String[] list() throws RemoteException, AccessException;
 
 }

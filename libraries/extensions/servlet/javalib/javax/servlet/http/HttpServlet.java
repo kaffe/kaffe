@@ -14,12 +14,10 @@ import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.Serializable;
 import java.io.IOException;
 
 public abstract class HttpServlet
-  extends GenericServlet
-  implements Serializable {
+  extends GenericServlet {
 
 public HttpServlet() {
 }

@@ -13,6 +13,6 @@ import java.io.IOException;
 
 public interface RMIServerSocketFactory {
 
-public ServerSocket createServerSocket(int port) throws IOException;
+    ServerSocket createServerSocket(int port) throws IOException;
 
 }

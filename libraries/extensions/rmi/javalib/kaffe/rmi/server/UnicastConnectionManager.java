@@ -11,7 +11,6 @@ package kaffe.rmi.server;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMIClientSocketFactory;
-import java.rmi.RemoteException;
 import kaffe.rmi.server.UnicastConnection;
 import java.util.Hashtable;
 import java.net.Socket;

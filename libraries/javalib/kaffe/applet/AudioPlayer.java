@@ -6,8 +6,8 @@ import java.net.URL;
 public class AudioPlayer
   implements AudioClip
 {
-	boolean stop;
-	URL     url;
+	private boolean stop;
+	private URL     url;
 
 public AudioPlayer( URL url) {
 	this.url = url;

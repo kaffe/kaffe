@@ -13,8 +13,8 @@ import java.rmi.UnknownHostException;
 
 public interface RegistryHandler {
 
-public Registry registryStub(String host, int port) throws RemoteException, UnknownHostException;
+    Registry registryStub(String host, int port) throws RemoteException, UnknownHostException;
 
-public Registry registryImpl(int port) throws RemoteException;
+    Registry registryImpl(int port) throws RemoteException;
 
 }

@@ -23,11 +23,11 @@ import java.util.Vector;
 public class VectorSnapshot
   implements Enumeration
 {
-	Object[] elements;
-	int index;
-	int size;
-	VectorSnapshot next;
-	static VectorSnapshot cache;
+	private Object[] elements;
+	private int index;
+	private int size;
+	private VectorSnapshot next;
+	private static VectorSnapshot cache;
 
 public VectorSnapshot ( Vector v ) {
 	size = v.size();

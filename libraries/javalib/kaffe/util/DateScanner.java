@@ -17,9 +17,9 @@ public class DateScanner
 {
 	int si0;
 	int si1;
-	int sLen;
+	private int sLen;
 	char[] src;
-	int tok;
+	private int tok;
 	final static int DAY = 0;
 	final static int MONTH = 1;
 	final static int YEAR = 2;
@@ -34,7 +34,7 @@ public class DateScanner
 	final static int WDMONTH = 10;
 	final static int AMPM = 11;
 	final static int UNKNOWN = -2;
-	DateFormatSymbols syms;
+	private DateFormatSymbols syms;
 
 public DateScanner( String date) {
 	this( date, new DateFormatSymbols() );

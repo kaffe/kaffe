@@ -14,12 +14,12 @@ import java.net.URL;
 
 public interface LoaderHandler {
 
-public static final String packagePrefix = "";
+    String packagePrefix = "";
 
-public Class loadClass(String name) throws MalformedURLException, ClassNotFoundException;
+    Class loadClass(String name) throws MalformedURLException, ClassNotFoundException;
 
-public Class loadClass(URL codebase, String name) throws MalformedURLException, ClassNotFoundException;
+    Class loadClass(URL codebase, String name) throws MalformedURLException, ClassNotFoundException;
 
-public Object getSecurityContext(ClassLoader loader);
+    Object getSecurityContext(ClassLoader loader);
 
 }

@@ -10,13 +10,11 @@
 
 package kaffe.security.provider;
 
-import java.security.SecureRandomSpi;
 import java.util.Random;
 
-import java.security.SecureRandom;
 import java.security.MessageDigest;
-import java.security.SecureRandomSpi;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandomSpi;
 
 public class SHA1PRNG
 	extends SecureRandomSpi

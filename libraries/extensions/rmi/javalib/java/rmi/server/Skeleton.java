@@ -13,7 +13,7 @@ import java.rmi.server.RemoteCall;
 
 public interface Skeleton {
 
-public void dispatch(Remote obj, RemoteCall theCall, int opnum, long hash) throws Exception;
-public Operation[] getOperations();
+    void dispatch(Remote obj, RemoteCall theCall, int opnum, long hash) throws Exception;
+    Operation[] getOperations();
 
 }

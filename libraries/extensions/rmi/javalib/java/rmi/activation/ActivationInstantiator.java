@@ -15,6 +15,6 @@ import java.rmi.MarshalledObject;
 public interface ActivationInstantiator
 	extends Remote {
 
-public MarshalledObject newInstance(ActivationID id, ActivationDesc desc) throws ActivationException, RemoteException;
+    MarshalledObject newInstance(ActivationID id, ActivationDesc desc) throws ActivationException, RemoteException;
 
 }

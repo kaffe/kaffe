@@ -19,12 +19,12 @@ import kaffe.util.DoubleLinkedObject;
 public class LogStream
   extends OutputStream
 {
-	DoubleLinkedObject first;
-	DoubleLinkedObject last;
-	StringBuffer current = new StringBuffer( 80);
-	int nLines;
-	int limit;
-	Object client;
+	private DoubleLinkedObject first;
+	private DoubleLinkedObject last;
+	private StringBuffer current = new StringBuffer( 80);
+	private int nLines;
+	private int limit;
+	private Object client;
 
 public LogStream ( int maxLines ) {
 	limit = maxLines;

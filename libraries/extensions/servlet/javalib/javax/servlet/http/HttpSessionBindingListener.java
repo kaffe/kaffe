@@ -15,7 +15,7 @@ import java.util.EventListener;
 public interface HttpSessionBindingListener
   extends EventListener {
 
-public abstract void valueBound(HttpSessionBindingEvent event);
-public abstract void valueUnbound(HttpSessionBindingEvent event);
+    void valueBound(HttpSessionBindingEvent event);
+    void valueUnbound(HttpSessionBindingEvent event);
 
 }
