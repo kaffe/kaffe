@@ -1,3 +1,12 @@
+2003-02-12 Timothy S Stack <stack@cs.utah.edu>
+
+        * config/i386/oskit/mkimage.sh:
+        Fix the paths used to build the kernel image.
+        (e.g. libexec/Kaffe -> jre/bin/kaffe-bin)
+
+        * kaffe/kaffevm/systems/oskit-pthreads/jthread.h:
+        Add jthread_relaxstack() function.
+
 2003-02-12 Mark J Roberts <mjr@znex.org>
 
 	* libraries/javalib/java/net/URLDecoder.java:

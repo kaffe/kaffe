@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999, 2000, 2003 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -49,6 +49,8 @@ typedef struct jthread {
 	unsigned char		status;		  /* Thread status */
 	unsigned char		flags; 		  /* Thread flags */
 } *jthread_t;
+
+#define JTHREAD_FLAG_RELAXED 0x80
 
 /*
  * Map the cookie and jthread to pthread_setspecific.
@@ -221,6 +223,21 @@ int 	jthread_stackcheck(int left);
 
 #define	REDZONE	1024
 
+static inline void
+jthread_relaxstack(int yes)
+{
+	jthread_t jtid = GET_JTHREAD();
+	
+	if( yes )
+	{
+		jtid->flags |= JTHREAD_FLAG_RELAXED;
+	}
+	else
+	{
+		jtid->flags &= ~JTHREAD_FLAG_RELAXED;
+	}
+}
+
 static inline void*
 jthread_stacklimit(void)
 {
@@ -233,7 +250,14 @@ jthread_stacklimit(void)
 #if defined(STACK_GROWS_UP)
 #error FIXME
 #else
-        return (void*)(((long)(ps.stackbase)) + REDZONE);
+	if( jtid->flags & JTHREAD_FLAG_RELAXED )
+	{
+		return (void*)(((long)(ps.stackbase)));
+	}
+	else
+	{
+		return (void*)(((long)(ps.stackbase)) + REDZONE);
+	}
 #endif
 }
 

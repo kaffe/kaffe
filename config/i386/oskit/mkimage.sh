@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+# Copyright (c) 1998, 1999, 2003 The University of Utah. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
@@ -134,7 +134,7 @@ fi
 CPF="$CLASSPATHFILE:/etc/kaffe_classpath"
 
 # The Kaffe kernel
-KAFFE=$KAFFEDIR/libexec/Kaffe
+KAFFE=$KAFFEDIR/jre/bin/kaffe-bin
 
 if test ! -x $KAFFE; then
     echo "ERROR: $KAFFE is not an executable."
@@ -142,7 +142,7 @@ if test ! -x $KAFFE; then
 fi
 
 # The directory with the minimum necessary class files.
-CLASSDIR=$KAFFEDIR/share/kaffe
+CLASSDIR=$KAFFEDIR/jre/lib
 
 # The final list of directories
 DIRS="$CLASSDIR $DIRS"
@@ -192,7 +192,7 @@ rm -f ${KERNELDIR}/Image
 		done
 	done
 
-	for FILE in $KAFFEDIR/lib/kaffe/*.la
+	for FILE in $KAFFEDIR/jre/lib/i386/*.la
 	do
 		echo "$FILE:/lib/"$(basename $FILE)
 	done
