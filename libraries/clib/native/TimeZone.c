@@ -18,7 +18,7 @@
 #include "config.h"
 #include "config-std.h"
 #include <native.h>
-#include "java_util_TimeZone.h"
+#include "java_util_VMTimeZone.h"
 
 struct Hjava_lang_String*
 java_util_VMTimeZone_getSystemTimeZoneId(void)
