@@ -134,12 +134,17 @@ java_io_RandomAccessFile_write(struct Hjava_io_RandomAccessFile* this, jint data
 void
 java_io_RandomAccessFile_writeBytes(struct Hjava_io_RandomAccessFile* this, HArrayOfByte* bytes, jint off, jint len)
 {
-	int rc;
-	ssize_t bwritten;
+	int r, fd;
+	ssize_t nw;
 
-	rc = KWRITE(unhand(unhand(this)->fd)->fd, &unhand_array(bytes)->body[off], len, &bwritten);
-	if (rc) {
-		SignalError("java.io.IOException", SYS_ERROR(rc));
+	fd = unhand(unhand(this)->fd)->fd;
+	while (len > 0) {
+		r = KWRITE(fd, &unhand_array(bytes)->body[off], len, &nw);
+		if (r) {
+			SignalError("java.io.IOException", SYS_ERROR(r));
+		}
+		off += nw;
+		len -= nw;
 	}
 }
 

@@ -78,19 +78,22 @@ java_io_FileOutputStream_close(struct Hjava_io_FileOutputStream* fh)
 }
 
 /*
- * Write bytes to file.
+ * Write all the bytes in the buffer to a file.
  */
 void
-java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* fh, HArrayOfByte* byteArray, jint start, jint len)
+java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* this, HArrayOfByte* bytes, jint off, jint len)
 {
-	int fd;
-	int r;
-	ssize_t bwritten;
+	int r, fd;
+	ssize_t nw;
 
-	fd = unhand(unhand(fh)->fd)->fd;
-	r = KWRITE(fd, &unhand_array(byteArray)->body[start], len, &bwritten);
-	if (r) {
-		SignalError("java.io.IOException", SYS_ERROR(r));
+	fd = unhand(unhand(this)->fd)->fd;
+	while (len > 0) {
+		r = KWRITE(fd, &unhand_array(bytes)->body[off], len, &nw);
+		if (r) {
+			SignalError("java.io.IOException", SYS_ERROR(r));
+		}
+		off += nw;
+		len -= nw;
 	}
 }
 
