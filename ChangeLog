@@ -1,5 +1,16 @@
 2003-08-04 Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/baseClasses.c:
+	(initBaseClasses) removed call to checkCorrectVersion.
+	(checkCorrectVersion) removed, since kaffe uses BOOTCLASSPATH
+	now and it has become impossible to mistakenly put some other
+	rt.jar in front of kaffe's.
+	
+	* libraries/javalib/java/lang/Cloneable.java:
+	Merged in from GNU Classpath.
+	
+2003-08-04 Dalibor Topic <robilad@kaffe.org>
+
 	Merged most of GNU Classpath's exceptions, errors and 
 	interfaces from java.lang .
 

@@ -94,7 +94,6 @@ Hjava_lang_Class* javaIoIOException;
 void initClasspath(void);
 void initNative(void);
 void initThreads(void);
-static void checkCorrectVersion(void);
 
 /*
  * Initialise the machine.
@@ -255,7 +254,6 @@ initBaseClasses(void)
 	loadStaticClass(&ObjectClass, OBJECTCLASS);
 	loadStaticClass(&SerialClass, SERIALCLASS);
 	loadStaticClass(&CloneClass, CLONECLASS);
-	checkCorrectVersion();
 	loadStaticClass(&ClassClass, CLASSCLASS);
 	loadStaticClass(&StringClass, STRINGCLASS);
 	loadStaticClass(&SystemClass, SYSTEMCLASS);
@@ -299,56 +297,5 @@ initBaseClasses(void)
 
 	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
 		abortWithEarlyClassFailure(&einfo);
-}
-
-static void
-checkCorrectVersion(void) 
-{
-	Field *f;
-	errorInfo einfo;
-	Utf8Const *utf8;
-	extern char* realClassPath;
-
-	/*
-	 * To make sure we have some ground to stand on, we doublecheck
-	 * that we really got Kaffe's java.lang.Cloneable class here.
-	 * Kaffe's class has a final public static field called
-	 * "KAFFE_VERSION".
-	 */
-	utf8 = utf8ConstNew("KAFFE_VERSION", -1);
-	if (!utf8) {
-		dprintf("not enough memory to run kaffe\n");
-		ABORT();
-	}
-	f = lookupClassField(CloneClass, utf8, true, &einfo);
-	utf8ConstRelease(utf8);
-	if (f == 0) {
-		dprintf(
-		    "\nCould not initialize Kaffe.\n"
-		    "It's likely that your CLASSPATH settings are wrong.  "
-		    "Please make sure\nyour CLASSPATH does not include any "
-		    "java.lang.* classes from other JVM\nvendors, such as "
-		    "Sun's or IBM's rt.jar (or classes.zip), BEFORE Kaffe's "
-		    "rt.jar.\n"
-		    "It should be okay to have Sun's rt.jar AFTER Kaffe's "
-		    "rt.jar\n\n"
-		    "The current effective classpath is `%s'\n\n",
-		    realClassPath
-		);
-		EXIT(-1);
-	}
-
-	if (*(jint*)FIELD_ADDRESS(f) != java_lang_Cloneable_KAFFE_VERSION) {
-		dprintf(
-		    "\nCould not initialize Kaffe.\n"
-		    "Your rt.jar version is %3.2f, but this VM "
-		    "was compiled with version %3.2f\n\n"
-		    "The current effective classpath is `%s'\n\n",
-		    *(jint*)FIELD_ADDRESS(f)/100.0,
-		    java_lang_Cloneable_KAFFE_VERSION/100.0,
-		    realClassPath
-		);
-		EXIT(-1);
-	}
 }
 
