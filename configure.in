@@ -452,7 +452,7 @@ else
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)
-  dnl AC_CHECK_LIBRARY(ungif,DGifOpenFileHandle,GIF_LIBS)
+  AC_CHECK_LIBRARY(ungif,DGifOpenFileHandle,GIF_LIBS)
   LIBS=$OLIBS
   dnl If libpng is included, we also need libz - if we don't have it then
   dnl we can't include png support.
