@@ -1,3 +1,9 @@
+Fri Jun 02 10:19:13 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/code-analyse.c (verifyBasicBlock):
+	Only read immediate constants when actually present, otherwise we
+	risk reading past the end of the heap.
+
 Fri May 26 15:45:43 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/utf8const.c: Be careful not to hold the utf8 lock
