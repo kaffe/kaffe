@@ -259,12 +259,12 @@ public class TreeMap extends AbstractMap
 	private Node find(Object key) {
 		insertionPoint = null;
 		for (Node node = root; node != NIL; ) {
-			if (c.compare(key, node.key) == 0) {
+			int diff = c.compare(key, node.key);
+			if (diff == 0) {
 				return node;
 			}
 			insertionPoint = node;
-			node = (c.compare(key, node.key) < 0) ?
-				node.left : node.right;
+			node = (diff < 0) ? node.left : node.right;
 		}
 		return null;
 	}
