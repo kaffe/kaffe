@@ -19,6 +19,7 @@
 #define KERR_INITIALIZER_ERROR		0x0004
 #define KERR_OUT_OF_MEMORY		0x0008
 #define KERR_CODE_MASK			0x00ff
+#define	KERR_NO_CLASS_FOUND		0x0100
 
 #define KERR_FREE_MESSAGE		0x8000
 
@@ -48,6 +49,12 @@ extern void vpostExceptionMessage(errorInfo *einfo,
 
 /* post an out of memory condition */
 extern void postOutOfMemory(errorInfo *einfo);
+
+/* post a no class found error */
+extern void postNoClassDefFoundError(errorInfo* einfo, const char* cname);
+
+/* check to see if we got a no class found error */
+extern int checkNoClassDefFoundError(errorInfo* einfo);
 
 #define MAX_ERROR_MESSAGE_SIZE        1024
 
