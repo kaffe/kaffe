@@ -107,11 +107,6 @@ public interface Configuration
   boolean HAVE_NATIVE_GENERATE_PROXY_CLASS = false;
 
   /**
-   * Name of default AWT peer library.
-   */
-  String default_awt_peer_toolkit = "gnu.java.awt.peer.gtk.GtkToolkit";
-
-  /**
    * Set to true if Cairo was found and enabled during configure,
    * false otherwise.
    */

@@ -1,5 +1,13 @@
 2005-02-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/Configuration.java.in
+	(default_awt_peer_toolkit) Removed.
+
+	* libraries/javalib/java/awt/Toolkit.java
+	(default_awt_peer_toolkit) Set directly.
+
+2005-02-24  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-02-24  Chris Burdess  <dog@gnu.org>
