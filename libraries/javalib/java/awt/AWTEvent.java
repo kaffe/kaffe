@@ -143,7 +143,7 @@ protected static void sendEvent ( AWTEvent e, boolean sync ) {
       Toolkit.eventQueue.postEvent( e);
 }
 
-void setSource ( Object newSource ) {
+public void setSource ( Object newSource ) {
 	source = newSource;
 }
 
