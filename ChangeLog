@@ -1,3 +1,12 @@
+Wed May 29 13:06:10 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* README: Added new supported platforms s390 and ia64. Added BeOS
+	and Cygwin on i386, found in config/i386. Added OpenBSD 2.x found
+	in config/sparc. Added Ultrix 4.2, found in config/mips. Added
+	Darwin and NetBSD1.x found in config/powerpc.
+
+	* WHATSNEW: Added ports to new architectures s390 and ia64.
+
 Wed May 29 12:59:24 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* config/s390/common.h: new file.
