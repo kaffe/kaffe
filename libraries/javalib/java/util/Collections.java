@@ -1110,6 +1110,8 @@ public class Collections
   public static void rotate(List list, int distance)
   {
     int size = list.size();
+    if (size == 0)
+      return;
     distance %= size;
     if (distance == 0)
       return;
