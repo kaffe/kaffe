@@ -24,7 +24,7 @@ private static final long serialVersionUID = -3665804199014368530L;
 private final boolean value;
 
 public Boolean(String s) {
-	value = (s != null && s.toLowerCase().equals("true"));
+	value = (s != null && s.equalsIgnoreCase("true"));
 }
 
 public Boolean(boolean value) {
