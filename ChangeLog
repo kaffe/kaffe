@@ -1,5 +1,18 @@
 2004-11-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/imageio/spi/ServiceRegistry.java,
+	libraries/javalib/javax/naming/directory/BasicAttributes.java:
+	Resynced with GNU Classpath.
+
+	2004-11-06  Tom Tromey  <tromey@redhat.com>
+
+        * javax/naming/directory/BasicAttributes.java (attributes): Now
+        package-private.
+        * javax/imageio/spi/ServiceRegistry.java (categories): Now
+        package-private.
+
+2004-11-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/URLClassLoader.java,
 	libraries/javalib/java/nio/charset/CoderResult.java,
 	libraries/javalib/java/rmi/server/RMIClassLoader.java,
