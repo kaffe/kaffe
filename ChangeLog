@@ -1,3 +1,7 @@
+2004-07-08  Jim Huang  <jserv@kaffe.org>
+
+	* po/zh_TW.po: Updated and fix minor typo
+
 2004-07-08  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c: Compilation fixes.
