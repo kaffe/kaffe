@@ -1,3 +1,7 @@
+2003-11-21  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated to include Ito's patch.
+
 2003-11-17  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* kaffe/kaffevm/access.c:
