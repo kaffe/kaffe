@@ -17,6 +17,9 @@ import java.util.ResourceBundle;
 import java.util.Locale;
 
 public abstract class Format implements Serializable, Cloneable {
+/*
+ * XXX implement serial form!
+ */
 
 private static final String RESOURCEBASE = "kaffe.text.";
 

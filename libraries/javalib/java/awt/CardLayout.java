@@ -4,11 +4,17 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class CardLayout
-  implements LayoutManager2
+  implements LayoutManager2, java.io.Serializable
 {
+	/** @serial undocumented */
 	int hgap;
+	/** @serial undocumented */
 	int vgap;
-	Hashtable comptable = new Hashtable();
+	/** @serial undocumented */
+	Hashtable tab = new Hashtable();
+
+	/* Sun's doesn't hardcode, we do */
+	private static final long serialVersionUID = -4328196481005934313L;
 
 public CardLayout () {
 	this( 0, 0);
@@ -32,8 +38,8 @@ public void addLayoutComponent ( Component comp, Object constraints) {
  * @deprecated
  */
 public void addLayoutComponent ( String name, Component comp) {
-	comptable.put( name, comp);
-	if ( comptable.size() > 1 )
+	tab.put( name, comp);
+	if ( tab.size() > 1 )
 		comp.setVisible( false);
 }
 
@@ -67,7 +73,7 @@ public float getLayoutAlignmentY ( Container parent ) {
 	return (Component.CENTER_ALIGNMENT);
 }
 
-Dimension getLayoutSize (  Container parent, boolean preferred) {
+private Dimension getLayoutSize (  Container parent, boolean preferred) {
 	Dimension d = new Dimension();
 	int cc = parent.getComponentCount();
 
@@ -168,11 +174,11 @@ public void previous ( Container parent) {
 }
 
 public void removeLayoutComponent ( Component comp) {
-	for( Enumeration e = comptable.keys(); e.hasMoreElements(); ) {
+	for( Enumeration e = tab.keys(); e.hasMoreElements(); ) {
 		String key = (String)e.nextElement();
-		Component c = (Component)comptable.get( key);
+		Component c = (Component)tab.get( key);
 		if ( c == comp ) {
-			comptable.remove( key);
+			tab.remove( key);
 			return;
 		}
 	}
@@ -187,7 +193,7 @@ public void setVgap ( int vgap) {
 }
 
 public void show ( Container parent, String name) {
-	Component nc = (Component)comptable.get( name);
+	Component nc = (Component)tab.get( name);
 	int cc = parent.getComponentCount();
 	
 	for ( int i=0; i<cc; i++) {

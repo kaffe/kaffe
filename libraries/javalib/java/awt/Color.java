@@ -11,8 +11,9 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
-public class Color
+public class Color implements java.io.Serializable
 {
+	/* XXX implement serial form! */
 	int rgbValue;
 	int nativeValue = 0xffffffff;
 	final public static Color darkGray = new Color( (byte)64, (byte)64, (byte)64);

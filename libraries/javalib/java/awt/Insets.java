@@ -13,12 +13,33 @@ package java.awt;
  * @author P.C.Mehlitz
  */
 public class Insets
-  implements Cloneable
+  implements Cloneable, java.io.Serializable
 {
+
+	/** @serial
+	 * The inset from the top.  This value is added to the Top of 
+	 * the rectangle to yield a new location for the Top.
+	 */
 	public int top;
+
+	/** @serial
+	 * The inset from the left.  This value is added to the left of 
+	 * the rectangle to yield a new location for the left edge.
+	 */
 	public int left;
+
+	/** @serial
+	 *  The inset from the bottom.  This value is added to the Bottom 
+	 *  of the rectangle to yield a new location for the Bottom.
+	 */
 	public int bottom;
+
+	/** @serial
+	 *  The inset from the left.  This value is added to the left of 
+	 *  the rectangle to yield a new location for the left edge.
+	 */
 	public int right;
+
 	static Insets noInsets = new Insets();
 	private static final long serialVersionUID = -2272572637695466749L;
 

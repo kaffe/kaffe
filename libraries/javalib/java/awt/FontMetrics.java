@@ -15,21 +15,24 @@ package java.awt;
 import java.util.Hashtable;
 import kaffe.util.Ptr;
 
-public class FontMetrics
+public class FontMetrics implements java.io.Serializable
 {
-	Ptr nativeData;
+	transient Ptr nativeData;
+	/** @serial The actual Font from which the font metrics are 
+	 * created.  This cannot be null.
+	 */
 	protected Font font;
-	int height;
-	int descent;
-	int ascent;
-	int leading;
-	int maxAdvance;
-	int maxDescent;
-	int maxAscent;
-	int fixedWidth;
-	int[] widths;
-	boolean isWideFont;
-	static Hashtable cache = new Hashtable();
+	transient int height;
+	transient int descent;
+	transient int ascent;
+	transient int leading;
+	transient int maxAdvance;
+	transient int maxDescent;
+	transient int maxAscent;
+	transient int fixedWidth;
+	transient int[] widths;
+	transient boolean isWideFont;
+	transient static Hashtable cache = new Hashtable();
 	private static final long serialVersionUID = 1681126225205050147L;
 
 FontMetrics ( Font fnt ) {

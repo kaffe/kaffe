@@ -13,11 +13,20 @@ package java.awt;
  * @author P.C.Mehlitz
  */
 public class Polygon
-  implements Shape
+  implements Shape, java.io.Serializable
 {
+	/** @serial The total number of points. This value can be NULL. */
 	public int npoints;
+
+	/** @serial The array of x coordinates. */
 	public int[] xpoints;
+
+	/** @serial The array of y coordinates. */
 	public int[] ypoints;
+
+	/** @serial 
+	 * Bounds of the polygon.  This value can be NULL.  See getBounds()
+	 */
 	protected Rectangle bounds;
 	private static final long serialVersionUID = -6460061437900069969L;
 

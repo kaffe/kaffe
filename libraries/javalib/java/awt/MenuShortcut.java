@@ -2,13 +2,17 @@ package java.awt;
 
 import java.awt.event.KeyEvent;
 
-public class MenuShortcut
+public class MenuShortcut implements java.io.Serializable
 {
-	int mods;
+	/* XXX implement serial form 
+	 * int key;		result of getKey()
+	 * boolean usesShift;	result of usesShiftModifier()
+	 */
 	int keyCode;
-	MenuShortcut next;
-	MenuShortcut nextMod;
-	ShortcutConsumer consumer;
+	transient int mods;
+	transient MenuShortcut next;
+	transient MenuShortcut nextMod;
+	transient ShortcutConsumer consumer;
 	private static final long serialVersionUID = 143448358473180225L;
 
 MenuShortcut( MenuShortcut ms) {

@@ -12,6 +12,7 @@ import java.util.Locale;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+/* NB: BreakIterator is serializable only in JDK 1.1, not in JDK 1.2 */
 abstract public class BreakIterator
   implements Cloneable, Serializable
 {

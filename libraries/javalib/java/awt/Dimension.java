@@ -12,10 +12,13 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
-public class Dimension
+public class Dimension implements java.io.Serializable
 {
 	private static final long serialVersionUID = 4723952579491349524L;
+	/** @serial The width dimension. Negative values can be used. */
 	public int width;
+
+	/** @serial The height dimension. Negative values can be used. */
 	public int height;
 
 public Dimension() {

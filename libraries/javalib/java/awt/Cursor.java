@@ -11,7 +11,7 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
-public class Cursor
+public class Cursor implements java.io.Serializable
 {
 	final public static int DEFAULT_CURSOR = 0;
 	final public static int CROSSHAIR_CURSOR = 1;
@@ -28,7 +28,16 @@ public class Cursor
 	final public static int HAND_CURSOR = 12;
 	final public static int MOVE_CURSOR = 13;
 
+	/** @serial 
+	 * The chosen cursor type intially set to the DEFAULT_CURSOR.
+	 */
 	int type;
+
+	/** @serial
+	 * The user-visible name of the cursor.
+	 */
+	protected String name;
+
 	protected static Cursor[] predefined = new Cursor[14];
 	static Cursor defaultCursor;
 	private static final long serialVersionUID = 8028237497568985504L;

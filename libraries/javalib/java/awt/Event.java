@@ -19,10 +19,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class Event
+public class Event implements java.io.Serializable
 {
 	public Object arg;
 	public int clickCount;
+	private boolean consumed;	// needed for serial form
 	public Event evt;
 	public int id;
 	public int key;

@@ -12,12 +12,13 @@ package java.awt;
 
 import java.util.Vector;
 
-public class CheckboxGroup {
+public class CheckboxGroup implements java.io.Serializable {
 
 private static final long serialVersionUID = 3729780091441768983L;
 
-Checkbox selection;
-Vector boxes = new Vector();
+/** @serial */
+Checkbox selectedCheckbox;
+transient Vector boxes = new Vector();
 
 public CheckboxGroup () {
 }
@@ -26,7 +27,7 @@ public CheckboxGroup () {
  * @deprecated
  */
 public Checkbox getCurrent() {
-	return selection;
+	return selectedCheckbox;
 }
 
 public Checkbox getSelectedCheckbox () {
@@ -41,16 +42,16 @@ public synchronized void setSelectedCheckbox ( Checkbox box) {
  * @deprecated
  */
 public synchronized void setCurrent(Checkbox box) {
-	if ( selection == box) {
+	if ( selectedCheckbox == box) {
 		return;
 	}
-	selection = box;
-	selection.group = null;
+	selectedCheckbox = box;
+	selectedCheckbox.group = null;
 	for ( int i=0; i<boxes.size(); i++) {
 		Checkbox cb = (Checkbox)boxes.elementAt( i);
-		cb.setState( cb == selection);
+		cb.setState( cb == selectedCheckbox);
 	}
-	selection.group = this;
+	selectedCheckbox.group = this;
 }
 
 public String toString () {

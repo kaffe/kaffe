@@ -27,6 +27,7 @@ import java.awt.peer.ActiveEvent;
 import java.awt.peer.ComponentPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.EventListener;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -46,8 +47,9 @@ import kaffe.awt.OpaqueComponent;
  */
 abstract public class Component
   extends Object
-  implements ImageObserver, MenuContainer
+  implements ImageObserver, MenuContainer, Serializable
 {
+	/* XXX implement serial form! */
 	private final static long serialVersionUID = -7644114512714619750L;
 	Container parent;
 	int x;

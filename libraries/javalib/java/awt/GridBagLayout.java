@@ -15,20 +15,31 @@ package java.awt;
 import java.util.Hashtable;
 
 public class GridBagLayout
-  implements LayoutManager2
+  implements LayoutManager2, java.io.Serializable
 {
 	final protected static int MINSIZE = 1;
 	final protected static int PREFERREDSIZE = 2;
 	final protected static int ACTUALSIZE = 3;
 	final protected static int MAXGRIDSIZE = 512;
+	/* NB: Sun doesn't hardcode */
+	private static final long serialVersionUID = 8838754796412211005L;
+
+	/** @serial */
 	protected Hashtable comptable = new Hashtable();
+	/** @serial */
 	protected GridBagConstraints defaultConstraints = new GridBagConstraints();
+// XXX fix serial form! /** @serial */
 //protected GridBagLayoutInfo layoutInfo;
+	/** @serial */
 	public int[] columnWidths;
+	/** @serial */
 	public int[] rowHeights;
+	/** @serial */
 	public double[] columnWeights;
+	/** @serial */
 	public double[] rowWeights;
-	Point offset = new Point();
+
+	transient Point offset = new Point();
 
 protected void AdjustForGravity(GridBagConstraints cons, Rectangle display) {
 	throw new kaffe.util.NotImplemented();

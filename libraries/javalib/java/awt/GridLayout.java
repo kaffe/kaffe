@@ -13,12 +13,19 @@ package java.awt;
 
 
 public class GridLayout
-  implements LayoutManager
+  implements LayoutManager, java.io.Serializable
 {
+	/** @serial */
 	int cols;
+	/** @serial */
 	int rows;
+	/** @serial */
 	int hgap;
+	/** @serial */
 	int vgap;
+
+	/* NB: Sun doesn't hardcode */
+	private static final long serialVersionUID = -7411804673224730901L;
 
 public GridLayout () {
 	this( 1, 0, 0, 0);

@@ -13,8 +13,9 @@ package java.awt;
  * @author P.C.Mehlitz
  */
 public class BorderLayout
-  implements LayoutManager2
+  implements LayoutManager2, java.io.Serializable
 {
+	/* XXX implement serial form! */
 	private static final long serialVersionUID = -8658291919501921765L;
 	Component center;
 	Component north;

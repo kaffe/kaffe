@@ -10,8 +10,9 @@ import java.awt.peer.MenuComponentPeer;
  * of this file.
  *
  */
-abstract public class MenuComponent
+abstract public class MenuComponent implements java.io.Serializable
 {
+	/* XXX implement serial form! */
 	Font fnt;
 	String name;
 	MenuContainer parent;

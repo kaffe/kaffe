@@ -12,12 +12,17 @@ package java.awt;
  * @author P.C.Mehlitz
  */
 public class Rectangle
-  implements Shape
+  implements Shape, java.io.Serializable
 {
 	private static final long serialVersionUID = -4345857070255674764L;
+
+	/** @serial The x coordinate of the Rectangle.  */
 	public int x;
+	/** @serial The y coordinate of the Rectangle.  */
 	public int y;
+	/** @serial The width of the Rectangle.  */
 	public int width;
+	/** @serial The height of the Rectangle.  */
 	public int height;
 
 public Rectangle() {
