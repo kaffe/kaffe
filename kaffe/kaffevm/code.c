@@ -9,8 +9,7 @@
  * of this file. 
  */
 
-#define	DBG(s)
-
+#include "debug.h"
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -37,9 +36,12 @@ addCode(Method* m, uint32 len, classFile* fp)
 	readu2(&c.max_stack, fp);
 	readu2(&c.max_locals, fp);
 	readu4(&c.code_length, fp);
-DBG(	printf("Max stack = %d\n", c.max_stack);	)
-DBG(	printf("Max locals = %d\n", c.max_locals);	)
-DBG(	printf("Code length = %d\n", c.code_length);	)
+DBG(CODEATTR,	
+	dprintf("addCode for method %s.%s\n", m->class->name->data, m->name->data);	
+	dprintf("Max stack = %d\n", c.max_stack);
+	dprintf("Max locals = %d\n", c.max_locals);
+	dprintf("Code length = %d\n", c.code_length);
+    )
 	if (c.code_length > 0) {
 		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
 		readm(c.code, c.code_length, sizeof(bytecode), fp);
@@ -48,7 +50,7 @@ DBG(	printf("Code length = %d\n", c.code_length);	)
 		c.code = 0;
 	}
 	readu2(&elen, fp);
-DBG(	printf("Exception table length = %d\n", elen);	)
+DBG(CODEATTR,	dprintf("Exception table length = %d\n", elen);	)
 	if (elen > 0) {
 		c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
 		c.exception_table->length = elen;
