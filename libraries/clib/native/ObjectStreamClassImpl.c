@@ -377,9 +377,7 @@ char*
 pathname2ClassnameCopy(const char *orig)
 {
 	char* str;
-	str = KMALLOC(strlen(orig) + 2);	/* Allow 2 extra - one for 0
-						 * and one for an extra ;.
-						 */
+	str = KMALLOC(strlen(orig) + 1);
 	if (str != 0) {
 		pathname2classname(orig, str);
 	}
@@ -442,16 +440,7 @@ static
 char*
 getClassName(Hjava_lang_Class* cls)
 {
-	char* str;
-	int l;
-
-	str = pathname2ClassnameCopy(cls->name->data);
-	if (CLASS_IS_ARRAY(cls) && !CLASS_IS_PRIMITIVE(CLASS_ELEMENT_TYPE(cls))) {
-		l = strlen(str);
-		str[l] = ';';
-		/* Will be a 0 at l+1 already */
-	}
-        return (str);
+	return (pathname2ClassnameCopy(cls->name->data));
 }
 
 jlong
@@ -767,7 +756,7 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 	if (unhand(cls)->iclazz == 0) {
 		unhand(cls)->iclazz = findDefaultSerialization(unhand(cls)->clazz);
 	}
-	clazz = unhand(cls)->clazz;
+	clazz = unhand(cls)->iclazz;
 
 	/* Count the number of fields we need to store */
 	len = CLASS_NIFIELDS(clazz);

@@ -84,9 +84,15 @@ public final class Security {
 	}
 
 	public static String getAlgorithmProperty(String alg, String prop) {
-
-		throw new kaffe.util.NotImplemented(
-		    Security.class.getName() + ".getAlgorithmProperty()");
+		String id = "Alg." + prop + "." + alg;
+		for (int i = 0; i < providers.size(); i++) {
+			Provider p = (Provider)providers.elementAt(i);
+			String val = p.getProperty(id);
+			if (val != null) {
+				return (val);
+			}
+		}
+		return (null);
 	}
 
 	public static int insertProviderAt(Provider provider, int position) {

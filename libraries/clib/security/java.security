@@ -1,6 +1,5 @@
 #
 # Security configuration file for Kaffe
 #
-
 security.provider.1=kaffe.security.provider.Kaffe
-
+security.provider.2=sun.security.provider.Sun
