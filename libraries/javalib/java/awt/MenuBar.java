@@ -99,4 +99,12 @@ public synchronized Enumeration shortcuts() {
 
 void updateView() {
 }
+
+/**
+ * HotJava 1.1.5 uses this.
+ * @deprecated As of JDK version 1.1, replaced by getMenuCount().
+ */
+public int countMenus() {
+	return getMenuCount();
+}
 }
