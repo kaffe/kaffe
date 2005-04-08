@@ -101,6 +101,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.win32 \
 	FAQ/FAQ.xdebugging \
 	FAQ/FAQ.xprofiler \
+	FAQ/FAQ.references \
 	compat-include/ansidecl.h \
 	compat-include/eh-common.h \
 	compat-include/frame.h \

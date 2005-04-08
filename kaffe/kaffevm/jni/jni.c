@@ -808,6 +808,9 @@ Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 	case JNI_VERSION_1_2:
 		(*penv) = je;
 		return (JNI_OK);
+	case JNI_VERSION_1_4:
+		(*penv) = je;
+		return (JNI_OK);
 #if 0
 	case JVMDI_VERSION_1:
 		(*penv) = (JVMDI_Interface_1*)&Kaffe_JVMDIEnv;
@@ -1060,9 +1063,9 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	NULL,
 	NULL,
 	Kaffe_ExceptionCheck,
-	NULL,
-	NULL,
-	NULL,
+	KaffeJNI_NewDirectByteBuffer,
+	KaffeJNI_GetDirectBufferAddress,
+	KaffeJNI_GetDirectBufferCapacity
 
 };
 

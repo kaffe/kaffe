@@ -1,3 +1,40 @@
+2005-04-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* Makefile.am
+	(EXTRA_DIST): Added FAQ/FAQ.references.
+	
+	* kaffe/kaffevm/jni/jni-base.c
+	(JNI_GetDefaultJavaVMInitArgs,
+	JNI_CreateJavaVM): Updated support to JNI 1.4.
+	
+	* kaffe/kaffevm/jni/jni-helpers.c
+	(KaffeJNI_NewDirectByteBuffer,
+	KaffeJNI_GetDirectBufferAddress,
+	KaffeJNI_GetDirectBufferCapacity): New functions.
+	(KaffeJNI_FromReflectedMethod,
+	KaffeJNI_FromReflectedField): Protected JNI call.
+	
+	* kaffe/kaffevm/jni/jni_funcs.h
+	(KaffeJNI_NewDirectByteBuffer,
+	KaffeJNI_GetDirectBufferAddress,
+	KaffeJNI_GetDirectBufferCapacity): New functions.
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_JNINativeInterface): Added the 3 new JNI calls.
+	(Kaffe_GetEnv): Updated support to JNI 1.4.
+
+	* libraries/clib/native/java_lang_ref_Reference.c
+	(create): Check whether the referenced object is NULL.
+
+	* libraries/clib/nio/java_nio_VMDirectByteBuffer.c:
+	Imported latest version from GNU Classpath.
+
+	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java:
+	Authorize loading gnu/classpath/RawData* classes from the user
+	class loader.
+
+	* Makefile.in: Regenerated.
+	
 2005-04-05  Supreet Sethi  <supreet@linux-delhi.org>
 
 	* include/jsyscall.h:

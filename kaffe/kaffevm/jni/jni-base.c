@@ -47,6 +47,7 @@ JNI_GetDefaultJavaVMInitArgs(void* args)
       memcpy(args, &Kaffe_JavaVMInitArgs, sizeof(Kaffe_JavaVMInitArgs));
       vm_args->version = JNI_VERSION_1_1;
       break;
+    case JNI_VERSION_1_4:
     case JNI_VERSION_1_2:
       vm_args->ignoreUnrecognized = JNI_FALSE;
       vm_args->options = NULL;
@@ -275,6 +276,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
     case JNI_VERSION_1_1:
       memcpy(&Kaffe_JavaVMArgs, args, sizeof(Kaffe_JavaVMArgs));
       break;
+    case JNI_VERSION_1_4:
     case JNI_VERSION_1_2:
       memcpy(&Kaffe_JavaVMArgs, &Kaffe_JavaVMInitArgs, sizeof(Kaffe_JavaVMArgs));
       if (!KaffeJNI_ParseArgs(&Kaffe_JavaVMArgs, vm_args->options, vm_args->nOptions))

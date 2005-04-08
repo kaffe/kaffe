@@ -23,20 +23,115 @@
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"
 
+jobject KaffeJNI_NewDirectByteBuffer(JNIEnv *env, void *buffer, jlong size)
+{
+  jclass clazz;
+  jclass clazz_rawdata;
+  jmethodID constructor;
+  jmethodID constructor_rawdata;
+  jobject bbuf;
+  jobject rawdata;
+
+  BEGIN_EXCEPTION_HANDLING(NULL);
+
+  clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl$ReadWrite");
+  constructor = (*env)->GetMethodID(env, clazz, "<init>", "(Ljava/lang/Object;Lgnu/classpath/RawData;III)V");
+#if SIZEOF_VOID_P == 4
+  clazz_rawdata = (*env)->FindClass(env, "gnu/classpath/RawData32");
+  constructor_rawdata = (*env)->GetMethodID(env, clazz_rawdata, "<init>", "(I)V");
+#elif SIZEOF_VOID_P == 8
+  clazz_rawdata = (*env)->FindClass(env, "gnu/classpath/RawData64");
+  constructor_rawdata = (*env)->GetMethodID(env, clazz_rawdata, "<init>", "(L)V");
+#else
+#error "Unknown void pointer width"
+#endif
+
+  rawdata = (*env)->NewObject(env, clazz_rawdata, constructor_rawdata, buffer);
+  
+  bbuf = (*env)->NewObject(env, clazz, constructor, NULL, rawdata, (jint)size, (jint)size, (jint)0);
+
+  END_EXCEPTION_HANDLING();
+
+  return bbuf;
+}
+
+void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env, jobject buffer)
+{
+  jfieldID address_field;
+  void *address;
+  jclass clazz;
+
+  BEGIN_EXCEPTION_HANDLING(NULL);
+
+  clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
+
+  if (!(*env)->IsInstanceOf(env, buffer, clazz))
+    address = NULL;
+  else
+    {
+      clazz = (*env)->GetObjectClass(env, buffer);
+      address_field = (*env)->GetFieldID(env, clazz, "address", "Lgnu/classpath/RawData;");
+      
+      address = (void *)((*env)->GetObjectField(env, buffer, address_field));
+    }
+
+  END_EXCEPTION_HANDLING();
+
+  return address;
+}
+
+jint KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
+{  
+  jmethodID capacity_method;
+  jint capacity;
+  jclass clazz;
+
+  BEGIN_EXCEPTION_HANDLING(-1);
+
+  clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
+  if (!(*env)->IsInstanceOf(env, buffer, clazz))
+    capacity = -1;
+  else
+    {
+      clazz = (*env)->GetObjectClass(env, buffer);
+      capacity_method = (*env)->GetMethodID(env, clazz, "capacity", "()I");
+      
+      capacity = (*env)->CallIntMethod(env, buffer, capacity_method);
+    }
+
+  END_EXCEPTION_HANDLING();
+
+  return capacity;
+}
+
+
 jmethodID
 KaffeJNI_FromReflectedMethod (JNIEnv *env UNUSED, jobject method)
 {
 	Hjava_lang_reflect_Method *realMethod = (Hjava_lang_reflect_Method *)method;
+	jmethodID id;
+
+	BEGIN_EXCEPTION_HANDLING(NULL);
 	
-	return (jmethodID) &(unhand(realMethod)->clazz->methods[unhand(realMethod)->slot]);
+	id = (jmethodID) &(unhand(realMethod)->clazz->methods[unhand(realMethod)->slot]);
+
+	END_EXCEPTION_HANDLING();
+
+	return id;
 }
 
 jfieldID
 KaffeJNI_FromReflectedField (JNIEnv *env UNUSED, jobject field)
 {
 	Hjava_lang_reflect_Field *realField = (Hjava_lang_reflect_Field *)field;
+	jfieldID id;
 
-	return (jfieldID) &(unhand(realField)->clazz->fields[unhand(realField)->slot]);
+	BEGIN_EXCEPTION_HANDLING(NULL);
+
+	id = (jfieldID) &(unhand(realField)->clazz->fields[unhand(realField)->slot]);
+	END_EXCEPTION_HANDLING();
+
+	return id;
 }
 
 jobject
@@ -93,4 +188,4 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 	
 	return (jobject) refField;
 }
-	
+

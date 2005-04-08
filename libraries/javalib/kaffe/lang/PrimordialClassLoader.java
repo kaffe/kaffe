@@ -63,7 +63,10 @@ public Class loadClass(String name, boolean resolve)
 	 */
 	if( name.startsWith("kaffe.lang.") 
 	    || (name.startsWith("gnu.classpath.") 
-		&& !name.startsWith("gnu.classpath.tools")))
+		&& !(name.startsWith("gnu.classpath.tools")
+		     || name.startsWith("gnu.classpath.RawData"))
+		)
+	    )
 	{
 		throw new ClassNotFoundException(name);
 	}
