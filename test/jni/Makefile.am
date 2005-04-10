@@ -32,7 +32,7 @@ LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 
 jniBase_SOURCES= jniBase.c
 jniBase_LDADD= \
-	"-dlopen" $(LIBNATIVE) \
+	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
@@ -41,7 +41,7 @@ jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniExecClass_SOURCES= jniExecClass.c
 jniExecClass_LDADD= \
-	"-dlopen" $(LIBNATIVE) \
+	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
@@ -50,7 +50,7 @@ jniExecClass_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniReflect_SOURCES= jniReflect.c
 jniReflect_LDADD= \
-	"-dlopen" $(LIBNATIVE) \
+	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
