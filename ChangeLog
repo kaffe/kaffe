@@ -1,3 +1,12 @@
+2005-04-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Reset to 1.1.x-cvs
+	
+	* configure: Regenerated.
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c: Merged back from GNU
+	Classpath with the right indentation.
+
 2005-04-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* Makefile.am
