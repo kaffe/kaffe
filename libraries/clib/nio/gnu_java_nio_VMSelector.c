@@ -36,6 +36,7 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 #include "config.h"
+#include "jsyscall.h"
 
 /* <sys/types.h> needs to be included on OSX before <sys/select.h> */
 #if defined(HAVE_SYS_TYPES_H)
@@ -151,12 +152,15 @@ helper_select (JNIEnv * env, jclass thread_class,
 
   while (1)
     {
-      r = select (n, readfds, writefds, exceptfds, timeout ? &delay : NULL);
+      int retcode;
 
-      if (r < 0 && errno != EINTR)
-	return -errno;
-      else if (r >= 0)
-	return r;
+      r = KSELECT (n, readfds, writefds, exceptfds,
+		   timeout ? &delay : NULL, &retcode);
+
+      if (r == 0)
+	return retcode;
+      if (r != EINTR)
+	return -r;
 
       /* Here we know we got EINTR. */
       if ((*env)->

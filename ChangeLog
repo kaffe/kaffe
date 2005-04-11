@@ -1,3 +1,9 @@
+2005-04-11  Guilhem Lavaux  <guilhem@kaffe.org>
+	Rei Odaira <ray@is.s.u-tokyo.ac.jp>
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c: Patched again to use
+	jthread syscall system.
+
 2005-04-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/jni/Makefile.am: Fixed dlopened libraries.
