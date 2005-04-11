@@ -1450,21 +1450,24 @@ div_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)
 		break;
 	case 4:
 		slot_alloctmp(tmp);
-		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		ashr_int_const(tmp, src, 1);
+		lshr_int_const(tmp, tmp, (sizeof(int) * 8 - 2));
 		add_int(tmp, tmp, src);
 		ashr_int_const(dst, tmp, 2);
 		slot_freetmp(tmp);
 		break;
 	case 8:
 		slot_alloctmp(tmp);
-		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		ashr_int_const(tmp, src, 2);
+		lshr_int_const(tmp, tmp, (sizeof(int) * 8 - 3));
 		add_int(tmp, tmp, src);
 		ashr_int_const(dst, tmp, 3);
 		slot_freetmp(tmp);
 		break;
 	case 16:
 		slot_alloctmp(tmp);
-		lshr_int_const(tmp, src, (sizeof(int) * 8 - 1));
+		ashr_int_const(tmp, src, 3);
+		lshr_int_const(tmp, tmp, (sizeof(int) * 8 - 4));
 		add_int(tmp, tmp, src);
 		ashr_int_const(dst, tmp, 4);
 		slot_freetmp(tmp);
@@ -4693,7 +4696,7 @@ check_div(int x, SlotInfo* obj, int y)
 {
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
-		cbranch_int_const(obj, 0, newFakeCall(soft_divzero, pc), eq | blink);
+		cbranch_int_const(obj, 0, newFakeCall(soft_divzero, pc), beq | blink);
 	}
 	else
 #endif

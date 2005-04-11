@@ -1,3 +1,11 @@
+2005-04-11  Rei Odaira  <ray@is.s.u-tokyo.ac.jp>
+
+	* kaffe/kaffevm/jit3/icode.c
+	(div_int_const_optimize): Fixed rounding.
+
+	* test/regression/NegativeDivideConst.java:
+	Check the rounding result.
+	
 2005-04-11  Guilhem Lavaux  <guilhem@kaffe.org>
 	Rei Odaira <ray@is.s.u-tokyo.ac.jp>
 
