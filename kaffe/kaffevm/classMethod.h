@@ -85,7 +85,6 @@ struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
 
 	struct _iLock*		lock;		/* Lock for internal use */
-        void *finalizer_call;
 
 	/* Link to class entry */
 	struct _classEntry*	centry;

@@ -120,7 +120,7 @@ initThreads(void)
 	assert(ThreadGroupClass != 0);
 
 	/* Allocate a thread to be the main thread */
-	attachFakedThreadInstance("main", false);
+	KaffeVM_attachFakedThreadInstance("main", false);
 
 	DBG(INIT, dprintf("initThreads() done\n"); );
 }
@@ -211,12 +211,28 @@ stopThread(Hjava_lang_VMThread* tid, Hjava_lang_Object* obj)
 	}
 }
 
-/*
- * Create the initial thread with a given name.
- *  We should only ever call this once.
+/**
+ * Detach this thread from the VM.
+ * This must not be called only when the thread has left the VM
+ * completely (e.g. the native code must not return in the interpreter/JIT
+ * after that).
+ */
+void KaffeVM_detachCurrentThread()
+{
+  Hjava_lang_Thread* tid = getCurrentThread();
+
+  DBG(VMTHREAD, dprintf("detachThreadInstance(%p, %s)\n", tid, nameThread(unhand(tid)->vmThread)); );
+
+  KaffeVM_unlinkNativeAndJavaThread();
+}
+
+/**
+ * Attach an external thread to the VM.
+ * We should only ever call this once for each external thread.
+ * (Note: All assertions on that must have been checked before)
  */
 void
-attachFakedThreadInstance(const char* nm, int isDaemon)
+KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
 {
 	Hjava_lang_Thread* tid;
 	jvalue retval;
@@ -590,7 +606,7 @@ runfinalizer(void)
 		 * java.lang.Thread instance or it was gc'ed in the mean time,
 		 * create a new one.
 		 */
-		attachFakedThreadInstance("main", false);
+		KaffeVM_attachFakedThreadInstance("main", false);
 	}
 
 	/* Do java-land cleanup */

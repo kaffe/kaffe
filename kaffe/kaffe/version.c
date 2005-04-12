@@ -15,6 +15,8 @@
 #include "config-std.h"
 #include "version.h"
 #include "version-info.h" /* generated at compile time */
+#include "gc.h"
+#include "md.h"
 
 extern char* engine_name;	/* defined in the engine's library */
 
@@ -40,6 +42,9 @@ printShortVersion(void)
 
 	fprintf(versionfd, "Engine: %s   Version: %s   Java Version: %s\n",
 		engine_name, PACKAGE_VERSION, JAVA_VERSION_STRING);
+	fprintf(versionfd, "Heap defaults: minimum size: %d MB, maximum size: %d MB\n",
+		MIN_HEAPSIZE / (1024*1024), MAX_HEAPSIZE / (1024*1024));
+	fprintf(versionfd, "Stack default size: %d KB\n", THREADSTACKSIZE / 1024);
 }
 
 void

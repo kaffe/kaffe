@@ -152,7 +152,7 @@ public abstract class Reference
    */
   public void clear()
   {
-    referent = null;
+    queue = null;
   }
 
   /**

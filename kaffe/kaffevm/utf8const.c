@@ -95,8 +95,6 @@ utf8ConstNew(const char *s, int slen)
 	int32 hash;
 	Utf8Const *fake;
 	char buf[200];
-#if !defined(KAFFEH)
-#endif
 
 	/* Automatic length finder */
 	if (slen < 0) {
@@ -178,13 +176,13 @@ utf8ConstNew(const char *s, int slen)
 	 *		   add additional ref to other utf8
 	 */
 
-	if (temp != 0 && temp != utf8) {
+	if (temp != NULL && temp != utf8) {
 		temp->nrefs++;
 	}
 
 	unlockUTF();
 
-	if (temp == 0 || temp != utf8) {
+	if (temp == NULL || temp != utf8) {
 		gc_free(utf8);
 	}
 
@@ -198,8 +196,6 @@ utf8ConstNew(const char *s, int slen)
 void
 utf8ConstAddRef(Utf8Const *utf8)
 {
-#if !defined(KAFFEH)
-#endif
 	lockUTF();
 	assert(utf8->nrefs >= 1);
 	utf8->nrefs++;
@@ -212,8 +208,6 @@ utf8ConstAddRef(Utf8Const *utf8)
 void
 utf8ConstRelease(Utf8Const *utf8)
 {
-#if !defined(KAFFEH)
-#endif
 	/* NB: we ignore zero utf8s here in order to not having to do it at
 	 * the call sites, such as when destroying half-processed class 
 	 * objects because of error conditions.
@@ -398,7 +392,7 @@ utf8ConstEqual(Utf8Const* a, Utf8Const* b)
 	/* If they're different pointers, double check that they're different strings... */
 	if ((a != b) && (a->hash == b->hash))
 	{
-		assert(strcmp(a->data,b->data));
+		assert(strcmp(a->data,b->data) != 0);
 	}
 #endif
 	/* Since we intern all UTF-8 constants, we can do this: */

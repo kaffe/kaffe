@@ -681,17 +681,17 @@ initCollector(void)
 	DBG(INIT, dprintf("initCollector()\n"); );
 
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVASTRING,
-	    stringWalk, KGC_OBJECT_NORMAL, stringDestroy, "j.l.String");
+	    stringWalk, finalizeObject, stringDestroy, "j.l.String");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NOWALK,
 	    NULL, KGC_OBJECT_NORMAL, NULL, "other-nowalk");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NORMALOBJECT,
 	    walkObject, KGC_OBJECT_NORMAL, NULL, "obj-no-final");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_PRIMARRAY,
-	    NULL, KGC_OBJECT_NORMAL, NULL, "prim-arrays");
+	    NULL, finalizeObject, NULL, "prim-arrays");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_REFARRAY,
-	    walkRefArray, KGC_OBJECT_NORMAL, NULL, "ref-arrays");
+	    walkRefArray, finalizeObject, NULL, "ref-arrays");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_CLASSOBJECT,
-	    walkClass, KGC_OBJECT_NORMAL, destroyClass, "j.l.Class");
+	    walkClass, finalizeObject, destroyClass, "j.l.Class");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_FINALIZEOBJECT,
 	    walkObject, finalizeObject, NULL, "obj-final");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVALOADER,

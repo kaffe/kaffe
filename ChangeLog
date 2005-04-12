@@ -1,4 +1,54 @@
-2005-04-11  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-04-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffe/version.c
+	(printShortVersion): Print the default heap sizes and stack size.
+
+	* kaffe/kaffevm/classMethod.h
+	(Hjava_lang_Class): Removed unused finalizer_call.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(initCollector): Strings/arrays must be finalized in case a weak
+	reference is attached to the object.
+
+	* kaffe/kaffevm/reference.c
+	(KaffeVM_isReferenced): Fixed though the function is currently
+	unused.
+	(referenceObjectFinalizer, referenceFinalizer): Added DBG
+	instructions.
+
+	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h
+	(attachFakedThreadInstance): Renamed into...
+	(KaffeVM_attachFakedThreadInstance): Renamed from
+	attachFakedThreadInstance.
+	(KaffeVM_detachCurrenThread): New dummy function.
+
+	* kaffe/kaffevm/utf8const.c: Removed a few 'if !defined(KAFFEH)'.
+
+	* kaffe/kaffevm/jni/jni.c
+	(KaffeJNI_AttachThread, KaffeJNI_AttachThreadAsDaemon): Use
+	KaffeVM_* function now.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(finishGC): Clarified a comment.
+	(finaliserJob): Do not clear the stack anymore. Removed iLockRoot
+	renamed. Invoke KaffeGC_clearWeakRef before finalizing.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.h
+	(weakRefObject): Added new fields to keep track precisely of the
+	allocation state of the object.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(resizeWeakReferenceObject): New auxiliary function.
+	(KaffeGC_rmWeakRef): Check whether the object has been removed during GC calls.
+	Do not resize dynamically the reference array.
+	(KaffeGC_addWeakRef): Use resizeWeakReferenceObject.
+	(KaffeGC_clearWeakRefs): Be gentle when destroying the weak
+	reference object.
+
+	* libraries/javalib/java/lang/ref/Reference.java
+	(clear): Do not clear referent but clear queue according to Java API.
+	
+2005-04-12  Guilhem Lavaux  <guilhem@kaffe.org>
 	Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 	
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c

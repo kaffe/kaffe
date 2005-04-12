@@ -95,7 +95,7 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
   KaffeVM_setFinalizer(reference, KGC_OBJECT_REFERENCE_FINALIZER);
   KaffeVM_setFinalizer(obj, KGC_REFERENCE_FINALIZER);
  
- if (referentOffset == ~((uint32)0))
+  if (referentOffset == ~((uint32)0))
     {
       Utf8Const *referent_name = utf8ConstNew("referent", -1);
       Field *referent_field;
@@ -116,17 +116,19 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
 
       referentOffset = FIELD_BOFFSET(referent_field);
     }
-  
- KGC_addWeakRef(main_collector, obj,
-		(void **)((char *)reference + referentOffset));
+
+  KGC_addWeakRef(main_collector, obj,
+		 (void **)((char *)reference + referentOffset));
 }
 
-bool KaffeVM_isReferenced(jobject obj)
+bool KaffeVM_isReferenced(jobject ob)
 {
   const referenceLinkListHead *ref;
+  referenceLinkListHead search_ref;
 
   lockStaticMutex(&referencesLock);
-  ref = hashFind(referencesHashTable, obj);
+  search_ref.obj = ob;
+  ref = (referenceLinkListHead *)hashFind(referencesHashTable, &search_ref);
   unlockStaticMutex(&referencesLock);
 
   return ref != NULL;
@@ -140,11 +142,13 @@ defaultObjectFinalizer(jobject ob)
   Method* final;
   
   objclass = OBJECT_CLASS(obj);
+
   final = objclass->finalizer;
   
-  if (!final) {
-    return;
-  }
+  if (!final)
+    {
+      return;
+    }
 
   KaffeVM_safeCallMethodA(final, METHOD_NATIVECODE(final), obj, NULL, NULL, 0);
   THREAD_DATA()->exceptObj = NULL;
@@ -182,13 +186,14 @@ referenceObjectFinalizer(jobject ob)
       else
 	{
 	  DBG(REFERENCE,
-	    dprintf("Internal error: a reference without the enqueue method "
-		    "has been registered.");
+	    dprintf("Internal error: a reference (%p) without the enqueue method "
+		    "has been registered.", ll->reference);
 	    dprintf("Aborting.\n");
 	  );
 	  ABORT();
 	}
 
+      DBG(REFERENCE, dprintf("Reference %p java-enqueued and C-dequeud\n", ll->reference); );
       KFREE(ll);
       ll = temp;
     }
@@ -204,10 +209,18 @@ referenceFinalizer(jobject ref)
   referenceLinkListHead *head;
   referenceLinkListHead search_ref;
 
+  DBG(REFERENCE, 
+      dprintf("referenceFinalizer: finalizing reference %p (%s)\n", ref, 
+	      CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)ref))); 
+      );
+
   assert(referentOffset != ~((uint32)0));
   referent = *(void **)((char *)ref + referentOffset);
   if (referent == NULL)
     {
+      DBG(REFERENCE,
+	  dprintf("reference is NULL. The object has already been finalized\n");
+	  );
       defaultObjectFinalizer(ref);
       return;
     }
@@ -217,11 +230,14 @@ referenceFinalizer(jobject ref)
   head = (referenceLinkListHead *)hashFind(referencesHashTable, &search_ref);
   /* The object has already been finalized though the reference is still here. */
   if (head == NULL)
-  {
-     unlockStaticMutex(&referencesLock);
-     defaultObjectFinalizer(ref);
-     return;
-  }
+    {
+      unlockStaticMutex(&referencesLock);
+      DBG(REFERENCE,
+	  dprintf("The reference has not been found in the hash table.\n");
+	  );
+      defaultObjectFinalizer(ref);
+      return;
+    }
 
   ll = &head->references;
   while (*ll != NULL)
@@ -237,7 +253,7 @@ referenceFinalizer(jobject ref)
       ll = &(*ll)->next;
     }
   unlockStaticMutex(&referencesLock);
-  
+
   KGC_rmWeakRef(main_collector, referent,
 		(void **)((char *)ref + referentOffset));
 

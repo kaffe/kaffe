@@ -753,7 +753,7 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (false)) {
 		KSEM(init)(&THREAD_DATA()->sem);
-		attachFakedThreadInstance ("test attach", false);
+		KaffeVM_attachFakedThreadInstance ("test attach", false);
 		*penv = THREAD_JNIENV();
 		return 0;
 	}
@@ -765,7 +765,7 @@ Kaffe_AttachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, void* args UNU
 {
 	if (KTHREAD(attach_current_thread) (true)) {
 		KSEM(init)(&THREAD_DATA()->sem);
-		attachFakedThreadInstance ("daemon attach", true);
+		KaffeVM_attachFakedThreadInstance ("daemon attach", true);
 		*penv = THREAD_JNIENV();
 	        return 0;
 	}

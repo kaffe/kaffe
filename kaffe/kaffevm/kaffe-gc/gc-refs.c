@@ -42,6 +42,9 @@ typedef struct _strongRefTable {
 typedef struct _weakRefObject {
   const void *          mem;
   unsigned int          ref;
+  unsigned int          allRefSize;
+  unsigned short        keep_object;
+  bool                  destroyed;
   void ***              allRefs;
   struct _weakRefObject *next;
 } weakRefObject;
@@ -123,6 +126,69 @@ KaffeGC_rmRef(Collector *collector, void* mem)
   return false;
 }
 
+/**
+ * Grow the weak reference list for a weakly referenced object.
+ * Assert: weakRefLock is held by the calling thread.
+ */
+static bool
+resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int size)
+{
+  unsigned int previousSize;
+  void ***refs, ***oldRefs;
+
+  if (size == 0)
+    {
+      obj->allRefSize = 0;
+      oldRefs = obj->allRefs;
+      obj->allRefs = NULL;
+
+      unlockStaticMutex(&weakRefLock);
+      KGC_free(collector, oldRefs);
+      lockStaticMutex(&weakRefLock);
+      return true;
+    }
+
+  obj->keep_object++;
+  do
+    {
+      previousSize = obj->allRefSize;
+      unlockStaticMutex(&weakRefLock);
+      refs = KGC_malloc(collector, size * sizeof(void **), KGC_ALLOC_REF);
+      lockStaticMutex(&weakRefLock);
+      if (refs == NULL)
+	{
+	  obj->keep_object--;
+	  return false;
+	}
+
+      /* Check that nothing has changed. */
+      if (previousSize != obj->allRefSize)
+	{
+	  unlockStaticMutex(&weakRefLock);
+	  KGC_free(collector, refs);
+	  lockStaticMutex(&weakRefLock);
+	  continue;
+	}
+
+      obj->allRefSize = size;
+
+      oldRefs = obj->allRefs;
+      obj->allRefs = refs;
+      if (oldRefs != NULL)
+	{
+	  memcpy(refs, oldRefs, sizeof(void **) * obj->ref);
+      
+	  unlockStaticMutex(&weakRefLock);
+	  KGC_free(collector, oldRefs);
+	  lockStaticMutex(&weakRefLock);
+	}
+
+      obj->keep_object--;
+      return true;
+    }
+  while (1);
+}
+
 bool
 KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 {
@@ -130,18 +196,20 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   weakRefObject* obj;
 
   idx = REFOBJHASH(mem);
+
   lockStaticMutex(&weakRefLock);
   for (obj = weakRefObjects.hash[idx]; obj != 0; obj = obj->next) {
     /* Found it - just register a new weak reference */
     if (obj->mem == mem) {
-      void ***newRefs;
       obj->ref++;
 
-      newRefs = (void ***)KGC_malloc(collector, sizeof(void ***)*obj->ref, KGC_ALLOC_REF);
-      memcpy(newRefs, obj->allRefs, sizeof(void ***)*(obj->ref-1));
-      KGC_free(collector, obj->allRefs);
+      if (obj->ref >= obj->allRefSize)
+	if (!resizeWeakReferenceObject(collector, obj, obj->ref * 2 + 1))
+	  {
+	    unlockStaticMutex(&weakRefLock);
+	    return false;
+	  }
 
-      obj->allRefs = newRefs;
       obj->allRefs[obj->ref-1] = refobj;
 
       unlockStaticMutex(&weakRefLock);
@@ -164,6 +232,7 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   obj->next = weakRefObjects.hash[idx];
   weakRefObjects.hash[idx] = obj;
   unlockStaticMutex(&weakRefLock);
+
   return true;
 }
 
@@ -178,51 +247,40 @@ KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
   idx = REFOBJHASH(mem);
 
   lockStaticMutex(&weakRefLock);
+
   for (objp = &weakRefObjects.hash[idx]; *objp != 0; objp = &obj->next) {
     obj = *objp;
     /* Found it - just decrease reference */
     if (obj->mem == mem)
       {
+	bool found = false;
+
 	for (i = 0; i < obj->ref; i++)
 	  {
 	    if (obj->allRefs[i] == refobj)
 	      {
-		void ***newRefs, ***oldrefs;
-		unsigned int rnum = obj->ref - 1;
-		
-		if (rnum != 0)
-		{
-  		  unlockStaticMutex(&weakRefLock);
-		  newRefs = (void ***)KGC_malloc(collector, sizeof(void ***)*rnum, KGC_ALLOC_REF);
-  		  lockStaticMutex(&weakRefLock);
-
-		  memcpy(newRefs, obj->allRefs, i*sizeof(void ***));
-		  memcpy(&newRefs[i], &obj->allRefs[i+1], (rnum-i)*sizeof(void ***));
-		} else
-	          newRefs = NULL;
-		obj->ref = rnum;
-		oldrefs = obj->allRefs;
-		obj->allRefs = newRefs;
-
-  		unlockStaticMutex(&weakRefLock);
-		KGC_free(collector, oldrefs);
-  		lockStaticMutex(&weakRefLock);
+		memcpy(&obj->allRefs[i], &obj->allRefs[i+1], sizeof(obj->allRefs[0]) * (obj->ref - i));
+		obj->ref--;
+		found = true;
 		break;
 	      }
 	  }
-	if (i == obj->ref)
-	  {
-	    unlockStaticMutex(&weakRefLock);
-	    return false;
-	  }
+
 	if (obj->ref == 0) {
-	  *objp = obj->next;
+	  if (!obj->destroyed)
+	    *objp = obj->next;
+
+	  obj->next = NULL;
+	  obj->destroyed = true;
+	  
 	  unlockStaticMutex(&weakRefLock);
+	  if (obj->allRefs != NULL)
+	    KGC_free(collector, obj->allRefs);
 	  KGC_free(collector, obj);
 	  lockStaticMutex(&weakRefLock);
 	}
 	unlockStaticMutex(&weakRefLock);
-	return true;
+	return found;
       }
   }
 
@@ -378,10 +436,23 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
 	{
 	  for (i = 0; i < obj->ref; i++)
 	    *(obj->allRefs[i]) = NULL;
-	  KGC_free(collector, obj->allRefs);
+	  obj->ref = 0;
 
-	  *objp = obj->next;
-	  KGC_free(collector, obj);
+	  if (obj->allRefs != NULL)
+	    {
+	      KGC_free(collector, obj->allRefs);
+	      obj->allRefs = NULL;
+	    }
+
+	  obj->allRefSize = 0;
+
+	  if (!obj->destroyed)
+	    *objp = obj->next;
+	  obj->next = NULL;
+	  obj->destroyed = true;
+	  if (obj->keep_object == 0)
+	    KGC_free(collector, obj);
+	  
 	  unlockStaticMutex(&weakRefLock);
 	  return;
 	}

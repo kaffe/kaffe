@@ -786,6 +786,7 @@ finishGC(Collector *gcif)
 
 	while (toRemove.cnext != &toRemove) {
 		destroy_func_t destroy;
+
 		unit = toRemove.cnext; 
 		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
@@ -805,7 +806,9 @@ finishGC(Collector *gcif)
 		}
 #endif
 
-		/* clear all weak references to the object */
+		/* clear all weak references to the object if it has not already been
+		 * during the finalisation mark phase.
+		 */
 		KaffeGC_clearWeakRef(gcif, UTOMEM(unit));
 
 		/* invoke destroy function before freeing the object */
@@ -873,8 +876,6 @@ static void finaliserJob(Collector *gcif)
   gc_block* info = NULL;
   gc_unit* unit = NULL;
   int idx = 0;
-  void *stack;
-#define iLockRoot (*where)
 
   /*
    * Loop until the list of objects whose finaliser needs to be run is empty
@@ -903,7 +904,16 @@ static void finaliserJob(Collector *gcif)
     unit = gclists[finalise].cnext;
     info = gc_mem2block(unit);
     idx = GCMEM2IDX(info, unit);
-    
+
+    /* Clear weak references to this object. Because according to the Java API spec.
+     * "Suppose that the garbage collector determines at a certain point in time 
+     * that an object is weakly reachable. At that time it will atomically clear
+     * all weak references to that object and all weak references to any other
+     * weakly-reachable objects from which that object is reachable through a chain
+     * of strong and soft references."
+     */
+    KaffeGC_clearWeakRef(gcif, UTOMEM(unit));
+
     /* Call finaliser */
     unlockStaticMutex(&finman);
     (*gcFunctions[KGC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
@@ -926,14 +936,6 @@ static void finaliserJob(Collector *gcif)
   info = NULL;
   unit = NULL;
   idx = 0;
-
-  /* This cleans STACK_SWEEP_MARGIN bytes on the stack. This is needed
-   * because some objects may still lie on our stack.
-   */
-  stack = alloca(STACK_SWEEP_MARGIN);
-
-  memset((void *)((uintp)stack), 0, STACK_SWEEP_MARGIN);
-#undef iLockRoot
 }
 
 static void NONRETURNING
