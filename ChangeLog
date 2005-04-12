@@ -1,3 +1,9 @@
+2005-04-11  Guilhem Lavaux  <guilhem@kaffe.org>
+	Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
+	
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedRecvFrom): Fixed parameter to waitForTimeout.
+
 2005-04-11  Rei Odaira  <ray@is.s.u-tokyo.ac.jp>
 
 	* kaffe/kaffevm/jit3/icode.c

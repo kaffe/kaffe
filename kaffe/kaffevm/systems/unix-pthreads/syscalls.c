@@ -597,9 +597,12 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 			break;
 		}
 		IGNORE_EINTR(r)
-		poll_timeout = deadline - currentTime();
-		if (poll_timeout > 0 || timeout == NOTIMEOUT) {
-			waitForTimeout(fd, poll_timeout);
+		if (timeout != NOTIMEOUT) {
+		        poll_timeout = deadline - currentTime();
+			if (poll_timeout > 0)
+			  waitForTimeout(fd, poll_timeout);
+		} else {
+			waitForTimeout(fd, NOTIMEOUT);
 		}
 		BREAK_IF_LATE(deadline, timeout)
 	}
