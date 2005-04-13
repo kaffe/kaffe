@@ -1,0 +1,270 @@
+# Simplified Chinese translations for Kaffe Virtual Machine package.
+# Copyright (c) 2005 DexterK Kidd <dexterkidd@gmail.com>.
+# This file is distributed under the same license as the Kaffe Virtual Machine package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
+"Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
+"POT-Creation-Date: 2005-03-26 07:53+0800\n"
+"PO-Revision-Date: 2005-04-13 07:39+0800\n"
+"Last-Translator: DexterK Kidd <dexterkidd@gmail.com>\n"
+"Language-Team: Simplified Chinese <kaffe@kaffe.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kaffe/kaffe/main.c:426 kaffe/kaffe/main.c:504 kaffe/kaffe/main.c:567
+#: kaffe/kaffe/main.c:594 kaffe/kaffe/main.c:619 kaffe/kaffe/main.c:641
+#, c-format
+msgid "Error: out of memory.\n"
+msgstr "错误：内存不足\n"
+
+#: kaffe/kaffe/main.c:656
+#, c-format
+msgid "Error: No stack size found for -ss option.\n"
+msgstr "错误：在 -ss 选项中沒有指定堆叠空间\n"
+
+#: kaffe/kaffe/main.c:664
+#, c-format
+msgid "Warning: Attempt to set stack size smaller than %d - ignored.\n"
+msgstr "警告：尝试设定少于 %d 的堆叠空间 - 忽略\n"
+
+#: kaffe/kaffe/main.c:675
+#, c-format
+msgid "Error: No heap size found for -mx option.\n"
+msgstr "错误：在 -mx 选项中沒有指定 heap 空间\n"
+
+#: kaffe/kaffe/main.c:688
+#, c-format
+msgid "Error: No heap size found for -ms option.\n"
+msgstr "错误：在 -ms 选项中沒有指定 heap 空间\n"
+
+#: kaffe/kaffe/main.c:700
+#, c-format
+msgid "Error: No heap size found for -as option.\n"
+msgstr "错误：在 -as 选项中沒有指定 heap 空间\n"
+
+#: kaffe/kaffe/main.c:756
+#, c-format
+msgid "Error: -Xxprof_syms option requires a file name.\n"
+msgstr "错误：-Xxprof_syms 选项需要提供文件名\n"
+
+#: kaffe/kaffe/main.c:762
+#, c-format
+msgid "Unable to create profiler symbol file %s.\n"
+msgstr "无法建立 profiler 符号资讯文件：%s\n"
+
+#: kaffe/kaffe/main.c:771
+#, c-format
+msgid "Error: -Xxprof_gmon option requires a file name.\n"
+msgstr "错误：-Xxprof_gmon 选项需要提供文件名\n"
+
+#: kaffe/kaffe/main.c:777
+#, c-format
+msgid "Unable to create gmon file %s.\n"
+msgstr "无法建立 gmon 文件： %s\n"
+
+#: kaffe/kaffe/main.c:791
+#, c-format
+msgid "Error: -Xxdebug_file option requires a file name.\n"
+msgstr "错误：-Xxdebug_file 选项需要提供文件名\n"
+
+#: kaffe/kaffe/main.c:805
+#, c-format
+msgid "Error: -Xfeedback option requires a file name.\n"
+msgstr "错误：-Xfeedback 选项需要提供文件名\n"
+
+#: kaffe/kaffe/main.c:823
+#, c-format
+msgid "Error: -vmstats option requires a second arg.\n"
+msgstr "错误：-vmstats 选项需要额外的参数\n"
+
+#: kaffe/kaffe/main.c:835
+#, c-format
+msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
+msgstr "错误：-vmdebug 选项需要侦错旗标，请用 -vmdebug list 取得旗标列表\n"
+
+#: kaffe/kaffe/main.c:848
+#, c-format
+msgid "Error: -debug-fd an open descriptor.\n"
+msgstr "错误： -debug-fd 后面应该有个 file descriptor\n"
+
+#: kaffe/kaffe/main.c:854
+#, c-format
+msgid "Error: -debug-fd requires an integer.\n"
+msgstr "错误：-debug-fd 需要给定一个整数。\n"
+
+#: kaffe/kaffe/main.c:866
+#, c-format
+msgid "Error: Unrecognized JVM specific option `%s'.\n"
+msgstr "错误：无法辨认的 JVM 选项： '%s'\n"
+
+#: kaffe/kaffe/main.c:881
+#, c-format
+msgid "Unknown flag: %s\n"
+msgstr "未知的旗标：%s\n"
+
+#: kaffe/kaffe/main.c:897
+#, c-format
+msgid ""
+"usage: kaffe [-options] class\n"
+"Options are:\n"
+"\t-help\t\t\t Print this message\n"
+"\t-version\t\t Print version number\n"
+"\t-fullversion\t\t Print verbose version info\n"
+msgstr ""
+"使用方式： kaffe [-选项] 类別\n"
+"选项：\n"
+"\t-help\t\t\t 印列本讯息\n"
+"\t-version\t\t 印列版本号码\n"
+"\t-fullversion\t\t 印列详细的版本资讯\n"
+
+#: kaffe/kaffe/main.c:903
+#, c-format
+msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
+msgstr "\t-ia32\t\t\t 执行 ia32 版本的 Kaffe\n"
+
+#: kaffe/kaffe/main.c:905
+#, c-format
+msgid ""
+"\t-ss <size>\t\t Maximum native stack size\n"
+"\t-mx <size> \t\t Maximum heap size\n"
+"\t-ms <size> \t\t Initial heap size\n"
+"\t-as <size> \t\t Heap increment\n"
+"\t-classpath <path>        Set classpath\n"
+"\t-Xbootclasspath:<path>   Set bootclasspath\n"
+"\t-Xbootclasspath/a:<path> Append path to bootclasspath\n"
+"\t-Xbootclasspath/p:<path> Prepend path to bootclasspath\n"
+"\t-D<property>=<value>     Set a property\n"
+"\t-verify *\t\t Verify all bytecode\n"
+"\t-verifyremote *\t\t Verify bytecode loaded from network\n"
+"\t-noverify\t\t Do not verify any bytecode\n"
+"\t-noclassgc\t\t Disable class garbage collection\n"
+"\t-verbosegc\t\t Print message during garbage collection\n"
+"\t-v, -verbose\t\t Be verbose\n"
+"\t-verbosejit\t\t Print message during JIT code generation\n"
+"\t-verbosemem\t\t Print detailed memory allocation statistics\n"
+"\t-verbosecall\t\t Print detailed call flow information\n"
+"\t-nodeadlock\t\t Disable deadlock detection\n"
+msgstr ""
+"\t-ss <size>\t\t 指定最大的原生 (native) 堆叠空间\n"
+"\t-mx <size> \t\t 指定最大 heap 空间\n"
+"\t-ms <size> \t\t 指定初始 heap 空间\n"
+"\t-as <size> \t\t 指定 heap 递增空间\n"
+"\t-classpath <path>        设定 classpath\n"
+"\t-Xbootclasspath:<path>   设定 bootclasspath\n"
+"\t-Xbootclasspath/a:<path> 在 bootclasspath 之后追加 path\n"
+"\t-Xbootclasspath/p:<path> 在 bootclasspath 前增加 path\n"
+"\t-D<property>=<value>     给予特定属性\n"
+"\t-verify *\t\t 检验 (verify) 所有 bytecode\n"
+"\t-verifyremote *\t\t 检验 (verify) 从网络下载的 bytecode\n"
+"\t-noverify\t\t 不检验 (verify) 任何 bytecode\n"
+"\t-noclassgc\t\t 关闭 class garbage collection\n"
+"\t-verbosegc\t\t 在执行 garbage collection 时印列详细资讯\n"
+"\t-v, -verbose\t\t 印列详细的执行情況\n"
+"\t-verbosejit\t\t 在 JIT code generation 时印列详细资讯\n"
+"\t-verbosemem\t\t 印列详细内存配置统计\n"
+"\t-verbosecall\t\t 印列详细呼叫流程资讯\n"
+"\t-nodeadlock\t\t 关闭死结 (deadlock) 侦测\n"
+
+#: kaffe/kaffe/main.c:925
+#, c-format
+msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
+msgstr "\t-prof\t\t\t 开启 Java method 的 profiling\n"
+
+#: kaffe/kaffe/main.c:928
+#, c-format
+msgid ""
+"\t-Xxprof\t\t\t Enable cross language profiling\n"
+"\t-Xxprof_syms <file>\t Name of the profiling symbols file [Default: kaffe-"
+"jit-symbols.s]\n"
+"\t-Xxprof_gmon <file>\t Base name for gmon files [Default: xgmon.out]\n"
+msgstr ""
+"\t-Xxprof\t\t\t 开启跨语言 profiling\n"
+"\t-Xxprof_syms <文件名>\t 指定 profiling symbol 的文件名 [预设值：kaffe-jit-"
+"symbols.s]\n"
+"\t-Xxprof_gmon <文件名>\t 指定 gmon 文件名 [预设值：xgmon.out]\n"
+
+#: kaffe/kaffe/main.c:933
+#, c-format
+msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
+msgstr "\t-Xxdebug_file <文件名>\t 指定 debugging symbol 文件名\n"
+
+#: kaffe/kaffe/main.c:936
+#, c-format
+msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
+msgstr "\t-Xfeedback <文件名>\t 指定输出 feedback 资料的文件名\n"
+
+#: kaffe/kaffe/main.c:938
+#, c-format
+msgid ""
+"\t-debug * \t\t Trace method calls\n"
+"\t-noasyncgc *\t\t Do not garbage collect asynchronously\n"
+"\t-cs, -checksource *\t Check source against class files\n"
+"\t-oss <size> *\t\t Maximum java stack size\n"
+"\t-jar                     Executable is a JAR\n"
+msgstr ""
+"\t-debug * \t\t 追踪 method 呼叫情况\n"
+"\t-noasyncgc *\t\t 不施行非同步 garbage collection\n"
+"\t-cs, -checksource *\t 检验 class 文件的來源\n"
+"\t-oss <空间> *\t\t 指定最大 Java 堆叠空间\n"
+"\t-jar                     执行 JAR\n"
+
+#: kaffe/kaffe/main.c:944
+#, c-format
+msgid ""
+"\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
+msgstr ""
+"\t-vmdebug <旗标{,旗标}>\t 内部 VM 侦錯，設定 flag=list 可取得侦错项目清单\n"
+
+#: kaffe/kaffe/main.c:946
+#, c-format
+msgid "\t-debug-fd <descriptor>\t Descriptor to send debug info to\n"
+msgstr "\t-debug-fd <descriptor>\t 所要传送侦错讯息的 descriptor\n"
+
+#: kaffe/kaffe/main.c:948
+#, c-format
+msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
+msgstr ""
+"\t-vmstats <旗标{,旗标}>\t 印列 VM 统计数据，特定 flag=all 可取得全部項目\n"
+
+#: kaffe/kaffe/main.c:951
+#, c-format
+msgid "\t-Xnative-big-math\t Use GMP for faster, native bignum calculations\n"
+msgstr ""
+"\t-Xnative-big-math\t 使用 GMP 作为原生的大数运算，以获取更快的执行速度\n"
+
+#: kaffe/kaffe/main.c:954
+#, c-format
+msgid "\t-Xkaffe-xlib-awt\t Use Kaffe's Xlib AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Xlib AWT backend\n"
+
+#: kaffe/kaffe/main.c:957
+#, c-format
+msgid "\t-Xkaffe-qt-awt\t\t Use Kaffe's Qt2/3/Embedded AWT backend\n"
+msgstr "\t-Xkaffe-qt-awt\t\t 使用 Kaffe 的 Qt2/3/Embedded AWT backend\n"
+
+#: kaffe/kaffe/main.c:960
+#, c-format
+msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
+
+#: kaffe/kaffe/main.c:963
+#, c-format
+msgid ""
+"  * Option currently ignored.\n"
+"\n"
+"Compatibility options:\n"
+"\t-Xss <size>\t\t Maximum native stack size\n"
+"\t-Xmx <size> \t\t Maximum heap size\n"
+"\t-Xms <size> \t\t Initial heap size\n"
+"\t-cp <path> \t\t Set classpath\n"
+msgstr ""
+"  标示 * 的项目目前是忽略的\n"
+"\n"
+"保持相容性的选项有：\n"
+"\t-Xss <空间>\t\t 指定最大原生 (native) 堆叠空間\n"
+"\t-Xmx <空间> \t\t 指定最大 heap 空间\n"
+"\t-Xms <空间> \t\t 指定初始 heap 空间\n"
+"\t-cp <路径> \t\t 设定 classpath\n"
