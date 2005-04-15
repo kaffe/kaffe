@@ -1,9 +1,48 @@
+2005-04-15  Guilhem Lavaux  <guilhem@kaffe.org>,
+	Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
+
+	* m4/libxslt.m4: Added inclusion of xsltconfig.h
+
+	* configure: Regenerated.
+	
+2005-04-15  Mike Castle <dalgoda@ix.netcom.com>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am
+	(libjawt_la_CFLAGS): Fixed include path.
+
+	* libraries/clib/awt/classpath-awt/gtk-peer/Makefile.in:
+	Regenerated.
+	
+2005-04-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffe/version.c: Converted strings to intl strings.
+
+	* po/POTFILES.in: Added kaffe/kaffe/version.c
+
+	* po/kaffe.pot: Regenerated.
+
+	* po/fr.po: Updated.
+
+	* libraries/javalib/java/lang/ref/Reference.java
+	(cleared): New field.
+	(clear): Set cleared.
+	(get): Return null if cleared is set.
+
+	* po/zh_CN.po, po/zh_TW.po: Updated automatically.
+	
 2005-04-13  Jim Huang  <jserv@kaffe.org>
 
 	* po/zh_CN.po,
 	po/LINGUAS:
 	Simplified Chinese translation contributed by DexterK Kidd 
 	<dexterkidd@gmail.com>.
+
+2005-04-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/java/lang/ref/Reference.java
+	(cleared): New field.
+	(get): Return null if cleared is set.
+	(clear): Set cleared.
 
 2005-04-12  Guilhem Lavaux  <guilhem@kaffe.org>
 

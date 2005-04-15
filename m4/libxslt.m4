@@ -65,6 +65,7 @@ dnl
 #include <stdio.h>
 #include <string.h>
 #include <libxslt/xslt.h>
+#include <libxslt/xsltconfig.h>
 int 
 main()
 {

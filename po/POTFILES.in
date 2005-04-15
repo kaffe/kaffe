@@ -1,6 +1,5 @@
 # List of source files containing translatable strings.
 # Copyright (C) 2004 Kaffe.org contributors.
 
-# No such files at the moment.
-
 kaffe/kaffe/main.c
+kaffe/kaffe/version.c

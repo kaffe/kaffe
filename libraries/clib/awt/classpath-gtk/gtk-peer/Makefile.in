@@ -535,6 +535,7 @@ libjawt_la_CFLAGS = \
 
 libjawt_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/include/ \
 	@X_CFLAGS@ \
 	-I$(top_srcdir)/libraries/clib/classpath/ \
 	-I$(top_builddir)/include/

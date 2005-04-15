@@ -94,6 +94,13 @@ public abstract class Reference
   Reference nextOnQueue;
 
   /**
+   * This flag tells whether the reference has been cleared.
+   * We cannot clear the referent field in kaffe for performance penalties so it is
+   * preferrable to add a new internal flag to this class.
+   */
+  boolean cleared;
+
+  /**
    * This lock should be taken by the garbage collector, before
    * determining reachability.  It will prevent the get()-method to
    * return the reference so that reachability doesn't change.
@@ -140,7 +147,7 @@ public abstract class Reference
   {
     synchronized (lock)
       {
-	return referent;
+	return (cleared) ? null : referent;
       }
   }
 
@@ -153,6 +160,7 @@ public abstract class Reference
   public void clear()
   {
     queue = null;
+    cleared = true;
   }
 
   /**
