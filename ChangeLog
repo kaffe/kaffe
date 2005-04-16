@@ -1,3 +1,9 @@
+2005-04-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * libraries/clib/nio/gnu_java_nio_VMSelector.c
+        (Java_gnu_java_nio_VMSelector_select): Use strerror instead of
+        strerror_r if it is not available.
+        
 2005-04-15  Guilhem Lavaux  <guilhem@kaffe.org>,
 	Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 
