@@ -1429,7 +1429,7 @@ objectSizesPrint(void)
 
         for (i = 0; i < nr; ) {
                 for (j = 0; j < 3 && i < nr; j++, i++) {
-                        dprintf("%10d :%5.1f /%5.1f  ", objectSizes[i].size, 
+                        dprintf("%10zd :%5.1f /%5.1f  ", objectSizes[i].size, 
 				(float)(objectSizes[i].count * 100 / (float)count), 
 				(float)(objectSizes[i].total * 100 / (float)total));
                 }

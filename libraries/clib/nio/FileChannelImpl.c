@@ -410,7 +410,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_read__(JNIEnv *env, jobject filechann
   int rc;
   uint8 one_byte;
   int nativeFd = (int)getFD(env, filechannel);
-  int ret;
+  ssize_t ret;
 
   do 
     {
@@ -464,7 +464,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_write__I(JNIEnv *env, jobject filecha
   int rc;
   int nativeFd = (int)getFD(env, filechannel);
   uint8 real_byte = byte;
-  int ret;
+  ssize_t ret;
 
   do {
     rc = KWRITE(nativeFd, &real_byte, 1, &ret);
