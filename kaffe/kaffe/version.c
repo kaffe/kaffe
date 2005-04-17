@@ -40,7 +40,7 @@ printShortVersion(void)
 {
 	if (!versionfd)
 		versionfd = stderr;
-	fprintf(versionfd, "%s\n\n", PACKAGE_NAME);
+	fprintf(versionfd, "%s VM \"%s\"\n\n", PACKAGE, PACKAGE_VERSION);
 	fprintf(versionfd,
 		       _("Copyright (c) 1996-2004 Kaffe.org project contributors (please see\n"
 			"  the source code for a full list of contributors).  All rights reserved.\n"
