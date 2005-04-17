@@ -2294,6 +2294,7 @@ gnu_xml_dom_html2_SRCS = \
 	gnu/xml/dom/html2/DomHTMLOptionElement.java \
 	gnu/xml/dom/html2/DomHTMLParagraphElement.java \
 	gnu/xml/dom/html2/DomHTMLParamElement.java \
+	gnu/xml/dom/html2/DomHTMLParser.java \
 	gnu/xml/dom/html2/DomHTMLPreElement.java \
 	gnu/xml/dom/html2/DomHTMLQuoteElement.java \
 	gnu/xml/dom/html2/DomHTMLScriptElement.java \
