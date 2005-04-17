@@ -99,7 +99,7 @@ class VMSystemProperties
       properties.setProperty("java.vm.version", "1.1.5+cvs");
       properties.setProperty("java.vm.vendor", "Kaffe.org project");
       properties.setProperty("java.vm.name", "Kaffe");
-      properties.setProperty("java.specification.version", "1.2");
+      properties.setProperty("java.specification.version", "1.4");
       properties.setProperty("java.specification.vendor", "Sun Microsystems Inc.");
       properties.setProperty("java.specification.name", "Java Platform API Specification");
       properties.setProperty("java.class.version", "46.0");
