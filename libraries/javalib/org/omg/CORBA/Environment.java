@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* Environment.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,60 +38,33 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
 
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
+ * A container for an exception, that has been thrown by the method
+ * of the CORBA object.
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public abstract class Environment
 {
-  /** 
-   * Use serialVersionUID for interoperability.
+  /**
+   * Removes the exception object from this container.
    */
-  private static final long serialVersionUID = 7416408250336395546L;
+  public abstract void clear();
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * Returns an exception, enclosed in this container.
+   *
+   * @return the enclosed exception or null if no any
+   * exception has been thrown or {@link #clear()}
+   * has been previously called.
    */
-  public MARSHAL(String message)
-  {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
-  }
+  public abstract Exception exception();
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Inserts the given exception into this container.
+   *
+   * @param except the exception to insert.
    */
-  public MARSHAL()
-  {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
-
-  /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
-   */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
-  }
+  public abstract void exception(Exception except);
 }

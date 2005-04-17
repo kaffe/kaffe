@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* PrincipalHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,60 +38,85 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
+import gnu.CORBA.primitiveTypeCode;
+
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
+ * A holder for storing an instance of {@link Principal}.
+ *
+ * @deprecated by CORBA 2.2.
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public final class PrincipalHolder
+  implements Streamable
 {
-  /** 
-   * Use serialVersionUID for interoperability.
+  /**
+   * The default type code for this holder.
    */
-  private static final long serialVersionUID = 7416408250336395546L;
+  private static final TypeCode t_any =
+    new primitiveTypeCode(TCKind.tk_Principal);
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * The instance of {@link Principal}, held by this holder.
    */
-  public MARSHAL(String message)
+  public Principal value;
+
+  /**
+   * Constructs an instance of PrincipalHolder,
+   * initializing {@link #value} to <code>null</code>.
+   */
+  public PrincipalHolder()
   {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
   }
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Constructs an instance of PrincipalHolder,
+   * initializing {@link #value} to the passed parameter.
+   *
+   * @param initial_value a value that will be assigned to the
+   * {@link #value} field.
    */
-  public MARSHAL()
+  public PrincipalHolder(Principal initial_value)
   {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
+    value = initial_value;
   }
 
   /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
+   * Fill in the {@link value } field by reading the required data
+   * from the given stream. For {@link Principal}, the functionality
+   * is delegated to
+   * {@link org.omg.CORBA.portable.InputStream#read_Principal}.
+   *
+   * @param input the input stream to read from.
    */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
+  public void _read(InputStream input)
   {
-    super(reason, minor, completed);
+    value = input.read_Principal();
+  }
+
+  /**
+   * Returns the TypeCode, corresponding the CORBA type that is stored
+   * using this holder.
+   */
+  public TypeCode _type()
+  {
+    return t_any;
+  }
+
+  /**
+   * Write the {@link value } field to the given stream.
+   * For {@link Principal} the functionality
+   * is delegated to
+   * {@link org.omg.CORBA.portable.OutputStream#write_Principal(Principal)}
+   * .
+   * @param output the output stream to write into.
+   */
+  public void _write(OutputStream output)
+  {
+    output.write_Principal(value);
   }
 }

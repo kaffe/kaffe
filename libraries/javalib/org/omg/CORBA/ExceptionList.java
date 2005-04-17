@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* ExceptionList.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,60 +38,36 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
-
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * Stores exceptions that can be thrown when invoking a method of an
+ * CORBA {@link org.omg.CORBA.Object}.
+ * @author Audrius Meskauskas (AudriusA@Bioinformatics.org).
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public abstract class ExceptionList
 {
-  /** 
-   * Use serialVersionUID for interoperability.
+  /**
+   * Add the typecode of the given exception to the list.
    */
-  private static final long serialVersionUID = 7416408250336395546L;
+  public abstract void add(TypeCode an_exception);
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * Get the number of the stored exceptions.
    */
-  public MARSHAL(String message)
-  {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
-  }
+  public abstract int count();
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Get the item at the given position.
+   * @param at the index
+   * @throws Bounds if the index is out of range.
    */
-  public MARSHAL()
-  {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
+  public abstract TypeCode item(int at)
+                         throws Bounds;
 
   /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
+   * Remove the item at the given position.
+   * @param at the index
+   * @throws Bounds if the index is out of range.
    */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
-  }
+  public abstract void remove(int at)
+                       throws Bounds;
 }

@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* VM_NONE.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -35,63 +35,20 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package org.omg.CORBA;
 
-import java.io.Serializable;
-
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
+ * Holds a single constant, specifying, that
+ * the code used to represent the one of the values 
+ * of a value type in a typecode.
  * 
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public interface VM_NONE
 {
-  /** 
-   * Use serialVersionUID for interoperability.
-   */
-  private static final long serialVersionUID = 7416408250336395546L;
-
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * States that the code used to represent the one of
+   * the values of a value type in a typecode.
    */
-  public MARSHAL(String message)
-  {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
-   */
-  public MARSHAL()
-  {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
-
-  /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
-   */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
-  }
+  short value = 0;
 }

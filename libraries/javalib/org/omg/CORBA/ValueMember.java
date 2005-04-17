@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* ValueMember.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,60 +38,77 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
-
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
+ * The class, defining properties of the value member.
  * 
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public class ValueMember
 {
-  /** 
-   * Use serialVersionUID for interoperability.
+  /**
+   * The typedef that represents the IDL type of the value member.
    */
-  private static final long serialVersionUID = 7416408250336395546L;
+  public IDLType type_def;
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * The repository ID of the value for that this member is defined
    */
-  public MARSHAL(String message)
+  public String defined_in;
+
+  /**
+   * The repository ID of this value member itself.
+   */
+  public String id;
+
+  /** The name of the value member. */
+  public String name;
+
+  /**
+   * The version of the value in which this member is defined.
+   */
+  public String version;
+
+  /** The type of of this value member. */
+  public TypeCode type;
+
+  /**
+   * The type of access (public, private) of this value member. 
+   * This field can be equal to either {@link PUBLIC_MEMBER#value} or
+   * {@link PRIVATE_MEMBER#value}.
+   */
+ public short access;
+
+  /**
+   * Create the value member with all fields initialised to default values
+   * (0 and <code>null</code>).
+   */
+  public ValueMember()
   {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
   }
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Create the value member, specifying the field values.
+   *
+   * @param a_name name.
+   * @param an_id id .
+   * @param is_defined_in id of the value where the member is defined.
+   * @param a_version version.
+   * @param a_type tye.
+   * @param a_type_def {@link IDLType} (typeded).
+   * @param an_access accessibility scope. Can be equal to either 
+   * {@link PUBLIC_MEMBER#value} or {@link PRIVATE_MEMBER#value}.
    */
-  public MARSHAL()
+  public ValueMember(String a_name, String an_id, String is_defined_in,
+                    String a_version, TypeCode a_type, IDLType a_type_def,
+                    short an_access
+                   )
   {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
-
-  /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
-   */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
+    name = a_name;
+    id = an_id;
+    defined_in = is_defined_in;
+    version = a_version;
+    type = a_type;
+    type_def = a_type_def;
+    access = an_access;
   }
 }

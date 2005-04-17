@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* InconsistentTypeCode.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,62 +36,44 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CORBA;
+package org.omg.CORBA.ORBPackage;
 
 import java.io.Serializable;
 
+import org.omg.CORBA.UserException;
+
+import org.omg.CORBA.portable.IDLEntity;
+
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
+ * The exception is thrown
+ * in response of the attempt to create the dynamic
+ * with an unmatching type code.
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public class InconsistentTypeCode
+  extends UserException
+  implements IDLEntity, Serializable
 {
-  /** 
-   * Use serialVersionUID for interoperability.
-   */
-  private static final long serialVersionUID = 7416408250336395546L;
+  /**
+  * Use serialVersionUID for interoperability.
+  * Using the version 1.4 UID.
+  */
+  private static final long serialVersionUID = -4393472660722667060L;
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * Constructs a the exception.
    */
-  public MARSHAL(String message)
+  public InconsistentTypeCode()
   {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
   }
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Constructs the exception, explaining the reason of throwing it.
+   * @param reason a string, explaining, why the exception has been thrown.
    */
-  public MARSHAL()
+  public InconsistentTypeCode(String reason)
   {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
-
-  /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
-   */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
+    super(reason);
   }
 }

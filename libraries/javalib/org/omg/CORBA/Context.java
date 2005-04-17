@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+
 /**
  *
  * This class holds the list of the named properties. It is normally
@@ -69,14 +70,32 @@ public abstract class Context
    *
    * @return the newly created context.
    */
-  public abstract Context create_child(String parm1);
+  public abstract Context create_child(String child);
 
   /**
    * Delete one or several (identically named) given properties.
    *
-   * @param property the name of the property to delet.
+   * @param property the name of the property to delete, may
+   * end by wildchar character '*'. The search scope is always
+   * limited to the current context.
    */
   public abstract void delete_values(String property);
+
+  /**
+   * Search the values.
+   *
+   * @param start_scope the context at which to initiate the search.
+   * @param flags the search operation flags. 
+   * The flag {@link CTX_RESTRICT_SCOPE} means
+   * that search is restricted to the start_scope.
+   * @param pattern the property being searched, can be
+   * either name or name with the optional trailing wildchar character
+   * '*'.
+   * @return the list of the found properties.
+   */
+  public abstract NVList get_values(String start_scope, int flags,
+                                    String pattern
+                                   );
 
   /**
    * Get the parent of this context.
@@ -87,7 +106,17 @@ public abstract class Context
   /**
    * Set a property.
    * @param name the property name.
-   * @param value the property value.
+   * @param value the property value (the {@link Any} must hold string).
    */
   public abstract void set_one_value(String name, Any value);
+  
+  /**
+   * Set multiple properties.
+   * 
+   * @param values a list of properties, the {@link Any}'s 
+   * in the list components must hold strings.
+   */
+  public abstract void set_values(NVList values);
+  
+  
 }

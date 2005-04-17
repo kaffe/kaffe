@@ -1,3 +1,65 @@
+2005-04-17  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-04-11  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* org/omg/CORBA/Request.java:
+	(send_deferred): Added missing 'abstract' keyword.
+
+	2005-04-10  Audrius Meskauskas  <audriusa@bluewin.ch>	
+
+	* org/omg/CORBA/PRIVATE_MEMBER.java,
+	org/omg/CORBA/PUBLIC_MEMBER.java,
+	org/omg/CORBA/Request.java,
+	org/omg/CORBA/StructMember.java,
+	org/omg/CORBA/UnionMember.java,
+	org/omg/CORBA/UNSUPPORTED_POLICY.java,
+	org/omg/CORBA/UNSUPPORTED_POLICY_VALUE.java,
+	org/omg/CORBA/ValueMember.java,
+	org/omg/CORBA/VM_ABSTRACT.java,
+	org/omg/CORBA/VM_CUSTOM.java,
+	org/omg/CORBA/VM_NONE.java,
+	org/omg/CORBA/VM_TRUNCATABLE.java,
+	org/omg/CORBA/WrongTransaction.java,
+	org/omg/CORBA/BAD_POLICY.java,
+	org/omg/CORBA/BAD_POLICY_TYPE.java,
+	org/omg/CORBA/BAD_POLICY_VALUE.java,
+	org/omg/CORBA/Environment.java,
+	org/omg/CORBA/IDLType.java,
+	org/omg/CORBA/OMGVMCID.java: new files.
+
+	2005-04-09  Audrius Meskauskas  <audriusa@bluewin.ch>	
+
+	* org/omg/CORBA/DynAnyPackage/Invalid.java,
+	org/omg/CORBA/DynAnyPackage/InvalidSeq.java,
+	org/omg/CORBA/DynAnyPackage/InvalidValue.java,
+	org/omg/CORBA/DynAnyPackage/TypeMismatch.java,
+	org/omg/CORBA/DynAnyPackage/package.html: New files.
+
+	2005-04-06   Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/CTX_RESTRICT_SCOPE.java,
+	org/omg/CORBA/ExceptionList.java,
+	org/omg/CORBA/NVList.java,
+	PrincipalHolder.java: New classes.
+	* org/omg/CORBA/Context.java: Completing
+	part, dependent from classes above,
+	org/omg/CORBA/MARSHAL.java: accessibility fixes.
+
+	2005-03-31  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/ORBPackage/InconsistentTypeCode.java,
+	org/omg/CORBA/ORBPackage/InvalidName.java,
+	org/omg/CORBA/ORBPackage/package.html: New files.
+
+	2005-03-19  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/AnySeqHolder.java,
+	org/omg/CORBA/AnySeqHelper.java,
+	org/omg/CORBA/CompletionStatusHelper.java:
+	New files.
+
 2005-04-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/generic/gentypes.h: New file.

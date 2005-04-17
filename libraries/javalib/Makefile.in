@@ -661,6 +661,8 @@ Klasses_jar_SRCS = \
 	$(org_metastatic_jessie_pki_provider_SRCS) \
 	$(org_metastatic_jessie_provider_SRCS) \
 	$(org_omg_CORBA_SRCS) \
+	$(org_omg_CORBA_DynAnyPackage_SRCS) \
+	$(org_omg_CORBA_ORBPackage_SRCS) \
 	$(org_omg_CORBA_TypeCodePackage_SRCS) \
 	$(org_omg_CORBA_portable_SRCS) \
 	$(org_tritonus_core_SRCS) \
@@ -5036,6 +5038,9 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/BAD_INV_ORDER.java \
 	org/omg/CORBA/BAD_OPERATION.java \
 	org/omg/CORBA/BAD_PARAM.java \
+	org/omg/CORBA/BAD_POLICY.java \
+	org/omg/CORBA/BAD_POLICY_TYPE.java \
+	org/omg/CORBA/BAD_POLICY_VALUE.java \
 	org/omg/CORBA/BAD_TYPECODE.java \
 	org/omg/CORBA/BooleanHolder.java \
 	org/omg/CORBA/BooleanSeqHelper.java \
@@ -5043,6 +5048,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Bounds.java \
 	org/omg/CORBA/ByteHolder.java \
 	org/omg/CORBA/COMM_FAILURE.java \
+	org/omg/CORBA/CTX_RESTRICT_SCOPE.java \
 	org/omg/CORBA/CharHolder.java \
 	org/omg/CORBA/CharSeqHelper.java \
 	org/omg/CORBA/CharSeqHolder.java \
@@ -5054,12 +5060,15 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/DoubleHolder.java \
 	org/omg/CORBA/DoubleSeqHelper.java \
 	org/omg/CORBA/DoubleSeqHolder.java \
+	org/omg/CORBA/Environment.java \
+	org/omg/CORBA/ExceptionList.java \
 	org/omg/CORBA/FREE_MEM.java \
 	org/omg/CORBA/FixedHolder.java \
 	org/omg/CORBA/FloatHolder.java \
 	org/omg/CORBA/FloatSeqHelper.java \
 	org/omg/CORBA/FloatSeqHolder.java \
 	org/omg/CORBA/IDLEntity.java \
+	org/omg/CORBA/IDLType.java \
 	org/omg/CORBA/IMP_LIMIT.java \
 	org/omg/CORBA/INITIALIZE.java \
 	org/omg/CORBA/INTERNAL.java \
@@ -5080,21 +5089,28 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/NO_MEMORY.java \
 	org/omg/CORBA/NO_PERMISSION.java \
 	org/omg/CORBA/NO_RESPONSE.java \
+	org/omg/CORBA/NVList.java \
 	org/omg/CORBA/NamedValue.java \
 	org/omg/CORBA/OBJECT_NOT_EXIST.java \
 	org/omg/CORBA/OBJ_ADAPTER.java \
+	org/omg/CORBA/OMGVMCID.java \
 	org/omg/CORBA/ORB.java \
 	org/omg/CORBA/Object.java \
 	org/omg/CORBA/OctetSeqHelper.java \
 	org/omg/CORBA/OctetSeqHolder.java \
 	org/omg/CORBA/PERSIST_STORE.java \
+	org/omg/CORBA/PRIVATE_MEMBER.java \
+	org/omg/CORBA/PUBLIC_MEMBER.java \
 	org/omg/CORBA/Principal.java \
+	org/omg/CORBA/PrincipalHolder.java \
+	org/omg/CORBA/Request.java \
 	org/omg/CORBA/ShortHolder.java \
 	org/omg/CORBA/ShortSeqHelper.java \
 	org/omg/CORBA/ShortSeqHolder.java \
 	org/omg/CORBA/StringHolder.java \
 	org/omg/CORBA/StringSeqHelper.java \
 	org/omg/CORBA/StringSeqHolder.java \
+	org/omg/CORBA/StructMember.java \
 	org/omg/CORBA/SystemException.java \
 	org/omg/CORBA/TCKind.java \
 	org/omg/CORBA/TRANSACTION_REQUIRED.java \
@@ -5107,13 +5123,32 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ULongSeqHelper.java \
 	org/omg/CORBA/ULongSeqHolder.java \
 	org/omg/CORBA/UNKNOWN.java \
+	org/omg/CORBA/UNSUPPORTED_POLICY.java \
+	org/omg/CORBA/UNSUPPORTED_POLICY_VALUE.java \
 	org/omg/CORBA/UShortSeqHelper.java \
 	org/omg/CORBA/UShortSeqHolder.java \
+	org/omg/CORBA/UnionMember.java \
 	org/omg/CORBA/UserException.java \
+	org/omg/CORBA/VM_ABSTRACT.java \
+	org/omg/CORBA/VM_CUSTOM.java \
+	org/omg/CORBA/VM_NONE.java \
+	org/omg/CORBA/VM_TRUNCATABLE.java \
+	org/omg/CORBA/ValueMember.java \
 	org/omg/CORBA/WCharSeqHelper.java \
 	org/omg/CORBA/WCharSeqHolder.java \
 	org/omg/CORBA/WStringSeqHelper.java \
-	org/omg/CORBA/WStringSeqHolder.java
+	org/omg/CORBA/WStringSeqHolder.java \
+	org/omg/CORBA/WrongTransaction.java
+
+org_omg_CORBA_DynAnyPackage_SRCS = \
+	org/omg/CORBA/DynAnyPackage/Invalid.java \
+	org/omg/CORBA/DynAnyPackage/InvalidSeq.java \
+	org/omg/CORBA/DynAnyPackage/InvalidValue.java \
+	org/omg/CORBA/DynAnyPackage/TypeMismatch.java
+
+org_omg_CORBA_ORBPackage_SRCS = \
+	org/omg/CORBA/ORBPackage/InconsistentTypeCode.java \
+	org/omg/CORBA/ORBPackage/InvalidName.java
 
 org_omg_CORBA_TypeCodePackage_SRCS = \
 	org/omg/CORBA/TypeCodePackage/BadKind.java \

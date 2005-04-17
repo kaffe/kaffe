@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* StructMember.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -40,58 +40,55 @@ package org.omg.CORBA;
 
 import java.io.Serializable;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
+ * The component, describing the member of CORBA IDL <code>struct</code>.
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public final class StructMember
+  implements IDLEntity, Serializable
 {
-  /** 
-   * Use serialVersionUID for interoperability.
+  /**
+   * Use 1.4 version serialVersionUID for interoperability.
    */
-  private static final long serialVersionUID = 7416408250336395546L;
+  private static final long serialVersionUID = 2762280796480753206L;
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * The IDL type of the structure member.
    */
-  public MARSHAL(String message)
-  {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
-  }
+  public IDLType type_def;
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * The name of the structure member.
    */
-  public MARSHAL()
-  {
-    super("", 0, CompletionStatus.COMPLETED_NO);
-  }
-
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
+  public String name;
 
   /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
+   * The typecode of the structure member.
    */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
+  public TypeCode type;
+  
+  /**
+   * Creates a structure member with all fields
+   * left with the default value <code>null</code>.
+   */
+  public StructMember()
   {
-    super(reason, minor, completed);
+  }
+  
+  /**
+   * Creates a structure member.
+   * 
+   * @param a_name member name.
+   * @param a_type member type code.
+   * @param a_type_def member IDL type definition.
+   */
+  public StructMember(String a_name, TypeCode a_type, IDLType a_type_def)
+  {
+    name = a_name;
+    type = a_type;
+    type_def = a_type_def;
   }
 }

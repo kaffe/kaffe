@@ -1,4 +1,4 @@
-/* MARSHAL.java --
+/* WrongTransaction.java -- Exception thrown due to out-of-bounds parameter
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,60 +38,33 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
-
 /**
- * Means that some request or reply from the network has a wrong
- * size or is structurally invalid.
- * 
+ * Thrown when the transaction scope mismatches.
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class MARSHAL
-  extends SystemException
-  implements Serializable
+public final class WrongTransaction
+  extends UserException
 {
-  /** 
-   * Use serialVersionUID for interoperability.
-   */
-  private static final long serialVersionUID = 7416408250336395546L;
 
   /**
-   * Creates a MARSHAL with the default minor code of 0,
-   * completion state COMPLETED_NO and the given explaining message.
-   * @param reasom the explaining message.
+   * Constructs a default <code>WrongTransaction</code> exception, with
+   * no detail message.
    */
-  public MARSHAL(String message)
+  public WrongTransaction()
   {
-    super(message, 0, CompletionStatus.COMPLETED_NO);
+    super();
   }
 
   /**
-   * Creates MARSHAL with the default minor code of 0 and a
-   * completion state COMPLETED_NO.
+   * Constructs a <code>WrongTransaction</code> exception using the specified
+   * message as the reason for throwing it.
+   *
+   * @param reason the reason, why the exception has been thrown.
    */
-  public MARSHAL()
+  public WrongTransaction(String reason)
   {
-    super("", 0, CompletionStatus.COMPLETED_NO);
+    super(reason);
   }
 
-  /** Creates a MARSHAL exception with the specified minor
-   * code and completion status.
-   * @param minor additional error code.
-   * @param completed the method completion status.
-   */
-  public MARSHAL(int minor, CompletionStatus completed)
-  {
-    super("", minor, completed);
-  }
-
-  /**
-   * Created MARSHAL exception, providing full information.
-   * @param reason explaining message.
-   * @param minor additional error code (the "minor").
-   * @param completed the method completion status.
-   */
-  public MARSHAL(String reason, int minor, CompletionStatus completed)
-  {
-    super(reason, minor, completed);
-  }
 }
