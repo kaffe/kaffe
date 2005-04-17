@@ -24,6 +24,8 @@
 #ifndef __m68k_common_h
 #define __m68k_common_h
 
+#include "generic/gentypes.h"
+
 #include "gccbuiltin.h"
 #include "atomic.h"
 #include "katomic.h"

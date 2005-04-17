@@ -19,79 +19,30 @@
 
 #include "config.h"
 
-#if defined(HAVE_STDINT_H)
-#include <stdint.h>
-#endif 
-
-#if defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#endif
-
 typedef int8_t atomic8_t;
 typedef uint8_t uatomic8_t;
-#if defined(HAVE_INT_FAST8_T)
 typedef int_fast8_t atomic_fast8_t;
-#else
-typedef int8_t atomic_fast8_t;
-#endif
-#if defined(HAVE_UINT_FAST8_T)
 typedef uint_fast8_t uatomic_fast8_t;
-#else
-typedef uint8_t uatomic_fast8_t;
-#endif
 
 typedef int16_t atomic16_t;
 typedef uint16_t uatomic16_t;
-#if defined(HAVE_INT_FAST16_T)
 typedef int_fast16_t atomic_fast16_t;
-#else
-typedef int16_t atomic_fast16_t;
-#endif
-#if defined(HAVE_UINT_FAST16_T)
 typedef uint_fast16_t uatomic_fast16_t;
-#else
-typedef uint16_t uatomic_fast16_t;
-#endif
 
 typedef int32_t atomic32_t;
 typedef uint32_t uatomic32_t;
-#if defined(HAVE_INT_FAST32_T)
 typedef int_fast32_t atomic_fast32_t;
-#else
-typedef int32_t atomic_fast32_t;
-#endif
-#if defined(HAVE_UINT_FAST32_T)
 typedef uint_fast32_t uatomic_fast32_t;
-#else
-typedef uint32_t uatomic_fast32_t;
-#endif
 
 typedef int64_t atomic64_t;
 typedef uint64_t uatomic64_t;
-#if defined(HAVE_INT_FAST64_T)
 typedef int_fast64_t atomic_fast64_t;
-#else
-typedef int64_t atomic_fast64_t;
-#endif
-#if defined(HAVE_UINT_FAST64_T)
 typedef uint_fast64_t uatomic_fast64_t;
-#else
-typedef uint64_t uatomic_fast64_t;
-#endif
 
 typedef intptr_t atomicptr_t;
 typedef uintptr_t uatomicptr_t;
-#if defined(HAVE_UINTMAX_T)
 typedef uintmax_t uatomic_max_t;
-#else
-typedef uint64_t uatomic_max_t;
-#endif
-
-#if defined(HAVE_INTMAX_T)
 typedef intmax_t atomic_max_t;
-#else
-typedef int64_t atomic_max_t;
-#endif
 
 #ifndef LOCK_PREFIX
 # ifdef UP

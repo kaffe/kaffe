@@ -18,6 +18,8 @@
 #ifndef __mips_common_h
 #define __mips_common_h
 
+#include "generic/gentypes.h"
+
 /* The R5900 is the Mips Core in the PS2 (Playstation 2)
 * It has most of the Mips III instructions set, some of the Mips IV 
 * instructions, it lacks the Mips II "ll" and "sc" instructions and 

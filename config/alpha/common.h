@@ -15,6 +15,8 @@
 #ifndef __alpha_common_h
 #define __alpha_common_h
 
+#include "generic/gentypes.h"
+
 #if defined(NEED_sysdepCallMethod)
 
 #define LONG_SYSDEP 1

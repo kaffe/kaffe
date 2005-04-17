@@ -15,6 +15,8 @@
 #if !defined(__sh_common_h)
 #define __sh_common_h
 
+#include "generic/gentypes.h"
+
 /* The SuperH never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 

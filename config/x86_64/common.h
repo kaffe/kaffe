@@ -12,6 +12,8 @@
 #ifndef __x86_64_common_h
 #define __x86_64_common_h
 
+#include "generic/gentypes.h"
+
 /* Stack must be aligned on 16-bytes boundary.  */
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))

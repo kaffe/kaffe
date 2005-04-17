@@ -15,6 +15,8 @@
 #ifndef __powerpc_common_h
 #define __powerpc_common_h
 
+#include "generic/gentypes.h"
+
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 

@@ -17,6 +17,8 @@
 #ifndef __arm_common_h
 #define __arm_common_h
 
+#include "generic/gentypes.h"
+
 /* The arm never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 

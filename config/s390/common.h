@@ -15,6 +15,8 @@
 #ifndef __s390_h
 #define __s390_h
 
+#include "generic/gentypes.h"
+
 /* The s390 gcc port aligns to the appropriate boundary: 1->1, 2->2, 4->4,
    and 8->8.  So alignment is pretty simple: */
 #define  ALIGNMENT_OF_SIZE(S) (S)
