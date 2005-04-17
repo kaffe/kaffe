@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-26  Jeroen Frijters  <jeroen@frijters.net>
+
+        * javax/imageio/spi/IIORegistry.java (IIORegistry):
+        Don't assume that awt Toolkit is always ClasspathToolkit.
+
+2005-04-17  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-23  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
         * gnu/xml/dom/html2/DomHTMLParser.java
