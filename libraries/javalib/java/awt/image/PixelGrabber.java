@@ -520,7 +520,7 @@ public class PixelGrabber implements ImageConsumer
 		  {
 		    ints_delivered = true;
 
-		    int_pixel_buffer[i] = currentModel.getRGB (pixels[p]);
+		    int_pixel_buffer[i] = currentModel.getRGB (pixels[p] & 0xFF);
 		  }
 		else
 		  {
