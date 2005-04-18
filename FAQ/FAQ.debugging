@@ -5,6 +5,32 @@ This document provides some pointers for debugging the Kaffe VM. (Not
 necessarily for debugging Java apps running on Kaffe, though you can
 abuse these techniques to that end.)
 
+building Kaffe for debugging
+============================
+
+There are a few things to consider when building Kaffe to make your 
+debugging experience enjoyable.  There are debugging macros within 
+Kaffe that will print out predefined messages, you control which 
+messages you are interested in by using -vmdebug (see below).  If
+you are planning on using GDB (either alone or with some GUI) you
+will want to disable GCC optimizations.  The optimizations that 
+GCC perform may change the execution order of some instructions 
+and make your debugging session very frustrating!  You will not 
+know which like will execute next and your executing line will 
+jump around.  The easiest way disable GCC optimizations when 
+building Kaffe is to edit the config.frag for your system 
+(config/<CPU>/<OS>/config.frag).  Add the -O0 flag to CFLAGS, 
+this tells GCC to use zero (0) optimizations. 
+        CFLAGS="$CFLAGS -O0"
+
+The other thing that you will want to do is to use
+static linking when building Kaffe.  There are issue with some 
+dynamic loaders and GDB may not be able to find your source files
+when you step into a function that is defined in another directory
+or library.  When configuring Kaffe you can pass the static flags
+     ./configure --with-staticlib --with-staticbin --with-staticvm
+
+       
 -vmdebug
 ========
 
@@ -30,11 +56,16 @@ used.
 gdb
 ===
 
-To run Kaffe in a debugger, use the KAFFE_DEBUG environment variable.
-(Look at the Kaffe script for details). For GDB, set KAFFE_DEBUG to
-'gdb'. ('kaffe' is a shell script so 'gdb kaffe' won't do what you
-want.)  I have shell aliases 'kdbg' and 'unkdbg' that set and unset
-the variable, respectively.
+Kaffe is started by a script that determines the BOOTCLASSPATH, 
+CLASSPATH and LD_LIBRARY_PATH that is needed for Kaffe to run.
+Since the Kaffe executable is not started directly by you, trying
+'dbg kaffe' will not work.  You will need to tell the startup script
+which debugger you want to use.  This is as easy as setting the 
+environment variable KAFFE_DEBUG to your debugger of choice.
+Currently Kaffe can be debugged use: gdb, ddd, emacs and cgdb.
+        KAFFE_DEBUG=gdb
+Once you are done debugging or nolonger want Kaffe to start up 
+within a debugger you can simply unset KAFFE_DEBUG.        
 
 There are some gdb macros in developers/gdbinit that are useful for
 looking at Kaffe's GC, thread, and object structures (in particular,

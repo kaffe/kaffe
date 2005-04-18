@@ -1,3 +1,8 @@
+2005-04-18  Michael Franz  <mvfranz@gmail.com>
+	
+	* FAQ/FAQ.debugging: Added new informations on how to debug kaffe
+	easily.
+
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
