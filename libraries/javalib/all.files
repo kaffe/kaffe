@@ -722,6 +722,8 @@ gnu/java/io/decode/DecoderCp1047.java
 gnu/java/io/decode/DecoderEBCDIC_XML_US.java
 gnu/java/io/decode/DecoderEightBitLookup.java
 gnu/java/io/decode/Decoder.java
+gnu/java/io/decode/DecoderUnicodeBig.java
+gnu/java/io/decode/DecoderUnicodeLittle.java
 gnu/java/io/decode/DecoderUTF16BE.java
 gnu/java/io/decode/DecoderUTF16LE.java
 gnu/java/io/decode/DecoderUTF32BE.java
@@ -740,6 +742,8 @@ gnu/java/io/encode/EncoderCp1047.java
 gnu/java/io/encode/EncoderEBCDIC_XML_US.java
 gnu/java/io/encode/EncoderEightBitLookup.java
 gnu/java/io/encode/Encoder.java
+gnu/java/io/encode/EncoderUnicodeBig.java
+gnu/java/io/encode/EncoderUnicodeLittle.java
 gnu/java/io/encode/EncoderUTF16BE.java
 gnu/java/io/encode/EncoderUTF16LE.java
 gnu/java/io/encode/EncoderUTF32BE.java

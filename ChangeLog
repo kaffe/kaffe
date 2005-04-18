@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-28  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/io/decode/DecoderUnicodeBig.java,
+        * gnu/java/io/decode/DecoderUnicodeLittle.java,
+        * gnu/java/io/encode/EncoderUnicodeBig.java,
+        * gnu/java/io/encode/EncoderUnicodeLittle.java:
+        New files.
+
+2005-04-17  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-26  Chris Burdess  <dog@gnu.org>
 
         * gnu/xml/dom/DomNode.java (notifyNode): grow listener array as

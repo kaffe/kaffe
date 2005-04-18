@@ -1577,6 +1577,8 @@ gnu_java_io_decode_SRCS = \
 	gnu/java/io/decode/DecoderUTF16LE.java \
 	gnu/java/io/decode/DecoderUTF32BE.java \
 	gnu/java/io/decode/DecoderUTF32LE.java \
+	gnu/java/io/decode/DecoderUnicodeBig.java \
+	gnu/java/io/decode/DecoderUnicodeLittle.java \
 	gnu/java/io/decode/DecoderWindows1250.java \
 	gnu/java/io/decode/DecoderWindows1252.java \
 	gnu/java/io/decode/KaffeDecoder.java
@@ -1597,6 +1599,8 @@ gnu_java_io_encode_SRCS = \
 	gnu/java/io/encode/EncoderUTF16LE.java \
 	gnu/java/io/encode/EncoderUTF32BE.java \
 	gnu/java/io/encode/EncoderUTF32LE.java \
+	gnu/java/io/encode/EncoderUnicodeBig.java \
+	gnu/java/io/encode/EncoderUnicodeLittle.java \
 	gnu/java/io/encode/EncoderWindows1250.java \
 	gnu/java/io/encode/EncoderWindows1252.java \
 	gnu/java/io/encode/KaffeEncoder.java
