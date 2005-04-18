@@ -4,6 +4,15 @@
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
+        * java/awt/image/ConvolveOp.java:
+        Removed comment added by eclipse.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-03-30  Michael Koch  <konqueror@gmx.de>
+
         * gnu/xml/aelfred2/XmlParser.java:
         Revert my typo fix.
 
