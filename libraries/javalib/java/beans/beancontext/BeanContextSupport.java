@@ -163,14 +163,14 @@ public class BeanContextSupport extends BeanContextChildSupport
     if (children.containsKey(targetChild))
       return false;
 
-    System.out.println("java.beans.beancontext.BeanContextSupport.add() ignored for now");
+    // FIXME: The second argument is surely wrong.
+    children.put(targetChild, targetChild);
     return true;
-    //throw new Error ("Not implemented");
   }
 
   public boolean addAll (Collection c)
   {
-    throw new Error ("Not implemented");
+    throw new UnsupportedOperationException();
   }
 
   public void addBeanContextMembershipListener
@@ -224,7 +224,7 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public void clear ()
   {
-    throw new Error ("Not implemented");
+    throw new UnsupportedOperationException();
   }
 
   public boolean contains (Object o)
@@ -391,7 +391,7 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public boolean removeAll (Collection c)
   {
-    throw new Error ("Not implemented");
+    throw new UnsupportedOperationException();
   }
 
   public void removeBeanContextMembershipListener (BeanContextMembershipListener bcml)
@@ -401,7 +401,7 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public boolean retainAll (Collection c)
   {
-    throw new Error ("Not implemented");
+    throw new UnsupportedOperationException();
   }
 
   protected final void serialize (ObjectOutputStream oos, Collection coll)
