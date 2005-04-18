@@ -1,3 +1,12 @@
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-03-28  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/ClassLoader.java (loadClass): Resolve class even if
+        it was already found.
+
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
