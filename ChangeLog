@@ -2,6 +2,14 @@
 
         Resynced with GNU Classpath.
 
+	2005-03-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * javax/swing/text/JTextComponent.java (viewToModel): New method.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-03-31  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/awt/peer/gtk/GdkGraphics.java
