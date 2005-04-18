@@ -2,6 +2,17 @@
 
         Resynced with GNU Classpath.
 
+	2005-03-30  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics.java:
+        (drawImage): Don't notify the image observer for offscreen images.
+        * gnu/java/awt/peer/gtk/GtkImagePainter.java:
+        (setPixels): Don't notify the image observer.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
         * java/beans/beancontext/BeanContextServicesSupport.java
