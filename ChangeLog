@@ -1,5 +1,15 @@
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
+        Resynced with GNU Classpath.
+
+	2005-03-30  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/geom/CubicCurve2D.java,
+        java/awt/geom/QuadCurve2D.java:
+        Fixed typo in name of Brian Cough.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/nio/gnu_java_nio_VMSelector.c:
 	Re-indented to match GNU Classpath's indentation style more closely.
 
