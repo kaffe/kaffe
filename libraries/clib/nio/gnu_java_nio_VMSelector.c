@@ -1,8 +1,8 @@
 /* gnu_java_nio_VMSelector.c - Native methods for SelectorImpl class
    Copyright (C) 2004, 2005 Free Software Foundation, Inc.
- 
+
 This file is part of GNU Classpath.
- 
+
 GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -12,17 +12,17 @@ GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
- 
+
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
 conditions of the GNU General Public License cover the whole
 combination.
- 
+
 As a special exception, the copyright holders of this library give you
 permission to link this library with independent modules to produce an
 executable, regardless of the license terms of these independent
@@ -66,11 +66,11 @@ void helper_reset (JNIEnv *, jintArray *);
 
 int
 helper_select (JNIEnv *, jclass, jmethodID,
-               int, fd_set *, fd_set *, fd_set *, struct timeval *);
+	       int, fd_set *, fd_set *, fd_set *, struct timeval *);
 
 void
 helper_put_filedescriptors (JNIEnv * env, jintArray fdArray, fd_set * fds,
-                            int *max_fd)
+			    int *max_fd)
 {
   jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, 0);
   int size = (*env)->GetArrayLength (env, fdArray);
@@ -81,12 +81,12 @@ helper_put_filedescriptors (JNIEnv * env, jintArray fdArray, fd_set * fds,
       fd = tmpFDArray[index];
 
       if (fd > 0)
-        {
-          FD_SET (tmpFDArray[index], fds);
+	{
+	  FD_SET (tmpFDArray[index], fds);
 
-          if (tmpFDArray[index] > (*max_fd))
-            (*max_fd) = tmpFDArray[index];
-        }
+	  if (tmpFDArray[index] > (*max_fd))
+	    (*max_fd) = tmpFDArray[index];
+	}
     }
 }
 
@@ -101,7 +101,7 @@ helper_get_filedescriptors (JNIEnv * env, jintArray * fdArray, fd_set * fds)
     {
       fd = tmpFDArray[index];
       if (fd < 0 || !FD_ISSET (fd, fds))
-        tmpFDArray[index] = 0;
+	tmpFDArray[index] = 0;
     }
 }
 
@@ -121,8 +121,8 @@ helper_reset (JNIEnv * env, jintArray * fdArray)
  */
 int
 helper_select (JNIEnv * env, jclass thread_class,
-               jmethodID thread_interrupted, int n, fd_set * readfds,
-               fd_set * writefds, fd_set * exceptfds, struct timeval *timeout)
+	       jmethodID thread_interrupted, int n, fd_set * readfds,
+	       fd_set * writefds, fd_set * exceptfds, struct timeval *timeout)
 {
 #ifdef HAVE_SYS_SELECT_H
   /* If we have a timeout, compute the absolute ending time. */
@@ -136,10 +136,10 @@ helper_select (JNIEnv * env, jclass thread_class,
       end.tv_usec += timeout->tv_usec;
 
       if (end.tv_usec >= 1000000)
-        {
-          ++end.tv_sec;
-          end.tv_usec -= 1000000;
-        }
+	{
+	  ++end.tv_sec;
+	  end.tv_usec -= 1000000;
+	}
 
       end.tv_sec += timeout->tv_sec;
       delay = *timeout;
@@ -155,44 +155,44 @@ helper_select (JNIEnv * env, jclass thread_class,
       int retcode;
 
       r = KSELECT (n, readfds, writefds, exceptfds,
-                   timeout ? &delay : NULL, &retcode);
+		   timeout ? &delay : NULL, &retcode);
 
       if (r == 0)
-        return retcode;
+	return retcode;
       if (r != EINTR)
-        return -r;
+	return -r;
 
       /* Here we know we got EINTR. */
       if ((*env)->
-          CallStaticBooleanMethod (env, thread_class, thread_interrupted))
-        {
-          return -EINTR;
-        }
+	  CallStaticBooleanMethod (env, thread_class, thread_interrupted))
+	{
+	  return -EINTR;
+	}
 
       if (timeout)
-        {
-          gettimeofday (&after, NULL);
+	{
+	  gettimeofday (&after, NULL);
 
-          /* Now compute new timeout argument. */
-          delay.tv_usec = end.tv_usec - after.tv_usec;
-          delay.tv_sec = end.tv_sec - after.tv_sec;
+	  /* Now compute new timeout argument. */
+	  delay.tv_usec = end.tv_usec - after.tv_usec;
+	  delay.tv_sec = end.tv_sec - after.tv_sec;
 
-          if (delay.tv_usec < 0)
-            {
-              --delay.tv_sec;
-              delay.tv_usec += 1000000;
-            }
+	  if (delay.tv_usec < 0)
+	    {
+	      --delay.tv_sec;
+	      delay.tv_usec += 1000000;
+	    }
 
-          if (delay.tv_sec < 0)
-            {
-              /* We assume that the user wants a valid select() call
-               * more than precise timing.  So if we get a series of
-               * EINTR we just keep trying with delay 0 until we get a
-               * valid result.
-               */
-              delay.tv_sec = 0;
-            }
-        }
+	  if (delay.tv_sec < 0)
+	    {
+	      /* We assume that the user wants a valid select() call
+	       * more than precise timing.  So if we get a series of
+	       * EINTR we just keep trying with delay 0 until we get a
+	       * valid result.
+	       */
+	      delay.tv_sec = 0;
+	    }
+	}
     }
 #else /* HAVE_SYS_SELECT_H */
   return 0;
@@ -202,16 +202,16 @@ helper_select (JNIEnv * env, jclass thread_class,
 
 JNIEXPORT jint JNICALL
 Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
-                                     jclass obj __attribute__ ((__unused__)),
-                                     jintArray read,
-                                     jintArray write,
-                                     jintArray except, jlong timeout)
+				     jclass obj __attribute__ ((__unused__)),
+				     jintArray read,
+				     jintArray write,
+				     jintArray except, jlong timeout)
 {
   jint result;
   jclass thread_class = (*env)->FindClass (env, "java/lang/Thread");
   jmethodID thread_current_thread =
     (*env)->GetStaticMethodID (env, thread_class, "currentThread",
-                               "()Ljava/lang/Thread;");
+			       "()Ljava/lang/Thread;");
   jmethodID thread_interrupt =
     (*env)->GetMethodID (env, thread_class, "interrupt", "()V");
   jmethodID thread_interrupted =
@@ -251,7 +251,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
   /* Actually do the select */
   result =
     helper_select (env, thread_class, thread_interrupted, max_fd + 1,
-                   &read_fds, &write_fds, &except_fds, time_data);
+		   &read_fds, &write_fds, &except_fds, time_data);
 
   if (result == -EINTR)
     {
@@ -261,8 +261,8 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
        * indicating that nothing was selected.
        */
       current_thread =
-        (*env)->CallStaticObjectMethod (env, thread_class,
-                                        thread_current_thread);
+	(*env)->CallStaticObjectMethod (env, thread_class,
+					thread_current_thread);
       (*env)->CallVoidMethod (env, current_thread, thread_interrupt);
 
       helper_reset (env, read);
@@ -280,27 +280,27 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
 #if defined(HAVE_STRERROR_R)
 
       if (strerror_r (errorcode, message_buf, BUF_SIZE))
-        {
-          /* This would mean that message_buf was to small
-           * to hold the error message.
-           */
-          JCL_ThrowException (env, "java/lang/InternalError",
-                              "Not enough space in message buffer.");
-          return 0;
-        }
+	{
+	  /* This would mean that message_buf was to small
+	   * to hold the error message.
+	   */
+	  JCL_ThrowException (env, "java/lang/InternalError",
+			      "Not enough space in message buffer.");
+	  return 0;
+	}
 #elif defined(HAVE_STRERROR)
-      const char *strerr_msg = strerror(errorcode);
+      const char *strerr_msg = strerror (errorcode);
 
-      if (strlen(strerr_msg) >= BUF_SIZE)
-        {
-          /* This would mean that message_buf was to small
-          * to hold the error message.
-          */
-          JCL_ThrowException (env, "java/lang/InternalError",
-                              "Not enough space in message buffer.");
-          return 0;
-        }
-      strncpy(message_buf, strerror(errorcode), BUF_SIZE);
+      if (strlen (strerr_msg) >= BUF_SIZE)
+	{
+	  /* This would mean that message_buf was to small
+	   * to hold the error message.
+	   */
+	  JCL_ThrowException (env, "java/lang/InternalError",
+			      "Not enough space in message buffer.");
+	  return 0;
+	}
+      strncpy (message_buf, strerror (errorcode), BUF_SIZE);
 #endif
 
       JCL_ThrowException (env, "java/io/IOException", message_buf);
