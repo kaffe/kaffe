@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-28  Tom Tromey  <tromey@redhat.com>
+
+        * java/net/URL.java (DEFAULT_SEARCH_PATH): Added
+        org.metastatic.jessie.
+
+2005-04-17  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-28  Sven de Marothy  <sven@physto.se>
 
         * gnu/java/io/decode/DecoderUnicodeBig.java,
