@@ -1,5 +1,5 @@
-/* java.beans.beancontext.BeanContextSupport
-   Copyright (C) 2003 Free Software Foundation, Inc.
+/* BeanContextSupport.java --
+   Copyright (C) 2003, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -153,13 +153,19 @@ public class BeanContextSupport extends BeanContextChildSupport
     okToUseGui = visible;
 
     initialize ();
-    
-    throw new Error ("Not implemented");
   }
 
   public boolean add (Object targetChild)
   {
-    throw new Error ("Not implemented");
+    if (targetChild == null)
+      throw new IllegalArgumentException();
+
+    if (children.containsKey(targetChild))
+      return false;
+
+    System.out.println("java.beans.beancontext.BeanContextSupport.add() ignored for now");
+    return true;
+    //throw new Error ("Not implemented");
   }
 
   public boolean addAll (Collection c)
@@ -167,9 +173,11 @@ public class BeanContextSupport extends BeanContextChildSupport
     throw new Error ("Not implemented");
   }
 
-  public void addBeanContextMembershipListener (BeanContextMembershipListener bcml)
+  public void addBeanContextMembershipListener
+    (BeanContextMembershipListener listener)
   {
-    throw new Error ("Not implemented");
+    if (! bcmListeners.contains(listener))
+      bcmListeners.add(listener);
   }
 
   public boolean avoidingGui ()
@@ -302,7 +310,7 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public Locale getLocale ()
   {
-    throw new Error ("Not implemented");
+    return locale;
   }
 
   public URL getResource (String name, BeanContextChild bcc)
@@ -317,7 +325,8 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   protected void initialize ()
   {
-    throw new Error ("Not implemented");
+    bcmListeners = new ArrayList();
+    children = new HashMap();
   }
 
   public Object instantiateChild (String beanName)
@@ -343,7 +352,7 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public Iterator iterator ()
   {
-    throw new Error ("Not implemented");
+    return children.keySet().iterator();
   }
 
   public boolean needsGui ()
@@ -369,11 +378,14 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public boolean remove (Object targetChild)
   {
-    throw new Error ("Not implemented");
+    return remove(targetChild, true);
   }
 
   protected boolean remove (Object targetChild, boolean callChildSetBC)
   {
+    if (targetChild == null)
+      throw new IllegalArgumentException();
+    
     throw new Error ("Not implemented");
   }
 
@@ -416,12 +428,12 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public Object[] toArray ()
   {
-    throw new Error ("Not implemented");
+    return children.keySet().toArray();
   }
 
-  public Object[] toArray (Object[] arry)
+  public Object[] toArray(Object[] array)
   {
-    throw new Error ("Not implemented");
+    return children.keySet().toArray(array);
   }
 
   protected boolean validatePendingAdd (Object targetChild)

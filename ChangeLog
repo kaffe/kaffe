@@ -4,6 +4,26 @@
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
+        * java/beans/beancontext/BeanContextServicesSupport.java
+        (BeanContextServicesSupport): Reimplemented.
+        (addBeanContextServicesListener): Implemented.
+        (initialize): Likewise.
+        (removeBeanContextServicesListener): Likewise.
+        * java/beans/beancontext/BeanContextSupport.java
+        (add): Likewise.
+        (addBeanContextMembershipListener): Likewise.
+        (getLocale): Likewise.
+        (initialize): Likewise.
+        (iterator): Likewise.
+        (remove): Likewise.
+        (toArray): Likewise.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-03-30  Michael Koch  <konqueror@gmx.de>
+
         * java/awt/image/ConvolveOp.java:
         Removed comment added by eclipse.
 
