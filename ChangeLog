@@ -2,6 +2,38 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-07  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/UIDefaults.java:
+        Added API documentation for all methods.
+
+	2005-04-06  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/UIDefaults.java
+        (put): Now uses new checkAndPut method instead of checking
+        directly.
+        (putDefaults): Fixed so that it accepts null-values and
+        treats them like remove(key).
+        (checkAndPut): Added. This checks for null-values and calls
+        put or remove.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU inetlib.
+
+	2005-04-06  Chris Burdess  <dog@gnu.org>
+
+        * CRLFInputStream.java: New algorithm, returning CRLF-delimited
+        chunks on each read.
+
+	2005-02-17  Chris Burdess  <dog@gnu.org>
+
+        * BASE64.java: Truncate encoded byte array.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-07  Chris Burdess  <dog@gnu.org>
 
         * gnu/java/net/CRLFInputStream.java: Rewrite to return

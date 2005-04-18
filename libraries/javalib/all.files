@@ -568,6 +568,7 @@ gnu/inet/smtp/Parameter.java
 gnu/inet/smtp/ParameterList.java
 gnu/inet/smtp/SMTPConnection.java
 gnu/inet/util/BASE64.java
+gnu/inet/util/CRLFInputStream.java
 gnu/inet/util/CRLFOutputStream.java
 gnu/inet/util/EmptyX509TrustManager.java
 gnu/inet/util/GetLocalHostAction.java

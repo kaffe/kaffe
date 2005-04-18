@@ -1,5 +1,5 @@
 /*
- * $Id: BASE64.java,v 1.7 2005/02/19 16:14:21 robilad Exp $
+ * BASE64.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -42,7 +42,6 @@ package gnu.inet.util;
  * Encodes and decodes text according to the BASE64 encoding.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.7 $ $Date: 2005/02/19 16:14:21 $
  */
 public final class BASE64
 {
@@ -71,7 +70,7 @@ public final class BASE64
       }
   }
 
-  private BASE64 ()
+  private BASE64()
   {
   }
 
@@ -80,7 +79,7 @@ public final class BASE64
    *
    * @param bs the source byte array
    */
-  public static byte[] encode (byte[] bs)
+  public static byte[] encode(byte[] bs)
   {
     int si = 0, ti = 0;         // source/target array indices
     byte[] bt = new byte[((bs.length + 2) * 4) / 3];     // target byte array
@@ -161,16 +160,16 @@ public final class BASE64
         len = srclen - si;
       }
     byte[] bt = new byte[buflen];
-    System.arraycopy (buffer, 0, bt, 0, buflen);
+    System.arraycopy(buffer, 0, bt, 0, buflen);
     return bt;
   }
   
-  public static void main (String[] args)
+  public static void main(String[] args)
   {
     boolean decode = false;
     for (int i = 0; i < args.length; i++)
       {
-        if (args[i].equals ("-d"))
+        if (args[i].equals("-d"))
           {
             decode = true;
           }
@@ -178,14 +177,14 @@ public final class BASE64
           {
             try
               {
-                byte[] in = args[i].getBytes ("US-ASCII");
-                byte[] out = decode ? decode (in) : encode (in);
-                System.out.println (args[i] + " = " +
-                                    new String (out, "US-ASCII"));
+                byte[] in = args[i].getBytes("US-ASCII");
+                byte[] out = decode ? decode(in) : encode(in);
+                System.out.println(args[i] + " = " +
+                                   new String(out, "US-ASCII"));
               }
             catch (java.io.UnsupportedEncodingException e)
               {
-                e.printStackTrace (System.err);
+                e.printStackTrace(System.err);
               }
           }
       }
