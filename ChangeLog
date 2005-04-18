@@ -2,6 +2,21 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-05  Roman Kennke  <roman@kennke.org>
+
+        * gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java
+        (getDisplayMode): Added. Returns the current display mode.
+        (isFullScreenSupported): Added.
+        * java/awt/GraphicsDevice.java
+        (setFullScreenWindow): Implemented a primitive fullscreen mode.
+        This resizes and relocates the fullscreen window so that it uses
+        the whole screen. This is not a fully accelerated fullscreen
+        exclusive mode.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-01  Tom Tromey  <tromey@redhat.com>
 
         * java/lang/AssertionError.java: Typo fix.
