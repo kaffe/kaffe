@@ -976,7 +976,6 @@ gnu_inet_smtp_SRCS = \
 	gnu/inet/smtp/SMTPConnection.java
 gnu_inet_util_SRCS = \
 	gnu/inet/util/BASE64.java \
-	gnu/inet/util/CRLFInputStream.java \
 	gnu/inet/util/CRLFOutputStream.java \
 	gnu/inet/util/EmptyX509TrustManager.java \
 	gnu/inet/util/GetLocalHostAction.java \
