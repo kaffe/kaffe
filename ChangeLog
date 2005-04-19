@@ -2,6 +2,17 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-12  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/FilePermission.java
+        (serialVersionUID): Made private.
+        (ALL_FILES): New constant.
+        (implies): Handle '<<ALL FILES>>' case.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-12  Audrius Meskauskas, Lithuania  <AudriusA@Bioinformatics.org>
 
         * javax/swing/text/html/HTMLDocument.java: New file.
