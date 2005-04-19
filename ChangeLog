@@ -2,6 +2,41 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-12  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicMenuBarUI.java:
+        Fixed tabs to spaces.
+
+	2005-04-12  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JRootPane.java:
+        Fixed various tabs to be spaces.
+        (RootLayout.layoutContainer): Made menubar left aligned.
+
+	2005-04-12  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JComponent.java:
+        Modified alignmentX and alignmentY to be 0.5 instead of 0.0.
+        Untabified the file.
+
+	2005-04-12  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/BoxLayout.java:
+        (layoutContainer): Made this layout manager respect the
+        minimum, maximum and preferred size more correctly.
+
+	2005-04-12  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/MediaTracker.java
+        (addImage): Synchronized list access.
+        (waitForAll): Fixed comparison of time (changed < to >).
+        (waitForID): Fixed comparison of time (changed < to >).
+        (removeImage): Synchronized list access.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
         * java/io/FilePermission.java

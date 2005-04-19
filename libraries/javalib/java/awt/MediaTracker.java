@@ -171,8 +171,11 @@ public class MediaTracker implements java.io.Serializable
     MediaEntry e = new MediaEntry();
     e.id = id;
     e.image = image;
-    e.next = head;
-    head = e;
+    synchronized(this)
+      {
+        e.next = head;
+        head = e;
+      }
     // Start tracking image status.
     int flags = target.checkImage(image, e);
     e.imageUpdate(image, flags, -1, -1, -1, -1);
@@ -193,10 +196,13 @@ public class MediaTracker implements java.io.Serializable
     MediaEntry e = new MediaEntry();
     e.id = id;
     e.image = image;
-    e.next = head;
     e.width = width;
     e.height = height;
-    head = e;
+    synchronized(this)
+      {
+        e.next = head;
+        head = e;
+      }
     // Start tracking image status.
     int flags = target.checkImage(image, width, height, e);
     e.imageUpdate(image, flags, -1, -1, width, height);
@@ -347,7 +353,7 @@ public class MediaTracker implements java.io.Serializable
 	{
 	  wait(ms);
 	  result = checkAll(true);
-	  if ((System.currentTimeMillis() - start) < ms)
+	  if ((System.currentTimeMillis() - start) > ms)
 	    break;
 	}
     }
@@ -532,7 +538,7 @@ public class MediaTracker implements java.io.Serializable
 	{
 	  wait(ms);
 	  result = checkID(id, true);
-	  if ((System.currentTimeMillis() - start) < ms)
+	  if ((System.currentTimeMillis() - start) > ms)
 	    break;
 	}
     }
@@ -579,19 +585,22 @@ public class MediaTracker implements java.io.Serializable
    */
   public void removeImage(Image image)
   {
-    MediaEntry e = head;
-    MediaEntry prev = null;
-    while (e != null)
+    synchronized (this)
       {
-        if (e.image == image)
-	  {
-	    if (prev == null)
-	      head = e.next;
-	    else
-	      prev.next = e.next;
-	  }
-	prev = e;
-	e = e.next;
+        MediaEntry e = head;
+        MediaEntry prev = null;
+        while (e != null)
+          {
+            if (e.image == image)
+              {
+                if (prev == null)
+                  head = e.next;
+                else
+                  prev.next = e.next;
+              }
+            prev = e;
+            e = e.next;
+          }
       }
   }
 
@@ -602,21 +611,24 @@ public class MediaTracker implements java.io.Serializable
    */
   public void removeImage(Image image, int id)
   {
-    MediaEntry e = head;
-    MediaEntry prev = null;
-    while (e != null)
+    synchronized (this)
       {
-        if (e.id == id && e.image == image)
-	  {
-	    if (prev == null)
-	      head = e.next;
-	    else
-	      prev.next = e.next;
-	  }
-	else
-	  prev = e;
-	e = e.next;
-      }  
+        MediaEntry e = head;
+        MediaEntry prev = null;
+        while (e != null)
+          {
+            if (e.id == id && e.image == image)
+              {
+                if (prev == null)
+                  head = e.next;
+                else
+                  prev.next = e.next;
+              }
+            else
+              prev = e;
+            e = e.next;
+          }
+      }
   }
 
   /**
@@ -626,21 +638,24 @@ public class MediaTracker implements java.io.Serializable
    */
   public void removeImage(Image image, int id, int width, int height)
   {
-    MediaEntry e = head;
-    MediaEntry prev = null;
-    while (e != null)
+    synchronized (this)
       {
-        if (e.id == id && e.image == image
-	    && e.width == width && e.height == height)
-	  {
-	    if (prev == null)
-	      head = e.next;
-	    else
-	      prev.next = e.next;
-	  }
-	else
-	  prev = e;
-	e = e.next;
+        MediaEntry e = head;
+        MediaEntry prev = null;
+        while (e != null)
+          {
+            if (e.id == id && e.image == image
+                && e.width == width && e.height == height)
+              {
+                if (prev == null)
+                  head = e.next;
+                else
+                  prev.next = e.next;
+              }
+            else
+              prev = e;
+            e = e.next;
+          }
       }
   }
 }
