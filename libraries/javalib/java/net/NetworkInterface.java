@@ -61,11 +61,20 @@ public final class NetworkInterface
   private String name;
   private Vector inetAddresses;
 
-  private NetworkInterface(String name, InetAddress address)
+  NetworkInterface(String name, InetAddress address)
   {
     this.name = name;
     this.inetAddresses = new Vector(1, 1);
     this.inetAddresses.add(address);
+  }
+
+  NetworkInterface(String name, InetAddress[] addresses)
+  {
+    this.name = name;
+    this.inetAddresses = new Vector(addresses.length, 1);
+
+    for (int i = 0; i < addresses.length; i++)
+      this.inetAddresses.add(addresses[i]);
   }
 
   /**
