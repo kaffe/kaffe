@@ -131,7 +131,11 @@ public abstract class CharsetDecoder
 
     reset();
     out.flip ();
-    return out;
+
+    // Unfortunately, resizing the actual charbuffer array is required.
+    char[] resized = new char[out.remaining()];
+    out.get(resized);
+    return CharBuffer.wrap(resized);
   }
 
   public final CoderResult decode (ByteBuffer in, CharBuffer out,
@@ -156,7 +160,7 @@ public abstract class CharsetDecoder
             cr = decodeLoop (in, out);
           }
         catch (RuntimeException e)
-          {
+	  {
             throw new CoderMalfunctionError (e);
           }
 

@@ -183,7 +183,11 @@ public abstract class CharsetEncoder
       cr.throwException ();
 
     out.flip ();
-    return out;
+
+    // Unfortunately, resizing the actual bytebuffer array is required.
+    byte[] resized = new byte[out.remaining()];
+    out.get(resized);
+    return ByteBuffer.wrap(resized);
   }
 
   public final CoderResult encode (CharBuffer in, ByteBuffer out,

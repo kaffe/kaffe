@@ -62,23 +62,14 @@ import java.util.TreeMap;
  */
 public abstract class Charset implements Comparable
 {
-  private static CharsetEncoder cachedEncoder;
-  private static CharsetDecoder cachedDecoder;
+  private CharsetEncoder cachedEncoder;
+  private CharsetDecoder cachedDecoder;
  
   /**
    * Charset providers.
    */
   private static CharsetProvider[] providers;
   
-  static
-  {
-    synchronized (Charset.class)
-      {
-        cachedEncoder = null;
-        cachedDecoder = null;
-      }
-  }
-
   private final String canonicalName;
   private final String[] aliases;
   
@@ -92,6 +83,8 @@ public abstract class Charset implements Comparable
             checkName (aliases[i]);
       }
 
+    cachedEncoder = null;
+    cachedDecoder = null;
     this.canonicalName = canonicalName;
     this.aliases = aliases;
   }
@@ -296,8 +289,8 @@ public abstract class Charset implements Comparable
                 cachedEncoder = newEncoder ()
                   .onMalformedInput (CodingErrorAction.REPLACE)
                   .onUnmappableCharacter (CodingErrorAction.REPLACE);
-              }
-
+              } else
+ 	        cachedEncoder.reset();
             return cachedEncoder.encode (cb);
           }
       }
@@ -327,7 +320,8 @@ public abstract class Charset implements Comparable
                 cachedDecoder = newDecoder ()
                   .onMalformedInput (CodingErrorAction.REPLACE)
                   .onUnmappableCharacter (CodingErrorAction.REPLACE);
-              }
+              } else
+ 	        cachedDecoder.reset();
 
             return cachedDecoder.decode (bb);
           }

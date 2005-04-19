@@ -77,8 +77,14 @@ public final class Provider extends CharsetProvider
    */
   private final HashMap charsets;
 
+  /**
+   * We don't load all available charsets at the start
+   */
+  private boolean extendedLoaded;
+
   private Provider ()
   {
+    extendedLoaded = false;
     canonicalNames = new HashMap ();
     charsets = new HashMap ();
 
@@ -99,10 +105,83 @@ public final class Provider extends CharsetProvider
 
     // UTF-16
     addCharset (new UTF_16 ());
+
+    // UTF-16LE (marked)
+    addCharset (new UnicodeLittle ());
+
+    // Windows-1250 aka cp-1250 (East European)
+    addCharset (new Windows1250 ());
+
+    // Windows-1251 (Cyrillic)
+    addCharset (new Windows1251 ());
+
+    // Windows-1252 aka cp-1252 (Latin-1)
+    addCharset (new Windows1252 ());
+
+    // Windows-1253 (Greek)
+    addCharset (new Windows1253 ());
+
+    // Windows-1254 (Turkish)
+    addCharset (new Windows1254 ());
+
+    // Windows-1257 (Baltic)
+    addCharset (new Windows1257 ());
+
+    // ISO-8859-2 aka ISO-LATIN-2
+    addCharset (new ISO_8859_2 ());
+
+    // ISO-8859-4 aka ISO-LATIN-4
+    addCharset (new ISO_8859_4 ());
+
+    // ISO-8859-5 (Cyrillic)
+    addCharset (new ISO_8859_5 ());
+
+    // ISO-8859-7 (Greek)
+    addCharset (new ISO_8859_7 ());
+
+    // ISO-8859-9 aka ISO-LATIN-5
+    addCharset (new ISO_8859_9 ());
+
+    // ISO-8859-13 aka ISO-LATIN-7
+    addCharset (new ISO_8859_13 ());
+
+    // ISO-8859-15 aka ISO-LATIN-9
+    addCharset (new ISO_8859_15 ());
+
+    // KOI8 (Cyrillic)
+    addCharset (new KOI_8 ());
+  }
+
+ /**
+  * Load non-mandatory charsets.
+  */
+  private void loadExtended ()
+  {
+    if(extendedLoaded)
+      return;
+
+    addCharset (new ISO_8859_3 ());    // ISO-8859-3 aka ISO-LATIN-3
+    addCharset (new ISO_8859_6 ());    // ISO-8859-6 (Arabic)
+    addCharset (new ISO_8859_8 ());    // ISO-8859-8 (Hebrew)
+
+    // Some more codepages
+    addCharset (new Cp855()); // IBM Cyrillic
+    addCharset (new Cp857()); // IBM Turkish
+    addCharset (new Cp860()); // MSDOS Portugese
+    addCharset (new Cp861()); // MSDOS Icelandic
+    addCharset (new Cp862()); // PC Hebrew
+    addCharset (new Cp863()); // MSDOS Can. French
+    addCharset (new Cp864()); // PC Arabic
+    addCharset (new Cp865()); // MSDOS Nordic
+    addCharset (new Cp866()); // MSDOS Russian
+    addCharset (new Cp869()); // IBM modern Greek
+    addCharset (new Cp874()); // IBM Thai
+    extendedLoaded = true;
   }
 
   public Iterator charsets ()
   {
+    loadExtended();
     return Collections.unmodifiableCollection (charsets.values ())
                       .iterator ();
   }
@@ -119,7 +198,13 @@ public final class Provider extends CharsetProvider
    */
   public Charset charsetForName (String charsetName)
   {
-    return (Charset) charsets.get(canonicalNames.get(charsetName.toLowerCase()));
+    Charset cs = (Charset) charsets.get(canonicalNames.get(charsetName.toLowerCase()));
+    if(cs == null && !extendedLoaded)
+     {
+       loadExtended();
+       cs = (Charset) charsets.get(canonicalNames.get(charsetName.toLowerCase()));
+     }
+    return cs;
   }
 
   /**

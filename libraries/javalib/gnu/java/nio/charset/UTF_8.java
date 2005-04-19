@@ -95,7 +95,7 @@ final class UTF_8 extends Charset
     // Package-private to avoid a trampoline constructor.
     Decoder (Charset cs)
     {
-      super (cs, 1.0f, 1.0f);
+      super (cs, 1f, 1f);
     }
 
     protected CoderResult decodeLoop (ByteBuffer in, CharBuffer out)
@@ -108,8 +108,7 @@ final class UTF_8 extends Charset
             {
               char c;
               byte b1 = in.get ();
-              int highNibble = (b1 >> 4) & 0xF;
-
+              int highNibble = ((b1 & 0xFF) >> 4) & 0xF;
               switch (highNibble)
                 {
                   case 0: case 1: case 2: case 3:
@@ -118,7 +117,7 @@ final class UTF_8 extends Charset
                       return CoderResult.OVERFLOW;
                     out.put ((char) b1);
                     inPos++;
-                    break;
+                    break;		    
 
                   case 0xC: case 0xD:
                     byte b2;
@@ -154,6 +153,31 @@ final class UTF_8 extends Charset
                       return CoderResult.malformedForLength (3);
                     out.put (c);
                     inPos += 3;
+                    break;
+
+                  case 0xF:
+                    byte b4;
+                    if (in.remaining () < 3)
+                      return CoderResult.UNDERFLOW;
+		    if((b1&0x0F) > 4)
+                      return CoderResult.malformedForLength (4);
+                    if (out.remaining () < 2)
+                      return CoderResult.OVERFLOW;
+                    if (!isContinuation (b2 = in.get ()))
+                      return CoderResult.malformedForLength (3);
+                    if (!isContinuation (b3 = in.get ()))
+                      return CoderResult.malformedForLength (2);
+                    if (!isContinuation (b4 = in.get ()))
+                      return CoderResult.malformedForLength (1);
+		    int n = (((b1 & 0x3) << 18)
+			     | ((b2 & 0x3F) << 12)
+			     | ((b3 & 0x3F) << 6)
+			     | (b4 & 0x3F)) - 0x10000;
+		    char c1 = (char)(0xD800 | (n & 0xFFC00)>>10);
+		    char c2 = (char)(0xDC00 | (n & 0x003FF));
+                    out.put (c1);
+                    out.put (c2);
+                    inPos += 4;
                     break;
 
                   default:
@@ -217,7 +241,6 @@ final class UTF_8 extends Charset
             // u uuuu zzzz yyyy yyxx xxxx   1101 10ww wwzz zzyy   1111 0uuu  10uu zzzz  10yy yyyy  10xx xxxx
             //                            + 1101 11yy yyxx xxxx
             // Note: uuuuu = wwww + 1
-
             if (c <= 0x7F)
               {
                 if (remaining < 1)
@@ -256,11 +279,10 @@ final class UTF_8 extends Charset
                 // int value2 = (c - 0xD800) * 0x400 + (d - 0xDC00) + 0x10000;
                 int value = (((c & 0x3FF) << 10) | (d & 0x3FF)) + 0x10000;
                 // assert value == value2;
-                out.put ((byte) (0xF0 | (value >> 18)));
+                out.put ((byte) (0xF0 | ((value >> 18) & 0x07)));
                 out.put ((byte) (0x80 | ((value >> 12) & 0x3F)));
                 out.put ((byte) (0x80 | ((value >>  6) & 0x3F)));
                 out.put ((byte) (0x80 | ((value      ) & 0x3F)));
-                
                 inPos += 2;
               }
             else

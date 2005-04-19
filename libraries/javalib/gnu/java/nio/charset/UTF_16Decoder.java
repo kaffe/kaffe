@@ -55,8 +55,8 @@ final class UTF_16Decoder extends CharsetDecoder
   static final int LITTLE_ENDIAN = 1;
   static final int UNKNOWN_ENDIAN = 2;
 
-  private static final char BYTE_ORDER_MARK = '\uFEFF';
-  private static final char REVERSED_BYTE_ORDER_MARK = '\uFFFE';
+  private static final char BYTE_ORDER_MARK = 0xFEFF;
+  private static final char REVERSED_BYTE_ORDER_MARK = 0xFFFE;
 
   private final int originalByteOrder;
   private int byteOrder;
@@ -83,7 +83,7 @@ final class UTF_16Decoder extends CharsetDecoder
             // handle byte order mark
             if (byteOrder == UNKNOWN_ENDIAN)
               {
-                char c = (char) ((b1 << 8) | b2);
+                char c = (char) (((b1 & 0xFF) << 8) | (b2 & 0xFF));
                 if (c == BYTE_ORDER_MARK)
                   {
                     byteOrder = BIG_ENDIAN;
@@ -104,6 +104,7 @@ final class UTF_16Decoder extends CharsetDecoder
                   }
               }
 
+	    // FIXME: Change so you only do a single comparison here.
             char c = byteOrder == BIG_ENDIAN ? (char) ((b1 << 8) | b2)
                                              : (char) ((b2 << 8) | b1);
 

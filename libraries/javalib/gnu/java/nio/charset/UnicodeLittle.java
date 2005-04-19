@@ -1,5 +1,5 @@
-/* UTF_16LE.java -- 
-   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
+/* UnicodeLittle.java -- 
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,25 +43,16 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 /**
- * UTF-16LE charset.
- *
- * @author Jesse Rosenstock
+ * UTF-16 little endian with a byte-order mark
+ * Included for java.io completeness.
+ * ("UTF-16" is equal to UnicodeBig, and 
+ * UTF-16BE/LE do not have a BOM
  */
-final class UTF_16LE extends Charset
+final class UnicodeLittle extends Charset
 {
-  UTF_16LE ()
+  UnicodeLittle ()
   {
-    super ("UTF-16LE", new String[] {
-        // witnessed by the internet
-        "UTF16LE", 
-        /* These names are provided by
-         * http://oss.software.ibm.com/cgi-bin/icu/convexp?s=ALL
-         */
-        "x-utf-16le", "ibm-1202", "ibm-13490", "ibm-17586",
-        "UTF16_LittleEndian",
-        // see http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html
-        "UnicodeLittleUnmarked"
-    });
+    super ("UnicodeLittle", new String[] {});
   }
 
   public boolean contains (Charset cs)
@@ -73,11 +64,11 @@ final class UTF_16LE extends Charset
 
   public CharsetDecoder newDecoder ()
   {
-    return new UTF_16Decoder (this, UTF_16Decoder.LITTLE_ENDIAN);
+    return new UTF_16Decoder (this, UTF_16Decoder.UNKNOWN_ENDIAN);
   }
 
   public CharsetEncoder newEncoder ()
   {
-    return new UTF_16Encoder (this, UTF_16Encoder.LITTLE_ENDIAN, false);
+    return new UTF_16Encoder (this, UTF_16Encoder.LITTLE_ENDIAN, true);
   }
 }
