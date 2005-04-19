@@ -2,6 +2,32 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-13  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/MediaTracker.java:
+        Reindented tabs to spaces.
+
+	2005-04-13  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/MediaTracker.java
+        (MediaEntry.imageUpdate): Removed check for SOMEBITS, this
+        confused the media tracker and lead to lockups. The LOADING
+        bit is handled on other places.
+        (addImage): Removed the 'start image tracking' stuff. This
+        is not necessary and could confuse the media tracker.
+        (checkAll): Improved the check for image status so that
+        images that already complete images are detected. Also now
+        are really all images checked and if necessary loaded. Before
+        the method bailed out after the first incomplete image.
+        (statusAll): Detect images that are complete after the
+        call to Component.prepareImage(..).
+        (checkID): The same as in checkAll.
+        (statusID): The same as in statusAll.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/BasicMenuUI.java
