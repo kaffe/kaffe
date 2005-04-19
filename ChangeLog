@@ -2,6 +2,18 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-15  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/text/DecimalFormatSymbols.java:
+        Added retrieval of "XXX" instance in place of null.
+        * java/util/Currency.java,
+        (Currency(String)): New constructor for the XXX special case.
+        (getInstance(String)): Allow special case of "XXX".
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-15  Sven de Marothy  <sven@physto.se>
 
         * java/io/InputStreamReader.java,

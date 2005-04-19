@@ -199,6 +199,19 @@ public final class Currency
   }
 
   /**
+   * Constructor for the "XXX" special case.  This allows
+   * a Currency to be constructed from an assumed good
+   * currency code.
+   *
+   * @param code the code to use.
+   */  
+  private Currency(String code)
+  {
+    currencyCode = code;
+    fractionDigits = -1; /* Pseudo currency */
+  }
+
+  /**
    * Returns the ISO4217 currency code of this currency.
    *
    * @return a <code>String</code> containing currency code.
@@ -303,12 +316,16 @@ public final class Currency
 
     /* 
      * Throw a null pointer exception explicitly if currencyCode is null.
-     * One is not thrown otherwise.  It results in an IllegalArgumentException. 
+     * One is not thrown otherwise.  It results in an
+     * IllegalArgumentException. 
      */
     if (currencyCode == null)
       {
         throw new NullPointerException("The supplied currency code is null.");
       }
+    /* Nasty special case to allow an erroneous currency... blame Sun */
+    if (currencyCode.equals("XXX"))
+      return new Currency("XXX");
     Currency newCurrency = (Currency) cache.get(currencyCode);
     if (newCurrency == null)
       {

@@ -146,7 +146,7 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   {
     ResourceBundle res;
 
-    currency = null;
+    currency = Currency.getInstance("XXX");
     currencySymbol = "?";
     intlCurrencySymbol = "XXX";
     try
