@@ -4018,8 +4018,30 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/ComboPopup.java
 javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/DefaultMetalTheme.java \
+	javax/swing/plaf/metal/MetalBorders.java \
+	javax/swing/plaf/metal/MetalButtonUI.java \
+	javax/swing/plaf/metal/MetalCheckBoxUI.java \
+	javax/swing/plaf/metal/MetalComboBoxUI.java \
+	javax/swing/plaf/metal/MetalDesktopIconUI.java \
+	javax/swing/plaf/metal/MetalInternalFrameUI.java \
+	javax/swing/plaf/metal/MetalLabelUI.java \
 	javax/swing/plaf/metal/MetalLookAndFeel.java \
-	javax/swing/plaf/metal/MetalTheme.java
+	javax/swing/plaf/metal/MetalPopupMenuSeparatorUI.java \
+	javax/swing/plaf/metal/MetalProgressBarUI.java \
+	javax/swing/plaf/metal/MetalRadioButtonUI.java \
+	javax/swing/plaf/metal/MetalRootPaneUI.java \
+	javax/swing/plaf/metal/MetalScrollBarUI.java \
+	javax/swing/plaf/metal/MetalScrollPaneUI.java \
+	javax/swing/plaf/metal/MetalSeparatorUI.java \
+	javax/swing/plaf/metal/MetalSliderUI.java \
+	javax/swing/plaf/metal/MetalSplitPaneUI.java \
+	javax/swing/plaf/metal/MetalTabbedPaneUI.java \
+	javax/swing/plaf/metal/MetalTextFieldUI.java \
+	javax/swing/plaf/metal/MetalTheme.java \
+	javax/swing/plaf/metal/MetalToggleButtonUI.java \
+	javax/swing/plaf/metal/MetalToolBarUI.java \
+	javax/swing/plaf/metal/MetalToolTipUI.java \
+	javax/swing/plaf/metal/MetalTreeUI.java
 javax_swing_table_SRCS = \
 	javax/swing/table/AbstractTableModel.java \
 	javax/swing/table/DefaultTableCellRenderer.java \
