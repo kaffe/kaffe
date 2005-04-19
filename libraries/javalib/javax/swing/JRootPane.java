@@ -218,7 +218,7 @@ public class JRootPane extends JComponent
               menuBarSize = menuBar.getPreferredSize();
               if (menuBarSize.height > containerSize.height)
                 menuBarSize.height = containerSize.height;
-              menuBar.setBounds(0, 0, menuBarSize.width, menuBarSize.height);
+              menuBar.setBounds(0, 0, containerSize.width, menuBarSize.height);
               int remainingHeight = containerSize.height - menuBarSize.height;
               glassPane.setBounds(0, menuBarSize.height, containerSize.width,
                                   containerSize.height - menuBarSize.height);
