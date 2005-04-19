@@ -51,8 +51,8 @@ import java.util.Vector;
  * following way:
  * <pre>
  * a = new ContentModel('+', A, null); // a reprensents A+
- * b = new ContentModel('&', B, a); // b represents B & A+
- * c = new ContentModel('*', b, null); // c represents ( B & A+) *
+ * b = new ContentModel('&amp;', B, a); // b represents B &amp; A+
+ * c = new ContentModel('*', b, null); // c represents ( B &amp; A+) *
  * d = new ContentModel('|', new ContentModel('*', A, null),
  *          new ContentModel('?', B, null)); // d represents ( A* | B? )
  * </pre>
@@ -65,7 +65,7 @@ import java.util.Vector;
  * <li><code>A|B</code> both A and B are permitted in any order.
  * The '|' alone does not permit the repetetive occurence of A or B
  * (use <code>(A|B)*</code>.</li>
- * <li><code>A&B both A and B must occur once (in any order)</li>
+ * <li><code>A&amp;B</code> both A and B must occur once (in any order)</li>
  * </ul>
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
@@ -73,11 +73,11 @@ public final class ContentModel
   implements Serializable
 {
   /** Use serialVersionUID for interoperability. */
-  private final static long serialVersionUID = -1130825523866321257L;
+  private static final long serialVersionUID = -1130825523866321257L;
 
   /**
    * The next content model model ( = pointer to the next element of
-   * the linked list) for the binary expression (',','&' or '|'). Null
+   * the linked list) for the binary expression (',','&amp;' or '|'). Null
    * for the last element in the list.
    */
   public ContentModel next;
@@ -105,8 +105,8 @@ public final class ContentModel
    * Examples:
    *<code>
    * a = new ContentModel('+', A, null); // a reprensents A+
-   * b = new ContentModel('&', B, a);    // b represents  B & A+
-   * c = new ContentModel('*', b, null); // c represents  ( B & A+) *
+   * b = new ContentModel('&amp;', B, a);    // b represents  B &amp; A+
+   * c = new ContentModel('*', b, null); // c represents  ( B &amp; A+) *
    * d = new ContentModel('|', A,
    *    new ContentModel('?',b, null);
    *     // d represents
@@ -130,7 +130,7 @@ public final class ContentModel
 
   /**
    * Create a content model, involving binary expression of the given type.
-   * @param a_type The expression operation type ( ',', '|' or '&').
+   * @param a_type The expression operation type ( ',', '|' or '&amp;').
    * @param a_content The content of the left part of the expression.
    * @param a_next The content model, representing the right part of the
    * expression.

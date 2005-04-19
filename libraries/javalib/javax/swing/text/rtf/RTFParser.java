@@ -41,8 +41,9 @@ package javax.swing.text.rtf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import javax.swing.text.Document;
+
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 /**
  * Parses an RTF file into a {@link Document}. The parser utilizes

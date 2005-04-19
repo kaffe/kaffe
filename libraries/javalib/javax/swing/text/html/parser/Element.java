@@ -65,7 +65,7 @@ public final class Element
   /**
    * Package level mapper between type names and they string values.
    */
-  final static gnuStringIntMapper mapper =
+  static final gnuStringIntMapper mapper =
     new gnuStringIntMapper()
     {
       protected void create()
@@ -78,7 +78,7 @@ public final class Element
     };
 
   /** Use serialVersionUID for interoperability. */
-  private final static long serialVersionUID = -6717939384601675586L;
+  private static final long serialVersionUID = -6717939384601675586L;
 
   /**
    * The element attributes.

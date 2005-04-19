@@ -1,4 +1,4 @@
-/* Parser.java -- HTML parser.
+/* Parser.java -- HTML parser
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -34,12 +34,7 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
- 
-/*
-* FOR DEVELOPERS: To avoid regression, please run the package test
-* textsuite/javax.swing.text.html.parser/AllParserTests after your
-* modifications.
-*/
+
 
 package javax.swing.text.html.parser;
 
@@ -48,6 +43,12 @@ import java.io.Reader;
 
 import javax.swing.text.ChangedCharSetException;
 import javax.swing.text.SimpleAttributeSet;
+
+/*
+ * FOR DEVELOPERS: To avoid regression, please run the package test
+ * textsuite/javax.swing.text.html.parser/AllParserTests after your
+ * modifications.
+ */
 
 /**
  * <p>A simple error-tolerant HTML parser that uses a DTD document
@@ -159,7 +160,7 @@ public class Parser
           }
 
           protected final void startTag(TagElement tag)
-                                 throws ChangedCharSetException
+            throws ChangedCharSetException
           {
             j.startTag(tag);
           }
@@ -188,7 +189,7 @@ public class Parser
    * @throws IOException If the reader throws one.
    */
   public synchronized void parse(Reader reader)
-                          throws IOException
+    throws IOException
   {
     gnu.parse(reader);
   }
@@ -199,7 +200,7 @@ public class Parser
    * @throws java.io.IOException
    */
   public String parseDTDMarkup()
-                        throws IOException
+    throws IOException
   {
     return gnu.parseDTDMarkup();
   }
@@ -211,8 +212,8 @@ public class Parser
    * @return true if this is a valid DTD markup declaration.
    * @throws IOException
    */
-  public boolean parseMarkupDeclarations(StringBuffer strBuff)
-                                  throws IOException
+  protected boolean parseMarkupDeclarations(StringBuffer strBuff)
+    throws IOException
   {
     return gnu.parseMarkupDeclarations(strBuff);
   }
@@ -330,7 +331,7 @@ public class Parser
    * @throws javax.swing.text.ChangedCharSetException
    */
   protected void handleEmptyTag(TagElement tag)
-                         throws javax.swing.text.ChangedCharSetException
+    throws ChangedCharSetException
   {
   }
 
@@ -429,7 +430,7 @@ public class Parser
    * @param The tag
    */
   protected void startTag(TagElement tag)
-                   throws ChangedCharSetException
+    throws ChangedCharSetException
   {
   }
 }

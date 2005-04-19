@@ -35,9 +35,8 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
- 
-package javax.swing.text.html.parser;
 
+package javax.swing.text.html.parser;
 
 /**
  * <p>This class defines the SGML basic types, used for describing HTML 4.01

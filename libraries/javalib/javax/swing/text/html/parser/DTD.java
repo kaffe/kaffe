@@ -42,11 +42,8 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -79,7 +76,7 @@ import java.util.Vector;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public class DTD
-  implements DTDConstants, Serializable
+  implements DTDConstants
 {
   /**
    * The version of the persistent data format.
@@ -201,8 +198,7 @@ public class DTD
    */
   public Element getElement(String element_name)
   {
-    Element e = newElement(element_name);
-    return e;
+    return newElement(element_name);
   }
 
   /**

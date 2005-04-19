@@ -4,6 +4,35 @@
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
+        * javax/swing/text/html/HTMLFrameHyperlinkEvent.java:
+        Reformatted.
+        * javax/swing/text/html/parser/AttributeList.java:
+        Fixed order of modifiers.
+        (AttributeList): Made final.
+        * javax/swing/text/html/parser/ContentModel.java:
+        Fixed html characters in javadocs.
+        * javax/swing/text/html/parser/DTD.java
+        (DTD): Don't implement java.io.Serializable directly.
+        (getElement): Simplified.
+        * javax/swing/text/html/parser/DTDConstants.java:
+        Reformatted file.
+        * javax/swing/text/html/parser/Element.java:
+        Fixed order of modifiers.
+        * javax/swing/text/html/parser/Parser.java:
+        Reformatted. Don't use fully-qualified class names.
+        * javax/swing/text/html/parser/ParserDelegator.java:
+        Fixed order of modifiers.
+        * javax/swing/text/rtf/RTFParser.java:
+        Re-ordered import statements.
+        * javax/swing/text/rtf/RTFScanner.java:
+        Removed unused import statement.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-04-12  Michael Koch  <konqueror@gmx.de>
+
         * java/awt/image/RasterOp.java:
         Fixed wrong formatting.
 

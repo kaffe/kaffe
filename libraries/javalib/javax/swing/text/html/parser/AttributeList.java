@@ -42,8 +42,8 @@ import gnu.javax.swing.text.html.parser.support.gnuStringIntMapper;
 
 import java.io.Serializable;
 
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p>
@@ -69,11 +69,11 @@ import java.util.Enumeration;
  * </p>
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class AttributeList
+public final class AttributeList
   implements DTDConstants, Serializable
 {
   /** Maps between type names and they string values. */
-  private final static gnuStringIntMapper mapper =
+  private static final gnuStringIntMapper mapper =
     new gnuStringIntMapper()
     {
       protected void create()
@@ -97,7 +97,7 @@ public class AttributeList
     };
 
   /** Use serialVersionUID for interoperability. */
-  private final static long serialVersionUID = -1361214058742015233L;
+  private static final long serialVersionUID = -1361214058742015233L;
 
   /**
    * The value of ( = pointer to ) the next attribute in the linked list,

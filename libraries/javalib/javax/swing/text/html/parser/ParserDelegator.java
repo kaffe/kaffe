@@ -1,5 +1,5 @@
 /* ParserDelegator.java -- Delegator for ParserDocument.
-   Copyright (C) 2005 Free Software Foundation, Inc.
+    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,7 +35,6 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package javax.swing.text.html.parser;
 
 import gnu.javax.swing.text.html.parser.HTML_401F;
@@ -65,7 +64,7 @@ public class ParserDelegator
   private class gnuParser
     extends gnu.javax.swing.text.html.parser.support.Parser
   {
-    private final static long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     private gnuParser(DTD d)
     {
@@ -121,7 +120,8 @@ public class ParserDelegator
   /**
    * Use serialVersionUID for interoperability.
    */
-  private final static long serialVersionUID = -1276686502624777206L;
+  private static final long serialVersionUID = -1276686502624777206L;
+
   private static DTD dtd = HTML_401F.getInstance();
 
   /**

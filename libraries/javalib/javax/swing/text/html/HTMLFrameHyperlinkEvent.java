@@ -65,8 +65,7 @@ public class HTMLFrameHyperlinkEvent
    * @param frame - the Frame to display the document in.
    */
   public HTMLFrameHyperlinkEvent(Object source, EventType type, URL url,
-                                 Element element, String frame
-                                )
+                                 Element element, String frame)
   {
     super(source, type, url, frame, element);
     target_frame = frame;
@@ -81,8 +80,7 @@ public class HTMLFrameHyperlinkEvent
    * @param frame - the Frame to display the document in.
    */
   public HTMLFrameHyperlinkEvent(Object source, EventType type, URL url,
-                                 String frame
-                                )
+                                 String frame)
   {
     super(source, type, url, frame);
     target_frame = frame;
@@ -100,8 +98,7 @@ public class HTMLFrameHyperlinkEvent
    */
   public HTMLFrameHyperlinkEvent(Object source, EventType type, URL url,
                                  String description, Element element,
-                                 String frame
-                                )
+                                 String frame)
   {
     super(source, type, url, description, element);
     target_frame = frame;
@@ -117,8 +114,7 @@ public class HTMLFrameHyperlinkEvent
    * @param frame - the Frame to display the document in.
    */
   public HTMLFrameHyperlinkEvent(Object source, EventType type, URL url,
-                                 String description, String frame
-                                )
+                                 String description, String frame)
   {
     super(source, type, url, description);
     target_frame = frame;
