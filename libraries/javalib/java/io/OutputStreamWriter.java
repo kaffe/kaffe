@@ -38,8 +38,17 @@ exception statement from your version. */
 
 package java.io;
 
-import gnu.java.io.EncodingManager;
-import gnu.java.io.encode.Encoder;
+import gnu.java.nio.charset.EncodingHelper;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 
 /**
  * This class writes characters to an output stream that is byte oriented
@@ -76,13 +85,26 @@ import gnu.java.io.encode.Encoder;
  */
 public class OutputStreamWriter extends Writer
 {
+  /**
+   * The output stream.
+   */
+  private OutputStream out;
 
   /**
-   * This is the byte-character encoder class that does the writing and
-   * translation of characters to bytes before writing to the underlying
-   * class.
+   * The charset encoder.
    */
-  private Encoder out;
+  private CharsetEncoder encoder;
+
+  /**
+   * java.io canonical name of the encoding.
+   */
+  private String encodingName;
+
+  /**
+   * Buffer output before character conversion as it has costly overhead.
+   */
+  private CharBuffer outputBuffer;
+  private final static int BUFFER_SIZE = 1024;
 
   /**
    * This method initializes a new instance of <code>OutputStreamWriter</code>
@@ -100,7 +122,54 @@ public class OutputStreamWriter extends Writer
   public OutputStreamWriter (OutputStream out, String encoding_scheme) 
     throws UnsupportedEncodingException
   {
-    this.out = EncodingManager.getEncoder (out, encoding_scheme);
+    this.out = out;
+    try 
+    {
+      // Don't use NIO if avoidable
+      if(EncodingHelper.isISOLatin1(encoding_scheme))
+      {
+	encodingName = "ISO8859_1";
+	encoder = null;
+	return;
+      }
+
+      /*
+       * Workraround for encodings with a byte-order-mark.
+       * We only want to write it once per stream.
+       */
+      try {
+	if(encoding_scheme.equalsIgnoreCase("UnicodeBig") || 
+	   encoding_scheme.equalsIgnoreCase("UTF-16") ||
+	   encoding_scheme.equalsIgnoreCase("UTF16"))
+	{
+	  encoding_scheme = "UTF-16BE";	  
+	  out.write((byte)0xFE);
+	  out.write((byte)0xFF);
+	} else if(encoding_scheme.equalsIgnoreCase("UnicodeLittle")){
+	  encoding_scheme = "UTF-16LE";
+	  out.write((byte)0xFF);
+	  out.write((byte)0xFE);
+	}
+      } catch(IOException ioe){
+      }
+
+      outputBuffer = CharBuffer.allocate(BUFFER_SIZE);
+
+      Charset cs = EncodingHelper.getCharset(encoding_scheme);
+      if(cs == null)
+	throw new UnsupportedEncodingException("Encoding "+encoding_scheme+
+ 					       " unknown");
+      encoder = cs.newEncoder();
+      encodingName = EncodingHelper.getOldCanonical(cs.name());
+
+      encoder.onMalformedInput(CodingErrorAction.REPLACE);
+      encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+    } catch(RuntimeException e) {
+      // Default to ISO Latin-1, will happen if this is called, for instance,
+      //  before the NIO provider is loadable.
+      encoder = null; 
+      encodingName = "ISO8859_1";
+    }
   }
 
   /**
@@ -111,7 +180,24 @@ public class OutputStreamWriter extends Writer
    */
   public OutputStreamWriter (OutputStream out)
   {
-    this.out = EncodingManager.getEncoder (out);
+    this.out = out;
+    outputBuffer = null;
+    try 
+    {
+      String encoding = System.getProperty("file.encoding");
+      Charset cs = Charset.forName(encoding);
+      encoder = cs.newEncoder();
+      encodingName =  EncodingHelper.getOldCanonical(cs.name());
+    } catch(RuntimeException e) {
+      encoder = null; 
+      encodingName = "ISO8859_1";
+    }
+    if(encoder != null)
+    {
+      encoder.onMalformedInput(CodingErrorAction.REPLACE);
+      encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+      outputBuffer = CharBuffer.allocate(BUFFER_SIZE);
+    }
   }
 
   /**
@@ -122,7 +208,11 @@ public class OutputStreamWriter extends Writer
    */
   public void close () throws IOException
   {
+    if(out == null)
+      throw new IOException("Stream is closed.");
+    flush();
     out.close ();
+    out = null;
   }
 
   /**
@@ -134,7 +224,7 @@ public class OutputStreamWriter extends Writer
    */
   public String getEncoding ()
   {
-    return out != null ? out.getSchemeName () : null;
+    return out != null ? encodingName : null;
   }
 
   /**
@@ -144,7 +234,18 @@ public class OutputStreamWriter extends Writer
    */
   public void flush () throws IOException
   {
-    out.flush ();
+      if(out != null){	  
+	  if(outputBuffer != null){
+	      char[] buf = new char[outputBuffer.position()];
+	      if(buf.length > 0){
+		  outputBuffer.flip();
+		  outputBuffer.get(buf);
+		  writeConvert(buf, 0, buf.length);
+		  outputBuffer.clear();
+	      }
+	  }
+	  out.flush ();
+      }
   }
 
   /**
@@ -160,7 +261,64 @@ public class OutputStreamWriter extends Writer
    */
   public void write (char[] buf, int offset, int count) throws IOException
   {
-    out.write (buf, offset, count);
+    if(out == null)
+      throw new IOException("Stream is closed.");
+    if(buf == null)
+      throw new IOException("Buffer is null.");
+
+    if(outputBuffer != null)
+	{
+	    if(count >= outputBuffer.remaining())
+		{
+		    int r = outputBuffer.remaining();
+		    outputBuffer.put(buf, offset, r);
+		    writeConvert(outputBuffer.array(), 0, BUFFER_SIZE);
+		    outputBuffer.clear();
+		    offset += r;
+		    count -= r;
+		    // if the remaining bytes is larger than the whole buffer, 
+		    // just don't buffer.
+		    if(count >= outputBuffer.remaining()){
+                      writeConvert(buf, offset, count);
+		      return;
+		    }
+		}
+	    outputBuffer.put(buf, offset, count);
+	} else writeConvert(buf, offset, count);
+  }
+
+ /**
+  * Converts and writes characters.
+  */
+  private void writeConvert (char[] buf, int offset, int count) 
+      throws IOException
+  {
+    if(encoder == null)
+    {
+      byte[] b = new byte[count];
+      for(int i=0;i<count;i++)
+	b[i] = (byte)((buf[offset+i] <= 0xFF)?buf[offset+i]:'?');
+      out.write(b);
+    } else {
+      try  {
+	ByteBuffer output = encoder.encode(CharBuffer.wrap(buf,offset,count));
+	encoder.reset();
+	if(output.hasArray())
+	  out.write(output.array());
+	else
+	  {
+	    byte[] outbytes = new byte[output.remaining()];
+	    output.get(outbytes);
+	    out.write(outbytes);
+	  }
+      } catch(IllegalStateException e) {
+	throw new IOException("Internal error.");
+      } catch(MalformedInputException e) {
+	throw new IOException("Invalid character sequence.");
+      } catch(CharacterCodingException e) {
+	throw new IOException("Unmappable character.");
+      }
+    }
   }
 
   /**
@@ -177,7 +335,10 @@ public class OutputStreamWriter extends Writer
    */
   public void write (String str, int offset, int count) throws IOException
   {
-    out.write (str, offset, count);
+    if(str == null)
+      throw new IOException("String is null.");
+
+    write(str.toCharArray(), offset, count);
   }
 
   /**
@@ -189,8 +350,7 @@ public class OutputStreamWriter extends Writer
    */
   public void write (int ch) throws IOException
   {
-    out.write (ch);
+    write(new char[]{ (char)ch }, 0, 1);
   }
-
 } // class OutputStreamWriter
 

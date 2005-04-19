@@ -2,6 +2,17 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-15  Sven de Marothy  <sven@physto.se>
+
+        * java/io/InputStreamReader.java,
+        * java/io/OutputStreamWriter.java,
+        * java/lang/String.java: Move to NIO charsets.
+        * java/io/PrintStream.java: Inline conversion using String.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-14  Chris Burdess  <dog@gnu.org>
 
         * java/io/DataOutputStream.java (writeUTF): Use block write for

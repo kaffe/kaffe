@@ -17,6 +17,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.CharConversionException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -126,11 +135,34 @@ public String(byte ascii[], int hibyte) {
   {
     if (offset < 0 || count < 0 || offset + count > data.length)
       throw new StringIndexOutOfBoundsException();
-    // XXX Consider using java.nio here.
-    value = EncodingManager.getDecoder(encoding)
-        .convertToChars(data, offset, count);
-    this.offset = 0;
-    this.count = value.length;
+    try 
+      {
+        CharsetDecoder csd = Charset.forName(encoding).newDecoder();
+	csd.onMalformedInput(CodingErrorAction.REPLACE);
+	csd.onUnmappableCharacter(CodingErrorAction.REPLACE);
+	CharBuffer cbuf = csd.decode(ByteBuffer.wrap(data, offset, count));
+ 	if(cbuf.hasArray())
+ 	  {
+ 	    value = cbuf.array();
+	    this.offset = cbuf.position();
+	    this.count = cbuf.remaining();
+ 	  } else {
+	    // Doubt this will happen. But just in case.
+	    value = new char[cbuf.remaining()];
+	    cbuf.get(value);
+	    this.offset = 0;
+	    this.count = value.length;
+	  }
+      } catch(CharacterCodingException e){
+	  throw new UnsupportedEncodingException("Encoding: "+encoding+
+						 " not found.");	  
+      } catch(IllegalCharsetNameException e){
+	  throw new UnsupportedEncodingException("Encoding: "+encoding+
+						 " not found.");
+      } catch(UnsupportedCharsetException e){
+	  throw new UnsupportedEncodingException("Encoding: "+encoding+
+						 " not found.");
+      }    
   }
 
 /**

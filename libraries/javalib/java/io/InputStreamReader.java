@@ -38,12 +38,16 @@ exception statement from your version. */
 
 package java.io;
 
-import java.nio.channels.Channels;
+import java.nio.charset.UnsupportedCharsetException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-
-import gnu.java.io.EncodingManager;
-import gnu.java.io.decode.Decoder;
+import java.nio.CharBuffer;
+import java.nio.ByteBuffer;
+import gnu.java.nio.charset.EncodingHelper;
 
 /**
  * This class reads characters from a byte input stream.   The characters
@@ -86,20 +90,50 @@ import gnu.java.io.decode.Decoder;
  * @see BufferedReader
  * @see InputStream
  *
+ * @author Robert Schuster
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @author Per Bothner (bothner@cygnus.com)
  * @date April 22, 1998.  
  */
 public class InputStreamReader extends Reader
 {
-  /*
-   * This is the byte-character decoder class that does the reading and
-   * translation of bytes from the underlying stream.
+  /**
+   * The input stream.
    */
-  private Reader in;
+  private InputStream in;
 
+  /**
+   * The charset decoder.
+   */
+  private CharsetDecoder decoder;
+
+  /**
+   * End of stream reached.
+   */
+  private boolean isDone = false;
+
+  /**
+   * Need this.
+   */
+  private float maxBytesPerChar;
+
+  /**
+   * Buffer holding surplus loaded bytes (if any)
+   */
+  private ByteBuffer byteBuffer;
+
+  /**
+   * java.io canonical name of the encoding.
+   */
   private String encoding;
-  
+
+  /**
+   * We might decode to a 2-char UTF-16 surrogate, which won't fit in the
+   * output buffer. In this case we need to save the surrogate char.
+   */
+  private char savedSurrogate;
+  private boolean hasSavedSurrogate = false;
+
   /**
    * This method initializes a new instance of <code>InputStreamReader</code>
    * to read from the specified stream using the default encoding.
@@ -110,11 +144,38 @@ public class InputStreamReader extends Reader
   {
     if (in == null)
       throw new NullPointerException();
-    
-    Decoder decoder =  EncodingManager.getDecoder(in);
-    encoding = decoder.getSchemeName();
-    
-    this.in = decoder;
+    this.in = in;
+    try 
+	{ 
+	  encoding = System.getProperty("file.encoding");
+	  // Don't use NIO if avoidable
+	  if(EncodingHelper.isISOLatin1(encoding))
+	    {
+	      encoding = "ISO8859_1";
+	      maxBytesPerChar = 1f;
+	      decoder = null;
+	      return;
+	    }
+	  Charset cs = EncodingHelper.getCharset(encoding);
+	  decoder = cs.newDecoder();
+	  encoding = EncodingHelper.getOldCanonical(cs.name());
+	  try {
+	      maxBytesPerChar = cs.newEncoder().maxBytesPerChar();
+	  } catch(UnsupportedOperationException _){
+	      maxBytesPerChar = 1f;
+	  } 
+	  decoder.onMalformedInput(CodingErrorAction.REPLACE);
+	  decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+	  decoder.reset();
+	} catch(RuntimeException e) {
+	  encoding = "ISO8859_1";
+	  maxBytesPerChar = 1f;
+	  decoder = null;
+	} catch(UnsupportedEncodingException e) {
+	  encoding = "ISO8859_1";
+	  maxBytesPerChar = 1f;
+	  decoder = null;
+	}
   }
 
   /**
@@ -136,41 +197,72 @@ public class InputStreamReader extends Reader
         || encoding_name == null)
       throw new NullPointerException();
     
-    Decoder decoder = EncodingManager.getDecoder(in, encoding_name);
-    encoding = decoder.getSchemeName();
-    
-    this.in = decoder;
-    
+    this.in = in;
+    // Don't use NIO if avoidable
+    if(EncodingHelper.isISOLatin1(encoding_name))
+      {
+	encoding = "ISO8859_1";
+	maxBytesPerChar = 1f;
+	decoder = null;
+	return;
+      }
+    try {
+      Charset cs = EncodingHelper.getCharset(encoding_name);
+      try {
+        maxBytesPerChar = cs.newEncoder().maxBytesPerChar();
+      } catch(UnsupportedOperationException _){
+	maxBytesPerChar = 1f;
+      } 
+
+      decoder = cs.newDecoder();
+      decoder.onMalformedInput(CodingErrorAction.REPLACE);
+      decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+      decoder.reset();
+
+      // The encoding should be the old name, if such exists.
+      encoding = EncodingHelper.getOldCanonical(cs.name());
+    } catch(RuntimeException e) {
+      encoding = "ISO8859_1";
+      maxBytesPerChar = 1f;
+      decoder = null;
+    }
   }
 
   /**
    * Creates an InputStreamReader that uses a decoder of the given
    * charset to decode the bytes in the InputStream into
    * characters.
-   * @since 1.4
    */
-  public InputStreamReader(InputStream in, Charset charset)
-  {
-    /* FIXME: InputStream is wrapped in Channel which is read by a
-     * Reader-implementation for channels. However to fix this we
-     * need to completely move to NIO-style character
-     * encoding/decoding.
-     */
-    this.in = Channels.newReader(Channels.newChannel(in), charset.newDecoder(),
-				 -1);
-    encoding = charset.name();
+  public InputStreamReader(InputStream in, Charset charset) {
+    this.in = in;
+    decoder = charset.newDecoder();
+
+    // JDK reports errors, so we do the same.
+    decoder.onMalformedInput(CodingErrorAction.REPORT);
+    decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+    decoder.reset();
+    encoding = EncodingHelper.getOldCanonical(charset.name());
   }
 
   /**
    * Creates an InputStreamReader that uses the given charset decoder
    * to decode the bytes in the InputStream into characters.
-   * @since 1.4
    */
-  public InputStreamReader(InputStream in, CharsetDecoder decoder)
-  {
-    // FIXME: see {@link InputStreamReader(InputStream, Charset)
-    this.in = Channels.newReader(Channels.newChannel(in), decoder, -1);
-    encoding = decoder.charset().name();
+  public InputStreamReader(InputStream in, CharsetDecoder decoder) {
+    this.in = in;
+    this.decoder = decoder;
+
+    try {
+	maxBytesPerChar = decoder.charset().newEncoder().maxBytesPerChar();
+    } catch(UnsupportedOperationException _){
+	maxBytesPerChar = 1f;
+    } 
+
+    // JDK reports errors, so we do the same.
+    decoder.onMalformedInput(CodingErrorAction.REPORT);
+    decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+    decoder.reset();
+    encoding = EncodingHelper.getOldCanonical(decoder.charset().name());      
   }
   
   /**
@@ -183,9 +275,14 @@ public class InputStreamReader extends Reader
   {
     synchronized (lock)
       {
+	// Makes sure all intermediate data is released by the decoder.
+	if (decoder != null)
+	   decoder.reset();
 	if (in != null)
-	  in.close();
+	   in.close();
 	in = null;
+	isDone = true;
+	decoder = null;
       }
   }
 
@@ -202,7 +299,7 @@ public class InputStreamReader extends Reader
   }
 
   /**
-   * This method checks to see if the stream is read to be read.  It
+   * This method checks to see if the stream is ready to be read.  It
    * will return <code>true</code> if is, or <code>false</code> if it is not.
    * If the stream is not ready to be read, it could (although is not required
    * to) block on the next read attempt.
@@ -217,7 +314,7 @@ public class InputStreamReader extends Reader
     if (in == null)
       throw new IOException("Reader has been closed");
     
-    return in.ready();
+    return in.available() != 0;
   }
 
   /**
@@ -233,45 +330,108 @@ public class InputStreamReader extends Reader
    *
    * @exception IOException If an error occurs
    */
-  public int read (char[] buf, int offset, int length) throws IOException
+  public int read(char[] buf, int offset, int length) throws IOException
   {
     if (in == null)
       throw new IOException("Reader has been closed");
-    
-    return in.read(buf, offset, length);
+    if (isDone)
+      return -1;
+
+    if(decoder != null){
+	int totalBytes = (int)((double)length * maxBytesPerChar);
+	byte[] bytes = new byte[totalBytes];
+
+	int remaining = 0;
+	if(byteBuffer != null)
+	{
+	    remaining = byteBuffer.remaining();
+	    byteBuffer.get(bytes, 0, remaining);
+	}
+	int read;
+	if(totalBytes - remaining > 0)
+	  {
+	    read = in.read(bytes, remaining, totalBytes - remaining);
+	    if(read == -1){
+	      read = remaining;
+	      isDone = true;
+	    } else
+	      read += remaining;
+	  } else 
+            read = remaining;
+	byteBuffer = ByteBuffer.wrap(bytes, 0, read);	
+	CharBuffer cb = CharBuffer.wrap(buf, offset, length);
+
+ 	if(hasSavedSurrogate){
+ 	    hasSavedSurrogate = false;
+ 	    cb.put(savedSurrogate);
+	    read++;
+ 	}
+
+	CoderResult cr = decoder.decode(byteBuffer, cb, isDone);
+	decoder.reset();
+
+	// 1 char remains which is the first half of a surrogate pair.
+	if(cr.isOverflow() && cb.hasRemaining()){
+	    CharBuffer overflowbuf = CharBuffer.allocate(2);
+	    cr = decoder.decode(byteBuffer, overflowbuf, isDone);
+	    overflowbuf.flip();
+	    cb.put(overflowbuf.get());
+ 	    savedSurrogate = overflowbuf.get();
+ 	    hasSavedSurrogate = true;	    
+	    isDone = false;
+	}
+
+	if(byteBuffer.hasRemaining()) {
+	    byteBuffer.compact();
+	    byteBuffer.flip();	  
+	    isDone = false;
+	} else
+	    byteBuffer = null;
+
+	return (read == 0)?-1:cb.position();
+    } else {
+	byte[] bytes = new byte[length];
+	int read = in.read(bytes);
+	for(int i=0;i<read;i++)
+          buf[offset+i] = (char)(bytes[i]&0xFF);
+	return read;
+    }
   }
 
   /**
-   * This method reads a single character of data from the stream.
+   * Reads an char from the input stream and returns it
+   * as an int in the range of 0-65535.  This method also will return -1 if
+   * the end of the stream has been reached.
+   * <p>
+   * This method will block until the char can be read.
    *
-   * @return The char read, as an int, or -1 if end of stream.
+   * @return The char read or -1 if end of stream
    *
    * @exception IOException If an error occurs
    */
   public int read() throws IOException
   {
-    if (in == null)
-      throw new IOException("Reader has been closed");
-    
-    return in.read();
+    char[] buf = new char[1];
+    int count = read(buf, 0, 1);
+    return count > 0 ? buf[0] : -1;
   }
 
-   /**
-    * Skips the specified number of chars in the stream.  It
-    * returns the actual number of chars skipped, which may be less than the
-    * requested amount.
-    *
-    * @param count The requested number of chars to skip
-    *
-    * @return The actual number of chars skipped.
-    *
-    * @exception IOException If an error occurs
-    */
+  /**
+   * Skips the specified number of chars in the stream.  It
+   * returns the actual number of chars skipped, which may be less than the
+   * requested amount.
+   *
+   * @param count The requested number of chars to skip
+   *
+   * @return The actual number of chars skipped.
+   *
+   * @exception IOException If an error occurs
+   */
    public long skip(long count) throws IOException
    {
      if (in == null)
        throw new IOException("Reader has been closed");
      
      return super.skip(count);
-  }
+   }
 }
