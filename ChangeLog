@@ -4,6 +4,22 @@
 
 	2005-04-08  Roman Kennke  <roman@kennke.org>
 
+        * java/awt/MediaTracker.java
+        (MediaEntry.imageUpdate): Fixed flags. The different flags
+        must not be ORed together.
+        (checkAll): Modified to handle different meaning of the flags.
+        (waitForAll): Fixed so that it waits maximum the
+        specified amount of milliseconds.
+        (statusAll): Modified to handle different meaning of the flags.
+        (waitForID): Fixed so that it waits maximum the
+        specified amount of milliseconds.
+
+2005-04-18  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-04-08  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/text/ImageIcon.java
         (ImageIcon): Use setImage instead of direct assignment.
         (setImage): Call loadImage to make sure that the image is loaded.

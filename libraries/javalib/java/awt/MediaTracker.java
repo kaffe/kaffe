@@ -76,9 +76,9 @@ public class MediaTracker implements java.io.Serializable
 			       int width, int height)
     {
       if ((flags & ABORT) != 0)
-        status = ABORTED | COMPLETE;
+        status = ABORTED;
       else if ((flags & ERROR) != 0)
-        status = ERRORED | COMPLETE;
+        status = ERRORED;
       else if ((flags & ALLBITS) != 0)
         status = COMPLETE;
       else if ((flags & SOMEBITS) != 0)
@@ -86,15 +86,13 @@ public class MediaTracker implements java.io.Serializable
       else
         status = 0;
 
-      if ((status & COMPLETE) == COMPLETE)
-      {
-        synchronized (MediaTracker.this)
-        {
+      synchronized (MediaTracker.this)
+	{
           MediaTracker.this.notifyAll();
         }
-      }
+
       // If status is not COMPLETE then we need more updates.
-      return (status & COMPLETE) == 0;
+      return ((status & (COMPLETE | ERRORED | ABORTED)) == 0);
     }
   }
 
@@ -141,7 +139,7 @@ public class MediaTracker implements java.io.Serializable
     
     while (e != null)
       {
-	if ((e.status & COMPLETE) == 0)
+	if ((e.status & (COMPLETE | ERRORED | ABORTED)) == 0)
 	  {
 	    if (load)
 	      {
@@ -204,15 +202,19 @@ public class MediaTracker implements java.io.Serializable
   public boolean waitForAll(long ms) throws InterruptedException
   {
     long start = System.currentTimeMillis();
+    boolean result = checkAll(true);
     synchronized (this)
     {
-      while (!checkAll(true))
-        wait(ms);
+      while (result == false)
+	{
+	  wait(ms);
+	  result = checkAll(true);
+	  if ((System.currentTimeMillis() - start) < ms)
+	    break;
+	}
     }
-    if ((System.currentTimeMillis() - start) < ms)
-      return true;
-    else
-      return false;
+
+    return result;
   }
 
   public int statusAll(boolean load)
@@ -244,7 +246,7 @@ public class MediaTracker implements java.io.Serializable
     
     while (e != null)
       {
-	if (e.id == id && ((e.status & COMPLETE) == 0))
+	if (e.id == id && ((e.status & (COMPLETE | ABORTED | ERRORED)) == 0))
 	  {
 	    if (load)
 	      {
@@ -309,15 +311,20 @@ public class MediaTracker implements java.io.Serializable
   {
     MediaEntry e = head;
     long start = System.currentTimeMillis();
+    boolean result = checkID(id, true);
+
     synchronized (this)
     {
-      while (checkID (id, true) == false)
-        wait(ms);
-    }  
-    if ((System.currentTimeMillis() - start) < ms)
-      return true;
-    else
-      return false;
+      while (result == false)
+	{
+	  wait(ms);
+	  result = checkID(id, true);
+	  if ((System.currentTimeMillis() - start) < ms)
+	    break;
+	}
+    }
+
+    return result;
   }
 
   public int statusID(int id, boolean load)
