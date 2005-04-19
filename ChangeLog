@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-10  Sven de Marothy  <sven@physto.se>
+
+        * java/text/SimpleDateFormat.java:
+        (formatWithAttribute): Pad year before truncating digits.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-15  Sven de Marothy  <sven@physto.se>
 
         * gnu/java/nio/charset/EncodingHelper.java: Added method
