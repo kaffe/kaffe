@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-11  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/MediaTracker.java
+        Added API documentation.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-11  Michael Koch  <konqueror@gmx.de>
 
         * javax/imageio/ImageIO.java (ReaderFormatFilter.filter):
