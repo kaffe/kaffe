@@ -2,6 +2,14 @@
 
         Resynced with GNU Classpath.
 
+	2005-04-12  Audrius Meskauskas, Lithuania  <AudriusA@Bioinformatics.org>
+
+        * javax/swing/text/html/HTMLDocument.java: New file.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/text/html/HTMLFrameHyperlinkEvent.java:

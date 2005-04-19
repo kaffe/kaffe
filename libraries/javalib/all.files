@@ -3515,6 +3515,7 @@ javax/swing/text/Utilities.java
 javax/swing/text/View.java
 javax/swing/text/ViewFactory.java
 javax/swing/text/html/HTML.java
+javax/swing/text/html/HTMLDocument.java
 javax/swing/text/html/HTMLEditorKit.java
 javax/swing/text/html/HTMLFrameHyperlinkEvent.java
 javax/swing/text/html/parser/AttributeList.java

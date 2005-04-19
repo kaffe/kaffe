@@ -4076,6 +4076,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/ViewFactory.java
 javax_swing_text_html_SRCS = \
 	javax/swing/text/html/HTML.java \
+	javax/swing/text/html/HTMLDocument.java \
 	javax/swing/text/html/HTMLEditorKit.java \
 	javax/swing/text/html/HTMLFrameHyperlinkEvent.java
 javax_swing_text_html_parser_SRCS = \
