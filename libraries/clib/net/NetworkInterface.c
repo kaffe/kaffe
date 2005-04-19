@@ -19,7 +19,7 @@
 #include "config-net.h"
 #include "config-io.h"
 #include "config-hacks.h"
-#include "java_net_NetworkInterface.h"
+#include "java_net_VMNetworkInterface.h"
 #include "nets.h"
 #include "support.h"
 #include <arpa/inet.h>
@@ -124,7 +124,7 @@ getInetAddress(struct ifaddrs *ifa)
 }
 
 struct Hjava_util_Vector*
-java_net_NetworkInterface_getRealNetworkInterfaces(void)
+java_net_VMNetworkInterface_getInterfaces(void)
 {
   struct Hjava_util_Vector* vector;
   struct ifaddrs* addrs;

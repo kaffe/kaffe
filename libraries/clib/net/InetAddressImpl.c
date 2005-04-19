@@ -20,7 +20,7 @@
 #include "itypes.h"
 #include "stringSupport.h"
 #include "support.h"
-#include "java_net_InetAddress.h"
+#include "java_net_VMInetAddress.h"
 #include "gnu_java_net_SysInetAddressImpl.h"
 #include "nets.h"
 #include "jsyscall.h"
@@ -39,7 +39,7 @@
 #define	HOSTNMSZ	1024
 
 HArrayOfByte*
-java_net_InetAddress_lookupInaddrAny(void)
+java_net_VMInetAddress_lookupInaddrAny(void)
 {
   HArrayOfByte* addr = NULL;
   errorInfo einfo;
@@ -95,7 +95,7 @@ static void initInetLock(void)
  * Get localhost name.
  */
 struct Hjava_lang_String*
-java_net_InetAddress_getLocalHostname(void)
+java_net_VMInetAddress_getLocalHostname(void)
 {
   static char hostname[HOSTNMSZ] = "localhost";
 	

@@ -2,6 +2,31 @@
 
         Resynced with GNU Classpath.
 
+	* libraries/clib/native/InetAddress.c:
+        All native methods moved to class VMInetAddress.
+
+	* libraries/clib/native/NetworkInterface.c:
+        All native methods moved to class VMNetworkInterface.
+
+	2005-04-11  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/InetAddress.java
+        (static): Removed.
+        (getLocalHostname): Likewise.
+        (lookupInaddrAny): Likewise.
+        (getHostByAddr): Likewise.
+        (getHostByName): Likewise.
+        * java/net/NetworkInterface.java
+        (static): Likewise.
+        (getRealNetworkInterfaces): Likewise.
+        * vm/reference/java/net/VMInetAddress.java,
+        vm/reference/java/net/VMNetworkInterface.java: New files.
+        * include/Makefile.am: Build new header files.
+
+2005-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-04-11  Roman Kennke  <roman@kennke.org>
 
         * java/awt/MediaTracker.java

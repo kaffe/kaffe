@@ -38,9 +38,6 @@ exception statement from your version. */
 
 package java.net;
 
-import gnu.classpath.Configuration;
-import gnu.java.net.InetAddressImpl;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -126,72 +123,43 @@ public class InetAddress implements Serializable
    */
   private static HashMap cache;
 
-  /**
-   * Real implementation for DNS resolution. This implementation is specified
-   * at run time.
-   */
-  private static InetAddressImpl impl;
-
   static
-    {
-      // load the shared library needed for name resolution
-      if (Configuration.INIT_LOAD_LIBRARY)
-	System.loadLibrary("net");
+  {
+    // Look for properties that override default caching behavior
+    cache_size =
+      Integer.getInteger("gnu.java.net.dns_cache_size", DEFAULT_CACHE_SIZE)
+             .intValue();
+    cache_period =
+      Integer.getInteger("gnu.java.net.dns_cache_period",
+                         DEFAULT_CACHE_PERIOD * 60 * 1000).intValue();
 
-      // Initialize DNS implementation
-      String dnsImpl = System.getProperty("gnu.java.net.dns");
-    
-      if (dnsImpl == null)
-	{
-	  impl = new gnu.java.net.SysInetAddressImpl();
-	}
-      else
-	{
-	  try
-	    {
-	      impl = (InetAddressImpl) Class.forName(dnsImpl).newInstance();
-	    }
-	  catch (Exception _)
-	    {
-	      impl = new gnu.java.net.SysInetAddressImpl();
-	    }
-	}
+    cache_purge_pct =
+      Integer.getInteger("gnu.java.net.dns_cache_purge_pct",
+                         DEFAULT_CACHE_PURGE_PCT).intValue();
 
-      // Look for properties that override default caching behavior
-      cache_size =
-	Integer.getInteger("gnu.java.net.dns_cache_size", DEFAULT_CACHE_SIZE)
-	       .intValue();
-      cache_period =
-	Integer.getInteger("gnu.java.net.dns_cache_period",
-		           DEFAULT_CACHE_PERIOD * 60 * 1000).intValue();
+    // Fallback to  defaults if necessary
+    if ((cache_purge_pct < 1) || (cache_purge_pct > 100))
+      cache_purge_pct = DEFAULT_CACHE_PURGE_PCT;
 
-      cache_purge_pct =
-	Integer.getInteger("gnu.java.net.dns_cache_purge_pct",
-			   DEFAULT_CACHE_PURGE_PCT).intValue();
+    // Create the cache
+    if (cache_size != 0)
+      cache = new HashMap(cache_size);
 
-      // Fallback to  defaults if necessary
-      if ((cache_purge_pct < 1) || (cache_purge_pct > 100))
-	cache_purge_pct = DEFAULT_CACHE_PURGE_PCT;
+    // precompute the ANY_IF address
+    try
+      {
+        ANY_IF = getInaddrAny();
 
-      // Create the cache
-      if (cache_size != 0)
-	cache = new HashMap(cache_size);
-
-      // precompute the ANY_IF address
-      try
-	{
-	  ANY_IF = getInaddrAny();
-
-	  byte[] ip_localhost = { 127, 0, 0, 1 };
-	  LOCALHOST = new Inet4Address(ip_localhost, "localhost");
-	}
-      catch (UnknownHostException uhe)
-	{
-	  // Hmmm, make one up and hope that it works.
-	  byte[] zeros = { 0, 0, 0, 0 };
-	  ANY_IF = new Inet4Address(zeros, "0.0.0.0");
-	}
-    }
+	byte[] ip_localhost = { 127, 0, 0, 1 };
+	LOCALHOST = new Inet4Address(ip_localhost, "localhost");
+      }
+    catch (UnknownHostException uhe)
+      {
+        // Hmmm, make one up and hope that it works.
+        byte[] zeros = { 0, 0, 0, 0 };
+        ANY_IF = new Inet4Address(zeros, "0.0.0.0");
+      }
+  }
 
   /**
    * The Serialized Form specifies that an int 'address' is saved/restored.
@@ -409,7 +377,7 @@ public class InetAddress implements Serializable
 
     try
       {
-	hostName = impl.getHostByAddr(addr);
+	hostName = VMInetAddress.getHostByAddr(addr);
 	return hostName;
       }
     catch (UnknownHostException e)
@@ -707,7 +675,7 @@ public class InetAddress implements Serializable
       return addresses;
 
     // Not in cache, try the lookup
-    byte[][] iplist = impl.getHostByName(hostname);
+    byte[][] iplist = VMInetAddress.getHostByName(hostname);
     
     if (iplist.length == 0)
 	throw new UnknownHostException(hostname);
@@ -802,22 +770,12 @@ public class InetAddress implements Serializable
   {
     if (inaddr_any == null)
       {
-	byte[] tmp = lookupInaddrAny();
+	byte[] tmp = VMInetAddress.lookupInaddrAny();
 	inaddr_any = new Inet4Address(tmp, null);
       }
 
     return inaddr_any;
   }
-
-  /**
-   * This native method looks up the hostname of the local machine
-   * we are on.  If the actual hostname cannot be determined, then the
-   * value "localhost" will be used.  This native method wrappers the
-   * "gethostname" function.
-   *
-   * @return The local hostname.
-   */
-  private static native String getLocalHostname();
 
   /**
    * Returns an InetAddress object representing the address of the current
@@ -830,14 +788,9 @@ public class InetAddress implements Serializable
    */
   public static InetAddress getLocalHost() throws UnknownHostException
   {
-    String hostname = getLocalHostname();
+    String hostname = VMInetAddress.getLocalHostname();
     return getByName(hostname);
   }
-
-  /**
-   * Returns the value of the special address INADDR_ANY
-   */
-  private static native byte[] lookupInaddrAny() throws UnknownHostException;
 
   /*
    * Needed for serialization
