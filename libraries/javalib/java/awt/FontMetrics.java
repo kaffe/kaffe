@@ -1,5 +1,5 @@
 /* FontMetrics.java -- Information about about a fonts display characteristics
-   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -40,6 +40,7 @@ package java.awt;
 
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 import java.text.CharacterIterator;
 
 // FIXME: I leave many methods basically unimplemented.  This
@@ -460,4 +461,32 @@ public LineMetrics getLineMetrics(CharacterIterator ci, int begin,
     rc = gRC;
   return font.getLineMetrics(ci, begin, limit, rc);
 }
+
+  public Rectangle2D getStringBounds(String str, Graphics context)
+  {
+    return font.getStringBounds(str, getFontRenderContext(context));
+  }
+
+  public Rectangle2D getStringBounds(String str, int beginIndex, int limit, Graphics context)
+  {
+    return font.getStringBounds(str, beginIndex, limit, getFontRenderContext(context));
+  }
+
+  public Rectangle2D getStringBounds(char[] chars, int beginIndex, int limit, Graphics context)
+  {
+    return font.getStringBounds(chars, beginIndex, limit, getFontRenderContext(context));
+  }
+
+  public Rectangle2D getStringBounds(CharacterIterator ci, int beginIndex, int limit, Graphics context)
+  {
+    return font.getStringBounds(ci, beginIndex, limit, getFontRenderContext(context));
+  }
+
+  private FontRenderContext getFontRenderContext(Graphics context)
+  {
+    if (context instanceof Graphics2D)
+      return ((Graphics2D) context).getFontRenderContext();
+
+    throw new UnsupportedOperationException("not implemented for Graphics contexts");
+  }
 }
