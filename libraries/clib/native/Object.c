@@ -33,7 +33,7 @@
  * Return class object for this object.
  */
 struct Hjava_lang_Class*
-java_lang_Object_getClass(struct Hjava_lang_Object* o)
+java_lang_VMObject_getClass(struct Hjava_lang_Object* o)
 {
   return (OBJECT_CLASS(o));
 }

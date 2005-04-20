@@ -1,5 +1,5 @@
 /* VMObject.java -- Reference implementation for VM hooks used by Object
-   Copyright (C) 1998, 2002 Free Software Foundation
+   Copyright (C) 1998, 2002, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -42,10 +42,19 @@ package java.lang;
  * As such, it needs help from the VM.
  *
  * @author John Keiser
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  */
 final class VMObject
 {
+  /**
+   * Returns the runtime {@link Class} of a given Object.
+   *
+   * @param obj the object to return the class for.
+   *
+   * @return the class of the Object.
+   */
+  static native Class getClass(Object obj);
+  
   /**
    * The VM is expected to make a field-for-field shallow copy of the
    * argument. Thus, the copy has the same runtime type as the argument.

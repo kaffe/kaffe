@@ -1,5 +1,5 @@
 /* java.lang.Object - The universal superclass in Java
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2004
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -326,7 +326,10 @@ public class Object
    *
    * @return the class of this Object
    */
-  public final native Class getClass();
+  public final Class getClass()
+  {
+    return VMObject.getClass(this);
+  }
 
   /**
    * Wakes up one of the {@link Thread}s that has called

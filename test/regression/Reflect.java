@@ -59,8 +59,8 @@ Field: public static final java.io.PrintStream java.lang.System.err
 Field: public static final java.io.PrintStream java.lang.System.out
 Method: public boolean java.lang.Object.equals(java.lang.Object)
 Method: public int java.lang.Object.hashCode()
+Method: public java.lang.Class java.lang.Object.getClass()
 Method: public java.lang.String java.lang.Object.toString()
-Method: public native java.lang.Class java.lang.Object.getClass()
 Method: public static java.lang.SecurityManager java.lang.System.getSecurityManager()
 Method: public static java.lang.String java.lang.System.getProperty(java.lang.String)
 Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)

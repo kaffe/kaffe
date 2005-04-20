@@ -1,3 +1,19 @@
+2005-04-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/Bean.java,
+	test/regression/Reflect.java: Updated expected output.
+
+	* libraries/clib/native/Object.c: Updated getClass signature.
+
+        Resynced with GNU Classpath.
+
+	2005-04-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/lang/Object.java
+        (getClass): Refactored to call the native in java.lang.VMObject.
+        * vm/reference/java/lang/VMObject.java
+        (getClass): Likewise.
+
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
         Resynced with GNU Classpath.

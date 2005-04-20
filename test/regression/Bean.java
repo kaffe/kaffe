@@ -63,7 +63,7 @@ public class Bean {
   Editor: <unknown>
   Editor: class gnu.java.beans.editors.StringEditor
   Method: public boolean java.lang.Object.equals(java.lang.Object)
-  Method: public final native java.lang.Class java.lang.Object.getClass()
+  Method: public final java.lang.Class java.lang.Object.getClass()
   Method: public final void java.lang.Object.notify() throws java.lang.IllegalMonitorStateException
   Method: public final void java.lang.Object.notifyAll() throws java.lang.IllegalMonitorStateException
   Method: public final void java.lang.Object.wait() throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
@@ -79,6 +79,6 @@ public class Bean {
   Method: public void Bean.setArray(java.lang.String[])
   Method: public void Bean.setValue(java.lang.String)
   Property: type class [Ljava.lang.String;, read public java.lang.String[] Bean.getArray(), write public void Bean.setArray(java.lang.String[]), idx read public java.lang.String Bean.getArray(int), idx write public void Bean.setArray(int,java.lang.String)
-  Property: type class java.lang.Class, read public final native java.lang.Class java.lang.Object.getClass(), write <none>
+  Property: type class java.lang.Class, read public final java.lang.Class java.lang.Object.getClass(), write <none>
   Property: type class java.lang.String, read public java.lang.String Bean.getValue(), write public void Bean.setValue(java.lang.String)
 */
