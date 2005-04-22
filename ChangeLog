@@ -4,6 +4,15 @@
 
 	2005-04-16  Michael Koch  <konqueror@gmx.de>
 
+        * java/rmi/server/RemoteObject.java:
+        Removed unused import statement.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-16  Michael Koch  <konqueror@gmx.de>
+
         * include/Makefile.am: Removed java_io_ObjectInputStream.h
         and added java_io_VMObjectInputStream.h.
         * java/io/ObjectInputStream.java
