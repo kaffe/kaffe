@@ -430,8 +430,10 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_reflect_Field.h \
 	java_lang_reflect_Method.h \
 	java_net_DatagramPacket.h \
+	java_net_InetAddress.h \
 	java_net_VMInetAddress.h \
 	java_net_InetSocketAddress.h \
+	java_net_NetworkInterface.h \
 	java_net_VMNetworkInterface.h \
 	gnu_java_net_PlainDatagramSocketImpl.h \
 	gnu_java_net_PlainSocketImpl.h \

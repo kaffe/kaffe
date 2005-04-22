@@ -18,14 +18,6 @@
 #include "soft.h"
 #include "exception.h"
 #include "java_lang_reflect_Array.h"
-#include "java_lang_Boolean.h"
-#include "java_lang_Byte.h"
-#include "java_lang_Character.h"
-#include "java_lang_Short.h"
-#include "java_lang_Integer.h"
-#include "java_lang_Long.h"
-#include "java_lang_Float.h"
-#include "java_lang_Double.h"
 #include <native.h>
 #include "defs.h"
 

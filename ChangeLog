@@ -1,5 +1,17 @@
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am (NOINSTALL_DERIVED_HDRS):
+	Added java_net_InetAddress.h and java_net_NetworkInterface.h.
+
+	Reported by:  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/native/Array.c,
+	libraries/clib/native/Field.c,
+	libraries/clib/native/Method.c:
+	Fixed includes.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/java_lang_VMDouble.c:
 	(parseDoubleFromChars) New function. Factored out from ...
 	(Java_java_lang_VMDouble_parseDouble): Factored out the parsing.
