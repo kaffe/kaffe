@@ -2,6 +2,26 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicScrollBarUI.java
+        (installUI): Install listeners after everything all, otherwise
+        we get strange NPEs in some situations, especially with
+        custom L&Fs.
+        (createIncreaseButton): Orientation is expected to be
+        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+        HORIZONTAL or VERTICAL.
+        (createDecreaseButton): Orientation is expected to be
+        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+        HORIZONTAL or VERTICAL.
+        (installComponents): Orientation for buttons is expected to be
+        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+        HORIZONTAL or VERTICAL.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
         * java/nio/ByteBufferImpl.java (get(), put(byte)): Inlined checks
