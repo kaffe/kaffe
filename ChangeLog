@@ -5,6 +5,18 @@
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/BasicScrollBarUI.java
+        (PropertyChangeHandler.propertyChange): Add default
+        to switch statement to avoid errors with unusual values
+        for orientation.
+        (installComponents): Likewise.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicScrollBarUI.java
         (installUI): Install listeners after everything all, otherwise
         we get strange NPEs in some situations, especially with
         custom L&Fs.

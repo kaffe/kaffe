@@ -159,7 +159,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
               incrButton = createIncreaseButton(EAST);
               decrButton = createDecreaseButton(WEST);
               break;
-            case (JScrollBar.VERTICAL):
+            default:
               incrButton = createIncreaseButton(SOUTH);
               decrButton = createDecreaseButton(NORTH);
               break;
@@ -796,7 +796,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
         incrButton = createIncreaseButton(EAST);
         decrButton = createDecreaseButton(WEST);
         break;
-      case (JScrollBar.VERTICAL):
+      default:
         incrButton = createIncreaseButton(SOUTH);
         decrButton = createDecreaseButton(NORTH);
         break;
