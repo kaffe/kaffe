@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-16  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/BorderLayout.java
+        (calcSize): Check for overflow when component sizes are added.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
         * java/rmi/Naming.java:
