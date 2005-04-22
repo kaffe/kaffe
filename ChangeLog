@@ -4,6 +4,16 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicScrollPaneUI.java
+        (installDefaults): Link managed JScrollPane in instance field.
+        (uninstallDefaults): Unlink managed JScrollPane in instance field.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-18  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/plaf/basic/BasicScrollBarUI.java
         (PropertyChangeHandler.propertyChange): Add default
         to switch statement to avoid errors with unusual values
