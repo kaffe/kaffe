@@ -222,7 +222,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_classpath_VMSystemProperties.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_SelectorImpl.h \
-	java_io_ObjectInputStream.h \
+	java_io_VMObjectInputStream.h \
 	java_io_VMObjectStreamClass.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \

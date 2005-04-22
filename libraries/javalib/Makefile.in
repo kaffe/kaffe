@@ -3048,6 +3048,7 @@ java_io_SRCS = \
 	java/io/UTFDataFormatException.java \
 	java/io/UnsupportedEncodingException.java \
 	java/io/VMFile.java \
+	java/io/VMObjectInputStream.java \
 	java/io/VMObjectStreamClass.java \
 	java/io/WriteAbortedException.java \
 	java/io/Writer.java

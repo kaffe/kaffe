@@ -796,7 +796,7 @@ public class ObjectInputStream extends InputStream
     if (sm == null)
       sm = new SecurityManager () {};
     
-    return currentClassLoader(sm);
+    return VMObjectInputStream.currentClassLoader(sm);
   }
 
   /**
@@ -888,7 +888,7 @@ public class ObjectInputStream extends InputStream
     if (sm == null)
       sm = new SecurityManager() {};
     
-    ClassLoader cl = currentClassLoader(sm);
+    ClassLoader cl = VMObjectInputStream.currentClassLoader(sm);
     
     Class[] clss = new Class[intfs.length];
     if(cl == null)
@@ -1838,7 +1838,7 @@ public class ObjectInputStream extends InputStream
         throw new InvalidClassException("Missing accessible no-arg base class constructor for " + real_class.getName()); 
     try
       {
-	return allocateObject(real_class, constructor.getDeclaringClass(), constructor);
+	return VMObjectInputStream.allocateObject(real_class, constructor.getDeclaringClass(), constructor);
       }
     catch (InstantiationException e)
       {
@@ -1865,15 +1865,6 @@ public class ObjectInputStream extends InputStream
 	this.validators.removeAllElements();
       }
   }
-
-  /**
-   * This native method is used to get access to the protected method
-   * of the same name in SecurityManger.
-   *
-   * @param sm SecurityManager instance which should be called.
-   * @return The current class loader in the calling stack.
-   */
-  private static native ClassLoader currentClassLoader (SecurityManager sm);
 
   private void callReadMethod (Method readObject, Class klass, Object obj)
     throws ClassNotFoundException, IOException
@@ -1906,9 +1897,6 @@ public class ObjectInputStream extends InputStream
     prereadFields = null;
   }
     
-  private native Object allocateObject(Class clazz, Class constr_clazz, Constructor constructor)
-    throws InstantiationException;
-
   private static final int BUFFER_SIZE = 1024;
 
   private DataInputStream realInputStream;

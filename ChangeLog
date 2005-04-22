@@ -1,5 +1,22 @@
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath:
+
+	2005-04-16  Michael Koch  <konqueror@gmx.de>
+
+        * include/Makefile.am: Removed java_io_ObjectInputStream.h
+        and added java_io_VMObjectInputStream.h.
+        * java/io/ObjectInputStream.java
+        (currentClassLoader): Removed.
+        (allocateObject): Likewise.
+        * native/jni/java-io/Makefile.am: Removed java_io_ObjectInputStream.c
+        and added java_io_VMObjectInputStream.c.
+        * native/jni/java-io/java_io_ObjectInputStream.c: Removed.
+        * native/jni/java-io/java_io_VMObjectInputStream.c: New file.
+        * vm/reference/java/io/VMObjectInputStream.java: Likewise.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am (NOINSTALL_DERIVED_HDRS):
 	Added java_net_InetAddress.h and java_net_NetworkInterface.h.
 

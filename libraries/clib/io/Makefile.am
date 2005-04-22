@@ -27,7 +27,7 @@ libio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 libio_la_SOURCES = \
 	File.c \
-	java_io_ObjectInputStream.c \
+	java_io_VMObjectInputStream.c \
 	java_io_VMObjectStreamClass.c
 
 CLEANFILES = so_locations
