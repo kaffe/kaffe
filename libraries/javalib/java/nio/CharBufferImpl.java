@@ -62,6 +62,7 @@ final class CharBufferImpl extends CharBuffer
   {
     super (copy.capacity (), copy.limit (), copy.position (), 0);
     backing_buffer = copy.backing_buffer;
+    array_offset = copy.array_offset;
     readOnly = copy.isReadOnly ();
   }
   
@@ -127,11 +128,10 @@ final class CharBufferImpl extends CharBuffer
    */
   public char get ()
   {
-    checkForUnderflow();
+    if (pos >= limit)
+        throw new BufferUnderflowException();
 
-    char result = backing_buffer [position ()];
-    position (position () + 1);
-    return result;
+    return backing_buffer [(pos++) + array_offset];
   }
   
   /**
@@ -142,10 +142,12 @@ final class CharBufferImpl extends CharBuffer
    */
   public CharBuffer put (char value)
   {
-    checkIfReadOnly();
-	  	    
-    backing_buffer [position ()] = value;
-    position (position () + 1);
+    if (readOnly)
+        throw new ReadOnlyBufferException();
+    if (pos >= limit)
+        throw new BufferOverflowException();
+
+    backing_buffer [(pos++) + array_offset] = value;
     return this;
   }
   
@@ -162,7 +164,7 @@ final class CharBufferImpl extends CharBuffer
   {
     checkIndex(index);
     
-    return backing_buffer [index];
+    return backing_buffer [index + array_offset];
   }
   
   /**
@@ -178,7 +180,7 @@ final class CharBufferImpl extends CharBuffer
     checkIndex(index);
     checkIfReadOnly();
     	    
-    backing_buffer [index] = value;
+    backing_buffer [index + array_offset] = value;
     return this;
   }
   

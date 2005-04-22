@@ -144,11 +144,10 @@ final class ByteBufferImpl extends ByteBuffer
    */
   public byte get ()
   {
-    checkForUnderflow();
+    if (pos >= limit)
+        throw new BufferUnderflowException();
 
-    byte result = backing_buffer [position () + array_offset];
-    position (position () + 1);
-    return result;
+    return backing_buffer [(pos++) + array_offset];
   }
   
   /**
@@ -161,12 +160,12 @@ final class ByteBufferImpl extends ByteBuffer
    */
   public ByteBuffer put (byte value)
   {
-    checkIfReadOnly();
-    checkForOverflow();
+    if (readOnly)
+        throw new ReadOnlyBufferException();
+    if (pos >= limit)
+        throw new BufferOverflowException();
 
-    int pos = position();
-    backing_buffer [pos + array_offset] = value;
-    position (pos + 1);
+    backing_buffer [(pos++) + array_offset] = value;
     return this;
   }
   

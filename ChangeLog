@@ -4,6 +4,20 @@
 
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
+        * java/nio/ByteBufferImpl.java (get(), put(byte)): Inlined checks
+        and field updates.
+        * java/nio/CharBufferImpl.java
+        (CharBufferImpl(CharBufferImpl)): Copy array_offset field.
+        (get(), put(char)): Inlined checks and field updates. Fixed to
+        take array_offset into account.
+        (get(int), put(int, char)): Fixed to take array_offset into account.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
+
         * java/awt/GraphicsEnvironment.java
         (localGraphicsEnvironment): New field.
         (getLocalGraphicsEnvironment): Added support for java.awt.graphicsenv
