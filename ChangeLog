@@ -1,3 +1,95 @@
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/java_lang_VMDouble.c:
+	(parseDoubleFromChars) New function. Factored out from ...
+	(Java_java_lang_VMDouble_parseDouble): Factored out the parsing.
+	(dtoa_toString): New function. Factored out from ...
+	(Java_java_lang_VMDouble_toString) : Factored out the conversion.
+	Changed conversion mode to 2, as modes 0 and 1 don't round
+	as the API spec demands. Invoke conversion function as often
+	as necessary with growing precision until a reversible
+	representaiton of the double in form of a string is reached.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* THIRDPARTY: Added information on fdlibm.
+
+	* configure.ac (AC_CONFIG_FILES): 
+	Added libraries/clib/fdlibm/Makefile.
+
+	* include/Makefile.am (NOINSTALL_JNI_DERIVED_HDRS):
+	Added java_lang_VMDouble.h and java_lang_VMFloat.h.
+	(NOINSTALL_DERIVED_HDRS) Removed java_lang_Double.h and
+	java_lang_Float.h.
+
+	* libraries/clib/Makefile.am (SUBDIRS): Added fdlibm.
+
+	* libraries/clib/native/Double.c,
+	libraries/clib/native/Float.c: Removed.
+
+	* libraries/clib/native/Makefile.am 
+	(AM_CPPFLAGS): Added fdlibm.
+	(LANG_SRCS) Removed Double.c and Float.c. 
+	Added java_lang_VMDouble.c and java_lang_VMFloat.c.
+	(libnative_la_DEPENDENCIES) Added fdlibm.
+
+	* libraries/clib/native/java_lang_VMDouble.c,
+	libraries/clib/native/java_lang_VMFloat.c,
+	libraries/javalib/java/lang/VMDouble.java,
+	libraries/javalib/java/lang/VMFloat.java:
+	New files. Taken from GNU Classpath.
+
+	* libraries/javalib/java/lang/Double.java,
+	libraries/javalib/java/lang/Float.java:  
+	Replaced by implementation from GNU Classpath.
+
+	* libraries/clib/fdlibm/Makefile.am,
+	libraries/clib/fdlibm/Makefile.in,
+	libraries/clib/fdlibm/dtoa.c,
+	libraries/clib/fdlibm/e_acos.c,
+	libraries/clib/fdlibm/e_asin.c,
+	libraries/clib/fdlibm/e_atan2.c,
+	libraries/clib/fdlibm/e_exp.c,
+	libraries/clib/fdlibm/e_fmod.c,
+	libraries/clib/fdlibm/e_log.c,
+	libraries/clib/fdlibm/e_pow.c,
+	libraries/clib/fdlibm/e_rem_pio2.c,
+	libraries/clib/fdlibm/e_remainder.c,
+	libraries/clib/fdlibm/e_scalb.c,
+	libraries/clib/fdlibm/e_sqrt.c,
+	libraries/clib/fdlibm/fdlibm.h,
+	libraries/clib/fdlibm/ieeefp.h,
+	libraries/clib/fdlibm/java-assert.h,
+	libraries/clib/fdlibm/k_cos.c,
+	libraries/clib/fdlibm/k_rem_pio2.c,
+	libraries/clib/fdlibm/k_sin.c,
+	libraries/clib/fdlibm/k_tan.c,
+	libraries/clib/fdlibm/mprec.c,
+	libraries/clib/fdlibm/mprec.h,
+	libraries/clib/fdlibm/s_atan.c,
+	libraries/clib/fdlibm/s_ceil.c,
+	libraries/clib/fdlibm/s_copysign.c,
+	libraries/clib/fdlibm/s_cos.c,
+	libraries/clib/fdlibm/s_fabs.c,
+	libraries/clib/fdlibm/s_floor.c,
+	libraries/clib/fdlibm/s_rint.c,
+	libraries/clib/fdlibm/s_scalbn.c,
+	libraries/clib/fdlibm/s_sin.c,
+	libraries/clib/fdlibm/s_tan.c,
+	libraries/clib/fdlibm/sf_fabs.c,
+	libraries/clib/fdlibm/sf_rint.c,
+	libraries/clib/fdlibm/strtod.c,
+	libraries/clib/fdlibm/w_acos.c,
+	libraries/clib/fdlibm/w_asin.c,
+	libraries/clib/fdlibm/w_atan2.c,
+	libraries/clib/fdlibm/w_exp.c,
+	libraries/clib/fdlibm/w_fmod.c,
+	libraries/clib/fdlibm/w_log.c,
+	libraries/clib/fdlibm/w_pow.c,
+	libraries/clib/fdlibm/w_remainder.c,
+	libraries/clib/fdlibm/w_sqrt.c:
+	New files. Taken from GNU Classpath.
+
 2005-04-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/regression/Bean.java,

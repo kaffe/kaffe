@@ -23,6 +23,7 @@ endif
 
 SUBDIRS = \
 	classpath \
+	fdlibm \
 	native \
 	io \
 	nio \

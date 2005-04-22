@@ -2639,6 +2639,8 @@ java_lang_SRCS = \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VMClassLoader.java \
 	java/lang/VMCompiler.java \
+	java/lang/VMDouble.java \
+	java/lang/VMFloat.java \
 	java/lang/VMObject.java \
 	java/lang/VMSecurityManager.java \
 	java/lang/VMThread.java \

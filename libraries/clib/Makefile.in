@@ -85,7 +85,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = classpath native io nio net zip math security \
+DIST_SUBDIRS = classpath fdlibm native io nio net zip math security \
 	management libxmlj awt sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -369,6 +369,7 @@ with_engine = @with_engine@
 @COND_NATIVE_SOUND_TRUE@MAYBE_NATIVE_SOUND_DIR = sound
 SUBDIRS = \
 	classpath \
+	fdlibm \
 	native \
 	io \
 	nio \

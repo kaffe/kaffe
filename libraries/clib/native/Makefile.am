@@ -14,7 +14,8 @@ native_LTLIBRARIES = libnative.la
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-        -I$(top_srcdir)/libraries/clib/classpath
+        -I$(top_srcdir)/libraries/clib/classpath \
+        -I$(top_srcdir)/libraries/clib/fdlibm
 
 IO_SRCS = \
 		ByteToCharDefault.c \
@@ -25,8 +26,8 @@ IO_SRCS = \
 LANG_SRCS = \
 		Class.c \
 		ClassLoader.c \
-		Double.c \
-		Float.c \
+		java_lang_VMDouble.c \
+		java_lang_VMFloat.c \
 		Math.c \
 		MemoryAdvice.c \
 		Object.c \
@@ -71,6 +72,7 @@ libnative_la_LDFLAGS = \
 
 libnative_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnative_la_LIBADD = \

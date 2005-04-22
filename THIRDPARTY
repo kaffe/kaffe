@@ -314,6 +314,36 @@ See license.terms for the text of the GNU General Public License.
 More information on GNU Classpath is available from 
 http://www.gnu.org/software/classpath/classpath.html.
 
+* libraries/clib/fdlibm
+
+fdlimb contains general algorithms useful for runtimes and compilers to
+support strict double and float mathematical operations.
+
+fdlibm files carry the following notices:
+
+  Copyright (c) 1991 by AT&T.
+
+  Permission to use, copy, modify, and distribute this software for any
+  purpose without fee is hereby granted, provided that this entire notice
+  is included in all copies of any software which is or includes a copy
+  or modification of this software and in all copies of the supporting
+  documentation for such software.
+
+  THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTY.  IN PARTICULAR, NEITHER THE AUTHOR NOR AT&T MAKES ANY
+  REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+  OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+
+  Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+
+  Developed at SunPro, a Sun Microsystems, Inc. business.
+  Permission to use, copy, modify, and distribute this
+  software is freely granted, provided that this notice
+  is preserved.
+
+The upstream for fdlibm is libgcj (http://gcc.gnu.org/java/), they sync
+again with the 'real' upstream (http://www.netlib.org/fdlibm/readme).
+
 * Replacement functions for getaddrinfo
 
 This code comes from Motoyuki Kasahara's <m-kasahr@sra.co.jp>

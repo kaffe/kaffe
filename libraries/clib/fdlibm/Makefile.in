@@ -14,17 +14,7 @@
 
 @SET_MAKE@
 
-# Library support
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-# Copyright (c) 2003
-#	Mark Wielaard <mark@klomp.org>
-# Copyright (c) 2004
-#	Kaffe.org contributors. All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
+SOURCES = $(libfdlibm_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -32,7 +22,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -48,10 +38,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = include
-DIST_COMMON = $(am__include_HEADERS_DIST) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+subdir = libraries/clib/fdlibm
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_antlr.m4 \
@@ -79,24 +67,29 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jni_md.h
 CONFIG_CLEAN_FILES =
-SOURCES =
-DIST_SOURCES =
-am__include_HEADERS_DIST = jni.h jni_cpp.h jvmpi.h kaffe_jni.h jawt.h \
-	jawt_md.h
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(includedir)" \
-	"$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"
-includeHEADERS_INSTALL = $(INSTALL_HEADER)
-nodist_pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
-	$(nodist_pkginclude_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libfdlibm_la_LIBADD =
+am_libfdlibm_la_OBJECTS = dtoa.lo e_acos.lo e_asin.lo e_atan2.lo \
+	e_exp.lo e_fmod.lo e_log.lo e_pow.lo e_remainder.lo \
+	e_rem_pio2.lo e_scalb.lo e_sqrt.lo k_cos.lo k_rem_pio2.lo \
+	k_sin.lo k_tan.lo mprec.lo s_atan.lo s_ceil.lo s_copysign.lo \
+	s_cos.lo s_fabs.lo sf_fabs.lo s_floor.lo sf_rint.lo s_rint.lo \
+	s_scalbn.lo s_sin.lo s_tan.lo strtod.lo w_acos.lo w_asin.lo \
+	w_atan2.lo w_exp.lo w_fmod.lo w_log.lo w_pow.lo w_remainder.lo \
+	w_sqrt.lo
+libfdlibm_la_OBJECTS = $(am_libfdlibm_la_OBJECTS)
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
+depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
+am__depfiles_maybe = depfiles
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+SOURCES = $(libfdlibm_la_SOURCES)
+DIST_SOURCES = $(libfdlibm_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -376,281 +369,60 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-KLASSES_JAR = $(top_builddir)/libraries/javalib/rt.jar
-EXTRA_DIST = distclean-hack \
-		stamp-h2.in
+noinst_LTLIBRARIES = libfdlibm.la 
+libfdlibm_la_SOURCES = \
+			dtoa.c \
+			e_acos.c \
+			e_asin.c \
+			e_atan2.c \
+			e_exp.c \
+			e_fmod.c \
+			e_log.c \
+			e_pow.c \
+			e_remainder.c \
+			e_rem_pio2.c \
+			e_scalb.c \
+			e_sqrt.c \
+			fdlibm.h \
+			ieeefp.h \
+			java-assert.h \
+			k_cos.c \
+			k_rem_pio2.c \
+			k_sin.c \
+			k_tan.c \
+			mprec.c \
+			mprec.h \
+			s_atan.c \
+			s_ceil.c \
+			s_copysign.c \
+			s_cos.c \
+			s_fabs.c \
+			sf_fabs.c \
+			s_floor.c \
+			sf_rint.c \
+			s_rint.c \
+			s_scalbn.c \
+			s_sin.c \
+			s_tan.c \
+			strtod.c \
+			w_acos.c \
+			w_asin.c \
+			w_atan2.c \
+			w_exp.c \
+			w_fmod.c \
+			w_log.c \
+			w_pow.c \
+			w_remainder.c \
+			w_sqrt.c 
 
-
-# INSTALL_ means: these headers get installed,
-# NOINSTALL_ means: they don't get installed.
-# _DERIVED_ means: these headers are derived (using
-# kaffeh, from rt.jar). 
-# _JNI_DERIVED_ means: these headers are derived using kaffeh
-# from rt.jar *and* the -jni option is
-# set, resulting in JNI-ish method names.
-#
-# So if your class uses JNI to call its native methods
-# (like tritonus), then it goes into the JNI set,
-# otherwise it goes into the other one.
-INSTALL_DERIVED_HDRS = 
-NOINSTALL_DERIVED_HDRS = \
-	java_lang_Object.h \
-	java_lang_VMObject.h \
-	java_lang_VMClassLoader.h \
-	java_lang_String.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_VMThread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	java_lang_SecurityManager.h \
-	java_io_File.h \
-	java_io_FileInputStream.h \
-	java_io_FileOutputStream.h \
-	java_io_InputStream.h \
-	java_io_InterruptedIOException.h \
-	java_io_PrintStream.h \
-	java_io_RandomAccessFile.h \
-	java_io_VMFile.h \
-	java_lang_Boolean.h \
-	java_lang_Byte.h \
-	java_lang_Character.h \
-	java_lang_Class.h \
-	java_lang_ClassLoader.h \
-	java_lang_Cloneable.h \
-	java_lang_Integer.h \
-	java_lang_Long.h \
-	java_lang_Math.h \
-	java_lang_Runtime.h \
-	java_lang_Short.h \
-	java_lang_System.h \
-	java_lang_reflect_Array.h \
-	java_lang_reflect_Constructor.h \
-	java_lang_reflect_Field.h \
-	java_lang_reflect_Method.h \
-	java_net_DatagramPacket.h \
-	java_net_VMInetAddress.h \
-	java_net_InetSocketAddress.h \
-	java_net_VMNetworkInterface.h \
-	gnu_java_net_PlainDatagramSocketImpl.h \
-	gnu_java_net_PlainSocketImpl.h \
-	gnu_java_net_SysInetAddressImpl.h \
-	java_net_SocketAddress.h \
-	java_net_SocketImpl.h \
-	java_net_SocketOptions.h \
-	java_security_VMAccessController.h \
-	java_util_Comparator.h \
-	java_util_VMTimeZone.h \
-	java_util_Vector.h \
-	java_util_zip_Adler32.h \
-	java_util_zip_CRC32.h \
-	java_util_zip_Deflater.h \
-	java_util_zip_Inflater.h \
-	java_util_zip_ZipEntry.h \
-	java_util_zip_ZipFile.h \
-	kaffe_lang_PrimordialClassLoader.h \
-	kaffe_lang_ThreadStack.h \
-	kaffe_management_Classpath.h \
-	gnu_java_nio_VMSelector.h
-
-DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
-INSTALL_JNI_DERIVED_HDRS = 
-LIBTRITONUSALSA_JNI_HDRS = \
-	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaCtl.h \
-	org_tritonus_lowlevel_alsa_Alsa.h \
-	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
-	org_tritonus_lowlevel_alsa_AlsaMixer.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaPcm.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
-	org_tritonus_lowlevel_alsa_AlsaSeq.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
-
-LIBTRITONUSESD_JNI_HDRS = \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h
-
-LIBXMLJ_JNI_HDRS = \
-	gnu_xml_libxmlj_dom_GnomeAttr.h \
-	gnu_xml_libxmlj_dom_GnomeDocument.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
-	gnu_xml_libxmlj_dom_GnomeElement.h \
-	gnu_xml_libxmlj_dom_GnomeEntity.h \
-	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
-	gnu_xml_libxmlj_dom_GnomeNode.h \
-	gnu_xml_libxmlj_dom_GnomeNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeNotation.h \
-	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
-	gnu_xml_libxmlj_dom_GnomeTypeInfo.h \
-	gnu_xml_libxmlj_dom_GnomeXPathExpression.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNSResolver.h \
-	gnu_xml_libxmlj_dom_GnomeXPathResult.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
-	gnu_xml_libxmlj_transform_GnomeTransformer.h \
-	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
-
-LIBGTKPEER_JNI_HDRS = \
-	gnu_java_awt_peer_gtk_GdkFontPeer.h \
-	gnu_java_awt_peer_gtk_GdkGraphics.h \
-	gnu_java_awt_peer_gtk_GdkGraphics2D.h \
-	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \
-	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
-	gnu_java_awt_peer_gtk_GdkRobotPeer.h \
-	gnu_java_awt_peer_gtk_GdkTextLayout.h \
-	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
-	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
-	gnu_java_awt_peer_gtk_GtkChoicePeer.h \
-	gnu_java_awt_peer_gtk_GtkClipboard.h \
-	gnu_java_awt_peer_gtk_GtkComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.h \
-	gnu_java_awt_peer_gtk_GtkFileDialogPeer.h \
-	gnu_java_awt_peer_gtk_GtkFramePeer.h \
-	gnu_java_awt_peer_gtk_GtkGenericPeer.h \
-	gnu_java_awt_peer_gtk_GtkImagePainter.h \
-	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
-	gnu_java_awt_peer_gtk_GtkListPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkPanelPeer.h \
-	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
-	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
-	gnu_java_awt_peer_gtk_GtkToolkit.h \
-	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
-	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
-
-
-# Only create headers for AWT, Sound and libxmlj if they are going to be built.
-@COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
-@COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
-@COND_CLASSPATH_GTK_AWT_TRUE@JAWT_HDRS = \
-@COND_CLASSPATH_GTK_AWT_TRUE@	jawt.h \
-@COND_CLASSPATH_GTK_AWT_TRUE@	jawt_md.h
-
-NOINSTALL_JNI_DERIVED_HDRS = \
-	java_math_BigInteger.h \
-	java_lang_VMDouble.h \
-	java_lang_VMFloat.h \
-	java_lang_ref_Reference.h \
-	gnu_classpath_VMSystemProperties.h \
-	gnu_java_nio_channels_FileChannelImpl.h \
-	gnu_java_nio_SelectorImpl.h \
-	java_io_ObjectInputStream.h \
-	java_io_VMObjectStreamClass.h \
-	java_nio_VMDirectByteBuffer.h \
-	java_nio_MappedByteBufferImpl.h \
-	kaffe_io_ByteToCharDefault.h \
-	kaffe_io_ByteToCharIconv.h \
-	kaffe_io_CharToByteDefault.h \
-	kaffe_io_CharToByteIconv.h \
-	kaffe_lang_MemoryAdvice.h \
-	kaffe_lang_UNIXProcess.h \
-	kaffe_management_JIT.h \
-	kaffe_management_Debug.h \
-	kaffe_management_XProfiler.h \
-	kaffe_security_provider_MD2.h \
-	kaffe_security_provider_MD4.h \
-	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h \
-	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
-	$(MAYBE_LIBXMLJ_JNI_HDRS) \
-	$(MAYBE_LIBGTKPEER_JNI_HDRS)
-
-JNI_DERIVED_HDRS = \
-	$(INSTALL_JNI_DERIVED_HDRS) \
-	$(NOINSTALL_JNI_DERIVED_HDRS)
-
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
-nodist_noinst_HEADERS = \
-	$(ifaddrs_compat) \
-	$(NOINSTALL_DERIVED_HDRS) \
-	$(NOINSTALL_JNI_DERIVED_HDRS)
-
-noinst_HEADERS = \
-	ifaddrs_compat.h \
-	defs.h \
-	dummyin6.h \
-	files.h \
-	gccbuiltin.h \
-	getaddrinfo.h \
-	gettext.h \
-	nets.h \
-	system.h \
-	Arrays.h \
-	errors.h \
-	jsyscall.h \
-	native.h 
-
-include_HEADERS = \
-	jni.h \
-	jni_cpp.h \
-	jvmpi.h \
-	kaffe_jni.h \
-	$(JAWT_HDRS)
-
-nodist_pkginclude_HEADERS = \
-	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS)
-
-pkginclude_HEADERS = \
-	java_lang_Object.h \
-	java_lang_String.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h \
-	kaffe/jni_md.h
-
-CLEANFILES = \
-	$(DERIVED_HDRS) \
-	$(JNI_DERIVED_HDRS) \
-	stamp-kaffeh
-
-DISTCLEANFILES = \
-	$(DERIVED_HDRS) \
-	$(JNI_DERIVED_HDRS) \
-	kaffe/jni_md.h \
-	stamp-h0all \
-	stamp-h1all \
-	stamp-libtritonusalsa \
-	stamp-libtritonusesd \
-	stamp-libxmlj \
-	stamp-libgtkpeer
+AM_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-no-undefined
 
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -660,9 +432,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/clib/fdlibm/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  include/Makefile
+	  $(AUTOMAKE) --gnu  libraries/clib/fdlibm/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -681,6 +453,84 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libfdlibm.la: $(libfdlibm_la_OBJECTS) $(libfdlibm_la_DEPENDENCIES) 
+	$(LINK)  $(libfdlibm_la_LDFLAGS) $(libfdlibm_la_OBJECTS) $(libfdlibm_la_LIBADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dtoa.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_acos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_asin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_atan2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_exp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_fmod.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_pow.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_rem_pio2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_remainder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_scalb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e_sqrt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/k_cos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/k_rem_pio2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/k_sin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/k_tan.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mprec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_atan.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_ceil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_copysign.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_cos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_fabs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_floor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_rint.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_scalbn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_sin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_tan.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sf_fabs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sf_rint.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strtod.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_acos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_asin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_atan2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_exp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_fmod.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_pow.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_remainder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w_sqrt.Plo@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -690,57 +540,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-includeHEADERS: $(include_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(includeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includedir)/$$f'"; \
-	  $(includeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includedir)/$$f"; \
-	done
-
-uninstall-includeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
-	done
-install-nodist_pkgincludeHEADERS: $(nodist_pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgincludedir)" || $(mkdir_p) "$(DESTDIR)$(pkgincludedir)"
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(nodist_pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  $(nodist_pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-
-uninstall-nodist_pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-install-pkgincludeHEADERS: $(pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgincludedir)" || $(mkdir_p) "$(DESTDIR)$(pkgincludedir)"
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-
-uninstall-pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -791,7 +590,6 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/kaffe
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -818,16 +616,10 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(includedir)" "$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -845,23 +637,23 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-libtool distclean-tags
 
 dvi: dvi-am
 
@@ -873,8 +665,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS \
-	install-nodist_pkgincludeHEADERS install-pkgincludeHEADERS
+install-data-am:
 
 install-exec-am:
 
@@ -885,12 +676,14 @@ install-man:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -900,81 +693,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool ctags dist-hook distclean distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am \
-	install-includeHEADERS install-info install-info-am \
-	install-man install-nodist_pkgincludeHEADERS \
-	install-pkgincludeHEADERS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 
-# Always link, ignore failures.
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs.h: ifaddrs_compat.h
-@USE_COMPAT_IFADDRS_TRUE@	$(LN_S) $(top_srcdir)/include/ifaddrs_compat.h ifaddrs.h || true
-
-stamp-kaffeh:
-	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	@echo timestamp > $@
-
-$(DERIVED_HDRS): stamp-h0all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h0all; $(MAKE) DERIVED_HDRS=$@ stamp-h0all; \
-	fi
-
-stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h0$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h0$$f $$f; \
-	  fi; \
-	done
-	@echo timestamp > $@
-
-.PHONY: rebuild-jni-hdrs
-rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib::$(top_builddir)/libraries/javalib/rt.jar -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib::$(top_builddir)/libraries/javalib/rt.jar -o stamp-h1$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h1$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h1$$f $$f; \
-	  fi; \
-	done
-
-#
-# jni headers of the core libraries
-#
-$(JNI_DERIVED_HDRS): stamp-h1all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
-	fi
-
-stamp-h1all: HDRS = $(JNI_DERIVED_HDRS)
-stamp-h1all: rebuild-jni-hdrs
-	@echo timestamp > $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
+# We just want the standard flags for fdlibm since it is an upstream lib
+# and our normal -pedantic -Wall -Werror breaks this lib. So no AM_CFLAGS.
+# We also don't need extra includes, so no AM_CPPFLAGS either.
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
