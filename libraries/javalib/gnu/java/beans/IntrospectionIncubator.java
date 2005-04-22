@@ -323,6 +323,8 @@ public class IntrospectionIncubator {
 				return;
 		}
 		newName = capitalize(newName);
+		if (newName.length() == 0)
+			return;
 
 		DoubleKey k = new DoubleKey(type,newName);
 		Method[] methods = (Method[])propertyMethods.get(k);
@@ -350,6 +352,8 @@ public class IntrospectionIncubator {
 				return;
 		}
 		newName = capitalize(newName);
+		if (newName.length() == 0)
+			return;
 
 		DoubleKey k = new DoubleKey(type,newName);
 		Method[] methods = (Method[])listenerMethods.get(k);
