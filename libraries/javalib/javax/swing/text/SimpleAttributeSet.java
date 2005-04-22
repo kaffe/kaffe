@@ -63,7 +63,10 @@ public class SimpleAttributeSet
 
   public void addAttribute(Object name, Object value)
   {
-    tab.put(name, value);
+    if (value == null)
+      tab.remove(name);
+    else
+      tab.put(name, value);
   }
 
   public void addAttributes(AttributeSet attributes)
