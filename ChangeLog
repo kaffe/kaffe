@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JToolBar.java
+        (addImpl): Adjust added AbstractButtons to look and feel like
+        toolbar buttons.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
         * gnu/java/beans/IntrospectionIncubator.java
