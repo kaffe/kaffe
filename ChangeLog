@@ -4,6 +4,17 @@
 
 	2005-04-17  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/text/SimpleAttributeSet.java
+        (addAttribute): Removed null pointer check.
+        * javax/swing/text/StyleContext.java
+        (NamedStyle.setResolveParent): Added null pointer check.
+
+2005-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-17  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/UIManager.java:
         Make the UIManager respect the swing.defaultlaf system
         property.
