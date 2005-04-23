@@ -1681,7 +1681,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    */
   public Dimension getMaximumSize(JComponent c)
   {
-    return getPreferredSize(c);
+    return new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
   }
 
   /**

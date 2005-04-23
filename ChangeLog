@@ -2,6 +2,17 @@
 
 	Resynced with GNU inetlib:
 
+	2005-04-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTabbedPaneUI.java:
+        (getMaximumSize): Return (Short.MAX_VALUE, Short.MAX_VALUE) as it
+        should according to a mauve testcase, instead of the preferred
+        size.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU inetlib:
+
 	2005-04-20  Robert Mitchell  <mitchelr@ipfw.edu>
 
         * IMAPConnection.java: Avoid NullPointerException when the server
