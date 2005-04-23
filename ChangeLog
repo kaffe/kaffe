@@ -2,6 +2,27 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/tree/DefaultTreeSelectionModel.java
+        (constructor): Added implementation.
+        (getRowMapper): Added implementation.
+        (setSelectionMode): Added implementation.
+        (getSelectionMode): Added implementation.
+        (getSelectionPath): Added implementation.
+        (getSelectionPaths): Added implementation.
+        (getSelectionCount): Added implementation.
+        (isSelectionEmpty): Added implementation.
+        (getSelectionRows): Added implementation.
+        (getMinSelectionRow): Added implementation.
+        (getMaxSelectionRow): Added implementation.
+        (getLeadSelectionRow): Added implementation.
+        (getLeadSelectionPath): Added implementation.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-20  Sven de Marothy  <sven@physto.se>
 
         * java/nio/charset/Charset.java:
