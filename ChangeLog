@@ -1,5 +1,14 @@
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU inetlib:
+
+	2005-04-20  Robert Mitchell  <mitchelr@ipfw.edu>
+
+        * IMAPConnection.java: Avoid NullPointerException when the server
+        returns no matches.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath:
 
 	2005-04-20  Sven de Marothy  <sven@physto.se>
