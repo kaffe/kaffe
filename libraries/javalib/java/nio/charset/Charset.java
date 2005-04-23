@@ -59,6 +59,7 @@ import java.util.TreeMap;
 /**
  * @author Jesse Rosenstock
  * @since 1.4
+ * @status updated to 1.5
  */
 public abstract class Charset implements Comparable
 {
@@ -114,6 +115,34 @@ public abstract class Charset implements Comparable
               || ch == '-' || ch == '.' || ch == ':' || ch == '_'))
           throw new IllegalCharsetNameException (name);
       }
+  }
+
+  /**
+   * Returns the system default charset.
+   *
+   * This may be set by the user or VM with the file.encoding
+   * property.
+   */
+  public static Charset defaultCharset()
+  {
+    String encoding;
+    try 
+      {
+	encoding = System.getProperty("file.encoding");
+      } catch(SecurityException e) {
+	encoding = "ISO-8859-1";
+      } catch(IllegalArgumentException e) {
+	encoding = "ISO-8859-1";
+      }
+
+    try
+      {
+	return forName(encoding);
+      } catch(UnsupportedCharsetException e) {
+      } catch(IllegalCharsetNameException e) {
+      } catch(IllegalArgumentException e) {
+      }
+    throw new IllegalStateException("Can't get default charset!");
   }
 
   public static boolean isSupported (String charsetName)
