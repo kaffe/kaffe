@@ -1115,6 +1115,11 @@ gnu/java/nio/charset/Cp866.java
 gnu/java/nio/charset/Cp869.java
 gnu/java/nio/charset/Cp874.java
 gnu/java/nio/charset/EncodingHelper.java
+gnu/java/nio/charset/iconv/IconvCharset.java
+gnu/java/nio/charset/iconv/IconvDecoder.java
+gnu/java/nio/charset/iconv/IconvEncoder.java
+gnu/java/nio/charset/iconv/IconvMetaData.java
+gnu/java/nio/charset/iconv/IconvProvider.java
 gnu/java/nio/charset/ISO_8859_13.java
 gnu/java/nio/charset/ISO_8859_15.java
 gnu/java/nio/charset/ISO_8859_1.java

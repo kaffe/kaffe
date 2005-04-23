@@ -140,6 +140,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_channels_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
+	$(gnu_java_nio_charset_iconv_SRCS) \
 	$(gnu_java_rmi_SRCS) \
 	$(gnu_java_rmi_dgc_SRCS) \
 	$(gnu_java_rmi_registry_SRCS) \
@@ -1609,6 +1610,12 @@ gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/Windows1256.java \
 	gnu/java/nio/charset/Windows1257.java \
 	gnu/java/nio/charset/Windows1258.java
+gnu_java_nio_charset_iconv_SRCS = \
+	gnu/java/nio/charset/iconv/IconvCharset.java \
+	gnu/java/nio/charset/iconv/IconvDecoder.java \
+	gnu/java/nio/charset/iconv/IconvEncoder.java \
+	gnu/java/nio/charset/iconv/IconvMetaData.java \
+	gnu/java/nio/charset/iconv/IconvProvider.java
 gnu_java_rmi_SRCS = \
 	gnu/java/rmi/RMIMarshalledObjectInputStream.java \
 	gnu/java/rmi/RMIMarshalledObjectOutputStream.java

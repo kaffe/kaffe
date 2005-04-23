@@ -220,6 +220,8 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_lang_VMFloat.h \
 	java_lang_ref_Reference.h \
 	gnu_classpath_VMSystemProperties.h \
+	gnu_java_nio_charset_iconv_IconvDecoder.h \
+	gnu_java_nio_charset_iconv_IconvEncoder.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_SelectorImpl.h \
 	java_io_VMObjectInputStream.h \

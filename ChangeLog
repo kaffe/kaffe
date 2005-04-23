@@ -1,3 +1,31 @@
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/tree/DefaultTreeSelectionModel.java:
+        Added API documentation all over the class.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-18  Sven de Marothy  <sven@physto.se>
+
+        * include/Makefile.am,
+        * native/jni/java-nio/Makefile.am: Added new files.
+        * gnu/java/nio/charset/iconv/IconvCharset.java,
+        * gnu/java/nio/charset/iconv/IconvDecoder.java,
+        * gnu/java/nio/charset/iconv/IconvEncoder.java,
+        * gnu/java/nio/charset/iconv/IconvMetaData.java,
+        * gnu/java/nio/charset/iconv/IconvProvider.java,
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+        * include/gnu_java_nio_charset_iconv_IconvDecoder.h,
+        * include/gnu_java_nio_charset_iconv_IconvEncoder.h,
+        New files.
+
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath:

@@ -86,6 +86,8 @@ LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =  \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am_libnio_la_OBJECTS = libnio_la-java_nio_VMDirectByteBuffer.lo \
+	libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo \
+	libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo \
 	libnio_la-gnu_java_nio_VMSelector.lo \
 	libnio_la-FileChannelImpl.lo
 libnio_la_OBJECTS = $(am_libnio_la_OBJECTS)
@@ -398,6 +400,8 @@ libnio_la_LDFLAGS = \
 
 libnio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
+	gnu_java_nio_charset_iconv_IconvDecoder.c \
+	gnu_java_nio_charset_iconv_IconvEncoder.c \
 	gnu_java_nio_VMSelector.c \
 	FileChannelImpl.c
 
@@ -480,6 +484,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-FileChannelImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-gnu_java_nio_VMSelector.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Plo@am__quote@
 
 .c.o:
@@ -509,6 +515,20 @@ libnio_la-java_nio_VMDirectByteBuffer.lo: java_nio_VMDirectByteBuffer.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_nio_VMDirectByteBuffer.c' object='libnio_la-java_nio_VMDirectByteBuffer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-java_nio_VMDirectByteBuffer.lo `test -f 'java_nio_VMDirectByteBuffer.c' || echo '$(srcdir)/'`java_nio_VMDirectByteBuffer.c
+
+libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo: gnu_java_nio_charset_iconv_IconvDecoder.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo -MD -MP -MF "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.Tpo" -c -o libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo `test -f 'gnu_java_nio_charset_iconv_IconvDecoder.c' || echo '$(srcdir)/'`gnu_java_nio_charset_iconv_IconvDecoder.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.Tpo" "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.Plo"; else rm -f "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_nio_charset_iconv_IconvDecoder.c' object='libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo `test -f 'gnu_java_nio_charset_iconv_IconvDecoder.c' || echo '$(srcdir)/'`gnu_java_nio_charset_iconv_IconvDecoder.c
+
+libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo: gnu_java_nio_charset_iconv_IconvEncoder.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo -MD -MP -MF "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.Tpo" -c -o libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo `test -f 'gnu_java_nio_charset_iconv_IconvEncoder.c' || echo '$(srcdir)/'`gnu_java_nio_charset_iconv_IconvEncoder.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.Tpo" "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.Plo"; else rm -f "$(DEPDIR)/libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_nio_charset_iconv_IconvEncoder.c' object='libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo `test -f 'gnu_java_nio_charset_iconv_IconvEncoder.c' || echo '$(srcdir)/'`gnu_java_nio_charset_iconv_IconvEncoder.c
 
 libnio_la-gnu_java_nio_VMSelector.lo: gnu_java_nio_VMSelector.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-gnu_java_nio_VMSelector.lo -MD -MP -MF "$(DEPDIR)/libnio_la-gnu_java_nio_VMSelector.Tpo" -c -o libnio_la-gnu_java_nio_VMSelector.lo `test -f 'gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`gnu_java_nio_VMSelector.c; \
