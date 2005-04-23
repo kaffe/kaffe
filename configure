@@ -48970,6 +48970,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files kaffe/scripts/javap"
 
+          ac_config_files="$ac_config_files kaffe/scripts/jdb"
+
           ac_config_files="$ac_config_files kaffe/scripts/javadoc"
 
           ac_config_files="$ac_config_files kaffe/scripts/appletviewer"
@@ -49865,6 +49867,7 @@ do
   "kaffe/scripts/jar" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/jar" ;;
   "kaffe/scripts/javah" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javah" ;;
   "kaffe/scripts/javap" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javap" ;;
+  "kaffe/scripts/jdb" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/jdb" ;;
   "kaffe/scripts/javadoc" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javadoc" ;;
   "kaffe/scripts/appletviewer" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/appletviewer" ;;
   "kaffe/scripts/rmic" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/rmic" ;;

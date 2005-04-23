@@ -1,3 +1,11 @@
+2005-04-23  Supreet Sethi  <supreet@linux-delhi.org>
+
+	* configure.ac: Added jdb script.
+
+	* kaffe/scripts/Makefile.am: Added jdb script.
+
+	* kaffe/scripts/jdb.in: place holder for tomcat.
+
 2005-04-23  Daniel Bonniot  <bonniot@users.sourceforge.net>
 
 	* kaffe/kaffevm/jit3/machine.c 

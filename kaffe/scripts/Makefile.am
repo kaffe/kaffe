@@ -38,12 +38,15 @@ PSCRIPTFILES=	install-jar
 
 jrebin_SCRIPTS = kaffe rmiregistry
 
+SCRIPTFILES_JDB = jdb
+
 bin_SCRIPTS = \
 	$(SCRIPTFILES_KJC) \
 	$(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) \
 	$(PSCRIPTFILES) \
-	$(SCRIPTFILES_XPROF)
+	$(SCRIPTFILES_XPROF) \
+	$(SCRIPTFILES_JDB)
 
 #include $(top_srcdir)/include/distclean-hack
 

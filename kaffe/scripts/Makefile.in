@@ -48,9 +48,10 @@ subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/appletviewer.in $(srcdir)/install-jar.in \
 	$(srcdir)/jar.in $(srcdir)/javadoc.in $(srcdir)/javah.in \
-	$(srcdir)/javap.in $(srcdir)/kaffe.in $(srcdir)/kaffexprof.in \
-	$(srcdir)/native2ascii.in $(srcdir)/rmic.in \
-	$(srcdir)/rmiregistry.in $(srcdir)/serialver.in
+	$(srcdir)/javap.in $(srcdir)/jdb.in $(srcdir)/kaffe.in \
+	$(srcdir)/kaffexprof.in $(srcdir)/native2ascii.in \
+	$(srcdir)/rmic.in $(srcdir)/rmiregistry.in \
+	$(srcdir)/serialver.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_antlr.m4 \
@@ -77,7 +78,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jni_md.h
-CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof jar javah javap \
+CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof jar javah javap jdb \
 	javadoc appletviewer rmic rmiregistry serialver native2ascii
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -387,12 +388,14 @@ SCRIPTFILES_SUN = \
 @ENABLE_XPROF_TRUE@SCRIPTFILES_XPROF = kaffexprof nm2as.awk
 PSCRIPTFILES = install-jar
 jrebin_SCRIPTS = kaffe rmiregistry
+SCRIPTFILES_JDB = jdb
 bin_SCRIPTS = \
 	$(SCRIPTFILES_KJC) \
 	$(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) \
 	$(PSCRIPTFILES) \
-	$(SCRIPTFILES_XPROF)
+	$(SCRIPTFILES_XPROF) \
+	$(SCRIPTFILES_JDB)
 
 all: all-recursive
 
@@ -437,6 +440,8 @@ jar: $(top_builddir)/config.status $(srcdir)/jar.in
 javah: $(top_builddir)/config.status $(srcdir)/javah.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javap: $(top_builddir)/config.status $(srcdir)/javap.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
