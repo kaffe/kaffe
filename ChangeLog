@@ -4,6 +4,16 @@
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicMenuItemUI.java
+        (paintText): Make use of the 'selectionForeground' UI default
+        for text painting.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU inetlib:
+
+	2005-04-22  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/plaf/basic/BasicLookAndFeel.java
         (initSystemColorDefaults): Modified colors to match the
         BasicLookAndFeel in the reference implementation.
