@@ -4,6 +4,15 @@
 
 	2005-04-23  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/text/Document.java:
+        Added API documentation comments.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-23  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/text/AbstractDocument.java
         (getDocumentProperties): Implemented.
         (setDocumentProperties): Implemented.
