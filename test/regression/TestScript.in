@@ -19,6 +19,7 @@ export KAFFEHOME
 test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn -bootclasspath @top_builddir@/libraries/javalib/rt.jar"}
 : ${JAVAC=${JIKES-"$JAVA -ss 512k -noverify at.dms.kjc.Main"}" -classpath \".${PATHSEP}@GNU_CRYPTO_JAR@${PATHSEP}@JAVAX_SECURITY_JAR@${PATHSEP}${SRCDIR}${PATHSEP}compile_time${PATHSEP}${CLASSPATH}\""}
 : ${TIMEOUT=300}
+: ${HARDTIMEOUT=5}
 overallerror=0
 error=0
 
@@ -76,7 +77,7 @@ run()
 	error=$?
 	pid=$!
 	$VERBOSE "Background pid: $pid"
-	(sleep $TIMEOUT; echo "Timeout - $TIMEOUT seconds - killed" >> $TMPRESULT; kill $pid) &
+	(sleep $TIMEOUT; echo "Timeout - $TIMEOUT seconds - killed" >> $TMPRESULT; kill $pid; sleep $HARDTIMEOUT; echo "Still alive $HARDTIMEOUT seconds after SIGTERM - SIGKILL sent)" >> $TMPRESULT; kill -KILL $pid) &
 	killerpid=$!
 	$VERBOSE "Killer process pid: $killerpid with timeout of $TIMEOUT seconds"
 	wait $pid

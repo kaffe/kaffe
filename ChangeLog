@@ -1,3 +1,9 @@
+2004-04-23  Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+
+	* test/regression/TestScript.in:
+	SIGKILL kaffe in testsuite when SIGTERM doesn't work,
+	prevent timeouts during build.
+
 2005-04-23  Supreet Sethi  <supreet@linux-delhi.org>
 
 	* configure.ac: Added jdb script.
