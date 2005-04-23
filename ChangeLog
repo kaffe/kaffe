@@ -4,6 +4,18 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicButtonListener.java
+        (mousePressed): replaced query to getModifiersEx with getModifiers.
+        This method relied on faulty behaviour in getModifierEx.
+        (mouseReleased): replaced query to getModifiersEx with getModifiers.
+        This method relied on faulty behaviour in getModifierEx.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-20  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/tree/DefaultTreeSelectionModel.java
         (constructor): Added implementation.
         (getRowMapper): Added implementation.
