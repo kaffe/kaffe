@@ -4,6 +4,18 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/JMenu.java
+        (add): add(Component) now calls PopupMenu.insert(..) instead of
+        PopupMenu.add(..). add(..) is not implemented for Component,
+        so JComponent.add(..) is called instead, adding the component
+        in the wrong place.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
+	2005-04-20  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/plaf/metal/MetalLookAndFeel.java
         (getDefaults): Call addCustomEntriesToTable on the theme.
 
