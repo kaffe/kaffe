@@ -1,6 +1,16 @@
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpat:
+
+	2005-04-22  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/BoxLayout
+        (preferredLayoutSize): Fixed computation so that it correctly
+        adds the top and bottom insets of the container.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
@@ -10,7 +20,7 @@
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpath:
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
@@ -21,7 +31,7 @@
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpath:
 
 	2005-04-22  Michael Koch  <konqueror@gmx.de>
 
@@ -30,7 +40,7 @@
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpath:
 
 	2005-04-21  Casey Marshall <csm@gnu.org>
 
@@ -42,7 +52,7 @@
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpath:
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
@@ -52,7 +62,7 @@
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
-	Resynced with GNU inetlib:
+	Resynced with GNU Classpath:
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
