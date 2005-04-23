@@ -225,7 +225,6 @@ public class MetalBorders
         newInsets = new Insets(0, 0, 0, 0);
 
       AbstractButton b = (AbstractButton) c;
-      Insets margin = b.getMargin();
       newInsets.bottom = borderInsets.bottom;
       newInsets.left = borderInsets.left;
       newInsets.right = borderInsets.right;
