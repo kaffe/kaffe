@@ -2,6 +2,67 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-20  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/io/EncodingManager.java: Removed charset alias properties.
+        * gnu/java/io/decode/Decoder.java,
+        * gnu/java/io/decode/Decoder8859_1.java,
+        * gnu/java/io/decode/Decoder8859_13.java,
+        * gnu/java/io/decode/Decoder8859_15.java,
+        * gnu/java/io/decode/Decoder8859_2.java,
+        * gnu/java/io/decode/Decoder8859_3.java,
+        * gnu/java/io/decode/Decoder8859_4.java,
+        * gnu/java/io/decode/Decoder8859_5.java,
+        * gnu/java/io/decode/Decoder8859_6.java,
+        * gnu/java/io/decode/Decoder8859_7.java,
+        * gnu/java/io/decode/Decoder8859_8.java,
+        * gnu/java/io/decode/Decoder8859_9.java,
+        * gnu/java/io/decode/DecoderASCII.java,
+        * gnu/java/io/decode/DecoderCp1047.java,
+        * gnu/java/io/decode/DecoderEBCDIC_XML_US.java,
+        * gnu/java/io/decode/DecoderEightBitLookup.java,
+        * gnu/java/io/decode/DecoderUTF16BE.java,
+        * gnu/java/io/decode/DecoderUTF16LE.java,
+        * gnu/java/io/decode/DecoderUTF32BE.java,
+        * gnu/java/io/decode/DecoderUTF32LE.java,
+        * gnu/java/io/decode/DecoderUTF8.java,
+        * gnu/java/io/decode/DecoderUnicodeBig.java,
+        * gnu/java/io/decode/DecoderUnicodeLittle.java,
+        * gnu/java/io/decode/DecoderWindows1250.java,
+        * gnu/java/io/decode/DecoderWindows1252.java,
+        * gnu/java/io/decode/package.html
+        * gnu/java/io/encode/Encoder.java,
+        * gnu/java/io/encode/Encoder8859_1.java,
+        * gnu/java/io/encode/Encoder8859_13.java,
+        * gnu/java/io/encode/Encoder8859_15.java,
+        * gnu/java/io/encode/Encoder8859_2.java,
+        * gnu/java/io/encode/Encoder8859_3.java,
+        * gnu/java/io/encode/Encoder8859_4.java,
+        * gnu/java/io/encode/Encoder8859_5.java,
+        * gnu/java/io/encode/Encoder8859_6.java,
+        * gnu/java/io/encode/Encoder8859_7.java,
+        * gnu/java/io/encode/Encoder8859_8.java,
+        * gnu/java/io/encode/Encoder8859_9.java,
+        * gnu/java/io/encode/EncoderASCII.java,
+        * gnu/java/io/encode/EncoderCp1047.java,
+        * gnu/java/io/encode/EncoderEBCDIC_XML_US.java,
+        * gnu/java/io/encode/EncoderEightBitLookup.java,
+        * gnu/java/io/encode/EncoderUTF16BE.java,
+        * gnu/java/io/encode/EncoderUTF16LE.java,
+        * gnu/java/io/encode/EncoderUTF32BE.java,
+        * gnu/java/io/encode/EncoderUTF32LE.java,
+        * gnu/java/io/encode/EncoderUTF8.java,
+        * gnu/java/io/encode/EncoderUnicodeBig.java,
+        * gnu/java/io/encode/EncoderUnicodeLittle.java,
+        * gnu/java/io/encode/EncoderWindows1250.java,
+        * gnu/java/io/encode/EncoderWindows1252.java,
+        * gnu/java/io/encode/package.html:
+        Removed
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-19  Michael Koch  <konqueror@gmx.de>
 
         * java/awt/geom/QuadCurve2D.java:

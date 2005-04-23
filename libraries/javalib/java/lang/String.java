@@ -10,9 +10,6 @@
 
 package java.lang;
 
-import gnu.java.io.decode.Decoder;
-import gnu.java.io.EncodingManager;
-
 import java.io.ByteArrayOutputStream;
 import java.io.CharConversionException;
 import java.io.Serializable;
@@ -115,18 +112,41 @@ public String(byte ascii[], int hibyte) {
   {
     if (offset < 0 || count < 0 || offset + count > data.length)
       throw new StringIndexOutOfBoundsException();
-    try
-      {
-        // XXX Consider using java.nio here.
-        value = EncodingManager.getDecoder()
-          .convertToChars(data, offset, count);
-      }
-    catch (UnsupportedEncodingException uee)
-      {
-        throw new Error(uee);
-      }
-    this.offset = 0;
-    this.count = value.length;
+    int o, c;
+    char[] v;
+    String encoding;
+    try 
+	{
+	  encoding = System.getProperty("file.encoding");
+	  CharsetDecoder csd = Charset.forName(encoding).newDecoder();
+	  csd.onMalformedInput(CodingErrorAction.REPLACE);
+	  csd.onUnmappableCharacter(CodingErrorAction.REPLACE);
+	  CharBuffer cbuf = csd.decode(ByteBuffer.wrap(data, offset, count));
+	  if(cbuf.hasArray())
+	    {
+              v = cbuf.array();
+	      o = cbuf.position();
+	      c = cbuf.remaining();
+	    } else {
+	      // Doubt this will happen. But just in case.
+	      v = new char[cbuf.remaining()];
+	      cbuf.get(v);
+	      o = 0;
+	      c = v.length;
+	    }
+	} catch(Exception ex){
+	    // If anything goes wrong (System property not set,
+	    // NIO provider not available, etc)
+	    // Default to the 'safe' encoding ISO8859_1
+	    v = new char[count];
+	    o = 0;
+	    c = count;
+	    for (int i=0;i<count;i++)
+	      v[i] = (char)data[offset+i];
+	}
+    this.value = v;
+    this.offset = o;
+    this.count = c;
   }
 
 /* taken from GNU Claspath */
@@ -389,11 +409,6 @@ public int indexOf( int ch, int sIdx) {
 	}
 
 	return -1;
-}
-
-private static char[] decodeBytes(byte[] bytes, int offset,
-		int len, Decoder decoder)  throws CharConversionException {
-	return decoder.convertToChars(bytes, offset, len);
 }
 
 public int lastIndexOf( String str) {
