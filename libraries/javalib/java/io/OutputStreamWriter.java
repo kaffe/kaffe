@@ -209,7 +209,7 @@ public class OutputStreamWriter extends Writer
   public void close () throws IOException
   {
     if(out == null)
-      throw new IOException("Stream is closed.");
+      return;
     flush();
     out.close ();
     out = null;
