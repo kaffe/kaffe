@@ -168,6 +168,34 @@ final class CharBufferImpl extends CharBuffer
   }
   
   /**
+   * Bulk get, overloaded for speed.
+   */
+  public CharBuffer get (char[] dst, int offset, int length)
+  {
+    checkArraySize(dst.length, offset, length);
+    checkForUnderflow(length);
+
+    System.arraycopy(backing_buffer, pos + array_offset, 
+		     dst, offset, length);
+    pos += length;
+    return this;
+  }
+
+  /**
+   * Bulk put, overloaded for speed.
+   */
+  public CharBuffer put (char[] src, int offset, int length)
+  {
+    checkArraySize(src.length, offset, length);
+    checkForOverflow(length);
+		    
+    System.arraycopy(src, offset,
+		     backing_buffer, pos + array_offset, length);
+    pos += length;
+    return this;
+  }
+
+  /**
    * Absolute put method. Writes <code>value</code> to position
    * <code>index</code> in the buffer.
    *

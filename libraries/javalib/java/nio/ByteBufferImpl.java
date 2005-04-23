@@ -149,7 +149,38 @@ final class ByteBufferImpl extends ByteBuffer
 
     return backing_buffer [(pos++) + array_offset];
   }
-  
+
+  /**
+   * Bulk get
+   */
+  public ByteBuffer get (byte[] dst, int offset, int length)
+  {
+    checkArraySize(dst.length, offset, length);
+    if ( (limit - pos) < length) // check for overflow
+      throw new BufferUnderflowException();
+
+    System.arraycopy(backing_buffer, pos + array_offset, 
+		     dst, offset, length);
+    pos += length;
+
+    return this;
+  }
+
+  /**
+   * Relative bulk put(), overloads the ByteBuffer impl.
+   */
+  public ByteBuffer put (byte[] src, int offset, int length)
+  {
+    if ( (limit - pos) < length) // check for overflow
+      throw new BufferOverflowException();
+    checkArraySize(src.length, offset, length);
+
+    System.arraycopy(src, offset, backing_buffer, pos + array_offset, length);
+    pos += length;
+
+    return this;
+  }
+
   /**
    * Relative put method. Writes <code>value</code> to the next position
    * in the buffer.
@@ -207,7 +238,21 @@ final class ByteBufferImpl extends ByteBuffer
   
   public ByteBuffer putChar (char value)
   {
-    ByteBufferHelper.putChar(this, value, order());
+    if (readOnly)
+      throw new ReadOnlyBufferException ();
+    if ( (limit-pos) < 2)
+      throw new BufferOverflowException();
+
+    if (endian == ByteOrder.LITTLE_ENDIAN)
+      {
+        backing_buffer [(pos++) + array_offset] = (byte)(value&0xFF);
+        backing_buffer [(pos++) + array_offset] = (byte)(value>>8);
+      }
+    else
+      {
+        backing_buffer [(pos++) + array_offset] = (byte)(value>>8);
+        backing_buffer [(pos++) + array_offset] = (byte)(value&0xFF);
+      }
     return this;
   }
   
