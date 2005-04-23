@@ -111,9 +111,6 @@ class VMSystemProperties
       properties.setProperty("java.runtime.name", properties.getProperty("java.vm.name"));
       properties.setProperty("java.runtime.version", properties.getProperty("java.vm.version"));
 
-      properties.setProperty("file.encoding.pkg", "kaffe.io");
-      properties.setProperty("file.encoding", "Default");
-
       /* Define the default java compiler - this should be configured
        * somehow.
        */
