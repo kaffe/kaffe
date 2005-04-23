@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package gnu.classpath;
 
 import java.util.Properties;
@@ -49,103 +50,103 @@ import java.util.Properties;
  */
 public class SystemProperties
 {
-    /**
-     * Stores the current system properties. This can be modified by
-     * {@link #setProperties(Properties)}, but will never be null, because
-     * setProperties(null) sucks in the default properties.
-     */
-    private static Properties properties;
+  /**
+   * Stores the current system properties. This can be modified by
+   * {@link #setProperties(Properties)}, but will never be null, because
+   * setProperties(null) sucks in the default properties.
+   */
+  private static Properties properties;
 
-    /**
-     * The default properties. Once the default is stabilized,
-     * it should not be modified;
-     * instead it is cloned when calling <code>setProperties(null)</code>.
-     */
-    private static final Properties defaultProperties = new Properties();
+  /**
+   * The default properties. Once the default is stabilized,
+   * it should not be modified;
+   * instead it is cloned when calling <code>setProperties(null)</code>.
+   */
+  private static final Properties defaultProperties = new Properties();
 
-    static
-    {
-        VMSystemProperties.preInit(defaultProperties);
+  static
+  {
+    VMSystemProperties.preInit(defaultProperties);
 
-        defaultProperties.put("gnu.classpath.home",
-            Configuration.CLASSPATH_HOME);
-        defaultProperties.put("gnu.classpath.version",
-            Configuration.CLASSPATH_VERSION);
+    defaultProperties.put("gnu.classpath.home", Configuration.CLASSPATH_HOME);
+    defaultProperties.put("gnu.classpath.version",
+                          Configuration.CLASSPATH_VERSION);
 
-        // Set base URL if not already set.
-        if (defaultProperties.get("gnu.classpath.home.url") == null)
-            defaultProperties.put("gnu.classpath.home.url",
-                "file://" + Configuration.CLASSPATH_HOME + "/lib");
+    // Set base URL if not already set.
+    if (defaultProperties.get("gnu.classpath.home.url") == null)
+      defaultProperties.put("gnu.classpath.home.url",
+			    "file://"
+			    + Configuration.CLASSPATH_HOME
+	                    + "/lib");
 
-        // Set short name if not already set.
-        if (defaultProperties.get("gnu.classpath.vm.shortname") == null)
-        {
-            String value = defaultProperties.getProperty("java.vm.name");
-            int index = value.lastIndexOf(' ');
-            if (index != -1)
-                value = value.substring(index + 1);
-            defaultProperties.put("gnu.classpath.vm.shortname", value);
-        }
+    // Set short name if not already set.
+    if (defaultProperties.get("gnu.classpath.vm.shortname") == null)
+      {
+	String value = defaultProperties.getProperty("java.vm.name");
+	int index = value.lastIndexOf(' ');
+	if (index != -1)
+	  value = value.substring(index + 1);
+	defaultProperties.put("gnu.classpath.vm.shortname", value);
+      }
 
-        // Network properties
-        if (defaultProperties.get("http.agent") == null)
-        {
-            String userAgent
-                = ("gnu-classpath/"
-                + defaultProperties.getProperty("gnu.classpath.version")
-                + " ("
-                + defaultProperties.getProperty("gnu.classpath.vm.shortname")
-                + "/"
-                + defaultProperties.getProperty("java.vm.version")
-                + ")");
-            defaultProperties.put("http.agent", userAgent);
-        }
+    // Network properties
+    if (defaultProperties.get("http.agent") == null)
+      {
+	String userAgent = ("gnu-classpath/"
+	                    + defaultProperties.getProperty("gnu.classpath.version")
+	                    + " ("
+	                    + defaultProperties.getProperty("gnu.classpath.vm.shortname")
+	                    + "/"
+	                    + defaultProperties.getProperty("java.vm.version")
+	                    + ")");
+	 defaultProperties.put("http.agent", userAgent);
+      }
 
-	// 8859_1 is a safe default encoding to use when not explicitly set
-        if (defaultProperties.get("file.encoding") == null)
-            defaultProperties.put("file.encoding", "8859_1");
+    // 8859_1 is a safe default encoding to use when not explicitly set
+    if (defaultProperties.get("file.encoding") == null)
+      defaultProperties.put("file.encoding", "8859_1");
 
-        // XXX FIXME - Temp hack for old systems that set the wrong property
-        if (defaultProperties.get("java.io.tmpdir") == null)
-            defaultProperties.put("java.io.tmpdir",
-                defaultProperties.get("java.tmpdir"));
+    // XXX FIXME - Temp hack for old systems that set the wrong property
+    if (defaultProperties.get("java.io.tmpdir") == null)
+      defaultProperties.put("java.io.tmpdir",
+                            defaultProperties.get("java.tmpdir"));
 
-        VMSystemProperties.postInit(defaultProperties);
+    VMSystemProperties.postInit(defaultProperties);
 
-        // Note that we use clone here and not new.  Some programs assume
-        // that the system properties do not have a parent.
+    // Note that we use clone here and not new.  Some programs assume
+    // that the system properties do not have a parent.
+    properties = (Properties) defaultProperties.clone();
+  }
+
+  public static String getProperty(String name)
+  {
+    return properties.getProperty(name);
+  }
+
+  public static String getProperty(String name, String defaultValue)
+  {
+    return properties.getProperty(name, defaultValue);
+  }
+
+  public static String setProperty(String name, String value)
+  {
+    return (String) properties.setProperty(name, value);
+  }
+
+  public static Properties getProperties()
+  {
+    return properties;
+  }
+
+  public static void setProperties(Properties properties)
+  {
+    if (properties == null)
+      {
+        // Note that we use clone here and not new.  Some programs
+        // assume that the system properties do not have a parent.
         properties = (Properties)defaultProperties.clone();
-    }
+      }
 
-    public static String getProperty(String name)
-    {
-        return properties.getProperty(name);
-    }
-
-    public static String getProperty(String name, String defaultValue)
-    {
-        return properties.getProperty(name, defaultValue);
-    }
-
-    public static String setProperty(String name, String value)
-    {
-        return (String)properties.setProperty(name, value);
-    }
-
-    public static Properties getProperties()
-    {
-        return properties;
-    }
-
-    public static void setProperties(Properties properties)
-    {
-        if (properties == null)
-          {
-            // Note that we use clone here and not new.  Some programs
-            // assume that the system properties do not have a parent.
-            properties = (Properties)defaultProperties.clone();
-          }
-
-        SystemProperties.properties = properties;
-    }
+    SystemProperties.properties = properties;
+  }
 }

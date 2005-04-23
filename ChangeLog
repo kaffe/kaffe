@@ -2,6 +2,15 @@
 
 	Resynced with GNU inetlib:
 
+	2005-04-22  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/classpath/SystemProperties.java:
+        Reformatted.
+
+2005-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU inetlib:
+
 	2005-04-21  Casey Marshall <csm@gnu.org>
 
         * gnu/java/security/der/DERValue.java
