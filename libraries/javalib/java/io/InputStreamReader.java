@@ -336,7 +336,6 @@ public class InputStreamReader extends Reader
       throw new IOException("Reader has been closed");
     if (isDone)
       return -1;
-
     if(decoder != null){
 	int totalBytes = (int)((double)length * maxBytesPerChar);
 	byte[] bytes = new byte[totalBytes];
@@ -360,6 +359,7 @@ public class InputStreamReader extends Reader
             read = remaining;
 	byteBuffer = ByteBuffer.wrap(bytes, 0, read);	
 	CharBuffer cb = CharBuffer.wrap(buf, offset, length);
+	int startPos = cb.position();
 
  	if(hasSavedSurrogate){
  	    hasSavedSurrogate = false;
@@ -369,16 +369,18 @@ public class InputStreamReader extends Reader
 
 	CoderResult cr = decoder.decode(byteBuffer, cb, isDone);
 	decoder.reset();
-
 	// 1 char remains which is the first half of a surrogate pair.
 	if(cr.isOverflow() && cb.hasRemaining()){
 	    CharBuffer overflowbuf = CharBuffer.allocate(2);
 	    cr = decoder.decode(byteBuffer, overflowbuf, isDone);
 	    overflowbuf.flip();
-	    cb.put(overflowbuf.get());
- 	    savedSurrogate = overflowbuf.get();
- 	    hasSavedSurrogate = true;	    
-	    isDone = false;
+	    if(overflowbuf.hasRemaining())
+	    {
+	      cb.put(overflowbuf.get());
+	      savedSurrogate = overflowbuf.get();
+	      hasSavedSurrogate = true;	    
+	      isDone = false;
+	    }
 	}
 
 	if(byteBuffer.hasRemaining()) {
@@ -388,7 +390,7 @@ public class InputStreamReader extends Reader
 	} else
 	    byteBuffer = null;
 
-	return (read == 0)?-1:cb.position();
+	return (read == 0)?-1:(cb.position() - startPos);
     } else {
 	byte[] bytes = new byte[length];
 	int read = in.read(bytes);
