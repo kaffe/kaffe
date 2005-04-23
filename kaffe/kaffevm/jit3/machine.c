@@ -652,11 +652,14 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 		struct debug_file *df = machine_debug_file;
 
 		/* Mark the start of this source file */
+		char *sourcefile = meth->class->sourcefile;
+		if (! sourcefile)
+			sourcefile = "Unknown source file";
 		addDebugInfo(df,
 			     DIA_IncludeFile,
 			     meth->class->name->data,
 			     meth->class->packageLength,
-			     meth->class->sourcefile,
+			     sourcefile,
 			     code->code,
 
 			     DIA_Function,
@@ -745,12 +748,15 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 		/*
 		 * No line debugging, but we'd like a symbol to show up anyways
 		 */
+                char *sourcefile = meth->class->sourcefile;
+                if (! sourcefile)
+                        sourcefile = "Unknown source file";
 		addDebugInfo(
 			machine_debug_file,
 			DIA_IncludeFile,
 			meth->class->name->data,
 			meth->class->packageLength,
-			meth->class->sourcefile,
+			sourcefile,
 			code->code,
 			
 			DIA_Function, meth, mm, 0, code->code, code->codelen,

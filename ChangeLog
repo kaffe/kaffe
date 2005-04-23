@@ -1,3 +1,10 @@
+2005-04-23  Daniel Bonniot  <bonniot@users.sourceforge.net>
+
+	* kaffe/kaffevm/jit3/machine.c 
+	[KAFFE_XDEBUGGING](installMethodCode):
+	Handle class files without a SourceFile attribute
+	more gracefully when xdebugging.
+
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath:
