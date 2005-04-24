@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2003, 2004
+ * Copyright (c) 2003, 2004, 2005
  *      Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -20,6 +20,9 @@
 
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>
+#endif
+#if defined(HAVE_SYS_SIGNAL_H)
+#include <sys/signal.h>
 #endif
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>

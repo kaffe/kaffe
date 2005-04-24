@@ -1,5 +1,13 @@
 2005-04-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/netbsd1/md.h:
+	Include <sys/signal.h> for sigcontext on NetBSD CVS head.
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c:
+	Include jit-md.h to make sure that exceptionFrame is defined.
+
+2005-04-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c 
 	(nullException, floatingException): Removed prototypes 
 	that were confusing the compiler on NetBSD CVS HEAD.

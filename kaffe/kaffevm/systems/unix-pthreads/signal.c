@@ -33,6 +33,7 @@
 #define	EXCEPTIONFRAME(f, c)	/* Does nothing */
 #define	EXCEPTIONFRAMEPTR	0
 #elif defined(TRANSLATOR)
+#include "jit-md.h"
 #define	DEFINEFRAME()		exceptionFrame frame
 #define	EXCEPTIONFRAMEPTR	&frame
 #endif /* TRANSLATOR */
