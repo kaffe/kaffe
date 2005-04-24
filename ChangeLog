@@ -1,5 +1,14 @@
 2005-04-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c 
+	(nullException, floatingException): Removed prototypes 
+	that were confusing the compiler on NetBSD CVS HEAD.
+	(jthread_initexceptions): Moved further to the back 
+	to make sure it picks up the declarations of 
+	nullException and floatingException.
+	
+2005-04-24  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath:
 
 	2005-04-23  Tom Tromey  <tromey@redhat.com>

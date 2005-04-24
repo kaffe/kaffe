@@ -47,42 +47,11 @@
 #define SIG_T   void*
 #endif
 
-static void nullException(SIGNAL_ARGS(sig, sc));
-static void floatingException(EXCEPTIONPROTO);
 static void ignoreSignal(int sig);
 
 static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
 static exchandler_t stackOverflowHandler;
-
-/*
- * Setup the internal exceptions.
- */
-void
-jthread_initexceptions(exchandler_t _nullHandler,
-		       exchandler_t _floatingHandler,
-		       exchandler_t _stackOverflowHandler)
-{
-	nullHandler = _nullHandler;
-	floatingHandler = _floatingHandler;
-	stackOverflowHandler = _stackOverflowHandler;
-
-	if (DBGEXPR(EXCEPTION, false, true)) {
-		/* Catch signals we need to convert to exceptions */
-#if defined(SIGSEGV)
-		registerSyncSignalHandler(SIGSEGV, nullException);
-#endif
-#if defined(SIGBUS)
-		registerSyncSignalHandler(SIGBUS, nullException);
-#endif
-#if defined(SIGFPE)
-		registerSyncSignalHandler(SIGFPE, floatingException);
-#endif
-#if defined(SIGPIPE)
-		ignoreSignal(SIGPIPE);
-#endif
-	}
-}
 
 /*
  * Null exception - catches bad memory accesses.
@@ -140,6 +109,36 @@ floatingException(EXCEPTIONPROTO)
 	EXCEPTIONFRAME(frame, ctx);
 	floatingHandler(EXCEPTIONFRAMEPTR);
 }
+
+/*
+ * Setup the internal exceptions.
+ */
+void
+jthread_initexceptions(exchandler_t _nullHandler,
+		       exchandler_t _floatingHandler,
+		       exchandler_t _stackOverflowHandler)
+{
+	nullHandler = _nullHandler;
+	floatingHandler = _floatingHandler;
+	stackOverflowHandler = _stackOverflowHandler;
+
+	if (DBGEXPR(EXCEPTION, false, true)) {
+		/* Catch signals we need to convert to exceptions */
+#if defined(SIGSEGV)
+		registerSyncSignalHandler(SIGSEGV, nullException);
+#endif
+#if defined(SIGBUS)
+		registerSyncSignalHandler(SIGBUS, nullException);
+#endif
+#if defined(SIGFPE)
+		registerSyncSignalHandler(SIGFPE, floatingException);
+#endif
+#if defined(SIGPIPE)
+		ignoreSignal(SIGPIPE);
+#endif
+	}
+}
+
 
 /* -----------------------------------------------
  * OS signal handling code.  See FAQ/FAQ.jsignal for information.
@@ -294,7 +293,6 @@ clearSignal(int sig)
 {
 	registerSignalHandler(sig, SIG_DFL, false);
 }
-
 
 /*
  * Ignore the given signal.
