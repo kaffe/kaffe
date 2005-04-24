@@ -64,7 +64,7 @@ class URLTest {
 	"foo/bar",
 // This testcase is too strict. I use here the message sent by classpath.
 //	"java.net.MalformedURLException: Protocol handler not found: foo/bar"
-	"java.net.MalformedURLException: Absolute URL required with null context"
+	"java.net.MalformedURLException: Absolute URL required with null context: foo/bar"
     ),
 
     new TestCase(
@@ -120,7 +120,7 @@ class URLTest {
 	"foo/bar",
 // This testcase is too strict. I use here the message sent by classpath.
 //	"java.net.MalformedURLException: Protocol handler not found: foo/bar"
-	"java.net.MalformedURLException: Absolute URL required with null context"
+	"java.net.MalformedURLException: Absolute URL required with null context: foo/bar"
     ),
 
     new TestCase(
@@ -134,7 +134,7 @@ class URLTest {
 	"jar:abc!/eat/me",
 // This testcase is too strict. I use here the message sent by classpath.
 //	"java.net.MalformedURLException: invalid inner URL: Protocol handler not found: abc"
-	"java.net.MalformedURLException: invalid inner URL: Absolute URL required with null context"
+	"java.net.MalformedURLException: invalid inner URL: Absolute URL required with null context: abc"
     ),
 
   };
