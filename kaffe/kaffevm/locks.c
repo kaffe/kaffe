@@ -577,8 +577,10 @@ dumpLocks(void)
 {
 }
 
-void KaffeLock_destroyLock(Collector *gcif, iLock *lock)
+void KaffeLock_destroyLock(Collector *gcif, void *l)
 {
+  iLock *lock = (iLock *)l;
+
   assert(lock->lockCount == 0);
   assert(lock->num_wait == 0);
   assert(lock->in_progress == 0);

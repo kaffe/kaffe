@@ -254,7 +254,7 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	      args->nativeStackSize = sz;
 	    }
 	  DBG(INIT,
-	    dprintf("Setup stack size to %d\n", sz);
+	    dprintf("Setup stack size to %zd\n", sz);
 	  );
 	}
     }

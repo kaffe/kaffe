@@ -613,7 +613,7 @@ gc_large_block(size_t sz)
 	/* number of pages allocated for block */
 	block_count = msz >> gc_pgbits;
 	
-	DBG(GCPRIM, dprintf ("large block covers %x pages\n", block_count); );
+	DBG(GCPRIM, dprintf ("large block covers %zx pages\n", block_count); );
 
 	/* Setup the meta-data for the block */
 	DBG(GCDIAG, gc_set_magic_marker(info));

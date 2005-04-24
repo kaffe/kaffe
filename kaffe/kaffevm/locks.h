@@ -86,6 +86,6 @@ extern void	locks_internal_slowUnlockMutexIfHeld(LOCKOBJECT, iLock *);
 
 extern void	dumpLocks(void);
 
-extern void KaffeLock_destroyLock(struct _Collector *, iLock *);
+extern void KaffeLock_destroyLock(struct _Collector *, void *);
 
 #endif

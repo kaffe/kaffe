@@ -13,13 +13,13 @@
 #define	__checks_h
 
 #define	check_local_int(l)	CHDBG (dprintf ("- local %d: int %d\n", (l), (int) local(l)->v.tint))
-#define	check_local_long(l)	CHDBG (dprintf ("- local %d: long %lld\n", (l), (jlong) local_long(l)->v.tlong))
+#define	check_local_long(l)	CHDBG (dprintf ("- local %d: long %jd\n", (l), (jlong) local_long(l)->v.tlong))
 #define	check_local_float(l)	CHDBG (dprintf ("- local %d: float %g\n", (l), (double) local_float(l)->v.tfloat))
 #define	check_local_double(l)	CHDBG (dprintf ("- local %d: double %g\n", (l), (double) local_double(l)->v.tdouble))
 #define	check_local_ref(l)	CHDBG (dprintf ("- local %d: ref %p\n", (l), (void *) local(l)->v.taddr))
 
 #define	check_stack_int(l)	CHDBG (dprintf ("- stack %d: int %d\n", (l), (int) stack(l)->v.tint))
-#define	check_stack_long(l)	CHDBG (dprintf ("- stack %d: long %lld\n", (l), (jlong) stack_long(l)->v.tlong))
+#define	check_stack_long(l)	CHDBG (dprintf ("- stack %d: long %jd\n", (l), (jlong) stack_long(l)->v.tlong))
 #define	check_stack_float(l)	CHDBG (dprintf ("- stack %d: float %g\n", (l), (double) stack(l)->v.tfloat))
 #define	check_stack_double(l)	CHDBG (dprintf ("- stack %d: double %g\n", (l), (double) stack_double(l)->v.tdouble))
 #define	check_stack_ref(l)	CHDBG (dprintf ("- stack %d: ref %p\n", (l), (void *) stack(l)->v.taddr))

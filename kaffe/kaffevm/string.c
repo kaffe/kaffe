@@ -490,7 +490,7 @@ stringCharArray2Java(const jchar *data, int len)
 void
 stringWalk(Collector* collector, void *gc_info, void* str, uint32 size UNUSED)
 {
-	Hjava_lang_String *objstr = (Hjava_lang_Object *)str;
+	Hjava_lang_String *objstr = (Hjava_lang_String *)str;
 	iLock *lk;
 
         /* That's all we have to do here */

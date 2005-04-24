@@ -221,7 +221,7 @@ KaffeJNI_PushLocalFrame(JNIEnv* env UNUSED, jint capacity)
 static jint
 KaffeJNI_EnsureLocalCapacity(JNIEnv* env, jint capacity)
 {
-  jint ret;
+  jint ret = 0;
 
   BEGIN_EXCEPTION_HANDLING(-1);
 

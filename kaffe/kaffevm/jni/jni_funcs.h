@@ -24,7 +24,7 @@ jobject   KaffeJNI_ToReflectedMethod (JNIEnv *, jclass, jmethodID, jboolean);
 jobject   KaffeJNI_ToReflectedField (JNIEnv *, jclass, jfieldID, jboolean);
 jobject   KaffeJNI_NewDirectByteBuffer(JNIEnv *, void *, jlong);
 void *    KaffeJNI_GetDirectBufferAddress(JNIEnv *, jobject);
-jint      KaffeJNI_GetDirectBufferCapacity(JNIEnv *, jobject);
+long      KaffeJNI_GetDirectBufferCapacity(JNIEnv *, jobject);
 
 /* ====== String handling =========================================================== */
 
