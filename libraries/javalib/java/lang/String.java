@@ -27,8 +27,6 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import kaffe.io.CharToByteConverter;
-
 public final class String implements Serializable, Comparable, CharSequence {
 
 	/**
@@ -333,27 +331,51 @@ public boolean equalsIgnoreCase (String that) {
 	return (true);
 }
 
-public byte[] getBytes() {
-	return ( getBytes( CharToByteConverter.getDefault()));
-}
+    /* Taken from GNU Classpath */
+  public byte[] getBytes()
+  { 
+      try 
+	  {
+	      return getBytes(System.getProperty("file.encoding"));
+	  } catch(Exception e) {
+	      // XXX - Throw an error here? 
+	      // For now, default to the 'safe' encoding.
+	      byte[] bytes = new byte[count];
+	      for(int i=0;i<count;i++)
+		  bytes[i] = (byte)((value[offset+i] <= 0xFF)?
+				    value[offset+i]:'?');
+	      return bytes;
+      }
+  }
 
-private byte[] getBytes( CharToByteConverter encoding) {
-	ByteArrayOutputStream out = new ByteArrayOutputStream( value.length);
+    /* Taken from GNU Classpath */
+  public byte[] getBytes(String enc) throws UnsupportedEncodingException
+  {
+    try 
+      {
+	CharsetEncoder cse = Charset.forName(enc).newEncoder();
+	cse.onMalformedInput(CodingErrorAction.REPLACE);
+	cse.onUnmappableCharacter(CodingErrorAction.REPLACE);
+	ByteBuffer bbuf = cse.encode(CharBuffer.wrap(value, offset, count));
+	if(bbuf.hasArray())
+	  return bbuf.array();
 
-	byte[] buf = new byte[value.length*7];
-	int buflen = encoding.convert( value, offset, count, buf, 0, buf.length);
-	while (buflen > 0) {
-		out.write(buf, 0, buflen);
-		buflen = encoding.flush(buf, 0, buf.length);
-	}
+	// Doubt this will happen. But just in case.
+	byte[] bytes = new byte[bbuf.remaining()];
+	bbuf.get(bytes);
+	return bytes;
 
-	return (out.toByteArray());
-}
-
-public byte[] getBytes( String enc) throws UnsupportedEncodingException
-{
-	return ( getBytes( CharToByteConverter.getConverter(enc)));
-}
+      } catch(IllegalCharsetNameException e){
+	  throw new UnsupportedEncodingException("Encoding: "+enc+
+						 " not found.");
+      } catch(UnsupportedCharsetException e){
+	  throw new UnsupportedEncodingException("Encoding: "+enc+
+						 " not found.");
+      } catch(CharacterCodingException e){
+	  // XXX - Ignore coding exceptions? They shouldn't really happen.
+	  return null;
+      }	  
+  }
 
 /**
  * @deprecated

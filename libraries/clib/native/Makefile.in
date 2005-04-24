@@ -91,11 +91,7 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = ../../../kaffe/kaffevm/libkaffevm.la \
 	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
-am__objects_1 = libnative_la-ByteToCharDefault.lo \
-	libnative_la-ByteToCharIconv.lo \
-	libnative_la-CharToByteDefault.lo \
-	libnative_la-CharToByteIconv.lo
-am__objects_2 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
+am__objects_1 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 	libnative_la-java_lang_VMDouble.lo \
 	libnative_la-java_lang_VMFloat.lo libnative_la-Math.lo \
 	libnative_la-MemoryAdvice.lo libnative_la-Object.lo \
@@ -105,15 +101,15 @@ am__objects_2 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 	libnative_la-Throwable.lo libnative_la-UNIXProcess.lo \
 	libnative_la-gnu_classpath_VMSystemProperties.lo \
 	libnative_la-ZipFile.lo
-am__objects_3 = libnative_la-Array.lo libnative_la-Constructor.lo \
+am__objects_2 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
-am__objects_4 = libnative_la-AccessController.lo
-am__objects_5 = libnative_la-TestNative.lo
-am__objects_6 = libnative_la-TimeZone.lo
-am__objects_7 = libnative_la-java_lang_ref_Reference.lo
+am__objects_3 = libnative_la-AccessController.lo
+am__objects_4 = libnative_la-TestNative.lo
+am__objects_5 = libnative_la-TimeZone.lo
+am__objects_6 = libnative_la-java_lang_ref_Reference.lo
 am_libnative_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6) $(am__objects_7)
+	$(am__objects_6)
 libnative_la_OBJECTS = $(am_libnative_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -413,12 +409,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/libraries/clib/classpath \
         -I$(top_srcdir)/libraries/clib/fdlibm
 
-IO_SRCS = \
-		ByteToCharDefault.c \
-		ByteToCharIconv.c \
-		CharToByteDefault.c \
-		CharToByteIconv.c
-
 LANG_SRCS = \
 		Class.c \
 		ClassLoader.c \
@@ -474,11 +464,9 @@ libnative_la_DEPENDENCIES = \
 libnative_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(M_LIBS) \
-	$(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
 
 libnative_la_SOURCES = \
-	$(IO_SRCS) \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
 	$(SECURITY_SRCS) \
@@ -558,10 +546,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-AccessController.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Array.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ByteToCharDefault.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ByteToCharIconv.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-CharToByteDefault.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-CharToByteIconv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Constructor.Plo@am__quote@
@@ -606,34 +590,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
-
-libnative_la-ByteToCharDefault.lo: ByteToCharDefault.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-ByteToCharDefault.lo -MD -MP -MF "$(DEPDIR)/libnative_la-ByteToCharDefault.Tpo" -c -o libnative_la-ByteToCharDefault.lo `test -f 'ByteToCharDefault.c' || echo '$(srcdir)/'`ByteToCharDefault.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-ByteToCharDefault.Tpo" "$(DEPDIR)/libnative_la-ByteToCharDefault.Plo"; else rm -f "$(DEPDIR)/libnative_la-ByteToCharDefault.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ByteToCharDefault.c' object='libnative_la-ByteToCharDefault.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-ByteToCharDefault.lo `test -f 'ByteToCharDefault.c' || echo '$(srcdir)/'`ByteToCharDefault.c
-
-libnative_la-ByteToCharIconv.lo: ByteToCharIconv.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-ByteToCharIconv.lo -MD -MP -MF "$(DEPDIR)/libnative_la-ByteToCharIconv.Tpo" -c -o libnative_la-ByteToCharIconv.lo `test -f 'ByteToCharIconv.c' || echo '$(srcdir)/'`ByteToCharIconv.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-ByteToCharIconv.Tpo" "$(DEPDIR)/libnative_la-ByteToCharIconv.Plo"; else rm -f "$(DEPDIR)/libnative_la-ByteToCharIconv.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ByteToCharIconv.c' object='libnative_la-ByteToCharIconv.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-ByteToCharIconv.lo `test -f 'ByteToCharIconv.c' || echo '$(srcdir)/'`ByteToCharIconv.c
-
-libnative_la-CharToByteDefault.lo: CharToByteDefault.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-CharToByteDefault.lo -MD -MP -MF "$(DEPDIR)/libnative_la-CharToByteDefault.Tpo" -c -o libnative_la-CharToByteDefault.lo `test -f 'CharToByteDefault.c' || echo '$(srcdir)/'`CharToByteDefault.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-CharToByteDefault.Tpo" "$(DEPDIR)/libnative_la-CharToByteDefault.Plo"; else rm -f "$(DEPDIR)/libnative_la-CharToByteDefault.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='CharToByteDefault.c' object='libnative_la-CharToByteDefault.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-CharToByteDefault.lo `test -f 'CharToByteDefault.c' || echo '$(srcdir)/'`CharToByteDefault.c
-
-libnative_la-CharToByteIconv.lo: CharToByteIconv.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-CharToByteIconv.lo -MD -MP -MF "$(DEPDIR)/libnative_la-CharToByteIconv.Tpo" -c -o libnative_la-CharToByteIconv.lo `test -f 'CharToByteIconv.c' || echo '$(srcdir)/'`CharToByteIconv.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-CharToByteIconv.Tpo" "$(DEPDIR)/libnative_la-CharToByteIconv.Plo"; else rm -f "$(DEPDIR)/libnative_la-CharToByteIconv.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='CharToByteIconv.c' object='libnative_la-CharToByteIconv.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-CharToByteIconv.lo `test -f 'CharToByteIconv.c' || echo '$(srcdir)/'`CharToByteIconv.c
 
 libnative_la-Class.lo: Class.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Class.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Class.Tpo" -c -o libnative_la-Class.lo `test -f 'Class.c' || echo '$(srcdir)/'`Class.c; \

@@ -570,10 +570,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_io_VMObjectStreamClass.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
-	kaffe_io_ByteToCharDefault.h \
-	kaffe_io_ByteToCharIconv.h \
-	kaffe_io_CharToByteDefault.h \
-	kaffe_io_CharToByteIconv.h \
 	kaffe_lang_MemoryAdvice.h \
 	kaffe_lang_UNIXProcess.h \
 	kaffe_management_JIT.h \

@@ -1,3 +1,135 @@
+2005-04-24  Dalibor Topic  <robilad@kaffe.org>
+
+        * include/Makefile.am:
+	Don't generate JNI headers for removed files.
+
+        * libraries/clib/native/Makefile.am:
+	Removed character set conversion sources.
+
+        * libraries/clib/nio/Makefile.am:
+	Added iconv linking flags.
+
+        * libraries/javalib/Makefile.am.in:
+	Removed serializes converters.
+
+        * libraries/javalib/META-INF/services/java.nio.charset.spi.CharsetProvider:
+	New file.
+
+        * test/regression/CharCvt.java:
+	Adapted to nio.
+
+        * test/regression/Makefile.am:
+	Taken out the sysdepCallMethod test as such things should now be tested in
+	the JNI module.
+
+        * developers/Encode.java,
+        developers/EncodeEUC_JP.java,
+        libraries/clib/native/ByteToCharDefault.c,
+        libraries/clib/native/ByteToCharIconv.c,
+        libraries/clib/native/CharToByteDefault.c,
+        libraries/clib/native/CharToByteIconv.c,
+        libraries/javalib/java/lang/String.java,
+        libraries/javalib/kaffe/io/ByteToChar8859_1.java,
+        libraries/javalib/kaffe/io/ByteToChar8859_2.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_3.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_4.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_5.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_6.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_7.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_8.ser,
+        libraries/javalib/kaffe/io/ByteToChar8859_9.ser,
+        libraries/javalib/kaffe/io/ByteToCharASCII.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP037.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1026.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1046.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1250.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1251.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1252.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1253.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1254.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1255.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1256.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1257.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP1258.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP850.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP852.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP855.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP857.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP860.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP861.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP862.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP863.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP864.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP865.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP866.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP868.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP869.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP870.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP871.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP875.ser,
+        libraries/javalib/kaffe/io/ByteToCharCP918.ser,
+        libraries/javalib/kaffe/io/ByteToCharConverter.java,
+        libraries/javalib/kaffe/io/ByteToCharDefault.java,
+        libraries/javalib/kaffe/io/ByteToCharHashBased.java,
+        libraries/javalib/kaffe/io/ByteToCharIconv.java,
+        libraries/javalib/kaffe/io/ByteToCharKOI8_R.ser,
+        libraries/javalib/kaffe/io/ByteToCharMS932.java,
+        libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
+        libraries/javalib/kaffe/io/ByteToCharUTF8.java,
+        libraries/javalib/kaffe/io/CharToByte8859_1.java,
+        libraries/javalib/kaffe/io/CharToByte8859_2.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_3.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_4.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_5.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_6.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_7.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_8.ser,
+        libraries/javalib/kaffe/io/CharToByte8859_9.ser,
+        libraries/javalib/kaffe/io/CharToByteASCII.ser,
+        libraries/javalib/kaffe/io/CharToByteCP037.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1026.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1046.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1250.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1251.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1252.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1253.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1254.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1255.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1256.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1257.ser,
+        libraries/javalib/kaffe/io/CharToByteCP1258.ser,
+        libraries/javalib/kaffe/io/CharToByteCP850.ser,
+        libraries/javalib/kaffe/io/CharToByteCP852.ser,
+        libraries/javalib/kaffe/io/CharToByteCP855.ser,
+        libraries/javalib/kaffe/io/CharToByteCP857.ser,
+        libraries/javalib/kaffe/io/CharToByteCP860.ser,
+        libraries/javalib/kaffe/io/CharToByteCP861.ser,
+        libraries/javalib/kaffe/io/CharToByteCP862.ser,
+        libraries/javalib/kaffe/io/CharToByteCP863.ser,
+        libraries/javalib/kaffe/io/CharToByteCP864.ser,
+        libraries/javalib/kaffe/io/CharToByteCP865.ser,
+        libraries/javalib/kaffe/io/CharToByteCP866.ser,
+        libraries/javalib/kaffe/io/CharToByteCP868.ser,
+        libraries/javalib/kaffe/io/CharToByteCP869.ser,
+        libraries/javalib/kaffe/io/CharToByteCP870.ser,
+        libraries/javalib/kaffe/io/CharToByteCP871.ser,
+        libraries/javalib/kaffe/io/CharToByteCP875.ser,
+        libraries/javalib/kaffe/io/CharToByteCP918.ser,
+        libraries/javalib/kaffe/io/CharToByteConverter.java,
+        libraries/javalib/kaffe/io/CharToByteDefault.java,
+        libraries/javalib/kaffe/io/CharToByteHashBased.java,
+        libraries/javalib/kaffe/io/CharToByteIconv.java,
+        libraries/javalib/kaffe/io/CharToByteKOI8_R.ser,
+        libraries/javalib/kaffe/io/CharToByteMS932.java,
+        libraries/javalib/kaffe/io/CharToByteSHIFT_JIS.java,
+        libraries/javalib/kaffe/io/CharToByteUTF8.java,
+        libraries/javalib/kaffe/io/CircularBuffer.java,
+        libraries/javalib/kaffe/io/ClassLoaderObjectInputStream.java,
+        libraries/javalib/kaffe/io/ConverterAlias.java,
+        libraries/javalib/kaffe/io/KaffeCharset.java,
+        libraries/javalib/kaffe/io/KaffeCharsetProvider.java:
+	Removed no longer necessary files.
+
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/classpath/VMSystemProperties.java:

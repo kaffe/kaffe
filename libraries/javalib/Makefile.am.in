@@ -59,86 +59,6 @@ Klasses_jar_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-serialized_converters = \
-	kaffe/io/ByteToChar8859_2.ser \
-	kaffe/io/ByteToChar8859_3.ser \
-	kaffe/io/ByteToChar8859_4.ser \
-	kaffe/io/ByteToChar8859_5.ser \
-	kaffe/io/ByteToChar8859_6.ser \
-	kaffe/io/ByteToChar8859_7.ser \
-	kaffe/io/ByteToChar8859_8.ser \
-	kaffe/io/ByteToChar8859_9.ser \
-	kaffe/io/ByteToCharASCII.ser \
-	kaffe/io/ByteToCharCP037.ser \
-	kaffe/io/ByteToCharCP1026.ser \
-	kaffe/io/ByteToCharCP1046.ser \
-	kaffe/io/ByteToCharCP1250.ser \
-	kaffe/io/ByteToCharCP1251.ser \
-	kaffe/io/ByteToCharCP1252.ser \
-	kaffe/io/ByteToCharCP1253.ser \
-	kaffe/io/ByteToCharCP1254.ser \
-	kaffe/io/ByteToCharCP1255.ser \
-	kaffe/io/ByteToCharCP1256.ser \
-	kaffe/io/ByteToCharCP1257.ser \
-	kaffe/io/ByteToCharCP1258.ser \
-	kaffe/io/ByteToCharCP850.ser \
-	kaffe/io/ByteToCharCP852.ser \
-	kaffe/io/ByteToCharCP855.ser \
-	kaffe/io/ByteToCharCP857.ser \
-	kaffe/io/ByteToCharCP860.ser \
-	kaffe/io/ByteToCharCP861.ser \
-	kaffe/io/ByteToCharCP862.ser \
-	kaffe/io/ByteToCharCP863.ser \
-	kaffe/io/ByteToCharCP864.ser \
-	kaffe/io/ByteToCharCP865.ser \
-	kaffe/io/ByteToCharCP866.ser \
-	kaffe/io/ByteToCharCP868.ser \
-	kaffe/io/ByteToCharCP869.ser \
-	kaffe/io/ByteToCharCP870.ser \
-	kaffe/io/ByteToCharCP871.ser \
-	kaffe/io/ByteToCharCP875.ser \
-	kaffe/io/ByteToCharCP918.ser \
-	kaffe/io/ByteToCharKOI8_R.ser \
-	kaffe/io/CharToByte8859_2.ser \
-	kaffe/io/CharToByte8859_3.ser \
-	kaffe/io/CharToByte8859_4.ser \
-	kaffe/io/CharToByte8859_5.ser \
-	kaffe/io/CharToByte8859_6.ser \
-	kaffe/io/CharToByte8859_7.ser \
-	kaffe/io/CharToByte8859_8.ser \
-	kaffe/io/CharToByte8859_9.ser \
-	kaffe/io/CharToByteASCII.ser \
-	kaffe/io/CharToByteCP037.ser \
-	kaffe/io/CharToByteCP1026.ser \
-	kaffe/io/CharToByteCP1046.ser \
-	kaffe/io/CharToByteCP1250.ser \
-	kaffe/io/CharToByteCP1251.ser \
-	kaffe/io/CharToByteCP1252.ser \
-	kaffe/io/CharToByteCP1253.ser \
-	kaffe/io/CharToByteCP1254.ser \
-	kaffe/io/CharToByteCP1255.ser \
-	kaffe/io/CharToByteCP1256.ser \
-	kaffe/io/CharToByteCP1257.ser \
-	kaffe/io/CharToByteCP1258.ser \
-	kaffe/io/CharToByteCP850.ser \
-	kaffe/io/CharToByteCP852.ser \
-	kaffe/io/CharToByteCP855.ser \
-	kaffe/io/CharToByteCP857.ser \
-	kaffe/io/CharToByteCP860.ser \
-	kaffe/io/CharToByteCP861.ser \
-	kaffe/io/CharToByteCP862.ser \
-	kaffe/io/CharToByteCP863.ser \
-	kaffe/io/CharToByteCP864.ser \
-	kaffe/io/CharToByteCP865.ser \
-	kaffe/io/CharToByteCP866.ser \
-	kaffe/io/CharToByteCP868.ser \
-	kaffe/io/CharToByteCP869.ser \
-	kaffe/io/CharToByteCP870.ser \
-	kaffe/io/CharToByteCP871.ser \
-	kaffe/io/CharToByteCP875.ser \
-	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteKOI8_R.ser
-
 gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle_fr.properties \
 	gnu/regexp/MessagesBundle_it.properties \
@@ -187,10 +107,9 @@ rebuildLib = ./rebuildLib
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools/javap/*.class)
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
-JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
-JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
-JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
-JAR_CMD7 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools/javap)
+JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
+JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
+JAR_CMD6 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools/javap)
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
@@ -206,7 +125,7 @@ compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_
 
 tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar
-	$(JAR_CMD7)
+	$(JAR_CMD6)
 	mv $@.new $@
 else
 ## classes is provided for backward compatibility; use compile-classes
@@ -228,14 +147,13 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD3)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
-	$(JAR_CMD6)
 	mv $@.new $@
 
 # Put gnu.bytecode into tools.jar to avoid problems
 # with applications using their own version of it.
 tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar
-	$(JAR_CMD7)
+	$(JAR_CMD6)
 	mv $@.new $@
 endif
 

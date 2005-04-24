@@ -1,6 +1,8 @@
-
-import kaffe.io.ByteToCharIconv;
-import kaffe.io.CharToByteIconv;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 
 /**
  * this class tests some aspects of the conversion 
@@ -35,27 +37,20 @@ public class CharCvt
 	print_as_int(make_a_short(-1));
 
 	/* Make sure CharToByteIconv does the right thing. */
-	try
-	{
-	    CharToByteIconv ic;
+	CharsetEncoder ce;
+	CharBuffer cbuf;
 
-	    ic = new CharToByteIconv("SHIFT_JIS");
-	    ic.convert(new char[0], 0, 0, new byte[0], 0, 0);
-	}
-	catch(java.io.UnsupportedEncodingException th)
-	{
-	}
+	ce = Charset.forName("SHIFT_JIS").newEncoder();
+	cbuf = CharBuffer.allocate(0);
+	ce.encode(cbuf);
+
 	/* Make sure ByteToCharIconv does the right thing. */
-	try
-	{
-	    ByteToCharIconv ic;
+	CharsetDecoder cd;
+	ByteBuffer bbuf;
 
-	    ic = new ByteToCharIconv("SHIFT_JIS");
-	    ic.convert(new byte[0], 0, 0, new char[0], 0, 0);
-	}
-	catch(java.io.UnsupportedEncodingException th)
-	{
-	}
+	cd = Charset.forName("SHIFT_JIS").newDecoder();
+	bbuf = ByteBuffer.allocate(0);
+	cd.decode(bbuf);
     }
 }
 

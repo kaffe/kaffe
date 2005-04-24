@@ -83,7 +83,8 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-am__DEPENDENCIES_1 =  \
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 =  \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am_libnio_la_OBJECTS = libnio_la-java_nio_VMDirectByteBuffer.lo \
 	libnio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo \
@@ -409,6 +410,7 @@ libnio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnio_la_LIBADD = \
+        $(LTLIBICONV) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(libnio_la_DEPENDENCIES)
 

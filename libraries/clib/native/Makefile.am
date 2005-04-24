@@ -17,12 +17,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/libraries/clib/classpath \
         -I$(top_srcdir)/libraries/clib/fdlibm
 
-IO_SRCS = \
-		ByteToCharDefault.c \
-		ByteToCharIconv.c \
-		CharToByteDefault.c \
-		CharToByteIconv.c
-
 LANG_SRCS = \
 		Class.c \
 		ClassLoader.c \
@@ -78,11 +72,9 @@ libnative_la_DEPENDENCIES = \
 libnative_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(M_LIBS) \
-	$(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
 
 libnative_la_SOURCES = \
-	$(IO_SRCS) \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
 	$(SECURITY_SRCS) \

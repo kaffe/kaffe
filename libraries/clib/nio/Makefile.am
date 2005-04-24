@@ -33,6 +33,7 @@ libnio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnio_la_LIBADD = \
+        $(LTLIBICONV) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(libnio_la_DEPENDENCIES)
 
