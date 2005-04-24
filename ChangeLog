@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath:
 
+	2005-04-23  Tom Tromey  <tromey@redhat.com>
+
+        * javax/swing/text/StyleConstants.java (StyleConstants): Now
+        package-private.
+
+2005-04-24  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath:
+
 	2005-04-23  Mark Wielaard  <mark@klomp.org>
 
         * java/net/URL.java (URL(URL,String,URLStreamHandler)): Add spec
