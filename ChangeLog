@@ -1,3 +1,12 @@
+2005-04-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/classMethod.c
+	(buildInterfaceDispatchTable): Put a strong reference on itable2dtable
+	to prevent it being freed before the class is actually destroyed.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Remove strong reference on itable2dtable.
+
 2005-04-24  Eric Anholt <eta@lclark.edu>
 
 	* kaffe/kaffevm/exception.c,

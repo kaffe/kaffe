@@ -229,6 +229,7 @@ DBG(CLASSGC,
 	   * GC when the class becomes unused as it is only marked while
 	   * the class is being walked (see walkClass).
 	   */
+	  KGC_rmRef(collector, clazz->itable2dtable);
 	}
 	if (clazz->gc_layout != NULL && clazz->superclass != NULL &&
 	    clazz->superclass->gc_layout != clazz->gc_layout)

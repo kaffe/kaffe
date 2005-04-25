@@ -2139,6 +2139,10 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		postOutOfMemory(einfo);
 		return (false);
 	}
+	if (!gc_add_ref(class->itable2dtable)) {
+		postOutOfMemory(einfo);
+		return false;
+	}
 	class->itable2dtable[0] = class;
 	j = 1;
 	for (i = 0; i < class->total_interface_len; i++) {
