@@ -80,3 +80,10 @@
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 
+#if defined(HAVE_INT32)
+#define HAVE_INT32_DEFINED
+#endif
+
+#if defined(HAVE_UINT32)
+#define _UINT32_T
+#endif

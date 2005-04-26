@@ -1,3 +1,9 @@
+2005-04-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/config-hacks.h: Added some alias definition for fdlibm.
+
+	* libraries/clib/fdlibm/mprec.h: Include config-hacks.h
+
 2005-04-25  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/net/NetworkInterface.java

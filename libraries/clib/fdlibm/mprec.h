@@ -30,6 +30,7 @@
 #define __CLASSPATH_MPREC_H__
 
 #include <config.h>
+#include "config-hacks.h"
 #include "ieeefp.h"
 
 #if defined HAVE_STDINT_H
