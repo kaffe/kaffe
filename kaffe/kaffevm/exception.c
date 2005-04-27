@@ -416,7 +416,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	 */
 	for (frame = baseFrame; frame->meth != ENDOFSTACK; frame++) {
 		bool 			foundHandler;
-		uintp 			handler;
+		uintp 			handler = 0;
 		Hjava_lang_Object*	obj;
 
 		/*
