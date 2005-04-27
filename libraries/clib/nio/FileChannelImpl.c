@@ -24,7 +24,12 @@
 static inline void
 throwIOException(JNIEnv *env, int rc)
 {
-  jclass clazz = (*env)->FindClass(env, "java.io.IOException");
+  jclass clazz = (*env)->FindClass(env, "java/io/IOException");
+
+  if ((*env)->ExceptionOccurred(env)) {
+	  (*env)->ExceptionDescribe(env);
+	  (*env)->FatalError(env, "An unexpected exception has been thrown while looking up java/io/IOException");
+  }
 
   assert(clazz != NULL);
   (*env)->ThrowNew(env, clazz, SYS_ERROR(rc));
