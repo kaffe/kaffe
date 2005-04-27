@@ -1,3 +1,26 @@
+2005-04-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.automake,
+	developers/autogen.sh: UÃpdated to use libtool 1.5.16.
+
+	* configure: Regenerated.
+
+	* libltdl/COPYING.LIB,
+	libltdl/Makefile.am,
+	libltdl/Makefile.in,
+	libltdl/acinclude.m4,
+	libltdl/config.guess,
+	libltdl/config.sub,
+	libltdl/configure,
+	libltdl/configure.ac,
+	libltdl/install-sh,
+	libltdl/ltdl.c,
+ 	libltdl/ltdl.h,
+	libltdl/ltmain.sh,
+	m4/libtool.m4,
+	scripts/ltmain.sh:
+	Updated to libtool 1.5.16.
+
 2005-04-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* developers/autogen.sh,

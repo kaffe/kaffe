@@ -222,6 +222,13 @@ libltdl_la_LDFLAGS = -no-undefined -version-info 4:1:1
 libltdl_la_LIBADD = $(LIBADD_DL)
 libltdlc_la_SOURCES = ltdl.c
 libltdlc_la_LIBADD = $(LIBADD_DL)
+ltdldatadir = $(datadir)/libtool/libltdl
+ltdldatafiles = COPYING.LIB README acinclude.m4 aclocal.m4 \
+		Makefile.am Makefile.in configure.ac configure \
+		config-h.in config.guess config.sub \
+		install-sh missing ltmain.sh \
+		ltdl.c ltdl.h
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -587,7 +594,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS
+install-data-am: install-data-local install-includeHEADERS
 
 install-exec-am: install-libLTLIBRARIES
 
@@ -626,15 +633,15 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	distclean-compile distclean-generic distclean-hdr \
 	distclean-libtool distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-includeHEADERS install-info \
-	install-info-am install-libLTLIBRARIES install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	install install-am install-data install-data-am \
+	install-data-local install-exec install-exec-am \
+	install-includeHEADERS install-info install-info-am \
+	install-libLTLIBRARIES install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-includeHEADERS \
+	uninstall-info-am uninstall-libLTLIBRARIES
 
 
 ltdl.lo: ltdl.h config.h
@@ -643,21 +650,11 @@ $(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS): libtool
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-local-install-files: $(DISTFILES)
-	-rm -rf $(DESTDIR)$(datadir)/libtool/libltdl
-	$(mkinstalldirs) $(DESTDIR)$(datadir)/libtool/libltdl
-	@for file in $(DISTFILES); do \
-	  case $$file in \
-	    $(srcdir)/*) file=`echo "$$file" | sed "s|^$(srcdir)/||"`;; \
-	  esac; \
-	  d=$(srcdir); \
-	  if test -d $$d/$$file; then \
-	    cp -r $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file; \
-	  else \
-	    test -f $(DESTDIR)$(datadir)/libtool/libltdl/$$file \
-	    || cp $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file || :; \
-	  fi; \
-	done
+install-data-local:
+	-rm -rf $(DESTDIR)$(ltdldatadir)
+	$(mkinstalldirs) $(DESTDIR)$(ltdldatadir)
+	( cd $(srcdir) && $(AMTAR) chf - $(ltdldatafiles); ) \
+	  | ( umask 0 && cd $(DESTDIR)$(ltdldatadir) && $(AMTAR) xf -; )
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
