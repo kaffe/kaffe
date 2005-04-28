@@ -290,7 +290,7 @@ public class Logger
 	if (!couldBeAdded)
 	  throw new IllegalStateException("cannot register new logger");
       }
-      else
+      else if (resourceBundleName != null)
       {
 	/* The logger already exists. Make sure it uses
 	 * the same resource bundle for localizing messages.
@@ -303,7 +303,7 @@ public class Logger
 	 * resourceBundle of the registered logger to the bundle
 	 * whose name was passed to getLogger.
 	 */
-	if ((existingBundleName == null) && (resourceBundleName != null))
+	if (existingBundleName == null)
 	{
 	  /* If ResourceBundle.getBundle throws an exception, the
 	   * existing logger will be unchanged.  This would be
@@ -319,7 +319,11 @@ public class Logger
 	    && ((existingBundleName == null)
 		|| !existingBundleName.equals(resourceBundleName)))
 	{
-	  throw new IllegalArgumentException();
+	  throw new IllegalArgumentException("name: " + name 
+					     + ", existing bundle name: " 
+					     + existingBundleName
+					     + ", resource bundle name: "
+					     + resourceBundleName);
 	}
       }
     }

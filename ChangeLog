@@ -1,3 +1,13 @@
+2005-04-29  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for Tom (http://tom.loria.fr).
+
+	* libraries/javalib/java/util/logging/Logger.java
+	(getLogger): If resourceBundleName is null, just
+	return the found result.
+
+	Reported by: Antoine Reilles <Antoine.Reilles@loria.fr>
+
 2005-04-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java
