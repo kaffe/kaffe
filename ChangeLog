@@ -1,3 +1,12 @@
+2005-04-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/kaffe/tools/jar/Jar.java
+	(buildUnicityMap): New method.
+	(addMapEntry): New method.
+	(unicityMap): New field.
+	(createJar): Use unicityMap directly.
+	(updateFilesInJar): Use unicityMap directly.
+	
 2005-04-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* developers/patch-libtool-no-default-install.diff:

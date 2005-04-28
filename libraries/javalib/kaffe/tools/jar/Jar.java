@@ -27,6 +27,9 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
@@ -436,6 +439,48 @@ public class Jar {
 
     }
 
+    void addMapEntry(Map m, String shortname, XPFile entry)
+    {
+      // Make sure the entryname ends with a '/' if it is a directory
+      
+      boolean entryfile_isDirectory = entry.isDirectory();
+
+      if (entryfile_isDirectory) {
+	if (shortname.length() == 0) {
+	  // Something is very wrong here.
+	  throw new RuntimeException("entryname was empty");
+	}
+	
+	if (shortname.charAt( shortname.length() - 1 ) != '/') {
+	  shortname = shortname + '/';
+	}
+      }
+      
+      m.put(shortname, entry);
+      
+      if (!entryfile_isDirectory)
+	return;
+      
+      String[] dir_files = entry.list();
+
+      for (int i = 0; i < dir_files.length; i++) {
+	XPFile abs_entry = new XPFile(entry, dir_files[i]);
+	String rel_entry = new XPFile(shortname, dir_files[i]).getPath();
+
+	addMapEntry(m, rel_entry, abs_entry);
+      }
+    }
+
+    // Build a set containing all shortnames
+    void buildUnicityMap()
+    {
+      unicityMap = new HashMap();
+
+      for (int i = 0; i < files.length; i++)
+	addMapEntry(unicityMap, new XPFile(files[i]).getPath(), new XPFile(absolute_files[i]));
+    }
+  
+
     // Create a table that will map argument file names to
     // fully qualified file names.
 
@@ -554,11 +599,13 @@ public class Jar {
 
 	    exit(2); 
 	}
-
+	
+	// If we are in update mode we also have to walk the full tree to be able to
+	// remove the redundant entries in the jar.
+	if (requireExistence) {
+	  buildUnicityMap();
+	}
     }
-
-
-
 
     // List the file arguments that exist in this jar file
     // if files argument is null then list them all
@@ -855,33 +902,23 @@ public class Jar {
 			    // print the name of the file to stdout.
 			    
 			    String entry_name = entry.getName();
-			    boolean match = (shortnames == null);
 			    String longname = entry_name;
 			    
-			    if (! match) {
-				    if (debug) {
-					    System.out.println("looking for match for \"" +
-							       entry_name + "\"");
-				    }
-	    
-				    for (int i = 0; i < shortnames.length ; i++) {
-					    if (entry_name.equals(shortnames[i])) {
-						    match = true;
-						    longname = longnames[i];
-					    }
-				    }
+			    if (debug) {
+			      System.out.println("looking for match for \"" +
+						 entry_name + "\"");
 			    }
 			    
-			    if (match) {
-				    if (debug) {
-					    System.out.println("found match for \"" +
-							       entry_name + "\"");
-				    }
-				    
-				    // skip matching entries, removing them from the
-				    // output stream. So entries that need to be 
-				    // updated don't appear on the stream twice.
-				    continue;
+			    if (unicityMap.get(entry_name) != null) {
+			      if (debug) {
+				System.out.println("found match for \"" +
+						   entry_name + "\"");
+			      }
+			      
+			      // skip matching entries, removing them from the
+			      // output stream. So entries that need to be 
+			      // updated don't appear on the stream twice.
+			      continue;
 			    }
 			    
 			    ZipEntry new_entry = new ZipEntry(entry_name);
@@ -916,18 +953,15 @@ public class Jar {
 		    }
 
 		    // add the updated entries
+		    
+		    Iterator filenames = unicityMap.keySet().iterator();
 
-		    for (int i=0; i < shortnames.length ; i++) {
-			    
-			    XPFile infile = new XPFile(longnames[i]);
-			    
-			    if (infile.isFile()) {
-				    // add a regular file to the archive
-				    addEntry(zos, shortnames[i], infile);
-			    } else {
-				    // add a directory and its contents to the archive
-				    addEntryDir(zos, shortnames[i], infile);
-			    }
+		    while (filenames.hasNext()) {
+		            String name = (String)filenames.next();
+			    XPFile infile = (XPFile)unicityMap.get(name);
+  			    
+			    // add a regular file to the archive
+			    addEntry(zos, name, infile);
 		    }
 
 		    zos.close();
@@ -1013,11 +1047,13 @@ public class Jar {
 	    Attributes mainAttr = jar_manifest.getMainAttributes();
 	    mainAttr.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
+	    Iterator filenames = unicityMap.keySet().iterator();
+
 	    // Checksum all files
-	    for (int i=0; i < longnames.length ; i++) {
+	    while (filenames.hasNext()) {
 		String[] algs = new String[] { "MD5", "SHA" };
-	    	XPFile infile = new XPFile(longnames[i]);
-		String name = shortnames[i];
+		String name = (String)filenames.next();
+	    	XPFile infile = (XPFile)unicityMap.get(name);
 
 		// Skip directories
 		if (!infile.isFile()) {
@@ -1080,18 +1116,15 @@ public class Jar {
 
 	// now that the Jar stream is open we need to add
 	// each of the file arguments to the stream
+	
+	Iterator filenames = unicityMap.keySet().iterator();
 
-	for (int i=0; i < shortnames.length ; i++) {
+	while (filenames.hasNext()) {
+	    String name = (String)filenames.next();
+	    XPFile infile = (XPFile)unicityMap.get(name);
 
-	    XPFile infile = new XPFile(longnames[i]);
-
-	    if (infile.isFile()) {
-		// add a regular file to the archive
-		addEntry(jos, shortnames[i], infile);
-	    } else {
-		// add a directory and its contents to the archive
-		addEntryDir(jos, shortnames[i], infile);
-	    }
+	    // add a new entry to the archive.
+	    addEntry(jos, name, infile);
 	}
 
 
@@ -1135,21 +1168,7 @@ public class Jar {
 	    }
 	}
 
-	// Make sure the entryname ends with a '/' if it is a directory
-
 	boolean entryfile_isDirectory = entryfile.isDirectory();
-
-	if (entryfile_isDirectory) {
-	    if (entryname.length() == 0) {
-		// Something is very wrong here.
-		throw new RuntimeException("entryname was empty");
-	    }
-	    
-	    if (entryname.charAt( entryname.length() - 1 ) != '/') {
-		entryname = entryname + '/';
-	    }
-	}
-
 	ZipEntry ze = new ZipEntry(entryname);
 	long entryfile_length = (entryfile_isDirectory ? 0 : entryfile.length());
 
@@ -1505,5 +1524,8 @@ public class Jar {
     // stream where verbose output will be going
 
     private PrintStream vout = System.out;
+
+    // A map to hold all file names and their implementation.
+    private HashMap unicityMap;
 
 }
