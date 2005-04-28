@@ -56,6 +56,7 @@ EXTRA_DIST = \
 	stamp-h1.in \
 	generic/comparexch.h \
 	generic/genatomic.h \
+	generic/gentypes.h \
 	alpha/alpha.c \
 	alpha/atomic.h \
 	alpha/callKaffeException.h \

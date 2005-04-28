@@ -114,8 +114,6 @@ EXTRA_DIST = \
 	binreloc/README \
 	binreloc/test.c \
 	developers/check-classpath-merge-status \
-	developers/Encode.java \
-	developers/EncodeEUC_JP.java \
 	developers/FullTest.sh \
 	developers/GCJ.note.1 \
 	developers/JavaClass.pm \
@@ -135,7 +133,9 @@ EXTRA_DIST = \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
 	developers/mnemonicizer.awk \
+	developers/patch-libtool-openbsd33.diff \
 	developers/patch-libtool-quote-sys_search_path.diff \
+	developers/patch-libtool-no-default-install.diff \
 	developers/resync-classpath.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \

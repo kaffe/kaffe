@@ -113,6 +113,7 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 libtoolize --automake --ltdl --copy --force
 patch -p0 < developers/patch-libtool-quote-sys_search_path.diff
 patch -p0 < developers/patch-libtool-openbsd33.diff
+patch -p0 < developers/patch-libtool-no-default-install.diff
 cp libltdl/acinclude.m4 m4/libtool.m4
 
 # gettextize kaffe

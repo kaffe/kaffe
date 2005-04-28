@@ -302,14 +302,18 @@ msgid ""
 "\n"
 msgstr ""
 "Copyright (c) 1996-2004 Les contributeurs du projet Kaffe.org (veuillez\n"
-"  consulter le code source pour une liste complète des contributeurs). Tout droit réservés.\n"
+"  consulter le code source pour une liste complète des contributeurs). Tout "
+"droit réservés.\n"
 "Certaines parties de ce programme sont régi par\n"
 " Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n"
 "\n"
 "La machine virtuelle Kaffe est un logiciel libre, régi par la license \n"
-"d'utilisation GNU General Public License. Kaffe.org est un logiciel communautaire\n"
-"libre et indépendant, et non directement affilié à Transvirtual Technologies,\n"
-"Inc. Kaffe est une marque commerciale de Transvirtual Technologies, Inc. Kaffe\n"
+"d'utilisation GNU General Public License. Kaffe.org est un logiciel "
+"communautaire\n"
+"libre et indépendant, et non directement affilié à Transvirtual "
+"Technologies,\n"
+"Inc. Kaffe est une marque commerciale de Transvirtual Technologies, Inc. "
+"Kaffe\n"
 "n'offre ABSOLUMENT AUCUNE GARANTIES DE FONCTIONNER.\n"
 "\n"
 
@@ -321,7 +325,9 @@ msgstr "Moteur: %s   Version: %s    Version Java: %s\n"
 #: kaffe/kaffe/version.c:56
 #, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: %d MB\n"
-msgstr "Paramètres par défaut du tas: taille minimale: %d MB, taille maximale: %d MB\n"
+msgstr ""
+"Paramètres par défaut du tas: taille minimale: %d MB, taille maximale: %d "
+"MB\n"
 
 #: kaffe/kaffe/version.c:58
 #, c-format
