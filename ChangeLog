@@ -1,3 +1,10 @@
+2005-04-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Check if second parameter of scalb is an int.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>,
+                      Michael Franz  <mvfranz@gmail.com>
+
 2005-04-29  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/clib/awt/qt/evt.cc

@@ -1586,6 +1586,23 @@ if test "$ac_cv_c_compile_value_glibc" -le "2"; then
 fi
 
 dnl ------------------------------------------------------------
+dnl Check for decalaration of scalb. Second parameter can be 
+dnl either int or double on some systemns, and that breaks
+dnl compilation of some code on them.
+dnl ------------------------------------------------------------
+
+AC_CACHE_CHECK([for type of second parameter of scalb being int],
+               [ac_cv_scalb_second_parameter_type_is_int],
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <math.h>]],
+                                                   [[double scalb (double, int);]])],
+               [ac_cv_scalb_second_parameter_type_is_int=yes],
+               [ac_cv_scalb_second_parameter_type_is_int=no])])
+
+if test $ac_cv_scalb_second_parameter_type_is_int = yes; then
+  AC_DEFINE(_SCALB_INT, 1, [Is second parameter of scalb an int])
+fi
+
+dnl ------------------------------------------------------------
 dnl determine whether to enable the cairo GTK Graphics2D backend
 dnl ------------------------------------------------------------
 AC_ARG_ENABLE([gtk-cairo],
