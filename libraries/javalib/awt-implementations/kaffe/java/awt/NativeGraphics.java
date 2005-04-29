@@ -20,7 +20,7 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2005
  * 	The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -171,6 +171,11 @@ public void dispose () {
 		font = null;
 		fgClr = null;
 		bgClr = null;
+	}
+
+	if ( nativeData != null ) {
+		Toolkit.graFreeGraphics( nativeData);
+		nativeData = null;
 	}
 
 	synchronized ( lock ) {

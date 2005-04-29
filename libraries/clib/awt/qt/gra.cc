@@ -4,7 +4,7 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2002, 2003, 2004
+ * Copyright (c) 2002, 2003, 2004, 2005
  *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -67,6 +67,12 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
     gr = (Graphics*) AWT_MALLOC( sizeof(Graphics));
     memset((void*)gr, 0, sizeof(Graphics));
   }
+  else {
+    /* Release QPainter objects of reused NativeGraphics Java objects */
+    if (gr->painter != NULL) {
+      delete gr->painter;
+    }
+  } 
 
   gr->painter = new QPainter(drw);
   DBG(AWT_GRA, qqDebug("painter=%x\n", gr->painter));

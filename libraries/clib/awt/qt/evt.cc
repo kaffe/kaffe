@@ -4,7 +4,7 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2002, 2003, 2004
+ * Copyright (c) 2002, 2003, 2004, 2005
  *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -98,7 +98,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
   EventPacket* packet = NULL;
   bool processed = false;
 
-  if(X->srcIdx == 0)
+  if (X->srcIdx == 0 || getSourceIdx(X, o) == 0xffffffff)
     return QWidget::eventFilter(o, e);
 
   switch(e->type()) {

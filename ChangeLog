@@ -1,3 +1,18 @@
+2005-04-29  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/clib/awt/qt/evt.cc
+	(EventDispatcher::eventFilter): Prevent incorrect getSourceIdx
+	return value.
+	* libraries/clib/awt/qt/gra.cc
+	(Java_java_awt_Toolkit_graInitGraph): Release QPainter objects of 
+	reused NativeGraphics Java objects.
+	* libraries/javalib/awt-implementations/kaffe/java/awt/NativeGraphics.java
+	(dispose): Avoid non-existing native graphic objects.
+	* libraries/clib/awt/qt/toolkit.h:
+	Fixlet to macro definitions.
+
+	Patched by Alexander Boettcher  <ab764283@os.inf.tu-dresden.de>.
+
 2005-04-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/ResourceBundle.java
