@@ -505,7 +505,7 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 	jch = (jitCodeHeader *)methblock;
 	jch->pool = (void *)(jch + 1);
 	jch->pool = (void *) ( ((unsigned long)(jch->pool) + const_align) & ~const_align);
-	jch->code_start = ((char *)jch->pool) + constlen;
+	jch->code_start = ((nativecode *)jch->pool) + constlen;
 	jch->code_len = CODEPC;
 	memcpy(jch->code_start, codeblock, jch->code_len);
 	gc_free(codeblock);
