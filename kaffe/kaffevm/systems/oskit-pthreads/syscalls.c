@@ -215,7 +215,7 @@ oskit_pthread_sock_read(int f, void* b, size_t l, int timeout, ssize_t *out)
 
 static int
 oskit_pthread_recvfrom(int a, void* b, size_t c, int d, struct sockaddr* e, 
-	int* f, int timeout, ssize_t *out)
+	socklen_t* f, int timeout, ssize_t *out)
 {
 	WITH_TIMEOUT(timeout, ERR(*out = recvfrom(a, b, c, d, e, f)));
 }
@@ -235,19 +235,19 @@ oskit_pthread_setsockopt(int a, int b, int c, const void* d, int e)
 }
 
 static int
-oskit_pthread_getsockopt(int a, int b, int c, void* d, int* e)
+oskit_pthread_getsockopt(int a, int b, int c, void* d, socklen_t* e)
 {
         return (getsockopt(a, b, c, d, e) == -1) ? errno : 0;
 }
 
 static int
-oskit_pthread_getsockname(int a, struct sockaddr* b, int* c)
+oskit_pthread_getsockname(int a, struct sockaddr* b, socklen_t* c)
 {
 	return (getsockname(a, b, c) == -1) ? errno : 0;
 }
 
 static int
-oskit_pthread_getpeername(int a, struct sockaddr* b, int* c)
+oskit_pthread_getpeername(int a, struct sockaddr* b, socklen_t* c)
 {
         return (getpeername(a, b, c) == -1) ? errno : 0;
 }

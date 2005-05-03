@@ -72,17 +72,17 @@ typedef struct SystemCallInterface {
 	int	(*_connect)(int, struct sockaddr *, int, int timeout);
 	int	(*_bind)(int, struct sockaddr *, int);
 	int	(*_listen)(int, int);
-	int	(*_accept)(int, struct sockaddr *, int*, int, int *);
+	int	(*_accept)(int, struct sockaddr *, socklen_t*, int, int *);
 	int	(*_sockread)(int, void*, size_t, int, ssize_t *);
-	int	(*_recvfrom)(int, void *, size_t, int, struct sockaddr *, int *,
+	int	(*_recvfrom)(int, void *, size_t, int, struct sockaddr *, socklen_t *,
 		int timeout, ssize_t *);
 	int	(*_sockwrite)(int, const void *, size_t, ssize_t *);
 	int	(*_sendto)(int, const void *, size_t, int, const struct sockaddr *,
 		int, ssize_t *);
 	int	(*_setsockopt)(int, int, int, const void *, int);
-	int	(*_getsockopt)(int, int, int, void *, int *);
-	int	(*_getsockname)(int, struct sockaddr *, int *);
-	int	(*_getpeername)(int, struct sockaddr *, int *);
+	int	(*_getsockopt)(int, int, int, void *, socklen_t *);
+	int	(*_getsockname)(int, struct sockaddr *, socklen_t *);
+	int	(*_getpeername)(int, struct sockaddr *, socklen_t *);
 	int	(*_sockclose)(int);
 	int	(*_gethostbyname)(const char *, struct hostent **);
 	int	(*_gethostbyaddr)(const char *, size_t, int, struct hostent **);

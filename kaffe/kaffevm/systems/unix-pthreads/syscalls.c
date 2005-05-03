@@ -331,7 +331,7 @@ jthreadedSetSockOpt(int a, int b, int c, const void* d, int e)
 }
 
 static int
-jthreadedGetSockOpt(int a, int b, int c, void* d, int* e)
+jthreadedGetSockOpt(int a, int b, int c, void* d, socklen_t* e)
 {
 	int rc = 0;
 
@@ -342,7 +342,7 @@ jthreadedGetSockOpt(int a, int b, int c, void* d, int* e)
 }
 
 static int
-jthreadedGetSockName(int a, struct sockaddr* b, int* c)
+jthreadedGetSockName(int a, struct sockaddr* b, socklen_t* c)
 {
 	int rc = 0;
 
@@ -353,7 +353,7 @@ jthreadedGetSockName(int a, struct sockaddr* b, int* c)
 }
 
 static int
-jthreadedGetPeerName(int a, struct sockaddr* b, int* c)
+jthreadedGetPeerName(int a, struct sockaddr* b, socklen_t* c)
 {
 	int rc = 0;
 
@@ -467,7 +467,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
  * Threaded socket accept.
  */
 static int
-jthreadedAccept(int fd, struct sockaddr* addr, int* len, 
+jthreadedAccept(int fd, struct sockaddr* addr, socklen_t* len, 
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
@@ -581,7 +581,7 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
  */
 static int 
 jthreadedRecvfrom(int fd, void* buf, size_t len, int flags, 
-	struct sockaddr* from, int* fromlen, int timeout, ssize_t *out)
+	struct sockaddr* from, socklen_t* fromlen, int timeout, ssize_t *out)
 {
 	int r;
 	jlong deadline = 0;

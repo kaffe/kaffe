@@ -128,7 +128,7 @@ gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSock
 {
 	int r;
 	KaffeSocketAddr addr;
-	int alen;
+	socklen_t alen;
 	const int fd = unhand(obj)->native_fd;
 
 	memset(&addr, 0, sizeof(addr));
@@ -277,7 +277,7 @@ gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSock
 	ssize_t r;
 	int rc;
 	KaffeSocketAddr saddr;
-	int alen = sizeof(saddr);
+	socklen_t alen = sizeof(saddr);
 
 	rc = KRECVFROM(unhand(obj)->native_fd,
 		NULL, 0, MSG_PEEK, (struct sockaddr*)&saddr,
@@ -306,7 +306,7 @@ gnu_java_net_PlainDatagramSocketImpl_receive0(struct Hgnu_java_net_PlainDatagram
 	ssize_t r;
 	int rc;
 	KaffeSocketAddr addr;
-	int alen = sizeof(addr);
+	socklen_t alen = sizeof(addr);
 	HArrayOfByte *array_address;
 	int to_read, offset;
 
@@ -481,11 +481,11 @@ jint
 gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jint opt)
 {
 	int k, r, v;
-	int vsize = sizeof(v);
+	socklen_t vsize = sizeof(v);
 	struct sockaddr_in addr;
-	int alen = sizeof(addr);
+	socklen_t alen = sizeof(addr);
 	struct in_addr ia;
-	int ia_len = sizeof(ia);
+	socklen_t ia_len = sizeof(ia);
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -742,7 +742,7 @@ gnu_java_net_PlainDatagramSocketImpl_getTTL(struct Hgnu_java_net_PlainDatagramSo
 
 #if defined(IP_MULTICAST_TTL)
 	unsigned char v;
-	int s = 1;
+	socklen_t s = 1;
 	int r;
 
 	r = KGETSOCKOPT(unhand(obj)->native_fd,

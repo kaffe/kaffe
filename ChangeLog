@@ -1,3 +1,36 @@
+2005-05-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/jsyscall.h (SystemCallInterface): Changed prototypes to 
+	use socklen_t where appropriate.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c (jthreadedGetPeerName 
+	jthreadedGetSockOpt, jthreadedGetSockName, jthreadedAccept, 
+	jthreadedRecvfrom): Use socklen_t instead of int to fix compiler warnigs.
+
+	* kaffe/kaffevm/systems/oskit-pthreads/syscalls.c (oskit_pthread_getsockopt) 
+	(oskit_pthread_getsockname, oskit_pthread_getpeername, oskit_pthread_accept,
+	(oskit_pthread_recvfrom): Use socklen_t instead of int to fix compiler warnigs.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c (
+	gnu_java_net_PlainDatagramSocketImpl_bind,
+	gnu_java_net_PlainDatagramSocketImpl_peek,
+	gnu_java_net_PlainDatagramSocketImpl_receive0,
+	gnu_java_net_PlainDatagramSocketImpl_socketGetOption,
+	gnu_java_net_PlainDatagramSocketImpl_getTTL): Use socklen_t where
+	appropriate.
+
+	* libraries/clib/net/PlainSocketImpl.c (
+	gnu_java_net_PlainSocketImpl_socketConnect,
+	gnu_java_net_PlainSocketImpl_socketBind,
+	gnu_java_net_PlainSocketImpl_socketAccept,
+	gnu_java_net_PlainSocketImpl_socketGetOption): Use socklen_t where
+	appropriate.
+	
+	* libraries/javalib/java/security/AccessControlContext.java 
+	(checkPermission): Improved exception messages.
+
 2005-05-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/machine.c (finishInsnSequence): Fixed

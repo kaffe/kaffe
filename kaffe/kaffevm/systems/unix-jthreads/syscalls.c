@@ -228,7 +228,7 @@ jthreadedSetSockOpt(int a, int b, int c, const void* d, int e)
 }
 
 static int
-jthreadedGetSockOpt(int a, int b, int c, void* d, int* e)
+jthreadedGetSockOpt(int a, int b, int c, void* d, socklen_t* e)
 {
 	int rc = 0;
 
@@ -241,7 +241,7 @@ jthreadedGetSockOpt(int a, int b, int c, void* d, int* e)
 }
 
 static int
-jthreadedGetSockName(int a, struct sockaddr* b, int* c)
+jthreadedGetSockName(int a, struct sockaddr* b, socklen_t* c)
 {
 	int rc = 0;
 
@@ -254,7 +254,7 @@ jthreadedGetSockName(int a, struct sockaddr* b, int* c)
 }
 
 static int
-jthreadedGetPeerName(int a, struct sockaddr* b, int* c)
+jthreadedGetPeerName(int a, struct sockaddr* b, socklen_t* c)
 {
 	int rc = 0;
 

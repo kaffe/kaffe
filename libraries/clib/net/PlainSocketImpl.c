@@ -178,7 +178,7 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 	int fd;
 	int r;
 	KaffeSocketAddr addr;
-	int alen;
+	socklen_t alen;
 
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(daddr)->addr) == IPV4_ADDRESS_SIZE) {
@@ -265,7 +265,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	KaffeSocketAddr addr;
 	int fd;
 	int on = 1;
-	int alen;
+	socklen_t alen;
 
 	DBG(NATIVENET,
 	    dprintf("socketBind(%p, %s, %d)\n", 
@@ -377,7 +377,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 {
 	int r;
 	int rc, rc1;
-	int alen;
+	socklen_t alen;
 	struct sockaddr_in addr;
 	HArrayOfByte *remote_addr;
 	struct Hgnu_java_net_PlainSocketImpl* accepted_socket =
@@ -620,9 +620,9 @@ jint
 gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImpl* this, jint opt)
 {
 	struct sockaddr_in addr;
-	int alen = sizeof(addr);
+	socklen_t alen = sizeof(addr);
 	int r, v;
-	int vsize = sizeof(v);
+	socklen_t vsize = sizeof(v);
 	unsigned int k;
 
 	DBG(NATIVENET,
