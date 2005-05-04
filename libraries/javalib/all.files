@@ -2089,7 +2089,6 @@ java/lang/Number.java
 java/lang/Object.java
 java/lang/OutOfMemoryError.java
 java/lang/Package.java
-java/lang/ProcessInputStream.java
 java/lang/Process.java
 java/lang/Readable.java
 java/lang/reflect/AccessibleObject.java

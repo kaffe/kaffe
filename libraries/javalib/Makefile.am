@@ -2573,7 +2573,6 @@ java_lang_SRCS = \
 	java/lang/OutOfMemoryError.java \
 	java/lang/Package.java \
 	java/lang/Process.java \
-	java/lang/ProcessInputStream.java \
 	java/lang/Readable.java \
 	java/lang/Runnable.java \
 	java/lang/Runtime.java \
