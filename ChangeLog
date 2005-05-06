@@ -1,5 +1,48 @@
 2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/boehm/Makefile.am,
+	kaffe/kaffevm/boehm-gc/boehm/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/aix_irix_threads.c,
+	kaffe/kaffevm/boehm-gc/boehm/allchblk.c,
+	kaffe/kaffevm/boehm-gc/boehm/alloc.c,
+	kaffe/kaffevm/boehm-gc/boehm/backgraph.c,
+	kaffe/kaffevm/boehm-gc/boehm/configure,
+	kaffe/kaffevm/boehm-gc/boehm/configure.ac,
+	kaffe/kaffevm/boehm-gc/boehm/darwin_stop_world.c,
+	kaffe/kaffevm/boehm-gc/boehm/dyn_load.c,
+	kaffe/kaffevm/boehm-gc/boehm/finalize.c,
+	kaffe/kaffevm/boehm-gc/boehm/mach_dep.c,
+	kaffe/kaffevm/boehm-gc/boehm/mark.c,
+	kaffe/kaffevm/boehm-gc/boehm/misc.c,
+	kaffe/kaffevm/boehm-gc/boehm/os_dep.c,
+	kaffe/kaffevm/boehm-gc/boehm/powerpc_darwin_mach_dep.s,
+	kaffe/kaffevm/boehm-gc/boehm/pthread_support.c,
+	kaffe/kaffevm/boehm-gc/boehm/reclaim.c,
+	kaffe/kaffevm/boehm-gc/boehm/solaris_pthreads.c,
+	kaffe/kaffevm/boehm-gc/boehm/solaris_threads.c,
+	kaffe/kaffevm/boehm-gc/boehm/specific.c,
+	kaffe/kaffevm/boehm-gc/boehm/threadlibs.c,
+	kaffe/kaffevm/boehm-gc/boehm/version.h,
+	kaffe/kaffevm/boehm-gc/boehm/win32_threads.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/cordprnt.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/cordtest.c,
+	kaffe/kaffevm/boehm-gc/boehm/doc/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.changes,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.environment,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.solaris2,
+	kaffe/kaffevm/boehm-gc/boehm/include/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_cpp.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/new_gc_alloc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_hdrs.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_locks.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_priv.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gcconfig.h: Upgraded
+	to Boehm-GC 6.4.
+
+2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
 	(gcMan): Fixed memory statistics printing.
 

@@ -11,19 +11,18 @@
 #
 # Original author: Tom Tromey
 # Modified by: Grzegorz Jakacki <jakacki at acm dot org>
-# Modified by: Guilhem Lavaux (guilhem at kaffe dot org)
 
 dnl Process this file with autoconf to produce configure.
 
 # Initialization
 # ==============
 
-AC_INIT([gc],[6.3],[Hans.Boehm@hp.com]) 
+AC_INIT(gc,6.4,Hans.Boehm@hp.com) 
     ## version must conform to [0-9]+[.][0-9]+(alpha[0-9]+)?
 AC_CONFIG_SRCDIR(gcj_mlc.c)
 AC_CANONICAL_TARGET 
-AC_PREREQ(2.59)
-AC_REVISION($Revision: 1.2 $)
+AC_PREREQ(2.53)
+AC_REVISION($Revision: 1.3 $)
 GC_SET_VERSION
 AM_INIT_AUTOMAKE
 
@@ -75,14 +74,15 @@ AC_ARG_ENABLE(libgc-convenience,
 AM_CONDITIONAL(GC_CONVENIENCE, test x"$enable_libgc_convenience" = x"yes")
 
 INCLUDES=-I${srcdir}/include
-THREADLIBS=
+THREADDLLIBS=
+## Libraries needed to support dynamic loading and/or threads.
 case "$THREADS" in
  no | none | single)
     THREADS=none
     ;;
  posix | pthreads)
     THREADS=posix
-    THREADLIBS=-lpthread
+    THREADDLLIBS=-lpthread
     case "$host" in
      x86-*-linux* | ia64-*-linux* | i586-*-linux* | i686-*-linux* | x86_64-*-linux* | alpha-*-linux*)
 	AC_DEFINE(GC_LINUX_THREADS)
@@ -108,13 +108,13 @@ case "$THREADS" in
 	  AC_DEFINE(PARALLEL_MARK)
 	fi
 	AC_DEFINE(THREAD_LOCAL_ALLOC)
-	THREADLIBS="-lpthread -lrt"
+	THREADDLLIBS="-lpthread -lrt"
 	;;
      *-*-freebsd*)
 	AC_MSG_WARN("FreeBSD does not yet fully support threads with Boehm GC.")
 	AC_DEFINE(GC_FREEBSD_THREADS)
 	INCLUDES="$INCLUDES -pthread"
-	THREADLIBS=-pthread
+	THREADDLLIBS=-pthread
       	;;
      *-*-solaris*)
 	AC_DEFINE(GC_SOLARIS_THREADS)
@@ -142,7 +142,10 @@ case "$THREADS" in
 	  # Measurements havent yet been done.
 	fi
 	INCLUDES="$INCLUDES -pthread"
-	THREADLIBS="-lpthread -lrt"
+	THREADDLLIBS="-lpthread -lrt"
+	;;
+      *)
+	AC_MSG_ERROR("Pthreads not supported by the GC on this platform.")
 	;;
     esac
     ;;
@@ -153,9 +156,9 @@ case "$THREADS" in
     ;;
  dgux386)
     THREADS=dgux386
-    AC_MSG_RESULT($THREADLIBS)
+    AC_MSG_RESULT($THREADDLLIBS)
     # Use pthread GCC  switch
-    THREADLIBS=-pthread
+    THREADDLLIBS=-pthread
     if test "${enable_parallel_mark}" = yes; then
         AC_DEFINE(PARALLEL_MARK)
     fi
@@ -167,7 +170,7 @@ case "$THREADS" in
     ;;
  aix)
     THREADS=posix
-    THREADLIBS=-lpthread
+    THREADDLLIBS=-lpthread
     AC_DEFINE(GC_AIX_THREADS)
     AC_DEFINE(_REENTRANT)
     ;;
@@ -178,7 +181,7 @@ case "$THREADS" in
     AC_MSG_ERROR($THREADS is an unknown thread package)
     ;;
 esac
-AC_SUBST(THREADLIBS)
+AC_SUBST(THREADDLLIBS)
 
 case "$host" in 
    powerpc-*-darwin*)
@@ -192,7 +195,7 @@ AM_CONDITIONAL(POWERPC_DARWIN,test x$powerpc_darwin = xtrue)
 case "$host" in
   *-*-darwin*) ;;
   *) 
-    AC_CHECK_LIB(dl, dlopen, EXTRA_TEST_LIBS="$EXTRA_TEST_LIBS -ldl")
+    AC_CHECK_LIB(dl, dlopen, THREADDLLIBS="$THREADDLLIBS -ldl")
     ;;
 esac
 
@@ -293,7 +296,7 @@ case "$host" in
     machdep="sparc_mach_dep.lo"
     AC_DEFINE(SUNOS53_SHARED_LIB)
     ;;
- sparc-sun-solaris2.*)
+ sparc*-sun-solaris2.*)
     machdep="sparc_mach_dep.lo"
     ;;
  ia64-*-*)
@@ -352,10 +355,10 @@ fi
 
 dnl As of 4.13a2, the collector will not properly work on Solaris when
 dnl built with gcc and -O.  So we remove -O in the appropriate case.
-dnl
+dnl Not needed anymore on Solaris.
 AC_MSG_CHECKING(whether Solaris gcc optimization fix is necessary)
 case "$host" in
- sparc-sun-solaris2*|*aix*)
+ *aix*)
     if test "$GCC" = yes; then
        AC_MSG_RESULT(yes)
        new_CFLAGS=
@@ -453,11 +456,10 @@ fi
 
 AM_CONDITIONAL(USE_LIBDIR, test -z "$with_cross_host")
 
-AC_CONFIG_FILES([Makefile doc/Makefile include/Makefile])
-AC_CONFIG_COMMANDS([default],[[]],[[srcdir=${srcdir}
+AC_OUTPUT([Makefile doc/Makefile include/Makefile],,
+srcdir=${srcdir}
 host=${host}
 CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
 CC="${CC}"
 DEFS="$DEFS"
-]])
-AC_OUTPUT
+)

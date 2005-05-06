@@ -101,14 +101,13 @@ am_libgc_la_OBJECTS = allchblk.lo alloc.lo blacklst.lo checksums.lo \
 	typd_mlc.lo backgraph.lo win32_threads.lo pthread_support.lo \
 	pthread_stop_world.lo darwin_stop_world.lo $(am__objects_1)
 libgc_la_OBJECTS = $(am_libgc_la_OBJECTS)
-@GC_CONVENIENCE_FALSE@am_libgc_la_rpath = -rpath $(libdir)
-@GC_CONVENIENCE_TRUE@am_libgc_la_rpath =
+@GC_CONVENIENCE_FALSE@am_libgc_la_rpath =
+@GC_CONVENIENCE_TRUE@am_libgc_la_rpath = -rpath $(libdir)
 libgccpp_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libgccpp_la_OBJECTS = gc_cpp.lo
 libgccpp_la_OBJECTS = $(am_libgccpp_la_OBJECTS)
-@CPLUSPLUS_TRUE@@GC_CONVENIENCE_FALSE@am_libgccpp_la_rpath = -rpath \
-@CPLUSPLUS_TRUE@@GC_CONVENIENCE_FALSE@	$(libdir)
-@CPLUSPLUS_TRUE@@GC_CONVENIENCE_TRUE@am_libgccpp_la_rpath =
+@CPLUSPLUS_TRUE@@GC_CONVENIENCE_TRUE@am_libgccpp_la_rpath = -rpath \
+@CPLUSPLUS_TRUE@@GC_CONVENIENCE_TRUE@	$(libdir)
 @CPLUSPLUS_TRUE@am__EXEEXT_1 = test_cpp$(EXEEXT)
 am_gctest_OBJECTS = test.$(OBJEXT)
 gctest_OBJECTS = $(am_gctest_OBJECTS)
@@ -228,7 +227,7 @@ RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-THREADLIBS = @THREADLIBS@
+THREADDLLIBS = @THREADDLLIBS@
 UNWINDLIBS = @UNWINDLIBS@
 USE_LIBDIR_FALSE = @USE_LIBDIR_FALSE@
 USE_LIBDIR_TRUE = @USE_LIBDIR_TRUE@
@@ -323,8 +322,8 @@ EXTRA_DIST = alpha_mach_dep.S mips_sgi_mach_dep.s sparc_mach_dep.S \
 	cord/de_win.RC libtool.m4
 @CPLUSPLUS_FALSE@extra = 
 @CPLUSPLUS_TRUE@extra = libgccpp.la
-@GC_CONVENIENCE_TRUE@noinst_LTLIBRARIES = libgc.la $(extra) 
-@GC_CONVENIENCE_FALSE@lib_LTLIBRARIES = libgc.la $(extra) 
+@GC_CONVENIENCE_TRUE@lib_LTLIBRARIES = libgc.la $(extra) 
+@GC_CONVENIENCE_FALSE@noinst_LTLIBRARIES = libgc.la
 include_HEADERS = include/gc.h include/gc_local_alloc.h \
 include/gc_pthread_redirects.h include/gc_config_macros.h \
 include/leak_detector.h include/gc_typed.h @addincludes@
@@ -342,9 +341,9 @@ pthread_support.c pthread_stop_world.c darwin_stop_world.c \
 $(asm_libgc_sources)
 
 
-# Include THREADLIBS here to ensure that the correct versions of
+# Include THREADDLLIBS here to ensure that the correct versions of
 # linuxthread semaphore functions get linked:
-libgc_la_LIBADD = @addobjs@ $(THREADLIBS) $(UNWINDLIBS)
+libgc_la_LIBADD = @addobjs@ $(THREADDLLIBS) $(UNWINDLIBS)
 libgc_la_DEPENDENCIES = @addobjs@
 libgc_la_LDFLAGS = -version-info 1:2:0
 EXTRA_libgc_la_SOURCES = alpha_mach_dep.S \
@@ -353,7 +352,7 @@ EXTRA_libgc_la_SOURCES = alpha_mach_dep.S \
     sparc_sunos4_mach_dep.s ia64_save_regs_in_stack.s
 
 libgccpp_la_SOURCES = gc_cpp.cc
-libgccpp_la_LIBADD = $(THREADLIBS) $(UNWINDLIBS)
+libgccpp_la_LIBADD = $(THREADDLLIBS) $(UNWINDLIBS)
 libgccpp_la_LDFLAGS = -version-info 1:2:0
 AM_CXXFLAGS = @GC_CFLAGS@
 AM_CFLAGS = @GC_CFLAGS@
@@ -362,9 +361,9 @@ AM_CFLAGS = @GC_CFLAGS@
 
 # gctest_OBJECTS = test.o
 gctest_SOURCES = tests/test.c
-gctest_LDADD = ./libgc.la $(THREADLIBS) $(UNWINDLIBS) $(EXTRA_TEST_LIBS)
+gctest_LDADD = ./libgc.la $(THREADDLLIBS) $(UNWINDLIBS) $(EXTRA_TEST_LIBS)
 test_cpp_SOURCES = tests/test_cpp.cc
-test_cpp_LDADD = ./libgc.la ./libgccpp.la $(THREADLIBS) $(UNWINDLIBS) $(EXTRA_TEST_LIBS)
+test_cpp_LDADD = ./libgc.la ./libgccpp.la $(THREADDLLIBS) $(UNWINDLIBS) $(EXTRA_TEST_LIBS)
 TESTS = gctest $(extra_checks)
 all_objs = @addobjs@ $(libgc_la_OBJECTS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) \
