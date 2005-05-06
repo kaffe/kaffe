@@ -1136,6 +1136,7 @@ jthread_exit ( void )
 	pendingExits++;
 	unprotectThreadList(cur);
   }
+  else unprotectThreadList(cur);
 }
 
 

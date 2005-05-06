@@ -1,5 +1,10 @@
 2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_exit): Release the thread list lock before exiting.
+
+2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/boehm/Makefile.am,
 	kaffe/kaffevm/boehm-gc/boehm/Makefile.in,
 	kaffe/kaffevm/boehm-gc/boehm/aix_irix_threads.c,
