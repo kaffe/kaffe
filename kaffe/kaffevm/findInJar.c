@@ -167,7 +167,7 @@ DBG(CLASSLOOKUP,
 	if (strcmp(cname, "java/lang/ClassNotFoundException") == 0 ||
 	    strcmp(cname, "java/lang/Object") == 0) {
 		dprintf("Cannot find essential class '%s' in class library ... aborting.\n", cname);
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 	return (NULL);
 }

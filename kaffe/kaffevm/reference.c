@@ -111,7 +111,7 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
 		    "'referent' field.\n"
 		    "Aborting.\n");
 	  );
-	  ABORT();
+	  KAFFEVM_ABORT();
 	}
 
       referentOffset = FIELD_BOFFSET(referent_field);
@@ -190,7 +190,7 @@ referenceObjectFinalizer(jobject ob)
 		    "has been registered.", ll->reference);
 	    dprintf("Aborting.\n");
 	  );
-	  ABORT();
+	  KAFFEVM_ABORT();
 	}
 
       DBG(REFERENCE, dprintf("Reference %p java-enqueued and C-dequeud\n", ll->reference); );
@@ -280,6 +280,6 @@ void KaffeVM_setFinalizer(jobject obj, kgc_finalizer_type fintype)
         dprintf("Internal error: invalid finalizer type %d for object %p.\n", fintype, obj);
         dprintf("Aborting.\n");
       );
-      ABORT();
+      KAFFEVM_ABORT();
     }
 }

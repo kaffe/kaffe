@@ -27,8 +27,8 @@
 /* #define STATIC_JAR_FILES */
 
 #if defined(KAFFEH)
-#undef ABORT
-#define ABORT() abort()
+#undef KAFFEVM_ABORT
+#define KAFFEVM_ABORT() abort()
 #undef  initStaticLock
 #define initStaticLock(x)
 #undef  staticLockIsInitialized
@@ -501,7 +501,7 @@ jarSeek(jarFile *jf, off_t offset, int whence)
 			pos = jf->size + offset;
 			break;
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 			break;
 		}
 		if( (pos >= 0) && ((unsigned)pos < jf->size) )

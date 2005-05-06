@@ -170,7 +170,7 @@ extern bool used_ieee_division;
 
 define_insn(unimplemented, unimplemented)
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
@@ -658,7 +658,7 @@ define_insn(move_float_const, fmove_RxC)
 		debug(("fld1\n"));
 	}
 	else {
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -704,7 +704,7 @@ define_insn(move_double_const, fmovel_RxC)
 		debug(("fld1\n"));
 	}
 	else {
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -1501,7 +1501,7 @@ define_insn(branch, branch_xCC)
 		debug(("juge %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 

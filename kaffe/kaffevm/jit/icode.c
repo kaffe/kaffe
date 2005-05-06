@@ -1084,7 +1084,7 @@ neg_long(SlotInfo* dst, SlotInfo* src)
 	adc_int_const(HSLOT(dst), HSLOT(src), 0);
 	neg_int(HSLOT(dst), HSLOT(dst));
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3238,7 +3238,7 @@ cvt_int_short(SlotInfo* dst, SlotInfo* src)
 void
 softcall_breakpoint()
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 /* ----------------------------------------------------------------------- */
@@ -3317,7 +3317,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 
 		case 'V':
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 
 		sp_idx--;

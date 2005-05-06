@@ -108,10 +108,18 @@ protected void connect(InetAddress address, int port) throws IOException {
 
 protected void connect(SocketAddress address, int timeout) throws IOException {
         InetSocketAddress iaddr = (InetSocketAddress)address;
+	InetAddress addr = iaddr.getAddress();
+
+	if (addr == null)
+	   throw new IllegalArgumentException("address is unresolved: " + iaddr);
+
+	if (timeout < 0)
+	   throw new IllegalArgumentException("negative timeout");
 	
 	if (timeout == 0)
 	    timeout = -1;
-	socketConnect(iaddr.getAddress(), iaddr.getPort(), timeout);
+
+	socketConnect(addr, iaddr.getPort(), timeout);
 }
 
 protected void create(boolean stream) throws IOException {

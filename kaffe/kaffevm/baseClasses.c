@@ -234,7 +234,7 @@ initialiseKaffe(void)
 	      LocalVariableTable_name && ConstantValue_name &&
 	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
 		DBG(INIT, dprintf("not enough memory to run kaffe\n"); );
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	DBG(INIT, dprintf("done\n"); );
@@ -285,7 +285,7 @@ abortWithEarlyClassFailure(errorInfo* einfo)
 		einfo->type, einfo->classname, einfo->mess);
 	);
 
-	EXIT(-1);
+	KAFFEVM_EXIT(-1);
 }
 
 

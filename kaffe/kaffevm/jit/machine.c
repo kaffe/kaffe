@@ -157,7 +157,7 @@ checkStackOverflow(void)
 	if (thread_data->needOnStack == STACK_LOW) {
 		dprintf(
 			"Panic: unhandled StackOverflowError()\n");
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 	
 	{

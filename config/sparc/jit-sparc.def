@@ -102,7 +102,7 @@ static int argcount = 0;
 
 define_insn(unimplemented, unimplemented)
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
@@ -969,7 +969,7 @@ define_insn(branch, branch_xCC)
 		debug(("bugt ?\n"));
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	NOP();

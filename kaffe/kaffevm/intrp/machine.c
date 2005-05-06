@@ -119,7 +119,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 			    dprintf(
 			    "Panic: unhandled StackOverflowError()\n");
 			);
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 	
 		{

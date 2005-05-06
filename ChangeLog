@@ -1,3 +1,75 @@
+2005-05-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/classMethod.c, 
+	(resolveInterfaces): Hold a strong reference on interfaces to
+	prevent it from being garbage collected before the destruction of
+	the class object.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Remove the strong reference.
+	(walkClass): Do not walk interfaces anymore as there is already a
+	strong reference on it.
+	
+	* kaffe/kaffevm/utf8const.c
+	(utf8ConstInit): Symbol cleanup for kaffeh.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(KaffeGC_addWeakRef): Release the lock before going into malloc and
+	acquire it again after.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: 
+	(jthread_exit) Fixed jthread_exit in case of unexpected error
+	returned by repsem_wait.
+
+	* config/sysdepCallMethod-ffi.h,
+	config/alpha/jit-alpha.def,
+	config/arm/jit3-arm.def,
+	config/i386/jit-i386.def,
+	config/i386/jit3-i386.def,
+	config/m68k/jit-m68k.def,
+	config/m68k/jit3-m68k.def,
+	config/powerpc/jit3-powerpc.def,
+	config/sparc/jit-sparc.def,
+	kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/code-analyse.c,
+	kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/external.c,
+	kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/gtypes.h,
+	kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/jar.c,
+	kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/reference.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/support.c,
+	kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/gcj/gcj-except.c,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit/basecode.c,
+	kaffe/kaffevm/jit/icode.c,
+	kaffe/kaffevm/jit/labels.c,
+	kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit/registers.c,
+	kaffe/kaffevm/jit3/basecode.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/registers.c,
+	kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	kaffe/kaffevm/kaffe-gc/gc-mem.c,
+	kaffe/kaffevm/systems/beos-native/signal.c,
+	kaffe/kaffevm/systems/oskit-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	libraries/clib/native/Method.c,
+	libraries/clib/native/Runtime.c: Renamed ABORT and EXIT to
+	KAFFEVM_ABORT and KAFFEVM_EXIT.
+
+	* libraries/javalib/gnu/java/net/PlainSocketImpl.java:
+	(connect) Imported internal checkings for socketConnect from GNU Classpath.
+	
+	* test/regression/SerialUID.java: Report the full stack trace of
+	the exception.
+
 2005-05-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/lang/ProcessInputStream.java: Removed,

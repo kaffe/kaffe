@@ -160,7 +160,7 @@ struct _strconst {
 /* The following two macros will exit or abort the JVM through the hooks
  * provided by JNI.  At this point, we only support one JVM with index 0.
  */
-#define	EXIT(X)	Kaffe_JavaVMArgs.exit(X)
-#define	ABORT()	Kaffe_JavaVMArgs.abort()
+#define	KAFFEVM_EXIT(X)	Kaffe_JavaVMArgs.exit(X)
+#define	KAFFEVM_ABORT()	Kaffe_JavaVMArgs.abort()
 
 #endif

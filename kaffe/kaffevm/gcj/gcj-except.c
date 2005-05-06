@@ -128,7 +128,7 @@ _Jv_exception_info(void)
 	if (einf == 0) {
 		dprintf("Attempt to catch an exception "
 				"before throwing one.  This is bad.\n");
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	obj = einf->eobj;

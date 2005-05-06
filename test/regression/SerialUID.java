@@ -131,6 +131,7 @@ public class SerialUID
 	    }
 	    catch (Throwable t) {
 		System.out.println(args[i] + ": " + t.toString());
+		t.printStackTrace();
 	    }
 	}
     }

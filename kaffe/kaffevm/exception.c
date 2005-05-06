@@ -324,8 +324,8 @@ throwException(struct Hjava_lang_Throwable* eobj)
 
 	if (eobj == 0) {
 		dprintf("Exception thrown on null object ... aborting\n");
-		ABORT();
-		EXIT(1);
+		KAFFEVM_ABORT();
+		KAFFEVM_EXIT(1);
 	}
 	vmstate = unhand(eobj)->vmState;
 	if (vmstate == 0) {
@@ -349,8 +349,8 @@ throwExternalException(Hjava_lang_Throwable* eobj)
 {
 	if (eobj == 0) {
 		dprintf("Exception thrown on null object ... aborting\n");
-		ABORT();
-		EXIT(1);
+		KAFFEVM_ABORT();
+		KAFFEVM_EXIT(1);
 	}
 	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(NULL));
 }
@@ -366,7 +366,7 @@ throwOutOfMemory(void)
 		throwException(err);
 	}
 	dprintf("(Insufficient memory)\n");
-	EXIT(-1);
+	KAFFEVM_EXIT(-1);
 }
 #endif
 
@@ -516,7 +516,7 @@ unhandledException(Hjava_lang_Throwable *eobj)
 		}
 	}
 	printStackTrace((Hjava_lang_Throwable*)eobj, NULL, 1);
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 /*

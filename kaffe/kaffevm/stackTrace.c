@@ -155,8 +155,8 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 
 	if (state == 0) {
 		dprintf("VMState for exception is null ... aborting\n");
-		ABORT();
-		EXIT(1);
+		KAFFEVM_ABORT();
+		KAFFEVM_EXIT(1);
 	}
 
 	frame = 0;

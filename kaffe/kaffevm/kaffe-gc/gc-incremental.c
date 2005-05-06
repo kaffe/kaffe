@@ -1213,7 +1213,7 @@ gcThrowOOM(Collector *gcif UNUSED)
 		unlockStaticMutex(&gc_lock);
 		dprintf(
 			"Not enough memory to throw OutOfMemoryError!\n");
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 	unlockStaticMutex(&gc_lock);
 	if (reffed) gc_rm_ref(ret);

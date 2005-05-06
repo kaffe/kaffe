@@ -1223,7 +1223,7 @@ op_fdsubx_ff(int src, int dst)
 
 define_insn(unimplemented, unimplemented)
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
@@ -1992,7 +1992,7 @@ define_insn(swap_any, swap_RxR)
 		op_exg_da(r2, r1);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 #endif
@@ -2275,7 +2275,7 @@ define_insn(branch, branch_xCC)
 		op_blo_16(0);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 #else
 	l->type |= Llong | Lrelative | Lrangecheck;
@@ -2308,7 +2308,7 @@ define_insn(branch, branch_xCC)
 		op_blo_32(0);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 #endif
 }
@@ -2416,7 +2416,7 @@ define_insn(popargs, popargs_xxC)
 	int o = const_int(2) * 4;
 
 	if (o < 0) {
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 	else if (o > 0) {
 		if (o <= 0x8) {

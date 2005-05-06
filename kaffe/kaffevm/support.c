@@ -459,7 +459,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 			call.args[i] = args[j];
 			break;
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 		s += call.callsize[i];
 	}
@@ -616,7 +616,7 @@ KaffeVM_callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* r
 			call.args[i].l = va_arg(args, jref);
 			break;
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 		s += call.callsize[i];
 	}

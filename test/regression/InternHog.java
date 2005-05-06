@@ -1,6 +1,6 @@
 public class InternHog {
-	public static final int MAX_NUM = 100000;
-	public static void main(String[] args) {
+	public static final int MAX_NUM = 50000;
+	public static void main(String[] args) throws Throwable {
 		int x = 0;
 		try {
 			if ((Integer.toString(0) + "aa").intern() != "0aa")

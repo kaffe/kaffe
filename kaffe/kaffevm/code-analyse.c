@@ -1409,7 +1409,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STACKOUT(0, TOBJ);
 				break;
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 				break;
 			}
 			INCPC(3);
@@ -1450,7 +1450,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STKPOP(1);
 				break;
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 				break;
 			}
 			INCPC(3);
@@ -1486,7 +1486,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STACKOUT(1, TVOID);
 				break;
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 				break;
 			}
 			INCPC(3);
@@ -1529,7 +1529,7 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				STKPOP(3);
 				break;
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 				break;
 			}
 			INCPC(3);

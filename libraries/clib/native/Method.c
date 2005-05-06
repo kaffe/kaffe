@@ -217,7 +217,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		case '[': ret.l = CallStaticTypeMethodA(Object); break;
 #undef CallStaticTypeMethodA
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 	}
 	else if (METHOD_IS_CONSTRUCTOR(meth)) { /* a constructor */
@@ -256,7 +256,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		case '[': ret.l = CallTypeMethodA(Object); break;
 #undef CallTypeMethodA
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 	}
 

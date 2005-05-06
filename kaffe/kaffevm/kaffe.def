@@ -147,7 +147,7 @@ define_insn(LDC1)
 		move_int_const(stack(0), CLASS_CONST_DATA(current_class(),idx));
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -186,7 +186,7 @@ define_insn(LDC2)
 		move_int_const(stack(0), CLASS_CONST_DATA(current_class(),idx));
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -211,7 +211,7 @@ define_insn(LDC2W)
 		move_double_const(stack_double(0), tmpl.d);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -2328,7 +2328,7 @@ define_insn(GETSTATIC)
 		}
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 #undef FIELD_IS_CONSTANT
@@ -2436,7 +2436,7 @@ define_insn(PUTSTATIC)
 		pop(2);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -2523,7 +2523,7 @@ define_insn(GETFIELD)
 		break;
 
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -2633,7 +2633,7 @@ define_insn(PUTFIELD)
 		pop(3);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -2669,7 +2669,7 @@ do {								\
 		return_double(stack_double(0));			\
 		break;						\
 	default:						\
-		ABORT();					\
+		KAFFEVM_ABORT();					\
 	}							\
 } while (0)
 
@@ -3222,7 +3222,7 @@ define_insn(WIDE)
 
 	switch(getopcode()) {
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 
 	define_wide_insn(ILOAD)
 	{

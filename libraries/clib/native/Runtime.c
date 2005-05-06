@@ -41,7 +41,7 @@ extern jboolean runFinalizerOnExit;
 void
 java_lang_Runtime_exit0(struct Hjava_lang_Runtime* r UNUSED, jint v)
 {
-	EXIT (v);
+	KAFFEVM_EXIT (v);
 }
 
 /*

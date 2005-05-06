@@ -84,7 +84,7 @@ initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 	return;
 bad:
 	dprintf("not enough memory to run kaffe\n");
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 /*

@@ -187,7 +187,7 @@ initNative(void)
 	dprintf("\t%s\n", libraryPath);
 	dprintf("Aborting.\n");
 	fflush(stderr);
-	EXIT(1);
+	KAFFEVM_EXIT(1);
 }
 
 /*

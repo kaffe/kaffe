@@ -227,7 +227,9 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 
   obj->mem = mem;
   obj->ref = 1;
+  unlockStaticMutex(&weakRefLock);
   obj->allRefs = (void ***)KGC_malloc(collector, sizeof(void ***), KGC_ALLOC_REF);
+  lockStaticMutex(&weakRefLock);
   obj->allRefs[0] = refobj;
   obj->next = weakRefObjects.hash[idx];
   weakRefObjects.hash[idx] = obj;

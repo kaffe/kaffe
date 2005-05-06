@@ -634,7 +634,7 @@ alpha_andconst_rangecheck(long v)
 
 define_insn(unimplemented, unimplemented)
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
@@ -1016,7 +1016,7 @@ define_insn(prologue, prologue_xxC)
 			sl++;
 			break;
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 	}
 }
@@ -1498,7 +1498,7 @@ define_insn(add_int_const, addi_RRC)
 		op_subl_i(r, -o, w);
 	}
 	else {
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -1600,7 +1600,7 @@ define_insn(sub_int_const, subi_RRC)
 		op_addl_i(r, -o, w);
 	}
 	else {
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -2723,7 +2723,7 @@ define_insn(branch, branch_xCC)
 		op_br(REG_zero, 0);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	l->from = CODEPC;
@@ -2767,7 +2767,7 @@ alpha_cbranch(int r1, int r2, label *l, int bt)
 		ne = 1;
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	l->type |= Llong21 | Lrelative | Lrangecheck;
@@ -2834,7 +2834,7 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 			bt = bne;
 			break;
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 		t = REG_at;
 	}
@@ -2877,7 +2877,7 @@ alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
 		op_bge(t, 0);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	l->from = CODEPC;

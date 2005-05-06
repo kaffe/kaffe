@@ -72,7 +72,7 @@ catchSignal(int sig, void* handler)
 	signal(sig, (SIG_T)handler);
 
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 
 	/* Unblock this signal */

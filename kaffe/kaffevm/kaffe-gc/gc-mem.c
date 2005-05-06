@@ -258,7 +258,7 @@ gc_heap_initialise(void)
 		dprintf(
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
 		    (int) (gc_heap_initial_size/1024), (int)(gc_heap_limit/1024));
-		EXIT(-1);
+		KAFFEVM_EXIT(-1);
 	}
 
 #ifndef PREDEFINED_NUMBER_OF_TILES

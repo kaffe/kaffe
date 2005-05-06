@@ -635,7 +635,7 @@ define_insn(move_float_const, fmove_RxC)
 	} else if (o == 10.0) {
 	    r = 0x8 | 7;
 	} else {
-	    ABORT();
+	    KAFFEVM_ABORT();
 	}
 
 	op_fmov(w, r);
@@ -680,7 +680,7 @@ define_insn(move_double_const, fmovel_RxC)
 	} else if (o == 10.0) {
 	    r = 0x8 | 7;
 	} else {
-	    ABORT();
+	    KAFFEVM_ABORT();
 	}
 
 	op_fmovl(w, r);
@@ -1686,7 +1686,7 @@ define_insn(branch, branch_xCC)
 				 0));
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 		break;
 	}
 	
@@ -1747,7 +1747,7 @@ define_insn(branch_and_link, branchl_xCC)
 			       0) | PPC_OPTION_LK);
 		break;
 	default:
-		ABORT();
+		KAFFEVM_ABORT();
 		break;
 	}
 	

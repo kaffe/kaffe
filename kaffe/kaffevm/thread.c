@@ -679,7 +679,7 @@ DBG(VMTHREAD,
 	dprintf("Deadlock: all threads blocked on internal events\n");
 );
 	fflush(stderr);
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 void

@@ -28,6 +28,8 @@ struct _errorInfo;
 static void* gcMalloc(struct _Collector*, size_t, gc_alloc_type_t);
 static void* gcRealloc(struct _Collector*, void*, size_t, gc_alloc_type_t);
 static void  gcFree(struct _Collector*, void*);
+static bool gcAddRef(struct _Collector*, const void*);
+static bool gcRmRef(struct _Collector*, void*);
 
 /*
  * We use a very simple 'fake' garbage collector interface
@@ -58,8 +60,8 @@ struct GarbageCollectorInterface_Ops GC_Ops = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,
-	NULL,
+	gcAddRef,
+	gcRmRef,
 	NULL,
 	NULL,
 };
@@ -111,6 +113,18 @@ gcRealloc(struct _Collector *collector UNUSED, void *mem,
 	  size_t sz, gc_alloc_type_t type UNUSED)
 {
 	return(jrealloc(mem, sz));
+}
+
+static bool
+gcAddRef(struct _Collector* collector UNUSED, const void* mem UNUSED)
+{
+	return true;
+}
+
+static bool
+gcRmRef(struct _Collector* collector UNUSED, void* mem UNUSED)
+{
+	return true;
 }
 
 static void  gcFree(struct _Collector *collector UNUSED, void *mem)

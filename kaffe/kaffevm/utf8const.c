@@ -33,6 +33,7 @@
 #define hashAdd(t, x)		(x)
 #define hashFind(t, x)		NULL
 #define hashRemove(t, x)	(void)NULL
+#define initStaticLock(a)	do { } while (0)
 #endif
 
 /* Internal variables */
@@ -363,9 +364,7 @@ utf8ConstInit(void)
 {
 	DBG(INIT, dprintf("utf8ConstInit()\n"); );
 
-#if !defined(KAFFEH)
 	initStaticLock(&utf8Lock);
-#endif
 
 	lockUTF();
 	hashTable = hashInit(utf8ConstHashValueInternal,

@@ -111,7 +111,7 @@ static void NONRETURNING
 Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess)
 {
 	kprintf(stderr, "FATAL ERROR: %s\n", mess);
-	exit(-1);
+	abort();
 }
 
 static void

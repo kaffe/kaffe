@@ -62,7 +62,7 @@ do {                                                                    \
                 ffi_call(&cif, (CALL)->function, (CALL)->ret, argvals); \
         }                                                               \
         else                                                            \
-                ABORT();                                                \
+                KAFFEVM_ABORT();                                                \
 } while (0);
 
 #endif /* __sysdepCallMethod_ffi_h__ */

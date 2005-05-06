@@ -331,7 +331,7 @@ void* tWatchdogRun (void* p)
 	if ( !life ) {
 	  DBG( JTHREAD, dprintf("deadlock\n"));
 	  tDump();
-	  ABORT();
+	  KAFFEVM_ABORT();
 	}
 
 	usleep( 5000);
@@ -1101,7 +1101,7 @@ jthread_exit ( void )
 	    pthread_exit( NULL);
 
 	    /* we shouldn't get here, this is a last safeguard */
-	    EXIT(0);
+	    KAFFEVM_EXIT(0);
 	  }
 	}
 	unprotectThreadList(cur);
@@ -1128,7 +1128,7 @@ jthread_exit ( void )
 	 * real threads to terminate. The main thread gets the control back
 	 * after that.
 	 */
-	repsem_wait( &cur->sem);
+	while (repsem_wait( &cur->sem) != 0);
   }
   else if (cur != firstThread) {
 	/* flag that we soon will get a new cache entry (would be annoying to
@@ -1395,7 +1395,7 @@ jthread_suspendall (void)
 		    if ((status = pthread_kill( t->tid, sigSuspend)) != 0)
 		      {
 			dprintf("Internal error: error sending SUSPEND signal to %p: %d (%s)\n", t, status, strerror(status));
-			ABORT();
+			KAFFEVM_ABORT();
 		      }
 		    else
 		      {

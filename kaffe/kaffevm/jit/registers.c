@@ -139,7 +139,7 @@ spill(SlotInfo* s)
 	else
 #endif
 	{
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 
@@ -180,7 +180,7 @@ reload(SlotInfo* s)
 	else
 #endif
 	{
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 }
 

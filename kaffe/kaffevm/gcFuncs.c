@@ -213,6 +213,9 @@ DBG(CLASSGC,
 	    KFREE(clazz->implementors);
 	  }
 
+	if (clazz->interfaces)
+		gc_rm_ref(clazz->interfaces);
+
 	if( clazz->itable2dtable )
 	{
 	  for (i = 0; i < clazz->total_interface_len; i++) {
@@ -313,14 +316,6 @@ DBG(GCPRECISE,
         if (class->state >= CSTATE_PREPARED) {
 	  KGC_markObject(collector, gc_info, class->superclass);
         } 
-
-        /* We only need the interface array to be allocated.
-	 * We do not want to mark array's interfaces as the pointer is
-	 * static (see lookupArray). */
-	if (class->interfaces != NULL && CLASS_CNAME(class)[0] != '[')
-          {
-            KGC_markObject(collector, gc_info, class->interfaces);
-          }
 
 	if (class->itable2dtable != NULL)
 	  {

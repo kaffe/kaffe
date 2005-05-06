@@ -340,7 +340,7 @@ slot_lslot_lslot(SlotInfo* dst, SlotInfo* s1, SlotInfo* s2, ifunc f, int type)
 	sequence* seq;
 
 #if defined(TWO_OPERAND)
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 
 	seq = nextSeq();

@@ -837,7 +837,14 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 				newifaces[i] = nclass->interfaces[j];
 			}
 		}
+		if (class->interfaces != NULL)
+		  gc_rm_ref(class->interfaces);
 		class->interfaces = newifaces;
+		if (!gc_add_ref(class->interfaces)) {
+			postOutOfMemory(einfo);
+			success = false;
+			goto done;
+		}	
 	}
 
 	/* don't set total_interface_len before interfaces to avoid
@@ -1581,7 +1588,7 @@ DBG(VMCLASSLOADER,
 bad:
 	dprintf("Couldn't find or load essential class `%s' %s %s\n",
 			name, info.classname, (char*)info.mess);
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 /*
@@ -2644,7 +2651,7 @@ sizeofSigItem(const char** strp, bool want_wide_refs)
 				break;
 			default:
 				count = -1;	/* avoid compiler warning */
-				ABORT();
+				KAFFEVM_ABORT();
 			}
 		} else {
 			while (*str == '[')

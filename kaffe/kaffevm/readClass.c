@@ -140,6 +140,11 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 		interfaces[i] = (Hjava_lang_Class*) (size_t) iface;
 	}
 
+	if (!gc_add_ref(interfaces)) {
+		postOutOfMemory(einfo);
+		return false;
+	}
+
 	addInterfaces(this, interfaces_count, interfaces);
 		
 	return true;

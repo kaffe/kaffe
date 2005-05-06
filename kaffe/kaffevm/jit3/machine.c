@@ -965,7 +965,7 @@ SCHK(	sanityCheck();						)
 				break;
 
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 			}
 		}
 	}
@@ -1014,7 +1014,7 @@ SCHK(	sanityCheck();						)
 				break;
 
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 			}
 		}
 	}
@@ -1045,7 +1045,7 @@ SCHK(	sanityCheck();						)
 				break;
 
 			default:
-				ABORT();
+				KAFFEVM_ABORT();
 			}
 		}
 	}

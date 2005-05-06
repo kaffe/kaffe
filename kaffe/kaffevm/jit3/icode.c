@@ -886,7 +886,7 @@ move_float(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT)
 		move_int(dst, src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 	}
 	else {
@@ -910,7 +910,7 @@ move_double(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 		move_long(dst, src);
 #else
-		ABORT();
+		KAFFEVM_ABORT();
 #endif
 	}
 	else {
@@ -1076,7 +1076,7 @@ add_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	slot_freetmp(res);
 	slot_freetmp(carry);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -1206,7 +1206,7 @@ sub_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 
 	slot_freetmp(carry);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -1749,7 +1749,7 @@ neg_long(SlotInfo* dst, SlotInfo* src)
 	slot_freetmp(zero);
 	slot_freetmp(carry);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -2305,7 +2305,7 @@ load_float(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT)
 	load_int(dst, src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -2331,7 +2331,7 @@ load_double(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	load_long(dst, src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -2892,7 +2892,7 @@ store_float(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT)
 	store_int(dst, src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -2940,7 +2940,7 @@ store_double(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	store_long(dst, src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3491,7 +3491,7 @@ pusharg_float(SlotInfo* src, int idx)
 #elif defined(HAVE_NO_FLOATING_POINT)
 	pusharg_int(src, idx);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3504,7 +3504,7 @@ pusharg_double(SlotInfo* src, int idx)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	pusharg_long(src, idx);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3790,7 +3790,7 @@ return_float(SlotInfo* dst)
 #elif defined(HAVE_NO_FLOATING_POINT)
 	return_int(dst);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3806,7 +3806,7 @@ return_double(SlotInfo* dst)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	return_long(dst);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3858,7 +3858,7 @@ returnarg_float(SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT)
 	returnarg_int(src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -3874,7 +3874,7 @@ returnarg_double(SlotInfo* src)
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)
 	returnarg_long(src);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -4057,7 +4057,7 @@ cmp_offset_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2, jint off)
 	cmp_int(dst, src, tmp);
 	slot_freetmp(tmp);
 #else
-	ABORT();
+	KAFFEVM_ABORT();
 #endif
 }
 
@@ -4416,7 +4416,7 @@ cvt_int_short(SlotInfo* dst, SlotInfo* src)
 void
 softcall_breakpoint(void)
 {
-	ABORT();
+	KAFFEVM_ABORT();
 }
 
 /* ----------------------------------------------------------------------- */
@@ -4448,7 +4448,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 		if( !args )
 		{
 			/* XXX We should be a little more graceful */
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 	}
 
@@ -4501,7 +4501,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 
 		case 'V':
 		default:
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 
 		sp_idx--;

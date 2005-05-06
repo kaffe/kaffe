@@ -127,7 +127,7 @@ KaffeJIT_linkLabels(codeinfo* codeInfo, uintp codebase)
 		default:
 		unhandled:
 			printf("Label type 0x%x not supported (%p).\n", l->type, l);
-			ABORT();
+			KAFFEVM_ABORT();
 		}
 #if 0
 		/*
