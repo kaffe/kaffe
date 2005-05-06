@@ -186,7 +186,7 @@ int writeCallGraph(struct call_graph *cg, struct gmon_file *gf)
 					gf->gf_low,
 					gf->gf_high);
 #endif
-			}
+			} else
 			retval = writeGmonRecord(gf,
 						 GRA_Type, GMON_TAG_CG_ARC,
 						 GRA_FromPC, ca->ca_from,
