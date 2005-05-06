@@ -26,7 +26,7 @@ throwIOException(JNIEnv *env, int rc)
 {
   jclass clazz = (*env)->FindClass(env, "java/io/IOException");
 
-  if ((*env)->ExceptionOccurred(env)) {
+  if ((*env)->ExceptionCheck(env)) {
 	  (*env)->ExceptionDescribe(env);
 	  (*env)->FatalError(env, "An unexpected exception has been thrown while looking up java/io/IOException");
   }

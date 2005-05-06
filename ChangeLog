@@ -1,5 +1,10 @@
 2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/nio/FileChannelImpl.c
+	(throwIOException): Use ExceptionCheck instead of ExceptionOccurred.
+
+2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/xprof/callGraph.c
 	(writeCallGraph): Fixlet for call graph dump.
 
