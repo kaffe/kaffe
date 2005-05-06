@@ -1,5 +1,10 @@
 2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(gcMan): Fixed memory statistics printing.
+
+2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/clib/nio/FileChannelImpl.c
 	(throwIOException): Use ExceptionCheck instead of ExceptionOccurred.
 

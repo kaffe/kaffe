@@ -635,7 +635,7 @@ DBG(GCSTAT,
 			(gcStats.totalmem-gcStats.freedmem)/1024, 
 			gcStats.totalobj,
 			gcStats.totalobj-gcStats.freedobj,
-			(1.0 - ((gcStats.totalmem-gcStats.freedmem)/
+			(1.0 - (((float)gcStats.totalmem-gcStats.freedmem)/
 				gc_get_heap_total())) * 100.0,
 			gcStats.allocmem/1024,
 			gcStats.allocobj,
