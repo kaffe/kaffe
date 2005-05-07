@@ -117,7 +117,7 @@ sysdepCallMethod(callMethodInfo *call)
 	    call->ret->i = iret;
 	  break;
 	default:
-	  ABORT();
+	  KAFFEVM_ABORT();
 	  break;
 	}
       }

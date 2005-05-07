@@ -1,3 +1,15 @@
+2005-05-07  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c (setupSigAltStack),
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c (restore_fds_and_exit)
+	kaffe/kaffevm/systems/oskit-pthreads/pjthread.c (remove_thread),
+	kaffe/jvmpi/jvmpi_kaffe.c (jvmpiProfilerExit),
+	config/mips/netbsd1/md.c (sysdepCallMethod),
+	kaffe/kaffevm/intrp/icode.h (softcall_breakpoint),
+	libraries/clib/net/InetAddressImpl.c (java_net_VMInetAddress_getLocalHostname),
+	test/internal/jit_stub.c (main): Renamed ABORT and EXIT to
+	KAFFEVM_ABORT and KAFFEVM_EXIT.
+
 2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c

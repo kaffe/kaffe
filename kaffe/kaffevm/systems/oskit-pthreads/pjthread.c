@@ -667,7 +667,7 @@ DBG(JTHREAD,
 		}
 
 		/* Am I suppose to close things down nicely ?? */
-		EXIT(0);
+		KAFFEVM_EXIT(0);
 	} else {
 		if (destructor1) {
 			(*destructor1)(tid->jlThread);

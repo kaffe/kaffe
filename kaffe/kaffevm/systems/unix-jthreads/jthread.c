@@ -2701,7 +2701,7 @@ restore_fds_and_exit()
 	/* technically, we should restore the original handler and rethrow
 	 * the signal.
 	 */
-	EXIT(-1);		/* XXX */
+	KAFFEVM_EXIT(-1);		/* XXX */
 }
 
 /*

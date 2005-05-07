@@ -106,7 +106,7 @@ java_net_VMInetAddress_getLocalHostname(void)
   if( gethostname(hostname, HOSTNMSZ - 1) < 0 )
     {
       perror("gethostname");
-      ABORT();
+      KAFFEVM_ABORT();
     }
   retval = stringC2Java(hostname);
   unlockStaticMutex(&inetLock);

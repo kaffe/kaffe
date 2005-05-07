@@ -178,7 +178,7 @@ static const int32 UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
 						 ((uint8*)(f)->v.taddr)[3])
 #define	load_code_ref				load_key
 
-#define	softcall_breakpoint()			ABORT()
+#define	softcall_breakpoint()			KAFFEVM_ABORT()
 
 #define	move_double(t, f)			(t)[0].v.tdouble = (f)[0].v.tdouble
 #define	move_double_const(t, c)			(t)[0].v.tdouble = (c)

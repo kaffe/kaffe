@@ -365,7 +365,7 @@ setupSigAltStack(void)
 	  {
 	    dprintf("Unexpected error calling sigaltstack: %s\n",
 		    SYS_ERROR(errno));
-	    EXIT(1);
+	    KAFFEVM_EXIT(1);
 	  }
 }
 #else

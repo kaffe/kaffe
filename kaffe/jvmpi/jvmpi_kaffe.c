@@ -496,7 +496,7 @@ static jint jvmpiGetThreadStatus(JNIEnv *env_id)
 
 static void jvmpiProfilerExit(jint err_code)
 {
-	EXIT(err_code);
+	KAFFEVM_EXIT(err_code);
 }
 
 static JVMPI_RawMonitor jvmpiRawMonitorCreate(char *lock_name)
