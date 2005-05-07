@@ -214,6 +214,7 @@ hashResize(hashtab_t tab)
 {
 	const int newSize = (tab->size > 0) ? (tab->size * 2) : INITIAL_SIZE;
 	const void **newList;
+	const void **oldList;
 	int i;
 
 	/* Get a bigger list */
@@ -256,13 +257,18 @@ hashResize(hashtab_t tab)
 		}
 	}
 
-	/* Update table */
-	if (tab->dealloc) {
-		tab->dealloc(tab->list);
-	} else {
-		KFREE(tab->list);
-	}
+	/* Update table. The operation is atomic as the lock
+	 * is held by the owner of the hashtable.
+	 */
+	oldList = tab->list;
 	tab->list = newList;
 	tab->size = newSize;
+
+	/* Free the old table */
+	if (tab->dealloc) {
+		tab->dealloc(oldList);
+	} else {
+		KFREE(oldList);
+	}
 	return (tab);
 }

@@ -1,3 +1,9 @@
+2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/hashtab.c
+	(hashResize): Reordered tab update to prevent race conditions during
+	the deallocation.
+
 2005-05-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c (setupSigAltStack),
