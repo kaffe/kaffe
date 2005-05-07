@@ -36,6 +36,7 @@ typedef struct _gc_freeobj {
 #define	MAX_SMALL_OBJECT_SIZE	8192
 #define	NR_FREELISTS		20
 #define	KGC_SMALL_OBJECT(S)	((S) <= max_small_object_size)
+#define KGC_NUMBER_PAGE_IN_RESERVE 4
 
 /**
  * Alignment for gc_blocks
@@ -88,7 +89,8 @@ typedef struct _gc_block {
 	uint8*			data;	/* Address of first object in */
 } gc_block;
 
-extern gc_block	* gc_primitive_reserve(void);
+extern void     gc_primitive_reserve(size_t numpages);
+extern bool     gc_primitive_use_reserve();
 extern void	gc_primitive_free(gc_block* mem);
 extern gc_block * gc_mem2block(const void * mem);
 

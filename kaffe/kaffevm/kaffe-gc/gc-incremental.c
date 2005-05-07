@@ -87,7 +87,6 @@ static counter gcfixedmem;
         ((uintp) (from) >= gc_get_heap_base() && \
 	 (uintp) (from) < gc_get_heap_base() + gc_get_heap_range())
 
-static void *reserve;
 static void *outOfMem;
 static void *outOfMem_allocator;
 
@@ -1199,9 +1198,7 @@ gcThrowOOM(Collector *gcif UNUSED)
 	 * outOfMemory error.  We can use some or all of the reserved
 	 * pages to actually grab an error.
 	 */
-	if (reserve) {
-		gc_primitive_free(reserve);
-		reserve = NULL;
+	if (gc_primitive_use_reserve()) {
 		if (!ret || ret == OOM_ALLOCATING) {
 			unlockStaticMutex(&gc_lock);
 			ret = OutOfMemoryError; /* implicit allocation */
@@ -1521,7 +1518,7 @@ createGC(void)
   gc_obj.collector.ops = &KGC_Ops;
   
   gc_heap_initialise ();
-  reserve = gc_primitive_reserve ();
+  gc_primitive_reserve(KGC_NUMBER_OF_PAGES_IN_RESERVE);
   
   return (&gc_obj.collector);
 }

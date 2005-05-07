@@ -40,6 +40,7 @@
 #endif
 
 static gc_block *gc_last_block;
+static gc_block *gc_reserve_pages;
 static iStaticLock	gc_heap_lock;
 
 #if defined(KAFFE_STATS)
@@ -945,14 +946,17 @@ gc_primitive_free(gc_block* mem)
 /*
  * Try to reserve some memory for OOM exception handling.  Gc once at
  * the beginning.  We start out looking for an arbitrary number of
- * pages (4), and cut our expectations in half until we are able to
+ * pages, and cut our expectations in half until we are able to
  * meet them.
  */
-gc_block *
-gc_primitive_reserve(void)
+void
+gc_primitive_reserve(size_t numpages)
 {
 	gc_block *r = NULL;
-	size_t size = 4 * gc_pgsize;
+	size_t size = numpages * gc_pgsize;
+
+	if (gc_reserve_pages != NULL)
+	        return;
 	
 	while (size >= gc_pgsize && !(r = gc_primitive_alloc(size))) {
 		if (size == gc_pgsize) {
@@ -960,8 +964,27 @@ gc_primitive_reserve(void)
 		}
 		size /= 2;
 	}
-	return r;
+	/* As it is done just at the initialization it is expected to have at 
+	 * least one page free */
+	assert(r != NULL);
+	gc_reserve_pages = r;
 }
+
+/*
+ * We return the reserve to the heap if it has not been already used.
+ * This function returns true if some reserve was still available.
+ */
+bool
+gc_primitive_use_reserve()
+{
+        if (gc_reserve_pages == NULL)
+	        return false;
+	gc_primitive_free(gc_reserve_pages);
+	gc_reserve_pages = NULL;
+
+	return true;
+}
+
 
 /*
  * System memory management:  Obtaining additional memory from the
@@ -1129,6 +1152,7 @@ gc_block_alloc(size_t size)
 			return NULL;
 		}
 
+		DBG(GCSYSALLOC, dprintf("old block_base = %p, new block_base = %p\n", old_blocks, gc_block_base));
 		/* If the array's address has changed, we have to fix
 		   up the pointers in the gc_blocks, as well as all
 		   external pointers to the gc_blocks.  We can only
@@ -1160,6 +1184,8 @@ gc_block_alloc(size_t size)
 
 			for (i = 0; freelist[i].list != (void*)-1; i++) 
 				R(gc_block, freelist[i].list);
+
+			R(gc_block, gc_reserve_pages);
 #undef R
 		}
 		KTHREAD(spinoff)(NULL);

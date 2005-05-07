@@ -1,3 +1,21 @@
+2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(reserve): Removed.
+	(gcThrowOOM): Use gc_primitive_use_reserve.
+	(KaffeGC_Init): Adapted to the new prototype.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h
+	(KGC_NUMBER_OF_PAGES_IN_RESERVE): New constant.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_reserve_pages): New variable.
+	(gc_primitive_reserve): Store the reserved block in a private
+	variable.
+	(gc_primitive_use_reserve): New function.
+	(gc_block_alloc): Update gc_reserve_pages if the block array is
+	reallocated.
+
 2005-05-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* test/internal/jit_stub.c: Changed ABORT to KAFFEVM_ABORT.
