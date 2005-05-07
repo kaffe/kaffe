@@ -41,6 +41,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,8 +72,9 @@ public class StreamSerializer
   static final int KET = 0x3e; // >
   static final int EQ = 0x3d; // =
 
-  protected String encoding;
-  boolean compatibilityMode;
+  protected final String encoding;
+  final Charset charset;
+  final CharsetEncoder encoder;
   final int mode;
   final Map namespaces;
   protected String eol;
@@ -96,16 +101,8 @@ public class StreamSerializer
         encoding = "UTF-8";
       }
     this.encoding = encoding.intern();
-    compatibilityMode = true;
-    if (encoding.length() > 3)
-      {
-        String p = encoding.substring(0, 3);
-        if (p.equalsIgnoreCase("UTF") ||
-            p.equalsIgnoreCase("UCS"))
-          {
-            compatibilityMode = false;
-          }
-      }
+    charset = Charset.forName(this.encoding);
+    encoder = charset.newEncoder();
     this.eol = (eol != null) ? eol : System.getProperty("line.separator");
     namespaces = new HashMap();
   }
@@ -498,37 +495,42 @@ public class StreamSerializer
   }
 
   final byte[] encodeText(String text)
-    throws UnsupportedEncodingException
+    throws IOException
   {
-    if (compatibilityMode)
+    encoder.reset();
+    if (!encoder.canEncode(text))
       {
+        // Check each character
+        StringBuffer buf = new StringBuffer();
         int len = text.length();
-        StringBuffer buf = null;
         for (int i = 0; i < len; i++)
           {
             char c = text.charAt(i);
-            if (c >= 127)
-              {
-                if (buf == null)
-                  {
-                    buf = new StringBuffer(text.substring(0, i));
-                  }
-                buf.append('&');
-                buf.append('#');
-                buf.append((int) c);
-                buf.append(';');
-              }
-            else if (buf != null)
+            if (encoder.canEncode(c))
               {
                 buf.append(c);
               }
+            else
+              {
+                // Replace with character entity reference
+                String hex = Integer.toHexString((int) c);
+                buf.append("&#x");
+                buf.append(hex);
+                buf.append(';');
+              }
           }
-        if (buf != null)
-          {
-            text = buf.toString();
-          }
+        text = buf.toString();
       }
-    return text.getBytes(encoding);
+    ByteBuffer encoded = encoder.encode(CharBuffer.wrap(text));
+    if (encoded.hasArray())
+      {
+        return encoded.array();
+      }
+    encoded.flip();
+    int len = encoded.limit() - encoded.position();
+    byte[] ret = new byte[len];
+    encoded.get(ret, 0, len);
+    return ret;
   }
 
   String encode(String text, boolean encodeCtl, boolean inAttr)
@@ -628,5 +630,5 @@ public class StreamSerializer
         throw new RuntimeException(e.getMessage());
       }
   }
-  
+
 }

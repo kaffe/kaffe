@@ -1,3 +1,12 @@
+2005-05-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Resynced with GNU Classpath:
+
+	2005-05-05  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/transform/StreamSerializer.java: Produce compact,
+	human-readable XML for non-UTF/ASCII encodings using NIO.
+
 2005-05-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
