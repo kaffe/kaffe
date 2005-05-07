@@ -1,10 +1,13 @@
 /*
  * utf8const.c
- *
  * Handle UTF-8 constant strings. These are intern'ed into a hash table.
  *
- * Copyright (c) 1998, 2004
+ * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *  
  */
 
 #include "config.h"

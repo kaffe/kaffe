@@ -1,3 +1,17 @@
+/*
+ * stats.c
+ * Getrusage based execution timing and other statistics gathering.
+ *
+ * Copyright (c) 1999
+ *	Archie Cobbs <archie@whistle.com>
+ *
+ * Copyright (c) 2004
+ *      Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *   
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"

@@ -2,7 +2,7 @@
  * native-wrapper.c
  * Java Native Interface - JNI wrapper builder.
  *
- * Copyright (c) 1996, 1997, 2004
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Copyright (c) 2004

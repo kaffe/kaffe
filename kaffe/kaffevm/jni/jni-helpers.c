@@ -2,7 +2,7 @@
  * jni-helpers.c
  * Java Native Interface - JNI helper functions (JNI 1.2).
  *
- * Copyright (c) 1996, 1997, 2004
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Copyright (c) 2004

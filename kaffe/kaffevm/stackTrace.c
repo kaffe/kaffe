@@ -2,11 +2,15 @@
  * stackTrace.c
  * Handle stack trace for the interpreter or translator.
  *
- * Copyright (c) 1996, 1997, 2004
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * 
  * Copyright (c) 2003
  *	Mark J. Wielaard <mark@klomp.org>
  *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *   
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */

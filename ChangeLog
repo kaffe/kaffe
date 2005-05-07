@@ -1,3 +1,39 @@
+2005-05-08  Jim Huang  <jserv@kaffe.org>
+
+	* kaffe/kaffeh/main.c,
+	kaffe/kaffeh/support.c,
+	kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/code.c,
+	kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/object.c,
+	kaffe/kaffevm/object.h,
+	kaffe/kaffevm/soft.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/stats.c,
+	kaffe/kaffevm/stats.h,
+	kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/intrp/methodcalls.c,
+	kaffe/kaffevm/intrp/native-wrapper.c,
+	kaffe/kaffevm/intrp/native-wrapper.h,
+	kaffe/kaffevm/jit/methodcalls.c,
+	kaffe/kaffevm/jit/native-wrapper.c,
+	kaffe/kaffevm/jit/native-wrapper.h,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit3/native-wrapper.c,
+	kaffe/kaffevm/jni/jni-arrays.c,
+	kaffe/kaffevm/jni/jni-base.c,
+	kaffe/kaffevm/jni/jni-callmethod.c,
+	kaffe/kaffevm/jni/jni-fields.c,
+	kaffe/kaffevm/jni/jni-helpers.c,
+	kaffe/kaffevm/jni/jni-string.c,
+	kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	include/native.h:
+	Corrected and clarified copyright notice.
+
 2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/hashtab.c

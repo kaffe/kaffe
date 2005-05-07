@@ -2,7 +2,7 @@
  * jni-callmethod.c
  * Java Native Interface - CallXMethod JNI functions.
  *
- * Copyright (c) 1996, 1997, 2004
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Copyright (c) 2004

@@ -1,3 +1,16 @@
+/*
+ * stats.h
+ *
+ * Copyright (c) 1999
+ *	Archie Cobbs <archie@whistle.com>
+ *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *   
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
 #ifndef __kaffevm_stats_h
 #define __kaffevm_stats_h
 

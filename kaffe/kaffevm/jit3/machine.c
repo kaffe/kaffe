@@ -1,9 +1,12 @@
 /* machine.c
  * Translate the Kaffe instruction set to the native one.
  *
- * Copyright (c) 1996-1999, 2003, 2004
+ * Copyright (c) 1996-1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003, 2004
+ *	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
+ *  
  * Cross-language profiling changes contributed by
  * the Flux Research Group, Department of Computer Science,
  * University of Utah, http://www.cs.utah.edu/flux/
