@@ -13,6 +13,11 @@
 2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(createGC): Fixed constant name.
+
+2005-05-07  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
 	(reserve): Removed.
 	(gcThrowOOM): Use gc_primitive_use_reserve.
 	(KaffeGC_Init): Adapted to the new prototype.

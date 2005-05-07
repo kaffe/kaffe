@@ -1518,7 +1518,7 @@ createGC(void)
   gc_obj.collector.ops = &KGC_Ops;
   
   gc_heap_initialise ();
-  gc_primitive_reserve(KGC_NUMBER_OF_PAGES_IN_RESERVE);
+  gc_primitive_reserve(KGC_NUMBER_PAGE_IN_RESERVE);
   
   return (&gc_obj.collector);
 }
