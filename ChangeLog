@@ -1,5 +1,9 @@
 2005-05-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
+	* test/internal/jit_stub.c: Changed ABORT to KAFFEVM_ABORT.
+
+2005-05-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
 	Resynced with GNU Classpath:
 
 	2005-05-05  Chris Burdess  <dog@gnu.org>

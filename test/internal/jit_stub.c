@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 	      LocalVariableTable_name && ConstantValue_name &&
 	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
 		dprintf("not enough memory to run kaffe\n");
-		ABORT();
+		KAFFEVM_ABORT();
 	}
 
 	{
