@@ -284,18 +284,27 @@ msgid ""
 "with ABSOLUTELY NO WARRANTY.\n"
 "\n"
 msgstr ""
+"版權所有 (c) 1996-2004 Kaffe.org 計畫貢獻者 (請參閱原始程式碼以取得\n"
+"所有貢獻者列表)，保留所有權利。\n"
+"部份版權歸屬 (c) 1996-2002 Transvirtual Technologies, Inc.\n"
+"\n"
+"Kaffe 虛擬機器是個依循 GNU General Public License 授權的自由軟體。\n"
+"Kaffe.org 是個獨立性自由軟體社群計畫，與 Transvirtual Technologies,\n"
+"Inc. 無直接關聯，Kaffe 是 Transvirtual Technologies, Inc. 的註冊商標\n"
+"，Kaffe 的使用上沒有擔保。\n"
+"\n"
 
 #: kaffe/kaffe/version.c:54
 #, c-format
 msgid "Engine: %s   Version: %s   Java Version: %s\n"
-msgstr ""
+msgstr "執行引擎： %s   版本： %s   Java版本： %s\n"
 
 #: kaffe/kaffe/version.c:56
 #, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: %d MB\n"
-msgstr ""
+msgstr "預設 Heap 空間： (最小) %d Mb   (最大) %d Mb\n"
 
 #: kaffe/kaffe/version.c:58
 #, c-format
 msgid "Stack default size: %d KB\n"
-msgstr ""
+msgstr "預設堆疊空間： %d Kb\n"

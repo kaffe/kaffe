@@ -1,5 +1,14 @@
 2005-05-08  Jim Huang  <jserv@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/gc2.c
+	(KaffeGC_ThrowOOM):
+	Changed ABORT to KAFFEVM_ABORT.
+
+	* po/zh_TW.po:
+	Updated Traditional Chinese translation.
+
+2005-05-07  Jim Huang  <jserv@kaffe.org>
+
 	* kaffe/kaffeh/main.c,
 	kaffe/kaffeh/support.c,
 	kaffe/kaffevm/baseClasses.c,

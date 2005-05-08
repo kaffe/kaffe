@@ -413,7 +413,7 @@ KaffeGC_ThrowOOM(Collector* gcif UNUSED)
 {
   dprintf(
 	  "Throwing OutOfMemoryError is not implemented in Boehm-GC.\n");
-  ABORT();
+  KAFFEVM_ABORT();
   
   return NULL;
 }
