@@ -271,7 +271,7 @@
 	* configure.ac: Check if second parameter of scalb is an int.
 
 	Reported by:  Riccardo Mottola <zuse@libero.it>,
-                      Michael Franz  <mvfranz@gmail.com>
+	              Michael Franz  <mvfranz@gmail.com>
 
 2005-04-29  Jim Huang  <jserv@kaffe.org>
 
@@ -429,8 +429,8 @@
 
 	2005-04-23  Tom Tromey  <tromey@redhat.com>
 
-        * javax/swing/text/StyleConstants.java (StyleConstants): Now
-        package-private.
+	* javax/swing/text/StyleConstants.java (StyleConstants): Now
+	package-private.
 
 2005-04-24  Dalibor Topic  <robilad@kaffe.org>
 
@@ -438,8 +438,8 @@
 
 	2005-04-23  Mark Wielaard  <mark@klomp.org>
 
-        * java/net/URL.java (URL(URL,String,URLStreamHandler)): Add spec
-        to MalformedURLException.
+	* java/net/URL.java (URL(URL,String,URLStreamHandler)): Add spec
+	to MalformedURLException.
 
 2005-04-24  Dalibor Topic  <robilad@kaffe.org>
 
@@ -447,139 +447,139 @@
 
 	2005-04-23  Michael Koch  <konqueror@gmx.de>
 
-        * java/net/ServerSocket.java
-        (getChannel): Improved javadoc comment.
+	* java/net/ServerSocket.java
+	(getChannel): Improved javadoc comment.
 
 2005-04-24  Dalibor Topic  <robilad@kaffe.org>
 
-        * include/Makefile.am:
+	* include/Makefile.am:
 	Don't generate JNI headers for removed files.
 
-        * libraries/clib/native/Makefile.am:
+	* libraries/clib/native/Makefile.am:
 	Removed character set conversion sources.
 
-        * libraries/clib/nio/Makefile.am:
+	* libraries/clib/nio/Makefile.am:
 	Added iconv linking flags.
 
-        * libraries/javalib/Makefile.am.in:
+	* libraries/javalib/Makefile.am.in:
 	Removed serializes converters.
 
-        * libraries/javalib/META-INF/services/java.nio.charset.spi.CharsetProvider:
+	* libraries/javalib/META-INF/services/java.nio.charset.spi.CharsetProvider:
 	New file.
 
-        * test/regression/CharCvt.java:
+	* test/regression/CharCvt.java:
 	Adapted to nio.
 
-        * test/regression/Makefile.am:
+	* test/regression/Makefile.am:
 	Taken out the sysdepCallMethod test as such things should now be tested in
 	the JNI module.
 
-        * developers/Encode.java,
-        developers/EncodeEUC_JP.java,
-        libraries/clib/native/ByteToCharDefault.c,
-        libraries/clib/native/ByteToCharIconv.c,
-        libraries/clib/native/CharToByteDefault.c,
-        libraries/clib/native/CharToByteIconv.c,
-        libraries/javalib/java/lang/String.java,
-        libraries/javalib/kaffe/io/ByteToChar8859_1.java,
-        libraries/javalib/kaffe/io/ByteToChar8859_2.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_3.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_4.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_5.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_6.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_7.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_8.ser,
-        libraries/javalib/kaffe/io/ByteToChar8859_9.ser,
-        libraries/javalib/kaffe/io/ByteToCharASCII.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP037.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1026.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1046.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1250.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1251.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1252.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1253.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1254.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1255.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1256.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1257.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP1258.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP850.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP852.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP855.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP857.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP860.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP861.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP862.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP863.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP864.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP865.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP866.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP868.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP869.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP870.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP871.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP875.ser,
-        libraries/javalib/kaffe/io/ByteToCharCP918.ser,
-        libraries/javalib/kaffe/io/ByteToCharConverter.java,
-        libraries/javalib/kaffe/io/ByteToCharDefault.java,
-        libraries/javalib/kaffe/io/ByteToCharHashBased.java,
-        libraries/javalib/kaffe/io/ByteToCharIconv.java,
-        libraries/javalib/kaffe/io/ByteToCharKOI8_R.ser,
-        libraries/javalib/kaffe/io/ByteToCharMS932.java,
-        libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
-        libraries/javalib/kaffe/io/ByteToCharUTF8.java,
-        libraries/javalib/kaffe/io/CharToByte8859_1.java,
-        libraries/javalib/kaffe/io/CharToByte8859_2.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_3.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_4.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_5.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_6.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_7.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_8.ser,
-        libraries/javalib/kaffe/io/CharToByte8859_9.ser,
-        libraries/javalib/kaffe/io/CharToByteASCII.ser,
-        libraries/javalib/kaffe/io/CharToByteCP037.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1026.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1046.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1250.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1251.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1252.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1253.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1254.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1255.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1256.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1257.ser,
-        libraries/javalib/kaffe/io/CharToByteCP1258.ser,
-        libraries/javalib/kaffe/io/CharToByteCP850.ser,
-        libraries/javalib/kaffe/io/CharToByteCP852.ser,
-        libraries/javalib/kaffe/io/CharToByteCP855.ser,
-        libraries/javalib/kaffe/io/CharToByteCP857.ser,
-        libraries/javalib/kaffe/io/CharToByteCP860.ser,
-        libraries/javalib/kaffe/io/CharToByteCP861.ser,
-        libraries/javalib/kaffe/io/CharToByteCP862.ser,
-        libraries/javalib/kaffe/io/CharToByteCP863.ser,
-        libraries/javalib/kaffe/io/CharToByteCP864.ser,
-        libraries/javalib/kaffe/io/CharToByteCP865.ser,
-        libraries/javalib/kaffe/io/CharToByteCP866.ser,
-        libraries/javalib/kaffe/io/CharToByteCP868.ser,
-        libraries/javalib/kaffe/io/CharToByteCP869.ser,
-        libraries/javalib/kaffe/io/CharToByteCP870.ser,
-        libraries/javalib/kaffe/io/CharToByteCP871.ser,
-        libraries/javalib/kaffe/io/CharToByteCP875.ser,
-        libraries/javalib/kaffe/io/CharToByteCP918.ser,
-        libraries/javalib/kaffe/io/CharToByteConverter.java,
-        libraries/javalib/kaffe/io/CharToByteDefault.java,
-        libraries/javalib/kaffe/io/CharToByteHashBased.java,
-        libraries/javalib/kaffe/io/CharToByteIconv.java,
-        libraries/javalib/kaffe/io/CharToByteKOI8_R.ser,
-        libraries/javalib/kaffe/io/CharToByteMS932.java,
-        libraries/javalib/kaffe/io/CharToByteSHIFT_JIS.java,
-        libraries/javalib/kaffe/io/CharToByteUTF8.java,
-        libraries/javalib/kaffe/io/CircularBuffer.java,
-        libraries/javalib/kaffe/io/ClassLoaderObjectInputStream.java,
-        libraries/javalib/kaffe/io/ConverterAlias.java,
-        libraries/javalib/kaffe/io/KaffeCharset.java,
-        libraries/javalib/kaffe/io/KaffeCharsetProvider.java:
+	* developers/Encode.java,
+	developers/EncodeEUC_JP.java,
+	libraries/clib/native/ByteToCharDefault.c,
+	libraries/clib/native/ByteToCharIconv.c,
+	libraries/clib/native/CharToByteDefault.c,
+	libraries/clib/native/CharToByteIconv.c,
+	libraries/javalib/java/lang/String.java,
+	libraries/javalib/kaffe/io/ByteToChar8859_1.java,
+	libraries/javalib/kaffe/io/ByteToChar8859_2.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_3.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_4.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_5.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_6.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_7.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_8.ser,
+	libraries/javalib/kaffe/io/ByteToChar8859_9.ser,
+	libraries/javalib/kaffe/io/ByteToCharASCII.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP037.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1026.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1046.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1250.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1251.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1252.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1253.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1254.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1255.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1256.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1257.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP1258.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP850.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP852.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP855.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP857.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP860.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP861.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP862.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP863.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP864.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP865.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP866.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP868.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP869.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP870.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP871.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP875.ser,
+	libraries/javalib/kaffe/io/ByteToCharCP918.ser,
+	libraries/javalib/kaffe/io/ByteToCharConverter.java,
+	libraries/javalib/kaffe/io/ByteToCharDefault.java,
+	libraries/javalib/kaffe/io/ByteToCharHashBased.java,
+	libraries/javalib/kaffe/io/ByteToCharIconv.java,
+	libraries/javalib/kaffe/io/ByteToCharKOI8_R.ser,
+	libraries/javalib/kaffe/io/ByteToCharMS932.java,
+	libraries/javalib/kaffe/io/ByteToCharSHIFT_JIS.java,
+	libraries/javalib/kaffe/io/ByteToCharUTF8.java,
+	libraries/javalib/kaffe/io/CharToByte8859_1.java,
+	libraries/javalib/kaffe/io/CharToByte8859_2.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_3.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_4.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_5.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_6.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_7.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_8.ser,
+	libraries/javalib/kaffe/io/CharToByte8859_9.ser,
+	libraries/javalib/kaffe/io/CharToByteASCII.ser,
+	libraries/javalib/kaffe/io/CharToByteCP037.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1026.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1046.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1250.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1251.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1252.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1253.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1254.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1255.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1256.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1257.ser,
+	libraries/javalib/kaffe/io/CharToByteCP1258.ser,
+	libraries/javalib/kaffe/io/CharToByteCP850.ser,
+	libraries/javalib/kaffe/io/CharToByteCP852.ser,
+	libraries/javalib/kaffe/io/CharToByteCP855.ser,
+	libraries/javalib/kaffe/io/CharToByteCP857.ser,
+	libraries/javalib/kaffe/io/CharToByteCP860.ser,
+	libraries/javalib/kaffe/io/CharToByteCP861.ser,
+	libraries/javalib/kaffe/io/CharToByteCP862.ser,
+	libraries/javalib/kaffe/io/CharToByteCP863.ser,
+	libraries/javalib/kaffe/io/CharToByteCP864.ser,
+	libraries/javalib/kaffe/io/CharToByteCP865.ser,
+	libraries/javalib/kaffe/io/CharToByteCP866.ser,
+	libraries/javalib/kaffe/io/CharToByteCP868.ser,
+	libraries/javalib/kaffe/io/CharToByteCP869.ser,
+	libraries/javalib/kaffe/io/CharToByteCP870.ser,
+	libraries/javalib/kaffe/io/CharToByteCP871.ser,
+	libraries/javalib/kaffe/io/CharToByteCP875.ser,
+	libraries/javalib/kaffe/io/CharToByteCP918.ser,
+	libraries/javalib/kaffe/io/CharToByteConverter.java,
+	libraries/javalib/kaffe/io/CharToByteDefault.java,
+	libraries/javalib/kaffe/io/CharToByteHashBased.java,
+	libraries/javalib/kaffe/io/CharToByteIconv.java,
+	libraries/javalib/kaffe/io/CharToByteKOI8_R.ser,
+	libraries/javalib/kaffe/io/CharToByteMS932.java,
+	libraries/javalib/kaffe/io/CharToByteSHIFT_JIS.java,
+	libraries/javalib/kaffe/io/CharToByteUTF8.java,
+	libraries/javalib/kaffe/io/CircularBuffer.java,
+	libraries/javalib/kaffe/io/ClassLoaderObjectInputStream.java,
+	libraries/javalib/kaffe/io/ConverterAlias.java,
+	libraries/javalib/kaffe/io/KaffeCharset.java,
+	libraries/javalib/kaffe/io/KaffeCharsetProvider.java:
 	Removed no longer necessary files.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
@@ -616,8 +616,8 @@
 
 	2005-04-23  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/Document.java:
-        Added API documentation comments.
+	* javax/swing/text/Document.java:
+	Added API documentation comments.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -625,11 +625,11 @@
 
 	2005-04-23  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/AbstractDocument.java
-        (getDocumentProperties): Implemented.
-        (setDocumentProperties): Implemented.
-        (getProperty): Implemented.
-        (putProperty): Implemented.
+	* javax/swing/text/AbstractDocument.java
+	(getDocumentProperties): Implemented.
+	(setDocumentProperties): Implemented.
+	(getProperty): Implemented.
+	(putProperty): Implemented.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -637,9 +637,9 @@
 
 	2005-04-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
-        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
-        (connectSignals): Realize the window widget after connecting
-        signals.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(connectSignals): Realize the window widget after connecting
+	signals.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -647,9 +647,9 @@
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/BoxLayout
-        (preferredLayoutSize): Fixed computation so that it correctly
-        adds the top and bottom insets of the container.
+	* javax/swing/BoxLayout
+	(preferredLayoutSize): Fixed computation so that it correctly
+	adds the top and bottom insets of the container.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -657,9 +657,9 @@
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicMenuItemUI.java
-        (paintText): Make use of the 'selectionForeground' UI default
-        for text painting.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(paintText): Make use of the 'selectionForeground' UI default
+	for text painting.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -667,10 +667,10 @@
 
 	2005-04-22  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicLookAndFeel.java
-        (initSystemColorDefaults): Modified colors to match the
-        BasicLookAndFeel in the reference implementation.
-        (initComponentDefaults): Likewise.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initSystemColorDefaults): Modified colors to match the
+	BasicLookAndFeel in the reference implementation.
+	(initComponentDefaults): Likewise.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -678,8 +678,8 @@
 
 	2005-04-22  Michael Koch  <konqueror@gmx.de>
 
-        * gnu/classpath/SystemProperties.java:
-        Reformatted.
+	* gnu/classpath/SystemProperties.java:
+	Reformatted.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -687,11 +687,11 @@
 
 	2005-04-21  Casey Marshall <csm@gnu.org>
 
-        * gnu/java/security/der/DERValue.java
-        (getValueAs): new method.
-        * gnu/java/security/x509/ext/PrivateKeyUsagePeriod.java
-        (<init>): read both dates with 'DERValue.getValueAs', with
-        'GENERALIZED_TIME' as the argument.
+	* gnu/java/security/der/DERValue.java
+	(getValueAs): new method.
+	* gnu/java/security/x509/ext/PrivateKeyUsagePeriod.java
+	(<init>): read both dates with 'DERValue.getValueAs', with
+	'GENERALIZED_TIME' as the argument.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -699,9 +699,9 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicLookAndFeel.java
-        (initComponentDefaults): Changed Button.border to be
-        BasicBorders.getButtonBorder as it should be.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Changed Button.border to be
+	BasicBorders.getButtonBorder as it should be.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -709,10 +709,10 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicTabbedPaneUI.java:
-        (getMaximumSize): Return (Short.MAX_VALUE, Short.MAX_VALUE) as it
-        should according to a mauve testcase, instead of the preferred
-        size.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java:
+	(getMaximumSize): Return (Short.MAX_VALUE, Short.MAX_VALUE) as it
+	should according to a mauve testcase, instead of the preferred
+	size.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -720,8 +720,8 @@
 
 	2005-04-20  Robert Mitchell  <mitchelr@ipfw.edu>
 
-        * IMAPConnection.java: Avoid NullPointerException when the server
-        returns no matches.
+	* IMAPConnection.java: Avoid NullPointerException when the server
+	returns no matches.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -729,8 +729,8 @@
 
 	2005-04-20  Sven de Marothy  <sven@physto.se>
 
-        * java/io/OutputStreamWriter.java:
-        (close): Do nothing on multiple closes.
+	* java/io/OutputStreamWriter.java:
+	(close): Do nothing on multiple closes.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -738,11 +738,11 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/JMenu.java
-        (add): add(Component) now calls PopupMenu.insert(..) instead of
-        PopupMenu.add(..). add(..) is not implemented for Component,
-        so JComponent.add(..) is called instead, adding the component
-        in the wrong place.
+	* javax/swing/JMenu.java
+	(add): add(Component) now calls PopupMenu.insert(..) instead of
+	PopupMenu.add(..). add(..) is not implemented for Component,
+	so JComponent.add(..) is called instead, adding the component
+	in the wrong place.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -750,8 +750,8 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (getDefaults): Call addCustomEntriesToTable on the theme.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(getDefaults): Call addCustomEntriesToTable on the theme.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -759,11 +759,11 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicButtonListener.java
-        (mousePressed): replaced query to getModifiersEx with getModifiers.
-        This method relied on faulty behaviour in getModifierEx.
-        (mouseReleased): replaced query to getModifiersEx with getModifiers.
-        This method relied on faulty behaviour in getModifierEx.
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(mousePressed): replaced query to getModifiersEx with getModifiers.
+	This method relied on faulty behaviour in getModifierEx.
+	(mouseReleased): replaced query to getModifiersEx with getModifiers.
+	This method relied on faulty behaviour in getModifierEx.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -771,20 +771,20 @@
 
 	2005-04-20  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/tree/DefaultTreeSelectionModel.java
-        (constructor): Added implementation.
-        (getRowMapper): Added implementation.
-        (setSelectionMode): Added implementation.
-        (getSelectionMode): Added implementation.
-        (getSelectionPath): Added implementation.
-        (getSelectionPaths): Added implementation.
-        (getSelectionCount): Added implementation.
-        (isSelectionEmpty): Added implementation.
-        (getSelectionRows): Added implementation.
-        (getMinSelectionRow): Added implementation.
-        (getMaxSelectionRow): Added implementation.
-        (getLeadSelectionRow): Added implementation.
-        (getLeadSelectionPath): Added implementation.
+	* javax/swing/tree/DefaultTreeSelectionModel.java
+	(constructor): Added implementation.
+	(getRowMapper): Added implementation.
+	(setSelectionMode): Added implementation.
+	(getSelectionMode): Added implementation.
+	(getSelectionPath): Added implementation.
+	(getSelectionPaths): Added implementation.
+	(getSelectionCount): Added implementation.
+	(isSelectionEmpty): Added implementation.
+	(getSelectionRows): Added implementation.
+	(getMinSelectionRow): Added implementation.
+	(getMaxSelectionRow): Added implementation.
+	(getLeadSelectionRow): Added implementation.
+	(getLeadSelectionPath): Added implementation.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -792,9 +792,9 @@
 
 	2005-04-20  Sven de Marothy  <sven@physto.se>
 
-        * java/nio/charset/Charset.java:
-        (defaultCharset()): New method.
-        Status updated to 1.5
+	* java/nio/charset/Charset.java:
+	(defaultCharset()): New method.
+	Status updated to 1.5
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -802,60 +802,60 @@
 
 	2005-04-20  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/io/EncodingManager.java: Removed charset alias properties.
-        * gnu/java/io/decode/Decoder.java,
-        * gnu/java/io/decode/Decoder8859_1.java,
-        * gnu/java/io/decode/Decoder8859_13.java,
-        * gnu/java/io/decode/Decoder8859_15.java,
-        * gnu/java/io/decode/Decoder8859_2.java,
-        * gnu/java/io/decode/Decoder8859_3.java,
-        * gnu/java/io/decode/Decoder8859_4.java,
-        * gnu/java/io/decode/Decoder8859_5.java,
-        * gnu/java/io/decode/Decoder8859_6.java,
-        * gnu/java/io/decode/Decoder8859_7.java,
-        * gnu/java/io/decode/Decoder8859_8.java,
-        * gnu/java/io/decode/Decoder8859_9.java,
-        * gnu/java/io/decode/DecoderASCII.java,
-        * gnu/java/io/decode/DecoderCp1047.java,
-        * gnu/java/io/decode/DecoderEBCDIC_XML_US.java,
-        * gnu/java/io/decode/DecoderEightBitLookup.java,
-        * gnu/java/io/decode/DecoderUTF16BE.java,
-        * gnu/java/io/decode/DecoderUTF16LE.java,
-        * gnu/java/io/decode/DecoderUTF32BE.java,
-        * gnu/java/io/decode/DecoderUTF32LE.java,
-        * gnu/java/io/decode/DecoderUTF8.java,
-        * gnu/java/io/decode/DecoderUnicodeBig.java,
-        * gnu/java/io/decode/DecoderUnicodeLittle.java,
-        * gnu/java/io/decode/DecoderWindows1250.java,
-        * gnu/java/io/decode/DecoderWindows1252.java,
-        * gnu/java/io/decode/package.html
-        * gnu/java/io/encode/Encoder.java,
-        * gnu/java/io/encode/Encoder8859_1.java,
-        * gnu/java/io/encode/Encoder8859_13.java,
-        * gnu/java/io/encode/Encoder8859_15.java,
-        * gnu/java/io/encode/Encoder8859_2.java,
-        * gnu/java/io/encode/Encoder8859_3.java,
-        * gnu/java/io/encode/Encoder8859_4.java,
-        * gnu/java/io/encode/Encoder8859_5.java,
-        * gnu/java/io/encode/Encoder8859_6.java,
-        * gnu/java/io/encode/Encoder8859_7.java,
-        * gnu/java/io/encode/Encoder8859_8.java,
-        * gnu/java/io/encode/Encoder8859_9.java,
-        * gnu/java/io/encode/EncoderASCII.java,
-        * gnu/java/io/encode/EncoderCp1047.java,
-        * gnu/java/io/encode/EncoderEBCDIC_XML_US.java,
-        * gnu/java/io/encode/EncoderEightBitLookup.java,
-        * gnu/java/io/encode/EncoderUTF16BE.java,
-        * gnu/java/io/encode/EncoderUTF16LE.java,
-        * gnu/java/io/encode/EncoderUTF32BE.java,
-        * gnu/java/io/encode/EncoderUTF32LE.java,
-        * gnu/java/io/encode/EncoderUTF8.java,
-        * gnu/java/io/encode/EncoderUnicodeBig.java,
-        * gnu/java/io/encode/EncoderUnicodeLittle.java,
-        * gnu/java/io/encode/EncoderWindows1250.java,
-        * gnu/java/io/encode/EncoderWindows1252.java,
-        * gnu/java/io/encode/package.html:
-        Removed
+	* gnu/java/io/EncodingManager.java: Removed charset alias properties.
+	* gnu/java/io/decode/Decoder.java,
+	* gnu/java/io/decode/Decoder8859_1.java,
+	* gnu/java/io/decode/Decoder8859_13.java,
+	* gnu/java/io/decode/Decoder8859_15.java,
+	* gnu/java/io/decode/Decoder8859_2.java,
+	* gnu/java/io/decode/Decoder8859_3.java,
+	* gnu/java/io/decode/Decoder8859_4.java,
+	* gnu/java/io/decode/Decoder8859_5.java,
+	* gnu/java/io/decode/Decoder8859_6.java,
+	* gnu/java/io/decode/Decoder8859_7.java,
+	* gnu/java/io/decode/Decoder8859_8.java,
+	* gnu/java/io/decode/Decoder8859_9.java,
+	* gnu/java/io/decode/DecoderASCII.java,
+	* gnu/java/io/decode/DecoderCp1047.java,
+	* gnu/java/io/decode/DecoderEBCDIC_XML_US.java,
+	* gnu/java/io/decode/DecoderEightBitLookup.java,
+	* gnu/java/io/decode/DecoderUTF16BE.java,
+	* gnu/java/io/decode/DecoderUTF16LE.java,
+	* gnu/java/io/decode/DecoderUTF32BE.java,
+	* gnu/java/io/decode/DecoderUTF32LE.java,
+	* gnu/java/io/decode/DecoderUTF8.java,
+	* gnu/java/io/decode/DecoderUnicodeBig.java,
+	* gnu/java/io/decode/DecoderUnicodeLittle.java,
+	* gnu/java/io/decode/DecoderWindows1250.java,
+	* gnu/java/io/decode/DecoderWindows1252.java,
+	* gnu/java/io/decode/package.html
+	* gnu/java/io/encode/Encoder.java,
+	* gnu/java/io/encode/Encoder8859_1.java,
+	* gnu/java/io/encode/Encoder8859_13.java,
+	* gnu/java/io/encode/Encoder8859_15.java,
+	* gnu/java/io/encode/Encoder8859_2.java,
+	* gnu/java/io/encode/Encoder8859_3.java,
+	* gnu/java/io/encode/Encoder8859_4.java,
+	* gnu/java/io/encode/Encoder8859_5.java,
+	* gnu/java/io/encode/Encoder8859_6.java,
+	* gnu/java/io/encode/Encoder8859_7.java,
+	* gnu/java/io/encode/Encoder8859_8.java,
+	* gnu/java/io/encode/Encoder8859_9.java,
+	* gnu/java/io/encode/EncoderASCII.java,
+	* gnu/java/io/encode/EncoderCp1047.java,
+	* gnu/java/io/encode/EncoderEBCDIC_XML_US.java,
+	* gnu/java/io/encode/EncoderEightBitLookup.java,
+	* gnu/java/io/encode/EncoderUTF16BE.java,
+	* gnu/java/io/encode/EncoderUTF16LE.java,
+	* gnu/java/io/encode/EncoderUTF32BE.java,
+	* gnu/java/io/encode/EncoderUTF32LE.java,
+	* gnu/java/io/encode/EncoderUTF8.java,
+	* gnu/java/io/encode/EncoderUnicodeBig.java,
+	* gnu/java/io/encode/EncoderUnicodeLittle.java,
+	* gnu/java/io/encode/EncoderWindows1250.java,
+	* gnu/java/io/encode/EncoderWindows1252.java,
+	* gnu/java/io/encode/package.html:
+	Removed
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -863,8 +863,8 @@
 
 	2005-04-19  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/geom/QuadCurve2D.java:
-        Fixed Brian Gough's name for real.
+	* java/awt/geom/QuadCurve2D.java:
+	Fixed Brian Gough's name for real.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -872,14 +872,14 @@
 
 	2005-04-19  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicButtonUI.java
-        (paint): This should not care about margin and insets
-        at the same time, as insets already include the margin
-        through the border.
-        * javax/swing/plaf/basic/BasicGraphicsUtils.java
-        (getPreferredButtonSize): Likewise.
-        * javax/swing/plaf/metal/MetalBorders.java
-        (getBorderInsets): Likewise.
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(paint): This should not care about margin and insets
+	at the same time, as insets already include the margin
+	through the border.
+	* javax/swing/plaf/basic/BasicGraphicsUtils.java
+	(getPreferredButtonSize): Likewise.
+	* javax/swing/plaf/metal/MetalBorders.java
+	(getBorderInsets): Likewise.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -887,10 +887,10 @@
 
 	2005-04-19  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicOptionPaneUI.java
-        (createMessageArea): The JPanel that holds the message area
-        doesn't need to override getPreferredSize. This prevents some
-        message components from rendering nicely.
+	* javax/swing/plaf/basic/BasicOptionPaneUI.java
+	(createMessageArea): The JPanel that holds the message area
+	doesn't need to override getPreferredSize. This prevents some
+	message components from rendering nicely.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -898,8 +898,8 @@
 
 	2005-04-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * java/net/URL.java:
-        (toURI()): Implemented.
+	* java/net/URL.java:
+	(toURI()): Implemented.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -907,8 +907,8 @@
 
 	2005-04-18  Sven de Marothy  <sven@physto.se>
 
-        * java/io/InputStreamReader.java:
-        (read): Fix several bugs leading to incorrect length being returned.
+	* java/io/InputStreamReader.java:
+	(read): Fix several bugs leading to incorrect length being returned.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -916,11 +916,11 @@
 
 	2005-04-18  Sven de Marothy  <sven@physto.se>
 
-        * java/nio/ByteBufferImpl.java:
-        (putChar): Inlined for speed.
-        (put, get): Bulk methods can use arraycopy.
-        * java/nio/CharBufferImpl.java:
-        (put, get): Bulk methods can use arraycopy.
+	* java/nio/ByteBufferImpl.java:
+	(putChar): Inlined for speed.
+	(put, get): Bulk methods can use arraycopy.
+	* java/nio/CharBufferImpl.java:
+	(put, get): Bulk methods can use arraycopy.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -928,8 +928,8 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/tree/DefaultTreeSelectionModel.java:
-        Added API documentation all over the class.
+	* javax/swing/tree/DefaultTreeSelectionModel.java:
+	Added API documentation all over the class.
 
 2005-04-23  Dalibor Topic  <robilad@kaffe.org>
 
@@ -937,18 +937,18 @@
 
 	2005-04-18  Sven de Marothy  <sven@physto.se>
 
-        * include/Makefile.am,
-        * native/jni/java-nio/Makefile.am: Added new files.
-        * gnu/java/nio/charset/iconv/IconvCharset.java,
-        * gnu/java/nio/charset/iconv/IconvDecoder.java,
-        * gnu/java/nio/charset/iconv/IconvEncoder.java,
-        * gnu/java/nio/charset/iconv/IconvMetaData.java,
-        * gnu/java/nio/charset/iconv/IconvProvider.java,
-        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
-        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
-        * include/gnu_java_nio_charset_iconv_IconvDecoder.h,
-        * include/gnu_java_nio_charset_iconv_IconvEncoder.h,
-        New files.
+	* include/Makefile.am,
+	* native/jni/java-nio/Makefile.am: Added new files.
+	* gnu/java/nio/charset/iconv/IconvCharset.java,
+	* gnu/java/nio/charset/iconv/IconvDecoder.java,
+	* gnu/java/nio/charset/iconv/IconvEncoder.java,
+	* gnu/java/nio/charset/iconv/IconvMetaData.java,
+	* gnu/java/nio/charset/iconv/IconvProvider.java,
+	* native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+	* native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+	* include/gnu_java_nio_charset_iconv_IconvDecoder.h,
+	* include/gnu_java_nio_charset_iconv_IconvEncoder.h:
+	New files.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -956,9 +956,9 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicScrollPaneUI.java
-        (installDefaults): Link managed JScrollPane in instance field.
-        (uninstallDefaults): Unlink managed JScrollPane in instance field.
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java
+	(installDefaults): Link managed JScrollPane in instance field.
+	(uninstallDefaults): Unlink managed JScrollPane in instance field.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -966,11 +966,11 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicScrollBarUI.java
-        (PropertyChangeHandler.propertyChange): Add default
-        to switch statement to avoid errors with unusual values
-        for orientation.
-        (installComponents): Likewise.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java
+	(PropertyChangeHandler.propertyChange): Add default
+	to switch statement to avoid errors with unusual values
+	for orientation.
+	(installComponents): Likewise.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -978,19 +978,19 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicScrollBarUI.java
-        (installUI): Install listeners after everything all, otherwise
-        we get strange NPEs in some situations, especially with
-        custom L&Fs.
-        (createIncreaseButton): Orientation is expected to be
-        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
-        HORIZONTAL or VERTICAL.
-        (createDecreaseButton): Orientation is expected to be
-        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
-        HORIZONTAL or VERTICAL.
-        (installComponents): Orientation for buttons is expected to be
-        SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
-        HORIZONTAL or VERTICAL.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java
+	(installUI): Install listeners after everything all, otherwise
+	we get strange NPEs in some situations, especially with
+	custom L&Fs.
+	(createIncreaseButton): Orientation is expected to be
+	SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+	HORIZONTAL or VERTICAL.
+	(createDecreaseButton): Orientation is expected to be
+	SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+	HORIZONTAL or VERTICAL.
+	(installComponents): Orientation for buttons is expected to be
+	SwingConstants.NORTH, ..SOUTH, ..WEST or ..EAST and not
+	HORIZONTAL or VERTICAL.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -998,13 +998,13 @@
 
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
-        * java/nio/ByteBufferImpl.java (get(), put(byte)): Inlined checks
-        and field updates.
-        * java/nio/CharBufferImpl.java
-        (CharBufferImpl(CharBufferImpl)): Copy array_offset field.
-        (get(), put(char)): Inlined checks and field updates. Fixed to
-        take array_offset into account.
-        (get(int), put(int, char)): Fixed to take array_offset into account.
+	* java/nio/ByteBufferImpl.java (get(), put(byte)): Inlined checks
+	and field updates.
+	* java/nio/CharBufferImpl.java
+	(CharBufferImpl(CharBufferImpl)): Copy array_offset field.
+	(get(), put(char)): Inlined checks and field updates. Fixed to
+	take array_offset into account.
+	(get(int), put(int, char)): Fixed to take array_offset into account.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1012,12 +1012,12 @@
 
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
-        * java/awt/GraphicsEnvironment.java
-        (localGraphicsEnvironment): New field.
-        (getLocalGraphicsEnvironment): Added support for java.awt.graphicsenv
-        property.
-        (isHeadless): Added support for java.awt.headless property.
-        (isHeadlessInstance): Call headless().
+	* java/awt/GraphicsEnvironment.java
+	(localGraphicsEnvironment): New field.
+	(getLocalGraphicsEnvironment): Added support for java.awt.graphicsenv
+	property.
+	(isHeadless): Added support for java.awt.headless property.
+	(isHeadlessInstance): Call headless().
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1025,9 +1025,9 @@
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/JToolBar.java
-        (addImpl): Adjust added AbstractButtons to look and feel like
-        toolbar buttons.
+	* javax/swing/JToolBar.java
+	(addImpl): Adjust added AbstractButtons to look and feel like
+	toolbar buttons.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1035,9 +1035,9 @@
 
 	2005-04-18  Jeroen Frijters  <jeroen@frijters.net>
 
-        * gnu/java/beans/IntrospectionIncubator.java
-        (addToPropertyHash, addToListenerHash): Don't confuse get(),
-        set(), is(), add() and remove() with properties or events.
+	* gnu/java/beans/IntrospectionIncubator.java
+	(addToPropertyHash, addToListenerHash): Don't confuse get(),
+	set(), is(), add() and remove() with properties or events.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1045,10 +1045,10 @@
 
 	2005-04-17  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/SimpleAttributeSet.java
-        (addAttribute): Removed null pointer check.
-        * javax/swing/text/StyleContext.java
-        (NamedStyle.setResolveParent): Added null pointer check.
+	* javax/swing/text/SimpleAttributeSet.java
+	(addAttribute): Removed null pointer check.
+	* javax/swing/text/StyleContext.java
+	(NamedStyle.setResolveParent): Added null pointer check.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1056,9 +1056,9 @@
 
 	2005-04-17  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/UIManager.java:
-        Make the UIManager respect the swing.defaultlaf system
-        property.
+	* javax/swing/UIManager.java:
+	Make the UIManager respect the swing.defaultlaf system
+	property.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1066,9 +1066,9 @@
 
 	2005-04-17  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/SimpleAttributeSet.java
-        (addAttribute): Check for null and remove key in that case.
-        This fixes http://gcc.gnu.org/bugzilla/show_bug.cgi?id=21064 .
+	* javax/swing/text/SimpleAttributeSet.java
+	(addAttribute): Check for null and remove key in that case.
+	This fixes http://gcc.gnu.org/bugzilla/show_bug.cgi?id=21064 .
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1076,8 +1076,8 @@
 
 	2005-04-16  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/BorderLayout.java
-        (calcSize): Check for overflow when component sizes are added.
+	* java/awt/BorderLayout.java
+	(calcSize): Check for overflow when component sizes are added.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1085,15 +1085,15 @@
 
 	2005-04-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * java/rmi/Naming.java:
-        Added class documentation.
-        (lookup(String)): Call parseURL and getName.
-        (bind(String,java.rmi.Remote)): Likewise.
-        (unbind(String)): Likewise.
-        (rebind(String, java.rmi.Remote)): Likewise.
-        (list(String)): Call parseURL.
-        (parseURL(String)): New method to handle parsing and defaults.
-        (getName(java.net.URL)): New method to handle finding the service name.
+	* java/rmi/Naming.java:
+	Added class documentation.
+	(lookup(String)): Call parseURL and getName.
+	(bind(String,java.rmi.Remote)): Likewise.
+	(unbind(String)): Likewise.
+	(rebind(String, java.rmi.Remote)): Likewise.
+	(list(String)): Call parseURL.
+	(parseURL(String)): New method to handle parsing and defaults.
+	(getName(java.net.URL)): New method to handle finding the service name.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1101,12 +1101,12 @@
 
 	2005-04-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * java/net/URI.java:
-        Added class documentation.
-        (parseURI(String)): Only handle scheme-specific parts
-        if URI is not opaque.  Allow for parts that can't be null.
-        (toString()): Output the scheme-specific part whole, rather
-        than as its possibly non-existent components.
+	* java/net/URI.java:
+	Added class documentation.
+	(parseURI(String)): Only handle scheme-specific parts
+	if URI is not opaque.  Allow for parts that can't be null.
+	(toString()): Output the scheme-specific part whole, rather
+	than as its possibly non-existent components.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1114,8 +1114,8 @@
 
 	2005-04-16  Michael Koch  <konqueror@gmx.de>
 
-        * java/rmi/server/RemoteObject.java:
-        Removed unused import statement.
+	* java/rmi/server/RemoteObject.java:
+	Removed unused import statement.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1123,16 +1123,16 @@
 
 	2005-04-16  Michael Koch  <konqueror@gmx.de>
 
-        * include/Makefile.am: Removed java_io_ObjectInputStream.h
-        and added java_io_VMObjectInputStream.h.
-        * java/io/ObjectInputStream.java
-        (currentClassLoader): Removed.
-        (allocateObject): Likewise.
-        * native/jni/java-io/Makefile.am: Removed java_io_ObjectInputStream.c
-        and added java_io_VMObjectInputStream.c.
-        * native/jni/java-io/java_io_ObjectInputStream.c: Removed.
-        * native/jni/java-io/java_io_VMObjectInputStream.c: New file.
-        * vm/reference/java/io/VMObjectInputStream.java: Likewise.
+	* include/Makefile.am: Removed java_io_ObjectInputStream.h
+	and added java_io_VMObjectInputStream.h.
+	* java/io/ObjectInputStream.java
+	(currentClassLoader): Removed.
+	(allocateObject): Likewise.
+	* native/jni/java-io/Makefile.am: Removed java_io_ObjectInputStream.c
+	and added java_io_VMObjectInputStream.c.
+	* native/jni/java-io/java_io_ObjectInputStream.c: Removed.
+	* native/jni/java-io/java_io_VMObjectInputStream.c: New file.
+	* vm/reference/java/io/VMObjectInputStream.java: Likewise.
 
 2005-04-22  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1245,704 +1245,704 @@
 
 	* libraries/clib/native/Object.c: Updated getClass signature.
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-16  Michael Koch  <konqueror@gmx.de>
 
-        * java/lang/Object.java
-        (getClass): Refactored to call the native in java.lang.VMObject.
-        * vm/reference/java/lang/VMObject.java
-        (getClass): Likewise.
+	* java/lang/Object.java
+	(getClass): Refactored to call the native in java.lang.VMObject.
+	* vm/reference/java/lang/VMObject.java
+	(getClass): Likewise.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-15  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * java/text/DecimalFormatSymbols.java:
-        Added retrieval of "XXX" instance in place of null.
-        * java/util/Currency.java,
-        (Currency(String)): New constructor for the XXX special case.
-        (getInstance(String)): Allow special case of "XXX".
+	* java/text/DecimalFormatSymbols.java:
+	Added retrieval of "XXX" instance in place of null.
+	* java/util/Currency.java,
+	(Currency(String)): New constructor for the XXX special case.
+	(getInstance(String)): Allow special case of "XXX".
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-15  Sven de Marothy  <sven@physto.se>
 
-        * java/io/InputStreamReader.java,
-        * java/io/OutputStreamWriter.java,
-        * java/lang/String.java: Move to NIO charsets.
-        * java/io/PrintStream.java: Inline conversion using String.
+	* java/io/InputStreamReader.java,
+	* java/io/OutputStreamWriter.java,
+	* java/lang/String.java: Move to NIO charsets.
+	* java/io/PrintStream.java: Inline conversion using String.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-14  Chris Burdess  <dog@gnu.org>
 
-        * java/io/DataOutputStream.java (writeUTF): Use block write for
-        output.
+	* java/io/DataOutputStream.java (writeUTF): Use block write for
+	output.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-19  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalBorders.java
-        (getBorderInsets): Likewise.
+	* javax/swing/plaf/metal/MetalBorders.java
+	(getBorderInsets): Likewise.
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalInternalFrameUI.java
-        (createUI): Do not share instances between components.
-        * javax/swing/plaf/metal/MetalSliderUI.java
-        (createUI): Do not share instances between components.
+	* javax/swing/plaf/metal/MetalInternalFrameUI.java
+	(createUI): Do not share instances between components.
+	* javax/swing/plaf/metal/MetalSliderUI.java
+	(createUI): Do not share instances between components.
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalBorders:
-        (PopupMenuBorder): Added.
-        * javax/swing/plaf/metal/MetalLookAndFeel
-        (initComponentDefaults): Added PopupMenuBorder.
+	* javax/swing/plaf/metal/MetalBorders:
+	(PopupMenuBorder): Added.
+	* javax/swing/plaf/metal/MetalLookAndFeel
+	(initComponentDefaults): Added PopupMenuBorder.
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalScrollBarUI.java:
-        (createUI): Instances cannot be shared among JScrollPanes.
+	* javax/swing/plaf/metal/MetalScrollBarUI.java:
+	(createUI): Instances cannot be shared among JScrollPanes.
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (initComponentDefaults): Added defaults for Menu, MenuBar
-        MenuEntry fonts.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Added defaults for Menu, MenuBar
+	MenuEntry fonts.
 
 	2005-04-18  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalBorders.java:
-        Adjusted insets of ButtonBorder.
-        (RolloverMarginBorder): Added class for toolbar buttons.
-        (getButtonBorder): Adjusted factory method to return a shared
-        instance of button border.
-        (getToolbarButtonBorder): Added factory method to return a shared
-        instance of toolbar button border.
-        (getMarginBorder): Added factory method to return a shared
-        instance of margin border.
-        * javax/swing/plaf/metal/MetalButtonUI.java
-        (installDefauls): If button is child of a JToolBar then set
-        special border on this button.
+	* javax/swing/plaf/metal/MetalBorders.java:
+	Adjusted insets of ButtonBorder.
+	(RolloverMarginBorder): Added class for toolbar buttons.
+	(getButtonBorder): Adjusted factory method to return a shared
+	instance of button border.
+	(getToolbarButtonBorder): Added factory method to return a shared
+	instance of toolbar button border.
+	(getMarginBorder): Added factory method to return a shared
+	instance of margin border.
+	* javax/swing/plaf/metal/MetalButtonUI.java
+	(installDefauls): If button is child of a JToolBar then set
+	special border on this button.
 
 	2005-04-15  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (initComponentDefaults): Added Label.font.
-        (initSystemColorDefaults): Added this method and adjusted the
-        general control color.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Added Label.font.
+	(initSystemColorDefaults): Added this method and adjusted the
+	general control color.
 
 	2005-04-15  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalTabbedPaneUI.java:
-        Added newline between import blocks. Changed Map to
-        HashMap in field declarations.
+	* javax/swing/plaf/metal/MetalTabbedPaneUI.java:
+	Added newline between import blocks. Changed Map to
+	HashMap in field declarations.
 
 	2005-04-15  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalBorders.java:
-        Added.
-        * javax/swing/plaf/metal/MetalButtonUI.java:
-        (installDefaults): Install button font.
-        * javax/swing/plaf/metal/MetalLookAndFeel.java:
-        (initComponentDefaults): Added button border, font and margin.
-        Changed components background color to the Metal current themes
-        standard color.
+	* javax/swing/plaf/metal/MetalBorders.java:
+	Added.
+	* javax/swing/plaf/metal/MetalButtonUI.java:
+	(installDefaults): Install button font.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java:
+	(initComponentDefaults): Added button border, font and margin.
+	Changed components background color to the Metal current themes
+	standard color.
 
 	2005-04-15  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalTabbedPaneUI.java
-        (createUI): Create one MetalTabbedPaneUI per Component instead
-        of sharing one instance.
+	* javax/swing/plaf/metal/MetalTabbedPaneUI.java
+	(createUI): Create one MetalTabbedPaneUI per Component instead
+	of sharing one instance.
 
 	2005-04-15  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (initComponentDefaults): Added to set Metal specific component
-        defaults.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Added to set Metal specific component
+	defaults.
 
 	2005-04-14  Mark Wielaard  <mark@klomp.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (initClassDefaults): Call super.initClassDefaults().
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initClassDefaults): Call super.initClassDefaults().
 
 	2005-04-14  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalLookAndFeel.java
-        (initClassDefaults): Added to include the *UI classes.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initClassDefaults): Added to include the *UI classes.
 
 	2005-04-14  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalComboBoxUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalDesktopIconUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalInternalFrameUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalPopupMenuSeparatorUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalProgressBarUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalRootPaneUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalScrollBarUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalSeparatorUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalSliderUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalSplitPaneUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalTextFieldUI.java:
-        Added.
-        * javax/swing/plaf/metal/MetalToggleButtonUI.java:
+	* javax/swing/plaf/metal/MetalComboBoxUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalDesktopIconUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalInternalFrameUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalPopupMenuSeparatorUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalProgressBarUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalRootPaneUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalScrollBarUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalSeparatorUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalSliderUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalSplitPaneUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalTextFieldUI.java:
+	Added.
+	* javax/swing/plaf/metal/MetalToggleButtonUI.java:
 
 	2005-04-14  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalButtonUI.java:
-        Fixed year in copyright notice.
-        * javax/swing/plaf/metal/MetalCheckBoxUI.java:
-        Fixed year in copyright notice.
-        * javax/swing/plaf/metal/MetalLabelUI.java:
-        Fixed year in copyright notice.
-        * javax/swing/plaf/metal/MetalRadioButtonUI.java:
-        Fixed year in copyright notice.
-        * javax/swing/plaf/metal/MetalScrollPaneUI.java:
-        Fixed year in copyright notice.
-        * javax/swing/plaf/metal/MetalTabbedPaneUI.java:
-        Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalButtonUI.java:
+	Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalCheckBoxUI.java:
+	Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalLabelUI.java:
+	Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalRadioButtonUI.java:
+	Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalScrollPaneUI.java:
+	Fixed year in copyright notice.
+	* javax/swing/plaf/metal/MetalTabbedPaneUI.java:
+	Fixed year in copyright notice.
 
 	2005-04-13  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/metal/MetalButtonUI.java:
-        Added skeleton class.
-        * javax/swing/plaf/metal/MetalCheckBoxUI.java:
-        Added skeleton class.
-        * javax/swing/plaf/metal/MetalLabelUI.java:
-        Added skeleton class.
-        * javax/swing/plaf/metal/MetalRadioButtonUI.java:
-        Added skeleton class.
-        * javax/swing/plaf/metal/MetalScrollPaneUI.java:
-        Added skeleton class.
-        * javax/swing/plaf/metal/MetalTabbedPaneUI.java:
-        Added skeleton class.
+	* javax/swing/plaf/metal/MetalButtonUI.java:
+	Added skeleton class.
+	* javax/swing/plaf/metal/MetalCheckBoxUI.java:
+	Added skeleton class.
+	* javax/swing/plaf/metal/MetalLabelUI.java:
+	Added skeleton class.
+	* javax/swing/plaf/metal/MetalRadioButtonUI.java:
+	Added skeleton class.
+	* javax/swing/plaf/metal/MetalScrollPaneUI.java:
+	Added skeleton class.
+	* javax/swing/plaf/metal/MetalTabbedPaneUI.java:
+	Added skeleton class.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-13  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/MediaTracker.java:
-        Reindented tabs to spaces.
+	* java/awt/MediaTracker.java:
+	Reindented tabs to spaces.
 
 	2005-04-13  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/MediaTracker.java
-        (MediaEntry.imageUpdate): Removed check for SOMEBITS, this
-        confused the media tracker and lead to lockups. The LOADING
-        bit is handled on other places.
-        (addImage): Removed the 'start image tracking' stuff. This
-        is not necessary and could confuse the media tracker.
-        (checkAll): Improved the check for image status so that
-        images that already complete images are detected. Also now
-        are really all images checked and if necessary loaded. Before
-        the method bailed out after the first incomplete image.
-        (statusAll): Detect images that are complete after the
-        call to Component.prepareImage(..).
-        (checkID): The same as in checkAll.
-        (statusID): The same as in statusAll.
+	* java/awt/MediaTracker.java
+	(MediaEntry.imageUpdate): Removed check for SOMEBITS, this
+	confused the media tracker and lead to lockups. The LOADING
+	bit is handled on other places.
+	(addImage): Removed the 'start image tracking' stuff. This
+	is not necessary and could confuse the media tracker.
+	(checkAll): Improved the check for image status so that
+	images that already complete images are detected. Also now
+	are really all images checked and if necessary loaded. Before
+	the method bailed out after the first incomplete image.
+	(statusAll): Detect images that are complete after the
+	call to Component.prepareImage(..).
+	(checkID): The same as in checkAll.
+	(statusID): The same as in statusAll.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicMenuUI.java
-        (getMaximumSize): Now returns preferredSize because JMenu should
-        never be bigger than that.
-        * javax/swing/JRootPane
-        (RootLayout.layoutContainer): Make JMenuBars take the whole width.
+	* javax/swing/plaf/basic/BasicMenuUI.java
+	(getMaximumSize): Now returns preferredSize because JMenu should
+	never be bigger than that.
+	* javax/swing/JRootPane
+	(RootLayout.layoutContainer): Make JMenuBars take the whole width.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/plaf/basic/BasicMenuBarUI.java:
-        Fixed tabs to spaces.
+	* javax/swing/plaf/basic/BasicMenuBarUI.java:
+	Fixed tabs to spaces.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/JRootPane.java:
-        Fixed various tabs to be spaces.
-        (RootLayout.layoutContainer): Made menubar left aligned.
+	* javax/swing/JRootPane.java:
+	Fixed various tabs to be spaces.
+	(RootLayout.layoutContainer): Made menubar left aligned.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/JComponent.java:
-        Modified alignmentX and alignmentY to be 0.5 instead of 0.0.
-        Untabified the file.
+	* javax/swing/JComponent.java:
+	Modified alignmentX and alignmentY to be 0.5 instead of 0.0.
+	Untabified the file.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/BoxLayout.java:
-        (layoutContainer): Made this layout manager respect the
-        minimum, maximum and preferred size more correctly.
+	* javax/swing/BoxLayout.java:
+	(layoutContainer): Made this layout manager respect the
+	minimum, maximum and preferred size more correctly.
 
 	2005-04-12  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/MediaTracker.java
-        (addImage): Synchronized list access.
-        (waitForAll): Fixed comparison of time (changed < to >).
-        (waitForID): Fixed comparison of time (changed < to >).
-        (removeImage): Synchronized list access.
+	* java/awt/MediaTracker.java
+	(addImage): Synchronized list access.
+	(waitForAll): Fixed comparison of time (changed < to >).
+	(waitForID): Fixed comparison of time (changed < to >).
+	(removeImage): Synchronized list access.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/io/FilePermission.java
-        (serialVersionUID): Made private.
-        (ALL_FILES): New constant.
-        (implies): Handle '<<ALL FILES>>' case.
+	* java/io/FilePermission.java
+	(serialVersionUID): Made private.
+	(ALL_FILES): New constant.
+	(implies): Handle '<<ALL FILES>>' case.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Audrius Meskauskas, Lithuania  <AudriusA@Bioinformatics.org>
 
-        * javax/swing/text/html/HTMLDocument.java: New file.
+	* javax/swing/text/html/HTMLDocument.java: New file.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * javax/swing/text/html/HTMLFrameHyperlinkEvent.java:
-        Reformatted.
-        * javax/swing/text/html/parser/AttributeList.java:
-        Fixed order of modifiers.
-        (AttributeList): Made final.
-        * javax/swing/text/html/parser/ContentModel.java:
-        Fixed html characters in javadocs.
-        * javax/swing/text/html/parser/DTD.java
-        (DTD): Don't implement java.io.Serializable directly.
-        (getElement): Simplified.
-        * javax/swing/text/html/parser/DTDConstants.java:
-        Reformatted file.
-        * javax/swing/text/html/parser/Element.java:
-        Fixed order of modifiers.
-        * javax/swing/text/html/parser/Parser.java:
-        Reformatted. Don't use fully-qualified class names.
-        * javax/swing/text/html/parser/ParserDelegator.java:
-        Fixed order of modifiers.
-        * javax/swing/text/rtf/RTFParser.java:
-        Re-ordered import statements.
-        * javax/swing/text/rtf/RTFScanner.java:
-        Removed unused import statement.
+	* javax/swing/text/html/HTMLFrameHyperlinkEvent.java:
+	Reformatted.
+	* javax/swing/text/html/parser/AttributeList.java:
+	Fixed order of modifiers.
+	(AttributeList): Made final.
+	* javax/swing/text/html/parser/ContentModel.java:
+	Fixed html characters in javadocs.
+	* javax/swing/text/html/parser/DTD.java
+	(DTD): Don't implement java.io.Serializable directly.
+	(getElement): Simplified.
+	* javax/swing/text/html/parser/DTDConstants.java:
+	Reformatted file.
+	* javax/swing/text/html/parser/Element.java:
+	Fixed order of modifiers.
+	* javax/swing/text/html/parser/Parser.java:
+	Reformatted. Don't use fully-qualified class names.
+	* javax/swing/text/html/parser/ParserDelegator.java:
+	Fixed order of modifiers.
+	* javax/swing/text/rtf/RTFParser.java:
+	Re-ordered import statements.
+	* javax/swing/text/rtf/RTFScanner.java:
+	Removed unused import statement.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/image/RasterOp.java:
-        Fixed wrong formatting.
+	* java/awt/image/RasterOp.java:
+	Fixed wrong formatting.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/print/PrinterJob.java
-        (pageDialog): New method.
-        (printDialog): Implemented.
+	* java/awt/print/PrinterJob.java
+	(pageDialog): New method.
+	(printDialog): Implemented.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/FontMetrics.java: Reformatted.
-        (getFontRenderContext): Handle case when java.awt.Graphics context is
-        given.
+	* java/awt/FontMetrics.java: Reformatted.
+	(getFontRenderContext): Handle case when java.awt.Graphics context is
+	given.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/FontMetrics.java
-        (getStringBounds): New methods.
+	* java/awt/FontMetrics.java
+	(getStringBounds): New methods.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-12  Michael Koch  <konqueror@gmx.de>
 
-        * java/net/NetworkInterface.java
-        (NetworkInterface): Made constructor package private.
-        Introduced another constructor for more addresses on one
-        interface.
+	* java/net/NetworkInterface.java
+	(NetworkInterface): Made constructor package private.
+	Introduced another constructor for more addresses on one
+	interface.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	* libraries/clib/native/InetAddress.c:
-        All native methods moved to class VMInetAddress.
+	All native methods moved to class VMInetAddress.
 
 	* libraries/clib/native/NetworkInterface.c:
-        All native methods moved to class VMNetworkInterface.
+	All native methods moved to class VMNetworkInterface.
 
 	2005-04-11  Michael Koch  <konqueror@gmx.de>
 
-        * java/net/InetAddress.java
-        (static): Removed.
-        (getLocalHostname): Likewise.
-        (lookupInaddrAny): Likewise.
-        (getHostByAddr): Likewise.
-        (getHostByName): Likewise.
-        * java/net/NetworkInterface.java
-        (static): Likewise.
-        (getRealNetworkInterfaces): Likewise.
-        * vm/reference/java/net/VMInetAddress.java,
-        vm/reference/java/net/VMNetworkInterface.java: New files.
-        * include/Makefile.am: Build new header files.
+	* java/net/InetAddress.java
+	(static): Removed.
+	(getLocalHostname): Likewise.
+	(lookupInaddrAny): Likewise.
+	(getHostByAddr): Likewise.
+	(getHostByName): Likewise.
+	* java/net/NetworkInterface.java
+	(static): Likewise.
+	(getRealNetworkInterfaces): Likewise.
+	* vm/reference/java/net/VMInetAddress.java,
+	vm/reference/java/net/VMNetworkInterface.java: New files.
+	* include/Makefile.am: Build new header files.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-11  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/MediaTracker.java
-        Added API documentation.
+	* java/awt/MediaTracker.java
+	Added API documentation.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-11  Michael Koch  <konqueror@gmx.de>
 
-        * javax/imageio/ImageIO.java (ReaderFormatFilter.filter):
-        Fixed wrong casting.
+	* javax/imageio/ImageIO.java (ReaderFormatFilter.filter):
+	Fixed wrong casting.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-10  Sven de Marothy  <sven@physto.se>
 
-        * java/text/SimpleDateFormat.java:
-        (formatWithAttribute): Pad year before truncating digits.
+	* java/text/SimpleDateFormat.java:
+	(formatWithAttribute): Pad year before truncating digits.
 
 2005-04-19  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-15  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/nio/charset/EncodingHelper.java: Added method
+	* gnu/java/nio/charset/EncodingHelper.java: Added method
 
 	2005-04-13  Sven de Marothy  <sven@physto.se>
 
-        * java/nio/charset/Charset.java: Cached encoders shouldn't be static.
+	* java/nio/charset/Charset.java: Cached encoders shouldn't be static.
 
 	2005-04-12  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/nio/charset/Provider.java: Add UnicodeLittle.
-        * gnu/java/nio/charset/UnicodeLittle.java: New file.
-        * gnu/java/nio/charset/UTF_16.java: UnicodeBig is an alias.
-        * gnu/java/nio/charset/UTF_16BE.java,
-        * gnu/java/nio/charset/UTF_16LE.java: No byte-order mark.
-        * gnu/java/nio/charset/UTF_16Encoder.java (encodeLoop): Fixed bug.
+	* gnu/java/nio/charset/Provider.java: Add UnicodeLittle.
+	* gnu/java/nio/charset/UnicodeLittle.java: New file.
+	* gnu/java/nio/charset/UTF_16.java: UnicodeBig is an alias.
+	* gnu/java/nio/charset/UTF_16BE.java,
+	* gnu/java/nio/charset/UTF_16LE.java: No byte-order mark.
+	* gnu/java/nio/charset/UTF_16Encoder.java (encodeLoop): Fixed bug.
 
 	2005-04-08  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/nio/charset/UTF_8.java
-        (Decoder): Previous fix was incorrect. Sorry.
-        * java/nio/charset/Charset.java: Reset cached de/encoders.
-        * java/nio/charset/CharsetDecoder.java,
-        java/nio/charset/CharsetEncoder.java:
-        Resize encoding/decoding result buffers.
+	* gnu/java/nio/charset/UTF_8.java
+	(Decoder): Previous fix was incorrect. Sorry.
+	* java/nio/charset/Charset.java: Reset cached de/encoders.
+	* java/nio/charset/CharsetDecoder.java,
+	java/nio/charset/CharsetEncoder.java:
+	Resize encoding/decoding result buffers.
 
 	2005-04-08  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/nio/charset/Provider.java: Add new charsets.
-        * gnu/java/nio/charset/UTF_16.java: Default to using BOM.
-        * gnu/java/nio/charset/UTF_16Decoder.java: Minor fixes.
-        * gnu/java/nio/charset/UTF_16Encoder.java,
-        Use NIO's built-in byte-ordering instead.
-        * gnu/java/nio/charset/UTF_8.java,
-        (Decoder): Correct values of maximum chars per byte.
-        (decodeLoop): Handle 4-byte surrogates.
-        * gnu/java/nio/charset/ByteCharset.java
-        * gnu/java/nio/charset/Cp424.java
-        * gnu/java/nio/charset/Cp437.java
-        * gnu/java/nio/charset/Cp737.java
-        * gnu/java/nio/charset/Cp775.java
-        * gnu/java/nio/charset/Cp850.java
-        * gnu/java/nio/charset/Cp852.java
-        * gnu/java/nio/charset/Cp855.java
-        * gnu/java/nio/charset/Cp857.java
-        * gnu/java/nio/charset/Cp860.java
-        * gnu/java/nio/charset/Cp861.java
-        * gnu/java/nio/charset/Cp862.java
-        * gnu/java/nio/charset/Cp863.java
-        * gnu/java/nio/charset/Cp864.java
-        * gnu/java/nio/charset/Cp865.java
-        * gnu/java/nio/charset/Cp866.java
-        * gnu/java/nio/charset/Cp869.java
-        * gnu/java/nio/charset/Cp874.java
-        * gnu/java/nio/charset/EncodingHelper.java
-        * gnu/java/nio/charset/ISO_8859_13.java
-        * gnu/java/nio/charset/ISO_8859_15.java
-        * gnu/java/nio/charset/ISO_8859_2.java
-        * gnu/java/nio/charset/ISO_8859_3.java
-        * gnu/java/nio/charset/ISO_8859_4.java
-        * gnu/java/nio/charset/ISO_8859_5.java
-        * gnu/java/nio/charset/ISO_8859_6.java
-        * gnu/java/nio/charset/ISO_8859_7.java
-        * gnu/java/nio/charset/ISO_8859_8.java
-        * gnu/java/nio/charset/ISO_8859_9.java
-        * gnu/java/nio/charset/KOI_8.java
-        * gnu/java/nio/charset/MS874.java
-        * gnu/java/nio/charset/MacCentralEurope.java
-        * gnu/java/nio/charset/MacCroatian.java
-        * gnu/java/nio/charset/MacCyrillic.java
-        * gnu/java/nio/charset/MacDingbat.java
-        * gnu/java/nio/charset/MacGreek.java
-        * gnu/java/nio/charset/MacIceland.java
-        * gnu/java/nio/charset/MacRoman.java
-        * gnu/java/nio/charset/MacRomania.java
-        * gnu/java/nio/charset/MacSymbol.java
-        * gnu/java/nio/charset/MacThai.java
-        * gnu/java/nio/charset/MacTurkish.java
-        * gnu/java/nio/charset/Windows1250.java
-        * gnu/java/nio/charset/Windows1251.java
-        * gnu/java/nio/charset/Windows1252.java
-        * gnu/java/nio/charset/Windows1253.java
-        * gnu/java/nio/charset/Windows1254.java
-        * gnu/java/nio/charset/Windows1255.java
-        * gnu/java/nio/charset/Windows1256.java
-        * gnu/java/nio/charset/Windows1257.java
-        * gnu/java/nio/charset/Windows1258.java
-        New files.
+	* gnu/java/nio/charset/Provider.java: Add new charsets.
+	* gnu/java/nio/charset/UTF_16.java: Default to using BOM.
+	* gnu/java/nio/charset/UTF_16Decoder.java: Minor fixes.
+	* gnu/java/nio/charset/UTF_16Encoder.java,
+	Use NIO's built-in byte-ordering instead.
+	* gnu/java/nio/charset/UTF_8.java,
+	(Decoder): Correct values of maximum chars per byte.
+	(decodeLoop): Handle 4-byte surrogates.
+	* gnu/java/nio/charset/ByteCharset.java
+	* gnu/java/nio/charset/Cp424.java
+	* gnu/java/nio/charset/Cp437.java
+	* gnu/java/nio/charset/Cp737.java
+	* gnu/java/nio/charset/Cp775.java
+	* gnu/java/nio/charset/Cp850.java
+	* gnu/java/nio/charset/Cp852.java
+	* gnu/java/nio/charset/Cp855.java
+	* gnu/java/nio/charset/Cp857.java
+	* gnu/java/nio/charset/Cp860.java
+	* gnu/java/nio/charset/Cp861.java
+	* gnu/java/nio/charset/Cp862.java
+	* gnu/java/nio/charset/Cp863.java
+	* gnu/java/nio/charset/Cp864.java
+	* gnu/java/nio/charset/Cp865.java
+	* gnu/java/nio/charset/Cp866.java
+	* gnu/java/nio/charset/Cp869.java
+	* gnu/java/nio/charset/Cp874.java
+	* gnu/java/nio/charset/EncodingHelper.java
+	* gnu/java/nio/charset/ISO_8859_13.java
+	* gnu/java/nio/charset/ISO_8859_15.java
+	* gnu/java/nio/charset/ISO_8859_2.java
+	* gnu/java/nio/charset/ISO_8859_3.java
+	* gnu/java/nio/charset/ISO_8859_4.java
+	* gnu/java/nio/charset/ISO_8859_5.java
+	* gnu/java/nio/charset/ISO_8859_6.java
+	* gnu/java/nio/charset/ISO_8859_7.java
+	* gnu/java/nio/charset/ISO_8859_8.java
+	* gnu/java/nio/charset/ISO_8859_9.java
+	* gnu/java/nio/charset/KOI_8.java
+	* gnu/java/nio/charset/MS874.java
+	* gnu/java/nio/charset/MacCentralEurope.java
+	* gnu/java/nio/charset/MacCroatian.java
+	* gnu/java/nio/charset/MacCyrillic.java
+	* gnu/java/nio/charset/MacDingbat.java
+	* gnu/java/nio/charset/MacGreek.java
+	* gnu/java/nio/charset/MacIceland.java
+	* gnu/java/nio/charset/MacRoman.java
+	* gnu/java/nio/charset/MacRomania.java
+	* gnu/java/nio/charset/MacSymbol.java
+	* gnu/java/nio/charset/MacThai.java
+	* gnu/java/nio/charset/MacTurkish.java
+	* gnu/java/nio/charset/Windows1250.java
+	* gnu/java/nio/charset/Windows1251.java
+	* gnu/java/nio/charset/Windows1252.java
+	* gnu/java/nio/charset/Windows1253.java
+	* gnu/java/nio/charset/Windows1254.java
+	* gnu/java/nio/charset/Windows1255.java
+	* gnu/java/nio/charset/Windows1256.java
+	* gnu/java/nio/charset/Windows1257.java
+	* gnu/java/nio/charset/Windows1258.java
+	New files.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-08  Roman Kennke  <roman@kennke.org>
 
-        * java/awt/MediaTracker.java
-        (MediaEntry.imageUpdate): Fixed flags. The different flags
-        must not be ORed together.
-        (checkAll): Modified to handle different meaning of the flags.
-        (waitForAll): Fixed so that it waits maximum the
-        specified amount of milliseconds.
-        (statusAll): Modified to handle different meaning of the flags.
-        (waitForID): Fixed so that it waits maximum the
-        specified amount of milliseconds.
+	* java/awt/MediaTracker.java
+	(MediaEntry.imageUpdate): Fixed flags. The different flags
+	must not be ORed together.
+	(checkAll): Modified to handle different meaning of the flags.
+	(waitForAll): Fixed so that it waits maximum the
+	specified amount of milliseconds.
+	(statusAll): Modified to handle different meaning of the flags.
+	(waitForID): Fixed so that it waits maximum the
+	specified amount of milliseconds.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-08  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/ImageIcon.java
-        (ImageIcon): Use setImage instead of direct assignment.
-        (setImage): Call loadImage to make sure that the image is loaded.
-        (loadImage): Waits for the image to complete loading.
-        (getImageLoadStatus): Added. Returns the load status of the
-        image.
+	* javax/swing/text/ImageIcon.java
+	(ImageIcon): Use setImage instead of direct assignment.
+	(setImage): Call loadImage to make sure that the image is loaded.
+	(loadImage): Waits for the image to complete loading.
+	(getImageLoadStatus): Added. Returns the load status of the
+	image.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-08  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/text/JTextComponent.java
-        (JTextComponent): Added repaintListener which issues repaint
-        requests when the underlying document changes.
-        (setDocument): Adds repaintListener to document when the
-        document is changed.
-        * javax/swing/text/DefaultEditorKit.java:
-        Removed repaint calls on JTextComponent. This is now handled
-        through a DocumentListener in JTextComponent that repaints
-        the component when needed.
+	* javax/swing/text/JTextComponent.java
+	(JTextComponent): Added repaintListener which issues repaint
+	requests when the underlying document changes.
+	(setDocument): Adds repaintListener to document when the
+	document is changed.
+	* javax/swing/text/DefaultEditorKit.java:
+	Removed repaint calls on JTextComponent. This is now handled
+	through a DocumentListener in JTextComponent that repaints
+	the component when needed.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-07  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/UIDefaults.java:
-        Added API documentation for all methods.
+	* javax/swing/UIDefaults.java:
+	Added API documentation for all methods.
 
 	2005-04-06  Roman Kennke  <roman@kennke.org>
 
-        * javax/swing/UIDefaults.java
-        (put): Now uses new checkAndPut method instead of checking
-        directly.
-        (putDefaults): Fixed so that it accepts null-values and
-        treats them like remove(key).
-        (checkAndPut): Added. This checks for null-values and calls
-        put or remove.
+	* javax/swing/UIDefaults.java
+	(put): Now uses new checkAndPut method instead of checking
+	directly.
+	(putDefaults): Fixed so that it accepts null-values and
+	treats them like remove(key).
+	(checkAndPut): Added. This checks for null-values and calls
+	put or remove.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU inetlib.
+	Resynced with GNU inetlib.
 
 	2005-04-06  Chris Burdess  <dog@gnu.org>
 
-        * CRLFInputStream.java: New algorithm, returning CRLF-delimited
-        chunks on each read.
+	* CRLFInputStream.java: New algorithm, returning CRLF-delimited
+	chunks on each read.
 
 	2005-02-17  Chris Burdess  <dog@gnu.org>
 
-        * BASE64.java: Truncate encoded byte array.
+	* BASE64.java: Truncate encoded byte array.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-07  Chris Burdess  <dog@gnu.org>
 
-        * gnu/java/net/CRLFInputStream.java: Rewrite to return
-        CRLF-delimited chunks.
+	* gnu/java/net/CRLFInputStream.java: Rewrite to return
+	CRLF-delimited chunks.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-05  Roman Kennke  <roman@kennke.org>
 
-        * gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java
-        (getDisplayMode): Added. Returns the current display mode.
-        (isFullScreenSupported): Added.
-        * java/awt/GraphicsDevice.java
-        (setFullScreenWindow): Implemented a primitive fullscreen mode.
-        This resizes and relocates the fullscreen window so that it uses
-        the whole screen. This is not a fully accelerated fullscreen
-        exclusive mode.
+	* gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java
+	(getDisplayMode): Added. Returns the current display mode.
+	(isFullScreenSupported): Added.
+	* java/awt/GraphicsDevice.java
+	(setFullScreenWindow): Implemented a primitive fullscreen mode.
+	This resizes and relocates the fullscreen window so that it uses
+	the whole screen. This is not a fully accelerated fullscreen
+	exclusive mode.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-04-01  Tom Tromey  <tromey@redhat.com>
 
-        * java/lang/AssertionError.java: Typo fix.
+	* java/lang/AssertionError.java: Typo fix.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
-        * javax/swing/text/JTextComponent.java (viewToModel): New method.
+	* javax/swing/text/JTextComponent.java (viewToModel): New method.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-31  Michael Koch  <konqueror@gmx.de>
 
-        * gnu/java/awt/peer/gtk/GdkGraphics.java
-        (getClipBounds): Handle clip being null.
-        (setClip): Likewise.
-        * java/beans/beancontext/BeanContextSupport.java
-        (add): Implemented.
-        (addAll): Likewise.
-        (clear): Likewise.
-        (removeAll): Likewise.
-        (retainAll): Likewise.
+	* gnu/java/awt/peer/gtk/GdkGraphics.java
+	(getClipBounds): Handle clip being null.
+	(setClip): Likewise.
+	* java/beans/beancontext/BeanContextSupport.java
+	(add): Implemented.
+	(addAll): Likewise.
+	(clear): Likewise.
+	(removeAll): Likewise.
+	(retainAll): Likewise.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-30  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/awt/peer/gtk/GdkGraphics.java:
-        (drawImage): Don't notify the image observer for offscreen images.
-        * gnu/java/awt/peer/gtk/GtkImagePainter.java:
-        (setPixels): Don't notify the image observer.
+	* gnu/java/awt/peer/gtk/GdkGraphics.java:
+	(drawImage): Don't notify the image observer for offscreen images.
+	* gnu/java/awt/peer/gtk/GtkImagePainter.java:
+	(setPixels): Don't notify the image observer.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
-        * java/beans/beancontext/BeanContextServicesSupport.java
-        (BeanContextServicesSupport): Reimplemented.
-        (addBeanContextServicesListener): Implemented.
-        (initialize): Likewise.
-        (removeBeanContextServicesListener): Likewise.
-        * java/beans/beancontext/BeanContextSupport.java
-        (add): Likewise.
-        (addBeanContextMembershipListener): Likewise.
-        (getLocale): Likewise.
-        (initialize): Likewise.
-        (iterator): Likewise.
-        (remove): Likewise.
-        (toArray): Likewise.
+	* java/beans/beancontext/BeanContextServicesSupport.java
+	(BeanContextServicesSupport): Reimplemented.
+	(addBeanContextServicesListener): Implemented.
+	(initialize): Likewise.
+	(removeBeanContextServicesListener): Likewise.
+	* java/beans/beancontext/BeanContextSupport.java
+	(add): Likewise.
+	(addBeanContextMembershipListener): Likewise.
+	(getLocale): Likewise.
+	(initialize): Likewise.
+	(iterator): Likewise.
+	(remove): Likewise.
+	(toArray): Likewise.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/image/ConvolveOp.java:
-        Removed comment added by eclipse.
+	* java/awt/image/ConvolveOp.java:
+	Removed comment added by eclipse.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
-        * gnu/xml/aelfred2/XmlParser.java:
-        Revert my typo fix.
+	* gnu/xml/aelfred2/XmlParser.java:
+	Revert my typo fix.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
-        Resynced with GNU Classpath.
+	Resynced with GNU Classpath.
 
 	2005-03-30  Michael Koch  <konqueror@gmx.de>
 
-        * java/awt/geom/CubicCurve2D.java,
-        java/awt/geom/QuadCurve2D.java:
-        Fixed typo in name of Brian Cough.
+	* java/awt/geom/CubicCurve2D.java,
+	java/awt/geom/QuadCurve2D.java:
+	Fixed typo in name of Brian Cough.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1960,8 +1960,8 @@
 
 	2005-03-29  Jeroen Frijters  <jeroen@frijters.net>
 
-        * gnu/classpath/SystemProperties.java (static): Converted encoding
-        aliases to lower case and removed redudant aliases.
+	* gnu/classpath/SystemProperties.java (static): Converted encoding
+	aliases to lower case and removed redudant aliases.
 
 2005-04-18  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1969,8 +1969,8 @@
 
 	2005-03-28  Tom Tromey  <tromey@redhat.com>
 
-        * java/lang/ClassLoader.java (loadClass): Resolve class even if
-        it was already found.
+	* java/lang/ClassLoader.java (loadClass): Resolve class even if
+	it was already found.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1978,8 +1978,8 @@
 
 	2005-03-28  Tom Tromey  <tromey@redhat.com>
 
-        * java/net/URL.java (DEFAULT_SEARCH_PATH): Added
-        org.metastatic.jessie.
+	* java/net/URL.java (DEFAULT_SEARCH_PATH): Added
+	org.metastatic.jessie.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1987,11 +1987,11 @@
 
 	2005-03-28  Sven de Marothy  <sven@physto.se>
 
-        * gnu/java/io/decode/DecoderUnicodeBig.java,
-        * gnu/java/io/decode/DecoderUnicodeLittle.java,
-        * gnu/java/io/encode/EncoderUnicodeBig.java,
-        * gnu/java/io/encode/EncoderUnicodeLittle.java:
-        New files.
+	* gnu/java/io/decode/DecoderUnicodeBig.java,
+	* gnu/java/io/decode/DecoderUnicodeLittle.java,
+	* gnu/java/io/encode/EncoderUnicodeBig.java,
+	* gnu/java/io/encode/EncoderUnicodeLittle.java:
+	New files.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -1999,8 +1999,8 @@
 
 	2005-03-26  Chris Burdess  <dog@gnu.org>
 
-        * gnu/xml/dom/DomNode.java (notifyNode): grow listener array as
-        required.
+	* gnu/xml/dom/DomNode.java (notifyNode): grow listener array as
+	required.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -2008,8 +2008,8 @@
 
 	2005-03-26  Jeroen Frijters  <jeroen@frijters.net>
 
-        * java/awt/image/PixelGrabber.java (setPixels(int,int,int,int,
-        ColorModel,byte[],int,int): Fixed byte to int conversion.
+	* java/awt/image/PixelGrabber.java (setPixels(int,int,int,int,
+	ColorModel,byte[],int,int): Fixed byte to int conversion.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -2017,8 +2017,8 @@
 
 	2005-03-26  Jeroen Frijters  <jeroen@frijters.net>
 
-        * javax/imageio/spi/IIORegistry.java (IIORegistry):
-        Don't assume that awt Toolkit is always ClasspathToolkit.
+	* javax/imageio/spi/IIORegistry.java (IIORegistry):
+	Don't assume that awt Toolkit is always ClasspathToolkit.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -2026,12 +2026,12 @@
 
 	2005-03-23  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * gnu/xml/dom/html2/DomHTMLParser.java
-        Changed 'enum' references to become 'enumeration'.
+	* gnu/xml/dom/html2/DomHTMLParser.java
+	Changed 'enum' references to become 'enumeration'.
 
 	2005-03-21  Audrius Meskauskas  <audriusa@bluewin.ch>
 
-        * gnu/xml/dom/html2/DomHTMLParser.java: New file.
+	* gnu/xml/dom/html2/DomHTMLParser.java: New file.
 
 2005-04-17  Dalibor Topic  <robilad@kaffe.org>
 
@@ -2140,10 +2140,10 @@
 
 2005-04-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
-        * libraries/clib/nio/gnu_java_nio_VMSelector.c
-        (Java_gnu_java_nio_VMSelector_select): Use strerror instead of
-        strerror_r if it is not available.
-        
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(Java_gnu_java_nio_VMSelector_select): Use strerror instead of
+	strerror_r if it is not available.
+
 2005-04-15  Guilhem Lavaux  <guilhem@kaffe.org>,
 	Nektarios K. Papadopoulos <npapadop@inaccessnetworks.com>
 
@@ -2683,21 +2683,21 @@
 	
 2005-03-31  Gerrit P. Haase <gp@familiehaase.de>
 
-        * kaffe/jvmpi/Makefile.am,
-        kaffe/kaffe/Makefile.am,
-        kaffe/kaffevm/Makefile.am,
-        kaffe/xprof/Makefile.am,
-        libraries/clib/awt/X/Makefile.am,
-        libraries/clib/awt/nano-X/Makefile.am,
-        libraries/clib/awt/qt/Makefile.am,
-        libraries/clib/io/Makefile.am,
-        libraries/clib/management/Makefile.am,
-        libraries/clib/math/Makefile.am,
-        libraries/clib/native/Makefile.am,
-        libraries/clib/net/Makefile.am,
-        libraries/clib/nio/Makefile.am,
-        libraries/clib/security/Makefile.am,
-        libraries/clib/zip/Makefile.am:
+	* kaffe/jvmpi/Makefile.am,
+	kaffe/kaffe/Makefile.am,
+	kaffe/kaffevm/Makefile.am,
+	kaffe/xprof/Makefile.am,
+	libraries/clib/awt/X/Makefile.am,
+	libraries/clib/awt/nano-X/Makefile.am,
+	libraries/clib/awt/qt/Makefile.am,
+	libraries/clib/io/Makefile.am,
+	libraries/clib/management/Makefile.am,
+	libraries/clib/math/Makefile.am,
+	libraries/clib/native/Makefile.am,
+	libraries/clib/net/Makefile.am,
+	libraries/clib/nio/Makefile.am,
+	libraries/clib/security/Makefile.am,
+	libraries/clib/zip/Makefile.am:
 	(*_LDFLAGS) Added -no-undefined.
 	(*_DEPENDENCIES) Added libkaffevm.
 
@@ -2742,8 +2742,8 @@
 
 2005-03-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
-        * java/text/DecimalFormat.java (parse):
-        Check whether the positive suffix matches the pattern. 
+	* java/text/DecimalFormat.java (parse):
+	Check whether the positive suffix matches the pattern. 
 
 2005-03-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
@@ -2889,8 +2889,8 @@
 
 2005-03-23  Dalibor Topic  <robilad@kaffe.org>
 
-        * kaffe/scripts/javadoc.in,
-        kaffe/scripts/compat/javadoc.in: Append installed antlr to
+	* kaffe/scripts/javadoc.in,
+	kaffe/scripts/compat/javadoc.in: Append installed antlr to
 	bootclasspath. Now gjdoccing all of Kaffe's class library
 	works out of the box.
 
@@ -3076,8 +3076,8 @@
 
 	2005-03-18  Sven de Marothy  <sven@physto.se>
 
-        * java/util/zip/GZIPInputStream.java:
-        (GZIPInputStream): Read header in constructor.
+	* java/util/zip/GZIPInputStream.java:
+	(GZIPInputStream): Read header in constructor.
 
 2005-03-21  Dalibor Topic  <robilad@kaffe.org>
 
@@ -3085,14 +3085,14 @@
 
 	2005-03-18  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
-        * gnu/javax/swing/text/html/parser/htmlAttributeSet.java:
-        (getAttributeNames()): Replaced 'enum' with 'enumeration'.
-        * gnu/javax/swing/text/html/parser/htmlValidator.java:
-        (validateParameters(TagElement,htmlAttributeSet)):
-        Replaced 'enum' with 'enumeration'.
-        (validateAttribute(TagElement,htmlAttributeSet,
-                           Enumeration,Enumeration)):
-        Likewise.
+	* gnu/javax/swing/text/html/parser/htmlAttributeSet.java:
+	(getAttributeNames()): Replaced 'enum' with 'enumeration'.
+	* gnu/javax/swing/text/html/parser/htmlValidator.java:
+	(validateParameters(TagElement,htmlAttributeSet)):
+	Replaced 'enum' with 'enumeration'.
+	(validateAttribute(TagElement,htmlAttributeSet,
+	                   Enumeration,Enumeration)):
+	Likewise.
 
 2005-03-21  Dalibor Topic  <robilad@kaffe.org>
 
@@ -3100,9 +3100,9 @@
 
 	2005-03-18  Audrius Meskauskas  <audriusa@bluewin.ch>
 
-        * javax/swing/text/html/parser/Entity.java (getType): New method.
-        * javax/swing/text/html/parser/DocumentParser.java:
-        Inherit from javax.swing.text.html.parser.Parser.
+	* javax/swing/text/html/parser/Entity.java (getType): New method.
+	* javax/swing/text/html/parser/DocumentParser.java:
+	Inherit from javax.swing.text.html.parser.Parser.
 
 2005-03-21  Dalibor Topic  <robilad@kaffe.org>
 
@@ -3110,14 +3110,14 @@
 
 	2005-03-18  Robert Schuster  <thebohemian@gmx>
 
-        * native/jni/java-nio/gnu_java_nio_VMSelector.c: Added important
-        return statement after throwing exception.
+	* native/jni/java-nio/gnu_java_nio_VMSelector.c: Added important
+	return statement after throwing exception.
 
 	2005-03-18  Robert Schuster  <thebohemian@gmx>
 
-        * native/jni/java-nio/gnu_java_nio_VMSelector.c: Implemented
-    	Java_gnu_java_nio_VMSelector_select.
-        * configure.ac: Added check for sys/select.h and strerro_r().
+	* native/jni/java-nio/gnu_java_nio_VMSelector.c: Implemented
+	Java_gnu_java_nio_VMSelector_select.
+	* configure.ac: Added check for sys/select.h and strerro_r().
 
 	* libraries/clib/nio/SelectorImpl.c: Removed. Replaced by 
 	gnu_java_nio_VMSelector.c.
@@ -3128,8 +3128,8 @@
 
 	2005-03-17  Chris Burdess  <dog@gnu.org>
 
-        * gnu/xml/dom/html2/DomHTMLDocument.java: Fixed element creation and
-        check for HTML/XHTML namespace.
+	* gnu/xml/dom/html2/DomHTMLDocument.java: Fixed element creation and
+	check for HTML/XHTML namespace.
 
 2005-03-21  Dalibor Topic  <robilad@kaffe.org>
 
@@ -3137,12 +3137,12 @@
 
 	2005-03-16  Archie Cobbs  <archie@dellroad.org>
 
-        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c: use
-        global native reference to wrap persistent jclass variable.
-        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c:
-        use DeleteLocalRef() to avoid exhausting local native references.
+	* native/jni/java-nio/java_nio_VMDirectByteBuffer.c: use
+	global native reference to wrap persistent jclass variable.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c:
+	use DeleteLocalRef() to avoid exhausting local native references.
 
-2003-03-20  Dalibor Topic  <robilad@kaffe.org>
+2005-03-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for -mregnames. It lets us use common register 
 	names on powerpc, and will hopefully make it simple to have a single 
@@ -3151,7 +3151,7 @@
 	* config/powerpc/trampolines.S: Changed powerpc floating point 
 	registers names from 'frX' to 'fX' and built fine on ppc-linux.
 
-2003-03-20  Dalibor Topic  <robilad@kaffe.org>
+2005-03-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Don't check for no-cpp-precomp. It confuses
 	libtool on 64 bit platforms to think that -fPIC is not supported, 
