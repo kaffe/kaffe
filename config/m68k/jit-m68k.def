@@ -743,7 +743,7 @@ op_moveal_ia(int imm, int dst)
 	LOUT(imm);
 }
 
-#if defined(JIT3)
+#if !defined(HAVE_NO_MOVEM)
 static inline void
 op_moveml_ro(int mask, int areg, int disp)
 {
@@ -1249,11 +1249,21 @@ define_insn(prologue, prologue_xxC)
 	/* Work out size of stack frame */
 	framesize = (maxLocal - maxArgs + maxStack + maxTemp) * SLOTSIZE;
 	op_linkw_ai(REG_fp, -framesize);
+
+#if defined(HAVE_NO_MOVEM)
+#else
+	op_moveml_rp(SAVEMASK, REG_sp);
+#endif
 }
 
 define_insn(epilogue, epilogue_xxx)
 {
 	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
+
+#if defined(HAVE_NO_MOVEM)
+#else
+	op_moveml_pr(REG_sp, RESTOREMASK);
+#endif
 
 	op_unlk_a(REG_fp);
 	op_rts();

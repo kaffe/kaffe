@@ -743,7 +743,7 @@ op_moveal_ia(int imm, int dst)
 	LOUT(imm);
 }
 
-#if defined(JIT3)
+#if !defined(HAVE_NO_MOVEM)
 static inline void
 op_moveml_ro(int mask, int areg, int disp)
 {
