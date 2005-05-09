@@ -1,3 +1,15 @@
+2005-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/jit-m68k.def:
+	Fix bug for optimization.
+
+	* config/m68k/jit3-m68k.def:
+	Change ifdef condition.
+
+	* config/m68k/netbsd1/config.frag,
+	config/m68k/linux/config.frag:
+	Set compilation option '-O1' as default.
+
 2005-05-08  Jim Huang  <jserv@kaffe.org>
 
 	* kaffe/kaffevm/boehm-gc/gc2.c
