@@ -1,5 +1,10 @@
 2005-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* kaffe/kaffevm/systems/unix-jthreads:
+	Fix build fail for '--with-threads=unix-jthreads'.
+
+2005-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* config/m68k/jit-m68k.def:
 	Fix bug for optimization.
 
