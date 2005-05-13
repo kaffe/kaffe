@@ -1,5 +1,14 @@
 2005-05-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/Makefile.am,
+	kaffe/kaffevm/verifier/Makefile.am,
+	replace/Makefile.am:
+	(native_LIBRARIES): Renamed to noinst_LTLIBRARIES
+	to turn them into convenience libraries. Should fix
+	the build problems on Cygwin, too.
+
+2005-05-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/ax_create_stdint_h.m4: New file. Taken from ac-archive.
 
 	* configure.ac: Use AX_CREATE_STDINT_H instead of checking 

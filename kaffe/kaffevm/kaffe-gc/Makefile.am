@@ -19,12 +19,10 @@ AM_CPPFLAGS = \
 	$(ENGINE_DEFS)
 
 
-native_LTLIBRARIES = libkaffegc.la
+noinst_LTLIBRARIES = libkaffegc.la
 
 libkaffegc_la_LDFLAGS = \
-	$(KVMLIBFLAGS) \
-	-export-dynamic \
-	-release $(PACKAGE_VERSION)
+	$(KVMLIBFLAGS)
 
 libkaffegc_la_SOURCES= \
 	gc-incremental.c \

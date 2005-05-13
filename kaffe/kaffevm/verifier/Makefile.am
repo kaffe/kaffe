@@ -21,12 +21,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier
 
-native_LTLIBRARIES = libkaffeverifier.la
+noinst_LTLIBRARIES = libkaffeverifier.la
 
 libkaffeverifier_la_LDFLAGS = \
-	$(KVMLIBFLAGS) \
-	-export-dynamic \
-	-release $(PACKAGE_VERSION)
+	$(KVMLIBFLAGS)
 
 libkaffeverifier_la_SOURCES = \
 	verify.c \
