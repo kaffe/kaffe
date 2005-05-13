@@ -1,3 +1,24 @@
+2005-05-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* m4/ax_create_stdint_h.m4: New file. Taken from ac-archive.
+
+	* configure.ac: Use AX_CREATE_STDINT_H instead of checking 
+	for standard int types manually. It generated a header file
+	that delegates to the native headers and types where possible,
+	and creates typedefs for the missing types.
+
+	* config/Makefile.am (GEN_HDRS): Added config-int.h.
+
+	* config/config-hacks.h:
+	Removed sections braced by HAVE_INT32 and HAVE_UINT32.
+
+	* config/generic/gentypes.h,
+	kaffe/kaffevm/gtypes.h,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gthread-jni.c,
+	libraries/clib/fdlibm/mprec.h:
+	Include config-int.h instead of declaring standard int types
+	manually.
+
 2005-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/systems/unix-jthreads:

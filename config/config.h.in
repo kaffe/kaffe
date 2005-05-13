@@ -230,35 +230,8 @@
 /* Define to 1 if you have the `inet_pton' function. */
 #undef HAVE_INET_PTON
 
-/* Define to 1 if the system has the type `int16'. */
-#undef HAVE_INT16
-
-/* Define to 1 if the system has the type `int32'. */
-#undef HAVE_INT32
-
-/* Define to 1 if the system has the type `int64'. */
-#undef HAVE_INT64
-
-/* Define to 1 if the system has the type `int8'. */
-#undef HAVE_INT8
-
-/* Define to 1 if the system has the type `intmax_t'. */
-#undef HAVE_INTMAX_T
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
-
-/* Define to 1 if the system has the type `int_fast16_t'. */
-#undef HAVE_INT_FAST16_T
-
-/* Define to 1 if the system has the type `int_fast32_t'. */
-#undef HAVE_INT_FAST32_T
-
-/* Define to 1 if the system has the type `int_fast64_t'. */
-#undef HAVE_INT_FAST64_T
-
-/* Define to 1 if the system has the type `int_fast8_t'. */
-#undef HAVE_INT_FAST8_T
 
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
@@ -663,30 +636,6 @@
    `tzname'. */
 #undef HAVE_TZNAME
 
-/* Define to 1 if the system has the type `uint16'. */
-#undef HAVE_UINT16
-
-/* Define to 1 if the system has the type `uint32'. */
-#undef HAVE_UINT32
-
-/* Define to 1 if the system has the type `uint8'. */
-#undef HAVE_UINT8
-
-/* Define to 1 if the system has the type `uintmax_t'. */
-#undef HAVE_UINTMAX_T
-
-/* Define to 1 if the system has the type `uint_fast16_t'. */
-#undef HAVE_UINT_FAST16_T
-
-/* Define to 1 if the system has the type `uint_fast32_t'. */
-#undef HAVE_UINT_FAST32_T
-
-/* Define to 1 if the system has the type `uint_fast64_t'. */
-#undef HAVE_UINT_FAST64_T
-
-/* Define to 1 if the system has the type `uint_fast8_t'. */
-#undef HAVE_UINT_FAST8_T
-
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
 
@@ -695,9 +644,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
-
-/* Define to 1 if the system has the type `unit64'. */
-#undef HAVE_UNIT64
 
 /* Define to 1 if you have the <utime.h> header file. */
 #undef HAVE_UTIME_H
@@ -812,6 +758,9 @@
    stackbase */
 #undef SIGALTSTACK_NEEDS_END
 
+/* The size of a `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
+
 /* The size of a `int', as computed by sizeof. */
 #undef SIZEOF_INT
 
@@ -823,6 +772,9 @@
 
 /* The size of a `short', as computed by sizeof. */
 #undef SIZEOF_SHORT
+
+/* The size of a `void*', as computed by sizeof. */
+#undef SIZEOF_VOIDP
 
 /* The size of a `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P

@@ -1274,14 +1274,11 @@ dnl =========================================================================
 dnl Check for [u]int{8,16,32,64} and bool.
 dnl -------------------------------------------------------------------------
 
-AC_CHECK_TYPES([int8,uint8,int16,uint16,int32,uint32,int64,unit64])
+AX_CREATE_STDINT_H([config/config-int.h])
 
 if test x"$ac_cv_typedef_bool" = x"yes"; then
   AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
 fi
-AC_CHECK_TYPES([uintmax_t, intmax_t])
-AC_CHECK_TYPES([uint_fast8_t,int_fast8_t,uint_fast16_t,int_fast16_t])
-AC_CHECK_TYPES([uint_fast32_t,int_fast32_t,uint_fast64_t,int_fast64_t])
 
 dnl =========================================================================
 dnl Check for struct sigcontext.

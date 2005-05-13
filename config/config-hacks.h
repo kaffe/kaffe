@@ -30,9 +30,6 @@
 #if defined(__WIN32__)
 #if defined(HAVE_WINSOCK2_H)
 #include <winsock2.h>
-#if _MSC_VER < 1200
-#define HAVE_INT32 1
-#endif
 #endif
 #if defined(__cplusplus)
 #define HAVE_BOOL 1
@@ -80,10 +77,3 @@
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 
-#if defined(HAVE_INT32)
-#define HAVE_INT32_DEFINED
-#endif
-
-#if defined(HAVE_UINT32)
-#define _UINT32_T
-#endif

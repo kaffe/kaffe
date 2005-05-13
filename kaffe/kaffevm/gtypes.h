@@ -13,84 +13,21 @@
 #define __gtype_h
 
 #include "config.h"
+#include "config-int.h"
 #include "config-std.h"
 #include "jni.h"
 
-#if defined(__STDC__)
-#if !defined(HAVE_INT8)
-typedef signed char		int8;
-#endif
-#elif defined(__CHAR_UNSIGNED__)
-#error "no signed char type"
-#else
-#if !defined(HAVE_INT8)
-typedef	char			int8;
-#endif
-#endif
+typedef int8_t		int8;
+typedef uint8_t		uint8;
 
-#if !defined(HAVE_UINT8)
-typedef	unsigned char		uint8;
-#endif
+typedef	int16_t		int16;
+typedef	uint16_t	uint16;
 
-#if SIZEOF_SHORT == 2
-#if !defined(HAVE_INT16)
-typedef	short			int16;
-#endif
-#if !defined(HAVE_UINT16)
-typedef	unsigned short		uint16;
-#endif
-#else
-#error "sizeof(short) must be 2"
-#endif
+typedef int32_t		int32;
+typedef uint32_t	uint32;
 
-/* If you change these definitions, also change strtod("-0.0") check
- * in configure.in
- */
-#if SIZEOF_INT == 4
-#if !defined(HAVE_INT32)
-typedef	int			int32;
-#endif
-#if !defined(HAVE_UINT32)
-typedef	unsigned int		uint32;
-#endif
-#elif SIZEOF_LONG == 4
-#if !defined(HAVE_INT32)
-typedef	long			int32;
-#endif
-#if !defined(HAVE_UINT32)
-typedef	unsigned long		uint32;
-#endif
-#else
-#error "sizeof(int) or sizeof(long) must be 4"
-#endif
-
-/* If you change these definitions, also change strtod("-0.0") check
- * in configure.in
- */
-#if SIZEOF_LONG == 8
-#if !defined(HAVE_INT64)
-typedef	long			int64;
-#endif
-#if !defined(HAVE_UINT64)
-typedef	unsigned long		uint64;
-#endif
-#elif SIZEOF_LONG_LONG == 8
-#if !defined(HAVE_INT64)
-typedef	long long		int64;
-#endif
-#if !defined(HAVE_UINT64)
-typedef	unsigned long long	uint64;
-#endif
-#elif SIZEOF___INT64 == 8
-#if !defined(HAVE_INT64)
-typedef	__int64			int64;
-#endif
-#if !defined(HAVE_UINT64)
-typedef	unsigned __int64	uint64;
-#endif
-#else
-#error "sizeof(long) or sizeof(long long) or sizeof(__int64) must be 8"
-#endif
+typedef int64_t		int64;
+typedef uint64_t	uint64;
 
 #if SIZEOF_VOID_P == 4
 typedef uint32			uintp;
