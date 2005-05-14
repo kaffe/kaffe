@@ -2,6 +2,41 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-25  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c:
+        Include config.h and jcl.h, use if defined(HAVE_ICONV), add new
+        static variables infid and outfid, add char_union.
+        (Java_gnu_java_nio_charset_iconv_IconvDecoder_openIconv):
+        Guard with if defined(HAVE_ICONV), use JCL_jstring_to_cstring,
+        JCL_free_cstring and JCL_ThrowException, cache inremaining and
+        outremaining fieldIDs.
+        (Java_gnu_java_nio_charset_iconv_IconvDecoder_decode):
+        Guard with if defined(HAVE_ICONV), use ICONV_CONST for iconv
+        argument, used cached fieldIDs, use char_union.
+        (Java_gnu_java_nio_charset_iconv_IconvDecoder_closeIconv):
+        Guard with if defined(HAVE_ICONV).
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c:
+        Include config.h and jcl.h, use if defined(HAVE_ICONV), add new
+        static variables infid and outfid, add char_union.
+        (Java_gnu_java_nio_charset_iconv_IconvEncoder_openIconv):
+        Guard with if defined(HAVE_ICONV), use JCL_jstring_to_cstring,
+        JCL_free_cstring and JCL_ThrowException, cache inremaining and
+        outremaining fieldIDs.
+        (Java_gnu_java_nio_charset_iconv_IconvEncoder_encode):
+        Guard with if defined(HAVE_ICONV), use ICONV_CONST for iconv
+        argument, used cached fieldIDs, use char_union.
+        (Java_gnu_java_nio_charset_iconv_IconvEncoder_closeIconv):
+        Guard with if defined(HAVE_ICONV).
+        * gnu/java/nio/charset/iconv/IconvDecoder.java (dispose): Renamed.
+        (finalize): Renamed from dispose.
+        * gnu/java/nio/charset/iconv/IconvEncoder.java (dispose): Renamed.
+        (finalize): Renamed from dispose.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-25  Tom Tromey  <tromey@redhat.com>
 
         * java/awt/AWTKeyStroke.java (vktable): Now package-private.

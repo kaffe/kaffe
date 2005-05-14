@@ -35,24 +35,55 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+#include <config.h>
+#include <jcl.h>
+
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+
+#if defined(HAVE_ICONV)
 #include <iconv.h>
+#endif
+
 #include "gnu_java_nio_charset_iconv_IconvEncoder.h"
 
 static void createRawData (JNIEnv * env, jobject obj, void *ptr);
 static void *getData (JNIEnv * env, jobject obj);
+
+static jfieldID infid = NULL;
+static jfieldID outfid = NULL;
+
+/* Union used for type punning. */
+union char_union
+{
+  jbyte **jb;
+  jchar **jc;
+  char **c;
+};
 
 JNIEXPORT void JNICALL
 Java_gnu_java_nio_charset_iconv_IconvEncoder_openIconv (JNIEnv * env,
 							jobject obj,
 							jstring jname)
 {
-  jclass exception;
+#if defined(HAVE_ICONV)
   iconv_t iconv_object;
+  jclass cls;
 
-  const char *name = (*env)->GetStringUTFChars (env, jname, 0);
+  const char *name = JCL_jstring_to_cstring (env, jname);
+  if (name == NULL)
+    return;
+
+  /* Cache fieldIDs for use in encode function. */
+  if (infid == NULL || outfid == NULL)
+    {
+      cls = (*env)->GetObjectClass (env, obj);
+      infid = (*env)->GetFieldID (env, cls, "inremaining", "I");
+      assert (infid != 0);
+      outfid = (*env)->GetFieldID (env, cls, "outremaining", "I");
+      assert (outfid != 0);
+    }
 
   /* to "name" from java, native java format depends on endianness */
 #ifdef WORDS_BIGENDIAN
@@ -61,19 +92,18 @@ Java_gnu_java_nio_charset_iconv_IconvEncoder_openIconv (JNIEnv * env,
   iconv_object = iconv_open (name, "UTF-16LE");
 #endif
 
-  (*env)->ReleaseStringUTFChars (env, jname, name);
+  JCL_free_cstring (env, jname, name);
   if ((long) iconv_object == -1L)
     {
-      /* Throw an exception if charset not available */
-      (*env)->ExceptionDescribe (env);
-      (*env)->ExceptionClear (env);
-      exception =
-	(*env)->FindClass (env, "java/lang/IllegalArgumentException");
-      assert (exception != 0);
-      (*env)->ThrowNew (env, exception, "Charset not available.");
+      JCL_ThrowException (env, "java/lang/IllegalArgumentException",
+			  "Charset not available");
       return;
     }
   createRawData (env, obj, (void *) iconv_object);
+#else
+  JCL_ThrowException (env, "java/lang/IllegalArgumentException",
+		      "iconv not available");
+#endif
 }
 
 JNIEXPORT jint JNICALL
@@ -84,11 +114,10 @@ Java_gnu_java_nio_charset_iconv_IconvEncoder_encode (JNIEnv * env,
 						     jint posIn, jint remIn,
 						     jint posOut, jint remOut)
 {
+#if defined(HAVE_ICONV)
   iconv_t iconv_object = getData (env, obj);
-  jclass cls;
-  jfieldID fid;
   size_t retval;
-  char **in, **out;
+  union char_union in, out;
   jchar *input, *inputcopy;
   jbyte *output, *outputcopy;
   size_t lenIn = (size_t) remIn * 2;
@@ -100,9 +129,10 @@ Java_gnu_java_nio_charset_iconv_IconvEncoder_encode (JNIEnv * env,
   input += posIn;
   output += posOut;
 
-  in = (char **) &input;
-  out = (char **) &output;
-  retval = iconv (iconv_object, in, &lenIn, out, &lenOut);
+  in.jc = &input;
+  out.jb = &output;
+  retval = iconv (iconv_object, (ICONV_CONST char **) in.c, &lenIn,
+		  out.c, &lenOut);
 
   /* XXX: Do we need to relase the input array? It's not modified. */
   (*env)->ReleaseCharArrayElements (env, inArr, inputcopy, 0);
@@ -118,24 +148,24 @@ Java_gnu_java_nio_charset_iconv_IconvEncoder_encode (JNIEnv * env,
   else
     retval = 0;
 
-  cls = (*env)->GetObjectClass (env, obj);
-  fid = (*env)->GetFieldID (env, cls, "inremaining", "I");
-  assert (fid != 0);
-  (*env)->SetIntField (env, obj, fid, (jint) (lenIn >> 1));
-  fid = (*env)->GetFieldID (env, cls, "outremaining", "I");
-  assert (fid != 0);
-  (*env)->SetIntField (env, obj, fid, (jint) lenOut);
+  (*env)->SetIntField (env, obj, infid, (jint) (lenIn >> 1));
+  (*env)->SetIntField (env, obj, outfid, (jint) lenOut);
 
   return (jint) retval;
+#else
+  return -1;
+#endif
 }
 
 JNIEXPORT void JNICALL
 Java_gnu_java_nio_charset_iconv_IconvEncoder_closeIconv (JNIEnv * env,
 							 jobject obj)
 {
+#if defined(HAVE_ICONV)
   iconv_t iconv_object;
   iconv_object = getData (env, obj);
   iconv_close (iconv_object);
+#endif
 }
 
 

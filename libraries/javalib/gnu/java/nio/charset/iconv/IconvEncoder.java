@@ -104,7 +104,7 @@ final class IconvEncoder extends CharsetEncoder
     return CoderResult.OVERFLOW;
   }
 
-  public void dispose()
+  protected void finalize()
   {
     closeIconv();
   }
