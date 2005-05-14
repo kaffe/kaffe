@@ -2,6 +2,19 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-25  Sven de Marothy  <sven@physto.se>
+
+        * java/io/InputStreamReader.java:
+        (InputStreamReader): Always replace invalid chars.
+        (read): Return -1 if zero bytes are read.
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c:
+        Correct C pointer arithmetic.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-25  David Gilbert  <david.gilbert@object-refinery.com>
 
         * java/awt/Transparency.java

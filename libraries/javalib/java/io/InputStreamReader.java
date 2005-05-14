@@ -237,9 +237,8 @@ public class InputStreamReader extends Reader
     this.in = in;
     decoder = charset.newDecoder();
 
-    // JDK reports errors, so we do the same.
-    decoder.onMalformedInput(CodingErrorAction.REPORT);
-    decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+    decoder.onMalformedInput(CodingErrorAction.REPLACE);
+    decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
     decoder.reset();
     encoding = EncodingHelper.getOldCanonical(charset.name());
   }
@@ -258,9 +257,8 @@ public class InputStreamReader extends Reader
 	maxBytesPerChar = 1f;
     } 
 
-    // JDK reports errors, so we do the same.
-    decoder.onMalformedInput(CodingErrorAction.REPORT);
-    decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+    decoder.onMalformedInput(CodingErrorAction.REPLACE);
+    decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
     decoder.reset();
     encoding = EncodingHelper.getOldCanonical(decoder.charset().name());      
   }
@@ -390,7 +388,8 @@ public class InputStreamReader extends Reader
 	} else
 	    byteBuffer = null;
 
-	return (read == 0)?-1:(cb.position() - startPos);
+	read = cb.position() - startPos;
+	return (read <= 0) ? -1 : read;
     } else {
 	byte[] bytes = new byte[length];
 	int read = in.read(bytes);

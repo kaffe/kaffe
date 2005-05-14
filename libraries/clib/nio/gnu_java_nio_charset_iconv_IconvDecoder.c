@@ -98,7 +98,7 @@ Java_gnu_java_nio_charset_iconv_IconvDecoder_decode (JNIEnv * env,
   outputcopy = output = (*env)->GetCharArrayElements (env, outArr, 0);
 
   input += posIn;
-  output += posOut * 2;
+  output += posOut;
 
   in = (char **) &input;
   out = (char **) &output;
