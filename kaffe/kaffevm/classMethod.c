@@ -1670,7 +1670,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	int maxalign;
 	int oldoffset;
 	int *map;
-	jbool is_reference;
+	jboolean is_reference;
 
 	/* Find start of new fields in this object.  If start is zero, we must
 	 * allow for the object headers.

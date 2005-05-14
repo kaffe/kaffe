@@ -65,8 +65,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/kaffe/jni_md.h
+CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libfdlibm_la_LIBADD =
@@ -79,7 +78,7 @@ am_libfdlibm_la_OBJECTS = dtoa.lo e_acos.lo e_asin.lo e_atan2.lo \
 	w_atan2.lo w_exp.lo w_fmod.lo w_log.lo w_pow.lo w_remainder.lo \
 	w_sqrt.lo
 libfdlibm_la_OBJECTS = $(am_libfdlibm_la_OBJECTS)
-DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \

@@ -13,7 +13,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "errors.h"
 #include "gtypes.h"
 #include "access.h"

@@ -17,7 +17,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "access.h"
 #include "classMethod.h"
 #include "locks.h"

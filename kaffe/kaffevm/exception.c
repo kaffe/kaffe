@@ -28,7 +28,7 @@
 #include "config-mem.h"
 #include "config-setjmp.h"
 #include "config-hacks.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "gtypes.h"
 #include "access.h"
 #include "object.h"

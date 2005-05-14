@@ -42,7 +42,7 @@
  */
 struct Hjava_lang_Class*
 java_lang_Class_forName(struct Hjava_lang_String* str,
-			jbool doinit,
+			jboolean doinit,
 			Hjava_lang_ClassLoader* loader)
 {
 	errorInfo einfo;
@@ -191,19 +191,19 @@ java_lang_Class_getClassLoader0(struct Hjava_lang_Class* this)
 /*
  * Is the class an interface?
  */
-jbool
+jboolean
 java_lang_Class_isInterface(struct Hjava_lang_Class* this)
 {
 	return ((this->accflags & ACC_INTERFACE) ? 1 : 0);
 }
 
-jbool
+jboolean
 java_lang_Class_isPrimitive(struct Hjava_lang_Class* this)
 {
 	return (CLASS_IS_PRIMITIVE(this));
 }
 
-jbool
+jboolean
 java_lang_Class_isArray(struct Hjava_lang_Class* this)
 {
 	return (CLASS_IS_ARRAY(this));
@@ -220,7 +220,7 @@ java_lang_Class_getComponentType(struct Hjava_lang_Class* this)
 	}
 }
 
-jbool
+jboolean
 java_lang_Class_isAssignableFrom(struct Hjava_lang_Class* this, struct Hjava_lang_Class* cls)
 {
 	return (instanceof(this, cls));
@@ -229,7 +229,7 @@ java_lang_Class_isAssignableFrom(struct Hjava_lang_Class* this, struct Hjava_lan
 /*
  * Is object instance of this class?
  */
-jbool
+jboolean
 java_lang_Class_isInstance(struct Hjava_lang_Class* this, struct Hjava_lang_Object* obj)
 {
 	return (soft_instanceof(this, obj));

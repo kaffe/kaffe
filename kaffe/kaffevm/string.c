@@ -10,7 +10,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "classMethod.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "gtypes.h"
 #include "constants.h"
 #include "object.h"

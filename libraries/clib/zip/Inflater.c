@@ -139,7 +139,7 @@ kaffe_zfree(voidpf opaque UNUSED, voidpf address) {
 }
 
 void
-java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
+java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
 {
 	int r;
 	z_stream* dstream;
@@ -230,7 +230,7 @@ java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
 }
 
 void
-java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jbool val)
+java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
 {
 	supportDisabled();
 }

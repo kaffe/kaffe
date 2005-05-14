@@ -12,8 +12,13 @@
 #ifndef __icode_h
 #define	__icode_h
 
+#include "config.h"
+#include "config-int.h"
 #include "slots.h"
 #include "soft.h"
+
+#define  JINT_MIN        INT32_MIN
+#define  JLONG_MIN       INT64_MIN
 
 #if defined(KAFFE_VMDEBUG)
 static const int32 UNINITIALIZED_STACK_SLOT = 0x00c0ffee;

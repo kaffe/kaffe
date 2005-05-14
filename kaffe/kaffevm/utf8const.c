@@ -15,7 +15,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "classMethod.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "kaffe/jmalloc.h"
 #include "constants.h"
 #include "object.h"

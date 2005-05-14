@@ -16,7 +16,7 @@
 #include "jni.h"
 #include <stdarg.h>
 #include "errors.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "kaffe/jmalloc.h"
 #include "gtypes.h"
 #include "access.h"

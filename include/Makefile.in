@@ -77,13 +77,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/kaffe/jni_md.h
+CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
-am__include_HEADERS_DIST = jni.h jni_cpp.h jvmpi.h kaffe_jni.h jawt.h \
-	jawt_md.h
+am__include_HEADERS_DIST = jni.h jni_md.h jni_cpp.h jvmpi.h \
+	kaffe_jni.h jawt.h jawt_md.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -613,6 +612,7 @@ noinst_HEADERS = \
 
 include_HEADERS = \
 	jni.h \
+	jni_md.h \
 	jni_cpp.h \
 	jvmpi.h \
 	kaffe_jni.h \
@@ -630,8 +630,7 @@ pkginclude_HEADERS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h \
-	kaffe/jni_md.h
+	kaffe/jmalloc.h
 
 CLEANFILES = \
 	$(DERIVED_HDRS) \
@@ -641,7 +640,6 @@ CLEANFILES = \
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	kaffe/jni_md.h \
 	stamp-h0all \
 	stamp-h1all \
 	stamp-libtritonusalsa \

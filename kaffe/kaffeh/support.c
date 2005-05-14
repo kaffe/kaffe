@@ -15,7 +15,7 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "debug.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "jsyscall.h"
 #include "gtypes.h"
 #include "gc.h"

@@ -32,7 +32,7 @@ extern void walkConservative(void*, int);
 
 static Hjava_lang_Thread* TcurrentJava(void);
 
-jbool runFinalizerOnExit;
+jboolean runFinalizerOnExit;
 jint nonDemonThreads;
 static Hjava_lang_Thread* activeThreads;
 

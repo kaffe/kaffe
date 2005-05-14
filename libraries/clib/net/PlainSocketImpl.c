@@ -135,7 +135,7 @@ ip62str(struct in6_addr *addr)
  * Create a stream or datagram socket.
  */
 void
-gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* this, jbool stream)
+gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* this, jboolean stream)
 {
 	int fd;
 	int type;
@@ -745,7 +745,7 @@ gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* t
 }
 
 void
-gnu_java_net_PlainSocketImpl_setBlocking(struct Hgnu_java_net_PlainSocketImpl* this, jbool blocking)
+gnu_java_net_PlainSocketImpl_setBlocking(struct Hgnu_java_net_PlainSocketImpl* this, jboolean blocking)
 {
 	if (blocking == unhand(this)->blocking)
 		return;

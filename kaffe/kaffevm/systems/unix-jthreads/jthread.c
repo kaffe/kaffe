@@ -22,7 +22,7 @@
 /* For NOTIMEOUT */
 #include "jsyscall.h"
 /* For jlong */
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 /* For Hjava_lang_VMThread */
 #include "thread.h"
 #include "gc.h"
@@ -90,7 +90,7 @@ static fd_set readsPending;	/* fds we want to read from */
 static fd_set writesPending;	/* fds we want to write to */
 static KaffeNodeQueue* readQ[FD_SETSIZE];	/* threads blocked on read */
 static KaffeNodeQueue* writeQ[FD_SETSIZE];	/* threads blocked on write */
-static jbool blockingFD[FD_SETSIZE];            /* file descriptor which should 
+static jboolean blockingFD[FD_SETSIZE];            /* file descriptor which should 
 						   really block */
 static jmutex threadLock;	/* static lock to protect liveThreads etc. */
 static jmutex GClock;
@@ -2479,7 +2479,7 @@ jbool
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
 	jthread *current = jthread_current();
-	jbool r;
+	jboolean r;
 
 	intsDisable();
 

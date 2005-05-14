@@ -1,5 +1,76 @@
 2005-05-13  Dalibor Topic  <robilad@kaffe.org>
 
+        * include/jni_md.h: New file. 
+	Merged in from GNU Classpath and gcj.
+
+        * include/kaffe/jni_md.h.in: Removed.
+
+        * configure.ac: Don't generate include/kaffe/jni_md.h.
+
+        * include/Makefile.am (include_HEADERS): Added jni_md.h.
+	(pkginclude_HEADERS) Removed kaffe/jni_md.h.
+
+        * kaffe/kaffevm/gtypes.h: Added typedefs 
+	for jword and jref.
+
+        * kaffe/kaffevm/jni/jnirefs.h: Include gtypes.h.
+
+        * kaffe/kaffevm/intrp/icode.h (JINT_MIN, JLONG_MIN) 
+	Define them here in term of stdint values.
+
+        * libraries/clib/net/PlainDatagramSocketImpl.c
+	(gnu_java_net_PlainDatagramSocketImpl_setTTL): 
+	Make the second parameter a jbyte as in the prototype.
+
+        kaffe/kaffeh/java_lang_String.h,
+        kaffe/kaffevm/classMethod.c,
+        kaffe/kaffevm/thread.c,
+        kaffe/kaffevm/thread.h,
+        kaffe/kaffevm/jni/jni-arrays.c,
+        kaffe/kaffevm/jni/jni-fields.c,
+        kaffe/kaffevm/jni/jni-string.c,
+        kaffe/kaffevm/jni/jni.c,
+        kaffe/kaffevm/jni/jni_funcs.h,
+        kaffe/kaffevm/systems/oskit-pthreads/lock-impl.h,
+        kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+        kaffe/kaffevm/systems/win32/winthread.c,
+        libraries/clib/native/Class.c,
+        libraries/clib/native/java_lang_VMDouble.c,
+        libraries/clib/net/PlainSocketImpl.c,
+        libraries/clib/zip/Deflater.c,
+        libraries/clib/zip/Inflater.c:
+	Use jboolean instead of jbool.
+
+        * include/files.h,
+        include/jni.h,
+        kaffe/kaffe/main.c,
+        kaffe/kaffeh/mem.c,
+        kaffe/kaffeh/support.c,
+        kaffe/kaffevm/code.c,
+        kaffe/kaffevm/debug.c,
+        kaffe/kaffevm/exception.c,
+        kaffe/kaffevm/itypes.c,
+        kaffe/kaffevm/lookup.c,
+        kaffe/kaffevm/stackTrace.c,
+        kaffe/kaffevm/stats.c,
+        kaffe/kaffevm/string.c,
+        kaffe/kaffevm/support.c,
+        kaffe/kaffevm/thread.c,
+        kaffe/kaffevm/utf8const.c,
+        kaffe/kaffevm/boehm-gc/gc2.c,
+        kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Include jni_md.h instead of kaffe/jni_md.h.
+
+	Resynced with GNU Classpath.
+
+	2005-04-24  Tom Tromey  <tromey@redhat.com>
+
+        * include/jni_md-x86-linux-gnu.h (JNIIMPORT): New define.
+        (jsize): New typedef.
+        * include/jni.h: Re-merged with libgcj.
+
+2005-05-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/Makefile.am,
 	kaffe/kaffevm/verifier/Makefile.am,
 	replace/Makefile.am:

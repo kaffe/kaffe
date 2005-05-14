@@ -74,8 +74,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/kaffe/jni_md.h
+CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(jrebindir)"
 jrebinPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -87,7 +86,7 @@ am__DEPENDENCIES_1 =
 @ENABLE_JVMPI_TRUE@am__DEPENDENCIES_3 = ../jvmpi/libkaffejvmpi.la
 am__DEPENDENCIES_4 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
-DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \

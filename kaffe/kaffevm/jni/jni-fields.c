@@ -158,7 +158,7 @@ KaffeJNI_SetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jobject v
 }
 
 void
-KaffeJNI_SetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jbool val)
+KaffeJNI_SetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jboolean val)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -369,7 +369,7 @@ KaffeJNI_SetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fl
 }
 
 void
-KaffeJNI_SetStaticBooleanField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jbool val)
+KaffeJNI_SetStaticBooleanField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jboolean val)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 

@@ -21,7 +21,7 @@ void jmutex_unlock(jmutex *lock);
 void jmutex_destroy(jmutex *lock);
 
 void jcondvar_initialise(jcondvar *cv);
-jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
+jboolean jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_destroy(jcondvar *lock);
 

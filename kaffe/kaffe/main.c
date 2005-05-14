@@ -18,7 +18,7 @@
 #include "config-mem.h"
 #include "debug.h"
 #include "classMethod.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "native.h"
 #include "constants.h"
 #include "support.h"

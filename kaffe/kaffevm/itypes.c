@@ -17,7 +17,7 @@
 #include "config-mem.h"
 #include "debug.h"
 #include "classMethod.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "itypes.h"
 #include "baseClasses.h"
 #include "stringSupport.h"

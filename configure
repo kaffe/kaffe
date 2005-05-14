@@ -50851,7 +50851,7 @@ done
 
 subdirs="$subdirs libltdl"
 
-                    ac_config_headers="$ac_config_headers config/config.h include/kaffe/jni_md.h"
+          ac_config_headers="$ac_config_headers config/config.h"
 
           ac_config_files="$ac_config_files Makefile"
 
@@ -51949,7 +51949,6 @@ do
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "$ac_stdint_h" ) CONFIG_COMMANDS="$CONFIG_COMMANDS $ac_stdint_h" ;;
   "config/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config/config.h" ;;
-  "include/kaffe/jni_md.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/kaffe/jni_md.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

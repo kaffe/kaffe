@@ -184,7 +184,7 @@ KaffeJNI_NewDoubleArray(JNIEnv* env UNUSED, jsize len)
 }
 
 jboolean*
-KaffeJNI_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* iscopy)
+KaffeJNI_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jboolean* iscopy)
 {
   jboolean* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -199,7 +199,7 @@ KaffeJNI_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* i
 }
 
 jbyte*
-KaffeJNI_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbool* iscopy)
+KaffeJNI_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jboolean* iscopy)
 {
   jbyte* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -214,13 +214,13 @@ KaffeJNI_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbool* iscopy)
 }
 
 void*
-KaffeJNI_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jbool* iscopy)
+KaffeJNI_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jboolean* iscopy)
 {
   return (KaffeJNI_GetByteArrayElements(env, (jbyteArray)arr, iscopy));
 }
 
 jchar*
-KaffeJNI_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jbool* iscopy)
+KaffeJNI_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jboolean* iscopy)
 {
   jchar* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -235,7 +235,7 @@ KaffeJNI_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jbool* iscopy)
 }
 
 jshort*
-KaffeJNI_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jbool* iscopy)
+KaffeJNI_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jboolean* iscopy)
 {
   jshort* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -250,7 +250,7 @@ KaffeJNI_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jbool* iscop
 }
 
 jint*
-KaffeJNI_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jbool* iscopy)
+KaffeJNI_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jboolean* iscopy)
 {
   jint* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -265,7 +265,7 @@ KaffeJNI_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jbool* iscopy)
 }
 
 jlong*
-KaffeJNI_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jbool* iscopy)
+KaffeJNI_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jboolean* iscopy)
 {
   jlong* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -280,7 +280,7 @@ KaffeJNI_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jbool* iscopy)
 }
 
 jfloat*
-KaffeJNI_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jbool* iscopy)
+KaffeJNI_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jboolean* iscopy)
 {
   jfloat* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -295,7 +295,7 @@ KaffeJNI_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jbool* iscop
 }
 
 jdouble*
-KaffeJNI_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jbool* iscopy)
+KaffeJNI_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jboolean* iscopy)
 {
   jdouble* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -310,7 +310,7 @@ KaffeJNI_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jbool* isc
 }
 
 void
-KaffeJNI_ReleaseBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* elems, jint mode)
+KaffeJNI_ReleaseBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jboolean* elems, jint mode)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -492,7 +492,7 @@ KaffeJNI_ReleaseDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jdoubl
 }
 
 void
-KaffeJNI_GetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jbool* data)
+KaffeJNI_GetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jboolean* data)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
@@ -596,7 +596,7 @@ KaffeJNI_GetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start,
 }
 
 void
-KaffeJNI_SetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jbool* data)
+KaffeJNI_SetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize start, jsize len, jboolean* data)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 

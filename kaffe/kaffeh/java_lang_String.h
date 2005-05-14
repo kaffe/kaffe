@@ -16,7 +16,7 @@ typedef struct Hjava_lang_String {
   jint offset;
   jint count;
   jint hash;
-  jbool interned;
+  jboolean interned;
 } Hjava_lang_String;
 
 extern struct Hjava_lang_String* java_lang_String_intern0(struct Hjava_lang_String*);

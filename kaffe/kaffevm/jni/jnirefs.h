@@ -12,6 +12,8 @@
 #ifndef __jnirefs_h
 #define	__jnirefs_h
 
+#include "gtypes.h"
+
 #define	DEFAULT_JNIREFS_NUMBER 61
 
 typedef struct _jnirefs {

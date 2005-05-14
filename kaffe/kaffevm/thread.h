@@ -55,7 +55,7 @@ void	KaffeVM_attachFakedThreadInstance (const char *name, int isDaemon);
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 
-extern  void KaffeVM_setDeadlockDetection(jbool detection);
+extern  void KaffeVM_setDeadlockDetection(jboolean detection);
 
 #define THREAD_NATIVE()         ((void*)KTHREAD(current)())
 

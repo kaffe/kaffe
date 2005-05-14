@@ -278,6 +278,7 @@ noinst_HEADERS = \
 
 include_HEADERS = \
 	jni.h \
+	jni_md.h \
 	jni_cpp.h \
 	jvmpi.h \
 	kaffe_jni.h \
@@ -295,8 +296,7 @@ pkginclude_HEADERS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h \
-	kaffe/jni_md.h
+	kaffe/jmalloc.h
 
 stamp-kaffeh:
 ## If KAFFEH does not exist, build it
@@ -363,7 +363,6 @@ CLEANFILES = \
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	kaffe/jni_md.h \
 	stamp-h0all \
 	stamp-h1all \
 	stamp-libtritonusalsa \

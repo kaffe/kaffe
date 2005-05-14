@@ -39,6 +39,9 @@ typedef int64			intp;
 #error "sizeof(void*) must be 4 or 8"
 #endif
 
+typedef	void*		jref;
+typedef intp            jword;
+
 #if !defined(HAVE_BOOL)
 typedef enum _bool {
 	false	= 0,

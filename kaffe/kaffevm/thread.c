@@ -18,7 +18,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "gtypes.h"
 #include "access.h"
 #include "object.h"
@@ -50,9 +50,9 @@ extern struct JNINativeInterface Kaffe_JNINativeInterface;
 static size_t threadStackSize;	/* native stack size */
 
 /* referenced by native/Runtime.c */
-jbool runFinalizerOnExit;	/* should we run finalizers? */
+jboolean runFinalizerOnExit;	/* should we run finalizers? */
 
-static jbool deadlockDetection = 1;	/* abort if we detect deadlock */
+static jboolean deadlockDetection = 1;	/* abort if we detect deadlock */
 
 /**
  * Turn deadlock detection on or off.
@@ -60,7 +60,7 @@ static jbool deadlockDetection = 1;	/* abort if we detect deadlock */
  * @param detect 0 to turn detection off, !0 to turn it on.
  */
 void 
-KaffeVM_setDeadlockDetection(jbool detect) 
+KaffeVM_setDeadlockDetection(jboolean detect) 
 {
   deadlockDetection = detect;
 }

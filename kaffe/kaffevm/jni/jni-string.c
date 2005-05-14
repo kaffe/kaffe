@@ -140,7 +140,7 @@ KaffeJNI_GetStringUTFLength(JNIEnv* env UNUSED, jstring data)
 }
 
 const jbyte*
-KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
+KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jboolean* copy)
 {
   Hjava_lang_String* const str = (Hjava_lang_String*)data;
   jchar* ptr;

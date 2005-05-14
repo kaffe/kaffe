@@ -359,10 +359,10 @@ Kaffe_GetSuperClass(JNIEnv* env UNUSED, jclass cls)
 	return (clz);
 }
 
-static jbool
+static jboolean
 Kaffe_IsAssignableFrom(JNIEnv* env UNUSED, jclass cls1, jclass cls2)
 {
-	jbool r;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -558,10 +558,10 @@ Kaffe_GetObjectClass(JNIEnv* env UNUSED, jobject obj)
 	return (cls);
 }
 
-static jbool
+static jboolean
 Kaffe_IsInstanceOf(JNIEnv* env UNUSED, jobject obj, jclass cls)
 {
-	jbool r;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 

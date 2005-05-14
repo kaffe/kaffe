@@ -714,7 +714,7 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
  * set multicast-TTL
  */
 void
-gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jbool ttl)
+gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jbyte ttl)
 {
 
 #if defined(IP_MULTICAST_TTL)

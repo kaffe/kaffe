@@ -139,7 +139,7 @@ kaffe_zfree(voidpf opaque UNUSED, voidpf address) {
 }
 
 void
-java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
+java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jboolean val)
 {
 	int r;
  	z_stream* dstream;
@@ -231,7 +231,7 @@ java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
 }
 
 void
-java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
+java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jboolean val)
 {
 	supportDisabled();
 }

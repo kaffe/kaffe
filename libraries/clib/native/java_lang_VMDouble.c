@@ -380,7 +380,7 @@ Java_java_lang_VMDouble_toString
 
   jint maximal_precision;
   jint least_necessary_precision = 2;
-  jbool parsed_value_unequal;
+  jboolean parsed_value_unequal;
 
   if ((*env)->CallStaticBooleanMethod (env, clsDouble, isNaNID, value))
     return (*env)->NewStringUTF (env, "NaN");

@@ -2249,7 +2249,7 @@ AC_SUBST(CFLAGS_WITHOUT_PG)
 
 
 AC_CONFIG_SUBDIRS([libltdl])
-AC_CONFIG_HEADERS([config/config.h include/kaffe/jni_md.h])
+AC_CONFIG_HEADERS([config/config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([project.xml project.properties])
 AC_CONFIG_FILES([config/Makefile])

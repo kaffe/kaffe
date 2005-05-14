@@ -32,7 +32,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "kaffe/jni_md.h"
+#include "jni_md.h"
 #include "gtypes.h"
 #include "gc.h"
 #include "debug.h"
