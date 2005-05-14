@@ -1,4 +1,11 @@
-2005-05-13  Dalibor Topic  <robilad@kaffe.org>
+2005-05-14  Tom Tromey  <tromey@redhat.com>
+
+	* libraries/javalib/gmp-math/Makefile.am (Klasses_jar): Include
+	srcdir; search for rt.jar in builddir.
+	(compile-classes $(LIBDIR)/stamp classes): Pass LIBDIR to
+	rebuildLib.
+
+2005-05-14  Dalibor Topic  <robilad@kaffe.org>
 
         * include/jni_md.h: New file. 
 	Merged in from GNU Classpath and gcj.

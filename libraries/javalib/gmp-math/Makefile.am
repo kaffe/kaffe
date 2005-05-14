@@ -1,7 +1,7 @@
 #
 # Kaffe GNU MP-based BigInteger and BigDecimal implementation.
 #
-# Copyright (c) 2004
+# Copyright (c) 2004, 2005
 # 	Kaffe.org contributors. All rights reserved. See ChangeLog for details.
 #
 # See the file "license.terms" for information on usage and redistribution
@@ -35,7 +35,7 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/rt.jar
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
@@ -43,7 +43,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gmpjavamath_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(gmpjavamath_jar_SRCS)
+	LIBDIR=$(LIBDIR) CLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(gmpjavamath_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
