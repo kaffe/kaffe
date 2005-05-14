@@ -179,6 +179,7 @@ public abstract class AbstractDocument
 
   public Dictionary getDocumentProperties()
   {
+    // FIXME: make me thread-safe
     if (properties == null)
       properties = new Hashtable();
 
@@ -208,6 +209,7 @@ public abstract class AbstractDocument
 
   public Object getProperty(Object key)
   {
+    // FIXME: make me thread-safe
     Object value = null;
     if (properties != null)
       value = properties.get(key);
@@ -269,6 +271,7 @@ public abstract class AbstractDocument
 
   public void putProperty(Object key, Object value)
   {
+    // FIXME: make me thread-safe
     if (properties == null)
       properties = new Hashtable();
 
@@ -381,6 +384,7 @@ public abstract class AbstractDocument
 
   public void setDocumentProperties(Dictionary x)
   {
+    // FIXME: make me thread-safe
     properties = x;
   }
 
