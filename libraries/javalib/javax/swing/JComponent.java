@@ -2348,7 +2348,7 @@ public abstract class JComponent extends Container implements Serializable
   /**
    * Receives notification if this component is added to a parent component.
    *
-   * Notification is sent to all registered AncestorListeners about the
+   * Notification is sent to all registered AncestorListeners about the
    * new parent.
    *
    * This method sets up ActionListeners for all registered KeyStrokes of

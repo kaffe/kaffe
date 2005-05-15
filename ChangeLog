@@ -2,6 +2,14 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-15  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/JComponent.java: Removed invalid char from comment.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-15  Audrius Meskauskas, Lithuania  <AudriusA@Bioinformatics.org>
 
         * gnu/CORBA/Version.java,
