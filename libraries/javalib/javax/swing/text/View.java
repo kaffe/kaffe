@@ -292,7 +292,6 @@ public abstract class View implements SwingConstants
    */
   public void insertUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
   {
-    System.err.println("entering insertUpdate in class: " + getClass().getName());
     Element el = getElement();
     DocumentEvent.ElementChange ec = ev.getChange(el);
     if (ec != null)
