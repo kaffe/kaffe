@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-26  Luca Barbieri  <luca.barbieri@gmail.com>
+
+        * gnu/java/nio/channels/FileChannelImpl.java (tryLock): Pass
+        'false' to native lock().
+        (lock): Pass 'true' to native lock().
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-26  Tom Tromey  <tromey@redhat.com>
 
         * gnu/java/nio/charset/iconv/IconvCharset.java (name):
