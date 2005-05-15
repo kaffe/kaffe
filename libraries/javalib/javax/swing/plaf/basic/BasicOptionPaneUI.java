@@ -855,6 +855,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     addIcon(messageArea);
 
     JPanel rightSide = new JPanel();
+    rightSide.setBorder(BorderFactory.createEmptyBorder(0, 11, 17, 0));
     rightSide.setLayout(new GridBagLayout());
     GridBagConstraints con = createConstraints();
 
@@ -865,19 +866,16 @@ public class BasicOptionPaneUI extends OptionPaneUI
       {
 	Object[] selection = optionPane.getSelectionValues();
 
-//	if (selection == null)
-//	  inputComponent = new JTextField();
-//	else if (selection.length < 20)
-//	  inputComponent = new JComboBox(selection);
-	// FIXME: Uncomment when the widgets are done.
 	if (selection == null)
-	  inputComponent = null;
+          inputComponent = new JTextField(15);
+	else if (selection.length < 20)
+          inputComponent = new JComboBox(selection);
 	else
 	  inputComponent = new JList(selection);
 	if (inputComponent != null)
 	  {
 	    addMessageComponents(rightSide, con, inputComponent,
-	                         getMaxCharactersPerLineCount(), true);
+                                 getMaxCharactersPerLineCount(), false);
 	    resetSelectedValue();
 	    selectInitialValue(optionPane);
 	  }
