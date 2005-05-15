@@ -200,7 +200,42 @@ public class PlainView extends View
     if (axis != X_AXIS && axis != Y_AXIS)
       throw new IllegalArgumentException();
 
-    return 10;
+    // make sure we have the metrics
+    updateMetrics();
+
+    float span = 0;
+    Element el = getElement();
+    Document doc = el.getDocument();
+    Segment seg = new Segment();
+
+    switch (axis)
+      {
+      case X_AXIS:
+        // calculate the maximum of the line's widths
+        for (int i = 0; i < el.getElementCount(); i++)
+          {
+            Element child = el.getElement(i);
+            int start = child.getStartOffset();
+            int end = child.getEndOffset();
+            try {
+              doc.getText(start, start + end, seg);
+            }
+            catch (BadLocationException ex)
+              {
+                // throw new ClasspathAssertionError
+                // ("no BadLocationException should be thrown here");
+              }
+            int width = metrics.charsWidth(seg.array, seg.offset, seg.count);
+            span = Math.max(span, width);
+          }
+        break;
+      case Y_AXIS:
+      default:
+        span = metrics.getHeight() * el.getElementCount();
+        break;
+      }
+
+    return span;
   }
 }
 
