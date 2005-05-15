@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-04  Andrew Overholt  <overholt@redhat.com>
+
+        * java/nio/channels/FileLock.java (toString): Re-implement using
+        StringBuffer.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
         * java/awt/ImageCapabilities.java: Document.

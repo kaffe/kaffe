@@ -132,16 +132,16 @@ public abstract class FileLock
    */
   public final String toString()
   {
-	String toReturn = getClass().getName() + 
-	  "[" + position + ":" + size;
-	if (shared)
-	  toReturn += " shared";
-	else
-	  toReturn += " exclusive";
-	if (isValid())
-	  toReturn += " valid]";
-	else
-	  toReturn += " invalid]";
-	return toReturn;
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append("[" + position + ":" + size);
+    if (shared)
+      buf.append(" shared");
+    else
+      buf.append(" exclusive");
+    if (isValid())
+      buf.append(" valid]");
+    else
+      buf.append(" invalid]");
+    return buf.toString();
   }
 }
