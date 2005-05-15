@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-03  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/GapContent.java:
+        Removed debugging output stuff, which I accidentally left in.
+
+	2005-05-03  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/GapContent.java:
+        Implemented a real GapContent. Only the public methods have
+        been implemented so far and still no UndoableEdit support.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-02  David Gilbert  <david.gilbert@object-refinery.com>
 
         * java/text/DecimalFormat.java
