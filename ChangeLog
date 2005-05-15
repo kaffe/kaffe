@@ -4,6 +4,16 @@
 
 	2005-04-26  Tom Tromey  <tromey@redhat.com>
 
+        * gnu/java/nio/charset/iconv/IconvCharset.java (name):
+        Removed unused field.
+        (IconvCharset): Updated.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-04-26  Tom Tromey  <tromey@redhat.com>
+
         * javax/swing/text/html/parser/ParserDelegator.java (callBack,
         gnu): Now package-private.
         * javax/swing/text/html/parser/DocumentParser.java (parser,

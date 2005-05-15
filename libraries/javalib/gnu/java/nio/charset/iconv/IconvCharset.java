@@ -38,22 +38,17 @@ exception statement from your version. */
 
 package gnu.java.nio.charset.iconv;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CoderResult;
 
 public final class IconvCharset extends Charset
 {
-  private String name;
   private IconvMetaData info;
 
   public IconvCharset(IconvMetaData info)
   {
     super(info.nioCanonical(), info.aliases());
-    this.name = name;
     this.info = info;
     if (newEncoder() == null || newDecoder() == null)
       throw new IllegalArgumentException();
