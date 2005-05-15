@@ -4,6 +4,56 @@
 
 	2005-05-11  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (RootView.insertUpdate): Added. Forwards the update to the real
+        root view.
+        (RootView.removeUpdate): Added. Forwards the update to the real
+        root view.
+        (RootView.changedUpdate): Added. Forwards the update to the real
+        root view.
+        (DocumentHandler): Added. Receives DocumentEvents and forwards
+        them to the corresponding View methods.
+        (installDocumentListeners): Installs Document listeners on the
+        text component's document model.
+        * javax/swing/plaf/text/FieldView.java
+        (adjustAllocation): Added. Adjusts the view area so that the
+        input line is centered vertically and correctly aligned horizontally.
+        (modelToView): Call adjustAllocation before call to
+        super.modelToView(..).
+        (paint): Call adjustAllocation before call to super.paint(..).
+        (insertUpdate): Added. Calls adjustAllocation before call to
+        super.insertUpdate(..).
+        (removeUpdate): Added. Calls adjustAllocation before call to
+        super.removeUpdate(..).
+        (changedUpdate): Added. Calls adjustAllocation before call to
+        super.changedUpdate(..).
+        * javax/swing/text/JTextComponent.java:
+        Removed RepaintListener. This is no longer needed and should
+        instead be handled by the text component's View.
+        * javax/swing/plaf/text/View.java
+        (paint): If parent is null, we still need to make sure the
+        text component is updated through calling revalidate().
+        (insertUpdate): Added. Receive notification about changes in the
+        text document model.
+        (removeUpdate): Added. Receive notification about changes in the
+        text document model.
+        (changedUpdate): Added. Receive notification about changes in the
+        text document model.
+        (updateChildren): Added. Updates the list of child Views after
+        text has been modified.
+        (forwardUpdate): Added. Forwards the update notification to the
+        child Views.
+        (forwardUpdateToView): Added. Actually performs the forwarding of
+        update events.
+        (updateLayout): Added. Makes sure that the display is in sync with
+        the model.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-11  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/JTextField.java
         (createDefaultModel): Create and return a subclass of PlainDocument
         to allow newlines to be swallowed.

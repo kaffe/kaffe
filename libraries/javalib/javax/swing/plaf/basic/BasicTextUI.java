@@ -57,6 +57,8 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.BadLocationException;
@@ -150,6 +152,45 @@ public abstract class BasicTextUI extends TextUI
       
       return ((PlainView) view).modelToView(position, a, bias).getBounds();
     }
+
+    /**
+     * Notification about text insertions. These are forwarded to the
+     * real root view.
+     *
+     * @param ev the DocumentEvent describing the change
+     * @param shape the current allocation of the view's display
+     * @param vf the ViewFactory to use for creating new Views
+     */
+    public void insertUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+    {
+      view.insertUpdate(ev, shape, vf);
+    }
+
+    /**
+     * Notification about text removals. These are forwarded to the
+     * real root view.
+     *
+     * @param ev the DocumentEvent describing the change
+     * @param shape the current allocation of the view's display
+     * @param vf the ViewFactory to use for creating new Views
+     */
+    public void removeUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+    {
+      view.removeUpdate(ev, shape, vf);
+    }
+
+    /**
+     * Notification about text changes. These are forwarded to the
+     * real root view.
+     *
+     * @param ev the DocumentEvent describing the change
+     * @param shape the current allocation of the view's display
+     * @param vf the ViewFactory to use for creating new Views
+     */
+    public void changedUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+    {
+      view.changedUpdate(ev, shape, vf);
+    }
   }
 
   class UpdateHandler implements PropertyChangeListener
@@ -163,12 +204,60 @@ public abstract class BasicTextUI extends TextUI
 	}
     }
   }
-  
+
+  /**
+   * Listens for changes on the underlying model and forwards notifications
+   * to the View.
+   *
+   * TODO: Maybe this should somehow be handled through EditorKits
+   */
+  class DocumentHandler implements DocumentListener
+  {
+    /**
+     * Notification about a document change event.
+     *
+     * @param ev the DocumentEvent describing the change
+     */
+    public void changedUpdate(DocumentEvent ev)
+    {
+      Dimension size = textComponent.getSize();
+      rootView.changedUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+                             BasicTextUI.this);
+    }
+    
+    /**
+     * Notification about a document insert event.
+     *
+     * @param ev the DocumentEvent describing the insertion
+     */
+    public void insertUpdate(DocumentEvent ev)
+    {
+      Dimension size = textComponent.getSize();
+      rootView.insertUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+                            BasicTextUI.this);
+    }
+
+    /**
+     * Notification about a document removal event.
+     *
+     * @param ev the DocumentEvent describing the removal
+     */
+    public void removeUpdate(DocumentEvent ev)
+    {
+      Dimension size = textComponent.getSize();
+      rootView.removeUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+                            BasicTextUI.this);
+    }
+  }
+
   static EditorKit kit = new DefaultEditorKit();
 
   RootView rootView = new RootView();
   JTextComponent textComponent;
   UpdateHandler updateHandler = new UpdateHandler();
+
+  /** The DocumentEvent handler. */
+  DocumentHandler documentHandler = new DocumentHandler();
 
   public BasicTextUI()
   {
@@ -249,6 +338,17 @@ public abstract class BasicTextUI extends TextUI
   protected void installListeners()
   {
     textComponent.addFocusListener(focuslistener);
+    installDocumentListeners();
+  }
+
+  /**
+   * Installs the document listeners on the textComponent's model.
+   */
+  private void installDocumentListeners()
+  {
+    Document doc = textComponent.getDocument();
+    if (doc != null)
+      doc.addDocumentListener(documentHandler);
   }
 
   protected String getKeymapName()
@@ -488,6 +588,7 @@ public abstract class BasicTextUI extends TextUI
     Document doc = textComponent.getDocument();
     if (doc == null)
       return;
+    installDocumentListeners();
     Element elem = doc.getDefaultRootElement();
     if (elem == null)
       return;

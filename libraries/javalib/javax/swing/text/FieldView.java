@@ -39,9 +39,14 @@ exception statement from your version. */
 package javax.swing.text;
 
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
+
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
 
 public class FieldView extends PlainView
 {
@@ -54,6 +59,55 @@ public class FieldView extends PlainView
   {
     Component container = getContainer();
     return container.getFontMetrics(container.getFont());
+  }
+
+  /**
+   * Vertically centers the single line of text within the
+   * bounds of the input shape. The returned Rectangle is centered
+   * vertically within <code>shape</code> and has a height of the
+   * preferred span along the Y axis. Horizontal adjustment is done according
+   * to the horizontalAligment property of the component that is rendered.
+   *
+   * @param shape the shape within which the line is beeing centered
+   */
+  protected Shape adjustAllocation(Shape shape)
+  {
+    Rectangle rectIn = shape.getBounds();
+    // vertical adjustment
+    int height = (int) getPreferredSpan(Y_AXIS);
+    int y = rectIn.y + (rectIn.height - height) / 2;
+    // horizontal adjustment
+    JTextField textField = (JTextField) getContainer();
+    int halign = textField.getHorizontalAlignment();
+    int width = (int) getPreferredSpan(X_AXIS);
+    int x;
+    ComponentOrientation orientation = textField.getComponentOrientation();
+    switch (halign)
+      {
+      case JTextField.CENTER:
+        x = rectIn.x + (rectIn.width - width) / 2;
+        break;
+      case JTextField.RIGHT:
+        x = rectIn.x + (rectIn.width - width);
+        break;
+      case JTextField.TRAILING:
+        if (orientation.isLeftToRight())
+          x = rectIn.x + (rectIn.width - width);
+        else
+          x = rectIn.x;
+        break;
+      case JTextField.LEADING:
+        if (orientation.isLeftToRight())
+          x = rectIn.x;
+        else
+          x = rectIn.x + (rectIn.width - width);
+        break;
+      case JTextField.LEFT:
+      default:
+        x = rectIn.x;
+        break;
+      }
+    return new Rectangle(x, y, width, height);
   }
 
   public float getPreferredSpan(int axis)
@@ -91,11 +145,32 @@ public class FieldView extends PlainView
   public Shape modelToView(int pos, Shape a, Position.Bias bias)
     throws BadLocationException
   {
-    return super.modelToView(pos, a, bias);
+    Shape newAlloc = adjustAllocation(a);
+    return super.modelToView(pos, newAlloc, bias);
   }
   
   public void paint(Graphics g, Shape s)
   {
-    super.paint(g, s);
+    Shape newAlloc = adjustAllocation(s);
+    super.paint(g, newAlloc);
   }
+
+  public void insertUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+  {
+    Shape newAlloc = adjustAllocation(shape);
+    super.insertUpdate(ev, newAlloc, vf);
+  }
+
+  public void removeUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+  {
+    Shape newAlloc = adjustAllocation(shape);
+    super.removeUpdate(ev, newAlloc, vf);
+  }
+
+  public void changedUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
+  {
+    Shape newAlloc = adjustAllocation(shape);
+    super.removeUpdate(ev, newAlloc, vf);
+  }
+
 }
