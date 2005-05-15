@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-04  Mark Wielaard  <mark@klomp.org>
+
+        * java/awt/BufferCapabilities.java (BufferCapabilities): Make
+        documentation of arguments match code.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-04  Tom Tromey  <tromey@redhat.com>
 
         * java/nio/channels/FileLock.java (toString): Entirely avoid
