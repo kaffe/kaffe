@@ -1,5 +1,5 @@
 /* AbstractCellEditor.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -46,7 +46,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.EventListenerList;
 
 /**
- * AbstractCellEditor
+ * The abstract superclass for table and tree cells. This provides some
+ * common shared functionality.
+ *
  * @author	Andrew Selkirk
  * @version	1.0
  */
@@ -56,59 +58,77 @@ public abstract class AbstractCellEditor
   private static final long serialVersionUID = -1048006551406220959L;
 
   /**
-   * listenerList
+   * Our Swing event listeners.
    */
   protected EventListenerList listenerList;
 
   /**
-   * changeEvent
+   * The cached ChangeEvent.
    */
   protected transient ChangeEvent changeEvent;
 
-	/**
-	 * Constructor AbstractCellEditor
-	 */
-	public AbstractCellEditor() {
-		// TODO
-	} // AbstractCellEditor()
-
-	/**
-	 * isCellEditable
-	 * @param event TODO
-	 * @returns boolean
-	 */
-	public boolean isCellEditable(EventObject event) {
-		return false; // TODO
-	} // isCellEditable()
-
-	/**
-	 * shouldSelectCell
-	 * @param event TODO
-	 * @returns boolean
-	 */
-	public boolean shouldSelectCell(EventObject event) {
-		return false; // TODO
-	} // shouldSelectCell()
-
-	/**
-	 * stopCellEditing
-	 * @returns boolean
-	 */
-	public boolean stopCellEditing() {
-		return false; // TODO
-	} // stopCellEditing()
-
-	/**
-	 * cancelCellEditing
-	 */
-	public void cancelCellEditing() {
-		// TODO
-	} // cancelCellEditing()
+  /**
+   * Creates a new instance of AbstractCellEditor.
+   */
+  public AbstractCellEditor() {
+    listenerList = new EventListenerList();
+    changeEvent = new ChangeEvent(this);
+  } // AbstractCellEditor()
 
   /**
-   * addCellEditorListener
+   * Returns <code>true</code> if the cell is editable using
+   * <code>event</code>, <code>false</code>
+   * if it's not. The default behaviour is to return <code>true</code>.
    *
-   * @param listener The listener to add
+   * @param event an event
+   *
+   * @return <code>true</code> if the cell is editable using
+   *     <code>event</code>, <code>false</code> if it's not
+   */
+  public boolean isCellEditable(EventObject event) {
+    return true;
+  } // isCellEditable()
+
+  /**
+   * Returns <code>true</code> if the editing cell should be selected,
+   * <code>false</code> otherwise. This is usually returning <code>true</code>,
+   * but in some special cases it might be useful not to switch cell selection
+   * when editing one cell.
+   *
+   * @param event an event
+   *
+   * @return <code>true</code> if the editing cell should be selected,
+   *     <code>false</code> otherwise
+   */
+  public boolean shouldSelectCell(EventObject event) {
+    return true;
+  } // shouldSelectCell()
+
+  /**
+   * Stop editing the cell and accept any partial value that has been entered
+   * into the cell.
+   *
+   * @returns <code>true</code> if editing has been stopped successfully,
+   *     <code>false</code>otherwise
+   */
+  public boolean stopCellEditing() {
+    fireEditingStopped();
+    return true;
+  } // stopCellEditing()
+
+  /**
+   * Stop editing the cell and do not accept any partial value that has
+   * been entered into the cell.
+   */
+  public void cancelCellEditing() {
+    fireEditingCanceled();
+  } // cancelCellEditing()
+
+  /**
+   * Adds a CellEditorListener to the list of CellEditorListeners of this
+   * CellEditor.
+   *
+   * @param listener the CellEditorListener to add
    */
   public void addCellEditorListener (CellEditorListener listener)
   {
@@ -116,9 +136,10 @@ public abstract class AbstractCellEditor
   }
 
   /**
-   * removeCellEditorListener
+   * Removes the specified CellEditorListener from the list of the
+   * CellEditorListeners of this CellEditor.
    *
-   * @param listener The listener to remove
+   * @param listener the CellEditorListener to remove
    */
   public void removeCellEditorListener (CellEditorListener listener)
   {
@@ -126,17 +147,23 @@ public abstract class AbstractCellEditor
   }
 	
   /**
-   * getCellEditorListeners
+   * Returns the list of CellEditorListeners that have been registered
+   * in this CellEditor.
+   *
+   * @return the list of CellEditorListeners that have been registered
+   *     in this CellEditor
    *
    * @since 1.4
    */
   public CellEditorListener[] getCellEditorListeners()
   {
-    return (CellEditorListener[]) listenerList.getListeners (CellEditorListener.class);
+    return (CellEditorListener[]) listenerList.getListeners
+      (CellEditorListener.class);
   }
 
   /**
-   * fireEditingStopped
+   * Notifies all registered listeners that the editing of the cell has
+   * has been stopped.
    */
   protected void fireEditingStopped()
   {
@@ -149,7 +176,8 @@ public abstract class AbstractCellEditor
   }
 
   /**
-   * fireEditingCanceled
+   * Notifies all registered listeners that the editing of the cell has
+   * has been canceled.
    */
   protected void fireEditingCanceled()
   {
