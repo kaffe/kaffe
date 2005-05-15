@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-26  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/ImageIcon.java:
+        Merged copyright with GCJ.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-25  Mark Wielaard  <mark@klomp.org>
 
         * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c:
