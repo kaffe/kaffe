@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-29  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/InetAddress.java
+        (aton): Fixed javadoc.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-28  Robert Schuster  <thebohemian@gmx.net>
 
         * java/beans/FeatureDescriptor.java:

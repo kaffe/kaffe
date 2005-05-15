@@ -565,8 +565,10 @@ public class InetAddress implements Serializable
   }
 
   /**
-   * If host is a valid numeric IP address, return the numeric address.
+   * If hostname is a valid numeric IP address, return the numeric address.
    * Otherwise, return null.
+   *
+   * @param hostname the name of the host
    */
   private static byte[] aton(String hostname)
   {
