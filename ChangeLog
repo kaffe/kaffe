@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-04  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/PlainView.java
+        (drawUnselectedText): Call Utilities.drawTabbedText() with correct
+        offset parameter.
+        * javax/swing/text/Utilities.java
+        (drawTabbedText): Initilialize local variable pos correctly.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
         * java/awt/image/VolatileImage.java: Document.
