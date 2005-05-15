@@ -77,6 +77,7 @@ import javax.accessibility.AccessibleKeyBinding;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleStateSet;
 import javax.swing.border.Border;
+import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.SwingPropertyChangeSupport;
@@ -2275,5 +2276,396 @@ public abstract class JComponent extends Container implements Serializable
     firePropertyChange("verifyInputWhenFocusTarget",
                        ! verifyInputWhenFocusTarget,
                        verifyInputWhenFocusTarget);
+  }
+
+  /**
+   * Requests that this component gets the input focus if the
+   * requestFocusEnabled property is set to <code>true</code>.
+   * This also means that this component's top-level window becomes
+   * the focused window, if that is not already the case.
+   *
+   * The preconditions that have to be met to become a focus owner is that
+   * the component must be displayable, visible and focusable.
+   *
+   * Note that this signals only a request for becoming focused. There are
+   * situations in which it is not possible to get the focus. So developers
+   * should not assume that the component has the focus until it receives
+   * a {@link java.awt.event.FocusEvent} with a value of
+   * {@link java.awt.event.FocusEvent.FOCUS_GAINED}.
+   *
+   * @see {@link Component#requestFocus()}
+   */
+  public void requestFocus()
+  {
+    if (isRequestFocusEnabled())
+      super.requestFocus();
+  }
+
+  /**
+   * This method is overridden to make it public so that it can be used
+   * by look and feel implementations.
+   *
+   * You should not use this method directly. Instead you are strongly
+   * encouraged to call {@link #requestFocus} or {@link #requestFocusInWindow}
+   * instead.
+   *
+   * @param temporary if the focus change is temporary
+   *
+   * @return <code>false</code> if the focus change request will definitly
+   *     fail, <code>true</code> if it will likely succeed
+   *
+   * @see {@link Component#requestFocus(boolean)}
+   *
+   * @since 1.4
+   */
+  public boolean requestFocus(boolean temporary)
+  {
+    return super.requestFocus(temporary);
+  }
+
+  /**
+   * This method is overridden to make it public so that it can be used
+   * by look and feel implementations.
+   *
+   * You should not use this method directly. Instead you are strongly
+   * encouraged to call {@link #requestFocus} or {@link #requestFocusInWindow}
+   * instead.
+   *
+   * @param temporary if the focus change is temporary
+   *
+   * @return <code>false</code> if the focus change request will definitly
+   *     fail, <code>true</code> if it will likely succeed
+   *
+   * @see {@link Component#requestFocus(boolean)}
+   *
+   * @since 1.4
+   */
+  public boolean requestFocusInWindow(boolean temporary)
+  {
+    return super.requestFocusInWindow(temporary);
+  }
+
+  /**
+   * Receives notification if this component is added to a parent component.
+   *
+   * Notification is sent to all registered AncestorListeners about the
+   * new parent.
+   *
+   * This method sets up ActionListeners for all registered KeyStrokes of
+   * this component in the chain of parent components.
+   *
+   * A PropertyChange event is fired to indicate that the ancestor property
+   * has changed.
+   *
+   * This method is used internally and should not be used in applications.
+   */
+  public void addNotify()
+  {
+    super.addNotify();
+
+    // let parents inherit the keybord mapping
+    InputMap input = getInputMap();
+    ActionMap actions = getActionMap();
+
+    Container parent = getParent();
+    while ((parent != null) && (parent instanceof JComponent))
+      {
+        JComponent jParent = (JComponent) parent;
+        InputMap parentInput = jParent.getInputMap();
+        ActionMap parentAction = jParent.getActionMap();
+
+        KeyStroke[] ikeys = input.keys();
+        for (int i = 0; i < ikeys.length; i++)
+          {
+            Object o = input.get(ikeys[i]);
+            parentInput.put(ikeys[i], o);
+          }
+
+        Object[] akeys = actions.keys();
+        for (int i = 0; i < akeys.length; i++)
+          {
+            Action a = actions.get(akeys[i]);
+            parentAction.put(akeys[i], a);
+          }
+
+        parent = jParent.getParent();
+      }
+
+    // notify ancestor listeners
+    AncestorListener[] ls = getAncestorListeners();
+    AncestorEvent ev = new AncestorEvent(this, AncestorEvent.ANCESTOR_ADDED,
+                                         this, parent);
+    for (int i = 0; i < ls.length; i++)
+      {
+        ls[i].ancestorAdded(ev);
+      }
+
+    // fire property change event for 'ancestor'
+    firePropertyChange("ancestor", null, parent);
+  }
+
+  /**
+   * Receives notification that this component no longer has a parent.
+   *
+   * This method sends an AncestorEvent to all registered AncestorListeners,
+   * notifying them that the parent is gone.
+   *
+   * The keybord actions of this component are removed from the parent and
+   * its ancestors.
+   *
+   * A PropertyChangeEvent is fired to indicate that the 'ancestor' property
+   * has changed.
+   *
+   * This method is called before the component is actually removed from
+   * its parent, so the parent is still visible through {@link #getParent}.
+   */
+  public void removeNotify()
+  {
+    super.removeNotify();
+
+    // let parents inherit the keybord mapping
+    InputMap input = getInputMap();
+    ActionMap actions = getActionMap();
+
+    Container parent = getParent();
+    while ((parent != null) && (parent instanceof JComponent))
+      {
+        JComponent jParent = (JComponent) parent;
+        InputMap parentInput = jParent.getInputMap();
+        ActionMap parentAction = jParent.getActionMap();
+
+        KeyStroke[] ikeys = input.allKeys();
+        for (int i = 0; i < ikeys.length; i++)
+          {
+            parentInput.remove(ikeys[i]);
+          }
+
+        Object[] akeys = actions.allKeys();
+        for (int i = 0; i < akeys.length; i++)
+          {
+            parentAction.remove(akeys[i]);
+          }
+
+        parent = jParent.getParent();
+      }
+
+    // notify ancestor listeners
+    AncestorListener[] ls = getAncestorListeners();
+    AncestorEvent ev = new AncestorEvent(this, AncestorEvent.ANCESTOR_ADDED,
+                                         this, parent);
+    for (int i = 0; i < ls.length; i++)
+      {
+        ls[i].ancestorAdded(ev);
+      }
+
+    // fire property change event for 'ancestor'
+    firePropertyChange("ancestor", parent, null);
+  }
+
+  /**
+   * Returns <code>true</code> if the coordinates (x, y) lie within
+   * the bounds of this component and <code>false</code> otherwise.
+   * x and y are relative to the coordinate space of the component.
+   *
+   * @param x the X coordinate of the point to check
+   * @param y the Y coordinate of the point to check
+   *
+   * @return <code>true</code> if the specified point lies within the bounds
+   *     of this component, <code>false</code> otherwise
+   */
+  public boolean contains(int x, int y)
+  {
+    if (ui == null)
+      return super.contains(x, y);
+    else
+      return ui.contains(this, x, y);
+  }
+
+  /**
+   * Disables this component.
+   *
+   * @deprecated replaced by {@link #setEnabled(boolean)}
+   */
+  public void disable()
+  {
+    super.disable();
+  }
+
+  /**
+   * Enables this component.
+   *
+   * @deprecated replaced by {@link #setEnabled(boolean)}
+   */
+  public void enable()
+  {
+    super.enable();
+  }
+
+  /**
+   * Returns the Graphics context for this component. This can be used
+   * to draw on a component.
+   *
+   * @return the Graphics context for this component
+   */
+  public Graphics getGraphics()
+  {
+    return super.getGraphics();
+  }
+
+  /**
+   * Returns the X coordinate of the upper left corner of this component.
+   * Prefer this method over {@link #getBounds} or {@link #getLocation}
+   * because it does not cause any heap allocation.
+   *
+   * @return the X coordinate of the upper left corner of the component
+   */
+  public int getX()
+  {
+    return super.getX();
+  }
+
+  /**
+   * Returns the Y coordinate of the upper left corner of this component.
+   * Prefer this method over {@link #getBounds} or {@link #getLocation}
+   * because it does not cause any heap allocation.
+   *
+   * @return the Y coordinate of the upper left corner of the component
+   */
+  public int getY()
+  {
+    return super.getY();
+  }
+
+  /**
+   * Returns the height of this component. Prefer this method over
+   * {@link #getBounds} or {@link #getSize} because it does not cause
+   * any heap allocation.
+   *
+   * @return the height of the component
+   */
+  public int getHeight()
+  {
+    return super.getHeight();
+  }
+
+  /**
+   * Returns the width of this component. Prefer this method over
+   * {@link #getBounds} or {@link #getSize} because it does not cause
+   * any heap allocation.
+   *
+   * @return the width of the component
+   */
+  public int getWidth()
+  {
+    return super.getWidth();
+  }
+
+  /**
+   * Return all <code>PropertyChangeListener</code> objects registered.
+   *
+   * @return The set of <code>PropertyChangeListener</code> objects
+   */
+  public PropertyChangeListener[] getPropertyChangeListeners()
+  {
+    if (changeSupport == null)
+      return new PropertyChangeListener[0];
+    else
+      return changeSupport.getPropertyChangeListeners();
+  }
+
+  /**
+   * Prints this component to the given Graphics context. A call to this
+   * method results in calls to the methods {@link #printComponent},
+   * {@link #printBorder} and {@link printChildren} in this order.
+   *
+   * Double buffering is temporarily turned off so the painting goes directly
+   * to the supplied Graphics context.
+   *
+   * @param g the Graphics context to print onto
+   */
+  public void print(Graphics g)
+  {
+    boolean doubleBufferState = isDoubleBuffered();
+    setDoubleBuffered(false);
+    printComponent(g);
+    printBorder(g);
+    printChildren(g);
+    setDoubleBuffered(doubleBufferState);
+  }
+
+  /**
+   * Prints this component to the given Graphics context. This invokes
+   * {@link #print}.
+   *
+   * @param g the Graphics context to print onto
+   */
+  public void printAll(Graphics g)
+  {
+    print(g);
+  }
+
+  /**
+   * Prints this component to the specified Graphics context. The default
+   * behaviour is to invoke {@link #paintComponent}. Override this
+   * if you want special behaviour for printing.
+   *
+   * @param g the Graphics context to print onto
+   *
+   * @since 1.3
+   */
+  public void printComponent(Graphics g)
+  {
+    paintComponent(g);
+  }
+
+  /**
+   * Print this component's children to the specified Graphics context.
+   * The default behaviour is to invoke {@link #paintChildren}. Override this
+   * if you want special behaviour for printing.
+   *
+   * @param g the Graphics context to print onto
+   *
+   * @since 1.3
+   */
+  public void printChildren(Graphics g)
+  {
+    paintChildren(g);
+  }
+
+  /**
+   * Print this component's border to the specified Graphics context.
+   * The default behaviour is to invoke {@link #paintBorder}. Override this
+   * if you want special behaviour for printing.
+   *
+   * @param g the Graphics context to print onto
+   *
+   * @since 1.3
+   */
+  public void printBorder(Graphics g)
+  {
+    paintBorder(g);
+  }
+
+  /**
+   * Processes mouse motion event, like dragging and moving.
+   *
+   * @param ev the MouseEvent describing the mouse motion
+   */
+  protected void processMouseMotionEvent(MouseEvent ev)
+  {
+    super.processMouseMotionEvent(ev);
+  }
+
+  /**
+   * Moves and resizes the component.
+   *
+   * @param x the new horizontal location
+   * @param y the new vertial location
+   * @param w the new width
+   * @param h the new height
+   */
+  public void reshape(int x, int y, int w, int h)
+  {
+    super.reshape(x, y, w, h);
   }
 }

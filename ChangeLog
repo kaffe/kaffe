@@ -2,6 +2,35 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-13  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JComponent.java
+        (requestFocus): Added method.
+        (requestFocus(boolean)): Added method.
+        (requestFocusInWindow): Added method.
+        (addNotify): Added method.
+        (removeNotify): Added method.
+        (contains): Added method.
+        (disable): Added method.
+        (enable): Added method.
+        (getGraphics): Added method.
+        (getX): Added method.
+        (getY): Added method.
+        (getHeight): Added method.
+        (getWidth): Added method.
+        (getPropertyChangeListener): Added method.
+        (print): Added method.
+        (printAll): Added method.
+        (printComponent): Added method.
+        (printChildren): Added method.
+        (printBorder): Added method.
+        (processMouseMotionEvent): Added method.
+        (reshape): Added method.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-11  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/DefaultMenuLayout.java:
