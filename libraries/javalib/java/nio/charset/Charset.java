@@ -1,5 +1,5 @@
 /* Charset.java -- 
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -126,22 +126,39 @@ public abstract class Charset implements Comparable
   public static Charset defaultCharset()
   {
     String encoding;
+    
     try 
       {
 	encoding = System.getProperty("file.encoding");
-      } catch(SecurityException e) {
+      }
+    catch(SecurityException e)
+      {
+	// Use fallback.
 	encoding = "ISO-8859-1";
-      } catch(IllegalArgumentException e) {
+      }
+    catch(IllegalArgumentException e)
+      {
+	// Use fallback.
 	encoding = "ISO-8859-1";
       }
 
     try
       {
 	return forName(encoding);
-      } catch(UnsupportedCharsetException e) {
-      } catch(IllegalCharsetNameException e) {
-      } catch(IllegalArgumentException e) {
       }
+    catch(UnsupportedCharsetException e)
+      {
+	// Ignore.
+      }
+    catch(IllegalCharsetNameException e)
+      {
+	// Ignore.
+      }
+    catch(IllegalArgumentException e)
+      {
+	// Ignore.
+      }
+    
     throw new IllegalStateException("Can't get default charset!");
   }
 
