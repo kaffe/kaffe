@@ -4,6 +4,17 @@
 
 	2005-05-11  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/DefaultMenuLayout.java:
+        Added this class.
+        * javax/swing/plaf/basic/BasicPopupMenuUI.java
+        (installUI): Use the new DefaultMenuLayout instead of GridBagLayout.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-11  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/AbstractCellEditor.java
         (constructor): Implemented.
         (isCellEditable): Implemented.

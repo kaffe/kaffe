@@ -3356,6 +3356,7 @@ javax/swing/plaf/basic/BasicToolTipUI.java
 javax/swing/plaf/basic/BasicTreeUI.java
 javax/swing/plaf/basic/BasicViewportUI.java
 javax/swing/plaf/basic/ComboPopup.java
+javax/swing/plaf/basic/DefaultMenuLayout.java
 javax/swing/plaf/BorderUIResource.java
 javax/swing/plaf/ButtonUI.java
 javax/swing/plaf/ColorChooserUI.java

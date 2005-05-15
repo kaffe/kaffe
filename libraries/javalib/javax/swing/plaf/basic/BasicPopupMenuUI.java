@@ -40,11 +40,11 @@ package javax.swing.plaf.basic;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
@@ -111,7 +111,7 @@ public class BasicPopupMenuUI extends PopupMenuUI
   {
     super.installUI(c);
     popupMenu = (JPopupMenu) c;
-    popupMenu.setLayout(new GridBagLayout());
+    popupMenu.setLayout(new DefaultMenuLayout(popupMenu, BoxLayout.Y_AXIS));
     popupMenu.setBorderPainted(true);
     JPopupMenu.setDefaultLightWeightPopupEnabled(true);
 
