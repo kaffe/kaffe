@@ -116,7 +116,6 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    * this model.
    */
   protected EventListenerList listenerList = new EventListenerList();
-  ;
 
   /** The single ChangeEvent this model (re)uses to call its ChangeListeners. */
   protected ChangeEvent changeEvent = new ChangeEvent(this);
