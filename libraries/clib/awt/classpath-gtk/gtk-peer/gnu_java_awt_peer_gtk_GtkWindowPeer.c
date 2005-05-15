@@ -477,10 +477,10 @@ window_delete_cb (GtkWidget *widget __attribute__((unused)),
 			      (jobject) NULL, (jint) 0);
   gdk_threads_enter ();
 
-  // Prevents that the Window dissappears ("destroy"
-  // not being signalled). This is necessary because it
-  // should be up to a WindowListener implementation
-  // how the AWT Frame responds to close requests.
+  /* Prevents that the Window dissappears ("destroy"
+     not being signalled). This is necessary because it
+     should be up to a WindowListener implementation
+     how the AWT Frame responds to close requests. */
   return TRUE;
 }
 
