@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import gnu.CORBA.fixedTypeCode;
 import gnu.CORBA.primitiveTypeCode;
 
 import java.math.BigDecimal;
@@ -60,12 +61,6 @@ import org.omg.CORBA.portable.Streamable;
 public final class FixedHolder
   implements Streamable
 {
-  /**
-   * The default type code for this holder.
-   */
-  private static final TypeCode t_fixed =
-    new primitiveTypeCode(TCKind.tk_fixed);
-
   /**
    * The <code>BigDecimal</code> (CORBA <code>fixed</code>) value,
    * held by this FixedHolder.
@@ -107,11 +102,13 @@ public final class FixedHolder
 
   /**
    * Returns the TypeCode, corresponding the CORBA type that is stored
-   * using this holder.
+   * using this holder. The scale and digits are set corresponding
+   * the scale and used digits of the value that is currently stored
+   * or left with default value 0 if the value is not set.
    */
   public TypeCode _type()
   {
-    return t_fixed;
+    return new fixedTypeCode(value);
   }
 
   /**

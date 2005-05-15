@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!-- package.html
+   Copyright (C) 2005 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. -->
+
+<html>
+<head><title>GNU Classpath - org.omg.CORBA</title></head>
+
+<body>
+This package will provide the support of <a href="www.omg.org">OMG</a> <a href="www.CORBA.org">CORBA</a>; see <a href="#overview">overview</a> of the implemented functionality. CORBA is an open, vendor independent system that applications use to work together over networks.  Thie purpose of this package is to provide CORBA APIs to java programming language, including the fully functional Object Request Broker ({@link org.omg.CORBA.ORB}). 
+
+<a name="overview">
+<h4>Overview of the currently <u>implemented</u> CORBA classes (all packages)</h4>
+<ol>
+<li>The <b>holder</b> classes are containers to store and pass values both to and from the method being executed. In java, the primitive types (int, boolean, etc) are passed by value (one way) only. While Objects are passed by reference, some of them (like String or Integer) are unmodifyable and the arrays cannot be resized. To work around this, such values are passed wrapped into a holder class, where the object instance can be modified and, if needed, replaced. The holders for the most of the types are located in the org.omg.CORBA package, having the suffix *Holder and implementing {@link org.omg.CORBA.portable.Streamable}.
+</li><li>
+The <b>helper</b> classes, having suffix *Helper, provide several convenience methods to manipulate the particular type of holder.
+</li><li>
+The <b>typecode</b> classes provide means to define all large variety of the CORBA types, from strings and arrays till structures, unions and enumerations. The typecodes (instances of the {@link org.omg.CORBA.TypeCode}) are created by invoking the methods of the ORB class. The instance of the restricted ORB (no networking) can be obtained by invoking  {@link org.omg.CORBA.ORB#init()}. The typecodes can be used everywhere where the means to define data structures are required.
+</li><li>
+The {@link org.omg.CORBA.Any} class is be used as a container to store the arbitray data type and has the numerous methods for inserting and extracting all primitive types, supported by CORBA. The {@link org.omg.CORBA.Any} is a convienient structure for storing, and passing and returning the values of the arbitrary type. 
+</li><li>
+The <b>CDR</b> (Commond Data Representation) streams, {@link org.omg.CORBA.portable.InputStream} and {@link org.omg.CORBA.portable.OutputStream}) are very much like DataInputStream and DataOutputStream in java.io. They read and write data in the binary form, standard for the CORBA messages. The working instances of these abstract classes can be obtained by calling methods on {@link org.omg.CORBA.ORB} or {@link org.omg.CORBA.Any}. 
+</li>
+</ol>
+</body>
+</html>
+

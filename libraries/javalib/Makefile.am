@@ -53,6 +53,11 @@ jrelib_DATA = \
 Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
 	$(gnu_CORBA_SRCS) \
+	$(gnu_CORBA_CDR_SRCS) \
+	$(gnu_CORBA_GIOP_SRCS) \
+	$(gnu_CORBA_GIOP_v1_0_SRCS) \
+	$(gnu_CORBA_GIOP_v1_2_SRCS) \
+	$(gnu_CORBA_NamingService_SRCS) \
 	$(gnu_bytecode_SRCS) \
 	$(gnu_classpath_SRCS) \
 	$(gnu_classpath_tools_SRCS) \
@@ -309,6 +314,9 @@ Klasses_jar_SRCS = \
 	$(org_omg_CORBA_ORBPackage_SRCS) \
 	$(org_omg_CORBA_TypeCodePackage_SRCS) \
 	$(org_omg_CORBA_portable_SRCS) \
+	$(org_omg_CosNaming_SRCS) \
+	$(org_omg_CosNaming_NamingContextExtPackage_SRCS) \
+	$(org_omg_CosNaming_NamingContextPackage_SRCS) \
 	$(org_tritonus_core_SRCS) \
 	$(org_tritonus_lowlevel_alsa_SRCS) \
 	$(org_tritonus_lowlevel_esd_SRCS) \
@@ -356,8 +364,79 @@ com_jcraft_jzlib_SRCS = \
 	com/jcraft/jzlib/ZStream.java \
 	com/jcraft/jzlib/ZStreamException.java
 gnu_CORBA_SRCS = \
+	gnu/CORBA/BigDecimalHelper.java \
+	gnu/CORBA/ByteArrayComparator.java \
+	gnu/CORBA/Connected_objects.java \
+	gnu/CORBA/ExceptionCreator.java \
+	gnu/CORBA/Functional_ORB.java \
+	gnu/CORBA/IOR.java \
+	gnu/CORBA/IOR_Delegate.java \
+	gnu/CORBA/IOR_contructed_object.java \
+	gnu/CORBA/ObjectCreator.java \
+	gnu/CORBA/OctetHolder.java \
+	gnu/CORBA/Restricted_ORB.java \
+	gnu/CORBA/Simple_delegate.java \
+	gnu/CORBA/TypeCodeHelper.java \
+	gnu/CORBA/Unexpected.java \
+	gnu/CORBA/Version.java \
+	gnu/CORBA/WCharHolder.java \
+	gnu/CORBA/WStringHolder.java \
+	gnu/CORBA/aliasTypeCode.java \
+	gnu/CORBA/binaryReply.java \
+	gnu/CORBA/bufferedResponseHandler.java \
+	gnu/CORBA/corbaArrayList.java \
+	gnu/CORBA/fixedTypeCode.java \
+	gnu/CORBA/generalTypeCode.java \
+	gnu/CORBA/gnuAny.java \
+	gnu/CORBA/gnuContext.java \
+	gnu/CORBA/gnuContextList.java \
+	gnu/CORBA/gnuEnvironment.java \
+	gnu/CORBA/gnuExceptionList.java \
+	gnu/CORBA/gnuNVList.java \
+	gnu/CORBA/gnuNamedValue.java \
+	gnu/CORBA/gnuRequest.java \
+	gnu/CORBA/holderFactory.java \
 	gnu/CORBA/primitiveArrayTypeCode.java \
-	gnu/CORBA/primitiveTypeCode.java
+	gnu/CORBA/primitiveTypeCode.java \
+	gnu/CORBA/recordTypeCode.java \
+	gnu/CORBA/recursiveTypeCode.java \
+	gnu/CORBA/streamRequest.java \
+	gnu/CORBA/stringTypeCode.java \
+	gnu/CORBA/stubFinder.java \
+	gnu/CORBA/typeNamer.java
+gnu_CORBA_CDR_SRCS = \
+	gnu/CORBA/CDR/aligningInputStream.java \
+	gnu/CORBA/CDR/aligningOutputStream.java \
+	gnu/CORBA/CDR/cdrBufInput.java \
+	gnu/CORBA/CDR/cdrBufOutput.java \
+	gnu/CORBA/CDR/cdrInput.java \
+	gnu/CORBA/CDR/cdrOutput.java \
+	gnu/CORBA/CDR/encapsulatedOutput.java
+gnu_CORBA_GIOP_SRCS = \
+	gnu/CORBA/GIOP/CancelHeader.java \
+	gnu/CORBA/GIOP/CharSets_OSF.java \
+	gnu/CORBA/GIOP/ErrorMessage.java \
+	gnu/CORBA/GIOP/MessageHeader.java \
+	gnu/CORBA/GIOP/ReplyHeader.java \
+	gnu/CORBA/GIOP/RequestHeader.java \
+	gnu/CORBA/GIOP/ServiceContext.java \
+	gnu/CORBA/GIOP/cxCodeSet.java
+gnu_CORBA_GIOP_v1_0_SRCS = \
+	gnu/CORBA/GIOP/v1_0/CancelHeader.java \
+	gnu/CORBA/GIOP/v1_0/ReplyHeader.java \
+	gnu/CORBA/GIOP/v1_0/RequestHeader.java
+gnu_CORBA_GIOP_v1_2_SRCS = \
+	gnu/CORBA/GIOP/v1_2/ReplyHeader.java \
+	gnu/CORBA/GIOP/v1_2/RequestHeader.java
+gnu_CORBA_NamingService_SRCS = \
+	gnu/CORBA/NamingService/Binding_iterator_impl.java \
+	gnu/CORBA/NamingService/Ext.java \
+	gnu/CORBA/NamingService/NameValidator.java \
+	gnu/CORBA/NamingService/NamingMap.java \
+	gnu/CORBA/NamingService/NamingServiceTransient.java \
+	gnu/CORBA/NamingService/TransientContext.java \
+	gnu/CORBA/NamingService/cmpNameComponent.java \
+	gnu/CORBA/NamingService/snConverter.java
 gnu_bytecode_SRCS = \
 	gnu/bytecode/Access.java \
 	gnu/bytecode/ArrayClassLoader.java \
@@ -3980,7 +4059,8 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/BasicToolTipUI.java \
 	javax/swing/plaf/basic/BasicTreeUI.java \
 	javax/swing/plaf/basic/BasicViewportUI.java \
-	javax/swing/plaf/basic/ComboPopup.java
+	javax/swing/plaf/basic/ComboPopup.java \
+	javax/swing/plaf/basic/DefaultMenuLayout.java
 javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/DefaultMetalTheme.java \
 	javax/swing/plaf/metal/MetalBorders.java \
@@ -4473,6 +4553,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Context.java \
 	org/omg/CORBA/ContextList.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
+	org/omg/CORBA/DomainManager.java \
+	org/omg/CORBA/DomainManagerOperations.java \
 	org/omg/CORBA/DoubleHolder.java \
 	org/omg/CORBA/DoubleSeqHelper.java \
 	org/omg/CORBA/DoubleSeqHolder.java \
@@ -4512,14 +4594,19 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/OMGVMCID.java \
 	org/omg/CORBA/ORB.java \
 	org/omg/CORBA/Object.java \
+	org/omg/CORBA/ObjectHelper.java \
+	org/omg/CORBA/ObjectHolder.java \
 	org/omg/CORBA/OctetSeqHelper.java \
 	org/omg/CORBA/OctetSeqHolder.java \
 	org/omg/CORBA/PERSIST_STORE.java \
 	org/omg/CORBA/PRIVATE_MEMBER.java \
 	org/omg/CORBA/PUBLIC_MEMBER.java \
+	org/omg/CORBA/Policy.java \
+	org/omg/CORBA/PolicyOperations.java \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/PrincipalHolder.java \
 	org/omg/CORBA/Request.java \
+	org/omg/CORBA/SetOverrideType.java \
 	org/omg/CORBA/ShortHolder.java \
 	org/omg/CORBA/ShortSeqHelper.java \
 	org/omg/CORBA/ShortSeqHolder.java \
@@ -4567,10 +4654,76 @@ org_omg_CORBA_TypeCodePackage_SRCS = \
 	org/omg/CORBA/TypeCodePackage/BadKind.java \
 	org/omg/CORBA/TypeCodePackage/Bounds.java
 org_omg_CORBA_portable_SRCS = \
+	org/omg/CORBA/portable/ApplicationException.java \
+	org/omg/CORBA/portable/Delegate.java \
 	org/omg/CORBA/portable/IDLEntity.java \
+	org/omg/CORBA/portable/IndirectionException.java \
 	org/omg/CORBA/portable/InputStream.java \
+	org/omg/CORBA/portable/InvokeHandler.java \
+	org/omg/CORBA/portable/ObjectImpl.java \
 	org/omg/CORBA/portable/OutputStream.java \
-	org/omg/CORBA/portable/Streamable.java
+	org/omg/CORBA/portable/RemarshalException.java \
+	org/omg/CORBA/portable/ResponseHandler.java \
+	org/omg/CORBA/portable/ServantObject.java \
+	org/omg/CORBA/portable/Streamable.java \
+	org/omg/CORBA/portable/UnknownException.java
+org_omg_CosNaming_SRCS = \
+	org/omg/CosNaming/Binding.java \
+	org/omg/CosNaming/BindingHelper.java \
+	org/omg/CosNaming/BindingHolder.java \
+	org/omg/CosNaming/BindingIterator.java \
+	org/omg/CosNaming/BindingIteratorHelper.java \
+	org/omg/CosNaming/BindingIteratorHolder.java \
+	org/omg/CosNaming/BindingListHelper.java \
+	org/omg/CosNaming/BindingListHolder.java \
+	org/omg/CosNaming/BindingType.java \
+	org/omg/CosNaming/BindingTypeHelper.java \
+	org/omg/CosNaming/BindingTypeHolder.java \
+	org/omg/CosNaming/NameComponent.java \
+	org/omg/CosNaming/NameComponentHelper.java \
+	org/omg/CosNaming/NameComponentHolder.java \
+	org/omg/CosNaming/NameHelper.java \
+	org/omg/CosNaming/NameHolder.java \
+	org/omg/CosNaming/NamingContext.java \
+	org/omg/CosNaming/NamingContextExt.java \
+	org/omg/CosNaming/NamingContextExtHelper.java \
+	org/omg/CosNaming/NamingContextExtHolder.java \
+	org/omg/CosNaming/NamingContextExtOperations.java \
+	org/omg/CosNaming/NamingContextHelper.java \
+	org/omg/CosNaming/NamingContextHolder.java \
+	org/omg/CosNaming/NamingContextOperations.java \
+	org/omg/CosNaming/_BindingIteratorImplBase.java \
+	org/omg/CosNaming/_BindingIteratorStub.java \
+	org/omg/CosNaming/_NamingContextExtImplBase.java \
+	org/omg/CosNaming/_NamingContextExtStub.java \
+	org/omg/CosNaming/_NamingContextImplBase.java \
+	org/omg/CosNaming/_NamingContextStub.java
+org_omg_CosNaming_NamingContextExtPackage_SRCS = \
+	org/omg/CosNaming/NamingContextExtPackage/AddressHelper.java \
+	org/omg/CosNaming/NamingContextExtPackage/InvalidAddress.java \
+	org/omg/CosNaming/NamingContextExtPackage/InvalidAddressHelper.java \
+	org/omg/CosNaming/NamingContextExtPackage/InvalidAddressHolder.java \
+	org/omg/CosNaming/NamingContextExtPackage/StringNameHelper.java \
+	org/omg/CosNaming/NamingContextExtPackage/URLStringHelper.java
+org_omg_CosNaming_NamingContextPackage_SRCS = \
+	org/omg/CosNaming/NamingContextPackage/AlreadyBound.java \
+	org/omg/CosNaming/NamingContextPackage/AlreadyBoundHelper.java \
+	org/omg/CosNaming/NamingContextPackage/AlreadyBoundHolder.java \
+	org/omg/CosNaming/NamingContextPackage/CannotProceed.java \
+	org/omg/CosNaming/NamingContextPackage/CannotProceedHelper.java \
+	org/omg/CosNaming/NamingContextPackage/CannotProceedHolder.java \
+	org/omg/CosNaming/NamingContextPackage/InvalidName.java \
+	org/omg/CosNaming/NamingContextPackage/InvalidNameHelper.java \
+	org/omg/CosNaming/NamingContextPackage/InvalidNameHolder.java \
+	org/omg/CosNaming/NamingContextPackage/NotEmpty.java \
+	org/omg/CosNaming/NamingContextPackage/NotEmptyHelper.java \
+	org/omg/CosNaming/NamingContextPackage/NotEmptyHolder.java \
+	org/omg/CosNaming/NamingContextPackage/NotFound.java \
+	org/omg/CosNaming/NamingContextPackage/NotFoundHelper.java \
+	org/omg/CosNaming/NamingContextPackage/NotFoundHolder.java \
+	org/omg/CosNaming/NamingContextPackage/NotFoundReason.java \
+	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHelper.java \
+	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHolder.java
 org_tritonus_core_SRCS = \
 	org/tritonus/core/Service.java \
 	org/tritonus/core/TAudioConfig.java \

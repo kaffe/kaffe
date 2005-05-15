@@ -60,10 +60,31 @@ public class primitiveArrayTypeCode
    */
   private int length;
 
+  /**
+   * Create a primitive array type code, defining the sequence 
+   * {@link TCKind.tk_sequence)} with 
+   * the given member type.
+   * 
+   * @param array_of the sequence member type.
+   */
   public primitiveArrayTypeCode(TCKind array_of)
   {
     super(TCKind.tk_sequence);
     of = new primitiveTypeCode(array_of);
+  }
+
+  /**
+   * Create a primitive array type code, defining the array, sequence
+   * or other type  with the given member type.
+   * 
+   * @param this_type the type of this type (normally either
+   * sequence of array).
+   * @param array_of the sequence member type.
+   */
+  public primitiveArrayTypeCode(TCKind this_type, TypeCode array_of)
+  {
+    super(this_type);
+    of = array_of;
   }
 
   /**

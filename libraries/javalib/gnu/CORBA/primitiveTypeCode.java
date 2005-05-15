@@ -38,14 +38,15 @@
 
 package gnu.CORBA;
 
+import java.io.Serializable;
+
 import org.omg.CORBA.Any;
 import org.omg.CORBA.IDLEntity;
 import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.TypeCodePackage.BadKind;
-
-import java.io.Serializable;
+import org.omg.CORBA.TypeCodePackage.Bounds;
 
 /**
  * An information about a primitive CORBA data type
@@ -73,25 +74,25 @@ public class primitiveTypeCode
   }
 
   public TypeCode concrete_base_type()
-                              throws org.omg.CORBA.TypeCodePackage.BadKind
+                              throws BadKind
   {
     throw new BadKind();
   }
 
   public TypeCode content_type()
-                        throws org.omg.CORBA.TypeCodePackage.BadKind
+                        throws BadKind
   {
     throw new BadKind();
   }
 
   public int default_index()
-                    throws org.omg.CORBA.TypeCodePackage.BadKind
+                    throws BadKind
   {
     throw new BadKind();
   }
 
   public TypeCode discriminator_type()
-                              throws org.omg.CORBA.TypeCodePackage.BadKind
+                              throws BadKind
   {
     throw new BadKind();
   }
@@ -113,15 +114,15 @@ public class primitiveTypeCode
   }
 
   public short fixed_digits()
-                     throws org.omg.CORBA.TypeCodePackage.BadKind
+                     throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("fixed_digits");
   }
 
   public short fixed_scale()
-                    throws org.omg.CORBA.TypeCodePackage.BadKind
+                    throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("fixed_scale");
   }
 
   public TypeCode get_compact_typecode()
@@ -130,9 +131,9 @@ public class primitiveTypeCode
   }
 
   public String id()
-            throws org.omg.CORBA.TypeCodePackage.BadKind
+            throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("id");
   }
 
   /**
@@ -145,53 +146,50 @@ public class primitiveTypeCode
   }
 
   public int length()
-             throws org.omg.CORBA.TypeCodePackage.BadKind
+             throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("length");
   }
 
   public int member_count()
-                   throws org.omg.CORBA.TypeCodePackage.BadKind
+                   throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("member_count");
   }
 
   public Any member_label(int index)
-                   throws org.omg.CORBA.TypeCodePackage.BadKind, 
-                          org.omg.CORBA.TypeCodePackage.Bounds
+                   throws BadKind, Bounds
   {
-    throw new BadKind();
+    throw new BadKind("member_label");
   }
 
   public String member_name(int index)
-                     throws BadKind
+                     throws BadKind, Bounds
   {
-    throw new BadKind();
+    throw new BadKind("member_name");
   }
 
   public TypeCode member_type(int index)
-                       throws org.omg.CORBA.TypeCodePackage.BadKind, 
-                              org.omg.CORBA.TypeCodePackage.Bounds
+                       throws BadKind, Bounds
   {
-    throw new BadKind();
+    throw new BadKind("member_type");
   }
 
   public short member_visibility(int index)
-                          throws org.omg.CORBA.TypeCodePackage.BadKind, 
-                                 org.omg.CORBA.TypeCodePackage.Bounds
+                          throws BadKind, Bounds
   {
-    throw new BadKind();
+    throw new BadKind("member_visibility");
   }
 
   public String name()
-              throws org.omg.CORBA.TypeCodePackage.BadKind
+              throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("name");
   }
 
   public short type_modifier()
-                      throws org.omg.CORBA.TypeCodePackage.BadKind
+                      throws BadKind
   {
-    throw new BadKind();
+    throw new BadKind("type_modifier");
   }
 }

@@ -40,6 +40,8 @@ package org.omg.CORBA;
 
 import java.io.Serializable;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 /**
  * The root class for CORBA IDL-defined user exceptions.
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
@@ -48,12 +50,12 @@ public class UserException
   extends Exception
   implements IDLEntity, Serializable
 {
-  /** 
-   * Use serialVersionUID for interoperability. 
+  /**
+   * Use serialVersionUID for interoperability.
    * Using the version 1.4 UID.
    */
-  private static final long serialVersionUID =-6594940734566091244L;
-  
+  private static final long serialVersionUID = -6594940734566091244L;
+
   /**
    * Constructs a the exception.
    */

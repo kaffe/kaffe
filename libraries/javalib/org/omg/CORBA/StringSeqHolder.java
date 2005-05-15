@@ -98,7 +98,7 @@ public final class StringSeqHolder
     value = new String[ input.read_long() ];
     for (int i = 0; i < value.length; i++)
       {
-        value [ i ] = input.read_wstring();
+        value [ i ] = input.read_string();
       }
     typecode.setLength(value.length);
   }
@@ -125,7 +125,7 @@ public final class StringSeqHolder
 
     for (int i = 0; i < value.length; i++)
       {
-        output.write_wstring(value [ i ]);
+        output.write_string(value [ i ]);
       }
   }
 }

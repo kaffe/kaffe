@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import gnu.CORBA.primitiveTypeCode;
+import gnu.CORBA.stringTypeCode;
 
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
@@ -61,8 +61,8 @@ public final class StringHolder
   /**
    * The default type code for this holder.
    */
-  private static final TypeCode t_string =
-    new primitiveTypeCode(TCKind.tk_string);
+  private static final stringTypeCode t_string =
+    new stringTypeCode(TCKind.tk_string);
 
   /**
    * The <code>String</code> (CORBA <code>string</code>) value,
@@ -91,7 +91,7 @@ public final class StringHolder
   }
 
   /**
-   * Fill in the {@link value } field by reading the required data
+   * Fill in the {@link #value } field by reading the required data
    * from the given stream. For <code>string</code>, the functionality
    * is delegated to
    * {@link org.omg.CORBA.portable.InputStream#read_string}.
@@ -105,7 +105,8 @@ public final class StringHolder
 
   /**
    * Returns the TypeCode, corresponding the CORBA type that is stored
-   * using this holder.
+   * using this holder. The {@link TypeCode#length()} method of the
+   * returned typecode always returns 0.
    */
   public TypeCode _type()
   {
@@ -113,7 +114,7 @@ public final class StringHolder
   }
 
   /**
-   * Write the {@link value } field to the given stream.
+   * Write the {@link #value } field to the given stream.
    * For <code>string</code>, the functionality
    * is delegated to
    * {@link org.omg.CORBA.portable.OutputStream#write_string(String) }.

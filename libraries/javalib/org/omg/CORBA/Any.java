@@ -40,6 +40,8 @@ package org.omg.CORBA;
 
 import java.io.Serializable;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 /**
  * A container that can store a value of either user defined or
  * primitive IDL type.
@@ -47,7 +49,13 @@ import java.io.Serializable;
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public abstract class Any
+  implements Serializable, IDLEntity
 {
+  /** 
+   * Using v 1.4 serialVersionUID for interoperability.
+   */
+  private static final long serialVersionUID = 1217179597823814463L;
+
   /**
    * Creates an input stream from that this Any object's value can be
    * read (unmarshalled).
