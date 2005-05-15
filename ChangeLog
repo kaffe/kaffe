@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-28  Robert Schuster  <thebohemian@gmx.net>
+
+        * java/beans/Introspector.java: Fixed bug #12624, BeanDescriptors
+        will now be set correctly.
+        (flushCaches): Now flushes all cached intermediate data.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-28  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/JTextArea.java
