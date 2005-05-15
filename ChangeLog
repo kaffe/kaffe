@@ -4,6 +4,21 @@
 
 	2005-05-04  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/text/AbstractDocument.java
+        (LeafElement): Made start and end package private fields for
+        effective reindexing.
+        * javax/swing/text/PlainDocument.java
+        (constructor): The field rootElement is always BranchElement,
+        so we handle it as such.
+        (removeUpdate): Rewritten reindexing for removeUpdate so that
+        the actual removal is taken into account.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-04  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/text/PlainView.java
         (drawUnselectedText): Call Utilities.drawTabbedText() with correct
         offset parameter.
