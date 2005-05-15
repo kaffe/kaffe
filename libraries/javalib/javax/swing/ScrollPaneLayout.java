@@ -467,6 +467,15 @@ public class ScrollPaneLayout
       }
   }
 
+  /**
+   * Returns the bounds of the border around a ScrollPane's viewport.
+   *
+   * @param scrollPane the ScrollPane for which's viewport the border
+   *     is requested
+   *
+   * @deprecated As of Swing 1.1 replaced by
+   *     {@link javax.swing.JScrollPane#getViewportBorderBounds}.
+   */
   public Rectangle getViewportBorderBounds(JScrollPane scrollPane) {
     return null;
   }

@@ -4,6 +4,15 @@
 
 	2005-05-13  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/ScrollPaneLayout.java
+        (getViewportBorderBounds): Documented methods.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-13  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/plaf/basic/BasicProgressBarUI.java
         (getPreferredSize): Changed implementation so that getGraphics()
         is not used (this triggers a NPE).
