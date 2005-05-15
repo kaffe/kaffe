@@ -446,8 +446,9 @@ public class Timer
    * In the coalescing mode, a single event is fired as a replacement
    * for all queued events. In non coalescing mode, a series of
    * all queued events is fired.
+   * This is package-private to avoid an accessor method.
    */
-  private void drainEvents()
+  void drainEvents()
   {
     synchronized (queueLock)
       {
@@ -470,8 +471,9 @@ public class Timer
 
   /**
   * Post a scheduled event to the event queue.
+  * Package-private to avoid an accessor method.
   */
-  private void queueEvent()
+  void queueEvent()
   {
     synchronized (queueLock)
       {
