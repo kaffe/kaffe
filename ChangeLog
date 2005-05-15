@@ -4,6 +4,15 @@
 
 	2005-05-13  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/AbstractButton.java
+        (ButtonChangeListener): Added this inner class.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-13  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/JComponent.java
         (requestFocus): Added method.
         (requestFocus(boolean)): Added method.

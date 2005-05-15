@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Serializable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -152,7 +153,23 @@ public abstract class AbstractButton extends JComponent
   implements ItemSelectable, SwingConstants
 {
   private static final long serialVersionUID = -937921345538462020L;
-  
+
+  /**
+   * An extension of ChangeListener to be serializable.
+   */
+  protected class ButtonChangeListener
+    implements ChangeListener, Serializable
+  {
+    /**
+     * Notified when the target of the listener changes its state.
+     *
+     * @param ev the ChangeEvent describing the change
+     */
+    public void stateChanged(ChangeEvent ev)
+    {
+    }
+  }
+
   /** The icon displayed by default. */
   Icon default_icon;
 
