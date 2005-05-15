@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-26  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JToggleButton.java
+        (JToggleButton): Removed horizontalAlignment setting, this
+        was wrong. Added setting of an actionCommand, ToggleButtons
+        have "" as default actionCommand.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-26  David Daney  <ddaney@avtrex.com>
 
         * java/net/InetAddress.java (InetAddress): Make a private copy of
