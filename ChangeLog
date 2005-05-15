@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-27  Chris Burdess  <dog@gnu.org>
+
+        * java/net/protocol/http/HTTPURLConnection.java (connect): Accept
+        absolute and relative paths in Location header.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-27  Roman Kennke  <roman@kennke.org>
 
         * java/awt/MediaTracker.java: Added 2005 to copyright statement.

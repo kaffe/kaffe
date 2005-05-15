@@ -283,7 +283,23 @@ public class HTTPURLConnection
                 file = location.substring(end);
                 retry = true;
               }
-            // Otherwise this is not an HTTP redirect, can't follow
+	    else if (location.length() > 0)
+	      {
+		// Malformed absolute URI, treat as file part of URI
+		if (location.charAt(0) == '/')
+		  {
+		    // Absolute path
+		    file = location;
+		  }
+		else
+		  {
+		    // Relative path
+		    int lsi = file.lastIndexOf('/');
+		    file = (lsi == -1) ? "/" : file.substring(0, lsi + 1);
+		    file += location;
+		  }
+		retry = true;
+	      }
           }
         else
           {
