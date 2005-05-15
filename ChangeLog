@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-10  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/lang/ClassLoader.java
+        (defaultGetSystemClassLoader): Refactored in three new methods.
+        (createExtClassLoader, createSystemClassLoader,
+        createAuxiliarySystemClassLoader): New methods.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-06  Robert Schuster  <thebohemian@gmx.net>
 
         * java/awt/Frame.java:

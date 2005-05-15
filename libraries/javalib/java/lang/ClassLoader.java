@@ -1054,15 +1054,23 @@ public abstract class ClassLoader
 
   static ClassLoader defaultGetSystemClassLoader()
   {
-    URL[] extURLs = getExtClassLoaderUrls();
-    ClassLoader extClassLoader;
-    if (extURLs.length > 0)
-      extClassLoader = new URLClassLoader(getExtClassLoaderUrls(), null);
-    else
-      extClassLoader = null;
+    return createAuxiliarySystemClassLoader(
+        createSystemClassLoader(getSystemClassLoaderUrls(),
+            createExtClassLoader(getExtClassLoaderUrls(), null)));
+  }
 
-    ClassLoader systemClassLoader =
-	new URLClassLoader(getSystemClassLoaderUrls(), extClassLoader)
+  static ClassLoader createExtClassLoader(URL[] urls, ClassLoader parent)
+  {
+    if (urls.length > 0)
+      return new URLClassLoader(urls, parent);
+    else
+      return parent;
+  }
+
+  static ClassLoader createSystemClassLoader(URL[] urls, ClassLoader parent)
+  {
+    return
+	new URLClassLoader(urls, parent)
 	{
 	    protected synchronized Class loadClass(String name,
 		boolean resolve)
@@ -1078,16 +1086,20 @@ public abstract class ClassLoader
 		return super.loadClass(name, resolve);
 	    }
 	};
+  }
+
+  static ClassLoader createAuxiliarySystemClassLoader(ClassLoader parent)
+  {
     String loader = SystemProperties.getProperty("java.system.class.loader", null);
     if (loader == null)
       {
-	return systemClassLoader;
+	return parent;
       }
     try
       {
-	Constructor c = Class.forName(loader, false, systemClassLoader)
+	Constructor c = Class.forName(loader, false, parent)
 	    .getConstructor(new Class[] { ClassLoader.class });
-	return (ClassLoader)c.newInstance(new Object[] { systemClassLoader });
+	return (ClassLoader)c.newInstance(new Object[] { parent });
       }
     catch (Exception e)
       {
