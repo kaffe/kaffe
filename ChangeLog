@@ -1,5 +1,35 @@
 2005-05-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am (NOINSTALL_JNI_DERIVED_HDRS):
+ 	Added gnu_classpath_VMStackWalker.h.
+
+	* libraries/clib/native/gnu_classpath_VMStackWalker.c:
+	New file.
+
+	Resynced with GNU Classpath.
+
+	2005-04-30  Mark Wielaard  <mark@klomp.org>
+
+        * java/io/ObjectInputStream.java
+        (currentLoader): Don't create SecurityManager, directly call
+        VMObjectInputStream.currentClassLoader().
+        (resolveProxyClass): Use currentLoader().
+        * vm/reference/java/io/VMObjectInputStream.java
+        (currentClassLoader(SecurityManager)): Removed.
+        (currentClassLoader): New method.
+        * native/jni/java-io/java_io_VMObjectInputStream.c
+        (Java_java_io_VMObjectInputStream_currentClassLoader): Removed.
+
+	2005-01-29  Steven Augart  <augart@watson.ibm.com>
+
+        * vm/reference/gnu/classpath/VMStackWalker.java: Doc fix.
+
+	2005-01-07  Archie Cobbs  <archie@dellroad.org>
+
+        * vm/reference/gnu/classpath/VMStackWalker.java: New class.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-04-30  Mark Wielaard  <mark@klomp.org>

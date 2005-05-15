@@ -783,20 +783,12 @@ public class ObjectInputStream extends InputStream
   }
 
   /**
-   * This method invokes the method currentClassLoader for the
-   * current security manager (or build an empty one if it is not
-   * present).
-   *
-   * @return The most recent non-system ClassLoader on the execution stack.
-   * @see java.lang.SecurityManager#currentClassLoader()
+   * Returns he most recent user defined ClassLoader on the execution stack
+   * or null of none is found.
    */
   private ClassLoader currentLoader()
   {
-    SecurityManager sm = System.getSecurityManager();
-    if (sm == null)
-      sm = new SecurityManager () {};
-    
-    return VMObjectInputStream.currentClassLoader(sm);
+    return VMObjectInputStream.currentClassLoader();
   }
 
   /**
@@ -883,12 +875,7 @@ public class ObjectInputStream extends InputStream
   protected Class resolveProxyClass(String[] intfs)
     throws IOException, ClassNotFoundException
   {
-    SecurityManager sm = System.getSecurityManager();
-    
-    if (sm == null)
-      sm = new SecurityManager() {};
-    
-    ClassLoader cl = VMObjectInputStream.currentClassLoader(sm);
+    ClassLoader cl = currentLoader();
     
     Class[] clss = new Class[intfs.length];
     if(cl == null)

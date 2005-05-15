@@ -39,27 +39,48 @@ exception statement from your version. */
 
 package java.io;
 
-import gnu.classpath.Configuration;
-import gnu.java.io.ObjectIdentityWrapper;
-
-import java.lang.reflect.Array;
+import gnu.classpath.VMStackWalker;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
 
 final class VMObjectInputStream
 {
-  static native ClassLoader currentClassLoader(SecurityManager sm);
+  private static Class oisClass = ObjectInputStream.class;
+  private static Class vmoisClass = VMObjectInputStream.class;
 
-  static native Object allocateObject(Class clazz, Class constr_clazz, Constructor constructor)
+  // PrivilegedAction needed for Class.getClassLoader()
+  private static PrivilegedAction loaderAction = new PrivilegedAction()
+    {
+      public Object run()
+      {
+	Class[] ctx = VMStackWalker.getClassContext();
+	for (int i = 0; i < ctx.length; i++)
+	  {
+	    ClassLoader cl = ctx[i].getClassLoader();
+	    if (cl != null)
+	      return cl;
+	  }
+	return null;
+      }
+    };
+
+  /**
+   * Returns the first user defined class loader on the call stack, or
+   * null when no non-null class loader was found.
+   */
+  static ClassLoader currentClassLoader()
+  {
+    return (ClassLoader) AccessController.doPrivileged(loaderAction);
+  }
+
+  /**
+   * Allocates a new Object of type clazz but without running the
+   * default constructor on it. It then calls the given constructor on
+   * it. The given constructor method comes from the constr_clazz
+   * which is a super class of the given clazz.
+   */
+  static native Object allocateObject(Class clazz, Class constr_clazz,
+				      Constructor constructor)
     throws InstantiationException;
 }
-

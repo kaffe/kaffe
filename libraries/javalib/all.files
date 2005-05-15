@@ -75,6 +75,7 @@ gnu/classpath/tools/rmi/rmic/RMIC.java
 gnu/classpath/tools/rmi/rmic/TabbedWriter.java
 gnu/classpath/tools/serialver/SerialVer.java
 gnu/classpath/tools/Util.java
+gnu/classpath/VMStackWalker.java
 gnu/classpath/VMSystemProperties.java
 gnu/CORBA/primitiveArrayTypeCode.java
 gnu/CORBA/primitiveTypeCode.java

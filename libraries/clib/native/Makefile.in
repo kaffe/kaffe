@@ -99,6 +99,7 @@ am__objects_1 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 	libnative_la-String.lo libnative_la-System.lo \
 	libnative_la-Thread.lo libnative_la-ThreadStack.lo \
 	libnative_la-Throwable.lo libnative_la-UNIXProcess.lo \
+	libnative_la-gnu_classpath_VMStackWalker.lo \
 	libnative_la-gnu_classpath_VMSystemProperties.lo \
 	libnative_la-ZipFile.lo
 am__objects_2 = libnative_la-Array.lo libnative_la-Constructor.lo \
@@ -425,6 +426,7 @@ LANG_SRCS = \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
+		gnu_classpath_VMStackWalker.c \
 		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 
@@ -565,6 +567,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-TimeZone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-UNIXProcess.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ZipFile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_VMDouble.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_VMFloat.Plo@am__quote@
@@ -695,6 +698,13 @@ libnative_la-UNIXProcess.lo: UNIXProcess.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='UNIXProcess.c' object='libnative_la-UNIXProcess.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-UNIXProcess.lo `test -f 'UNIXProcess.c' || echo '$(srcdir)/'`UNIXProcess.c
+
+libnative_la-gnu_classpath_VMStackWalker.lo: gnu_classpath_VMStackWalker.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMStackWalker.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMStackWalker.c' object='libnative_la-gnu_classpath_VMStackWalker.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c
 
 libnative_la-gnu_classpath_VMSystemProperties.lo: gnu_classpath_VMSystemProperties.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMSystemProperties.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c; \

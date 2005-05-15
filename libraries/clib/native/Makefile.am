@@ -33,6 +33,7 @@ LANG_SRCS = \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
+		gnu_classpath_VMStackWalker.c \
 		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 

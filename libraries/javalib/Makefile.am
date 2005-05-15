@@ -410,6 +410,7 @@ gnu_classpath_SRCS = \
 	gnu/classpath/ServiceFactory.java \
 	gnu/classpath/ServiceProviderLoadingAction.java \
 	gnu/classpath/SystemProperties.java \
+	gnu/classpath/VMStackWalker.java \
 	gnu/classpath/VMSystemProperties.java
 gnu_classpath_tools_SRCS = \
 	gnu/classpath/tools/Util.java

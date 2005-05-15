@@ -49,28 +49,6 @@ exception statement from your version. */
 
 /*
  * Class:     java_io_VMObjectInputStream
- * Method:    currentClassLoader
- * Signature: (Ljava/lang/SecurityManager;)Ljava/lang/ClassLoader;
- */
-JNIEXPORT jobject JNICALL
-Java_java_io_VMObjectInputStream_currentClassLoader (JNIEnv * env,
-						   jclass clazz,
-						   jobject loader)
-{
-  jmethodID id = (*env)->GetMethodID (env,
-				      (*env)->GetObjectClass (env, loader),
-				      "currentClassLoader",
-				      "()Ljava/lang/ClassLoader;");
-
-  if (id == NULL)
-    return NULL;
-
-  return (*env)->CallObjectMethod (env, loader, id, clazz);
-}
-
-
-/*
- * Class:     java_io_VMObjectInputStream
  * Method:    allocateObject
  * Signature: (Ljava/lang/Class;)Ljava/lang/Object;
  */
