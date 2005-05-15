@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-30  Robert Schuster  <thebohemian@gmx.net>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c: Fixed
+        copyright header.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-29  Audrius Meskauskas  <AudriusA@bluewin.ch>
 
         * org/omg/CORBA/WStringSeqHelper.java,
