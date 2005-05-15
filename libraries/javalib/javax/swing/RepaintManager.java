@@ -489,6 +489,31 @@ public class RepaintManager
   }
 
   /**
+   * Creates and returns a volatile offscreen buffer for the specified
+   * component that can be used as a double buffer. The returned image
+   * is a {@link VolatileImage}. Its size will be <code>(proposedWidth,
+   * proposedHeight)</code> except when the maximum double buffer size
+   * has been set in this RepaintManager.
+   *
+   * @param comp the Component for which to create a volatile buffer
+   * @param proposedWidth the proposed width of the buffer
+   * @param proposedHeight the proposed height of the buffer
+   *
+   * @since 1.4
+   *
+   * @see {@link VolatileImage}
+   */
+  public Image getVolatileOffscreenBuffer(Component comp, int proposedWidth,
+                                          int proposedHeight)
+  {
+    int maxWidth = doubleBufferMaximumSize.width;
+    int maxHeight = doubleBufferMaximumSize.height;
+    return comp.createVolatileImage(Math.min(maxWidth, proposedWidth),
+                                    Math.min(maxHeight, proposedHeight));
+  }
+  
+
+  /**
    * Get the value of the {@link #doubleBufferMaximumSize} property.
    *
    * @return The current value of the property

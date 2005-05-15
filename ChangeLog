@@ -4,6 +4,15 @@
 
 	2005-05-13  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/RepaintManager.java:
+        (getVolatileOffscreenBuffer): Added methods.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-13  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/DefaultButtonModel.java:
         Removed superfluous semicolon.
 
