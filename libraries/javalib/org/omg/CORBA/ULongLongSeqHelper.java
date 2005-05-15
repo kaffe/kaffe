@@ -106,18 +106,15 @@ public abstract class ULongLongSeqHelper
 
   /**
    * Reads the <code>long[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link ULongLongSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static long[] read(InputStream input)
   {
-    ULongLongSeqHolder h = new ULongLongSeqHolder();
-    h._read(input);
-    return h.value;
+    long[] value = new long[ input.read_long() ];
+    input.read_ulonglong_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -128,21 +125,18 @@ public abstract class ULongLongSeqHelper
    */
   public static TypeCode type()
   {
-    return new primitiveArrayTypeCode(TCKind.tk_long);
+    return new primitiveArrayTypeCode(TCKind.tk_ulong);
   }
 
   /**
    * Writes the <code>long[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link ULongLongSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, long[] value)
   {
-    ULongLongSeqHolder h = new ULongLongSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_ulonglong_array(value, 0, value.length);
   }
 }

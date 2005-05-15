@@ -106,18 +106,15 @@ public abstract class FloatSeqHelper
 
   /**
    * Reads the <code>float[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link FloatSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static float[] read(InputStream input)
   {
-    FloatSeqHolder h = new FloatSeqHolder();
-    h._read(input);
-    return h.value;
+    float[] value = new float[ input.read_long() ];
+    input.read_float_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class FloatSeqHelper
 
   /**
    * Writes the <code>float[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link FloatSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, float[] value)
   {
-    FloatSeqHolder h = new FloatSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_float_array(value, 0, value.length);
   }
 }

@@ -106,18 +106,15 @@ public abstract class DoubleSeqHelper
 
   /**
    * Reads the <code>double[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link DoubleSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static double[] read(InputStream input)
   {
-    DoubleSeqHolder h = new DoubleSeqHolder();
-    h._read(input);
-    return h.value;
+    double[] value = new double[ input.read_long() ];
+    input.read_double_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class DoubleSeqHelper
 
   /**
    * Writes the <code>double[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link DoubleSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, double[] value)
   {
-    DoubleSeqHolder h = new DoubleSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_double_array(value, 0, value.length);
   }
 }

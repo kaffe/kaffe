@@ -105,19 +105,16 @@ public abstract class LongLongSeqHelper
   }
 
   /**
-   * Reads the <code>long[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link LongLongSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
+   * Reads the <code>long long[]</code> from the CORBA input stream.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static long[] read(InputStream input)
   {
-    LongLongSeqHolder h = new LongLongSeqHolder();
-    h._read(input);
-    return h.value;
+    long[] value = new long[ input.read_long() ];
+    input.read_longlong_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class LongLongSeqHelper
 
   /**
    * Writes the <code>long[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link LongLongSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, long[] value)
   {
-    LongLongSeqHolder h = new LongLongSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_longlong_array(value, 0, value.length);
   }
 }

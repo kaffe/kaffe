@@ -2,6 +2,29 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-29  Audrius Meskauskas  <AudriusA@bluewin.ch>
+
+        * org/omg/CORBA/WStringSeqHelper.java,
+        org/omg/CORBA/AnySeqHelper.java,
+        org/omg/CORBA/BooleanSeqHelper.java,
+        org/omg/CORBA/CharSeqHelper.java,
+        org/omg/CORBA/DoubleSeqHelper.java,
+        org/omg/CORBA/FloatSeqHelper.java,
+        org/omg/CORBA/LongLongSeqHelper.java,
+        org/omg/CORBA/LongSeqHelper.java,
+        org/omg/CORBA/OctetSeqHelper.java,
+        org/omg/CORBA/ShortSeqHelper.java,
+        org/omg/CORBA/StringSeqHelper.java,
+        org/omg/CORBA/ULongLongSeqHelper.java,
+        org/omg/CORBA/ULongSeqHelper.java,
+        org/omg/CORBA/UShortSeqHelper.java,
+        org/omg/CORBA/WCharSeqHelper.java:
+        Removing redundant object instantiation.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-29  Sven de Marothy  <sven@physto.se>
                     Mark Wielaard  <mark@klomp.org>
 

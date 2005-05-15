@@ -106,18 +106,15 @@ public abstract class OctetSeqHelper
 
   /**
    * Reads the <code>byte[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link OctetSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static byte[] read(InputStream input)
   {
-    OctetSeqHolder h = new OctetSeqHolder();
-    h._read(input);
-    return h.value;
+    byte[] value = new byte[ input.read_long() ];
+    input.read_octet_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class OctetSeqHelper
 
   /**
    * Writes the <code>byte[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link OctetSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, byte[] value)
   {
-    OctetSeqHolder h = new OctetSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_octet_array(value, 0, value.length);
   }
 }

@@ -105,18 +105,16 @@ public abstract class StringSeqHelper
 
   /**
    * Reads the <code>String[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link StringSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static String[] read(InputStream input)
   {
-    StringSeqHolder h = new StringSeqHolder();
-    h._read(input);
-    return h.value;
+    String[] value = new String[ input.read_long() ];
+    for (int i = 0; i < value.length; i++)
+      value [ i ] = input.read_wstring();
+    return value;
   }
 
   /**
@@ -132,16 +130,15 @@ public abstract class StringSeqHelper
 
   /**
    * Writes the <code>String[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link StringSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, String[] value)
   {
-    StringSeqHolder h = new StringSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+
+    for (int i = 0; i < value.length; i++)
+      output.write_wstring(value [ i ]);
   }
 }

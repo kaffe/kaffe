@@ -106,18 +106,15 @@ public abstract class UShortSeqHelper
 
   /**
    * Reads the <code>short[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link UShortSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static short[] read(InputStream input)
   {
-    UShortSeqHolder h = new UShortSeqHolder();
-    h._read(input);
-    return h.value;
+    short[] value = new short[ input.read_long() ];
+    input.read_ushort_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class UShortSeqHelper
 
   /**
    * Writes the <code>short[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link UShortSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, short[] value)
   {
-    UShortSeqHolder h = new UShortSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_ushort_array(value, 0, value.length);
   }
 }

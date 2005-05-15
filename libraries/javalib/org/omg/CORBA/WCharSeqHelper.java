@@ -106,18 +106,15 @@ public abstract class WCharSeqHelper
 
   /**
    * Reads the <code>char[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link WCharSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static char[] read(InputStream input)
   {
-    WCharSeqHolder h = new WCharSeqHolder();
-    h._read(input);
-    return h.value;
+    char[] value = new char[ input.read_long() ];
+    input.read_wchar_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class WCharSeqHelper
 
   /**
    * Writes the <code>char[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link WCharSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, char[] value)
   {
-    WCharSeqHolder h = new WCharSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_wchar_array(value, 0, value.length);
   }
 }

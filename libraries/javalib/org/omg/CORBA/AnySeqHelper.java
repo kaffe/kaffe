@@ -114,9 +114,12 @@ public abstract class AnySeqHelper
    */
   public static Any[] read(InputStream input)
   {
-    AnySeqHolder h = new AnySeqHolder();
-    h._read(input);
-    return h.value;
+    Any[] value = new Any[ input.read_long() ];
+    for (int i = 0; i < value.length; i++)
+      {
+        value [ i ] = input.read_any();
+      }
+    return value;
   }
 
   /**
@@ -132,16 +135,17 @@ public abstract class AnySeqHelper
 
   /**
    * Writes the array of {@link Any}'s into the given stream.
-   * This implementation first creates an instance of
-   * {@link AnySeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, Any[] value)
   {
-    AnySeqHolder h = new AnySeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+
+    for (int i = 0; i < value.length; i++)
+      {
+        output.write_any(value [ i ]);
+      }
   }
 }

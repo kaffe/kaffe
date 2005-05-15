@@ -106,18 +106,15 @@ public abstract class CharSeqHelper
 
   /**
    * Reads the <code>char[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link CharSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static char[] read(InputStream input)
   {
-    CharSeqHolder h = new CharSeqHolder();
-    h._read(input);
-    return h.value;
+    char [] value = new char[ input.read_long() ];
+    input.read_char_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class CharSeqHelper
 
   /**
    * Writes the <code>char[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link CharSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, char[] value)
   {
-    CharSeqHolder h = new CharSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_char_array(value, 0, value.length);
   }
 }

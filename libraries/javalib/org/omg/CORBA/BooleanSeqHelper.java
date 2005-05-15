@@ -106,18 +106,15 @@ public abstract class BooleanSeqHelper
 
   /**
    * Reads the <code>boolean[]</code> from the CORBA input stream.
-   * This implementation first creates an instance of
-   * {@link BooleanSeqHolder} and then delegates functionality
-   * to its <code>_read()</code> method.
    *
    * @param input the CORBA (not java.io) stream to read from.
    * @return the value from the stream.
    */
   public static boolean[] read(InputStream input)
   {
-    BooleanSeqHolder h = new BooleanSeqHolder();
-    h._read(input);
-    return h.value;
+    boolean [] value = new boolean[ input.read_long() ];
+    input.read_boolean_array(value, 0, value.length);
+    return value;
   }
 
   /**
@@ -133,16 +130,13 @@ public abstract class BooleanSeqHelper
 
   /**
    * Writes the <code>boolean[]</code> into the given stream.
-   * This implementation first creates an instance of
-   * {@link BooleanSeqHolder} and then delegates functionality
-   * to its <code>_write()</code> method.
    *
    * @param output the CORBA (not java.io) output stream to write.
    * @param value the value that must be written.
    */
   public static void write(OutputStream output, boolean[] value)
   {
-    BooleanSeqHolder h = new BooleanSeqHolder(value);
-    h._write(output);
+    output.write_long(value.length);
+    output.write_boolean_array(value, 0, value.length);
   }
 }
