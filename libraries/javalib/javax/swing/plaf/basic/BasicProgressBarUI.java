@@ -48,6 +48,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -381,16 +384,16 @@ public class BasicProgressBarUI extends ProgressBarUI
   {
     // The only thing we need to worry about is
     // the text size.
-    Graphics g = progressBar.getGraphics();
-
     Insets insets = c.getInsets();
 
-    FontMetrics fm = g.getFontMetrics(c.getFont());
-
-    int textW = fm.stringWidth(progressBar.getString());
-    int textH = fm.getHeight();
-
-    g.dispose();
+    // make a fontrenderer context so that we can make assumptions about
+    // the string bounds
+    FontRenderContext ctx = new FontRenderContext(new AffineTransform(),
+                                                  false, false);
+    Rectangle2D bounds = c.getFont().getStringBounds(progressBar.getString(),
+                                                     ctx);
+    int textW = (int) bounds.getWidth();
+    int textH = (int) bounds.getHeight();
 
     if (progressBar.getOrientation() == JProgressBar.HORIZONTAL)
       {
