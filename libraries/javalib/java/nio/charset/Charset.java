@@ -185,7 +185,7 @@ public abstract class Charset implements Comparable
   {
     checkName (charsetName);
     Charset cs = null;
-    CharsetProvider[] providers = providers();
+    CharsetProvider[] providers = providers2();
     for (int i = 0; i < providers.length; i++)
       {
         cs = providers[i].charsetForName(charsetName);
@@ -199,7 +199,7 @@ public abstract class Charset implements Comparable
   {
     TreeMap charsets = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
-    CharsetProvider[] providers = providers();
+    CharsetProvider[] providers = providers2();
     for (int j = 0; j < providers.length; j++)
       {
         for (Iterator i = providers[j].charsets(); i.hasNext(); )
@@ -222,7 +222,7 @@ public abstract class Charset implements Comparable
    * java.nio.charset.spi.CharsetProvider in the resource directory
    * META-INF/services.
    */
-  private static CharsetProvider[] providers()
+  private static CharsetProvider[] providers2()
   {
     if (providers == null)
       {

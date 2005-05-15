@@ -40,6 +40,8 @@ package java.security;
 
 import gnu.classpath.SystemProperties;
 
+import gnu.classpath.Configuration;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
