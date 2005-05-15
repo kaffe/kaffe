@@ -65,7 +65,7 @@ public final class AccessControlContext
    *
    * @param context The ProtectionDomains to use
    */
-  public AccessControlContext(ProtectionDomain[]context)
+  public AccessControlContext(ProtectionDomain[] context)
   {
     HashSet domains = new HashSet (context.length);
     for (int i = 0; i < context.length; i++)
