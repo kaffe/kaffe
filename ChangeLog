@@ -2,6 +2,14 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/image/VolatileImage.java: Document.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-03  Andrew Overholt  <overholt@redhat.com>
 
         * gnu/java/nio/channels/FileChannelImpl.java: Return null if lock
