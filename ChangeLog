@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-11  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JTextField.java
+        (createDefaultModel): Create and return a subclass of PlainDocument
+        to allow newlines to be swallowed.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-10  David Daney  <ddaney@avtrex.com>
 
         * java/util/BitSet.java (get(int, int)): Fix breakage when
