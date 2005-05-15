@@ -56,6 +56,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -906,7 +907,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
    */
   protected Container createSeparator()
   {
-    return null;
+    return (Container) Box.createVerticalStrut(17);
   }
 
   /**
@@ -1123,6 +1124,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	optionPane.add(button);
       }
 
+    optionPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 11, 11));
     optionPane.invalidate();
   }
 

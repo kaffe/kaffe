@@ -4,6 +4,18 @@
 
 	2005-05-11  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicOptionPaneUI.java
+        (createSeparator): Implemented. Returns a vertical separator with
+        a height of 17 pixels as recommended in the book Java Look & Feel
+        Design Guidelines.
+        (installComponents): Added an empty border around the dialog.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-11  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/text/View.java
         (insertUpdate) Removed a debug println statement.
 
