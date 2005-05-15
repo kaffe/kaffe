@@ -403,32 +403,41 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return systemClipboard;
   }
 
+  /**
+   * Prepares a GtkImage. For every other kind of Image it just
+   * assumes the image is already prepared for rendering.
+   */
   public boolean prepareImage (Image image, int width, int height, 
 			       ImageObserver observer) 
   {
-    GtkImage i = (GtkImage) image;
-
-    if (i.isLoaded ()) return true;
-
-    class PrepareImage extends Thread
-    {
-      GtkImage image;
-      ImageObserver observer;
-
-      PrepareImage (GtkImage image, ImageObserver observer)
+    if (image instanceof GtkImage)
       {
-	this.image = image;
-	image.setObserver (observer);
+	GtkImage i = (GtkImage) image;
+	
+	if (i.isLoaded ()) return true;
+	
+	class PrepareImage extends Thread
+	{
+	  GtkImage image;
+	  ImageObserver observer;
+	  
+	  PrepareImage (GtkImage image, ImageObserver observer)
+	  {
+	    this.image = image;
+	    image.setObserver (observer);
+	  }
+	  
+	  public void run ()
+	  {
+	    image.source.startProduction (image);
+	  }
+	}
+	
+	new PrepareImage (i, observer).start ();
+	return false;
       }
-      
-      public void run ()
-      {
-	image.source.startProduction (image);
-      }
-    }
-
-    new PrepareImage (i, observer).start ();
-    return false;
+    else
+      return true;
   }
 
   public native void sync();
