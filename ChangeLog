@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-26  David Daney  <ddaney@avtrex.com>
+
+        * java/net/InetAddress.java (InetAddress): Make a private copy of
+        the address.
+        * java/net/Inet4Address.java (getAddress): Return a copy of the
+        address.
+        * java/net/Inet6Address.java (Inet6Address): Use private copy of
+        the address
+        (getAddress): Return a copy of the address.
+        (equals): Rewrote.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-26  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/ImageIcon.java:

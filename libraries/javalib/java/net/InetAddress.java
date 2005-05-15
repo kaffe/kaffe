@@ -202,12 +202,9 @@ public class InetAddress implements Serializable
    */
   InetAddress(byte[] ipaddr, String hostname)
   {
-    addr = new byte[ipaddr.length];
-
-    for (int i = 0; i < ipaddr.length; i++)
-      addr[i] = ipaddr[i];
-
-    this.hostName = hostname;
+    addr = (null == ipaddr) ? null : (byte[]) ipaddr.clone();
+    hostName = hostname;
+    
     lookup_time = System.currentTimeMillis();
 
     family = 2; /* AF_INET */
