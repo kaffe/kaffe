@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-26  Chris Burdess  <dog@gnu.org>
+
+        * gnu/java/net/protocol/http/HTTPURLConnection.java: Throw
+        FileNotFoundException and implement getErrorStream on 404.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-26  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/BasicToggleButtonUI.java:

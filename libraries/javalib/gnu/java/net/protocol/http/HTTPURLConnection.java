@@ -40,6 +40,7 @@ package gnu.java.net.protocol.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -94,6 +95,7 @@ public class HTTPURLConnection
 
   private Response response;
   private ByteArrayInputStream responseSink;
+  private ByteArrayInputStream errorSink;
 
   private HandshakeCompletedEvent handshakeEvent;
 
@@ -286,6 +288,11 @@ public class HTTPURLConnection
         else
           {
             responseSink = new ByteArrayInputStream(reader.toByteArray ());
+            if (response.getCode() == 404)
+              {
+                errorSink = responseSink;
+                throw new FileNotFoundException(url.toString());
+              }
           }
       }
     while (retry);
@@ -453,6 +460,11 @@ public class HTTPURLConnection
         throw new ProtocolException("doInput is false");
       }
     return responseSink;
+  }
+
+  public InputStream getErrorStream()
+  {
+    return errorSink;
   }
 
   public Map getHeaderFields()
