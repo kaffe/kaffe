@@ -38,7 +38,10 @@ exception statement from your version. */
 
 package java.nio.charset;
 
+import gnu.classpath.SystemProperties;
+
 import gnu.java.nio.charset.Provider;
+import gnu.java.nio.charset.iconv.IconvProvider;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -129,7 +132,7 @@ public abstract class Charset implements Comparable
     
     try 
       {
-	encoding = System.getProperty("file.encoding");
+	encoding = SystemProperties.getProperty("file.encoding");
       }
     catch(SecurityException e)
       {
@@ -231,6 +234,12 @@ public abstract class Charset implements Comparable
 
   private static CharsetProvider provider()
   {
+    String useIconv = SystemProperties.getProperty
+      ("gnu.classpath.nio.charset.provider.iconv");
+
+    if (useIconv != null)
+      return IconvProvider.provider();
+
     return Provider.provider();
   }
 
