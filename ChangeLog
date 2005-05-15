@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-04-27  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/net/URL.java: Remove org.metastatic.jessie from default
+        protocol search path.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-04-27  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/BasicScrollBarUI.java
