@@ -1,5 +1,5 @@
 /* DecimalFormat.java -- Formats and parses numbers
-   Copyright (C) 1999, 2000, 2001, 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -819,12 +819,14 @@ public class DecimalFormat extends NumberFormat
     return positiveSuffix;
   }
 
-  public int hashCode ()
+  /**
+   * Returns a hash code for this object.
+   *
+   * @return A hash code.
+   */
+  public int hashCode()
   {
-    int hash = (negativeSuffix.hashCode() ^ negativePrefix.hashCode()
-		^positivePrefix.hashCode() ^ positiveSuffix.hashCode());
-    // FIXME.
-    return hash;
+    return toPattern().hashCode();
   }
 
   public boolean isDecimalSeparatorAlwaysShown ()
