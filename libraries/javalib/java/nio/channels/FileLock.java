@@ -1,5 +1,5 @@
 /* FileLock.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -133,7 +133,10 @@ public abstract class FileLock
   public final String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());
-    buf.append("[" + position + ":" + size);
+    buf.append("[");
+    buf.append(position);
+    buf.append(":");
+    buf.append(size);
     if (shared)
       buf.append(" shared");
     else
