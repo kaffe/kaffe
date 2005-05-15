@@ -593,7 +593,7 @@ public static Frame[] getFrames()
    */
   public void setUndecorated (boolean undecorated)
   {
-    if (!isDisplayable ())
+    if (isDisplayable ())
       throw new IllegalComponentStateException ();
 
     this.undecorated = undecorated;

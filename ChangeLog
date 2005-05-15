@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-06  Robert Schuster  <thebohemian@gmx.net>
+
+        * java/awt/Frame.java:
+        (setUndecorated): Toggled boolean expression.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-06  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/text/PlainView.java
