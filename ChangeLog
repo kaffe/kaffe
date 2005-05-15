@@ -2,20 +2,20 @@
 
 	Resynced with GNU Classpath.
 
-	2005-05-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
+	2005-05-04  Mark Wielaard  <mark@klomp.org>
 
-        * java/awt/image/BufferStrategy.java: Document.
-
-        * java/awt/BufferCapabilities.java: Document.
+        * java/awt/BufferCapabilities.java (BufferCapabilities): Make
+        documentation of arguments match code.
 
 2005-05-15  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 
-	2005-05-04  Mark Wielaard  <mark@klomp.org>
+	2005-05-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
-        * java/awt/BufferCapabilities.java (BufferCapabilities): Make
-        documentation of arguments match code.
+        * java/awt/image/BufferStrategy.java: Document.
+
+        * java/awt/BufferCapabilities.java: Document.
 
 2005-05-15  Dalibor Topic  <robilad@kaffe.org>
 
