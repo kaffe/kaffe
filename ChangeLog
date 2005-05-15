@@ -4,6 +4,16 @@
 
 	2005-05-13  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/JDialog.java
+        (setDefaultCloseOperation): Don't throw an IllegalArgumentException
+        but instead accept illegal values as DO_NOTHING_ON_CLOSE.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-13  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/ScrollPaneLayout.java
         (getViewportBorderBounds): Documented methods.
 
