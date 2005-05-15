@@ -39,6 +39,8 @@ package gnu.xml.dom;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMConfiguration;
@@ -140,6 +142,7 @@ class DomDocumentBuilder
     throws SAXException, IOException
   {
     LSInput input = ls.createLSInput();
+    String systemId = is.getSystemId();
     InputStream in = is.getByteStream();
     if (in != null)
       {
@@ -147,10 +150,19 @@ class DomDocumentBuilder
       }
     else
       {
-        input.setCharacterStream(is.getCharacterStream());
+        Reader reader = is.getCharacterStream();
+        if (reader != null)
+          {
+            input.setCharacterStream(reader);
+          }
+        else
+          {
+            URL url = new URL(systemId);
+            input.setByteStream(url.openStream());
+          }
       }
     input.setPublicId(is.getPublicId());
-    input.setSystemId(is.getSystemId());
+    input.setSystemId(systemId);
     input.setEncoding(is.getEncoding());
     return parser.parse(input);
   }

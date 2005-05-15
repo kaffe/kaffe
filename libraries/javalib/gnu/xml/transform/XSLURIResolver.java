@@ -134,33 +134,41 @@ class XSLURIResolver
                   }
               }
           }
-        if (in == null && url != null)
+        if (in == null)
           {
-            systemId = url.toString();
-            node = (Node) nodeCache.get(systemId);
-            // Is the resource up to date?
-            URLConnection conn = url.openConnection();
-            Long llm = (Long) lastModifiedCache.get(systemId);
-            if (llm != null)
+            if (url != null)
               {
-                lastLastModified = llm.longValue();
-                conn.setIfModifiedSince(lastLastModified);
-              }
-            conn.connect();
-            lastModified = conn.getLastModified();
-            if (node != null && 
-                lastModified > 0L &&
-                lastModified <= lastLastModified)
-              {
-                // Resource unchanged
-                return new DOMSource(node, systemId);
+                systemId = url.toString();
+                node = (Node) nodeCache.get(systemId);
+                // Is the resource up to date?
+                URLConnection conn = url.openConnection();
+                Long llm = (Long) lastModifiedCache.get(systemId);
+                if (llm != null)
+                  {
+                    lastLastModified = llm.longValue();
+                    conn.setIfModifiedSince(lastLastModified);
+                  }
+                conn.connect();
+                lastModified = conn.getLastModified();
+                if (node != null && 
+                    lastModified > 0L &&
+                    lastModified <= lastLastModified)
+                  {
+                    // Resource unchanged
+                    return new DOMSource(node, systemId);
+                  }
+                else
+                  {
+                    // Resource new or modified
+                    in = conn.getInputStream();
+                    nodeCache.put(systemId, node);
+                    lastModifiedCache.put(systemId, new Long(lastModified));
+                  }
               }
             else
               {
-                // Resource new or modified
-                in = conn.getInputStream();
-                nodeCache.put(systemId, node);
-                lastModifiedCache.put(systemId, new Long(lastModified));
+                throw new TransformerException("can't resolve URL: " +
+                                               systemId);
               }
           }
         InputSource input = new InputSource(in);
@@ -206,6 +214,11 @@ class XSLURIResolver
             else if (href != null)
               {
                 url = new URL(href);
+              }
+            else
+              {
+                // See below
+                throw new MalformedURLException(systemId);
               }
           }
         return url;

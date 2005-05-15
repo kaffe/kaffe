@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-14  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/dom/DomDocumentBuilder.java,
+          gnu/xml/dom/transform/XSLUriResolver.java: Handle unqualified
+        relative URLs.
+        * gnu/xml/dom/ls/SAXEventSink.java: Ignore XML entities in start/
+        end entity callbacks.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-13  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/plaf/basic/BasicOptionPaneUI.java
