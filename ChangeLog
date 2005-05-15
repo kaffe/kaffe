@@ -4,6 +4,21 @@
 
 	2005-04-27  Roman Kennke  <roman@kennke.org>
 
+        * javax/swing/plaf/basic/BasicScrollBarUI
+        (getThumbBounds): Do not make thumb smaller than
+        minimumThumbSize.
+        * javax/swing/plaf/metal/MetalLookAndFeel
+        (initComponentDefaults): Added color defaults for ScrollBar.
+        * javax/swing/plaf/metal/MetalScrollBarUI
+        (paintThumb): Added.
+        (getMinimumThumbSize): Added.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-04-27  Roman Kennke  <roman@kennke.org>
+
         * javax/swing/plaf/metal/MetalLookAndFeel
         (initComponentDefaults): Added some default colors.
 

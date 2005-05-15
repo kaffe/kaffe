@@ -743,7 +743,8 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	thumbRect.x += (value - min) * trackRect.width / (max - min);
 	thumbRect.y = trackRect.y;
 
-	thumbRect.width = extent * trackRect.width / (max - min);
+	thumbRect.width = Math.max(extent * trackRect.width / (max - min),
+                                   getMinimumThumbSize().width);
 	thumbRect.height = trackRect.height;
       }
     else
@@ -752,7 +753,8 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	thumbRect.y = trackRect.y + value * trackRect.height / (max - min);
 
 	thumbRect.width = trackRect.width;
-	thumbRect.height = extent * trackRect.height / (max - min);
+	thumbRect.height = Math.max(extent * trackRect.height / (max - min),
+                                    getMinimumThumbSize().height);
       }
     return thumbRect;
   }

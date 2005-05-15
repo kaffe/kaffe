@@ -494,6 +494,12 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "MenuItem.background", new ColorUIResource(getControl()),
       "MenuItem.font", getControlTextFont(),
       "ScrollBar.background", new ColorUIResource(getControl()),
+      "ScrollBar.shadow", new ColorUIResource(getControlShadow()),
+      "ScrollBar.thumb", new ColorUIResource(getPrimaryControlShadow()),
+      "ScrollBar.thumbDarkShadow",
+      new ColorUIResource(getPrimaryControlDarkShadow()),
+      "ScrollBar.thumbHighlight",
+      new ColorUIResource(getPrimaryControl()),
       "PopupMenu.border", new MetalBorders.PopupMenuBorder()
     };
     defaults.putDefaults(myDefaults);
