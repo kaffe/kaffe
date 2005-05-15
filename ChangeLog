@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+        (init_glib_threads): Check if threading system is already
+        initialized.
+
+2005-05-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-03  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/text/GapContent.java:
