@@ -2213,7 +2213,6 @@ java/lang/VMCompiler.java
 java/lang/VMDouble.java
 java/lang/VMFloat.java
 java/lang/VMObject.java
-java/lang/VMSecurityManager.java
 java/lang/VMThread.java
 java/lang/VMThrowable.java
 java/lang/Void.java

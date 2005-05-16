@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.lang;
 
 import gnu.classpath.SystemProperties;
+import gnu.classpath.VMStackWalker;
 import gnu.java.util.DoubleEnumeration;
 import gnu.java.util.EmptyEnumeration;
 
@@ -521,8 +522,7 @@ public abstract class ClassLoader
     SecurityManager sm = SecurityManager.current;
     if (sm != null)
       {
-        Class c = VMSecurityManager.getClassContext()[1];
-        ClassLoader cl = c.getClassLoader();
+	ClassLoader cl = VMStackWalker.getCallingClassLoader();
 	if (cl != null && ! cl.isAncestorOf(this))
           sm.checkPermission(new RuntimePermission("getClassLoader"));
       }
@@ -764,8 +764,7 @@ public abstract class ClassLoader
     SecurityManager sm = SecurityManager.current;
     if (sm != null)
       {
-	Class c = VMSecurityManager.getClassContext()[1];
-	ClassLoader cl = c.getClassLoader();
+	ClassLoader cl = VMStackWalker.getCallingClassLoader();
 	if (cl != null && cl != StaticData.systemClassLoader)
 	  sm.checkPermission(new RuntimePermission("getClassLoader"));
       }

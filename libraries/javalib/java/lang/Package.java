@@ -1,5 +1,5 @@
 /* Package.java -- information about a package
-   Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,6 +36,8 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 package java.lang;
+
+import gnu.classpath.VMStackWalker;
 
 import java.net.URL;
 import java.util.NoSuchElementException;
@@ -273,8 +275,8 @@ public class Package
   public static Package getPackage(String name)
   {
     // Get the caller's classloader
-    ClassLoader cl = VMSecurityManager.currentClassLoader();
-    return cl != null ? cl.getPackage(name) : null;
+    ClassLoader cl = VMStackWalker.getCallingClassLoader();
+    return cl != null ? cl.getPackage(name) : VMClassLoader.getPackage(name);
   }
 
   /**
@@ -286,12 +288,8 @@ public class Package
   public static Package[] getPackages()
   {
     // Get the caller's classloader
-    Class c = VMSecurityManager.getClassContext()[1];
-    ClassLoader cl = c.getClassLoader();
-    // Sun's implementation returns the packages loaded by the bootstrap
-    // classloader if cl is null, but right now our bootstrap classloader
-    // does not create any Packages.
-    return cl != null ? cl.getPackages() : new Package[0];
+    ClassLoader cl = VMStackWalker.getCallingClassLoader();
+    return cl != null ? cl.getPackages() : VMClassLoader.getPackages();
   }
 
   /**

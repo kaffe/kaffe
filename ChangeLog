@@ -1,3 +1,16 @@
+2005-05-16  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-01-07  Archie Cobbs  <archie@dellroad.org>
+
+        * java/lang/ClassLoader.java (getParent(), getSystemClassLoader()):
+        Likewise.
+        * java/lang/Package.java (getPackages()): Likewise.
+        * java/lang/SecurityManager.java (getClassContext()): Likewise.
+        * java/util/ResourceBundle.java (getBundle()): Likewise.
+        * vm/reference/java/lang/VMSecurityManager.java: Removed.
+	
 2005-05-15  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
