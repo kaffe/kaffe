@@ -483,7 +483,7 @@ yieldThread(void)
  * already been updated. In the other case, there will be a small inconsistency.
  */
 void
-setPriorityThread(Hjava_lang_VMThread* tid, int prio)
+setPriorityThread(Hjava_lang_VMThread* tid, jint prio)
 {
 	/* no native thread yet */
 	if (unhand(tid)->jthreadID == 0)

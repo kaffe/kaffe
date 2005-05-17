@@ -2343,7 +2343,7 @@ store_const_offset_byte(SlotInfo* dst, jint offset, jint val)
 /*									   */
 
 void
-pusharg_int_const(int val, int idx)
+pusharg_int_const(jint val, int idx)
 {
 #if defined(HAVE_pusharg_int_const)
 	if (HAVE_pusharg_int_const_rangecheck(val)) {
