@@ -610,7 +610,7 @@ runfinalizer(void)
 	}
 
 	/* Do java-land cleanup */
-	do_execute_java_method(NULL, SystemClass, "exitJavaCleanup",
+	do_execute_java_method(NULL, RuntimeClass, "exitJavaCleanupHook",
 			       "()V", NULL, true);
 	if (runFinalizerOnExit) {
 		invokeFinalizer();

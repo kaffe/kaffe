@@ -424,7 +424,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Math.h \
 	java_lang_Runtime.h \
 	java_lang_Short.h \
-	java_lang_System.h \
 	java_lang_reflect_Array.h \
 	java_lang_reflect_Constructor.h \
 	java_lang_reflect_Field.h \
@@ -567,6 +566,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_java_nio_charset_iconv_IconvEncoder.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_SelectorImpl.h \
+	java_lang_VMSystem.h \
 	java_io_VMObjectInputStream.h \
 	java_io_VMObjectStreamClass.h \
 	java_nio_VMDirectByteBuffer.h \

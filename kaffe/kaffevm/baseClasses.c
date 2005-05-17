@@ -63,6 +63,7 @@ static Hjava_lang_Class* ClassClass = &dummyClassClass;
 Hjava_lang_Class* StringClass;
 Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
+Hjava_lang_Class* RuntimeClass;
 Hjava_lang_Class* SerialClass;
 Hjava_lang_Class* CloneClass;
 Hjava_lang_Class* PtrClass;
@@ -99,11 +100,12 @@ Hjava_lang_Class* javaIoIOException;
 
 Hjava_lang_ClassLoader* appClassLoader;
 
-#define SYSTEMCLASS "java/lang/System"
-#define	SERIALCLASS "java/io/Serializable"
-#define	CLONECLASS  "java/lang/Cloneable"
-#define	LOADERCLASS "java/lang/ClassLoader"
-#define PTRCLASS    "kaffe/util/Ptr"
+#define RUNTIMECLASS "java/lang/Runtime"
+#define SYSTEMCLASS  "java/lang/System"
+#define	SERIALCLASS  "java/io/Serializable"
+#define	CLONECLASS   "java/lang/Cloneable"
+#define	LOADERCLASS  "java/lang/ClassLoader"
+#define PTRCLASS     "kaffe/util/Ptr"
 
 
 /* Initialisation prototypes */
@@ -316,6 +318,7 @@ initBaseClasses(void)
         loadStaticClass(&ClassClass, CLASSCLASS);
         loadStaticClass(&StringClass, STRINGCLASS);
         loadStaticClass(&SystemClass, SYSTEMCLASS);
+        loadStaticClass(&RuntimeClass, RUNTIMECLASS);
 	
         /* We must to a little cross tidying */
         ObjectClass->head.vtable = ClassClass->vtable;

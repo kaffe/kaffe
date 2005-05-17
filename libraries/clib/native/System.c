@@ -39,7 +39,7 @@
 #include "defs.h"
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
-#include "java_lang_System.h"
+#include "java_lang_VMSystem.h"
 #include "java_lang_Throwable.h"
 #include <native.h>
 #include <jni.h>
@@ -49,71 +49,8 @@
 extern void printStackTrace(struct Hjava_lang_Throwable*,
 	struct Hjava_lang_Object*, int);
 
-/* Adapted from GNU Classpath */
-struct Hjava_lang_String*
-java_lang_System_getenv0(struct Hjava_lang_String *str) 
-{
-  const char *cname;
-  const char *envname;
-
-  cname = checkPtr(stringJava2C(str));
-  if (cname == NULL)
-    return NULL;
-
-  envname = getenv(cname);
-  if (envname == NULL)
-    return NULL;
-
-  return stringC2Java(envname);
-}
-
-/*
- * Return current time.
- */
-jlong
-java_lang_System_currentTimeMillis(void)
-{
-	return (currentTime());
-}
-
-/*
- * Set the stdin stream.
- */
-void
-Java_java_lang_System_setIn0(JNIEnv *env, jclass system_cls, jobject stream)
-{
-	jfieldID in = (*env)->GetStaticFieldID(env, system_cls, 
-					"in", "Ljava/io/InputStream;");
-	assert(in != NULL);
-	(*env)->SetStaticObjectField(env, system_cls, in, stream);
-}
-
-/*
- * Set the stdout stream.
- */
-void
-Java_java_lang_System_setOut0(JNIEnv *env, jclass system_cls, jobject stream)
-{
-	jfieldID out = (*env)->GetStaticFieldID(env, system_cls, 
-					"out", "Ljava/io/PrintStream;");
-	assert(out != NULL);
-	(*env)->SetStaticObjectField(env, system_cls, out, stream);
-}
-
-/*
- * Set the error stream.
- */
-void
-Java_java_lang_System_setErr0(JNIEnv *env, jclass system_cls, struct Hjava_io_PrintStream* stream)
-{
-	jfieldID err = (*env)->GetStaticFieldID(env, system_cls, 
-					"err", "Ljava/io/PrintStream;");
-	assert(err != NULL);
-	(*env)->SetStaticObjectField(env, system_cls, err, stream);
-}
-
 jint
-java_lang_System_identityHashCode(struct Hjava_lang_Object* o)
+java_lang_VMSystem_identityHashCode(struct Hjava_lang_Object* o)
 {
   /* Hash code is object's address */
   return ((jint)(jword)o);
@@ -153,9 +90,12 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 }
 
 void
-java_lang_System_arraycopy0(struct Hjava_lang_Object* src, jint srcpos,
-			   struct Hjava_lang_Object* dst, jint dstpos,
-			   jint len) {
+java_lang_VMSystem_arraycopy0(struct Hjava_lang_Object* src,
+			      jint srcpos,
+			      struct Hjava_lang_Object* dst,
+			      jint dstpos,
+			      jint len)
+{
 	char* in; 	 
 	char* out; 	 
 	int elemsz; 	 

@@ -1,6 +1,5 @@
-/* System.java -- useful methods to interface with the system
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
+/* VMSystem.java -- helper for java.lang.system
+   Copyright (C) 1998, 2002, 2004 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -36,19 +35,17 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package java.lang;
 
+import java.lang.reflect.Array;
+
 /**
- * System represents system-wide resources; things that represent the
- * general environment.  As such, all methods are static.
+ * VMSystem is a package-private helper class for System that the
+ * VM must implement.
  *
  * @author John Keiser
- * @author Eric Blake (ebb9@email.byu.edu)
- * @since 1.0
- * @status still missing 1.4 functionality
  */
-public final class System
+final class VMSystem
 {
   /**
    * Copy one array onto another from <code>src[srcStart]</code> ...
@@ -73,10 +70,51 @@ public final class System
    * @throws IndexOutOfBoundsException if len is negative, or if the start or
    *         end copy position in either array is out of bounds
    */
-  public static void arraycopy(Object src, int srcStart,
-                               Object dest, int destStart, int len)
-  {
-    VMSystem.arraycopy(src, srcStart, dest, destStart, len);
-  }
+  static void arraycopy(Object src, int srcStart,
+			Object dest, int destStart, int len)
+    {
+	if (src == null)
+	    throw new NullPointerException("src == null");
 
-} // class System
+	if (dest == null)
+	    throw new NullPointerException("dest == null");
+
+	if (len == 0)
+	    return; 	 
+
+	final Class source_class = src.getClass();
+
+	if (!source_class.isArray())
+	    throw new ArrayStoreException("source is not an array: " + source_class.getName());
+
+	final Class destination_class = dest.getClass();
+
+	if (!destination_class.isArray())
+	    throw new ArrayStoreException("destination is not an array: " + destination_class.getName());
+
+	if (srcStart < 0)
+	    throw new ArrayIndexOutOfBoundsException("srcStart < 0: " + srcStart);
+
+	final int src_len = Array.getLength(src);
+
+	if ((long)srcStart + (long)len > (long)src_len)
+	    throw new ArrayIndexOutOfBoundsException("srcStart + len > src.len: " + srcStart + " + " + len + " > " + src_len);
+
+	if (destStart < 0)
+	    throw new ArrayIndexOutOfBoundsException("destStart < 0: " + destStart);
+
+	final int dest_len = Array.getLength(dest);
+
+	if ((long)destStart + (long)len > (long)dest_len)
+	    throw new ArrayIndexOutOfBoundsException("destStart + len > dest.len: " + destStart + " + " + len + " > " + dest_len);
+
+	if (len < 0)
+	    throw new ArrayIndexOutOfBoundsException("len < 0: " + len);
+
+	arraycopy0(src, srcStart, dest, destStart, len);
+    }
+
+  static native void arraycopy0(Object src, int srcStart,
+				Object dest, int destStart, int len);
+
+}

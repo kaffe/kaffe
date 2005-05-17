@@ -29,6 +29,7 @@ LANG_SRCS = \
 		Runtime.c \
 		String.c \
 		System.c \
+		java_lang_VMSystem.c \
 		Thread.c \
 		ThreadStack.c \
 		Throwable.c \

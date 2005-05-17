@@ -1,3 +1,57 @@
+2005-05-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/java_lang_VMSystem.c,
+	libraries/javalib/java/lang/VMSystem.java,
+	test/internal/java/lang/VMSystem.java:
+	New files. Taken from GNU Classpath.
+
+	* include/Makefile.am (NOINSTALL_DERIVED_HDRS): Removed
+	java_lang_System.h. (NOINSTALL_JNI_DERIVED_HDRS) Added
+	java_lang_VMSystem.h.
+
+	* kaffe/kaffevm/baseClasses.c (RuntimeClass): New field.
+	(RUNTIMECLASS) New constant. 
+	(initBaseClasses) Load Runtime class.
+
+	* kaffe/kaffevm/baseClasses.h (RuntimeClass): export field.
+
+	* kaffe/kaffevm/thread.c (runfinalizer): Call exitJavaCleanupHook
+	in Runtime class.
+
+	* libraries/clib/native/Class.c,
+	libraries/clib/native/Field.c: Removed unnecessary include of
+	java_lang_System.h.
+
+	* libraries/clib/native/Makefile.am (LANG_SRCS): Added 
+	java_lang_VMSystem.c.
+
+	* libraries/clib/native/System.c (java_lang_System_getenv0,
+	java_lang_System_currentTimeMillis, Java_java_lang_System_setIn0,
+	Java_java_lang_System_setOut0, Java_java_lang_System_setErr0):
+	Removed.
+	(java_lang_System_identityHashCode, java_lang_System_arraycopy0)
+	Renamed into java_lang_VMSystem_identityHashCode and
+	java_lang_VMSystem_arraycopy0.
+
+	* libraries/javalib/gnu/classpath/VMStackWalker.java:
+	(MINIMAL_NUMBER_OF_FRAMES, CALLERS_CALLER_FRAME): New constants.
+	(getCallingClass, getCallingClassLoader): Use MINIMAL_NUMBER_OF_FRAMES
+	and CALLERS_CALLER_FRAME to return the class or the classloader of
+	the caller's caller.
+
+	* libraries/javalib/java/lang/Runtime.java (securityManager): Removed.
+	(exitJavaCleanupHook): New method.
+
+	* libraries/javalib/java/lang/System.java: Switched over to implementation
+	from GNU Classpath.
+
+	* test/internal/Makefile.am: Added java/lang/VMSystem.java into the build.
+
+	* test/internal/java/lang/System.java: Switched over to implementation
+	from GNU Classpath.
+
+	* test/regression/Reflect.java: Adapted expected output.
+
 2005-05-16  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

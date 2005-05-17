@@ -2684,6 +2684,7 @@ java_lang_SRCS = \
 	java/lang/VMDouble.java \
 	java/lang/VMFloat.java \
 	java/lang/VMObject.java \
+	java/lang/VMSystem.java \
 	java/lang/VMThread.java \
 	java/lang/VMThrowable.java \
 	java/lang/VerifyError.java \

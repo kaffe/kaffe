@@ -52,6 +52,25 @@ package gnu.classpath;
 public final class VMStackWalker
 {
   /**
+   * When calling <code>getCallingClass()</code> and 
+   * <code>getCallingClassLoader()</code>, the minimal number of frames 
+   * on the stack needs to be 4. The frames on the stack look like this:
+   *
+   * <ul>
+   * <li><code>getClassContext()</code>
+   * <li><code>getCallingClass()</code> | <code>getCallingClassLoader()</code>
+   * <li>method invoking it
+   * <li>method whose <code>Class</code> or <code>ClassLoader</code> we need
+   * </ul>
+   */
+  private static final int MINIMAL_NUMBER_OF_FRAMES = 4;
+
+  /**
+   * The frame of the caller's caller.
+   */
+  private static final int CALLERS_CALLER_FRAME = MINIMAL_NUMBER_OF_FRAMES - 1;
+
+  /**
    * Get a list of all the classes currently executing methods on the
    * Java stack. <code>getClassContext()[0]</code> is the class associated
    * with the currently executing method, i.e., the method that called
@@ -81,9 +100,9 @@ public final class VMStackWalker
   public static Class getCallingClass()
   {
     Class[] ctx = getClassContext();
-    if (ctx.length < 3)
+    if (ctx.length < MINIMAL_NUMBER_OF_FRAMES)
       return null;
-    return ctx[2];
+    return ctx[CALLERS_CALLER_FRAME];
   }
 
   /**
@@ -100,9 +119,9 @@ public final class VMStackWalker
   public static ClassLoader getCallingClassLoader()
   {
     Class[] ctx = getClassContext();
-    if (ctx.length < 3)
+    if (ctx.length < MINIMAL_NUMBER_OF_FRAMES)
       return null;
-    return ctx[2].getClassLoader();
+    return ctx[CALLERS_CALLER_FRAME].getClassLoader();
   }
 }
 

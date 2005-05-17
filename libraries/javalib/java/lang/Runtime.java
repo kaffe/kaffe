@@ -44,8 +44,6 @@ private static boolean VMShuttingDown = false;
 private static final RuntimePermission SHUTDOWN_HOOKS =
 	new RuntimePermission("shutdownHooks");
 
-static SecurityManager securityManager;
-	
 private Runtime () {
 }
 
@@ -311,6 +309,10 @@ public boolean removeShutdownHook(Thread hook) throws IllegalStateException {
 	}
 
 	return shutdownHooks.removeElement(hook);
+}
+
+private static void exitJavaCleanupHook() {
+	Runtime.getRuntime().exitJavaCleanup();
 }
 
 native public void runFinalization();

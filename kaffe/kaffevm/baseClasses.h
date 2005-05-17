@@ -30,6 +30,7 @@ void initialiseKaffe(void);
 
 extern struct Hjava_lang_Class*	ObjectClass;
 extern struct Hjava_lang_Class*	StringClass;
+extern struct Hjava_lang_Class*	RuntimeClass;
 extern struct Hjava_lang_Class*	SystemClass;
 extern struct Hjava_lang_Class*	SerialClass;
 extern struct Hjava_lang_Class*	CloneClass;

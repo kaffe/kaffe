@@ -127,13 +127,13 @@ ObjectFields.class: $(srcdir)/ObjectFields.java
 MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
 	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/MethodOptimizations.java
 
-NativeMethodCall.class java/lang/System.class: $(srcdir)/NativeMethodCall.java  $(srcdir)/java/lang/System.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/java/lang/System.java $(srcdir)/NativeMethodCall.java
+NativeMethodCall.class java/lang/System.class java/lang/VMSystem.class: $(srcdir)/NativeMethodCall.java   $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java
+	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java $(srcdir)/NativeMethodCall.java
 
 Exceptions.class: $(srcdir)/Exceptions.java
 	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/Exceptions.java
 
-jit_stub.o: java/lang/System.class $(JAVA_CLASSES)
+jit_stub.o: java/lang/System.class java/lang/VMSystem.class $(JAVA_CLASSES)
 
 TESTS = $(check_PROGRAMS)
 
@@ -155,7 +155,8 @@ EXTRA_DIST = \
 	MethodOptimizations.java \
 	NativeMethodCall.java \
 	Exceptions.java \
-	java/lang/System.java
+	java/lang/System.java \
+	java/lang/VMSystem.java
 
 CLEANFILES = \
 	*.fail \
@@ -164,4 +165,6 @@ CLEANFILES = \
 	*.core \
 	*.class \
 	$(nodist_GEN_SRCS) \
-	java/lang/System.class
+	java/lang/System.class  \
+	java/lang/VMSystem.class
+

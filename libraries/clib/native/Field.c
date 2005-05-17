@@ -24,7 +24,6 @@
 #include "exception.h"
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
-#include "java_lang_System.h"
 #include "java_lang_reflect_Field.h"
 #include <native.h>
 #include "defs.h"
