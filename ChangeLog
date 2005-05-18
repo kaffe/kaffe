@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-16  Tom Tromey  <tromey@redhat.com>
+
+        * gnu/java/net/protocol/http/Headers.java (parse): Include final
+        character of line.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-18  Roman Kennke  <roman@kennke.org>
 
         * javax/swing/text/JTextComponent.java
