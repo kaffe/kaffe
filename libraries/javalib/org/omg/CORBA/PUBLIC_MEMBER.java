@@ -1,4 +1,4 @@
-/* PUBLIC_MEMBER.java -- 
+/* PUBLIC_MEMBER.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -39,11 +39,11 @@ package org.omg.CORBA;
 
 /**
  * One of the two constants, defining the visibility scope of
- * the {@link ValueMember}. The other constant is 
+ * the {@link ValueMember}. The other constant is
  * {@link PRIVATE_MEMBER}.
- * 
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
- * 
+ *
  * @see ValueMember#access
  */
 public interface PUBLIC_MEMBER
@@ -51,5 +51,5 @@ public interface PUBLIC_MEMBER
   /**
    * The flag, specifying that the value member is public.
    */
-  int value = 1;
+  short value = 1;
 }
