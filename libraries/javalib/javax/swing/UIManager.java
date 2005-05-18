@@ -72,6 +72,23 @@ public class UIManager implements Serializable
     {
       return clazz;
     }
+
+    /**
+     * Returns a String representation of the LookAndFeelInfo object.
+     *
+     * @return a String representation of the LookAndFeelInfo object
+     */
+    public String toString()
+    {
+      StringBuffer s = new StringBuffer();
+      s.append(getClass().getName());
+      s.append('[');
+      s.append(getName());
+      s.append(' ');
+      s.append(getClassName());
+      s.append(']');
+      return s.toString();
+    }
   }
 
   private static final long serialVersionUID = -5547433830339189365L;

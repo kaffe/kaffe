@@ -1319,4 +1319,33 @@ public class SwingUtilities
            && b.x >= a.x && b.x + b.width <= a.x + a.width && b.y >= a.y
            && b.y + b.height <= a.y + a.height;
   }
+
+  /**
+   * Returns the InputMap that is provided by the ComponentUI of
+   * <code>component</code> for the specified condition.
+   *
+   * @param component the component for which the InputMap is returned
+   * @param cond the condition that specifies which of the three input
+   *     maps should be returned, may be
+   *     {@link JComponent#WHEN_IN_FOCUSED_WINDOW},
+   *     {@link JComponent#WHEN_FOCUSED} or
+   *     {@link JComponent#WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+   *
+   * @return
+   */
+  public static InputMap getUIInputMap(JComponent component, int cond)
+  {
+    return component.getInputMap(cond);
+  }
+
+  /**
+   * Returns the ActionMap that is provided by the ComponentUI of
+   * <code>component</code>.
+   *
+   * @param component the component for which the ActionMap is returned
+   */
+  public static InputMap getUIActionMap(JComponent component)
+  {
+    return component.getInputMap();
+  }
 }

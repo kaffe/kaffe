@@ -400,6 +400,7 @@ public abstract class JComponent extends Container implements Serializable
     setDropTarget(new DropTarget());
     defaultLocale = Locale.getDefault();
     debugGraphicsOptions = DebugGraphics.NONE_OPTION;
+    setRequestFocusEnabled(true);
   }
 
   /**
@@ -2321,6 +2322,33 @@ public abstract class JComponent extends Container implements Serializable
   public boolean requestFocus(boolean temporary)
   {
     return super.requestFocus(temporary);
+  }
+
+  /**
+   * Requests that this component gets the input focus if the top level
+   * window that contains this component has the focus and the
+   * requestFocusEnabled property is set to <code>true</code>.
+   *
+   * The preconditions that have to be met to become a focus owner is that
+   * the component must be displayable, visible and focusable.
+   *
+   * Note that this signals only a request for becoming focused. There are
+   * situations in which it is not possible to get the focus. So developers
+   * should not assume that the component has the focus until it receives
+   * a {@link java.awt.event.FocusEvent} with a value of
+   * {@link java.awt.event.FocusEvent.FOCUS_GAINED}.
+   *
+   * @return <code>false</code> if the focus change request will definitly
+   *     fail, <code>true</code> if it will likely succeed
+   *
+   * @see {@link Component#requestFocusInWindow()}
+   */
+  public boolean requestFocusInWindow()
+  {
+    if (isRequestFocusEnabled())
+      return super.requestFocusInWindow();
+    else
+      return false;
   }
 
   /**

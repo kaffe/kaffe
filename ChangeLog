@@ -2,6 +2,57 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/JTextComponent.java
+        (constructor): Make text components editable by default.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/UIManager.java
+        (toString): Added method.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SwingUtilities.java
+        (getUIInputMap): Added method.
+        (getUIActionMap): Added method.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JComponent.java
+        (constructor): Make component requestFocusEnabled by default.
+        (requestFocusInWindow): Added method.
+
+	2005-05-18  Sven de Marothy <sven@physto.se>
+
+        * javax/swing/table/DefaultTableCellRenderer.java
+        (getTableCellRendererComponent): Allow table parameter to be null.
+
+	2005-05-17  Jan Roehrich  <jan@roehrich.info>
+
+        * javax/swing/JTree.java
+        (getExpandedDescendants): Added method.
+
+	2005-05-17  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JTree.java
+        (TreeModelHandler): Added inner class.
+        (TreeSelectionRedirector): Added inner class.
+        (EmptySelectionModel): Added inner class.
+        (DynamicUtilTreeNode.getChildAt): Added method.
+        (constructor(model)): Sets up a model and a selection model.
+        (setModel): Set up the JTree treeModelListener on newly set
+        models.
+        (createModelListener): Added method.
+        (getDefaultTreeModel): Added method.
+        (convertValueToText): Added method.
+        (paramString): Added method.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-18  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
 
         * org/omg/CORBA/DynAny.java,

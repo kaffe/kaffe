@@ -122,10 +122,14 @@ public class DefaultTableCellRenderer extends JLabel
                                                  boolean hasFocus,
                                                  int row, int column)
   {
-    if (value!=null)
+    if (value != null)
       super.setText(value.toString());
 
     setOpaque(true);
+
+    if (table == null)
+      return this;
+
     if (isSelected)
       {
         setBackground(table.getSelectionBackground());

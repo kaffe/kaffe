@@ -40,6 +40,7 @@ package javax.swing;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -49,6 +50,8 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
@@ -56,6 +59,7 @@ import javax.swing.plaf.TreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
@@ -68,6 +72,172 @@ import javax.swing.tree.TreeSelectionModel;
 public class JTree extends JComponent
   implements Scrollable, Accessible
 {
+  /**
+   * Listens to the model of the JTree and updates the property
+   * <code>expandedState</code> if nodes are removed or changed.
+   */
+  protected class TreeModelHandler
+    implements TreeModelListener
+  {
+
+    /**
+     * Creates a new instance of TreeModelHandler.
+     */
+    protected TreeModelHandler()
+    {
+    }
+
+    /**
+     * Notifies when a node has changed in some ways. This does not include
+     * that a node has changed its location or changed it's children. It
+     * only means that some attributes of the node have changed that might
+     * affect its presentation.
+     *
+     * This method is called after the actual change occured.
+     *
+     * @param ev the TreeModelEvent describing the change
+     */
+    public void treeNodesChanged(TreeModelEvent ev)
+    {
+      // nothing to do here
+    }
+
+    /**
+     * Notifies when a node is inserted into the tree.
+     *
+     * This method is called after the actual change occured.
+     *
+     * @param ev the TreeModelEvent describing the change
+     */
+    public void treeNodesInserted(TreeModelEvent ev)
+    {
+      // nothing to do here
+    }
+
+    /**
+     * Notifies when a node is removed from the tree.
+     *
+     * This method is called after the actual change occured.
+     *
+     * @param ev the TreeModelEvent describing the change
+     */
+    public void treeNodesRemoved(TreeModelEvent ev)
+    {
+      // TODO: The API docs suggest that this method should do something
+      // but I cannot really see what has to be done here ...
+    }
+
+    /**
+     * Notifies when the structure of the tree is changed.
+     *
+     * This method is called after the actual change occured.
+     *
+     * @param ev the TreeModelEvent describing the change
+     */
+    public void treeStructureChanged(TreeModelEvent ev)
+    {
+      // set state of new path
+      TreePath path = ev.getTreePath();
+      setExpandedState(path, isExpanded(path));
+    }
+  } // TreeModelHandler
+
+  /**
+   * This redirects TreeSelectionEvents and rewrites the source of it
+   * to be this JTree. This is typically done when the tree model
+   * generates an event, but the JTree object associated with that model
+   * should be listed as the actual source of the event.
+   */
+  protected class TreeSelectionRedirector
+    implements TreeSelectionListener, Serializable
+  {
+    /** The serial version UID. */
+    private static final long serialVersionUID = -3505069663646241664L;
+
+    /**
+     * Creates a new instance of TreeSelectionRedirector
+     */
+    protected TreeSelectionRedirector()
+    {
+    }
+
+    /**
+     * Notifies when the tree selection changes.
+     *
+     * @param ev the TreeSelectionEvent that describes the change
+     */
+    public void valueChanged(TreeSelectionEvent ev)
+    {
+      TreeSelectionEvent rewritten =
+        (TreeSelectionEvent) ev.cloneWithSource(JTree.this);
+      fireValueChanged(rewritten);
+    }
+  } // TreeSelectionRedirector
+
+  /**
+   * A TreeModel that does not allow anything to be selected.
+   */
+  protected static class EmptySelectionModel
+    extends DefaultTreeSelectionModel
+  {
+    /** The serial version UID. */
+    private static final long serialVersionUID = -5815023306225701477L;
+
+    /**
+     * The shared instance of this model.
+     */
+    protected static final EmptySelectionModel sharedInstance =
+    new EmptySelectionModel();
+
+    /**
+     * Creates a new instance of EmptySelectionModel.
+     */
+    protected EmptySelectionModel()
+    {
+    }
+
+    /**
+     * Returns the shared instance of EmptySelectionModel.
+     *
+     * @return the shared instance of EmptySelectionModel
+     */
+    public static EmptySelectionModel sharedInstance()
+    {
+      return sharedInstance;
+    }
+
+    /**
+     * This catches attempts to set a selection and sets nothing
+     * instead.
+     *
+     * @param paths not used here
+     */
+    public void setSelectionPaths(TreePath[] paths)
+    {
+      // we don't allow selections in this class
+    }
+
+    /**
+     * This catches attempts to add something to the selection.
+     *
+     * @param paths not used here
+     */
+    public void addSelectionPaths(TreePath[] paths)
+    {
+      // we don't allow selections in this class
+    }
+
+    /**
+     * This catches attempts to remove something from the selection.
+     *
+     * @param paths not used here
+     */
+    public void removeSelectionPaths(TreePath[] paths)
+    {
+      // we don't allow selections in this class
+    }
+  }// EmptySelectionModel
+
   private static final long serialVersionUID = 7559816092864483649L;
 
   public static final String CELL_EDITOR_PROPERTY = "cellEditor";
@@ -121,6 +291,17 @@ public class JTree extends JComponent
   protected int visibleRowCount;
 
   /**
+   * Handles TreeModelEvents to update the expandedState.
+   */
+  protected transient TreeModelListener treeModelListener;
+
+  /**
+   * Redirects TreeSelectionEvents so that the source is this JTree.
+   */
+  protected TreeSelectionRedirector selectionRedirector =
+    new TreeSelectionRedirector();
+
+  /**
    * Creates a new <code>JTree</code> object.
    */
   public JTree()
@@ -155,7 +336,9 @@ public class JTree extends JComponent
    */
   public JTree(TreeModel model)
   {
-    treeModel = model;
+    setModel(model);
+    setSelectionModel(EmptySelectionModel.sharedInstance());
+    selectionModel.addTreeSelectionListener(selectionRedirector);
     setCellRenderer(new DefaultTreeCellRenderer());
     updateUI();
   }
@@ -231,6 +414,20 @@ public class JTree extends JComponent
     {
       loadChildren();
       return super.children();
+    }
+
+    /**
+     * Returns the child node at position <code>pos</code>. Subclassed here
+     * to load the children if necessary.
+     *
+     * @param pos the position of the child node to fetch
+     *
+     * @return the childnode at the specified position
+     */
+    public TreeNode getChildAt(int pos)
+    {
+      loadChildren();
+      return super.getChildAt(pos);
     }
 
     public boolean isLeaf() 
@@ -582,6 +779,11 @@ public class JTree extends JComponent
     TreeModel oldValue = treeModel;
     treeModel = model;
     firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
+
+    // add treeModelListener to the new model
+    if (treeModelListener == null)
+      treeModelListener = createTreeModelListener();
+    model.addTreeModelListener(treeModelListener);
   }
 
   /**
@@ -1388,5 +1590,118 @@ public class JTree extends JComponent
   public boolean isPathEditable(TreePath path)
   {    
     return isEditable();
+  }
+
+  /**
+   * Creates and returns an instance of {@link TreeModelHandler}.
+   *
+   * @returns an instance of {@link TreeModelHandler}
+   */
+  protected TreeModelListener createTreeModelListener()
+  {
+    return new TreeModelHandler();
+  }
+
+  /**
+   * Returns a sample TreeModel that can be used in a JTree. This can
+   * be used in Bean- or GUI-Builders to show something interesting.
+   *
+   * @return a sample TreeModel that can be used in a JTree
+   */
+  protected static TreeModel getDefaultTreeModel()
+  {
+    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root node");
+    DefaultMutableTreeNode child1 = new DefaultMutableTreeNode("Child node 1");
+    DefaultMutableTreeNode child11 =
+      new DefaultMutableTreeNode("Child node 1.1");
+    DefaultMutableTreeNode child12 =
+      new DefaultMutableTreeNode("Child node 1.2");
+    DefaultMutableTreeNode child13 =
+      new DefaultMutableTreeNode("Child node 1.3");
+    DefaultMutableTreeNode child2 = new DefaultMutableTreeNode("Child node 2");
+    DefaultMutableTreeNode child21 =
+      new DefaultMutableTreeNode("Child node 2.1");
+    DefaultMutableTreeNode child22 =
+      new DefaultMutableTreeNode("Child node 2.2");
+    DefaultMutableTreeNode child23 =
+      new DefaultMutableTreeNode("Child node 2.3");
+    DefaultMutableTreeNode child24 =
+      new DefaultMutableTreeNode("Child node 2.4");
+
+    DefaultMutableTreeNode child3 = new DefaultMutableTreeNode("Child node 3");
+    root.add(child1);
+    root.add(child2);
+    root.add(child3);
+    child1.add(child11);
+    child1.add(child12);
+    child1.add(child13);
+    child2.add(child21);
+    child2.add(child22);
+    child2.add(child23);
+    child2.add(child24);
+    return new DefaultTreeModel(root);
+  }
+
+  /**
+   * Converts the specified value to a String. This is used by the
+   * renderers of this JTree and its nodes.
+   *
+   * This implementation simply returns <code>value.toString()</code> and
+   * ignores all other parameters.
+   * Subclass this method to control the conversion.
+   *
+   * @param value the value that is converted to a String
+   * @param selected indicates if that value is selected or not
+   * @param expanded indicates if that value is expanded or not
+   * @param leaf indicates if that value is a leaf node or not
+   * @param row the row of the node
+   * @param hasFocus indicates if that node has focus or not
+   */
+  public String convertValueToText(Object value, boolean selected,
+                                   boolean expanded, boolean leaf, int row,
+                                   boolean hasFocus)
+  {
+    return value.toString();
+  }
+
+  /**
+   * A String representation of this JTree. This is intended to be used
+   * for debugging. The returned string may be empty but may not be
+   * <code>null</code>.
+   *
+   * @return a String representation of this JTree
+   */
+  public String paramString()
+  {
+    // TODO: this is completely legal, but it would possibly be nice
+    // to return some more content, like the tree structure, some properties
+    // etc ...
+    return "";
+  }
+
+  /**
+   * Returns all TreePath objects which are a descendants of 
+   * the given path and are exapanded at the moment of the
+   * execution of this method. If the state of any node 
+   * is beeing toggled while this method is executing this 
+   * change may be left unaccounted.
+   *  
+   * @param path The parent of this request
+   * @return An Enumeration containing TreePath objects
+   */
+  public Enumeration getExpandedDescendants(TreePath path) 
+  {
+    Enumeration paths = nodeStates.keys();
+    Vector relevantPaths = new Vector();
+    while(paths.hasMoreElements())
+      {
+        TreePath nextPath = (TreePath) paths.nextElement();
+        if(nodeStates.get(nextPath) == EXPANDED && 
+           path.isDescendant(nextPath)) 
+          {
+            relevantPaths.add(nextPath);
+          }
+      }
+    return relevantPaths.elements();
   }
 }
