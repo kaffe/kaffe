@@ -72,5 +72,6 @@ public abstract class Compiler
   protected String dest;
 
   /** Class prefix used when trying to find instance.  */
-  private static final String classPrefix = "gnu.java.rmi.rmic.Compile_";
+  private static final String classPrefix =
+    "gnu.classpath.tools.rmi.rmic.Compile_";
 }

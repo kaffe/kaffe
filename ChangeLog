@@ -1,3 +1,8 @@
+2005-05-18  Julio M. Merino Vidal <jmmv84@gmail.com>
+
+	* libraries/javalib/gnu/classpath/tools/rmi/rmic/Compiler.java:
+	(classPrefix) Fixed to match package name.
+
 2005-05-17  Davanum Srinivas <dims@yahoo.com>
 
 	* kaffe/kaffevm/thread.c (setPriorityThread):
