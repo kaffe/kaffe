@@ -10,7 +10,7 @@
 #ifndef KAFFE_KAFFE_VERSION_H
 #define KAFFE_KAFFE_VERSION_H
 
-#define JAVA_VERSION_STRING	"1.1"
+#define JAVA_VERSION_STRING	"1.4"
 
 /*
  * Print copyright notice and simple version info (Java version, 
