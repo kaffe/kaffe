@@ -999,7 +999,7 @@ public class SimpleDateFormat extends DateFormat
 		int zoneCount = zoneStrings.length;
 		int index = pos.getIndex();
 		boolean found_zone = false;
-		simpleOffset = computeOffset(dateStr.substring(index));
+		simpleOffset = computeOffset(dateStr.substring(index), pos);
 		if (simpleOffset != null)
 		  {
 		    found_zone = true;
@@ -1186,26 +1186,44 @@ public class SimpleDateFormat extends DateFormat
    * @return the parsed offset, or null if parsing
    *         failed.
    */
-  private Integer computeOffset(String zoneString)
+  private Integer computeOffset(String zoneString, ParsePosition pos)
   {
-    Pattern pattern =
+    Pattern pattern = 
       Pattern.compile("(GMT)?([+-])([012])?([0-9]):?([0-9]{2})");
     Matcher matcher = pattern.matcher(zoneString);
-    if (matcher.matches())
+
+    // Match from start, but ignore trailing parts
+    boolean hasAll = matcher.lookingAt();
+    try
+      {
+	// Do we have at least the sign, hour and minute?
+	matcher.group(2);
+	matcher.group(4);
+	matcher.group(5);
+      }
+    catch (IllegalStateException ise)
+      {
+	hasAll = false;
+      }
+    if (hasAll)
       {
 	int sign = matcher.group(2).equals("+") ? 1 : -1;
-	int hour = (Integer.parseInt(matcher.group(3)) * 10)
-	  + Integer.parseInt(matcher.group(4));
+	int hour = Integer.parseInt(matcher.group(4));
+	if (!matcher.group(3).equals(""))
+	  hour += (Integer.parseInt(matcher.group(3)) * 10);
 	int minutes = Integer.parseInt(matcher.group(5));
 
 	if (hour > 23)
 	  return null;
-
 	int offset = sign * ((hour * 60) + minutes) * 60000;
+
+	// advance the index
+	pos.setIndex(pos.getIndex() + matcher.end());
 	return new Integer(offset);
       }
     else if (zoneString.startsWith("GMT"))
       {
+	pos.setIndex(pos.getIndex() + 3);
 	return new Integer(0);
       }
     return null;
