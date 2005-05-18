@@ -1,3 +1,9 @@
+2005-05-18  Rei Odaira <ray@is.s.u-tokyo.ac.jp>
+
+	* kaffe/kaffevm/classMethod.c:
+	(getInheritedMethodIndex) Check whether method 
+	is accessible.
+
 2005-05-18  Julio M. Merino Vidal <jmmv84@gmail.com>
 
 	* libraries/javalib/gnu/classpath/tools/rmi/rmic/Compiler.java:

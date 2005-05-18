@@ -1959,7 +1959,8 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
 		Method* mt = CLASS_METHODS(super);
 		for (; --j >= 0;  ++mt) {
 			if (utf8ConstEqual (mt->name, meth->name) &&
-			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)))
+			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)) &&
+			    checkMethodAccess(meth->class, super, mt))
 			{
 				meth->idx = mt->idx;
 				return (true);
