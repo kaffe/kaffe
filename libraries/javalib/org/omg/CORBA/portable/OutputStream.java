@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package org.omg.CORBA.portable;
 
-import java.math.BigDecimal;
-
 import org.omg.CORBA.Any;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
@@ -47,6 +45,10 @@ import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Principal;
 import org.omg.CORBA.TypeCode;
+
+import java.io.IOException;
+
+import java.math.BigDecimal;
 
 /**
  * This class is used to write CORBA IDL data types.
@@ -73,15 +75,17 @@ public abstract class OutputStream
   }
 
   /**
-   * Should write an integer to the output stream, but,
+   * Should write an byte (lower 8 bits) to the output stream, but,
    * following specification, it does not and
    * must be overridden to get a functionality.
    *
    * @param n an integer to write.
    *
    * @throws NO_IMPLEMENT, always.
+   * @throws IOException in overriden methods.
    */
   public void write(int n)
+             throws IOException
   {
     throw new NO_IMPLEMENT();
   }

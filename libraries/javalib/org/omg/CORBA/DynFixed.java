@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynFixed.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,40 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents a CORBA <code>fixed</code>, allowing to get and set its value
+ * in the form of the binary representation.
+ *
+ * The format, described in CORBA specification, requires to store
+ * data in hexadecimal format, two digits per byte (oceted), most
+ * significant digit first. The last half-byte in the representation
+ * stores the sign, being 0xD for negative numbers and 0xC for
+ * zero and positive numbers. To have the even number of half bytes,
+ * 0x0 is appended to the beginning, if required. The position of the
+ * decimal point is not stored.
+ *
+ * @see gnu.CORBA.BigDecimalHelper
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynFixed
+  extends DynAny
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Get the value of this DynFixed in the binary form.
+   *
+   * @return the binary representation, defined in the header comment.
    */
-  void destroy();
+  byte[] get_value();
 
   /**
-   * Return the desired amount of bindings.
+   * Sets the value of this DynFixed from the binary representation.
    *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * @param a_value the byte array, representing a CORBA <code>fixed</code>,
+   * as defined in the header comment.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
-
-  /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
-   */
-  boolean next_one(BindingHolder a_binding);
+  void set_value(byte[] a_value);
 }

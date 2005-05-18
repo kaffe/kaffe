@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* NameValuePair.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,46 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Holds the value, having the given name(id). This class is used by
+ * with {@link DynStruct} to name the fields of the record (structure).
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public final class NameValuePair
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * The value of the structure record.
    */
-  void destroy();
+  public Any value;
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * The name of the structure record.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  public String id;
 
   /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * Cretes an unitialised instance of the name-value pair.
    */
-  boolean next_one(BindingHolder a_binding);
+  public NameValuePair()
+  {
+  }
+
+  /**
+   * Creates the name-value pair, initialising the fields to the passed
+   * values.
+   *
+   * @param an_id the name (also called id) of the name-value pair, normally
+   * the name of the structure field.
+   *
+   * @param a_value the value of the name-value pair.
+   */
+  public NameValuePair(String an_id, Any a_value)
+  {
+    id = an_id;
+    value = a_value;
+  }
 }

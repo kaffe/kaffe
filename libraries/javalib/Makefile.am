@@ -54,6 +54,7 @@ Klasses_jar_SRCS = \
 	$(com_jcraft_jzlib_SRCS) \
 	$(gnu_CORBA_SRCS) \
 	$(gnu_CORBA_CDR_SRCS) \
+	$(gnu_CORBA_DynAn_SRCS) \
 	$(gnu_CORBA_GIOP_SRCS) \
 	$(gnu_CORBA_GIOP_v1_0_SRCS) \
 	$(gnu_CORBA_GIOP_v1_2_SRCS) \
@@ -412,6 +413,8 @@ gnu_CORBA_CDR_SRCS = \
 	gnu/CORBA/CDR/cdrInput.java \
 	gnu/CORBA/CDR/cdrOutput.java \
 	gnu/CORBA/CDR/encapsulatedOutput.java
+gnu_CORBA_DynAn_SRCS = \
+	gnu/CORBA/DynAn/NameValuePairHolder.java
 gnu_CORBA_GIOP_SRCS = \
 	gnu/CORBA/GIOP/CancelHeader.java \
 	gnu/CORBA/GIOP/CharSets_OSF.java \
@@ -4552,12 +4555,21 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/CompletionStatusHelper.java \
 	org/omg/CORBA/Context.java \
 	org/omg/CORBA/ContextList.java \
+	org/omg/CORBA/Current.java \
+	org/omg/CORBA/CurrentOperations.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
 	org/omg/CORBA/DomainManager.java \
 	org/omg/CORBA/DomainManagerOperations.java \
 	org/omg/CORBA/DoubleHolder.java \
 	org/omg/CORBA/DoubleSeqHelper.java \
 	org/omg/CORBA/DoubleSeqHolder.java \
+	org/omg/CORBA/DynAny.java \
+	org/omg/CORBA/DynArray.java \
+	org/omg/CORBA/DynEnum.java \
+	org/omg/CORBA/DynFixed.java \
+	org/omg/CORBA/DynSequence.java \
+	org/omg/CORBA/DynStruct.java \
+	org/omg/CORBA/DynUnion.java \
 	org/omg/CORBA/Environment.java \
 	org/omg/CORBA/ExceptionList.java \
 	org/omg/CORBA/FREE_MEM.java \
@@ -4586,8 +4598,11 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/NO_IMPLEMENT.java \
 	org/omg/CORBA/NO_MEMORY.java \
 	org/omg/CORBA/NO_PERMISSION.java \
+	org/omg/CORBA/NO_RESOURCES.java \
 	org/omg/CORBA/NO_RESPONSE.java \
 	org/omg/CORBA/NVList.java \
+	org/omg/CORBA/NameValuePair.java \
+	org/omg/CORBA/NameValuePairHelper.java \
 	org/omg/CORBA/NamedValue.java \
 	org/omg/CORBA/OBJECT_NOT_EXIST.java \
 	org/omg/CORBA/OBJ_ADAPTER.java \
@@ -4602,6 +4617,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/PRIVATE_MEMBER.java \
 	org/omg/CORBA/PUBLIC_MEMBER.java \
 	org/omg/CORBA/Policy.java \
+	org/omg/CORBA/PolicyError.java \
 	org/omg/CORBA/PolicyOperations.java \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/PrincipalHolder.java \

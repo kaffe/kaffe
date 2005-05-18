@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* NameValuePairHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,60 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package gnu.CORBA.DynAn;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
+import org.omg.CORBA.NameValuePair;
+import org.omg.CORBA.NameValuePairHelper;
+import org.omg.CORBA.TypeCode;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The iterator for seing the available bindings.
+ * The name-value pair holder. The {@link NameValuePair} has no standard
+ * holder defined, but it is needed to store the {@link NameValuePair} into
+ * {@link Any}.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public class NameValuePairHolder
+  implements Streamable
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * The stored value of the name value pair.
    */
-  void destroy();
+  public NameValuePair value;
+
+  public NameValuePairHolder()
+  {
+  }
+
+  public NameValuePairHolder(NameValuePair a_value)
+  {
+    value = a_value;
+  }
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * Read the name value pair.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  public void _read(InputStream input)
+  {
+    value = NameValuePairHelper.read(input);
+  }
 
   /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * Return the typecode of the name value pair.
    */
-  boolean next_one(BindingHolder a_binding);
+  public TypeCode _type()
+  {
+    return NameValuePairHelper.type();
+  }
+
+  /**
+   * Write the name value pair.
+   */
+  public void _write(OutputStream output)
+  {
+    NameValuePairHelper.write(output, value);
+  }
 }

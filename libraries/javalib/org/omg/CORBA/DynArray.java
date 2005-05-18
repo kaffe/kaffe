@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynArray.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,30 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
+import org.omg.CORBA.DynAnyPackage.InvalidSeq;
 
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents the {@link DynAny}, holding an array.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynArray
+  extends DynAny
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Get the elements of the enclosed array.
    */
-  void destroy();
+  Any[] get_elements();
 
   /**
-   * Return the desired amount of bindings.
+   * Set the elements from of the enclosed array of Anys.
    *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * @throws InvalidSeq if the passed array contains the
+   * elements of the different type of if the array size mismatch.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
-
-  /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
-   */
-  boolean next_one(BindingHolder a_binding);
+  void set_elements(Any[] an_array)
+             throws InvalidSeq;
 }

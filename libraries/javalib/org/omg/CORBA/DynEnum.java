@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynEnum.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,49 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents the dynamic enumeration, allowing to get/set the value by
+ * name or by position in the enumeration list. The CORBA enumeration
+ * can obtain one of the named values from the specified enumeration list.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynEnum
+  extends DynAny
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Get the value of this object.
+   * @return the currently set value, one of the allowed values
+   * for this enumeration.
    */
-  void destroy();
+  String value_as_string();
 
   /**
-   * Return the desired amount of bindings.
+   * Set the value of this object.
    *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * @param member the value to set, must be one of the allowed values for
+   * this enumeration. Otherwise the {@link SystemException} may be thrown.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  void value_as_string(String member);
 
   /**
-   * Return the next binding.
+   * Set the value of this object as the position inside the list of this
+   * enumeration.
    *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * @param member the position of the enumeration value inside
+   * the enumeration list. Otherwise the {@link SystemException} may be thrown.
    */
-  boolean next_one(BindingHolder a_binding);
+  void value_as_ulong(int member);
+
+  /**
+   * Get the value of this object as the position inside the list of this
+   * enumeration.
+   *
+   * @return member the position of the currently set enumeration value inside
+   * the enumeration list.
+   */
+  int value_as_ulong();
 }

@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* NO_RESOURCES.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,62 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
-
-import org.omg.CORBA.portable.IDLEntity;
+package org.omg.CORBA;
 
 import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Means that the ORB has reached some general resource limitation like
+ * maximal number of the opened connections.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public class NO_RESOURCES
+  extends SystemException
+  implements Serializable
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Use serialVersionUID (v1.4) for interoperability.
    */
-  void destroy();
+  private static final long serialVersionUID = 8129246118235803597L;
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * Creates a NO_RESOURCES with the default minor code of 0,
+   * completion state COMPLETED_NO and the given explaining message.
+   * @param reasom the explaining message.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  public NO_RESOURCES(String message)
+  {
+    super(message, 0, CompletionStatus.COMPLETED_NO);
+  }
 
   /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * Creates NO_RESOURCES with the default minor code of 0 and a
+   * completion state COMPLETED_NO.
    */
-  boolean next_one(BindingHolder a_binding);
+  public NO_RESOURCES()
+  {
+    super("", 0, CompletionStatus.COMPLETED_NO);
+  }
+
+  /** Creates a NO_RESOURCES exception with the specified minor
+   * code and completion status.
+   * @param minor additional error code.
+   * @param completed the method completion status.
+   */
+  public NO_RESOURCES(int minor, CompletionStatus completed)
+  {
+    super("", minor, completed);
+  }
+
+  /**
+   * Created NO_RESOURCES exception, providing full information.
+   * @param reason explaining message.
+   * @param minor additional error code (the "minor").
+   * @param completed the method completion status.
+   */
+  public NO_RESOURCES(String reason, int minor, CompletionStatus completed)
+  {
+    super(reason, minor, completed);
+  }
 }

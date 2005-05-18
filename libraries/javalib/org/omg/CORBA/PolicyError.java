@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* PolicyError.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,67 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
-
-import org.omg.CORBA.portable.IDLEntity;
+package org.omg.CORBA;
 
 import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * The exception is thrown when a policy error occurs.
+ * A PolicyError exception may include one of the following error reason codes:
+ * {@link BAD_POLICY}, {@link BAD_POLICY_TYPE},
+ * {@link BAD_POLICY_VALUE}, {@link UNSUPPORTED_POLICY},
+ * {@link UNSUPPORTED_POLICY_VALUE}.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public class PolicyError
+  extends UserException
+  implements IDLEntity, Serializable
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
-   */
-  void destroy();
+   * Holds the exception reason code, one of
+   * {@link BAD_POLICY}, {@link BAD_POLICY_TYPE},
+   * {@link BAD_POLICY_VALUE}, {@link UNSUPPORTED_POLICY},
+   * {@link UNSUPPORTED_POLICY_VALUE}.
+  */
+  public short reason;
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * Use serialVersionUID (v1.4) for interoperability.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  private static final long serialVersionUID = -9196809779974700103L;
 
   /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * Constructs an unitialised instance of the policy error.
    */
-  boolean next_one(BindingHolder a_binding);
+  public PolicyError()
+  {
+  }
+
+  /**
+   * Constructs the policy error with the given reason code.
+   * @param reason a reason code, one of
+   * {@link BAD_POLICY}, {@link BAD_POLICY_TYPE},
+   * {@link BAD_POLICY_VALUE}, {@link UNSUPPORTED_POLICY},
+   * {@link UNSUPPORTED_POLICY_VALUE}.
+   */
+  public PolicyError(short a_reason)
+  {
+    reason = a_reason;
+  }
+
+  /**
+   * Constructs the policy error with the given reason code and the
+   * detailed message.
+   * @param reason a reason code, one of
+   * {@link BAD_POLICY}, {@link BAD_POLICY_TYPE},
+   * {@link BAD_POLICY_VALUE}, {@link UNSUPPORTED_POLICY},
+   * {@link UNSUPPORTED_POLICY_VALUE}.
+   * @param details the detailed message.
+   */
+  public PolicyError(String a_details, short a_reason)
+  {
+    super(a_details);
+    reason = a_reason;
+  }
 }

@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynSequence.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,43 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
+import org.omg.CORBA.DynAnyPackage.InvalidSeq;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents the {@link DynAny}, holding the CORBA sequence
+ * (an array with the flexible length).
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynSequence
+  extends DynAny
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Get the elements of the enclosed sequence.
    */
-  void destroy();
+  Any[] get_elements();
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * Returns the number of elements, stored in the sequence.
+   * @return
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  int length();
 
   /**
-   * Return the next binding.
+   * Sets the length of this sequence to the given value.
    *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * @param l the new length of the sequence.
    */
-  boolean next_one(BindingHolder a_binding);
+  void length(int l);
+
+  /**
+   * Set the elements from of the enclosed array of Anys.
+   *
+   * @throws InvalidSeq if the passed array contains the
+   * elements of the different type.
+   */
+  void set_elements(Any[] an_array)
+             throws InvalidSeq;
 }

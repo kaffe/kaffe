@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynUnion.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,64 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents the {@link DynAny}, holding the CORBA structure (variant record
+ * with the named fields). The internal reference, described in
+ * {@link DynAny#current_component()}, iterates over the fields of the
+ * member, stored in the union. The union always holds only one member;
+ * which one, depends from the value of the discriminator.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynUnion
+  extends DynAny
 {
   /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
+   * Returns the discriminator, defining, which set of fields is stored.
+   * @return the discriminator.
    */
-  void destroy();
+  DynAny discriminator();
 
   /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * Returns the discriminator kind.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  TCKind discriminator_kind();
 
   /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * Returns the member, stored in this union.
    */
-  boolean next_one(BindingHolder a_binding);
+  DynAny member();
+
+  /**
+   * Returns the kind of the member, stored in this union.
+   */
+  TCKind member_kind();
+
+  /**
+   * Returns the name of the currently focused member.
+   */
+  String member_name();
+
+  /**
+   * Renames the currently focused member.
+   *
+   * @param new_name the new name of the currently focused member.
+   */
+  void member_name(String new_name);
+
+  /**
+   * Checks if the discriminator of this union has been assigned a valid
+   * default value.
+   */
+  boolean set_as_default();
+
+  /**
+   * Determines if the discriminator of this union gets assigned a valid
+   * default value.
+   * @param assign_default
+   */
+  void set_as_default(boolean assign_default);
 }

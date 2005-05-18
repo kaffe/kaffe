@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* CurrentOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,17 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
 
 /**
- * The iterator for seing the available bindings.
+ * The interfaces, derived from this class, define operations that provide
+ * information, associated with a particular thread of execution.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ *
+ * @see Current
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface CurrentOperations
 {
-  /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
-   */
-  void destroy();
-
-  /**
-   * Return the desired amount of bindings.
-   *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
-   */
-  boolean next_n(int amount, BindingListHolder a_list);
-
-  /**
-   * Return the next binding.
-   *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
-   */
-  boolean next_one(BindingHolder a_binding);
 }

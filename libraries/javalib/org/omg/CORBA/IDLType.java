@@ -49,6 +49,6 @@ import org.omg.CORBA.portable.IDLEntity;
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public interface IDLType
-  extends Serializable, IDLEntity
+  extends Serializable, IDLEntity, org.omg.CORBA.Object
 {
 }

@@ -1,4 +1,4 @@
-/* ValueMember.java -- 
+/* ValueMember.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,13 +38,21 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import java.io.Serializable;
+
 /**
  * The class, defining properties of the value member.
- * 
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public class ValueMember
+  implements Serializable, IDLEntity
 {
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -2507594168537449114L;
+
   /**
    * The typedef that represents the IDL type of the value member.
    */
@@ -72,11 +80,11 @@ public class ValueMember
   public TypeCode type;
 
   /**
-   * The type of access (public, private) of this value member. 
+   * The type of access (public, private) of this value member.
    * This field can be equal to either {@link PUBLIC_MEMBER#value} or
    * {@link PRIVATE_MEMBER#value}.
    */
- public short access;
+  public short access;
 
   /**
    * Create the value member with all fields initialised to default values
@@ -95,13 +103,13 @@ public class ValueMember
    * @param a_version version.
    * @param a_type tye.
    * @param a_type_def {@link IDLType} (typeded).
-   * @param an_access accessibility scope. Can be equal to either 
+   * @param an_access accessibility scope. Can be equal to either
    * {@link PUBLIC_MEMBER#value} or {@link PRIVATE_MEMBER#value}.
    */
   public ValueMember(String a_name, String an_id, String is_defined_in,
-                    String a_version, TypeCode a_type, IDLType a_type_def,
-                    short an_access
-                   )
+                     String a_version, TypeCode a_type, IDLType a_type_def,
+                     short an_access
+                    )
   {
     name = a_name;
     id = an_id;

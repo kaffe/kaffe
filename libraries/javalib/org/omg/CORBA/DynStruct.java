@@ -1,4 +1,4 @@
-/* BindingIterator.java --
+/* DynStruct.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,45 +36,54 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.CosNaming;
+package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
+import org.omg.CORBA.DynAnyPackage.InvalidSeq;
 
 /**
- * The iterator for seing the available bindings.
+ * Represents the {@link DynAny}, holding the CORBA structure (record
+ * with the named fields). The internal reference, described in
+ * {@link DynAny#current_component()}, iterates over the fields of the
+ * structure.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface BindingIterator
-  extends org.omg.CORBA.Object, Serializable, IDLEntity
+public interface DynStruct
+  extends DynAny
 {
-  /**
-   * Destroy the iterator on the server side. This must always be
-   * called, as otherwise the iterator will remain on the server even
-   * after the client application terminates.
-   */
-  void destroy();
+/**
+ * Get the kind of the structure field that would be returned by
+ * {@link DynAny#current_component()}.
+ *
+ * @return the kind of the structure field.
+ */
+  TCKind current_member_kind();
 
   /**
-   * Return the desired amount of bindings.
+   * Get the name of the structure field that would be returned by
+   * {@link DynAny#current_component()}.
    *
-   * @param amount the maximal number of bindings to return.
-   * @param a_list a holder to store the returned bindings.
-   *
-   * @return false if there are no more bindings available,
-   * true otherwise.
+   * @return the name of the structure field.
    */
-  boolean next_n(int amount, BindingListHolder a_list);
+  String current_member_name();
 
   /**
-   * Return the next binding.
+   * Get all fields of the structure in the array of the named values,
+   * holding name, repository id and value of the associated field.
    *
-   * @param a_binding a holder, where the next binding will be stored.
-   *
-   * @return false if there are no more bindings available, true
-   * otherwise.
+   * @return members the array of the named values,
+   * representing the structure fields.
    */
-  boolean next_one(BindingHolder a_binding);
+  NameValuePair[] get_members();
+
+  /**
+   * Set all fields of this structure by name.
+   *
+   * @param members the array of the named values,
+   * representing the structure fields.
+   *
+   * @throws InvalidSeq if the passed argument is invalid.
+   */
+  void set_members(NameValuePair[] members)
+            throws InvalidSeq;
 }
