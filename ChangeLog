@@ -4,6 +4,14 @@
 
 	2005-05-16  Tom Tromey  <tromey@redhat.com>
 
+        * java/net/URI.java (unquote): Handle lower-case letters as well.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-16  Tom Tromey  <tromey@redhat.com>
+
         * java/nio/charset/Charset.java (encode, decode): Synchronize on
         'this', not the class.
 
