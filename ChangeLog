@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-16  Ziga Mahkovec  <ziga.mahkovec@klika.si>
+
+        PR libgcj/20504
+        gnu/regexp/RE.java: Add support for quoting constructs.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-16  Tom Tromey  <tromey@redhat.com>
 
         * java/net/URI.java (unquote): Handle lower-case letters as well.
