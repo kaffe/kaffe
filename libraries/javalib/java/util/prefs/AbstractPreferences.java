@@ -1042,7 +1042,7 @@ public abstract class AbstractPreferences extends Preferences {
             } else {
                 flushSpi();
             }
-            keys = (String[]) childCache.keySet().toArray();
+            keys = (String[]) childCache.keySet().toArray(new String[]{});
         }
 
         if (keys != null) {

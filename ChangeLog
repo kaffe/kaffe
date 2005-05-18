@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * java/util/prefs/AbstractPreferences.java
+        (flushNode): Changed toArray() call to toArray(new String[0]) call
+        to avoid casting errors.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-18  Sven de Marothy <sven@physto.se>
 
         * java/text/SimpleDateFormat.java
