@@ -5,6 +5,6 @@ exec_prefix=@exec_prefix@
 PATH=${PATH}:@bindir@
 export PATH
 
-exec @bindir@/@kaffe_TRANSF@ -Dclasspath.compiler=jikes $JAVA_OPTS gnu.classpath.tools.rmi.rmic.RMIC ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ -cp @jrelibdir@/tools.jar -Dclasspath.compiler=jikes $JAVA_OPTS gnu.classpath.tools.rmi.rmic.RMIC ${1+"$@"}
 exit $?
 

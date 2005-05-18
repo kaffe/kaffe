@@ -73,5 +73,6 @@ public abstract class Compiler
 
   /** Class prefix used when trying to find instance.  */
   private static final String classPrefix =
-    "gnu.classpath.tools.rmi.rmic.Compile_";
+    Compiler.class.getPackage().getName() + ".Compile_";
+//    "gnu.classpath.tools.rmi.rmic.Compile_";
 }
