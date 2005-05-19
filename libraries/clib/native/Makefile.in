@@ -19,7 +19,7 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2004
+# Copyright (c) 2004, 2005
 #	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -91,18 +91,18 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = ../../../kaffe/kaffevm/libkaffevm.la \
 	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
 	$(top_builddir)/libraries/clib/classpath/libclasspath.la
-am__objects_1 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
-	libnative_la-java_lang_VMDouble.lo \
-	libnative_la-java_lang_VMFloat.lo libnative_la-Math.lo \
-	libnative_la-MemoryAdvice.lo libnative_la-Object.lo \
-	libnative_la-PrimordialClassLoader.lo libnative_la-Runtime.lo \
-	libnative_la-String.lo libnative_la-System.lo \
-	libnative_la-java_lang_VMSystem.lo libnative_la-Thread.lo \
-	libnative_la-ThreadStack.lo libnative_la-Throwable.lo \
-	libnative_la-UNIXProcess.lo \
-	libnative_la-gnu_classpath_VMStackWalker.lo \
+am__objects_1 = libnative_la-gnu_classpath_VMStackWalker.lo \
 	libnative_la-gnu_classpath_VMSystemProperties.lo \
-	libnative_la-ZipFile.lo
+	libnative_la-java_lang_VMFloat.lo \
+	libnative_la-java_lang_Math.lo \
+	libnative_la-java_lang_VMDouble.lo \
+	libnative_la-java_lang_VMSystem.lo libnative_la-Class.lo \
+	libnative_la-ClassLoader.lo libnative_la-MemoryAdvice.lo \
+	libnative_la-Object.lo libnative_la-PrimordialClassLoader.lo \
+	libnative_la-Runtime.lo libnative_la-String.lo \
+	libnative_la-System.lo libnative_la-Thread.lo \
+	libnative_la-ThreadStack.lo libnative_la-Throwable.lo \
+	libnative_la-UNIXProcess.lo libnative_la-ZipFile.lo
 am__objects_2 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
 am__objects_3 = libnative_la-AccessController.lo
@@ -412,24 +412,24 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/libraries/clib/fdlibm
 
 LANG_SRCS = \
+		gnu_classpath_VMStackWalker.c \
+		gnu_classpath_VMSystemProperties.c \
+		java_lang_VMFloat.c \
+		java_lang_Math.c \
+		java_lang_VMDouble.c \
+		java_lang_VMSystem.c \
 		Class.c \
 		ClassLoader.c \
-		java_lang_VMDouble.c \
-		java_lang_VMFloat.c \
-		Math.c \
 		MemoryAdvice.c \
 		Object.c \
 		PrimordialClassLoader.c \
 		Runtime.c \
 		String.c \
 		System.c \
-		java_lang_VMSystem.c \
 		Thread.c \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
-		gnu_classpath_VMStackWalker.c \
-		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 
 REF_SRCS = \
@@ -554,7 +554,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Constructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Field.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Math.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-MemoryAdvice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Method.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Object.Plo@am__quote@
@@ -571,6 +570,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ZipFile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_Math.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_VMDouble.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_VMFloat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-java_lang_VMSystem.Plo@am__quote@
@@ -597,6 +597,48 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+libnative_la-gnu_classpath_VMStackWalker.lo: gnu_classpath_VMStackWalker.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMStackWalker.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMStackWalker.c' object='libnative_la-gnu_classpath_VMStackWalker.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c
+
+libnative_la-gnu_classpath_VMSystemProperties.lo: gnu_classpath_VMSystemProperties.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMSystemProperties.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMSystemProperties.c' object='libnative_la-gnu_classpath_VMSystemProperties.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c
+
+libnative_la-java_lang_VMFloat.lo: java_lang_VMFloat.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMFloat.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo" -c -o libnative_la-java_lang_VMFloat.lo `test -f 'java_lang_VMFloat.c' || echo '$(srcdir)/'`java_lang_VMFloat.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMFloat.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMFloat.c' object='libnative_la-java_lang_VMFloat.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMFloat.lo `test -f 'java_lang_VMFloat.c' || echo '$(srcdir)/'`java_lang_VMFloat.c
+
+libnative_la-java_lang_Math.lo: java_lang_Math.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_Math.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_Math.Tpo" -c -o libnative_la-java_lang_Math.lo `test -f 'java_lang_Math.c' || echo '$(srcdir)/'`java_lang_Math.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_Math.Tpo" "$(DEPDIR)/libnative_la-java_lang_Math.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_Math.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_Math.c' object='libnative_la-java_lang_Math.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_Math.lo `test -f 'java_lang_Math.c' || echo '$(srcdir)/'`java_lang_Math.c
+
+libnative_la-java_lang_VMDouble.lo: java_lang_VMDouble.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMDouble.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo" -c -o libnative_la-java_lang_VMDouble.lo `test -f 'java_lang_VMDouble.c' || echo '$(srcdir)/'`java_lang_VMDouble.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMDouble.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMDouble.c' object='libnative_la-java_lang_VMDouble.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMDouble.lo `test -f 'java_lang_VMDouble.c' || echo '$(srcdir)/'`java_lang_VMDouble.c
+
+libnative_la-java_lang_VMSystem.lo: java_lang_VMSystem.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMSystem.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo" -c -o libnative_la-java_lang_VMSystem.lo `test -f 'java_lang_VMSystem.c' || echo '$(srcdir)/'`java_lang_VMSystem.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMSystem.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMSystem.c' object='libnative_la-java_lang_VMSystem.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMSystem.lo `test -f 'java_lang_VMSystem.c' || echo '$(srcdir)/'`java_lang_VMSystem.c
+
 libnative_la-Class.lo: Class.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Class.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Class.Tpo" -c -o libnative_la-Class.lo `test -f 'Class.c' || echo '$(srcdir)/'`Class.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-Class.Tpo" "$(DEPDIR)/libnative_la-Class.Plo"; else rm -f "$(DEPDIR)/libnative_la-Class.Tpo"; exit 1; fi
@@ -610,27 +652,6 @@ libnative_la-ClassLoader.lo: ClassLoader.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ClassLoader.c' object='libnative_la-ClassLoader.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-ClassLoader.lo `test -f 'ClassLoader.c' || echo '$(srcdir)/'`ClassLoader.c
-
-libnative_la-java_lang_VMDouble.lo: java_lang_VMDouble.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMDouble.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo" -c -o libnative_la-java_lang_VMDouble.lo `test -f 'java_lang_VMDouble.c' || echo '$(srcdir)/'`java_lang_VMDouble.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMDouble.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMDouble.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMDouble.c' object='libnative_la-java_lang_VMDouble.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMDouble.lo `test -f 'java_lang_VMDouble.c' || echo '$(srcdir)/'`java_lang_VMDouble.c
-
-libnative_la-java_lang_VMFloat.lo: java_lang_VMFloat.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMFloat.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo" -c -o libnative_la-java_lang_VMFloat.lo `test -f 'java_lang_VMFloat.c' || echo '$(srcdir)/'`java_lang_VMFloat.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMFloat.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMFloat.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMFloat.c' object='libnative_la-java_lang_VMFloat.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMFloat.lo `test -f 'java_lang_VMFloat.c' || echo '$(srcdir)/'`java_lang_VMFloat.c
-
-libnative_la-Math.lo: Math.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Math.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Math.Tpo" -c -o libnative_la-Math.lo `test -f 'Math.c' || echo '$(srcdir)/'`Math.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-Math.Tpo" "$(DEPDIR)/libnative_la-Math.Plo"; else rm -f "$(DEPDIR)/libnative_la-Math.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Math.c' object='libnative_la-Math.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-Math.lo `test -f 'Math.c' || echo '$(srcdir)/'`Math.c
 
 libnative_la-MemoryAdvice.lo: MemoryAdvice.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-MemoryAdvice.lo -MD -MP -MF "$(DEPDIR)/libnative_la-MemoryAdvice.Tpo" -c -o libnative_la-MemoryAdvice.lo `test -f 'MemoryAdvice.c' || echo '$(srcdir)/'`MemoryAdvice.c; \
@@ -674,13 +695,6 @@ libnative_la-System.lo: System.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-System.lo `test -f 'System.c' || echo '$(srcdir)/'`System.c
 
-libnative_la-java_lang_VMSystem.lo: java_lang_VMSystem.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-java_lang_VMSystem.lo -MD -MP -MF "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo" -c -o libnative_la-java_lang_VMSystem.lo `test -f 'java_lang_VMSystem.c' || echo '$(srcdir)/'`java_lang_VMSystem.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo" "$(DEPDIR)/libnative_la-java_lang_VMSystem.Plo"; else rm -f "$(DEPDIR)/libnative_la-java_lang_VMSystem.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_VMSystem.c' object='libnative_la-java_lang_VMSystem.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-java_lang_VMSystem.lo `test -f 'java_lang_VMSystem.c' || echo '$(srcdir)/'`java_lang_VMSystem.c
-
 libnative_la-Thread.lo: Thread.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Thread.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Thread.Tpo" -c -o libnative_la-Thread.lo `test -f 'Thread.c' || echo '$(srcdir)/'`Thread.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-Thread.Tpo" "$(DEPDIR)/libnative_la-Thread.Plo"; else rm -f "$(DEPDIR)/libnative_la-Thread.Tpo"; exit 1; fi
@@ -708,20 +722,6 @@ libnative_la-UNIXProcess.lo: UNIXProcess.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='UNIXProcess.c' object='libnative_la-UNIXProcess.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-UNIXProcess.lo `test -f 'UNIXProcess.c' || echo '$(srcdir)/'`UNIXProcess.c
-
-libnative_la-gnu_classpath_VMStackWalker.lo: gnu_classpath_VMStackWalker.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMStackWalker.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMStackWalker.c' object='libnative_la-gnu_classpath_VMStackWalker.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMStackWalker.lo `test -f 'gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`gnu_classpath_VMStackWalker.c
-
-libnative_la-gnu_classpath_VMSystemProperties.lo: gnu_classpath_VMSystemProperties.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMSystemProperties.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMSystemProperties.c' object='libnative_la-gnu_classpath_VMSystemProperties.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c
 
 libnative_la-ZipFile.lo: ZipFile.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-ZipFile.lo -MD -MP -MF "$(DEPDIR)/libnative_la-ZipFile.Tpo" -c -o libnative_la-ZipFile.lo `test -f 'ZipFile.c' || echo '$(srcdir)/'`ZipFile.c; \

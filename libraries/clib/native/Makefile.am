@@ -3,7 +3,7 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2004
+# Copyright (c) 2004, 2005
 #	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -18,24 +18,24 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/libraries/clib/fdlibm
 
 LANG_SRCS = \
+		gnu_classpath_VMStackWalker.c \
+		gnu_classpath_VMSystemProperties.c \
+		java_lang_VMFloat.c \
+		java_lang_Math.c \
+		java_lang_VMDouble.c \
+		java_lang_VMSystem.c \
 		Class.c \
 		ClassLoader.c \
-		java_lang_VMDouble.c \
-		java_lang_VMFloat.c \
-		Math.c \
 		MemoryAdvice.c \
 		Object.c \
 		PrimordialClassLoader.c \
 		Runtime.c \
 		String.c \
 		System.c \
-		java_lang_VMSystem.c \
 		Thread.c \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
-		gnu_classpath_VMStackWalker.c \
-		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 
 REF_SRCS= \
