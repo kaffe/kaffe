@@ -1,3 +1,8 @@
+2005-05-19  Davanum Srinivas <dims@yahoo.com>
+
+	* libraries/clib/native/ZipFile.c
+	(java_util_zip_ZipFile_getZipFileSize0) Fixed prototype.
+
 2005-05-19  Supreet Sethi  <supreet@linux-delhi.org>
 
 	* test/regression/compiler/Makefile.am: (InnerTest1_A.class 

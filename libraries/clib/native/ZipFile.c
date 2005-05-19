@@ -43,7 +43,7 @@ java_util_zip_ZipFile_closeZipFile0(struct Hkaffe_util_Ptr* zip)
 	closeJarFile((jarFile*)zip);
 }
 
-int
+jint
 java_util_zip_ZipFile_getZipFileSize0(struct Hkaffe_util_Ptr* zip)
 {
 	return ((jarFile*)zip)->count;
