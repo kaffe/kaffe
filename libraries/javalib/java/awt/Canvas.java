@@ -255,21 +255,22 @@ public class Canvas
       throw new IllegalStateException("Canvas.createBufferStrategy: canvas is"
 				      + " not displayable");
 
+    BufferStrategy newStrategy = null;
+
     // try a flipping strategy
     try
       {
-	bufferStrategy = new CanvasFlipBufferStrategy(numBuffers);
-	return;
+	newStrategy = new CanvasFlipBufferStrategy(numBuffers);
       }
     catch (AWTException e)
       {
       }
 
-    // try an accelerated blitting strategy
-    bufferStrategy = new CanvasBltBufferStrategy(numBuffers, true);
+    // fall back to an accelerated blitting strategy
+    if (newStrategy == null)
+      newStrategy = new CanvasBltBufferStrategy(numBuffers, true);
 
-    // fall back to an unaccelerated blitting strategy
-    bufferStrategy = new CanvasBltBufferStrategy(numBuffers, false);
+    bufferStrategy = newStrategy;
   }
 
   /**

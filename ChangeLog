@@ -1,5 +1,18 @@
 2005-05-19  Dalibor Topic  <robilad@kaffe.org>
 
+        Resynced with GNU Classpath.
+
+	2005-05-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Window.java (createBufferStrategy): Remove unnecessary
+        try-catch blocks.
+        * java/awt/Canvas.java (createBufferStrategy): Likewise.
+
+        * gnu/java/security/provider/DSASignature.java: Import updates
+        from GNU Crypto.
+
+2005-05-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (EXTRA_DIST): removed libtool patches.
 
 	* FAQ/FAQ.automake: Updated.
