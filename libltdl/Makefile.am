@@ -31,7 +31,6 @@ $(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS): libtool
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-if INSTALL_LTDL
 ## These are installed as a subdirectory of pkgdatadir so that
 ## libtoolize --ltdl can find them later:
 ltdldatadir = $(datadir)/libtool/libltdl
@@ -43,10 +42,8 @@ ltdldatafiles = COPYING.LIB README acinclude.m4 aclocal.m4 \
 
 ## To avoid spurious reconfiguration when the user installs these files
 ## with libtoolize, we have to preserve their timestamps carefully:
-install-data-local:
+local-install-files: $(ltdldatafiles)
 	-rm -rf $(DESTDIR)$(ltdldatadir)
 	$(mkinstalldirs) $(DESTDIR)$(ltdldatadir)
 	( cd $(srcdir) && $(AMTAR) chf - $(ltdldatafiles); ) \
 	  | ( umask 0 && cd $(DESTDIR)$(ltdldatadir) && $(AMTAR) xf -; )
-endif
-

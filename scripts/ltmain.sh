@@ -43,8 +43,8 @@ EXIT_FAILURE=1
 
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.5.16
-TIMESTAMP=" (1.1220.2.234 2005/04/24 17:45:58)"
+VERSION=1.5.18
+TIMESTAMP=" (1.1220.2.245 2005/05/16 08:55:27)"
 
 # See if we are running on zsh, and set the options which allow our
 # commands through without removal of \ escapes.
@@ -1357,6 +1357,8 @@ EOF
 	  ;;
         darwin_framework)
 	  compiler_flags="$compiler_flags $arg"
+	  compile_command="$compile_command $arg"
+	  finalize_command="$finalize_command $arg"
 	  prev=
 	  continue
 	  ;;
@@ -1421,6 +1423,8 @@ EOF
       -framework)
         prev=darwin_framework
         compiler_flags="$compiler_flags $arg"
+	compile_command="$compile_command $arg"
+	finalize_command="$finalize_command $arg"
         continue
         ;;
 

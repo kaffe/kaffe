@@ -1150,6 +1150,7 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkTextComponentPeer.java \
 	gnu/java/awt/peer/gtk/GtkTextFieldPeer.java \
 	gnu/java/awt/peer/gtk/GtkToolkit.java \
+	gnu/java/awt/peer/gtk/GtkVolatileImage.java \
 	gnu/java/awt/peer/gtk/GtkWindowPeer.java
 gnu_java_beans_SRCS = \
 	gnu/java/beans/BeanInfoEmbryo.java \

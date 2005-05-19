@@ -18,7 +18,7 @@ if [ "$1" != "--override" ]; then
 
 WANTED_AUTOMAKE_VERS="1.9.5"
 WANTED_AUTOCONF_VERS="2.59"
-WANTED_LIBTOOL_VERS="1.5.16"
+WANTED_LIBTOOL_VERS="1.5.18"
 WANTED_AUTOPOINT_VERS="0.14.4"
 
 ACLOCAL_VERS=`aclocal --version | 
@@ -111,9 +111,7 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
-patch -p0 < developers/patch-libtool-quote-sys_search_path.diff
-patch -p0 < developers/patch-libtool-openbsd33.diff
-patch -p0 < developers/patch-libtool-no-default-install.diff
+# add some libtool patches if necessary here
 cp libltdl/acinclude.m4 m4/libtool.m4
 
 # gettextize kaffe
@@ -122,20 +120,20 @@ cp libltdl/acinclude.m4 m4/libtool.m4
 
 autopoint -f
 aclocal -I m4
-autoheader -Wall
-automake --add-missing --force-missing --copy -Wall || true  # ignore warnings
-autoconf -Wall
+autoheader # -Wall
+automake --add-missing --force-missing --copy # -Wall || true  # ignore warnings
+autoconf # -Wall
 
 (
  cd libltdl
  # Need to regenerate things because patching 	 
  # screws up timestamps 	 
- autoreconf -i -Wall
+ autoreconf -i # -Wall
  touch config-h.in
 ) 	 
 
 (
   cd kaffe/kaffevm/boehm-gc/boehm
 
-  autoreconf -i -Wall
+  autoreconf -i # -Wall
 )
