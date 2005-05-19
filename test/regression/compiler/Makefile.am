@@ -23,7 +23,7 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(
 VarInit.class VarInit2.class: VarInit.java VarInit2.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/VarInit.java $(srcdir)/VarInit2.java
 
-InnerTest1_A.class InnerTest1_B.class: InnerTest1_A.java InnerTest1_B.java
+InnerTest1_A.class InnerTest1_B.class InnerTest1_A$$X.class InnerTest1_B$$X.class: InnerTest1_A.java InnerTest1_B.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InnerTest1_A.java $(srcdir)/InnerTest1_B.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InnerTest1_B.java
 

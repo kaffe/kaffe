@@ -1,3 +1,8 @@
+2005-05-19  Supreet Sethi  <supreet@linux-delhi.org>
+
+	* test/regression/compiler/Makefile.am: (InnerTest1_A.class 
+	InnerTest1_B.class) Added missing inner classes.
+
 2005-05-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/Math.c: Removed.
