@@ -43,6 +43,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -71,6 +74,212 @@ public class JTable extends JComponent
   implements TableModelListener, Scrollable, TableColumnModelListener,
              ListSelectionListener, CellEditorListener, Accessible
 {
+
+  /**
+   * A cell renderer for boolean values.
+   */
+  private class BooleanCellRenderer
+    extends DefaultTableCellRenderer
+  {
+
+    /**
+     * The CheckBox that is used for rendering.
+     */
+    private JCheckBox checkBox = new JCheckBox();
+
+    /**
+     * Returns the component that is used for rendering the value.
+     *
+     * @param table the JTable
+     * @param value the value of the object
+     * @param isSelected is the cell selected?
+     * @param hasFocus has the cell the focus?
+     * @param row the row to render
+     * @param column the cell to render
+     * 
+     * @return this component (the default table cell renderer)
+     */
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column)
+    {
+      Boolean boolValue = (Boolean) value;
+      checkBox.setSelected(boolValue.booleanValue());
+      return checkBox;
+    }
+  }
+
+  /**
+   * A cell renderer for Date values.
+   */
+  private class DateCellRenderer
+    extends DefaultTableCellRenderer
+  {
+    /**
+     * Returns the component that is used for rendering the value.
+     *
+     * @param table the JTable
+     * @param value the value of the object
+     * @param isSelected is the cell selected?
+     * @param hasFocus has the cell the focus?
+     * @param row the row to render
+     * @param column the cell to render
+     * 
+     * @return this component (the default table cell renderer)
+     */
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column)
+    {
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                                          row, column);
+      if (value instanceof Date)
+        {
+          Date dateValue = (Date) value;
+          DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+          setText(df.format(dateValue));
+        }
+      return this;
+    }
+  }
+
+  /**
+   * A cell renderer for Double values.
+   */
+  private class DoubleCellRenderer
+    extends DefaultTableCellRenderer
+  {
+    /**
+     * Creates a new instance of NumberCellRenderer.
+     */
+    public DoubleCellRenderer()
+    {
+      setHorizontalAlignment(JLabel.RIGHT);
+    }
+
+    /**
+     * Returns the component that is used for rendering the value.
+     *
+     * @param table the JTable
+     * @param value the value of the object
+     * @param isSelected is the cell selected?
+     * @param hasFocus has the cell the focus?
+     * @param row the row to render
+     * @param column the cell to render
+     * 
+     * @return this component (the default table cell renderer)
+     */
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column)
+    {
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                                          row, column);
+      if (value instanceof Double)
+        {
+          Double doubleValue = (Double) value;
+          NumberFormat nf = NumberFormat.getInstance();
+          setText(nf.format(doubleValue.doubleValue()));
+        }
+      return this;
+    }
+  }
+
+  /**
+   * A cell renderer for Float values.
+   */
+  private class FloatCellRenderer
+    extends DefaultTableCellRenderer
+  {
+    /**
+     * Creates a new instance of NumberCellRenderer.
+     */
+    public FloatCellRenderer()
+    {
+      setHorizontalAlignment(JLabel.RIGHT);
+    }
+
+    /**
+     * Returns the component that is used for rendering the value.
+     *
+     * @param table the JTable
+     * @param value the value of the object
+     * @param isSelected is the cell selected?
+     * @param hasFocus has the cell the focus?
+     * @param row the row to render
+     * @param column the cell to render
+     * 
+     * @return this component (the default table cell renderer)
+     */
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column)
+    {
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                                          row, column);
+      if (value instanceof Float)
+        {
+          Float floatValue = (Float) value;
+          NumberFormat nf = NumberFormat.getInstance();
+          setText(nf.format(floatValue.floatValue()));
+        }
+      return this;
+    }
+  }
+
+  /**
+   * A cell renderer for Number values.
+   */
+  private class NumberCellRenderer
+    extends DefaultTableCellRenderer
+  {
+    /**
+     * Creates a new instance of NumberCellRenderer.
+     */
+    public NumberCellRenderer()
+    {
+      setHorizontalAlignment(JLabel.RIGHT);
+    }
+  }
+
+  /**
+   * A cell renderer for Icon values.
+   */
+  private class IconCellRenderer
+    extends DefaultTableCellRenderer
+  {
+    /**
+     * Returns the component that is used for rendering the value.
+     *
+     * @param table the JTable
+     * @param value the value of the object
+     * @param isSelected is the cell selected?
+     * @param hasFocus has the cell the focus?
+     * @param row the row to render
+     * @param column the cell to render
+     * 
+     * @return this component (the default table cell renderer)
+     */
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus, int row,
+                                                   int column)
+    {
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                                          row, column);
+      if (value instanceof Icon)
+        {
+          Icon iconValue = (Icon) value;
+          setIcon(iconValue);
+        }
+      return this;
+    }
+  }
+
   private static final long serialVersionUID = 3876025080382781659L;
 
 
@@ -476,7 +685,12 @@ public class JTable extends JComponent
 
   protected void createDefaultRenderers()
   {
-    //FIXME: Create the renderer object.
+    setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+    setDefaultRenderer(Number.class, new NumberCellRenderer());
+    setDefaultRenderer(Double.class, new DoubleCellRenderer());
+    setDefaultRenderer(Double.class, new FloatCellRenderer());
+    setDefaultRenderer(Date.class, new DateCellRenderer());
+    setDefaultRenderer(Icon.class, new IconCellRenderer());
   }
   
   /**
@@ -1580,44 +1794,22 @@ public class JTable extends JComponent
 
 
   /**
-   * Sun javadocs describe an unusual implementation of
-   * <code>doLayout</code> which involves some private interfaces. We try
-   * to implement the same algorithm as is documented, but using the
-   * columnModel directly. We still use a private helper method, but it has
-   * a simpler signature.
+   * This distributes the superfluous width in a table evenly on its columns.
+   *
+   * The implementation used here is different to that one described in
+   * the JavaDocs. It is much simpler, and seems to work very well.
+   *
+   * TODO: correctly implement the algorithm described in the JavaDoc
    */
-
   private void distributeSpill(TableColumn[] cols, int spill)
   {
-    int MIN = 0;
-    int MAX = 0;
-    int PREF = 0;
-
-    int[] min = new int[cols.length];
-    int[] max = new int[cols.length];
-    int[] pref = new int[cols.length];
-
-    for (int i = 0; i < cols.length; ++i)
+    int average = spill / cols.length;
+    for (int i = 0; i < cols.length; i++)
       {
-        pref[i] = cols[i].getPreferredWidth();
-        min[i] = cols[i].getMinWidth();
-        max[i] = cols[i].getMaxWidth();
-        PREF += pref[i];
-        MIN += min[i];
-        MAX += max[i];
+        cols[i].setWidth(cols[i].getWidth() + average);
       }
-
-    for (int i = 0; i < cols.length; ++i)
-      {
-        int adj = 0;
-        if (spill > 0)          
-          adj = (spill * (pref[i] - min[i])) / (PREF - MIN);
-        else
-          adj = (spill * (max[i] - pref[i])) / (MAX - PREF);
-        cols[i].setWidth(pref[i] + adj);        
-      }    
   }
-  
+
   public void doLayout()
   {
     TableColumn resizingColumn = null;
@@ -1643,7 +1835,7 @@ public class JTable extends JComponent
           rCol = i;
       }
 
-    int spill = prefSum - getWidth();
+    int spill = getWidth() - prefSum;
 
     if (resizingColumn != null)
       {

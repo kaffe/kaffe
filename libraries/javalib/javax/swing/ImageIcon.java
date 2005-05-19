@@ -45,11 +45,157 @@ import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Locale;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleIcon;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleStateSet;
 
 public class ImageIcon
-  implements Icon, Serializable
+  implements Icon, Serializable, Accessible
 {
+  /**
+   * Accessibility support for ImageIcon.
+   */
+  protected class AccessibleImageIcon
+    extends AccessibleContext
+    implements AccessibleIcon, Serializable
+  {
+    /**
+     * Creates a new instance of AccessibleImageIcon.
+     */
+    protected AccessibleImageIcon()
+    {
+    }
+
+    /**
+     * Returns the AccessibleRole of ImageIcon, which is
+     * {@link AccessibleRole#ICON}.
+     *
+     * @return {@link AccessibleRole#ICON}
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.ICON;
+    }
+
+    /**
+     * Returns the accessible state of this ImageIcon.
+     *
+     * @return the accessible state of this ImageIcon
+     */
+    public AccessibleStateSet getAccessibleStateSet()
+    {
+      // TODO: which state information from ImageIcon is returned here??
+      return new AccessibleStateSet();
+    }
+
+    /**
+     * Returns the accessible parent of this object, which is <code>null</code>
+     * in this case, because ImageIcons have no parent.
+     *
+     * @return <code>null</code>, because ImageIcons have no parent
+     */
+    public Accessible getAccessibleParent()
+    {
+      // TODO: ImageIcons have no parent, have they ??
+      return null;
+    }
+
+    /**
+     * Returns the index of this object in its accessible parent, which is
+     * -1 here, because ImageIcons have no accessible parent.
+     *
+     * @return -1 because ImageIcons have no parent
+     */
+    public int getAccessibleIndexInParent()
+    {
+      // TODO: do ImageIcons have parents??
+      return -1;
+    }
+
+    /**
+     * Returns the number of accessible children of this component,
+     * which is 0, because ImageIcons have no children.
+     *
+     * @return 0 because ImageIcons have no children
+     */
+    public int getAccessibleChildrenCount()
+    {
+      return 0;
+    }
+
+    /**
+     * Returns the accessible child at index <code>i</code>, which is
+     * <code>null</code> in this case because ImageIcons have no children.
+     *
+     * @param i the index of the child to be fetched
+     *
+     * @return <code>null</code> because ImageIcons have no children
+     */
+    public Accessible getAccessibleChild(int i)
+    {
+      return null;
+    }
+
+    /**
+     * Returns the locale of this object. This returns the default locale
+     * that is set for the current VM.
+     *
+     * @return the locale of this object
+     */
+    public Locale getLocale()
+    {
+      return Locale.getDefault();
+    }
+
+    /**
+     * Returns the accessible Icon description. This returns the
+     * actual 'description' property of the ImageIcon.
+     *
+     * @return the accessible Icon description
+     */
+    public String getAccessibleIconDescription()
+    {
+      return getDescription();
+    }
+
+    /**
+     * Sets the accessible Icon description. This sets the
+     * actual 'description' property of the ImageIcon.
+     *
+     * @param newDescr the description to be set
+     */
+    public void setAccessibleIconDescription(String newDescr)
+    {
+      setDescription(newDescr);
+    }
+
+    /**
+     * Returns the icon height. This returns the iconHeight property of
+     * the underlying Icon.
+     *
+     * @return the icon height
+     */
+    public int getAccessibleIconHeight()
+    {
+      return getIconHeight();
+    }
+    
+    /**
+     * Returns the icon width. This returns the iconWidth property of
+     * the underlying Icon.
+     *
+     * @return the icon width
+     */
+    public int getAccessibleIconWidth()
+    {
+      return getIconWidth();
+    }
+  } // AccessibleIcon
+
   private static final long serialVersionUID = 532615968316031794L;
 
   /** A dummy Component that is used in the MediaTracker. */
@@ -67,6 +213,9 @@ public class ImageIcon
 
   /** The image loading status. */
   private int loadStatus;
+
+  /** The AccessibleContext of this ImageIcon. */
+  private AccessibleContext accessibleContext;
 
   public ImageIcon()
   {
@@ -194,5 +343,17 @@ public class ImageIcon
   public int getImageLoadStatus()
   {
     return loadStatus;
+  }
+
+  /**
+   * Returns the AccessibleContext for this ImageIcon.
+   *
+   * @return the AccessibleContext for this ImageIcon
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleImageIcon();
+    return accessibleContext;
   }
 }

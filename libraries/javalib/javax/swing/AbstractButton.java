@@ -1346,18 +1346,6 @@ public abstract class AbstractButton extends JComponent
   }
 
   /**
-   * Return the button's "focusTraversable" property. This property controls
-   * whether or not the button can receive focus when the user attempts to
-   * traverse the focus hierarchy.
-   *
-   * @return The current "focusTraversable" property
-   */
-  public boolean isFocusTraversable()
-  {
-    return true;
-  }
-
-  /**
    * Verifies that a particular key is one of the valid constants used for
    * describing horizontal alignment and positioning. The valid constants
    * are the following members of {@link SwingConstants}:

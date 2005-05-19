@@ -183,17 +183,6 @@ public class JSeparator extends JComponent implements SwingConstants,
   }
 
   /**
-   * This method overrides the isFocusTraversable method from
-   * Component to false. JSeparator cannot be focused on.
-   *
-   * @return boolean False.
-   */
-  public boolean isFocusTraversable()
-  {
-    return false;
-  }
-
-  /**
    * getAccessibleContext
    *
    * @return AccessibleContext

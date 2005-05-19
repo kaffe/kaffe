@@ -61,7 +61,6 @@ public class JEditorPane extends JTextComponent
   private EditorKit editorKit;
   
   boolean focus_root;
-  boolean manages_focus;
 
   public JEditorPane()
   {
@@ -175,11 +174,6 @@ public class JEditorPane extends JTextComponent
   public boolean isFocusCycleRoot()
   {
     return focus_root;
-  }
-
-  public boolean isManagingFocus()
-  {
-    return manages_focus;
   }
 
   protected String paramString()

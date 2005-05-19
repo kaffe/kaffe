@@ -157,7 +157,7 @@ public class MenuSelectionManager
     for (int i = 0; i < selectedPath.size(); i++)
       {
 	Component comp = ((Component) selectedPath.get(i));
-        Dimension size = comp.getSize();
+	Dimension size = comp.getSize();
 
 	// convert location of this menu item to screen coordinates
 	compPointOnScreen = comp.getLocationOnScreen();
@@ -276,6 +276,11 @@ public class MenuSelectionManager
 	      subComponents[i].processMouseEvent(event, path, manager);
 	 }
 	*/
+      }
+    else
+      {
+	if (event.getID() == MouseEvent.MOUSE_RELEASED)
+	  clearSelectedPath();
       }
   }
 

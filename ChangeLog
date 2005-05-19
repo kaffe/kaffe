@@ -1,5 +1,115 @@
 2005-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* java/awt/Canvas.java, java/awt/Window.java:
+	Fix not compiling code. :)
+
+	Resynced with GNU Classpath.
+
+	005-05-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkVolatileImage.java: Fix imports.
+
+	2005-05-18  Olga Rodimina  <rodimina@redhat.com>
+
+        * javax/swing/MenuSelectionManager.java
+        (processMouseEvent): Clear selected path if the mouse was released
+        over non-menu component.
+        * javax/swing/plaf/basic/BasicPopupMenuUI.java
+        (Constructor): Removed initialization of mouseInputListener.
+        (installListeners): Do not add mouseInputListener to this popup
+        menu. Instead it will be added to the root container of the popup
+        menu.
+        (uninstallListeners): Remove code that removed mouseInputListener
+        from popupMenu.
+        (popupMenuWillBecomeInvisible): If this popup menu is the last
+        menu on the screen, then stop interrupting mouse events through
+        the glass pane.
+        (popupMenuWillBecomeVisible): Add mouseInputListener to glass pane
+        if it was not added before and make glass pane visible in order to
+        interrupt mouse evevents.
+        (MouseInputHandler): Close menu hierarchy if the mouse was clicked
+        on non menu component.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JEditorPane.java
+        (isManagingFocus): According to Suns API documentation this
+        method is not implemented in this class. Also the
+        implementation did not add any value. Removed.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JSeparator.java
+        (isFocusTraversable): According to Suns API documentation this
+        method is not implemented in this class. Also the
+        implementation did not add any value. Removed.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/AbstractButton.java
+        (isFocusTraversable): According to Suns API documentation this
+        method is not implemented in this class. Also the
+        implementation did not add any value. Removed.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/ImageIcon.java
+        (AccessibleImageIcon): Added inner class for Accessibility support
+        in ImageIcon.
+        (getAccessibleContext): Added method for accessibility support
+        in ImageIcon.
+
+	2005-05-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java
+        (createCompatibleVolatileImage(int,int)): Implement.
+        (createCompatibleVolatileImage(int,int,ImageCapabilities)):
+        Likewise.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java (backBuffer, caps):
+        New fields.
+        (createVolatileImage): Implement.
+        (createBuffers): Likewise.
+        (getBackBuffer): Likewise.
+        (flip): Likewise.
+        (destroyBuffers): Likewise.
+        * gnu/java/awt/peer/gtk/GtkVolatileImage.java: New file.
+        * java/awt/Canvas.java (CanvasBltBufferStrategy): New class.
+        (CanvasFlipBufferStrategy): Likewise.
+        (createBufferStrategy(int)): New method.
+        (createBufferStrategy(int,BufferCapabilities)): Likewise.
+        * java/awt/Component.java (BltBufferStrategy): Implement and
+        document class.
+        (FlipBufferStrategy): Likewise.
+        * java/awt/Window.java (WindowBltBufferStrategy): New class.
+        (WindowFlipBufferStrategy): Likewise.
+        (createBufferStrategy(int)): New method.
+        (createBufferStrategy(int,BufferCapabilities)): Likewise.
+        (getBufferStrategy): Likewise.
+        * java/awt/BufferCapabilities.java (BufferCapabilities): Rename
+        front to frontCaps and back to backCaps.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JTable.java:
+        (BooleanCellRenderer): Added default renderer for Boolean cell values.
+        (DateCellRenderer): Added default renderer for Date cell values.
+        (DoubleCellRenderer): Added default renderer for Double cell values.
+        (FloatCellRenderer): Added default renderer for Float cell values.
+        (NumberCellRenderer): Added default renderer for Number cell values.
+        (IconCellRenderer): Added default renderer for Icon cell values.
+        (createDefaultRenderers): Include new default renderers.
+        (distributeSpill): Fix algorithm to do a nice layout, if still not
+        beeing 100% perfect.
+        (doLayout): Correctly calculate the spill variable.
+
+	2005-05-18  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Window.java
+        (isShowing): A Window can be showing even if its parent is not
+        showing.
+
+2005-05-18  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-05-18  Roman Kennke  <roman@kennke.org>
