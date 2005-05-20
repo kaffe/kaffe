@@ -12,10 +12,12 @@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include
 
-noinst_LTLIBRARIES = libreplace.la
+native_LTLIBRARIES = libreplace.la
 
 libreplace_la_LDFLAGS = \
-        $(KVMLIBFLAGS)
+        $(KVMLIBFLAGS) \
+       -no-undefined \
+        -release $(PACKAGE_VERSION)
 
 libreplace_la_SOURCES = \
 	dummyin6.c \

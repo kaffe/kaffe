@@ -2052,6 +2052,8 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
+\$(top_builddir)/libraries/clib/classpath/libclasspath.la \
+\$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
 $JAVA_LIBS \
 "
 

@@ -56,11 +56,11 @@ kaffe_bin_LDFLAGS = \
 
 kaffe_bin_LDADD = \
 	$(DLOPEN_JAVA_LIBS) \
+	$(OPT_DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
 	$(KAFFE_LIBS) \
 	$(top_builddir)/replace/libreplace.la \
-	$(LTLIBINTL) \
-	@LIBLTDL@
+	$(LTLIBINTL) 
 
 kaffe_bin_DEPENDENCIES = \
 	$(LIBKAFFEVM) \

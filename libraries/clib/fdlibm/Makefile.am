@@ -1,4 +1,4 @@
-noinst_LTLIBRARIES = libfdlibm.la 
+native_LTLIBRARIES = libfdlibm.la 
 
 libfdlibm_la_SOURCES =  \
 			dtoa.c \
@@ -47,7 +47,8 @@ libfdlibm_la_SOURCES =  \
 
 AM_LDFLAGS = \
 	$(KLIBFLAGS) \
-	-no-undefined
+	-no-undefined \
+        -release $(PACKAGE_VERSION)
 
 # We just want the standard flags for fdlibm since it is an upstream lib
 # and our normal -pedantic -Wall -Werror breaks this lib. So no AM_CFLAGS.

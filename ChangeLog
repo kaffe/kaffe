@@ -1,3 +1,14 @@
+2005-05-19  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac (DLOPEN_JAVA_LIBS): Added libclasspath and 
+	libfdlibm.
+
+	* kaffe/kaffe/Makefile.am (kaffe_bin_LDADD): Added 
+	OPT_DLOPEN_JAVA_LIBS. Removed LIBLTDL.
+
+	* libraries/clib/fdlibm/Makefile.am: Build as a shared library.
+	(AM_LDFLAGS) Added options for shared library build.
+
 2005-05-19  Davanum Srinivas <dims@yahoo.com>
 
 	* libraries/clib/native/ZipFile.c
