@@ -2,6 +2,47 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/net/URI.java:
+        Added more documentation.
+        (RFC2396_MARK): Removed.
+        (RFC2396_UNRESERVED): Changed to RFC3986_UNRESERVED and updated.
+        (RFC2396_REG_NAME): Changed to RFC3986_REG_NAME and updated.
+        (RFC2396_PCHAR): Changed to RFC3986_PCHAR and updated.
+        (RFC2396_SEGMENT): Changed to RFC3986_SEGMENT and updated.
+        (RFC2396_PATH_SEGMENTS): Changed to RFC3986_PATH_SEGMENTS.
+        (RFC3986_UNRESERVED): New field.
+        (RFC3986_SSP): New field.
+        (RFC3986_HOST): New field.
+        (RFC3986_USERINFO): New field.
+        (static): New initializer to initialize patterns with class.
+        (parseURI()): Moved authority parsing to parseServerAuthority().
+        (unquote(String)): Removed invalid exception for non-ASCII chars.
+        (quote(String)): Implemented.
+        (quoteAuthority(String)): Adapted to use new fields.
+        (quote(String,String)): Moved escaping of characters to another
+        method.
+        (quoteHost(String)): Implemented.
+        (quotePath(String)): Adapted to use new fields.
+        (quoteUserInfo(String)): Implemented.
+        (parseServerAuthority()): Implemented.
+        (normalize()): Implemented.
+        (normalizePath(String)): Implemented as part of normalize().
+        (removeLastSegment(StringBuffer)): Likewise.
+        (relativize(java.net.URI)): Implemented.
+        (equals(Object)): Implemented.
+        (hashCode()): Implemented.
+        (compareTo(Object)): Implemented.
+        (compareFragments(java.net.URI)): Implemented.
+        (toString()): Use fields directly.
+        (toASCIIString()): Implemented.
+        (escapeCharacters(String)): Implemented to escape non-ASCII characters.
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-20  Roman Kennke  <roman@kennke.org>
 
         * java/awt/DefaultKeyboardFocusManager.java:
