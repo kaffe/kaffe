@@ -154,6 +154,7 @@ area_updated (GdkPixbufLoader *loader,
 			  (jint) width, (jint) height,
 			  jpixels,
 			  stride_pixels);
+  (*env)->DeleteLocalRef(env, jpixels);
   gdk_threads_enter ();
 }
 

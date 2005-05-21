@@ -1,5 +1,11 @@
 2005-05-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+	(area_updated): Delete jpixels reference after use to avoid wasting references.
+	
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-05-20  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
