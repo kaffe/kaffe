@@ -2475,7 +2475,7 @@ jcondvar_initialise(jcondvar *cv)
 	*cv = NULL;
 }
 
-jbool
+jboolean
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
 	jthread *current = jthread_current();
