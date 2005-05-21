@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import org.omg.CORBA.portable.IDLEntity;
+
 import java.io.Serializable;
 
 /**

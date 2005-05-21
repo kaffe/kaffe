@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA.portable;
 
+import java.io.Serializable;
 
 /**
  * This is exception is potentially thrown by the _invoke()
@@ -49,6 +50,10 @@ package org.omg.CORBA.portable;
  */
 public class RemarshalException
   extends Exception
-  implements java.io.Serializable
+  implements Serializable
 {
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -7025491253080954918L;
 }

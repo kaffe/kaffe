@@ -59,18 +59,18 @@ public class CompletionStatus
   /**
    * The method was completed when the exception was thrown.
    */
-  static final int _COMPLETED_YES = 0;
+  public static final int _COMPLETED_YES = 0;
 
   /**
    * The method was running when the exception was thrown.
    */
-  static final int _COMPLETED_NO = 1;
+  public static final int _COMPLETED_NO = 1;
 
   /**
    * The method was either running or complete (no exact information availabe)
    * when the exception was thrown.
    */
-  static final int _COMPLETED_MAYBE = 2;
+  public static final int _COMPLETED_MAYBE = 2;
 
   /**
    * An instance of CompletionStatus, initialized to {@link #COMPLETED_YES }

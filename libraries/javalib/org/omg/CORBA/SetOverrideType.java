@@ -46,7 +46,7 @@ import org.omg.CORBA.portable.IDLEntity;
  * Defines the instruction, how the newly specified policies can be
  * taken into consideration. The policies can be either
  * added to the current policies or replace them.
- * 
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public class SetOverrideType
@@ -60,12 +60,12 @@ public class SetOverrideType
   /**
    * Add the new policies to the existing policies.
    */
-  static final int _ADD_OVERRIDE = 1;
+  public static final int _ADD_OVERRIDE = 1;
 
   /**
    * Replace the new existing policies by the new policies.
    */
-  static final int _SET_OVERRIDE = 0;
+  public static final int _SET_OVERRIDE = 0;
 
   /**
    * Add the new policies to the existing policies.
@@ -80,7 +80,7 @@ public class SetOverrideType
    */
   public static final SetOverrideType SET_OVERRIDE =
     new SetOverrideType(_SET_OVERRIDE);
-   
+
   private final int _value;
 
   /**
@@ -96,7 +96,7 @@ public class SetOverrideType
    * @param kind one of _ADD_OVERRIDE or _SET_OVERRIDE.
    *
    * @return one of ADD_OVERRIDE or SET_OVERRIDE.
-   * 
+   *
    * @throws BAD_PARAM if the parameter is not one of these two values.
    */
   public static SetOverrideType from_int(int kind)
@@ -116,7 +116,7 @@ public class SetOverrideType
 
   /**
    * Returns a short string representation.
-   * 
+   *
    * @return either "add" or "replace".
    */
   public String toString()
@@ -126,7 +126,7 @@ public class SetOverrideType
 
   /**
    * Returns the value, representing stored instruction.
-   * 
+   *
    * @return one of ADD_OVERRIDE or SET_OVERRIDE
    */
   public int value()

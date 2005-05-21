@@ -2,6 +2,28 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-20  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+        * org/omg/CORBA/SetOverrideType.java (_ADD_OVERRIDE, _SET_OVERRIDE),
+        org/omg/CORBA/CompletionStatus.java
+        (_COMPLETED_YES, _COMPLETED_NO, _COMPLETED_MAYBE): Making public.
+        * org/omg/CORBA/ValueMember.java: Inherit from
+        org.omg.CORBA.portable.IDLEntity.
+
+	2005-05-20  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+        * org/omg/CORBA/portable/ApplicationException.java,
+        org/omg/CORBA/portable/RemarshalException.java:
+        Adding serialVersionUID.
+        *org/omg/CORBA/portable/OutputStream.java(write_Context):
+        Making concrete.
+        org/omg/CORBA/portable/ServantObject.java (servant):
+        Fixing typo in the field name.
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
         * java/net/URI.java:

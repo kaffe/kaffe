@@ -91,9 +91,16 @@ public abstract class OutputStream
   }
 
   /**
-   * Write CORBA Context.
+   * Should write a CORBA context to the output stream, but,
+   * following the 1.4 specification, it does not and
+   * must be overridden to get a functionality.
+   *
+   * @throws NO_IMPLEMENT, always.
    */
-  public abstract void write_Context(Context context, ContextList contexts);
+  public void write_Context(Context context, ContextList contexts)
+  {
+    throw new NO_IMPLEMENT();
+  }
 
   /**
    * Write CORBA (not java) Object.

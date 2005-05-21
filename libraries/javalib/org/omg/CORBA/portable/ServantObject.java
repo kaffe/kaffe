@@ -57,5 +57,5 @@ public class ServantObject
    * The real servant, that can be casted to the expected type, later
    * invoking the methods directly.
    */
-  public java.lang.Object Servant;
+  public java.lang.Object servant;
 }

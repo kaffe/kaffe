@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA.portable;
 
+import java.io.Serializable;
 
 /**
  * This expection is thrown if the application throws an exception,
@@ -47,8 +48,13 @@ package org.omg.CORBA.portable;
  */
 public class ApplicationException
   extends Exception
-  implements java.io.Serializable
+  implements Serializable
 {
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -2088103024111528125L;
+
   /**
    * The input from where the exception parameters can be read.
    */
