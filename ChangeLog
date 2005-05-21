@@ -1,3 +1,9 @@
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* replace/Makefile.am:
+	(libreplace_ls_LIBADD) Add LTLIBINTL to fix a build failure
+	on darwin reported by the tinderbox.
+
 2005-05-21  Kiyo Inaba <inaba@@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:

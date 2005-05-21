@@ -30,5 +30,8 @@ libreplace_la_SOURCES = \
 	repsemaphore.h \
 	semaphores.c
 
+libreplace_la_LIBADD = \
+        $(LTLIBINTL)
+
 EXTRA_DIST = \
 	ifaddrs_linux.c

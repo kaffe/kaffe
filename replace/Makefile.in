@@ -88,7 +88,8 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libreplace_la_LIBADD =
+am__DEPENDENCIES_1 =
+libreplace_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libreplace_la_OBJECTS = dummyin6.lo getaddrinfo.lo getifaddrs.lo \
 	inet_pton.lo inet_ntop.lo memset.lo semaphores.lo
 libreplace_la_OBJECTS = $(am_libreplace_la_OBJECTS)
@@ -400,6 +401,9 @@ libreplace_la_SOURCES = \
 	memset.c \
 	repsemaphore.h \
 	semaphores.c
+
+libreplace_la_LIBADD = \
+        $(LTLIBINTL)
 
 EXTRA_DIST = \
 	ifaddrs_linux.c
