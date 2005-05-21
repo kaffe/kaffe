@@ -41,6 +41,7 @@ package java.text;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 /**
  * This class acts as container for locale specific date/time formatting
@@ -78,13 +79,62 @@ public class DateFormatSymbols implements java.io.Serializable, Cloneable
   transient String[] dateFormats;
   transient String[] timeFormats;
 
+  private static String[] getStringArray(ResourceBundle res, String name)
+  { 
+    int index = 0;
+    String data = res.getString(name);
+    StringTokenizer st = new StringTokenizer(data, "\u00ae");
+    String[] array = new String[st.countTokens()];
+
+    while (st.hasMoreTokens())
+      {
+        array[index] = st.nextToken();
+	index++;
+      }
+
+    return array;
+  }
+
+  private String[][] getZoneStrings(ResourceBundle res)
+  {
+    try
+      {
+        int index = 0;
+        String data = res.getString("zoneStrings");
+        StringTokenizer st = new StringTokenizer(data, "\u00ae\u00ae");
+        String[][] array = new String[st.countTokens()][];
+    
+        while (st.hasMoreTokens())
+          {
+	    int index2 = 0;
+	    String token = st.nextToken();
+	    StringTokenizer st2 = new StringTokenizer(token, "\u00ae");
+            array[index] = new String[st2.countTokens()];
+
+	    while (st2.hasMoreTokens())
+	      {
+	         array[index][index2] = st2.nextToken();
+	         index2++;
+	      }
+
+	    index++;
+          }
+    
+        return array;
+      }
+    catch (MissingResourceException e)
+      {
+	return new String[0][];
+      }
+  }
+  
   private String[] formatsForKey(ResourceBundle res, String key) 
   {
-    String[] values = new String [formatPrefixes.length];
+    String[] values = new String[formatPrefixes.length];
+    
     for (int i = 0; i < formatPrefixes.length; i++)
-      {
-        values[i] = res.getString(formatPrefixes[i]+key);
-      }
+      values[i] = res.getString(formatPrefixes[i] + key);
+  
     return values;
   }
 
@@ -101,15 +151,14 @@ public class DateFormatSymbols implements java.io.Serializable, Cloneable
       = ResourceBundle.getBundle("gnu.java.locale.LocaleInformation", locale,
       				 ClassLoader.getSystemClassLoader());
 
-    ampms = res.getStringArray ("ampms");
-    eras = res.getStringArray ("eras");
-    localPatternChars = res.getString ("localPatternChars");
-    months = res.getStringArray ("months");
-    shortMonths = res.getStringArray ("shortMonths");
-    shortWeekdays = res.getStringArray ("shortWeekdays");
-    weekdays = res.getStringArray ("weekdays");
-    zoneStrings = (String[][]) res.getObject ("zoneStrings");
-
+    ampms = getStringArray(res, "ampms");
+    eras = getStringArray(res, "eras");
+    localPatternChars = res.getString("localPatternChars");
+    months = getStringArray(res, "months");
+    shortMonths = getStringArray(res, "shortMonths");
+    shortWeekdays = getStringArray(res, "shortWeekdays");
+    weekdays = getStringArray(res, "weekdays");
+    zoneStrings = getZoneStrings(res);
     dateFormats = formatsForKey(res, "DateFormat");
     timeFormats = formatsForKey(res, "TimeFormat");
   }

@@ -1,5 +1,5 @@
 /* Locale.java -- i18n locales
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2002, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,7 +39,6 @@ exception statement from your version. */
 package java.util;
 
 import gnu.classpath.SystemProperties;
-import gnu.java.locale.LocaleHelper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -663,8 +662,19 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayLanguage(Locale inLocale)
   {
-    return LocaleHelper.getLocalizedString(inLocale, language,
-					   "languages", true, false);
+    try
+      {
+	ResourceBundle res =
+          ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
+                                   inLocale,
+                                   ClassLoader.getSystemClassLoader());
+
+        return res.getString("languages." + language);
+      }
+    catch (MissingResourceException e)
+      {
+	return language;
+      }
   }
 
   /**
@@ -710,8 +720,19 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayCountry(Locale inLocale)
   {
-    return LocaleHelper.getLocalizedString(inLocale, country,
-					    "territories", true, false);
+    try
+      {
+        ResourceBundle res =
+          ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
+                                   inLocale,
+                                   ClassLoader.getSystemClassLoader());
+    
+        return res.getString("territories." + country);
+      }
+    catch (MissingResourceException e)
+      {
+        return country;
+      }
   }
 
   /**
@@ -758,8 +779,19 @@ public final class Locale implements Serializable, Cloneable
    */
   public String getDisplayVariant(Locale inLocale)
   {
-    return LocaleHelper.getLocalizedString(inLocale, variant, "variants",
-					   true, false);
+    try
+      {
+        ResourceBundle res =
+          ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
+                                   inLocale,
+                                   ClassLoader.getSystemClassLoader());
+    
+        return res.getString("variants." + variant);
+      }
+    catch (MissingResourceException e)
+      {
+        return variant;
+      }
   }
 
   /**
