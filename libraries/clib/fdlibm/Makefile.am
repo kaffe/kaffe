@@ -47,6 +47,7 @@ libfdlibm_la_SOURCES =  \
 
 AM_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-module \
 	-no-undefined \
         -release $(PACKAGE_VERSION)
 

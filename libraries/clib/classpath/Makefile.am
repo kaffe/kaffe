@@ -12,4 +12,6 @@ libclasspath_la_SOURCES = \
 
 libclasspath_la_LDFLAGS = \
 	$(KLIBFLAGS) \
+	-module \
+        -no-undefined \
         -release $(PACKAGE_VERSION)
