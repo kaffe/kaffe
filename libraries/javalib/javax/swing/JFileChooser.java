@@ -1,5 +1,5 @@
 /* JFileChooser.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,925 +35,1120 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package javax.swing;
 
 import java.awt.Component;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Vector;
-
+import java.util.ArrayList;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
-import javax.accessibility.AccessibleRole;
+import javax.swing.JDialog;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 import javax.swing.plaf.FileChooserUI;
 
-/**
- * JFileChooser
- * @author	Andrew Selkirk
- * @version	1.0
- */
-public class JFileChooser extends JComponent implements Accessible {
 
-  private static final long serialVersionUID = 3162921138695327837L;
+/**
+ * DOCUMENT ME!
+ */
+public class JFileChooser extends JComponent implements Accessible
+{
+  /** DOCUMENT ME! */
+  public static final int OPEN_DIALOG = 0;
+
+  /** DOCUMENT ME! */
+  public static final int SAVE_DIALOG = 1;
+
+  /** DOCUMENT ME! */
+  public static final int CUSTOM_DIALOG = 2;
+
+  /** DOCUMENT ME! */
+  public static final int CANCEL_OPTION = 1;
+
+  /** DOCUMENT ME! */
+  public static final int APPROVE_OPTION = 0;
+
+  /** DOCUMENT ME! */
+  public static final int ERROR_OPTION = -1;
+
+  /** DOCUMENT ME! */
+  public static final int FILES_ONLY = 0;
+
+  /** DOCUMENT ME! */
+  public static final int DIRECTORIES_ONLY = 1;
+
+  /** DOCUMENT ME! */
+  public static final int FILES_AND_DIRECTORIES = 2;
+
+  /** DOCUMENT ME! */
+  public static final String CANCEL_SELECTION = "CancelSelection";
+
+  /** DOCUMENT ME! */
+  public static final String APPROVE_SELECTION = "ApproveSelection";
+
+  /** DOCUMENT ME! */
+  public static final String APPROVE_BUTTON_TEXT_CHANGED_PROPERTY = "approvebuttonText";
+
+  /** DOCUMENT ME! */
+  public static final String APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY = "approveButtonToolTipText";
+
+  /** DOCUMENT ME! */
+  public static final String APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY = "approveButtonMnemonic";
+
+  /** DOCUMENT ME! */
+  public static final String CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY = "controlButtonsAreShown";
+
+  /** DOCUMENT ME! */
+  public static final String DIRECTORY_CHANGED_PROPERTY = "directory";
+
+  /** DOCUMENT ME! */
+  public static final String SELECTED_FILE_CHANGED_PROPERTY = "SelectedFileChangedProperty";
+
+  /** DOCUMENT ME! */
+  public static final String SELECTED_FILES_CHANGED_PROPERTY = "selectedFiles";
+
+  /** DOCUMENT ME! */
+  public static final String MULTI_SELECTION_ENABLED_CHANGED_PROPERTY = "multiSelectionEnabled";
+
+  /** DOCUMENT ME! */
+  public static final String FILE_SYSTEM_VIEW_CHANGED_PROPERTY = "fileSystemView";
+
+  /** DOCUMENT ME! */
+  public static final String FILE_VIEW_CHANGED_PROPERTY = "fileView";
+
+  /** DOCUMENT ME! */
+  public static final String FILE_HIDING_CHANGED_PROPERTY = "fileHidingEnabled";
+
+  /** DOCUMENT ME! */
+  public static final String FILE_FILTER_CHANGED_PROPERTY = "fileFilter";
+
+  /** DOCUMENT ME! */
+  public static final String FILE_SELECTION_MODE_CHANGED_PROPERTY = "fileSelectionMode";
+
+  /** DOCUMENT ME! */
+  public static final String ACCESSORY_CHANGED_PROPERTY = "accessory";
+
+  /** DOCUMENT ME! */
+  public static final String ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY = "acceptAllFileFilter";
+
+  /** DOCUMENT ME! */
+  public static final String DIALOG_TITLE_CHANGED_PROPERTY = "dialogTitle";
+
+  /** DOCUMENT ME! */
+  public static final String DIALOG_TYPE_CHANGED_PROPERTY = "dialogType";
+
+  /** DOCUMENT ME! */
+  public static final String CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY = "choosableFileFilter";
+
+  /** DOCUMENT ME! */
+  protected AccessibleContext accessibleContext;
+
+  /** DOCUMENT ME! */
+  private FileSystemView fsv;
+
+  /** DOCUMENT ME! */
+  private JComponent accessory;
+
+  /** DOCUMENT ME! */
+  private int approveButtonMnemonic = 0;
+
+  /** DOCUMENT ME! */
+  private String approveButtonText;
+
+  /** DOCUMENT ME! */
+  private String approveButtonToolTipText;
+
+  /** DOCUMENT ME! */
+  private ArrayList choosableFilters = new ArrayList();
+
+  /** DOCUMENT ME! */
+  private boolean isAcceptAll = true;
+
+  /** DOCUMENT ME! */
+  private String dialogTitle;
+
+  /** DOCUMENT ME! */
+  private int dialogType = OPEN_DIALOG;
+
+  /** DOCUMENT ME! */
+  private int retval = ERROR_OPTION;
+
+  /** DOCUMENT ME! */
+  private boolean multiSelection = false;
+
+  /** DOCUMENT ME! */
+  private boolean fileHiding = true;
+
+  /** DOCUMENT ME! */
+  private int fileSelectionMode = FILES_AND_DIRECTORIES;
+
+  /** DOCUMENT ME! */
+  private FileView fv = null;
+
+  /** DOCUMENT ME! */
+  private boolean controlButtonsShown = true;
+
+  /** DOCUMENT ME! */
+  private File currentDir = null;
+
+  /** DOCUMENT ME! */
+  private FileFilter currentFilter = null;
+
+  /** DOCUMENT ME! */
+  private File[] selectedFiles;
+
+  /** DOCUMENT ME! */
+  private File selectedFile;
 
   /**
-   * AccessibleJFileChooser
+   * Creates a new JFileChooser object.
    */
-  protected class AccessibleJFileChooser extends AccessibleJComponent
+  public JFileChooser()
   {
-    private static final long serialVersionUID = 8205148454060169244L;
-
-    /**
-     * Constructor AccessibleJFileChooser
-     * @param component TODO
-     */
-    protected AccessibleJFileChooser()
-    {
-    }
-
-    /**
-     * getAccessibleRole
-     * @return AccessibleRole
-     */
-    public AccessibleRole getAccessibleRole()
-    {
-      return AccessibleRole.FILE_CHOOSER;
-    }
+    setup(null);
+    setCurrentDirectory(null);
   }
 
-	/**
-	 * uiClassID
-	 */
-	private static final String uiClassID = "FileChooserUI";
-
-	/**
-	 * OPEN_DIALOG
-	 */
-	public static final int OPEN_DIALOG = 0;
-
-	/**
-	 * SAVE_DIALOG
-	 */
-	public static final int SAVE_DIALOG = 1;
-
-	/**
-	 * CUSTOM_DIALOG
-	 */
-	public static final int CUSTOM_DIALOG = 2;
-
-	/**
-	 * CANCEL_OPTION
-	 */
-	public static final int CANCEL_OPTION = 1;
-
-	/**
-	 * APPROVE_OPTION
-	 */
-	public static final int APPROVE_OPTION = 0;
-
-	/**
-	 * ERROR_OPTION
-	 */
-	public static final int ERROR_OPTION = -1;
-
-	/**
-	 * FILES_ONLY
-	 */
-	public static final int FILES_ONLY = 0;
-
-	/**
-	 * DIRECTORIES_ONLY
-	 */
-	public static final int DIRECTORIES_ONLY = 1;
-
-	/**
-	 * FILES_AND_DIRECTORIES
-	 */
-	public static final int FILES_AND_DIRECTORIES = 2;
-
-	/**
-	 * CANCEL_SELECTION
-	 */
-	public static final String CANCEL_SELECTION = "CancelSelection";
-
-	/**
-	 * APPROVE_SELECTION
-	 */
-	public static final String APPROVE_SELECTION = "ApproveSelection";
-
-	/**
-	 * APPROVE_BUTTON_TEXT_CHANGED_PROPERTY
-	 */
-	public static final String APPROVE_BUTTON_TEXT_CHANGED_PROPERTY = "ApproveButtonTextChangedProperty";
-
-	/**
-	 * APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY
-	 */
-	public static final String APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY = "ApproveButtonToolTipTextChangedProperty";
-
-	/**
-	 * APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY
-	 */
-	public static final String APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY = "ApproveButtonMnemonicChangedProperty";
-
-	/**
-	 * CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY
-	 */
-	public static final String CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY = "ControlButtonsAreShownChangedProperty";
-
-	/**
-	 * DIRECTORY_CHANGED_PROPERTY
-	 */
-	public static final String DIRECTORY_CHANGED_PROPERTY = "directoryChanged";
-
-	/**
-	 * SELECTED_FILE_CHANGED_PROPERTY
-	 */
-	public static final String SELECTED_FILE_CHANGED_PROPERTY = "SelectedFileChangedProperty";
-
-	/**
-	 * SELECTED_FILES_CHANGED_PROPERTY
-	 */
-	public static final String SELECTED_FILES_CHANGED_PROPERTY = "SelectedFilesChangedProperty";
-
-	/**
-	 * MULTI_SELECTION_ENABLED_CHANGED_PROPERTY
-	 */
-	public static final String MULTI_SELECTION_ENABLED_CHANGED_PROPERTY = "MultiSelectionEnabledChangedProperty";
-
-	/**
-	 * FILE_SYSTEM_VIEW_CHANGED_PROPERTY
-	 */
-	public static final String FILE_SYSTEM_VIEW_CHANGED_PROPERTY = "FileSystemViewChanged";
-
-	/**
-	 * FILE_VIEW_CHANGED_PROPERTY
-	 */
-	public static final String FILE_VIEW_CHANGED_PROPERTY = "fileViewChanged";
-
-	/**
-	 * FILE_HIDING_CHANGED_PROPERTY
-	 */
-	public static final String FILE_HIDING_CHANGED_PROPERTY = "FileHidingChanged";
-
-	/**
-	 * FILE_FILTER_CHANGED_PROPERTY
-	 */
-	public static final String FILE_FILTER_CHANGED_PROPERTY = "fileFilterChanged";
-
-	/**
-	 * FILE_SELECTION_MODE_CHANGED_PROPERTY
-	 */
-	public static final String FILE_SELECTION_MODE_CHANGED_PROPERTY = "fileSelectionChanged";
-
-	/**
-	 * ACCESSORY_CHANGED_PROPERTY
-	 */
-	public static final String ACCESSORY_CHANGED_PROPERTY = "AccessoryChangedProperty";
-
-	/**
-	 * ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY
-	 */
-	public static final String ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY = "acceptAllFileFilterUsedChanged";
-
-	/**
-	 * DIALOG_TITLE_CHANGED_PROPERTY
-	 */
-	public static final String DIALOG_TITLE_CHANGED_PROPERTY = "DialogTitleChangedProperty";
-
-	/**
-	 * DIALOG_TYPE_CHANGED_PROPERTY
-	 */
-	public static final String DIALOG_TYPE_CHANGED_PROPERTY = "DialogTypeChangedProperty";
-
-	/**
-	 * CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY
-	 */
-	public static final String CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY = "ChoosableFileFilterChangedProperty";
-
-	/**
-	 * dialogTitle
-	 */
-	private String dialogTitle;
-
-	/**
-	 * approveButtonText
-	 */
-	private String approveButtonText;
-
-	/**
-	 * approveButtonToolTipText
-	 */
-	private String approveButtonToolTipText;
-
-	/**
-	 * approveButtonMnemonic
-	 */
-	private int approveButtonMnemonic;
-
-	/**
-	 * actionListener
-	 */
-	private ActionListener actionListener;
-
-	/**
-	 * filters
-	 */
-	private Vector filters;
-
-	/**
-	 * dialog
-	 */
-	private JDialog dialog;
-
-	/**
-	 * dialogType
-	 */
-	private int dialogType;
-
-	/**
-	 * returnValue
-	 */
-	private int returnValue;
-
-	/**
-	 * accessory
-	 */
-	private JComponent accessory;
-
-	/**
-	 * fileView
-	 */
-	private FileView fileView;
-
-	/**
-	 * uiFileView
-	 */
-	private FileView uiFileView;
-
-	/**
-	 * controlsShown
-	 */
-	private boolean controlsShown;
-
-	/**
-	 * useFileHiding
-	 */
-	private boolean useFileHiding;
-
-	/**
-	 * fileSelectionMode
-	 */
-	private int fileSelectionMode;
-
-	/**
-	 * multiSelectionEnabled
-	 */
-	private boolean multiSelectionEnabled;
-
-	/**
-	 * useAcceptAllFileFilter
-	 */
-	private boolean useAcceptAllFileFilter;
-
-	/**
-	 * fileFilter
-	 */
-	private FileFilter fileFilter;
-
-	/**
-	 * fileSystemView
-	 */
-	private FileSystemView fileSystemView;
-
-	/**
-	 * currentDirectory
-	 */
-	private File currentDirectory;
-
-	/**
-	 * selectedFile
-	 */
-	private File selectedFile;
-
-	/**
-	 * selectedFiles
-	 */
-	private File[] selectedFiles;
-
-	/**
-	 * accessibleContext
-	 */
-	protected AccessibleContext accessibleContext;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * Constructor JFileChooser
-	 */
-	public JFileChooser() {
-		// TODO
-	} // JFileChooser()
-
-	/**
-	 * Constructor JFileChooser
-	 * @param currentDirectoryPath TODO
-	 */
-	public JFileChooser(String currentDirectoryPath) {
-		// TODO
-	} // JFileChooser()
-
-	/**
-	 * Constructor JFileChooser
-	 * @param currentDirectory TODO
-	 */
-	public JFileChooser(File currentDirectory) {
-		// TODO
-	} // JFileChooser()
-
-	/**
-	 * Constructor JFileChooser
-	 * @param value0 TODO
-	 */
-	public JFileChooser(FileSystemView fsv) {
-		// TODO
-	} // JFileChooser()
-
-	/**
-	 * Constructor JFileChooser
-	 * @param currentDirectory TODO
-	 * @param fsv TODO
-	 */
-	public JFileChooser(File currentDirectory, FileSystemView fsv) {
-		// TODO
-	} // JFileChooser()
-
-	/**
-	 * Constructor JFileChooser
-	 * @param currentDirectoryPath TODO
-	 * @param fsv TODO
-	 */
-	public JFileChooser(String currentDirectoryPath, FileSystemView fsv) {
-		// TODO
-	} // JFileChooser()
-
-
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * writeObject
-	 * @param stream TODO
-	 * @exception IOException TODO
-	 */
-	private void writeObject(ObjectOutputStream stream) throws IOException {
-		// TODO
-	} // writeObject()
-
-	/**
-	 * getName
-	 * @param file TODO
-	 * @returns String
-	 */
-	public String getName(File file) {
-		return null; // TODO
-	} // getName()
-
-	/**
-	 * setup
-	 * @param view TODO
-	 */
-	protected void setup(FileSystemView view) {
-		// TODO
-	} // setup()
-
-	/**
-	 * accept
-	 * @param file TODO
-	 * @returns boolean
-	 */
-	public boolean accept(File file) {
-		return false; // TODO
-	} // accept()
-
-	/**
-	 * getSelectedFile
-	 * @returns File
-	 */
-	public File getSelectedFile() {
-		return null; // TODO
-	} // getSelectedFile()
-
-	/**
-	 * setSelectedFile
-	 * @param file TODO
-	 */
-	public void setSelectedFile(File file) {
-		// TODO
-	} // setSelectedFile()
-
-	/**
-	 * getSelectedFiles
-	 * @returns File[]
-	 */
-	public File[] getSelectedFiles() {
-		return null; // TODO
-	} // getSelectedFiles()
-
-	/**
-	 * setSelectedFiles
-	 * @param files TODO
-	 */
-	public void setSelectedFiles(File[] files) {
-		// TODO
-	} // setSelectedFiles()
-
-	/**
-	 * getCurrentDirectory
-	 * @returns File
-	 */
-	public File getCurrentDirectory() {
-		return null; // TODO
-	} // getCurrentDirectory()
-
-	/**
-	 * setCurrentDirectory
-	 * @param directory TODO
-	 */
-	public void setCurrentDirectory(File directory) {
-		// TODO
-	} // setCurrentDirectory()
-
-	/**
-	 * changeToParentDirectory
-	 */
-	public void changeToParentDirectory() {
-		// TODO
-	} // changeToParentDirectory()
-
-	/**
-	 * rescanCurrentDirectory
-	 */
-	public void rescanCurrentDirectory() {
-		// TODO
-	} // rescanCurrentDirectory()
-
-	/**
-	 * ensureFileIsVisible
-	 * @param file TODO
-	 */
-	public void ensureFileIsVisible(File file) {
-		// TODO
-	} // ensureFileIsVisible()
-
-	/**
-	 * showOpenDialog
-	 * @param parent TODO
-	 * @returns int
-	 */
-	public int showOpenDialog(Component parent) {
-		return CANCEL_OPTION; // TODO
-	} // showOpenDialog()
-
-	/**
-	 * showSaveDialog
-	 * @param parent TODO
-	 * @returns int
-	 */
-	public int showSaveDialog(Component parent) {
-		return CANCEL_OPTION; // TODO
-	} // showSaveDialog()
-
-	/**
-	 * showDialog
-	 * @param parent TODO
-	 * @param approveButtonText TODO
-	 * @returns int
-	 */
-	public int showDialog(Component parent, String approveButtonText) {
-		return CANCEL_OPTION; // TODO
-	} // showDialog()
-
-	/**
-	 * getControlButtonsAreShown
-	 * @returns boolean
-	 */
-	public boolean getControlButtonsAreShown() {
-		return false; // TODO
-	} // getControlButtonsAreShown()
-
-	/**
-	 * setControlButtonsAreShown
-	 * @param value TODO
-	 */
-	public void setControlButtonsAreShown(boolean value) {
-		// TODO
-	} // setControlButtonsAreShown()
-
-	/**
-	 * getDialogType
-	 * @returns int
-	 */
-	public int getDialogType() {
-		return 0; // TODO
-	} // getDialogType()
-
-	/**
-	 * setDialogType
-	 * @param type TODO
-	 */
-	public void setDialogType(int type) {
-		// TODO
-	} // setDialogType()
-
-	/**
-	 * setDialogTitle
-	 * @param title TODO
-	 */
-	public void setDialogTitle(String title) {
-		// TODO
-	} // setDialogTitle()
-
-	/**
-	 * getDialogTitle
-	 * @returns String
-	 */
-	public String getDialogTitle() {
-		return null; // TODO
-	} // getDialogTitle()
-
-	/**
-	 * setApproveButtonToolTipText
-	 * @param text TODO
-	 */
-	public void setApproveButtonToolTipText(String text) {
-		// TODO
-	} // setApproveButtonToolTipText()
-
-	/**
-	 * getApproveButtonToolTipText
-	 * @returns String
-	 */
-	public String getApproveButtonToolTipText() {
-		return null; // TODO
-	} // getApproveButtonToolTipText()
-
-	/**
-	 * getApproveButtonMnemonic
-	 * @returns int
-	 */
-	public int getApproveButtonMnemonic() {
-		return 0; // TODO
-	} // getApproveButtonMnemonic()
-
-	/**
-	 * setApproveButtonMnemonic
-	 * @param mnemonic TODO
-	 */
-	public void setApproveButtonMnemonic(int mnemonic) {
-		// TODO
-	} // setApproveButtonMnemonic()
-
-	/**
-	 * setApproveButtonMnemonic
-	 * @param mnemonic TODO
-	 */
-	public void setApproveButtonMnemonic(char mnemonic) {
-		// TODO
-	} // setApproveButtonMnemonic()
-
-	/**
-	 * setApproveButtonText
-	 * @param text TODO
-	 */
-	public void setApproveButtonText(String text) {
-		// TODO
-	} // setApproveButtonText()
-
-	/**
-	 * getApproveButtonText
-	 * @returns String
-	 */
-	public String getApproveButtonText() {
-		return null; // TODO
-	} // getApproveButtonText()
-
-	/**
-	 * getChoosableFileFilters
-	 * @returns FileFilter[]
-	 */
-	public FileFilter[] getChoosableFileFilters() {
-		return null; // TODO
-	} // getChoosableFileFilters()
-
-	/**
-	 * addChoosableFileFilter
-	 * @param filter TODO
-	 */
-	public void addChoosableFileFilter(FileFilter filter) {
-		// TODO
-	} // addChoosableFileFilter()
-
-	/**
-	 * removeChoosableFileFilter
-	 * @param filter TODO
-	 * @returns boolean
-	 */
-	public boolean removeChoosableFileFilter(FileFilter filter) {
-		return false; // TODO
-	} // removeChoosableFileFilter()
-
-	/**
-	 * resetChoosableFileFilters
-	 */
-	public void resetChoosableFileFilters() {
-		// TODO
-	} // resetChoosableFileFilters()
-
-	/**
-	 * getAcceptAllFileFilter
-	 * @returns FileFilter
-	 */
-	public FileFilter getAcceptAllFileFilter() {
-		return null; // TODO
-	} // getAcceptAllFileFilter()
-
-	/**
-	 * isAcceptAllFileFilterUsed
-	 * @returns boolean
-	 */
-	public boolean isAcceptAllFileFilterUsed() {
-		return false; // TODO
-	} // isAcceptAllFileFilterUsed()
-
-	/**
-	 * setAcceptAllFileFilterUsed
-	 * @param value TODO
-	 */
-	public void setAcceptAllFileFilterUsed(boolean value) {
-		// TODO
-	} // setAcceptAllFileFilterUsed()
-
-	/**
-	 * getAccessory
-	 * @returns JComponent
-	 */
-	public JComponent getAccessory() {
-		return null; // TODO
-	} // getAccessory()
-
-	/**
-	 * setAccessory
-	 * @param accessory TODO
-	 */
-	public void setAccessory(JComponent accessory) {
-		// TODO
-	} // setAccessory()
-
-	/**
-	 * setFileSelectionMode
-	 * @param mode TODO
-	 */
-	public void setFileSelectionMode(int mode) {
-		// TODO
-	} // setFileSelectionMode()
-
-	/**
-	 * getFileSelectionMode
-	 * @returns int
-	 */
-	public int getFileSelectionMode() {
-		return 0; // TODO
-	} // getFileSelectionMode()
-
-	/**
-	 * isFileSelectionEnabled
-	 * @returns boolean
-	 */
-	public boolean isFileSelectionEnabled() {
-		return false; // TODO
-	} // isFileSelectionEnabled()
-
-	/**
-	 * isDirectorySelectionEnabled
-	 * @returns boolean
-	 */
-	public boolean isDirectorySelectionEnabled() {
-		return false; // TODO
-	} // isDirectorySelectionEnabled()
-
-	/**
-	 * isMultiSelectionEnabled
-	 * @returns boolean
-	 */
-	public boolean isMultiSelectionEnabled() {
-		return false; // TODO
-	} // isMultiSelectionEnabled()
-
-	/**
-	 * setMultiSelectionEnabled
-	 * @param enabled TODO
-	 */
-	public void setMultiSelectionEnabled(boolean enabled) {
-		// TODO
-	} // setMultiSelectionEnabled()
-
-	/**
-	 * isFileHidingEnabled
-	 * @returns boolean
-	 */
-	public boolean isFileHidingEnabled() {
-		return false; // TODO
-	} // isFileHidingEnabled()
-
-	/**
-	 * setFileHidingEnabled
-	 * @param enabled TODO
-	 */
-	public void setFileHidingEnabled(boolean enabled) {
-		// TODO
-	} // setFileHidingEnabled()
-
-	/**
-	 * getFileFilter
-	 * @returns FileFilter
-	 */
-	public FileFilter getFileFilter() {
-		return null; // TODO
-	} // getFileFilter()
-
-	/**
-	 * setFileFilter
-	 * @param filter TODO
-	 */
-	public void setFileFilter(FileFilter filter) {
-		// TODO
-	} // setFileFilter()
-
-	/**
-	 * getFileView
-	 * @returns FileView
-	 */
-	public FileView getFileView() {
-		return null; // TODO
-	} // getFileView()
-
-	/**
-	 * setFileView
-	 * @param view TODO
-	 */
-	public void setFileView(FileView view) {
-		// TODO
-	} // setFileView()
-
-	/**
-	 * getDescription
-	 * @param file TODO
-	 * @returns String
-	 */
-	public String getDescription(File file) {
-		return null; // TODO
-	} // getDescription()
-
-	/**
-	 * getTypeDescription
-	 * @param file TODO
-	 * @returns String
-	 */
-	public String getTypeDescription(File file) {
-		return null; // TODO
-	} // getTypeDescription()
-
-	/**
-	 * getIcon
-	 * @param file TODO
-	 * @returns Icon
-	 */
-	public Icon getIcon(File file) {
-		return null; // TODO
-	} // getIcon()
-
-	/**
-	 * isTraversable
-	 * @param file TODO
-	 * @returns boolean
-	 */
-	public boolean isTraversable(File file) {
-		return false; // TODO
-	} // isTraversable()
-
-	/**
-	 * getFileSystemView
-	 * @returns FileSystemView
-	 */
-	public FileSystemView getFileSystemView() {
-		return null; // TODO
-	} // getFileSystemView()
-
-	/**
-	 * setFileSystemView
-	 * @param fsv TODO
-	 */
-	public void setFileSystemView(FileSystemView fsv) {
-		// TODO
-	} // setFileSystemView()
-
-	/**
-	 * approveSelection
-	 */
-	public void approveSelection() {
-		// TODO
-	} // approveSelection()
-
-	/**
-	 * cancelSelection
-	 */
-	public void cancelSelection() {
-		// TODO
-	} // cancelSelection()
-
-	/**
-	 * addActionListener
-	 * @param listener TODO
-	 */
-	public void addActionListener(ActionListener listener)
-	{
-		listenerList.add (ActionListener.class, listener);
-	}
-
-	/**
-	 * removeActionListener
-	 * @param listener TODO
-	 */
-	public void removeActionListener(ActionListener listener)
-	{
-		listenerList.remove (ActionListener.class, listener);
-	}
-
-	public ActionListener[] getActionListeners()
-	{
-		return (ActionListener[]) listenerList.getListeners (ActionListener.class);
-	}
-
-	/**
-	 * fireActionPerformed
-	 * @param command TODO
-	 */
-	protected void fireActionPerformed(String command) {
-		// TODO
-	} // fireActionPerformed()
-
-	/**
-	 * updateUI
-	 */
-	public void updateUI() {
-		setUI((FileChooserUI) UIManager.get(this));
-		invalidate();
-	} // updateUI()
-
-	/**
-	 * getUIClassID
-	 * @returns String
-	 */
-	public String getUIClassID() {
-		return uiClassID;
-	} // getUIClassID()
-
-	/**
-	 * getUI
-	 * @returns FileChooserUI
-	 */
-	public FileChooserUI getUI() {
-		return (FileChooserUI) ui;
-	} // getUI()
-
-	/**
-	 * paramString
-	 * @returns String
-	 */
-	protected String paramString() {
-		return null; // TODO
-	} // paramString()
+  /**
+   * Creates a new JFileChooser object.
+   *
+   * @param currentDirectoryPath DOCUMENT ME!
+   */
+  public JFileChooser(String currentDirectoryPath)
+  {
+    setup(null);
+    setCurrentDirectory(fsv.createFileObject(currentDirectoryPath));
+  }
 
   /**
-   * getAccessibleContext
-   * @returns AccessibleContext
+   * Creates a new JFileChooser object.
+   *
+   * @param currentDirectory DOCUMENT ME!
+   */
+  public JFileChooser(File currentDirectory)
+  {
+    setup(null);
+    setCurrentDirectory(currentDirectory);
+  }
+
+  /**
+   * Creates a new JFileChooser object.
+   *
+   * @param fsv DOCUMENT ME!
+   */
+  public JFileChooser(FileSystemView fsv)
+  {
+    setup(fsv);
+    setCurrentDirectory(null);
+  }
+
+  /**
+   * Creates a new JFileChooser object.
+   *
+   * @param currentDirectory DOCUMENT ME!
+   * @param fsv DOCUMENT ME!
+   */
+  public JFileChooser(File currentDirectory, FileSystemView fsv)
+  {
+    setup(fsv);
+    setCurrentDirectory(currentDirectory);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param view DOCUMENT ME!
+   */
+  protected void setup(FileSystemView view)
+  {
+    if (view == null)
+      view = FileSystemView.getFileSystemView();
+    setFileSystemView(view);
+    updateUI();
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param b DOCUMENT ME!
+   */
+  public void setDragEnabled(boolean b)
+  {
+    // FIXME: Implement
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean getDragEnabled()
+  {
+    // FIXME: Implement
+    return false;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getSelectedFile()
+  {
+    return selectedFile;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param file DOCUMENT ME!
+   */
+  public void setSelectedFile(File file)
+  {
+    if (selectedFile != file)
+      {
+	File old = selectedFile;
+	selectedFile = file;
+	firePropertyChange(SELECTED_FILE_CHANGED_PROPERTY, old, selectedFile);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File[] getSelectedFiles()
+  {
+    return selectedFiles;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param selectedFiles DOCUMENT ME!
+   */
+  public void setSelectedFiles(File[] selectedFiles)
+  {
+    if (this.selectedFiles != selectedFiles)
+      {
+	File[] old = this.selectedFiles;
+	this.selectedFiles = selectedFiles;
+	firePropertyChange(SELECTED_FILES_CHANGED_PROPERTY, old, selectedFiles);
+      }
+
+    if (selectedFiles != null)
+      setSelectedFile(selectedFiles[0]);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getCurrentDirectory()
+  {
+    return currentDir;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   */
+  public void setCurrentDirectory(File dir)
+  {
+    if (currentDir != dir || dir == null)
+      {
+	if (dir == null)
+	  dir = fsv.getDefaultDirectory();
+
+	File old = currentDir;
+	currentDir = dir;
+	firePropertyChange(DIRECTORY_CHANGED_PROPERTY, old, currentDir);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void changeToParentDirectory()
+  {
+    setCurrentDirectory(fsv.getParentDirectory(currentDir));
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void rescanCurrentDirectory()
+  {
+    getUI().rescanCurrentDirectory(this);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   */
+  public void ensureFileIsVisible(File f)
+  {
+    getUI().ensureFileIsVisible(this, f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param parent DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws HeadlessException DOCUMENT ME!
+   */
+  public int showOpenDialog(Component parent) throws HeadlessException
+  {
+    JDialog d = createDialog(parent);
+
+    // FIXME: Remove when we get ancestor property
+    d.setTitle("Open");
+    setDialogType(OPEN_DIALOG);
+
+    retval = ERROR_OPTION;
+
+    d.pack();
+    d.show();
+    return retval;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param parent DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws HeadlessException DOCUMENT ME!
+   */
+  public int showSaveDialog(Component parent) throws HeadlessException
+  {
+    JDialog d = createDialog(parent);
+    setDialogType(SAVE_DIALOG);
+
+    retval = ERROR_OPTION;
+
+    d.pack();
+    d.show();
+    return retval;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param parent DOCUMENT ME!
+   * @param approveButtonText DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws HeadlessException DOCUMENT ME!
+   */
+  public int showDialog(Component parent, String approveButtonText)
+                 throws HeadlessException
+  {
+    JDialog d = createDialog(parent);
+    setApproveButtonText(approveButtonText);
+    setDialogType(CUSTOM_DIALOG);
+
+    retval = ERROR_OPTION;
+
+    d.pack();
+    d.show();
+    return retval;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param parent DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws HeadlessException DOCUMENT ME!
+   */
+  protected JDialog createDialog(Component parent) throws HeadlessException
+  {
+    Frame toUse = (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
+    if (toUse == null)
+      toUse = SwingUtilities.getOwnerFrame();
+
+    JDialog dialog = new JDialog(toUse);
+    setSelectedFile(null);
+    dialog.getContentPane().add(this);
+    dialog.setModal(true);
+    dialog.invalidate();
+    dialog.repaint();
+
+    return dialog;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean getControlButtonsAreShown()
+  {
+    return controlButtonsShown;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param b DOCUMENT ME!
+   */
+  public void setControlButtonsAreShown(boolean b)
+  {
+    if (controlButtonsShown != b)
+      {
+	controlButtonsShown = b;
+	firePropertyChange(CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY,
+	                   ! controlButtonsShown, controlButtonsShown);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public int getDialogType()
+  {
+    return dialogType;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dialogType DOCUMENT ME!
+   */
+  public void setDialogType(int dialogType)
+  {
+    if (dialogType != OPEN_DIALOG && dialogType != SAVE_DIALOG
+        && dialogType != CUSTOM_DIALOG)
+      throw new IllegalArgumentException("Choose allowable dialogType.");
+
+    if (this.dialogType != dialogType)
+      {
+	int old = this.dialogType;
+	this.dialogType = dialogType;
+	firePropertyChange(DIALOG_TYPE_CHANGED_PROPERTY, old, this.dialogType);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dialogTitle DOCUMENT ME!
+   */
+  public void setDialogTitle(String dialogTitle)
+  {
+    if (this.dialogTitle != dialogTitle)
+      {
+	String old = this.dialogTitle;
+	this.dialogTitle = dialogTitle;
+	firePropertyChange(DIALOG_TITLE_CHANGED_PROPERTY, old, this.dialogTitle);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getDialogTitle()
+  {
+    return dialogTitle;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param toolTipText DOCUMENT ME!
+   */
+  public void setApproveButtonToolTipText(String toolTipText)
+  {
+    if (approveButtonToolTipText != toolTipText)
+      {
+	String oldText = approveButtonToolTipText;
+	approveButtonToolTipText = toolTipText;
+	firePropertyChange(APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY,
+	                   oldText, approveButtonToolTipText);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getApproveButtonToolTipText()
+  {
+    return approveButtonToolTipText;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public int getApproveButtonMnemonic()
+  {
+    return approveButtonMnemonic;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param mnemonic DOCUMENT ME!
+   */
+  public void setApproveButtonMnemonic(int mnemonic)
+  {
+    if (approveButtonMnemonic != mnemonic)
+      {
+	int oldMnemonic = approveButtonMnemonic;
+	approveButtonMnemonic = mnemonic;
+	firePropertyChange(APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY,
+	                   oldMnemonic, approveButtonMnemonic);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param mnemonic DOCUMENT ME!
+   */
+  public void setApproveButtonMnemonic(char mnemonic)
+  {
+    setApproveButtonMnemonic((int) Character.toUpperCase(mnemonic));
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param approveButtonText DOCUMENT ME!
+   */
+  public void setApproveButtonText(String approveButtonText)
+  {
+    if (this.approveButtonText != approveButtonText)
+      {
+	String oldText = this.approveButtonText;
+	this.approveButtonText = approveButtonText;
+	firePropertyChange(APPROVE_BUTTON_TEXT_CHANGED_PROPERTY, oldText,
+	                   this.approveButtonText);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getApproveButtonText()
+  {
+    return approveButtonText;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileFilter[] getChoosableFileFilters()
+  {
+    return (FileFilter[]) choosableFilters.toArray(new FileFilter[0]);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param filter DOCUMENT ME!
+   */
+  public void addChoosableFileFilter(FileFilter filter)
+  {
+    FileFilter[] old = getChoosableFileFilters();
+    choosableFilters.add(filter);
+    FileFilter[] newFilters = getChoosableFileFilters();
+    firePropertyChange(CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY, old, newFilters);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean removeChoosableFileFilter(FileFilter f)
+  {
+    FileFilter[] old = getChoosableFileFilters();
+    if (! choosableFilters.remove(f))
+      return false;
+    FileFilter[] newFilters = getChoosableFileFilters();
+    firePropertyChange(CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY, old, newFilters);
+    return true;
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void resetChoosableFileFilters()
+  {
+    choosableFilters.clear();
+    choosableFilters.add(getUI().getAcceptAllFileFilter(this));
+    setFileFilter((FileFilter) choosableFilters.get(0));
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileFilter getAcceptAllFileFilter()
+  {
+    return getUI().getAcceptAllFileFilter(this);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isAcceptAllFileFilterUsed()
+  {
+    return isAcceptAll;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param b DOCUMENT ME!
+   */
+  public void setAcceptAllFileFilterUsed(boolean b)
+  {
+    if (isAcceptAll != b)
+      {
+	isAcceptAll = b;
+	firePropertyChange(ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY,
+	                   ! isAcceptAll, isAcceptAll);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public JComponent getAccessory()
+  {
+    return accessory;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param newAccessory DOCUMENT ME!
+   */
+  public void setAccessory(JComponent newAccessory)
+  {
+    if (accessory != newAccessory)
+      {
+	JComponent old = accessory;
+	accessory = newAccessory;
+	firePropertyChange(ACCESSORY_CHANGED_PROPERTY, old, accessory);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param mode DOCUMENT ME!
+   */
+  public void setFileSelectionMode(int mode)
+  {
+    if (mode != FILES_ONLY && mode != DIRECTORIES_ONLY
+        && mode != FILES_AND_DIRECTORIES)
+      throw new IllegalArgumentException("Choose a correct file selection mode.");
+    if (fileSelectionMode != mode)
+      {
+	int old = fileSelectionMode;
+	fileSelectionMode = mode;
+	firePropertyChange(FILE_SELECTION_MODE_CHANGED_PROPERTY, old,
+	                   fileSelectionMode);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public int getFileSelectionMode()
+  {
+    return fileSelectionMode;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isFileSelectionEnabled()
+  {
+    return (fileSelectionMode == FILES_ONLY
+           || fileSelectionMode == FILES_AND_DIRECTORIES);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isDirectorySelectionEnabled()
+  {
+    return (fileSelectionMode == DIRECTORIES_ONLY
+           || fileSelectionMode == FILES_AND_DIRECTORIES);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param b DOCUMENT ME!
+   */
+  public void setMultiSelectionEnabled(boolean b)
+  {
+    if (multiSelection != b)
+      {
+	multiSelection = b;
+	firePropertyChange(MULTI_SELECTION_ENABLED_CHANGED_PROPERTY,
+	                   ! multiSelection, multiSelection);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isMultiSelectionEnabled()
+  {
+    return multiSelection;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isFileHidingEnabled()
+  {
+    return fileHiding;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param b DOCUMENT ME!
+   */
+  public void setFileHidingEnabled(boolean b)
+  {
+    if (fileHiding != b)
+      {
+	fileHiding = b;
+	firePropertyChange(FILE_HIDING_CHANGED_PROPERTY, ! fileHiding,
+	                   fileHiding);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param filter DOCUMENT ME!
+   */
+  public void setFileFilter(FileFilter filter)
+  {
+    if (currentFilter != filter)
+      {
+	FileFilter old = currentFilter;
+	currentFilter = filter;
+	firePropertyChange(FILE_FILTER_CHANGED_PROPERTY, old, currentFilter);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileFilter getFileFilter()
+  {
+    return currentFilter;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param fileView DOCUMENT ME!
+   */
+  public void setFileView(FileView fileView)
+  {
+    if (fv != fileView)
+      {
+	FileView old = fv;
+	fv = fileView;
+	firePropertyChange(FILE_VIEW_CHANGED_PROPERTY, old, fv);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileView getFileView()
+  {
+    return fv;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  private FileView getInternalFileView()
+  {
+    if (fv == null)
+      return getUI().getFileView(this);
+    return fv;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getName(File f)
+  {
+    return getInternalFileView().getName(f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getDescription(File f)
+  {
+    return getInternalFileView().getDescription(f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getTypeDescription(File f)
+  {
+    return getInternalFileView().getTypeDescription(f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public Icon getIcon(File f)
+  {
+    return getInternalFileView().getIcon(f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isTraversable(File f)
+  {
+    return getFileSystemView().isTraversable(f).booleanValue();
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean accept(File f)
+  {
+    if (f == null)
+      return false;
+    return getFileFilter().accept(f);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param fsv DOCUMENT ME!
+   */
+  public void setFileSystemView(FileSystemView fsv)
+  {
+    if (this.fsv != fsv)
+      {
+	FileSystemView old = this.fsv;
+	this.fsv = fsv;
+	firePropertyChange(FILE_SYSTEM_VIEW_CHANGED_PROPERTY, old, this.fsv);
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileSystemView getFileSystemView()
+  {
+    return fsv;
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void approveSelection()
+  {
+    retval = APPROVE_OPTION;
+    fireActionPerformed(APPROVE_SELECTION);
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void cancelSelection()
+  {
+    retval = CANCEL_OPTION;
+    fireActionPerformed(CANCEL_SELECTION);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param l DOCUMENT ME!
+   */
+  public void addActionListener(ActionListener l)
+  {
+    listenerList.add(ActionListener.class, l);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param l DOCUMENT ME!
+   */
+  public void removeActionListener(ActionListener l)
+  {
+    try
+      {
+	listenerList.remove(ActionListener.class, l);
+      }
+    catch (IllegalArgumentException e)
+      {
+	e.printStackTrace();
+      }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public ActionListener[] getActionListeners()
+  {
+    return (ActionListener[]) getListeners(ActionListener.class);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param command DOCUMENT ME!
+   */
+  protected void fireActionPerformed(String command)
+  {
+    ActionListener[] list = getActionListeners();
+    ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
+                                        command);
+
+    for (int i = 0; i < list.length; i++)
+      list[i].actionPerformed(event);
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void updateUI()
+  {
+    setUI((FileChooserUI) UIManager.getUI(this));
+    revalidate();
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getUIClassID()
+  {
+    return "FileChooserUI";
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public FileChooserUI getUI()
+  {
+    return (FileChooserUI) ui;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  protected String paramString()
+  {
+    return "JFileChooser";
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
    */
   public AccessibleContext getAccessibleContext()
   {
-    if (accessibleContext == null)
-      accessibleContext = new AccessibleJFileChooser();
-
-    return accessibleContext;
+    return null;
   }
 }

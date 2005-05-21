@@ -1111,7 +1111,7 @@ public class BasicComboBoxUI extends ComboBoxUI
       if (largestItemSize == null)
 	largestItemSize = new Dimension(0, 0);
 
-      for (int i = start - 1; i < end; i++)
+      for (int i = start; i < end; i++)
         {
 	  Object item = model.getElementAt(i);
 	  Component comp = renderer.getListCellRendererComponent(new JList(),

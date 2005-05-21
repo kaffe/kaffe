@@ -112,6 +112,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "DesktopIconUI", "javax.swing.plaf.basic.BasicDesktopIconUI",
       "DesktopPaneUI", "javax.swing.plaf.basic.BasicDesktopPaneUI",
       "EditorPaneUI", "javax.swing.plaf.basic.BasicEditorPaneUI",
+      "FileChooserUI", "javax.swing.plaf.basic.BasicFileChooserUI",
       "FormattedTextFieldUI", "javax.swing.plaf.basic.BasicFormattedTextFieldUI",
       "InternalFrameUI", "javax.swing.plaf.basic.BasicInternalFrameUI",
       "LabelUI", "javax.swing.plaf.basic.BasicLabelUI",
@@ -398,20 +399,20 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "FileChooser.cancelButtonText", "Cancel",
       "FileChooser.cancelButtonToolTipText", "Abort file chooser dialog",
       // XXX Don't use gif
-      "FileChooser.detailsViewIcon", new IconUIResource(new ImageIcon("icons/DetailsView.gif")),
+//      "FileChooser.detailsViewIcon", new IconUIResource(new ImageIcon("icons/DetailsView.gif")),
       "FileChooser.directoryDescriptionText", "Directory",
       "FileChooser.fileDescriptionText", "Generic File",
       "FileChooser.helpButtonMnemonic", new Integer(72),
       "FileChooser.helpButtonText", "Help",
       "FileChooser.helpButtonToolTipText", "FileChooser help",
       // XXX Don't use gif
-      "FileChooser.homeFolderIcon", new IconUIResource(new ImageIcon("icons/HomeFolder.gif")),
+//      "FileChooser.homeFolderIcon", new IconUIResource(new ImageIcon("icons/HomeFolder.gif")),
       // XXX Don't use gif
-      "FileChooser.listViewIcon", new IconUIResource(new ImageIcon("icons/ListView.gif")),
+//      "FileChooser.listViewIcon", new IconUIResource(new ImageIcon("icons/ListView.gif")),
       "FileChooser.newFolderErrorSeparator", ":",
       "FileChooser.newFolderErrorText", "Error creating new folder",
       // XXX Don't use gif
-      "FileChooser.newFolderIcon", new IconUIResource(new ImageIcon("icons/NewFolder.gif")),
+//      "FileChooser.newFolderIcon", new IconUIResource(new ImageIcon("icons/NewFolder.gif")),
       "FileChooser.openButtonMnemonic", new Integer(79),
       "FileChooser.openButtonText", "Open",
       "FileChooser.openButtonToolTipText", "Open selected file",
@@ -419,20 +420,20 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "FileChooser.saveButtonText", "Save",
       "FileChooser.saveButtonToolTipText", "Save selected file",
       // XXX Don't use gif
-      "FileChooser.upFolderIcon", new IconUIResource(new ImageIcon("icons/UpFolder.gif")),
+//      "FileChooser.upFolderIcon", new IconUIResource(new ImageIcon("icons/UpFolder.gif")),
       "FileChooser.updateButtonMnemonic", new Integer(85),
       "FileChooser.updateButtonText", "Update",
       "FileChooser.updateButtonToolTipText", "Update directory listing",
       // XXX Don't use gif
-      "FileView.computerIcon", new IconUIResource(new ImageIcon("icons/Computer.gif")),
+//      "FileView.computerIcon", new IconUIResource(new ImageIcon("icons/Computer.gif")),
       // XXX Don't use gif
-      "FileView.directoryIcon", new IconUIResource(new ImageIcon("icons/Directory.gif")),
+//      "FileView.directoryIcon", new IconUIResource(new ImageIcon("icons/Directory.gif")),
       // XXX Don't use gif
-      "FileView.fileIcon", new IconUIResource(new ImageIcon("icons/File.gif")),
+//      "FileView.fileIcon", new IconUIResource(new ImageIcon("icons/File.gif")),
       // XXX Don't use gif
-      "FileView.floppyDriveIcon", new IconUIResource(new ImageIcon("icons/Floppy.gif")),
+//      "FileView.floppyDriveIcon", new IconUIResource(new ImageIcon("icons/Floppy.gif")),
       // XXX Don't use gif
-      "FileView.hardDriveIcon", new IconUIResource(new ImageIcon("icons/HardDrive.gif")),
+//      "FileView.hardDriveIcon", new IconUIResource(new ImageIcon("icons/HardDrive.gif")),
       "FocusManagerClassName", "TODO",
       "FormattedTextField.background", new ColorUIResource(light),
       "FormattedTextField.caretForeground", new ColorUIResource(Color.black),
@@ -456,7 +457,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "InternalFrame.borderShadow", new ColorUIResource(shadow),
       "InternalFrame.closeIcon", BasicIconFactory.createEmptyFrameIcon(),
       // XXX Don't use gif
-      "InternalFrame.icon", new IconUIResource(new ImageIcon("icons/JavaCup.gif")),
+//      "InternalFrame.icon", new IconUIResource(new ImageIcon("icons/JavaCup.gif")),
       "InternalFrame.iconifyIcon", BasicIconFactory.createEmptyFrameIcon(),
       "InternalFrame.inactiveTitleBackground", new ColorUIResource(Color.gray),
       "InternalFrame.inactiveTitleForeground",
@@ -557,13 +558,13 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       new BorderUIResource.EmptyBorderUIResource(0, 0, 0, 0),
       "OptionPane.cancelButtonText", "Cancel",
       // XXX Don't use gif
-      "OptionPane.errorIcon",
-      new IconUIResource(new ImageIcon("icons/Error.gif")),
+//      "OptionPane.errorIcon",
+//      new IconUIResource(new ImageIcon("icons/Error.gif")),
       "OptionPane.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "OptionPane.foreground", new ColorUIResource(darkShadow),
       // XXX Don't use gif
-      "OptionPane.informationIcon",
-      new IconUIResource(new ImageIcon("icons/Inform.gif")),
+//      "OptionPane.informationIcon",
+//      new IconUIResource(new ImageIcon("icons/Inform.gif")),
       "OptionPane.messageAreaBorder",
       new BorderUIResource.EmptyBorderUIResource(0, 0, 0, 0),
       "OptionPane.messageForeground", new ColorUIResource(darkShadow),
@@ -571,11 +572,11 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "OptionPane.noButtonText", "No",
       "OptionPane.okButtonText", "OK",
       // XXX Don't use gif
-      "OptionPane.questionIcon",
-      new IconUIResource(new ImageIcon("icons/Question.gif")),
+//      "OptionPane.questionIcon",
+//      new IconUIResource(new ImageIcon("icons/Question.gif")),
       // XXX Don't use gif
-      "OptionPane.warningIcon",
-      new IconUIResource(new ImageIcon("icons/Warn.gif")),
+//      "OptionPane.warningIcon",
+//      new IconUIResource(new ImageIcon("icons/Warn.gif")),
       "OptionPane.windowBindings", new Object[] {
         "ESCAPE",  "close"
       },
@@ -836,7 +837,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "TableHeader.cellBorder", new BorderUIResource.BevelBorderUIResource(0),
       "TableHeader.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "TableHeader.foreground", new ColorUIResource(darkShadow),
-      "TextArea.background", new ColorUIResource(light),
+
+			"TextArea.background", new ColorUIResource(light),
       "TextArea.border", new BasicBorders.MarginBorder(),
       "TextArea.caretBlinkRate", new Integer(500),
       "TextArea.caretForeground", new ColorUIResource(Color.black),
@@ -909,7 +911,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
           },
       "TextPane.margin", new InsetsUIResource(3, 3, 3, 3),
       "TextPane.selectionBackground", new ColorUIResource(Color.black),
-      "TextPane.selectionForeground", new ColorUIResource(Color.white),
+      "TextPane.selectionForeground", new ColorUIResource(Color.white)/*,
       "TitledBorder.border", new BorderUIResource.EtchedBorderUIResource(),
       "TitledBorder.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "TitledBorder.titleColor", new ColorUIResource(darkShadow),
@@ -961,8 +963,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       }),
       "Tree.background", new ColorUIResource(light),
       "Tree.changeSelectionWithFocus", Boolean.TRUE,
-      "Tree.closedIcon", new IconUIResource(new ImageIcon("icons/TreeClosed.png")),
-      "Tree.collapsedIcon", new IconUIResource(new ImageIcon("icons/TreeCollapsed.png")),
+//      "Tree.closedIcon", new IconUIResource(new ImageIcon("icons/TreeClosed.png")),
+//      "Tree.collapsedIcon", new IconUIResource(new ImageIcon("icons/TreeCollapsed.png")),
       "Tree.drawsFocusBorderAroundIcon", Boolean.FALSE,
       "Tree.editorBorder", new BorderUIResource.LineBorderUIResource(Color.lightGray),
       "Tree.focusInputMap", new UIDefaults.LazyInputMap(new Object[] {
@@ -1010,12 +1012,12 @@ public abstract class BasicLookAndFeel extends LookAndFeel
         "ctrl PAGE_DOWN", "scrollDownChangeLead"
       }),
       "Tree.font", new FontUIResource("Dialog", Font.PLAIN, 12),
-      "Tree.expandedIcon", new IconUIResource(new ImageIcon("icons/TreeExpanded.png")),
+//      "Tree.expandedIcon", new IconUIResource(new ImageIcon("icons/TreeExpanded.png")),
       "Tree.foreground", new ColorUIResource(Color.black),
       "Tree.hash", new ColorUIResource(Color.gray),
-      "Tree.leafIcon", new IconUIResource(new ImageIcon("icons/TreeLeaf.png")),
+//      "Tree.leafIcon", new IconUIResource(new ImageIcon("icons/TreeLeaf.png")),
       "Tree.leftChildIndent", new Integer(7),
-      "Tree.openIcon", new IconUIResource(new ImageIcon("icons/TreeOpen.png")),
+//      "Tree.openIcon", new IconUIResource(new ImageIcon("icons/TreeOpen.png")),
       "Tree.rightChildIndent", new Integer(13),
       "Tree.rowHeight", new Integer(16),
       "Tree.scrollsOnExpand", Boolean.TRUE,
@@ -1026,7 +1028,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Tree.textForeground", new ColorUIResource(Color.black),
       "Viewport.background", new ColorUIResource(light),
       "Viewport.foreground", new ColorUIResource(Color.black),
-      "Viewport.font", new FontUIResource("Dialog", Font.PLAIN, 12)
+      "Viewport.font", new FontUIResource("Dialog", Font.PLAIN, 12)*/
     };
     defaults.putDefaults(uiDefaults);
   }

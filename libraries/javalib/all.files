@@ -3031,6 +3031,7 @@ javax/swing/event/UndoableEditListener.java
 javax/swing/filechooser/FileFilter.java
 javax/swing/filechooser/FileSystemView.java
 javax/swing/filechooser/FileView.java
+javax/swing/filechooser/UnixFileSystemView.java
 javax/swing/FocusManager.java
 javax/swing/GrayFilter.java
 javax/swing/Icon.java
@@ -3107,7 +3108,9 @@ javax/swing/plaf/basic/BasicComboBoxUI.java
 javax/swing/plaf/basic/BasicComboPopup.java
 javax/swing/plaf/basic/BasicDesktopIconUI.java
 javax/swing/plaf/basic/BasicDesktopPaneUI.java
+javax/swing/plaf/basic/BasicDirectoryModel.java
 javax/swing/plaf/basic/BasicEditorPaneUI.java
+javax/swing/plaf/basic/BasicFileChooserUI.java
 javax/swing/plaf/basic/BasicFormattedTextFieldUI.java
 javax/swing/plaf/basic/BasicGraphicsUtils.java
 javax/swing/plaf/basic/BasicIconFactory.java

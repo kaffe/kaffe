@@ -45,6 +45,7 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleStateSet;
 import javax.accessibility.AccessibleValue;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ProgressBarUI;
@@ -285,9 +286,11 @@ public class JProgressBar extends JComponent implements SwingConstants,
    */
   protected void paintBorder(Graphics graphics)
   {
-    getBorder().paintBorder(this, graphics, 0, 0,
-                            getWidth(),
-                            getHeight());
+    Border border = getBorder();
+    if (paintBorder && border != null)
+      border.paintBorder(this, graphics, 0, 0,
+                         getWidth(),
+                         getHeight());
   }
 
   /**

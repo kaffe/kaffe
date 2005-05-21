@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.util.HashMap;
+
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -46,9 +48,8 @@ public class MetalComboBoxUI
   extends BasicComboBoxUI
 {
 
-  // FIXME: maybe replace by a Map of instances when this becomes stateful
-  /** The shared UI instance for JComboBoxes. */
-  private static MetalComboBoxUI instance = null;
+  /** The UI instances for JComboBoxes. */
+  private static HashMap instances = null;
 
   /**
    * Constructs a new instance of MetalComboBoxUI.
@@ -67,8 +68,19 @@ public class MetalComboBoxUI
    */
   public static ComponentUI createUI(JComponent component)
   {
-    if (instance == null)
-      instance = new MetalComboBoxUI();
+    if (instances == null)
+      instances = new HashMap();
+
+    Object o = instances.get(component);
+    MetalComboBoxUI instance;
+    if (o == null)
+      {
+	instance = new MetalComboBoxUI();
+	instances.put(component, instance);
+      }
+    else
+      instance = (MetalComboBoxUI) o;
+
     return instance;
   }
 }

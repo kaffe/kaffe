@@ -2,6 +2,138 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/DefaultKeyboardFocusManager.java:
+        Documentation fixes.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/JTextComponent.java
+        (CaretBlinkTimer): Added inner class to make caret blinking.
+        (constructor): Create one instance of CaretBlinkTimer.
+        (setEditable): Switch caret on and off depending on the editable
+        property.
+        (setCare): Register caret with the CaretBlinkTimer.
+        * javax/swing/text/DefaultCaret.java:
+        Set a good blink rate of 500ms.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JEditorPane.java:
+        (processComponentKeyEvent): Removed this method. This blocks
+        key events from beeing delivered and is not in the API.
+        (processKeyEvent): Removed this method. This blocks
+        key events from beeing delivered and is not in the API.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/DefaultKeyboardFocusManager.java
+        (processKeyEvent): Properly swallow KEY_TYPED events after
+        a KEY_PRESSED event for a focusTraversalKey has been received.
+        Otherwise the focusTraversalKey (e.g. a TAB) would end up
+        beeing delivered to the focused component.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Component.java
+        (dispatchEventImpl): Let MouseEvents trigger a focus change
+        on lightweight components.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JTextField.java
+        (constructor): Set default value for the horizontalAlignment
+        property.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+        (setButtonIcons): Added checks for null references.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JProgressBar.java
+        (paintBorder): Check if border is null before trying to paint it.
+        * javax/swing/plaf/basic/BasicProgressBarUI.java
+        (paint): Don't paint the border here. This would lead to the border
+        beeing painted twice.
+
+	2005-05-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SwingUtilities.java
+        (convertPoint): Check for visibility of source and destination
+        before calling convertPointToScreen or convertPointFromScreen.
+
+	2005-05-20  Robert Schuster  <thebohemian@gmx.net>
+
+        * javax/swing/SizeRequirements.java: Removed two non-UTF8 chars.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SizeRequirements.java
+        (constructors): Implemented.
+        (getTiledSizeRequirements): Implemented.
+        (calculateTiledPositions): Implemented.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SizeRequirements.java:
+        Added API documentation for this class.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SizeRequirements.java:
+        Reformatted file to meet our coding standards.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/SwingUtilities.java
+        (getUIInputMap): Return the InputMap that has been set by
+        the UI of the component, not the component's own InputMap.
+        (getUIActionMap): Return the ActionMap that has been set by
+        the UI of the component, not the component's own ActionMap.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/FocusManager.java:
+        Reformatted this file to match our coding standard.
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/metal/BasicFileChooserUI.java:
+        (installComponents): Include parents ComboBox. This has been
+        commented out because ComboBox was broken (see previous entry).
+
+	2005-05-19  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/metal/MetalComboBoxUI.java
+        (createUI): Do not share instances of this UI class between
+        different JComboBoxes.
+
+	2005-05-19  Kim Ho  <kho@luxsci.net>
+
+        * javax/swing/DefaultComboBoxModel.java:
+        (addElement): Set index to be the element of the added item.
+        (removeAllElements): Clear before retrieving new size. Use
+        correct size.
+        * javax/swing/JFileChooser.java: Implemented.
+        * javax/swing/filechooser/FileSystemView.java: Implemented.
+        * javax/swing/filechooser/UnixFileSystemView.java: New file.
+        Implemented.
+        * javax/swing/plaf/basic/BasicComboBoxUI.java:
+        (intervalAdded): Set initial index to start.
+        * javax/swing/plaf/basic/BasicDirectoryModel.java: New file.
+        Implemented.
+        * javax/swing/plaf/basic/BasicFileChooserUI.java: New file.
+        Implemented.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java: Add FileChooserUI.
+        Commented out GIF properties for FileChooser stuff.
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-19  Michael Koch  <konqueror@gmx.de>
 
         * java/text/DateFormatSymbols.java

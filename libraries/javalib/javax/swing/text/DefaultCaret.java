@@ -63,7 +63,7 @@ public class DefaultCaret extends Rectangle
   private JTextComponent textComponent;
   
   private boolean selectionVisible = true;
-  private int blinkRate = 0;
+  private int blinkRate = 500;
   private int dot = 0;
   private int mark = 0;
   private Point magicCaretPosition = null;

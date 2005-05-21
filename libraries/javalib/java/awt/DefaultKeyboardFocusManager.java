@@ -140,6 +140,12 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
     }
   }
 
+  /**
+   * This flag indicates for which focus traversal key release event we
+   * possibly wait, before letting any more KEY_TYPED events through.
+   */
+  private AWTKeyStroke waitForKeyStroke = null;
+
   /** The {@link java.util.SortedSet} of current {@link
       #EventDelayRequest}s. */
   private SortedSet delayRequests = new TreeSet ();
@@ -357,9 +363,32 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
     // the other two key event types for the same key (e.g. if
     // KEY_PRESSED TAB is a focus traversal keystroke, we also need to
     // consume KEY_RELEASED and KEY_TYPED TAB key events).
+    // consuming KEY_RELEASED is easy, because their keyCodes matches
+    // the KEY_PRESSED event. Consuming the intermediate KEY_TYPED is
+    // very difficult because their is no clean way that we can know
+    // which KEY_TYPED belongs to a focusTraversalKey and which not.
+    // To address this problem we swallow every KEY_TYPE between the
+    // KEY_PRESSED event that matches a focusTraversalKey and the
+    // corresponding KEY_RELEASED.
     AWTKeyStroke oppositeKeystroke = AWTKeyStroke.getAWTKeyStroke (e.getKeyCode (),
                                                                    e.getModifiersEx (),
                                                                    !(e.id == KeyEvent.KEY_RELEASED));
+
+    // Here we check if we are currently waiting for a KEY_RELEASED and
+    // swallow all KeyEvents that are to be delivered in between. This
+    // should only be the KEY_TYPED events that correspond to the
+    // focusTraversalKey's KEY_PRESSED event
+    if (waitForKeyStroke != null)
+      {
+        if (eventKeystroke.equals(waitForKeyStroke))
+          // release this lock
+          waitForKeyStroke = null;
+
+        // as long as we are waiting for the KEY_RELEASED, we swallow every
+        // KeyEvent, including the KEY_RELEASED
+        e.consume();
+        return;
+      }
 
     Set forwardKeystrokes = comp.getFocusTraversalKeys (KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
     Set backwardKeystrokes = comp.getFocusTraversalKeys (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
@@ -370,31 +399,29 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
 
     if (forwardKeystrokes.contains (eventKeystroke))
       {
+        waitForKeyStroke = oppositeKeystroke;        
         focusNextComponent (comp);
         e.consume ();
       }
     else if (backwardKeystrokes.contains (eventKeystroke))
       {
+        waitForKeyStroke = oppositeKeystroke;        
         focusPreviousComponent (comp);
         e.consume ();
       }
     else if (upKeystrokes.contains (eventKeystroke))
       {
+        waitForKeyStroke = oppositeKeystroke;        
         upFocusCycle (comp);
         e.consume ();
       }
     else if (comp instanceof Container
              && downKeystrokes.contains (eventKeystroke))
       {
+        waitForKeyStroke = oppositeKeystroke;        
         downFocusCycle ((Container) comp);
         e.consume ();
       }
-    else if (forwardKeystrokes.contains (oppositeKeystroke)
-             || backwardKeystrokes.contains (oppositeKeystroke)
-             || upKeystrokes.contains (oppositeKeystroke)
-             || (comp instanceof Container &&
-                 downKeystrokes.contains (oppositeKeystroke)))
-      e.consume ();
   }
 
   protected void enqueueKeyEvents (long after, Component untilFocused)

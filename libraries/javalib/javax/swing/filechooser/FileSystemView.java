@@ -1,5 +1,5 @@
 /* FileSystemView.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,116 +35,327 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package javax.swing.filechooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.Icon;
+
 
 /**
- * FileSystemView
- * @author	Andrew Selkirk
- * @version	1.0
+ * DOCUMENT ME!
  */
-public abstract class FileSystemView {
+public abstract class FileSystemView
+{
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   * @param filename DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File createFileObject(File dir, String filename)
+  {
+    return new File(dir, filename);
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * DOCUMENT ME!
+   *
+   * @param path DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File createFileObject(String path)
+  {
+    return new File(path);
+  }
 
-	/**
-	 * Constructor FileSystemView
-	 */
-	public FileSystemView() {
-		// TODO
-	} // FileSystemView()
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  protected File createFileSystemRoot(File f)
+  {
+    File[] roots = File.listRoots();
+    if (roots == null)
+      return null;
+    return roots[0];
+  }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @param containingDir DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws IOException DOCUMENT ME!
+   */
+  public abstract File createNewFolder(File containingDir)
+                                throws IOException;
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * DOCUMENT ME!
+   *
+   * @param parent DOCUMENT ME!
+   * @param fileName DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getChild(File parent, String fileName)
+  {
+    // FIXME: Handle the case when parent and child are special folders.
+    return new File(parent, fileName);
+  }
 
-	/**
-	 * getFileSystemView
-	 * @returns FileSystemView
-	 */
-	public static FileSystemView getFileSystemView() {
-		return null; // TODO
-	} // getFileSystemView()
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getDefaultDirectory()
+  {
+    return getHomeDirectory();
+  }
 
-	/**
-	 * isRoot
-	 * @param file TODO
-	 * @returns boolean
-	 */
-	public abstract boolean isRoot(File file);
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   * @param useFileHiding DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File[] getFiles(File dir, boolean useFileHiding)
+  {
+    if (dir == null)
+      return null;
+    File[] files = dir.listFiles();
+    if (! useFileHiding)
+      return files;
+    ArrayList trim = new ArrayList();
+    for (int i = 0; i < files.length; i++)
+      if (! files[i].isHidden())
+	trim.add(files[i]);
+    File[] value = (File[]) trim.toArray(new File[0]);
+    return value;
+  }
 
-	/**
-	 * createNewFolder
-	 * @param file TODO
-	 * @exception IOException TODO
-	 * @returns File
-	 */
-	public abstract File createNewFolder(File file) throws IOException;
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public static FileSystemView getFileSystemView()
+  {
+    if (File.separator.equals("/"))
+      return new UnixFileSystemView();
 
-	/**
-	 * isHiddenFile
-	 * @param file TODO
-	 * @returns boolean
-	 */
-	public abstract boolean isHiddenFile(File file);
+    // else if (File.Separator.equals("\"))
+    //	return new Win32FileSystemView();
+    // else 
+    //	return new GenericFileSystemView();
+    return null;
+  }
 
-	/**
-	 * getRoots
-	 * @returns File[]
-	 */
-	public abstract File[] getRoots();
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getHomeDirectory()
+  {
+    return createFileObject(System.getProperty("user.home"));
+  }
 
-	/**
-	 * getHomeDirectory
-	 * @returns File
-	 */
-	public File getHomeDirectory() {
-		return null; // TODO
-	} // getHomeDirectory()
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File getParentDirectory(File f)
+  {
+    if (f == null)
+      return null;
+    return f.getParentFile();
+  }
 
-	/**
-	 * createFileObject
-	 * @param directory TODO
-	 * @param filename TODO
-	 * @returns File
-	 */
-	public File createFileObject(File directory, String filename) {
-		return null; // TODO
-	} // createFileObject()
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public File[] getRoots()
+  {
+    // subclass
+    return null;
+  }
 
-	/**
-	 * createFileObject
-	 * @param path TODO
-	 * @returns File
-	 */
-	public File createFileObject(String path) {
-		return null; // TODO
-	} // createFileObject()
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getSystemDisplayName(File f)
+  {
+    return null;
+  }
 
-	/**
-	 * getFiles
-	 * @param directory TODO
-	 * @param fileHiding TODO
-	 * @returns File[]
-	 */
-	public File[] getFiles(File directory, boolean fileHiding) {
-		return null; // TODO
-	} // getFiles()
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public Icon getSystemIcon(File f)
+  {
+    return null;
+  }
 
-	/**
-	 * getParentDirectory
-	 * @param directory TODO
-	 * @returns File
-	 */
-	public File getParentDirectory(File directory) {
-		return null; // TODO
-	} // getParentDirectory()
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getSystemTypeDescription(File f)
+  {
+    return null;
+  }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isComputerNode(File dir)
+  {
+    return false;
+  }
 
-} // FileSystemView
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isDrive(File dir)
+  {
+    return false;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isFileSystem(File f)
+  {
+    return (f.isFile() || f.isDirectory());
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isFileSystemRoot(File dir)
+  {
+    File[] roots = File.listRoots();
+    if (roots == null || dir == null)
+      return false;
+    String filename = dir.getAbsolutePath();
+    for (int i = 0; i < roots.length; i++)
+      if (roots[i].getAbsolutePath().equals(filename))
+	return true;
+    return false;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param dir DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isFloppyDrive(File dir)
+  {
+    return false;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isHiddenFile(File f)
+  {
+    return f.isHidden();
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param folder DOCUMENT ME!
+   * @param file DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isParent(File folder, File file)
+  {
+    File parent = file.getParentFile();
+    if (parent == null)
+      return false;
+    return folder.equals(parent);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public boolean isRoot(File f)
+  {
+    // These are not file system roots.
+    return false;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param f DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public Boolean isTraversable(File f)
+  {
+    // Tested. A directory where the user has no permission to rwx is still
+    // traversable. (No files are listed when you traverse the directory)
+    // My best guess is that as long as it's a directory, the file is
+    // traversable.
+    return new Boolean(f.isDirectory());
+  }
+}

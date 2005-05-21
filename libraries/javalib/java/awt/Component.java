@@ -1149,7 +1149,9 @@ public abstract class Component
   public Point getLocationOnScreen()
   {
     if (! isShowing())
-      throw new IllegalComponentStateException("component not showing");
+      throw new IllegalComponentStateException("component "
+                                               + getClass().getName()
+                                               + " not showing");
     // We know peer != null here.
     return peer.getLocationOnScreen();
   }
@@ -4762,6 +4764,10 @@ p   * <li>the set of backward traversal keys
                     .getCurrentKeyboardFocusManager()
                     .dispatchEvent(e))
                     return;
+              case MouseEvent.MOUSE_PRESSED:
+                if (isLightweight())
+                  requestFocus();
+                break;
               }
           }
         processEvent (e);

@@ -179,6 +179,9 @@ public class JTextField extends JTextComponent
 
     if (text != null)
       setText(text);
+
+    // default value for alignment
+    align = LEADING;
   }
 
   /**

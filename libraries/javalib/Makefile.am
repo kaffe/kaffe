@@ -3690,7 +3690,8 @@ javax_swing_event_SRCS = \
 javax_swing_filechooser_SRCS = \
 	javax/swing/filechooser/FileFilter.java \
 	javax/swing/filechooser/FileSystemView.java \
-	javax/swing/filechooser/FileView.java
+	javax/swing/filechooser/FileView.java \
+	javax/swing/filechooser/UnixFileSystemView.java
 javax_swing_plaf_SRCS = \
 	javax/swing/plaf/ActionMapUIResource.java \
 	javax/swing/plaf/BorderUIResource.java \
@@ -3747,7 +3748,9 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/BasicComboPopup.java \
 	javax/swing/plaf/basic/BasicDesktopIconUI.java \
 	javax/swing/plaf/basic/BasicDesktopPaneUI.java \
+	javax/swing/plaf/basic/BasicDirectoryModel.java \
 	javax/swing/plaf/basic/BasicEditorPaneUI.java \
+	javax/swing/plaf/basic/BasicFileChooserUI.java \
 	javax/swing/plaf/basic/BasicFormattedTextFieldUI.java \
 	javax/swing/plaf/basic/BasicGraphicsUtils.java \
 	javax/swing/plaf/basic/BasicIconFactory.java \

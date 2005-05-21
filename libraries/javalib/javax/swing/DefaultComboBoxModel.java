@@ -108,7 +108,7 @@ public class DefaultComboBoxModel extends AbstractListModel
   public void addElement(Object object)
   {
     list.add(object);
-    fireIntervalAdded(this, list.size(), list.size());
+    fireIntervalAdded(this, list.size() - 1, list.size());
   }
 
   /**
@@ -163,9 +163,9 @@ public class DefaultComboBoxModel extends AbstractListModel
    */
   public void removeAllElements()
   {
-    int listSize = getSize();
     list.clear();
-    fireIntervalAdded(this, 0, listSize - 1);
+    int listSize = getSize();
+    fireIntervalAdded(this, 0, listSize);
   }
 
   /**

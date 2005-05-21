@@ -47,140 +47,123 @@ import java.awt.event.KeyEvent;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public abstract class FocusManager extends DefaultKeyboardFocusManager
+public abstract class FocusManager
+  extends DefaultKeyboardFocusManager
 {
 
-	//-------------------------------------------------------------
-	// Classes ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * DisabledFocusManager
+   */
+  static class DisabledFocusManager
+    extends FocusManager
+  {
 
-	/**
-	 * DisabledFocusManager
-	 */
-	static class DisabledFocusManager extends FocusManager {
+    /**
+     * Constructor DisabledFocusManager
+     */
+    DisabledFocusManager()
+    {
+      // TODO
+    }
 
-		//-------------------------------------------------------------
-		// Initialization ---------------------------------------------
-		//-------------------------------------------------------------
+    /**
+     * processKeyEvent
+     * @param component TODO
+     * @param event TODO
+     */
+    public void processKeyEvent(Component component, KeyEvent event)
+    {
+      // TODO
+    }
 
-		/**
-		 * Constructor DisabledFocusManager
-		 */
-		DisabledFocusManager() {
-			// TODO
-		} // DisabledFocusManager()
+    /**
+     * focusNextComponent
+     * @param component TODO
+     */
+    public void focusNextComponent(Component component)
+    {
+      // TODO
+    }
 
-
-		//-------------------------------------------------------------
-		// Methods ----------------------------------------------------
-		//-------------------------------------------------------------
-
-		/**
-		 * processKeyEvent
-		 * @param component TODO
-		 * @param event TODO
-		 */
-		public void processKeyEvent(Component component, KeyEvent event) {
-			// TODO
-		} // processKeyEvent()
-
-		/**
-		 * focusNextComponent
-		 * @param component TODO
-		 */
-		public void focusNextComponent(Component component) {
-			// TODO
-		} // focusNextComponent()
-
-		/**
-		 * focusPreviousComponent
-		 * @param value0 TODO
-		 */
-		public void focusPreviousComponent(Component value0) {
-			// TODO
-		} // focusPreviousComponent()
+    /**
+     * focusPreviousComponent
+     * @param value0 TODO
+     */
+    public void focusPreviousComponent(Component value0)
+    {
+      // TODO
+    }
+  }
 
 
-	} // DisabledFocusManager
+  /**
+   * FOCUS_MANAGER_CLASS_PROPERTY
+   */
+  public static final String FOCUS_MANAGER_CLASS_PROPERTY =
+    "FocusManagerClassName";
 
+  /**
+   * Constructor FocusManager
+   */
+  public FocusManager()
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * getCurrentManager
+   * @returns FocusManager
+   */
+  public static FocusManager getCurrentManager()
+  {
+    return null; // TODO
+  }
 
-	/**
-	 * FOCUS_MANAGER_CLASS_PROPERTY
-	 */
-	public static final String FOCUS_MANAGER_CLASS_PROPERTY = "FocusManagerClassName";
+  /**
+   * setCurrentManager
+   * @param manager TODO
+   */
+  public static void setCurrentManager(FocusManager manager)
+  {
+    // TODO
+  }
 
+  /**
+   * disableSwingFocusManager
+   * @deprecated 1.4
+   */
+  public static void disableSwingFocusManager()
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * isFocusManagerEnabled
+   * @return boolean
+   * @deprecated 1.4
+   */
+  public static boolean isFocusManagerEnabled()
+  {
+    return false; // TODO
+  }
 
-	/**
-	 * Constructor FocusManager
-	 */
-	public FocusManager() {
-		// TODO
-	} // FocusManager()
+  /**
+   * processKeyEvent
+   * @param component TODO
+   * @param event TODO
+   */
+  public abstract void processKeyEvent(Component component, KeyEvent event);
 
+  /**
+   * focusNextComponent
+   * @param component TODO
+   */
+  public abstract void focusNextComponent(Component component);
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * focusPreviousComponent
+   * @param component TODO
+   */
+  public abstract void focusPreviousComponent(Component component);
 
-	/**
-	 * getCurrentManager
-	 * @returns FocusManager
-	 */
-	public static FocusManager getCurrentManager() {
-		return null; // TODO
-	} // getCurrentManager()
-
-	/**
-	 * setCurrentManager
-	 * @param manager TODO
-	 */
-	public static void setCurrentManager(FocusManager manager) {
-		// TODO
-	} // setCurrentManager()
-
-	/**
-	 * disableSwingFocusManager
-	 * @deprecated 1.4
-	 */
-	public static void disableSwingFocusManager() {
-		// TODO
-	} // disableSwingFocusManager()
-
-	/**
-	 * isFocusManagerEnabled
-	 * @return boolean
-	 * @deprecated 1.4
-	 */
-	public static boolean isFocusManagerEnabled() {
-		return false; // TODO
-	} // isFocusManagerEnabled()
-
-	/**
-	 * processKeyEvent
-	 * @param component TODO
-	 * @param event TODO
-	 */
-	public abstract void processKeyEvent(Component component, KeyEvent event);
-
-	/**
-	 * focusNextComponent
-	 * @param component TODO
-	 */
-	public abstract void focusNextComponent(Component component);
-
-	/**
-	 * focusPreviousComponent
-	 * @param component TODO
-	 */
-	public abstract void focusPreviousComponent(Component component);
-
-
-} // FocusManager
+}

@@ -492,11 +492,6 @@ public class BasicProgressBarUI extends ProgressBarUI
       paintDeterminate(g, c);
     else
       paintIndeterminate(g, c);
-      
-    if (progressBar.isBorderPainted())
-      progressBar.getBorder().paintBorder(progressBar, g, 0, 0,
-                                          progressBar.getWidth(),
-					  progressBar.getHeight());
   }
 
   /**
