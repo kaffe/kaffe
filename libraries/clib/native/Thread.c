@@ -74,5 +74,5 @@ jboolean java_lang_VMThread_interrupted(void)
 
 jboolean java_lang_VMThread_isInterrupted(Hjava_lang_VMThread *this)
 {
-  return KTHREAD(is_interrupted)((jthread_t)unhand(this)->jthreadID);
+  return KTHREAD(is_interrupted)((jthread_t)unhand(this)->vmdata);
 }

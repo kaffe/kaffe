@@ -48,13 +48,16 @@ package java.lang;
  */
 final class VMThrowable
 {
+  /**
+   * VM private data.
+   */
   /*
    * NB: this is a place where native code stores private
    * data.  The gc will mark the memory referenced, but its allocation
    * type is such that it won't be walked further.
    * Do not use kaffe.util.Ptr here.
    */
-  private transient Object backtrace;
+  private transient Object vmdata;
 
   /**
    * Private contructor, create VMThrowables with fillInStackTrace();

@@ -165,7 +165,7 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 
 	frame = 0;
 	first_frame = 0;
-	stack = (stackTraceInfo*)unhand(state)->backtrace;
+	stack = (stackTraceInfo*)unhand(state)->vmdata;
 	throwable_class = ((Hjava_lang_Object*)throwable)->vtable->class;
 
 	for (i = 0; stack[i].meth != ENDOFSTACK; i++) {
@@ -232,7 +232,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	if (vmstate == NULL) {
 		return;
 	}
-	info = (stackTraceInfo*)unhand(vmstate)->backtrace;
+	info = (stackTraceInfo*)unhand(vmstate)->vmdata;
 	if (info == NULL) {
 		return;
 	}

@@ -28,8 +28,8 @@ extern HArrayOfObject* getStackTraceElements(struct Hjava_lang_VMThrowable*,
 void
 java_lang_VMThrowable_fillInStackTrace(struct Hjava_lang_VMThrowable* o)
 {
-	unhand(o)->backtrace = buildStackTrace(NULL);
-	assert(unhand(o)->backtrace != NULL);
+	unhand(o)->vmdata = buildStackTrace(NULL);
+	assert(unhand(o)->vmdata != NULL);
 }
 
 /*

@@ -246,6 +246,11 @@ public abstract class ClassLoader
   Map classAssertionStatus;
 
   /**
+   * VM private data.
+   */
+  transient Object vmdata;
+
+  /**
    * Create a new ClassLoader with as parent the system classloader. There
    * may be a security check for <code>checkCreateClassLoader</code>.
    *

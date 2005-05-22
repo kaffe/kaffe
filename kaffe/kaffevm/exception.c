@@ -336,7 +336,7 @@ throwException(struct Hjava_lang_Throwable* eobj)
 		unhand(eobj)->vmState = vmstate;
 	}
 	backtrace = buildStackTrace(NULL);
-	unhand(vmstate)->backtrace = backtrace;
+	unhand(vmstate)->vmdata = backtrace;
 	dispatchException(eobj, (stackTraceInfo*)backtrace);
 }
 
@@ -547,7 +547,7 @@ stackOverflowException(struct _exceptionFrame *frame)
 	soe = (Hjava_lang_Throwable*)newObject(javaLangStackOverflowError);
 	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
 	backtrace = buildStackTrace(frame);
-	unhand(vmstate)->backtrace = backtrace;
+	unhand(vmstate)->vmdata = backtrace;
 	unhand(soe)->vmState = vmstate;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
@@ -568,7 +568,7 @@ nullException(struct _exceptionFrame *frame)
 	npe = (Hjava_lang_Throwable*)newObject(javaLangNullPointerException);
 	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
 	backtrace = buildStackTrace(frame);
-	unhand(vmstate)->backtrace = backtrace;
+	unhand(vmstate)->vmdata = backtrace;
 	unhand(npe)->vmState = vmstate;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
@@ -589,7 +589,7 @@ floatingException(struct _exceptionFrame *frame)
 	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
 	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
 	backtrace = buildStackTrace(frame);
-	unhand(vmstate)->backtrace = backtrace;
+	unhand(vmstate)->vmdata = backtrace;
 	unhand(ae)->vmState = vmstate;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();

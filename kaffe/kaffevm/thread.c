@@ -78,7 +78,7 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 	threadData *thread_data = KTHREAD(get_data)(thread);
 
 	thread_data->jlThread = jlThread;
-	unhand (jlThread)->jthreadID = (struct Hkaffe_util_Ptr *)thread;
+	unhand (jlThread)->vmdata = (struct Hkaffe_util_Ptr *)thread;
 
 	thread_data->jnireferences = NULL;
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
@@ -185,10 +185,10 @@ void
 interruptThread(Hjava_lang_VMThread* tid)
 {
 DBG(VMTHREAD, dprintf ("%p (%p) interrupting %p (%p)\n", KTHREAD(current)(),
-                       THREAD_DATA()->jlThread, unhand(tid)->jthreadID, tid); );
-	assert(unhand(tid)->jthreadID != NULL);
+                       THREAD_DATA()->jlThread, unhand(tid)->vmdata, tid); );
+	assert(unhand(tid)->vmdata != NULL);
 
-	KTHREAD(interrupt)((jthread_t)unhand(tid)->jthreadID);
+	KTHREAD(interrupt)((jthread_t)unhand(tid)->vmdata);
 }
 
 /*
@@ -206,8 +206,8 @@ stopThread(Hjava_lang_VMThread* tid, Hjava_lang_Object* obj)
 		 * thread won't throw the exception `obj', but it will 
 		 * construct a new ThreadDeath exception when it dies.
 		 */
-		if ((jthread_t)unhand(tid)->jthreadID)
-			KTHREAD(stop)((jthread_t)unhand(tid)->jthreadID);
+		if ((jthread_t)unhand(tid)->vmdata)
+			KTHREAD(stop)((jthread_t)unhand(tid)->vmdata);
 	}
 }
 
@@ -277,7 +277,7 @@ KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
-         * before the KTHREAD(createfirst) and the jthreadID assignment.
+         * before the KTHREAD(createfirst) and the vmdata assignment.
 	 *
 	 * If we're creating the Thread instance of the main thread, this
 	 * will trigger the initialization process of the java part of the
@@ -486,10 +486,10 @@ void
 setPriorityThread(Hjava_lang_VMThread* tid, jint prio)
 {
 	/* no native thread yet */
-	if (unhand(tid)->jthreadID == 0)
+	if (unhand(tid)->vmdata == 0)
 	        return;
 
-	KTHREAD(setpriority)((jthread_t)unhand(tid)->jthreadID, prio);
+	KTHREAD(setpriority)((jthread_t)unhand(tid)->vmdata, prio);
 }
 
 /*
@@ -553,7 +553,7 @@ getCurrentThread(void)
 void
 finalizeThread(Hjava_lang_VMThread* tid)
 {
-	jthread_t jtid = (jthread_t)unhand(tid)->jthreadID;
+	jthread_t jtid = (jthread_t)unhand(tid)->vmdata;
 
 	if (jtid != NULL) {
 		KTHREAD(destroy)(jtid);

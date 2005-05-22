@@ -1,5 +1,28 @@
 2005-05-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c
+	kaffe/kaffevm/exception.c
+	kaffe/kaffevm/stackTrace.c:
+	Renamed backtrace field to vmdata.
+
+	* kaffe/kaffevm/thread.c
+	libraries/clib/native/Thread.c
+	libraries/clib/native/Throwable.c:
+	Renamed jthreadID field to vmdata.
+
+	Resynced with GNU Classpath.
+
+	2005-05-21  Archie Cobbs  <archie@dellroad.org>
+
+        * java/lang/ClassLoader.java: (vmdata): add
+        * vm/reference/java/lang/VMThread.java: (vmdata): add
+        (countStackFrames()): make native
+        * vm/reference/java/lang/VMThrowable.java: (vmdata): add
+        (fillInStackTrace()): make native
+        (getStackTrace()): make native
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-05-21  Michael Koch  <konqueror@gmx.de>

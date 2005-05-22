@@ -85,9 +85,9 @@ final class VMThread
     private volatile boolean running;
 
     /**
-     * Kaffe Specific: Pointer to the jthread identifier.
+     * VM private data.
      */
-    private Ptr jthreadID;
+    private transient Ptr vmdata;
 
     /**
      * Private constructor, create VMThreads with the static create method.
@@ -226,10 +226,7 @@ final class VMThread
      *
      * @deprecated unsafe operation
      */
-    int countStackFrames()
-    {
-	return 0;
-    }
+    native int countStackFrames();
 
     /**
      * Wait the specified amount of time for the Thread in question to die.
