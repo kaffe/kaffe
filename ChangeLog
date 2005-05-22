@@ -1,5 +1,55 @@
 2005-05-21  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-05-21  Michael Koch  <konqueror@gmx.de>
+
+        * resource/gnu/java/locale/LocaleInformation_as.properties,
+        resource/gnu/java/locale/LocaleInformation_bg.properties,
+        resource/gnu/java/locale/LocaleInformation_cs.properties,
+        resource/gnu/java/locale/LocaleInformation_da.properties,
+        resource/gnu/java/locale/LocaleInformation_de.properties,
+        resource/gnu/java/locale/LocaleInformation_dz.properties,
+        resource/gnu/java/locale/LocaleInformation_en.properties,
+        resource/gnu/java/locale/LocaleInformation_en_GB.properties,
+        resource/gnu/java/locale/LocaleInformation_en_IE.properties,
+        resource/gnu/java/locale/LocaleInformation_en_SG.properties,
+        resource/gnu/java/locale/LocaleInformation_es.properties,
+        resource/gnu/java/locale/LocaleInformation_fa.properties,
+        resource/gnu/java/locale/LocaleInformation_fa_AF.properties,
+        resource/gnu/java/locale/LocaleInformation_fi.properties,
+        resource/gnu/java/locale/LocaleInformation_fr.properties,
+        resource/gnu/java/locale/LocaleInformation_ga.properties,
+        resource/gnu/java/locale/LocaleInformation_hi.properties,
+        resource/gnu/java/locale/LocaleInformation_it.properties,
+        resource/gnu/java/locale/LocaleInformation_ja.properties,
+        resource/gnu/java/locale/LocaleInformation_ko.properties,
+        resource/gnu/java/locale/LocaleInformation_mr.properties,
+        resource/gnu/java/locale/LocaleInformation_mt.properties,
+        resource/gnu/java/locale/LocaleInformation_nb.properties,
+        resource/gnu/java/locale/LocaleInformation_nl.properties,
+        resource/gnu/java/locale/LocaleInformation_ps.properties,
+        resource/gnu/java/locale/LocaleInformation_pt.properties,
+        resource/gnu/java/locale/LocaleInformation_sr.properties,
+        resource/gnu/java/locale/LocaleInformation_sr_Latn.properties,
+        resource/gnu/java/locale/LocaleInformation_sv.properties,
+        resource/gnu/java/locale/LocaleInformation_sw.properties,
+        resource/gnu/java/locale/LocaleInformation_ta.properties,
+        resource/gnu/java/locale/LocaleInformation_uz_AF.properties,
+        resource/gnu/java/locale/LocaleInformation_zh.properties,
+        resource/gnu/java/locale/LocaleInformation_zh_Hant.properties:
+        Regenerated with newer gnu.localegen to fix newline bug.
+
+	2005-05-21  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/text/DateFormatSymbols.java:
+        (getStringArray(java.util.ResourceBundle,String)):
+        Fixed parsing of new property files.
+        (getZoneStrings(java.util.ResourceBundle)):
+        Likewise.
+
+2005-05-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
 	(area_updated): Delete jpixels reference after use to avoid wasting references.
 	

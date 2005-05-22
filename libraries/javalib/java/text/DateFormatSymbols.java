@@ -81,18 +81,7 @@ public class DateFormatSymbols implements java.io.Serializable, Cloneable
 
   private static String[] getStringArray(ResourceBundle res, String name)
   { 
-    int index = 0;
-    String data = res.getString(name);
-    StringTokenizer st = new StringTokenizer(data, "\u00ae");
-    String[] array = new String[st.countTokens()];
-
-    while (st.hasMoreTokens())
-      {
-        array[index] = st.nextToken();
-	index++;
-      }
-
-    return array;
+    return res.getString(name).split("\u00ae");
   }
 
   private String[][] getZoneStrings(ResourceBundle res)
@@ -101,26 +90,11 @@ public class DateFormatSymbols implements java.io.Serializable, Cloneable
       {
         int index = 0;
         String data = res.getString("zoneStrings");
-        StringTokenizer st = new StringTokenizer(data, "\u00ae\u00ae");
-        String[][] array = new String[st.countTokens()][];
-    
-        while (st.hasMoreTokens())
-          {
-	    int index2 = 0;
-	    String token = st.nextToken();
-	    StringTokenizer st2 = new StringTokenizer(token, "\u00ae");
-            array[index] = new String[st2.countTokens()];
-
-	    while (st2.hasMoreTokens())
-	      {
-	         array[index][index2] = st2.nextToken();
-	         index2++;
-	      }
-
-	    index++;
-          }
-    
-        return array;
+	String[] zones = data.split("\u00a9");
+	String[][] array = new String[zones.length][];
+	for (int a = 0; a < zones.length; ++a)
+	  array[a] = zones[a].split("\u00ae");
+	return array;
       }
     catch (MissingResourceException e)
       {
