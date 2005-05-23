@@ -1,5 +1,12 @@
 2005-05-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Only run boehm-gc configury if
+	boehm-gc is selected.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>
+
+2005-05-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Create include/config-int.h
 	instead of config/config-int.h.
 

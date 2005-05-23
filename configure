@@ -32274,13 +32274,14 @@ echo "$as_me: error: Threads support for $Khost_os unavailable in the boehm-gc. 
 	esac
 
 	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
-fi
+
 
 
 subdirs="$subdirs kaffe/kaffevm/boehm-gc/boehm"
 
 
 
+fi
 
 echo "$as_me:$LINENO: result: $GC_NAME" >&5
 echo "${ECHO_T}$GC_NAME" >&6
