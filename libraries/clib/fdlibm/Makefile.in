@@ -423,6 +423,9 @@ libfdlibm_la_SOURCES = \
 			w_remainder.c \
 			w_sqrt.c 
 
+AM_CPPFLAGS = \
+        -I$(top_builddir)/include
+
 AM_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \

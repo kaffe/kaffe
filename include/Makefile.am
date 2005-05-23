@@ -278,6 +278,7 @@ noinst_HEADERS = \
 	native.h 
 
 include_HEADERS = \
+	config-int.h \
 	jni.h \
 	jni_md.h \
 	jni_cpp.h \

@@ -24,7 +24,6 @@ endif
 GEN_HDRS = \
 	md.h \
 	callKaffeException.h \
-	config-int.h \
 	$(XPROF_HDRS) \
 	$(ENGINE_GEN_HDRS)
 

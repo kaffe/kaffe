@@ -81,8 +81,8 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
-am__include_HEADERS_DIST = jni.h jni_md.h jni_cpp.h jvmpi.h \
-	kaffe_jni.h jawt.h jawt_md.h
+am__include_HEADERS_DIST = config-int.h jni.h jni_md.h jni_cpp.h \
+	jvmpi.h kaffe_jni.h jawt.h jawt_md.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -612,6 +612,7 @@ noinst_HEADERS = \
 	native.h 
 
 include_HEADERS = \
+	config-int.h \
 	jni.h \
 	jni_md.h \
 	jni_cpp.h \

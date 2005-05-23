@@ -366,7 +366,6 @@ with_engine = @with_engine@
 GEN_HDRS = \
 	md.h \
 	callKaffeException.h \
-	config-int.h \
 	$(XPROF_HDRS) \
 	$(ENGINE_GEN_HDRS)
 
