@@ -1,6 +1,18 @@
 2005-05-26  Dalibor Topic  <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
+	
+	2005-05-25  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* resource/META-INF/services/javax.xml.parsers.DocumentBuilderFactory,
+	resource/META-INF/services/javax.xml.parsers.SAXParserFactory,
+	resource/META-INF/services/javax.xml.parsers.TransformerFactory,
+	resource/META-INF/services/org.xml.sax.driver:
+	Properties for the XML facilities.
+
+2005-05-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
 
 	2005-05-25  Michael Koch  <konqueror@gmx.de>
 
