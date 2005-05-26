@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath.
 	
+	2005-05-25  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/Locale.java (getISOStrings):
+	Re-implemented for locale properties files.
+
+2005-05-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
 	2005-05-24  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
 	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c

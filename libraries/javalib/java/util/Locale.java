@@ -453,33 +453,35 @@ public final class Locale implements Serializable, Cloneable
    */
   private static String[] getISOStrings(String tableName)
   {
-    List tempList;
-    ResourceBundle bundle;
-    Enumeration keys;
     int count = 0;
-    String[] strings;
+    ResourceBundle bundle =
+      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
+    Enumeration e = bundle.getKeys();
+    ArrayList tempList = new ArrayList();
 
-    tempList = new ArrayList();
-    bundle = ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
-    keys = ((Hashtable) bundle.getObject(tableName)).keys();
-    while (keys.hasMoreElements())
+    while (e.hasMoreElements())
       {
-	String nextString;
-
-	nextString = (String) keys.nextElement();
-	if (nextString.length() == 2 &&
-	    Character.isLetter(nextString.charAt(0)) &&
-	    Character.isLetter(nextString.charAt(1)))
+	String key = (String) e.nextElement();
+	
+	if (key.startsWith(tableName + "."))
 	  {
-	    tempList.add(nextString);
-	    ++count;
+	    String str = key.substring(tableName.length() + 1);
+
+	    if (str.length() == 2
+		&& Character.isLetter(str.charAt(0))
+		&& Character.isLetter(str.charAt(1)))
+	      {
+		tempList.add(str);
+		++count;
+	      }
 	  }
       }
-    strings = new String[count];
+
+    String[] strings = new String[count];
+    
     for (int a = 0; a < count; ++a)
-      {
-	strings[a] = (String) tempList.get(a);
-      }
+      strings[a] = (String) tempList.get(a);
+    
     return strings;
   }
 
