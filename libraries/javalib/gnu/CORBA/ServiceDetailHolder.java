@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* ServiceDetailHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,85 +36,56 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package gnu.CORBA;
 
-import java.io.ByteArrayInputStream;
+import org.omg.CORBA.ServiceDetail;
+import org.omg.CORBA.ServiceDetailHelper;
 
-import org.omg.CORBA.BAD_PARAM;
 
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * The service detail holder. This class is not included in the original
+ * API specification, so we place it outside the org.omg namespace.
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
+public class ServiceDetailHolder
+  implements org.omg.CORBA.portable.Streamable
 {
   /**
-   * The alignment offset.
+   * The stored value.
    */
-  private int offset = 0;
+  public ServiceDetail value;
 
   /**
-   * Create a stream, reading form the given buffer.
-   *
-   * @param a_buffer a buffer to read from.
+   * Create the initialised instance.
+   * @param initialValue
    */
-  public aligningInputStream(byte[] a_buffer)
+  public ServiceDetailHolder(ServiceDetail initialValue)
   {
-    super(a_buffer);
+    value = initialValue;
   }
 
   /**
-   * Create a stream, reading from the given buffer region.
-   *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
+   * Read from the CDR stream.
    */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
+  public void _read(org.omg.CORBA.portable.InputStream in)
   {
-    super(a_buffer, offset, length);
+    value = ServiceDetailHelper.read(in);
   }
 
   /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
+   * Get the typecode.
    */
-  public void setOffset(int an_offset)
+  public org.omg.CORBA.TypeCode _type()
   {
-    offset = an_offset;
+    return ServiceDetailHelper.type();
   }
 
   /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
-   *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
+   * Write into the CDR stream.
    */
-  public void align(int alignment)
+  public void _write(org.omg.CORBA.portable.OutputStream out)
   {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
-  }
-
-  /**
-   * Get the byte buffer, from where the data are read.
-   */
-  public byte[] getBuffer()
-  {
-    return buf;
+    ServiceDetailHelper.write(out, value);
   }
 }

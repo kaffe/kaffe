@@ -40,6 +40,7 @@ package gnu.CORBA;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -51,6 +52,48 @@ import java.util.TreeMap;
  */
 public class Connected_objects
 {
+  /**
+   * The reference data about the connected object.
+   */
+  public class cObject
+  {
+    /**
+     * Create an initialised instance.
+     */
+    cObject(org.omg.CORBA.Object _object, int _port, byte[] _key)
+    {
+      object = _object;
+      port = _port;
+      key = _key;
+    }
+
+    /**
+     * The object.
+     */
+    public final org.omg.CORBA.Object object;
+
+    /**
+     * The port on that the object is connected.
+     */
+    public final int port;
+
+    /**
+     * The object key.
+     */
+    public final byte[] key;
+
+    public boolean equals(java.lang.Object other)
+    {
+      if (other instanceof cObject)
+        {
+          cObject o = (cObject) other;
+          return o.object.equals(object) && o.port == port;
+        }
+      else
+        return false;
+    }
+  }
+
   /**
    * The free number to give for the next instance.
    * This field is incremented each time the
@@ -66,23 +109,25 @@ public class Connected_objects
   private Map objects = new TreeMap(new ByteArrayComparator());
 
   /**
-   * Get the key of the stored object.
+   * Get the record of the stored object.
    *
    * @param object the stored object
    *
-   * @return the key of the stored object, null if
+   * @return the record about the stored object, null if
    * this object is not stored here.
    */
-  public byte[] getKey(org.omg.CORBA.Object stored_object)
+  public cObject getKey(org.omg.CORBA.Object stored_object)
   {
     Map.Entry item;
     Iterator iter = objects.entrySet().iterator();
+    cObject ref;
+
     while (iter.hasNext())
       {
         item = (Map.Entry) iter.next();
-        if (stored_object._is_equivalent((org.omg.CORBA.Object) item.getValue())
-           )
-          return (byte[]) item.getKey();
+        ref = (cObject) item.getValue();
+        if (stored_object.equals(ref.object))
+          return ref;
       }
     return null;
   }
@@ -92,10 +137,14 @@ public class Connected_objects
    * generated automatically.
    *
    * @param object the object to add.
+   * @param port, on that the ORB will be listening to the remote
+   * invocations.
+   *
+   * @return the newly created object record.
    */
-  public void add(org.omg.CORBA.Object object)
+  public cObject add(org.omg.CORBA.Object object, int port)
   {
-    add(generateObjectKey(object), object);
+    return add(generateObjectKey(object), object, port);
   }
 
   /**
@@ -103,10 +152,14 @@ public class Connected_objects
    *
    * @param key the object key.
    * @param object the object to add.
+   * @param port the port, on that the ORB will be listening on the
+   * remote invocations.
    */
-  public void add(byte[] key, org.omg.CORBA.Object object)
+  public cObject add(byte[] key, org.omg.CORBA.Object object, int port)
   {
-    objects.put(key, object);
+    cObject rec = new cObject(object, port, key);
+    objects.put(key, rec);
+    return rec;
   }
 
   /**
@@ -116,21 +169,40 @@ public class Connected_objects
    *
    * @return the matching object, null if none is matching.
    */
-  public org.omg.CORBA.Object get(byte[] key)
+  public cObject get(byte[] key)
   {
-    return (org.omg.CORBA.Object) objects.get(key);
+    return (cObject) objects.get(key);
   }
 
   /**
-   * Remover the given object.
+   * Get the map entry set.
+   * @return
+   */
+  public Set entrySet()
+  {
+    return objects.entrySet();
+  }
+
+  /**
+   * Remove the given object.
    *
    * @param object the object to remove.
    */
   public void remove(org.omg.CORBA.Object object)
   {
-    byte[] key = getKey(object);
-    if (key != null)
-      objects.remove(key);
+    cObject ref = getKey(object);
+    if (ref != null)
+      objects.remove(ref.key);
+  }
+
+  /**
+   * Remove the given object, indiciating it by the key.
+   *
+   * @param object the object to remove.
+   */
+  public void remove(byte[] key)
+  {
+    objects.remove(key);
   }
 
   /**

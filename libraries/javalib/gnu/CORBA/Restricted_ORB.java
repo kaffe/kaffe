@@ -49,12 +49,14 @@ import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.NVList;
 import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.ORB;
-import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CORBA.Request;
 import org.omg.CORBA.StructMember;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
-import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.UnionMember;
+
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.portable.OutputStream;
 
 import java.applet.Applet;
@@ -364,5 +366,48 @@ public class Restricted_ORB
     // Apart the programming errors, this can only happen if the
     // malicious code is trying to do that it is not allowed.
     throw new NO_IMPLEMENT("Use init(args, props) for the functional version.");
+  }
+
+  /**
+   * This method is not allowed for a RestrictedORB.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public Request get_next_response()
+                            throws org.omg.CORBA.WrongTransaction
+  {
+    no();
+    throw new InternalError();
+  }
+
+  /**
+   * This method is not allowed for a RestrictedORB.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public boolean poll_next_response()
+  {
+    no();
+    throw new InternalError();
+  }
+
+  /**
+   * This method is not allowed for a RestrictedORB.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public void send_multiple_requests_deferred(Request[] requests)
+  {
+    no();
+  }
+
+  /**
+   * This method is not allowed for a RestrictedORB.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public void send_multiple_requests_oneway(Request[] requests)
+  {
+    no();
   }
 }

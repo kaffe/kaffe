@@ -1,3 +1,130 @@
+2005-05-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
+	2005-05-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/TRANSIENT.java (serialVersionUID): Added 1.4 SVUID.
+
+	2005-05-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ValueBaseHelper.java,
+	org/omg/CORBA/ValueBaseHolder.java,
+	org/omg/CORBA/portable/ValueBase.java: New files.
+	* gnu/CORBA/gnuAny.java (insert_Value, extract_Value): 
+	Implemented methods. 
+
+	2005-05-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ORB.java (create_dyn_any, create_dyn_array,
+	create_dyn_enum, create_dyn_sequence, create_dyn_struct, 
+	create_dyn_union, create_policy): Declaring they may throw an
+	exceptions.
+	* org/omg/CORBA/DefinitionKind.java: Making fields final and inherit
+	from IDLEntity, Serializable.
+	* org/omg/CORBA/IRObject.java: Inherit from 
+	org.omg.CORBA.Object, Serializable, IDLEntity.
+
+	2005-05-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Connected_objects.java (cObject, getKey, add, get,
+	entrySet, remove),
+	* gnu/CORBA/Functional_ORB.java (portServer, getFreePort, connect,
+	startService, destroy, disconnect, object_to_string, run, shutdown, 
+	find_connected_object, createIOR, finalize): Implemented 
+	listening on different ports for different objects.
+
+	2005-05-24  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/portable/Delegate.java (equals): Compare parameters.
+
+	2005-05-24  Mark Wielaard  <mark@klomp.org>
+
+	* java/util/regex/Pattern.java (split): Assign value of variable
+	matched outside while statement.
+	* gnu/regexp/RE.java (getCharUnit): Assign value of unit.bk variable
+	outside if statement.
+	* gnu/CORBA/bufferedResponseHandler.java (createReply): Assign values
+	from static class type constants.
+	* gnu/CORBA/IOR.java (_write_no_endian): Likewise.
+	* gnu/CORBA/Functional_ORB.java (respond_to_client): Likewise.
+	(serve): Likewise.
+
+	2005-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Asynchron.java: New file.
+	* org/omg/CORBA/ORB.java (send_multiple_requests_oneway,
+	send_multiple_requests_deferred, poll_next_response, 
+	get_next_response, perform_work, work_pending): New methods.
+	* gnu/CORBA/gnuRequest.java (send_deferred, send_oneway):
+	Launch the submission process in a separate thread.
+	* org/omg/CORBA/portable/ObjectImpl.java (hashCode): Removing
+	redundant method.
+	* gnu/CORBA/Functional_ORB.java (send_multiple_requests_oneway,
+	send_multiple_requests_deferred, poll_next_response,
+	get_next_response, perform_work, work_pending): New methods.
+	* gnu/CORBA/Restricted_ORB.java (send_multiple_requests_oneway,
+	send_multiple_requests_deferred, poll_next_response,
+	get_next_response, perform_work, work_pending): New methods.	
+
+	2005-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/NameValuePair.java: Inherit from Serializable, IDLEntity.
+	* org/omg/CORBA/SetOverrideType.java (constuctor): Making protected.
+	* org/omg/CORBA/DynFixed.java (set_value): Declare it may throw an 
+	InvalidValue.
+
+	2005-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/DefinitionKind.java,
+	org/omg/CORBA/IRObject.java,
+	org/omg/CORBA/IRObjectOperations.java,
+	org/omg/CORBA/IDLTypeOperations.java: New files.
+	* org/omg/CORBA/IDLType.java: Inherit from IDLTypeOperations.
+
+	2005-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ORB.java (create_context_list, create_basic_dyn_any,
+	create_dyn_any, create_dyn_array,  create_dyn_enum,
+	create_dyn_sequence, create_dyn_struct, create_dyn_union,
+	create_policy, get_current): New 
+	methods. 
+
+	2005-05-22  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ServerRequest.java,
+	org/omg/CORBA/DynamicImplementation.java:
+	New files.
+
+	2005-05-22  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/cdrOutput.java (write_octet_array): Removing
+	redundant loop.
+
+	2005-05-22  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ServiceInformation.java,
+	org/omg/CORBA/ServiceInformationHelper.java,
+	org/omg/CORBA/ServiceInformationHolder: New files.
+
+	2005-05-22  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ServiceDetail.java,
+	org/omg/CORBA/ServiceDetailHelper.java,
+	gnu/CORBA/ServiceDetailHolder.java: New files.
+
+	2005-05-21  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/ObjectCreator.java: Use gnu/CORBA namespace.
+
+	2005-05-21  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/universalHolder.java: New file.
+	* gnu/CORBA/gnuAny.java (create_input_stream,
+	read_value): Use the universalHolder.
+	* gnu/CORBA/CDR/aligningInputStream.java
+	(getBuffer): New method.
+
 2005-05-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Only run boehm-gc configury if

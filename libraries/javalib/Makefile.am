@@ -365,6 +365,7 @@ com_jcraft_jzlib_SRCS = \
 	com/jcraft/jzlib/ZStream.java \
 	com/jcraft/jzlib/ZStreamException.java
 gnu_CORBA_SRCS = \
+	gnu/CORBA/Asynchron.java \
 	gnu/CORBA/BigDecimalHelper.java \
 	gnu/CORBA/ByteArrayComparator.java \
 	gnu/CORBA/Connected_objects.java \
@@ -376,6 +377,7 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/ObjectCreator.java \
 	gnu/CORBA/OctetHolder.java \
 	gnu/CORBA/Restricted_ORB.java \
+	gnu/CORBA/ServiceDetailHolder.java \
 	gnu/CORBA/Simple_delegate.java \
 	gnu/CORBA/TypeCodeHelper.java \
 	gnu/CORBA/Unexpected.java \
@@ -404,7 +406,8 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/streamRequest.java \
 	gnu/CORBA/stringTypeCode.java \
 	gnu/CORBA/stubFinder.java \
-	gnu/CORBA/typeNamer.java
+	gnu/CORBA/typeNamer.java \
+	gnu/CORBA/universalHolder.java
 gnu_CORBA_CDR_SRCS = \
 	gnu/CORBA/CDR/aligningInputStream.java \
 	gnu/CORBA/CDR/aligningOutputStream.java \
@@ -4287,6 +4290,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Current.java \
 	org/omg/CORBA/CurrentOperations.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
+	org/omg/CORBA/DefinitionKind.java \
 	org/omg/CORBA/DomainManager.java \
 	org/omg/CORBA/DomainManagerOperations.java \
 	org/omg/CORBA/DoubleHolder.java \
@@ -4299,6 +4303,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/DynSequence.java \
 	org/omg/CORBA/DynStruct.java \
 	org/omg/CORBA/DynUnion.java \
+	org/omg/CORBA/DynamicImplementation.java \
 	org/omg/CORBA/Environment.java \
 	org/omg/CORBA/ExceptionList.java \
 	org/omg/CORBA/FREE_MEM.java \
@@ -4308,6 +4313,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/FloatSeqHolder.java \
 	org/omg/CORBA/IDLEntity.java \
 	org/omg/CORBA/IDLType.java \
+	org/omg/CORBA/IDLTypeOperations.java \
 	org/omg/CORBA/IMP_LIMIT.java \
 	org/omg/CORBA/INITIALIZE.java \
 	org/omg/CORBA/INTERNAL.java \
@@ -4317,6 +4323,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/INV_IDENT.java \
 	org/omg/CORBA/INV_OBJREF.java \
 	org/omg/CORBA/INV_POLICY.java \
+	org/omg/CORBA/IRObject.java \
+	org/omg/CORBA/IRObjectOperations.java \
 	org/omg/CORBA/IntHolder.java \
 	org/omg/CORBA/LongHolder.java \
 	org/omg/CORBA/LongLongSeqHelper.java \
@@ -4351,6 +4359,12 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/PrincipalHolder.java \
 	org/omg/CORBA/Request.java \
+	org/omg/CORBA/ServerRequest.java \
+	org/omg/CORBA/ServiceDetail.java \
+	org/omg/CORBA/ServiceDetailHelper.java \
+	org/omg/CORBA/ServiceInformation.java \
+	org/omg/CORBA/ServiceInformationHelper.java \
+	org/omg/CORBA/ServiceInformationHolder.java \
 	org/omg/CORBA/SetOverrideType.java \
 	org/omg/CORBA/ShortHolder.java \
 	org/omg/CORBA/ShortSeqHelper.java \
@@ -4381,6 +4395,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/VM_CUSTOM.java \
 	org/omg/CORBA/VM_NONE.java \
 	org/omg/CORBA/VM_TRUNCATABLE.java \
+	org/omg/CORBA/ValueBaseHelper.java \
+	org/omg/CORBA/ValueBaseHolder.java \
 	org/omg/CORBA/ValueMember.java \
 	org/omg/CORBA/WCharSeqHelper.java \
 	org/omg/CORBA/WCharSeqHolder.java \
@@ -4411,7 +4427,8 @@ org_omg_CORBA_portable_SRCS = \
 	org/omg/CORBA/portable/ResponseHandler.java \
 	org/omg/CORBA/portable/ServantObject.java \
 	org/omg/CORBA/portable/Streamable.java \
-	org/omg/CORBA/portable/UnknownException.java
+	org/omg/CORBA/portable/UnknownException.java \
+	org/omg/CORBA/portable/ValueBase.java
 org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/Binding.java \
 	org/omg/CosNaming/BindingHelper.java \

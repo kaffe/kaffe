@@ -51,8 +51,10 @@ import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.NO_RESOURCES;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CORBA.Request;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.UNKNOWN;
 import org.omg.CORBA.portable.Delegate;
@@ -70,10 +72,13 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -88,6 +93,103 @@ import java.util.TreeMap;
 public class Functional_ORB
   extends Restricted_ORB
 {
+  /**
+   * A server, responsible for listening on requests on some
+   * local port. The ORB may listen on multiple ports and process
+   * the requests in separate threads. Normally the server takes
+   * one port per object being served.
+   */
+  class portServer
+    extends Thread
+  {
+    /**
+     * The port on that this portServer is listening for requests.
+     */
+    int s_port;
+
+    /**
+     * The server socket of this portServer.
+     */
+    ServerSocket service;
+
+    /**
+     * Create a new portServer, serving on specific port.
+     */
+    portServer(int _port)
+    {
+      s_port = _port;
+    }
+
+    /**
+     * Enter the serving loop (get request/process it).
+     * All portServer normally terminate thy threads when
+     * the Functional_ORB.running is set to false.
+     */
+    public void run()
+    {
+      boolean terminated;
+
+      try
+        {
+          service = new ServerSocket(s_port);
+        }
+      catch (IOException ex)
+        {
+          throw new BAD_OPERATION("Unable to open the server socket.");
+        }
+
+      while (running)
+        {
+          try
+            {
+              serve(service);
+            }
+          catch (SocketException ex)
+            {
+              // Thrown when the service is closed by
+              // the close_now().
+              return;
+            }
+          catch (IOException iex)
+            {
+              // Wait 5 seconds. Do not terminate the
+              // service due potentially transient error.
+              try
+                {
+                  Thread.sleep(5000);
+                }
+              catch (InterruptedException ex)
+                {
+                }
+            }
+        }
+    }
+
+    /**
+     * Forcibly close the server socket and mark this port as free.
+     */
+    public void close_now()
+    {
+      try
+        {
+          service.close();
+        }
+      catch (Exception ex)
+        {
+          // This may happen if the service has not been opened or
+          // cannot be closed. Return without action.
+        }
+    }
+
+    /**
+     * If the thread is no longer in use, close the socket (if opened).
+     */
+    protected void finalize()
+    {
+      close_now();
+    }
+  }
+
   /**
    * The property of port, on that this ORB is listening for requests from clients.
    * This class supports one port per ORB only.
@@ -143,21 +245,39 @@ public class Functional_ORB
   private Map initial_references = new TreeMap();
 
   /**
+   * The currently active portServers.
+   */
+  private ArrayList portServers = new ArrayList();
+
+  /**
    * The host, on that the name service is expected to be running.
    */
   private String ns_host;
 
   /**
    * The port, under that the ORB is listening for remote requests.
-   * In this implementation, all objects, served by this ORB, share
-   * the same port, 1126.
+   * Then the new object is connected, this port is used first, then
+   * it is incremented by 1, etc. If the given port is not available,
+   * up to 20 subsequent values are tried and then the parameterless
+   * server socket contructor is called.
    */
-  private int Port = 1126;
+  private static int Port = 1126;
 
   /**
    * The port, on that the name service is expected to be running.
    */
   private int ns_port = 900;
+
+  /**
+   * The instance, stored in this field, handles the asynchronous dynamic
+   * invocations.
+   */
+  protected Asynchron asynchron = new Asynchron();
+
+  /**
+   * The list of the freed ports. The ORB reuses ports, when possible.
+   */
+  protected LinkedList freed_ports = new LinkedList();
 
   /**
    * Create the instance of the Functional ORB.
@@ -196,6 +316,68 @@ public class Functional_ORB
   }
 
   /**
+   * Get the currently free port, starting from the initially set port
+   * and going up max 20 steps, then trying to bind into any free
+   * address.
+   *
+   * @return the currently available free port.
+   *
+   * @throws NO_RESOURCES if the server socked cannot be opened on the
+   * local host.
+   */
+  public int getFreePort()
+                  throws BAD_OPERATION
+  {
+    ServerSocket s;
+
+    try
+      {
+        // If there are some previously freed ports, use them first.
+        if (!freed_ports.isEmpty())
+          {
+            Integer free = (Integer) freed_ports.getLast();
+            freed_ports.removeLast();
+            s = new ServerSocket(free.intValue());
+            s.close();
+            return free.intValue();
+          }
+      }
+    catch (Exception ex)
+      {
+        // This may be thrown if the request for the new port has arrived
+        // before the current service is completly shutdown.
+        // OK then, use a new port.
+      }
+
+    for (int i = Port; i < Port + 20; i++)
+      {
+        try
+          {
+            s = new ServerSocket(i);
+            s.close();
+            Port = i + 1;
+            return s.getLocalPort();
+          }
+        catch (IOException ex)
+          {
+            // Repeat the loop if this exception has been thrown.
+          }
+      }
+
+    try
+      {
+        // Try any port.
+        s = new ServerSocket();
+        s.close();
+        return s.getLocalPort();
+      }
+    catch (IOException ex1)
+      {
+        throw new NO_RESOURCES("Unable to open the server socket");
+      }
+  }
+
+  /**
    * Set the port, on that the server is listening for the client requests.
    * In this implementation, the server is listening at only one port,
    * the default value being 1126.
@@ -228,6 +410,12 @@ public class Functional_ORB
    * Connect the given CORBA object to this ORB. After the object is
    * connected, it starts receiving remote invocations via this ORB.
    *
+   * The ORB tries to connect the object to the port, that has been
+   * previously set by {@link setPort(int)}. On failure, it tries
+   * 20 subsequent larger values and then calls the parameterless
+   * server socked constructor to get any free local port.
+   * If this fails, the {@link NO_RESOURCES} is thrown.
+   *
    * @param object the object, must implement the {@link InvokeHandler})
    * interface.
    *
@@ -236,28 +424,54 @@ public class Functional_ORB
    */
   public void connect(org.omg.CORBA.Object object)
   {
-    connected_objects.add(object);
+    int a_port = getFreePort();
 
-    IOR ior = createIOR(object, connected_objects.getKey(object));
+    Connected_objects.cObject ref = connected_objects.add(object, a_port);
+    IOR ior = createIOR(ref);
     prepareObject(object, ior);
+    if (running)
+      startService(ior);
   }
 
   /**
    * Connect the given CORBA object to this ORB, explicitly specifying
    * the object key.
    *
+   * The ORB tries to connect the object to the port, that has been
+   * previously set by {@link setPort(int)}. On failure, it tries
+   * 20 subsequent larger values and then calls the parameterless
+   * server socked constructor to get any free local port.
+   * If this fails, the {@link NO_RESOURCES} is thrown.
+   *
    * @param object the object, must implement the {@link InvokeHandler})
    * interface.
    * @param key the object key, usually used to identify the object from
-   *  remote side.
+   * remote side.
    *
    * @throws BAD_PARAM if the object does not implement the
    * {@link InvokeHandler}).
    */
   public void connect(org.omg.CORBA.Object object, byte[] key)
   {
-    prepareObject(object, createIOR(object, key));
-    connected_objects.add(key, object);
+    int a_port = getFreePort();
+
+    Connected_objects.cObject ref = connected_objects.add(key, object, a_port);
+    IOR ior = createIOR(ref);
+    prepareObject(object, ior);
+    if (running)
+      startService(ior);
+  }
+
+  /**
+   * Start the service on the given port of this IOR.
+   *
+   * @param ior the ior (only Internet.port is used).
+   */
+  private void startService(IOR ior)
+  {
+    portServer p = new portServer(ior.Internet.port);
+    portServers.add(p);
+    p.start();
   }
 
   /**
@@ -266,6 +480,13 @@ public class Functional_ORB
   public void destroy()
   {
     super.destroy();
+
+    portServer p;
+    for (int i = 0; i < portServers.size(); i++)
+      {
+        p = (portServer) portServers.get(i);
+        p.close_now();
+      }
   }
 
   /**
@@ -279,7 +500,43 @@ public class Functional_ORB
    */
   public void disconnect(org.omg.CORBA.Object object)
   {
-    connected_objects.remove(object);
+    Connected_objects.cObject rmKey = null;
+
+    // Handle the case when it is possible to get the object key.
+    // Handle the case when the object is known, but not local.
+    if (object instanceof ObjectImpl)
+      {
+        Delegate delegate = ((ObjectImpl) object)._get_delegate();
+        if (delegate instanceof Simple_delegate)
+        {
+          byte[] key = ((Simple_delegate) delegate).getIor().key;
+          rmKey = connected_objects.get(key);
+        }
+      }
+
+    // Try to find and disconned the object that is not an instance of the
+    // object implementation.
+    if (rmKey == null)
+     rmKey = connected_objects.getKey(object);
+
+    // Disconnect the object on any success.
+    if (rmKey != null)
+      {
+        // Find and stop the corresponding portServer.
+        portServer p;
+        StopService:
+        for (int i = 0; i < portServers.size(); i++)
+          {
+            p = (portServer) portServers.get(i);
+            if (p.s_port == rmKey.port)
+              {
+                p.close_now();
+                freed_ports.addFirst(new Integer(rmKey.port));
+                break StopService;
+              }
+            connected_objects.remove(rmKey.key);
+          }
+      }
   }
 
   /**
@@ -351,14 +608,14 @@ public class Functional_ORB
       }
 
     // Handle the case when the object is local.
-    byte[] key = connected_objects.getKey(forObject);
+    Connected_objects.cObject rec = connected_objects.getKey(forObject);
 
-    if (key == null)
+    if (rec == null)
       throw new BAD_PARAM("The object " + forObject +
                           " has not been previously connected to this ORB"
                          );
 
-    IOR ior = createIOR(forObject, key);
+    IOR ior = createIOR(rec);
 
     return ior.toStringifiedReference();
   }
@@ -406,18 +663,31 @@ public class Functional_ORB
    */
   public void run()
   {
-    try
+    running = true;
+
+    // Instantiate the port server for each socket.
+    Iterator iter = connected_objects.entrySet().iterator();
+    Map.Entry m;
+    Connected_objects.cObject obj;
+
+    while (iter.hasNext())
       {
-        ServerSocket service = new ServerSocket(Port);
-        running = true;
-        while (running)
+        m = (Map.Entry) iter.next();
+        obj = (Connected_objects.cObject) m.getValue();
+
+        portServer subserver = new portServer(obj.port);
+        portServers.add(subserver);
+
+        // Reuse the current thread for the last portServer.
+        if (!iter.hasNext())
           {
-            serve(service);
+            // Discard the iterator, eliminating lock checks.
+            iter = null;
+            subserver.run();
+            return;
           }
-      }
-    catch (IOException ex)
-      {
-        throw new BAD_OPERATION("Unable to open the server socket.");
+        else
+          subserver.start();
       }
   }
 
@@ -425,11 +695,21 @@ public class Functional_ORB
    * Shutdown the ORB server.
    *
    * @param wait_for_completion if true, the current thread is
-   * suspended untile the shutdown process is complete.
+   * suspended until the shutdown process is complete.
    */
   public void shutdown(boolean wait_for_completion)
   {
     super.shutdown(wait_for_completion);
+    running = false;
+
+    if (!wait_for_completion)
+      {
+        for (int i = 0; i < portServers.size(); i++)
+          {
+            portServer p = (portServer) portServers.get(i);
+            p.close_now();
+          }
+      }
   }
 
   /**
@@ -465,7 +745,7 @@ public class Functional_ORB
           }
 
         object = impl;
-        connected_objects.add(ior.key, impl);
+        connected_objects.add(ior.key, impl, ior.Internet.port);
       }
     return object;
   }
@@ -503,7 +783,8 @@ public class Functional_ORB
    */
   protected org.omg.CORBA.Object find_connected_object(byte[] key)
   {
-    return connected_objects.get(key);
+    Connected_objects.cObject ref = connected_objects.get(key);
+    return ref==null?null:ref.object;
   }
 
   /**
@@ -603,26 +884,26 @@ public class Functional_ORB
     useProperties(props);
   }
 
-  private IOR createIOR(org.omg.CORBA.Object forObject, byte[] key)
+  private IOR createIOR(Connected_objects.cObject ref)
                  throws BAD_OPERATION
   {
     IOR ior = new IOR();
-    ior.key = key;
-    ior.Internet.port = Port;
+    ior.key = ref.key;
+    ior.Internet.port = ref.port;
 
-    if (forObject instanceof ObjectImpl)
+    if (ref.object instanceof ObjectImpl)
       {
-        ObjectImpl imp = (ObjectImpl) forObject;
+        ObjectImpl imp = (ObjectImpl) ref.object;
         if (imp._ids().length > 0)
           ior.Id = imp._ids() [ 0 ];
       }
     if (ior.Id == null)
-      ior.Id = forObject.getClass().getName();
+      ior.Id = ref.object.getClass().getName();
 
     try
       {
         ior.Internet.host = InetAddress.getLocalHost().getHostAddress();
-        ior.Internet.port = Port;
+        ior.Internet.port = ref.port;
       }
     catch (UnknownHostException ex)
       {
@@ -691,11 +972,11 @@ public class Functional_ORB
     ReplyHeader reply = handler.reply_header;
 
     if (sysEx != null)
-      reply.reply_status = reply.SYSTEM_EXCEPTION;
+      reply.reply_status = ReplyHeader.SYSTEM_EXCEPTION;
     else if (handler.isExceptionReply())
-      reply.reply_status = reply.USER_EXCEPTION;
+      reply.reply_status = ReplyHeader.USER_EXCEPTION;
     else
-      reply.reply_status = reply.NO_EXCEPTION;
+      reply.reply_status = ReplyHeader.NO_EXCEPTION;
 
     reply.request_id = rh_request.request_id;
 
@@ -711,7 +992,7 @@ public class Functional_ORB
 
     MessageHeader msh_reply = new MessageHeader();
     msh_reply.version = msh_request.version;
-    msh_reply.message_type = msh_reply.REPLY;
+    msh_reply.message_type = MessageHeader.REPLY;
     msh_reply.message_size = out.buffer.size();
 
     // Write the reply.
@@ -764,7 +1045,7 @@ public class Functional_ORB
             n = in.read(r, n, r.length - n);
           }
 
-        if (msh_request.message_type == msh_request.REQUEST)
+        if (msh_request.message_type == MessageHeader.REQUEST)
           {
             RequestHeader rh_request;
 
@@ -879,4 +1160,86 @@ public class Functional_ORB
           }
       }
   }
+
+  /**
+   * Get the next instance with a response being received. If all currently
+   * sent responses not yet processed, this method pauses till at least one of
+   * them is complete. If there are no requests currently sent, the method
+   * pauses till some request is submitted and the response is received.
+   * This strategy is identical to the one accepted by Suns 1.4 ORB
+   * implementation.
+   *
+   * The returned response is removed from the list of the currently
+   * submitted responses and is never returned again.
+   *
+   * @return the previously sent request that now contains the received
+   * response.
+   *
+   * @throws WrongTransaction If the method was called from the transaction
+   * scope different than the one, used to send the request. The exception
+   * can be raised only if the request is implicitly associated with some
+   * particular transaction.
+   */
+  public Request get_next_response()
+                            throws org.omg.CORBA.WrongTransaction
+  {
+    return asynchron.get_next_response();
+  }
+
+  /**
+   * Find if any of the requests that have been previously sent with
+   * {@link #send_multiple_requests_deferred}, have a response yet.
+   *
+   * @return true if there is at least one response to the previously
+   * sent request, false otherwise.
+   */
+  public boolean poll_next_response()
+  {
+    return asynchron.poll_next_response();
+  }
+
+  /**
+   * Send multiple prepared requests expecting to get a reply. All requests
+   * are send in parallel, each in its own separate thread. When the
+   * reply arrives, it is stored in the agreed fields of the corresponing
+   * request data structure. If this method is called repeatedly,
+   * the new requests are added to the set of the currently sent requests,
+   * but the old set is not discarded.
+   *
+   * @param requests the prepared array of requests.
+   *
+   * @see #poll_next_response()
+   * @see #get_next_response()
+   * @see Request#send_deferred()
+   */
+  public void send_multiple_requests_deferred(Request[] requests)
+  {
+    asynchron.send_multiple_requests_deferred(requests);
+  }
+
+  /**
+   * Send multiple prepared requests one way, do not caring about the answer.
+   * The messages, containing requests, will be marked, indicating that
+   * the sender is not expecting to get a reply.
+   *
+   * @param requests the prepared array of requests.
+   *
+   * @see Request#send_oneway()
+   */
+  public void send_multiple_requests_oneway(Request[] requests)
+  {
+    asynchron.send_multiple_requests_oneway(requests);
+  }
+
+  /**
+   * Set the flag, forcing all server threads to terminate.
+   */
+  protected void finalize()
+                   throws java.lang.Throwable
+  {
+    running = false;
+    super.finalize();
+  }
 }
+
+

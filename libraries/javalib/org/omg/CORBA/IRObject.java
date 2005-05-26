@@ -1,4 +1,4 @@
-/* DynFixed.java --
+/* IRObject.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,40 +38,16 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.DynAnyPackage.InvalidValue;
+import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
- * Represents a CORBA <code>fixed</code>, allowing to get and set its value
- * in the form of the binary representation.
- *
- * The format, described in CORBA specification, requires to store
- * data in hexadecimal format, two digits per byte (oceted), most
- * significant digit first. The last half-byte in the representation
- * stores the sign, being 0xD for negative numbers and 0xC for
- * zero and positive numbers. To have the even number of half bytes,
- * 0x0 is appended to the beginning, if required. The position of the
- * decimal point is not stored.
- *
- * @see gnu.CORBA.BigDecimalHelper
+ * Represents the interface repository object.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface DynFixed
-  extends DynAny
+public interface IRObject
+  extends IRObjectOperations, org.omg.CORBA.Object, Serializable, IDLEntity
 {
-  /**
-   * Get the value of this DynFixed in the binary form.
-   *
-   * @return the binary representation, defined in the header comment.
-   */
-  byte[] get_value();
-
-  /**
-   * Sets the value of this DynFixed from the binary representation.
-   *
-   * @param a_value the byte array, representing a CORBA <code>fixed</code>,
-   * as defined in the header comment.
-   */
-  void set_value(byte[] a_value)
-          throws InvalidValue;
 }

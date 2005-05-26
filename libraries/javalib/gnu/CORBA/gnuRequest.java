@@ -422,7 +422,7 @@ public class gnuRequest
         {
           invoke();
         }
-      }.run();
+      }.start();
   }
 
   /**
@@ -443,7 +443,7 @@ public class gnuRequest
         {
           cloned.invoke();
         }
-      }.run();
+      }.start();
   }
 
   /**

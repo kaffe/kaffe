@@ -41,9 +41,9 @@ package org.omg.CORBA;
 import java.io.Serializable;
 
 /**
- * Means that the ORB cannot <i>reach</i> the object. It is not an 
+ * Means that the ORB cannot <i>reach</i> the object. It is not an
  * indication that this object does not exist.
- * 
+ *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public class TRANSIENT
@@ -59,6 +59,11 @@ public class TRANSIENT
   {
     super(message, 0, CompletionStatus.COMPLETED_NO);
   }
+
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 8168539547719791425L;
 
   /**
    * Creates TRANSIENT with the default minor code of 0 and a

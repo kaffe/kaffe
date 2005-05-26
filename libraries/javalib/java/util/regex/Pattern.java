@@ -1,5 +1,5 @@
 /* Pattern.java -- Compiled regular expression ready to be applied.
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -188,9 +188,9 @@ public final class Pattern implements Serializable
     int count = 0;
     int start = 0;
     int end;
-    boolean matched;
+    boolean matched = matcher.find();
 
-    while ((matched = matcher.find()) && (limit <= 0 || count < limit - 1))
+    while (matched && (limit <= 0 || count < limit - 1))
       {
 	++count;
 	end = matcher.start();
@@ -208,6 +208,7 @@ public final class Pattern implements Serializable
 	    list.add(text);
 	  }
 	start = matcher.end();
+	matched = matcher.find();
       }
 
     // We matched nothing.

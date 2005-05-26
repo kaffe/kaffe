@@ -391,18 +391,6 @@ public abstract class ObjectImpl
   }
 
   /**
-   * Return the hashcode for this CORBA object. The default implementation
-   * delegates call to {@link #_hash(int)}, passing Integer.MAX_VALUE as an
-   * argument.
-   *
-   * @return the hashcode.
-   */
-  public int hashCode()
-  {
-    return _hash(Integer.MAX_VALUE);
-  }
-
-  /**
    * Return the string representation of the passed object.
    *
    * @return the string representation.

@@ -52,7 +52,6 @@ import org.omg.CORBA.FloatHolder;
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.LongHolder;
 import org.omg.CORBA.MARSHAL;
-import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ObjectHolder;
 import org.omg.CORBA.Principal;
@@ -63,6 +62,7 @@ import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.TypeCodeHolder;
 import org.omg.CORBA.TypeCodePackage.BadKind;
+import org.omg.CORBA.ValueBaseHolder;
 import org.omg.CORBA.portable.Streamable;
 
 import java.io.IOException;
@@ -148,12 +148,21 @@ public class gnuAny
    */
   public org.omg.CORBA.portable.InputStream create_input_stream()
   {
-    cdrBufOutput out = new cdrBufOutput();
-    out.setOrb(orb);
-    write_value(out);
-    cdrBufInput in = new cdrBufInput(out.buffer.toByteArray());
-    in.setOrb(orb);
-    return in;
+    if (has instanceof universalHolder)
+      {
+        universalHolder u = (universalHolder) has;
+        return u.getInputStream();
+      }
+    else
+      {
+        cdrBufOutput out = new cdrBufOutput();
+        out.setOrb(orb);
+        write_value(out);
+
+        cdrBufInput in = new cdrBufInput(out.buffer.toByteArray());
+        in.setOrb(orb);
+        return in;
+      }
   }
 
   /**
@@ -256,11 +265,26 @@ public class gnuAny
     return ((TypeCodeHolder) has).value;
   }
 
+  /**
+   * Extract the stored value type.
+   *
+   * @return the previously stored value type.
+   *
+   * @throws BAD_OPERATION if the Any contains something different.
+   *
+   * @see org.omg.CORBA.portable.ValueBase
+   */
   public Serializable extract_Value()
                              throws BAD_OPERATION
   {
-    /**@todo Implement this org.omg.CORBA.Any abstract method*/
-    throw new java.lang.UnsupportedOperationException("Method extract_Value() not yet implemented.");
+    try
+      {
+        return ((ValueBaseHolder) has).value;
+      }
+    catch (ClassCastException ex)
+      {
+        return new BAD_OPERATION("Value type expected");
+      }
   }
 
   /** {@inheritDoc} */
@@ -465,17 +489,18 @@ public class gnuAny
   /** {@inheritDoc} */
   public void insert_Value(Serializable x, TypeCode typecode)
   {
-    resetTypes();
-
-    /**@todo Implement this org.omg.CORBA.Any abstract method*/
+    type(typecode);
+    insert_Value(x);
   }
 
   /** {@inheritDoc} */
   public void insert_Value(Serializable x)
   {
     resetTypes();
-
-    /**@todo Implement this org.omg.CORBA.Any abstract method*/
+    if (has instanceof ValueBaseHolder)
+      ((ValueBaseHolder) has).value = x;
+    else
+      has = new ValueBaseHolder(x);
   }
 
   /**
@@ -701,9 +726,14 @@ public class gnuAny
           {
             has = holderFactory.createHolder(a_type);
             if (has == null)
-              throw new NO_IMPLEMENT("Not implemented for " +
-                                     typeNamer.nameIt(a_type)
-                                    );
+              {
+                // Use the Universal Holder that reads till the end of stream.
+                // This works with the extract/insert pair of the typical
+                // Helper.
+                cdrBufOutput buffer = new cdrBufOutput();
+                buffer.setOrb(orb);
+                has = new universalHolder(buffer);
+              }
           }
         type(a_type);
         has._read(input);

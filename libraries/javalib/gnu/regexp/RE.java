@@ -1,5 +1,5 @@
 /* gnu/regexp/RE.java
-   Copyright (C) 1998-2001, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998-2001, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -819,7 +819,9 @@ public class RE extends REToken {
 
   private static int getCharUnit(char[] input, int index, CharUnit unit, boolean quot) throws REException {
     unit.ch = input[index++];
-    if (unit.bk = (unit.ch == '\\' && (!quot || index >= input.length || input[index] == 'E')))
+    unit.bk = (unit.ch == '\\'
+	       && (!quot || index >= input.length || input[index] == 'E'));
+    if (unit.bk)
       if (index < input.length)
 	unit.ch = input[index++];
       else throw new REException(getLocalizedMessage("ends.with.backslash"),REException.REG_ESCAPE,index);

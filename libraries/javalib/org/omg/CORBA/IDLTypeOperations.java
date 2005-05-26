@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* IDLTypeOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,85 +36,21 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
-
-import java.io.ByteArrayInputStream;
-
-import org.omg.CORBA.BAD_PARAM;
-
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * Defines operations, applicable for the IDL type.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
+package org.omg.CORBA;
+
+public interface IDLTypeOperations
+  extends IRObjectOperations
 {
   /**
-   * The alignment offset.
-   */
-  private int offset = 0;
-
-  /**
-   * Create a stream, reading form the given buffer.
+   * Get the type code of the interface repository object.
    *
-   * @param a_buffer a buffer to read from.
+   * @return the data structure, describing the type of the object, stored in
+   * the repository.
    */
-  public aligningInputStream(byte[] a_buffer)
-  {
-    super(a_buffer);
-  }
-
-  /**
-   * Create a stream, reading from the given buffer region.
-   *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
-   */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
-  {
-    super(a_buffer, offset, length);
-  }
-
-  /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
-   */
-  public void setOffset(int an_offset)
-  {
-    offset = an_offset;
-  }
-
-  /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
-   *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
-   */
-  public void align(int alignment)
-  {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
-  }
-
-  /**
-   * Get the byte buffer, from where the data are read.
-   */
-  public byte[] getBuffer()
-  {
-    return buf;
-  }
+  TypeCode type();
 }

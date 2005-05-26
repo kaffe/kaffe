@@ -78,6 +78,7 @@ gnu/classpath/tools/Util.java
 gnu/classpath/VMStackWalker.java
 gnu/classpath/VMSystemProperties.java
 gnu/CORBA/aliasTypeCode.java
+gnu/CORBA/Asynchron.java
 gnu/CORBA/BigDecimalHelper.java
 gnu/CORBA/binaryReply.java
 gnu/CORBA/bufferedResponseHandler.java
@@ -136,6 +137,7 @@ gnu/CORBA/primitiveTypeCode.java
 gnu/CORBA/recordTypeCode.java
 gnu/CORBA/recursiveTypeCode.java
 gnu/CORBA/Restricted_ORB.java
+gnu/CORBA/ServiceDetailHolder.java
 gnu/CORBA/Simple_delegate.java
 gnu/CORBA/streamRequest.java
 gnu/CORBA/stringTypeCode.java
@@ -143,6 +145,7 @@ gnu/CORBA/stubFinder.java
 gnu/CORBA/TypeCodeHelper.java
 gnu/CORBA/typeNamer.java
 gnu/CORBA/Unexpected.java
+gnu/CORBA/universalHolder.java
 gnu/CORBA/Version.java
 gnu/CORBA/WCharHolder.java
 gnu/CORBA/WStringHolder.java
@@ -3675,11 +3678,13 @@ org/omg/CORBA/CTX_RESTRICT_SCOPE.java
 org/omg/CORBA/Current.java
 org/omg/CORBA/CurrentOperations.java
 org/omg/CORBA/DATA_CONVERSION.java
+org/omg/CORBA/DefinitionKind.java
 org/omg/CORBA/DomainManager.java
 org/omg/CORBA/DomainManagerOperations.java
 org/omg/CORBA/DoubleHolder.java
 org/omg/CORBA/DoubleSeqHelper.java
 org/omg/CORBA/DoubleSeqHolder.java
+org/omg/CORBA/DynamicImplementation.java
 org/omg/CORBA/DynAny.java
 org/omg/CORBA/DynAnyPackage/Invalid.java
 org/omg/CORBA/DynAnyPackage/InvalidSeq.java
@@ -3700,6 +3705,7 @@ org/omg/CORBA/FloatSeqHolder.java
 org/omg/CORBA/FREE_MEM.java
 org/omg/CORBA/IDLEntity.java
 org/omg/CORBA/IDLType.java
+org/omg/CORBA/IDLTypeOperations.java
 org/omg/CORBA/IMP_LIMIT.java
 org/omg/CORBA/INITIALIZE.java
 org/omg/CORBA/INTERNAL.java
@@ -3710,6 +3716,8 @@ org/omg/CORBA/INV_FLAG.java
 org/omg/CORBA/INV_IDENT.java
 org/omg/CORBA/INV_OBJREF.java
 org/omg/CORBA/INV_POLICY.java
+org/omg/CORBA/IRObject.java
+org/omg/CORBA/IRObjectOperations.java
 org/omg/CORBA/LongHolder.java
 org/omg/CORBA/LongLongSeqHelper.java
 org/omg/CORBA/LongLongSeqHolder.java
@@ -3753,11 +3761,18 @@ org/omg/CORBA/portable/ResponseHandler.java
 org/omg/CORBA/portable/ServantObject.java
 org/omg/CORBA/portable/Streamable.java
 org/omg/CORBA/portable/UnknownException.java
+org/omg/CORBA/portable/ValueBase.java
 org/omg/CORBA/PrincipalHolder.java
 org/omg/CORBA/Principal.java
 org/omg/CORBA/PRIVATE_MEMBER.java
 org/omg/CORBA/PUBLIC_MEMBER.java
 org/omg/CORBA/Request.java
+org/omg/CORBA/ServerRequest.java
+org/omg/CORBA/ServiceDetailHelper.java
+org/omg/CORBA/ServiceDetail.java
+org/omg/CORBA/ServiceInformationHelper.java
+org/omg/CORBA/ServiceInformationHolder.java
+org/omg/CORBA/ServiceInformation.java
 org/omg/CORBA/SetOverrideType.java
 org/omg/CORBA/ShortHolder.java
 org/omg/CORBA/ShortSeqHelper.java
@@ -3786,6 +3801,8 @@ org/omg/CORBA/UNSUPPORTED_POLICY_VALUE.java
 org/omg/CORBA/UserException.java
 org/omg/CORBA/UShortSeqHelper.java
 org/omg/CORBA/UShortSeqHolder.java
+org/omg/CORBA/ValueBaseHelper.java
+org/omg/CORBA/ValueBaseHolder.java
 org/omg/CORBA/ValueMember.java
 org/omg/CORBA/VM_ABSTRACT.java
 org/omg/CORBA/VM_CUSTOM.java

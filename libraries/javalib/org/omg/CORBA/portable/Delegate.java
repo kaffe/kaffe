@@ -237,7 +237,7 @@ public abstract class Delegate
    */
   public boolean equals(org.omg.CORBA.Object self, java.lang.Object other)
   {
-    return super.equals(other);
+    return self==other;
   }
 
   /**

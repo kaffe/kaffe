@@ -38,9 +38,9 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import java.io.Serializable;
-
 import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
  * An abstract interface
@@ -49,6 +49,7 @@ import org.omg.CORBA.portable.IDLEntity;
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public interface IDLType
-  extends Serializable, IDLEntity, org.omg.CORBA.Object
+  extends IDLTypeOperations, IRObject, IDLEntity, org.omg.CORBA.Object,
+          Serializable
 {
 }

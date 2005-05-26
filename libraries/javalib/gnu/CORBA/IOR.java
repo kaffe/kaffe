@@ -467,7 +467,7 @@ public class IOR
         // One tagged component.
         b.write_long(1);
 
-        b.write_long(CodeSets.TAG_CODE_SETS);
+        b.write_long(CodeSets_profile.TAG_CODE_SETS);
         CodeSets.write(b);
 
         b.close();

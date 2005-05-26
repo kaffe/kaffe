@@ -70,8 +70,16 @@ public class ObjectCreator
   public static final String JAVA_PREFIX = "org.omg.";
 
   /**
+   * The prefix for classes that are placed instide the
+   * gnu.CORBA namespace.
+   */
+  public static final String CLASSPATH_PREFIX = "gnu.CORBA";
+
+  /**
    * Try to instantiate an object with the given IDL name.
    * The object must be mapped to the local java class.
+   * The omg.org domain must be mapped into the object in either
+   * org/omg or gnu/CORBA namespace.
    *
    * @param IDL name
    * @return instantiated object instance or null if no such
@@ -81,11 +89,20 @@ public class ObjectCreator
   {
     try
       {
-        return Class.forName(toClassName(idl) + suffix).newInstance();
+        return Class.forName(toClassName(JAVA_PREFIX, idl) + suffix)
+                    .newInstance();
       }
     catch (Exception ex)
       {
-        return null;
+        try
+          {
+            return Class.forName(toClassName(CLASSPATH_PREFIX, idl) + suffix)
+                        .newInstance();
+          }
+        catch (Exception exex)
+          {
+            return null;
+          }
       }
   }
 
@@ -105,7 +122,7 @@ public class ObjectCreator
   {
     try
       {
-        String cl = toClassName(idl);
+        String cl = toClassName(JAVA_PREFIX, idl);
         Class exClass = Class.forName(cl);
 
         Constructor constructor =
@@ -229,12 +246,12 @@ public class ObjectCreator
   }
 
   /**
-   * Converts teh given IDL name to class name.
+   * Converts the given IDL name to class name.
    *
    * @param IDL the idl name.
    *
    */
-  protected static String toClassName(String IDL)
+  protected static String toClassName(String prefix, String IDL)
   {
     String s = IDL;
     int a = s.indexOf(':') + 1;
@@ -243,7 +260,7 @@ public class ObjectCreator
     s = IDL.substring(a, b);
 
     if (s.startsWith(OMG_PREFIX))
-      s = JAVA_PREFIX + s.substring(OMG_PREFIX.length());
+      s = prefix + s.substring(OMG_PREFIX.length());
 
     return s.replace('/', '.');
   }

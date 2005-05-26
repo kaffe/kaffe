@@ -38,6 +38,9 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
  * Holds the value, having the given name(id). This class is used by
@@ -46,11 +49,17 @@ package org.omg.CORBA;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public final class NameValuePair
+  implements Serializable, IDLEntity
 {
   /**
    * The value of the structure record.
    */
   public Any value;
+
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 7000741877654946223L;
 
   /**
    * The name of the structure record.

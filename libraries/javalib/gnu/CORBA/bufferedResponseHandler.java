@@ -130,7 +130,7 @@ class bufferedResponseHandler
   {
     exceptionReply = false;
     prepareStream();
-    reply_header.reply_status = reply_header.NO_EXCEPTION;
+    reply_header.reply_status = ReplyHeader.NO_EXCEPTION;
     return buffer;
   }
 

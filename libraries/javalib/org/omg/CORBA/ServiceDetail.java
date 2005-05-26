@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* ServiceDetail.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,85 +36,46 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package org.omg.CORBA;
 
-import java.io.ByteArrayInputStream;
-
-import org.omg.CORBA.BAD_PARAM;
+import org.omg.CORBA.portable.IDLEntity;
 
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * An object, representing one of the additional details about the
+ * particular ORB service.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
+public final class ServiceDetail
+  implements IDLEntity
 {
   /**
-   * The alignment offset.
+   * The type of the information, defined by this detail.
    */
-  private int offset = 0;
+  public int service_detail_type;
 
   /**
-   * Create a stream, reading form the given buffer.
+   * The binary data, defining the information.
+   */
+  public byte[] service_detail;
+
+  /**
+   * Create an unitialised instance.
+   */
+  public ServiceDetail()
+  {
+  }
+
+  /**
+   * Create the instance of the service detail, initialising its fields
+   * to the given values.
    *
-   * @param a_buffer a buffer to read from.
+   * @param _service_detail_type the service detail type.
+   * @param _service_detail the service detail.
    */
-  public aligningInputStream(byte[] a_buffer)
+  public ServiceDetail(int _service_detail_type, byte[] _service_detail)
   {
-    super(a_buffer);
-  }
-
-  /**
-   * Create a stream, reading from the given buffer region.
-   *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
-   */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
-  {
-    super(a_buffer, offset, length);
-  }
-
-  /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
-   */
-  public void setOffset(int an_offset)
-  {
-    offset = an_offset;
-  }
-
-  /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
-   *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
-   */
-  public void align(int alignment)
-  {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
-  }
-
-  /**
-   * Get the byte buffer, from where the data are read.
-   */
-  public byte[] getBuffer()
-  {
-    return buf;
+    service_detail_type = _service_detail_type;
+    service_detail = _service_detail;
   }
 }

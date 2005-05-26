@@ -45,6 +45,8 @@ import gnu.CORBA.gnuContext;
 import gnu.CORBA.recordTypeCode;
 import gnu.CORBA.recursiveTypeCode;
 
+import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
+
 import java.applet.Applet;
 
 import java.io.BufferedInputStream;
@@ -182,6 +184,117 @@ public abstract class ORB
   public abstract ContextList create_context_list();
 
   /**
+   * The support for {@link DynAny} and derived interfaces
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynAny create_basic_dyn_any(org.omg.CORBA.TypeCode t)
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
+   * The support for {@link DynAny} and derived interfaces
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynAny create_dyn_any(org.omg.CORBA.Any a)
+                       throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
+   * The support for {@link DynArray}
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynArray create_dyn_array(org.omg.CORBA.TypeCode t)
+                       throws InconsistentTypeCode
+   {
+     throw new NO_IMPLEMENT();
+   };
+
+  /**
+   * The support for {@link DynEnum}
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynEnum create_dyn_enum(org.omg.CORBA.TypeCode t)
+                       throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
+   * The support for {@link DynSequence}
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynSequence create_dyn_sequence(org.omg.CORBA.TypeCode t)
+                       throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
+   * The support for {@link DynStruct} and derived interfaces
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynStruct create_dyn_struct(org.omg.CORBA.TypeCode t)
+                       throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
+   * The support for {@link DynUnion} and derived interfaces
+   * has never been implemented in Sun's java releases,
+   * at least till v1.4 inclusive.
+   *
+   * Since v1.4 this stil missing implementation was replaced
+   * by the new DynamicAny package.
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public DynUnion create_dyn_union(org.omg.CORBA.TypeCode t)
+                       throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  };
+
+  /**
    * Create a typecode, defining the given enumeration.
    *
    * @param id the id.
@@ -267,12 +380,86 @@ public abstract class ORB
   public abstract NamedValue create_named_value(String s, Any any, int flags);
 
   /**
+   * Send multiple prepared requests one way, do not caring about the answer.
+   * The messages, containing requests, will be marked, indicating that
+   * the sender is not expecting to get a reply.
+   *
+   * @param requests the prepared array of requests.
+   *
+   * @see Request#send_oneway()
+   */
+  public abstract void send_multiple_requests_oneway(Request[] requests);
+
+  /**
+   * Send multiple prepared requests expecting to get a reply. All requests
+   * are send in parallel, each in its own separate thread. When the
+   * reply arrives, it is stored in the agreed fields of the corresponing
+   * request data structure. If this method is called repeatedly,
+   * the new requests are added to the set of the currently sent requests,
+   * but the old set is not discarded.
+   *
+   * @param requests the prepared array of requests.
+   *
+   * @see #poll_next_response()
+   * @see #get_next_response()
+   * @see Request#send_deferred()
+   */
+  public abstract void send_multiple_requests_deferred(Request[] requests);
+
+  /**
+   * Find if any of the requests that have been previously sent with
+   * {@link #send_multiple_requests_deferred}, have a response yet.
+   *
+   * @return true if there is at least one response to the previously
+   * sent request, false otherwise.
+   */
+  public abstract boolean poll_next_response();
+
+  /**
+   * Get the next instance with a response being received. If all currently
+   * sent responses not yet processed, this method pauses till at least one of
+   * them is complete. If there are no requests currently sent, the method
+   * pauses till some request is submitted and the response is received.
+   * This strategy is identical to the one accepted by Suns 1.4 ORB
+   * implementation.
+   *
+   * @return the previously sent request that now contains the received
+   * response.
+   *
+   * @throws WrongTransaction If the method was called from the transaction
+   * scope different than the one, used to send the request. The exception
+   * can be raised only if the request is implicitly associated with some
+   * particular transaction.
+   */
+  public abstract Request get_next_response()
+                                   throws WrongTransaction;
+
+
+  /**
    * Create a new CDR output stream, where the parameter values can be written
    * during the method invocation.
    *
    * @return a stream to write values into.
    */
   public abstract org.omg.CORBA.portable.OutputStream create_output_stream();
+
+  /**
+   * This should create the new policy with the specified type and initial
+   * state. The policies and methods for getting them are not implemented till
+   * v1.4 inclusive.
+   *
+   * @param type the policy type.
+   * @param value the policy value.
+   *
+   * @return never
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public Policy create_policy(int type, Any value)
+                       throws PolicyError
+  {
+    throw new NO_IMPLEMENT();
+  }
 
   /**
    * Create typecode, defining the sequence of the elements, having
@@ -381,6 +568,23 @@ public abstract class ORB
       }
 
     return r;
+  }
+
+  /**
+   * This should return the information, related to the current thread.
+   * The {@link Current} is very general interface, with no fields and
+   * operations defined. This method is not implemented in Suns
+   * releases at least till v1.4 inclusive.
+   *
+   * @deprecated since 1.2
+   *
+   * @return never
+   *
+   * @throws NO_IMPLEMENT, always.
+   */
+  public Current get_current()
+  {
+    throw new NO_IMPLEMENT();
   }
 
   /**
@@ -539,6 +743,42 @@ public abstract class ORB
    * @see string_to_object(String)
    */
   public abstract String object_to_string(Object forObject);
+
+  /**
+   * This should perform the implementation dependent unit of work in the
+   * main thread.
+   *
+   * This method is part of the support for the distribute use of the
+   * single execution thread.
+   *
+   * Same as in Suns releases at least till 1.4 inclusive,
+   * the distribute use of the single thread is not implemented.
+   * Use multiple threads, provided by jre.
+   *
+   * The method returns without action.
+   */
+  public void perform_work()
+  {
+  }
+
+   /**
+   * Checks if the ORB needs the main thread to perform some work.
+   * The method should return true if the ORB needs the main thread,
+   * and false if it does not.
+   *
+   * This method is part of the support for the distribute use of the
+   * single execution thread.
+   *
+   * Same as in Suns releases at least till 1.4 inclusive,
+   * the distributed use of the single thread is not implemented.
+   * Use multiple threads, provided by jre.
+   *
+   * @return false, always.
+   */
+  public boolean work_pending()
+  {
+    return false;
+  }
 
   /**
    * Find and return the CORBA object, addressed by the given

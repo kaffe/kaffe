@@ -86,7 +86,7 @@ public class SetOverrideType
   /**
    * No other instances can be created.
    */
-  private SetOverrideType(int a_value)
+  protected SetOverrideType(int a_value)
   {
     _value = a_value;
   }

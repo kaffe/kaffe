@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* ValueBaseHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,85 +36,74 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package org.omg.CORBA;
 
-import java.io.ByteArrayInputStream;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
-import org.omg.CORBA.BAD_PARAM;
+import java.io.Serializable;
 
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * A holder to store a {@link ValueBase} that is handled as
+ * {@link Serializable} here.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * @since 1.3
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
+public class ValueBaseHolder
+  implements Streamable
 {
   /**
-   * The alignment offset.
+   * A stored value of the value base type.
    */
-  private int offset = 0;
+  public Serializable value;
 
   /**
-   * Create a stream, reading form the given buffer.
+   * Create an unitialised instance.
+   */
+  public ValueBaseHolder()
+  {
+  }
+
+  /**
+   * Create an instance, initialised into the given value.
    *
-   * @param a_buffer a buffer to read from.
+   * @param initial an initial value.
    */
-  public aligningInputStream(byte[] a_buffer)
+  public ValueBaseHolder(Serializable initial)
   {
-    super(a_buffer);
+    value = initial;
   }
 
   /**
-   * Create a stream, reading from the given buffer region.
+   * Read fill in the value field by reading an instance from the
+   * given input stream. Uses {@link ValueBaseHelper.}
    *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
+   * @param input a stream to read from.
    */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
+  public void _read(InputStream input)
   {
-    super(a_buffer, offset, length);
+    value = ValueBaseHelper.read(input);
   }
 
   /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
+   * Get the typecode of the stored instance. Uses {@link ValueBaseHelper.}
    */
-  public void setOffset(int an_offset)
+  public TypeCode _type()
   {
-    offset = an_offset;
+    return ValueBaseHelper.type();
   }
 
   /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
+   * Write the stored instance to the given input stream.
+   * Uses {@link ValueBaseHelper.}
    *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
+   * @param input a stream to read from.
    */
-  public void align(int alignment)
+  public void _write(OutputStream output)
   {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
-  }
-
-  /**
-   * Get the byte buffer, from where the data are read.
-   */
-  public byte[] getBuffer()
-  {
-    return buf;
+    ValueBaseHelper.write(output, value);
   }
 }

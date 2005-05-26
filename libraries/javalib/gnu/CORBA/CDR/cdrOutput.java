@@ -647,16 +647,13 @@ public abstract class cdrOutput
    */
   public void write_octet_array(byte[] x, int ofs, int len)
   {
-    for (int i = ofs; i < ofs + len; i++)
+    try
       {
-        try
-          {
-            b.write(x, ofs, len);
-          }
-        catch (IOException ex)
-          {
-            Unexpected.error(ex);
-          }
+        b.write(x, ofs, len);
+      }
+    catch (IOException ex)
+      {
+        Unexpected.error(ex);
       }
   }
 

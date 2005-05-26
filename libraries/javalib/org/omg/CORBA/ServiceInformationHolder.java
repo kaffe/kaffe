@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* ServiceInformationHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,85 +36,66 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package org.omg.CORBA;
 
-import java.io.ByteArrayInputStream;
-
-import org.omg.CORBA.BAD_PARAM;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
 
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * A holder for the service information.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * This class is part of the service information support, but the
+ * 1.4 API specification states that this support should be not implemented.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
+public final class ServiceInformationHolder
+  implements Streamable
 {
   /**
-   * The alignment offset.
+   * A wrapped value.
    */
-  private int offset = 0;
+  public ServiceInformation value;
 
   /**
-   * Create a stream, reading form the given buffer.
-   *
-   * @param a_buffer a buffer to read from.
+   * Create an unitialised instance.
    */
-  public aligningInputStream(byte[] a_buffer)
+  public ServiceInformationHolder()
   {
-    super(a_buffer);
   }
 
   /**
-   * Create a stream, reading from the given buffer region.
-   *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
+   * Create the instance where the stored service information
+   * s intialised into the given value.
    */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
+  public ServiceInformationHolder(ServiceInformation initialValue)
   {
-    super(a_buffer, offset, length);
+    value = initialValue;
   }
 
   /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
+   * Read the service information from the given CDR input stream.
    */
-  public void setOffset(int an_offset)
+  public void _read(InputStream in)
   {
-    offset = an_offset;
+    value = ServiceInformationHelper.read(in);
   }
 
   /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
-   *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
+   * Get the typecode of the service information.
    */
-  public void align(int alignment)
+  public TypeCode _type()
   {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
+    return ServiceInformationHelper.type();
   }
 
   /**
-   * Get the byte buffer, from where the data are read.
+   * Write the stored service information into the given
+   * CDR output stream.
    */
-  public byte[] getBuffer()
+  public void _write(OutputStream out)
   {
-    return buf;
+    ServiceInformationHelper.write(out, value);
   }
 }

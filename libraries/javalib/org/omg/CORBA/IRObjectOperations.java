@@ -1,4 +1,4 @@
-/* aligningInputStream.java --
+/* IRObjectOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -35,86 +35,34 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package org.omg.CORBA;
 
-package gnu.CORBA.CDR;
-
-import java.io.ByteArrayInputStream;
-
-import org.omg.CORBA.BAD_PARAM;
 
 /**
- * The input stream with the possibility to align on the
- * word (arbitrary size) boundary.
+ * Defines the operations, applicable to the interface repository object.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class aligningInputStream
-  extends ByteArrayInputStream
-{
+public interface IRObjectOperations {
   /**
-   * The alignment offset.
-   */
-  private int offset = 0;
-
-  /**
-   * Create a stream, reading form the given buffer.
+   * Get the definition kind of this interface repository object.
    *
-   * @param a_buffer a buffer to read from.
+   * @return the defintion kind (one of the DefinitionKind.dk_...
+   * constants).
    */
-  public aligningInputStream(byte[] a_buffer)
-  {
-    super(a_buffer);
-  }
+  DefinitionKind def_kind();
 
   /**
-   * Create a stream, reading from the given buffer region.
+   * Destroy this interface repository object. If the object is a container,
+   * the method applies to all its contents. If the object is part of some
+   * other object, it is removed.
    *
-   * @param a_buffer a buffer to read from.
-   * @param offset the offset of the region.
-   * @param length thr length of the region.
-   */
-  public aligningInputStream(byte[] a_buffer, int offset, int length)
-  {
-    super(a_buffer, offset, length);
-  }
-
-  /**
-   * Set the alignment offset, if the index of the first byte in the
-   * stream is different from 0.
-   */
-  public void setOffset(int an_offset)
-  {
-    offset = an_offset;
-  }
-
-  /**
-   * Skip several bytes, aligning the internal pointer on the
-   * selected boundary.
+   * @throws BAD_INV_ORDER, minor code 1, if destroying this object would
+   * leave the repository in an incoherent state.
    *
-   * @throws BAD_PARAM, minor code 0, the alignment is not possible,
-   * usually due the wrong parameter value.
+   * @throws BAD_INV_ORDER, minor code 2, if the method is invoked on the
+   * Repository or on the definition of the primitive type.
    */
-  public void align(int alignment)
-  {
-    try
-      {
-        int d = (pos + offset) % alignment;
-        if (d > 0)
-          {
-            skip(alignment - d);
-          }
-      }
-    catch (Exception ex)
-      {
-        throw new BAD_PARAM("Unable to align at " + alignment);
-      }
-  }
+  void destroy() throws BAD_INV_ORDER;
 
-  /**
-   * Get the byte buffer, from where the data are read.
-   */
-  public byte[] getBuffer()
-  {
-    return buf;
-  }
 }
