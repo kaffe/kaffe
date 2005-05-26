@@ -69,6 +69,7 @@ import javax.swing.JComponent;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
@@ -1130,19 +1131,39 @@ public abstract class JTextComponent extends JComponent
 
   public Dimension getPreferredScrollableViewportSize()
   {
-    return null;
+    return getPreferredSize();
   }
 
   public int getScrollableUnitIncrement(Rectangle visible, int orientation,
                                         int direction)
   {
-    return 0;
+    // We return 1/10 of the visible area as documented in Sun's API docs.
+    if (orientation == SwingConstants.HORIZONTAL)
+      return visible.width / 10;
+    else if (orientation == SwingConstants.VERTICAL)
+      return visible.height / 10;
+    else
+      throw new IllegalArgumentException("orientation must be either "
+                                      + "javax.swing.SwingConstants.VERTICAL "
+                                      + "or "
+                                      + "javax.swing.SwingConstants.HORIZONTAL"
+                                         );
   }
 
   public int getScrollableBlockIncrement(Rectangle visible, int orientation,
                                          int direction)
   {
-    return 0;
+    // We return the whole visible area as documented in Sun's API docs.
+    if (orientation == SwingConstants.HORIZONTAL)
+      return visible.width;
+    else if (orientation == SwingConstants.VERTICAL)
+      return visible.height;
+    else
+      throw new IllegalArgumentException("orientation must be either "
+                                      + "javax.swing.SwingConstants.VERTICAL "
+                                      + "or "
+                                      + "javax.swing.SwingConstants.HORIZONTAL"
+                                         );
   }
 
   /**

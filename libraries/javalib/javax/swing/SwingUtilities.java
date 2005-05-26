@@ -352,6 +352,25 @@ public class SwingUtilities
   }
 
   /**
+   * Returns the first ancestor of <code>comp</code> that is a {@link Window}
+   * or <code>null</code> if <code>comp</code> is not contained in a
+   * {@link Window}.
+   *
+   * This is equivalent to calling
+   * <code>getAncestorOfClass(Window, comp)</code> or
+   * <code>windowForComponent(comp)</code>.
+   *
+   * @param comp the component for which we are searching the ancestor Window
+   *
+   * @return the first ancestor Window of <code>comp</code> or
+   *     <code>null</code> if <code>comp</code> is not contained in a Window
+   */
+  public Window getWindowAncestor(Component comp)
+  {
+    return (Window) getAncestorOfClass(Window.class, comp);
+  }
+
+  /**
    * Equivalent to calling <code>getAncestorOfClass(Window, comp)</code>.
    *
    * @param comp The component to search for an ancestor window 

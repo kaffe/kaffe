@@ -516,6 +516,24 @@ public class DefaultListSelectionModel implements Cloneable,
 
   /**
    * Fires a {@link ListSelectionEvent} to all the listeners of type {@link
+   * ListSelectionListener} registered with this selection model to
+   * indicate that a series of adjustment has just ended.
+   *
+   * The values of {@link #getMinSelectionIndex} and
+   * {@link getMaxSelectionIndex} are used in the {@link ListSelectionEvent}
+   * that gets fired.
+   *
+   * @param isAdjusting <code>true</code> if this is the final change
+   *     in a series of adjustments, <code>false/code> otherwise
+   */
+  protected void fireValueChanged(boolean isAdjusting)
+  {
+    fireValueChanged(getMinSelectionIndex(), getMaxSelectionIndex(),
+                     isAdjusting);
+  }
+
+  /**
+   * Fires a {@link ListSelectionEvent} to all the listeners of type {@link
    * ListSelectionListener} registered with this selection model.
    *
    * @param firstIndex The low index of the changed range

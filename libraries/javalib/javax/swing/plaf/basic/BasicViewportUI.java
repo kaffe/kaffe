@@ -103,7 +103,6 @@ public class BasicViewportUI extends ViewportUI
   public void installUI(JComponent c) 
   {
     super.installUI(c);
-    c.setLayout(new ViewportLayout());
     installListeners(c);
   }
 

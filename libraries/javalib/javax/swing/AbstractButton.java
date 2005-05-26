@@ -523,14 +523,9 @@ public abstract class AbstractButton extends JComponent
  {
     this.text = text;
     default_icon = icon;
-    model = new DefaultButtonModel();
     actionListener = createActionListener();
     changeListener = createChangeListener();
     itemListener = createItemListener();
-
-    model.addActionListener(actionListener);
-    model.addChangeListener(changeListener);
-    model.addItemListener(itemListener);
 
     horizontalAlignment = CENTER;
     horizontalTextPosition = TRAILING;

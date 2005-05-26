@@ -51,250 +51,247 @@ public class TreePath implements Serializable
 {
   static final long serialVersionUID = 4380036194768077479L;
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * path
-	 */
-	private Object[]	path	= null;
+  /**
+   * path
+   */
+  private Object[] path = null;
 
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * Constructor TreePath
+   * @param path TODO
+   */
+  public TreePath(Object[] path)
+  {
+    // Create Path
+    this.path = new Object[path.length];
+    System.arraycopy(path, 0, this.path, 0, path.length);
+  }
 
-	/**
-	 * Constructor TreePath
-	 * @param path TODO
-	 */
-	public TreePath(Object[] path) {
+  /**
+   * Constructor TreePath
+   * @param element TODO
+   */
+  public TreePath(Object element)
+  {
+    // Create Path
+    path = new Object[1];
+    path[0] = element;
+  }
 
-		// Create Path
-		this.path = new Object[path.length];
-		System.arraycopy(path, 0, this.path, 0, path.length);
+  /**
+   * Constructor TreePath
+   * @param path TODO
+   * @param element TODO
+   */
+  protected TreePath(TreePath path, Object element)
+  {
+    // Variables
+    Object[]	treepath;
 
-	} // TreePath()
+    // Get Tree Path
+    treepath = path.getPath();
 
-	/**
-	 * Constructor TreePath
-	 * @param element TODO
-	 */
-	public TreePath(Object element) {
+    // Create Tree Path
+    this.path = new Object[treepath.length + 1];
+    System.arraycopy(treepath, 0, this.path, 0, treepath.length);
+    this.path[treepath.length] = element;
+  }
 
-		// Create Path
-		path = new Object[1];
-		path[0] = element;
+  /**
+   * Constructor TreePath
+   * @param path TODO
+   * @param length TODO
+   */
+  protected TreePath(Object[] path, int length)
+  {
+    // Create Path
+    this.path = new Object[length];
+    System.arraycopy(path, 0, this.path, 0, length);
+  }
 
-	} // TreePath()
-
-	/**
-	 * Constructor TreePath
-	 * @param path TODO
-	 * @param element TODO
-	 */
-	protected TreePath(TreePath path, Object element) {
-
-		// Variables
-		Object[]	treepath;
-
-		// Get Tree Path
-		treepath = path.getPath();
-
-		// Create Tree Path
-		this.path = new Object[treepath.length + 1];
-		System.arraycopy(treepath, 0, this.path, 0, treepath.length);
-		this.path[treepath.length] = element;
-
-	} // TreePath()
-
-	/**
-	 * Constructor TreePath
-	 * @param path TODO
-	 * @param length TODO
-	 */
-	protected TreePath(Object[] path, int length) {
-
-		// Create Path
-		this.path = new Object[length];
-		System.arraycopy(path, 0, this.path, 0, length);
-
-	} // TreePath()
-
-	/**
-	 * Constructor TreePath
-	 */
-	protected TreePath() {
-		path = new Object[0];
-	} // TreePath()
+  /**
+   * Constructor TreePath
+   */
+  protected TreePath()
+  {
+    path = new Object[0];
+  }
 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * hashCode
+   * @returns int
+   */
+  public int hashCode()
+  {
+    return getLastPathComponent().hashCode();
+  }
 
-	/**
-	 * hashCode
-	 * @returns int
-	 */
-	public int hashCode() {
-		return getLastPathComponent().hashCode();
-	} // hashCode()
+  /**
+   * equals
+   * @param object TODO
+   * @returns boolean
+   */
+  public boolean equals(Object object)
+  {
+    // Variables
+    Object[]	treepath;
+    int			index;
 
-	/**
-	 * equals
-	 * @param object TODO
-	 * @returns boolean
-	 */
-	public boolean equals(Object object) {
+    // Check for TreePath
+    if (object instanceof TreePath)
+      {
+        // Get Path Elements
+        treepath = ((TreePath) object).getPath();
 
-		// Variables
-		Object[]	treepath;
-		int			index;
+        // Check length
+        if (treepath.length != path.length)
+          return false;
 
-		// Check for TreePath
-		if (object instanceof TreePath) {
+        // Check Elements
+        for (index = 0; index < path.length; index++)
+          {
+            if (treepath[index] != path[index])
+              return false;
+          }
 
-			// Get Path Elements
-			treepath = ((TreePath) object).getPath();
+        // Tree Path's are equals
+        return true;
+      }
 
-			// Check length
-			if (treepath.length != path.length) {
-				return false;
-			} // if
+    // Unequal
+    return false;
+  }
 
-			// Check Elements
-			for (index = 0; index < path.length; index++) {
-				if (treepath[index] != path[index]) {
-					return false;
-				} // if
-			} // for
+  /**
+   * toString
+   * @returns String
+   */
+  public String toString()
+  {
+    return null; // TODO
+  }
 
-			// Tree Path's are equals
-			return true;
+  /**
+   * writeObject
+   * @param value0 TODO
+   * @exception IOException TODO
+   */
+  private void writeObject(ObjectOutputStream value0)
+    throws IOException
+  {
+    // TODO
+  }
 
-		} // if
+  /**
+   * readObject
+   * @param value0 TODO
+   * @exception IOException TODO
+   * @exception ClassNotFoundException TODO
+   */
+  private void readObject(ObjectInputStream value0)
+    throws IOException, ClassNotFoundException
+  {
+    // TODO
+  }
 
-		// Unequal
-		return false;
+  /**
+   * getPath
+   * @returns Object[]
+   */
+  public Object[] getPath()
+  {
+    return path;
+  }
 
-	} // equals()
+  /**
+   * getLastPathComponent
+   * @returns Object
+   */
+  public Object getLastPathComponent()
+  {
+    return path[path.length - 1];
+  }
 
-	/**
-	 * toString
-	 * @returns String
-	 */
-	public String toString() {
-		return null; // TODO
-	} // toString()
+  /**
+   * getPathCount
+   * @returns int
+   */
+  public int getPathCount()
+  {
+    return path.length;
+  }
 
-	/**
-	 * writeObject
-	 * @param value0 TODO
-	 * @exception IOException TODO
-	 */
-	private void writeObject(ObjectOutputStream value0) throws IOException {
-		// TODO
-	} // writeObject()
+  /**
+   * getPathComponent
+   * @param position TODO
+   * @returns Object
+   */
+  public Object getPathComponent(int position)
+  {
+    return path[position];
+  }
 
-	/**
-	 * readObject
-	 * @param value0 TODO
-	 * @exception IOException TODO
-	 * @exception ClassNotFoundException TODO
-	 */
-	private void readObject(ObjectInputStream value0) throws IOException, ClassNotFoundException {
-		// TODO
-	} // readObject()
+  /**
+   * isDescendant
+   * @param path TODO
+   * @returns boolean
+   */
+  public boolean isDescendant(TreePath path)
+  {
 
-	/**
-	 * getPath
-	 * @returns Object[]
-	 */
-	public Object[] getPath() {
-		return path;
-	} // getPath()
+    // Variables
+    Object[]	treepath;
+    int			index;
+    int			index2;
 
-	/**
-	 * getLastPathComponent
-	 * @returns Object
-	 */
-	public Object getLastPathComponent() {
-		return path[path.length - 1];
-	} // getLastPathComponent()
+    // Get Descendant path
+    treepath = path.getPath();
 
-	/**
-	 * getPathCount
-	 * @returns int
-	 */
-	public int getPathCount() {
-		return path.length;
-	} // getPathCount()
+    // Locate Start Index
+    index = 0;
+    index2 = 0;
+    while (treepath[index] != this.path[index2])
+      index++;
 
-	/**
-	 * getPathComponent
-	 * @param position TODO
-	 * @returns Object
-	 */
-	public Object getPathComponent(int position) {
-		return path[position];
-	} // getPathComponent()
+    // Verify Paths
+    while (treepath[index] == this.path[index2])
+      {
+        index++;
+        index2++;
+      }
 
-	/**
-	 * isDescendant
-	 * @param path TODO
-	 * @returns boolean
-	 */
-	public boolean isDescendant(TreePath path) {
+    // Check for descendant
+    if (index2 != this.path.length)
+      return false;
 
-		// Variables
-		Object[]	treepath;
-		int			index;
-		int			index2;
+    // Is Descendant
+    return true;
 
-		// Get Descendant path
-		treepath = path.getPath();
+  }
 
-		// Locate Start Index
-		index = 0;
-		index2 = 0;
-		while (treepath[index] != this.path[index2]) {
-			index++;
-		} // while
+  /**
+   * pathByAddingChild
+   * @param element TODO
+   * @returns TreePath
+   */
+  public TreePath pathByAddingChild(Object element)
+  {
+    return new TreePath(this, element);
+  }
 
-		// Verify Paths
-		while (treepath[index] == this.path[index2]) {
-			index++;
-			index2++;
-		} // while
+  /**
+   * getParentPath
+   * @returns TreePath
+   */
+  public TreePath getParentPath()
+  {
+    // If this path has only one element, then we return null. That
+    // is what the JDK does.
+    if (path.length <= 1)
+      return null;
 
-		// Check for descendant
-		if (index2 != this.path.length) {
-			return false;
-		} // if
-
-		// Is Descendant
-		return true;
-
-	} // isDescendant()
-
-	/**
-	 * pathByAddingChild
-	 * @param element TODO
-	 * @returns TreePath
-	 */
-	public TreePath pathByAddingChild(Object element) {
-		return new TreePath(this, element);
-	} // pathByAddingChild()
-
-	/**
-	 * getParentPath
-	 * @returns TreePath
-	 */
-	public TreePath getParentPath() {
-		return new TreePath(this.getPath(), path.length - 1);
-	} // getParentPath()
-
-
-} // TreePath
+    return new TreePath(this.getPath(), path.length - 1);
+  }
+}

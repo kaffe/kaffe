@@ -1348,7 +1348,11 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public void paint(Graphics g, JComponent jc)
   {
-    // Do nothing. All the painting is handled by children.
+    // Make sure that the location is valid
+    int divLoc = splitPane.getDividerLocation();
+    int valLoc = validLocation(divLoc);
+    if (divLoc != valLoc)
+      splitPane.setDividerLocation(valLoc);
   }
 
   /**

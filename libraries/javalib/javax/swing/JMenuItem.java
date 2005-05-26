@@ -163,6 +163,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
   protected void init(String text, Icon icon)
   {
     super.init(text, icon);
+    setModel(new DefaultButtonModel());
 
     // Initializes properties for this menu item, that are different
     // from Abstract button properties. 

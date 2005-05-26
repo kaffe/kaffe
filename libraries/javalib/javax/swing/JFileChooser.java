@@ -92,58 +92,73 @@ public class JFileChooser extends JComponent implements Accessible
   public static final String APPROVE_SELECTION = "ApproveSelection";
 
   /** DOCUMENT ME! */
-  public static final String APPROVE_BUTTON_TEXT_CHANGED_PROPERTY = "approvebuttonText";
+  public static final String APPROVE_BUTTON_TEXT_CHANGED_PROPERTY =
+    "ApproveButtonTextChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY = "approveButtonToolTipText";
+  public static final String APPROVE_BUTTON_TOOL_TIP_TEXT_CHANGED_PROPERTY =
+    "ApproveButtonToolTipTextChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY = "approveButtonMnemonic";
+  public static final String APPROVE_BUTTON_MNEMONIC_CHANGED_PROPERTY =
+    "ApproveButtonMnemonicChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY = "controlButtonsAreShown";
+  public static final String CONTROL_BUTTONS_ARE_SHOWN_CHANGED_PROPERTY =
+    "ControlButtonsAreShownChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String DIRECTORY_CHANGED_PROPERTY = "directory";
+  public static final String DIRECTORY_CHANGED_PROPERTY = "directoryChanged";
 
   /** DOCUMENT ME! */
-  public static final String SELECTED_FILE_CHANGED_PROPERTY = "SelectedFileChangedProperty";
+  public static final String SELECTED_FILE_CHANGED_PROPERTY =
+    "SelectedFilesChangedProperty";
 
   /** DOCUMENT ME! */
   public static final String SELECTED_FILES_CHANGED_PROPERTY = "selectedFiles";
 
   /** DOCUMENT ME! */
-  public static final String MULTI_SELECTION_ENABLED_CHANGED_PROPERTY = "multiSelectionEnabled";
+  public static final String MULTI_SELECTION_ENABLED_CHANGED_PROPERTY =
+    "MultiSelectionEnabledChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String FILE_SYSTEM_VIEW_CHANGED_PROPERTY = "fileSystemView";
+  public static final String FILE_SYSTEM_VIEW_CHANGED_PROPERTY =
+    "FileSystemViewChanged";
 
   /** DOCUMENT ME! */
-  public static final String FILE_VIEW_CHANGED_PROPERTY = "fileView";
+  public static final String FILE_VIEW_CHANGED_PROPERTY = "fileViewChanged";
 
   /** DOCUMENT ME! */
-  public static final String FILE_HIDING_CHANGED_PROPERTY = "fileHidingEnabled";
+  public static final String FILE_HIDING_CHANGED_PROPERTY =
+    "FileHidingChanged";
 
   /** DOCUMENT ME! */
-  public static final String FILE_FILTER_CHANGED_PROPERTY = "fileFilter";
+  public static final String FILE_FILTER_CHANGED_PROPERTY =
+    "fileFilterChanged";
 
   /** DOCUMENT ME! */
-  public static final String FILE_SELECTION_MODE_CHANGED_PROPERTY = "fileSelectionMode";
+  public static final String FILE_SELECTION_MODE_CHANGED_PROPERTY =
+    "fileSelectionChanged";
 
   /** DOCUMENT ME! */
-  public static final String ACCESSORY_CHANGED_PROPERTY = "accessory";
+  public static final String ACCESSORY_CHANGED_PROPERTY =
+    "AccessoryChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY = "acceptAllFileFilter";
+  public static final String ACCEPT_ALL_FILE_FILTER_USED_CHANGED_PROPERTY =
+    "acceptAllFileFilterUsedChanged";
 
   /** DOCUMENT ME! */
-  public static final String DIALOG_TITLE_CHANGED_PROPERTY = "dialogTitle";
+  public static final String DIALOG_TITLE_CHANGED_PROPERTY =
+    "DialogTitleChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String DIALOG_TYPE_CHANGED_PROPERTY = "dialogType";
+  public static final String DIALOG_TYPE_CHANGED_PROPERTY =
+    "DialogTypeChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY = "choosableFileFilter";
+  public static final String CHOOSABLE_FILE_FILTER_CHANGED_PROPERTY =
+    "ChoosableFileFilterChangedProperty";
 
   /** DOCUMENT ME! */
   protected AccessibleContext accessibleContext;
@@ -222,6 +237,20 @@ public class JFileChooser extends JComponent implements Accessible
   public JFileChooser(String currentDirectoryPath)
   {
     setup(null);
+    setCurrentDirectory(fsv.createFileObject(currentDirectoryPath));
+  }
+
+  /**
+   * Creates a new JFileChooser object with the specified directory and
+   * FileSystemView.
+   *
+   * @param currentDirectoryPath the directory that should initially be
+   *     shown the filechooser
+   * @param fsv the FileSystemView object to use
+   */
+  public JFileChooser(String currentDirectoryPath, FileSystemView fsv)
+  {
+    setup(fsv);
     setCurrentDirectory(fsv.createFileObject(currentDirectoryPath));
   }
 

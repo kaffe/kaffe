@@ -42,8 +42,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.io.Serializable;
 
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -93,6 +97,59 @@ import javax.swing.plaf.ViewportUI;
  */
 public class JViewport extends JComponent
 {
+
+  /**
+   * A {@link java.awt.event.ComponentListener} that listens for
+   * changes of the view's size. This class forbids changes of the view
+   * component's size that would exceed the viewport's size.
+   */
+  protected class ViewListener
+    extends ComponentAdapter
+    implements Serializable
+  {
+    /**
+     * Creates a new instance of ViewListener.
+     */
+    protected ViewListener()
+    {
+    }
+
+    /**
+     * Receives notification when a component (in this case: the view
+     * component) changes it's size.
+     *
+     * @param ev the ComponentEvent describing the change
+     */
+    public void componentResized(ComponentEvent ev)
+    {
+      // According to some tests that I did with Sun's implementation
+      // this class is supposed to make sure that the view component
+      // is not resized to a larger size than the viewport.
+      // This is not documented anywhere. What I did is: I subclassed JViewport
+      // and ViewListener and 'disabled' the componentResized method by
+      // overriding it and not calling super.componentResized().
+      // When this method is disabled I can set the size on the view component
+      // normally, when it is enabled, it gets immediatly resized back,
+      // after a resize attempt that would exceed the Viewport's size.
+      Component comp = ev.getComponent();
+      Dimension newSize = comp.getSize();
+      Dimension viewportSize = getSize();
+      boolean revert = false;
+      if (newSize.width > viewportSize.width)
+        {
+          newSize.width = viewportSize.width;
+          revert = true;
+        }
+      if (newSize.height > viewportSize.height)
+        {
+          newSize.height = viewportSize.height;
+          revert = true;
+        }
+      if (revert == true)
+        comp.setSize(newSize);
+    }
+  }
+
   private static final long serialVersionUID = -6925142919680527970L;
   
   public static final int SIMPLE_SCROLL_MODE = 0;
@@ -125,10 +182,16 @@ public class JViewport extends JComponent
 
   Point lastPaintPosition;
 
+  /**
+   * The ViewListener instance.
+   */
+  ViewListener viewListener;
+
   public JViewport()
   {
     setOpaque(true);
     setScrollMode(BLIT_SCROLL_MODE);
+    setLayout(createLayoutManager());
     updateUI();
   }
 
@@ -267,9 +330,17 @@ public class JViewport extends JComponent
   public void setView(Component v)
   {
     while (getComponentCount() > 0)
-      remove(0);
+      {
+        if (viewListener != null)
+          getView().removeComponentListener(viewListener);
+        remove(0);
+      }
+
     if (v != null)
       {
+        if (viewListener == null)
+          viewListener = createViewListener();
+        v.addComponentListener(viewListener);
         add(v);
         fireStateChanged();
       }
@@ -391,5 +462,27 @@ public class JViewport extends JComponent
   {
     if (border != null)
       throw new IllegalArgumentException();
+  }
+
+  /**
+   * Creates a {@link ViewListener} that is supposed to listen for
+   * size changes on the view component.
+   *
+   * @return a ViewListener instance
+   */
+  protected ViewListener createViewListener()
+  {
+    return new ViewListener();
+  }
+
+  /**
+   * Creates the LayoutManager that is used for this viewport. Override
+   * this method if you want to use a custom LayoutManager.
+   *
+   * @return a LayoutManager to use for this viewport
+   */
+  protected LayoutManager createLayoutManager()
+  {
+    return new ViewportLayout();
   }
 }

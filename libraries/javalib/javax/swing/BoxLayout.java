@@ -477,6 +477,9 @@ public class BoxLayout implements LayoutManager2, Serializable
             Component comp = children[index];
             Dimension sz = comp.getMaximumSize();
             x += sz.width;
+            // Check for overflow.
+            if (x < 0)
+              x = Integer.MAX_VALUE;
             y = Math.max(y, sz.height);
           }
       }
@@ -489,6 +492,9 @@ public class BoxLayout implements LayoutManager2, Serializable
             Component comp = children[index];
             Dimension sz = comp.getMaximumSize();
             y += sz.height;
+            // Check for overflow
+            if (y < 0)
+              y = Integer.MAX_VALUE;
             x = Math.max(x, sz.width);
           }
       } 

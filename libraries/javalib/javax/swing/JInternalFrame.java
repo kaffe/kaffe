@@ -862,7 +862,10 @@ public class JInternalFrame extends JComponent implements Accessible,
   {
     JDesktopPane pane = getDesktopPane();
     if (pane != null)
-      return pane.getLayer(this);
+      // The cast here forces the call to the instance method getLayer()
+      // instead of the static method (this would lead to infinite
+      // recursion).
+      return pane.getLayer((Component) this);
     return -1;
   }
 

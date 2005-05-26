@@ -38,7 +38,9 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.Rectangle;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -227,6 +229,55 @@ public class JTextArea extends JTextComponent
   public boolean getScrollableTracksViewportWidth()
   {
     return lineWrap ? true : super.getScrollableTracksViewportWidth();
+  }
+
+  /**
+   * Returns the increment that is needed to expose exactly one new line
+   * of text. This is implemented here to return the values of
+   * {@link #getRowHeight} and {@link getColumnWidth}, depending on
+   * the value of the argument <code>direction</code>.
+   *
+   * @param visibleRect the view area that is visible in the viewport
+   * @param orientation either {@link SwingConstants.VERTICAL} or
+   *     {@link SwingConstants.HORIZONTAL}
+   * @param direction less than zero for up/left scrolling, greater
+   *     than zero for down/right scrolling
+   *
+   * @return the increment that is needed to expose exactly one new row
+   *     or column of text
+   *
+   * @throws IllegalArgumentException if <code>orientation</code> is invalid
+   */
+  public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation,
+                                        int direction)
+  {
+    if (orientation == SwingConstants.VERTICAL)
+      return getRowHeight();
+    else if (orientation == SwingConstants.HORIZONTAL)
+      return getColumnWidth();
+    else
+      throw new IllegalArgumentException("orientation must be either "
+                                     + "javax.swing.SwingConstants.VERTICAL "
+                                     + "or "
+                                     + "javax.swing.SwingConstants.HORIZONTAL"
+                                     );
+  }
+
+  /**
+   * Returns the preferred size of that text component in the case
+   * it is embedded within a JScrollPane. This uses the column and
+   * row settings if they are explicitly set, or fall back to
+   * the superclass's behaviour.
+   *
+   * @return the preferred size of that text component in the case
+   *     it is embedded within a JScrollPane
+   */
+  public Dimension getPreferredScrollableViewportSize()
+  {
+    if ((rows > 0) && (columns > 0))
+      return new Dimension(columns * getColumnWidth(), rows * getRowHeight());
+    else
+      return super.getPreferredScrollableViewportSize();
   }
 
   /**

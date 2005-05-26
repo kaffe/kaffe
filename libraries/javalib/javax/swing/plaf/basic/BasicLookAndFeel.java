@@ -911,7 +911,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
           },
       "TextPane.margin", new InsetsUIResource(3, 3, 3, 3),
       "TextPane.selectionBackground", new ColorUIResource(Color.black),
-      "TextPane.selectionForeground", new ColorUIResource(Color.white)/*,
+      "TextPane.selectionForeground", new ColorUIResource(Color.white),
       "TitledBorder.border", new BorderUIResource.EtchedBorderUIResource(),
       "TitledBorder.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "TitledBorder.titleColor", new ColorUIResource(darkShadow),
@@ -1028,7 +1028,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Tree.textForeground", new ColorUIResource(Color.black),
       "Viewport.background", new ColorUIResource(light),
       "Viewport.foreground", new ColorUIResource(Color.black),
-      "Viewport.font", new FontUIResource("Dialog", Font.PLAIN, 12)*/
+      "Viewport.font", new FontUIResource("Dialog", Font.PLAIN, 12)
     };
     defaults.putDefaults(uiDefaults);
   }
