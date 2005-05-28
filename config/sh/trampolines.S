@@ -29,8 +29,6 @@ TRAMPOLINE_FUNCTION()
 #define C_FUNC_NAME(FUNC) FUNC
 #endif
 
-asm(
-
     .text
     .align 4
     .global C_FUNC_NAME(sh_do_fixup_trampoline)

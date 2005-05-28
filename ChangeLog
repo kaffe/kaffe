@@ -1,5 +1,10 @@
 2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* config/sh/trampolines.S:
+	Fix bugs introduced in Gcc assembler to real assembler conversion.
+
+2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* config/m68k/jit-icode.h,
 	config/m68k/jit3-icode.h,
 	kaffe/kaffevm/jit3/funcs.h:
