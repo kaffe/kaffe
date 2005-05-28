@@ -11,29 +11,18 @@
 #ifndef __m68k_icode_h
 #define __m68k_icode_h
 
-/*
- * Refs and int/long registers are equivalent.
- * Neither is true on the m68k -- we put refs in aX and ints in dX.
- */
-
-#undef HAVE_ref_eq_int
-#undef HAVE_ref_eq_long
-
 /* Since it won't be set for us by virtue of having one of the above set... */
 #define pusharg_long_idx_inc		2
-
 
 /*
  * Define the range checking macros.
  */
-
 #define m68k_s16_rangecheck(v)		((v) >= -0x8000 && (v) < 0x8000)
 #define m68k_1_8_rangecheck(v)		((v) >= 1 && (v) <= 8)
 
 /*
  * These must be defined for any architecture.
  */
-
 #define HAVE_prologue			prologue_xxC
 #define HAVE_epilogue			epilogue_xxx
 #define HAVE_exception_prologue		eprologue_xxx
@@ -85,11 +74,9 @@
 #define HAVE_build_code_ref		set_wordpc_xxC
 #undef	HAVE_build_const_ref
 
-
 /*
  * These are required since we distinguish between refs and ints.
  */
-
 #define HAVE_spill_ref			spillr_RCx
 #define HAVE_reload_ref			reloadr_RCx
 
@@ -111,7 +98,6 @@
 /*
  * These are sometimes optional (if long operators are defined)
  */
-
 #define HAVE_adc_int			adci_RRR
 #define HAVE_sbc_int			sbci_RRR
 #define HAVE_ngc_int			ngci_RxR
@@ -206,7 +192,6 @@
 #undef	HAVE_cvt_long_int
 
 #undef	HAVE_get_arg_ptr
-
 
 #if !defined(HAVE_NO_FLOATING_POINT)
 

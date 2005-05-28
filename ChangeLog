@@ -1,3 +1,10 @@
+2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/jit-icode.h,
+	config/m68k/jit3-icode.h,
+	kaffe/kaffevm/jit3/funcs.h:
+	Remove unused macros HAVE_ref_eq_int and HAVE_ref_eq_long.
+
 2005-05-26  Dalibor Topic  <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
@@ -1148,7 +1155,7 @@
 	(libreplace_ls_LIBADD) Add LTLIBINTL to fix a build failure
 	on darwin reported by the tinderbox.
 
-2005-05-21  Kiyo Inaba <inaba@@src.ricoh.co.jp>
+2005-05-21  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
 	Fix build fail for '--with-threads=unix-jthreads'.

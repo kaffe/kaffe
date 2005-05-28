@@ -634,14 +634,6 @@ extern void HAVE_pusharg_ref_const (sequence* s);
 extern void HAVE_push_frame (sequence* s);
 #endif /* defined(HAVE_push_frame) */
 
-#if defined(HAVE_ref_eq_int)
-extern void HAVE_ref_eq_int (sequence* s);
-#endif /* defined(HAVE_ref_eq_int) */
-
-#if defined(HAVE_ref_eq_long)
-extern void HAVE_ref_eq_long (sequence* s);
-#endif /* defined(HAVE_ref_eq_long) */
-
 #if defined(HAVE_reload_double)
 extern void HAVE_reload_double (sequence* s);
 #endif /* defined(HAVE_reload_double) */
