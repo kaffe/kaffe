@@ -1,3 +1,18 @@
+2005-05-28  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* developers/dumpClass.pl: add command line arguments for verbose
+	method and field info
+	* developers/update-class-list: set LC_ALL to C to get a consistent
+	sort order
+	* kaffe/kaffevm/code-analyse.c (analyzeBasicBlock): throw VerifyError
+	if bytecode contains an invalid opcode
+	* kaffe/kaffevm/exception.c (findExceptionBlockInMethod): improved
+	debug messages
+	* kaffe/kaffevm/stackTrace.c (printStackTrace): print message of
+	exception
+	* libraries/clib/native/String.c (java_lang_String_indexOf): fix bounds
+	of loop
+	
 2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/jit3/icode.c:

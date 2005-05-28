@@ -84,7 +84,7 @@ java_lang_String_indexOf(Hjava_lang_String* str, Hjava_lang_String* pat, jint of
 	for ( i=0; i<m; i++ )
 	  bs[ (unsigned char)p[i] ] = m-i;
 
-	k= n - m;
+	k= n - m + 1;
 	for ( i=offset; i < k; ) {
 	  if ( memcmp( &a[i], p, (size_t)m2) == 0 )
 		return i;

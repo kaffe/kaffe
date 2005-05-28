@@ -632,8 +632,8 @@ DBG(ELOOKUP,
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
-DBG(ELOOKUP,	dprintf("  Handler %d covers %#lx-%#lx\n", i, 
-			(long) start_pc, (long) end_pc); );
+DBG(ELOOKUP,	dprintf("  Handler %d covers %#lx-%#lx catches %s\n", i, 
+			(long) start_pc, (long) end_pc, eptr[i].catch_type==NULL?"all":CLASS_CNAME(eptr[i].catch_type)););
 		if (_pc < start_pc || _pc >= end_pc) {
 			continue;
 		}

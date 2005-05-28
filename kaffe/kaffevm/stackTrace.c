@@ -228,6 +228,12 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	char* class_dot_name;
 	errorInfo einfo;
 
+	if (unhand(o)->detailMessage != NULL) {
+		char *cstr = checkPtr (stringJava2C(unhand(o)->detailMessage));
+		dprintf ("%s\n", cstr);
+		KFREE(cstr);
+	}
+
 	vmstate = (Hjava_lang_VMThrowable*)unhand(o)->vmState;
 	if (vmstate == NULL) {
 		return;

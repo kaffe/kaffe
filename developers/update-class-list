@@ -8,6 +8,9 @@
 # Whenever you add or remove a file, run this script from within
 # kaffe-src/libraries/javalib
 
+# set LC_ALL to C to get the same sort order on all systems
+export LC_ALL=C
+
 if test -f Makefile.am.in &&
    SRCDIRS=`sed -n '/^SRCDIRS *= */ s///p' < Makefile.am.in` > /dev/null; then :
 else

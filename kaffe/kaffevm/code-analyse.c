@@ -1937,6 +1937,15 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case BREAKPOINT:
 			INCPC(1);
 			break;
+		default:
+			postExceptionMessage(einfo,
+					     JAVA_LANG(VerifyError),
+					     "(class: %s, method: %s signature: %s) "
+					     "invalid opcode",
+					     meth->class->name->data,
+					     meth->name->data,
+					     meth->parsed_sig->signature->data);
+			goto done_fail;
 		}
 	} while (pc < meth->c.bcode.codelen && !IS_STARTOFBASICBLOCK(pc) && !IS_STARTOFEXCEPTION(pc));
 

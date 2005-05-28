@@ -34,7 +34,23 @@ $JavaClass::detailedFields = 0;
 $JavaClass::detailedMethods = 0;
 
 ## Parse the command line
-my $classFile = shift  || &usage();
+my $classFile = "";
+
+foreach (@ARGV){
+  if (/--verbose-fields/) {
+    $JavaClass::detailedFields = 1;
+  }
+  elsif (/--verbose-methods/) {
+    $JavaClass::detailedMethods = 1;
+  }
+  else {
+    $classFile = $_;
+  }
+}
+
+print "$classFile\n";
+
+#$classFile!="" || &usage();
 
 ## Read/parse the class file
 my $class = &JavaClass::readClass($classFile);
@@ -48,7 +64,7 @@ my $class = &JavaClass::readClass($classFile);
 
 sub usage() {
   print STDOUT "Usage:\n";
-  print STDOUT "    dumpClass.pl <ClassFile>\n\n";
+  print STDOUT "    dumpClass.pl [--verbose-methods] [--verbose-fields] <ClassFile>\n\n";
   print STDOUT "    Note that '.class' will be appended if it is not specified in the file name.\n";
 
   exit 11;
