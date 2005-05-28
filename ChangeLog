@@ -1,5 +1,12 @@
 2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* kaffe/kaffevm/jit3/icode.c:
+	Fix argument type mismatch.
+	The 'else' parts of 'neg_float' or 'neg_double' may have never
+	been used.
+
+2005-05-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* config/sh/trampolines.S:
 	Fix bugs introduced in Gcc assembler to real assembler conversion.
 

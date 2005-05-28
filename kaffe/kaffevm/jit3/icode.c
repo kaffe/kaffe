@@ -1761,7 +1761,7 @@ neg_float(SlotInfo* dst, SlotInfo* src)
 #else
 	SlotInfo* zero;
 	slot_alloctmp(zero);
-	move_float_const(zero, NULL);
+	move_float_const(zero, 0);
 	sub_float(dst, zero, src);
 	slot_freetmp(zero);
 #endif
@@ -1775,7 +1775,7 @@ neg_double(SlotInfo* dst, SlotInfo* src)
 #else
 	SlotInfo* zero;
 	slot_alloc2tmp(zero);
-	move_double_const(zero, NULL);
+	move_double_const(zero, 0);
 	sub_double(dst, zero, src);
 	slot_free2tmp(zero);
 #endif
