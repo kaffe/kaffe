@@ -129,7 +129,9 @@ public class GridBagLayout
 	    return;
 
 	if (!(constraints instanceof GridBagConstraints))
-	    throw new IllegalArgumentException();
+	    throw new IllegalArgumentException("constraints " 
+					       + constraints 
+					       + " are not an instance of GridBagConstraints");
 
 	setConstraints (component, (GridBagConstraints) constraints);
     }
