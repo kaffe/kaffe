@@ -261,9 +261,6 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     constraints.weightx = 100.0;
     constraints.weighty = 100.0;
 
-    if (index == -1)
-      index = getComponents().length;
-
     constraints.gridy = index;
     super.add(component, constraints, index);
 
