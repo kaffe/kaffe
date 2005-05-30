@@ -308,10 +308,46 @@ public final class URI
     os.writeObject(string);
   }
 
+  /**
+   * <p>
+   * Returns the string content of the specified group of the supplied
+   * matcher.  The returned value is modified according to the following:
+   * </p>
+   * <ul>
+   * <li>If the resulting string has a length greater than 0, then
+   * that string is returned.</li>
+   * <li>If a string of zero length, is matched, then the content
+   * of the preceding group is considered.  If this is also an empty
+   * string, then <code>null</code> is returned to indicate an undefined
+   * value.  Otherwise, the value is truly the empty string and this is
+   * the returned value.</li>
+   * </ul>
+   * <p>
+   * This method is used for matching against all parts of the URI
+   * that may be either undefined or empty (i.e. all those but the
+   * scheme-specific part and the path).  In each case, the preceding
+   * group is the content of the original group, along with some
+   * additional distinguishing feature.  For example, the preceding
+   * group for the query includes the preceding question mark,
+   * while that of the fragment includes the hash symbol.  The presence
+   * of these features enables disambiguation between the two cases
+   * of a completely unspecified value and a simple non-existant value.
+   * The scheme differs in that it will never return an empty string;
+   * the delimiter follows the scheme rather than preceding it, so
+   * it becomes part of the following section.  The same is true
+   * of the user information.
+   * </p>
+   *
+   * @param match the matcher, which contains the results of the URI
+   *              matched against the URI regular expression.
+   * @return either the matched content, <code>null</code> for undefined
+   *         values, or an empty string for a URI part with empty content.
+   */
   private static String getURIGroup(Matcher match, int group)
   {
     String matched = match.group(group);
-    return matched.length() == 0 ? null : matched;
+    return matched.length() == 0 
+      ? ((match.group(group - 1).length() == 0) ? null : "") : matched;
   }
 
   /**
@@ -895,8 +931,8 @@ public final class URI
 
   /**
    * <p>
-   * Relativizes the given URI against this URI using the following
-   * algorithm:
+   * Relativizes the given URI against this URI.  The following
+   * algorithm is used:
    * </p>
    * <ul>
    * <li>If either URI is opaque, the given URI is returned.</li>
