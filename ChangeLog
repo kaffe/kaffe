@@ -1,6 +1,17 @@
 2005-05-30  Dalibor Topic  <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
+
+	2005-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/xml/transform/StreamSerializer.java:
+	(serialize(org.w3c.dom.Node,java.io.OutputStream,
+	boolean)): Add missing 'DOCTYPE' keyword to
+	DocumentType node output.
+
+2005-05-30  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
 	
 	2005-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 

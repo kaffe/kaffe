@@ -421,6 +421,7 @@ public class StreamSerializer
         DocumentType doctype = (DocumentType) node;
         out.write(BRA);
         out.write(BANG);
+	out.write(encodeText("DOCTYPE "));
         value = doctype.getNodeName();
         out.write(encodeText(value));
         String publicId = doctype.getPublicId();
