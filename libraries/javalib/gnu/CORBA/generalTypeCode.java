@@ -62,7 +62,7 @@ public class generalTypeCode
   /**
    * Indicates that the field value has not been previously set.
    */
-  protected static int UNSET = -Integer.MIN_VALUE;
+  protected static int UNSET = Integer.MIN_VALUE;
 
   /**
    * The kinds for that the length() must return 0 even if it

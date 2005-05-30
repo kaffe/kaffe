@@ -1,5 +1,10 @@
 2005-05-30  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/gnu/CORBA/generalTypeCode.java:
+	  s/-Integer.MIN_VALUE/Integer.MIN_VALUE/
+
+2005-05-30  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/gnu/crypto/exp/Helix.java,
 	libraries/javalib/gnu/crypto/hash/MD4.java,
 	libraries/javalib/gnu/crypto/hash/MD5.java,
