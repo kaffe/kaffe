@@ -155,6 +155,9 @@ DBG(CLASSLOOKUP,
 		}
 		return (class);
 
+	case CP_INVALID:
+	case CP_SOFILE:
+	case CP_BYTEARRAY:
 	default:
 		break;
 	}

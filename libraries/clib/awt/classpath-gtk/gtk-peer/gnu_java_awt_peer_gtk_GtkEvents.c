@@ -1096,6 +1096,32 @@ pre_event_handler (GtkWidget *widget, GdkEvent *event, jobject peer)
       else
         return FALSE;
       break;
+    case GDK_NOTHING:
+    case GDK_DELETE:
+    case GDK_DESTROY:
+    case GDK_2BUTTON_PRESS:
+    case GDK_3BUTTON_PRESS:
+    case GDK_MAP:
+    case GDK_UNMAP:
+    case GDK_PROPERTY_NOTIFY:
+    case GDK_SELECTION_CLEAR:
+    case GDK_SELECTION_REQUEST:
+    case GDK_SELECTION_NOTIFY:
+    case GDK_PROXIMITY_IN:
+    case GDK_PROXIMITY_OUT:
+    case GDK_DRAG_ENTER:
+    case GDK_DRAG_LEAVE:
+    case GDK_DRAG_MOTION:
+    case GDK_DRAG_STATUS:
+    case GDK_DROP_START:
+    case GDK_DROP_FINISHED:
+    case GDK_CLIENT_EVENT:
+    case GDK_VISIBILITY_NOTIFY:
+    case GDK_NO_EXPOSE:
+    case GDK_SCROLL:
+    case GDK_WINDOW_STATE:
+    case GDK_SETTING:
+    case GDK_OWNER_CHANGE:
     default:
       break;
     }

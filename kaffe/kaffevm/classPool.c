@@ -483,6 +483,9 @@ Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl)
 			ce->data.cl = cl;
 			retval = cl;
 			break;
+		case NMS_EMPTY:
+		case NMS_LOADED:
+		case NMS_DONE:
 		default:
 			/* Ignore. */
 			retval = ce->data.cl;

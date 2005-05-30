@@ -1,5 +1,12 @@
 2005-05-30  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/classPool.c, kaffe/kaffevm/findInJar.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c:
+	  Fix all -Wswitch-enum warnings.
+
+2005-05-30  Adam Heath  <doogie@brainfood.com>
+
 	* include/gccbuiltin.h:
 	  Fix GCC_VERSION undefined warning.
 
