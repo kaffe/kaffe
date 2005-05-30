@@ -26,8 +26,10 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 /* __builtin_expect(A, B) evaluates to A, but notifies the compiler that
    the most likely value of A is B.  This feature was added at some point
    between 2.95 and 3.0.  Let's use 3.0 as the lower bound for now.  */
+#ifdef GCC_VERSION
 #if (GCC_VERSION < 3000)
 #define __builtin_expect(a, b) (a)
+#endif
 #endif
 
 #endif
