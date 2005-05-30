@@ -61,9 +61,9 @@ public class SpinnerDateModel extends AbstractSpinnerModel
 
   /**
    * For compatability with Sun's JDK
-   * FIXME: what's the number? And which fields should be serialized?
+   * FIXME: Which fields should be serialized?
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -4802518107105940612L;
 
   /**
    * Constructs a SpinnerDateModel using the current date,

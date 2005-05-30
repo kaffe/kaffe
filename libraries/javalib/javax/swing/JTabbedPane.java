@@ -530,6 +530,8 @@ public class JTabbedPane extends JComponent implements Serializable,
     }
   }
 
+  private static final long serialVersionUID = 1614381073220130939L;
+
   /** The changeEvent used to fire changes to listeners. */
   protected ChangeEvent changeEvent;
 

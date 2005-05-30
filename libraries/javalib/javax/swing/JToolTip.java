@@ -60,6 +60,8 @@ public class JToolTip extends JComponent implements Accessible
    */
   protected class AccessibleJToolTip extends AccessibleJComponent
   {
+    private static final long serialVersionUID = -6222548177795408476L;
+
     /**
      * Creates a new AccessibleJToolTip object.
      */

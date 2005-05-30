@@ -63,6 +63,8 @@ public class ImageIcon
     extends AccessibleContext
     implements AccessibleIcon, Serializable
   {
+    private static final long serialVersionUID = 2113430526551336564L;
+
     /**
      * Creates a new instance of AccessibleImageIcon.
      */

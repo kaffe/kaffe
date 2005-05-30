@@ -797,6 +797,8 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   protected class AccessibleJMenu extends AccessibleJMenuItem
     implements AccessibleSelection
   {
+    private static final long serialVersionUID = -8131864021059524309L;
+
     protected AccessibleJMenu()
     {
     }

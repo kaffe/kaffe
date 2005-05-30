@@ -102,7 +102,7 @@ public class TransferHandler implements Serializable
     }
   }
   
-  private static final long serialVersionUID = -7908749299918704233L;
+  private static final long serialVersionUID = -967749805571669910L;
 
   private static final String COMMAND_COPY = "copy";
   private static final String COMMAND_CUT = "cut";

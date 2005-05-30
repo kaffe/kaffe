@@ -69,6 +69,7 @@ public class JToggleButton extends AbstractButton implements Accessible
     extends AccessibleAbstractButton
     implements ItemListener
   {
+    private static final long serialVersionUID = -8652952712161229225L;
 
     /**
      * Constructor for the accessible toggle button.

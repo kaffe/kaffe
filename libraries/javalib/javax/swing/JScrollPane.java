@@ -645,6 +645,8 @@ public class JScrollPane
     extends JScrollBar
     implements UIResource
   {
+    private static final long serialVersionUID = -42032395320987283L;
+
     public ScrollBar(int orientation)
     {
       super(orientation);

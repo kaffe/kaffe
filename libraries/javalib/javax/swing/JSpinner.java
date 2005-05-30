@@ -279,6 +279,8 @@ public class JSpinner extends JComponent
     }
   }
 
+  private static final long serialVersionUID = 3412663575706551720L;
+
   /** DOCUMENT ME! */
   private SpinnerModel model;
 

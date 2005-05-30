@@ -160,6 +160,8 @@ public abstract class AbstractButton extends JComponent
   protected class ButtonChangeListener
     implements ChangeListener, Serializable
   {
+    private static final long serialVersionUID = 1471056094226600578L;
+
     /**
      * Notified when the target of the listener changes its state.
      *

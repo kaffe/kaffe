@@ -2,6 +2,35 @@
 
         Resynced with GNU Classpath.
 	
+	2005-05-27  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/AbstractButton.java:
+	Bumped up serialVersionUID(s) to JDK1.4 compatibility.
+	* javax/swing/ImageIcon.java: Likewise.
+	* javax/swing/JFileChooser.java: Likewise.
+	* javax/swing/JInternalFrame.java: Likewise.
+	* javax/swing/JMenu.java: Likewise.
+	* javax/swing/JRadioButton.java: Likewise.
+	* javax/swing/JScrollPane.java: Likewise.
+	* javax/swing/JSpinner.java: Likewise.
+	* javax/swing/JTabbedPane.java: Likewise.
+	* javax/swing/ImageIcons.java: Likewise.
+	* javax/swing/JToggleButton.java: Likewise.
+	* javax/swing/JToolTip.java: Likewise.
+	* javax/swing/JViewPort.java: Likewise.
+	* javax/swing/LayoutFocusTraversalPolicy.java: Likewise.
+	* javax/swing/SpinnerDateModel.java: Likewise.
+	* javax/swing/TransferHandler.java: Likewise.
+
+2005-05-27  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkContainerPeer.java (setFont): Handle
+	lightweight peers specially.
+
+2005-05-30  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
 	2005-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
 
 	* java/net/URI.java:

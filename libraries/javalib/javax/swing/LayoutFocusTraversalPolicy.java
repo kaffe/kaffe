@@ -79,6 +79,8 @@ public class LayoutFocusTraversalPolicy
       return 1;
     }
   }
+
+  private static final long serialVersionUID = 4312146927238881442L;
   
   public LayoutFocusTraversalPolicy()
   {

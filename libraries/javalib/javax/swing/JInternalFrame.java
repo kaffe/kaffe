@@ -76,6 +76,8 @@ public class JInternalFrame extends JComponent implements Accessible,
   protected class AccessibleJInternalFrame extends AccessibleJComponent
     implements AccessibleValue
   {
+    private static final long serialVersionUID = 5931936924175476797L;
+
     /**
      * Creates a new AccessibleJInternalFrame object.
      */
@@ -168,6 +170,8 @@ public class JInternalFrame extends JComponent implements Accessible,
     protected class AccessibleJDesktopIcon extends AccessibleJComponent
       implements AccessibleValue
     {
+      private static final long serialVersionUID = 5035560458941637802L;
+
       /**
        * Creates a new AccessibleJDesktopIcon object.
        */
@@ -238,6 +242,8 @@ public class JInternalFrame extends JComponent implements Accessible,
 	return false;
       }
     }
+
+    private static final long serialVersionUID = 4672973344731387687L;
 
     /** The JInternalFrame this DesktopIcon represents. */
     JInternalFrame frame;

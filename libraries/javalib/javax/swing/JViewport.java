@@ -107,6 +107,8 @@ public class JViewport extends JComponent
     extends ComponentAdapter
     implements Serializable
   {
+    private static final long serialVersionUID = -2812489404285958070L;
+
     /**
      * Creates a new instance of ViewListener.
      */

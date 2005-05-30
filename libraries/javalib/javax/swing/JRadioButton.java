@@ -79,6 +79,7 @@ public class JRadioButton extends JToggleButton
   protected class AccessibleJRadioButton
     extends AccessibleJToggleButton
   {
+    private static final long serialVersionUID = 4850967637026120674L;
 
     /**
      * Constructor for the accessible toggle button.
