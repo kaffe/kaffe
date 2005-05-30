@@ -1299,19 +1299,11 @@ public class BasicFileChooserUI extends FileChooserUI
     c.anchor = GridBagConstraints.EAST;
     bottomPanel.add(closePanel, c);
 
-    filechooser.setLayout(new GridBagLayout());
+    filechooser.setLayout(new BorderLayout());
 
-    c.anchor = GridBagConstraints.WEST;
-    c.gridx = 0;
-    c.gridy = 0;
-    filechooser.add(topPanel, c);
-
-    c.gridy = 1;
-    filechooser.add(centrePanel, c);
-
-    c.gridy = 2;
-    c.fill = GridBagConstraints.HORIZONTAL;
-    filechooser.add(bottomPanel, c);
+    filechooser.add(topPanel, BorderLayout.NORTH);
+    filechooser.add(centrePanel, BorderLayout.CENTER);
+    filechooser.add(bottomPanel, BorderLayout.SOUTH);
   }
 
   /**
