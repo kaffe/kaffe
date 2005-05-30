@@ -61,6 +61,8 @@ gnu/classpath/RawData.java
 gnu/classpath/ServiceFactory.java
 gnu/classpath/ServiceProviderLoadingAction.java
 gnu/classpath/SystemProperties.java
+gnu/classpath/VMStackWalker.java
+gnu/classpath/VMSystemProperties.java
 gnu/classpath/tools/javap/GnuByteCodeJavap.java
 gnu/classpath/tools/javap/Javap.java
 gnu/classpath/tools/javap/JavapMain.java
@@ -1940,6 +1942,7 @@ java/lang/UnsupportedClassVersionError.java
 java/lang/UnsupportedOperationException.java
 java/lang/VerifyError.java
 java/lang/VirtualMachineError.java
+java/lang/VMClass.java
 java/lang/VMClassLoader.java
 java/lang/VMCompiler.java
 java/lang/VMDouble.java
@@ -3436,14 +3439,11 @@ kaffe/io/StdInputStream.java
 kaffe/io/StdOutputStream.java
 kaffe/jar/ExecJar.java
 kaffe/jar/ExecJarName.java
-kaffe/lang/AppClassLoader.java
 kaffe/lang/ClassPathReader.java
 kaffe/lang/MemoryAdviceCallback.java
 kaffe/lang/MemoryAdvice.java
 kaffe/lang/PackageHelper.java
-kaffe/lang/PrimordialClassLoader.java
 kaffe/lang/ResourceReader.java
-kaffe/lang/ThreadStack.java
 kaffe/lang/UNIXProcess.java
 kaffe/management/Classpath.java
 kaffe/management/Debug.java

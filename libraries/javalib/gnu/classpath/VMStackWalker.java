@@ -97,13 +97,7 @@ public final class VMStackWalker
    * VM implementers are encouraged to provide a more efficient
    * version of this method.
    */
-  public static Class getCallingClass()
-  {
-    Class[] ctx = getClassContext();
-    if (ctx.length < MINIMAL_NUMBER_OF_FRAMES)
-      return null;
-    return ctx[CALLERS_CALLER_FRAME];
-  }
+  public static native Class getCallingClass();
 
   /**
    * Get the class loader associated with the Class returned by
@@ -116,12 +110,5 @@ public final class VMStackWalker
    * VM implementers are encouraged to provide a more efficient
    * version of this method.
    */
-  public static ClassLoader getCallingClassLoader()
-  {
-    Class[] ctx = getClassContext();
-    if (ctx.length < MINIMAL_NUMBER_OF_FRAMES)
-      return null;
-    return ctx[CALLERS_CALLER_FRAME].getClassLoader();
-  }
+  public static native ClassLoader getCallingClassLoader();
 }
-

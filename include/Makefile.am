@@ -33,6 +33,7 @@ INSTALL_DERIVED_HDRS =
 NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_VMObject.h \
+	java_lang_VMClass.h \
 	java_lang_VMClassLoader.h \
 	java_lang_String.h \
 	java_lang_StackTraceElement.h \
@@ -41,7 +42,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	java_lang_SecurityManager.h \
 	java_io_File.h \
 	java_io_FileInputStream.h \
 	java_io_FileOutputStream.h \
@@ -53,7 +53,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Boolean.h \
 	java_lang_Byte.h \
 	java_lang_Character.h \
-	java_lang_Class.h \
 	java_lang_ClassLoader.h \
 	java_lang_Cloneable.h \
 	java_lang_Integer.h \
@@ -87,10 +86,9 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_Inflater.h \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
-	kaffe_lang_PrimordialClassLoader.h \
-	kaffe_lang_ThreadStack.h \
 	kaffe_management_Classpath.h \
-	gnu_java_nio_VMSelector.h
+	gnu_java_nio_VMSelector.h \
+	gnu_classpath_VMStackWalker.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
@@ -218,7 +216,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_lang_VMDouble.h \
 	java_lang_VMFloat.h \
 	java_lang_ref_Reference.h \
-	gnu_classpath_VMStackWalker.h \
 	gnu_classpath_VMSystemProperties.h \
 	gnu_java_nio_charset_iconv_IconvDecoder.h \
 	gnu_java_nio_charset_iconv_IconvEncoder.h \

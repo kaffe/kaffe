@@ -56,7 +56,8 @@ public class CharCvt
 
 // unsafe
 
-/* Expected Output:
+/* java args: CharCvt -Dgnu.classpath.nio.charset.provider.iconv=true
+Expected Output:
 65535
 -1
 */

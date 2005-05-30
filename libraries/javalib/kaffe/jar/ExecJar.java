@@ -19,8 +19,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import kaffe.lang.AppClassLoader;
-
 public class ExecJar {
 
 public static void main(String[] args)
@@ -49,22 +47,6 @@ public static void main(String[] args)
 	if (mainClass == null) {
 		System.err.println("No ``Main-Class'' found in manifest");
 		System.exit(1);
-	}
-
-	// Add ourselves to the classpath
-	AppClassLoader acl;
-
-	acl = (AppClassLoader)AppClassLoader.getSingleton();
-	acl.addSource(jar.getName());
-
-	// Get "Class-Path" attribute
-	String classPath = manifest.getMainAttributes().getValue(
-					Attributes.Name.CLASS_PATH);
-	if (classPath != null) {
-	    StringTokenizer st = new StringTokenizer(classPath);
-	    while(st.hasMoreElements()) {
-		acl.addSource(st.nextToken());
-	    }
 	}
 
 	// Now call ExecJarName's main()

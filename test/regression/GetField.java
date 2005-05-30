@@ -75,9 +75,9 @@ class GetField {
 /* Expected Output:
 java.lang.IllegalArgumentException
 public static: 20
-java.lang.NoSuchFieldException: Class GetField has no field named PSTEST
+java.lang.NoSuchFieldException: PSTEST
 java.lang.NullPointerException
 public static from null: 20
 SomeFields public: 10
-java.lang.NoSuchFieldException: Class SomeFields has no field named PSOME
+java.lang.NoSuchFieldException: PSOME
 */

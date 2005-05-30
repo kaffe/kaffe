@@ -59,6 +59,7 @@ initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 	clazz->accflags = ACC_PUBLIC | ACC_FINAL;
 	CLASS_PRIM_SIG(clazz) = sig;
         CLASS_PRIM_NAME(clazz) = utf8ConstNew(&sig, 1);
+	clazz->this_inner_index = -1;
 	if (!clazz->name || !CLASS_PRIM_NAME(clazz)) {
 		goto bad;
 	}
@@ -140,15 +141,15 @@ finishTypes(void)
 {
 	DBG(INIT, dprintf("finishTypes()\n"); );
 
-	byteClass->head.vtable = getClassClass()->vtable;
-	shortClass->head.vtable = getClassClass()->vtable;
-	intClass->head.vtable = getClassClass()->vtable;
-	longClass->head.vtable = getClassClass()->vtable;
-	booleanClass->head.vtable = getClassClass()->vtable;
-	charClass->head.vtable = getClassClass()->vtable;
-	floatClass->head.vtable = getClassClass()->vtable;
-	doubleClass->head.vtable = getClassClass()->vtable;
-	voidClass->head.vtable = getClassClass()->vtable;
+	byteClass->head.vtable = getClassVtable();
+	shortClass->head.vtable = getClassVtable();
+	intClass->head.vtable = getClassVtable();
+	longClass->head.vtable = getClassVtable();
+	booleanClass->head.vtable = getClassVtable();
+	charClass->head.vtable = getClassVtable();
+	floatClass->head.vtable = getClassVtable();
+	doubleClass->head.vtable = getClassVtable();
+	voidClass->head.vtable = getClassVtable();
 
 	DBG(INIT, dprintf("finishTypes() done\n"); );
 }

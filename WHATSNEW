@@ -1,6 +1,12 @@
 What's New in CVS
 ------------------------------------------------------
 
+* Merged java.lang.Class from GNU Classpath.
+* Kaffe's home-grown system class loader was replaced by
+  GNU classpath's system class loader. This improves support
+  for the Java Extension Mechanism and the Java security
+  model.
+
 What's New in Kaffe 1.1.5
 ------------------------------------------------------
 

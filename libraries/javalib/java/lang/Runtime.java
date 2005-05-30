@@ -19,8 +19,6 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import kaffe.lang.ThreadStack;
-
 public class Runtime
 {
 /**
@@ -143,7 +141,7 @@ public static Runtime getRuntime() {
 
 public void loadLibrary(String libname) {
 	loadLibrary(libname,
-		    ThreadStack.getCallersClassLoader(false));
+		    gnu.classpath.VMStackWalker.getCallingClassLoader());
 }
 
    /**
@@ -192,7 +190,7 @@ void loadLibrary(String libname, ClassLoader loader) throws UnsatisfiedLinkError
 }
 
 public void load(String filename) {
-	load(filename, ThreadStack.getCallersClassLoader(false));
+	load(filename, gnu.classpath.VMStackWalker.getCallingClassLoader());
 }
 
 void load(String filename, ClassLoader loader) {

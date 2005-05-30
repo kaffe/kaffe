@@ -119,7 +119,7 @@ newClass(void)
 
         /* Fill in object information */
 	KaffeVM_setFinalizer(cls, KGC_DEFAULT_FINALIZER);
-	cls->head.vtable = getClassClass()->vtable;
+	cls->head.vtable = getClassVtable();
 done:
 DBG(NEWOBJECT,
 	dprintf("newClass @%p\n", cls);

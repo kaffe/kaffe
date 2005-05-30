@@ -98,10 +98,9 @@ am__objects_1 = libnative_la-gnu_classpath_VMStackWalker.lo \
 	libnative_la-java_lang_VMDouble.lo \
 	libnative_la-java_lang_VMSystem.lo libnative_la-Class.lo \
 	libnative_la-ClassLoader.lo libnative_la-MemoryAdvice.lo \
-	libnative_la-Object.lo libnative_la-PrimordialClassLoader.lo \
-	libnative_la-Runtime.lo libnative_la-String.lo \
-	libnative_la-System.lo libnative_la-Thread.lo \
-	libnative_la-ThreadStack.lo libnative_la-Throwable.lo \
+	libnative_la-Object.lo libnative_la-Runtime.lo \
+	libnative_la-String.lo libnative_la-System.lo \
+	libnative_la-Thread.lo libnative_la-Throwable.lo \
 	libnative_la-UNIXProcess.lo libnative_la-ZipFile.lo
 am__objects_2 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
@@ -422,12 +421,10 @@ LANG_SRCS = \
 		ClassLoader.c \
 		MemoryAdvice.c \
 		Object.c \
-		PrimordialClassLoader.c \
 		Runtime.c \
 		String.c \
 		System.c \
 		Thread.c \
-		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
 		ZipFile.c
@@ -458,7 +455,7 @@ libnative_la_LDFLAGS = \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe)_"
+	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
 libnative_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \
@@ -557,13 +554,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-MemoryAdvice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Method.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Object.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-String.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-System.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-TestNative.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ThreadStack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Throwable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-TimeZone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-UNIXProcess.Plo@am__quote@
@@ -667,13 +662,6 @@ libnative_la-Object.lo: Object.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-Object.lo `test -f 'Object.c' || echo '$(srcdir)/'`Object.c
 
-libnative_la-PrimordialClassLoader.lo: PrimordialClassLoader.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-PrimordialClassLoader.lo -MD -MP -MF "$(DEPDIR)/libnative_la-PrimordialClassLoader.Tpo" -c -o libnative_la-PrimordialClassLoader.lo `test -f 'PrimordialClassLoader.c' || echo '$(srcdir)/'`PrimordialClassLoader.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-PrimordialClassLoader.Tpo" "$(DEPDIR)/libnative_la-PrimordialClassLoader.Plo"; else rm -f "$(DEPDIR)/libnative_la-PrimordialClassLoader.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='PrimordialClassLoader.c' object='libnative_la-PrimordialClassLoader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-PrimordialClassLoader.lo `test -f 'PrimordialClassLoader.c' || echo '$(srcdir)/'`PrimordialClassLoader.c
-
 libnative_la-Runtime.lo: Runtime.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Runtime.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Runtime.Tpo" -c -o libnative_la-Runtime.lo `test -f 'Runtime.c' || echo '$(srcdir)/'`Runtime.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-Runtime.Tpo" "$(DEPDIR)/libnative_la-Runtime.Plo"; else rm -f "$(DEPDIR)/libnative_la-Runtime.Tpo"; exit 1; fi
@@ -701,13 +689,6 @@ libnative_la-Thread.lo: Thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Thread.c' object='libnative_la-Thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-Thread.lo `test -f 'Thread.c' || echo '$(srcdir)/'`Thread.c
-
-libnative_la-ThreadStack.lo: ThreadStack.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-ThreadStack.lo -MD -MP -MF "$(DEPDIR)/libnative_la-ThreadStack.Tpo" -c -o libnative_la-ThreadStack.lo `test -f 'ThreadStack.c' || echo '$(srcdir)/'`ThreadStack.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-ThreadStack.Tpo" "$(DEPDIR)/libnative_la-ThreadStack.Plo"; else rm -f "$(DEPDIR)/libnative_la-ThreadStack.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ThreadStack.c' object='libnative_la-ThreadStack.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-ThreadStack.lo `test -f 'ThreadStack.c' || echo '$(srcdir)/'`ThreadStack.c
 
 libnative_la-Throwable.lo: Throwable.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Throwable.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Throwable.Tpo" -c -o libnative_la-Throwable.lo `test -f 'Throwable.c' || echo '$(srcdir)/'`Throwable.c; \

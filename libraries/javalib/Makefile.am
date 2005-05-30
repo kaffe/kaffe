@@ -2413,6 +2413,7 @@ java_lang_SRCS = \
 	java/lang/UnsatisfiedLinkError.java \
 	java/lang/UnsupportedClassVersionError.java \
 	java/lang/UnsupportedOperationException.java \
+	java/lang/VMClass.java \
 	java/lang/VMClassLoader.java \
 	java/lang/VMCompiler.java \
 	java/lang/VMDouble.java \
@@ -4030,14 +4031,11 @@ kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
 kaffe_lang_SRCS = \
-	kaffe/lang/AppClassLoader.java \
 	kaffe/lang/ClassPathReader.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/PackageHelper.java \
-	kaffe/lang/PrimordialClassLoader.java \
 	kaffe/lang/ResourceReader.java \
-	kaffe/lang/ThreadStack.java \
 	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java \

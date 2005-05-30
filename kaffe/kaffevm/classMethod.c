@@ -76,7 +76,44 @@ static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
 
+static struct Hjava_security_ProtectionDomain  *defaultProtectionDomain;
 
+
+void
+initialiseSecurity (void)
+{
+	struct Hjava_lang_Object *codeSource;
+	struct Hjava_lang_Object *permissions;
+	struct Hjava_lang_Object *allPermission;
+
+	codeSource = execute_java_constructor ("java/security/CodeSource",
+					       NULL,
+					       NULL,
+					       "(Ljava/net/URL;[Ljava/security/cert/Certificate;)V",
+					       NULL,
+					       NULL);
+
+	permissions = execute_java_constructor ("java/security/Permissions",
+						NULL,
+						NULL,
+						"()V");
+
+	allPermission = execute_java_constructor ("java/security/AllPermission",
+						  NULL,
+						  NULL,
+						  "()V");
+	
+	do_execute_java_method(NULL, permissions, "add", "(Ljava/security/Permission;)V",
+			       NULL, 0, allPermission);
+	do_execute_java_method(NULL, permissions, "setReadOnly", "()V", NULL, 0);
+
+	defaultProtectionDomain = (struct Hjava_security_ProtectionDomain *)execute_java_constructor ("java/security/ProtectionDomain",
+							    NULL,
+							    NULL,
+							    "(Ljava/security/CodeSource;Ljava/security/PermissionCollection;)V",
+							    codeSource,
+							    permissions);
+}
 
 #if !defined(ALIGNMENT_OF_SIZE)
 #define	ALIGNMENT_OF_SIZE(S)	(S)
@@ -947,6 +984,13 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 	cl->inner_classes = NULL;
 	cl->nr_inner_classes = 0;
 	cl->this_inner_index = -1;
+
+	/* set protection domain to the default */
+	if (loader == NULL)
+	{
+		cl->protectionDomain = defaultProtectionDomain;
+	}
+
 	return 1;
 }
 
@@ -1564,7 +1608,7 @@ DBG(VMCLASSLOADER,
 );
 
 		clazz = findClass(centry, &info);
-		if (clazz == 0) {
+		if (clazz == NULL) {
 			goto bad;
 		}
 		/* we won't ever want to lose these classes */
@@ -1576,10 +1620,9 @@ DBG(VMCLASSLOADER,
 		(*class) = centry->data.cl = clazz;
 	}
 	unlockStaticMutex(&centry->slock);
-	
 	if (!(*class))
 		(*class) = centry->data.cl;
-	
+
 	if (processClass(centry->data.cl, CSTATE_LINKED, &info) == true) {
 		assert(centry->state == NMS_DONE);
 		return;
@@ -1960,9 +2003,16 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
 		int j = CLASS_NMETHODS(super);
 		Method* mt = CLASS_METHODS(super);
 		for (; --j >= 0;  ++mt) {
+			/* skip methods that are private or static */
+			if ((mt->accflags & (ACC_PRIVATE|ACC_STATIC)) != 0)
+				continue;
+
+			/* skip inaccessible methods */
+			if (!checkAccess (meth->class, super, mt->accflags))
+				continue;
+ 
 			if (utf8ConstEqual (mt->name, meth->name) &&
-			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)) &&
-			    checkMethodAccess(meth->class, super, mt))
+			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)))
 			{
 				meth->idx = mt->idx;
 				return (true);
@@ -2863,6 +2913,10 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 		arr_flags |= ACC_PUBLIC;
 	}
 	internalSetupClass(arr_class, arr_name, arr_flags, 0, 0, c->loader, NULL);
+
+	/* use protection domain of element class for array classes */
+	arr_class->protectionDomain = c->protectionDomain;
+
 	arr_class->superclass = ObjectClass;
 	if (buildDispatchTable(arr_class, einfo) == false) {
 		centry->data.cl = c = NULL;
@@ -2880,7 +2934,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	addInterfaces(arr_class, 2, arr_interfaces);
 
 	arr_class->total_interface_len = arr_class->interface_len;
-	arr_class->head.vtable = getClassClass()->vtable;
+	arr_class->head.vtable = getClassVtable();
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 

@@ -1,3 +1,62 @@
+2005-05-30  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/kaffe/lang/AppClassLoader.java,
+	libraries/javalib/kaffe/lang/PrimordialClassLoader.java,
+	libraries/clib/native/PrimordialClassLoader.c: removed. Loading classes is
+	now handled completely by ClassLoader / VMClassLoader.
+	* libraries/clib/native/ClassLoader.c (java_lang_VMClassLoader_loadClass):
+	implemented
+
+	* libraries/javalib/java/lang/Class.java: replaced by implementation from
+	GNU Classpath
+	* libraries/javalib/java/lang/VMClass.java: new file
+	* libraries/clib/native/Class.c: updated to VMClass implementation
+
+	* libraries/clib/native/ThreadStack.c,
+	libraries/javalib/kaffe/lang/ThreadStack.java: removed. Identical
+	functionality is now provided by gnu.classpath.VMStackWalker.
+	* libraries/clib/native/gnu_classpath_VMStackWalker.c,
+	libraries/javalib/gnu/classpath/VMStackWalker.java: implement methods
+	directly instead of delegating to kaffe.lang.ThreadStack.
+
+	* kaffe/kaffevm/baseClasses.h,
+	kaffe/kaffevm/baseClasses.c: removed references to kaffe.lang.AppClassLoader,
+	replaced getClassClass with getClassVtable, so we can remove dummyClassClass
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/object.c: replaced getClassClass()->vtable with getClassVtable()
+
+	* kaffe/kaffevm/classMethod.c (initialiseSecurity): new method
+	(internalSetupClass, lookupArray): initialise protection domain of new class
+
+	* kaffe/kaffevm/classMethod.h (struct Hjava_lang_Class): rearranged fields
+	to match fields in GNU Classpath's java.lang.Class implementation
+
+	* kaffe/kaffevm/jni/jni.c (Kaffe_FindClass): walk the stack to find the
+	correct class loader
+	
+	* kaffe/kaffevm/gcFuncs.c (walkClass): updated to Hjava_lang_Class changes
+
+	* libraries/javalib/META-INF/services/java.nio.charset.spi.CharsetProvider:
+	removed, as iconv is treated specially by java.nio.charset.Charset
+
+	* kaffe/kaffe/main.c (options): add argument of -jar option to the classpath
+
+	* libraries/javalib/kaffe/jar/ExecJar.java: don't update the classpath, that's
+	done in kaffe's main now.
+
+	* libraries/javalib/kaffe/jar/ExecJarName.java: use the system class loader
+	to load the main class.
+
+	* libraries/clib/native/Makefile.am, libraries/clib/native/Makefile.in,
+	include/Makefile.am, include/Makefile.in, libraries/javalib/all.files,
+	WHATSNEW: updated
+
+	* test/regression/CharCvt.java,	test/regression/GetField.java,
+	test/regression/KaffeInternal.java, test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassLockTest.java,
+	test/regression/ProcessClassStop.java: updated expected output
+
 2005-05-30  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffe/main.c, kaffe/kaffevm/classMethod.c,

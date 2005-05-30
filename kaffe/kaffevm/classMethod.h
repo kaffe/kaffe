@@ -84,6 +84,15 @@ typedef enum {
 struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
 
+	/* these fields are also accessed from java and therefore MUST NOT BE CHANGED */
+
+	HArrayOfObject*			signers;
+	struct Hjava_security_ProtectionDomain*	protectionDomain;
+	struct Hjava_lang_Object*	vmData; /* unused for kaffe */
+	struct Hjava_lang_Object*	constructor;
+
+	/* end of fields being accessed from java */
+
 	struct _iLock*		lock;		/* Lock for internal use */
 
 	/* Link to class entry */
@@ -170,12 +179,6 @@ struct Hjava_lang_Class {
 	/** Stab type ID. */
 	int stab_id;
 #endif
-
-	/** The array of 'signer' objects; usually Certificates. */
-	HArrayOfObject*		signers;
-
-	/** The protection domain */
-	struct Hjava_security_ProtectionDomain*	protectionDomain;
 };
 
 #ifndef __DEFINED_CLASS
@@ -506,7 +509,6 @@ struct classFile;
 #define CLASS_CONST_USHORT2(CL, INDEX) \
   ((uint16)((CL)->constants.data[INDEX] >> 16))
 
-
 /*
  * 'processClass' is the core of the class initialiser and can prepare a
  * class from the cradle to the grave.
@@ -515,7 +517,7 @@ bool			processClass(Hjava_lang_Class*, int, errorInfo *einfo);
 
 Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
-Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
+Hjava_lang_Class*	findClass(struct _classEntry* centry, errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 

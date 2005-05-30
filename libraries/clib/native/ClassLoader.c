@@ -160,3 +160,62 @@ java_lang_VMClassLoader_resolveClass(struct Hjava_lang_Class* class)
 		throwError(&info);
 	}
 }
+
+
+struct Hjava_lang_Class*
+java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)
+{
+	Hjava_lang_Class *clazz = NULL;
+	errorInfo info;
+	int error = 0;
+        Utf8Const *c;
+        char *name;
+
+	name = checkPtr(stringJava2C(jStr));
+	classname2pathname(name, name);
+
+	if (!strncmp (name, "kaffe/lang/", 11) ||
+	    !strncmp (name, "gnu/classpath/", 14)) {
+		struct Hjava_lang_Throwable *throwable;
+
+		throwable = (struct Hjava_lang_Throwable *)execute_java_constructor(JAVA_LANG(ClassNotFoundException),
+										    NULL,
+										    NULL,
+										    "(Ljava/lang/String;)V",
+										    jStr);
+		throwException (throwable);
+	}
+
+	if( (c = utf8ConstNew(name, -1)) )
+	{
+		clazz = loadClass(c, NULL, &info);
+		if( clazz )
+		{
+			if( processClass(clazz,
+					 resolve ? CSTATE_COMPLETE : CSTATE_PREPARED,
+					 &info) == false )
+			{
+				error = 1;
+			}
+		}
+		else
+		{
+			error = 1;
+		}
+		utf8ConstRelease(c);
+	}
+	else
+	{
+		postOutOfMemory(&info);
+		error = 1;
+	}
+
+	gc_free(name);
+	
+	if( error )
+	{
+		throwError(&info);
+	}
+	return( clazz );
+}
+

@@ -55,7 +55,7 @@ public class ProcessClassLockTest
 		try {
 		    Class.forName("this_class_does_not_exist");
 		} catch (Throwable t) {
-		    System.out.println(t);
+		    System.out.println(t.getClass().getName()+": "+t.getMessage().substring(0, 25));
 		}
 		System.exit(0);
 	    }

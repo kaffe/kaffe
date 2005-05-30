@@ -41,6 +41,7 @@
 #include "jni_funcs.h"
 #include "native-wrapper.h"
 #include "kaffe_jni.h"
+#include "stackTrace.h"
 
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern KaffeVM_Arguments Kaffe_JavaVMInitArgs;
@@ -326,9 +327,11 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 static jclass
 Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 {
+	stackTraceInfo          *trace;
 	jstring nameString;
 	Utf8Const* utf8;
 	jvalue retval;
+	int			i;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
@@ -338,8 +341,34 @@ Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 	utf8ConstRelease(utf8);
 	checkPtr(nameString);
 
-	do_execute_java_class_method(&retval, "java.lang.Class", NULL,
-		"forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
+	trace = (stackTraceInfo *)buildStackTrace (NULL);
+	if (trace == NULL)
+		return NULL;
+
+	for (i=0; trace[i].meth != ENDOFSTACK; i++)
+	{
+		if ((trace[i].meth != NULL) &&
+		    (trace[i].meth->class != NULL))
+			break;
+	}
+
+	if (trace[i].meth == ENDOFSTACK) {
+		/* if there are no java methods on the stack, we use the system class loader */
+		do_execute_java_class_method (&retval, "java/lang/ClassLoader",
+					      NULL,
+					      "getSystemClassLoader",
+					      "()Ljava/lang/ClassLoader;");
+
+		do_execute_java_class_method(&retval, "java.lang.Class", NULL,
+					     "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;",
+					     nameString, true, retval.l);
+	} else {
+		/* otherwise, we use the first java method on the stack */
+		do_execute_java_class_method(&retval, "java.lang.Class", NULL,
+					     "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;",
+					     nameString, true, trace[i].meth->class->loader);
+	}
+
 	ADD_REF(retval.l);
 
 	END_EXCEPTION_HANDLING();

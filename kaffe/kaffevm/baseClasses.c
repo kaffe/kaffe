@@ -58,8 +58,8 @@ Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
 Utf8Const* InnerClasses_name;
 
-static Hjava_lang_Class dummyClassClass;
-static Hjava_lang_Class* ClassClass = &dummyClassClass;
+static struct _dispatchTable *ClassClass_vtable;
+static Hjava_lang_Class*	ClassClass;
 Hjava_lang_Class* StringClass;
 Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
@@ -83,7 +83,6 @@ Hjava_lang_Class* javaLangIntegerClass;
 Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
-Hjava_lang_Class* kaffeLangAppClassLoaderClass;
 
 Hjava_lang_Class* javaLangThrowable;
 Hjava_lang_Class* javaLangVMThrowable;
@@ -98,15 +97,12 @@ Hjava_lang_Class* javaLangStackOverflowError;
 /* Let's not load this if we can't open Klasses.jar */
 Hjava_lang_Class* javaIoIOException;
 
-Hjava_lang_ClassLoader* appClassLoader;
-
 #define RUNTIMECLASS "java/lang/Runtime"
 #define SYSTEMCLASS  "java/lang/System"
 #define	SERIALCLASS  "java/io/Serializable"
 #define	CLONECLASS   "java/lang/Cloneable"
 #define	LOADERCLASS  "java/lang/ClassLoader"
 #define PTRCLASS     "kaffe/util/Ptr"
-
 
 /* Initialisation prototypes */
 void initClasspath(void);
@@ -116,14 +112,10 @@ void initNative(void);
  * get the java.lang.Class class.
  * Load it if it is not loaded.
  */
-Hjava_lang_Class* 
-getClassClass(void)
+struct _dispatchTable*
+getClassVtable(void)
 {
-  if (ClassClass == NULL) {
-    loadStaticClass(&ClassClass, CLASSCLASS);
-  }
-
-  return ClassClass;
+  return ClassClass_vtable;
 }
 
 /**
@@ -189,6 +181,7 @@ initialiseKaffe(void)
 	/* Initialise the (native) threading system */
 	initNativeThreads(threadStackSize);
 
+	initLocking();
 	initEngine();
 	KaffeVM_initClassPool();
 	KaffeVM_initJarCache();
@@ -263,8 +256,8 @@ initialiseKaffe(void)
 	/* Setup exceptions */
 	initExceptions();
 
-	/* Setup locking */
-	initLocking();
+	/* Init stuff for the java security model */
+	initialiseSecurity();
 
 	/* Init thread support */
 	initThreads();
@@ -293,7 +286,6 @@ abortWithEarlyClassFailure(errorInfo* einfo)
 	KAFFEVM_EXIT(-1);
 }
 
-
 /*
  * We need to use certain classes in the internal machine so we better
  * get them in now in a known way so we can refer back to them.
@@ -301,31 +293,31 @@ abortWithEarlyClassFailure(errorInfo* einfo)
 void
 initBaseClasses(void)
 {
-        errorInfo einfo;
+	errorInfo einfo;
 
-	memset(&dummyClassClass, 0, sizeof(dummyClassClass));
+	DBG(INIT, dprintf("initBaseClasses()\n"); );
 
-        /* Primitive types */
-        initTypes();
+	/* Primitive types */
+	initTypes();
 	initVerifierPrimTypes();
 
-        DBG(INIT, dprintf("initBaseClasses()\n"); );
+	loadStaticClass(&ObjectClass, OBJECTCLASS);
+	loadStaticClass(&SerialClass, SERIALCLASS);
+	loadStaticClass(&CloneClass,  CLONECLASS);
+	loadStaticClass(&ClassClass,  CLASSCLASS);
 
-        /* The base types */
-        loadStaticClass(&ObjectClass, OBJECTCLASS);
-        loadStaticClass(&SerialClass, SERIALCLASS);
-        loadStaticClass(&CloneClass, CLONECLASS);
-        loadStaticClass(&ClassClass, CLASSCLASS);
-        loadStaticClass(&StringClass, STRINGCLASS);
-        loadStaticClass(&SystemClass, SYSTEMCLASS);
+	ClassClass_vtable = ClassClass->vtable;
+	ObjectClass->head.vtable = ClassClass_vtable;
+	SerialClass->head.vtable = ClassClass_vtable;
+	CloneClass->head.vtable  = ClassClass_vtable;
+	ClassClass->head.vtable  = ClassClass_vtable;
+
+	finishTypes();
+
+	loadStaticClass(&StringClass, STRINGCLASS);
+	loadStaticClass(&SystemClass, SYSTEMCLASS);
         loadStaticClass(&RuntimeClass, RUNTIMECLASS);
-	
-        /* We must to a little cross tidying */
-        ObjectClass->head.vtable = ClassClass->vtable;
-        SerialClass->head.vtable = ClassClass->vtable;
-        CloneClass->head.vtable = ClassClass->vtable;
-        ClassClass->head.vtable = ClassClass->vtable;
-	
+
 	/* Basic types classes */
 	loadStaticClass(&javaLangVoidClass, "java/lang/Void");
 	loadStaticClass(&javaLangBooleanClass, "java/lang/Boolean");
@@ -338,7 +330,6 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangDoubleClass, "java/lang/Double");
 	loadStaticClass(&PtrClass, PTRCLASS);
 	loadStaticClass(&ClassLoaderClass, LOADERCLASS);
-	loadStaticClass(&kaffeLangAppClassLoaderClass, APPCLASSLOADERCLASS);
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
@@ -361,12 +352,7 @@ initBaseClasses(void)
 
 	DBG(INIT, dprintf("initBaseClasses() done\n"); );
 
-	/* Fixup primitive types */
-	finishTypes();
-	
 	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
 		abortWithEarlyClassFailure(&einfo);
-
-	appClassLoader = NULL;
 }
 

@@ -733,6 +733,31 @@ options(char** argv, int argc)
 			vmargs.enableVerboseClassloading = 1;
 		}
                 else if (strcmp(argv[i], "-jar") == 0) {
+			char	*newcpath;
+			unsigned int      cpathlength;
+
+			cpathlength = strlen(argv[i+1]) + 
+				strlen(path_separator) +
+				((vmargs.classpath!=NULL) ? strlen(vmargs.classpath) : 0) +
+				1;
+
+			newcpath = (char *)malloc (cpathlength);
+			if (newcpath == NULL) {
+				fprintf(stderr,  _("Error: out of memory.\n"));
+				exit(1);
+			}
+
+			strcpy (newcpath, argv[i+1]);
+
+			if (vmargs.classpath != NULL) {
+				strcat (newcpath, path_separator);
+				strcat (newcpath, vmargs.classpath);
+				free (vmargs.classpath);
+			}
+
+			/* set the new classpath */
+			vmargs.classpath = newcpath;
+
                         isJar = 1;
                 }
 		else if (strncmp(argv[i], "-Xrun", 5) == 0) {

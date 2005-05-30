@@ -469,6 +469,7 @@ DBG(GCPRECISE,
         KGC_markObject(collector, gc_info, class->loader);
 	KGC_markObject(collector, gc_info, class->signers);
 	KGC_markObject(collector, gc_info, class->protectionDomain);
+	KGC_markObject(collector, gc_info, class->constructor);
 }
 
 /*****************************************************************************

@@ -38,9 +38,11 @@ exception statement from your version. */
 
 package java.lang;
 
+import java.security.AllPermission;
+import java.security.CodeSource;
+import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.File;
 import java.util.Enumeration;
@@ -48,12 +50,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
 import java.lang.reflect.Constructor;
 
 import gnu.java.util.EmptyEnumeration;
+import gnu.classpath.SystemProperties;
 
-import kaffe.lang.PrimordialClassLoader;
-import kaffe.lang.AppClassLoader;
 
 /**
  * java.lang.VMClassLoader is a package-private helper for VMs to implement
@@ -65,6 +68,8 @@ import kaffe.lang.AppClassLoader;
  */
 final class VMClassLoader
 {
+   private static final Map bootjars = new HashMap();
+
   /**
    * Helper to define a class using a string of bytes. This assumes that
    * the security checks have already been performed, if necessary.
@@ -102,19 +107,53 @@ final class VMClassLoader
   /**
    * Helper to load a class from the bootstrap class loader.
    *
-   * XXX - Not implemented; this requires native help.
-   *
    * @param name the class name to load
    * @param resolve whether to resolve it
    * @return the class, loaded by the bootstrap classloader or null
    * if the class wasn't found. Returning null is equivalent to throwing
    * a ClassNotFoundException (but a possible performance optimization).
    */
-  static Class loadClass(String name, boolean resolve)
-    throws ClassNotFoundException
-  {
-    return PrimordialClassLoader.getSingleton().loadClass(name, resolve);
-  }
+   static native Class loadClass(String name, boolean resolve)
+      throws ClassNotFoundException;
+
+
+   private static URL nextResource (StringTokenizer path, String name)
+   {
+      while (path.hasMoreTokens())
+      {
+         File file = new File(path.nextToken());
+
+         if (!file.exists()) {
+            continue;
+         }
+         else if (file.isDirectory()) {
+            file = new File(file, name);
+            if (file.isFile()) {
+               try {
+                  return new URL("file", "", file.getCanonicalPath().replace(File.separatorChar, '/'));
+               } catch (IOException e) {
+               }
+            }
+         }
+         else if (file.isFile()) {
+            ZipFile zip = (ZipFile) bootjars.get(file.getName());
+            try {
+               if (zip == null) {
+                  zip = new ZipFile(file);
+                  bootjars.put(file.getName(), zip);
+               }
+               ZipEntry entry = zip.getEntry(name);
+               if (entry != null && !entry.isDirectory()) {
+                  return new URL("jar:file:"
+                                 + file.getCanonicalPath().replace(File.separatorChar, '/') + "!/" + entry.getName());
+               }
+            } catch (IOException e) {
+            }
+         }
+      }
+
+      return null;
+   }
 
   /**
    * Helper to load a resource from the bootstrap class loader.
@@ -124,7 +163,15 @@ final class VMClassLoader
    */
   static URL getResource(String name)
   {
-    return PrimordialClassLoader.getSingleton().findResource(name);
+     String classpath = gnu.classpath.SystemProperties.getProperties().getProperty("sun.boot.class.path");
+
+     StringTokenizer path = new StringTokenizer(classpath, File.pathSeparator);
+
+     if (name.startsWith("/")) {
+        name = name.substring(1);
+     }
+
+     return nextResource (path, name);
   }
 
   /**
@@ -136,7 +183,26 @@ final class VMClassLoader
    */
   static Enumeration getResources(String name) throws IOException
   {
-    return PrimordialClassLoader.getSingleton().findResources(name);
+     String classpath = gnu.classpath.SystemProperties.getProperties().getProperty("sun.boot.class.path");
+
+     StringTokenizer path = new StringTokenizer(classpath, File.pathSeparator);
+
+     if (name.startsWith("/")) {
+        name = name.substring(1);
+     }
+
+     Vector ret = new Vector ();
+
+     for (;;) {
+        URL url = nextResource (path, name);
+
+        if (url == null)
+           break;
+
+        ret.add (url);
+     }
+
+     return ret.elements ();
   }
 
   /**
@@ -149,7 +215,7 @@ final class VMClassLoader
    */
   static Package getPackage(String name)
   {
-    return PrimordialClassLoader.getSingleton().getPackage(name);
+     return null;
   }
 
   /**
@@ -161,7 +227,7 @@ final class VMClassLoader
    */
   static Package[] getPackages()
   {
-    return PrimordialClassLoader.getSingleton().getPackages();
+     return new Package[0];
   }
 
   /**
@@ -270,6 +336,6 @@ final class VMClassLoader
 
   static ClassLoader getSystemClassLoader ()
   {
-    return AppClassLoader.getSingleton();
+    return ClassLoader.defaultGetSystemClassLoader ();
   }
 }

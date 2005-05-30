@@ -28,12 +28,10 @@ LANG_SRCS = \
 		ClassLoader.c \
 		MemoryAdvice.c \
 		Object.c \
-		PrimordialClassLoader.c \
 		Runtime.c \
 		String.c \
 		System.c \
 		Thread.c \
-		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
 		ZipFile.c
@@ -64,7 +62,7 @@ libnative_la_LDFLAGS = \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe)_"
+	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
 libnative_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \

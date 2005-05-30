@@ -28,7 +28,6 @@
 #include "java_lang_reflect_Constructor.h"
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"
-#include "java_lang_Class.h"
 
 #include "defs.h"
 #include "reflect.h"

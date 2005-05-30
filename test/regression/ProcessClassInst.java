@@ -102,8 +102,9 @@ public class ProcessClassInst
 /* Expected Output:
 tan java.lang.NoClassDefFoundError: Base
 java.lang.NoClassDefFoundError: Base
-   at java.lang.Class.getConstructor0 (Class.java)
-   at java.lang.Class.getDeclaredConstructor (Class.java:174)
-   at java.lang.Class.newInstance (Class.java:419)
+   at java.lang.reflect.Method.invoke0 (Method.java)
+   at java.lang.reflect.Method.invoke (Method.java:255)
+   at java.lang.reflect.Constructor.newInstance (Constructor.java:90)
+   at java.lang.Class.newInstance (Class.java:1141)
    at ProcessClassInst.main (ProcessClassInst.java:72)
 */

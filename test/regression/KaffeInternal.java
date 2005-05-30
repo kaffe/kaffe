@@ -1,5 +1,5 @@
 
-import kaffe.lang.ThreadStack;
+import kaffe.lang.PackageHelper;
 import gnu.classpath.SystemProperties;
 
 /**
@@ -11,7 +11,7 @@ class KaffeInternal
     {
 	try
 	{
-	    ThreadStack.getClassStack();
+            PackageHelper.getPackageName (KaffeInternal.class);
 	}
 	catch(Throwable th)
 	{
@@ -30,6 +30,6 @@ class KaffeInternal
 }
 
 /* Expected Output:
-java.lang.NoClassDefFoundError: kaffe/lang/ThreadStack
+java.lang.NoClassDefFoundError: kaffe/lang/PackageHelper
 java.lang.NoClassDefFoundError: gnu/classpath/SystemProperties
 */

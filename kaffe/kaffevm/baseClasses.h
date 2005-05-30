@@ -18,7 +18,6 @@
 #define	STRINGCLASS	"java/lang/String"
 #define	OBJECTCLASS	"java/lang/Object"
 #define	CLASSCLASS	"java/lang/Class"
-#define	APPCLASSLOADERCLASS "kaffe/lang/AppClassLoader"
 
 #define	OBJECTCLASSSIG	"Ljava/lang/Object;"
 
@@ -36,7 +35,6 @@ extern struct Hjava_lang_Class*	SerialClass;
 extern struct Hjava_lang_Class*	CloneClass;
 extern struct Hjava_lang_Class* PtrClass;
 extern struct Hjava_lang_Class* ClassLoaderClass;
-extern struct Hjava_lang_Class* kaffeLangAppClassLoaderClass;
 
 extern struct Hjava_lang_Class* javaLangRefReference;
 extern struct Hjava_lang_Class* javaLangRefSoftReference;
@@ -64,9 +62,7 @@ extern struct Hjava_lang_Class* javaLangClassNotFoundException;
 extern struct Hjava_lang_Class* javaLangNoClassDefFoundError;
 extern struct Hjava_lang_Class* javaLangStackOverflowError;
 
-extern struct Hjava_lang_ClassLoader *appClassLoader;
-
-extern Hjava_lang_Class* getClassClass(void);
+extern struct _dispatchTable* getClassVtable(void);
 extern Hjava_lang_Class* getStringClass(void);
 
 #endif
