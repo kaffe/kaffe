@@ -308,7 +308,10 @@ public class HTTPURLConnection
           {
             responseSink = new ByteArrayInputStream(reader.toByteArray ());
             if (response.getCode() == 404)
-	      errorSink = responseSink;
+	      {
+		errorSink = responseSink;
+		throw new FileNotFoundException(url.toString());
+	      }
           }
       }
     while (retry);
