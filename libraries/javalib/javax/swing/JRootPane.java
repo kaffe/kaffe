@@ -163,7 +163,7 @@ public class JRootPane extends JComponent
     {
       Dimension menuBarSize;
       Dimension containerSize = c.getSize(null);
-      Dimension contentPaneSize = contentPane.getPreferredSize();
+      Dimension contentPaneSize = getContentPane().getPreferredSize();
 
       /*
        if size of top-level window wasn't set then just set
@@ -275,7 +275,7 @@ public class JRootPane extends JComponent
       Dimension prefSize;
 
       Dimension containerSize = c.getSize();
-      Dimension contentPaneSize = contentPane.getPreferredSize();
+      Dimension contentPaneSize = getContentPane().getPreferredSize();
 
       if (containerSize.width == 0 && containerSize.height == 0)
         {
