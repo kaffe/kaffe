@@ -682,11 +682,11 @@ startGC(Collector *gcif)
 	gcStats.markedmem = 0;
 
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_KGC_START) )
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_START) )
 	{
 		JVMPI_Event ev;
 
-		ev.event_type = JVMPI_EVENT_KGC_START;
+		ev.event_type = JVMPI_EVENT_GC_START;
 		jvmpiPostEvent(&ev);
 	}
 #endif
@@ -828,11 +828,11 @@ finishGC(Collector *gcif)
 	}
 
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_KGC_FINISH) )
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_FINISH) )
 	{ 
 		JVMPI_Event ev;
 
-		ev.event_type = JVMPI_EVENT_KGC_FINISH;
+		ev.event_type = JVMPI_EVENT_GC_FINISH;
 		ev.u.gc_info.used_objects = (jlong)gcStats.markedobj;
 		ev.u.gc_info.used_object_space = (jlong)gcStats.markedmem;
 		ev.u.gc_info.total_object_space = (jlong)gcStats.totalmem;
