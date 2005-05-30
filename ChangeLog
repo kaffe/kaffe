@@ -1,5 +1,25 @@
 2005-05-30  Dalibor Topic  <robilad@kaffe.org>
 
+        Resynced with GNU Classpath.
+	
+	2005-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java:
+	(connect()): Reverted the removal of the exception
+	with 404s.
+
+	2005-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java:
+	(connect()): Fixed a null pointer exception with 304
+	responses and an inappropriate exception with 404s.
+	* gnu/java/net/protocol/http/Request.java:
+	(readResponse(java.io.LineInputStream)): Fixed a
+	fruitless attempt to read the non-existant body
+	of a 304 response.
+
+2005-05-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
 	Fixed compile problems with JVMPI.
 

@@ -448,6 +448,7 @@ public class Request
       {
       case 204:
       case 205:
+      case 304:
         break;
       default:
         // Does response body reader want body?

@@ -233,82 +233,82 @@ public class HTTPURLConnection
           {
             // Follow redirect
             String location = response.getHeader("Location");
-            String connectionUri = connection.getURI();
-            int start = connectionUri.length();
-            if (location.startsWith(connectionUri) &&
-                location.charAt(start) == '/')
-              {
-                file = location.substring(start);
-                retry = true;
-              }
-            else if (location.startsWith("http:"))
-              {
-                connection.close();
-                connection = null;
-                secure = false;
-                start = 7;
-                int end = location.indexOf('/', start);
-                host = location.substring(start, end);
-                int ci = host.lastIndexOf(':');
-                if (ci != -1)
-                  {
-                    port = Integer.parseInt(host.substring (ci + 1));
-                    host = host.substring(0, ci);
-                  }
-                else
-                  {
-                    port = HTTPConnection.HTTP_PORT;
-                  }
-                file = location.substring(end);
-                retry = true;
-              }
-            else if (location.startsWith("https:"))
-              {
-                connection.close();
-                connection = null;
-                secure = true;
-                start = 8;
-                int end = location.indexOf('/', start);
-                host = location.substring(start, end);
-                int ci = host.lastIndexOf(':');
-                if (ci != -1)
-                  {
-                    port = Integer.parseInt(host.substring (ci + 1));
-                    host = host.substring(0, ci);
-                  }
-                else
-                  {
-                    port = HTTPConnection.HTTPS_PORT;
-                  }
-                file = location.substring(end);
-                retry = true;
-              }
-	    else if (location.length() > 0)
+	    if (location != null)
 	      {
-		// Malformed absolute URI, treat as file part of URI
-		if (location.charAt(0) == '/')
+		String connectionUri = connection.getURI();
+		int start = connectionUri.length();
+		if (location.startsWith(connectionUri) &&
+		    location.charAt(start) == '/')
 		  {
-		    // Absolute path
-		    file = location;
+		    file = location.substring(start);
+		    retry = true;
 		  }
-		else
+		else if (location.startsWith("http:"))
 		  {
-		    // Relative path
-		    int lsi = file.lastIndexOf('/');
-		    file = (lsi == -1) ? "/" : file.substring(0, lsi + 1);
+		    connection.close();
+		    connection = null;
+		    secure = false;
+		    start = 7;
+		    int end = location.indexOf('/', start);
+		    host = location.substring(start, end);
+		    int ci = host.lastIndexOf(':');
+		    if (ci != -1)
+		      {
+			port = Integer.parseInt(host.substring (ci + 1));
+			host = host.substring(0, ci);
+		      }
+		    else
+		      {
+			port = HTTPConnection.HTTP_PORT;
+		      }
+		    file = location.substring(end);
+		    retry = true;
+		  }
+		else if (location.startsWith("https:"))
+		  {
+		    connection.close();
+		    connection = null;
+		    secure = true;
+		    start = 8;
+		    int end = location.indexOf('/', start);
+		    host = location.substring(start, end);
+		    int ci = host.lastIndexOf(':');
+		    if (ci != -1)
+		      {
+			port = Integer.parseInt(host.substring (ci + 1));
+			host = host.substring(0, ci);
+		      }
+		    else
+		      {
+			port = HTTPConnection.HTTPS_PORT;
+		      }
+		    file = location.substring(end);
+		    retry = true;
+		  }
+		else if (location.length() > 0)
+		  {
+		    // Malformed absolute URI, treat as file part of URI
+		    if (location.charAt(0) == '/')
+		      {
+			// Absolute path
+			file = location;
+		      }
+		    else
+		      {
+			// Relative path
+			int lsi = file.lastIndexOf('/');
+			file = (lsi == -1) ? "/" : file.substring(0, lsi + 1);
 		    file += location;
+		      }
+		    retry = true;
 		  }
-		retry = true;
 	      }
           }
         else
           {
             responseSink = new ByteArrayInputStream(reader.toByteArray ());
             if (response.getCode() == 404)
-              {
-                errorSink = responseSink;
-                throw new FileNotFoundException(url.toString());
-              }
+	      errorSink = responseSink;
           }
       }
     while (retry);
