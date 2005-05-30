@@ -38,16 +38,17 @@ exception statement from your version. */
 
 package org.omg.CosNaming;
 
-import java.util.Hashtable;
-
 import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.DynamicImplementation;
 import org.omg.CORBA.ObjectHelper;
+import org.omg.CORBA.ObjectHolder;
+import org.omg.CORBA.ServerRequest;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
-import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ResponseHandler;
+import org.omg.CORBA.portable.Streamable;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBoundHelper;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
@@ -59,13 +60,15 @@ import org.omg.CosNaming.NamingContextPackage.NotEmptyHelper;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.CosNaming.NamingContextPackage.NotFoundHelper;
 
+import java.util.Hashtable;
+
 /**
  * The naming context implementation base.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public abstract class _NamingContextImplBase
-  extends ObjectImpl
+  extends DynamicImplementation
   implements NamingContext, InvokeHandler
 {
   /**
@@ -364,5 +367,41 @@ public abstract class _NamingContextImplBase
       }
 
     return out;
+  }
+
+  /**
+   * The obsolete invocation using server request. Implemented for
+   * compatibility reasons, but is it more effectinve to use
+   * {@link #_invoke}.
+   *
+   * @param request a server request.
+   */
+  public void invoke(ServerRequest request)
+  {
+    Streamable result = null;
+
+    // The server request contains no required result type.
+    Integer call_method = (Integer) methods.get(request.operation());
+    if (call_method == null)
+      throw new BAD_OPERATION(0, CompletionStatus.COMPLETED_MAYBE);
+
+    switch (call_method.intValue())
+      {
+        case 4 : // resolve, object
+          result = new ObjectHolder();
+          break;
+
+        case 6 : // new_context, NamingContext
+        case 7 : // bind_new_context, NamingContext
+        {
+          result = new NamingContextHolder();
+          break;
+        }
+
+        default : // void for others.
+          result = null;
+      }
+
+    gnu.CORBA.ServiceRequestAdapter.invoke(request, this, result);
   }
 }

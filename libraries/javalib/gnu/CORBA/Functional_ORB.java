@@ -113,6 +113,12 @@ public class Functional_ORB
     ServerSocket service;
 
     /**
+     * True if the serving node must shutdown due
+     * call of the close_now().
+     */
+    boolean terminated;
+
+    /**
      * Create a new portServer, serving on specific port.
      */
     portServer(int _port)
@@ -127,8 +133,6 @@ public class Functional_ORB
      */
     public void run()
     {
-      boolean terminated;
-
       try
         {
           service = new ServerSocket(s_port);
@@ -146,11 +150,12 @@ public class Functional_ORB
             }
           catch (SocketException ex)
             {
-              // Thrown when the service is closed by
+              // May be thrown when the service is closed by
               // the close_now().
-              return;
+              if (terminated)
+                return;
             }
-          catch (IOException iex)
+          catch (Exception iex)
             {
               // Wait 5 seconds. Do not terminate the
               // service due potentially transient error.
@@ -172,6 +177,7 @@ public class Functional_ORB
     {
       try
         {
+          terminated = true;
           service.close();
         }
       catch (Exception ex)
@@ -217,9 +223,55 @@ public class Functional_ORB
   public static final String NAME_SERVICE = "NameService";
 
   /**
+   * The if the client has once opened a socket, it should start sending
+   * the message header in a given time. Otherwise the server will close the
+   * socket. This prevents server hang when the client opens the socket,
+   * but does not send any message, usually due crash on the client side.
+   */
+  public static String START_READING_MESSAGE =
+      "gnu.classpath.CORBA.TOUT_START_READING_MESSAGE";
+
+  /**
+   * If the client has started to send the request message, the socket time
+   * out changes to the specified value.
+   */
+  public static String WHILE_READING =
+      "gnu.classpath.CORBA.TOUT_WHILE_READING";
+
+  /**
+   * If the message body is received, the time out changes to the
+   * specifice value. This must be longer, as includes time, required to
+   * process the received task. We make it 40 minutes.
+   */
+  public static String AFTER_RECEIVING =
+      "gnu.classpath.CORBA.TOUT_AFTER_RECEIVING";
+
+  /**
    * The address of the local host.
    */
   public final String LOCAL_HOST;
+
+  /**
+   * The if the client has once opened a socket, it should start sending
+   * the message header in a given time. Otherwise the server will close the
+   * socket. This prevents server hang when the client opens the socket,
+   * but does not send any message, usually due crash on the client side.
+   */
+  private int TOUT_START_READING_MESSAGE = 20*1000;
+  // (Here and below, we use * to make meaning of the constant clearler).
+
+  /**
+   * If the client has started to send the request message, the socket time
+   * out changes to the specified value.
+   */
+  private int TOUT_WHILE_READING = 2*60*1000;
+
+  /**
+   * If the message body is received, the time out changes to the
+   * specifice value. This must be longer, as includes time, required to
+   * process the received task. We make it 40 minutes.
+   */
+  private int TOUT_AFTER_RECEIVING = 40*60*1000;
 
   /**
    * The map of the already conncted objects.
@@ -820,6 +872,15 @@ public class Functional_ORB
             if (para [ i ] [ 0 ].equals(NS_HOST))
               ns_host = para [ i ] [ 1 ];
 
+            if (para [ i ] [ 0 ].equals(START_READING_MESSAGE))
+              TOUT_START_READING_MESSAGE = Integer.parseInt(para [ i ] [ 1 ]);
+
+            if (para [ i ] [ 0 ].equals(WHILE_READING))
+              TOUT_WHILE_READING = Integer.parseInt(para [ i ] [ 1 ]);
+
+            if (para [ i ] [ 0 ].equals(AFTER_RECEIVING))
+              TOUT_AFTER_RECEIVING = Integer.parseInt(para [ i ] [ 1 ]);
+
             try
               {
                 if (para [ i ] [ 0 ].equals(NS_PORT))
@@ -1016,9 +1077,8 @@ public class Functional_ORB
     try
       {
         service = serverSocket.accept();
-        service.setKeepAlive(true);
-
         InputStream in = service.getInputStream();
+        service.setSoTimeout(TOUT_START_READING_MESSAGE);
 
         MessageHeader msh_request = new MessageHeader();
         msh_request.read(in);
@@ -1031,7 +1091,6 @@ public class Functional_ORB
             {
               OutputStream out = service.getOutputStream();
               new ErrorMessage(max_version).write(out);
-              service.close();
               return;
             }
 
@@ -1039,11 +1098,17 @@ public class Functional_ORB
 
         int n = 0;
 
+        service.setSoTimeout(TOUT_WHILE_READING);
+
         reading:
         while (n < r.length)
           {
             n = in.read(r, n, r.length - n);
           }
+
+        service.shutdownInput();
+
+        service.setSoTimeout(TOUT_AFTER_RECEIVING);
 
         if (msh_request.message_type == MessageHeader.REQUEST)
           {
@@ -1140,6 +1205,18 @@ public class Functional_ORB
           {
             if (props.containsKey(NS_PORT))
               ns_port = Integer.parseInt(props.getProperty(NS_PORT));
+
+            if (props.containsKey(START_READING_MESSAGE))
+              TOUT_START_READING_MESSAGE =
+                Integer.parseInt(props.getProperty(START_READING_MESSAGE));
+
+            if (props.containsKey(WHILE_READING))
+              TOUT_WHILE_READING =
+                Integer.parseInt(props.getProperty(WHILE_READING));
+
+            if (props.containsKey(AFTER_RECEIVING))
+              TOUT_AFTER_RECEIVING =
+                Integer.parseInt(props.getProperty(AFTER_RECEIVING));
           }
         catch (NumberFormatException ex)
           {

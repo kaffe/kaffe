@@ -138,7 +138,9 @@ gnu/CORBA/recordTypeCode.java
 gnu/CORBA/recursiveTypeCode.java
 gnu/CORBA/Restricted_ORB.java
 gnu/CORBA/ServiceDetailHolder.java
+gnu/CORBA/ServiceRequestAdapter.java
 gnu/CORBA/Simple_delegate.java
+gnu/CORBA/streamReadyHolder.java
 gnu/CORBA/streamRequest.java
 gnu/CORBA/stringTypeCode.java
 gnu/CORBA/stubFinder.java
@@ -3696,6 +3698,7 @@ org/omg/CORBA/DynFixed.java
 org/omg/CORBA/DynSequence.java
 org/omg/CORBA/DynStruct.java
 org/omg/CORBA/DynUnion.java
+org/omg/CORBA/DynValue.java
 org/omg/CORBA/Environment.java
 org/omg/CORBA/ExceptionList.java
 org/omg/CORBA/FixedHolder.java
@@ -3796,6 +3799,7 @@ org/omg/CORBA/ULongSeqHelper.java
 org/omg/CORBA/ULongSeqHolder.java
 org/omg/CORBA/UnionMember.java
 org/omg/CORBA/UNKNOWN.java
+org/omg/CORBA/UnknownUserException.java
 org/omg/CORBA/UNSUPPORTED_POLICY.java
 org/omg/CORBA/UNSUPPORTED_POLICY_VALUE.java
 org/omg/CORBA/UserException.java

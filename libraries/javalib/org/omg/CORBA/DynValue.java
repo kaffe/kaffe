@@ -1,4 +1,4 @@
-/* gnuNVList.java --
+/* DynValue.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,92 +36,47 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA;
-
-import org.omg.CORBA.Any;
-import org.omg.CORBA.Bounds;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
+package org.omg.CORBA;
 
 /**
- * The implementation of {@link NVList}.
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * Represents the {@link DynAny}, holding a value type.
+ *
+ * A value type is something between CORBA structure and CORBA object.
+ * Like CORBA object, it can have methods, supporting some IDL-defined
+ * interface. However, like structures, they are always local and passed by
+ * value, not by IOR reference.
+ *
+ * The value types can have both public and private members. They support
+ * inheritance. Value types can also be abstract.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuNVList
-  extends NVList
+public interface DynValue
 {
   /**
-   * The list of the named values.
-   */
-  protected corbaArrayList list;
-
-  /**
-   * Creates the list with the default initial size.
-   */
-  public gnuNVList()
-  {
-    list = new corbaArrayList();
-  }
-
-  /**
-   * Creates the list with the given initial size.
-   */
-  public gnuNVList(int initial_size)
-  {
-    list = new corbaArrayList(initial_size);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add(int a_flags)
-  {
-    return add_value(null, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_item(String a_name, int a_flags)
-  {
-    return add_value(a_name, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_value(String a_name, Any a_value, int a_flags)
-  {
-    gnuNamedValue n = new gnuNamedValue();
-    n.setName(a_name);
-    n.setValue(a_value);
-    n.setFlags(a_flags);
-    list.add(n);
-    return n;
-  }
-
-  /**
-   * Add the given named value to the list directly.
+   * Get the kind of the member, pointed by the internal pointer.
    *
-   * @param value the named vaue to add.
+   * @return the kind of the member.
    */
-  public void add(NamedValue value)
-  {
-    list.add(value);
-  }
+  TCKind current_member_kind();
 
+  /**
+   * Get the name of the member, pointed by the internal pointer.
+   *
+   * @return the name of the member.
+   */
+  String current_member_name();
 
-  /** {@inheritDoc} */
-  public int count()
-  {
-    return list.size();
-  }
+  /**
+   * Get all members of the enclosed value type object.
+   * @return
+   */
+  NameValuePair[] get_members();
 
-  /** {@inheritDoc} */
-  public NamedValue item(int at)
-                  throws Bounds
-  {
-    return (NamedValue) list.item(at);
-  }
-
-  /** {@inheritDoc} */
-  public void remove(int at)
-              throws Bounds
-  {
-    list.drop(at);
-  }
+  /**
+   * Set all members for the enclosed value type object.
+   *
+   * @param value an array of members to set.
+   */
+  void set_members(NameValuePair[] value);
 }

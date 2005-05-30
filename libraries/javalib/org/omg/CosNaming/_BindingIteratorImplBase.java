@@ -39,12 +39,15 @@ exception statement from your version. */
 package org.omg.CosNaming;
 
 import org.omg.CORBA.BAD_OPERATION;
+import org.omg.CORBA.BooleanHolder;
 import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.DynamicImplementation;
+import org.omg.CORBA.ServerRequest;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
-import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ResponseHandler;
+import org.omg.CORBA.portable.Streamable;
 
 /**
  * The binding iterator implementation base.
@@ -52,7 +55,7 @@ import org.omg.CORBA.portable.ResponseHandler;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public abstract class _BindingIteratorImplBase
-  extends ObjectImpl
+  extends DynamicImplementation
   implements BindingIterator, InvokeHandler
 {
   /**
@@ -109,5 +112,20 @@ public abstract class _BindingIteratorImplBase
       throw new BAD_OPERATION(method, 0, CompletionStatus.COMPLETED_MAYBE);
 
     return out;
+  }
+
+  /**
+   * The obsolete invocation using server request. Implemented for
+   * compatibility reasons, but is it more effectinve to use
+   * {@link #_invoke}.
+   *
+   * @param request a server request.
+   */
+  public void invoke(ServerRequest request)
+  {
+    // "destroy" has a void return type, the two other methods - boolean.
+    Streamable result =
+      request.operation().equals("destroy") ? null : new BooleanHolder();
+    gnu.CORBA.ServiceRequestAdapter.invoke(request, this, result);
   }
 }

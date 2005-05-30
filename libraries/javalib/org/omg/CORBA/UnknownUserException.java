@@ -1,4 +1,4 @@
-/* gnuNVList.java --
+/* UnknownUserException.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,92 +36,52 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA;
+package org.omg.CORBA;
 
-import org.omg.CORBA.Any;
-import org.omg.CORBA.Bounds;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
+import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
- * The implementation of {@link NVList}.
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * A wrapper against an unknown  user exception that has been thrown
+ * on remote side and returned by the server. The instance of this
+ * class is returned by {@link Request#env()}.
+ *
+ * @see Environment#exception().
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuNVList
-  extends NVList
+public class UnknownUserException
+  extends UserException
+  implements IDLEntity, Serializable
 {
   /**
-   * The list of the named values.
+   * The Any, holding the actual exception, that has been thrown
+   * by the server.
    */
-  protected corbaArrayList list;
+  public Any except;
 
   /**
-   * Creates the list with the default initial size.
+   * Use serialVersionUID (v1.4) for interoperability.
    */
-  public gnuNVList()
-  {
-    list = new corbaArrayList();
-  }
+  private static final long serialVersionUID = 3106202258203879281L;
 
   /**
-   * Creates the list with the given initial size.
+   * Create an unitialised instance of the unknown user exception.
    */
-  public gnuNVList(int initial_size)
+  public UnknownUserException()
   {
-    list = new corbaArrayList(initial_size);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add(int a_flags)
-  {
-    return add_value(null, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_item(String a_name, int a_flags)
-  {
-    return add_value(a_name, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_value(String a_name, Any a_value, int a_flags)
-  {
-    gnuNamedValue n = new gnuNamedValue();
-    n.setName(a_name);
-    n.setValue(a_value);
-    n.setFlags(a_flags);
-    list.add(n);
-    return n;
   }
 
   /**
-   * Add the given named value to the list directly.
+   * Create the instance of the unknow user exception, initialised
+   * to the given value.
    *
-   * @param value the named vaue to add.
+   * @param an_exception the exception, that has actually been thrown
+   * by the server.
    */
-  public void add(NamedValue value)
+  public UnknownUserException(Any an_exception)
   {
-    list.add(value);
-  }
-
-
-  /** {@inheritDoc} */
-  public int count()
-  {
-    return list.size();
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue item(int at)
-                  throws Bounds
-  {
-    return (NamedValue) list.item(at);
-  }
-
-  /** {@inheritDoc} */
-  public void remove(int at)
-              throws Bounds
-  {
-    list.drop(at);
+    except = an_exception;
   }
 }

@@ -38,14 +38,16 @@ exception statement from your version. */
 
 package org.omg.CosNaming;
 
+import org.omg.CORBA.ObjectHolder;
+import org.omg.CORBA.ServerRequest;
+import org.omg.CORBA.StringHolder;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ResponseHandler;
-import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
+import org.omg.CORBA.portable.Streamable;
 import org.omg.CosNaming.NamingContextExtPackage.InvalidAddress;
 import org.omg.CosNaming.NamingContextExtPackage.InvalidAddressHelper;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.CannotProceedHelper;
 import org.omg.CosNaming.NamingContextPackage.InvalidName;
@@ -191,5 +193,45 @@ public abstract class _NamingContextExtImplBase
         }
       }
     return out;
+  }
+
+  /**
+   * The obsolete invocation using server request. Implemented for
+   * compatibility reasons, but is it more effectinve to use
+   * {@link #_invoke}.
+   *
+   * @param request a server request.
+   */
+  public void invoke(ServerRequest request)
+  {
+    Streamable result = null;
+
+    Integer call_method = (Integer) _methods.get(request.operation());
+
+    if (call_method == null)
+      {
+        super.invoke(request);
+        return;
+      }
+
+    switch (call_method.intValue())
+      {
+        case 0 : // to_string, String
+          result = new StringHolder();
+          break;
+
+        case 1 : // to_name, Name
+          result = new NameHolder();
+          break;
+
+        case 2 : // to_url, String
+          result = new StringHolder();
+          break;
+
+        case 3 : // resolve_str, Object
+          result = new ObjectHolder();
+          break;
+      }
+    gnu.CORBA.ServiceRequestAdapter.invoke(request, this, result);
   }
 }

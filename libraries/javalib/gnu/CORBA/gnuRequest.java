@@ -69,6 +69,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.Socket;
+import org.omg.CORBA.UnknownUserException;
 
 /**
  * The implementation of the CORBA request.
@@ -786,17 +787,15 @@ public class gnuRequest
               input.align(8);
               align = false;
             }
-          input.mark(2000);
 
-          String uxId = input.read_string();
-          input.reset();
+          // Prepare an Any that will hold the exception.
+          gnuAny exc = new gnuAny();
 
-          UserException uex = ObjectCreator.readUserException(uxId, input);
+          exc.insert_Streamable(new streamReadyHolder(input));
 
-          if (uex == null)
-            m_environment.exception(new UserException(uxId));
-          else
-            m_environment.exception(uex);
+          UnknownUserException unuex = new UnknownUserException(exc);
+          m_environment.exception(unuex);
+
           break;
 
         case ReplyHeader.LOCATION_FORWARD_PERM :

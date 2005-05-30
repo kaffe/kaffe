@@ -115,7 +115,9 @@ public abstract class ServerRequest
   }
 
   /**
-   * @deprecated, use {@link #set_result} (same parameter).
+   * This method is deprecated, {@link #set_result} (same parameter).
+   *
+   * @deprecated since 1.2
    *
    * @throws NO_IMPLEMENT, always.
    */
@@ -125,7 +127,9 @@ public abstract class ServerRequest
   }
 
   /**
-   * @deprecated, use {@link #set_exception} (same parameter).
+   * This method is deprecated, use {@link #set_exception} (same parameter).
+   *
+   * @deprecated since 1.2.
    *
    * @throws NO_IMPLEMENT, always.
    */
@@ -135,7 +139,9 @@ public abstract class ServerRequest
   }
 
   /**
-   * @deprecated, use {@link #arguments} (same parameter).
+   * This method is deprecated, use {@link #arguments} (same parameter).
+   *
+   * @deprecated since 1.2
    *
    * @throws NO_IMPLEMENT, always.
    */
@@ -145,7 +151,9 @@ public abstract class ServerRequest
   }
 
   /**
-   * @deprecated, use {@link #operation} (same parameter).
+   * This method is deprecated, use {@link #operation} (same parameter).
+   *
+   * @deprecated since 1.2
    *
    * @throws NO_IMPLEMENT, always.
    */

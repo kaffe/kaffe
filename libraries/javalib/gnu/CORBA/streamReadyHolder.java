@@ -1,4 +1,4 @@
-/* gnuNVList.java --
+/* streamReadyHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -35,93 +35,86 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package gnu.CORBA;
 
-import org.omg.CORBA.Any;
-import org.omg.CORBA.Bounds;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
+import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.NO_IMPLEMENT;
+import org.omg.CORBA.TypeCode;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
+
+import java.io.IOException;
 
 /**
- * The implementation of {@link NVList}.
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * A holder that stores the input stream, from that the holder data
+ * can be read. There is no way to write the data into this holder.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuNVList
-  extends NVList
+public class streamReadyHolder
+  implements Streamable
 {
   /**
-   * The list of the named values.
+   * The stream, holding the data for this holder.
    */
-  protected corbaArrayList list;
+  protected final InputStream stream;
 
   /**
-   * Creates the list with the default initial size.
-   */
-  public gnuNVList()
-  {
-    list = new corbaArrayList();
-  }
-
-  /**
-   * Creates the list with the given initial size.
-   */
-  public gnuNVList(int initial_size)
-  {
-    list = new corbaArrayList(initial_size);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add(int a_flags)
-  {
-    return add_value(null, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_item(String a_name, int a_flags)
-  {
-    return add_value(a_name, new gnuAny(), a_flags);
-  }
-
-  /** {@inheritDoc} */
-  public NamedValue add_value(String a_name, Any a_value, int a_flags)
-  {
-    gnuNamedValue n = new gnuNamedValue();
-    n.setName(a_name);
-    n.setValue(a_value);
-    n.setFlags(a_flags);
-    list.add(n);
-    return n;
-  }
-
-  /**
-   * Add the given named value to the list directly.
+   * Create a holder that will read from the given stream.
    *
-   * @param value the named vaue to add.
+   * @param a_stream a stream.
    */
-  public void add(NamedValue value)
+  public streamReadyHolder(InputStream a_stream)
   {
-    list.add(value);
+    stream = a_stream;
   }
 
-
-  /** {@inheritDoc} */
-  public int count()
+  /**
+   * This method is not in use, should never be called.
+   */
+  public TypeCode _type()
   {
-    return list.size();
+    throw new NO_IMPLEMENT();
   }
 
-  /** {@inheritDoc} */
-  public NamedValue item(int at)
-                  throws Bounds
+  /**
+   * Writes the data from the stored stream into the provided
+   * output stream till the end of the input stream is reached.
+   *
+   * @throws MARSHAL if the IOException is thrown during operation.
+   */
+  public void _write(OutputStream output)
   {
-    return (NamedValue) list.item(at);
+    try
+      {
+        int d = stream.read();
+
+        while (d >= 0)
+          {
+            output.write(d);
+            d = stream.read();
+          }
+      }
+    catch (IOException ex)
+      {
+        throw new MARSHAL(ex + ":" + ex.getMessage());
+      }
   }
 
-  /** {@inheritDoc} */
-  public void remove(int at)
-              throws Bounds
+  /**
+   * This method is not in use, should never be called.
+   */
+  public void _read(InputStream input)
   {
-    list.drop(at);
+    throw new NO_IMPLEMENT();
+  }
+
+  /**
+   * Get the input stream that has been passed in constructor.
+   */
+  InputStream getInputStream()
+  {
+    return stream;
   }
 }

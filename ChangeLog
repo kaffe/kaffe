@@ -1,6 +1,54 @@
 2005-05-30  Dalibor Topic  <robilad@kaffe.org>
 
         Resynced with GNU Classpath.
+
+	2005-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CosNaming/_BindingIteratorImplBase.java ,
+	org/omg/CosNaming/_NamingContextExtImplBase.java,
+	org/omg/CosNaming/_NamingContextImplBase.java: Inherit from
+	DynamicImplementation.
+	* gnu/CORBA/ServiceRequestAdapter.java: New class.
+	* gnu/CORBA/gnuNVList.java (add, add_item):
+	Replacing null by constructed instance.
+
+	2005-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/Functional_ORB.java (serve, useProperties, init): Implementing
+	the property-configurable time-outs. 
+
+	2005-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/gnuRequest.java (p_invoke): Wrap the received UserException into
+	UnknownUserException.
+	* gnu/CORBA/streamReadyHolder.java: New wrapper for UserException. 
+	* org/omg/CORBA/UnknownUserException.java: New exception.
+	
+	2005-05-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* omg/org/CORBA/ORB.java (create_recursive_sequence_tc): New method.
+
+	2005-05-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* omg/org/CORBA/DynValue.java: New interface.
+
+	2005-05-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* omg/org/CORBA/package.html: Documentation update.
+
+	2005-05-26  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/ORB.java (create_basic_dyn_any): 
+	Declare it may throw an InconsistentTypeCode.
+	(create_dyn_any): Remove wrong exception declaration.
+	(create_operation_list, create_abstract_interface_tc, 
+	create_native_tc, get_service_information): Implementing these methods.
+	* org/omg/CORBA/ServerRequest.java (result, except, params, op_name): 
+	Marking deprecated.
+	
+2005-05-30  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
 	
 	2005-05-27  Roman Kennke  <roman@kennke.org>
 
