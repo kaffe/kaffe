@@ -223,6 +223,8 @@ dig_done:
 	  esign = 1;
 	case '+':
 	  c = *++s;
+	default:
+	  break;
 	}
       if (c >= '0' && c <= '9')
 	{

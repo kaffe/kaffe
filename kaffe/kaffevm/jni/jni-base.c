@@ -96,6 +96,8 @@ parseSize(char* arg)
 	case 'm': case 'M':
 		sz *= 1024 * 1024;
 		break;
+	default:
+		break;
 	}
 
 	return (sz);

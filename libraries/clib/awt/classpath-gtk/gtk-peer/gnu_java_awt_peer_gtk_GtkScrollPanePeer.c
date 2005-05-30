@@ -185,6 +185,8 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_setPolicy
     case AWT_SCROLLPANE_SCROLLBARS_NEVER:
       policy = GTK_POLICY_NEVER;
       break;
+    default:
+      break;
     }
 
   gdk_threads_enter ();

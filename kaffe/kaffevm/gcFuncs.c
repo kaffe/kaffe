@@ -165,6 +165,8 @@ DBG(CLASSGC,
 		case CONSTANT_Utf8:
 			utf8ConstRelease(WORD2UTF(pool->data[idx]));
 			break;
+		default:
+			break;
 		}
 	}
 	/* free constant pool */
@@ -352,6 +354,8 @@ DBG(GCPRECISE,
                 case CONSTANT_ResolvedString:
                         KGC_markObject(collector, gc_info, (void*)pool->data[idx]);
                         break;
+		default:
+			break;
                 }
         }
 

@@ -192,6 +192,8 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		case 'J':
 			args[i].j = (*env)->GetLongField(env, arg, Jvalue);
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -303,6 +305,8 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	case 'L':
 	case '[':
 		return (ret.l);
+	default:
+		break;
 	}
 
 	return (NULL);

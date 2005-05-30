@@ -229,6 +229,8 @@ recompute:
 	    	   iq[jz-1] &= 0x7fffff; break;
 	    	case 2:
 	    	   iq[jz-1] &= 0x3fffff; break;
+		default:
+		   break;
 	        }
 	    }
 	    if(ih==2) {
@@ -313,6 +315,8 @@ recompute:
 		} else {
 		    y[0] = -fq[0]; y[1] = -fq[1]; y[2] = -fw;
 		}
+	    default:
+		break;
 	}
 	return n&7;
 }

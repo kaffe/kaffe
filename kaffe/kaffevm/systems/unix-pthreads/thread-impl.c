@@ -966,6 +966,8 @@ jthread_create ( unsigned int pri, void* func, int isDaemon, void* jlThread, siz
 	  case EPERM:
 	    DBG( JTHREAD, dprintf( "no permission to set scheduling\n"));
 	    break;
+	  default:
+	    break;
 	  }
 
 	  repsem_destroy( &nt->sem);

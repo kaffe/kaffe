@@ -75,6 +75,8 @@ void SHA1Final(unsigned char *md, SHA1_CTX *c);
 			case 1: l|=((unsigned long)(*((c)++)))<<16; \
 			case 2: l|=((unsigned long)(*((c)++)))<< 8; \
 			case 3: l|=((unsigned long)(*((c)++))); \
+			default: \
+				break; \
 				} \
 			}
 
@@ -87,6 +89,8 @@ void SHA1Final(unsigned char *md, SHA1_CTX *c);
 			case 3: l =((unsigned long)(*(--(c))))<< 8; \
 			case 2: l|=((unsigned long)(*(--(c))))<<16; \
 			case 1: l|=((unsigned long)(*(--(c))))<<24; \
+			default: \
+				break; \
 				} \
 			}
 
@@ -99,6 +103,8 @@ void SHA1Final(unsigned char *md, SHA1_CTX *c);
 			case 1: l|=((unsigned long)(*((c)++)))<<16; \
 				if (--len == 0) break; \
 			case 2: l|=((unsigned long)(*((c)++)))<< 8; \
+			default: \
+				break; \
 				} \
 			}
 

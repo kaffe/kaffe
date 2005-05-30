@@ -212,6 +212,8 @@ KaffeJIT3_linkLabels(uintp codebase)
 		/* Machine specific labels go in this magic macro */
 			EXTRA_LABELS(place, dest, l);
 
+		default:
+			break;
 		}
 	}
 }
@@ -287,6 +289,8 @@ KaffeJIT3_getInternalLabel(label **lptr, uintp _pc)
 				*lptr = curr->next;
 				retval = curr;
 			}
+			break;
+		default:
 			break;
 		}
 		curr = curr->next;

@@ -438,6 +438,8 @@ _DEFUN (_dtoa_r,
       ilim1 = i - 1;
       if (i <= 0)
 	i = 1;
+    default:
+      break;
     }
   j = sizeof (unsigned long);
   for (ptr->_result_k = 0; (int) (sizeof (_Jv_Bigint) - sizeof (unsigned long)) + j <= i;

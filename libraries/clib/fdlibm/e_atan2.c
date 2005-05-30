@@ -83,6 +83,7 @@ pi_lo   = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
 		case 1: return y; 	/* atan(+-0,+anything)=+-0 */
 		case 2: return  pi+tiny;/* atan(+0,-anything) = pi */
 		case 3: return -pi-tiny;/* atan(-0,-anything) =-pi */
+		default: break;
 	    }
 	}
     /* when x = 0 */
@@ -96,6 +97,7 @@ pi_lo   = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
 		    case 1: return -pi_o_4-tiny;/* atan(-INF,+INF) */
 		    case 2: return  3.0*pi_o_4+tiny;/*atan(+INF,-INF)*/
 		    case 3: return -3.0*pi_o_4-tiny;/*atan(-INF,-INF)*/
+		    default: break;
 		}
 	    } else {
 		switch(m) {
@@ -103,6 +105,7 @@ pi_lo   = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
 		    case 1: return -zero  ;	/* atan(-...,+INF) */
 		    case 2: return  pi+tiny  ;	/* atan(+...,-INF) */
 		    case 3: return -pi-tiny  ;	/* atan(-...,-INF) */
+		    default: break;
 		}
 	    }
 	}

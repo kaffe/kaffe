@@ -51,6 +51,8 @@ awt_button_mask_to_num (int buttons)
       return 2;
     case AWT_BUTTON3_MASK:
       return 3;
+    default:
+      break;
     }
 
   return 0;

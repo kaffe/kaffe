@@ -226,6 +226,8 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 				discardErrorInfo(&einfo_copy);
 			}
 			break;
+		default:
+			break;
 		}
 		return NULL;
 	}

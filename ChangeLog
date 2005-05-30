@@ -1,5 +1,24 @@
 2005-05-30  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffe/main.c, kaffe/kaffevm/classMethod.c,
+	  kaffe/kaffevm/classPool.c, kaffe/kaffevm/gcFuncs.c,
+	  kaffe/kaffevm/lookup.c, kaffe/kaffevm/stringParsing.c,
+	  kaffe/kaffevm/jit/native-wrapper.c, kaffe/kaffevm/jit3/constpool.c,
+	  kaffe/kaffevm/jit3/icode.c, kaffe/kaffevm/jit3/labels.c,
+	  kaffe/kaffevm/jni/jni-arrays.c, kaffe/kaffevm/jni/jni-base.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	  kaffe/kaffevm/verifier/verify-block.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollPanePeer.c,
+	  libraries/clib/fdlibm/dtoa.c, libraries/clib/fdlibm/e_atan2.c,
+	  libraries/clib/fdlibm/k_rem_pio2.c, libraries/clib/fdlibm/strtod.c,
+	  libraries/clib/native/Method.c, libraries/clib/net/InetAddressImpl.c,
+	  libraries/clib/security/sha-1.h:
+	  Add default case to several switches, fixing more warnings.
+
+2005-05-30  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/classPool.c, kaffe/kaffevm/findInJar.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollBarPeer.c:

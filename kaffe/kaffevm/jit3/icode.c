@@ -4556,6 +4556,8 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 		case 'D':
 			pusharg_double(stack_double(sp_idx), arg_idx);
 			break;
+		default:
+			break;
 		}
 	}
 }

@@ -1936,6 +1936,8 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 				*(jref*)mem = (jref)CLASS_CONST_DATA(class, idx);
 				FIELD_SIZE(fld) = PTR_TYPE_SIZE;
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -2626,6 +2628,8 @@ sizeofSigChar(char ch, bool want_wide_refs)
 	case '[':
 	case 'L':
 		return want_wide_refs ? sizeof(void*) / sizeof(int32) : 1;
+	default:
+		break;
 	}
 
 	return -1;

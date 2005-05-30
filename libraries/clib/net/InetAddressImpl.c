@@ -188,6 +188,8 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 #endif
 	      count += 1;
 	      break;
+	    default:
+	      break;
 	    }
 	  curr = curr->ai_next;
 	}

@@ -271,6 +271,8 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			an--;
 			pusharg_double(local(an), count);
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -394,6 +396,8 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		softcall_exit_method(globalMethod);
 #endif
 		ret();
+		break;
+	default:
 		break;
 	}
 

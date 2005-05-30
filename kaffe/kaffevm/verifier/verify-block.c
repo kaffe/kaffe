@@ -534,6 +534,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				 */
 				OPSTACK_PUSH(getTSTRING());
 				break;
+			default:
+				break;
 			}
 			break;
 			

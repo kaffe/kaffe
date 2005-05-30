@@ -326,6 +326,8 @@ KaffeJNI_ReleaseBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jboo
     case JNI_ABORT:
       KFREE(elems);
       break;
+    default:
+      break;
     }
   }
   END_EXCEPTION_HANDLING();
@@ -347,6 +349,8 @@ KaffeJNI_ReleaseByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbyte* ele
       break;
     case JNI_ABORT:
       KFREE(elems);
+      break;
+    default:
       break;
     }
   }
@@ -376,6 +380,8 @@ KaffeJNI_ReleaseCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jchar* ele
     case JNI_ABORT:
       KFREE(elems);
       break;
+    default:
+      break;
     }
   }
   END_EXCEPTION_HANDLING();
@@ -397,6 +403,8 @@ KaffeJNI_ReleaseShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jshort* 
       break;
     case JNI_ABORT:
       KFREE(elems);
+      break;
+    default:
       break;
     }
   }
@@ -420,6 +428,8 @@ KaffeJNI_ReleaseIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jint* elems,
     case JNI_ABORT:
       KFREE(elems);
       break;
+    default:
+      break;
     }
   }
   END_EXCEPTION_HANDLING();
@@ -441,6 +451,8 @@ KaffeJNI_ReleaseLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jlong* ele
       break;
     case JNI_ABORT:
       KFREE(elems);
+      break;
+    default:
       break;
     }
   }
@@ -464,6 +476,8 @@ KaffeJNI_ReleaseFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jfloat* 
     case JNI_ABORT:
       KFREE(elems);
       break;
+    default:
+      break;
     }
   }
   END_EXCEPTION_HANDLING();
@@ -485,6 +499,8 @@ KaffeJNI_ReleaseDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jdoubl
       break;
     case JNI_ABORT:
       KFREE(elems);
+      break;
+    default:
       break;
     }
   }

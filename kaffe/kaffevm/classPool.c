@@ -387,6 +387,8 @@ int classMappingSearch(classEntry *ce,
 			*out_cl = ce->data.cl;
 			done = 1;
 			break;
+		default:
+			break;
 		}
 		unlockStaticMutex(&ce->slock);
 	}
@@ -451,6 +453,8 @@ int classMappingLoad(classEntry *ce,
 			/* Its already been loaded and linked. */
 			*out_cl = ce->data.cl;
 			done = 1;
+			break;
+		default:
 			break;
 		}
 		unlockStaticMutex(&ce->slock);

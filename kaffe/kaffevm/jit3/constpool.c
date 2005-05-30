@@ -66,6 +66,8 @@ KaffeJIT3_newConstant(int type, ...)
 	case CPstring:
 		val.r = va_arg(arg, void*);
 		break;
+	default:
+		break;
 	}
 	va_end(arg);
 

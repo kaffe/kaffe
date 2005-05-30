@@ -420,6 +420,8 @@ void skipBlock(stringScript *script, void **values,
 				c_ptr = va_arg(*args, char *);
 			}
 			break;
+		default:
+			break;
 		}
 		if( skip_depth >= 0 )
 		{

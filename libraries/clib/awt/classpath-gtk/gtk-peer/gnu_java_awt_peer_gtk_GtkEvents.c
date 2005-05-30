@@ -63,6 +63,8 @@ button_to_awt_mods (int button)
       return AWT_BUTTON2_MASK;
     case 3:
       return AWT_BUTTON3_MASK;
+    default:
+      break;
     }
 
   return 0;
