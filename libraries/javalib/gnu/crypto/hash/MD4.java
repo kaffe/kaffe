@@ -1,7 +1,7 @@
 package gnu.crypto.hash;
 
 // ----------------------------------------------------------------------------
-// $Id: MD4.java,v 1.1 2004/07/21 01:41:25 dalibor Exp $
+// $Id: MD4.java,v 1.2 2005/05/30 06:27:48 doogie Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -61,7 +61,7 @@ import gnu.crypto.util.Util;
  *    R. Rivest.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author Casey Marshall (rsdio@metastatic.org)
  */
 public class MD4 extends BaseHash {
@@ -195,103 +195,103 @@ public class MD4 extends BaseHash {
       aa = a;  bb = b;  cc = c;  dd = d;
 
       aa += ((bb & cc) | ((~bb) & dd)) + X0;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & bb) | ((~aa) & cc)) + X1;
-      dd = dd <<  7 | dd >>> -7;
+      dd = dd <<  7 | dd >>> (32 - 7);
       cc += ((dd & aa) | ((~dd) & bb)) + X2;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += ((cc & dd) | ((~cc) & aa)) + X3;
-      bb = bb << 19 | bb >>> -19;
+      bb = bb << 19 | bb >>> (32 - 19);
       aa += ((bb & cc) | ((~bb) & dd)) + X4;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & bb) | ((~aa) & cc)) + X5;
-      dd = dd <<  7 | dd >>> -7;
+      dd = dd <<  7 | dd >>> (32 - 7);
       cc += ((dd & aa) | ((~dd) & bb)) + X6;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += ((cc & dd) | ((~cc) & aa)) + X7;
-      bb = bb << 19 | bb >>> -19;
+      bb = bb << 19 | bb >>> (32 - 19);
       aa += ((bb & cc) | ((~bb) & dd)) + X8;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & bb) | ((~aa) & cc)) + X9;
-      dd = dd <<  7 | dd >>> -7;
+      dd = dd <<  7 | dd >>> (32 - 7);
       cc += ((dd & aa) | ((~dd) & bb)) + X10;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += ((cc & dd) | ((~cc) & aa)) + X11;
-      bb = bb << 19 | bb >>> -19;
+      bb = bb << 19 | bb >>> (32 - 19);
       aa += ((bb & cc) | ((~bb) & dd)) + X12;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & bb) | ((~aa) & cc)) + X13;
-      dd = dd <<  7 | dd >>> -7;
+      dd = dd <<  7 | dd >>> (32 - 7);
       cc += ((dd & aa) | ((~dd) & bb)) + X14;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += ((cc & dd) | ((~cc) & aa)) + X15;
-      bb = bb << 19 | bb >>> -19;
+      bb = bb << 19 | bb >>> (32 - 19);
 
       aa += ((bb & (cc | dd)) | (cc & dd)) + X0 + 0x5a827999;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & (bb | cc)) | (bb & cc)) + X4 + 0x5a827999;
-      dd = dd <<  5 | dd >>> -5;
+      dd = dd <<  5 | dd >>> (32 - 5);
       cc += ((dd & (aa | bb)) | (aa & bb)) + X8 + 0x5a827999;
-      cc = cc <<  9 | cc >>> -9;
+      cc = cc <<  9 | cc >>> (32 - 9);
       bb += ((cc & (dd | aa)) | (dd & aa)) + X12 + 0x5a827999;
-      bb = bb << 13 | bb >>> -13;
+      bb = bb << 13 | bb >>> (32 - 13);
       aa += ((bb & (cc | dd)) | (cc & dd)) + X1 + 0x5a827999;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & (bb | cc)) | (bb & cc)) + X5 + 0x5a827999;
-      dd = dd <<  5 | dd >>> -5;
+      dd = dd <<  5 | dd >>> (32 - 5);
       cc += ((dd & (aa | bb)) | (aa & bb)) + X9 + 0x5a827999;
-      cc = cc <<  9 | cc >>> -9;
+      cc = cc <<  9 | cc >>> (32 - 9);
       bb += ((cc & (dd | aa)) | (dd & aa)) + X13 + 0x5a827999;
-      bb = bb << 13 | bb >>> -13;
+      bb = bb << 13 | bb >>> (32 - 13);
       aa += ((bb & (cc | dd)) | (cc & dd)) + X2 + 0x5a827999;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & (bb | cc)) | (bb & cc)) + X6 + 0x5a827999;
-      dd = dd <<  5 | dd >>> -5;
+      dd = dd <<  5 | dd >>> (32 - 5);
       cc += ((dd & (aa | bb)) | (aa & bb)) + X10 + 0x5a827999;
-      cc = cc <<  9 | cc >>> -9;
+      cc = cc <<  9 | cc >>> (32 - 9);
       bb += ((cc & (dd | aa)) | (dd & aa)) + X14 + 0x5a827999;
-      bb = bb << 13 | bb >>> -13;
+      bb = bb << 13 | bb >>> (32 - 13);
       aa += ((bb & (cc | dd)) | (cc & dd)) + X3 + 0x5a827999;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += ((aa & (bb | cc)) | (bb & cc)) + X7 + 0x5a827999;
-      dd = dd <<  5 | dd >>> -5;
+      dd = dd <<  5 | dd >>> (32 - 5);
       cc += ((dd & (aa | bb)) | (aa & bb)) + X11 + 0x5a827999;
-      cc = cc <<  9 | cc >>> -9;
+      cc = cc <<  9 | cc >>> (32 - 9);
       bb += ((cc & (dd | aa)) | (dd & aa)) + X15 + 0x5a827999;
-      bb = bb << 13 | bb >>> -13;
+      bb = bb << 13 | bb >>> (32 - 13);
 
       aa += (bb ^ cc ^ dd) + X0 + 0x6ed9eba1;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += (aa ^ bb ^ cc) + X8 + 0x6ed9eba1;
-      dd = dd <<  9 | dd >>> -9;
+      dd = dd <<  9 | dd >>> (32 - 9);
       cc += (dd ^ aa ^ bb) + X4 + 0x6ed9eba1;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += (cc ^ dd ^ aa) + X12 + 0x6ed9eba1;
-      bb = bb << 15 | bb >>> -15;
+      bb = bb << 15 | bb >>> (32 - 15);
       aa += (bb ^ cc ^ dd) + X2 + 0x6ed9eba1;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += (aa ^ bb ^ cc) + X10 + 0x6ed9eba1;
-      dd = dd <<  9 | dd >>> -9;
+      dd = dd <<  9 | dd >>> (32 - 9);
       cc += (dd ^ aa ^ bb) + X6 + 0x6ed9eba1;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += (cc ^ dd ^ aa) + X14 + 0x6ed9eba1;
-      bb = bb << 15 | bb >>> -15;
+      bb = bb << 15 | bb >>> (32 - 15);
       aa += (bb ^ cc ^ dd) + X1 + 0x6ed9eba1;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += (aa ^ bb ^ cc) + X9 + 0x6ed9eba1;
-      dd = dd <<  9 | dd >>> -9;
+      dd = dd <<  9 | dd >>> (32 - 9);
       cc += (dd ^ aa ^ bb) + X5 + 0x6ed9eba1;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += (cc ^ dd ^ aa) + X13 + 0x6ed9eba1;
-      bb = bb << 15 | bb >>> -15;
+      bb = bb << 15 | bb >>> (32 - 15);
       aa += (bb ^ cc ^ dd) + X3 + 0x6ed9eba1;
-      aa = aa <<  3 | aa >>> -3;
+      aa = aa <<  3 | aa >>> (32 - 3);
       dd += (aa ^ bb ^ cc) + X11 + 0x6ed9eba1;
-      dd = dd <<  9 | dd >>> -9;
+      dd = dd <<  9 | dd >>> (32 - 9);
       cc += (dd ^ aa ^ bb) + X7 + 0x6ed9eba1;
-      cc = cc << 11 | cc >>> -11;
+      cc = cc << 11 | cc >>> (32 - 11);
       bb += (cc ^ dd ^ aa) + X15 + 0x6ed9eba1;
-      bb = bb << 15 | bb >>> -15;
+      bb = bb << 15 | bb >>> (32 - 15);
 
       a += aa; b += bb; c += cc; d += dd;
    }
