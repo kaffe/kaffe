@@ -151,7 +151,7 @@ Java_java_nio_VMDirectByteBuffer_allocate
 {
   void *buffer;
   
-  buffer = malloc (capacity);
+  buffer = malloc ((size_t) capacity);
 
   if (buffer == NULL)
     {
@@ -194,7 +194,7 @@ Java_java_nio_VMDirectByteBuffer_get__Lgnu_classpath_RawData_2I_3BII
    jobject address, jint index, jbyteArray dst, jint dst_offset, jint dst_len)
 {
   jbyte *src = (jbyte *) NIOGetPointer (env, address) + index;
-  memcpy ((*env)->GetByteArrayElements (env, dst, NULL) + dst_offset, src, dst_len);
+  memcpy ((*env)->GetByteArrayElements (env, dst, NULL) + dst_offset, src, (size_t) dst_len);
 }
 
 JNIEXPORT void JNICALL
@@ -204,7 +204,7 @@ Java_java_nio_VMDirectByteBuffer_shiftDown
 {
   jbyte *dst = (jbyte *) NIOGetPointer (env, address) + dst_offset;
   jbyte *src = (jbyte *) NIOGetPointer (env, address) + src_offset;
-  memmove (dst, src, count);
+  memmove (dst, src, (size_t) count);
 }
 
 JNIEXPORT jobject JNICALL

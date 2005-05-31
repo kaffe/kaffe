@@ -106,7 +106,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_delMenu
 
   gdk_threads_enter ();
   list = gtk_container_children (GTK_CONTAINER (ptr));
-  list = g_list_nth (list, i);
+  list = g_list_nth (list, (unsigned int) i);
   gtk_container_remove (GTK_CONTAINER (ptr), GTK_WIDGET (list->data));
   gdk_threads_leave ();
 }

@@ -1,3 +1,21 @@
+2005-05-31  Adam Heath  <doogie@brainfood.com>
+
+	* include/jsyscall.h, kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextComponentPeer.c,
+	  libraries/clib/classpath/native_state.c,
+	  libraries/clib/io/java_io_VMObjectStreamClass.c,
+	  libraries/clib/native/Method.c, libraries/clib/native/Object.c,
+	  libraries/clib/net/InetAddressImpl.c,
+	  libraries/clib/net/PlainDatagramSocketImpl.c,
+	  libraries/clib/nio/java_nio_VMDirectByteBuffer.c:
+	  Fix some -Wtraditional warnings(mostly signed/unsigned type) by
+	  adding either casts or changing types.
+
 2005-05-30  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/javalib/kaffe/lang/AppClassLoader.java,

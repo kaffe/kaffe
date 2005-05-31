@@ -69,8 +69,8 @@ typedef struct SystemCallInterface {
 	int	(*_remove)(const char *);
 
 	int	(*_socket)(int, int, int, int *);
-	int	(*_connect)(int, struct sockaddr *, int, int timeout);
-	int	(*_bind)(int, struct sockaddr *, int);
+	int	(*_connect)(int, struct sockaddr *, socklen_t, int timeout);
+	int	(*_bind)(int, struct sockaddr *, socklen_t);
 	int	(*_listen)(int, int);
 	int	(*_accept)(int, struct sockaddr *, socklen_t*, int, int *);
 	int	(*_sockread)(int, void*, size_t, int, ssize_t *);

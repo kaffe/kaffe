@@ -259,7 +259,7 @@ DBG(NATIVENET,
 	}
 
 	rc = KSENDTO(unhand(obj)->native_fd,
-		unhand_array(unhand(pkt)->buffer)->body, unhand(pkt)->length,
+		unhand_array(unhand(pkt)->buffer)->body, (size_t) unhand(pkt)->length,
 		0, (struct sockaddr *)&addr, alen, &bsent);
 
 DBG(NATIVENET,

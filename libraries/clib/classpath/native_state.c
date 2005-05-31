@@ -59,7 +59,7 @@ init_state_table_with_size (JNIEnv * env, jclass clazz, jint size)
   table = (struct state_table *) malloc (sizeof (struct state_table));
   table->size = size;
   table->head = (struct state_node **) calloc (sizeof (struct state_node *),
-					       table->size);
+					       (size_t) table->size);
   table->hash = hash;
   table->clazz = clazz_g;
 

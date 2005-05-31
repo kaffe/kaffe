@@ -162,8 +162,8 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	rettype = *METHOD_RET_TYPE(meth);
 
 	for (i = len - 1; i >= 0; i--) {
-		arg = (*env)->GetObjectArrayElement(env, argobj, (unsigned int)i);
-		argc = (*env)->GetObjectArrayElement(env, paramtypes, (unsigned int)i);
+		arg = (*env)->GetObjectArrayElement(env, argobj, i);
+		argc = (*env)->GetObjectArrayElement(env, paramtypes, i);
 		if (!CLASS_IS_PRIMITIVE((Hjava_lang_Class*)argc)) {
 			args[i].l = arg;
 		}

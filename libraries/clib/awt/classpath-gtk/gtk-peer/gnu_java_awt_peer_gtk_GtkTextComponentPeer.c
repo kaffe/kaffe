@@ -479,7 +479,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextComponentPeer_setText
       if (text)
 	{
 	  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
-	  gtk_text_buffer_set_text (buf, str, strlen (str));
+	  gtk_text_buffer_set_text (buf, str, (ssize_t) strlen (str));
 	}
     }
 

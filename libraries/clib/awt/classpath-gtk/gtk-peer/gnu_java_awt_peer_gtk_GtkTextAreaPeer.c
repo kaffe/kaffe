@@ -101,7 +101,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_insert
 
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
   gtk_text_buffer_get_iter_at_offset (buf, &iter, pos);
-  gtk_text_buffer_insert (buf, &iter, str, strlen (str));
+  gtk_text_buffer_insert (buf, &iter, str, (size_t) strlen (str));
 
   gdk_threads_leave ();
 
@@ -134,7 +134,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_replaceRange
   gtk_text_buffer_delete (buf, &startIter, &endIter);
 
   gtk_text_buffer_get_iter_at_offset (buf, &iter, mystart);
-  gtk_text_buffer_insert(buf, &iter, str, strlen (str));
+  gtk_text_buffer_insert(buf, &iter, str, (size_t) strlen (str));
 
   gdk_threads_leave ();
   (*env)->ReleaseStringUTFChars (env, contents, str);

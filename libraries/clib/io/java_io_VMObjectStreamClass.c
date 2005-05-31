@@ -114,11 +114,11 @@ static jfieldID getFieldReference(JNIEnv *env, jobject field,
   jfieldID fid;
   const char *field_name;
   const char *type_name;
-  int type_len;
+  size_t type_len;
   jmethodID mid;
   jstring name;
   jstring tname;
-  int i;
+  unsigned int i;
 
   fieldClass = (*env)->GetObjectClass(env, field);
 
@@ -210,7 +210,8 @@ static jfieldID getFieldReference(JNIEnv *env, jobject field,
     }
   else
     {
-      type_len = -1;
+      /* not needed: not used in the rest of the method */
+      /* type_len = -1; */
       fid = (*env)->GetFieldID(env, declaringClass, field_name, type);
     }
 

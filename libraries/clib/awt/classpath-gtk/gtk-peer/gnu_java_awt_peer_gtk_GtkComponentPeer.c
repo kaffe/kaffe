@@ -65,7 +65,7 @@ awt_keycode_to_keysym (jint keyCode, jint keyLocation)
 {
   /* GDK_A through GDK_Z */
   if (keyCode >= VK_A && keyCode <= VK_Z)
-    return gdk_keyval_to_lower (keyCode);
+    return gdk_keyval_to_lower ((unsigned int) keyCode);
 
   /* GDK_0 through GDK_9 */
   if (keyCode >= VK_0 && keyCode <= VK_9)

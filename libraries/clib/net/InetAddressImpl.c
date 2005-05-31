@@ -407,7 +407,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 #endif
       sain->sin_family = AF_INET;
       sain->sin_port = 0;
-      memcpy(&sain->sin_addr, unhand_byte_array(addr), addr->length);
+      memcpy(&sain->sin_addr, unhand_byte_array(addr), (size_t) addr->length);
       break;
 #if defined(AF_INET6)
     case 16:
@@ -423,7 +423,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 #endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO */
       memcpy(&sain6->sin6_addr,
 	     unhand_byte_array(addr),
-	     addr->length);
+	     (size_t) addr->length);
 #if defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
       sain6->sin6_scope_id = 0;
 #endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID */

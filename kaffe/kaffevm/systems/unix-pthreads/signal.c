@@ -368,7 +368,7 @@ blockAsyncSignals(void)
  * value it has detected.
  */
 void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -386,7 +386,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -405,7 +405,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -442,7 +442,7 @@ void kaffeNoopFunc(char c UNUSED)
  * the faulty adress directly.
  */
 void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
 	static volatile char *guessPointer;
 	void *handler_segv, *handler_bus;
@@ -504,7 +504,7 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
 #if defined(STACK_GROWS_UP)
 	jtid->stackMin = (void*)(uintp)(&jtid - 0x100);

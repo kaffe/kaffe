@@ -84,7 +84,7 @@ java_lang_VMObject_clone(struct Hjava_lang_Cloneable* c)
       /* Clone an array */
       obj = newArray(CLASS_ELEMENT_TYPE(class), ARRAY_SIZE(o));
       memcpy(ARRAY_DATA(obj), ARRAY_DATA(o),
-	     ARRAY_SIZE(o) * TYPE_SIZE(CLASS_ELEMENT_TYPE(class)));
+	     (size_t) ARRAY_SIZE(o) * TYPE_SIZE(CLASS_ELEMENT_TYPE(class)));
     }
   return (obj);
 }
