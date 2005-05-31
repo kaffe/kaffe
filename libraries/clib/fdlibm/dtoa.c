@@ -265,7 +265,7 @@ _DEFUN (_dtoa_r,
       ptr->_result->_k = ptr->_result_k;
       ptr->_result->_maxwds = 1 << ptr->_result_k;
       Bfree (ptr, ptr->_result);
-      ptr->_result = 0;
+      ptr->_result = NULL;
     }
 
   if (word0 (d) & Sign_bit)
@@ -499,7 +499,7 @@ _DEFUN (_dtoa_r,
       word0 (eps) -= (P - 1) * Exp_msk1;
       if (ilim == 0)
 	{
-	  S = mhi = 0;
+	  S = mhi = NULL;
 	  d.d -= 5.;
 	  if (d.d > eps.d)
 	    goto one_digit;
@@ -570,7 +570,7 @@ _DEFUN (_dtoa_r,
       ds = tens[k];
       if (ndigits < 0 && ilim <= 0)
 	{
-	  S = mhi = 0;
+	  S = mhi = NULL;
 	  if (ilim < 0 || d.d <= 5 * ds)
 	    goto no_digits;
 	  goto one_digit;
@@ -613,7 +613,7 @@ _DEFUN (_dtoa_r,
 
   m2 = b2;
   m5 = b5;
-  mhi = mlo = 0;
+  mhi = mlo = NULL;
   if (leftright)
     {
       if (mode < 2)

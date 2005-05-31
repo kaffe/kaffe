@@ -273,7 +273,7 @@ dig_done:
   rv.d = y;
   if (k > 9)
     rv.d = tens[k - 9] * rv.d + z;
-  bd0 = 0;
+  bd0 = NULL;
   if (nd <= DBL_DIG
 #ifndef RND_PRODQUOT
       && FLT_ROUNDS == 1

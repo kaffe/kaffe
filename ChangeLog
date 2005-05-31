@@ -1,5 +1,17 @@
 2005-05-31  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jni/jni.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c,
+	  libraries/clib/fdlibm/dtoa.c, libraries/clib/fdlibm/mprec.c,
+	  libraries/clib/fdlibm/strtod.c,
+	  libraries/clib/nio/gnu_java_nio_VMSelector.c,
+	  libraries/clib/nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+	  libraries/clib/nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+	  libraries/clib/nio/java_nio_VMDirectByteBuffer.c:
+	  s/0/NULL/.
+
+2005-05-31  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/GCCWarning.pm: Few more warnings added.
 
 2005-05-31  Adam Heath  <doogie@brainfood.com>

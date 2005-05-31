@@ -72,7 +72,7 @@ void
 helper_put_filedescriptors (JNIEnv * env, jintArray fdArray, fd_set * fds,
 			    int *max_fd)
 {
-  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, 0);
+  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, NULL);
   int size = (*env)->GetArrayLength (env, fdArray);
   int index, fd;
 
@@ -93,7 +93,7 @@ helper_put_filedescriptors (JNIEnv * env, jintArray fdArray, fd_set * fds,
 void
 helper_get_filedescriptors (JNIEnv * env, jintArray * fdArray, fd_set * fds)
 {
-  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, 0);
+  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, NULL);
   int size = (*env)->GetArrayLength (env, fdArray);
   int index, fd;
 
@@ -108,7 +108,7 @@ helper_get_filedescriptors (JNIEnv * env, jintArray * fdArray, fd_set * fds)
 void
 helper_reset (JNIEnv * env, jintArray * fdArray)
 {
-  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, 0);
+  jint *tmpFDArray = (*env)->GetIntArrayElements (env, fdArray, NULL);
   int size = (*env)->GetArrayLength (env, fdArray);
   int index;
 

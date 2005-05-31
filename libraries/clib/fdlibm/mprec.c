@@ -423,7 +423,7 @@ _DEFUN (pow5mult,
     {
       /* first time */
       p5 = ptr->_p5s = i2b (ptr, 625);
-      p5->_next = 0;
+      p5->_next = NULL;
     }
   for (;;)
     {
@@ -438,7 +438,7 @@ _DEFUN (pow5mult,
       if (!(p51 = p5->_next))
 	{
 	  p51 = p5->_next = mult (ptr, p5, p5);
-	  p51->_next = 0;
+	  p51->_next = NULL;
 	}
       p5 = p51;
     }

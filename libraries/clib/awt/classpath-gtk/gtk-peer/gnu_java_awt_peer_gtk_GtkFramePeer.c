@@ -196,7 +196,7 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromData
 
   ptr = NSA_GET_PTR (env, obj);
 
-  pixels = (*env)->GetIntArrayElements (env, pixelArray, 0);
+  pixels = (*env)->GetIntArrayElements (env, pixelArray, NULL);
   pixels_length = (*env)->GetArrayLength (env, pixelArray);
 
   data = malloc (sizeof (guchar) * pixels_length);

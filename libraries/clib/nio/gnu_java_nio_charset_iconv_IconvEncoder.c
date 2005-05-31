@@ -123,8 +123,8 @@ Java_gnu_java_nio_charset_iconv_IconvEncoder_encode (JNIEnv * env,
   size_t lenIn = (size_t) remIn * 2;
   size_t lenOut = (size_t) remOut;
 
-  inputcopy = input = (*env)->GetCharArrayElements (env, inArr, 0);
-  outputcopy = output = (*env)->GetByteArrayElements (env, outArr, 0);
+  inputcopy = input = (*env)->GetCharArrayElements (env, inArr, NULL);
+  outputcopy = output = (*env)->GetByteArrayElements (env, outArr, NULL);
 
   input += posIn;
   output += posOut;

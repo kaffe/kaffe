@@ -93,7 +93,7 @@ KaffeJNI_removeJNIref(jref obj)
 
 	for (idx = 0; idx < table->frameSize; idx++) {
 		if (table->objects[idx] == obj) {
-			table->objects[idx] = 0;
+			table->objects[idx] = NULL;
 			table->used--;
 			return;
 		}
