@@ -1,5 +1,9 @@
 2005-05-31  Adam Heath  <doogie@brainfood.com>
 
+	* scripts/GCCWarning.pm: Few more warnings added.
+
+2005-05-31  Adam Heath  <doogie@brainfood.com>
+
 	* include/Makefile.am, include/Makefile.am:
 	  Prefix the classpath with gmp-math, so that java_math_BigInteger.h
 	  is generated correctly.

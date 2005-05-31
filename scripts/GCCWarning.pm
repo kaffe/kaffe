@@ -80,6 +80,7 @@ inline." );
 	register_warning( '-Wformat-nonliteral', qr/format not a string literal, argument types not checked$/m ),
 	register_warning( '-Wformat-nonliteral', qr/format not a string literal and no format arguments$/m ),
 	register_warning( '-Wimplicit-func-decl', qr/implicit declaration of function `([^']+)'$/m ),
+	register_warning( '-Wunused-function', qr/`([^']+)' defined but not used$/m ),
 	register_warning( '-Wunused-parameter', qr/unused parameter `([^']+)'$/m ),
 	register_warning( '-Wunused-variable', qr/unused variable `([^']+)'$/m ),
 	register_warning( '-Wshadow', qr/declaration of [`']([^']+)' shadows a global declaration\n${GCCWarning::prefix_regex}shadowed declaration is here$/m ),
@@ -106,7 +107,7 @@ inline." );
 	register_warning( '-Wmissing-declarations', qr/`([^']+)' is not defined\s*$/m ),
 	register_warning( '-Wmissing-noreturn', qr/function might be possible candidate for attribute `(noreturn)'$/m ),
 	register_warning( '-Wmissing-noreturn', qr/`([^']+)' function does return$/m ),
-	register_warning( '-Wmissing-format-attribute', qr/function might be possible candidate for `printf' format attribute$/m ),
+	register_warning( '-Wmissing-format-attribute', qr/function might be possible candidate for `(printf)' format attribute$/m ),
 	register_warning( '-Wpadded', qr/padding struct to align `([^']+)'$/m ),
 	register_warning( '-Wnested-externs', qr/nested extern declaration of `([^']+)'$/m ),
 	register_warning( '-Wunreachable-code', qr/will never be executed$/m ),
@@ -126,5 +127,7 @@ inline." );
 	register_warning( '-Wold-style-definition', qr/old-style parameter declaration$/m ),
 	register_warning( '-Wswitch-default', qr/switch missing default case$/m ),
 	register_warning( '-Wswitch-enum', qr/enumeration value `([^']+)' not handled in switch$/m ),
+	register_warning( '-Wuninitialized', qr/`([^']+)' might be used uninitialized in this function$/m ),
+	register_warning( '-Wformat', qr/format argument is not a (pointer) \(arg (3)\)$/m ),
 }
 1;
