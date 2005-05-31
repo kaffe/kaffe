@@ -1,5 +1,11 @@
 2005-05-31  Adam Heath  <doogie@brainfood.com>
 
+	* include/Makefile.am, include/Makefile.am:
+	  Prefix the classpath with gmp-math, so that java_math_BigInteger.h
+	  is generated correctly.
+
+2005-05-31  Adam Heath  <doogie@brainfood.com>
+
 	* include/jsyscall.h, kaffe/kaffevm/systems/unix-pthreads/signal.c,
 	  kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
