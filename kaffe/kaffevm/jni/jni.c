@@ -472,10 +472,35 @@ static void
 Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
+	const char* cname;
+	Hjava_lang_Class* class;
+	Hjava_lang_Throwable *eobj = thread_data->exceptObj;
 
-	if (thread_data->exceptObj != 0) {
-		do_execute_java_method(NULL, thread_data->exceptObj, "printStackTrace", "()V",
-				       NULL, 0, thread_data->exceptObj); 
+	if (eobj != 0) {
+		/* Don't use the java stack printer because the exception
+		 * may arise in the IO codec.
+		 */
+	       Hjava_lang_String *msg;
+	       char *realname;
+
+	       class = OBJECT_CLASS(&eobj->base);
+	       cname = CLASS_CNAME(class);
+	       realname = KMALLOC(strlen(cname));
+	       pathname2classname(cname, realname);
+			       
+	       msg = unhand(eobj)->detailMessage;
+	       if (msg != NULL) {
+		       char *cmsg = checkPtr(stringJava2C(msg));
+
+		       kprintf(stderr, "%s: %s\n", realname, cmsg);
+		       KFREE(cmsg);
+		       unhand(eobj)->detailMessage = NULL;
+	       } else {
+		       kprintf(stderr, "%s\n", realname);
+	       }
+       	       KFREE(realname);
+	       
+	       printStackTrace (eobj, NULL, true);
 	}
 	END_EXCEPTION_HANDLING();
 }

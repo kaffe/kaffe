@@ -262,13 +262,13 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 
 			if (linenr == -1) {
 				if (meth->accflags & ACC_NATIVE) {
-					sprintf(buf, "\tat %s.%s(%s:native)",
+					sprintf(buf, "   at %s.%s (%s:native)",
 						class_dot_name,
 						meth->name->data, 
 						CLASS_SOURCEFILE(meth->class));
 				}
 				else {
-					sprintf(buf, "\tat %s.%s(%s:line unknown, pc %p)",
+					sprintf(buf, "   at %s.%s (%s:line unknown, pc %p)",
 						class_dot_name,
 						meth->name->data, 
 						CLASS_SOURCEFILE(meth->class),
@@ -276,7 +276,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 				}
 			}
 			else {
-				sprintf(buf, "\tat %s.%s(%s:%d)",
+				sprintf(buf, "   at %s.%s (%s:%d)",
 					class_dot_name,
 					meth->name->data,
 					CLASS_SOURCEFILE(meth->class),

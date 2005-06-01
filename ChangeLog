@@ -1,3 +1,20 @@
+2005-06-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/stackTrace.c
+	(printStackTrace): Reformatted trace output.
+
+	* kaffe/kaffevm/support.c
+	(kprintf): Use vfprintf stored in kaffe VM arguments.
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_ExceptionDescribe): Always print the stack trace using
+	kaffe internal routines. That way we always get a stack trace when
+	an exception is thrown.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java: Fixed expected output
+	accordingly.
+	
 2005-05-31  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffevm/jni/jni.c,
