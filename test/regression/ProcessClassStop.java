@@ -105,7 +105,7 @@ public class ProcessClassStop
 /* Expected Output:
 tan java.lang.NoClassDefFoundError: Base
 java.lang.NoClassDefFoundError: Base
-   at java.lang.reflect.Method.invoke0 (Method.java)
+   at java.lang.reflect.Method.invoke0 (Method.java:native)
    at java.lang.reflect.Method.invoke (Method.java:255)
    at java.lang.reflect.Constructor.newInstance (Constructor.java:90)
    at java.lang.Class.newInstance (Class.java:1141)

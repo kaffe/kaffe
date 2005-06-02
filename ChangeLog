@@ -1,3 +1,11 @@
+2005-06-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_ExceptionDescribe): Fixed variable declaration.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java: Checked in missing files.
+
 2005-06-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/stackTrace.c

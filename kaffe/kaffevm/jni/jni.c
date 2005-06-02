@@ -471,10 +471,13 @@ Kaffe_ExceptionCheck(JNIEnv* env UNUSED)
 static void
 Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 {
-	BEGIN_EXCEPTION_HANDLING_VOID();
 	const char* cname;
 	Hjava_lang_Class* class;
-	Hjava_lang_Throwable *eobj = thread_data->exceptObj;
+	Hjava_lang_Throwable *eobj;
+
+	BEGIN_EXCEPTION_HANDLING_VOID();
+
+	eobj = thread_data->exceptObj;
 
 	if (eobj != 0) {
 		/* Don't use the java stack printer because the exception
