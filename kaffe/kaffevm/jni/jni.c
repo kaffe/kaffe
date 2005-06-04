@@ -317,34 +317,56 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 	return (cls);
 }
 
-/*
- * For this routine, we defer most of the work to Class.forName(),
- * which handles the task of figuring out the right ClassLoader to
- * use based on the calling method, which requires examining the
- * stack backtrace.
- */
-
 static jclass
 Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 {
 	stackTraceInfo          *trace;
-	jstring nameString;
 	Utf8Const* utf8;
-	jvalue retval;
+	Hjava_lang_ClassLoader  *loader;
+	Hjava_lang_Class	*clazz;
+	errorInfo		einfo;
 	int			i;
+	char*			pathname;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	/* We accepts slashes, but Class.forName() does not */
-	utf8 = checkPtr(utf8ConstNew(name, -1));
-	nameString = utf8Const2JavaReplace(utf8, '/', '.');
-	utf8ConstRelease(utf8);
-	checkPtr(nameString);
+	/* convert name to the form used inside the vm */
+	pathname = checkPtr(KMALLOC(strlen (name) + 1));
+	classname2pathname (name, pathname);
 
+	/* create a new utf8 constant */
+	utf8 = utf8ConstNew(pathname, -1);
+
+	/* free the internal form of name */
+	KFREE(pathname);
+
+	/* bail out if we could not create the utf8 constant */
+	if (utf8 == NULL)
+	{
+		postOutOfMemory (&einfo);
+		throwError (&einfo);
+	}
+
+	/* Quote from the JNI documentation:
+	 *
+	 * "In the Java 2 Platform, FindClass locates the class loader associated with the current native method.
+	 *  If the native code belongs to a system class, no class loader will be involved. Otherwise, the proper
+	 *  class loader will be invoked to load and link the named class. When FindClass is called through the
+	 *  Invocation Interface, there is no current native method or its associated class loader. In that case,
+	 *  the result of ClassLoader.getBaseClassLoader is used."
+	 *
+	 * So we ...
+	 */
+
+	/* ... get the stacktrace ... */
 	trace = (stackTraceInfo *)buildStackTrace (NULL);
 	if (trace == NULL)
-		return NULL;
+	{
+		postOutOfMemory (&einfo);
+		goto error_out;
+	}
 
+	/* ... find the first java method on the stack ... */
 	for (i=0; trace[i].meth != ENDOFSTACK; i++)
 	{
 		if ((trace[i].meth != NULL) &&
@@ -352,27 +374,58 @@ Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 			break;
 	}
 
+	/* ... determine the loader to be used ... */
 	if (trace[i].meth == ENDOFSTACK) {
-		/* if there are no java methods on the stack, we use the system class loader */
+		jvalue retval;
+
 		do_execute_java_class_method (&retval, "java/lang/ClassLoader",
 					      NULL,
 					      "getSystemClassLoader",
 					      "()Ljava/lang/ClassLoader;");
 
-		do_execute_java_class_method(&retval, "java.lang.Class", NULL,
-					     "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;",
-					     nameString, true, retval.l);
+		loader = (Hjava_lang_ClassLoader *)retval.l;
 	} else {
-		/* otherwise, we use the first java method on the stack */
-		do_execute_java_class_method(&retval, "java.lang.Class", NULL,
-					     "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;",
-					     nameString, true, trace[i].meth->class->loader);
+		loader = trace[i].meth->class->loader;
 	}
 
-	ADD_REF(retval.l);
+	/* ... and finally call loadArray or loadClass.
+	 *
+	 * Why don't we delegate to Class.forName? Our implementation of
+	 * VMClassLoader.loadClass denies access to classes in internal
+	 * packages like kaffe.lang or gnu.classpath (for security reasons).
+	 * However, when FindClass is invoked from the native method of a
+	 * class defined by the bootstrap loader, that is not correct.
+	 * Therefore, we call loadClass / loadArray directly, which corresponds
+	 * to what getClass() does. 
+	 */
+	if (utf8->data[0] == '[')
+	{
+		clazz = loadArray (utf8, loader, &einfo);
+	}
+	else
+	{
+		clazz = loadClass (utf8, loader, &einfo);
+	}
 
+	if (clazz == NULL)
+	{
+		goto error_out;
+	}
+
+	if (processClass (clazz, CSTATE_COMPLETE, &einfo) == false)
+	{
+		goto error_out;
+	}
+
+	ADD_REF(clazz);
+
+	utf8ConstRelease(utf8);
 	END_EXCEPTION_HANDLING();
-	return (retval.l);
+	return (clazz);
+
+error_out:
+	utf8ConstRelease(utf8);
+	throwError (&einfo);
 }
 
 static jclass
