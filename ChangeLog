@@ -1,7 +1,12 @@
-2005-06-04  Helmer Kraemer  <hkraemer@freenet.de>
+2005-06-05  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
-	* kaffe/kaffevm/jni/jni.c (Kaffe_FindClass): fixed so it works correctly
-	for native methods of system classes.
+	* libraries/javalib/gnu/java/nio/charset/iconv/IconvProvider.java
+	(IconvProvider): Made the constructor public.
+
+	* libraries/javalib/java/nio/charset/Charset.java
+	(providers2): Allow spaces and comments in
+	META-INF/services/java.nio.charset.spi.CharsetProvider.
+	Load the provider using the context class loader.
 
 2005-06-02  Guilhem Lavaux  <guilhem@kaffe.org>
 

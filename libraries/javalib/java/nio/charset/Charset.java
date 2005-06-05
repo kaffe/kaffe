@@ -267,8 +267,29 @@ public abstract class Charset implements Comparable
                     String s = rdr.readLine();
                     if (s == null)
 		      break;
+		    int i = -1, j = -1;
+		    for (int k = 0; k < s.length(); k++)
+		      {
+			char c = s.charAt(k);
+			if (c == ' ' || c == '\t')
+			  continue;
+			if (c == '#')
+			  break;
+			i = k;
+			break;
+		      }
+		    if (i < 0)
+			continue;
+		    for (j = i + 1; j < s.length(); j++)
+		      {
+			char c = s.charAt(j);
+			if (c == ' ' || c == '\t' || c == '#')
+			  break;
+		      }
+		    s = s.substring(i, j);
                     CharsetProvider p =
-		      (CharsetProvider) ((Class.forName(s)).newInstance());
+		      (CharsetProvider) ((Class.forName(s, true,
+			 Thread.currentThread().getContextClassLoader())).newInstance());
                     set.add(p);
                   }
                }
