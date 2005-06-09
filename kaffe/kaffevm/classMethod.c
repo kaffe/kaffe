@@ -75,6 +75,7 @@ static bool resolveObjectFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveStaticFields(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
 static bool resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo);
+static parsed_signature_t *duplicateParsedSignature (parsed_signature_t *, errorInfo *);
 
 static struct Hjava_security_ProtectionDomain  *defaultProtectionDomain;
 
@@ -703,15 +704,28 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 		int i;
 		
 		i = CLASS_NMETHODS(cl);
-		CLASS_NMETHODS(cl) = i + 1;
 		CLASS_METHODS(cl) = new_methods;
 		utf8ConstAddRef(imeth->name);
-		utf8ConstAddRef(imeth->parsed_sig->signature);
 		new_methods[i] = *imeth;
+
+		/* Allocate a new parsed_signature_t for the method. We can't use the one
+		 * of the implemented method as destroyClass would then try to free it
+		 * twice.
+		 */
+		new_methods[i].parsed_sig = duplicateParsedSignature (imeth->parsed_sig, einfo);
+		if (new_methods[i].parsed_sig == NULL)
+		{
+			gc_free (new_methods);
+			return 0;
+		}
+
 		new_methods[i].ndeclared_exceptions = -1;
 		new_methods[i].declared_exceptions_u.remote_exceptions =
 			imeth;
 		new_methods[i].class = cl;
+
+		CLASS_NMETHODS(cl) = i + 1;
+
 		retval = 1;
 	}
 	else
@@ -2010,7 +2024,7 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
 			/* skip inaccessible methods */
 			if (!checkAccess (meth->class, super, mt->accflags))
 				continue;
- 
+
 			if (utf8ConstEqual (mt->name, meth->name) &&
 			    utf8ConstEqual (METHOD_SIG(mt), METHOD_SIG(meth)))
 			{
@@ -2784,6 +2798,31 @@ countArgsInSignature(const char *signature)
 	}
 
 	return (nargs);
+}
+
+/*
+ * Duplicates a parsed signature.
+ */
+static parsed_signature_t*
+duplicateParsedSignature(parsed_signature_t *orig, errorInfo *einfo)
+{
+	parsed_signature_t *ret;
+	size_t sizeOfSignature;
+
+	sizeOfSignature = sizeof(*ret) + orig->nargs * sizeof(ret->ret_and_args[0]);
+
+	ret = (parsed_signature_t *)gc_malloc (sizeOfSignature, KGC_ALLOC_CLASSMISC);
+
+	if (ret == NULL) {
+		postOutOfMemory(einfo);
+		return NULL;
+	}
+
+	memcpy (ret, orig, sizeOfSignature);
+
+	utf8ConstAddRef (PSIG_UTF8(ret));
+
+	return ret;
 }
 
 /*

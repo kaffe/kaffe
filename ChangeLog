@@ -1,3 +1,11 @@
+2005-06-09  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/classMethod.c (expandMethods): create new parsed_signature_t for
+	created method
+	(duplicateParsedSignature): new method
+
+	Fixes bug reported by Daniel Bonniot <Daniel.Bonniot@inria.fr>
+
 2005-06-05  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/java/nio/charset/iconv/IconvProvider.java
