@@ -4,6 +4,20 @@
 
 	2005-05-31  Jeroen Frijters  <jeroen@frijters.net>
 
+	* java/net/ServerSocket.java
+	(bound): Removed.
+	(local): New field.
+	(bind): Cache local socket address.
+	(getInetAddress, getLocalPort, getLocalSocketAddress, isBound):
+	Use cached local socket address.
+	(close): bound field was removed.
+
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-31  Jeroen Frijters  <jeroen@frijters.net>
+
 	* gnu/java/nio/channels/FileChannelImpl.java
 	(FileChannelImpl()): Removed.
 	(FileChannelImpl(File,int)): Made private.

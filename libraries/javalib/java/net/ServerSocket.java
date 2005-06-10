@@ -76,9 +76,9 @@ public class ServerSocket
   private SocketImpl impl;
 
   /**
-   * True if socket is bound.
+   * We need to retain the local address even after the socket is closed.
    */
-  private boolean bound;
+  private InetSocketAddress local;
 
   /*
    * This constructor is only used by java.nio.
@@ -238,7 +238,9 @@ public class ServerSocket
       {
 	impl.bind(addr, tmp.getPort());
 	impl.listen(backlog);
-	bound = true;
+	local = new InetSocketAddress(
+            (InetAddress) impl.getOption(SocketOptions.SO_BINDADDR),
+            impl.getLocalPort());
       }
     catch (IOException exception)
       {
@@ -264,18 +266,10 @@ public class ServerSocket
    */
   public InetAddress getInetAddress()
   {
-    if (! isBound())
+    if (local == null)
       return null;
 
-    try
-      {
-	return (InetAddress) impl.getOption(SocketOptions.SO_BINDADDR);
-      }
-    catch (SocketException e)
-      {
-	// This never happens as we are bound.
-	return null;
-      }
+    return local.getAddress();
   }
 
   /**
@@ -285,10 +279,10 @@ public class ServerSocket
    */
   public int getLocalPort()
   {
-    if (! isBound())
+    if (local == null)
       return -1;
 
-    return impl.getLocalPort();
+    return local.getPort();
   }
 
   /**
@@ -300,10 +294,7 @@ public class ServerSocket
    */
   public SocketAddress getLocalSocketAddress()
   {
-    if (! isBound())
-      return null;
-
-    return new InetSocketAddress(getInetAddress(), getLocalPort());
+    return local;
   }
 
   /**
@@ -393,7 +384,6 @@ public class ServerSocket
 
     impl.close();
     impl = null;
-    bound = false;
 
     if (getChannel() != null)
       getChannel().close();
@@ -424,7 +414,7 @@ public class ServerSocket
    */
   public boolean isBound()
   {
-    return bound;
+    return local != null;
   }
 
   /**
