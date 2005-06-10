@@ -160,7 +160,7 @@ public class DirectColorModel extends PackedColorModel
   public final int getAlpha(int pixel)
   {
     if (!hasAlpha())
-      return 0;
+      return 255;
     return extractAndScaleSample(pixel, 3);
   }
 
