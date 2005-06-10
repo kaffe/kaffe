@@ -69,7 +69,9 @@ public abstract class BindingTypeHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Binding type expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Binding type expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

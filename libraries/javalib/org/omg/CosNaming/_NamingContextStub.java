@@ -70,6 +70,11 @@ public class _NamingContextStub
   implements NamingContext
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 6835430958405349379L;
+
+  /**
    * Create the naming context stub.
    */
   public _NamingContextStub()
@@ -109,6 +114,7 @@ public class _NamingContextStub
     catch (ApplicationException ex)
       {
         in = ex.getInputStream();
+
         String id = ex.getId();
         throw5(in, id);
       }
@@ -169,6 +175,7 @@ public class _NamingContextStub
     catch (ApplicationException ex)
       {
         in = ex.getInputStream();
+
         String id = ex.getId();
         throw5(in, id);
         throw new InternalError();
@@ -284,6 +291,7 @@ public class _NamingContextStub
     catch (ApplicationException ex)
       {
         in = ex.getInputStream();
+
         String id = ex.getId();
         throw4(in, id);
       }
@@ -312,6 +320,7 @@ public class _NamingContextStub
     catch (ApplicationException ex)
       {
         in = ex.getInputStream();
+
         String id = ex.getId();
         throw4(in, id);
       }
@@ -342,6 +351,7 @@ public class _NamingContextStub
     catch (ApplicationException ex)
       {
         in = ex.getInputStream();
+
         String id = ex.getId();
         throw4(in, id);
         throw new InternalError();
@@ -406,8 +416,7 @@ public class _NamingContextStub
    * @throws MARSHAL if the id does not match any of the previous 4 exceptions.
    */
   protected void throw4(InputStream in, String id)
-               throws MARSHAL, InvalidName, CannotProceed,
-                      NotFound
+                 throws MARSHAL, InvalidName, CannotProceed, NotFound
   {
     if (id.equals(NotFoundHelper.id()))
       throw NotFoundHelper.read(in);
@@ -435,8 +444,8 @@ public class _NamingContextStub
    * @throws MARSHAL if the id does not match any of the previous 4 exceptions.
    */
   protected void throw5(InputStream in, String id)
-               throws MARSHAL, AlreadyBound, InvalidName, CannotProceed,
-                      NotFound
+                 throws MARSHAL, AlreadyBound, InvalidName, CannotProceed,
+                        NotFound
   {
     if (id.equals(AlreadyBoundHelper.id()))
       throw AlreadyBoundHelper.read(in);

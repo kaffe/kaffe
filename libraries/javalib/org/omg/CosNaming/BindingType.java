@@ -49,6 +49,11 @@ public class BindingType
   implements org.omg.CORBA.portable.IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 3735105633408228513L;
+
+  /**
    * This constant means that the binding has been created
    * with operations  bind_context,  rebind_context or
    * bind_new_context.

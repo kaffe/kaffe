@@ -56,6 +56,8 @@ import org.omg.CORBA.portable.RemarshalException;
 
 import java.io.IOException;
 
+import java.net.Socket;
+
 /**
  * The Classpath implementation of the {@link Delegate} functionality in the
  * case, when the object was constructed from an IOR object. The IOR can be
@@ -211,7 +213,9 @@ public class IOR_Delegate
                 }
               catch (IOException ex)
                 {
-                  throw new MARSHAL(ex + " while reading the forwarding info");
+                  MARSHAL t = new MARSHAL("Cant read forwarding info");
+                  t.initCause(ex);
+                  throw t;
                 }
 
               request.request.setIor(forwarded);
@@ -278,5 +282,30 @@ public class IOR_Delegate
     request.setORB(orb);
 
     return request.getParameterStream();
+  }
+
+  /**
+   * If there is an opened cache socket to access this object, close
+   * that socket.
+   *
+   * @param target The target is not used, this delegate requires a
+   * single instance per object.
+   */
+  public void release(org.omg.CORBA.Object target)
+  {
+    String key = ior.Internet.host + ":" + ior.Internet.port;
+
+    Socket socket = SocketRepository.get_socket(key);
+    try
+      {
+        if (socket != null)
+          {
+            socket.close();
+          }
+      }
+    catch (IOException ex)
+      {
+        // do nothing, then.
+      }
   }
 }

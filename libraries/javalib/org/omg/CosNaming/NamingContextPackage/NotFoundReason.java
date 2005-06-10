@@ -50,6 +50,11 @@ public class NotFoundReason
   implements IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -5689237060527596081L;
+
+  /**
    * The code for reason, when the node is missing.
    */
   public static final int _missing_node = 0;

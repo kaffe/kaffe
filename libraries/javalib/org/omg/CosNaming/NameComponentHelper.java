@@ -74,7 +74,9 @@ public abstract class NameComponentHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Name component expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Name component expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

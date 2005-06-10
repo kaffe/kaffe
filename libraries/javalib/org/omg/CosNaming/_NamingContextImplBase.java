@@ -72,6 +72,11 @@ public abstract class _NamingContextImplBase
   implements NamingContext, InvokeHandler
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -114280294134561035L;
+
+  /**
    * As there are quite many methods, it may be sensible to use the hashtable.
    */
   private static Hashtable methods = new Hashtable();

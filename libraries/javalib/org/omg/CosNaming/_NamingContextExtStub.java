@@ -72,6 +72,11 @@ public class _NamingContextExtStub
   implements NamingContextExt
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 6333293895664182866L;
+
+  /**
    * This stub can be the base of the two CORBA objects, so it
    * has two repository ids.
    */

@@ -160,7 +160,9 @@ public class cxCodeSet
       }
     catch (IOException ex)
       {
-        throw new InternalError();
+        InternalError t = new InternalError();
+        t.initCause(ex);
+        throw t;
       }
   }
 

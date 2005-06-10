@@ -76,7 +76,9 @@ public abstract class BindingIteratorHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Binding iterator expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Binding iterator expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

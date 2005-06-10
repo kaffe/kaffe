@@ -89,6 +89,7 @@ class binaryReply
     in.setOffset(header.getHeaderSize());
     in.setVersion(header.version);
     in.setOrb(orb);
+    in.setBigEndian(header.isBigEndian());
     return in;
   }
 }

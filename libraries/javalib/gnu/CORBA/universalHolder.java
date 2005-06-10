@@ -109,7 +109,9 @@ class universalHolder
       }
     catch (IOException ex)
       {
-        throw new MARSHAL(ex.getClass().getName() + ":" + ex.getMessage());
+        MARSHAL t = new MARSHAL();
+        t.initCause(ex);
+        throw t;
       }
   }
 
@@ -139,7 +141,9 @@ class universalHolder
       }
     catch (IOException ex)
       {
-        throw new MARSHAL(ex.getClass().getName() + ":" + ex.getMessage());
+        MARSHAL t = new MARSHAL();
+        t.initCause(ex);
+        throw t;
       }
   }
 

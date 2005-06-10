@@ -53,6 +53,11 @@ public final class NotFound
   implements IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -7539098836265502514L;
+
+  /**
    * The reason, explaining, why the binding cannot be found.
    * This might be either the missing node or the wrong binding type.
    */

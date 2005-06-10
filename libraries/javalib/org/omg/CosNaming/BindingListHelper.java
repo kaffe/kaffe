@@ -73,7 +73,9 @@ public abstract class BindingListHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Binding list expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Binding list expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

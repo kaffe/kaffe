@@ -59,6 +59,11 @@ public abstract class _BindingIteratorImplBase
   implements BindingIterator, InvokeHandler
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 3472591176635005503L;
+
+  /**
    * The binding interator repository id.
    */
   private static String[] ids = { BindingIteratorHelper.id() };

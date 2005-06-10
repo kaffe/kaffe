@@ -38,18 +38,23 @@ exception statement from your version. */
 
 package gnu.CORBA.GIOP;
 
+import gnu.CORBA.CDR.BigEndianOutputStream;
+import gnu.CORBA.CDR.LittleEndianInputStream;
+import gnu.CORBA.CDR.LittleEndianOutputStream;
+import gnu.CORBA.CDR.abstractDataOutputStream;
 import gnu.CORBA.Version;
 
+import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.portable.IDLEntity;
+
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.Arrays;
-
-import org.omg.CORBA.MARSHAL;
-import org.omg.CORBA.NO_IMPLEMENT;
-
-import org.omg.CORBA.portable.IDLEntity;
+import gnu.CORBA.CDR.BigEndianInputStream;
+import gnu.CORBA.CDR.abstractDataInputStream;
+import java.io.InputStream;
 
 /**
  * The GIOP message header.
@@ -144,7 +149,7 @@ public class MessageHeader
    */
   public MessageHeader()
   {
-    version = new Version(1,0);
+    version = new Version(1, 0);
   }
 
   /**
@@ -165,6 +170,20 @@ public class MessageHeader
   public boolean isBigEndian()
   {
     return (flags & 0x1) == 0;
+  }
+
+  /**
+   * Set the encoding to use.
+   *
+   * @param use_big_endian if true (default), the Big Endian
+   * encoding is used. If false, the Little Endian encoding is used.
+   */
+  public void setBigEndian(boolean use_big_endian)
+  {
+    if (use_big_endian)
+      flags = (byte) (flags & ~1);
+    else
+      flags = (byte) (flags | 1);
   }
 
   /**
@@ -252,27 +271,32 @@ public class MessageHeader
   {
     try
       {
-        DataInputStream din = new DataInputStream(istream);
-
         byte[] xMagic = new byte[ MAGIC.length ];
-        din.read(xMagic);
+        istream.read(xMagic);
         if (!Arrays.equals(xMagic, MAGIC))
           throw new MARSHAL("Not a GIOP message");
 
-        version = Version.read_version(din);
+        version = Version.read_version(istream);
 
-        flags = (byte) din.read();
+        abstractDataInputStream din;
 
-        /** TODO implement support for the little endian. */
-        if (!isBigEndian())
-          throw new NO_IMPLEMENT("Little endian unsupported.");
+        flags = (byte) istream.read();
+
+        // This checks the bit in the byte we have just received.
+        if (isBigEndian())
+          din = new BigEndianInputStream(istream);
+        else
+          din = new LittleEndianInputStream(istream);
 
         message_type = (byte) din.read();
+
         message_size = din.readInt();
       }
     catch (IOException ex)
       {
-        throw new MARSHAL(ex.toString());
+        MARSHAL t = new MARSHAL();
+        t.initCause(ex);
+        throw t;
       }
   }
 
@@ -297,22 +321,30 @@ public class MessageHeader
   {
     try
       {
-        DataOutputStream dout = new DataOutputStream(out);
+        abstractDataOutputStream dout;
+
+        if (isBigEndian())
+          dout = new BigEndianOutputStream(out);
+        else
+          dout = new LittleEndianOutputStream(out);
 
         // Write magic sequence.
         dout.write(MAGIC);
 
         // Write version number.
-        version.write(dout);
+        version.write((OutputStream) dout);
 
         dout.write(flags);
 
         dout.write(message_type);
+
         dout.writeInt(message_size);
       }
     catch (IOException ex)
       {
-        throw new MARSHAL(ex.toString());
+        MARSHAL t = new MARSHAL();
+        t.initCause(ex);
+        throw t;
       }
   }
 }

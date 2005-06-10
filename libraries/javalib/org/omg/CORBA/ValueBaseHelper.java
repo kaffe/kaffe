@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import gnu.CORBA.CDR.uncObjectInputStream;
+import gnu.CORBA.CDR.uncObjectOutputStream;
 import gnu.CORBA.recordTypeCode;
 
 import org.omg.CORBA.portable.InputStream;
@@ -109,13 +111,7 @@ public abstract class ValueBaseHelper
     // in its finalizer.
     try
       {
-        ObjectInputStream oin =
-          new ObjectInputStream(output)
-          {
-            public void close()
-            {
-            }
-          };
+        ObjectInputStream oin = new uncObjectInputStream(output);
         return (Serializable) oin.readObject();
       }
     catch (Exception ex)
@@ -151,15 +147,7 @@ public abstract class ValueBaseHelper
     // in its finalizer.
     try
       {
-        ObjectOutputStream oout =
-          new ObjectOutputStream(input)
-          {
-            public void close()
-                       throws IOException
-            {
-              flush();
-            }
-          };
+        ObjectOutputStream oout = new uncObjectOutputStream(input);
         oout.writeObject(value);
         oout.flush();
       }

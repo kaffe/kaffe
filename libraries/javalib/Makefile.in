@@ -670,9 +670,14 @@ Klasses_jar_SRCS = \
 	$(org_omg_CORBA_ORBPackage_SRCS) \
 	$(org_omg_CORBA_TypeCodePackage_SRCS) \
 	$(org_omg_CORBA_portable_SRCS) \
+	$(org_omg_CORBA_2_3_SRCS) \
+	$(org_omg_CORBA_2_3_portable_SRCS) \
 	$(org_omg_CosNaming_SRCS) \
 	$(org_omg_CosNaming_NamingContextExtPackage_SRCS) \
 	$(org_omg_CosNaming_NamingContextPackage_SRCS) \
+	$(org_omg_Messaging_SRCS) \
+	$(org_omg_SendingContext_SRCS) \
+	$(org_omg_stub_java_rmi_SRCS) \
 	$(org_tritonus_core_SRCS) \
 	$(org_tritonus_lowlevel_alsa_SRCS) \
 	$(org_tritonus_lowlevel_esd_SRCS) \
@@ -726,6 +731,7 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/BigDecimalHelper.java \
 	gnu/CORBA/ByteArrayComparator.java \
 	gnu/CORBA/Connected_objects.java \
+	gnu/CORBA/DefinitionKindHolder.java \
 	gnu/CORBA/ExceptionCreator.java \
 	gnu/CORBA/Functional_ORB.java \
 	gnu/CORBA/IOR.java \
@@ -736,7 +742,9 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/Restricted_ORB.java \
 	gnu/CORBA/ServiceDetailHolder.java \
 	gnu/CORBA/ServiceRequestAdapter.java \
+	gnu/CORBA/SetOverrideTypeHolder.java \
 	gnu/CORBA/Simple_delegate.java \
+	gnu/CORBA/SocketRepository.java \
 	gnu/CORBA/TypeCodeHelper.java \
 	gnu/CORBA/Unexpected.java \
 	gnu/CORBA/Version.java \
@@ -769,13 +777,21 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/universalHolder.java
 
 gnu_CORBA_CDR_SRCS = \
+	gnu/CORBA/CDR/BigEndianInputStream.java \
+	gnu/CORBA/CDR/BigEndianOutputStream.java \
+	gnu/CORBA/CDR/LittleEndianInputStream.java \
+	gnu/CORBA/CDR/LittleEndianOutputStream.java \
+	gnu/CORBA/CDR/abstractDataInputStream.java \
+	gnu/CORBA/CDR/abstractDataOutputStream.java \
 	gnu/CORBA/CDR/aligningInputStream.java \
 	gnu/CORBA/CDR/aligningOutputStream.java \
 	gnu/CORBA/CDR/cdrBufInput.java \
 	gnu/CORBA/CDR/cdrBufOutput.java \
 	gnu/CORBA/CDR/cdrInput.java \
 	gnu/CORBA/CDR/cdrOutput.java \
-	gnu/CORBA/CDR/encapsulatedOutput.java
+	gnu/CORBA/CDR/encapsulatedOutput.java \
+	gnu/CORBA/CDR/uncObjectInputStream.java \
+	gnu/CORBA/CDR/uncObjectOutputStream.java
 
 gnu_CORBA_DynAn_SRCS = \
 	gnu/CORBA/DynAn/NameValuePairHolder.java
@@ -783,6 +799,7 @@ gnu_CORBA_DynAn_SRCS = \
 gnu_CORBA_GIOP_SRCS = \
 	gnu/CORBA/GIOP/CancelHeader.java \
 	gnu/CORBA/GIOP/CharSets_OSF.java \
+	gnu/CORBA/GIOP/CloseMessage.java \
 	gnu/CORBA/GIOP/ErrorMessage.java \
 	gnu/CORBA/GIOP/MessageHeader.java \
 	gnu/CORBA/GIOP/ReplyHeader.java \
@@ -4904,8 +4921,13 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ContextList.java \
 	org/omg/CORBA/Current.java \
 	org/omg/CORBA/CurrentOperations.java \
+	org/omg/CORBA/CustomMarshal.java \
+	org/omg/CORBA/CustomValue.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
+	org/omg/CORBA/DataInputStream.java \
+	org/omg/CORBA/DataOutputStream.java \
 	org/omg/CORBA/DefinitionKind.java \
+	org/omg/CORBA/DefinitionKindHelper.java \
 	org/omg/CORBA/DomainManager.java \
 	org/omg/CORBA/DomainManagerOperations.java \
 	org/omg/CORBA/DoubleHolder.java \
@@ -4923,12 +4945,14 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Environment.java \
 	org/omg/CORBA/ExceptionList.java \
 	org/omg/CORBA/FREE_MEM.java \
+	org/omg/CORBA/FieldNameHelper.java \
 	org/omg/CORBA/FixedHolder.java \
 	org/omg/CORBA/FloatHolder.java \
 	org/omg/CORBA/FloatSeqHelper.java \
 	org/omg/CORBA/FloatSeqHolder.java \
 	org/omg/CORBA/IDLEntity.java \
 	org/omg/CORBA/IDLType.java \
+	org/omg/CORBA/IDLTypeHelper.java \
 	org/omg/CORBA/IDLTypeOperations.java \
 	org/omg/CORBA/IMP_LIMIT.java \
 	org/omg/CORBA/INITIALIZE.java \
@@ -4941,6 +4965,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/INV_POLICY.java \
 	org/omg/CORBA/IRObject.java \
 	org/omg/CORBA/IRObjectOperations.java \
+	org/omg/CORBA/IdentifierHelper.java \
 	org/omg/CORBA/IntHolder.java \
 	org/omg/CORBA/LongHolder.java \
 	org/omg/CORBA/LongLongSeqHelper.java \
@@ -4969,11 +4994,15 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/PERSIST_STORE.java \
 	org/omg/CORBA/PRIVATE_MEMBER.java \
 	org/omg/CORBA/PUBLIC_MEMBER.java \
+	org/omg/CORBA/ParameterMode.java \
+	org/omg/CORBA/ParameterModeHelper.java \
+	org/omg/CORBA/ParameterModeHolder.java \
 	org/omg/CORBA/Policy.java \
 	org/omg/CORBA/PolicyError.java \
 	org/omg/CORBA/PolicyOperations.java \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/PrincipalHolder.java \
+	org/omg/CORBA/RepositoryIdHelper.java \
 	org/omg/CORBA/Request.java \
 	org/omg/CORBA/ServerRequest.java \
 	org/omg/CORBA/ServiceDetail.java \
@@ -4982,13 +5011,16 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ServiceInformationHelper.java \
 	org/omg/CORBA/ServiceInformationHolder.java \
 	org/omg/CORBA/SetOverrideType.java \
+	org/omg/CORBA/SetOverrideTypeHelper.java \
 	org/omg/CORBA/ShortHolder.java \
 	org/omg/CORBA/ShortSeqHelper.java \
 	org/omg/CORBA/ShortSeqHolder.java \
 	org/omg/CORBA/StringHolder.java \
 	org/omg/CORBA/StringSeqHelper.java \
 	org/omg/CORBA/StringSeqHolder.java \
+	org/omg/CORBA/StringValueHelper.java \
 	org/omg/CORBA/StructMember.java \
+	org/omg/CORBA/StructMemberHelper.java \
 	org/omg/CORBA/SystemException.java \
 	org/omg/CORBA/TCKind.java \
 	org/omg/CORBA/TRANSACTION_REQUIRED.java \
@@ -5006,6 +5038,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/UShortSeqHelper.java \
 	org/omg/CORBA/UShortSeqHolder.java \
 	org/omg/CORBA/UnionMember.java \
+	org/omg/CORBA/UnionMemberHelper.java \
 	org/omg/CORBA/UnknownUserException.java \
 	org/omg/CORBA/UserException.java \
 	org/omg/CORBA/VM_ABSTRACT.java \
@@ -5015,11 +5048,16 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ValueBaseHelper.java \
 	org/omg/CORBA/ValueBaseHolder.java \
 	org/omg/CORBA/ValueMember.java \
+	org/omg/CORBA/ValueMemberHelper.java \
+	org/omg/CORBA/VersionSpecHelper.java \
+	org/omg/CORBA/VisibilityHelper.java \
 	org/omg/CORBA/WCharSeqHelper.java \
 	org/omg/CORBA/WCharSeqHolder.java \
 	org/omg/CORBA/WStringSeqHelper.java \
 	org/omg/CORBA/WStringSeqHolder.java \
-	org/omg/CORBA/WrongTransaction.java
+	org/omg/CORBA/WStringValueHelper.java \
+	org/omg/CORBA/WrongTransaction.java \
+	org/omg/CORBA/_IDLTypeStub.java
 
 org_omg_CORBA_DynAnyPackage_SRCS = \
 	org/omg/CORBA/DynAnyPackage/Invalid.java \
@@ -5037,6 +5075,7 @@ org_omg_CORBA_TypeCodePackage_SRCS = \
 
 org_omg_CORBA_portable_SRCS = \
 	org/omg/CORBA/portable/ApplicationException.java \
+	org/omg/CORBA/portable/BoxedValueHelper.java \
 	org/omg/CORBA/portable/Delegate.java \
 	org/omg/CORBA/portable/IDLEntity.java \
 	org/omg/CORBA/portable/IndirectionException.java \
@@ -5049,7 +5088,17 @@ org_omg_CORBA_portable_SRCS = \
 	org/omg/CORBA/portable/ServantObject.java \
 	org/omg/CORBA/portable/Streamable.java \
 	org/omg/CORBA/portable/UnknownException.java \
-	org/omg/CORBA/portable/ValueBase.java
+	org/omg/CORBA/portable/ValueBase.java \
+	org/omg/CORBA/portable/ValueFactory.java
+
+org_omg_CORBA_2_3_SRCS = \
+	org/omg/CORBA_2_3/ORB.java
+
+org_omg_CORBA_2_3_portable_SRCS = \
+	org/omg/CORBA_2_3/portable/Delegate.java \
+	org/omg/CORBA_2_3/portable/InputStream.java \
+	org/omg/CORBA_2_3/portable/ObjectImpl.java \
+	org/omg/CORBA_2_3/portable/OutputStream.java
 
 org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/Binding.java \
@@ -5063,6 +5112,7 @@ org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/BindingType.java \
 	org/omg/CosNaming/BindingTypeHelper.java \
 	org/omg/CosNaming/BindingTypeHolder.java \
+	org/omg/CosNaming/IstringHelper.java \
 	org/omg/CosNaming/NameComponent.java \
 	org/omg/CosNaming/NameComponentHelper.java \
 	org/omg/CosNaming/NameComponentHolder.java \
@@ -5110,6 +5160,17 @@ org_omg_CosNaming_NamingContextPackage_SRCS = \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReason.java \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHelper.java \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHolder.java
+
+org_omg_Messaging_SRCS = \
+	org/omg/Messaging/SYNC_WITH_TRANSPORT.java \
+	org/omg/Messaging/SyncScopeHelper.java
+
+org_omg_SendingContext_SRCS = \
+	org/omg/SendingContext/RunTimeOperations.java \
+	org/omg/SendingContext/Runtime.java
+
+org_omg_stub_java_rmi_SRCS = \
+	org/omg/stub/java/rmi/_Remote_Stub.java
 
 org_tritonus_core_SRCS = \
 	org/tritonus/core/Service.java \

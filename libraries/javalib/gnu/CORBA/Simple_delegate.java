@@ -238,13 +238,12 @@ public class Simple_delegate
   }
 
   /**
-   * Not implemented for this delegate.
+   * This should never be called this type delegate.
    *
-   * @throws NO_IMPLEMENT, always.
+   * @throws InternalError, always.
    */
   public Request request(org.omg.CORBA.Object target, String operation)
   {
-    /**@todo Implement this org.omg.CORBA.portable.Delegate abstract method*/
-    throw new java.lang.UnsupportedOperationException("Method request() not yet implemented.");
+    throw new InternalError();
   }
 }

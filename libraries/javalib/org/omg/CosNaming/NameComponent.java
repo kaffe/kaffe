@@ -49,6 +49,11 @@ public final class NameComponent
   implements IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -1052538183391762390L;
+
+  /**
    * The name component identifier.
    */
   public String id;

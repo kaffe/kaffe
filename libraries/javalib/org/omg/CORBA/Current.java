@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import org.omg.CORBA.portable.IDLEntity;
 
 /**
  * The interfaces, derived from this class, define the objects, providing

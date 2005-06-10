@@ -54,6 +54,11 @@ public final class CannotProceed
   implements IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -8627405252527310782L;
+
+  /**
    * The relevant naming contex.
    */
   public NamingContext cxt;

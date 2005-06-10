@@ -38,9 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import gnu.CORBA.primitiveArrayTypeCode;
+import gnu.CORBA.Restricted_ORB;
 
-import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 
@@ -52,6 +51,11 @@ import org.omg.CORBA.portable.OutputStream;
  */
 public abstract class CompletionStatusHelper
 {
+  /**
+   * The cached typecode value, computed once.
+   */
+  private static TypeCode typeCode;
+
   /**
    * Extract the {@link CompletionStatus} from the
    * given {@link Any}. This implementation expects
@@ -68,7 +72,7 @@ public abstract class CompletionStatusHelper
   }
 
   /**
-   * Returns the agreed Id. 
+   * Returns the agreed Id.
    * @return <code>IDL:omg.org/CORBA/CompletionStatus:1.0</code>, always.
    */
   public static String id()
@@ -112,5 +116,25 @@ public abstract class CompletionStatusHelper
   public static void write(OutputStream output, CompletionStatus status)
   {
     output.write_long(status.value());
+  }
+
+  /**
+   * Get the parameter mode typecode (enumeration, named "CompletionStatus").
+   * The typecode states that the enumeration can obtain one of
+   * the following values:  COMPLETED_YES ,COMPLETED_NO or COMPLETED_MAYBE .
+   */
+  public static TypeCode type()
+  {
+    if (typeCode == null)
+      {
+        String[] members =
+          new String[] { "COMPLETED_YES", "COMPLETED_NO", "COMPLETED_MAYBE" };
+
+        typeCode =
+          Restricted_ORB.Singleton.create_enum_tc(id(), "CompletionStatus",
+                                                  members
+                                                 );
+      }
+    return typeCode;
   }
 }

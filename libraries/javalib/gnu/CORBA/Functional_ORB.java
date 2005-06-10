@@ -83,6 +83,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import gnu.CORBA.GIOP.CloseMessage;
 
 /**
  * The ORB implementation, capable to handle remote invocations on the
@@ -102,7 +103,6 @@ public class Functional_ORB
   class portServer
     extends Thread
   {
-
     /**
      * The number of the currently running parallel threads.
      */
@@ -145,7 +145,10 @@ public class Functional_ORB
         }
       catch (IOException ex)
         {
-          throw new BAD_OPERATION("Unable to open the server socket.");
+          BAD_OPERATION bad =
+            new BAD_OPERATION("Unable to open the server socket.");
+          bad.initCause(ex);
+          throw bad;
         }
 
       while (running)
@@ -264,7 +267,7 @@ public class Functional_ORB
    */
   private int TOUT_START_READING_MESSAGE = 20 * 1000;
 
-  // (Here and below, we use * to make meaning of the constant clearler).
+  // (Here and below, we use * to make the meaning of the constant clearler).
 
   /**
    * If the client has started to send the request message, the socket time
@@ -283,17 +286,11 @@ public class Functional_ORB
    * Some clients tend to submit multiple requests over the
    * same socket. The server waits for the next request on
    * the same socket for the duration, specified
-   * below. The default time is seven seconds.
+   * below. In additions, the request of this implementation also
+   * waits for the same duration before closing the socket.
+   * The default time is seven seconds.
    */
-  public int TANDEM_REQUESTS = 7000;
-
-  /**
-   * If the maximal number of threads per object is reached,
-   * the server waits for the given time interval before checking
-   * again maybe some threads are already complete.
-   * Thr default time is 0.5 second.
-   */
-  public int PAUSE_ON_THREAD_OVERLOAD = 500;
+  public static int TANDEM_REQUESTS = 7000;
 
   /**
    * The map of the already conncted objects.
@@ -372,7 +369,10 @@ public class Functional_ORB
       }
     catch (UnknownHostException ex)
       {
-        throw new BAD_OPERATION("Unable to resolve the local host address.");
+        BAD_OPERATION bad =
+          new BAD_OPERATION("Unable to open the server socket.");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 
@@ -411,6 +411,7 @@ public class Functional_ORB
                   throws BAD_OPERATION
   {
     ServerSocket s;
+    int a_port;
 
     try
       {
@@ -431,14 +432,14 @@ public class Functional_ORB
         // OK then, use a new port.
       }
 
-    for (int i = Port; i < Port + 20; i++)
+    for (a_port = Port; a_port < Port + 20; a_port++)
       {
         try
           {
-            s = new ServerSocket(i);
+            s = new ServerSocket(a_port);
             s.close();
-            Port = i + 1;
-            return s.getLocalPort();
+            Port = a_port + 1;
+            return a_port;
           }
         catch (IOException ex)
           {
@@ -450,12 +451,16 @@ public class Functional_ORB
       {
         // Try any port.
         s = new ServerSocket();
+        a_port = s.getLocalPort();
         s.close();
-        return s.getLocalPort();
+        return a_port;
       }
-    catch (IOException ex1)
+    catch (IOException ex)
       {
-        throw new NO_RESOURCES("Unable to open the server socket");
+        NO_RESOURCES bad =
+          new NO_RESOURCES("Unable to open the server socket.");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 
@@ -728,7 +733,9 @@ public class Functional_ORB
       }
     catch (Exception ex)
       {
-        throw new InvalidName(name + ":" + ex.getMessage());
+        InvalidName err = new InvalidName(name);
+        err.initCause(ex);
+        throw err;
       }
     if (object != null)
       return object;
@@ -918,10 +925,13 @@ public class Functional_ORB
               }
             catch (NumberFormatException ex)
               {
-                throw new BAD_PARAM("Invalid " + NS_PORT +
-                                    "property, unable to parse '" +
-                                    props.getProperty(NS_PORT) + "'"
-                                   );
+                BAD_PARAM bad =
+                  new BAD_PARAM("Invalid " + NS_PORT +
+                                "property, unable to parse '" +
+                                props.getProperty(NS_PORT) + "'"
+                               );
+                bad.initCause(ex);
+                throw bad;
               }
           }
       }
@@ -1082,6 +1092,7 @@ public class Functional_ORB
     handler.getBuffer().buffer.writeTo(out);
 
     MessageHeader msh_reply = new MessageHeader();
+
     msh_reply.version = msh_request.version;
     msh_reply.message_type = MessageHeader.REPLY;
     msh_reply.message_size = out.buffer.size();
@@ -1111,9 +1122,10 @@ public class Functional_ORB
     service = serverSocket.accept();
 
     // Tell the server there are no more resources.
-    while (p.running_threads >= MAX_RUNNING_THREADS)
+    if (p.running_threads >= MAX_RUNNING_THREADS)
       {
         serveStep(service, true);
+        return;
       }
 
     new Thread()
@@ -1192,7 +1204,7 @@ public class Functional_ORB
             reading:
             while (n < r.length)
               {
-                n = in.read(r, n, r.length - n);
+                n += in.read(r, n, r.length - n);
               }
 
             service.setSoTimeout(TOUT_AFTER_RECEIVING);
@@ -1205,6 +1217,7 @@ public class Functional_ORB
                 cin.setOrb(this);
                 cin.setVersion(msh_request.version);
                 cin.setOffset(msh_request.getHeaderSize());
+                cin.setBigEndian(msh_request.isBigEndian());
 
                 rh_request = msh_request.create_request_header();
 
@@ -1233,7 +1246,8 @@ public class Functional_ORB
 
                 try
                   {
-                    if (no_resources) throw new NO_RESOURCES();
+                    if (no_resources)
+                      throw new NO_RESOURCES();
                     if (target == null)
                       throw new OBJECT_NOT_EXIST();
                     target._invoke(rh_request.operation, cin, handler);
@@ -1266,6 +1280,14 @@ public class Functional_ORB
                                      );
                   }
               }
+            else if (msh_request.message_type == MessageHeader.CLOSE_CONNECTION ||
+                     msh_request.message_type == MessageHeader.MESSAGE_ERROR
+                    )
+              {
+                CloseMessage.close(service.getOutputStream());
+                service.close();
+                return;
+              }
             else
               ;
 
@@ -1273,7 +1295,7 @@ public class Functional_ORB
             if (service != null && !service.isClosed())
               {
                 // Wait for the subsequent invocations on the
-                // same socket for 2 minutes.
+                // same socket for the TANDEM_REQUEST duration.
                 service.setSoTimeout(TANDEM_REQUESTS);
               }
             else

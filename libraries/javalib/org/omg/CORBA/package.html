@@ -54,7 +54,14 @@ including the fully functional Object Request Broker ({@link org.omg.CORBA.ORB})
  object references, primitive types, narrow and wide strings, arrays, structures 
  and trees between these two platforms. The thrown exceptions are also transferred 
  and handled. The support for stringified object references (IORs) is implemented.
- The redirection commands works. 
+ The redirection commands works, LOCATION_FORWARD_PERM changing the target address
+ until the application is restarted and LOCATION_FORWARD redirecting for the
+ current session only. Both Little and Big Endian encoded messages
+ are accepted. The encoding of the sent messages is the same as used in the 
+ stringified IOR reference of that object or Big Endian, if no such data
+ available.
+ </p>
+ <p>
  You can use both request-oriented (based on {@link org.omg.CORBA.Request}) 
  and stream-oriented (based on {@link org.omg.CORBA.portable.ObjectImpl}) 
  invocation models. The current release includes the working examples, demonstrating
@@ -62,7 +69,8 @@ including the fully functional Object Request Broker ({@link org.omg.CORBA.ORB})
  how to use the Classpath naming service. The IDL compiler is not yet written, 
  but as a side effect of the required compatibility, the implementation seems 
  accepting the output of the Sun's 1.3 idlj.</p>
-
+ 
+ @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
 </body>
 </html>
 

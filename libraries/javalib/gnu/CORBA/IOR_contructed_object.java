@@ -97,4 +97,13 @@ public class IOR_contructed_object
   {
     return getClass().getName() + ":IOR:" + ior;
   }
+
+  /**
+   * Calls realease on the delegate.
+   */
+  protected void finalize()
+                   throws java.lang.Throwable
+  {
+    _get_delegate().release(this);
+  }
 }

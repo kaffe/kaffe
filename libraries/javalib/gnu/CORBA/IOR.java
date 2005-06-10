@@ -64,9 +64,6 @@ import java.io.IOException;
  * decoding the IOR information from/to the stringified references,
  * usually returned by {@link org.omg.CORBA.ORB#String object_to_string()}.
  *
- * TODO the current implementation supports the IOP version 1.0 only.
- * TODO Little Endian (lower byte first) encoding, if anybody needs it.
- *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  *
  * @see org.mog.CORBA.Object.object_to_string(Object forObject)
@@ -276,6 +273,14 @@ public class IOR
   public byte[] key;
 
   /**
+   * True if the profile was encoded using the Big Endian or
+   * the encoding is not known.
+   *
+   * false if it was encoded using the Little Endian.
+   */
+  public boolean Big_Endian = true;
+
+  /**
    * Create an empty instance, initialising the code sets to default
    * values.
    */
@@ -345,10 +350,6 @@ public class IOR
    *
    * @param c a stream to read from.
    * @throws IOException if the stream throws it.
-   * @throws BAD_PARAM, minor code 10, if the stream contents
-   * requires to switch into currently unsupported Little Endian mode.
-   *
-   * FIXME TODO Implement Little Endian mode.
    */
   public void _read(cdrInput c)
              throws IOException, BAD_PARAM
@@ -357,9 +358,10 @@ public class IOR
 
     endian = c.read_long();
     if (endian != 0)
-      throw new BAD_PARAM("Little endian is not yet supported", FAILED,
-                          CompletionStatus.COMPLETED_NO
-                         );
+      {
+        Big_Endian = false;
+        c.setBigEndian(false);
+      }
     _read_no_endian(c);
   }
 
@@ -369,10 +371,15 @@ public class IOR
    * thansferred in this form in
    * {@link write_Object(org.omg.CORBA.Object)}.
    *
+   * If the stream contains a null value, the Id and Internet fields become
+   * equal to null. Otherwise Id contains some string (possibly
+   * empty).
+   *
+   * Id is checked for null in cdrInput that then returns
+   * null instead of object.
+   *
    * @param c a stream to read from.
    * @throws IOException if the stream throws it.
-   * @throws BAD_PARAM, minor code 10, if the stream contents
-   * requires to switch into currently unsupported Little Endian mode.
    */
   public void _read_no_endian(cdrInput c)
                        throws IOException, BAD_PARAM
@@ -380,6 +387,13 @@ public class IOR
     Id = c.read_string();
 
     int n_profiles = c.read_long();
+
+    if (n_profiles == 0)
+      {
+        Id = null;
+        Internet = null;
+        return;
+      }
 
     for (int i = 0; i < n_profiles; i++)
       {
@@ -402,7 +416,8 @@ public class IOR
 
             try
               {
-                n_components = profile.read_long();
+                if (Internet.version.since_inclusive(1, 1))
+                  n_components = profile.read_long();
 
                 for (int t = 0; t < n_components; t++)
                   {
@@ -431,6 +446,21 @@ public class IOR
     // Always use Big Endian.
     out.write(0);
     _write_no_endian(out);
+  }
+
+  /**
+   * Write a null value to the CDR output stream.
+   *
+   * The null value is written as defined in OMG specification
+   * (zero length string, followed by an empty set of profiles).
+   */
+  public static void write_null(cdrOutput out)
+  {
+    // Empty Id string.
+    out.write_string("");
+
+    // Empty set of profiles.
+    out.write_long(0);
   }
 
   /**
@@ -487,6 +517,10 @@ public class IOR
     b.append(Id);
     b.append(" at ");
     b.append(Internet);
+
+    if (!Big_Endian)
+      b.append(" (Little endian) ");
+
     b.append(" Key ");
 
     for (int i = 0; i < key.length; i++)

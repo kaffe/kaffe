@@ -40,6 +40,7 @@ package gnu.CORBA;
 
 import gnu.CORBA.CDR.cdrBufInput;
 import gnu.CORBA.CDR.cdrBufOutput;
+import gnu.CORBA.GIOP.CloseMessage;
 import gnu.CORBA.GIOP.MessageHeader;
 import gnu.CORBA.GIOP.ReplyHeader;
 import gnu.CORBA.GIOP.RequestHeader;
@@ -56,20 +57,22 @@ import org.omg.CORBA.ContextList;
 import org.omg.CORBA.Environment;
 import org.omg.CORBA.ExceptionList;
 import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.NO_RESOURCES;
 import org.omg.CORBA.NVList;
 import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.TypeCode;
+import org.omg.CORBA.UnknownUserException;
 import org.omg.CORBA.UserException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.net.BindException;
 import java.net.Socket;
-import org.omg.CORBA.UnknownUserException;
 
 /**
  * The implementation of the CORBA request.
@@ -86,9 +89,23 @@ public class gnuRequest
   public static Version MAX_SUPPORTED = new Version(1, 2);
 
   /**
-   * The request reading buffer size.
+   * The initial pause that the Request makes when
+   * the required port is not available.
    */
-  public static final int READ_BUFFER_SIZE = 2048;
+  public static int PAUSE_INITIAL = 50;
+
+  /**
+   * The number of repretetive attempts to get a required
+   * port, if it is not immediately available.
+   */
+  public static int PAUSE_STEPS = 12;
+
+  /**
+   * The maximal pausing interval between two repetetive attempts.
+   * The interval doubles after each unsuccessful attempt, but
+   * will not exceed this value.
+   */
+  public static int PAUSE_MAX = 1000;
 
   /**
    * The empty byte array.
@@ -173,13 +190,26 @@ public class gnuRequest
   private ORB orb;
 
   /**
+   * The encoding, used to send the message.
+   *
+   * The default encoding is inherited from the set IOR
+   * (that string reference can be encoded in either Big or
+   * Little endian). If the IOR encoding is not known
+   * (for example, by obtaining the reference from the naming
+   * service), the Big Endian is used.
+   */
+  private boolean Big_endian = true;
+
+  /**
    * Set the IOR data, sufficient to find the invocation target.
+   * This also sets default endian encoding for invocations.
    *
    * @see IOR.parse(String)
    */
   public void setIor(IOR an_ior)
   {
     ior = an_ior;
+    setBigEndian(ior.Big_Endian);
   }
 
   /**
@@ -198,6 +228,22 @@ public class gnuRequest
   public void setORB(ORB an_orb)
   {
     orb = an_orb;
+  }
+
+  /**
+   * Set the encoding that will be used to send the message.
+   * The default encoding is inherited from the set IOR
+   * (that string reference can be encoded in either Big or
+   * Little endian). If the IOR encoding is not known
+   * (for example, by obtaining the reference from the naming
+   * service), the Big Endian is used.
+   *
+   * @param use_big_endian true to use the Big Endian, false
+   * to use the Little Endian encoding.
+   */
+  public void setBigEndian(boolean use_big_endian)
+  {
+    Big_endian = use_big_endian;
   }
 
   /**
@@ -221,6 +267,7 @@ public class gnuRequest
     m_parameter_buffer.setVersion(ior.Internet.version);
     m_parameter_buffer.setCodeSet(cxCodeSet.negotiate(ior.CodeSets));
     m_parameter_buffer.setOrb(orb);
+    m_parameter_buffer.setBigEndian(Big_endian);
     return m_parameter_buffer;
   }
 
@@ -575,6 +622,8 @@ public class gnuRequest
   {
     gnu.CORBA.GIOP.MessageHeader header = new gnu.CORBA.GIOP.MessageHeader();
 
+    header.setBigEndian(Big_endian);
+
     // The byte order will be Big Endian by default.
     header.message_type = gnu.CORBA.GIOP.MessageHeader.REQUEST;
     header.version = useVersion(ior.Internet.version);
@@ -591,6 +640,7 @@ public class gnuRequest
     request_part.setVersion(header.version);
     request_part.setCodeSet(cxCodeSet.negotiate(ior.CodeSets));
     request_part.setOrb(orb);
+    request_part.setBigEndian(header.isBigEndian());
 
     // This also sets the stream encoding to the encoding, specified
     // in the header.
@@ -615,9 +665,54 @@ public class gnuRequest
     // Now the message size is available.
     header.message_size = request_part.buffer.size();
 
+    Socket socket = null;
+
+    java.lang.Object key = ior.Internet.host+":"+ior.Internet.port;
+
+    synchronized (SocketRepository.class)
+      {
+        socket = SocketRepository.get_socket(key);
+      }
+
     try
       {
-        Socket socket = new Socket(ior.Internet.host, ior.Internet.port);
+        long pause = PAUSE_INITIAL;
+
+        if (socket == null)
+          {
+            // The BindException may be thrown under very heavy parallel
+            // load. For some time, just wait, exceptiong the socket to free.
+            Open:
+            for (int i = 0; i < PAUSE_STEPS; i++)
+              {
+                try
+                  {
+                    socket = new Socket(ior.Internet.host, ior.Internet.port);
+                    break Open;
+                  }
+                catch (BindException ex)
+                  {
+                    try
+                      {
+                        // Expecting to free a socket via finaliser.
+                        System.gc();
+                        Thread.sleep(pause);
+                        pause = pause * 2;
+                        if (pause > PAUSE_MAX)
+                          pause = PAUSE_MAX;
+                      }
+                    catch (InterruptedException iex)
+                      {
+                      }
+                  }
+              }
+          }
+
+        if (socket == null)
+          throw new NO_RESOURCES(ior.Internet.host + ":" + ior.Internet.port +
+                                 " in use"
+                                );
+        socket.setKeepAlive(true);
 
         OutputStream socketOutput = socket.getOutputStream();
 
@@ -639,18 +734,35 @@ public class gnuRequest
             reading:
             while (n < r.length)
               {
-                n = socketInput.read(r, n, r.length - n);
+                n += socketInput.read(r, n, r.length - n);
               }
-            socketInput.close();
             return new binaryReply(orb, response_header, r);
           }
         else
           return EMPTY;
       }
-    catch (IOException ex1)
+    catch (IOException io_ex)
       {
-        ex1.printStackTrace();
         return null;
+      }
+    finally
+      {
+        try
+          {
+            if (socket != null && !socket.isClosed())
+              {
+                socket.setSoTimeout(Functional_ORB.TANDEM_REQUESTS);
+                SocketRepository.put_socket(key,
+                                            socket
+                                           );
+              }
+          }
+        catch (IOException scx)
+          {
+            InternalError ierr = new InternalError();
+            ierr.initCause(scx);
+            throw ierr;
+          }
       }
   }
 
@@ -814,6 +926,7 @@ public class gnuRequest
             }
 
           setIor(forwarded);
+
           // Repeat with the forwarded information.
           p_invoke();
           return;

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
+import org.omg.CORBA.DynAnyPackage.InvalidSeq;
+
 /**
  * Represents the {@link DynAny}, holding a value type.
  *
@@ -52,6 +54,7 @@ package org.omg.CORBA;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public interface DynValue
+  extends DynAny, org.omg.CORBA.Object
 {
   /**
    * Get the kind of the member, pointed by the internal pointer.
@@ -77,6 +80,9 @@ public interface DynValue
    * Set all members for the enclosed value type object.
    *
    * @param value an array of members to set.
+   *
+   * @throws InvalidSeq if the passed sequence is not valid.
    */
-  void set_members(NameValuePair[] value);
+  void set_members(NameValuePair[] value)
+            throws InvalidSeq;
 }

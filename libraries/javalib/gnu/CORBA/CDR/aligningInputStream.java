@@ -106,7 +106,9 @@ public class aligningInputStream
       }
     catch (Exception ex)
       {
-        throw new BAD_PARAM("Unable to align at " + alignment);
+        BAD_PARAM p = new BAD_PARAM("Unable to align at " + alignment);
+        p.initCause(ex);
+        throw p;
       }
   }
 

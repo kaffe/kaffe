@@ -57,6 +57,11 @@ public class encapsulatedOutput
   public static final byte BIG_ENDIAN = 0;
 
   /**
+   * The Little Endian (least siginificant byte first flag).
+   */
+  public static final byte LITTLE_ENDIAN = 1;
+
+  /**
    * The byte buffer.
    */
   public final aligningOutputStream buffer;
@@ -67,16 +72,17 @@ public class encapsulatedOutput
   public final org.omg.CORBA.portable.OutputStream parent;
 
   /**
-   * Create the EncapsulationOutput with the default buffer size
-   * and the given parent stream.
-    */
-  public encapsulatedOutput(org.omg.CORBA.portable.OutputStream _parent)
+   * Create the EncapsulationOutput with the given parent stream
+   * and the specified encoding.
+   */
+  public encapsulatedOutput(org.omg.CORBA.portable.OutputStream _parent,
+                            boolean use_big_endian)
   {
     super();
     buffer = new aligningOutputStream();
     setOutputStream(buffer);
     parent = _parent;
-    write(BIG_ENDIAN);
+    write(use_big_endian?BIG_ENDIAN:LITTLE_ENDIAN);
   }
 
   /**
@@ -109,7 +115,9 @@ public class encapsulatedOutput
       }
     catch (IOException ex)
       {
-        throw new InternalError();
+        InternalError err = new InternalError();
+        err.initCause(ex);
+        throw err;
       }
   }
 

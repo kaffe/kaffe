@@ -75,7 +75,9 @@ public abstract class NameHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Name expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Name expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

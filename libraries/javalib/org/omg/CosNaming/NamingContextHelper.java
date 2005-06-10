@@ -76,7 +76,9 @@ public abstract class NamingContextHelper
       }
     catch (ClassCastException ex)
       {
-        throw new BAD_OPERATION("Naming context expected");
+        BAD_OPERATION bad = new BAD_OPERATION("Naming context expected");
+        bad.initCause(ex);
+        throw bad;
       }
   }
 

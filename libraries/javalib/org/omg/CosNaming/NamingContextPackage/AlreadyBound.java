@@ -53,6 +53,11 @@ public final class AlreadyBound
   implements IDLEntity
 {
   /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = -5456929050527586560L;
+
+  /**
    * Creates the expection with no details.
    */
   public AlreadyBound()

@@ -50,4 +50,8 @@ public final class NotEmpty
   extends UserException
   implements IDLEntity
 {
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 7120362687417045881L;
 }

@@ -1,6 +1,247 @@
 2005-06-10  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-06-10  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/SendingContext/package.html,
+	org/omg/CORBA/SendingContext/Runtime.java,
+	org/omg/CORBA/SendingContext/RuntimeOperations.java: Removed.
+	* org/omg/SendingContext/package.html,
+	org/omg/SendingContext/Runtime.java,
+	org/omg/SendingContext/RuntimeOperations.java: Added.
+
+	2005-06-08 Audrius Meskauskas <AudriusA@Bioinformatics.org>.
+
+	* org/omg/CORBA/CustomValue.java,
+	org/omg/CORBA/CustomMarshal.java,
+	org/omg/CORBA/DataOutputStream.java,
+	org/omg/CORBA/DataInputStream.java: New classes.
+
+	2005-06-08  Audrius Meskauskas <AudriusA@Bioinformatics.org>.
+
+	* org/omg/CORBA/UnionMemberHelper.java,
+	org/omg/CORBA/ValueMemberHelper.java,
+	org/omg/CORBA/StructMemberHelper.java,
+	org/omg/CORBA/IDLTypeHelper.java,
+	org/omg/CORBA/_IDLTypeStub.java: New files.
+	* gnu/CORBA/IOR.java (write_null, _read_no_endian),
+	gnu/CORBA/CDR/cdrInput.java (read_Object),
+	gnu/CORBA/CDR/cdrOutput.java (write_Object):
+	Implemented sending of java null.
+
+	2005-06-07  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/IOR_Delegate.java (release),
+	gnu/CORBA/IOR_contructed_object.java (finalize):
+	Close the associated socket if the finalizer is called.
+	gnu/CORBA/gnuRequest.java (submit),
+	gnu/CORBA/Functional_ORB.java (serveStep): Try to reuse the opened sockets.
+	* gnu/CORBA/SocketRepository.java,
+	gnu/CORBA/GIOP/CloseMessage.java: New files.
+
+	2005-06-06  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/CompletionStatusHelper.java (type): New method.
+	* org/omg/CORBA/Current.java: Inherit from org.omg.portable.IDLEntity.
+
+	2005-06-06  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/StringValueHelper.java,
+	org/omg/CORBA/WStringValueHelper.java: New helpers.
+	* org/omg/CORBA/portable/BoxedValueHelper.java: Documentation update.
+
+	2005-06-05  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/VisibilityHelper.java: New helper.
+
+	2005-06-05  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/stub/java/rmi/_Remote_Stub.java:
+	Inheriting from Stub, Remote and Serializable.
+
+	2005-06-05  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org\omg\CORBA\portable\ValueFactory.java (read_value): Changed 
+	parameter type to org.omg.CORBA_2_3.portable.InputStream.
+	* org\omg\CosNaming\_BindingIteratorStub.java,
+	* org\omg\CosNaming\_NamingContextStub.java: Fixed serialVersionUID.
+	* org\omg\CORBA_2_3\portable\InputStream.java 
+	(read_value(BoxedValueHelper)): Implemented.
+	* org\omg\CORBA_2_3\portable\OutputStream.java 
+	(write_abstract_interface): 
+	Changed parameter type to java.lang.Object.
+	* org\omg\CORBA\portable\BoxedValueHelper.java: 
+	Moved wrongly placed bracket.
+	* org\omg\CORBA\ParameterMode.java: Inherit from
+	Serializable, IDLEntity and removing duplicated header.
+	(_PARAM_IN, _PARAM_OUT, _PARAM_INOUT): Making final.
+	* org\omg\Messaging\SyncScopeHelper.java (extract, id, insert, 
+	read, type, write): Making public.
+
+	2005-06-04  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/DefinitionKindHelper.java,
+	org/omg/CORBA/FieldNameHelper.java,
+	org/omg/CORBA/IdentifierHelper.java,
+	org/omg/CORBA/ParameterMode.java,
+	org/omg/CORBA/ParameterModeHelper.java,
+	org/omg/CORBA/ParameterModeHolder.java,
+	org/omg/CORBA/RepositoryIdHelper.java,
+	org/omg/CORBA/SetOverrideTypeHelper.java,
+	org/omg/CORBA/VersionSpecHelper.java,
+	gnu/CORBA/SetOverrideTypeHolder.java,
+	gnu/CORBA/DefinitionKindHolder.java: New files.
+
+	2005-06-04  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/stub/java/rmi/_Remote_Stub.java,
+	org/omg/stub/java/rmi/package.html: New package.
+
+	2005-06-04  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/Messaging/SyncScopeHelper.java
+	org/omg/Messaging/SYNC_WITH_TRANSPORT.java
+	org/omg/Messaging/package.html: New package.
+
+	2005-06-03  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/portable/BoxedValueHelper.java,
+	org/omg/CORBA_2_3/portable/OutputStream.java,
+	org/omg/CORBA_2_3/portable/Delegate.java,
+	org/omg/CORBA_2_3/portable/ObjectImpl.java,
+	org/omg/CORBA_2_3/portable/package.html: New files.
+
+	2005-06-03  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CosNaming/NamingContextPackage/AlreadyBound.java,
+	org/omg/CosNaming/NamingContextPackage/CannotProceed.java,
+	org/omg/CosNaming/NamingContextPackage/InvalidName.java,
+	org/omg/CosNaming/NamingContextPackage/NotEmpty.java,
+	org/omg/CosNaming/NamingContextPackage/NotFound.java,
+	org/omg/CosNaming/NamingContextPackage/NotFoundReason.java:
+	Added SerialVersionUID.
+
+	2005-06-03  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/GIOP/uncObjectInputStream.java,
+	gnu/CORBA/GIOP/uncObjectInputStream/uncObjectOutputStream.java:
+	Deleting files.
+	* gnu/CORBA/CDR/uncObjectInputStream.java,
+	gnu/CORBA/CDR/uncObjectInputStream/uncObjectOutputStream.java:
+	Adding files.
+
+	2005-06-03  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Functional_ORB.java,
+	gnu/CORBA/IOR_Delegate.java,
+	gnu/CORBA/Simple_delegate.java,
+	gnu/CORBA/universalHolder.java,
+	gnu/CORBA/CDR/aligningInputStream.java,
+	gnu/CORBA/CDR/aligningOutputStream.java,
+	gnu/CORBA/CDR/cdrInput.java,
+	gnu/CORBA/CDR/cdrOutput.java,
+	gnu/CORBA/CDR/encapsulatedOutput.java,
+	gnu/CORBA/GIOP/ErrorMessage.java,
+	gnu/CORBA/GIOP/MessageHeader.java,
+	gnu/CORBA/GIOP/cxCodeSet.java,
+	gnu/CORBA/GIOP/v1_2/RequestHeader.java,
+	org/omg/CosNaming/BindingIteratorHelper.java,
+	org/omg/CosNaming/BindingListHelper.java,
+	org/omg/CosNaming/BindingTypeHelper.java,
+	org/omg/CosNaming/NameComponentHelper.java,
+	org/omg/CosNaming/NameHelper.java,
+	org/omg/CosNaming/NamingContextExtHelper.java,
+	org/omg/CosNaming/NamingContextHelper.java:
+	Initialise instances of org.omg.SystemException, thrown
+	after catching the other exception, with InitCause.
+
+	2005-06-03  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/GIOP/uncObjectInputStream.java,
+	gnu/CORBA/GIOP/uncObjectInputStream/uncObjectOutputStream.java: New streams.
+	* org/omg/CORBA/ValueBaseHelper.java: Removing inner classes,
+	using uncObjectInputStream, uncObjectOutputStream instead.
+	* org/omg/CORBA_2_3/portable.InputStream.java (read_value): 
+	Delegate call to ValueBaseHelper.
+
+	2005-06-03  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/SendingContext/Runtime.java,
+	org/omg/CORBA/SendingContext/RunTimeOperations.java:
+	Fixing the package statement.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/SendingContext/package.html,
+	org/omg/SendingContext/RunTimeOperations.java,
+	org/omg/SendingContext/Runtime.java: New package.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CosNaming/BindingType.java,
+	org/omg/CosNaming/NameComponent.java,
+	org/omg/CosNaming/_BindingIteratorStub.java,
+	org/omg/CosNaming/_NamingContextStub.java,
+	org/omg/CosNaming/_NamingContextExtStub.java,	
+	org/omg/CosNaming/_BindingIteratorImplBase.java,
+	org/omg/CosNaming/_NamingContextImplBase.java: Added SerialVersionUID.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+	
+	* org/omg/CosNaming/IstringHelper.java: New class.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/CDR/cdrInput.java (read_wstring): Correcting
+	check for native encoding.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Functional_ORB.java (serveStep),
+	gnu/CORBA/gnuRequest.java (submit),
+	gnu/CORBA/CDR/cdrInput.java (read_encapsulation): Correcting
+	data read loop.
+
+	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Functional_ORG.java (getFreePort): Remember
+	the port number in the local variable.
+
+	2005-05-31  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA_2_3/ORB.java,
+	org/omg/CORBA_2_3/portable/InputStream.java,
+	org/omg/CORBA/portable/ValueFactory.java: New classes.
+
+	2005-05-31  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+	* org/omg.CORBA/DynValue.java (declaration): Inherit from DynAny,
+	org.omg.CORBA.Object. (set_members): Declare it may throw InvalidSeq.
+
+	2005-05-31 Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/CDR/BigEndianInputStream.java,
+	gnu/CORBA/CDR/BigEndianOutputStream.java,
+	gnu/CORBA/CDR/LittleEndianInputStream.java,
+	gnu/CORBA/CDR/LittleEndianOutputStream.java: New streams.
+	gnu/CORBA/CDR/abstractDataInputStream.java,
+	gnu/CORBA/CDR/abstractDataOutputStream.java: New interfaces.
+	* gnu/CORBA/IOR.java: Implemented parsing of the Little
+	Endian encoded IOR references. 
+	* gnu/CORBA/Functional_ORB.java, 
+	gnu/CORBA/binaryReply.java, 
+	gnu/CORBA/gnuRequest.java, 
+	gnu/CORBA/CDR/cdrInput.java, 
+	gnu/CORBA/CDR/cdrOutput.java, 
+	gnu/CORBA/CDR/encapsulatedOutput.java, 
+	gnu/CORBA/GIOP/MessageHeader.java: Implemented support
+	for Big and Little Endian.
+	* org/omg/CORBA/package.html: Documentation update.
+
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-05-31  Jeroen Frijters  <jeroen@frijters.net>
 
