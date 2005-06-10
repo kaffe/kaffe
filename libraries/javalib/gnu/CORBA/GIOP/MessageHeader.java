@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.NO_IMPLEMENT;
+
 import org.omg.CORBA.portable.IDLEntity;
 
 /**
@@ -263,7 +265,7 @@ public class MessageHeader
 
         /** TODO implement support for the little endian. */
         if (!isBigEndian())
-          throw new MARSHAL("Little endian unsupported.");
+          throw new NO_IMPLEMENT("Little endian unsupported.");
 
         message_type = (byte) din.read();
         message_size = din.readInt();

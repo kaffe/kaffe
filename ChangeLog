@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-30  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Functional_ORB.java (serve, portServer, serveStep):
+	Implemented support for the subsequent invocations reusing the same
+	socket.
+	* gnu/CORBA/GIOP/MessageHeader.java (read): throw
+	NO_IMPLEMENT, not MARSHAL for Little Endian request.
+	
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-30  Roman Kennke  <roman@kennke.org>
 
 	* javax/swing/JLayeredPane.java
