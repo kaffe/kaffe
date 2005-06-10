@@ -1,3 +1,11 @@
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-05-29  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/LinkedHashMap.java (access): Set 'root.pred'.
+
 2005-06-09  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/classMethod.c (expandMethods): create new parsed_signature_t for
