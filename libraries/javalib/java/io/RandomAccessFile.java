@@ -122,7 +122,7 @@ public class RandomAccessFile implements DataOutput, DataInput
           s.checkWrite(fileName);
       }
 
-    ch = new FileChannelImpl (file, fdmode);
+    ch = FileChannelImpl.create(file, fdmode);
     fd = new FileDescriptor(ch);
     out = new DataOutputStream (new FileOutputStream (fd));
     in = new DataInputStream (new FileInputStream (fd));

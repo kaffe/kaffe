@@ -155,7 +155,7 @@ public class FileOutputStream extends OutputStream
     if (s != null)
       s.checkWrite(file.getPath());
 
-   ch = new FileChannelImpl (file, (append
+   ch = FileChannelImpl.create(file, (append
 				    ? FileChannelImpl.WRITE
 				    | FileChannelImpl.APPEND
 				    : FileChannelImpl.WRITE));

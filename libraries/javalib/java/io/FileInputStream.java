@@ -107,7 +107,7 @@ public class FileInputStream extends InputStream
     if (s != null)
       s.checkRead(file.getPath());
 
-    ch = new FileChannelImpl (file, FileChannelImpl.READ);
+    ch = FileChannelImpl.create(file, FileChannelImpl.READ);
   }
 
   /**

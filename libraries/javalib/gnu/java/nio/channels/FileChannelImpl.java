@@ -97,12 +97,17 @@ public final class FileChannelImpl extends FileChannel
 
   private int mode;
 
-  public FileChannelImpl ()
+  /* Open a file.  MODE is a combination of the above mode flags. */
+  /* This is a static factory method, so that VM implementors can decide
+   * substitute subclasses of FileChannelImpl. */
+  public static FileChannelImpl create(File file, int mode)
+    throws FileNotFoundException
   {
+    return new FileChannelImpl(file, mode);
   }
 
-  /* Open a file.  MODE is a combination of the above mode flags. */
-  public FileChannelImpl (File file, int mode) throws FileNotFoundException
+  private FileChannelImpl(File file, int mode)
+    throws FileNotFoundException
   {
     final String path = file.getPath();
     fd = open (path, mode);
