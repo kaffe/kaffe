@@ -56,6 +56,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.TreeUI;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -1703,5 +1704,80 @@ public class JTree extends JComponent
           }
       }
     return relevantPaths.elements();
+  }
+
+  /**
+   * Returns the next table element (beginning from the row
+   * <code>startingRow</code>
+   * that starts with <code>prefix</code>. Searching is done in the direction
+   * specified by <code>bias</code>.
+   *
+   * @param prefix the prefix to search for in the cell values
+   * @param startingRow the index of the row where to start searching from
+   * @param bias the search direction, either {@link Position.Bias.Forward}
+   *     or {@link Position.Bias.Backward}
+   *
+   * @return the path to the found element or -1 if no such element has
+   *     been found
+   *
+   * @throws IllegalArgumentException if prefix is <code>null</code> or
+   *     startingRow is not valid
+   *
+   * @since 1.4
+   */
+  public TreePath getNextMatch(String prefix, int startingRow,
+                               Position.Bias bias)
+  {
+    if (prefix == null)
+      throw new IllegalArgumentException("The argument 'prefix' must not be"
+                                         + " null.");
+    if (startingRow < 0)
+      throw new IllegalArgumentException("The argument 'startingRow' must not"
+                                         + " be less than zero.");
+
+    int size = getRowCount();
+    if (startingRow > size)
+      throw new IllegalArgumentException("The argument 'startingRow' must not"
+                                         + " be greater than the number of"
+                                         + " elements in the TreeModel.");
+
+    TreePath foundPath = null;
+    if (bias == Position.Bias.Forward)
+      {
+        for (int i = startingRow; i < size; i++)
+          {
+            TreePath path = getPathForRow(i);
+            Object o = path.getLastPathComponent();
+            // FIXME: in the following call to convertValueToText the
+            // last argument (hasFocus) should be done right.
+            String item = convertValueToText(o, isRowSelected(i),
+                                             isExpanded(i),
+                                             treeModel.isLeaf(o), i, false);
+            if (item.startsWith(prefix))
+              {
+                foundPath = path;
+                break;
+              }
+          }
+      }
+    else
+      {
+        for (int i = startingRow; i >= 0; i--)
+          {
+            TreePath path = getPathForRow(i);
+            Object o = path.getLastPathComponent();
+            // FIXME: in the following call to convertValueToText the
+            // last argument (hasFocus) should be done right.
+            String item = convertValueToText(o, isRowSelected(i),
+                                             isExpanded(i),
+                                             treeModel.isLeaf(o), i, false);
+            if (item.startsWith(prefix))
+              {
+                foundPath = path;
+                break;
+              }
+          }
+      }
+    return foundPath;
   }
 }

@@ -53,6 +53,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ListUI;
+import javax.swing.text.Position;
 
 /**
  * <p>This class is a facade over three separate objects: {@link
@@ -1334,5 +1335,82 @@ public class JList extends JComponent implements Accessible, Scrollable
     int old = layoutOrientation;
     layoutOrientation = orientation;
     firePropertyChange("layoutOrientation", old, orientation);
+  }
+
+  /**
+   * Returns the bounds of the rectangle that encloses both list cells
+   * with index0 and index1.
+   *
+   * @param index0 the index of the first cell
+   * @param index1 the index of the second cell
+   *
+   * @return  the bounds of the rectangle that encloses both list cells
+   *     with index0 and index1, <code>null</code> if one of the indices is
+   *     not valid
+   */
+  public Rectangle getCellBounds(int index0, int index1)
+  {
+    return ((ListUI) ui).getCellBounds(this, index0, index1);
+  }
+
+  /**
+   * Returns the next list element (beginning from <code>startIndex</code>
+   * that starts with <code>prefix</code>. Searching is done in the direction
+   * specified by <code>bias</code>.
+   *
+   * @param prefix the prefix to search for in the cell values
+   * @param startIndex the index where to start searching from
+   * @param bias the search direction, either {@link Position.Bias.Forward}
+   *     or {@link Position.Bias.Backward}
+   *
+   * @return the index of the found element or -1 if no such element has
+   *     been found
+   *
+   * @throws IllegalArgumentException if prefix is <code>null</code> or
+   *     startIndex is not valid
+   *
+   * @since 1.4
+   */
+  public int getNextMatch(String prefix, int startIndex, Position.Bias bias)
+  {
+    if (prefix == null)
+      throw new IllegalArgumentException("The argument 'prefix' must not be"
+                                         + " null.");
+    if (startIndex < 0)
+      throw new IllegalArgumentException("The argument 'startIndex' must not"
+                                         + " be less than zero.");
+
+    int size = model.getSize();
+    if (startIndex > model.getSize())
+      throw new IllegalArgumentException("The argument 'startIndex' must not"
+                                         + " be greater than the number of"
+                                         + " elements in the ListModel.");
+
+    int index = -1;
+    if (bias == Position.Bias.Forward)
+      {
+        for (int i = startIndex; i < size; i++)
+          {
+            String item = model.getElementAt(i).toString();
+            if (item.startsWith(prefix))
+              {
+                index = i;
+                break;
+              }
+          }
+      }
+    else
+      {
+        for (int i = startIndex; i >= 0; i--)
+          {
+            String item = model.getElementAt(i).toString();
+            if (item.startsWith(prefix))
+              {
+                index = i;
+                break;
+              }
+          }
+      }
+    return index;
   }
 }

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.util.HashMap;
+
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -46,9 +48,8 @@ public class MetalSplitPaneUI
   extends BasicSplitPaneUI
 {
 
-  // FIXME: maybe replace by a Map of instances when this becomes stateful
-  /** The shared UI instance for MetalSplitPaneUIs */
-  private static MetalSplitPaneUI instance = null;
+  /** The UI instances for MetalSplitPaneUIs */
+  private static HashMap instances;
 
   /**
    * Constructs a new instance of MetalSplitPaneUI.
@@ -67,8 +68,19 @@ public class MetalSplitPaneUI
    */
   public static ComponentUI createUI(JComponent component)
   {
-    if (instance == null)
-      instance = new MetalSplitPaneUI();
+    if (instances == null)
+      instances = new HashMap();
+
+    Object o = instances.get(component);
+    MetalSplitPaneUI instance;
+    if (o == null)
+      {
+	instance = new MetalSplitPaneUI();
+	instances.put(component, instance);
+      }
+    else
+      instance = (MetalSplitPaneUI) o;
+
     return instance;
   }
 }

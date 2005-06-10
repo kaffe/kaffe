@@ -2,6 +2,38 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JTree.java
+	(getNextMatch): Implemented new method.
+	
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/metal/MetalSplitPaneUI.java:
+	(createUI): Do not share one instance of MetalSplitPaneUI
+	between multiple JSplitPanes.
+
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JComponent.java:
+	Made JComponent.AccessibleJComponent implement
+	AccessibleExtendedComponent.
+
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JButton.java
+	(constructor): Set initial actionCommand equal to the buttons label.
+
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JList.java
+	(getNextMatch): Implemented new method.
+	(getCellBounds): Implemented new method.
+	
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-30  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
 
 	* gnu/CORBA/Functional_ORB.java (serve, portServer, serveStep):
