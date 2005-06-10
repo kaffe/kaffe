@@ -114,10 +114,11 @@ public class JFileChooser extends JComponent implements Accessible
 
   /** DOCUMENT ME! */
   public static final String SELECTED_FILE_CHANGED_PROPERTY =
-    "SelectedFilesChangedProperty";
+    "SelectedFileChangedProperty";
 
   /** DOCUMENT ME! */
-  public static final String SELECTED_FILES_CHANGED_PROPERTY = "selectedFiles";
+  public static final String SELECTED_FILES_CHANGED_PROPERTY =
+    "SelectedFilesChangedProperty";
 
   /** DOCUMENT ME! */
   public static final String MULTI_SELECTION_ENABLED_CHANGED_PROPERTY =

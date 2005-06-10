@@ -2,6 +2,26 @@
 
 	Resynced with GNU Classpath.
 
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JLayeredPane.java
+	(putLayer): Implemented new method.
+
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JFileChooser.java:
+	Fixed values of some constant fields.
+
+	2005-05-30  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/SwingUtilities.java:
+	(getWindowAncestor): This method has to be static instead of
+	non-static.
+	
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-05-29  Michael Koch  <konqueror@gmx.de>
 
 	* java/util/LinkedHashMap.java (access): Set 'root.pred'.

@@ -365,7 +365,7 @@ public class SwingUtilities
    * @return the first ancestor Window of <code>comp</code> or
    *     <code>null</code> if <code>comp</code> is not contained in a Window
    */
-  public Window getWindowAncestor(Component comp)
+  public static Window getWindowAncestor(Component comp)
   {
     return (Window) getAncestorOfClass(Window.class, comp);
   }

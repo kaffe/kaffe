@@ -599,4 +599,15 @@ public class JLayeredPane extends JComponent implements Accessible
     revalidate();
     repaint();
   }     
+
+  /**
+   * Sets the layer property for a JComponent.
+   *
+   * @param component the component for which to set the layer
+   * @param layer the layer property to set
+   */
+  public static void putLayer(JComponent component, int layer)
+  {
+    getLayeredPaneAbove(component).setLayer(component, layer);
+  }
 }
