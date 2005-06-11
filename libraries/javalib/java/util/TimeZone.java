@@ -1,5 +1,5 @@
 /* java.util.TimeZone
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -810,12 +810,19 @@ public abstract class TimeZone implements java.io.Serializable, Cloneable
    * with the result of <code>System.getProperty("user.timezone")</code>
    * or <code>getDefaultTimeZoneId()</code>.  Note that giving one of
    * the standard tz data names from ftp://elsie.nci.nih.gov/pub/ is
-   * preferred.  The time zone name can be given as follows:
-   * <code>(standard zone name)[(GMT offset)[(daylight time zone name)]]</code>
+   * preferred.  
+   * The time zone name can be given as follows:
+   * <code>(standard zone name)[(GMT offset)[(DST zone name)[DST offset]]]
+   * </code>
    * <p>
    * If only a (standard zone name) is given (no numbers in the
    * String) then it gets mapped directly to the TimeZone with that
    * name, if that fails null is returned.
+   * <p>
+   * Alternately, a POSIX-style TZ string can be given, defining the time zone:
+   * <code>std offset dst offset,date/time,date/time</code>
+   * See the glibc manual, or the man page for <code>tzset</code> for details
+   * of this format.
    * <p>
    * A GMT offset is the offset to add to the local time to get GMT.
    * If a (GMT offset) is included (either in seconds or hours) then
@@ -843,93 +850,278 @@ public abstract class TimeZone implements java.io.Serializable, Cloneable
    */
   static TimeZone getDefaultTimeZone(String sysTimeZoneId)
   {
-    // First find start of GMT offset info and any Daylight zone name.
-    int startGMToffset = 0;
-    int sysTimeZoneIdLength = sysTimeZoneId.length();
-    for (int i = 0; i < sysTimeZoneIdLength && startGMToffset == 0; i++)
+    String stdName = null;
+    String dstName;
+    int stdOffs;
+    int dstOffs;
+    try
       {
-	char c = sysTimeZoneId.charAt(i);
-	if (Character.isDigit(c))
-	  startGMToffset = i;
-	else if ((c == '+' || c == '-')
-		 && i + 1 < sysTimeZoneIdLength
-		 && Character.isDigit(sysTimeZoneId.charAt(i + 1)))
-	  startGMToffset = i;
-      }
-    
-    String tzBasename;
-    if (startGMToffset == 0)
-      tzBasename = sysTimeZoneId;
-    else
-      tzBasename = sysTimeZoneId.substring (0, startGMToffset);
-    
-    int startDaylightZoneName = 0;
-    for (int i = sysTimeZoneIdLength - 1;
-	 i >= 0 && !Character.isDigit(sysTimeZoneId.charAt(i)); --i)
-      startDaylightZoneName = i;
-    
-    boolean useDaylightTime = startDaylightZoneName > 0;
-    
-    // Integer.parseInt() doesn't handle leading +.
-    if (sysTimeZoneId.charAt(startGMToffset) == '+')
-      startGMToffset++;
-    
-    int gmtOffset = 0;
-    if (startGMToffset > 0)
-      {
-	gmtOffset = Integer.parseInt
-	  (startDaylightZoneName == 0
-	   ? sysTimeZoneId.substring(startGMToffset)
-	   : sysTimeZoneId.substring(startGMToffset,
-				     startDaylightZoneName));
-	
-	// Offset could be in hours or seconds.  Convert to millis.
-	// The offset is given as the time to add to local time to get GMT
-	// we need the time to add to GMT to get localtime.
-	if (Math.abs(gmtOffset) < 24)
-	  gmtOffset *= 60 * 60;
-	gmtOffset *= -1000;
-      }
-    
-    // Try to be optimistic and get the timezone that matches the base name.
-    // If we only have the base name then just accept this timezone.
-    // Otherwise check the gmtOffset and day light attributes.
-    TimeZone tz = (TimeZone) timezones().get(tzBasename);
-    if (tz != null
-	&& (tzBasename == sysTimeZoneId
-	    || (tz.getRawOffset() == gmtOffset
-		&& tz.useDaylightTime() == useDaylightTime)))
-      return tz;
-    
-    // Maybe there is one with the daylight zone name?
-    if (useDaylightTime)
-      {
-	String daylightZoneName;
-	daylightZoneName = sysTimeZoneId.substring(startDaylightZoneName);
-	if (!daylightZoneName.equals(tzBasename))
+	int idLength = sysTimeZoneId.length();
+
+	int index = 0;
+	int prevIndex;
+	char c;
+
+	// get std
+	do
+	  c = sysTimeZoneId.charAt(index++);
+	while (c != '+' && c != '-' && c != ',' && c != ':'
+	       && ! Character.isDigit(c) && c != '\0' && index < idLength);
+
+	if (index >= idLength)
+	  return (TimeZone)timezones().get(sysTimeZoneId);
+
+	stdName = sysTimeZoneId.substring(0, --index);
+	prevIndex = index;
+
+	// get the std offset
+	do
+	  c = sysTimeZoneId.charAt(index++);
+	while ((c == '-' || c == '+' || c == ':' || Character.isDigit(c))
+	       && index < idLength);
+	if (index < idLength)
+	  index--;
+
+	{ // convert the dst string to a millis number
+	    String offset = sysTimeZoneId.substring(prevIndex, index);
+	    prevIndex = index;
+
+	    if (offset.charAt(0) == '+' || offset.charAt(0) == '-')
+	      stdOffs = parseTime(offset.substring(1));
+	    else
+	      stdOffs = parseTime(offset);
+
+	    if (offset.charAt(0) == '-')
+	      stdOffs = -stdOffs;
+
+	    // TZ timezone offsets are positive when WEST of the meridian.
+	    stdOffs = -stdOffs;
+	}
+
+	// Done yet? (Format: std offset)
+	if (index >= idLength)
 	  {
-	    tz = (TimeZone) timezones().get(tzBasename);
-	    if (tz != null
-		&& tz.getRawOffset() == gmtOffset
-		&& tz.useDaylightTime())
-	      return tz;
+	    // Do we have an existing timezone with that name and offset?
+	    TimeZone tz = (TimeZone) timezones().get(stdName);
+	    if (tz != null)
+	      if (tz.getRawOffset() == stdOffs)
+		return tz;
+
+	    // Custom then.
+	    return new SimpleTimeZone(stdOffs, stdName);
+	  }
+
+	// get dst
+	do
+	  c = sysTimeZoneId.charAt(index++);
+	while (c != '+' && c != '-' && c != ',' && c != ':'
+	       && ! Character.isDigit(c) && c != '\0' && index < idLength);
+
+	// Done yet? (Format: std offset dst)
+	if (index >= idLength)
+	  {
+	    // Do we have an existing timezone with that name and offset 
+	    // which has DST?
+	    TimeZone tz = (TimeZone) timezones().get(stdName);
+	    if (tz != null)
+	      if (tz.getRawOffset() == stdOffs && tz.useDaylightTime())
+		return tz;
+
+	    // Custom then.
+	    return new SimpleTimeZone(stdOffs, stdName);
+	  }
+
+	// get the dst offset
+	dstName = sysTimeZoneId.substring(prevIndex, --index);
+	prevIndex = index;
+	do
+	  c = sysTimeZoneId.charAt(index++);
+	while ((c == '-' || c == '+' || c == ':' || Character.isDigit(c))
+	       && index < idLength);
+	if (index < idLength)
+	  index--;
+
+	{ // convert the dst string to a millis number
+	    String offset = sysTimeZoneId.substring(prevIndex, index);
+	    prevIndex = index;
+
+	    if (offset.charAt(0) == '+' || offset.charAt(0) == '-')
+	      dstOffs = parseTime(offset.substring(1));
+	    else
+	      dstOffs = parseTime(offset);
+
+	    if (offset.charAt(0) == '-')
+	      dstOffs = -dstOffs;
+
+	    // TZ timezone offsets are positive when WEST of the meridian.
+	    dstOffs = -dstOffs;
+	}
+
+	// Done yet? (Format: std offset dst offset)
+	// FIXME: We don't support DST without a rule given. Should we?
+	if (index >= idLength)
+	  {
+	    // Time Zone existing with same name, dst and offsets?
+	    TimeZone tz = (TimeZone) timezones().get(stdName);
+	    if (tz != null)
+	      if (tz.getRawOffset() == stdOffs && tz.useDaylightTime()
+	          && tz.getDSTSavings() == (dstOffs - stdOffs))
+		return tz;
+
+	    return new SimpleTimeZone(stdOffs, stdName);
+	  }
+
+	// get the DST rule
+	if (sysTimeZoneId.charAt(index) == ','
+	    || sysTimeZoneId.charAt(index) == ';')
+	  {
+	    index++;
+	    int offs = index;
+	    while (sysTimeZoneId.charAt(index) != ','
+	           && sysTimeZoneId.charAt(index) != ';')
+	      index++;
+	    String startTime = sysTimeZoneId.substring(offs, index);
+	    index++;
+	    String endTime = sysTimeZoneId.substring(index);
+
+	    index = startTime.indexOf('/');
+	    int startMillis;
+	    int endMillis;
+	    String startDate;
+	    String endDate;
+	    if (index != -1)
+	      {
+		startDate = startTime.substring(0, index);
+		startMillis = parseTime(startTime.substring(index + 1));
+	      }
+	    else
+	      {
+		startDate = startTime;
+		// if time isn't given, default to 2:00:00 AM.
+		startMillis = 2 * 60 * 60 * 1000;
+	      }
+	    index = endTime.indexOf('/');
+	    if (index != -1)
+	      {
+		endDate = endTime.substring(0, index);
+		endMillis = parseTime(endTime.substring(index + 1));
+	      }
+	    else
+	      {
+		endDate = endTime;
+		// if time isn't given, default to 2:00:00 AM.
+		endMillis = 2 * 60 * 60 * 1000;
+	      }
+
+	    int[] start = getDateParams(startDate);
+	    int[] end = getDateParams(endDate);
+	    return new SimpleTimeZone(stdOffs, stdName, start[0], start[1],
+	                              start[2], startMillis, end[0], end[1],
+	                              end[2], endMillis, (dstOffs - stdOffs));
 	  }
       }
-    
-    // If no match, see if a valid timezone has similar attributes as this
-    // and then use it instead. We take the first one that looks OKish.
-    if (startGMToffset > 0)
+
+    // FIXME: Produce a warning here?
+    catch (IndexOutOfBoundsException _)
       {
-	String[] ids = getAvailableIDs(gmtOffset);
-	for (int i = 0; i < ids.length; i++)
-	  {
-	    tz = (TimeZone) timezones().get(ids[i]);
-	    if (tz.useDaylightTime() == useDaylightTime)
-	      return tz;
-	  }
       }
-    
+    catch (NumberFormatException _)
+      {
+      }
+
     return null;
+  }
+
+  /**
+   * Parses and returns the params for a POSIX TZ date field,
+   * in the format int[]{ month, day, dayOfWeek }, following the
+   * SimpleTimeZone constructor rules.
+   */
+  private static int[] getDateParams(String date)
+  {
+    int[] dayCount = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+    int month;
+
+    if (date.charAt(0) == 'M' || date.charAt(0) == 'm')
+      {
+	int day;
+
+	// Month, week of month, day of week
+	month = Integer.parseInt(date.substring(1, date.indexOf('.')));
+	int week = Integer.parseInt(date.substring(date.indexOf('.') + 1,
+	                                           date.lastIndexOf('.')));
+	int dayOfWeek = Integer.parseInt(date.substring(date.lastIndexOf('.')
+	                                                + 1));
+	if (week == 5)
+	  day = -1; // last day of month is -1 in java, 5 in TZ
+	else
+	  // first day of week starting on or after.
+	  day = (week - 1) * 7 + 1;
+
+	dayOfWeek++; // Java day of week is one-based, Sunday is first day.
+	month--; // Java month is zero-based.
+	return new int[] { month, day, dayOfWeek };
+      }
+
+    // julian day, either zero-based 0<=n<=365 (incl feb 29)
+    // or one-based 1<=n<=365 (no feb 29)
+    int julianDay; // Julian day, 
+
+    if (date.charAt(0) != 'J' || date.charAt(0) != 'j')
+      {
+	julianDay = Integer.parseInt(date.substring(1));
+	julianDay++; // make 1-based
+	// Adjust day count to include feb 29.
+	dayCount = new int[]
+	           {
+	             0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
+	           };
+      }
+    else
+      // 1-based julian day
+      julianDay = Integer.parseInt(date);
+
+    int i = 11;
+    while (i > 0)
+      if (dayCount[i] < julianDay)
+	break;
+      else
+	i--;
+    julianDay -= dayCount[i];
+    month = i;
+    return new int[] { month, julianDay, 0 };
+  }
+
+  /**
+   * Parses a time field hh[:mm[:ss]], returning the result
+   * in milliseconds. No leading sign.
+   */
+  private static int parseTime(String time)
+  {
+    int millis = 0;
+    int i = 0;
+
+    while (i < time.length())
+      if (time.charAt(i) == ':')
+	break;
+      else
+	i++;
+    millis = 60 * 60 * 1000 * Integer.parseInt(time.substring(0, i));
+    if (i >= time.length())
+      return millis;
+
+    int iprev = ++i;
+    while (i < time.length())
+      if (time.charAt(i) == ':')
+	break;
+      else
+	i++;
+    if (i >= time.length())
+      return millis;
+
+    millis += 60 * 1000 * Integer.parseInt(time.substring(iprev, i));
+    millis += 1000 * Integer.parseInt(time.substring(++i));
+    return millis;
   }
 
   /**
