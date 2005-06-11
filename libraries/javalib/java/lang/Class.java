@@ -944,18 +944,18 @@ public final class Class implements Serializable
   private String resourcePath(String resourceName)
   {
     if (resourceName.length() > 0)
-    {
-      if (resourceName.charAt(0) != '/')
       {
-        String pkg = getPackagePortion(getName());
-        if (pkg.length() > 0)
-          resourceName = pkg.replace('.','/') + '/' + resourceName;
+	if (resourceName.charAt(0) != '/')
+	  {
+	    String pkg = getPackagePortion(getName());
+	    if (pkg.length() > 0)
+	      resourceName = pkg.replace('.','/') + '/' + resourceName;
+	  }
+	else
+	  {
+	    resourceName = resourceName.substring(1);
+	  }
       }
-      else
-      {
-        resourceName = resourceName.substring(1);
-      }
-    }
     return resourceName;
   }
 
