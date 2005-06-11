@@ -1103,7 +1103,8 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EmbeddedWindow.java \
 	gnu/java/awt/EmbeddedWindowSupport.java \
-	gnu/java/awt/EventModifier.java
+	gnu/java/awt/EventModifier.java \
+	gnu/java/awt/GradientPaintContext.java
 gnu_java_awt_color_SRCS = \
 	gnu/java/awt/color/CieXyzConverter.java \
 	gnu/java/awt/color/ClutProfileConverter.java \

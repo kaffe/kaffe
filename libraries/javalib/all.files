@@ -689,6 +689,7 @@ gnu/java/awt/ComponentDataBlitOp.java
 gnu/java/awt/EmbeddedWindow.java
 gnu/java/awt/EmbeddedWindowSupport.java
 gnu/java/awt/EventModifier.java
+gnu/java/awt/GradientPaintContext.java
 gnu/java/awt/image/ImageDecoder.java
 gnu/java/awt/image/XBMDecoder.java
 gnu/java/awt/peer/ClasspathFontPeer.java

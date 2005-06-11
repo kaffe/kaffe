@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-01  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* gnu/java/awt/GradientPaintContext.java: New file.
+	* java/awt/GradientPaint.java: Implemented.
+	* java/awt/image/IndexColorModel.java: Reimplemented.
+
+2005-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-06-10  Audrius Meskauskas <AudriusA@Bioinformatics.org>
 
 	* org/omg/CORBA/SendingContext/package.html,
