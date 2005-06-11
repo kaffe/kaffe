@@ -166,36 +166,17 @@ public class GtkFramePeer extends GtkWindowPeer
     setIconImage(frame.getIconImage());
   }
 
-  native void nativeSetIconImageFromDecoder (GdkPixbufDecoder decoder);
-  native void nativeSetIconImageFromData (int[] pixels, int width, int height);
+  native void nativeSetIconImage (GtkImage image);
+
   public void setIconImage (Image image) 
   {
-      if (image != null && image instanceof GtkImage)
-        {
-          GtkImage img = (GtkImage) image;
-          // FIXME: Image should be loaded, but if not, do image loading here.
-          if (img.isLoaded())
-            {
-              if (img.getSource() instanceof GdkPixbufDecoder)
-                {
-                  nativeSetIconImageFromDecoder((GdkPixbufDecoder) img.getSource());
-                }
-              else
-                {
-                  int[] pixels = img.getPixelCache();
-                  ColorModel model = img.getColorModel();
-                  int[] data = new int[pixels.length * 4];
-                  for (int i = 0; i < pixels.length; i++)
-                    {
-                      data[i * 4] = model.getRed(pixels[i]);
-                      data[i * 4 + 1] = model.getGreen(pixels[i]);
-                      data[i * 4 + 2] = model.getBlue(pixels[i]);
-                      data[i * 4 + 3] = model.getAlpha(pixels[i]);
-                    }
-                  nativeSetIconImageFromData(data, img.getWidth(null), img.getHeight(null));
-                }
-            }
-        }
+      if (image != null)
+	{
+	  if (image instanceof GtkImage)
+	    nativeSetIconImage((GtkImage) image);
+	  else
+	    nativeSetIconImage(new GtkImage(image.getSource()));
+	}
   }
 
   public Graphics getGraphics ()

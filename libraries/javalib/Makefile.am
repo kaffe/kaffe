@@ -1157,14 +1157,13 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkFramePeer.java \
 	gnu/java/awt/peer/gtk/GtkGenericPeer.java \
 	gnu/java/awt/peer/gtk/GtkImage.java \
-	gnu/java/awt/peer/gtk/GtkImagePainter.java \
+	gnu/java/awt/peer/gtk/GtkImageConsumer.java \
 	gnu/java/awt/peer/gtk/GtkLabelPeer.java \
 	gnu/java/awt/peer/gtk/GtkListPeer.java \
 	gnu/java/awt/peer/gtk/GtkMenuBarPeer.java \
 	gnu/java/awt/peer/gtk/GtkMenuComponentPeer.java \
 	gnu/java/awt/peer/gtk/GtkMenuItemPeer.java \
 	gnu/java/awt/peer/gtk/GtkMenuPeer.java \
-	gnu/java/awt/peer/gtk/GtkOffScreenImage.java \
 	gnu/java/awt/peer/gtk/GtkPanelPeer.java \
 	gnu/java/awt/peer/gtk/GtkPopupMenuPeer.java \
 	gnu/java/awt/peer/gtk/GtkScrollPanePeer.java \

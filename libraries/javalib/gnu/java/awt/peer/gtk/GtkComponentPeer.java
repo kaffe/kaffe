@@ -198,33 +198,21 @@ public class GtkComponentPeer extends GtkGenericPeer
   public int checkImage (Image image, int width, int height, 
 			 ImageObserver observer) 
   {
-    GtkImage i = (GtkImage) image;
-    return i.checkImage ();
+    return getToolkit().checkImage(image, width, height, observer);
   }
 
   public Image createImage (ImageProducer producer) 
   {
-    GtkImage image = new GtkImage (producer, null);
-    producer.startProduction (image);
-    return image;
+    return new GtkImage (producer);
   }
 
   public Image createImage (int width, int height)
   {
-    Graphics g;
-    if (GtkToolkit.useGraphics2D ())
-      {
-        Graphics2D g2 = new GdkGraphics2D (width, height);
-        g2.setBackground (getBackground ());
-        g = g2;
-      }
-    else
-      g = new GdkGraphics (width, height);
-
+    GtkImage image = new GtkImage (width, height);
+    Graphics g = image.getGraphics();
     g.setColor(getBackground());
     g.fillRect(0, 0, width, height);
-
-    return new GtkOffScreenImage (null, g, width, height);
+    return image;
   }
 
   public void disable () 
@@ -353,29 +341,7 @@ public class GtkComponentPeer extends GtkGenericPeer
   public boolean prepareImage (Image image, int width, int height,
 			       ImageObserver observer) 
   {
-    GtkImage i = (GtkImage) image;
-
-    if (i.isLoaded ()) return true;
-
-    class PrepareImage extends Thread
-    {
-      GtkImage image;
-      ImageObserver observer;
-
-      PrepareImage (GtkImage image, ImageObserver observer)
-      {
-	this.image = image;
-	image.setObserver (observer);
-      }
-      
-      public void run ()
-      {
-	image.source.startProduction (image);
-      }
-    }
-
-    new PrepareImage (i, observer).start ();
-    return false;
+    return getToolkit().prepareImage(image, width, height, observer);
   }
 
   public void print (Graphics g) 

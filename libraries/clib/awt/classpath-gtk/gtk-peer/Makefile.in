@@ -101,7 +101,7 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c \
 	gnu_java_awt_peer_gtk_GtkFramePeer.c \
 	gnu_java_awt_peer_gtk_GtkGenericPeer.c \
-	gnu_java_awt_peer_gtk_GtkImagePainter.c \
+	gnu_java_awt_peer_gtk_GtkImage.c \
 	gnu_java_awt_peer_gtk_GtkLabelPeer.c \
 	gnu_java_awt_peer_gtk_GtkListPeer.c \
 	gnu_java_awt_peer_gtk_GtkMenuBarPeer.c \
@@ -140,7 +140,7 @@ am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFramePeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.lo \
-	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo \
+	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkListPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkMenuBarPeer.lo \
@@ -483,7 +483,7 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c \
 	gnu_java_awt_peer_gtk_GtkFramePeer.c \
 	gnu_java_awt_peer_gtk_GtkGenericPeer.c	\
-	gnu_java_awt_peer_gtk_GtkImagePainter.c \
+	gnu_java_awt_peer_gtk_GtkImage.c \
 	gnu_java_awt_peer_gtk_GtkLabelPeer.c \
 	gnu_java_awt_peer_gtk_GtkListPeer.c	\
 	gnu_java_awt_peer_gtk_GtkMenuBarPeer.c \
@@ -640,7 +640,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFileDialogPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFramePeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkListPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkMenuBarPeer.Plo@am__quote@
@@ -828,12 +828,12 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.lo: gnu_java_awt_peer_gtk_Gtk
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkGenericPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkGenericPeer.c
 
-libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo: gnu_java_awt_peer_gtk_GtkImagePainter.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo `test -f 'gnu_java_awt_peer_gtk_GtkImagePainter.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkImagePainter.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkImagePainter.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo' libtool=yes @AMDEPBACKSLASH@
+libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo: gnu_java_awt_peer_gtk_GtkImage.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo `test -f 'gnu_java_awt_peer_gtk_GtkImage.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkImage.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkImage.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImagePainter.lo `test -f 'gnu_java_awt_peer_gtk_GtkImagePainter.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkImagePainter.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkImage.lo `test -f 'gnu_java_awt_peer_gtk_GtkImage.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkImage.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.lo: gnu_java_awt_peer_gtk_GtkLabelPeer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkLabelPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkLabelPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkLabelPeer.c; \

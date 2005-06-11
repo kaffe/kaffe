@@ -2,6 +2,46 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-02  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java:
+	(GdkGraphics): New constructor.
+	(drawImage): Reimplemented.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java:
+	(checkImage,createImage): Reimplemented.
+	(prepareImage): Just call the GdkToolkit method.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java:
+	(setIconImage): Reimplemented.
+	* gnu/java/awt/peer/gtk/GtkImage.java: Reimplemented.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java:
+	(checkImage): Change handling of GtkImage.
+	(createImage): Reimplemented for GtkImage.
+	(getColorModel): Return the actual native color model.
+	(prepareImage): Reimplemented.
+	* include/Makefile.am,
+	* native/jni/gtk-peer/Makefile.am: Removed old files, added new ones.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics.h,
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c:
+	(initFromImage): New method.
+	(copyPixmap, flip_pixbuf, copyAndScalePixmap): Removed.
+	* include/gnu_java_awt_peer_gtk_GtkFramePeer.h,
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c:
+	(nativeSetIconImage): New method.
+	(nativeSetIconImageFromData,nativeSetIconImageFromDecoder): Removed.
+	* gnu/java/awt/peer/gtk/GtkImageConsumer.java,
+	* include/gnu_java_awt_peer_gtk_GtkImage.h,
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c: 
+	New files.
+	* gnu/java/awt/peer/gtk/GtkImagePainter.java,
+	* gnu/java/awt/peer/gtk/GtkOffScreenImage.java,
+	* include/gnu_java_awt_peer_gtk_GtkImagePainter.h,
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c:
+	Removed files.
+
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-06-01  Tom Tromey  <tromey@redhat.com>
 
 	* java/io/ObjectInputStream.java (currentLoader): Fixed typo.

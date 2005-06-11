@@ -53,6 +53,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.im.InputMethodHighlight;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
@@ -140,9 +141,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
       | ImageObserver.HEIGHT;
 
     if (image instanceof GtkImage)
-      {        
-        status = ((GtkImage) image).checkImage ();
-      }
+	return ((GtkImage) image).checkImage (observer);
 
     if (observer != null)
       observer.imageUpdate (image, status,
@@ -250,12 +249,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (useGraphics2D())
       return bufferedImageOrError(GdkPixbufDecoder.createBufferedImage (filename));
     else
-      {
-        GdkPixbufDecoder d = new GdkPixbufDecoder (filename);
-        GtkImage image = new GtkImage (d, null);
-        d.startProduction (image);
-        return image;        
-      }
+      return new GtkImage (filename);
   }
 
   public Image createImage (URL url)
@@ -265,8 +259,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     else
       {
         GdkPixbufDecoder d = new GdkPixbufDecoder (url);
-        GtkImage image = new GtkImage (d, null);
-        d.startProduction (image);
+        GtkImage image = new GtkImage (d);
         return image;        
       }
   }
@@ -276,11 +269,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (useGraphics2D())
       return bufferedImageOrError(GdkPixbufDecoder.createBufferedImage (producer));
     else
-      {
-        GtkImage image = new GtkImage (producer, null);
-        producer.startProduction (image);
-        return image;        
-      }
+      return new GtkImage (producer);
   }
 
   public Image createImage (byte[] imagedata, int imageoffset,
@@ -295,8 +284,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
         GdkPixbufDecoder d = new GdkPixbufDecoder (imagedata,
                                                    imageoffset, 
                                                    imagelength);
-        GtkImage image = new GtkImage (d, null);
-        d.startProduction (image);
+        GtkImage image = new GtkImage (d);
         return image;        
       }
   }
@@ -312,9 +300,18 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return new GdkPixbufDecoder(url);  
   }
 
+  /**
+   * Returns the native color model (which isn't the same as the default
+   * ARGB color model, but doesn't have to be). 
+   */
   public ColorModel getColorModel () 
   {
-    return ColorModel.getRGBdefault ();
+    /* Return the GDK-native ABGR format */
+    return new DirectColorModel(32, 
+				0x000000FF,
+				0x0000FF00,
+				0x00FF0000,
+				0xFF000000);
   }
 
   public String[] getFontList () 
@@ -410,34 +407,13 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   public boolean prepareImage (Image image, int width, int height, 
 			       ImageObserver observer) 
   {
+    /* GtkImages are always prepared, as long as they're loaded. */
     if (image instanceof GtkImage)
-      {
-	GtkImage i = (GtkImage) image;
-	
-	if (i.isLoaded ()) return true;
-	
-	class PrepareImage extends Thread
-	{
-	  GtkImage image;
-	  ImageObserver observer;
-	  
-	  PrepareImage (GtkImage image, ImageObserver observer)
-	  {
-	    this.image = image;
-	    image.setObserver (observer);
-	  }
-	  
-	  public void run ()
-	  {
-	    image.source.startProduction (image);
-	  }
-	}
-	
-	new PrepareImage (i, observer).start ();
-	return false;
-      }
-    else
-      return true;
+      return ((((GtkImage)image).checkImage (observer) & 
+	       ImageObserver.ALLBITS) != 0);
+
+    /* Assume anything else is too */
+    return true;
   }
 
   public native void sync();

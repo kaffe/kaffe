@@ -58,6 +58,7 @@ public class GdkGraphics extends Graphics
   GtkComponentPeer component;
   Font font;
   Rectangle clip;
+  GtkImage image; 
 
   int xOffset = 0;
   int yOffset = 0;
@@ -66,6 +67,7 @@ public class GdkGraphics extends Graphics
 
   native void initState (GtkComponentPeer component);
   native void initState (int width, int height);
+  native void initFromImage (GtkImage image);
   native void copyState (GdkGraphics g);
 
   GdkGraphics (GdkGraphics g)
@@ -87,10 +89,21 @@ public class GdkGraphics extends Graphics
     font = new Font ("Dialog", Font.PLAIN, 12);
   }
 
+  GdkGraphics (GtkImage image)
+  {
+    this.image = image;
+    initFromImage (image);
+    color = Color.black;
+    clip = new Rectangle (0, 0, 
+			  image.getWidth(null), image.getHeight(null));
+    font = new Font ("Dialog", Font.PLAIN, 12);
+  }
+
   GdkGraphics (GtkComponentPeer component)
   {
     this.component = component;
     font = component.awtComponent.getFont ();
+    color = Color.black;
 
     if (component.isRealized ())
       initComponentGraphics ();
@@ -135,163 +148,58 @@ public class GdkGraphics extends Graphics
                                   int src_width, int src_height, 
                                   int dest_x, int dest_y, 
                                   int dest_width, int dest_height);
+
   public boolean drawImage (Image img, int x, int y, 
 			    Color bgcolor, ImageObserver observer)
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (img instanceof GtkOffScreenImage)
-      {
-        int width = img.getWidth (null);
-        int height = img.getHeight (null);
-	copyPixmap (img.getGraphics (), 
-		    x, y, width, height);
-	return true;
-      }
-
-    GtkImage image = (GtkImage) img;
-    new GtkImagePainter (image, this, x, y, -1, -1, bgcolor, observer);
-    return image.isLoaded ();
+    return drawImage(img, x, y, img.getWidth(null), img.getHeight(null),
+		     bgcolor, observer);
   }
 
   public boolean drawImage (Image img, int x, int y, ImageObserver observer)
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (img instanceof GtkOffScreenImage)
-      {
-        int width = img.getWidth (null);
-        int height = img.getHeight (null);
-	copyPixmap (img.getGraphics (), 
-		    x, y, width, height);
-	return true;
-      }
-
-    if (component != null)
-      return drawImage (img, x, y, component.getBackground (), observer);
-    else
-      return drawImage (img, x, y, SystemColor.window, observer);
+    return drawImage (img, x, y, null, observer);
   }
 
   public boolean drawImage (Image img, int x, int y, int width, int height, 
 			    Color bgcolor, ImageObserver observer)
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (img instanceof GtkOffScreenImage)
-      {
-        copyAndScalePixmap (img.getGraphics (), false, false,
-                            0, 0, img.getWidth (null), img.getHeight (null), 
-                            x, y, width, height);
-        return true;
-      }
-
-    GtkImage image = (GtkImage) img;
-    new GtkImagePainter (image, this, x, y, width, height, bgcolor, observer);
-    return image.isLoaded ();
+    if (img instanceof GtkImage)
+      return ((GtkImage)img).drawImage (this, x, y, width, height, 
+					bgcolor, observer);
+    else
+      return (new GtkImage(img.getSource())).drawImage (this, x, y, 
+							width, height, 
+							bgcolor, observer);
   }
 
   public boolean drawImage (Image img, int x, int y, int width, int height, 
 			    ImageObserver observer)
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (component != null)
-      return drawImage (img, x, y, width, height, component.getBackground (),
-                        observer);
-    else
-      return drawImage (img, x, y, width, height, SystemColor.window,
-                        observer);
+    return drawImage (img, x, y, width, height,  null, observer);
   }
 
   public boolean drawImage (Image img, int dx1, int dy1, int dx2, int dy2, 
 			    int sx1, int sy1, int sx2, int sy2, 
 			    Color bgcolor, ImageObserver observer)
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (img instanceof GtkOffScreenImage)
-      {
-        int dx_start, dy_start, d_width, d_height;
-        int sx_start, sy_start, s_width, s_height;
-        boolean x_flip = false;
-        boolean y_flip = false;
-
-        if (dx1 < dx2)
-        {
-          dx_start = dx1;
-          d_width = dx2 - dx1;
-        }
-        else
-        {
-          dx_start = dx2;
-          d_width = dx1 - dx2;
-          x_flip ^= true;
-        }
-        if (dy1 < dy2)
-        {
-          dy_start = dy1;
-          d_height = dy2 - dy1;
-        }
-        else
-        {
-          dy_start = dy2;
-          d_height = dy1 - dy2;
-          y_flip ^= true;
-        }
-        if (sx1 < sx2)
-        {
-          sx_start = sx1;
-          s_width = sx2 - sx1;
-        }
-        else
-        {
-          sx_start = sx2;
-          s_width = sx1 - sx2;
-          x_flip ^= true;
-        }
-        if (sy1 < sy2)
-        {
-          sy_start = sy1;
-          s_height = sy2 - sy1;
-        }
-        else
-        {
-          sy_start = sy2;
-          s_height = sy1 - sy2;
-          y_flip ^= true;
-        }
-
-        copyAndScalePixmap (img.getGraphics (), x_flip, y_flip,
-                            sx_start, sy_start, s_width, s_height, 
-                            dx_start, dy_start, d_width, d_height);
-        return true;
-      }
-
-    GtkImage image = (GtkImage) img;
-    new GtkImagePainter (image, this, dx1, dy1, dx2, dy2, 
-			 sx1, sy1, sx2, sy2, bgcolor, observer);
-    return image.isLoaded ();
+    if (img instanceof GtkImage)
+      return ((GtkImage)img).drawImage(this, dx1, dy1, dx2, dy2, 
+				       sx1, sy1, sx2, sy2, bgcolor, observer);
+    else
+      return (new GtkImage(img.getSource())).drawImage(this, dx1, dy1, 
+						       dx2, dy2, 
+						       sx1, sy1, sx2, sy2, 
+						       bgcolor, observer);
   }
 
   public boolean drawImage (Image img, int dx1, int dy1, int dx2, int dy2, 
 			    int sx1, int sy1, int sx2, int sy2, 
 			    ImageObserver observer) 
   {
-    if (component != null && ! component.isRealized ())
-      return false;
-
-    if (component != null)
-      return drawImage (img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-                        component.getBackground (), observer);
-    else
-      return drawImage (img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2,
-                        SystemColor.window, observer);
+    return drawImage (img, dx1, dy1, dx2, dy2, 
+		      sx1, sy1, sx2, sy2, 
+		      null, observer);
   }
 
   public native void drawLine(int x1, int y1, int x2, int y2);

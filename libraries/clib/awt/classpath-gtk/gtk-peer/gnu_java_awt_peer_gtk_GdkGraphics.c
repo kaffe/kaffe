@@ -97,6 +97,32 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__II
   NSA_SET_PTR (env, obj, g);
 }
 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkGraphics_initFromImage
+   (JNIEnv *env, jobject obj, jobject source)
+{
+  struct graphics *g;
+  GdkPixmap *pixmap = 
+    gnu_java_awt_peer_gtk_GtkImage_getPixmap(env, source);
+  g_assert(pixmap != NULL);
+  gdk_pixmap_ref (pixmap);
+
+  g = (struct graphics *) malloc (sizeof (struct graphics));
+  g->x_offset = g->y_offset = 0;
+
+  gdk_threads_enter ();
+
+  g->drawable = (GdkDrawable *)pixmap;
+
+  g->cm = gdk_drawable_get_colormap (g->drawable);
+  gdk_colormap_ref (g->cm);
+  g->gc = gdk_gc_new (g->drawable);
+
+  gdk_threads_leave ();
+
+  NSA_SET_PTR (env, obj, g);
+}
+
 /* copy the native state of the peer (GtkWidget *) to the native state
    of the graphics object */
 JNIEXPORT void JNICALL
@@ -299,136 +325,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_copyArea
   gdk_flush ();
   gdk_threads_leave ();
 }
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics_copyPixmap
-  (JNIEnv *env, jobject obj, jobject offscreen, 
-   jint x, jint y, jint width, jint height)
-{
-  struct graphics *g1, *g2;
-
-  g1 = (struct graphics *) NSA_GET_PTR (env, obj);
-  g2 = (struct graphics *) NSA_GET_PTR (env, offscreen);
-
-  gdk_threads_enter ();
-  gdk_window_copy_area ((GdkWindow *)g1->drawable,
-			g1->gc,
-			x + g1->x_offset, y + g1->y_offset,
-			(GdkWindow *)g2->drawable,
-			0 + g2->x_offset, 0 + g2->y_offset, 
-			width, height);
-  gdk_flush ();
-  gdk_threads_leave ();
-}
-
-static void flip_pixbuf (GdkPixbuf *pixbuf,
-                         jboolean flip_x,
-                         jboolean flip_y,
-                         jint width,
-                         jint height)
-{
-  gint src_rs;
-  guchar *src_pix;
-
-  src_rs = gdk_pixbuf_get_rowstride (pixbuf);
-  src_pix = gdk_pixbuf_get_pixels (pixbuf);
-
-  if (flip_x) 
-    {
-      gint i, channels;
-      guchar buf[4];
-
-      channels = gdk_pixbuf_get_has_alpha (pixbuf) ? 4 : 3;
-
-      for (i = 0; i < height; i++) 
-        {
-          guchar *left = src_pix + i * src_rs;
-          guchar *right = left + channels * (width - 1);
-          while (left < right)
-            { 
-              g_memmove (buf, left, (size_t)channels);
-              g_memmove (left, right, (size_t)channels);
-              g_memmove (right, buf, (size_t)channels);
-              left += channels;
-              right -= channels;
-            }
-        }
-    }
-
-  if (flip_y) 
-    {
-      guchar *top = src_pix;
-      guchar *bottom = top + (height - 1) * src_rs;
-      gpointer buf = g_malloc ((size_t)src_rs);
-      
-      while (top < bottom)
-        {
-          g_memmove (buf, top, (size_t)src_rs);
-          g_memmove (top, bottom, (size_t)src_rs);
-          g_memmove (bottom, buf, (size_t)src_rs); 
-          top += src_rs;
-          bottom -= src_rs;
-        }
-
-      g_free (buf);
-    }
-}
-  
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics_copyAndScalePixmap
-  (JNIEnv *env, jobject obj, jobject offscreen, jboolean flip_x, jboolean flip_y,
-   jint src_x, jint src_y, jint src_width, jint src_height,
-   jint dest_x, jint dest_y, jint dest_width, jint dest_height)
-{
-  struct graphics *g1, *g2;
-  GdkPixbuf *buf_src, *buf_dest;
-
-  g1 = (struct graphics *) NSA_GET_PTR (env, obj);
-  g2 = (struct graphics *) NSA_GET_PTR (env, offscreen);
-
-  gdk_threads_enter ();
-
-  buf_src = gdk_pixbuf_get_from_drawable (NULL,
-                                          g2->drawable,
-                                          g2->cm,
-                                          src_x,
-                                          src_y,
-                                          0,
-                                          0,
-                                          src_width,
-                                          src_height);
-
-  buf_dest = gdk_pixbuf_scale_simple (buf_src, 
-                                      dest_width, 
-                                      dest_height, 
-                                      GDK_INTERP_BILINEAR);
-
-  if (flip_x || flip_y)
-    {
-      flip_pixbuf (buf_dest, flip_x, flip_y, dest_width, dest_height);
-    }
-
-  gdk_pixbuf_render_to_drawable (buf_dest,
-                                 g1->drawable,
-                                 g1->gc,
-                                 0,
-                                 0,
-                                 dest_x,
-                                 dest_y,
-                                 dest_width,
-                                 dest_height,
-                                 GDK_RGB_DITHER_NORMAL,
-                                 0,
-                                 0);
-
-  g_object_unref (G_OBJECT (buf_src));
-  g_object_unref (G_OBJECT (buf_dest));
-
-  gdk_threads_leave ();
-}
-
-
-
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
