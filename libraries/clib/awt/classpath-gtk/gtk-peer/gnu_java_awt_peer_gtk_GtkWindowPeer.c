@@ -561,8 +561,6 @@ window_focus_in_cb (GtkWidget * widget  __attribute__((unused)),
                               postWindowEventID,
                               (jint) AWT_WINDOW_GAINED_FOCUS,
                               (jobject) NULL, (jint) 0);
-  /* FIXME: somewhere after this is handled, the child window is
-     getting an expose event. */
   gdk_threads_enter ();
   return FALSE;
 }
@@ -577,8 +575,6 @@ window_focus_out_cb (GtkWidget * widget __attribute__((unused)),
                               postWindowEventID,
                               (jint) AWT_WINDOW_LOST_FOCUS,
                               (jobject) NULL, (jint) 0);
-  /* FIXME: somewhere after this is handled, the child window is
-     getting an expose event. */
   gdk_threads_enter ();
   return FALSE;
 }

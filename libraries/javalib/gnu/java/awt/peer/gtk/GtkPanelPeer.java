@@ -65,4 +65,6 @@ public class GtkPanelPeer extends GtkContainerPeer
       }
     super.handleEvent (event);
   }
+
+  native void connectSignals ();
 }

@@ -94,7 +94,7 @@ long eventMask;
   * @serial This menu item's label
   * This is package-private to avoid an accessor method.
   */
-String label;
+String label = "";
 
 /**
   * @serial The shortcut for this menu item, if any

@@ -4448,6 +4448,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/FieldView.java \
 	javax/swing/text/GapContent.java \
 	javax/swing/text/Highlighter.java \
+	javax/swing/text/InternationalFormatter.java \
 	javax/swing/text/JTextComponent.java \
 	javax/swing/text/Keymap.java \
 	javax/swing/text/LayeredHighlighter.java \

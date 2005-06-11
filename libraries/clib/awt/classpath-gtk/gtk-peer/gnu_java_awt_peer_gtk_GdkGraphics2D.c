@@ -403,7 +403,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_copyState
 	init_graphics2d_as_pixbuf (g);
     }
 
-  cairo_pattern_set_filter (g->pattern, CAIRO_FILTER_FAST);
+  if (g->pattern)
+    cairo_pattern_set_filter (g->pattern, CAIRO_FILTER_FAST);
 
   NSA_SET_G2D_PTR (env, obj, g);
   gdk_threads_leave();
@@ -503,9 +504,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
   height = min (s_height, d_height);
 
   cairo_get_matrix (src->cr, &matrix);
-  cairo_matrix_translate (&matrix, (double)-x, (double)-y);
-  cairo_pattern_set_matrix (src->pattern, &matrix);
-
+  cairo_matrix_translate (&matrix, (double)-x, (double)-y); 
+  if (src->pattern)
+    cairo_pattern_set_matrix (src->pattern, &matrix); 
   tmp_op = cairo_get_operator (dst->cr); 
   cairo_set_operator(dst->cr, CAIRO_OPERATOR_SOURCE); 
   cairo_set_source_surface (dst->cr, src->surface, width, height);
@@ -513,7 +514,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
   cairo_set_operator(dst->cr, tmp_op);
 
   cairo_matrix_translate (&matrix, (double)x, (double)y);
-  cairo_pattern_set_matrix (src->pattern, &matrix);
+  if (src->pattern)
+    cairo_pattern_set_matrix (src->pattern, &matrix);
 
   gdk_flush();
 
@@ -826,7 +828,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_drawPixels
 
    p = cairo_pattern_create_for_surface (surf);
    cairo_pattern_set_matrix (p, &mat);
-   cairo_pattern_set_filter (p, cairo_pattern_get_filter (gr->pattern));
+   if (gr->pattern)
+     cairo_pattern_set_filter (p, cairo_pattern_get_filter (gr->pattern));
    cairo_set_source_surface (gr->cr, surf, w, h);
    cairo_paint (gr->cr);
    cairo_surface_destroy (surf);

@@ -348,7 +348,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
 		    height = Math.max(height, dims.height);
 	        }
 	    }
-	  return new Dimension(500, 500); //width, height);	
+	  return new Dimension(width, height);	
         }
       return null;
     }
@@ -613,7 +613,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
 		  width = Math.max(width, dims.width);
 	        }
 	    }
-	  return new Dimension(500, 500); //width, height);
+	  return new Dimension(width, height);
         }
       return null;
     }

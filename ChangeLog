@@ -2,6 +2,48 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-10  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/InternationalFormatter.java
+	Implemented new class.
+
+	2005-06-10  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(BasicHorizontalLayoutManager.preferredLayoutSize): fixed return
+	statement.
+	(BasicVerticalLayoutManager.preferredLayoutSize): Likewise.
+	
+	2005-06-10  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JTextArea.java
+	(getPreferredSize): Implemented new method. This is overridden
+	in order to support custom set rows and columns.
+
+	2005-06-10  Sven de Marothy  <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(gdkDrawDrawable): Check if cairo pattern is non-null before 
+	setting its matrix.
+	
+	2005-06-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkPanelPeer.java,
+	gnu_java_awt_peer_gtk_GtkPanelPeer.c (connectSignals): New method.
+	* include/gnu_java_awt_peer_gtk_GtkPanelPeer.h: Regenerate.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(window_focus_in_cb, window_focus_out_cb): Remove FIXMEs.
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(copyState): Check if cairo pattern is null before copying it.
+	(drawPixels): Check if cairo pattern is null before retrieving it.
+
+	* java/awt/MenuItem.java (label): Initialize to empty string.
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-06-08  Bryce McKinlay  <mckinlay@redhat.com>
 
 	* java/rmi/server/RMIClassLoader.java (getClassLoader): Make public.

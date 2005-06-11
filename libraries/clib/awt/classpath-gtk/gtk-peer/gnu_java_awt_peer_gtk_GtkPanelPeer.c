@@ -40,6 +40,13 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkPanelPeer.h"
 
+static gboolean panel_focus_in_cb (GtkWidget * widget,
+                                   GdkEventFocus *event,
+                                   jobject peer);
+static gboolean panel_focus_out_cb (GtkWidget * widget,
+                                    GdkEventFocus *event,
+                                    jobject peer);
+
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkPanelPeer_create
   (JNIEnv *env, jobject obj)
@@ -49,7 +56,7 @@ Java_gnu_java_awt_peer_gtk_GtkPanelPeer_create
   NSA_SET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
-  
+
   widget = gtk_fixed_new ();
 
   gtk_fixed_set_has_window (GTK_FIXED (widget), TRUE);
@@ -60,3 +67,47 @@ Java_gnu_java_awt_peer_gtk_GtkPanelPeer_create
 
   NSA_SET_PTR (env, obj, widget);
 }
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkPanelPeer_connectSignals
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  jobject *gref;
+
+  ptr = NSA_GET_PTR (env, obj);
+  gref = NSA_GET_GLOBAL_REF (env, obj);
+
+  gdk_threads_enter ();
+
+  g_signal_connect (GTK_OBJECT (ptr), "event",
+                    G_CALLBACK (pre_event_handler), *gref);
+
+  g_signal_connect (G_OBJECT (ptr), "focus-in-event",
+                    G_CALLBACK (panel_focus_in_cb), *gref);
+
+  g_signal_connect (G_OBJECT (ptr), "focus-out-event",
+                    G_CALLBACK (panel_focus_out_cb), *gref);
+
+  g_signal_connect_after (G_OBJECT (ptr), "realize",
+                          G_CALLBACK (connect_awt_hook_cb), *gref);
+
+  gdk_threads_leave ();
+}
+
+static gboolean
+panel_focus_in_cb (GtkWidget * widget  __attribute__((unused)),
+		    GdkEventFocus *event  __attribute__((unused)),
+		    jobject peer __attribute__((unused)))
+{
+  return TRUE;
+}
+
+static gboolean
+panel_focus_out_cb (GtkWidget * widget __attribute__((unused)),
+		     GdkEventFocus *event __attribute__((unused)),
+		     jobject peer __attribute__((unused)))
+{
+  return TRUE;
+}
+

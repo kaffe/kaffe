@@ -47,6 +47,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.View;
 
 /**
  * The <code>JTextArea</code> component provides a multi-line area for displaying
@@ -188,7 +189,6 @@ public class JTextArea extends JTextComponent
     setText(text);
     setRows(rows);
     setColumns(columns);
-    setPreferredSize(new Dimension(440, 150));
   }
 
   /**
@@ -528,5 +528,23 @@ public class JTextArea extends JTextComponent
       {
 	// This cannot happen as we check offset above.
       }
+  }
+
+  /**
+   * Returns the preferred size for the JTextArea. This is the maximum of
+   * the size that is needed to display the content and the requested size
+   * as per {@link #getColumns} and {@link #getRows}.
+   *
+   * @return the preferred size of the JTextArea
+   */
+  public Dimension getPreferredSize()
+  {
+    int reqWidth = getColumns() * getColumnWidth();
+    int reqHeight = getRows() * getRowHeight();
+    View view = getUI().getRootView(this);
+    int neededWidth = (int) view.getPreferredSpan(View.HORIZONTAL);
+    int neededHeight = (int) view.getPreferredSpan(View.VERTICAL);
+    return new Dimension(Math.max(reqWidth, neededWidth),
+                          Math.max(reqHeight, neededHeight));
   }
 }

@@ -3276,6 +3276,7 @@ javax/swing/text/ChangedCharSetException.java
 javax/swing/text/ComponentView.java
 javax/swing/text/DefaultCaret.java
 javax/swing/text/DefaultEditorKit.java
+javax/swing/text/DefaultFormatter.java
 javax/swing/text/DefaultHighlighter.java
 javax/swing/text/DefaultStyledDocument.java
 javax/swing/text/DocumentFilter.java
@@ -3299,6 +3300,7 @@ javax/swing/text/html/parser/Entity.java
 javax/swing/text/html/parser/ParserDelegator.java
 javax/swing/text/html/parser/Parser.java
 javax/swing/text/html/parser/TagElement.java
+javax/swing/text/InternationalFormatter.java
 javax/swing/text/JTextComponent.java
 javax/swing/text/Keymap.java
 javax/swing/text/LayeredHighlighter.java
