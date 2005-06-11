@@ -1,6 +1,17 @@
 2005-06-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-06-02  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java:
+	(drawImage): Remove reference to GtkOffScreenImage.
+	* gnu/java/awt/peer/gtk/GtkImageConsumer.java:
+	Add additional comments.
+
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-06-02  Sven de Marothy  <sven@physto.se>
 

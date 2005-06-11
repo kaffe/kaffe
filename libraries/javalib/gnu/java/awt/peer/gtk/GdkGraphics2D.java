@@ -510,21 +510,22 @@ public class GdkGraphics2D extends Graphics2D
     if (img == null)
       return false;
 
-    if (img instanceof GtkOffScreenImage
-        && img.getGraphics() instanceof GdkGraphics2D
-        && (xform == null || xform.getType() == AffineTransform.TYPE_IDENTITY
-        || xform.getType() == AffineTransform.TYPE_TRANSLATION))
-      {
-	// we are being asked to flush a double buffer from Gdk
-	GdkGraphics2D g2 = (GdkGraphics2D) img.getGraphics();
-	gdkDrawDrawable(g2, (int) xform.getTranslateX(),
-	                (int) xform.getTranslateY());
+    // FIXME: I'll fix this, /Sven
+//     if (img instanceof GtkOffScreenImage
+//         && img.getGraphics() instanceof GdkGraphics2D
+//         && (xform == null || xform.getType() == AffineTransform.TYPE_IDENTITY
+//         || xform.getType() == AffineTransform.TYPE_TRANSLATION))
+//       {
+// 	// we are being asked to flush a double buffer from Gdk
+// 	GdkGraphics2D g2 = (GdkGraphics2D) img.getGraphics();
+// 	gdkDrawDrawable(g2, (int) xform.getTranslateX(),
+// 	                (int) xform.getTranslateY());
 
-	updateBufferedImage();
+// 	updateBufferedImage();
 
-	return true;
-      }
-    else
+// 	return true;
+//       }
+//     else
       {
 	// In this case, xform is an AffineTransform that transforms bounding
 	// box of the specified image from image space to user space. However
