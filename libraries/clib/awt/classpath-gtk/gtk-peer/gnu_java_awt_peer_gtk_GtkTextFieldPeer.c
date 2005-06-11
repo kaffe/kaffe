@@ -39,6 +39,12 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkTextFieldPeer.h"
 
+/* the color used for highlighting when the foreground is black,
+   since black highlights aren't a Good Idea. */
+#define BB_RED    16962
+#define BB_GREEN  26985
+#define BB_BLUE   31611
+
 static jint
 get_border_width (GtkWidget *entry);
 
@@ -94,10 +100,17 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetSetForeground
   color.red = (red / 255.0) * 65535;
   color.green = (green / 255.0) * 65535;
   color.blue = (blue / 255.0) * 65535;
-
+  
   gdk_threads_enter ();
 
   gtk_widget_modify_text (GTK_WIDGET (ptr), GTK_STATE_NORMAL, &color);
+
+  if ( red == 0 && green == 0 && blue == 0)
+    {
+      color.red = BB_RED;
+      color.green = BB_GREEN;
+      color.blue = BB_BLUE;
+    }
   gtk_widget_modify_base (GTK_WIDGET (ptr), GTK_STATE_SELECTED, &color);
 
   gdk_threads_leave ();

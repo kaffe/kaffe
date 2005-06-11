@@ -92,23 +92,23 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   private transient int iconTextGap = 4;
 
   /**
-   * Creates a new horizontally and vertically centered JLabel object with no
-   * text and no icon.
+   * Creates a new vertically centered, horizontally on the leading edge
+   * JLabel object with text and no icon.
    */
   public JLabel()
   {
-    this(null, null, CENTER);
+    this(null, null, LEADING);
   }
 
   /**
-   * Creates a new horizontally and vertically centered JLabel object with no
-   * text and the given icon.
+   * Creates a new vertically centered, horizontally on the leading edge
+   * JLabel object with no text and the given icon.
    *
    * @param image The icon to use with the label.
    */
   public JLabel(Icon image)
   {
-    this(null, image, CENTER);
+    this(null, image, LEADING);
   }
 
   /**
@@ -125,14 +125,14 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   }
 
   /**
-   * Creates a new horizontally and vertically centered JLabel object with no
-   * icon and the given text.
+   * Creates a new horizontally leading and vertically centered JLabel 
+   * object with no icon and the given text.
    *
    * @param text The text to use with the label.
    */
   public JLabel(String text)
   {
-    this(text, null, CENTER);
+    this(text, null, LEADING);
   }
 
   /**

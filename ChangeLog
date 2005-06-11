@@ -1,6 +1,60 @@
 2005-06-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-06-06  Sven de Marothy <sven@physto.se>
+
+	* javax/swing/JLabel.java
+	(JLabel): Horizontal justification changed to default to LEADING.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/DefaultFormatter.java:
+	Implemented new class.
+	
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JFrame.java:
+	Added the two missing constructors that take
+	java.awt.GraphicsConfiguration objects as arguments.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JTree.java
+	(removeDescendantSelectedPaths): Implemented new method.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(focusLost): Don't unarm button on focus lost. This behaviour is
+	not documented anywhere and disturbs correct event processing
+	in buttons.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(getKeymapName): Removed debug statement.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(getKeymapName): Added API documentation comments.
+
+	2005-06-06  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(getKeymapName): Reimplemented to return the classname of
+	itself. This way subclasses don't have to override this
+	method.
+
+	2005-06-06  Sven de Marothy <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c
+	(gtkWidgetSetForeground): Avoid setting black-on-black selection color
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-06-05  Tom Tromey  <tromey@redhat.com>
 

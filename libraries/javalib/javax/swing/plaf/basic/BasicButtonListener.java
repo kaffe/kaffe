@@ -87,9 +87,6 @@ public class BasicButtonListener
     if (e.getSource() instanceof AbstractButton)
       {
         AbstractButton button = (AbstractButton) e.getSource();
-        ButtonModel model = button.getModel();
-        model.setArmed(false);
-
         if (button.isFocusPainted())
           button.repaint();   
       }

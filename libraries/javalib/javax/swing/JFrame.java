@@ -45,6 +45,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
 import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -76,6 +77,37 @@ public class JFrame extends Frame
   public JFrame(String title)
   {
     super(title);
+    frameInit();
+  }
+
+  /**
+   * Creates a new JFrame in the specified {@link GraphicsConfiguration}
+   * and with an empty title.
+   *
+   * @param gc the <code>GraphicsConfiguration</code> that is used for
+   *     the new <code>JFrame</code>
+   *
+   * @see Frame(GraphicsConfiguration)
+   */
+  public JFrame(GraphicsConfiguration gc)
+  {
+    super(gc);
+    frameInit();
+  }
+
+  /**
+   * Creates a new JFrame in the specified {@link GraphicsConfiguration}
+   * and with the specified title.
+   *
+   * @param title the title for the new <code>JFrame</code>
+   * @param gc the <code>GraphicsConfiguration</code> that is used for
+   *     the new <code>JFrame</code>
+   *
+   * @see Frame(String, GraphicsConfiguration)
+   */
+  public JFrame(String title, GraphicsConfiguration gc)
+  {
+    super(title, gc);
     frameInit();
   }
 

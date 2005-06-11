@@ -352,9 +352,21 @@ public abstract class BasicTextUI extends TextUI
       doc.addDocumentListener(documentHandler);
   }
 
+  /**
+   * Returns the name of the keymap for this type of TextUI.
+   * 
+   * This is implemented so that the classname of this TextUI
+   * without the package prefix is returned. This way subclasses
+   * don't have to override this method.
+   * 
+   * @return the name of the keymap for this TextUI
+   */
   protected String getKeymapName()
   {
-    return "BasicTextUI";
+    String fullClassName = getClass().getName();
+    int index = fullClassName.lastIndexOf('.');
+    String className = fullClassName.substring(index + 1);
+    return className;
   }
 
   protected Keymap createKeymap()

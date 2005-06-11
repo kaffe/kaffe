@@ -1780,4 +1780,37 @@ public class JTree extends JComponent
       }
     return foundPath;
   }
+
+  /**
+   * Removes any paths in the current set of selected paths that are
+   * descendants of <code>path</code>. If <code>includePath</code> is
+   * set to <code>true</code> and <code>path</code> itself is selected,
+   * then it will be removed too.
+   *
+   * @param path the path from which selected descendants are to be
+   *     removed
+   * @param includePath if <code>true</code> then <code>path</code>
+   *     itself will also be remove if it's selected
+   *
+   * @return <code>true</code> if something has been removed,
+   *     <code>false</code> otherwise
+   *
+   * @since 1.3
+   */
+  protected boolean removeDescendantSelectedPaths(TreePath path,
+                                                    boolean includeSelected)
+  {
+    boolean removedSomething = false;
+    TreePath[] selected = getSelectionPaths();
+    for (int index = 0; index < selected.length; index++)
+      {
+        if ((selected[index] == path && includeSelected)
+            || (selected[index].isDescendant(path)))
+          {
+            removeSelectionPath(selected[index]);
+            removedSomething = true;
+          }
+      }
+    return removedSomething;
+  }
 }
