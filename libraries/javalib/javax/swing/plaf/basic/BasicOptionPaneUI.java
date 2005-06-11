@@ -85,8 +85,12 @@ public class BasicOptionPaneUI extends OptionPaneUI
   /**
    * This is a helper class that listens to the buttons located at the bottom
    * of the JOptionPane.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class ButtonActionListener implements ActionListener
+  public class ButtonActionListener implements ActionListener
   {
     /** The index of the option this button represents. */
     protected int buttonIndex;
@@ -152,8 +156,13 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * This helper layout manager is responsible for the layout of the button
    * area. The button area is the panel that holds the buttons which
    * represent the options.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class ButtonAreaLayout implements LayoutManager
+  // FIXME: should be static
+  public class ButtonAreaLayout implements LayoutManager
   {
     /** Whether this layout will center the buttons. */
     protected boolean centersChildren = true;
@@ -366,6 +375,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
 
   /**
    * This helper class handles property change events from the JOptionPane.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class PropertyChangeHandler implements PropertyChangeListener
   {
@@ -453,19 +466,15 @@ public class BasicOptionPaneUI extends OptionPaneUI
   private transient Border buttonBorder;
 
   /** The string used to describe OK buttons. */
-  // FIXME: wrong name for a constant.
   private static final String OK_STRING = "OK";
 
   /** The string used to describe Yes buttons. */
-  // FIXME: wrong name for a constant.
   private static final String YES_STRING = "Yes";
 
   /** The string used to describe No buttons. */
-  // FIXME: wrong name for a constant.
   private static final String NO_STRING = "No";
 
   /** The string used to describe Cancel buttons. */
-  // FIXME: wrong name for a constant.
   private static final String CANCEL_STRING = "Cancel";
 
   /** The container for the message area.

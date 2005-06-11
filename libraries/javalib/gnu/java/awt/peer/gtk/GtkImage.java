@@ -281,6 +281,8 @@ public class GtkImage extends Image
    */
   public ImageProducer getSource ()
   {
+    if (!isLoaded)
+      return null;
     return new MemoryImageSource(width, height, nativeModel, getPixels(), 
 				 0, width);
   }
@@ -433,7 +435,8 @@ public class GtkImage extends Image
       ImageObserver.PROPERTIES |
       ImageObserver.ALLBITS;
 
-    for(int i=0; i < observers.size(); i++)
+    if (observers != null)
+      for(int i=0; i < observers.size(); i++)
 	((ImageObserver)observers.elementAt(i)).
 	  imageUpdate(this, flags, 0, 0, width, height);
 

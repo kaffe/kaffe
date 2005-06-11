@@ -2,6 +2,67 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-06  Sven de Marothy <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GtkImage.java
+	(getSource, deliver): Added null checks.
+	* java/awt/image/RGBImageFilter.java
+	(filterRGBPixels): Reimplement.
+
+	2005-06-05  Ka-Hing Cheung  <kahing@javabsp.org>
+
+	* javax/swing/event/TreeSelectionEvent.java
+	(getPaths): Return a cloned copy.
+	(isAddedPath): Implemented.
+	(cloneWithSource): Likewise.
+
+	2005-06-05  Ka-Hing Cheung  <kahing@javabsp.org>
+
+	* javax/swing/event/TreeSelectionEvent.java:
+	Reformatted.
+
+	2005-06-05  Ka-Hing Cheung  <kahing@javabsp.org>
+
+	* javax/swing/tree/TreePath.java
+	(toString): Implemented.
+	
+	2005-06-04  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java (focusListener): Use
+	correct type.
+	(listDataListener, listSelectionListener, mouseInputListener,
+	propertyChangeListener): Likewise.
+	* javax/swing/plaf/basic/BasicMenuUI.java (ChangeHandler): Now
+	public and deprecated.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(TabbedPaneLayout): Now public.
+	* javax/swing/plaf/basic/BasicOptionPaneUI.java
+	(ButtonActionListener): Now public.
+	(PropertyChangeHandler): Likewise.
+	(ButtonAreaLayout): Likewise.
+	* javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+	(TitlePaneLayout): Now public.
+	(PropertyChangeHandler): Likewise.
+	* javax/swing/plaf/basic/BasicCheckBoxUI.java
+	(getPropertyPrefix): New method.
+	* javax/swing/plaf/basic/BasicProgressBarUI.java (ChangeHandler):
+	Now public.
+	* javax/swing/plaf/basic/BasicSliderUI.java (ComponentHandler):
+	Now public.
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(BasicVerticalLayoutManager): Now public.
+	(FocusHandler): Likewise.
+	(BasicHorizontalLayoutManager): Likewise.
+	* javax/swing/plaf/basic/BasicFileChooserUI.java
+	(AcceptAllFileFilter): New public constructor.
+	(BasicFileView): Likewise.
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java
+	(BorderListener.RESIZE_NONE): Now final.
+
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-06-03  Roman Kennke  <roman@kennke.org>
 
 	* javax/swing/plaf/basic/BasicListUI.java
@@ -71,6 +132,19 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-05  Sven de Marothy  <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+	(getPixels): Handle pixbufs which don't have alpha.
+
+	2005-06-04  Michael Koch  <konqueror@gmx.de>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+	(Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf):
+	Fixed method declaration format.
+	(Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaled):
+	Likewise.
+
 	2005-06-02  Sven de Marothy  <sven@physto.se>
 
 	* gnu/java/awt/peer/gtk/GdkGraphics.java:

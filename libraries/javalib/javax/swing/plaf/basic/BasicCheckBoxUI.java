@@ -1,5 +1,5 @@
 /* BasicCheckBoxUI.java
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -59,7 +59,13 @@ public class BasicCheckBoxUI extends BasicRadioButtonUI
   
   public void installUI(final JComponent c)  {
     super.installUI(c);
-  }  
+  }
+
+  // Overridden to change method access.
+  public String getPropertyPrefix()
+  {
+    return super.getPropertyPrefix();
+  }
 }
 
 

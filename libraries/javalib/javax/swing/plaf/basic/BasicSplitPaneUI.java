@@ -1,5 +1,5 @@
 /* BasicSplitPaneUI.java --
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -71,8 +71,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This Layout Manager controls the position and size of the components when
    * the JSplitPane's orientation is HORIZONTAL_SPLIT.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class BasicHorizontalLayoutManager implements LayoutManager2
+  public class BasicHorizontalLayoutManager implements LayoutManager2
   {
     // 3 components at a time.
     // LEFT/TOP = 0
@@ -485,8 +489,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This class is the Layout Manager for the JSplitPane when the orientation
    * is VERTICAL_SPLIT.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class BasicVerticalLayoutManager
+  public class BasicVerticalLayoutManager
     extends BasicHorizontalLayoutManager
   {
     /**
@@ -653,8 +661,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
 
   /**
    * This class handles FocusEvents from the JComponent.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class FocusHandler extends FocusAdapter
+  public class FocusHandler extends FocusAdapter
   {
     /**
      * This method is called when the JSplitPane gains focus.
@@ -680,6 +692,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This is a deprecated class. It is supposed to be used for handling down
    * and right key presses.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class KeyboardDownRightHandler implements ActionListener
   {
@@ -697,6 +713,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This is a deprecated class. It is supposed to be used for handling end
    * key presses.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class KeyboardEndHandler implements ActionListener
   {
@@ -714,6 +734,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This is a deprecated class. It is supposed to be used for handling home
    * key presses.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class KeyboardHomeHandler implements ActionListener
   {
@@ -731,6 +755,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This is a deprecated class. It is supposed to be used for handling resize
    * toggles.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class KeyboardResizeToggleHandler implements ActionListener
   {
@@ -748,6 +776,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This is a deprecated class. It is supposed to be used for handler up and
    * left key presses.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class KeyboardUpLeftHandler implements ActionListener
   {
@@ -765,6 +797,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /**
    * This helper class handles PropertyChangeEvents from the JSplitPane. When
    * a property changes, this will update the UI accordingly.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class PropertyHandler implements PropertyChangeListener
   {

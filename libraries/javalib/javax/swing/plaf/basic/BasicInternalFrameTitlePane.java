@@ -77,6 +77,10 @@ public class BasicInternalFrameTitlePane extends JComponent
 {
   /**
    * The Action responsible for closing the JInternalFrame.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class CloseAction extends AbstractAction
   {
@@ -102,6 +106,10 @@ public class BasicInternalFrameTitlePane extends JComponent
 
   /**
    * This Action is responsible for iconifying the JInternalFrame.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class IconifyAction extends AbstractAction
   {
@@ -128,6 +136,10 @@ public class BasicInternalFrameTitlePane extends JComponent
 
   /**
    * This Action is responsible for maximizing the JInternalFrame.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class MaximizeAction extends AbstractAction
   {
@@ -154,6 +166,10 @@ public class BasicInternalFrameTitlePane extends JComponent
 
   /**
    * This Action is responsible for dragging the JInternalFrame.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class MoveAction extends AbstractAction
   {
@@ -171,6 +187,10 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This Action is responsible for restoring the JInternalFrame. Restoring
    * the JInternalFrame is the same as setting the maximum property to false.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class RestoreAction extends AbstractAction
   {
@@ -197,6 +217,10 @@ public class BasicInternalFrameTitlePane extends JComponent
 
   /**
    * This action is responsible for sizing the JInternalFrame.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class SizeAction extends AbstractAction
   {
@@ -214,8 +238,12 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This class is responsible for handling property change events from the
    * JInternalFrame and adjusting the Title Pane as necessary.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class PropertyChangeHandler implements PropertyChangeListener
+  public class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * This method is called when a PropertyChangeEvent is received by the
@@ -236,6 +264,10 @@ public class BasicInternalFrameTitlePane extends JComponent
   /**
    * This class acts as the MenuBar for the TitlePane. Clicking on the Frame
    * Icon in the top left corner will activate it.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class SystemMenuBar extends JMenuBar
   {
@@ -284,8 +316,12 @@ public class BasicInternalFrameTitlePane extends JComponent
 
   /**
    * This class acts as the Layout Manager for the TitlePane.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class TitlePaneLayout implements LayoutManager
+  public class TitlePaneLayout implements LayoutManager
   {
     /**
      * Creates a new <code>TitlePaneLayout</code> object.

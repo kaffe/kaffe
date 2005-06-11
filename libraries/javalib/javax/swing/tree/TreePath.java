@@ -1,5 +1,5 @@
 /* TreePath.java --
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * TreePath
@@ -170,7 +171,10 @@ public class TreePath implements Serializable
    */
   public String toString()
   {
-    return null; // TODO
+    if (path.length == 1)
+      return String.valueOf(path[0]);
+    else
+      return Arrays.asList(path).toString();
   }
 
   /**

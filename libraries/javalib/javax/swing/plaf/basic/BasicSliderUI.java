@@ -138,6 +138,10 @@ public class BasicSliderUI extends SliderUI
 {
   /**
    * Helper class that listens to the {@link JSlider}'s model for changes.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class ChangeHandler implements ChangeListener
   {
@@ -160,8 +164,12 @@ public class BasicSliderUI extends SliderUI
 
   /**
    * Helper class that listens for resize events.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class ComponentHandler extends ComponentAdapter
+  public class ComponentHandler extends ComponentAdapter
   {
     /**
      * Called when the size of the component changes. The UI delegate should
@@ -181,6 +189,10 @@ public class BasicSliderUI extends SliderUI
 
   /**
    * Helper class that listens for focus events.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class FocusHandler implements FocusListener
   {
@@ -246,6 +258,10 @@ public class BasicSliderUI extends SliderUI
    * Helper class that listens to our swing timer. This class is responsible
    * for listening to the timer and moving the thumb in the proper direction
    * every interval.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class ScrollListener implements ActionListener
   {
@@ -320,6 +336,10 @@ public class BasicSliderUI extends SliderUI
 
   /**
    * Helper class that listens for mouse events.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class TrackListener extends MouseInputAdapter
   {

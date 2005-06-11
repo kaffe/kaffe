@@ -75,8 +75,12 @@ public class BasicProgressBarUI extends ProgressBarUI
   /**
    * A helper class that listens for ChangeEvents 
    * from the progressBar's model.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class ChangeHandler implements ChangeListener
+  public class ChangeHandler implements ChangeListener
   {
     /**
      * Called every time the state of the model changes.

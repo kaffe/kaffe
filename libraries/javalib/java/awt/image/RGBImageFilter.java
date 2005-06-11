@@ -147,12 +147,14 @@ public abstract class RGBImageFilter extends ImageFilter
     public void filterRGBPixels(int x, int y, int w, int h, int[] pixels,
 				int offset, int scansize)
     {
-      for (int xp = x; xp < (x + w); xp++)
-	for (int yp = y; yp < (y + h); yp++)
-	  {
-	    pixels[offset] = filterRGB(xp, yp, pixels[offset]);
-	    offset++;
-	  }
+      for (int yp = 0; yp < h; yp++)
+	{
+	  for (int xp = 0; xp < w; xp++)
+	    {
+	      pixels[offset + xp] = filterRGB(xp + x, yp + y, pixels[offset + xp]);
+	    }
+	  offset += scansize;
+	}
     }
 
 
@@ -212,9 +214,9 @@ public abstract class RGBImageFilter extends ImageFilter
 	else
 	{
 	    //FIXME: Store the filtered pixels in a separate temporary buffer?
-	    convertColorModelToDefault( x, y, w, h, model, pixels, offset, scansize );
-	    filterRGBPixels( x, y, w, h, pixels, offset, scansize );
-	    consumer.setPixels(x, y, w, h, ColorModel.getRGBdefault(), pixels, offset, scansize);
+	  convertColorModelToDefault( x, y, w, h, model, pixels, offset, scansize );
+	  filterRGBPixels( x, y, w, h, pixels, offset, scansize );
+	  consumer.setPixels(x, y, w, h, ColorModel.getRGBdefault(), pixels, offset, scansize);
 	}
     }
 

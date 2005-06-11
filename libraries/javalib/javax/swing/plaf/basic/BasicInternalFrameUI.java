@@ -1,5 +1,5 @@
 /* BasicInternalFrameUI.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -162,7 +162,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
     implements SwingConstants
   {
     /** FIXME: Use for something. */
-    protected int RESIZE_NONE;
+    protected final int RESIZE_NONE = 0;
 
     /** The x offset from the top left corner of the JInternalFrame. */
     private transient int xOffset = 0;

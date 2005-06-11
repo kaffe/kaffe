@@ -83,6 +83,10 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
 {
   /**
    * A helper class that handles focus.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class FocusHandler extends FocusAdapter
   {
@@ -111,6 +115,10 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * A helper class for determining if mouse presses occur inside tabs and
    * sets the index appropriately. In SCROLL_TAB_MODE, this class also
    * handles the mouse clicks on the scrolling buttons.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class MouseHandler extends MouseAdapter
   {
@@ -173,6 +181,10 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
 
   /**
    * This class handles PropertyChangeEvents fired from the JTabbedPane.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class PropertyChangeHandler implements PropertyChangeListener
   {
@@ -205,8 +217,12 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * A LayoutManager responsible for placing all the tabs and the visible
    * component inside the JTabbedPane. This class is only used for
    * WRAP_TAB_LAYOUT.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
-  protected class TabbedPaneLayout implements LayoutManager
+  public class TabbedPaneLayout implements LayoutManager
   {
     /**
      * This method is called when a component is added to the JTabbedPane.
@@ -1101,6 +1117,10 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
 
   /**
    * This class handles ChangeEvents from the JTabbedPane.
+   *
+   * @specnote Apparently this class was intended to be protected,
+   *           but was made public by a compiler bug and is now
+   *           public for compatibility.
    */
   public class TabSelectionHandler implements ChangeListener
   {

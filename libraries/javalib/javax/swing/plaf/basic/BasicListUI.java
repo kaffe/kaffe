@@ -304,19 +304,20 @@ public class BasicListUI extends ListUI
   }
 
   /** The current focus listener. */
-  protected FocusHandler focusListener;
+  protected FocusListener focusListener;
 
   /** The data listener listening to the model. */
-  protected ListDataHandler listDataListener;
+  protected ListDataListener listDataListener;
 
   /** The selection listener listening to the selection model. */
-  protected ListSelectionHandler listSelectionListener;
+  protected ListSelectionListener listSelectionListener;
 
   /** The mouse listener listening to the list. */
-  protected MouseInputHandler mouseInputListener;
+  protected MouseInputListener mouseInputListener;
 
   /** The property change listener listening to the list. */
-  protected PropertyChangeHandler propertyChangeListener;
+  protected PropertyChangeListener propertyChangeListener;
+
 
   /** The component listener that receives notification for resizing the
    * JList component.*/
