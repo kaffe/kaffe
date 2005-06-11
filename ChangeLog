@@ -2,6 +2,71 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-08  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/BandedSampleModel.java
+	(createBankArray): New method.
+	(BandedSampleModel(int, int, int, int)): reimplemented.
+	(BandedSampleModel(int, int, int, int, int[], int[]): 
+	RasterFormatException nearer to start of constructor.
+	(getPixel): Use band index, not zero.
+	(getPixels): Fixed loop indices.
+	(getSamples): Fixed loop indices.
+	(setDataElements): Use band index, not zero.
+	
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/DefaultFormatter.java
+	(FormatterDocumentFilter.remove): Added check for valid input.
+	(FormatterDocumentFilter.insertString): Added check for valid input.
+	Added support for overwriteMode property.
+	(FormatterDocumentFilter.replace): Added check for valid input.
+	(checkValidInput): New helper method to check for valid input
+	and roll it back if necessary.
+
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JFormattedTextField.java
+	(getActions): Call super.getActions instead of throwing an exception.
+	This is safe here.
+	(processFocusEvent): Likewise.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(createKeymap): Construct new bindings array if UIDefaults does return
+	a null object for this.
+
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(installDefaults): Call resetLayoutManager() _after_ the divider
+	is created to prevent NPE.
+	(paint): Removed check for valid divider location. This is done
+	in resetComponentAt(index).
+	(resetLayoutManager): Call layout.updateComponents _after_ the
+	layout has been installed. Otherwise it has no effect.
+
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JComponent.java
+	(setMinimumSize): Adjust preferredSize and maximumSize when
+	minimumSize is greater than preferred or maximumSize.
+
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/DefaultEditorKit.java:
+	Added some API documentation.
+
+	2005-06-08  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/DefaultEditorKit.java
+	(DefaultKeyTypedAction.actionPerformed): This action
+	has to filter control characters here.
+	(InsertBreakAction.actionPerformed): This action inserts
+	a newline character here.
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-06  Sven de Marothy <sven@physto.se>
 
 	* javax/swing/JLabel.java

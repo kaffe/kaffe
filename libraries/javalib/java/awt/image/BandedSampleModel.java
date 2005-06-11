@@ -1,4 +1,4 @@
-/* Copyright (C) 2004  Free Software Foundation
+/* Copyright (C) 2004, 2005, Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -53,9 +53,17 @@ public final class BandedSampleModel extends ComponentSampleModel
   private int numberOfBits;
   private int numElems;
 
+  private static int[] createBankArray(int size) 
+  {
+    int[] result = new int[size];
+    for (int i = 0; i < size; i++)
+      result[i] = i;
+    return result;
+  }
+
   public BandedSampleModel(int dataType, int w, int h, int numBands)
   {
-    super(dataType, w, h, 1, w, new int[numBands]);
+    this(dataType, w, h, w, createBankArray(numBands), new int[numBands]);
   }
 
   public BandedSampleModel(int dataType, int w, int h, int scanlineStride,
@@ -103,6 +111,10 @@ public final class BandedSampleModel extends ComponentSampleModel
 
   public SampleModel createSubsetSampleModel(int[] bands)
   {
+    if (bands.length > bankIndices.length)
+      throw new
+	RasterFormatException("BandedSampleModel createSubsetSampleModel too"
+			      +" many bands");
     int[] newoff = new int[bands.length];
     int[] newbanks = new int[bands.length];
     for (int i=0; i < bands.length; i++)
@@ -112,11 +124,6 @@ public final class BandedSampleModel extends ComponentSampleModel
 	newbanks[i] = bankIndices[b];
       }
 
-    if (bands.length > bankIndices.length)
-      throw new
-	RasterFormatException("BandedSampleModel createSubsetSampleModel too"
-			      +" many bands");
-    
     return new BandedSampleModel(dataType, width, height, scanlineStride,
 				 newbanks, newoff);
   }
@@ -192,7 +199,7 @@ public final class BandedSampleModel extends ComponentSampleModel
   {
     if (iArray == null) iArray = new int[numBands];
     for (int i=0; i < numBands; i++)
-      iArray[i] = getSample(x, y, 0, data);
+      iArray[i] = getSample(x, y, i, data);
 	
     return iArray;
   }
@@ -223,13 +230,15 @@ public final class BandedSampleModel extends ComponentSampleModel
   {
     if (iArray == null) iArray = new int[w*h*numBands];
     int outOffset = 0;
-    for (y=0; y<h; y++)
+    int maxX = x + w;
+    int maxY = y + h;
+    for (int yy = x; yy < maxY; yy++)
       {
-	for (x=0; x<w;)
+	for (int xx = x; xx < maxX; xx++)
 	  {
-	    for (int b=0; b < numBands; b++)
+	    for (int b = 0; b < numBands; b++)
 	      {
-		int offset = bandOffsets[b] + y * scanlineStride + x;
+		int offset = bandOffsets[b] + yy * scanlineStride + xx;
 		iArray[outOffset++] =
 		  data.getElem(bankIndices[b], offset);
 	      }
@@ -281,11 +290,13 @@ public final class BandedSampleModel extends ComponentSampleModel
   {
     if (iArray == null) iArray = new int[w*h];
     int outOffset = 0;
-    for (y=0; y<h; y++)
+    int maxX = x + w;
+    int maxY = y + h;
+    for (int yy = y; yy < maxY; yy++)
       {
-	for (x=0; x<w;)
+	for (int xx = x; xx < maxX; xx++)
 	  {
-	    int offset = bandOffsets[b] + y * scanlineStride + x;
+	    int offset = bandOffsets[b] + yy * scanlineStride + xx;
 	    iArray[outOffset++] =
 	      data.getElem(bankIndices[b], offset);
 	  }
@@ -328,7 +339,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferByte out = (DataBufferByte) data;
 	      byte[] in = (byte[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  case DataBuffer.TYPE_SHORT:
@@ -336,7 +347,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferShort out = (DataBufferShort) data;
 	      short[] in = (short[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  case DataBuffer.TYPE_USHORT:
@@ -344,7 +355,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferUShort out = (DataBufferUShort) data;
 	      short[] in = (short[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  case DataBuffer.TYPE_INT:
@@ -352,7 +363,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferInt out = (DataBufferInt) data;
 	      int[] in = (int[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  case DataBuffer.TYPE_FLOAT:
@@ -360,7 +371,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferFloat out = (DataBufferFloat) data;
 	      float[] in = (float[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  case DataBuffer.TYPE_DOUBLE:
@@ -368,7 +379,7 @@ public final class BandedSampleModel extends ComponentSampleModel
 	      DataBufferDouble out = (DataBufferDouble) data;
 	      double[] in = (double[]) obj;
 	      for (int i=0; i < numBands; i++)
-		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[0];
+		out.getData(bankIndices[i])[offset + bandOffsets[i]] = in[i];
 	      return;
 	    }
 	  default:

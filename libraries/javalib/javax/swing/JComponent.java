@@ -2063,6 +2063,16 @@ public abstract class JComponent extends Container implements Serializable
     firePropertyChange("minimumSize", oldMinimumSize, minimumSize);
     revalidate();
     repaint();
+
+    // adjust preferred and maximum size accordingly
+    Dimension prefSize = getPreferredSize();
+    prefSize.width = Math.max(prefSize.width, minimumSize.width);
+    prefSize.height = Math.max(prefSize.height, minimumSize.height);
+    setPreferredSize(prefSize);
+    Dimension maxSize = getMaximumSize();
+    maxSize.width = Math.max(maxSize.width, minimumSize.width);
+    maxSize.height = Math.max(maxSize.height, minimumSize.height);
+    setMaximumSize(maxSize);
   }
 
   /**

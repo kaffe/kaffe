@@ -990,8 +990,8 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   protected void installDefaults()
   {
-    resetLayoutManager();
     divider = createDefaultDivider();
+    resetLayoutManager();
     nonContinuousLayoutDivider = createDefaultNonContinuousLayoutDivider();
     splitPane.add(divider, JSplitPane.DIVIDER);
 
@@ -1384,11 +1384,6 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public void paint(Graphics g, JComponent jc)
   {
-    // Make sure that the location is valid
-    int divLoc = splitPane.getDividerLocation();
-    int valLoc = validLocation(divLoc);
-    if (divLoc != valLoc)
-      splitPane.setDividerLocation(valLoc);
   }
 
   /**
@@ -1449,9 +1444,8 @@ public class BasicSplitPaneUI extends SplitPaneUI
       layoutManager = new BasicHorizontalLayoutManager();
     else
       layoutManager = new BasicVerticalLayoutManager();
-    layoutManager.invalidateLayout(splitPane);
-    layoutManager.updateComponents();
     getSplitPane().setLayout(layoutManager);
+    layoutManager.updateComponents();
 
     // invalidating by itself does not invalidate the layout.
     getSplitPane().revalidate();

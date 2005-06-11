@@ -197,7 +197,8 @@ public class JFormattedTextField extends JTextField
 
   public Action[] getActions ()
   {
-    throw new InternalError ("not implemented");
+    // FIXME: Add JFormattedTextField specific actions
+    return super.getActions();
   }
 
   public int getFocusLostBehavior()
@@ -240,7 +241,10 @@ public class JFormattedTextField extends JTextField
 
   protected void processFocusEvent (FocusEvent evt)
   {
-    throw new InternalError ("not implemented");
+    // it's safe to simply call super for now, until it gets clear
+    // what this method is supposed to do
+    // throw new InternalError ("not implemented");
+    super.processFocusEvent(evt);
   }
 
   public void setDocument(Document newDocument)

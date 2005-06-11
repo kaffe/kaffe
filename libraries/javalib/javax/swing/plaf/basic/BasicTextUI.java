@@ -375,6 +375,12 @@ public abstract class BasicTextUI extends TextUI
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     JTextComponent.KeyBinding[] bindings = 
       (JTextComponent.KeyBinding[]) defaults.get(prefix + ".keyBindings");
+    if (bindings == null)
+      {
+        bindings = new JTextComponent.KeyBinding[0];
+        defaults.put(prefix + ".keyBindings", bindings);
+      }
+
     Keymap km = JTextComponent.addKeymap(getKeymapName(), 
                                          JTextComponent.getKeymap(JTextComponent.DEFAULT_KEYMAP));    
     JTextComponent.loadKeymap(km, bindings, textComponent.getActions());
