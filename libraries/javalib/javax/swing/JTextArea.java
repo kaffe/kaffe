@@ -188,6 +188,7 @@ public class JTextArea extends JTextComponent
     setText(text);
     setRows(rows);
     setColumns(columns);
+    setPreferredSize(new Dimension(440, 150));
   }
 
   /**

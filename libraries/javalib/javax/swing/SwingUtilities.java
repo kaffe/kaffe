@@ -1128,9 +1128,13 @@ public class SwingUtilities
       component.setActionMap(uiActionMap);
     else
       {
-        while(child.getParent() != null
-              && !(child.getParent() instanceof ActionMapUIResource))
-          child = child.getParent();
+        ActionMap parent = child.getParent();
+        while(parent != null)
+          {
+            child = parent;
+            parent = child.getParent();
+          }
+
         if (child != null)
           child.setParent(uiActionMap);
       }

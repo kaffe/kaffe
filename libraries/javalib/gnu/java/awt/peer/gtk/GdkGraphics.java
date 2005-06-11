@@ -142,13 +142,6 @@ public class GdkGraphics extends Graphics
 
   public native void dispose();
 
-  native void copyPixmap (Graphics g, int x, int y, int width, int height);
-  native void copyAndScalePixmap (Graphics g, boolean flip_x, boolean flip_y,
-                                  int src_x, int src_y, 
-                                  int src_width, int src_height, 
-                                  int dest_x, int dest_y, 
-                                  int dest_width, int dest_height);
-
   public boolean drawImage (Image img, int x, int y, 
 			    Color bgcolor, ImageObserver observer)
   {

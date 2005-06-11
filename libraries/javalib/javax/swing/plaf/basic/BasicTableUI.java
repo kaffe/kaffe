@@ -209,12 +209,22 @@ public class BasicTableUI
 
   protected void uninstallDefaults() 
   {
-    table.setFont(null);
-    table.setGridColor(null);
-    table.setForeground(null);
-    table.setBackground(null);
-    table.setSelectionForeground(null);
-    table.setSelectionBackground(null);
+    // TODO: this method used to do the following which is not
+    // quite right (at least it breaks apps that run fine with the
+    // JDK):
+    //
+    // table.setFont(null);
+    // table.setGridColor(null);
+    // table.setForeground(null);
+    // table.setBackground(null);
+    // table.setSelectionForeground(null);
+    // table.setSelectionBackground(null);
+    //
+    // This would leave the component in a corrupt state, which is
+    // not acceptable. A possible solution would be to have component
+    // level defaults installed, that get overridden by the UI defaults
+    // and get restored in this method. I am not quite sure about this
+    // though. / Roman Kennke
   }
 
   protected void uninstallKeyboardActions() 

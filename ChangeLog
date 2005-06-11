@@ -2,6 +2,55 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(damageLayout): Check for list beeing null before revalidating
+	it.
+
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/PlainDocument.java
+	(removeUpdate): Fixed indices in text buffer access.
+	* javax/swing/text/PlainView.java
+	(drawLine): Simplified element access.
+
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JTextArea.java
+	(constructor): Set preferredSize to a sane default.
+	
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/SwingUtilites.java
+	(replaceUIActionMap): Fixed loop again. Now correctly, I hope.
+	* javax/swing/ActionMap.java
+	(setParent): Make sure we don't build a loop.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(createActionMap): Create ActionMapUIResource instead of
+	plain ActionMap.
+
+	2005-06-03  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java:
+	Removed declarations for the previously removed native methods.
+
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/SwingUtilites.java
+	(replaceUIActionMap): Fixed condition in while loop that caused
+	infinite looping.
+
+	2005-06-03  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(uninstallDefault): Don't set properties to null, this corrupts
+	component state.
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-06-02  Sven de Marothy  <sven@physto.se>
 
 	* java/awt/Component.java

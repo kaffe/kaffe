@@ -123,7 +123,7 @@ public class PlainView extends View
       {
 	metrics = g.getFontMetrics();
 	// FIXME: Selected text are not drawn yet.
-	Element line = getDocument().getDefaultRootElement().getElement(lineIndex);
+	Element line = getElement().getElement(lineIndex);
 	drawUnselectedText(g, x, y, line.getStartOffset(), line.getEndOffset());
 	//drawSelectedText(g, , , , );
       }

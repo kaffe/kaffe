@@ -59,6 +59,7 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.BadLocationException;
@@ -416,7 +417,7 @@ public abstract class BasicTextUI extends TextUI
   ActionMap createActionMap()
   {
     Action[] actions = textComponent.getActions();
-    ActionMap am = new ActionMap();
+    ActionMap am = new ActionMapUIResource();
     for (int i = 0; i < actions.length; ++i)
       {
         String name = (String) actions[i].getValue(Action.NAME);

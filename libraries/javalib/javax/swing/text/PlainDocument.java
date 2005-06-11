@@ -117,8 +117,8 @@ public class PlainDocument extends AbstractDocument
     super.removeUpdate(event);
 
     int p0 = event.getOffset();
-    int p1 = event.getLength() + p0;
     int len = event.getLength();
+    int p1 = len + p0;
 
     // check if we must collapse some elements
     int i1 = rootElement.getElementIndex(p0);
@@ -133,7 +133,7 @@ public class PlainDocument extends AbstractDocument
         Element newEl = createLeafElement(rootElement,
                                           SimpleAttributeSet.EMPTY,
                                           start, end - len);
-        rootElement.replace(i1, i1 - i1, new Element[]{ newEl });
+        rootElement.replace(i1, i2 - i1, new Element[]{ newEl });
       }
     else
       {
