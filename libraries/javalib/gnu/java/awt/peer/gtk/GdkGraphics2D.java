@@ -290,8 +290,8 @@ public class GdkGraphics2D extends Graphics2D
   private native void cairoRestore();
   private native void cairoSetMatrix(double[] m);
   private native void cairoSetOperator(int cairoOperator);
-  private native void cairoSetRGBColor(double red, double green, double blue);
-  private native void cairoSetAlpha(double alpha);
+  private native void cairoSetRGBAColor(double red, double green,
+                                        double blue, double alpha);
   private native void cairoSetFillRule(int cairoFillRule);
   private native void cairoSetLineWidth(double width);
   private native void cairoSetLineCap(int cairoLineCap);
@@ -807,9 +807,8 @@ public class GdkGraphics2D extends Graphics2D
 
     fg = c;
     paint = c;
-    cairoSetRGBColor(fg.getRed() / 255.0, fg.getGreen() / 255.0,
-                     fg.getBlue() / 255.0);
-    cairoSetAlpha((fg.getAlpha() & 255) / 255.0);
+    cairoSetRGBAColor(fg.getRed() / 255.0, fg.getGreen() / 255.0,
+                      fg.getBlue() / 255.0, fg.getAlpha() / 255.0);
   }
 
   public Color getColor()
@@ -914,9 +913,8 @@ public class GdkGraphics2D extends Graphics2D
 
   public void clearRect(int x, int y, int width, int height)
   {
-    cairoSetRGBColor(bg.getRed() / 255.0, bg.getGreen() / 255.0,
-                     bg.getBlue() / 255.0);
-    cairoSetAlpha(1.0);
+    cairoSetRGBAColor(bg.getRed() / 255.0, bg.getGreen() / 255.0,
+                      bg.getBlue() / 255.0, 1.0);
     cairoNewPath();
     cairoRectangle(x, y, width, height);
     cairoFill();

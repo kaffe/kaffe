@@ -1,6 +1,21 @@
 2005-06-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-06-08  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (cairoSetRGBColor,
+	cairoSetAlpha): Combine ...
+	(cairoSetRGBAColor): New method.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics2D.h: Regenerate.
+	* include/gnu_java_awt_peer_gtk_GtkImage.h: Regenerate.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c: Use
+	Cairo 0.5.0 APIs.
+	* configure.ac: Require Cairo 0.5.0.
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-06-08  David Gilbert  <david.gilbert@object-refinery.com>
 

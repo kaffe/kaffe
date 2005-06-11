@@ -1804,7 +1804,7 @@ if test x"$enable_native_awt" = x"yes"; then
 
 	if test "x${enable_gtk_cairo}" = xyes
   	then
-		PKG_CHECK_MODULES(CAIRO, cairo)
+		PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
     		PKG_CHECK_MODULES(PANGOFT2, pangoft2)
   	fi
   	AC_SUBST(CAIRO_LIBS)
