@@ -646,6 +646,7 @@ public abstract class Calendar implements Serializable, Cloneable
     clear();
     this.time = time;
     isTimeSet = true;
+    computeFields();
   }
 
   /**
