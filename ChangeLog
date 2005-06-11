@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-01  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(setLogicalStyle): Implemented this method.
+
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-01  Sven de Marothy  <sven@physto.se>
 
 	* java/util/GregorianCalendar.java
@@ -227,6 +236,11 @@
 	* org/omg/CORBA/SendingContext/Runtime.java,
 	org/omg/CORBA/SendingContext/RunTimeOperations.java:
 	Fixing the package statement.
+
+	2005-06-01  Tom Tromey  <tromey@redhat.com>
+
+	* org/omg/CosNaming/IstringHelper.java: Changed non-ascii
+	characters.
 
 	2005-06-01  Audrius Meskauskas <AudriusA@Bioinformatics.org>
 

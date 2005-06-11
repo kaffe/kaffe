@@ -181,8 +181,15 @@ public class DefaultStyledDocument extends AbstractDocument
   
   public void setLogicalStyle(int position, Style style)
   {
-    // FIXME: Implement me.
-    throw new Error("not implemented");
+    Element el = getParagraphElement(position);
+    if (el instanceof AbstractElement)
+      {
+        AbstractElement ael = (AbstractElement) el;
+        ael.setResolveParent(style);
+      }
+    else
+      throw new AssertionError("paragraph elements are expected to be"
+         + "instances of javax.swing.text.AbstractDocument.AbstractElement");
   }
 
   public void setParagraphAttributes(int offset, int length,
