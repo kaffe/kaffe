@@ -133,7 +133,7 @@ public class PlainDocument extends AbstractDocument
         Element newEl = createLeafElement(rootElement,
                                           SimpleAttributeSet.EMPTY,
                                           start, end - len);
-        rootElement.replace(start, end - start, new Element[]{ newEl });
+        rootElement.replace(i1, i1 - i1, new Element[]{ newEl });
       }
     else
       {

@@ -101,6 +101,10 @@ public class BasicFileChooserUI extends FileChooserUI
    */
   protected class AcceptAllFileFilter extends FileFilter
   {
+    public AcceptAllFileFilter()
+    {
+    }
+    
     /**
      * DOCUMENT ME!
      *
@@ -167,6 +171,10 @@ public class BasicFileChooserUI extends FileChooserUI
   {
     /** DOCUMENT ME! */
     protected Hashtable iconCache = new Hashtable();
+
+    public BasicFileView()
+    {
+    }
 
     /**
      * DOCUMENT ME!
@@ -1300,7 +1308,6 @@ public class BasicFileChooserUI extends FileChooserUI
     bottomPanel.add(closePanel, c);
 
     filechooser.setLayout(new BorderLayout());
-
     filechooser.add(topPanel, BorderLayout.NORTH);
     filechooser.add(centrePanel, BorderLayout.CENTER);
     filechooser.add(bottomPanel, BorderLayout.SOUTH);

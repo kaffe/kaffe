@@ -1788,6 +1788,8 @@ public abstract class JComponent extends Container implements Serializable
    */
   protected void processKeyEvent(KeyEvent e)
   {
+    // let the AWT event processing send KeyEvents to registered listeners
+    super.processKeyEvent(e);
     processComponentKeyEvent(e);
 
     // FIXME: this needs to be elaborated significantly, to do all the

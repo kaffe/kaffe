@@ -2,6 +2,35 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-01  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/plaf/basic/BasicFileChooserUI.java
+	(installComponents): Changed layout of main panel from GridBagLayout
+	to BorderLayout (as is the case in Suns JDK). This fixes
+	bug#13244.
+
+	2005-06-01  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JPopupMenu.java
+	(insert): Do not check for index == -1 at this point, this is done
+	in java.awt.Container. Catching -1 indices here disturbes the
+	Container.addImpl which leads to bug #13247 for example.
+
+	2005-06-01  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/text/PlainDocument.java
+	(removeUpdate): Fixed indices in call to rootElement.replace().
+
+	2005-06-01  Roman Kennke  <roman@kennke.org>
+
+	* javax/swing/JComponent.java
+	(processKeyEvent): Call super.processKeyEvent() so that KeyEvents
+	are delivered to registered KeyListeners.
+	
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-01  Sven de Marothy  <sven@physto.se>
 
 	* java/util/TimeZone (getDefaultTimeZone): Reimplemented.
