@@ -1,6 +1,15 @@
 2005-06-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-06-02  Sven de Marothy  <sven@physto.se>
+
+	* java/awt/Component.java
+	(setBackgroundColor): Return if the color equals the existing bgcolor.
+
+2005-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-06-02  Sven de Marothy  <sven@physto.se>
 
