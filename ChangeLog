@@ -1,3 +1,10 @@
+2005-06-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am.in: Put gnu.classpath.tools
+	completely into tools.jar to make javap work fine.
+
+	Reported by: Guilhem Lavaux  <guilhem@kaffe.org>
+
 2005-06-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/exception.c
