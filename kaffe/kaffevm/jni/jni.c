@@ -532,7 +532,7 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 
 	eobj = thread_data->exceptObj;
 
-	if (eobj != 0) {
+	while (eobj != NULL) {
 		/* Don't use the java stack printer because the exception
 		 * may arise in the IO codec.
 		 */
@@ -541,7 +541,7 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 
 	       class = OBJECT_CLASS(&eobj->base);
 	       cname = CLASS_CNAME(class);
-	       realname = KMALLOC(strlen(cname));
+	       realname = KMALLOC(strlen(cname)+1);
 	       pathname2classname(cname, realname);
 			       
 	       msg = unhand(eobj)->detailMessage;
@@ -557,6 +557,13 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
        	       KFREE(realname);
 	       
 	       printStackTrace (eobj, NULL, true);
+
+	       if (eobj->cause != eobj)
+	       {
+		       eobj = eobj->cause;
+		       kprintf(stderr, "caused by: ");
+	       } else
+		       eobj = NULL;
 	}
 	END_EXCEPTION_HANDLING();
 }
