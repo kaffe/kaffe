@@ -570,6 +570,7 @@ nullException(struct _exceptionFrame *frame)
 	backtrace = buildStackTrace(frame);
 	unhand(vmstate)->vmdata = backtrace;
 	unhand(npe)->vmState = vmstate;
+	unhand(npe)->cause = npe;
 #if defined(HAVE_GCJ_SUPPORT)
 	FAKE_THROW_FRAME();
 #endif /* defined(HAVE_GCJ_SUPPORT) */

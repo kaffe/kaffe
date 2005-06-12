@@ -1,5 +1,10 @@
 2005-06-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/exception.c
+	(nullException): Fill in the "cause" field.
+
+2005-06-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/jni.c
 	(Kaffe_ExceptionDescribe): Fixed memory allocation. Iterate through
 	all causes of an exception.
