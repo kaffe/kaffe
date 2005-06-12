@@ -1,5 +1,11 @@
 2005-06-12  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/serialver.in,
+	kaffe/scripts/native2ascii.in:
+	Added tools.jar to classpath to make them work again.
+
+2005-06-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am.in: Put gnu.classpath.tools
 	completely into tools.jar to make javap work fine.
 
