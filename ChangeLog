@@ -1,3 +1,8 @@
+2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/sparc/jit.h: FRAMEOBJECT get the real enclosing object (and
+	not the second one).
+
 2005-06-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/scripts/serialver.in,

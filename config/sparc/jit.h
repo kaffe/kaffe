@@ -55,8 +55,7 @@ typedef struct _exceptionFrame {
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(obj, f, einfo)					\
 	(obj) = (*(Hjava_lang_Object**)					\
-		 (((exceptionFrame*)(((exceptionFrame*)(f))->retbp)	\
-		  )->retbp+68))
+		 (((exceptionFrame*)(f))->retbp+68))
 
 /**/
 /* Method dispatch.  */
