@@ -558,8 +558,7 @@ Kaffe_ExceptionDescribe(JNIEnv* env UNUSED)
 	       
 	       printStackTrace (eobj, NULL, true);
 
-	       if (eobj->cause != eobj)
-	       {
+	       if (eobj->cause != eobj) {
 		       eobj = eobj->cause;
 		       kprintf(stderr, "caused by: ");
 	       } else

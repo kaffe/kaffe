@@ -143,18 +143,15 @@ newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 		if (CLASS_IS_PRIMITIVE(elclass) || elclass == PtrClass) {
 			total_count = (TYPE_SIZE(elclass) * count) +
 				ARRAY_DATA_OFFSET;
-			if (total_count > count) {
-				obj = gc_malloc(total_count,
-						KGC_ALLOC_PRIMARRAY);
-			}
+			obj = gc_malloc(total_count,
+					KGC_ALLOC_PRIMARRAY);
 		}
 		else {
 			total_count = (PTR_TYPE_SIZE * count) +
 				ARRAY_DATA_OFFSET;
-			if (total_count > count) {
-				obj = gc_malloc(total_count,
-						KGC_ALLOC_REFARRAY);
-			}
+
+			obj = gc_malloc(total_count,
+					KGC_ALLOC_REFARRAY);
 		}
 		if (obj != NULL) {
 		        KaffeVM_setFinalizer(obj, KGC_DEFAULT_FINALIZER);

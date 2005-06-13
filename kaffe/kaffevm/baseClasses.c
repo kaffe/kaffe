@@ -97,6 +97,21 @@ Hjava_lang_Class* javaLangStackOverflowError;
 /* Let's not load this if we can't open Klasses.jar */
 Hjava_lang_Class* javaIoIOException;
 
+static Hjava_lang_Class** stateCompleteClass[] = {
+  &StringClass,
+  &javaLangThrowable,
+  &javaLangVMThrowable,
+  &javaLangStackTraceElement,
+  &javaLangException,
+  &javaLangArrayIndexOutOfBoundsException,
+  &javaLangNullPointerException,
+  &javaLangArithmeticException,
+  &javaLangClassNotFoundException,
+  &javaLangNoClassDefFoundError,
+  &javaLangStackOverflowError,
+  NULL
+};
+
 #define RUNTIMECLASS "java/lang/Runtime"
 #define SYSTEMCLASS  "java/lang/System"
 #define	SERIALCLASS  "java/io/Serializable"
@@ -294,6 +309,7 @@ void
 initBaseClasses(void)
 {
 	errorInfo einfo;
+	int i;
 
 	DBG(INIT, dprintf("initBaseClasses()\n"); );
 
@@ -352,7 +368,9 @@ initBaseClasses(void)
 
 	DBG(INIT, dprintf("initBaseClasses() done\n"); );
 
-	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
-		abortWithEarlyClassFailure(&einfo);
+	for (i = 0; stateCompleteClass[i] != NULL; i++) {
+	    if (!processClass(*stateCompleteClass[i], CSTATE_COMPLETE, &einfo))
+	      abortWithEarlyClassFailure(&einfo);
+	}
 }
 

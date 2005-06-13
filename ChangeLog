@@ -1,5 +1,19 @@
 2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/baseClasses.c
+	(stateCompleteClass): New array to store classes that should be in
+	complete state at the end of the first initialization procedure.
+	(initBaseClasses): Push all classes in stateCompleteClass to the
+	COMPLETE state.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(walkRefArray): Added some debug printing.
+	(newArrayChecked): Removed unused condition.
+
+	* kaffe/kaffevm/jni/jni.c: Cleaned up style.
+
+2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* test/regression/Preempt.java: Added a 'yield' for Solaris.
 
 2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>

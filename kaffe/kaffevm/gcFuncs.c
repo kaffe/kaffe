@@ -496,6 +496,10 @@ walkRefArray(Collector* collector, void *gc_info, void* base, uint32 size UNUSED
    	if (lk != NULL && KGC_getObjectIndex(collector, lk) == KGC_ALLOC_LOCK)
 	  KGC_markObject(collector, gc_info, lk);
 
+DBG(GCPRECISE,
+        dprintf("walkRefArray `%s' (num=%d)\n", CLASS_CNAME(arr->vtable->class), ARRAY_SIZE(arr));
+   );
+
 	ptr = OBJARRAY_DATA(arr);
         /* mark class only if not a system class (which would be anchored
          * anyway.)  */
@@ -503,7 +507,7 @@ walkRefArray(Collector* collector, void *gc_info, void* base, uint32 size UNUSED
                 KGC_markObject(collector, gc_info, arr->vtable->class);
         }
 
-        for (i = ARRAY_SIZE(arr); --i>= 0; ) {
+        for (i = ARRAY_SIZE(arr); i > 0; i--) {
                 Hjava_lang_Object* el = *ptr++;
 		/*
 		 * NB: This would break if some objects (i.e. class objects)
