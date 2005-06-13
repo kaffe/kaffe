@@ -31,6 +31,8 @@ public class Preempt implements Runnable
 	    System.out.println(Thread.currentThread().getName());
 	}
 	while (true) {
+		// Apparently, Solaris is needing this to reschedule sub-thread.
+		Thread.yield();
 		continue;
 	}
     }

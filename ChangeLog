@@ -1,5 +1,9 @@
 2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* test/regression/Preempt.java: Added a 'yield' for Solaris.
+
+2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/sparc/jit.h: FRAMEOBJECT get the real enclosing object (and
 	not the second one).
 
