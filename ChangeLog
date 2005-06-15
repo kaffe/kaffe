@@ -1,3 +1,15 @@
+2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/i386/linux/md.c
+	(init_md): Setup the FP unit to use double precision and not extended
+	precision.
+
+	* configure.ac: Check for fpu_control.h
+
+	* configure, config/config.h.in: Regenerated.
+
+	Fixes bug reported by Daniel Bonniot <Daniel.Bonniot@inria.fr>
+
 2005-06-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/baseClasses.c

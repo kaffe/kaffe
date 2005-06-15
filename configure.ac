@@ -1051,7 +1051,8 @@ unistd.h \
 utime.h \
 wintypes.h \
 wtypes.h \
-zlib.h])
+zlib.h \
+fpu_control.h])
 
 dnl GNU/Linux sigcontext headers
 AC_CHECK_HEADERS([asm/sigcontext.h])

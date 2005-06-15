@@ -132,6 +132,9 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the <fpu_control.h> header file. */
+#undef HAVE_FPU_CONTROL_H
+
 /* Define to 1 if you have the `fsync' function. */
 #undef HAVE_FSYNC
 
