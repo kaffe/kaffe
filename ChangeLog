@@ -1,5 +1,10 @@
 2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* test/regression/DoubleIEEE.java: New testcase for strict IEEE
+	computation.
+
+2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/i386/linux/md.c
 	(init_md): Setup the FP unit to use double precision and not extended
 	precision.
