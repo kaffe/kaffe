@@ -33,7 +33,7 @@ public class ProcessClassStop
 	Thread wd = new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(3000);
+		    Thread.sleep(10000);
 		    System.out.println("sorry, you timed out");
 		    System.exit(-1);
 		} catch (Exception e) {

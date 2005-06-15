@@ -6,6 +6,7 @@ What's New in CVS
   GNU classpath's system class loader. This improves support
   for the Java Extension Mechanism and the Java security
   model.
+* Force double precision on x86 FPU for Linux OS.
 
 What's New in Kaffe 1.1.5
 ------------------------------------------------------

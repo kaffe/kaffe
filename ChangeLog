@@ -1,5 +1,21 @@
 2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* test/regression/Makefile.am: Added DoubleIEEE.
+
+	* test/regression/Makefile.in: Regenerated.
+
+	* test/regression/ProcessClassStop.java,
+	test/regression/ProcessClassLockTest.java: Increased the timeout
+	value.
+
+	* WHATSNEW: Updated.
+
+	* FAQ/FAQ.pthreads: Updated. Thread.stop() deprecated.
+
+	* FAQ/FAQ.locks: Updated locks algorithm.
+
+2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* test/regression/DoubleIEEE.java: New testcase for strict IEEE
 	computation.
 

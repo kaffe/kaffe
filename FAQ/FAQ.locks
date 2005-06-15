@@ -196,7 +196,9 @@ a:
 
 
 When the heavy lock is released the algorithm increase the semaphore
-counter to wake up a potentially locked thread.
+counter only if some thread is waiting for the semaphore. The checking is done
+using an atomic counter which gives the number of threads waiting on the given
+semaphore.
 
 Jason Baker <jbaker@cs.utah.edu>
 Jun 29, 1999

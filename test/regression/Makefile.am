@@ -63,7 +63,8 @@ TEST_INTS_LONGS_FLOATS_DOUBLES = \
 	LongNeg.java \
 	FPUStack.java \
 	NegativeDivideConst.java \
-	divtest.java 
+	divtest.java \
+	DoubleIEEE.java
 
 ## Test strings
 TEST_STRINGS = \

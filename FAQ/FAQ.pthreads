@@ -12,11 +12,12 @@ GLIBC 2.1.1 there is a patch in the developers directory you need to apply.
 Limitation
 ----------
 
-* We currently don't support fork/exec/wait under pthreads.
-
 * Certain I/O operations cannot be interrupted.
 
-* We do not support asynchronous exceptions via Thread.stop()
+* We do not support asynchronous exceptions via Thread.stop(). This will never
+be implemented as this is a buggy part of the Java specification and its use
+has been deprecated by GNU Classpath developers. The reason is that it can leave
+the VM is an unknown state.
 
 SMP support
 -----------
