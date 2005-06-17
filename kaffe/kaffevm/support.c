@@ -11,6 +11,11 @@
 
 #include "debug.h"
 #include "config.h"
+
+#if !defined(HAVE_LIBFFI)
+#define NEED_sysdepCallMethod 1
+#endif
+
 #include "config-std.h"
 #include "config-mem.h"
 #include "jni.h"
@@ -372,18 +377,24 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 	int i;
 	int j;
 	int s;
+	int numArgs;
 	callMethodInfo call;	
 	jvalue tmp;
 
 	if (ret == 0) {
 		ret = &tmp;
 	}
+	if (!NO_HOLES)
+	        numArgs = sizeofSigMethod(meth, false);
+	else
+	        numArgs = METHOD_NARGS(meth);
+
 	i = engine_reservedArgs(meth);
 	s = 0;
 	
-	call.args = (jvalue *)alloca((METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
-	call.callsize = (char *)&call.args[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
-	call.calltype = (char *)&call.callsize[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
+	call.args = (jvalue *)alloca((numArgs+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	call.callsize = (char *)&call.args[numArgs+engine_reservedArgs(meth)+2];
+	call.calltype = (char *)&call.callsize[numArgs+engine_reservedArgs(meth)+2];
 
 	/* If this method isn't static, we must insert the object as
 	 * an argument.
@@ -551,16 +562,22 @@ KaffeVM_callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* r
 	int j;
 	callMethodInfo call;
 	jvalue tmp;
+	int numArgs;
 
 	if (ret == 0) {
 		ret = &tmp;
 	}
 	i = engine_reservedArgs(meth);
 	s = 0;
+	
+	if (!NO_HOLES)
+	        numArgs = sizeofSigMethod(meth, false);
+	else
+	        numArgs = METHOD_NARGS(meth);
 
-	call.args = (jvalue *)alloca((METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
-	call.callsize = (char *)&call.args[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
-	call.calltype = (char *)&call.callsize[METHOD_NARGS(meth)+engine_reservedArgs(meth)+2];
+	call.args = (jvalue *)alloca((numArgs+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	call.callsize = (char *)&call.args[numArgs+engine_reservedArgs(meth)+2];
+	call.calltype = (char *)&call.callsize[numArgs+engine_reservedArgs(meth)+2];
 
 	/* If this method isn't static, we must insert the object as
 	 * the first argument and get the function code.
@@ -606,6 +623,7 @@ KaffeVM_callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* r
 				call.args[i+1].i = (&call.args[i].i)[1];
 				i++;
 				call.callsize[i] = 0;
+				call.calltype[i] = 0;
 			}
 			break;
 		case '[':

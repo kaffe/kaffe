@@ -1,3 +1,14 @@
+2005-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/support.c
+	(KaffeVM_callMethodA, KaffeVM_callMethodV): 
+	Allocate the argument array following the real slot allocation given
+	by methodSigInfo. This may not be sufficient for architecture which
+	needs alignment of the slots.
+
+	Define NEED_sysdepCallMethod to get specific argument reordering
+	except if we use ffi.
+
 2005-06-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/regression/Makefile.am: Added DoubleIEEE.
