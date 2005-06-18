@@ -1,5 +1,12 @@
 2005-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* m4/ax_create_stdint_h.m4: Patched to get it work on system without
+	__UINT64_C and __INT64_C
+
+	* configure: Regenerated.
+
+2005-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/support.c
 	(KaffeVM_callMethodA, KaffeVM_callMethodV): 
 	Allocate the argument array following the real slot allocation given

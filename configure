@@ -53479,6 +53479,14 @@ typedef           long   intptr_t;
 #endif
 #endif
 
+#ifdef _HAVE_LONGLONG_UINT64_T
+#  define __INT64_C(c)    c ## L
+#  define __UINT64_C(c)   c ## UL
+# else
+#  define __INT64_C(c)    c ## LL
+#  define __UINT64_C(c)   c ## ULL
+#endif
+
 /* These limits are merily those of a two complement byte-oriented system */
 
 /* Minimum of signed integral types.  */

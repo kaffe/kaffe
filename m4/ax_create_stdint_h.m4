@@ -30,7 +30,7 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @version $Id: ax_create_stdint_h.m4,v 1.1 2005/05/13 17:09:24 robilad Exp $
+dnl @version $Id: ax_create_stdint_h.m4,v 1.2 2005/06/18 07:57:27 guilhem Exp $
 dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CHECK_DATA_MODEL],[
@@ -603,6 +603,14 @@ typedef           long   intptr_t;
 
   /* literalnumbers */
 #endif
+#endif
+
+#ifdef _HAVE_LONGLONG_UINT64_T
+#  define __INT64_C(c)    c ## L
+#  define __UINT64_C(c)   c ## UL
+# else
+#  define __INT64_C(c)    c ## LL
+#  define __UINT64_C(c)   c ## ULL
 #endif
 
 /* These limits are merily those of a two complement byte-oriented system */
