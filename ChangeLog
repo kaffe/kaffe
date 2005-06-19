@@ -1,3 +1,12 @@
+2005-06-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* developers/autogen.sh: Updated to gettext 0.14.5
+
+	* m4/ax_create_stdint_h.m4: Check whether UINT8_MIN & INT8_MIN are
+	already defined.
+
+	* configure: Regenerated.
+
 2005-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* m4/ax_create_stdint_h.m4: Patched to get it work on system without

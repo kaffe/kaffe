@@ -30,7 +30,7 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @version $Id: ax_create_stdint_h.m4,v 1.2 2005/06/18 07:57:27 guilhem Exp $
+dnl @version $Id: ax_create_stdint_h.m4,v 1.3 2005/06/19 13:47:28 guilhem Exp $
 dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CHECK_DATA_MODEL],[
@@ -615,6 +615,7 @@ typedef           long   intptr_t;
 
 /* These limits are merily those of a two complement byte-oriented system */
 
+#if !defined(INT8_MIN)
 /* Minimum of signed integral types.  */
 # define INT8_MIN               (-128)
 # define INT16_MIN              (-32767-1)
@@ -625,12 +626,15 @@ typedef           long   intptr_t;
 # define INT16_MAX              (32767)
 # define INT32_MAX              (2147483647)
 # define INT64_MAX              (__INT64_C(9223372036854775807))
+#endif
 
 /* Maximum of unsigned integral types.  */
+#if !defined(UINT8_MAX)
 # define UINT8_MAX              (255)
 # define UINT16_MAX             (65535)
 # define UINT32_MAX             (4294967295U)
 # define UINT64_MAX             (__UINT64_C(18446744073709551615))
+#endif
 
 /* Minimum of signed integral types having a minimum size.  */
 # define INT_LEAST8_MIN         INT8_MIN
