@@ -1,9 +1,16 @@
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/mips/atomic.h: Removed all register aliases to support
+	old gcc compiler.
+
+	Reported by Riccardo Mottola  <rmottola@users.sf.net>
+
+2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/config-hacks.c: We must redefine __builtin_trap until gcc
 	3.1.
 
-	Reported by Andrew Pinsky <pinskia@physics.uc.edu>
+	Reported by Andrew Pinski <pinskia@physics.uc.edu>
 
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 

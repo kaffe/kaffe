@@ -167,21 +167,19 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__ret],%[__mem]\n"				\
-	"	move	%[__tmp],%[__val]\n"				\
-	"	sc	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"1:	ll	%0,%2\n"					\
+	"	move	%1,%3\n"					\
+	"	sc	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__val] "r" ((unsigned int)(value))				\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" ((unsigned int)(value))					\
 	: "memory");							\
   __ret; })
 
@@ -193,21 +191,19 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__ret],%[__mem]\n"				\
-	"	move	%[__tmp],%[__val]\n"				\
-	"	scd	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"1:	lld	%0,%2\n"					\
+	"	move	%1,%3\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__val] "r" (value)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" (value)							\
 	: "memory");							\
   __ret; })
 #endif
@@ -231,21 +227,19 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__ret],%[__mem]\n"				\
-	"	addu	%[__tmp],%[__val],%[__ret]\n"			\
-	"	sc	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"1:	ll	%0,%2\n"					\
+	"	addu	%1,%4,%0\n"					\
+	"	sc	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__val] "r" ((unsigned int)(value))				\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" ((unsigned int)(value))					\
 	: "memory");							\
   __ret; })
 
@@ -257,21 +251,19 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__ret],%[__mem]\n"				\
-	"	daddu	%[__tmp],%[__val],%[__ret]\n"			\
-	"	scd	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"1:	lld	%0,%2\n"					\
+	"	daddu	%1,%3,%0\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__val] "r" ((unsigned long)(value))				\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" ((unsigned long)(value))					\
 	: "memory");							\
   __ret; })
 #endif
@@ -294,20 +286,18 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__ret],%[__mem]\n"				\
-	"	addiu	%[__tmp],%[__ret],1\n"				\
-	"	sc	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
-	"	 addiu	%[__ret],%[__ret],1\n"				\
+	"1:	ll	%0,%2\n"					\
+	"	addiu	%0,%1,1\n"					\
+	"	sc	%0,%2\n"					\
+	"	beqz	%0,1b\n"					\
+	"	 addiu	%0,%0,1\n"					\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 
@@ -319,20 +309,18 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__ret],%[__mem]\n"				\
-	"	daddiu	%[__tmp],%[__ret],1\n"				\
-	"	scd	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
-	"	 daddiu	%[__ret],%[__ret],1\n"				\
+	"1:	lld	%0,%2\n"					\
+	"	daddiu	%1,%0,1\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
+	"	 daddiu	%0,%0,1\n"					\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 #endif
@@ -358,20 +346,18 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__ret],%[__mem]\n"				\
-	"	addiu	%[__tmp],%[__ret],-1\n"				\
-	"	sc	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
-	"	 addiu	%[__ret],%[__ret],-1\n"				\
+	"1:	ll	%0,%2\n"					\
+	"	addiu	%1,%0,-1\n"					\
+	"	sc	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
+	"	 addiu	%0,%0,-1\n"					\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 
@@ -383,20 +369,18 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__ret],%[__mem]\n"				\
-	"	daddiu	%[__tmp],%[__ret],-1\n"				\
-	"	scd	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
-	"	 daddiu	%[__ret],%[__ret],-1\n"				\
+	"1:	lld	%0,%2\n"					\
+	"	daddiu	%1,%0,-1\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
+	"	 daddiu	%0,%0,-1\n"					\
 		mb2							\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 #endif
@@ -422,23 +406,21 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   signed int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__ret],%[__mem]\n"				\
-	"	addiu	%[__tmp],%[__ret],-1\n"				\
-	"	bltz	%[__tmp],2f\n"					\
+	"1:	ll	%0,%2\n"					\
+	"	addiu	%1,%0,-1\n"					\
+	"	bltz	%1,2f\n"					\
 	"	 nop\n"							\
-	"	sc	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"	sc	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
 	"2:\n"								\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 
@@ -450,23 +432,21 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   signed long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__ret],%[__mem]\n"				\
-	"	daddiu	%[__tmp],%[__ret],-1\n"				\
-	"	bltz	%[__tmp],2f\n"					\
+	"1:	lld	%0,%2\n"					\
+	"	daddiu	%1,%0,-1\n"					\
+	"	bltz	%1,2f\n"					\
 	"	 nop\n"							\
-	"	scd	%[__tmp],%[__mem]\n"				\
-	"	beqz	%[__tmp],1b\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
 	"2:\n"								\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem)						\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem)							\
 	: "memory");							\
   __ret; })
 #endif
@@ -487,22 +467,20 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned int __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__tmp],%[__mem]\n"				\
-	"	or	%[__ret],%[__tmp],%[__bit]\n"			\
-	"	sc	%[__ret],%[__mem]\n"				\
-	"	beqz	%[__ret],1b\n"					\
-	"	 and	%[__ret],%[__tmp],%[__bit]\n"			\
+	"1:	ll	%1,%2\n"					\
+	"	or	%0,%1,%3\n"					\
+	"	sc	%0,%2\n"					\
+	"	beqz	%0,1b\n"					\
+	"	 and	%0,%2,%3\n"					\
 		mb2							\
 	"2:\n"								\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__bit] "r" (1UL << bit)					\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" (1UL << bit)						\
 	: "memory");							\
   __ret != 0; })
 
@@ -514,22 +492,20 @@ typedef uintmax_t uatomic_max_t;
 ({									\
   unsigned long __ret, __tmp;						\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__tmp],%[__mem]\n"				\
-	"	or	%[__ret],%[__tmp],%[__bit]\n"			\
-	"	scd	%[__ret],%[__mem]\n"				\
-	"	beqz	%[__ret],1b\n"					\
-	"	 and	%[__ret],%[__tmp],%[__bit]\n"			\
+	"1:	lld	%1,%2\n"					\
+	"	or	%0,%1,%3\n"					\
+	"	scd	%0,%2\n"					\
+	"	beqz	%0,1b\n"					\
+	"	 and	%0,%1,%2\n"					\
 		mb2							\
 	"2:\n"								\
-	"	.set pop\n"						\
-	: [__ret] "=&r" (__ret),					\
-	  [__tmp] "=&r" (__tmp)						\
-	: [__mem] "R" (*mem),						\
-	  [__bit] "r" (1 << bit)					\
+	"	.set reorder\n"						\
+	: "=&r" (__ret),						\
+	  "=&r" (__tmp)							\
+	: "R" (*mem),							\
+	  "r" (1 << bit)						\
 	: "memory");							\
   __ret; })
 #endif
