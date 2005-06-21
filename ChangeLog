@@ -1,5 +1,12 @@
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
-	Riccardo Mottola  <rmottola@users.sf.net>
+
+	* config/sparc/atomic-sparc64.h
+	(__builtin_expect): Do not take into account expect if we are not
+	using gcc or it is not at least gcc3.
+
+	Reported by Riccardo Mottola  <rmottola@users.sf.net>
+
+2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/mips/atomic.h: Rearranged the inlined assembly to make it
 	compile on Irix.
