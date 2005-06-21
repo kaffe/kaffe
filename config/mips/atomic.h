@@ -6,7 +6,8 @@
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version. */
 
-#include <stdint.h>
+/* Modified to get it work on all kaffe's platforms. */
+#include "config-int.h"
 #include <sgidefs.h>
 
 typedef int32_t atomic32_t;
