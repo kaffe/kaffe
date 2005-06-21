@@ -1238,6 +1238,11 @@ AC_MSG_CHECKING([whether to enable MIPS II instructions])
 if test x"$enable_mips2" != x"no"; then
     AC_DEFINE([HAVE_MIPSII_INSTRUCTIONS], 1, [Enable MIPS II instructions])
     enable_mips2=yes
+    case "$Khost_os" in
+	linux*)
+		CFLAGS="$CFLAGS -mips2"
+		;;
+    esac
 fi
 AC_MSG_RESULT($enable_mips2)
 

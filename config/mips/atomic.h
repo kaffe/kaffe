@@ -6,7 +6,6 @@
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version. */
 
-/* Modified to get it work on all kaffe's platforms. */
 #include "config-int.h"
 #include <sgidefs.h>
 
@@ -24,6 +23,10 @@ typedef intptr_t atomicptr_t;
 typedef uintptr_t uatomicptr_t;
 typedef intmax_t atomic_max_t;
 typedef uintmax_t uatomic_max_t;
+
+#if !defined(__GNUC__) || (__GNUC__ <= 2 && __GNUC_MINOR__ <= 95)
+#define __builtin_trap abort
+#endif
 
 /*
  * MIPS does not have byte and halfword forms of load linked and store
@@ -57,50 +60,46 @@ typedef uintmax_t uatomic_max_t;
 #define __arch_compare_and_exchange_xxx_32_int(mem, new, old, mb1, mb2) \
 ({									\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips2\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	ll	%[__prev],%[__mem]\n"				\
-	"	bne	%[__prev],%[__old],2f\n"			\
-	"	 li	%[__cmp],0\n"					\
-	"	move	%[__cmp],%[__new]\n"				\
-	"	sc	%[__cmp],%[__mem]\n"				\
-	"	beqz	%[__cmp],1b\n"					\
+	"1:	ll	%0,%2\n"					\
+	"	 li	%1,0\n"						\
+	"	bne	%0,%3,2f\n"					\
+	"	move	%1,%4\n"					\
+	"	sc	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
 	"2:\n"								\
-	"	.set pop"						\
-	: [__prev] "=&r" (__prev),					\
-	  [__cmp] "=&r" (__cmp)						\
-	: [__mem] "R" (*(volatile atomic32_t *)(mem)),			\
-	  [__old] "r" ((atomic32_t)(old)),				\
-	  [__new] "r" ((atomic32_t)(new))				\
+	"	.set reorder\n"						\
+	:  "=&r" (__prev),						\
+	   "=&r" (__cmp)						\
+	: "R" (*(volatile atomic32_t *)(mem)),				\
+	   "r" ((atomic32_t)(old)),					\
+	   "r" ((atomic32_t)(new))					\
 	: "memory");							\
 })
 
 #define __arch_compare_and_exchange_xxx_64_int(mem, new, old, mb1, mb2)	\
 ({									\
   __asm__ __volatile__ (						\
-	"	.set push\n"						\
-	"	.set mips3\n"						\
 	"	.set noreorder\n"					\
 		mb1							\
-	"1:	lld	%[__prev],%[__mem]\n"				\
-	"	bne	%[__prev],%[__old],2f\n"			\
-	"	 li	%[__cmp],0\n"					\
-	"	move	%[__cmp],%[__new]\n"				\
-	"	scd	%[__cmp],%[__mem]\n"				\
-	"	beqz	%[__cmp],1b\n"					\
+	"1:	lld	%0,%2\n"					\
+	"	 li	%1,0\n"						\
+	"	bne	%0,%3,2f\n"					\
+	"	move	%1,%4\n"					\
+	"	scd	%1,%2\n"					\
+	"	beqz	%1,1b\n"					\
 	"	 nop\n"							\
 		mb2							\
 	"2:\n"								\
-	"	.set pop"						\
-	: [__prev] "=&r" (__prev),					\
-	  [__cmp] "=&r" (__cmp)						\
-	: [__mem] "R" (*(volatile atomic32_t *)(mem)),			\
-	  [__old] "r" ((atomic64_t)(old)),				\
-	  [__new] "r" ((atomic64_t)(new))				\
+	"	.set reorder"						\
+	:  "=&r" (__prev),						\
+	   "=&r" (__cmp)						\
+	:  "R" (*(volatile atomic32_t *)(mem)),				\
+	   "r" ((atomic64_t)(old)),					\
+	   "r" ((atomic64_t)(new))					\
 	: "memory");							\
 })
 

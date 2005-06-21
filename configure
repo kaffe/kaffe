@@ -33096,6 +33096,11 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
     enable_mips2=yes
+    case "$Khost_os" in
+	linux*)
+		CFLAGS="$CFLAGS -mips2"
+		;;
+    esac
 fi
 echo "$as_me:$LINENO: result: $enable_mips2" >&5
 echo "${ECHO_T}$enable_mips2" >&6
