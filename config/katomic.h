@@ -22,6 +22,7 @@
 #define _ATOMIC_H	1
 
 #include <stdlib.h>
+#include "config-hacks.h"
 
 /* Wrapper macros to call pre_NN_post (mem, ...) where NN is the
    bit width of *MEM.  The calling macro puts parens around MEM

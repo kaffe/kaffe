@@ -84,5 +84,5 @@
 #define __builtin_expect(a,b) (a)
 
 #include <stdlib.h>
-#define __builtin_trap(a) abort()
+#define __builtin_trap() abort()
 #endif
