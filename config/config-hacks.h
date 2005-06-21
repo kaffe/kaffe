@@ -80,7 +80,7 @@
 /*
  * GCC before 3.0 does not support explicit branch optimization.
  */
-#if !defined(__GNUC__) || (__GNUC__ < 3)
+#if !defined(__GNUC__) || (__GNUC__ < 3) || (__GNUC__ == 3 && __GNUC_MINOR__ == 0)
 #define __builtin_expect(a,b) (a)
 
 #include <stdlib.h>

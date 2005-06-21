@@ -1,5 +1,12 @@
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/config-hacks.c: We must redefine __builtin_trap until gcc
+	3.1.
+
+	Reported by Andrew Pinsky <pinskia@physics.uc.edu>
+
+2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/katomic.h: Include config-hacks.h to be sure the hacks are
 	taken into account.
 
