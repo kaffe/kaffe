@@ -45,11 +45,6 @@ typedef uintptr_t uatomicptr_t;
 typedef intmax_t atomic_max_t;
 typedef uintmax_t uatomic_max_t;
 
-#if !defined(__GNUC__) || (__GNUC__ < 3)
-#define __builtin_expect(a,b) a
-#endif
-
-
 #define __arch_compare_and_exchange_val_8_acq(mem, newval, oldval) \
   (abort (), (__typeof (*mem)) 0)
 

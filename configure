@@ -33089,7 +33089,7 @@ fi;
 
 echo "$as_me:$LINENO: checking whether to enable MIPS II instructions" >&5
 echo $ECHO_N "checking whether to enable MIPS II instructions... $ECHO_C" >&6
-if test x"$enable_mips2" != x"no"; then
+if test x"$enable_mips2" != x"no" -a x"$Khost_cpu" = x"mips"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_MIPSII_INSTRUCTIONS 1

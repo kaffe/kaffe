@@ -1235,7 +1235,7 @@ AC_ARG_ENABLE([mips2],
                              [Disable MIPS II instructions]))
 
 AC_MSG_CHECKING([whether to enable MIPS II instructions])
-if test x"$enable_mips2" != x"no"; then
+if test x"$enable_mips2" != x"no" -a x"$Khost_cpu" = x"mips"; then
     AC_DEFINE([HAVE_MIPSII_INSTRUCTIONS], 1, [Enable MIPS II instructions])
     enable_mips2=yes
     case "$Khost_os" in

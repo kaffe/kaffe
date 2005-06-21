@@ -24,10 +24,6 @@ typedef uintptr_t uatomicptr_t;
 typedef intmax_t atomic_max_t;
 typedef uintmax_t uatomic_max_t;
 
-#if !defined(__GNUC__) || (__GNUC__ <= 2 && __GNUC_MINOR__ <= 95)
-#define __builtin_trap abort
-#endif
-
 /*
  * MIPS does not have byte and halfword forms of load linked and store
  * conditional. So for MIPS we stub out the 8- and 16-bit forms.

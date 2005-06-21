@@ -1,5 +1,19 @@
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/sparc/atomic-sparc64.h,
+	config/mips/atomic.h: Removed gcc specific hacks. Moved into
+	config-hacks.h
+
+	* config/config-hacks.h
+	(__builtin_expect, __builtin_trap): Define to identity if we are not
+	using at least gcc3.
+
+	* configure.ac: Check that we are on mips before enabling '-mips2'.
+
+	* configure: Regenerated.
+
+2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/sparc/atomic-sparc64.h
 	(__builtin_expect): Do not take into account expect if we are not
 	using gcc or it is not at least gcc3.

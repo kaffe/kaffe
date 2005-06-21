@@ -77,3 +77,12 @@
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 
+/*
+ * GCC before 3.0 does not support explicit branch optimization.
+ */
+#if !defined(__GNUC__) || (__GNUC__ < 3)
+#define __builtin_expect(a,b) (a)
+
+#include <stdlib.h>
+#define __builtin_trap(a) abort()
+#endif
