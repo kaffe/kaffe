@@ -34349,8 +34349,7 @@ else
   and64=""
 fi
 
-      stdint.h inttypes.h sys/inttypes.h $inttype_headers
- break
+   break
   done
   echo "$as_me:$LINENO: checking for stdint uintptr_t" >&5
 echo $ECHO_N "checking for stdint uintptr_t... $ECHO_C" >&6
@@ -34500,8 +34499,6 @@ else
   and64=""
 fi
 
-      inttypes.h sys/inttypes.h stdint.h $inttype_headers
- break
    break;
   done
   echo "$as_me:$LINENO: checking for stdint uint32_t" >&5
@@ -34654,8 +34651,6 @@ else
   and64=""
 fi
 
-      sys/types.h inttypes.h sys/inttypes.h $inttype_headers
- break
    break;
   done
   echo "$as_me:$LINENO: checking for stdint u_int32_t" >&5

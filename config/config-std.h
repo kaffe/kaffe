@@ -68,9 +68,4 @@
 #  include <dmalloc.h>            
 #endif
 
-/* NetBSD doesn't have ENOTSUP */
-#if !defined(ENOTSUP)
-#define ENOTSUP EOPNOTSUPP
-#endif /* !defined(ENOTSUP) */
-
 #endif

@@ -10,7 +10,7 @@
 
 #include "config.h"
 #include "config-std.h"
-#include <errno.h>
+#include "lerrno.h"
 #include "debug.h"
 
 #include "jthread.h"

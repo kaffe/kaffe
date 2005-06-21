@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-#include <errno.h>
+#include "lerrno.h"
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"

@@ -1,5 +1,21 @@
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* m4/ax_create_stdint_h.m4: Removed some broken & unused m4 code line.
+
+	* configure: Regenerated.
+
+	* config/config-std.h,
+	kaffe/kaffevm/lerrno.h: Moved definition of ENOTSUP to prevent
+	redefinition.
+
+	* kaffe/kaffevm/debug.c,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: Use lerrno.h
+	instead of errno.h
+
+2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/sparc/atomic-sparc64.h,
 	config/mips/atomic.h: Removed gcc specific hacks. Moved into
 	config-hacks.h

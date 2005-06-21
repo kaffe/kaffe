@@ -30,7 +30,7 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @version $Id: ax_create_stdint_h.m4,v 1.3 2005/06/19 13:47:28 guilhem Exp $
+dnl @version $Id: ax_create_stdint_h.m4,v 1.4 2005/06/21 16:11:57 guilhem Exp $
 dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CHECK_DATA_MODEL],[
@@ -80,7 +80,7 @@ AC_CACHE_CHECK([for stdint uintptr_t], [ac_cv_header_stdint_x],[
    unset ac_cv_type_uint64_t
    AC_CHECK_TYPE(uintptr_t,[ac_cv_header_stdint_x=$i],continue,[#include <$i>])
    AC_CHECK_TYPE(uint64_t,[and64="/uint64_t"],[and64=""],[#include<$i>])
-   m4_ifvaln([$1],[$1]) break
+   break
   done
   AC_MSG_CHECKING([for stdint uintptr_t])
  ])
@@ -95,7 +95,6 @@ AC_CACHE_CHECK([for stdint uint32_t], [ac_cv_header_stdint_o],[
    unset ac_cv_type_uint64_t
    AC_CHECK_TYPE(uint32_t,[ac_cv_header_stdint_o=$i],continue,[#include <$i>])
    AC_CHECK_TYPE(uint64_t,[and64="/uint64_t"],[and64=""],[#include<$i>])
-   m4_ifvaln([$1],[$1]) break
    break;
   done
   AC_MSG_CHECKING([for stdint uint32_t])
@@ -111,7 +110,6 @@ AC_CACHE_CHECK([for stdint u_int32_t], [ac_cv_header_stdint_u],[
    unset ac_cv_type_u_int64_t
    AC_CHECK_TYPE(u_int32_t,[ac_cv_header_stdint_u=$i],continue,[#include <$i>])
    AC_CHECK_TYPE(u_int64_t,[and64="/u_int64_t"],[and64=""],[#include<$i>])
-   m4_ifvaln([$1],[$1]) break
    break;
   done
   AC_MSG_CHECKING([for stdint u_int32_t])

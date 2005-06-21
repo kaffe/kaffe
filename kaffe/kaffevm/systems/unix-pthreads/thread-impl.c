@@ -12,7 +12,7 @@
  * of this file.
  */
 
-#include <errno.h>
+#include "lerrno.h"
 #include <limits.h>
 
 #include "config.h"

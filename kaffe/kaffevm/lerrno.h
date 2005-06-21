@@ -34,5 +34,13 @@
 #if !defined(EISCONN)
 #define	EISCONN		NOERRNO
 #endif
+#if !defined(EOPNOTSUPP)
+#define EOPNOTSUPP	NOERRNO
+#endif
+
+/* This is for NetBSD */ 
+#if !defined(ENOTSUP)
+#define ENOTSUP EOPNOTSUPP
+#endif
 
 #endif

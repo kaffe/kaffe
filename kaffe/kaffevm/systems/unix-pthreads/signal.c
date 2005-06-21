@@ -22,7 +22,7 @@
 #include "thread-internal.h"
 #include "files.h"
 #include "kaffe/jmalloc.h"
-#include <errno.h>
+#include "lerrno.h"
 #ifdef KAFFE_BOEHM_GC
 #include "boehm-gc/boehm/include/gc.h"
 #endif
