@@ -1,3 +1,7 @@
+2005-06-23  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* FAQ/FAQ.charsets: New file.
+
 2005-06-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/mips/atomic.h: Removed all register aliases to support
