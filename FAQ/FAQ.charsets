@@ -1,0 +1,406 @@
+Using Various Charsets on Kaffe
+===============================
+
+Author: Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+Supported charsets
+------------------
+
+  Kaffe's default charset provider is gnu.java.nio.charset.Provider.
+  To get a list of supported charsets, run the method
+  java.nio.charset.Charset.availableCharsets() or see the source
+  code libraries/javalib/gnu/java/nio/charset/Provider.java.
+
+  You can optionally use charsets supported by libiconv, which are
+  provided by gnu.java.nio.charset.iconv.IconvProvider.  In order to
+  enable gnu.java.nio.charset.iconv.IconvProvider, you have to make
+  a configuration file named java.nio.charset.spi.CharsetProvider
+  in the resource directory META-INF/services.  In the configuration
+  file should contain a line which reads
+
+       gnu.java.nio.charset.iconv.IconvProvider
+
+How about Japanese charsets?
+----------------------------
+
+  EUC-JP and ISO-2022-JP are supported by libiconv.
+
+  Shift_JIS is supported by libiconv, but you will be annoyed to find
+  that '\\' is converted to Yen sign.
+
+  Windows-31J aka MS932, which is commonly used in Japan, is not supported
+  by libiconv.
+
+  In order to handle these charsets properly,  you should either
+
+    (1) Modify libiconv.
+
+  or
+
+    (2) Use a wrapper class of gnu.java.nio.charset.iconv package.
+
+  If you are to modify libiconv, make or find a patch yourself.
+
+  If you are to use a wrapper class, compile the source file below
+  and put the name of the wrapper class IconvJapaneseCharsetProvider
+  in the configuration file.  In this case, you do not have to put
+  gnu.java.nio.charset.iconv.IconvProvider in the configuration file
+  because IconvJapaneseCharsetProvider loads it internally.
+
+  If you are using not only Japanese charsets but also some other charsets
+  supported by libiconv,  you must put IconvJapaneseCharsetProvider
+  before gnu.java.nio.charset.iconv.IconvProvider, otherwise the wrapper
+  cannot wrap what is to be wrapped.
+
+------------------------------------------------------------------------
+import java.nio.charset.spi.CharsetProvider;
+import java.nio.charset.*;
+import java.nio.CharBuffer;
+import java.nio.ByteBuffer;
+import java.nio.BufferOverflowException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import gnu.java.nio.charset.iconv.IconvProvider;
+
+public final class IconvJapaneseCharsetProvider extends CharsetProvider
+{
+
+  /**
+    * List of supported charsets.
+    * Key: canonical name in lower case characters
+    * Value: CharsetInfo
+    */
+  private static HashMap charsets;
+
+  /**
+    * Alias -> canonical name mapping
+    */
+  private static HashMap alias2cname;
+
+  static
+  {
+      charsets = new HashMap();
+      charsets.put("euc-jp", new CharsetInfo(
+          "EUC-JP", "EUC-JP",
+              new String[] {"EUC_JP"}));
+      charsets.put("iso-2022-jp", new CharsetInfo(
+          "ISO-2022-JP", "ISO-2022-JP",
+              new String[] {}));
+      charsets.put("shift_jis", new CharsetInfo(
+          "Shift_JIS", "Shift_JIS",
+              null, new Shift_JISCharset()));
+      charsets.put("windows-31j",new CharsetInfo(
+          "Windows-31J", "CP932",
+              null, new MS932Charset()));
+      alias2cname = new HashMap();
+      
+      for (Iterator it = charsets.keySet().iterator(); it.hasNext();)
+        {
+          String key = (String)(it.next());
+          CharsetInfo info = (CharsetInfo)(charsets.get(key));
+          String[] als = (String[])(info.aliases);
+          for (int i = 0; i < als.length; i++)
+            {
+              alias2cname.put(als[i].toLowerCase(), key);
+            }
+        }
+  }
+
+  public IconvJapaneseCharsetProvider ()
+  {
+  }
+
+  public Iterator charsets ()
+  {
+      HashMap map = new HashMap();
+      for (Iterator i = charsets.keySet().iterator (); i.hasNext (); )
+        {
+          String name = (String)(i.next ());
+          map.put(name, charsetForName(name));
+        }
+      return Collections.unmodifiableCollection (map.values ())
+                      .iterator ();
+  }
+
+  public Charset charsetForName (String charsetName)
+  {
+      String keyName = charsetName.toLowerCase();
+      String cName = (String)(alias2cname.get(keyName));
+      if (cName != null)
+        {
+          keyName = cName;
+        }
+      CharsetInfo info = (CharsetInfo)(charsets.get(keyName));
+      if (info == null)
+        {
+          return null;
+        }
+      Charset iconvCharset = IconvProvider.provider().
+          charsetForName((String)(info.iconvName));
+
+      if (info.wrapper != null)
+        {
+          info.wrapper.setIconvCharset(iconvCharset);  
+          return info.wrapper;
+        }
+      else
+        {
+          return iconvCharset;
+        }
+  }
+
+  private static class CharsetInfo
+  {
+        public String canonicalName;
+        public String iconvName;
+        public String[] aliases;
+        public IconvCharsetWrapper wrapper;
+
+        public CharsetInfo(String canonicalName, String iconvName,
+            String[] aliases)
+          {
+            this.canonicalName = canonicalName;
+            this.iconvName = iconvName;
+            this.aliases = aliases;
+            this.wrapper = null;
+          }
+
+        public CharsetInfo(String canonicalName, String iconvName,
+            String[] aliases, IconvCharsetWrapper wrapper)
+          {
+            this.canonicalName = canonicalName;
+            this.iconvName = iconvName;
+            this.wrapper = wrapper;
+            if (aliases == null)
+              {
+                Set aliasesSet = wrapper.aliases();
+                this.aliases = new String[aliasesSet.size()];
+                int i = 0;
+                for (Iterator it = aliasesSet.iterator(); it.hasNext(); )
+                  {
+                    this.aliases[i++] = (String)(it.next());
+                  }
+              }
+            else
+              {
+                this.aliases = aliases;
+              }
+          }
+  }
+
+  private abstract static class IconvCharsetWrapper extends Charset
+  {
+      protected Charset iconvCharset;
+
+      protected IconvCharsetWrapper(String name, String[] aliases)
+        {
+          super(name, aliases);
+        }
+
+      public void setIconvCharset(Charset iconvCharset)
+        {
+          this.iconvCharset = iconvCharset;
+        }
+
+      public boolean contains(Charset cs)
+        {
+          return false;
+        }
+
+  }
+
+  public static class Shift_JISCharset extends IconvCharsetWrapper
+  {
+
+      public Shift_JISCharset()
+        {
+          super("Shift_JIS", new String[] {"SJIS", "Shift-JIS"});
+        }
+
+      public CharsetDecoder newDecoder()
+        {
+          return new Shift_JISDecoder(this, iconvCharset.newDecoder());
+        }
+
+      public CharsetEncoder newEncoder()
+        {
+          return new Shift_JISEncoder(this, iconvCharset.newEncoder());
+        }
+
+  }
+
+  public static class Shift_JISDecoder extends CharsetDecoder
+  {
+      private CharsetDecoder iconvDecoder;
+      public Shift_JISDecoder(Charset cs, CharsetDecoder iconvDecoder)
+        {
+          super(cs, iconvDecoder.averageCharsPerByte(),
+            iconvDecoder.maxCharsPerByte());
+          this.iconvDecoder = iconvDecoder;
+        }
+
+      protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out)
+        {
+          int p0 = out.position();
+          CoderResult result = iconvDecoder.decode(in, out, false);
+          if (! result.isError())
+            {
+              int p = out.position();
+              for (int i = p0; i < p; i++)
+                {
+                  char c = out.get(i);
+                  if (c == (char)0x00a5)
+                    out.put(i, (char)'\\');
+                  else if (c == (char)0x203e)
+                    out.put(i, (char)'~');
+                }
+            }
+          return result;
+        }
+
+  }
+
+  public static class Shift_JISEncoder extends CharsetEncoder
+  {
+      private CharsetEncoder iconvEncoder;
+      public Shift_JISEncoder(Charset cs, CharsetEncoder iconvEncoder)
+        {
+          super(cs, iconvEncoder.averageBytesPerChar(),
+            iconvEncoder.maxBytesPerChar());
+          this.iconvEncoder = iconvEncoder;
+        }
+
+      protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out)
+        {
+          CoderResult result = iconvEncoder.encode(in, out, false);
+          if (result.isError())
+            {
+              int l = result.length();
+              int p = in.position();
+              for (int i = 0; i < l; i++)
+                {
+                  char c = in.get(p);
+                  if (c == '\\' || c == '~')
+                    {
+                      try
+                        {
+                          out.put((byte)c);
+                          p++;
+                          in.position(p);
+                        }
+                      catch (BufferOverflowException _)
+                        {
+                          return CoderResult.OVERFLOW;
+                        }
+                    }
+                  else
+                    {
+                      return CoderResult.unmappableForLength(1);
+                    }
+                }
+              return this.encodeLoop(in, out);
+            }
+         else
+           {
+              return result;
+           }
+        }
+  }
+
+  // Windows-31J
+  public static class MS932Charset extends IconvCharsetWrapper
+  {
+
+      public MS932Charset()
+        {
+          super("Windows-31J", new String[] {"MS932"});
+        }
+
+      public CharsetDecoder newDecoder()
+        {
+          return new MS932Decoder(this, iconvCharset.newDecoder());
+        }
+
+      public CharsetEncoder newEncoder()
+        {
+          return new MS932Encoder(this, iconvCharset.newEncoder());
+        }
+
+  }
+
+  public static class MS932Decoder extends CharsetDecoder
+  {
+      private CharsetDecoder iconvDecoder;
+      public MS932Decoder(Charset cs, CharsetDecoder iconvDecoder)
+        {
+          super(cs, iconvDecoder.averageCharsPerByte(),
+            iconvDecoder.maxCharsPerByte());
+          this.iconvDecoder = iconvDecoder;
+        }
+
+      protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out)
+        {
+          int p0 = out.position();
+          CoderResult result = iconvDecoder.decode(in, out, false);
+          if (! result.isError())
+            {
+              int p = out.position();
+              for (int i = p0; i < p; i++)
+                {
+                  char c = out.get(i);
+                  if (c == (char)0x301c)           // WAVE DASH
+                    out.put(i, (char)0xff5e);
+                  else if (c == (char)0x2016)      // DOUBLE VERTICAL LINE
+                    out.put(i, (char)0x2225);
+                  else if (c == (char)0x2212)      // MINUS SIGN
+                    out.put(i, (char)0xff0d);
+                  else if (c == (char)0x00a2)      // CENT SIGN
+                    out.put(i, (char)0xffe0);
+                  else if (c == (char)0x00a3)      // POND SIGN
+                    out.put(i, (char)0xffe1);
+                  else if (c == (char)0x00ac)      // NOT SIGN
+                    out.put(i, (char)0xffe2);
+                }
+            }
+          return result;
+        }
+
+  }
+
+  public static class MS932Encoder extends CharsetEncoder
+  {
+      private CharsetEncoder iconvEncoder;
+      public MS932Encoder(Charset cs, CharsetEncoder iconvEncoder)
+        {
+          super(cs, iconvEncoder.averageBytesPerChar(),
+            iconvEncoder.maxBytesPerChar());
+          this.iconvEncoder = iconvEncoder;
+        }
+
+      protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out)
+        {
+          CharBuffer tmp = CharBuffer.allocate(in.remaining());
+          for (int i = in.position(), j = 0; i < in.limit(); i++, j++)
+            {
+              char c = in.get(i);
+              if (c == '\u2212') c = '\ufffd';          // MINUS SIGN
+              else if (c == '\u2225') c = '\u2016';     // DOUBLE VERTICAL LINE
+              else if (c == '\u301c') c = '\ufffd';     // WAVE DASH
+              else if (c == '\uffe2') c = '\u00ac';     // NOT SIGN
+              else if (c == '\uff0d') c = '\u2212';     // MINUS SIGN
+              else if (c == '\uff5e') c = '\u301c';     // WAVE DASH
+              else if (c == '\uffe0') c = '\u00a2';     // CENT SIGN
+              else if (c == '\uffe1') c = '\u00a3';     // POUND SIGN
+              else if (c == '\uffe2') c = '\u00ac';     // NOT SIGN
+              tmp.put(j, c);
+            }
+          CoderResult result = iconvEncoder.encode(tmp, out, false);
+          int p = in.position();
+          in.position(p + tmp.position());
+          return result;
+        }
+  }
+
+}
