@@ -170,11 +170,21 @@ java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)
 	int error = 0;
         Utf8Const *c;
         char *name;
+	int i;
+	jboolean foundSlash = false;
 
 	name = checkPtr(stringJava2C(jStr));
-	classname2pathname(name, name);
+	for (i = strlen(name)-1; i >= 0; i--)
+		if (name[i] == '/') {
+			foundSlash = true;
+			break;
+		}
 
-	if (!strncmp (name, "kaffe/lang/", 11) ||
+	if (!foundSlash)
+	  classname2pathname(name, name);
+
+	if (foundSlash ||
+	    !strncmp (name, "kaffe/lang/", 11) ||
 	    !strncmp (name, "gnu/classpath/", 14)) {
 		struct Hjava_lang_Throwable *throwable;
 

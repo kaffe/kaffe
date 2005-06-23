@@ -2785,7 +2785,7 @@ sizeofSigMethod(Method *meth, bool want_wide_refs)
 	return (size);
 }
 
-/*
+/**
  * Count the number of arguments in a signature.
  */
 int
@@ -2800,7 +2800,7 @@ countArgsInSignature(const char *signature)
 	return (nargs);
 }
 
-/*
+/**
  * Duplicates a parsed signature.
  */
 static parsed_signature_t*
@@ -2853,6 +2853,8 @@ parseSignature(Utf8Const *signature, errorInfo *einfo)
 	}
 	++sig_iter; /* skip `)' */
 	PSIG_RET(sig) = sig_iter - signature->data;
+
+	PSIG_RNARGS(sig) = KaffeVM_countRealNumberOfArgs(sig); 
 
 	return sig;
 }

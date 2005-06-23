@@ -114,6 +114,7 @@ libkaffevm_la_SOURCES = \
 	string.c \
 	stringParsing.c \
 	support.c \
+	javacall.c \
 	thread.c \
 	utf8const.c \
 	gcFuncs.c \

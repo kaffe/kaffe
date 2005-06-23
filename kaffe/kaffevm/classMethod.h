@@ -296,6 +296,7 @@ typedef struct _innerClass {
 typedef struct _parsed_signature {
 	Utf8Const*		signature;
 	u2			nargs;
+	u2			real_nargs;
 	u2			ret_and_args[1]; /* index into signature */
 	/* ret_and_args[0]: return value
 	   ret_and_args[1]: first argument
@@ -347,8 +348,9 @@ typedef struct _methods {
 #define PSIG_UTF8(sig)		((sig)->signature)
 #define PSIG_DATA(sig)		(PSIG_UTF8((sig))->data)
 #define PSIG_RET(sig)		((sig)->ret_and_args[0])
-#define PSIG_NARGS(sig)		(sig->nargs)
+#define PSIG_NARGS(sig)		((sig)->nargs)
 #define PSIG_ARG(sig,n)		((sig)->ret_and_args[1+n])
+#define PSIG_RNARGS(sig)	((sig)->real_nargs)
 
 #define METHOD_PSIG(M)		((M)->parsed_sig)
 #define METHOD_SIG(M)		(PSIG_UTF8(METHOD_PSIG((M))))
@@ -509,17 +511,61 @@ struct classFile;
 #define CLASS_CONST_USHORT2(CL, INDEX) \
   ((uint16)((CL)->constants.data[INDEX] >> 16))
 
-/*
+/**
  * 'processClass' is the core of the class initialiser and can prepare a
  * class from the cradle to the grave.
+ *
+ * @param clazz The class to process.
+ * @param state The state to achieve during this process.
+ * @param einfo An error which may have occured.
+ *
+ * @returns false if an error has occured, true if everything is ok.
  */
-bool			processClass(Hjava_lang_Class*, int, errorInfo *einfo);
+bool			processClass(Hjava_lang_Class* clazz, int state, errorInfo *einfo);
 
-Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
-Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
+/**
+ * This function loads a class using the given class loader if non-NULL else it uses the 
+ * internal bootstrap class loader to fetch classes. The classes are processed to the linked state.
+ * This function must not be used to "load" a class representing array. For that use loadArray.
+ * 
+ * @param name The name of the class to load.
+ * @param loader The loader to use. It may be NULL if you want to use the internal VM class loader.
+ * @param einfo The error structure to fill if something bad happens.
+ *
+ * @returns A valid class object if the load is successful, NULL otherwise.
+ */
+Hjava_lang_Class*	loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo);
+
+/**
+ * This function loads an array with the given name and using the given class loader. The array is usable directly
+ * after that call.
+ *
+ * @param name The name of the array to load.
+ * @param loader The loader to use. It may be NULL If you want to use the internal VM class loader.
+ * @param einfo The error structure to fill if something bad happens.
+ *
+ * @returns A valid class object if the load is successful, NULL otherwise.
+ */
+Hjava_lang_Class*	loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo);
+
+/**
+ * This function finds a class in a directory or in a jar file. It implements the internal VM class loader.
+ *
+ * @param centry The class entry representing the class to be loaded.
+ * @param einfo The error structure to fill if something bad happens.
+ *
+ * @returns A valid class object if the load is successful, NULL otherwise.
+ */
 Hjava_lang_Class*	findClass(struct _classEntry* centry, errorInfo *einfo);
 
-void			loadStaticClass(Hjava_lang_Class**, const char*);
+/**
+ * This function is used at the VM boot to preload some classes. The classes are loaded and put in the linked state.
+ * It cannot return an error. If an error happened the VM is aborted.
+ *
+ * @param clazz A pointer to the place where the class object should be put.
+ * @param name The name of the class to load.
+ */
+void			loadStaticClass(Hjava_lang_Class** clazz, const char* name);
 
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
 				   constIndex, u2, Hjava_lang_ClassLoader*, errorInfo*);
@@ -544,8 +590,6 @@ classEntry*		lookupClassEntryInternal(Utf8Const*,
 int			removeClassEntries(Hjava_lang_ClassLoader*);
 void 			walkClassEntries(Collector *collector, void *gc_info, Hjava_lang_ClassLoader*);
 
-Collector* 		initCollector(void);
-
 Hjava_lang_Class*	lookupClass(const char*, Hjava_lang_ClassLoader*,
 				errorInfo*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*, errorInfo*);
@@ -562,6 +606,7 @@ void			establishMethod(Method*);
 Hjava_lang_Class*	getClassFromSignature(const char*, Hjava_lang_ClassLoader*, errorInfo*);
 Hjava_lang_Class*	getClassFromSignaturePart(const char*, Hjava_lang_ClassLoader*, errorInfo*);
 int			countArgsInSignature(const char *);
+int			KaffeVM_countRealNumberOfArgs(parsed_signature_t *);
 parsed_signature_t*	parseSignature(Utf8Const *, errorInfo*);
 
 int			startFields(Hjava_lang_Class*, u2 fieldct, errorInfo*);
@@ -571,34 +616,38 @@ void			destroyClassLoader(Collector *, void *);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
 int			findPackageLength(const char *name);
-/*
+
+/**
  * Start a search for a class.  If no other thread is searching for this
  * mapping then the responsibility falls on the current thread.
  *
- * ce - The mapping to start searching for.
- * out_cl - A placeholder for the class if it has already been bound.
- * einfo - An uninitialized errorInfo object.
- * returns - True, if the class is already bound or if this thread should be
+ * @param ce The mapping to start searching for.
+ * @param out_cl A placeholder for the class if it has already been bound.
+ * @param einfo An uninitialized errorInfo object.
+ *
+ * @returns True, if the class is already bound or if this thread should be
  *   responsible for searching/loading the class.  False, if searching for this
  *   class would result in a class circularity.
  */
 int classMappingSearch(classEntry *ce,
 		       Hjava_lang_Class **out_cl,
 		       errorInfo *einfo);
-/*
+/**
  * Start loading a class.
  *
- * ce - The mapping to start searching for.
- * out_cl - A placeholder for the class if it has already been bound.
- * einfo - An uninitialized errorInfo object.
- * returns - True, if the class is already bound or if this thread should be
+ * @param ce The mapping to start searching for.
+ * @param out_cl A placeholder for the class if it has already been bound.
+ * @param einfo An uninitialized errorInfo object.
+ *
+ * @returns True, if the class is already bound or if this thread should be
  *   responsible for searching/loading the class.  False, if searching for this
  *   class would result in a class circularity.
  */
 int classMappingLoad(classEntry *ce,
 		     Hjava_lang_Class **out_cl,
 		     errorInfo *einfo);
-/*
+
+/**
  * Transition a mapping to the loaded state.
  *
  * ce - The name mapping whose state should be updated.
@@ -607,7 +656,8 @@ int classMappingLoad(classEntry *ce,
  *   it will be the value previously stored in the mapping.
  */
 Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl);
-/*
+
+/**
  * Force a mapping to a particular state.
  *
  * ce - The name mapping whose state should be updated.
@@ -615,8 +665,19 @@ Hjava_lang_Class *classMappingLoaded(classEntry *ce, Hjava_lang_Class *cl);
  */
 void setClassMappingState(classEntry *ce, name_mapping_state_t nms);
 
+/**
+ * This function walks through the class pool and execute the given function
+ * for each class of the pool.
+ *
+ * @param walker A class walker.
+ * @param param A user parameter.
+ */
 void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);
 
+
+/**
+ * Initialize internal global variables of the class pool.
+ */
 void KaffeVM_initClassPool(void);
 
 extern Utf8Const* init_name;		/* "<clinit>" */

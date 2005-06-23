@@ -234,4 +234,7 @@ extern Collector* main_collector;
 #define gc_disableGC()	    KGC_disableGC(main_collector)
 
 extern const char* describeObject(const void* mem);
+
+Collector* 		initCollector(void);
+
 #endif

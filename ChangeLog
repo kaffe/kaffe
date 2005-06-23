@@ -1,3 +1,34 @@
+2005-06-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/Makefile.am
+	(libkaffevm_la_SOURCES): Added javacall.c
+
+	* kaffe/kaffevm/Makefile.in: Regenerated.
+
+	* kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/classMethod.h
+	(initCollector): Moved to gc.h
+	(parsed_signature): Added real_nargs.
+	(PSIG_RNARGS): New macro.
+	(KaffeVM_countRealNumberOfArgs): New function to retrieve the real
+	number of argument slot used.
+	
+	Doxified a bit.
+	
+	* kaffe/kaffevm/gc.h
+	(initCollector): Moved from classMethod.h
+
+	* kaffe/kaffevm/javacall.c
+	(KaffeVM_callMethodA, KaffeVM_callMethodV): Moved from support.c
+	along with their macros.
+	(KaffeVM_countRealNumberOfArgs): New function.
+	
+	kaffe/kaffevm/support.c:
+	(KaffeVM_callMethodA, KaffeVM_callMethodV): Moved out.
+
+	* libraries/clib/native/ClassLoader.c
+	(loadClass): Check whether the class name is well constructed.
+
 2005-06-23  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* FAQ/FAQ.charsets: New file.

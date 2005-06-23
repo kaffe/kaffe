@@ -100,8 +100,8 @@ am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
 	debug.c exception.c external.c file.c findInJar.c fp.c gc.c \
 	hashtab.c inflate.c itypes.c jar.c ksem.c locks.c lookup.c \
 	object.c readClass.c soft.c stackTrace.c stats.c string.c \
-	stringParsing.c support.c thread.c utf8const.c gcFuncs.c \
-	reflect.c reference.c ../../binreloc/prefix.c
+	stringParsing.c support.c javacall.c thread.c utf8const.c \
+	gcFuncs.c reflect.c reference.c ../../binreloc/prefix.c
 @ENABLE_BINRELOC_TRUE@am__objects_1 = libkaffevm_la-prefix.lo
 am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-baseClasses.lo libkaffevm_la-classMethod.lo \
@@ -118,10 +118,10 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-readClass.lo libkaffevm_la-soft.lo \
 	libkaffevm_la-stackTrace.lo libkaffevm_la-stats.lo \
 	libkaffevm_la-string.lo libkaffevm_la-stringParsing.lo \
-	libkaffevm_la-support.lo libkaffevm_la-thread.lo \
-	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
-	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
-	$(am__objects_1)
+	libkaffevm_la-support.lo libkaffevm_la-javacall.lo \
+	libkaffevm_la-thread.lo libkaffevm_la-utf8const.lo \
+	libkaffevm_la-gcFuncs.lo libkaffevm_la-reflect.lo \
+	libkaffevm_la-reference.lo $(am__objects_1)
 am__objects_2 = libkaffevm_la-md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -515,6 +515,7 @@ libkaffevm_la_SOURCES = \
 	string.c \
 	stringParsing.c \
 	support.c \
+	javacall.c \
 	thread.c \
 	utf8const.c \
 	gcFuncs.c \
@@ -653,6 +654,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-inflate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-itypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-jar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-javacall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-ksem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-locks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-lookup.Plo@am__quote@
@@ -902,6 +904,13 @@ libkaffevm_la-support.lo: support.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='support.c' object='libkaffevm_la-support.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-support.lo `test -f 'support.c' || echo '$(srcdir)/'`support.c
+
+libkaffevm_la-javacall.lo: javacall.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-javacall.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-javacall.Tpo" -c -o libkaffevm_la-javacall.lo `test -f 'javacall.c' || echo '$(srcdir)/'`javacall.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-javacall.Tpo" "$(DEPDIR)/libkaffevm_la-javacall.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-javacall.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='javacall.c' object='libkaffevm_la-javacall.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-javacall.lo `test -f 'javacall.c' || echo '$(srcdir)/'`javacall.c
 
 libkaffevm_la-thread.lo: thread.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-thread.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-thread.Tpo" -c -o libkaffevm_la-thread.lo `test -f 'thread.c' || echo '$(srcdir)/'`thread.c; \
