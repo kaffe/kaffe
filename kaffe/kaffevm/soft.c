@@ -863,12 +863,16 @@ soft_mul(jint v1, jint v2)
 jint
 soft_div(jint v1, jint v2)
 {
+	if (v2 == -1)
+		return -v1;
 	return (v1/v2);
 }
 
 jint
 soft_rem(jint v1, jint v2)
 {
+	if (v2 == -1)
+		return 0;
 	return (v1%v2);
 }
 

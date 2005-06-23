@@ -1,5 +1,11 @@
 2005-06-23  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/soft.c
+	(soft_div, soft_rem): Check for the divisor to return the correct
+	value on all processors.
+
+2005-06-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/Makefile.am
 	(libkaffevm_la_SOURCES): Added javacall.c
 
