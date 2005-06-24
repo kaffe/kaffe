@@ -480,9 +480,21 @@ options(char** argv, int argc)
 			/* FIXME: skip, case handled by the calle script */
 		}
 #endif
-		else if ((strcmp(argv[i], "-addclasspath") == 0)
-			 || (strcmp(argv[i], "-classpath") == 0)
-			 || (strcmp(argv[i], "-cp") == 0)) {
+		else if (strcmp(argv[i], "-classpath") == 0
+			 || strcmp(argv[i], "-cp") == 0) {
+
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr, 
+				    "Error: No path found for %s option.\n",
+				    argv[i - 1]);
+				exit(1);
+			}
+
+			/* set the new classpath */
+			vmargs.classpath = strdup(argv[i]);
+		}
+		else if (strcmp(argv[i], "-addclasspath") == 0) {
 			char	*newcpath;
 			unsigned int      cpathlength;
 

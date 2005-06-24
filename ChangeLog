@@ -1,3 +1,11 @@
+2005-06-24  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffe/main.c
+	(options): "-classpath" must reset the classpath to the only specified
+	by the following argument.
+
+	Fixes bug reported by Daniel Bonniot <Daniel.Bonniot@inria.fr>
+
 2005-06-23  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/soft.c
