@@ -1,3 +1,11 @@
+2005-06-24  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/java/nio/charset/UnicodeLittle.java
+	(newDecoder): Set the default endian to be little endian.
+
+	* gnu/java/nio/charset/UTF_16Decoder.java
+	(decodeLoop): Use 0x00FF instead of 0xFF for masking.
+
 2005-06-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffe/main.c
