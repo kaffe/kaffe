@@ -1,3 +1,8 @@
+2005-06-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/tools/jar/Jar.java
+	(addEntry): Delete "./" from the top of entryname.
+
 2005-06-24  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* gnu/java/nio/charset/UnicodeLittle.java

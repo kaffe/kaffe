@@ -1142,6 +1142,11 @@ public class Jar {
     void addEntry(ZipOutputStream zos, String entryname, XPFile entryfile)
     	throws IOException
     {
+	// Delete "./" from the top of entryname.  Sun's jar command seems to
+	// do this.
+	if (entryname.startsWith("./") && entryname.length() > 2) {
+	    entryname = entryname.substring(2);
+	}
 	// YIKES!! Watch out for the really ugly special case where
 	// we attempt to add the archive that we are writing to the
 	// archive we are writing to the archive we are writing.
