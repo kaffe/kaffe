@@ -1739,7 +1739,7 @@ define_insn(div_float, divf_RRR)
 	int r = rreg_float(2);
 	int w = rwreg_float(0);
 
-	assert(rreg_double(1) == w);
+	assert(rreg_float(1) == w);
 
 	op_fsdivx_ff(r, w);
 }

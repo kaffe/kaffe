@@ -1,3 +1,17 @@
+2005-06-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/m68k/linux/md.h
+	(sysdepCallMethod): Inlined function instead of a macro. Fixed the
+	return of a float.
+
+	* config/m68k/jit3-m68k.def
+	(div_float): Fixed a misallocation of the destination register
+	because of a wrong assert.
+
+	* libraries/clib/fdlibm/ieeefp.h: Removed all preprocessor magic and
+	replaced by the checking of the definition of WORDS_BIGENDIAN by
+	configure.
+	
 2005-06-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java

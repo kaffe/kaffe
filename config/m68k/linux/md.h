@@ -65,44 +65,51 @@ extern void init_md(void);
  *
  *	Linux version
  */
-#define sysdepCallMethod(CALL) do {				\
-	int extraargs[(CALL)->nrargs];				\
-	register int d0 asm ("d0");				\
-	register int d1 asm ("d1");				\
-	register double f0d asm ("fp0");			\
-	register float f0f asm ("fp0");				\
-	int *res;						\
-	int *args = extraargs;					\
-	int argidx;						\
-	for(argidx = 0; argidx < (CALL)->nrargs; ++argidx) {	\
-		if ((CALL)->callsize[argidx])			\
-			*args++ = (CALL)->args[argidx].i;	\
-		else						\
-			*args++ = (CALL)->args[argidx-1].j;	\
-	}							\
-	asm volatile ("jsr	%2@\n"				\
-	 : "=r" (d0), "=r" (d1)					\
-	 : "a" ((CALL)->function)				\
-	 : "cc", "memory");					\
-	if ((CALL)->retsize != 0) {				\
-		res = (int *)(CALL)->ret;			\
-	switch((CALL)->retsize) {				\
-	case 2:							\
-	  if ((CALL)->rettype == 'D')				\
-	    *(double*)res = f0d;				\
-	  else {						\
-		res[1] = d1;					\
-		res[0] = d0;					\
-	  }							\
-	  break;						\
-	case 1:							\
-	  if ((CALL)->rettype == 'F')				\
-	    *(double*)res = f0f;				\
-	  else							\
-		res[0] = d0;					\
-	  break;						\
-	}							\
-	}							\
-} while (0)
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
+static inline void sysdepCallMethod(callMethodInfo *call)
+{
+  int extraargs[call->nrargs];
+  register int d0 asm ("d0");
+  register int d1 asm ("d1");
+  register double f0d asm ("fp0");
+  register float f0f asm ("fp0");
+  int *res;
+  int *args = extraargs;
+  int argidx;
+
+  for(argidx = 0; argidx < call->nrargs; ++argidx) {
+    if (call->callsize[argidx])	
+      *args++ = call->args[argidx].i;
+    else
+      *args++ = call->args[argidx-1].j;
+  }
+
+  asm volatile ("jsr	%2@\n"				
+		: "=r" (d0), "=r" (d1)					
+		: "a" (call->function)
+		: "cc", "memory");
+  
+  if (call->retsize != 0) {
+    res = (int *)call->ret;
+
+    switch(call->retsize) {
+    case 2:
+      if ((CALL)->rettype == 'D')
+	*(double*)res = f0d;
+      else {	      
+	res[1] = d1;
+	res[0] = d0;
+      }
+      break;
+    case 1:
+      if ((CALL)->rettype == 'F')
+	*(float*)res = f0f;
+      else
+	res[0] = d0;
+      break;
+    }
+  }
+}
 
 #endif /* __m68k_linux_md_h */
