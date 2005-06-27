@@ -1,3 +1,14 @@
+2005-06-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+        * gnu/java/nio/charset/UnicodeLittle.java
+	(newDecoder): Set the endianness to UTF_16Decoder.MAYBE_LITTLE_ENDIAN.
+
+	* gnu/java/nio/charset/UTF_16Decoder.java
+	(MAYBE_BIG_ENDIAN, MAYBE_LITTLE_ENDIAN): New constants.
+	(decodeLoop): If the byte order is MAYBE_LITTLE_ENDIAN or
+	MAYBE_BIG_ENDIAN, assume the default endianness to be little or
+	big respectively.
+
 2005-06-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/sparc/bsdi3/md.h,
