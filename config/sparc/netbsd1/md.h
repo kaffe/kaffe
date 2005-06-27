@@ -15,6 +15,7 @@
 #include "sparc/common.h"
 #include "sparc/threads.h"
 
+#undef SA_SIGINFO
 #define SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)

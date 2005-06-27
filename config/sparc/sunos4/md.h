@@ -27,6 +27,7 @@
 #undef  SP_OFFSET
 #define SP_OFFSET       2
 
+#undef SA_SIGINFO
 #define SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext* sc, char* addr
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)

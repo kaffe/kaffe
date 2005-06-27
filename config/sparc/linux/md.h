@@ -45,6 +45,7 @@
 #endif
 
 /* Function prototype for signal handlers */
+#undef SA_SIGINFO
 #define	SIGNAL_ARGS(sig, sc) int sig, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
