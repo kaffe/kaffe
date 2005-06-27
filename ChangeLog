@@ -1,5 +1,13 @@
 2005-06-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/tools/Util.java
+	(Util): Really search the default classpath if no class is found in
+	the current directory.
+
+	Reported by:  Daniel Bonniot  <bonniot@users.sourceforge.net>
+
+2005-06-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/m68k/linux/md.h
 	(sysdepCallMethod): Inlined function instead of a macro. Fixed the
 	return of a float.

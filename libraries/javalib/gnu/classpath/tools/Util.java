@@ -63,6 +63,11 @@ public class Util
     else
       {
         is = findFile(filename);
+        if (is == null)
+	  {
+	    String path = getSearchPath();
+            is = findClass(filename, path);
+	  }
       }
     if (is != null)
       return is;
