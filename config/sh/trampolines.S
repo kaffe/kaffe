@@ -24,7 +24,7 @@ TRAMPOLINE_FUNCTION()
  * Otherwise we'll try to construct one.
  */
 #if defined(HAVE_UNDERSCORED_C_NAMES)
-#define C_FUNC_NAME(FUNC) _FUNC
+#define C_FUNC_NAME(FUNC) _ ## FUNC
 #else
 #define C_FUNC_NAME(FUNC) FUNC
 #endif

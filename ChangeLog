@@ -1,3 +1,17 @@
+2005-06-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/alpha/trampolines.S,
+	config/arm/trampolines.S,
+	config/i386/trampolines.S,
+	config/m68k/trampolines.S,
+	config/mips/trampolines.S,
+	config/sh/trampolines.S,
+	config/sparc/trampolines.S
+	(C_FUNC_NAME): Fixed concatenation.
+
+	Reported by Davanum Srinivas <dims@yahoo.com>,
+	Dalibor Topic  <robilad@kaffe.org>
+
 2005-06-28  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (DLOPEN_JAVA_LIBS): Removed libclasspath and 
