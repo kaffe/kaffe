@@ -519,7 +519,9 @@ java_lang_VMClass_throwException (struct Hjava_lang_Throwable *throwable)
 
 
 void
-java_lang_VMClass_checkAccess (struct Hjava_lang_Class *clazz, struct Hjava_lang_Class *caller, int flags)
+java_lang_VMClass_checkAccess (struct Hjava_lang_Class *clazz,
+                               struct Hjava_lang_Class *caller,
+                               jint flags)
 {
 	if (checkAccess (caller, clazz, flags) == 0)
 		SignalError (JAVA_LANG(IllegalAccessException), NULL);

@@ -1,5 +1,15 @@
 2005-06-29  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/nets.h: Guarded include of config.h. Include netdb.h.
+	Check for H_ERRNO_DECLARED rather than h_errno.
+
+	* libraries/clib/native/Class.c: 
+	(java_lang_class_VMClass_checkAccess) Fixed prototype.
+
+	Build fixes for Cygwin.
+
+2005-06-29  Dalibor Topic  <robilad@kaffe.org>
+
         * include/kaffe/trampoline.h: New file, with code shared
 	by all trampoline implementations.
 

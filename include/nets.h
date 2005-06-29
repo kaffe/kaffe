@@ -11,12 +11,16 @@
 #ifndef __nets_h
 #define __nets_h
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #include "config-mem.h"
 #include <errno.h>
+#include <netdb.h>
 
 /* some systems define this already as a macro, in which we leave it as is */
-#ifndef h_errno
+#ifndef H_ERRNO_DECLARED
 extern int h_errno;
 #endif /* h_errno */
 
