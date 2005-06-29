@@ -1,3 +1,23 @@
+2005-06-29  Dalibor Topic  <robilad@kaffe.org>
+
+        * include/kaffe/trampoline.h: New file, with code shared
+	by all trampoline implementations.
+
+        * config/alpha/trampolines.S,
+        config/arm/trampolines.S,
+        config/i386/trampolines.S,
+        config/m68k/trampolines.S,
+        config/mips/trampolines.S,
+        config/powerpc/trampolines.S,
+        config/sh/trampolines.S,
+        config/sparc/trampolines.S:
+	Include kaffe/trampoline.h.
+
+        * kaffe/kaffevm/jit3/Makefile.am,
+        kaffe/kaffevm/jit/Makefile.am:
+	(AM_CCASFLAGS) Added ENGINE_DEFS and include
+	directory to includes.
+
 2005-06-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/alpha/trampolines.S,
@@ -17,9 +37,7 @@
 	* configure.ac (DLOPEN_JAVA_LIBS): Removed libclasspath and 
 	libfdlibm.
 
-	2005-05-19  Dalibor Topic  <robilad@kaffe.org>
-
-	libraries/clib/classpath/Makefile.am,
+	* libraries/clib/classpath/Makefile.am,
 	libraries/clib/fdlibm/Makefile.am,
 	replace/Makefile.am:
 	(AM_LDFLAGS) Removed -module. Build as convenience libraries.

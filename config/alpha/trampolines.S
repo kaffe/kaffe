@@ -12,9 +12,7 @@
  * of this file.
  */
 
-#if defined(HAVE_CONFIG_H)
-#include "config.h"
-#endif /* defined(HAVE_CONFIG_H) */
+#include "kaffe/trampoline.h"
 
 #if defined(TRAMPOLINE_FUNCTION)
 /*
@@ -26,13 +24,6 @@ TRAMPOLINE_FUNCTION()
 /*
  * Otherwise we'll try to construct one.
  */
-#if !defined(C_FUNC_NAME)
-#if defined(HAVE_UNDERSCORED_C_NAMES)
-#define C_FUNC_NAME(FUNC) _ ## FUNC
-#else
-#define C_FUNC_NAME(FUNC) FUNC
-#endif
-#endif
 
      .text
      .align 3

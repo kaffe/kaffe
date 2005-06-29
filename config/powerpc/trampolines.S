@@ -3,11 +3,9 @@
  *
  */
 
-/* include common ppc asm syntax header */
-#if defined(HAVE_CONFIG_H)
-#include "config.h"
-#endif
+#include "kaffe/trampoline.h"
 
+/* include common ppc asm syntax header */
 #if defined(HAVE_ASM_PPC_ASM_H)
 #include <asm/ppc_asm.h>
 #endif /* defined(HAVE_ASM_PPC_ASM_H) */
@@ -22,11 +20,6 @@ TRAMPOLINE_FUNCTION()
 /*
  * Otherwise we'll try to construct one.
  */
-#if defined(HAVE_UNDERSCORED_C_NAMES)
-#define	C_FUNC_NAME(FUNC) _FUNC
-#else
-#define	C_FUNC_NAME(FUNC) FUNC
-#endif
 
 .text
 .align 2

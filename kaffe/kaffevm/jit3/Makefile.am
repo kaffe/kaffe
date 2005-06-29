@@ -20,8 +20,10 @@ AM_CPPFLAGS = \
 
 AM_CCASFLAGS = \
 	$(DEFS) \
+	$(ENGINE_DEFS) \
 	$(DEFAULT_INCLUDES) \
-	$(INCLUDES)
+	$(INCLUDES) \
+	-I$(top_srcdir)/include
 
 noinst_LTLIBRARIES = libengine.la
 
