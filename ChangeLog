@@ -1,3 +1,15 @@
+2005-06-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac (DLOPEN_JAVA_LIBS): Removed libclasspath and 
+	libfdlibm.
+
+	2005-05-19  Dalibor Topic  <robilad@kaffe.org>
+
+	libraries/clib/classpath/Makefile.am,
+	libraries/clib/fdlibm/Makefile.am,
+	replace/Makefile.am:
+	(AM_LDFLAGS) Removed -module. Build as convenience libraries.
+
 2005-06-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
         * gnu/java/nio/charset/UnicodeLittle.java

@@ -1,4 +1,4 @@
-native_LTLIBRARIES = libclasspath.la
+noinst_LTLIBRARIES = libclasspath.la
 
 AM_CPPFLAGS = \
         -I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
@@ -12,6 +12,4 @@ libclasspath_la_SOURCES = \
 
 libclasspath_la_LDFLAGS = \
 	$(KLIBFLAGS) \
-	-module \
-        -no-undefined \
-        -release $(PACKAGE_VERSION)
+        -no-undefined 

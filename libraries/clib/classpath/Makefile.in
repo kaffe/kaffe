@@ -67,15 +67,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(nativedir)"
-nativeLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(native_LTLIBRARIES)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
 libclasspath_la_LIBADD =
 am_libclasspath_la_OBJECTS = jcl.lo jnilink.lo native_state.lo
 libclasspath_la_OBJECTS = $(am_libclasspath_la_OBJECTS)
@@ -370,7 +362,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-native_LTLIBRARIES = libclasspath.la
+noinst_LTLIBRARIES = libclasspath.la
 AM_CPPFLAGS = \
         -I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
         -I$(top_srcdir)/kaffe/kaffevm/jni
@@ -383,9 +375,7 @@ libclasspath_la_SOURCES = \
 
 libclasspath_la_LDFLAGS = \
 	$(KLIBFLAGS) \
-	-module \
-        -no-undefined \
-        -release $(PACKAGE_VERSION)
+        -no-undefined 
 
 all: all-am
 
@@ -420,35 +410,17 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(nativedir)" || $(mkdir_p) "$(DESTDIR)$(nativedir)"
-	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(nativedir)/$$f'"; \
-	    $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(nativedir)/$$f"; \
-	  else :; fi; \
-	done
 
-uninstall-nativeLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@set -x; list='$(native_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(nativedir)/$$p'"; \
-	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(nativedir)/$$p"; \
-	done
-
-clean-nativeLTLIBRARIES:
-	-test -z "$(native_LTLIBRARIES)" || rm -f $(native_LTLIBRARIES)
-	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
 libclasspath.la: $(libclasspath_la_OBJECTS) $(libclasspath_la_DEPENDENCIES) 
-	$(LINK) -rpath $(nativedir) $(libclasspath_la_LDFLAGS) $(libclasspath_la_OBJECTS) $(libclasspath_la_LIBADD) $(LIBS)
+	$(LINK)  $(libclasspath_la_LDFLAGS) $(libclasspath_la_OBJECTS) $(libclasspath_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -570,9 +542,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(nativedir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -599,7 +568,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -618,7 +587,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-nativeLTLIBRARIES
+install-data-am:
 
 install-exec-am:
 
@@ -646,20 +615,19 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
+uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-nativeLTLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-nativeLTLIBRARIES install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-nativeLTLIBRARIES
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
