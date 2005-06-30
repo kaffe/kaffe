@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
 
 AM_CCASFLAGS = \
 	$(DEFS) \
-	$(ENGINE_DEFS)
+	$(ENGINE_DEFS) \
 	$(DEFAULT_INCLUDES) \
 	$(INCLUDES) \
 	-I$(top_srcdir)/include
