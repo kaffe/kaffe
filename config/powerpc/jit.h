@@ -93,6 +93,16 @@ do { \
 /*
  * Call a jitted java exception handler.
  */
+#if defined(__APPLE__)
+#define CALL_KAFFE_EXCEPTION(frame, handler, object) \
+	asm volatile ("mr r1, %0\n" \
+		      "\tlwz r10, 0(r1)\n" \
+		      "\tlmw r14, -72(r10)\n" \
+		      "\tmr r3, %1\n" \
+		      "\tmtctr %2\n" \
+		      "\tbctr\n" \
+		      : : "r" (frame), "r" (object), "r" (handler) : "r3")
+#else
 #define CALL_KAFFE_EXCEPTION(frame, handler, object) \
 	asm volatile ("mr 1, %0\n" \
 		      "\tlwz 10, 0(1)\n" \
@@ -101,6 +111,7 @@ do { \
 		      "\tmtctr %2\n" \
 		      "\tbctr\n" \
 		      : : "r" (frame), "r" (object), "r" (handler) : "r3")
+#endif
 
 /*
  * Call a JanosVM catastrophe handler.
@@ -124,5 +135,7 @@ do { \
 #define KAFFEJIT_TO_NATIVE(M)
 
 #define PUSHARG_FORWARDS
+
+#include "jit-labels.h"
 
 #endif

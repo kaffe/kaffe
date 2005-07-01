@@ -4291,6 +4291,36 @@ cvt_float_int(SlotInfo* dst, SlotInfo* src)
 	used_ieee_rounding = true;
 #if defined(HAVE_cvt_float_int)
 	slot_slot_slot(dst, 0, src, HAVE_cvt_float_int, Tcomplex);
+#elif defined(HAVE_cvt_float_int_ieee)
+	{
+	  SlotInfo *tmp;
+	  
+	  slot_alloctmp(tmp);
+
+	  end_sub_block();
+	  and_int_const(tmp, src, FEXPMASK);
+	  cbranch_int_const_ne(tmp, FEXPMASK, reference_label(1, 1));
+	  
+	  and_int_const(tmp, src, FMANMASK);
+	  cbranch_int_const_eq(tmp, 0, reference_label(1, 2));
+
+          start_sub_block();
+	  move_int_const(dst, 0);
+	  end_sub_block();
+	  branch_a(reference_label(1, 3));
+
+	  set_label(1, 1);
+	  set_label(1, 2);
+	  start_sub_block();
+	  slot_slot_lslot(dst, 0, src, HAVE_cvt_float_int_ieee, Tcomplex);
+	  end_sub_block();
+
+	  set_label(1, 3);
+
+	  start_sub_block();
+
+	  slot_freetmp(tmp);
+	}
 #else
 	begin_func_sync();
 	pusharg_float(src, 0);
@@ -4338,6 +4368,39 @@ cvt_double_int(SlotInfo* dst, SlotInfo* src)
 	used_ieee_rounding = true;
 #if defined(HAVE_cvt_double_int)
 	slot_slot_lslot(dst, NULL, src, HAVE_cvt_double_int, Tcomplex);
+#elif defined(HAVE_cvt_double_int_ieee)
+	{
+	  SlotInfo *tmp;
+	  int i;
+	  
+	  end_sub_block();
+	  slot_alloc2tmp(tmp);
+
+	  and_long_const(tmp, src, DEXPMASK);
+	  cbranch_int_const_ne(LSLOT(tmp), (jint)(DEXPMASK & 0xffffffff), reference_label(1, 1));
+	  cbranch_int_const_ne(HSLOT(tmp), (jint)((DEXPMASK >> 32) & 0xffffffff), reference_label(1, 2));
+	  
+	  and_long_const(tmp, src, DMANMASK);
+	  cbranch_int_const_ne(LSLOT(tmp), 0, reference_label(1, 3));
+	  cbranch_int_const_eq(HSLOT(tmp), 0, reference_label(1, 4));
+
+	  set_label(1, 3);
+	  start_sub_block();
+	  move_int_const(dst, 0);
+	  end_sub_block();
+	  branch_a(reference_label(1, 5));
+
+	  set_label(1, 4);
+	  set_label(1, 1);
+	  set_label(1, 2);
+	  start_sub_block();
+	  slot_slot_lslot(dst, 0, src, HAVE_cvt_double_int_ieee, Tcomplex);
+	  end_sub_block();
+
+	  set_label(1, 5);
+	  slot_free2tmp(tmp);
+	  start_sub_block();
+	}
 #else
 	begin_func_sync();
 	pusharg_double(src, 0);

@@ -1,3 +1,12 @@
+2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/powerpc/jit.h: Include jit-labels.h
+	(CALL_KAFFE_EXCEPTION): Use apple syntax on register if necessary.
+
+	* kaffe/kaffevm/jit3/icode.c
+	(cvt_float_int, cvt_double_int): Imported JIT code to do a precise NaN
+	conversion.
+
 2005-07-01  Davanum Srinivas <dims@yahoo.com>
 
 	* binreloc/prefix.c: (br_locate) Fix for cygwin.
