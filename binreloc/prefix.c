@@ -110,9 +110,12 @@ br_locate (const char *symbol)
 
 		if (!fgets (line, sizeof (line), f))
 			continue;
-		if (!strstr (line, " r-xp ") || !strchr (line, '/'))
+		if (!strchr (line, '/'))
 			continue;
-
+#ifndef __CYGWIN__ 
+		if (!strstr (line, " r-xp "))
+			continue;
+#endif
 		sscanf (line, "%x-%x ", &start, &end);
 		if (((unsigned int) symbol) >= start && ((unsigned int) symbol) < end)
 		{

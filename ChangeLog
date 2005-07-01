@@ -1,3 +1,9 @@
+2005-07-01  Davanum Srinivas <dims@yahoo.com>
+
+	* binreloc/prefix.c: (br_locate) Fix for cygwin.
+
+	* config/i386/trampolines.S: Fixed white space.
+
 2005-07-01  jrandom <jrandom@i2p.net>
 
 	* gnu/java/net/PlainDatagramSocketImpl.java: Removed synchronized
