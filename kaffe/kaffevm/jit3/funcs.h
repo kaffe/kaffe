@@ -217,7 +217,7 @@ extern void HAVE_cvt_float_long (sequence* s);
 #endif /* defined(HAVE_cvt_float_long) */
 
 #if defined(HAVE_cvt_float_int_ieee)
-extern void HAVE_cvt_float_int_ieee (sequense* s);
+extern void HAVE_cvt_float_int_ieee (sequence* s);
 #endif /* defined(HAVE_cvt_float_int_ieee) */
 
 #if defined(HAVE_cvt_int_byte)

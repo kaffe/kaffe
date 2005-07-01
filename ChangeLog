@@ -1,5 +1,14 @@
 2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/powerpc/jit3-icode.h
+	(HAVE_cvt_double_int, HAVE_cvt_float_int): Disabled.
+	(HAVE_cvt_double_int_ieee, HAVE_cvt_float_int_ieee): Enabled.
+
+	* kaffe/kaffevm/jit3/funcs.c
+	(HAVE_cvt_float_int_ieee): Fixed typo.
+
+2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/powerpc/jit3-powerpc.def: Fixed access to
 	KaffeJIT3_getLabelName.
 

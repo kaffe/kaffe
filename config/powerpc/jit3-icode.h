@@ -307,8 +307,10 @@
 #define	HAVE_mul_double			fmull_RRR
 #define	HAVE_div_double			fdivl_RRR
 
-#define	HAVE_cvt_float_int		cvtfi_RxR
-#define	HAVE_cvt_double_int		cvtdi_RxR
+#undef	HAVE_cvt_float_int
+#undef	HAVE_cvt_double_int
+#define	HAVE_cvt_float_int_ieee		cvtfi_RxR
+#define	HAVE_cvt_double_int_ieee	cvtdi_RxR
 
 #define	HAVE_cvt_int_float		cvtif_RxR
 #define	HAVE_cvt_int_double		cvtid_RxR
