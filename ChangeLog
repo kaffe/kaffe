@@ -1,3 +1,9 @@
+2005-07-01  jrandom <jrandom@i2p.net>
+
+	* gnu/java/net/PlainDatagramSocketImpl.java: Removed synchronized
+	modifier for all native methods in order to make multi-threaded 
+	code operating on a single socket.
+
 2005-06-30  Dalibor Topic  <robilad@kaffe.org>
 
         * kaffe/kaffevm/jit/Makefile.am:
