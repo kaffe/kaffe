@@ -291,7 +291,7 @@ define_insn(exception_prologue, eprologue_xxx)
 		LOUT(ppc_op_addis(PPC_RCONST_POOL, PPC_RCONST_POOL, 0));
 #endif
 
-		// debug((DBOUT,"exception_prologue %s\n",getLabelName(l)));
+		// debug((DBOUT,"exception_prologue %s\n",KaffeJIT3_getLabelName(l)));
 	}
 }
 
@@ -1623,7 +1623,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->from = CODEPC;
 	LOUT(0);
 
-	debug((DBOUT,"build_code_ref (@0x%x to 0x%x)\n", l->at, getLabelName(l)));
+	debug((DBOUT,"build_code_ref (@0x%x to 0x%x)\n", l->at, KaffeJIT3_getLabelName(l)));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1690,7 +1690,7 @@ define_insn(branch, branch_xCC)
 		break;
 	}
 	
-	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, getLabelName(l)));
+	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, KaffeJIT3_getLabelName(l)));
 }
 
 define_insn(branch_and_link, branchl_xCC)
@@ -1751,7 +1751,7 @@ define_insn(branch_and_link, branchl_xCC)
 		break;
 	}
 	
-	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, getLabelName(l)));
+	debug((DBOUT,"branch type %d at 0x%x to %s\n", bt, l -> at, KaffeJIT3_getLabelName(l)));
 }
 
 //

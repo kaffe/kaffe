@@ -36,6 +36,7 @@
 #include "code-analyse.h"
 #include "funcs.h"
 #include "kaffe_jni.h"
+#include "fp.h"
 
 #if defined(HAVE_branch_and_link)
 #define blink 0x8000000
@@ -1843,14 +1844,15 @@ and_long(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 #endif
 }
 
-#if defined(HAVE_and_long_const)
 void
 and_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 {
+#if defined(HAVE_and_long_const)
 	if (HAVE_and_long_const_rangecheck(val)) {
 		lslot_lslot_lconst(dst, src, val, HAVE_and_long_const, Tcomplex);
 	}
 	else
+#endif
 	{
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
@@ -1859,7 +1861,6 @@ and_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 		slot_freetmp(tmp);
 	}
 }
-#endif
 
 #if defined(HAVE_or_int)
 void

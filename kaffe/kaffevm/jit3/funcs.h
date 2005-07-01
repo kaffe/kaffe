@@ -196,6 +196,10 @@ extern void HAVE_cvt_double_float (sequence* s);
 extern void HAVE_cvt_double_int (sequence* s);
 #endif /* defined(HAVE_cvt_double_int) */
 
+#if defined(HAVE_cvt_double_int_ieee)
+extern void HAVE_cvt_double_int_ieee (sequence* s);
+#endif /* defined(HAVE_cvt_double_int_ieee) */
+
 #if defined(HAVE_cvt_double_long)
 extern void HAVE_cvt_double_long (sequence* s);
 #endif /* defined(HAVE_cvt_double_long) */
@@ -211,6 +215,10 @@ extern void HAVE_cvt_float_int (sequence* s);
 #if defined(HAVE_cvt_float_long)
 extern void HAVE_cvt_float_long (sequence* s);
 #endif /* defined(HAVE_cvt_float_long) */
+
+#if defined(HAVE_cvt_float_int_ieee)
+extern void HAVE_cvt_float_int_ieee (sequense* s);
+#endif /* defined(HAVE_cvt_float_int_ieee) */
 
 #if defined(HAVE_cvt_int_byte)
 extern void HAVE_cvt_int_byte (sequence* s);

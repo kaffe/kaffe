@@ -1,5 +1,19 @@
 2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/powerpc/jit3-powerpc.def: Fixed access to
+	KaffeJIT3_getLabelName.
+
+	* kaffe/kaffevm/jit3/funcs.h
+	(HAVE_cvt_double_int_ieee, HAVE_cvt_float_int_ieee): Added missing
+	prototype.
+
+	* kaffe/kaffevm/jit3/icode.c
+	(and_long_const): Fixed ifdef macro as and_long_const may be defined
+	in any cases.
+	(HEADERS): Added the inclusion of fp.h
+
+2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/powerpc/jit.h: Include jit-labels.h
 	(CALL_KAFFE_EXCEPTION): Use apple syntax on register if necessary.
 
