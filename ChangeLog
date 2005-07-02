@@ -1,3 +1,7 @@
+2005-07-02  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* FAQ/FAQ.charsets: Correction of a grammatical error.
+
 2005-07-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/powerpc/jit3-icode.h

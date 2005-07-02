@@ -15,7 +15,7 @@ Supported charsets
   provided by gnu.java.nio.charset.iconv.IconvProvider.  In order to
   enable gnu.java.nio.charset.iconv.IconvProvider, you have to make
   a configuration file named java.nio.charset.spi.CharsetProvider
-  in the resource directory META-INF/services.  In the configuration
+  in the resource directory META-INF/services.  The configuration
   file should contain a line which reads
 
        gnu.java.nio.charset.iconv.IconvProvider
