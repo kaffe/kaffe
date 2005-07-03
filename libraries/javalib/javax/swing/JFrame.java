@@ -66,7 +66,18 @@ public class JFrame extends Frame
   private int close_action = HIDE_ON_CLOSE;
   protected AccessibleContext accessibleContext;
   protected JRootPane rootPane;
-  protected boolean rootPaneCheckingEnabled;
+  
+  /**
+   * @specnote rootPaneCheckingEnabled is false to comply with J2SE 5.0
+   */
+  protected boolean rootPaneCheckingEnabled = false;
+
+  /**
+   * Tells us if we're in the initialization stage.
+   * If so, adds go to top-level Container, otherwise they go
+   * to the content pane for this container.
+   */
+  private boolean initStageDone = false;
 
   public JFrame()
   {
@@ -116,6 +127,8 @@ public class JFrame extends Frame
     super.setLayout(new BorderLayout(1, 1));
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     getRootPane(); // will do set/create
+    // We're now done the init stage.
+    initStageDone = true;
   }
 
   public Dimension getPreferredSize()
@@ -135,7 +148,17 @@ public class JFrame extends Frame
 
   public void setLayout(LayoutManager manager)
   {
-    super.setLayout(manager);
+    // Check if we're in initialization stage.  If so, call super.setLayout
+    // otherwise, valid calls go to the content pane.
+    if (initStageDone)
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Cannot set layout. Use getContentPane().setLayout()"
+                           + " instead.");
+        getContentPane().setLayout(manager);
+      }
+    else
+      super.setLayout(manager);
   }
 
   public void setLayeredPane(JLayeredPane layeredPane)
@@ -191,12 +214,27 @@ public class JFrame extends Frame
 
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    super.addImpl(comp, constraints, index);
+    // If we're adding the rootPane (initialization stages) use super.add.
+    // Otherwise pass the add onto the content pane.
+    if (comp==rootPane)
+      super.addImpl(comp, constraints, index);
+    else
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("rootPaneChecking is enabled - adding components "
+                           + "disallowed.");
+        getContentPane().add(comp,constraints,index);
+      }
   }
 
   public void remove(Component comp)
   {
-    getContentPane().remove(comp);
+    // If we're removing the root pane, use super.remove. Otherwise
+    // pass it on to the content pane instead.
+    if (comp==rootPane)
+      super.remove(rootPane);
+    else
+      getContentPane().remove(comp);
   }
 
   protected boolean isRootPaneCheckingEnabled()

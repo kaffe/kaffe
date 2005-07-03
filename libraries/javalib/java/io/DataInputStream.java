@@ -361,8 +361,8 @@ public class DataInputStream extends FilterInputStream implements DataInput
 	    int next_c = in.read();
             if (next_c != '\n' && next_c != -1)
               {
-                if (! (in instanceof PushbackInputStream))
-                    in = new PushbackInputStream(in);
+                if (!(in instanceof PushbackInputStream))
+                  in = new PushbackInputStream(in);
                 ((PushbackInputStream) in).unread(next_c);
               }
             break;

@@ -49,6 +49,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -184,6 +186,47 @@ public class BasicListUI extends ListUI
   }
 
   /**
+   * A helper class which listens for {@link KeyEvents}s 
+   * from the {@link JList}.
+   */
+  private class KeyHandler extends KeyAdapter
+  {
+    public KeyHandler()
+    {
+    }
+    
+    public void keyPressed( KeyEvent evt ) 
+    {
+      if (evt.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+          int lead = BasicListUI.this.list.getLeadSelectionIndex();
+          if (!evt.isShiftDown())
+            {
+              BasicListUI.this.list.clearSelection();
+              BasicListUI.this.list.setSelectedIndex(lead+1);
+            }
+          else 
+            {
+              BasicListUI.this.list.getSelectionModel().setLeadSelectionIndex(lead+1);
+            }
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_UP)
+        {
+          int lead = BasicListUI.this.list.getLeadSelectionIndex();
+          if (!evt.isShiftDown())
+            {
+              BasicListUI.this.list.clearSelection();
+              BasicListUI.this.list.setSelectedIndex(Math.max(lead-1,0));
+            }
+          else
+            {
+              BasicListUI.this.list.getSelectionModel().setLeadSelectionIndex(Math.max(lead-1,0));
+            }
+        }
+    }
+  }
+  
+  /**
    * A helper class which listens for {@link MouseEvent}s 
    * from the {@link JList}.
    */
@@ -197,6 +240,22 @@ public class BasicListUI extends ListUI
      */
     public void mouseClicked(MouseEvent event)
     {
+      Point click = event.getPoint();
+      int index = BasicListUI.this.locationToIndex(list, click);
+      if (index == -1)
+        return;
+      boolean controlPressed = event.isControlDown();
+      if (controlPressed)
+        {
+          if (BasicListUI.this.list.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION)
+            BasicListUI.this.list.setSelectedIndex(index);
+          else if (BasicListUI.this.list.isSelectedIndex(index))
+            BasicListUI.this.list.removeSelectionInterval(index,index);
+          else
+            BasicListUI.this.list.addSelectionInterval(index,index);
+        }
+      else
+        BasicListUI.this.list.setSelectedIndex(index);
     }
 
     /**
@@ -207,12 +266,6 @@ public class BasicListUI extends ListUI
      */
     public void mousePressed(MouseEvent event)
     {
-      Point click = event.getPoint();
-      int index = BasicListUI.this.locationToIndex(list, click);
-      if (index == -1)
-        return;
-
-      BasicListUI.this.list.setSelectedIndex(index);
     }
 
     /**
@@ -314,6 +367,9 @@ public class BasicListUI extends ListUI
 
   /** The mouse listener listening to the list. */
   protected MouseInputListener mouseInputListener;
+
+  /** The key listener listening to the list */
+  private KeyHandler keyListener;
 
   /** The property change listener listening to the list. */
   protected PropertyChangeListener propertyChangeListener;
@@ -525,6 +581,7 @@ public class BasicListUI extends ListUI
     listDataListener = new ListDataHandler();
     listSelectionListener = new ListSelectionHandler();
     mouseInputListener = new MouseInputHandler();
+    keyListener = new KeyHandler();
     propertyChangeListener = new PropertyChangeHandler();
     componentListener = new ComponentHandler();
     updateLayoutStateNeeded = 1;
@@ -572,6 +629,7 @@ public class BasicListUI extends ListUI
     list.getModel().addListDataListener(listDataListener);
     list.addListSelectionListener(listSelectionListener);
     list.addMouseListener(mouseInputListener);
+    list.addKeyListener(keyListener);
     list.addMouseMotionListener(mouseInputListener);
     list.addPropertyChangeListener(propertyChangeListener);
     list.addComponentListener(componentListener);
@@ -586,6 +644,7 @@ public class BasicListUI extends ListUI
     list.getModel().removeListDataListener(listDataListener);
     list.removeListSelectionListener(listSelectionListener);
     list.removeMouseListener(mouseInputListener);
+    list.removeKeyListener(keyListener);
     list.removeMouseMotionListener(mouseInputListener);
     list.removePropertyChangeListener(propertyChangeListener);
   }

@@ -86,7 +86,7 @@ public class Windows1255 extends ByteCharset
 
   public Windows1255()
   {
-      super("Windows-1255", new String[] {
+      super("windows-1255", new String[] {
 	  "Windows1255", 
 	  "cp1255", 
 	  "cp-1255", 

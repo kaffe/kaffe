@@ -424,6 +424,10 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener
 	insideTimer.stop();
 	hideTip();
       }
+    
+    if (currentComponent == null)
+  	  currentComponent = (Component) event.getSource();
+    
     currentComponent.invalidate();
     currentComponent.validate();
     currentComponent.repaint();

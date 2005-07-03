@@ -85,7 +85,7 @@ public class Windows1252 extends ByteCharset
 
   public Windows1252()
   {
-      super("Windows-1252", new String[] {
+      super("windows-1252", new String[] {
 	  "Windows1252",
 	  "ibm-5348_P100-1997",
 	  "ibm-5348",

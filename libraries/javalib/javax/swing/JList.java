@@ -633,7 +633,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     lo = selectionModel.getMinSelectionIndex();
     hi = selectionModel.getMaxSelectionIndex();
     n = 0;
-    for (i = lo; i < hi; ++i)
+    for (i = lo; i <= hi; ++i)
       if (selectionModel.isSelectedIndex(i))
         n++;
     int [] v = new int[n];

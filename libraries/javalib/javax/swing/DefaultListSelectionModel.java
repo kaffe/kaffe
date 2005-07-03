@@ -240,7 +240,7 @@ public class DefaultListSelectionModel implements Cloneable,
     int R2 = Math.max(anchorSelectionIndex, oldLeadIndex);
     int S1 = Math.min(anchorSelectionIndex, leadIndex);
     int S2 = Math.max(anchorSelectionIndex, leadIndex);
-    
+
     int lo = Math.min(R1, S1);
     int hi = Math.max(R2, S2);
 
@@ -262,9 +262,7 @@ public class DefaultListSelectionModel implements Cloneable,
 
     int beg = sel.nextSetBit(0), end = -1;
     for(int i=beg; i >= 0; i=sel.nextSetBit(i+1)) 
-      { 
-        end = i;
-      }
+      end = i;
     fireValueChanged(beg, end, valueIsAdjusting);    
   }
 
@@ -409,8 +407,24 @@ public class DefaultListSelectionModel implements Cloneable,
     int lo = Math.min(index0, index1);
     int hi = Math.max(index0, index1);
 
-    sel.set(lo, hi+1);
-    fireValueChanged(lo, hi, valueIsAdjusting);
+    /* We have to update the anchorSelectionIndex and leadSelectionIndex
+       variables */
+    
+    /* The next if statements breaks down to "if this selection is adjacent
+       to the previous selection and going in the same direction" */
+    if (((index0 - 1 == leadSelectionIndex && (index1 >= index0) 
+              && (leadSelectionIndex >= anchorSelectionIndex))
+             || (index0 + 1 == leadSelectionIndex && (index1 <= index0) 
+                 && (leadSelectionIndex <= anchorSelectionIndex)))
+        && (anchorSelectionIndex != -1 || leadSelectionIndex != -1))
+      setLeadSelectionIndex(index1);
+    else
+      {
+        leadSelectionIndex = index1;
+        anchorSelectionIndex = index0;
+        sel.set(lo, hi+1);
+        fireValueChanged(lo, hi, valueIsAdjusting);
+      }
   }
 
 
@@ -430,6 +444,10 @@ public class DefaultListSelectionModel implements Cloneable,
     int lo = Math.min(index0, index1);
     int hi = Math.max(index0, index1);
     sel.clear(lo, hi+1); 
+    //update anchorSelectionIndex and leadSelectionIndex variables
+    //TODO: will probably need MouseDragged to test properly and know if this works
+    setAnchorSelectionIndex(index0);
+    leadSelectionIndex = index1;
     fireValueChanged(lo, hi, valueIsAdjusting);
   }
 
@@ -462,6 +480,9 @@ public class DefaultListSelectionModel implements Cloneable,
     int hi = Math.max(index0, index1);
     sel.set(lo, hi+1);
     fireValueChanged(lo, hi, valueIsAdjusting);
+    // update the anchorSelectionIndex and leadSelectionIndex variables
+    setAnchorSelectionIndex(index0);
+    leadSelectionIndex=index1;
   }
 
   /**

@@ -69,8 +69,12 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   /** The single RootPane in the Dialog. */
   protected JRootPane rootPane;
 
-  /** Whether checking is enabled on the RootPane */
-  protected boolean rootPaneCheckingEnabled = true;
+  /**
+   * Whether checking is enabled on the RootPane.
+   *
+   * @specnote Should be false to comply with J2SE 5.0
+   */ 
+  protected boolean rootPaneCheckingEnabled = false;
 
   /** The default action taken when closed. */
   private int close_action = HIDE_ON_CLOSE;
@@ -79,7 +83,13 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   private static boolean decorated;
 
   /**
-   * Creates a new non-modal JDialog with no title 
+   * Whether we're in the init stage or not.
+   * If so, adds and layouts are for top-level, otherwise they're for the
+   * content pane
+   */
+  private boolean initStageDone = false;
+
+  /* Creates a new non-modal JDialog with no title 
    * using a shared Frame as the owner.
    */
   public JDialog()
@@ -224,12 +234,12 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   protected void dialogInit()
   {
     // FIXME: Do a check on GraphicsEnvironment.isHeadless()
-    setRootPaneCheckingEnabled(false);
-    setLocale(JComponent.getDefaultLocale());       
-    getRootPane(); // will do set/create  
-    setRootPaneCheckingEnabled(true);    
+    setLocale(JComponent.getDefaultLocale());
+    getRootPane(); // Will do set/create.
     invalidate();
-
+    // Now that initStageDone is true, adds and layouts apply to contentPane,
+    // not top-level.
+    initStageDone = true;
   }
 
   /**
@@ -298,9 +308,17 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   public void setLayout(LayoutManager manager)
   {
-    if (isRootPaneCheckingEnabled())
-      throw new Error("rootPaneChecking is enabled - cannot set layout.");
-    super.setLayout(manager);
+    // Check if we're in initialization stage. If so, call super.setLayout
+    // otherwise, valid calls go to the content pane.
+    if (initStageDone)
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Cannot set top-level layout.  Use"
+                           + " getConentPane().setLayout instead.");
+          getContentPane().setLayout(manager);
+      }
+    else
+      super.setLayout(manager);
   }
 
   /**
@@ -420,9 +438,17 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    if (isRootPaneCheckingEnabled())
-      throw new Error("rootPaneChecking is enabled - adding components disallowed.");
-    super.addImpl(comp, constraints, index);
+    // If we're adding the rootPane (initialization stages) use super.add.
+    // Otherwise pass the add onto the content pane.
+    if (comp == rootPane)
+      super.addImpl(comp, constraints, index);
+    else
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Do not add directly to JDialog."
+                          + " Use getContentPane().add instead.");
+        getContentPane().add(comp, constraints, index);
+      }
   }
 
   /**
@@ -432,7 +458,8 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   public void remove(Component comp)
   {
-    // The path changes if the component == root.
+    // If we're removing the root pane, use super.remove. Otherwise
+    // pass it on to the content pane instead.
     if (comp == rootPane)
       super.remove(rootPane);
     else 

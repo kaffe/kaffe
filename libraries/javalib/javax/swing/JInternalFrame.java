@@ -430,8 +430,19 @@ public class JInternalFrame extends JComponent implements Accessible,
   /** Whether the JInternalFrame can be maximized. */
   protected boolean maximizable;
 
-  /** Whether the JInternalFrame has rootPaneChecking enabled. */
-  protected boolean rootPaneCheckingEnabled = true;
+  /**
+   * Whether the JInternalFrame has rootPaneChecking enabled.
+   *
+   * @specnote Should be false to comply with J2SE 5.0
+   */
+  protected boolean rootPaneCheckingEnabled = false;
+
+  /**
+   * Tells us if we're in the initialization stage.
+   * If so, adds go to top-level Container, otherwise they go
+   * to the content pane for this container.
+   */
+  private boolean initStageDone = false;
 
   /** Whether the JInternalFrame is resizable. */
   protected boolean resizable;
@@ -554,12 +565,9 @@ public class JInternalFrame extends JComponent implements Accessible,
     this.maximizable = maximizable;
     this.iconable = iconifiable;
     storedBounds = new Rectangle();
-
-    setRootPaneCheckingEnabled(false);
     setRootPane(createRootPane());
-
     updateUI();
-    setRootPaneCheckingEnabled(true);
+    initStageDone = true; // Done the init stage, now adds go to content pane.
   }
 
   /**
@@ -576,10 +584,17 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    if (isRootPaneCheckingEnabled())
-      throw new Error("Do not use add() on JInternalPane directly. Use getContentPane().add() instead");
-
-    super.addImpl(comp, constraints, index);
+    // If we're adding the rootPane (initialization stages) use super.add.
+    // otherwise pass the add onto the content pane.
+    if (comp==rootPane)
+      super.addImpl(comp,constraints, index);
+    else
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Do not use add() on JInternalFrame directly. Use "
+                           + "getContentPane().add() instead");
+        getContentPane().add(comp, constraints, index);
+      }
   }
 
   /**
@@ -1181,7 +1196,12 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void remove(Component comp)
   {
-    super.remove(comp);
+    // If we're removing the root pane, use super.remove.  Otherwise
+    // pass it on to the content pane instead.
+    if (comp==rootPane)
+      super.remove(comp);
+    else
+      getContentPane().remove(comp);
   }
 
   /**
@@ -1466,9 +1486,17 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setLayout(LayoutManager manager)
   {
-    if (isRootPaneCheckingEnabled())
-      throw new Error("Cannot set layout. Use getContentPane().setLayout() instead.");
-    super.setLayout(manager);
+    // Check if we're in initialization stage.  If so, call super.setLayout
+    // otherwise, valid calls go to the content pane.
+    if (initStageDone)
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Cannot set layout. Use getContentPane().setLayout()"
+                           + " instead.");
+        getContentPane().setLayout(manager);
+      }
+    else
+      super.setLayout(manager);
   }
 
   /**

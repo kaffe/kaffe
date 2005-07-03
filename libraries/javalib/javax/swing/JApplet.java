@@ -55,12 +55,24 @@ public class JApplet extends Applet
   private static final long serialVersionUID = 7269359214497372587L;
   
   protected JRootPane rootPane;
-  protected boolean rootPaneCheckingEnabled;
+
+  /**
+   * @specnote rootPaneCheckingEnabled is false to comply with J2SE 5.0
+   */
+  protected boolean rootPaneCheckingEnabled=false;
+
+  /**
+   * Tells us if we're in the initialization stage.
+   * If so, adds go to top-level Container, otherwise they go
+   * to the content pane for this container
+   */
+  private boolean initStageDone = false;
 
   public JApplet()
   {
     super.setLayout(new BorderLayout(1, 1));
-    getRootPane(); // will do set/create
+    getRootPane(); // Will do set/create.
+    initStageDone = true; // Init stage is now over.
   }
 
   public Dimension getPreferredSize()
@@ -70,7 +82,17 @@ public class JApplet extends Applet
 
   public void setLayout(LayoutManager manager)
   {
-    super.setLayout(manager);
+    // Check if we're in initialization stage.  If so, call super.setLayout
+    // otherwise, valid calls go to the content pane
+    if (initStageDone)
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Cannot set layout. Use getContentPane().setLayout()"
+                           + "instead.");
+        getContentPane().setLayout(manager);
+      }
+    else
+      super.setLayout(manager);
   }
 
   public void setLayeredPane(JLayeredPane layeredPane)
@@ -126,7 +148,17 @@ public class JApplet extends Applet
 
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    super.addImpl(comp, constraints, index);
+    // If we're adding the rootPane (initialization stages) use super.add.
+    // Otherwise pass the add onto the content pane.
+    if (comp == rootPane)
+      super.addImpl(comp, constraints, index);
+    else
+      {
+        if (isRootPaneCheckingEnabled())
+          throw new Error("Do not use add() on JApplet directly. Use "
+                           + "getContentPane().add() instead");
+        getContentPane().add(comp, constraints, index);
+      }
   }
 
   public AccessibleContext getAccessibleContext()
@@ -156,7 +188,12 @@ public class JApplet extends Applet
   
   public void remove(Component comp)
   {
-    getContentPane().remove(comp);
+    // If we're removing the root pane, use super.remove. Otherwise
+    // pass it on to the content pane instead
+    if (comp == rootPane)
+      super.remove(rootPane);
+    else
+      getContentPane().remove(comp);
   }
 
   protected boolean isRootPaneCheckingEnabled()

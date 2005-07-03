@@ -2,6 +2,82 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-17  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JApplet.java,
+        javax/swing/JDialog.java,
+        javax/swing/JFrame.java,
+        javax/swing/JInternalFrame.java,
+        javax/swing/JWindow.java: Added support for adding and setting
+        layout managers directly for these top-level containers tocomply
+        with J2SE 5.0.  Added private boolean initStageDone.
+        Initialized rootPaneCheckingEnabled to false.
+        (JDialog.dialogInit): Set initStageDone to true.
+        (JApplet.JApplet): Set initStageDone to true.
+        (JFrame.frameInit) : Set initStageDone to true.
+        (JInternalFrame.JInternalFrame): Set initStageDone to true.
+        (JWindow.windowInit): Set initStageDone to true.
+        (addImpl): Added check for direct adds (J2SE 5.0) and directed
+        them to getContentPane().add.
+        (setLayout): Added check for direct calls to setLayout.
+        (remove): Added check for direct calls to remove.
+
+	2005-06-17  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/ToolTipManager.java
+        (mousePressed): Check if currentComponent is null.
+        If so, it should be equal to the current source.
+        Fixes Bug #11538.
+
+	2005-06-17  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/DefaultListSelectionModel.java:
+        (addSelectionInterval): Added update to leadSelectionIndex
+        and anchorSelectionIndex variables.
+        (removeSelectionInterval): Same as above.
+        (setSelectionInterval): Same as above.
+        * javax/swing/JList.java:
+        (getSelectedIndices): Increased for loop upper bound by 1.
+        * javax/swing/plaf/basic/BasicListUI.java:
+        (KeyHandler): New class.
+        (MouseInputHandler): Moved code from MousePressed to
+        MouseClicked.
+        (MouseInputHandler.MouseClicked): Added check for control
+        key being down.
+
+	2005-06-17  Roman Kennke  <roman@kennke.org>
+
+        * java/io/DataInputStream.java:
+        Reverted my patch from 2005-06-15.
+
+	2005-06-16  Robert Schuster <thebohemian@gmx.net>
+
+        * gnu/java/nio/charset/Windows1250.java,
+        gnu/java/nio/charset/Windows1251.java,
+        gnu/java/nio/charset/Windows1252.java,
+        gnu/java/nio/charset/Windows1253.java,
+        gnu/java/nio/charset/Windows1254.java,
+        gnu/java/nio/charset/Windows1255.java,
+        gnu/java/nio/charset/Windows1256.java,
+        gnu/java/nio/charset/Windows1257.java,
+        gnu/java/nio/charset/Windows1258.java: Fixed canonical NIO
+        charset name.
+
+	2005-06-15  Goffredo Baroncelli  <kreijack@inwind.it>
+
+        * gnu/java/net/protocol/http/HTTPURLConnection.java
+        (getHeaderFieldKey): Check index.
+
+	2005-06-15  Roman Kennke  <roman@kennke.org>
+
+        * java/io/DataInputStream.java
+        (readLine): Added checks for InputStream that support have a pos field
+        for repositioning the stream.
+
+2005-07-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-14  Mark Wielaard  <mark@klomp.org>
 
         * javax/swing/JComponent.java (setMinimumSize): Only adjust
