@@ -326,7 +326,7 @@ public class InternationalFormatter
    *
    * @throws CloneNotSupportedException not thrown here, since cloning is
    *     supported
-   */
+   * XXX - FIXME - Whole method disabled as workaround for gcj bug #22060.
   public Object clone()
     throws CloneNotSupportedException
   {
@@ -335,6 +335,7 @@ public class InternationalFormatter
     Object clone = super.clone();
     return clone;
   }
+   */
 
   /**
    * Returns the Actions that are supported by this Formatter.

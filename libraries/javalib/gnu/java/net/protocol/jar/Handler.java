@@ -1,5 +1,5 @@
 /* gnu.java.net.protocol.jar.Handler - jar protocol handler for java.net
-   Copyright (C) 1999, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -99,7 +99,7 @@ public class Handler extends URLStreamHandler
 	    
 	    file = file.substring (0, idx + 1) + url_string;
           }
-        else
+        else if (url_string.length() > 0)
           {
             int idx = file.lastIndexOf ("/");
             if (idx == -1) //context path is weird
@@ -156,14 +156,18 @@ public class Handler extends URLStreamHandler
   protected String toExternalForm (URL url)
   {
     String file = url.getFile();
+    String ref = url.getRef();
 
     // return "jar:" + file;
     // Performance!!: 
     //  Do the concatenation manually to avoid resize StringBuffer's 
-    //  internal buffer.
+    //  internal buffer.  The length of ref is not taken into consideration
+    //  as it's a rare path.
     StringBuffer sb = new StringBuffer (file.length() + 5);
     sb.append ("jar:");
     sb.append (file);
+    if (ref != null)
+      sb.append('#').append(ref);
     return sb.toString();
   }
 }

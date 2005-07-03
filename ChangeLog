@@ -2,6 +2,40 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-14  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/JComponent.java (setMinimumSize): Only adjust
+        prefferedSize or maximumSize when they are set.
+        * javax/swing/JScrollPane.java (JScrollPane(Component,int,int)):
+        Set viewport and view manually.
+
+	2005-06-14  Ziga Mahkovec  <ziga.mahkovec@klika.si>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java (updateBufferedImage):
+        Fixed pixelBuffer array index.
+
+	2005-06-14  Ziga Mahkovec  <ziga.mahkovec@klika.si>
+
+        Classpath bug #13353:
+        * gnu/java/net/protocol/jar/Handler.java (parseURL, toExternalForm):
+        Append fragments (#ref) to URLs.
+
+	2005-06-14  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/text/InternationalFormatter.java (clone): Disabled.
+
+	2005-06-14  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/text/DecimalFormat.java
+        (DecimalFormat(String, DecimalFormatSymbols)): store clone of symbols;
+        (equals): add missing checks;
+        (getDecimalFormatSymbols): return clone of symbols;
+        (setDecimalFormatSymbols): store clone of symbols.
+
+2005-07-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-13  Ziga Mahkovec  <ziga.mahkovec@klika.si>
 
         * java/awt/image/SampleModel.java (getPixels): Fixed array

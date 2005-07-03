@@ -437,13 +437,9 @@ public class DecimalFormat extends NumberFormat
    * @throws NullPointerException if any argument is null.
    * @throws IllegalArgumentException if the pattern is invalid.
    */
-  public DecimalFormat (String pattern, DecimalFormatSymbols symbols)
+  public DecimalFormat(String pattern, DecimalFormatSymbols symbols)
   {
-    if (symbols == null)
-      {
-        throw new NullPointerException("Supplied set of symbols is null.");
-      }
-    this.symbols = symbols;
+    this.symbols = (DecimalFormatSymbols) symbols.clone();
     applyPattern(pattern);
   }
 
@@ -454,21 +450,39 @@ public class DecimalFormat extends NumberFormat
     return s1.equals(s2);
   }
 
-  public boolean equals (Object obj)
+  /**
+   * Tests this instance for equality with an arbitrary object.  This method
+   * returns <code>true</code> if:
+   * <ul>
+   * <li><code>obj</code> is not <code>null</code>;</li>
+   * <li><code>obj</code> is an instance of <code>DecimalFormat</code>;</li>
+   * <li>this instance and <code>obj</code> have the same attributes;</li>
+   * </ul>
+   * 
+   * @param obj  the object (<code>null</code> permitted).
+   * 
+   * @return A boolean.
+   */
+  public boolean equals(Object obj)
   {
     if (! (obj instanceof DecimalFormat))
       return false;
     DecimalFormat dup = (DecimalFormat) obj;
-    return (decimalSeparatorAlwaysShown == dup.decimalSeparatorAlwaysShown
-	    && groupingSize == dup.groupingSize
-	    && minExponentDigits == dup.minExponentDigits
-	    && multiplier == dup.multiplier
-	    && equals(negativePrefix, dup.negativePrefix)
-	    && equals(negativeSuffix, dup.negativeSuffix)
-	    && equals(positivePrefix, dup.positivePrefix)
-	    && equals(positiveSuffix, dup.positiveSuffix)
-	    && symbols.equals(dup.symbols)
-	    && useExponentialNotation == dup.useExponentialNotation);
+    return (decimalSeparatorAlwaysShown == dup.decimalSeparatorAlwaysShown 
+           && groupingUsed == dup.groupingUsed 
+           && groupingSize == dup.groupingSize 
+           && multiplier == dup.multiplier
+           && useExponentialNotation == dup.useExponentialNotation
+           && minExponentDigits == dup.minExponentDigits
+           && minimumIntegerDigits == dup.minimumIntegerDigits
+           && maximumIntegerDigits == dup.maximumIntegerDigits
+           && minimumFractionDigits == dup.minimumFractionDigits
+           && maximumFractionDigits == dup.maximumFractionDigits
+           && equals(negativePrefix, dup.negativePrefix)
+           && equals(negativeSuffix, dup.negativeSuffix)
+           && equals(positivePrefix, dup.positivePrefix)
+           && equals(positiveSuffix, dup.positiveSuffix)
+           && symbols.equals(dup.symbols));
   }
 
   private void formatInternal (double number, FormatBuffer dest,
@@ -784,9 +798,14 @@ public class DecimalFormat extends NumberFormat
     return symbols.getCurrency();
   }
 
-  public DecimalFormatSymbols getDecimalFormatSymbols ()
+  /**
+   * Returns a copy of the symbols used by this instance.
+   * 
+   * @return A copy of the symbols.
+   */
+  public DecimalFormatSymbols getDecimalFormatSymbols()
   {
-    return symbols;
+    return (DecimalFormatSymbols) symbols.clone();
   }
 
   public int getGroupingSize ()
@@ -1133,9 +1152,15 @@ public class DecimalFormat extends NumberFormat
     symbols.setCurrency(currency);
   }
 
-  public void setDecimalFormatSymbols (DecimalFormatSymbols newSymbols)
+  /**
+   * Sets the symbols used by this instance.  This method makes a copy of 
+   * the supplied symbols.
+   * 
+   * @param newSymbols  the symbols (<code>null</code> not permitted).
+   */
+  public void setDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
   {
-    symbols = newSymbols;
+    symbols = (DecimalFormatSymbols) newSymbols.clone();
   }
 
   public void setDecimalSeparatorAlwaysShown (boolean newValue)

@@ -498,9 +498,10 @@ public class GdkGraphics2D extends Graphics2D
       {
         int height = bimage.getHeight();
         int width = bimage.getWidth();
+        int index = 0;
         for (int y = 0; y < height; ++y)
           for (int x = 0; x < width; ++x)
-            bimage.setRGB(x, y, pixelBuffer[y*width+height]);
+            bimage.setRGB(x, y, pixelBuffer[index++]);
       }
   }
 
