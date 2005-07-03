@@ -1,5 +1,5 @@
 /* AttributedStringIterator.java -- Class to iterate over AttributedString
-   Copyright (C) 1998, 1999, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -228,7 +228,7 @@ getRunLimit(Set attribute_set)
   for (int i = 0; i < attribs.length; ++i)
     {
       if (pos >= attribs[i].begin_index &&
-          pos <= attribs[i].end_index)
+          pos < attribs[i].end_index)
         {
           Iterator iter = attribute_set.iterator();
           while(iter.hasNext()) 
@@ -242,7 +242,7 @@ getRunLimit(Set attribute_set)
   if (hit)
     return runLimit;
   else
-    return -1;
+    return ci.getEndIndex();
 }
 
 /*************************************************************************/

@@ -41,17 +41,19 @@ package javax.swing;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.SpinnerUI;
-
+import javax.swing.text.DateFormatter;
 
 /**
  * A JSpinner is a component which typically contains a numeric value and a
@@ -66,53 +68,15 @@ public class JSpinner extends JComponent
   /**
    * DOCUMENT ME!
    */
-  public static class StubEditor extends JLabel implements ChangeListener
-  {
-    /** DOCUMENT ME! */
-    private JLabel label;
-
-    /** DOCUMENT ME! */
-    private JButton up;
-
-    /** DOCUMENT ME! */
-    private JButton down;
-
-    /** DOCUMENT ME! */
-    private JSpinner spinner;
-
-    /**
-     * Creates a new StubEditor object.
-     *
-     * @param spinner DOCUMENT ME!
-     */
-    public StubEditor(JSpinner spinner)
-    {
-      this.spinner = spinner;
-      setBorder(new EtchedBorder());
-      setHorizontalAlignment(SwingConstants.TRAILING);
-      stateChanged(null); /* fill in the label */
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param evt DOCUMENT ME!
-     */
-    public void stateChanged(ChangeEvent evt)
-    {
-      setText(String.valueOf(spinner.getValue()));
-    }
-  }
-
-  /**
-   * DOCUMENT ME!
-   */
   public static class DefaultEditor extends JPanel implements ChangeListener,
                                                               PropertyChangeListener,
                                                               LayoutManager
   {
     private JSpinner spinner;
-    
+
+    /** The JFormattedTextField that backs the editor. */
+    JFormattedTextField ftf;
+
     /**
      * For compatability with Sun's JDK 1.4.2 rev. 5
      */
@@ -125,8 +89,12 @@ public class JSpinner extends JComponent
      */
     public DefaultEditor(JSpinner spinner)
     {
+      super();
+      setLayout(this);
       this.spinner = spinner;
-      
+      ftf = new JFormattedTextField();
+      add(ftf);
+      ftf.setValue(spinner.getValue());
       spinner.addChangeListener(this);
     }
 
@@ -163,8 +131,8 @@ public class JSpinner extends JComponent
      */
     public JFormattedTextField getTextField()
     {
-      return null;
-    } /* TODO */
+      return ftf;
+    }
     
     /**
      * DOCUMENT ME!
@@ -173,7 +141,12 @@ public class JSpinner extends JComponent
      */
     public void layoutContainer(Container parent)
     {
-    } /* TODO */
+      Insets insets = getInsets();
+      Dimension size = getSize();
+      ftf.setBounds(insets.left, insets.top,
+                    size.width - insets.left - insets.right,
+                    size.height - insets.top - insets.bottom);
+    }
     
     /**
      * DOCUMENT ME!
@@ -184,8 +157,11 @@ public class JSpinner extends JComponent
      */
     public Dimension minimumLayoutSize(Container parent)
     {
-      return null;
-    } /* TODO */
+      Insets insets = getInsets();
+      Dimension minSize = ftf.getMinimumSize();
+      return new Dimension(minSize.width + insets.left + insets.right,
+                            minSize.height + insets.top + insets.bottom);
+    }
     
     /**
      * DOCUMENT ME!
@@ -196,8 +172,11 @@ public class JSpinner extends JComponent
      */
     public Dimension preferredLayoutSize(Container parent)
     {
-      return null;
-    } /* TODO */
+      Insets insets = getInsets();
+      Dimension prefSize = ftf.getPreferredSize();
+      return new Dimension(prefSize.width + insets.left + insets.right,
+                            prefSize.height + insets.top + insets.bottom);
+    }
     
     /**
      * DOCUMENT ME!
@@ -276,6 +255,95 @@ public class JSpinner extends JComponent
     public SpinnerNumberModel getModel()
     {
       return (SpinnerNumberModel) getSpinner().getModel();
+    }
+  }
+
+  /**
+   * An editor class for a <code>JSpinner</code> that is used
+   * for displaying and editing dates (e.g. that uses
+   * <code>SpinnerDateModel</code> as model).
+   *
+   * The editor uses a {@link JTextField} with the value
+   * displayed by a {@link DateFormatter} instance.
+   */
+  public static class DateEditor extends DefaultEditor
+  {
+
+    /** The serialVersionUID. */
+    private static final long serialVersionUID = -4279356973770397815L;
+
+    /** The DateFormat instance used to format the date. */
+    SimpleDateFormat dateFormat;
+
+    /**
+     * Creates a new instance of DateEditor for the specified
+     * <code>JSpinner</code>.
+     *
+     * @param spinner the <code>JSpinner</code> for which to
+     *     create a <code>DateEditor</code> instance
+     */
+    public DateEditor(JSpinner spinner)
+    {
+      super(spinner);
+      init(new SimpleDateFormat());
+    }
+
+    /**
+     * Creates a new instance of DateEditor for the specified
+     * <code>JSpinner</code> using the specified date format
+     * pattern.
+     *
+     * @param spinner the <code>JSpinner</code> for which to
+     *     create a <code>DateEditor</code> instance
+     * @param dateFormatPattern the date format to use
+     *
+     * @see SimpleDateFormat(String)
+     */
+    public DateEditor(JSpinner spinner, String dateFormatPattern)
+    {
+      super(spinner);
+      init(new SimpleDateFormat(dateFormatPattern));
+    }
+
+    /**
+     * Initializes the JFormattedTextField for this editor.
+     *
+     * @param the date format to use in the formatted text field
+     */
+    private void init(SimpleDateFormat format)
+    {
+      dateFormat = format;
+      getTextField().setFormatterFactory(
+        new JFormattedTextField.AbstractFormatterFactory()
+        {
+          public JFormattedTextField.AbstractFormatter
+          getFormatter(JFormattedTextField ftf)
+          {
+            return new DateFormatter(dateFormat);
+          }
+        });
+    }
+
+    /**
+     * Returns the <code>SimpleDateFormat</code> instance that is used to
+     * format the date value.
+     *
+     * @return the <code>SimpleDateFormat</code> instance that is used to
+     *     format the date value
+     */
+    public SimpleDateFormat getFormat()
+    {
+      return dateFormat;
+    }
+
+    /**
+     * Returns the {@link SpinnerDateModel} that is edited by this editor.
+     *
+     * @return the <code>SpinnerDateModel</code> that is edited by this editor
+     */
+    public SpinnerDateModel getModel()
+    {
+      return (SpinnerDateModel) getSpinner().getModel();
     }
   }
 
@@ -544,5 +612,11 @@ public class JSpinner extends JComponent
    */
   protected JComponent createEditor(SpinnerModel model)
   {
-    return new StubEditor(this);
-  } /* TODO */}
+    if (model instanceof SpinnerDateModel)
+      return new DateEditor(this);
+    else if (model instanceof SpinnerNumberModel)
+      return new NumberEditor(this);
+    else
+      return new DefaultEditor(this);
+  }
+}

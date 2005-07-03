@@ -2,6 +2,58 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-13  Ziga Mahkovec  <ziga.mahkovec@klika.si>
+
+        * java/awt/image/SampleModel.java (getPixels): Fixed array
+        assignment.
+
+	2005-06-13  Ziga Mahkovec  <ziga.mahkovec@klika.si>
+
+        * java/text/AttributedStringIterator.java (getRunLimit): Fixed the
+        range of the returned indexes.
+
+	2005-06-13  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/metal/MetalUtils.java:
+        Added new package-private helper class.
+        * javax/swing/plaf/metal/MetalSplitPaneDivider.java:
+        Added new package-private class. This is the divider used
+        by JSplitPane.
+        * javax/swing/plaf/metal/MetalScrollBarUI.java
+        (paintThumb): Use new MetalUtils class for drawing the typical
+        Metal pattern on the thumb.
+        * javax/swing/plaf/metal/MetalScrollBarUI.java
+        (initComponentDefaults): Added color defaults for SplitPane.
+        * javax/swing/plaf/metal/MetalSplitPaneUI.java:
+        (createDefaultDivider): Implemented new method. This creates
+        the Metal divider for JSplitPane.
+
+	2005-06-13  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JSpinner.java
+        (StubEditor): Removed this inner class.
+        (DefaultEditor): Implemented this class and its dummy methods.
+        (DateEditor): Added and implemented this inner class.
+
+	2005-06-13  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JFormattedTextField.java
+        (setValue): Creates an AbstractFormatter instance based on the type
+        of the value beeing set.
+        (createFormatter): New helper method.
+
+
+	2005-06-13  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/DateFormatter.java:
+        Implemented new class.
+        * javax/swing/JFormattedTextField.java
+        (setValue): Added conversion from value to text.
+
+2005-07-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-12  Ziga Mahkovec  <ziga.mahkovec@klika.si>
 
         * java/text/MessageFormat.java (parse): When parsing strings, check

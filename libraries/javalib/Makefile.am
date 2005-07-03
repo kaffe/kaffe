@@ -3853,6 +3853,7 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalScrollPaneUI.java \
 	javax/swing/plaf/metal/MetalSeparatorUI.java \
 	javax/swing/plaf/metal/MetalSliderUI.java \
+	javax/swing/plaf/metal/MetalSplitPaneDivider.java \
 	javax/swing/plaf/metal/MetalSplitPaneUI.java \
 	javax/swing/plaf/metal/MetalTabbedPaneUI.java \
 	javax/swing/plaf/metal/MetalTextFieldUI.java \
@@ -3860,7 +3861,8 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalToggleButtonUI.java \
 	javax/swing/plaf/metal/MetalToolBarUI.java \
 	javax/swing/plaf/metal/MetalToolTipUI.java \
-	javax/swing/plaf/metal/MetalTreeUI.java
+	javax/swing/plaf/metal/MetalTreeUI.java \
+	javax/swing/plaf/metal/MetalUtils.java
 javax_swing_table_SRCS = \
 	javax/swing/table/AbstractTableModel.java \
 	javax/swing/table/DefaultTableCellRenderer.java \
@@ -3879,6 +3881,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/Caret.java \
 	javax/swing/text/ChangedCharSetException.java \
 	javax/swing/text/ComponentView.java \
+	javax/swing/text/DateFormatter.java \
 	javax/swing/text/DefaultCaret.java \
 	javax/swing/text/DefaultEditorKit.java \
 	javax/swing/text/DefaultFormatter.java \

@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2001, 2002  Free Software Foundation
+/* Copyright (C) 2000, 2001, 2002, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -236,7 +236,7 @@ public abstract class SampleModel
       {
 	for (int xx=x; xx<(x+w); xx++)
 	  {
-	    getPixel(xx, yy, pixel, data);
+	    pixel = getPixel(xx, yy, pixel, data);
 	    System.arraycopy(pixel, 0, iArray, outOffset, numBands);
 	    outOffset += numBands;
 	  }
@@ -257,7 +257,7 @@ public abstract class SampleModel
       {
 	for (int xx=x; xx<(x+w); xx++)
 	  {
-	    getPixel(xx, yy, pixel, data);
+	    pixel = getPixel(xx, yy, pixel, data);
 	    System.arraycopy(pixel, 0, fArray, outOffset, numBands);
 	    outOffset += numBands;
 	  }
@@ -278,7 +278,7 @@ public abstract class SampleModel
       {
 	for (int xx=x; xx<(x+w); xx++)
 	  {
-	    getPixel(xx, yy, pixel, data);
+	    pixel = getPixel(xx, yy, pixel, data);
 	    System.arraycopy(pixel, 0, dArray, outOffset, numBands);
 	    outOffset += numBands;
 	  }

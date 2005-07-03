@@ -42,7 +42,10 @@ import java.awt.event.FocusEvent;
 import java.io.Serializable;
 import java.text.Format;
 import java.text.ParseException;
+import java.util.Date;
 
+import javax.swing.text.DateFormatter;
+import javax.swing.text.DefaultFormatter;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.NavigationFilter;
@@ -296,9 +299,49 @@ public class JFormattedTextField extends JTextField
   {
     if (value == newValue)
       return;
-    
+
+    // format value
+    AbstractFormatter formatter = createFormatter(newValue);
+    try
+      {
+        setText(formatter.valueToString(newValue));
+      }
+    catch (ParseException ex)
+      {
+        // TODO: what should we do with this?
+      }
+
     Object oldValue = value;
     value = newValue;
     firePropertyChange("value", oldValue, newValue);
+  }
+
+  /**
+   * A helper method that attempts to create a formatter that is suitable
+   * to format objects of the type like <code>value</code>.
+   *
+   * If <code>formatterFactory</code> is not null and the returned formatter
+   * is also not <code>null</code> then this formatter is used. Otherwise we
+   * try to create one based on the type of <code>value</code>.
+   *
+   * @param value an object which should be formatted by the formatter
+   *
+   * @return a formatter able to format objects of the class of
+   *     <code>value</code>
+   */
+  AbstractFormatter createFormatter(Object value)
+  {
+    AbstractFormatter formatter = null;
+    if (formatterFactory != null
+        && formatterFactory.getFormatter(this) != null)
+     formatter = formatterFactory.getFormatter(this);
+   else
+     {
+       if (value instanceof Date)
+         formatter = new DateFormatter();
+       else
+         formatter = new DefaultFormatter();
+     }
+    return formatter;
   }
 }

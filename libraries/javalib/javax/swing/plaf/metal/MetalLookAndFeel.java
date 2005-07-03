@@ -501,6 +501,12 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       new ColorUIResource(getPrimaryControlDarkShadow()),
       "ScrollBar.thumbHighlight",
       new ColorUIResource(getPrimaryControl()),
+
+      "SplitPane.darkShadow",
+      new ColorUIResource(getControlDarkShadow()),
+      "SplitPane.highlight",
+      new ColorUIResource(getControlHighlight()),
+
       "PopupMenu.border", new MetalBorders.PopupMenuBorder()
     };
     defaults.putDefaults(myDefaults);
