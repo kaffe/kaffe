@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -44,6 +44,7 @@ import gnu.CORBA.GIOP.ErrorMessage;
 import gnu.CORBA.GIOP.MessageHeader;
 import gnu.CORBA.GIOP.ReplyHeader;
 import gnu.CORBA.GIOP.RequestHeader;
+import gnu.CORBA.GIOP.CloseMessage;
 import gnu.CORBA.NamingService.NamingServiceTransient;
 
 import org.omg.CORBA.BAD_INV_ORDER;
@@ -83,7 +84,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-import gnu.CORBA.GIOP.CloseMessage;
 
 /**
  * The ORB implementation, capable to handle remote invocations on the
@@ -206,6 +206,12 @@ public class Functional_ORB
   }
 
   /**
+   * The default value where the first instance of this ORB will start
+   * looking for a free port.
+   */
+  public static int DEFAULT_INITIAL_PORT = 1126;
+
+  /**
    * The property of port, on that this ORB is listening for requests from clients.
    * This class supports one port per ORB only.
    */
@@ -326,13 +332,14 @@ public class Functional_ORB
   private String ns_host;
 
   /**
-   * The port, under that the ORB is listening for remote requests.
-   * Then the new object is connected, this port is used first, then
-   * it is incremented by 1, etc. If the given port is not available,
-   * up to 20 subsequent values are tried and then the parameterless
-   * server socket contructor is called.
+   * Probably free port, under that the ORB will try listening for
+   * remote requests first. When the new object is connected, this
+   * port is used first, then it is incremented by 1, etc. If the given
+   * port is not available, up to 20 subsequent values are tried and then
+   * the parameterless server socket contructor is called. The constant is
+   * shared between multiple instances of this ORB.
    */
-  private static int Port = 1126;
+  private static int Port = DEFAULT_INITIAL_PORT;
 
   /**
    * The port, on that the name service is expected to be running.
@@ -366,6 +373,7 @@ public class Functional_ORB
     try
       {
         LOCAL_HOST = ns_host = InetAddress.getLocalHost().getHostAddress();
+        initial_references.put("CodecFactory", new gnuCodecFactory(this));
       }
     catch (UnknownHostException ex)
       {
@@ -466,31 +474,17 @@ public class Functional_ORB
 
   /**
    * Set the port, on that the server is listening for the client requests.
-   * In this implementation, the server is listening at only one port,
-   * the default value being 1126.
+   * If only one object is connected to the orb, the server will be
+   * try listening on this port first. It the port is busy, or if more
+   * objects are connected, the subsequent object will receive a larger
+   * port values, skipping unavailable ports, if required. The change
+   * applies globally.
    *
    * @param a_Port a port, on that the server is listening for requests.
-   *
-   * @throws BAD_INV_ORDER if the server has already been started. The port
-   * can only be changed when the server is not yet started.
    */
-  public void setPort(int a_Port)
+  public static void setPort(int a_Port)
   {
-    if (running)
-      throw new BAD_INV_ORDER("The server is running");
-    this.Port = a_Port;
-  }
-
-  /**
-   * Get the port, on that the server is listening for the client requests.
-   * In this implementation, the server is listening at only one port,
-   * the default value being 1126.
-   *
-   * @return the port.
-   */
-  public int getPort()
-  {
-    return Port;
+    Port = a_Port;
   }
 
   /**

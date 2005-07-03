@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -67,6 +67,8 @@ import org.omg.CORBA.portable.Streamable;
 
 import java.io.IOException;
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
 
 import java.math.BigDecimal;
 
@@ -279,9 +281,19 @@ public class gnuAny
   {
     try
       {
-        return ((ValueBaseHolder) has).value;
+        if (has instanceof ValueBaseHolder)
+          return ((ValueBaseHolder) has).value;
+        else
+          {
+            // Normally, ValueBase holder must be an instance of the
+            // ValueBaseHolder. However some IDL compilers probably
+            // have a bug, do not deriving this way. The the only
+            // way to access the wrapped value is via reflection.
+            Field f = has.getClass().getField("value");
+            return (Serializable) f.get(has);
+          }
       }
-    catch (ClassCastException ex)
+    catch (Exception ex)
       {
         return new BAD_OPERATION("Value type expected");
       }

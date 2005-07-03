@@ -59,6 +59,7 @@ Klasses_jar_SRCS = \
 	$(gnu_CORBA_GIOP_v1_0_SRCS) \
 	$(gnu_CORBA_GIOP_v1_2_SRCS) \
 	$(gnu_CORBA_NamingService_SRCS) \
+	$(gnu_CORBA_Poa_SRCS) \
 	$(gnu_bytecode_SRCS) \
 	$(gnu_classpath_SRCS) \
 	$(gnu_classpath_tools_SRCS) \
@@ -320,7 +321,19 @@ Klasses_jar_SRCS = \
 	$(org_omg_CosNaming_SRCS) \
 	$(org_omg_CosNaming_NamingContextExtPackage_SRCS) \
 	$(org_omg_CosNaming_NamingContextPackage_SRCS) \
+	$(org_omg_Dynamic_SRCS) \
+	$(org_omg_DynamicAny_DynAnyFactoryPackage_SRCS) \
+	$(org_omg_DynamicAny_DynAnyPackage_SRCS) \
+	$(org_omg_IOP_SRCS) \
+	$(org_omg_IOP_CodecFactoryPackage_SRCS) \
+	$(org_omg_IOP_CodecPackage_SRCS) \
 	$(org_omg_Messaging_SRCS) \
+	$(org_omg_PortableInterceptor_SRCS) \
+	$(org_omg_PortableInterceptor_ORBInitInfoPackage_SRCS) \
+	$(org_omg_PortableServer_SRCS) \
+	$(org_omg_PortableServer_CurrentPackage_SRCS) \
+	$(org_omg_PortableServer_POAManagerPackage_SRCS) \
+	$(org_omg_PortableServer_POAPackage_SRCS) \
 	$(org_omg_SendingContext_SRCS) \
 	$(org_omg_stub_java_rmi_SRCS) \
 	$(org_tritonus_core_SRCS) \
@@ -375,6 +388,8 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/ByteArrayComparator.java \
 	gnu/CORBA/Connected_objects.java \
 	gnu/CORBA/DefinitionKindHolder.java \
+	gnu/CORBA/DuplicateNameHolder.java \
+	gnu/CORBA/EmptyExceptionHolder.java \
 	gnu/CORBA/ExceptionCreator.java \
 	gnu/CORBA/Functional_ORB.java \
 	gnu/CORBA/IOR.java \
@@ -393,13 +408,16 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/Version.java \
 	gnu/CORBA/WCharHolder.java \
 	gnu/CORBA/WStringHolder.java \
+	gnu/CORBA/_PolicyImplBase.java \
 	gnu/CORBA/aliasTypeCode.java \
 	gnu/CORBA/binaryReply.java \
 	gnu/CORBA/bufferedResponseHandler.java \
+	gnu/CORBA/cdrEncapsCodec.java \
 	gnu/CORBA/corbaArrayList.java \
 	gnu/CORBA/fixedTypeCode.java \
 	gnu/CORBA/generalTypeCode.java \
 	gnu/CORBA/gnuAny.java \
+	gnu/CORBA/gnuCodecFactory.java \
 	gnu/CORBA/gnuContext.java \
 	gnu/CORBA/gnuContextList.java \
 	gnu/CORBA/gnuEnvironment.java \
@@ -423,6 +441,7 @@ gnu_CORBA_CDR_SRCS = \
 	gnu/CORBA/CDR/BigEndianOutputStream.java \
 	gnu/CORBA/CDR/LittleEndianInputStream.java \
 	gnu/CORBA/CDR/LittleEndianOutputStream.java \
+	gnu/CORBA/CDR/Vio.java \
 	gnu/CORBA/CDR/abstractDataInputStream.java \
 	gnu/CORBA/CDR/abstractDataOutputStream.java \
 	gnu/CORBA/CDR/aligningInputStream.java \
@@ -431,9 +450,7 @@ gnu_CORBA_CDR_SRCS = \
 	gnu/CORBA/CDR/cdrBufOutput.java \
 	gnu/CORBA/CDR/cdrInput.java \
 	gnu/CORBA/CDR/cdrOutput.java \
-	gnu/CORBA/CDR/encapsulatedOutput.java \
-	gnu/CORBA/CDR/uncObjectInputStream.java \
-	gnu/CORBA/CDR/uncObjectOutputStream.java
+	gnu/CORBA/CDR/encapsulatedOutput.java
 gnu_CORBA_DynAn_SRCS = \
 	gnu/CORBA/DynAn/NameValuePairHolder.java
 gnu_CORBA_GIOP_SRCS = \
@@ -462,6 +479,8 @@ gnu_CORBA_NamingService_SRCS = \
 	gnu/CORBA/NamingService/TransientContext.java \
 	gnu/CORBA/NamingService/cmpNameComponent.java \
 	gnu/CORBA/NamingService/snConverter.java
+gnu_CORBA_Poa_SRCS = \
+	gnu/CORBA/Poa/InvalidPolicyHolder.java
 gnu_bytecode_SRCS = \
 	gnu/bytecode/Access.java \
 	gnu/bytecode/ArrayClassLoader.java \
@@ -4307,6 +4326,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/Context.java \
 	org/omg/CORBA/ContextList.java \
 	org/omg/CORBA/Current.java \
+	org/omg/CORBA/CurrentHelper.java \
+	org/omg/CORBA/CurrentHolder.java \
 	org/omg/CORBA/CurrentOperations.java \
 	org/omg/CORBA/CustomMarshal.java \
 	org/omg/CORBA/CustomValue.java \
@@ -4354,6 +4375,7 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/IRObjectOperations.java \
 	org/omg/CORBA/IdentifierHelper.java \
 	org/omg/CORBA/IntHolder.java \
+	org/omg/CORBA/LocalObject.java \
 	org/omg/CORBA/LongHolder.java \
 	org/omg/CORBA/LongLongSeqHelper.java \
 	org/omg/CORBA/LongLongSeqHolder.java \
@@ -4386,7 +4408,12 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ParameterModeHolder.java \
 	org/omg/CORBA/Policy.java \
 	org/omg/CORBA/PolicyError.java \
+	org/omg/CORBA/PolicyHelper.java \
+	org/omg/CORBA/PolicyHolder.java \
+	org/omg/CORBA/PolicyListHelper.java \
+	org/omg/CORBA/PolicyListHolder.java \
 	org/omg/CORBA/PolicyOperations.java \
+	org/omg/CORBA/PolicyTypeHelper.java \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/PrincipalHolder.java \
 	org/omg/CORBA/RepositoryIdHelper.java \
@@ -4444,7 +4471,8 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/WStringSeqHolder.java \
 	org/omg/CORBA/WStringValueHelper.java \
 	org/omg/CORBA/WrongTransaction.java \
-	org/omg/CORBA/_IDLTypeStub.java
+	org/omg/CORBA/_IDLTypeStub.java \
+	org/omg/CORBA/_PolicyStub.java
 org_omg_CORBA_DynAnyPackage_SRCS = \
 	org/omg/CORBA/DynAnyPackage/Invalid.java \
 	org/omg/CORBA/DynAnyPackage/InvalidSeq.java \
@@ -4459,6 +4487,7 @@ org_omg_CORBA_TypeCodePackage_SRCS = \
 org_omg_CORBA_portable_SRCS = \
 	org/omg/CORBA/portable/ApplicationException.java \
 	org/omg/CORBA/portable/BoxedValueHelper.java \
+	org/omg/CORBA/portable/CustomValue.java \
 	org/omg/CORBA/portable/Delegate.java \
 	org/omg/CORBA/portable/IDLEntity.java \
 	org/omg/CORBA/portable/IndirectionException.java \
@@ -4470,6 +4499,7 @@ org_omg_CORBA_portable_SRCS = \
 	org/omg/CORBA/portable/ResponseHandler.java \
 	org/omg/CORBA/portable/ServantObject.java \
 	org/omg/CORBA/portable/Streamable.java \
+	org/omg/CORBA/portable/StreamableValue.java \
 	org/omg/CORBA/portable/UnknownException.java \
 	org/omg/CORBA/portable/ValueBase.java \
 	org/omg/CORBA/portable/ValueFactory.java
@@ -4487,6 +4517,7 @@ org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/BindingIterator.java \
 	org/omg/CosNaming/BindingIteratorHelper.java \
 	org/omg/CosNaming/BindingIteratorHolder.java \
+	org/omg/CosNaming/BindingIteratorOperations.java \
 	org/omg/CosNaming/BindingListHelper.java \
 	org/omg/CosNaming/BindingListHolder.java \
 	org/omg/CosNaming/BindingType.java \
@@ -4538,12 +4569,122 @@ org_omg_CosNaming_NamingContextPackage_SRCS = \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReason.java \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHelper.java \
 	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHolder.java
+org_omg_Dynamic_SRCS = \
+	org/omg/Dynamic/Parameter.java
+org_omg_DynamicAny_DynAnyFactoryPackage_SRCS = \
+	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCode.java \
+	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCodeHelper.java
+org_omg_DynamicAny_DynAnyPackage_SRCS = \
+	org/omg/DynamicAny/DynAnyPackage/InvalidValue.java \
+	org/omg/DynamicAny/DynAnyPackage/InvalidValueHelper.java \
+	org/omg/DynamicAny/DynAnyPackage/TypeMismatch.java \
+	org/omg/DynamicAny/DynAnyPackage/TypeMismatchHelper.java
+org_omg_IOP_SRCS = \
+	org/omg/IOP/CodeSets.java \
+	org/omg/IOP/Codec.java \
+	org/omg/IOP/CodecFactory.java \
+	org/omg/IOP/CodecFactoryHelper.java \
+	org/omg/IOP/CodecFactoryOperations.java \
+	org/omg/IOP/CodecOperations.java \
+	org/omg/IOP/ComponentIdHelper.java \
+	org/omg/IOP/ENCODING_CDR_ENCAPS.java \
+	org/omg/IOP/Encoding.java \
+	org/omg/IOP/IOR.java \
+	org/omg/IOP/IORHelper.java \
+	org/omg/IOP/IORHolder.java \
+	org/omg/IOP/MultipleComponentProfileHelper.java \
+	org/omg/IOP/MultipleComponentProfileHolder.java \
+	org/omg/IOP/ProfileIdHelper.java \
+	org/omg/IOP/ServiceContext.java \
+	org/omg/IOP/ServiceContextHelper.java \
+	org/omg/IOP/ServiceContextHolder.java \
+	org/omg/IOP/ServiceContextListHelper.java \
+	org/omg/IOP/ServiceContextListHolder.java \
+	org/omg/IOP/ServiceIdHelper.java \
+	org/omg/IOP/TAG_ALTERNATE_IIOP_ADDRESS.java \
+	org/omg/IOP/TAG_CODE_SETS.java \
+	org/omg/IOP/TAG_INTERNET_IOP.java \
+	org/omg/IOP/TAG_JAVA_CODEBASE.java \
+	org/omg/IOP/TAG_MULTIPLE_COMPONENTS.java \
+	org/omg/IOP/TAG_ORB_TYPE.java \
+	org/omg/IOP/TAG_POLICIES.java \
+	org/omg/IOP/TaggedComponent.java \
+	org/omg/IOP/TaggedComponentHelper.java \
+	org/omg/IOP/TaggedComponentHolder.java \
+	org/omg/IOP/TaggedProfile.java \
+	org/omg/IOP/TaggedProfileHelper.java \
+	org/omg/IOP/TaggedProfileHolder.java \
+	org/omg/IOP/TransactionService.java
+org_omg_IOP_CodecFactoryPackage_SRCS = \
+	org/omg/IOP/CodecFactoryPackage/UnknownEncoding.java \
+	org/omg/IOP/CodecFactoryPackage/UnknownEncodingHelper.java
+org_omg_IOP_CodecPackage_SRCS = \
+	org/omg/IOP/CodecPackage/FormatMismatch.java \
+	org/omg/IOP/CodecPackage/FormatMismatchHelper.java \
+	org/omg/IOP/CodecPackage/InvalidTypeForEncoding.java \
+	org/omg/IOP/CodecPackage/InvalidTypeForEncodingHelper.java \
+	org/omg/IOP/CodecPackage/TypeMismatch.java \
+	org/omg/IOP/CodecPackage/TypeMismatchHelper.java
 org_omg_Messaging_SRCS = \
 	org/omg/Messaging/SYNC_WITH_TRANSPORT.java \
 	org/omg/Messaging/SyncScopeHelper.java
+org_omg_PortableInterceptor_SRCS = \
+	org/omg/PortableInterceptor/LOCATION_FORWARD.java \
+	org/omg/PortableInterceptor/SUCCESSFUL.java \
+	org/omg/PortableInterceptor/SYSTEM_EXCEPTION.java \
+	org/omg/PortableInterceptor/TRANSPORT_RETRY.java \
+	org/omg/PortableInterceptor/USER_EXCEPTION.java
+org_omg_PortableInterceptor_ORBInitInfoPackage_SRCS = \
+	org/omg/PortableInterceptor/ORBInitInfoPackage/DuplicateName.java \
+	org/omg/PortableInterceptor/ORBInitInfoPackage/DuplicateNameHelper.java \
+	org/omg/PortableInterceptor/ORBInitInfoPackage/InvalidName.java \
+	org/omg/PortableInterceptor/ORBInitInfoPackage/InvalidNameHelper.java \
+	org/omg/PortableInterceptor/ORBInitInfoPackage/ObjectIdHelper.java
+org_omg_PortableServer_SRCS = \
+	org/omg/PortableServer/ID_ASSIGNMENT_POLICY_ID.java \
+	org/omg/PortableServer/ID_UNIQUENESS_POLICY_ID.java \
+	org/omg/PortableServer/IMPLICIT_ACTIVATION_POLICY_ID.java \
+	org/omg/PortableServer/IdAssignmentPolicyValue.java \
+	org/omg/PortableServer/IdUniquenessPolicyValue.java \
+	org/omg/PortableServer/ImplicitActivationPolicyValue.java \
+	org/omg/PortableServer/LIFESPAN_POLICY_ID.java \
+	org/omg/PortableServer/LifespanPolicyValue.java \
+	org/omg/PortableServer/REQUEST_PROCESSING_POLICY_ID.java \
+	org/omg/PortableServer/RequestProcessingPolicyValue.java \
+	org/omg/PortableServer/SERVANT_RETENTION_POLICY_ID.java \
+	org/omg/PortableServer/ServantRetentionPolicyValue.java \
+	org/omg/PortableServer/THREAD_POLICY_ID.java
+org_omg_PortableServer_CurrentPackage_SRCS = \
+	org/omg/PortableServer/CurrentPackage/NoContext.java \
+	org/omg/PortableServer/CurrentPackage/NoContextHelper.java
+org_omg_PortableServer_POAManagerPackage_SRCS = \
+	org/omg/PortableServer/POAManagerPackage/AdapterInactive.java \
+	org/omg/PortableServer/POAManagerPackage/AdapterInactiveHelper.java \
+	org/omg/PortableServer/POAManagerPackage/State.java
+org_omg_PortableServer_POAPackage_SRCS = \
+	org/omg/PortableServer/POAPackage/AdapterAlreadyExists.java \
+	org/omg/PortableServer/POAPackage/AdapterAlreadyExistsHelper.java \
+	org/omg/PortableServer/POAPackage/AdapterNonExistent.java \
+	org/omg/PortableServer/POAPackage/AdapterNonExistentHelper.java \
+	org/omg/PortableServer/POAPackage/InvalidPolicy.java \
+	org/omg/PortableServer/POAPackage/InvalidPolicyHelper.java \
+	org/omg/PortableServer/POAPackage/NoServant.java \
+	org/omg/PortableServer/POAPackage/NoServantHelper.java \
+	org/omg/PortableServer/POAPackage/ObjectAlreadyActive.java \
+	org/omg/PortableServer/POAPackage/ObjectAlreadyActiveHelper.java \
+	org/omg/PortableServer/POAPackage/ObjectNotActive.java \
+	org/omg/PortableServer/POAPackage/ObjectNotActiveHelper.java \
+	org/omg/PortableServer/POAPackage/ServantAlreadyActive.java \
+	org/omg/PortableServer/POAPackage/ServantAlreadyActiveHelper.java \
+	org/omg/PortableServer/POAPackage/ServantNotActive.java \
+	org/omg/PortableServer/POAPackage/ServantNotActiveHelper.java \
+	org/omg/PortableServer/POAPackage/WrongAdapter.java \
+	org/omg/PortableServer/POAPackage/WrongAdapterHelper.java \
+	org/omg/PortableServer/POAPackage/WrongPolicy.java \
+	org/omg/PortableServer/POAPackage/WrongPolicyHelper.java
 org_omg_SendingContext_SRCS = \
-	org/omg/SendingContext/RunTimeOperations.java \
-	org/omg/SendingContext/Runtime.java
+	org/omg/SendingContext/RunTime.java \
+	org/omg/SendingContext/RunTimeOperations.java
 org_omg_stub_java_rmi_SRCS = \
 	org/omg/stub/java/rmi/_Remote_Stub.java
 org_tritonus_core_SRCS = \

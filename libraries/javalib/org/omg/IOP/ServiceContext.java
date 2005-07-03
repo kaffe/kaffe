@@ -1,4 +1,4 @@
-/* uncObjectInputStream.java --
+/* ServiceContext.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -36,35 +36,60 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package org.omg.IOP;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
- * An object input stream that cannot be closed. Used in cases where
- * it represents only part of the input data.
+ * The ServiceContext structure contains the service data, being passed in the
+ * CORBA message. For instance, then passing the wide characters, it is
+ * mandatory to include the service context, defining the used encoding.
+ * The contexts are recognised by they integer indentifier.
+ * In this class, the content of the context is represented as an abstract
+ * array of bytes.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * @see ServiceContextHolder
+ * @see ServiceContextHelper
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class uncObjectInputStream
-  extends ObjectInputStream
+public class ServiceContext
+  implements IDLEntity, Serializable
 {
   /**
-   * Delegate call to super class constructor.
+   * Use serialVersionUID (v1.4) for interoperability.
    */
-  public uncObjectInputStream(InputStream in)
-                       throws IOException
+  private static final long serialVersionUID = -2232391417465261379L;
+
+  /**
+   * The context id (for instance, 0x1 for code sets context).
+   * At the moment of writing, the OMG defines 16 standard values and
+   * provides rules to register the vendor specific context ids.
+   * The range 0-4095 is reserved for the future standard OMG contexts.
+   */
+  public int context_id;
+
+  /**
+   * The context_data.
+   */
+  public byte[] context_data;
+
+  /**
+   * Create the unitialised instance, assigning to
+   * the all fields java default values.
+   */
+  public ServiceContext()
   {
-    super(in);
   }
 
   /**
-   * Do not close the stream, return without action.
+   * Create the instance, initialising the fields to the given values.
    */
-  public void close()
+  public ServiceContext(int a_context_id, byte[] a_context_data)
   {
-    // Do nothing.
+    this.context_id = a_context_id;
+    this.context_data = a_context_data;
   }
 }

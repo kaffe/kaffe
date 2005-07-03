@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -47,6 +47,8 @@ import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.RemarshalException;
 
+import java.io.Serializable;
+
 /**
  * The stub for the IDL type. This stub can be used to access the
  * remote IDL type object, if its IOR is known. To create the
@@ -57,8 +59,13 @@ import org.omg.CORBA.portable.RemarshalException;
  */
 public class _IDLTypeStub
   extends ObjectImpl
-  implements IDLType
+  implements IDLType, Serializable
 {
+  /**
+  * Use serialVersionUID (v1.4) for interoperability.
+  */
+  private static final long serialVersionUID = 9150293942452453626L;
+
   /**
    * Create the instance of the IDL type stub without
    * the set delegate. The delegate must be set anyway before calling

@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -43,9 +43,8 @@ package org.omg.CORBA.portable;
  * ValueBase is the basic interface for all CORBA value data types. A value
  * type is something between CORBA structure and CORBA object. Like CORBA
  * object, it can have methods, supporting some IDL-defined interface.
- * However, like structures, they are always local and passed by value,
- * not by IOR reference. The Sun's implementation transfers the value types
- * using java serialization mechanism.
+ * However, like structures, they are local and passed by value,
+ * not by IOR reference.
  *
  * Unlike CORBA objects, values are not connected to any ORB by
  * default; they hanlde the implemented functionality locally. The classes,
@@ -54,6 +53,9 @@ package org.omg.CORBA.portable;
  *
  * The value types can have both public and private members. They support
  * inheritance. Value types can also be abstract.
+ *
+ * For transferring the value type data via stream, it must implement either
+ * {@link CustomValue} or {@link StreamableValue}.
  *
  * @since 1.3
  *

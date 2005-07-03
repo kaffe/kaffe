@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -58,7 +58,16 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * When creating an ORB instance is being created, the class name
+ * A central class in CORBA implementation, responsible for sending and
+ * handling remote invocations. ORB also works as a factory for
+ * creating instances of certain CORBA classes.
+ *
+ * Despite the core library contains the fully working CORBA implementation,
+ * it also provides a simple way to plug-in the alternative CORBA support.
+ * This is done by replacing the ORB. The alternative ORB can be specified
+ * via properties, passed to ORB.Init(...).
+ *
+ * When creating an ORB instance, the class name
  * is searched in the following locations:
  * <p>
  * 1. Applet parameter or application string array, if any.<br>

@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -40,9 +40,14 @@ package org.omg.CORBA;
 
 
 /**
+ * <p>
  * The interfaces, derived from this class, define operations that provide
  * information, associated with a particular thread of execution.
- *
+ * </p><p>
+ * There are no operations for the general "Current". Instead, the operations
+ * are defined for various subinterfaces that were derived from the
+ * Current.
+ * </p>
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  *
  * @see Current

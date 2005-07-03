@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -80,6 +80,21 @@ public final class NotFound
    */
   public NotFound(NotFoundReason _why, NameComponent[] _rest_of_name)
   {
+    why = _why;
+    rest_of_name = _rest_of_name;
+  }
+
+  /**
+   * Creates the exception, intialising the fields to the given values and
+   * also providing the explaining string.
+   *
+   * @since 1.4
+   */
+  public NotFound(String explanation, NotFoundReason _why,
+                  NameComponent[] _rest_of_name
+                 )
+  {
+    super(explanation);
     why = _why;
     rest_of_name = _rest_of_name;
   }

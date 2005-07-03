@@ -1,4 +1,4 @@
-/* Runtime.java --
+/* TAG_ALTERNATE_IIOP_ADDRESS.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -36,25 +36,24 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package org.omg.SendingContext;
+package org.omg.IOP;
 
-import org.omg.CORBA.Object;
-import org.omg.CORBA.portable.IDLEntity;
-
-import java.io.Serializable;
-
-/**
- * Defines the base class that represents the Sending Context. The sending
- * context provides access to information about the originator of a
- * GIOP message. For example, when a value type is sent in a GIOP
- * Request, the receiver may need to ask the sender about
- * the CodeBase for the implementation of the value type.
+ /**
+ * Holds an integer constant of the TAG_ALTERNATE_IIOP_ADDRESS Component that
+ * may occur zero or more times in the Internet of Multiple components profile.
+ * The tag contains the possible alternative address (host and port) of
+ * the object being defined by IOR profile.
+ * This tag is supported since GIOP 1.2.
  *
- * @since 1.3
+ * @see TAG_INTERNET_IOP
+ * @see TAG_MULTIPLE_COMPONENTS
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface Runtime
-  extends IDLEntity, Object, RunTimeOperations, Serializable
+public interface TAG_ALTERNATE_IIOP_ADDRESS
 {
+  /**
+   * Specifies the TAG_ALTERNATE_IIOP_ADDRESS value, 3.
+   */
+  int value = 3;
 }

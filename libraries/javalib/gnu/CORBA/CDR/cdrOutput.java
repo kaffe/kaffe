@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -64,9 +64,9 @@ import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.Streamable;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 
 import java.math.BigDecimal;
 
@@ -75,14 +75,15 @@ import java.math.BigDecimal;
  * output stream, writing data into the
  * given {@link java.io.OutputStream}.
  *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+ * The same class also implements the {@link DataInputStream},
+ * providing support for writing the value type objects
+ * in a user defined way.
  *
- * TODO the standalone chars and char arrays are still written using
- * the native encoding, as the size under arbitrary encoding is not
- * evident.
+ * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public abstract class cdrOutput
-  extends org.omg.CORBA.portable.OutputStream
+  extends org.omg.CORBA_2_3.portable.OutputStream
+  implements org.omg.CORBA.DataOutputStream
 {
   /**
    * This instance is used to convert primitive data types into the
@@ -967,5 +968,32 @@ public abstract class cdrOutput
       {
         Unexpected.error(ex);
       }
+  }
+
+  /** {@inheritDoc} */
+  public void write_any_array(Any[] anys, int offset, int length)
+  {
+    for (int i = offset; i < offset + length; i++)
+      {
+        write_any(anys [ i ]);
+      }
+  }
+
+  public String[] _truncatable_ids()
+  {
+    /**@todo Implement this org.omg.CORBA.portable.ValueBase abstract method*/
+    throw new java.lang.UnsupportedOperationException("Method _truncatable_ids() not yet implemented.");
+  }
+
+  /** {@inheritDoc} */
+  public void write_Abstract(java.lang.Object value)
+  {
+    write_Abstract(value);
+  }
+
+  /** {@inheritDoc} */
+  public void write_Value(Serializable value)
+  {
+    write_Value(value);
   }
 }

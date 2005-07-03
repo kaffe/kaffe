@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -73,7 +73,7 @@ public class ObjectCreator
    * The prefix for classes that are placed instide the
    * gnu.CORBA namespace.
    */
-  public static final String CLASSPATH_PREFIX = "gnu.CORBA";
+  public static final String CLASSPATH_PREFIX = "gnu.CORBA.";
 
   /**
    * Try to instantiate an object with the given IDL name.
@@ -184,11 +184,11 @@ public class ObjectCreator
   {
     try
       {
-        String holder = toHelperName(idl);
-        Class holderClass = Class.forName(holder);
+        String helper = toHelperName(idl);
+        Class helperClass = Class.forName(helper);
 
         Method read =
-          holderClass.getMethod("read",
+          helperClass.getMethod("read",
                                 new Class[]
                                 {
                                   org.omg.CORBA.portable.InputStream.class
@@ -266,19 +266,83 @@ public class ObjectCreator
   }
 
   /**
+   * Converts the given IDL name to class name and tries to load the
+   * matching class. The OMG prefix (omg.org) is replaced by
+   * the java prefix org.omg. No other prefixes are added.
+   *
+   * @param IDL the idl name.
+   *
+   * TODO Cache the returned classes, avoiding these string manipulations
+   * each time the conversion is required.
+   *
+   * @return the matching class or null if no such is available.
+   */
+  public static Class Idl2class(String IDL)
+  {
+    String s = IDL;
+    int a = s.indexOf(':') + 1;
+    int b = s.lastIndexOf(':');
+
+    s = IDL.substring(a, b);
+
+    if (s.startsWith(OMG_PREFIX))
+      s = JAVA_PREFIX + s.substring(OMG_PREFIX.length());
+
+    String cn = s.replace('/', '.');
+
+    try
+      {
+        return Class.forName(cn);
+      }
+    catch (ClassNotFoundException ex)
+      {
+        return null;
+      }
+  }
+
+  /**
+   * Converts the given IDL name to class name, tries to load the
+   * matching class and create an object instance with parameterless
+   * constructor. The OMG prefix (omg.org) is replaced by
+   * the java prefix org.omg. No other prefixes are added.
+   *
+   * @param IDL the idl name.
+   *
+   * @return instantiated object instance or null if such attempt was not
+   * successful.
+   */
+  public static java.lang.Object Idl2Object(String IDL)
+  {
+    Class cx = Idl2class(IDL);
+
+    try
+      {
+        if (cx != null)
+          return cx.newInstance();
+        else
+          return null;
+      }
+    catch (Exception ex)
+      {
+        return null;
+      }
+  }
+
+  /**
    * Convert the class name to IDL name.
    *
    * @param cn the class name.
    *
    * @return the idl name.
    */
-  protected static String toIDL(String cn)
+  public static String toIDL(String cn)
   {
     if (cn.startsWith(JAVA_PREFIX))
-      cn = cn.substring(JAVA_PREFIX.length());
+      cn = OMG_PREFIX + cn.substring(JAVA_PREFIX.length()).replace('.', '/');
+    else if (cn.startsWith(CLASSPATH_PREFIX))
+      cn =
+        OMG_PREFIX + cn.substring(CLASSPATH_PREFIX.length()).replace('.', '/');
 
-    cn = cn.replace('.', '/');
-
-    return "IDL:" + OMG_PREFIX + cn + ":1.0";
+    return "IDL:" + cn + ":1.0";
   }
 }

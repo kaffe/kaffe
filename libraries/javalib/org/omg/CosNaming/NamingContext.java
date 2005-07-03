@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -56,7 +56,7 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public interface NamingContext
-  extends org.omg.CORBA.Object, IDLEntity
+  extends NamingContextOperations, org.omg.CORBA.Object, IDLEntity
 {
   /**
    * Gives the object a name, valid in this context.
@@ -66,6 +66,8 @@ public interface NamingContext
    *
    * @throws AlreadyBound if the object is already named in this context.
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void bind(NameComponent[] a_name, org.omg.CORBA.Object an_object)
      throws NotFound, CannotProceed, InvalidName, AlreadyBound;
@@ -78,6 +80,8 @@ public interface NamingContext
    *
    * @throws AlreadyBound if the child context is already named in
    * the current context.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void bind_context(NameComponent[] a_name, NamingContext a_context)
              throws NotFound, CannotProceed, InvalidName, AlreadyBound;
@@ -92,6 +96,8 @@ public interface NamingContext
    *
    * @throws AlreadyBound if the name is already in use.
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   NamingContext bind_new_context(NameComponent[] a_name)
                           throws NotFound, AlreadyBound, CannotProceed,
@@ -100,6 +106,8 @@ public interface NamingContext
   /**
    * Destroy this context (must be empty).
    * @throws NotEmpty if the context being destroyed is not empty.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void destroy()
         throws NotEmpty;
@@ -115,11 +123,15 @@ public interface NamingContext
    * @param a_list the holder, where the returned bindigs are stored.
    * @param an_iter the iterator that can be used to access the remaining
    * bindings.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void list(int amount, BindingListHolder a_list, BindingIteratorHolder an_iter);
 
   /**
    * Creates a new naming context, not bound to any name.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   NamingContext new_context();
 
@@ -132,6 +144,8 @@ public interface NamingContext
    * @param an_object the object, being named.
    *
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void rebind(NameComponent[] a_name, org.omg.CORBA.Object an_object)
        throws NotFound, CannotProceed, InvalidName;
@@ -145,6 +159,8 @@ public interface NamingContext
    * @param a_context the child context being named.
    *
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void rebind_context(NameComponent[] a_name, NamingContext a_context)
                throws NotFound, CannotProceed, InvalidName;
@@ -161,6 +177,8 @@ public interface NamingContext
    *
    * @throws NotFound
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   org.omg.CORBA.Object resolve(NameComponent[] a_name)
                         throws NotFound, CannotProceed, InvalidName;
@@ -171,6 +189,8 @@ public interface NamingContext
    * @param a_name a name to remove.
    *
    * @throws InvalidName if the name has zero length or otherwise invalid.
+   *
+   * @specnote since 1.3 this method has moved into NamingContextOperations.
    */
   void unbind(NameComponent[] a_name)
        throws NotFound, CannotProceed, InvalidName;

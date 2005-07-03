@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -667,7 +667,7 @@ public class gnuRequest
 
     Socket socket = null;
 
-    java.lang.Object key = ior.Internet.host+":"+ior.Internet.port;
+    java.lang.Object key = ior.Internet.host + ":" + ior.Internet.port;
 
     synchronized (SocketRepository.class)
       {
@@ -743,7 +743,12 @@ public class gnuRequest
       }
     catch (IOException io_ex)
       {
-        return null;
+        MARSHAL m =
+          new MARSHAL("Unable to open a socket at " + ior.Internet.host + ":" +
+                      ior.Internet.port
+                     );
+        m.initCause(io_ex);
+        throw m;
       }
     finally
       {
@@ -752,9 +757,7 @@ public class gnuRequest
             if (socket != null && !socket.isClosed())
               {
                 socket.setSoTimeout(Functional_ORB.TANDEM_REQUESTS);
-                SocketRepository.put_socket(key,
-                                            socket
-                                           );
+                SocketRepository.put_socket(key, socket);
               }
           }
         catch (IOException scx)

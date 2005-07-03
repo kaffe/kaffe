@@ -1,4 +1,4 @@
-/* uncObjectOutputStream.java --
+/* UnknownEncoding.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -36,38 +36,43 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.CORBA.CDR;
+package org.omg.IOP.CodecFactoryPackage;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import org.omg.CORBA.UserException;
+import org.omg.CORBA.portable.IDLEntity;
+
+import java.io.Serializable;
 
 /**
- * The Uncloseable Object Output Stream is used in cases when
- * it is necessary to write the data and leave the stream opened.
- *
- * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
- */
-public class uncObjectOutputStream
-  extends ObjectOutputStream
+* The {@link org.omg.IOP.CodecFactoryOperations#create_codec} raises
+* UnknownEncoding if that factory cannot create a
+* {@link org.omg.IOP.Codec} of the given encoding.
+*
+* @author Audrius Meskauskas, Lithiania (AudriusA@Bioinformatics.org)
+*/
+public class UnknownEncoding
+  extends UserException
+  implements IDLEntity, Serializable
 {
   /**
-   * Delegate call to super class constructor.
+   * Use serialVersionUID (v1.4) for interoperability.
    */
-  public uncObjectOutputStream(OutputStream out)
-                        throws IOException
+  private static final long serialVersionUID = 1613955753212049966L;
+
+  /**
+   * Create UnknownEncoding with no explaining message.
+   */
+  public UnknownEncoding()
   {
-    super(out);
   }
 
   /**
-   * Do not close, just flush.
+   * Create the UnknownEncoding with explaining message.
    *
-   * @throws IOException if the flush() throws it.
+   * @param why a string, explaining, why this exception has been thrown.
    */
-  public void close()
-             throws IOException
+  public UnknownEncoding(String why)
   {
-    flush();
+    super(why);
   }
 }

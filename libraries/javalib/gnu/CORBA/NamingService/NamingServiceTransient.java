@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -104,12 +104,6 @@ public class NamingServiceTransient
       {
         // Create and initialize the ORB
         final Functional_ORB orb = new Functional_ORB();
-        orb.setPort(PORT);
-        orb.init(args, null);
-
-        // Create the servant and register it with the ORB
-        NamingContextExt namer = new Ext(new TransientContext());
-        orb.connect(namer, getDefaultKey());
 
         if (args.length > 1)
           for (int i = 0; i < args.length - 1; i++)
@@ -121,7 +115,11 @@ public class NamingServiceTransient
                 iorf = args [ i + 1 ];
             }
 
-        orb.setPort(port);
+        Functional_ORB.setPort(port);
+
+        // Create the servant and register it with the ORB
+        NamingContextExt namer = new Ext(new TransientContext());
+        orb.connect(namer, getDefaultKey());
 
         // Storing the IOR reference.
         String ior = orb.object_to_string(namer);
@@ -145,7 +143,7 @@ public class NamingServiceTransient
           {
             public void run()
             {
-              // wait for invocations from clients
+              // Wait for invocations from clients.
               orb.run();
             }
           }.start();
@@ -155,5 +153,8 @@ public class NamingServiceTransient
         System.err.println("ERROR: " + e);
         e.printStackTrace(System.out);
       }
+
+    // Restore the default value for allocating ports for the subsequent objects.
+    Functional_ORB.setPort(Functional_ORB.DEFAULT_INITIAL_PORT);
   }
 }

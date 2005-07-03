@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -49,18 +49,19 @@ import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.NVList;
 import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.ORB;
+import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.StructMember;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
-import org.omg.CORBA.UnionMember;
-
-import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CORBA.TypeCodePackage.BadKind;
+import org.omg.CORBA.UnionMember;
 import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.ValueFactory;
 
 import java.applet.Applet;
 
+import java.util.Hashtable;
 import java.util.Properties;
 
 /**
@@ -80,12 +81,17 @@ import java.util.Properties;
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public class Restricted_ORB
-  extends ORB
+  extends org.omg.CORBA_2_3.ORB
 {
   /**
    * The singleton instance of this ORB.
    */
   public static final ORB Singleton = new Restricted_ORB();
+
+  /**
+   * The value factories.
+   */
+  protected Hashtable factories = new Hashtable();
 
   /**
    * Create a new instance of the RestrictedORB. This is used
@@ -104,7 +110,9 @@ public class Restricted_ORB
   /** {@inheritDoc} */
   public Any create_any()
   {
-    return new gnuAny();
+    gnuAny any = new gnuAny();
+    any.setOrb(this);
+    return any;
   }
 
   /** {@inheritDoc} */
@@ -409,5 +417,47 @@ public class Restricted_ORB
   public void send_multiple_requests_oneway(Request[] requests)
   {
     no();
+  }
+
+  /**
+   * Register the value factory under the given repository id.
+   */
+  public ValueFactory register_value_factory(String repository_id,
+                                             ValueFactory factory
+                                            )
+  {
+    factories.put(repository_id, factory);
+    return factory;
+  }
+
+  /**
+   * Unregister the value factroy.
+   */
+  public void unregister_value_factory(String id)
+  {
+    factories.remove(id);
+  }
+
+  /**
+   * Look for the value factory for the value, having the given repository id.
+   * The implementation checks for the registered value factories first.
+   * If none found, it tries to load and instantiate the class, mathing the
+   * given naming convention. If this faild, null is returned.
+   *
+   * @param repository_id a repository id.
+   *
+   * @return a found value factory, null if none.
+   */
+  public ValueFactory lookup_value_factory(String repository_id)
+  {
+    ValueFactory f = (ValueFactory) factories.get(repository_id);
+    if (f != null)
+      return f;
+
+    f = (ValueFactory) ObjectCreator.createObject(repository_id, "DefaultFactory");
+    if (f != null)
+      factories.put(repository_id, f);
+
+    return f;
   }
 }

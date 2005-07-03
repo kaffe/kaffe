@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -54,4 +54,21 @@ public final class NotEmpty
    * Use serialVersionUID (v1.4) for interoperability.
    */
   private static final long serialVersionUID = 7120362687417045881L;
+
+  /**
+   * Create an exception with no message.
+   */
+  public NotEmpty()
+  {
+  }
+
+  /**
+   * Create an exception with explaining message.
+   *
+   * @since 1.4
+   */
+  public NotEmpty(String why)
+  {
+    super(why);
+  }
 }

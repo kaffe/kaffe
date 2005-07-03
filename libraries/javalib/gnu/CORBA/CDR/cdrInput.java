@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -51,22 +51,32 @@ import gnu.CORBA.gnuAny;
 import gnu.CORBA.stubFinder;
 
 import org.omg.CORBA.Any;
+import org.omg.CORBA.AnySeqHolder;
 import org.omg.CORBA.BAD_OPERATION;
+import org.omg.CORBA.BooleanSeqHolder;
+import org.omg.CORBA.CharSeqHolder;
+import org.omg.CORBA.DoubleSeqHolder;
+import org.omg.CORBA.FloatSeqHolder;
+import org.omg.CORBA.LongLongSeqHolder;
+import org.omg.CORBA.LongSeqHolder;
 import org.omg.CORBA.MARSHAL;
-import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.ORB;
-import org.omg.CORBA.Object;
+import org.omg.CORBA.OctetSeqHolder;
+import org.omg.CORBA.ShortSeqHolder;
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.TypeCodePackage.Bounds;
+import org.omg.CORBA.ULongLongSeqHolder;
+import org.omg.CORBA.ULongSeqHolder;
+import org.omg.CORBA.UShortSeqHolder;
+import org.omg.CORBA.WCharSeqHolder;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.ObjectImpl;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 
 import java.math.BigDecimal;
 
@@ -74,13 +84,17 @@ import java.math.BigDecimal;
  * A simple CORBA CDR (common data representation)
  * input stream, reading data from the
  * given {@link java.io.InputStream}. The primitive types
- * are aligned on they natural boundaries by implamenting the
+ * are aligned on they natural boundaries by implementing the
  * abstract method {@link #align(int boundary)}.
+ *
+ * The same class also implements {@link org.omg.CORBA.DataInputStream} to
+ * read the object content in a user defined way.
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public abstract class cdrInput
-  extends org.omg.CORBA.portable.InputStream
+  extends org.omg.CORBA_2_3.portable.InputStream
+  implements org.omg.CORBA.DataInputStream
 {
   /**
    * The message, explaining that the exception has been thrown due
@@ -110,7 +124,7 @@ public abstract class cdrInput
   /**
    * The GIOP version.
    */
-  protected Version giop = new Version(1, 0);
+  protected Version giop = new Version(1, 2);
 
   /**
    * The code set information.
@@ -357,14 +371,15 @@ public abstract class cdrInput
    *
    * @return the loaded and constructed object.
    */
-  public Object read_Object()
+  public org.omg.CORBA.Object read_Object()
   {
     try
       {
         IOR ior = new IOR();
         ior._read_no_endian(this);
 
-        if (ior.Id == null) return null;
+        if (ior.Id == null)
+          return null;
 
         // Check maybe this is a remote reference to the local object.
         // This is only possible if we access the repository of the
@@ -372,7 +387,7 @@ public abstract class cdrInput
         if (orb instanceof Functional_ORB)
           {
             Functional_ORB forb = (Functional_ORB) orb;
-            Object local = forb.find_local_object(ior);
+            org.omg.CORBA.Object local = forb.find_local_object(ior);
             if (local != null)
               return local;
           }
@@ -1224,8 +1239,433 @@ public abstract class cdrInput
    *
    * @return the returned object.
    */
-  public Object read_Object(Class klass)
+  public org.omg.CORBA.Object read_Object(Class klass)
   {
     return read_Object();
+  }
+
+  /**
+   * Read a value type structure from the stream.
+   *
+   * OMG specification states the writing format is outside the scope
+   * of GIOP definition. This implementation uses java serialization
+   * mechanism, calling {@link ObjectInputStream#readObject}
+   *
+   * @return an value type structure, unmarshaled from the stream
+   */
+  public Serializable read_Value()
+  {
+    return read_value();
+  }
+
+  /**
+   * Read the abstract interface. An abstract interface can be either
+   * CORBA value type or CORBA object and is returned as an abstract
+   * java.lang.Object.
+   *
+   * As specified in OMG specification, this reads a single
+   * boolean and then delegates either to {@link #read_Object()} (for false)
+   * or to {@link #read_Value()} (for true).
+   *
+   * @return an abstract interface, unmarshaled from the stream
+   */
+  public java.lang.Object read_Abstract()
+  {
+    return read_abstract_interface();
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_char_array(CharSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_char_array(holder.value, offset, length);
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_wchar_array(WCharSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_wchar_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the char array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing char array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private char[] ensureArray(char[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new char[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        char[] value = new char[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_ulong_array(ULongSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_ulong_array(holder.value, offset, length);
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_long_array(LongSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_ulong_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the int array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing int array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private int[] ensureArray(int[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new int[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        int[] value = new int[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_float_array(FloatSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_float_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the float array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing float array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private float[] ensureArray(float[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new float[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        float[] value = new float[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_double_array(DoubleSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_double_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the double array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing double array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private double[] ensureArray(double[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new double[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        double[] value = new double[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_short_array(ShortSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_short_array(holder.value, offset, length);
+  }
+
+  /** {@inheritDoc} */
+  public void read_ushort_array(UShortSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_ushort_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the short array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing short array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private short[] ensureArray(short[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new short[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        short[] value = new short[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_octet_array(OctetSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_octet_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the byte array to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing byte array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private byte[] ensureArray(byte[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new byte[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        byte[] value = new byte[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_longlong_array(LongLongSeqHolder holder, int offset,
+                                  int length
+                                 )
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_longlong_array(holder.value, offset, length);
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_ulonglong_array(ULongLongSeqHolder holder, int offset,
+                                   int length
+                                  )
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_ulonglong_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the array of longs to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing array, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private long[] ensureArray(long[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new long[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        long[] value = new long[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_boolean_array(BooleanSeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    read_boolean_array(holder.value, offset, length);
+  }
+
+  /**
+   * If required, allocate or resize the array of booleans to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing array of booleans, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private boolean[] ensureArray(boolean[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new boolean[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        boolean[] value = new boolean[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * Read an array. In OMG specification is written that if the data does
+   * not fit into the holder value field, that array must be resized.
+   * The implementation follows this rule. If the holder value field
+   * contains null, it is newly instantiated.
+   */
+  public void read_any_array(AnySeqHolder holder, int offset, int length)
+  {
+    holder.value = ensureArray(holder.value, offset, length);
+    for (int i = offset; i < offset + length; i++)
+      {
+        holder.value [ i ] = read_any();
+      }
+  }
+
+  /**
+   * If required, allocate or resize the array of Anys to fit the newly
+   * read values.
+   *
+   * @param holder_value the existing array of Anys, may be null.
+   * @param offset the required offset to read.
+   * @param length the length of the new sequence.
+   *
+   * @return the allocated or resized array, same array if no such operations
+   * are required.
+   */
+  private Any[] ensureArray(Any[] holder_value, int offset, int length)
+  {
+    if (holder_value == null)
+      return new Any[ offset + length ];
+    else if (holder_value.length < offset + length)
+      {
+        Any[] value = new Any[ offset + length ];
+        System.arraycopy(holder_value, 0, value, 0, holder_value.length);
+        return value;
+      }
+    else
+      return holder_value;
+  }
+
+  /**
+   * This method is required to represent the DataInputStream as a value
+   * type object.
+   *
+   * @return a single entity "IDL:omg.org/CORBA/DataInputStream:1.0",
+   * always.
+   */
+  public String[] _truncatable_ids()
+  {
+    return new String[] { "IDL:omg.org/CORBA/DataInputStream:1.0" };
   }
 }
