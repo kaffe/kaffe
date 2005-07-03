@@ -53,6 +53,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
@@ -864,8 +866,32 @@ public class BasicInternalFrameUI extends InternalFrameUI
    * JInternalFrame.
    */
   public class InternalFramePropertyChangeListener
-    implements PropertyChangeListener
+    implements PropertyChangeListener, VetoableChangeListener
   {
+
+    /**
+     * This method is called when one of the JInternalFrame's properties
+     * change.  This method is to allow JInternalFrame to veto an attempt
+     * to close the internal frame.  This allows JInternalFrame to honour
+     * its defaultCloseOperation if that is DO_NOTHING_ON_CLOSE.
+     */
+    public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException
+    {
+      if (e.getPropertyName().equals(JInternalFrame.IS_CLOSED_PROPERTY))
+        {
+          if (frame.getDefaultCloseOperation() == JInternalFrame.HIDE_ON_CLOSE)
+            {
+              frame.setVisible(false);
+              frame.getDesktopPane().repaint();
+              throw new PropertyVetoException ("close operation is HIDE_ON_CLOSE\n", e);
+            }
+          else if (frame.getDefaultCloseOperation() == JInternalFrame.DISPOSE_ON_CLOSE)
+            closeFrame(frame);
+          else
+            throw new PropertyVetoException ("close operation is DO_NOTHING_ON_CLOSE\n", e);
+        }
+    }
+    
     /**
      * This method is called when one of the JInternalFrame's properties
      * change.
@@ -881,8 +907,6 @@ public class BasicInternalFrameUI extends InternalFrameUI
 	  else
 	    minimizeFrame(frame);
         }
-      else if (evt.getPropertyName().equals(JInternalFrame.IS_CLOSED_PROPERTY))
-	closeFrame(frame);
       else if (evt.getPropertyName().equals(JInternalFrame.IS_ICON_PROPERTY))
         {
 	  if (frame.isIcon())
@@ -1031,6 +1055,13 @@ public class BasicInternalFrameUI extends InternalFrameUI
    */
   protected PropertyChangeListener propertyChangeListener;
 
+  /**
+   * The VetoableChangeListener.  Listens to PropertyChangeEvents
+   * from the JInternalFrame and allows the JInternalFrame to 
+   * veto attempts to close it.
+   */
+  private VetoableChangeListener internalFrameVetoableChangeListener;
+
   /** The InternalFrameListener that listens to the JInternalFrame. */
   private transient BasicInternalFrameListener internalFrameListener;
 
@@ -1171,12 +1202,13 @@ public class BasicInternalFrameUI extends InternalFrameUI
     borderListener = createBorderListener(frame);
     componentListener = createComponentListener();
     propertyChangeListener = createPropertyChangeListener();
+    internalFrameVetoableChangeListener = new InternalFramePropertyChangeListener();
 
     frame.addMouseListener(borderListener);
     frame.addMouseMotionListener(borderListener);
     frame.addInternalFrameListener(internalFrameListener);
     frame.addPropertyChangeListener(propertyChangeListener);
-
+    frame.addVetoableChangeListener(internalFrameVetoableChangeListener);
     frame.getRootPane().getGlassPane().addMouseListener(glassPaneDispatcher);
     frame.getRootPane().getGlassPane().addMouseMotionListener(glassPaneDispatcher);
   }
@@ -1552,7 +1584,10 @@ public class BasicInternalFrameUI extends InternalFrameUI
    */
   protected DesktopManager getDesktopManager()
   {
-    DesktopManager value = frame.getDesktopPane().getDesktopManager();
+    DesktopManager value = null;
+    JDesktopPane pane = frame.getDesktopPane();
+    if (pane != null)
+      value = frame.getDesktopPane().getDesktopManager();
     if (value == null)
       value = createDesktopManager();
     return value;

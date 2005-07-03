@@ -547,14 +547,12 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   public void setDefaultCloseOperation(int operation)
   {
-    if (operation == DO_NOTHING_ON_CLOSE ||
-    	operation == HIDE_ON_CLOSE ||
-	operation == DISPOSE_ON_CLOSE)
-      close_action = operation;
-    else
-      // accept illegal value and set the property to the default value,
-      // that's what the reference implementation does
-      close_action = DO_NOTHING_ON_CLOSE;
+    /* Reference implementation allows invalid operations
+       to be specified.  If so, getDefaultCloseOperation
+       must return the invalid code, and the behaviour
+       defaults to DO_NOTHING_ON_CLOSE.  processWindowEvent
+       above handles this */
+    close_action = operation;
   }
 
   /**

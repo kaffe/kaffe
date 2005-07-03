@@ -375,18 +375,33 @@ public class GtkImage extends Image
     int dstY = (dy1 < dy2) ? dy1 : dy2;
 
     // Clipping. This requires the dst to be scaled as well, 
+    if (srcWidth > width)
+      {
+	dstWidth = (int)((double)dstWidth*((double)width/(double)srcWidth));
+	srcWidth = width - srcX;
+      }
+
+    if (srcHeight > height) 
+      {
+	dstHeight = (int)((double)dstHeight*((double)height/(double)srcHeight));
+	srcHeight = height - srcY;
+      }
+
     if (srcWidth + srcX > width)
       {
 	dstWidth = (int)((double)dstWidth * (double)(width - srcX)/(double)srcWidth);
 	srcWidth = width - srcX;
-    }
+      }
 
     if (srcHeight + srcY > height)
       {
 	dstHeight = (int)((double)dstHeight * (double)(width - srcY)/(double)srcHeight);
 	srcHeight = height - srcY;
       }
-    
+
+    if ( srcWidth <= 0 || srcHeight <= 0 || dstWidth <= 0 || dstHeight <= 0)
+      return true;
+
     if(bgcolor != null)
       drawPixelsScaledFlipped (g, bgcolor.getRed (), bgcolor.getGreen (), 
 			       bgcolor.getBlue (), 

@@ -1,5 +1,5 @@
 /* gdkpixbufdecoder.c
-   Copyright (C) 1999, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This file is part of GNU Classpath.
    
@@ -41,6 +41,7 @@
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
 #include <jni.h>
+#include <jcl.h>
 #include "native_state.h"
 #include "gnu_java_awt_peer_gtk_GdkPixbufDecoder.h"
 
@@ -72,8 +73,7 @@ area_prepared (GdkPixbufLoader *loader,
   jint width, height;
 
   GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-  if (pixbuf == NULL)
-    return;
+  g_assert (pixbuf != NULL);
 
   width = gdk_pixbuf_get_width (pixbuf); 
   height = gdk_pixbuf_get_height (pixbuf);
@@ -311,6 +311,26 @@ Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
   gdk_pixbuf_loader_close (loader, NULL);
   g_object_unref (loader);
   gdk_threads_leave (); 
+
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpDone
+(JNIEnv *env, jobject obj)
+{
+  GError *err = NULL;
+  GdkPixbufLoader *loader = (GdkPixbufLoader *)NSA_GET_PB_PTR (env, obj);
+  g_assert (loader != NULL);
+
+  gdk_threads_enter ();
+  gdk_pixbuf_loader_close (loader, &err);
+  gdk_threads_leave ();
+
+  if (err != NULL)
+    {
+      JCL_ThrowException (env, "java/io/IOException", err->message);
+      g_error_free (err);
+    }
 }
 
 struct stream_save_request
@@ -423,15 +443,17 @@ Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_streamImage
   (*env)->ReleaseIntArrayElements (env, jarr, ints, 0);
 }
 
+
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpBytes
   (JNIEnv *env, jobject obj, jbyteArray jarr, jint len)
 {
   GdkPixbufLoader *loader = NULL;
   jbyte *bytes = NULL;
+  GError *err = NULL;
 
-  if (len < 1)
-    return;
+  g_assert (len >= 1);
+  g_assert (jarr != NULL);
 
   bytes = (*env)->GetByteArrayElements (env, jarr, NULL);
   g_assert (bytes != NULL);
@@ -439,8 +461,14 @@ Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpBytes
   g_assert (loader != NULL);
 
   gdk_threads_enter ();
-  gdk_pixbuf_loader_write (loader, (const guchar *) bytes, len, NULL);
+  gdk_pixbuf_loader_write (loader, (const guchar *) bytes, len, &err);
   gdk_threads_leave ();
 
   (*env)->ReleaseByteArrayElements (env, jarr, bytes, 0);
+
+  if (err != NULL)
+    {
+      JCL_ThrowException (env, "java/io/IOException", err->message);
+      g_error_free (err);
+    }
 }

@@ -1305,10 +1305,10 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setDefaultCloseOperation(int operation)
   {
-    if (operation != DO_NOTHING_ON_CLOSE
-	&& operation != HIDE_ON_CLOSE
-        && operation != DISPOSE_ON_CLOSE)
-      throw new Error("Close operation must be one of DO_NOTHING_ON_CLOSE, HIDE_ON_CLOSE, or DISPOSE_ON_CLOSE");
+    /* Reference implementation allows invalid operations to be specified.
+       In that case, behaviour defaults to DO_NOTHING_ON_CLOSE.
+       processWindowEvent handles the behaviour. getDefaultCloseOperation
+       must return the invalid operator code. */
     defaultCloseOperation = operation;
   }
 

@@ -1437,7 +1437,7 @@ loop:
       }
     else
       {
-        if (type.equals("CDATA") || type == null)
+        if (type == null || type.equals("CDATA"))
           {
             value = readLiteral(flags);
           }

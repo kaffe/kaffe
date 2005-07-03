@@ -848,8 +848,14 @@ public class SwingUtilities
       }
     else
       {
+        int fromIndex = 0;
         textR.width = fm.stringWidth(text);
         textR.height = fm.getHeight(); 
+        while (text.indexOf('\n', fromIndex) != -1)
+          {
+            textR.height += fm.getHeight();
+            fromIndex = text.indexOf('\n', fromIndex) + 1;
+          }
       }
 
     // Work out the position of text and icon, assuming the top-left coord

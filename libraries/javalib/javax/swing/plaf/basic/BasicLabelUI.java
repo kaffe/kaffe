@@ -351,7 +351,6 @@ public class BasicLabelUI extends LabelUI implements PropertyChangeListener
     c.setBackground(defaults.getColor("Label.background"));
     c.setFont(defaults.getFont("Label.font"));
     c.setBorder(defaults.getBorder("Label.border"));
-    c.setOpaque(true);
     //XXX: There are properties we don't use called disabledForeground
     //and disabledShadow.
   }

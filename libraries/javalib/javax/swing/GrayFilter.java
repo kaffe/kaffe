@@ -46,7 +46,7 @@ import java.awt.image.RGBImageFilter;
 public class GrayFilter extends RGBImageFilter
 {
   private boolean b;
-  private int p;
+  private double p;
 
   /**
    * Create a GrayFilter. If b is true then brighten. Also, indicate how much
@@ -58,7 +58,7 @@ public class GrayFilter extends RGBImageFilter
   public GrayFilter(boolean b, int p)
   {
     this.b = b; //FIXME - HANDLE THIS
-    this.p = p;
+    this.p = (1. - (p / 100.)) / 3.;
   }
 
   /**
@@ -72,7 +72,7 @@ public class GrayFilter extends RGBImageFilter
   {
     return (Toolkit.getDefaultToolkit().
 	    createImage(new FilteredImageSource(src.getSource(),
-						new GrayFilter(false, 100))));
+						new GrayFilter(true, 0))));
   }
   
   /**
@@ -80,7 +80,13 @@ public class GrayFilter extends RGBImageFilter
    */
   public int filterRGB(int x, int y, int rgb)
   {
-    return (int) (p * (0.299 * ((0xff0000 & rgb) >> 16)
-		       + 0.587 * ((0xff00 & rgb) >> 8) + 0.114 * (0xff & rgb)));
+    int alpha = 0xff000000 & rgb;
+    int red = (0xff0000 & rgb) >> 16;
+    int green = (0xff00 & rgb) >> 8;
+    int blue = (0xff & rgb);
+    int gray = (int) ((0.299 * red + 0.587 * green + 0.114 * blue) * p);
+    if (b)
+      gray = Math.min(gray + 128, 255);
+    return gray | gray << 8 | gray << 16 | alpha ;
   }
 }

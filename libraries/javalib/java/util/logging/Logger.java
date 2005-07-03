@@ -1150,13 +1150,8 @@ public class Logger
     lm = LogManager.getLogManager();
 
     if (this == lm.rootLogger)
-    {
-      if (parent != null)
         throw new IllegalArgumentException(
           "only the root logger can have a null parent");
-      this.parent = null;
-      return;
-    }
 
     /* An application is allowed to control an anonymous logger
      * without having the permission to control the logging

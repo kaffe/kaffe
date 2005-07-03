@@ -90,7 +90,8 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
 
   // interface to GdkPixbuf
   native void initState ();
-  native void pumpBytes (byte[] bytes, int len);
+  native void pumpBytes (byte[] bytes, int len) throws IOException;
+  native void pumpDone () throws IOException;
   native void finish ();
   static native void streamImage(int[] bytes, String format, int width, int height, boolean hasAlpha, DataOutput sink);
   
@@ -165,6 +166,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
     initState();
     while ((len = is.read (bytes)) != -1)
       pumpBytes (bytes, len);
+    pumpDone();
     
     for (int i = 0; i < curr.size (); i++)
       {

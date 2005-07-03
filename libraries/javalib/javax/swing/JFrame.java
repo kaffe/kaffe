@@ -342,7 +342,7 @@ public class JFrame extends Frame
 
     if (operation != EXIT_ON_CLOSE && operation != DISPOSE_ON_CLOSE
         && operation != HIDE_ON_CLOSE && operation != DO_NOTHING_ON_CLOSE)
-      throw new IllegalArgumentException("operation = " + operation);
+      throw new IllegalArgumentException("defaultCloseOperation must be EXIT_ON_CLOSE, HIDE_ON_CLOSE, DISPOSE_ON_CLOSE, or DO_NOTHING_ON_CLOSE");
 
     close_action = operation;
   }

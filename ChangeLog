@@ -2,6 +2,97 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-23  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/gtk/GtkImage.java: Don't draw 0 size images.
+
+	2005-06-23  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/gtk/GtkImage.java: Add case source size > size.
+
+	2005-06-22  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/awt/peer/gtk/GdkPixbufDecoder.java
+        (pumpBytes): Throws IOException.
+        (pumpDone): New native method.
+        (produce): Call pumpDone().
+        * include/gnu_java_awt_peer_gtk_GdkPixbufDecoder.h: Regenerated.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+        (Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpDone): New method.
+        (Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_pumpBytes): Check for
+        errors on gdk_pixbuf_loader_write.
+
+	2005-06-22  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java:
+        (InternalFramePropertyChangeListener.vetoableChange):
+        Repaint the JDesktopPane when JInternalFrame is closed.
+        Also veto the close request, because hiding is not
+        closing.
+
+	2005-06-22  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/SwingUtilities.java:
+        (layoutCompoundLabel): Added check for multi-line text.
+
+	2005-06-22  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JDialog.java:
+        (setDefaultCloseOperation): Removed validity check for
+        operation code.  Validity is handled in processWindowEvent.
+        * javax/swing/JFrame.java:
+        (setDefaultCloseOperation): Changed error message to be more
+        descriptive and similar to reference implementation.
+        * javax/swing/JInternalFrame.java:
+        (setDefaultCloseOperation): Removed validity check for
+        operation code.
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java:
+        (InternalFramePropertyListener): Added implementation of
+        VetoableChangeListener.
+        (InternalFramePropertyListener.vetoableChange): New method.
+        (InternalFramePropertyListener.propertyChange): Removed
+        check for JInternalFrame.IS_CLOSED_PROPERTY.  This is now
+        handled in vetoableChange.
+        (getDesktopManager): Added a check for null pointer from
+        JInternalFrame.getDesktopPane().
+
+	2005-06-22  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicLabelUI.java
+        (installDefaults): JLabels are not opaque by default.
+
+	2005-06-22  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/GrayFilter.java
+        (constructor): Compute factor at initialization time.
+        (createDisabledImage): Initialize GrayFilter with correct arguments.
+        (filterRGB): Reworked filter method. This is now compliant with
+        the JDK behaviour.
+
+	2005-06-22  Mark Wielaard  <mark@klomp.org>
+
+        Fixes bug #13439
+        * javax/swing/JScrollPane.java (JScrollPane(Component,int,int)):
+        Set viewport, view and scrollLostener manually.
+
+	2005-06-21  Lillian Angel  <langel@redhat.com>
+
+        * java/util/logging/Logger.java
+        (setParent): No lines after throwing an exception are executed
+        and there is no point to check if the parent is null, because a
+        NullPointerException would have been thrown earlier. Fixes Bug
+        #13460.
+
+	2005-06-21  Lillian Angel  <langel@redhat.com>
+
+        * gnu/xml/aelfred2/XmlParser
+        (parseAttribute): if (type.equals("CDATA") || type == null)
+        this would always throw a NullPointerException if type is null.
+
+2005-07-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-20  Mark Wielaard  <mark@klomp.org>
 
         * javax/swing/DefaultDesktopManager.java (getBoundsForIconOf):
