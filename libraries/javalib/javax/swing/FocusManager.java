@@ -95,7 +95,6 @@ public abstract class FocusManager
     }
   }
 
-
   /**
    * FOCUS_MANAGER_CLASS_PROPERTY
    */

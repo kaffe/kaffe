@@ -47,92 +47,94 @@ import java.beans.PropertyChangeListener;
  */
 public interface Action extends ActionListener {
 
-	//-------------------------------------------------------------
-	// Constants --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * DEFAULT
+   */
+  String DEFAULT = "Default";
 
 	/**
-	 * DEFAULT
-	 */
-	String	DEFAULT				= "Default";
+   * LONG_DESCRIPTION
+   */
+  String LONG_DESCRIPTION = "LongDescription";
+
+  /**
+   * NAME
+   */
+  String NAME = "Name";
+
+  /**
+   * SHORT_DESCRIPTION
+   */
+  String SHORT_DESCRIPTION = "ShortDescription";
+
+  /**
+   * SMALL_ICON
+   */
+  String SMALL_ICON = "SmallIcon";
+
+  /**
+   * ACCELERATOR_KEY
+   */
+  String ACCELERATOR_KEY = "AcceleratorKey";
+
+  /**
+   * ACTION_COMMAND_KEY
+   */
+  String ACTION_COMMAND_KEY = "ActionCommandKey";
+
+  /**
+   * MNEMONIC_KEY
+   */
+  String MNEMONIC_KEY = "MnemonicKey";
 
 	/**
-	 * LONG_DESCRIPTION
-	 */
-	String	LONG_DESCRIPTION	= "LongDescription";
+   * getValue
+   * 
+   * @param key
+   *          TODO
+   * @returns TODO
+   */
+  Object getValue(String key);
 
-	/**
-	 * NAME
-	 */
-	String	NAME				= "Name";
+  /**
+   * setValue
+   * 
+   * @param key
+   *          TODO
+   * @param value
+   *          TODO
+   */
+  void putValue(String key, Object value);
 
-	/**
-	 * SHORT_DESCRIPTION
-	 */
-	String	SHORT_DESCRIPTION	= "ShortDescription";
+  /**
+   * isEnabled
+   * 
+   * @returns TODO
+   */
+  boolean isEnabled();
 
-	/**
-	 * SMALL_ICON
-	 */
-	String	SMALL_ICON			= "SmallIcon";
+  /**
+   * setEnabled
+   * 
+   * @param b
+   *          TODO
+   */
+  void setEnabled(boolean b);
 
-	/**
-	 * ACCELERATOR_KEY
-	 */
-	String ACCELERATOR_KEY = "AcceleratorKey";
+  /**
+   * addPropertyChangeListener
+   * 
+   * @param listener
+   *          TODO
+   */
+  void addPropertyChangeListener(PropertyChangeListener listener);
 
-	/**
-	 * ACTION_COMMAND_KEY
-	 */
-	String ACTION_COMMAND_KEY = "ActionCommandKey";
-
-	/**
-	 * MNEMONIC_KEY
-	 */
-	String MNEMONIC_KEY = "MnemonicKey";
-
-
-	//-------------------------------------------------------------
-	// Interface: Action ------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * getValue
-	 * @param key TODO
-	 * @returns TODO
-	 */
-	Object getValue(String key);
-
-	/**
-	 * setValue
-	 * @param key TODO
-	 * @param value TODO
-	 */
-	void putValue(String key, Object value);
-
-	/**
-	 * isEnabled
-	 * @returns TODO
-	 */
-	boolean isEnabled();
-
-	/**
-	 * setEnabled
-	 * @param b TODO
-	 */
-	void setEnabled(boolean b);
-
-	/**
-	 * addPropertyChangeListener
-	 * @param listener TODO
-	 */
-	void addPropertyChangeListener(PropertyChangeListener listener);
-
-	/**
-	 * removePropertyChangeListener
-	 * @param listener TODO
-	 */
-	void removePropertyChangeListener(PropertyChangeListener listener);
-
+  /**
+   * removePropertyChangeListener
+   * 
+   * @param listener
+   *          TODO
+   */
+  void removePropertyChangeListener(PropertyChangeListener listener);
 
 } // Action

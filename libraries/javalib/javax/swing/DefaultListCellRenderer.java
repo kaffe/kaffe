@@ -93,21 +93,21 @@ public class DefaultListCellRenderer extends JLabel
 
     if (isSelected)
       {
-	setBackground(list.getSelectionBackground());
-	setForeground(list.getSelectionForeground());
+        setBackground(list.getSelectionBackground());
+        setForeground(list.getSelectionForeground());
       }
     else
       {
-	setBackground(list.getBackground());
-	setForeground(list.getForeground());
+        setBackground(list.getBackground());
+        setForeground(list.getForeground());
       }
 
     setEnabled(list.isEnabled());
     setFont(list.getFont());
 
-    // Use focusCellHighlightBorder when renderer has focus and 
+    // Use focusCellHighlightBorder when renderer has focus and
     // noFocusBorder otherwise
-    
+
     if (cellHasFocus)
       setBorder(UIManager.getBorder("List.focusCellHighlightBorder"));
     else

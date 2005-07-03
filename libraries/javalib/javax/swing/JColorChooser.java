@@ -237,11 +237,11 @@ public class JColorChooser extends JComponent implements Accessible
   {
     try
       {
-	synchronized (dialog)
-	  {
-	    while (dialog.isVisible())
-	      dialog.wait();
-	  }
+        synchronized (dialog)
+          {
+            while (dialog.isVisible())
+              dialog.wait();
+          }
       }
     catch (InterruptedException e)
       {
@@ -393,9 +393,9 @@ public class JColorChooser extends JComponent implements Accessible
   {
     if (component != previewPanel)
       {
-	JComponent old = previewPanel;
-	previewPanel = component;
-	firePropertyChange(PREVIEW_PANEL_PROPERTY, old, previewPanel);
+        JComponent old = previewPanel;
+        previewPanel = component;
+        firePropertyChange(PREVIEW_PANEL_PROPERTY, old, previewPanel);
       }
   } // setPreviewPanel()
 
@@ -421,10 +421,8 @@ public class JColorChooser extends JComponent implements Accessible
     if (panel == null)
       return;
     AbstractColorChooserPanel[] old = chooserPanels;
-    AbstractColorChooserPanel[] newPanels = new AbstractColorChooserPanel[(old == null)
-                                                                          ? 1
-                                                                          : old.length
-                                                                          + 1];
+    AbstractColorChooserPanel[] newPanels =
+      new AbstractColorChooserPanel[(old == null) ? 1 : old.length + 1];
     if (old != null)
       System.arraycopy(old, 0, newPanels, 0, old.length);
     newPanels[newPanels.length - 1] = panel;
@@ -447,8 +445,8 @@ public class JColorChooser extends JComponent implements Accessible
     for (int i = 0; i < chooserPanels.length; i++)
       if (panel == chooserPanels[i])
         {
-	  index = i;
-	  break;
+          index = i;
+          break;
         }
 
     if (index == -1)
@@ -459,12 +457,12 @@ public class JColorChooser extends JComponent implements Accessible
       chooserPanels = null;
     else
       {
-	AbstractColorChooserPanel[] newPanels = new AbstractColorChooserPanel[chooserPanels.length
-	                                        - 1];
-	System.arraycopy(chooserPanels, 0, newPanels, 0, index);
-	System.arraycopy(chooserPanels, index, newPanels, index - 1,
-	                 chooserPanels.length - index);
-	chooserPanels = newPanels;
+        AbstractColorChooserPanel[] newPanels =
+          new AbstractColorChooserPanel[chooserPanels.length - 1];
+        System.arraycopy(chooserPanels, 0, newPanels, 0, index);
+        System.arraycopy(chooserPanels, index, newPanels, index - 1,
+                         chooserPanels.length - index);
+        chooserPanels = newPanels;
       }
     panel.uninstallChooserPanel(this);
     firePropertyChange(CHOOSER_PANELS_PROPERTY, old, chooserPanels);
@@ -480,20 +478,20 @@ public class JColorChooser extends JComponent implements Accessible
   {
     if (panels != chooserPanels)
       {
-	if (chooserPanels != null)
-	  for (int i = 0; i < chooserPanels.length; i++)
-	    if (chooserPanels[i] != null)
-	      chooserPanels[i].uninstallChooserPanel(this);
+        if (chooserPanels != null)
+          for (int i = 0; i < chooserPanels.length; i++)
+            if (chooserPanels[i] != null)
+              chooserPanels[i].uninstallChooserPanel(this);
 
-	AbstractColorChooserPanel[] old = chooserPanels;
-	chooserPanels = panels;
+        AbstractColorChooserPanel[] old = chooserPanels;
+        chooserPanels = panels;
 
-	if (panels != null)
-	  for (int i = 0; i < panels.length; i++)
-	    if (panels[i] != null)
-	      panels[i].installChooserPanel(this);
+        if (panels != null)
+          for (int i = 0; i < panels.length; i++)
+            if (panels[i] != null)
+              panels[i].installChooserPanel(this);
 
-	firePropertyChange(CHOOSER_PANELS_PROPERTY, old, chooserPanels);
+        firePropertyChange(CHOOSER_PANELS_PROPERTY, old, chooserPanels);
       }
   } // setChooserPanels()
 

@@ -138,16 +138,16 @@ public class ButtonGroup implements Serializable
 
     if (b && sel != m)
       {
-	ButtonModel old = sel;
-	sel = m;
+        ButtonModel old = sel;
+        sel = m;
 
-	if (old != null)
-	  old.setSelected(false);
-	AbstractButton button = FindButton(old);
-	if (button != null)
-	  button.repaint();
+        if (old != null)
+          old.setSelected(false);
+        AbstractButton button = FindButton(old);
+        if (button != null)
+          button.repaint();
       }
-    else if (! b && sel == m)
+    else if (!b && sel == m)
       m.setSelected(true);
   }
 

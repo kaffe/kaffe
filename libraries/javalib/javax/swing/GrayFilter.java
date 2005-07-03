@@ -49,7 +49,8 @@ public class GrayFilter extends RGBImageFilter
   private int p;
 
   /**
-   * Create a GrayFilter. If b is true then brighten. Also, indicate how much gray.
+   * Create a GrayFilter. If b is true then brighten. Also, indicate how much
+   * gray.
    *    
    * @param b if brighten
    * @param p percent of gray, 0 - 100

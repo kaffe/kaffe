@@ -49,107 +49,118 @@ import java.util.Stack;
  */
 public class DefaultFocusManager extends FocusManager {
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+	/**
+   * historyStack
+   */
+  private Stack historyStack;
+
+  /**
+   * Constructor DefaultFocusManager
+   */
+  public DefaultFocusManager()
+  {
+    // TODO
+  } // DefaultFocusManager()
 
 	/**
-	 * historyStack
-	 */
-	private Stack historyStack;
-
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * Constructor DefaultFocusManager
-	 */
-	public DefaultFocusManager() {
-		// TODO
-	} // DefaultFocusManager()
-
-
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+   * processKeyEvent
+   * 
+   * @param component
+   *          TODO
+   * @param event
+   *          TODO
+   */
+  public void processKeyEvent(Component component, KeyEvent event)
+  {
+    // TODO
+  } // processKeyEvent()
 
 	/**
-	 * processKeyEvent
-	 * @param component TODO
-	 * @param event TODO
-	 */
-	public void processKeyEvent(Component component, KeyEvent event) {
-		// TODO
-	} // processKeyEvent()
+   * focusNextComponent
+   * 
+   * @param component
+   *          TODO
+   */
+  public void focusNextComponent(Component component)
+  {
+    // TODO
+  } // focusNextComponent()
 
 	/**
-	 * focusNextComponent
-	 * @param component TODO
-	 */
-	public void focusNextComponent(Component component) {
-		// TODO
-	} // focusNextComponent()
+   * focusPreviousComponent
+   * 
+   * @param component
+   *          TODO
+   */
+  public void focusPreviousComponent(Component component)
+  {
+    // TODO
+  } // focusPreviousComponent()
 
 	/**
-	 * focusPreviousComponent
-	 * @param component TODO
-	 */
-	public void focusPreviousComponent(Component component) {
-		// TODO
-	} // focusPreviousComponent()
+   * getFirstComponent
+   * 
+   * @param container
+   *          TODO
+   * @returns Component
+   */
+  public Component getFirstComponent(Container container)
+  {
+    return null; // TODO
+  } // getFirstComponent()
 
 	/**
-	 * getFirstComponent
-	 * @param container TODO
-	 * @returns Component
-	 */
-	public Component getFirstComponent(Container container) {
-		return null; // TODO
-	} // getFirstComponent()
+   * getLastComponent
+   * 
+   * @param container
+   *          TODO
+   * @returns Component
+   */
+  public Component getLastComponent(Container container)
+  {
+    return null; // TODO
+  } // getLastComponent()
 
 	/**
-	 * getLastComponent
-	 * @param container TODO
-	 * @returns Component
-	 */
-	public Component getLastComponent(Container container) {
-		return null; // TODO
-	} // getLastComponent()
+   * getComponentBefore
+   * 
+   * @param container
+   *          TODO
+   * @param component
+   *          TODO
+   * @returns Component
+   */
+  public Component getComponentBefore(Container container, Component component)
+  {
+    return null; // TODO
+  } // getComponentBefore()
 
 	/**
-	 * getComponentBefore
-	 * @param container TODO
-	 * @param component TODO
-	 * @returns Component
-	 */
-	public Component getComponentBefore(Container container,
-			Component component) {
-		return null; // TODO
-	} // getComponentBefore()
+   * getComponentAfter
+   * 
+   * @param container
+   *          TODO
+   * @param component
+   *          TODO
+   * @returns Component
+   */
+  public Component getComponentAfter(Container container, Component component)
+  {
+    return null; // TODO
+  } // getComponentAfter()
 
 	/**
-	 * getComponentAfter
-	 * @param container TODO
-	 * @param component TODO
-	 * @returns Component
-	 */
-	public Component getComponentAfter(Container container, 
-			Component component) {
-		return null; // TODO
-	} // getComponentAfter()
-
-	/**
-	 * compareTabOrder
-	 * @param component1 TODO
-	 * @param component2 TODO
-	 * @returns boolean
-	 */
-	public boolean compareTabOrder(Component component1,
-			Component component2) {
-		return false; // TODO
-	} // compareTabOrder()
-
+   * compareTabOrder
+   * 
+   * @param component1
+   *          TODO
+   * @param component2
+   *          TODO
+   * @returns boolean
+   */
+  public boolean compareTabOrder(Component component1, Component component2)
+  {
+    return false; // TODO
+  } // compareTabOrder()
 
 } // DefaultFocusManager

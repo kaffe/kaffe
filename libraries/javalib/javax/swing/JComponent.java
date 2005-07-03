@@ -100,7 +100,6 @@ public abstract class JComponent extends Container implements Serializable
   /** 
    * Accessibility support is currently missing.
    */
-
   protected AccessibleContext accessibleContext;
 
   public abstract class AccessibleJComponent 
@@ -163,7 +162,6 @@ public abstract class JComponent extends Container implements Serializable
    * ComponentUI.getMaximumSize} method on the {@link #ui} property.
    */
   Dimension maximumSize;
-
 
   /**
    * A value between 0.0 and 1.0 indicating the preferred horizontal
@@ -348,7 +346,6 @@ public abstract class JComponent extends Container implements Serializable
    */
   private static final Object paintLock = new Object();
 
-
   /**
    * The default locale of the component.
    * 
@@ -390,7 +387,6 @@ public abstract class JComponent extends Container implements Serializable
    * @see #registerKeyboardAction
    */
   public static final int WHEN_IN_FOCUSED_WINDOW = 2;
-
 
   /**
    * Creates a new <code>JComponent</code> instance.
@@ -613,12 +609,12 @@ public abstract class JComponent extends Container implements Serializable
    * @param property The property to return the listeners of
    *
    * @return The set of <code>PropertyChangeListener</code> objects in 
-   * {@link #changeSupport} registered to listen on the specified propert
+   *     {@link #changeSupport} registered to listen on the specified property
    */
   public PropertyChangeListener[] getPropertyChangeListeners(String property)
   {
     return changeSupport == null ? new PropertyChangeListener[0]
-                                 : changeSupport.getPropertyChangeListeners(property);
+                          : changeSupport.getPropertyChangeListeners(property);
   }
 
   /**
@@ -756,9 +752,9 @@ public abstract class JComponent extends Container implements Serializable
     throws PropertyVetoException
   {
     VetoableChangeListener[] listeners = getVetoableChangeListeners();
-    
+
     PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-    
+
     for (int i = 0; i < listeners.length; i++)
       listeners[i].vetoableChange(evt);
   }
@@ -772,7 +768,6 @@ public abstract class JComponent extends Container implements Serializable
   {
     return null;
   }
-
 
   /**
    * Get the value of the {@link #alignmentX} property.
@@ -881,7 +876,6 @@ public abstract class JComponent extends Container implements Serializable
     g2.setColor(this.getForeground());
     return g2;
   }
-
 
   /**
    * Get the value of the {@link #debugGraphicsOptions} property.
@@ -1024,17 +1018,25 @@ public abstract class JComponent extends Container implements Serializable
    */
   public Dimension getPreferredSize()
   {
+    Dimension prefSize = null;
     if (preferredSize != null)
-      return preferredSize;
+      prefSize = preferredSize;
 
     if (ui != null)
       {
         Dimension s = ui.getPreferredSize(this);
         if (s != null)
-          return s;
+          prefSize = s;
       }
-    Dimension p = super.getPreferredSize();
-    return p;
+    if (prefSize == null)
+      prefSize = super.getPreferredSize();
+    // make sure that prefSize is not smaller than minSize
+    if (minimumSize != null && prefSize != null
+        && (minimumSize.width > prefSize.width
+            || minimumSize.height > prefSize.height))
+        prefSize = new Dimension(Math.max(minimumSize.width, prefSize.width),
+                                 Math.max(minimumSize.height, prefSize.height));
+    return prefSize;
   }
 
   /**
@@ -1141,10 +1143,10 @@ public abstract class JComponent extends Container implements Serializable
    */
   public JToolTip createToolTip()
   {
-        JToolTip toolTip = new JToolTip();
-        toolTip.setComponent(this);
-        toolTip.setTipText(toolTipText);
-    
+    JToolTip toolTip = new JToolTip();
+    toolTip.setComponent(this);
+    toolTip.setTipText(toolTipText);
+
     return toolTip;
   }
 
@@ -1155,7 +1157,7 @@ public abstract class JComponent extends Container implements Serializable
    * @param event The event the tooltip is being presented in response to
    *
    * @return The point at which to display a tooltip, or <code>null</code>
-   * if swing is to choose a default location.
+   *     if swing is to choose a default location.
    */
   public Point getToolTipLocation(MouseEvent event)
   {
@@ -1177,14 +1179,14 @@ public abstract class JComponent extends Container implements Serializable
       toolTipText = null;
       return;
     }
-                
+
     // XXX: The tip text doesn't get updated unless you set it to null
     // and then to something not-null. This is consistent with the behaviour
     // of Sun's ToolTipManager.
-                        
+
     String oldText = toolTipText;
     toolTipText = text;
-                
+
     if (oldText == null)
       ToolTipManager.sharedInstance().registerComponent(this);
   }
@@ -1315,10 +1317,10 @@ public abstract class JComponent extends Container implements Serializable
    * <code>CTRL+TAB</code> and <code>CTRL+SHIFT+TAB</code>.
    *
    * @return <code>true</code> if you want this component to manage its own
-   * focus, otherwise (by default) <code>false</code>
+   *     focus, otherwise (by default) <code>false</code>
    *
    * @deprecated 1.4 Use {@link Component.setFocusTraversalKeys(int,Set)} and
-   * {@link Container.setFocusCycleRoot(boolean)} instead
+   *     {@link Container.setFocusCycleRoot(boolean)} instead
    */
   public boolean isManagingFocus()
   {
@@ -1405,8 +1407,8 @@ public abstract class JComponent extends Container implements Serializable
    * one of these methods rather than <code>paint</code>.</p>
    *
    * <p>For more details on the painting sequence, see <a
-   * href="http://java.sun.com/products/jfc/tsc/articles/painting/index.html">this
-   * article</a>.</p>
+   * href="http://java.sun.com/products/jfc/tsc/articles/painting/index.html">
+   * this article</a>.</p>
    *
    * @param g The graphics context to paint with
    *
@@ -1596,7 +1598,6 @@ public abstract class JComponent extends Container implements Serializable
    * sun-private solution so I will only immitate it as much as it matters
    * to external observers.
    */
-
   private static class ActionListenerProxy
     extends AbstractAction
   {
@@ -1629,12 +1630,12 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @param anAction The action to be registered
    * @param aCommand The command to deliver in the delivered {@link
-   * java.awt.ActionEvent}
+   *     java.awt.ActionEvent}
    * @param aKeyStroke The keystroke to register on
    * @param aCondition One of the values {@link #UNDEFINED_CONDITION},
-   * {@link #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT}, {@link #WHEN_FOCUSED}, or
-   * {@link #WHEN_IN_FOCUSED_WINDOW}, indicating the condition which must
-   * be met for the action to be fired
+   *     {@link #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT}, {@link #WHEN_FOCUSED}, or
+   *     {@link #WHEN_IN_FOCUSED_WINDOW}, indicating the condition which must
+   *     be met for the action to be fired
    *
    * @see #unregisterKeyboardAction
    * @see #getConditionForKeystroke
@@ -1647,8 +1648,6 @@ public abstract class JComponent extends Container implements Serializable
   {
     getInputMap(cond).put(stroke, new ActionListenerProxy(act, cmd));
   }
-
-
 
   public final void setInputMap(int condition, InputMap map)
   {
@@ -1723,11 +1722,11 @@ public abstract class JComponent extends Container implements Serializable
    * @param aKeyStroke The keystroke to return the condition of
    *
    * @return One of the values {@link #UNDEFINED_CONDITION}, {@link
-   * #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT}, {@link #WHEN_FOCUSED}, or {@link
-   * #WHEN_IN_FOCUSED_WINDOW}
+   *     #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT}, {@link #WHEN_FOCUSED}, or {@link
+   *     #WHEN_IN_FOCUSED_WINDOW}
    *
    * @deprecated As of 1.3 KeyStrokes can be registered with multiple
-   * simultaneous conditions.
+   *     simultaneous conditions.
    *
    * @see #registerKeyboardAction   
    * @see #unregisterKeyboardAction   
@@ -1783,8 +1782,8 @@ public abstract class JComponent extends Container implements Serializable
    * the swing {@link InputMap} / {@link ActionMap} system.
    *
    * See <a
-   * href="http://java.sun.com/products/jfc/tsc/special_report/kestrel/keybindings.html">this
-   * report</a> for more details, it's somewhat complex.
+   * href="http://java.sun.com/products/jfc/tsc/special_report/kestrel/keybindings.html">
+   * this report</a> for more details, it's somewhat complex.
    */
   protected void processKeyEvent(KeyEvent e)
   {
@@ -1837,6 +1836,7 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void unregisterKeyboardAction(KeyStroke aKeyStroke)
   {
+    // FIXME: Must be implemented.
   }
 
 
@@ -1858,7 +1858,6 @@ public abstract class JComponent extends Container implements Serializable
     if (actionMap != null)
       actionMap.clear();
   }
-
 
   /**
    * Mark the described region of this component as dirty in the current
@@ -1900,8 +1899,8 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @return The result of {@link #requestFocus}
    *
-   * @deprecated Use {@link #requestFocus()} on the default component provided from
-   * the {@link FocusTraversalPolicy} instead.
+   * @deprecated Use {@link #requestFocus()} on the default component provided
+   *     from the {@link FocusTraversalPolicy} instead.
    */
   public boolean requestDefaultFocus()
   {
@@ -2063,22 +2062,6 @@ public abstract class JComponent extends Container implements Serializable
     firePropertyChange("minimumSize", oldMinimumSize, minimumSize);
     revalidate();
     repaint();
-
-    // adjust preferred and maximum size accordingly
-    if (preferredSize != null)
-      {
-	Dimension prefSize = getPreferredSize();
-	prefSize.width = Math.max(prefSize.width, minimumSize.width);
-	prefSize.height = Math.max(prefSize.height, minimumSize.height);
-	setPreferredSize(prefSize);
-      }
-    if (maximumSize != null)
-      {
-	Dimension maxSize = getMaximumSize();
-	maxSize.width = Math.max(maxSize.width, minimumSize.width);
-	maxSize.height = Math.max(maxSize.height, minimumSize.height);
-	setMaximumSize(maxSize);
-      }
   }
 
   /**
@@ -2161,8 +2144,6 @@ public abstract class JComponent extends Container implements Serializable
     boolean oldOpaque = opaque;
     opaque = isOpaque;
     firePropertyChange("opaque", oldOpaque, opaque);
-    revalidate();
-    repaint();
   }
 
   /**

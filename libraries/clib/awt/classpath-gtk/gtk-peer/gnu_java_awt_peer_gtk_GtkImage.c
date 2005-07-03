@@ -46,11 +46,6 @@ exception statement from your version. */
 #define SCALE_REPLICATE    8 
 #define SCALE_AREA_AVERAGING  16
 
-/* functions used by other gtk peer native routines */
-GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj);
-GdkPixmap *gnu_java_awt_peer_gtk_GtkImage_getPixmap(JNIEnv *env, jobject obj);
-jboolean gnu_java_awt_peer_gtk_GtkImage_isOffScreen(JNIEnv *env, jobject obj);
-
 /* local stuff */
 static GdkInterpType mapHints(jint hints);
 static jboolean offScreen (JNIEnv * env, jobject obj);

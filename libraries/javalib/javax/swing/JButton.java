@@ -89,31 +89,35 @@ public class JButton extends AbstractButton
 
   protected void configurePropertiesFromAction(Action a)
   {
-    //Factory method which sets the AbstractButton's properties according to values from the Action instance. 
+    // Factory method which sets the AbstractButton's properties according to
+    // values from the Action instance. 
     super.configurePropertiesFromAction(a);
   }
 
   public AccessibleContext getAccessibleContext()
   {
-    //Gets the AccessibleContext associated with this JButton. 
+    // Gets the AccessibleContext associated with this JButton. 
     return null;
   }
 
   public String getUIClassID()
   {
-    //Returns a string that specifies the name of the L&F class that renders this component.  
+    // Returns a string that specifies the name of the L&F class that renders
+    // this component.  
     return "ButtonUI";
   }
 
   public boolean isDefaultButton()
   {
-    //Returns whether or not this button is the default button on the RootPane.  
+    // Returns whether or not this button is the default button on the
+    // RootPane.
     return is_def;
   }
 
   public boolean isDefaultCapable()
   {
-    //Returns whether or not this button is capable of being the default button on the RootPane. 
+    // Returns whether or not this button is capable of being the default
+    // button on the RootPane. 
     return def;
   }
 

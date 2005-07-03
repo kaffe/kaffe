@@ -319,17 +319,17 @@ public class ImageIcon
   {
     try
       {
-	tracker.addImage(image, id);
-	id++;
-	tracker.waitForID(id - 1);
+        tracker.addImage(image, id);
+        id++;
+        tracker.waitForID(id - 1);
       }
     catch (InterruptedException ex)
       {
-	; // ignore this for now
+        ; // ignore this for now
       }
     finally
       {
-	loadStatus = tracker.statusID(id - 1, false);
+        loadStatus = tracker.statusID(id - 1, false);
       }
   }
 

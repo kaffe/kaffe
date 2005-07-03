@@ -78,7 +78,6 @@ public class DefaultListSelectionModel implements Cloneable,
    */
   int selectionMode = MULTIPLE_INTERVAL_SELECTION;
 
-
   /**
    * The index of the "lead" of the most recent selection. The lead is the
    * second argument in any call to {@link #setSelectionInterval}, {@link
@@ -87,7 +86,6 @@ public class DefaultListSelectionModel implements Cloneable,
    * over.
    */
   int leadSelectionIndex = -1;
-
 
   /**
    * The index of the "anchor" of the most recent selection. The anchor is
@@ -101,7 +99,6 @@ public class DefaultListSelectionModel implements Cloneable,
    * @see #setAnchorSelectionIndex
    */
   int anchorSelectionIndex = -1;
-
 
   /**
    * controls the range of indices provided in any {@link
@@ -119,7 +116,6 @@ public class DefaultListSelectionModel implements Cloneable,
    * @see #setLeadAnchorNotificationEnabled
    */
   protected boolean leadAnchorNotificationEnabled = true;
-
 
   /**
    * Whether the selection is currently "adjusting". Any {@link
@@ -139,7 +135,6 @@ public class DefaultListSelectionModel implements Cloneable,
    * cleared bit indicates a non-selected index.
    */
   BitSet sel = new BitSet();
-
 
   /**
    * Gets the value of the {@link #selectionMode} property.
@@ -290,7 +285,6 @@ public class DefaultListSelectionModel implements Cloneable,
     leadAnchorNotificationEnabled = l;
   }
 
-
   /**
    * Gets the value of the {@link #valueIsAdjusting} property.
    *
@@ -326,14 +320,13 @@ public class DefaultListSelectionModel implements Cloneable,
     return sel.isEmpty();
   }
 
-
   /**
    * Gets the smallest index which is currently a member of a selection
    * interval.
    *
    * @return The least integer <code>i</code> such that <code>i >=
-   * 0</code> and <code>i</code> is a member of a selected interval, or
-   * <code>-1</code> if there are no selected intervals
+   *     0</code> and <code>i</code> is a member of a selected interval, or
+   *     <code>-1</code> if there are no selected intervals
    *
    * @see #getMaxSelectionIndex
    */
@@ -350,8 +343,8 @@ public class DefaultListSelectionModel implements Cloneable,
    * interval.
    *
    * @return The greatest integer <code>i</code> such that <code>i >=
-   * 0</code> and <code>i</code> is a member of a selected interval, or
-   * <code>-1</code> if there are no selected intervals
+   *     0</code> and <code>i</code> is a member of a selected interval, or
+   *     <code>-1</code> if there are no selected intervals
    *
    * @see #getMinSelectionIndex
    */
@@ -375,7 +368,7 @@ public class DefaultListSelectionModel implements Cloneable,
    * @param a The index to search for
    *
    * @return <code>true</code> if the index is a member of a selection interval,
-   * otherwise <code>false</code>
+   *     otherwise <code>false</code>
    */
   public boolean isSelectedIndex(int a)
   {
@@ -495,7 +488,7 @@ public class DefaultListSelectionModel implements Cloneable,
    * @param index The position to insert indices at
    * @param length The number of indices to insert
    * @param before Indicates whether to insert the indices before the index
-   * or after it
+   *     or after it
    */
   public void insertIndexInterval(int index,
                                   int length,
@@ -572,7 +565,7 @@ public class DefaultListSelectionModel implements Cloneable,
    * @param firstIndex The low index of the changed range
    * @param lastIndex The high index of the changed range
    * @param isAdjusting Whether this change is part of a seqence of adjustments
-   * made to the selection, such as during interactive scrolling
+   *     made to the selection, such as during interactive scrolling
    */
   protected void fireValueChanged(int firstIndex, int lastIndex,
 				  boolean isAdjusting)

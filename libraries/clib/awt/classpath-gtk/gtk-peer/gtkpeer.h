@@ -1,5 +1,5 @@
 /* gtkpeer.h -- Some global variables and #defines
-   Copyright (C) 1998, 1999, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -503,6 +503,11 @@ union widget_union
   void **void_widget;
   GtkWidget **widget;
 };
+
+/* GtkImage functions used by other gtk peer native routines */
+GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj);
+GdkPixmap *gnu_java_awt_peer_gtk_GtkImage_getPixmap(JNIEnv *env, jobject obj);
+jboolean gnu_java_awt_peer_gtk_GtkImage_isOffScreen(JNIEnv *env, jobject obj);
 
 #define DEBUG_LOCKING 0
 

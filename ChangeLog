@@ -2,6 +2,96 @@
 
 	Resynced with GNU Classpath.
 
+	2005-06-20  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/DefaultDesktopManager.java (getBoundsForIconOf):
+        Initialize desktopPane before use.
+
+	2005-06-20  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * javax/swing/text/html/HTML.java: Added public parameterless
+        constructor for Tag.
+
+	2005-06-20  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/DefaultDesktopManager.java
+        (getBoundsForIconOf): No reason to check if desktopPane is null
+        after dereferencing desktopPane in code. Fixes bug #13461.
+
+	2005-06-20  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JScrollPane.java
+        (JScrollPane): Viewport was not being set when
+        the view was null. Whenever a view would be added to container
+        it would not appear. This was changed to use setViewportView.
+
+	2005-06-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/AbstractButton.java:
+        * javax/swing/AbstractCellEditor.java:
+        * javax/swing/Action.java:
+        * javax/swing/BorderFactory.java:
+        * javax/swing/ButtonGroup.java:
+        * javax/swing/CellRendererPane.java:
+        * javax/swing/DebugGraphics.java:
+        * javax/swing/DefaultBoundedRangeModel.java:
+        * javax/swing/DefaultButtonModel.java:
+        * javax/swing/DefaultCellEditor.java:
+        * javax/swing/DefaultComboBoxModel.java:
+        * javax/swing/DefaultDesktopManager.java:
+        * javax/swing/DefaultFocusManager.java:
+        * javax/swing/DefaultListCellRenderer.java:
+        * javax/swing/DefaultListModel.java:
+        * javax/swing/DefaultListSelectionModel.java:
+        * javax/swing/FocusManager.java:
+        * javax/swing/GrayFilter.java:
+        * javax/swing/ImageIcon.java:
+        * javax/swing/JButton.java:
+        * javax/swing/JCheckBoxMenuItem.java:
+        * javax/swing/JColorChooser.java:
+        * javax/swing/JComboBox.java:
+        * javax/swing/JComponent.java:
+        * javax/swing/JDesktopPane.java:
+        Reformatted these sourcefiles to better match our coding style.
+
+	2005-06-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JComponent.java
+        (getPreferredSize): Make sure that preferredSize is greater than
+        minimumSize.
+        (setMinimumSize): Removed hack to adjust preferredSize. This is moved
+        into the method getPreferredSize().
+
+	2005-06-20  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JComponent.java
+        (setOpaque): Don't revalidate and repaint when the opaque property
+        is changed (at least not here).
+
+	2005-06-20  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+        * javax/swing/text/html/HTMLEditorKit.java:
+        Inherit from StyledEditorKit, Cloneable, Serializable and adding
+        string constants.
+        (handleStartTag): Fixed typo in comment.
+
+	2005-06-19  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+        (gnu_java_awt_peer_gtk_GtkImage_getPixbuf,
+        gnu_java_awt_peer_gtk_GtkImage_getPixmap,
+        gnu_java_awt_peer_gtk_GtkImage_isOffScreen): Move declaration to ...
+        * native/jni/gtk-peer/gtkpeer.h: here.
+
+	2005-06-18  Chris Burdess <dog@bluezoo.org>
+
+        * java/util/logging/LogManager.java: Set default level of root
+        logger to INFO.
+
+2005-07-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-06-17  Anthony Balkissoon  <abalkiss@redhat.com>
 
         * javax/swing/JApplet.java,

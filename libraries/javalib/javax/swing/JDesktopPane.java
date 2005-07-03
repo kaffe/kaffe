@@ -154,10 +154,9 @@ public class JDesktopPane extends JLayeredPane implements Accessible
 
     // FIXME: Unsupported mode.
     if (mode == OUTLINE_DRAG_MODE)
-      {
-        // throw new IllegalArgumentException("Outline drag modes are unsupported.");
-        mode = LIVE_DRAG_MODE;
-      }
+      // throw new IllegalArgumentException("Outline drag modes are
+      // unsupported.");
+      mode = LIVE_DRAG_MODE;
 
     dragMode = mode;
   }
@@ -241,22 +240,22 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   {
     if (selectedFrame != null)
       {
-	try
-	  {
-	    selectedFrame.setSelected(false);
-	  }
-	catch (PropertyVetoException e)
-	  {
-	  }
+        try
+          {
+            selectedFrame.setSelected(false);
+          }
+        catch (PropertyVetoException e)
+          {
+          }
       }
     selectedFrame = null;
 
     try
       {
-	if (frame != null)
-	  frame.setSelected(true);
+        if (frame != null)
+          frame.setSelected(true);
 
-	selectedFrame = frame;
+        selectedFrame = frame;
       }
     catch (PropertyVetoException e)
       {

@@ -67,7 +67,7 @@ public class DefaultListModel extends AbstractListModel
    * @return The object at the given index
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public Object elementAt(int index)
   {
@@ -90,9 +90,9 @@ public class DefaultListModel extends AbstractListModel
    * @param element The element to search for
    *
    * @return The first index in the list at which an object
-   * <code>obj</code> exists such that <code>obj.equals(element)</code> is
-   * <code>true</code>; if no such object exists, the method returns
-   * <code>-1</code>
+   *     <code>obj</code> exists such that <code>obj.equals(element)</code> is
+   *     <code>true</code>; if no such object exists, the method returns
+   *     <code>-1</code>
    */
   public int indexOf(Object element)
   {
@@ -107,9 +107,9 @@ public class DefaultListModel extends AbstractListModel
    * @param startIndex The index to begin searching at
    *
    * @return The first index in the list, greater than or equal to
-   * <code>startIndex</code>, at which an object <code>obj</code> exists
-   * such that <code>obj.equals(element)</code> is <code>true</code>; if no
-   * such object exists, the method returns <code>-1</code>
+   *     <code>startIndex</code>, at which an object <code>obj</code> exists
+   *     such that <code>obj.equals(element)</code> is <code>true</code>; if no
+   *     such object exists, the method returns <code>-1</code>
    */
   public int indexOf(Object element, int startIndex)
   {
@@ -122,9 +122,9 @@ public class DefaultListModel extends AbstractListModel
    * @param element The element to search for
    *
    * @return The last index in the list at which an object
-   * <code>obj</code> exists such that <code>obj.equals(element)</code> is
-   * <code>true</code>; if no such object exists, the method returns
-   * <code>-1</code>
+   *     <code>obj</code> exists such that <code>obj.equals(element)</code> is
+   *     <code>true</code>; if no such object exists, the method returns
+   *     <code>-1</code>
    */
   public int lastIndexOf(Object element)
   {
@@ -139,9 +139,9 @@ public class DefaultListModel extends AbstractListModel
    * @param endIndex The index to finish searching at
    *
    * @return The last index in the list, less than to or equal to
-   * <code>endIndexIndex</code>, at which an object <code>obj</code> exists
-   * such that <code>obj.equals(element)</code> is <code>true</code>; if no
-   * such object exists, the method returns <code>-1</code>
+   *     <code>endIndexIndex</code>, at which an object <code>obj</code> exists
+   *     such that <code>obj.equals(element)</code> is <code>true</code>; if no
+   *     such object exists, the method returns <code>-1</code>
    */
   public int lastIndexOf(Object element, int endIndex)
   {
@@ -156,7 +156,7 @@ public class DefaultListModel extends AbstractListModel
    * @return The list value at the provided index
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public Object get(int index)
   {
@@ -172,7 +172,7 @@ public class DefaultListModel extends AbstractListModel
    * @return The value previously held at the specified index
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public Object set(int index, Object element)
   {
@@ -193,7 +193,7 @@ public class DefaultListModel extends AbstractListModel
    * @param element The element to insert at the index
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds <code>[0, size()]</code>
+   *     outside the bounds <code>[0, size()]</code>
    */
   public void add(int index, Object element)
   {
@@ -228,7 +228,7 @@ public class DefaultListModel extends AbstractListModel
    * Gets an array containing the elements of the list.
    *
    * @return An array of the objects in the list, in the order they occur
-   * in the list
+   *     in the list
    */
   public Object[] toArray()
   {
@@ -241,7 +241,7 @@ public class DefaultListModel extends AbstractListModel
    * @param element The element to search for
    *
    * @return <code>true</code> if <code>element</code> is a member of the
-   * list, otherwise <code>false</code>
+   *     list, otherwise <code>false</code>
    */
   public boolean contains(Object element)
   {
@@ -255,7 +255,7 @@ public class DefaultListModel extends AbstractListModel
    * @param array The array to copy the list into
    * 
    * @throws IndexOutOfBoundsException if the array is too small to hold the
-   * elements of the list
+   *     elements of the list
    */
   public void copyInto(Object[] array)
   {
@@ -283,7 +283,7 @@ public class DefaultListModel extends AbstractListModel
    * @return The value at the index, which has been removed from the list
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public Object remove(int index)
   {
@@ -297,7 +297,7 @@ public class DefaultListModel extends AbstractListModel
    * Determines whether the list is empty.
    *
    * @return <code>true</code> if the list is empty, otherwise
-   * <code>false</code>
+   *     <code>false</code>
    */
   public boolean isEmpty()
   {
@@ -348,14 +348,14 @@ public class DefaultListModel extends AbstractListModel
   {
     int oldSize = elements.size();
     elements.setSize(size);
-    if (oldSize < size) 
-    {
-      fireIntervalAdded(this, oldSize, size - 1); 
-    }
-    else if (oldSize > size) 
-    {
-      this.fireIntervalRemoved(this, size, oldSize - 1);
-    }
+    if (oldSize < size)
+      {
+        fireIntervalAdded(this, oldSize, size - 1);
+      }
+    else if (oldSize > size)
+      {
+        this.fireIntervalRemoved(this, size, oldSize - 1);
+      }
   }
 
   /**
@@ -396,7 +396,7 @@ public class DefaultListModel extends AbstractListModel
    * @param index The list index at which to set a value 
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public void setElementAt(Object element, int index)
   {
@@ -410,7 +410,7 @@ public class DefaultListModel extends AbstractListModel
    * @param index The index of the element to remove
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public void removeElementAt(int index)
   {
@@ -429,7 +429,7 @@ public class DefaultListModel extends AbstractListModel
    * @param index The index to insert the element at
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds <code>[0, size()]</code>
+   *     outside the bounds <code>[0, size()]</code>
    */
   public void insertElementAt(Object element, int index)
   {
@@ -444,7 +444,7 @@ public class DefaultListModel extends AbstractListModel
    * @param element The element to remove
    *
    * @return <code>true</code> if the element existed in the list (and was
-   * removed), <code>false</code> otherwise
+   *     removed), <code>false</code> otherwise
    */
   public boolean removeElement(Object element)
   {
@@ -481,8 +481,8 @@ public class DefaultListModel extends AbstractListModel
    * @param endIndex The last index in the range to remove
    *
    * @throws ArrayIndexOutOfBoundsException if either index is outside the
-   * valid range of indices for this list <code>[0, size())</code>
-   * @throws IllegalArgumentException if <code>startIndex > endIndex</code>
+   *     valid range of indices for this list <code>[0, size())</code>
+   * @throws IllegalArgumentException if <code>startIndex &gt; endIndex</code>
    */
   public void removeRange(int startIndex, int endIndex)
   {
@@ -512,7 +512,7 @@ public class DefaultListModel extends AbstractListModel
    * @return The list value at the provided index
    *
    * @throws ArrayIndexOutOfBoundsException If the provided index is
-   * outside the bounds of the list <code>[0, size())</code>
+   *     outside the bounds of the list <code>[0, size())</code>
    */
   public Object getElementAt(int index)
   {

@@ -42,8 +42,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
@@ -216,10 +214,9 @@ public class CellRendererPane
    * @param h the height of the components drawing area
    */
   public void paintComponent(Graphics graphics, Component c,
-                             Container p, int x, int y, int w, int h) {
-
+                             Container p, int x, int y, int w, int h)
+  {
     paintComponent(graphics, c, p, x, y, w, h, false);
-
   } // paintComponent()
 
   /**
@@ -237,9 +234,7 @@ public class CellRendererPane
   public void paintComponent(Graphics graphics, Component c,
                              Container p, Rectangle r)
   {
-
     paintComponent(graphics, c, p, r.x, r.y, r.width, r.height);
-
   } // paintComponent()
 
   /**

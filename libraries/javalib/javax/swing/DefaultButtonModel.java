@@ -51,7 +51,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 /**
- * The purpose of this class is to model the dynamic state of an abstract
+ * The pUrpose of this class is to model the dynamic state of an abstract
  * button. The concrete button type holding this state may be a a "toggle"
  * button (checkbox, radio button) or a "push" button (menu button, button).
  * If the model is disabled, only the "selected" property can be changed. An
@@ -337,16 +337,16 @@ public class DefaultButtonModel implements ButtonModel, Serializable
 
     if ((oldstate & SELECTED) == 0 && (newstate & SELECTED) == SELECTED)
       {
-	fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
-	                                   null, ItemEvent.SELECTED));
+        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
+                                           null, ItemEvent.SELECTED));
         if (group != null)
           group.setSelected(this, true);
       }
 
     else if ((oldstate & SELECTED) == SELECTED && (newstate & SELECTED) == 0)
       {
-	fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
-	                                   null, ItemEvent.DESELECTED));
+        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
+                                           null, ItemEvent.DESELECTED));
         if (group != null)
           group.setSelected(this, false);
       }
@@ -476,8 +476,8 @@ public class DefaultButtonModel implements ButtonModel, Serializable
   {
     if (mnemonic != key)
       {
-	mnemonic = key;
-	fireStateChanged();
+        mnemonic = key;
+        fireStateChanged();
       }
   }
 
@@ -492,8 +492,8 @@ public class DefaultButtonModel implements ButtonModel, Serializable
   {
     if (actionCommand != s)
       {
-	actionCommand = s;
-	fireStateChanged();
+        actionCommand = s;
+        fireStateChanged();
       }
   }
 
@@ -519,8 +519,8 @@ public class DefaultButtonModel implements ButtonModel, Serializable
   {
     if (group != g)
       {
-	group = g;
-	fireStateChanged();
+        group = g;
+        fireStateChanged();
       }
   }
 

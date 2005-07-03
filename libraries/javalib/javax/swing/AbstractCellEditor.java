@@ -162,8 +162,8 @@ public abstract class AbstractCellEditor
   }
 
   /**
-   * Notifies all registered listeners that the editing of the cell has
-   * has been stopped.
+   * Notifies all registered listeners that the editing of the cell has has been
+   * stopped.
    */
   protected void fireEditingStopped()
   {
@@ -171,7 +171,7 @@ public abstract class AbstractCellEditor
 
     for (int index = 0; index < listeners.length; index++)
       {
-	listeners [index].editingStopped (changeEvent);
+        listeners[index].editingStopped(changeEvent);
       }
   }
 
@@ -185,7 +185,7 @@ public abstract class AbstractCellEditor
 
     for (int index = 0; index < listeners.length; index++)
       {
-	listeners [index].editingCanceled (changeEvent);
+        listeners[index].editingCanceled(changeEvent);
       }
   }
 }

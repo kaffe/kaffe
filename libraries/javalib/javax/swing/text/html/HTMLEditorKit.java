@@ -39,18 +39,23 @@ exception statement from your version. */
 package javax.swing.text.html;
 
 import java.io.Reader;
+import java.io.Serializable;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyledEditorKit;
 
 /**
  * This class is NOT implemented. This file currently holds only
  * declarations of the two enclosing classes, necessary for testing
  * the implemented javax.swing.text.html.parser package.
+ *
  * @author No authorship is taken, implement the class and be!
  * TODO: replace this header after implementing the class.
  */
 public class HTMLEditorKit
+  extends StyledEditorKit
+  implements Serializable, Cloneable
 {
   /**
    * The abstract HTML parser declaration.
@@ -153,7 +158,7 @@ public class HTMLEditorKit
      * is found or if the parser concludes that the one should be present
      * in the current position.
      * @param tag The tag being handled
-     * @param position The tag position in the text bein parsed
+     * @param position The tag position in the text being parsed
      */
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
                                int position
@@ -170,4 +175,75 @@ public class HTMLEditorKit
     {
     }
   }
+
+  /**
+   * Use serialVersionUID (v1.4) for interoperability.
+   */
+  private static final long serialVersionUID = 8751997116710384592L;
+
+  /**
+   * Default cascading stylesheed file ("default.css").
+   */
+  public static final String DEFAULT_CSS = "default.css";
+
+  /**
+   * The <b>bold</b> action identifier.
+   */
+  public static final String BOLD_ACTION = "html-bold-action";
+
+  /**
+   * The <i>italic</i> action identifier.
+   */
+  public static final String ITALIC_ACTION = "html-italic-action";
+
+  /**
+   * The <font color="#FF0000">color</font> action indentifier
+   * (passing the color as an argument).
+   */
+  public static final String COLOR_ACTION = "html-color-action";
+
+  /**
+   * The <font size="+1">increase</font> font action identifier.
+   */
+  public static final String FONT_CHANGE_BIGGER = "html-font-bigger";
+
+  /**
+   * The <font size="-1">decrease</font> font action identifier.
+   */
+  public static final String FONT_CHANGE_SMALLER = "html-font-smaller";
+
+  /**
+   * Align images at the bottom.
+   */
+  public static final String IMG_ALIGN_BOTTOM = "html-image-align-bottom";
+
+  /**
+   * Align images at the middle.
+   */
+  public static final String IMG_ALIGN_MIDDLE = "html-image-align-middle";
+
+  /**
+   * Align images at the top.
+   */
+  public static final String IMG_ALIGN_TOP = "html-image-align-top";
+
+  /**
+   * Align images at the border.
+   */
+  public static final String IMG_BORDER = "html-image-border";
+
+  /**
+   * The "logical style" action identifier, passing that style as parameter.
+   */
+  public static final String LOGICAL_STYLE_ACTION = "html-logical-style-action";
+
+  /**
+   * The "ident paragraph left" action.
+   */
+  public static final String PARA_INDENT_LEFT = "html-para-indent-left";
+
+  /**
+   * The "ident paragraph right" action.
+   */
+  public static final String PARA_INDENT_RIGHT = "html-para-indent-right";
 }

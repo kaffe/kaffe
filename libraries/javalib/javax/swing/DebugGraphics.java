@@ -404,11 +404,11 @@ public class DebugGraphics extends Graphics
   {
     try
       {
-	Thread.sleep(milliseconds);
+        Thread.sleep(milliseconds);
       }
     catch (InterruptedException e)
       {
-	// Ignore this.
+        // Ignore this.
       }
   }
   
@@ -424,13 +424,13 @@ public class DebugGraphics extends Graphics
   {
     for (int index = 0; index < (debugFlashCount - 1); ++index)
       {
-	graphics.setColor(color);
-	graphics.drawRect(x, y, width, height);
-	sleep(debugFlashTime);
-	
-	graphics.setColor(debugFlashColor);
-	graphics.drawRect(x, y, width, height);
-	sleep(debugFlashTime);
+        graphics.setColor(color);
+        graphics.drawRect(x, y, width, height);
+        sleep(debugFlashTime);
+
+        graphics.setColor(debugFlashColor);
+        graphics.drawRect(x, y, width, height);
+        sleep(debugFlashTime);
       }
 
     graphics.setColor(color);
@@ -449,13 +449,13 @@ public class DebugGraphics extends Graphics
   {
     for (int index = 0; index < (debugFlashCount - 1); ++index)
       {
-	graphics.setColor(color);
-	graphics.fillRect(x, y, width, height);
-	sleep(debugFlashTime);
-	
-	graphics.setColor(debugFlashColor);
-	graphics.fillRect(x, y, width, height);
-	sleep(debugFlashTime);
+        graphics.setColor(color);
+        graphics.fillRect(x, y, width, height);
+        sleep(debugFlashTime);
+
+        graphics.setColor(debugFlashColor);
+        graphics.fillRect(x, y, width, height);
+        sleep(debugFlashTime);
       }
 
     graphics.setColor(color);
@@ -696,13 +696,13 @@ public class DebugGraphics extends Graphics
   {
     for (int index = 0; index < (debugFlashCount - 1); ++index)
       {
-	graphics.setColor(color);
-	graphics.drawChars(data, offset, length, x, y);
-	sleep(debugFlashTime);
-	
-	graphics.setColor(debugFlashColor);
-	graphics.drawChars(data, offset, length, x, y);
-	sleep(debugFlashTime);
+        graphics.setColor(color);
+        graphics.drawChars(data, offset, length, x, y);
+        sleep(debugFlashTime);
+
+        graphics.setColor(debugFlashColor);
+        graphics.drawChars(data, offset, length, x, y);
+        sleep(debugFlashTime);
       }
 
     graphics.setColor(color);

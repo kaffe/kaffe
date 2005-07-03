@@ -189,14 +189,14 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
       p.setSelectedFrame(frame);
     else
       {
-	try
-	  {
-	    frame.setSelected(true);
-	  }
-	catch (PropertyVetoException e)
-	  {
-	    // Do nothing.
-	  }
+        try
+          {
+            frame.setSelected(true);
+          }
+        catch (PropertyVetoException e)
+          {
+            // Do nothing.
+          }
       }
 
     setBoundsForFrame(frame, normalBounds.x, normalBounds.y,
@@ -217,32 +217,32 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
       p.setSelectedFrame(null);
     else
       {
-	try
-	  {
-	    frame.setSelected(false);
-	  }
-	catch (PropertyVetoException e)
-	  {
-	  }
+        try
+          {
+            frame.setSelected(false);
+          }
+        catch (PropertyVetoException e)
+          {
+          }
       }
 
     Container c = frame.getParent();
 
-    if (! wasIcon(frame))
+    if (!wasIcon(frame))
       {
-	Rectangle r = getBoundsForIconOf(frame);
-	icon.setBounds(r);
-	setWasIcon(frame, Boolean.TRUE);
+        Rectangle r = getBoundsForIconOf(frame);
+        icon.setBounds(r);
+        setWasIcon(frame, Boolean.TRUE);
       }
 
     if (c != null)
       {
-	if (icon != null)
-	  {
-	    c.add(icon);
-	    icon.setVisible(true);
-	  }
-	c.remove(frame);
+        if (icon != null)
+          {
+            c.add(icon);
+            icon.setVisible(true);
+          }
+        c.remove(frame);
       }
   }
 
@@ -261,22 +261,22 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
     c.add(frame);
     frame.setVisible(true);
 
-    if (! frame.isSelected())
+    if (!frame.isSelected())
       {
-	JDesktopPane p = frame.getDesktopPane();
-	if (p != null)
-	  p.setSelectedFrame(frame);
-	else
-	  {
-	    try
-	      {
-		frame.setSelected(true);
-	      }
-	    catch (PropertyVetoException e)
-	      {
-		// Do nothing.
-	      }
-	  }
+        JDesktopPane p = frame.getDesktopPane();
+        if (p != null)
+          p.setSelectedFrame(frame);
+        else
+          {
+            try
+              {
+                frame.setSelected(true);
+              }
+            catch (PropertyVetoException e)
+              {
+                // Do nothing.
+              }
+          }
       }
 
     c.invalidate();
@@ -296,13 +296,13 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
       p.setSelectedFrame(frame);
     else
       {
-	try
-	  {
-	    frame.setSelected(true);
-	  }
-	catch (PropertyVetoException e)
-	  {
-	  }
+        try
+          {
+            frame.setSelected(true);
+          }
+        catch (PropertyVetoException e)
+          {
+          }
       }
 
     frame.toFront();
@@ -318,18 +318,18 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
     JDesktopPane p = frame.getDesktopPane();
     if (p != null)
       {
-	if (p.getSelectedFrame() == frame)
-	  p.setSelectedFrame(null);
+        if (p.getSelectedFrame() == frame)
+          p.setSelectedFrame(null);
       }
     else
       {
-	try
-	  {
-	    frame.setSelected(false);
-	  }
-	catch (PropertyVetoException e)
-	  {
-	  }
+        try
+          {
+            frame.setSelected(false);
+          }
+        catch (PropertyVetoException e)
+          {
+          }
       }
   }
 
@@ -361,6 +361,7 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
    * This method is called to drag the JInternalFrame to a new location.
    *
    * @param component The JComponent to drag, usually a JInternalFrame.
+   *
    * @param newX The new x coordinate.
    * @param newY The new y coordinate.
    */
@@ -368,16 +369,16 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
   {
     if (currentDragMode == JDesktopPane.OUTLINE_DRAG_MODE)
       {
-	// FIXME: Do outline drag mode painting.
+        // FIXME: Do outline drag mode painting.
       }
     else
       {
-	Rectangle b = component.getBounds();
-	if (component instanceof JDesktopIcon)
-	  component.setBounds(newX, newY, b.width, b.height);
-	else
-	  setBoundsForFrame((JInternalFrame) component, newX, newY, b.width,
-	                    b.height);
+        Rectangle b = component.getBounds();
+        if (component instanceof JDesktopIcon)
+          component.setBounds(newX, newY, b.width, b.height);
+        else
+          setBoundsForFrame((JInternalFrame) component, newX, newY, b.width,
+                            b.height);
       }
   }
 
@@ -391,10 +392,10 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
   {
     if (currentDragMode == JDesktopPane.OUTLINE_DRAG_MODE)
       {
-	setBoundsForFrame((JInternalFrame) component, dragCache.x,
-	                  dragCache.y, dragCache.width, dragCache.height);
-	pane = null;
-	dragCache = null;
+        setBoundsForFrame((JInternalFrame) component, dragCache.x, dragCache.y,
+                          dragCache.width, dragCache.height);
+        pane = null;
+        dragCache = null;
       }
     component.repaint();
   }
@@ -436,7 +437,7 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
 
     if (currentDragMode == JDesktopPane.OUTLINE_DRAG_MODE)
       {
-	// FIXME: Do outline drag painting.
+        // FIXME: Do outline drag painting.
       }
     else
       setBoundsForFrame(component, dragCache.x, dragCache.y, dragCache.width,
@@ -454,10 +455,10 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
   {
     if (currentDragMode == JDesktopPane.OUTLINE_DRAG_MODE)
       {
-	setBoundsForFrame((JInternalFrame) component, dragCache.x,
-	                  dragCache.y, dragCache.width, dragCache.height);
-	pane = null;
-	dragCache = null;
+        setBoundsForFrame((JInternalFrame) component, dragCache.x, dragCache.y,
+                          dragCache.width, dragCache.height);
+        pane = null;
+        dragCache = null;
       }
     component.repaint();
   }
@@ -516,12 +517,13 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
     // The icon also must not be placed where another icon is placed 
     // (regardless whether that frame is an icon currently or not)
     JDesktopPane desktopPane = frame.getDesktopPane();
-    Rectangle paneBounds = desktopPane.getBounds();
-    Insets insets = desktopPane.getInsets();
-    Dimension pref = frame.getDesktopIcon().getPreferredSize();
 
     if (desktopPane == null)
       return frame.getDesktopIcon().getBounds();
+
+    Rectangle paneBounds = desktopPane.getBounds();
+    Insets insets = desktopPane.getInsets();
+    Dimension pref = frame.getDesktopIcon().getPreferredSize();
 
     Component[] frames = desktopPane.getComponents();
 
@@ -534,12 +536,12 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
     iconRects = new Rectangle[count];
     for (int i = 0, j = 0; i < frames.length; i++)
       if (frames[i] instanceof JDesktopIcon)
-	iconRects[--count] = frames[i].getBounds();
+        iconRects[--count] = frames[i].getBounds();
       else if (frames[i] instanceof JInternalFrame
                && ((JInternalFrame) frames[i]).getWasIcon()
                && frames[i] != frame)
-	iconRects[--count] = ((JInternalFrame) frames[i]).getDesktopIcon()
-	                      .getBounds();
+        iconRects[--count] = ((JInternalFrame) frames[i])
+                                                 .getDesktopIcon().getBounds();
 
     int startingX = insets.left;
     int startingY = paneBounds.height - insets.bottom - pref.height;
@@ -549,25 +551,25 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
 
     while (iconRects.length > 0)
       {
-	clear = true;
-	for (int i = 0; i < iconRects.length; i++)
-	  {
-	    if (iconRects[i] != null && iconRects[i].intersects(ideal))
-	      {
-		clear = false;
-		break;
-	      }
-	  }
-	if (clear)
-	  return ideal;
+        clear = true;
+        for (int i = 0; i < iconRects.length; i++)
+          {
+            if (iconRects[i] != null && iconRects[i].intersects(ideal))
+              {
+                clear = false;
+                break;
+              }
+          }
+        if (clear)
+          return ideal;
 
-	startingX += pref.width;
-	if (startingX + pref.width > paneBounds.width - insets.right)
-	  {
-	    startingX = insets.left;
-	    startingY -= pref.height;
-	  }
-	ideal.setBounds(startingX, startingY, pref.width, pref.height);
+        startingX += pref.width;
+        if (startingX + pref.width > paneBounds.width - insets.right)
+          {
+            startingX = insets.left;
+            startingY -= pref.height;
+          }
+        ideal.setBounds(startingX, startingY, pref.width, pref.height);
       }
 
     return ideal;

@@ -1,6 +1,6 @@
 /* LogManager.java -- a class for maintaining Loggers and managing
    configuration properties
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002,2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -95,6 +95,10 @@ import java.util.StringTokenizer;
  *     the system property <code>gnu.classpath.home.url</code>.</li>
  * </ul>
  *
+ * <p>The <code>LogManager</code> has a level of <code>INFO</code> by
+ * default, and this will be inherited by <code>Logger</code>s unless they
+ * override it either by properties or programmatically.
+ *
  * @author Sascha Brawer (brawer@acm.org)
  */
 public class LogManager
@@ -140,6 +144,7 @@ public class LogManager
     logManager = this;
     loggers = new java.util.HashMap();
     rootLogger = new Logger("", null);
+    rootLogger.setLevel(Level.INFO);
     addLogger(rootLogger);
 
     /* Make sure that Logger.global has the rootLogger as its parent.

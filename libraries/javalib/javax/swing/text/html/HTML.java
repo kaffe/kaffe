@@ -965,6 +965,21 @@ public class HTML
     final int flags;
 
     /**
+     * Create the unitialised instance of HTML.Tag.
+     *
+     * The {@link #breaksFlow()}, {@link #isBlock()}
+     * and {@link #isPreformatted()} will always return false.
+     * The {@link #toString()} will return <code>null</code>.
+     *
+     * @since 1.3
+     */
+    public Tag()
+    {
+      name = null;
+      flags = 0;
+    }
+
+    /**
      * Creates a new Tag with the specified id, and with causesBreak
      * and isBlock set to false.
      */

@@ -192,9 +192,8 @@ public class DefaultComboBoxModel extends AbstractListModel
   public void setSelectedItem(Object object)
   {
     
-    /* Updates the selected item only if the given object
-     * is null or in the list (this is how the JDK behaves).
-     */ 
+    // Updates the selected item only if the given object
+    // is null or in the list (this is how the JDK behaves).
     if(object == null || list.contains(object)) {
 	selectedItem = object;
 	fireContentsChanged(this, -1, -1);
