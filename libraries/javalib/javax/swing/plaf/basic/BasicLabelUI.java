@@ -350,7 +350,6 @@ public class BasicLabelUI extends LabelUI implements PropertyChangeListener
     c.setForeground(defaults.getColor("Label.foreground"));
     c.setBackground(defaults.getColor("Label.background"));
     c.setFont(defaults.getFont("Label.font"));
-    c.setBorder(defaults.getBorder("Label.border"));
     //XXX: There are properties we don't use called disabledForeground
     //and disabledShadow.
   }
@@ -366,7 +365,6 @@ public class BasicLabelUI extends LabelUI implements PropertyChangeListener
     c.setForeground(null);
     c.setBackground(null);
     c.setFont(null);
-    c.setBorder(null);
   }
 
   /**

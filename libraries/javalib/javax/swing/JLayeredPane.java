@@ -124,9 +124,18 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public int getLayer(Component c)
   {
-    if (! componentToLayer.containsKey (c))
-	    throw new IllegalArgumentException ();
-    return ((Integer) componentToLayer.get(c)).intValue();
+    Component myComp = c;
+    while(! componentToLayer.containsKey(myComp))
+      {
+	myComp = myComp.getParent();
+	if (myComp == null)
+	  break;
+      }
+    if (myComp == null)
+      throw new IllegalArgumentException
+	("component is not in this JLayeredPane");
+    Integer layerObj = (Integer) componentToLayer.get(myComp);
+    return layerObj.intValue();
   }
 
   /**

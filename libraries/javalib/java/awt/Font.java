@@ -44,6 +44,7 @@ import gnu.java.awt.peer.ClasspathFontPeer;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.peer.FontPeer;
@@ -377,8 +378,8 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @return The logical name of the font.
   *
-  * @see getFamily()
-  * @see getFontName()
+  * @see #getFamily()
+  * @see #getFontName()
   */
   public String getName ()
 {
@@ -453,9 +454,9 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see getName()
-  * @see getFontName()
-  * @see GraphicsEnvironment.getAvailableFontFamilyNames()
+  * @see #getName()
+  * @see #getFontName()
+  * @see GraphicsEnvironment#getAvailableFontFamilyNames()
   */
   public String getFamily ()
 {
@@ -464,13 +465,13 @@ private static final long serialVersionUID = -4206021311591459213L;
 
 /**
   * Returns integer code representing the sum of style flags of this font, a
-  * combination of either {@link PLAIN}, {@link BOLD}, or {@link ITALIC}.
+  * combination of either {@link #PLAIN}, {@link #BOLD}, or {@link #ITALIC}.
   *
   * @return code representing the style of this font.
   *
-  * @see isPlain()
-  * @see isBold()
-  * @see isItalic()
+  * @see #isPlain()
+  * @see #isBold()
+  * @see #isItalic()
   */
   public int getStyle ()
 {
@@ -555,13 +556,13 @@ private static final long serialVersionUID = -4206021311591459213L;
 }
 
 /**
-  * Creates a new font with point size 1 and {@link PLAIN} style,
+  * Creates a new font with point size 1 and {@link #PLAIN} style,
   * reading font data from the provided input stream. The resulting font
   * can have further fonts derived from it using its
   * <code>deriveFont</code> method.
   *
   * @param fontFormat Integer code indicating the format the font data is
-  * in.Currently this can only be {@link TRUETYPE_FONT}.
+  * in.Currently this can only be {@link #TRUETYPE_FONT}.
   * @param is {@link InputStream} from which font data will be read. This
   * stream is not closed after font data is extracted.
   *
@@ -594,7 +595,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * @return A new {@link GlyphVector} containing glyphs mapped from str,
   * through the font's cmap table.
   *
-  * @see layoutGlyphVector()
+  * @see #layoutGlyphVector(FontRenderContext, char[], int, int, int)
   */
   public GlyphVector createGlyphVector (FontRenderContext ctx, String str)
 {
@@ -614,7 +615,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * @return A new {@link GlyphVector} containing glyphs mapped from str,
   * through the font's cmap table.
   *
-  * @see layoutGlyphVector()
+  * @see #layoutGlyphVector(FontRenderContext, char[], int, int, int)
   */
   public GlyphVector createGlyphVector (FontRenderContext ctx, CharacterIterator i)
 {
@@ -634,7 +635,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * @return A new {@link GlyphVector} containing glyphs mapped from str,
   * through the font's cmap table.
   *
-  * @see layoutGlyphVector()
+  * @see #layoutGlyphVector(FontRenderContext, char[], int, int, int)
   */
   public GlyphVector createGlyphVector (FontRenderContext ctx, char[] chars)
 {
@@ -652,7 +653,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * @return A new {@link GlyphVector} containing glyphs mapped from str,
   * through the font's cmap table.
   *
-  * @see layoutGlyphVector()
+  * @see #layoutGlyphVector(FontRenderContext, char[], int, int, int)
   *
   * @specnote This method is documented to perform character-to-glyph
   * conversions, in the Sun documentation, but its second parameter name is
@@ -776,7 +777,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @return A map of chracter attributes which this font currently has set.
   *
-  * @see getAvailableAttributes()
+  * @see #getAvailableAttributes()
   * @see java.text.AttributedCharacterIterator.Attribute
   * @see java.awt.font.TextAttribute
   */
@@ -790,7 +791,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @return An array of chracter attribute keys which this font understands.
   *
-  * @see getAttributes()
+  * @see #getAttributes()
   * @see java.text.AttributedCharacterIterator.Attribute
   * @see java.awt.font.TextAttribute
   */
@@ -800,8 +801,8 @@ private static final long serialVersionUID = -4206021311591459213L;
 }
 
 /**
-  * Returns a baseline code (one of {@link ROMAN_BASELINE}, {@link
-  * CENTER_BASELINE} or {@link HANGING_BASELINE}) indicating which baseline
+  * Returns a baseline code (one of {@link #ROMAN_BASELINE}, {@link
+  * #CENTER_BASELINE} or {@link #HANGING_BASELINE}) indicating which baseline
   * this font will measure baseline offsets for, when presenting glyph
   * metrics for a given character.
   *
@@ -818,7 +819,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see LineMetrics.getBaselineOffsets()
+  * @see LineMetrics#getBaselineOffsets()
   */
   public byte getBaselineFor (char c)
 {
@@ -838,9 +839,9 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see getName()
-  * @see getFontName()
-  * @see GraphicsEnvironment.getAvailableFontFamilyNames()
+  * @see #getName()
+  * @see #getFontName()
+  * @see GraphicsEnvironment#getAvailableFontFamilyNames()
   * @see Locale
   */
   public String getFamily (Locale lc)
@@ -857,7 +858,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see TextAttribure  
+  * @see java.awt.font.TextAttribute  
   */
   public static Font getFont (Map attributes)
 {
@@ -874,8 +875,8 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see getName()
-  * @see getFamily()
+  * @see #getName()
+  * @see #getFamily()
   */
   public String getFontName ()
 {
@@ -894,8 +895,8 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see getName()
-  * @see getFamily()
+  * @see #getName()
+  * @see #getFamily()
   */
   public String getFontName (Locale lc)
 {
@@ -904,12 +905,12 @@ private static final long serialVersionUID = -4206021311591459213L;
 
 /**
   * Returns the italic angle of this font, a measurement of its slant when
-  * style is {@link ITALIC}. The precise meaning is the inverse slope of a
+  * style is {@link #ITALIC}. The precise meaning is the inverse slope of a
   * caret line which "best measures" the font's italic posture.
   *
   * @return The italic angle.
   *
-  * @see TextAttribute.POSTURE
+  * @see java.awt.font.TextAttribute#POSTURE
   */
   public float getItalicAngle ()
 {
@@ -1028,9 +1029,9 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see getName()
-  * @see getFamily()
-  * @see getFontName()
+  * @see #getName()
+  * @see #getFamily()
+  * @see #getFontName()
   */
   public String getPSName ()
 {
@@ -1042,7 +1043,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * font in the specified {@link FontRenderContext}. This box will include the
   * glyph origin, ascent, advance, height, and leading, but may not include all
   * diacritics or accents. To get the complete visual bounding box of all the
-  * glyphs in a run of text, use the {@link TextLayout#getBounds} method of
+  * glyphs in a run of text, use the {@link TextLayout#getBounds} method of 
   * {@link TextLayout}.
   *
   * @param str The string to measure.
@@ -1050,7 +1051,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * 
   * @return A bounding box covering the logical bounds of the specified text.
   *
-  * @see createGlyphVector()
+  * @see #createGlyphVector(FontRenderContext, String)
   */
   public Rectangle2D getStringBounds (String str, FontRenderContext frc)
 {
@@ -1077,7 +1078,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see createGlyphVector()
+  * @see #createGlyphVector(FontRenderContext, String)
   */
   public Rectangle2D getStringBounds (String str, int begin, 
                                       int limit, FontRenderContext frc)
@@ -1105,7 +1106,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see createGlyphVector()
+  * @see #createGlyphVector(FontRenderContext, CharacterIterator)
   */
   public Rectangle2D getStringBounds (CharacterIterator ci, int begin, 
                                       int limit, FontRenderContext frc)
@@ -1133,7 +1134,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * @since 1.2
   *
-  * @see createGlyphVector()
+  * @see #createGlyphVector(FontRenderContext, char[])
   */
   public Rectangle2D getStringBounds (char[] chars, int begin, 
                                       int limit, FontRenderContext frc)
@@ -1163,7 +1164,7 @@ private static final long serialVersionUID = -4206021311591459213L;
   * @return Whether this font has uniform line metrics.
   *
   * @see LineMetrics
-  * @see getLineMetrics()
+  * @see #getLineMetrics(String, FontRenderContext)
   */
   public boolean hasUniformLineMetrics ()
 {
@@ -1189,12 +1190,12 @@ private static final long serialVersionUID = -4206021311591459213L;
   *
   * Bidirectional (bidi) layout is not performed in this method; text
   * should have its bidi direction specified with one of the flags {@link
-  * LAYOUT_LEFT_TO_RIGHT} or {@link LAYOUT_RIGHT_TO_LEFT}.
+  * #LAYOUT_LEFT_TO_RIGHT} or {@link #LAYOUT_RIGHT_TO_LEFT}.
   *
   * Some types of layout (notably Arabic glyph shaping) may examine context
   * characters beyond the bounds of the indicated range, in order to select
-  * an appropriate shape. The flags {@link LAYOUT_NO_START_CONTEXT} and
-  * {@link LAYOUT_NO_LIMIT_CONTEXT} can be provided to prevent these extra
+  * an appropriate shape. The flags {@link #LAYOUT_NO_START_CONTEXT} and
+  * {@link #LAYOUT_NO_LIMIT_CONTEXT} can be provided to prevent these extra
   * context areas from being examined, for instance if they contain invalid
   * characters.
   *

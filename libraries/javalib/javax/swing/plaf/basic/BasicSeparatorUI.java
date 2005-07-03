@@ -125,7 +125,7 @@ public class BasicSeparatorUI extends SeparatorUI
 
     shadow = defaults.getColor("Separator.shadow");
     highlight = defaults.getColor("Separator.highlight");
-    s.setOpaque(true);
+    s.setOpaque(false);
   }
 
   /**

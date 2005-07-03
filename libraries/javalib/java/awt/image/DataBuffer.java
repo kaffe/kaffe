@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2002  Free Software Foundation
+/* Copyright (C) 2000, 2002, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -46,43 +46,43 @@ package java.awt.image;
 public abstract class DataBuffer
 {
   /**
-   * A constant representng a data type that uses <code>byte</code> primitives
+   * A constant representing a data type that uses <code>byte</code> primitives
    * as the storage unit.
    */
   public static final int TYPE_BYTE      =  0;
 
   /**
-   * A constant representng a data type that uses <code>short</code> 
+   * A constant representing a data type that uses <code>short</code> 
    * primitives as the storage unit.
    */
   public static final int TYPE_USHORT    =  1;
 
   /**
-   * A constant representng a data type that uses <code>short</code> 
+   * A constant representing a data type that uses <code>short</code> 
    * primitives as the storage unit.
    */
   public static final int TYPE_SHORT     =  2;
 
   /**
-   * A constant representng a data type that uses <code>int</code> 
+   * A constant representing a data type that uses <code>int</code> 
    * primitives as the storage unit.
    */
   public static final int TYPE_INT       =  3;
   
   /**
-   * A constant representng a data type that uses <code>float</code> 
+   * A constant representing a data type that uses <code>float</code> 
    * primitives as the storage unit.
    */
   public static final int TYPE_FLOAT     =  4;
 
   /**
-   * A constant representng a data type that uses <code>double</code> 
+   * A constant representing a data type that uses <code>double</code> 
    * primitives as the storage unit.
    */
   public static final int TYPE_DOUBLE    =  5;
 
   /**
-   * A constant representng an undefined data type.
+   * A constant representing an undefined data type.
    */
   public static final int TYPE_UNDEFINED = 32;
   

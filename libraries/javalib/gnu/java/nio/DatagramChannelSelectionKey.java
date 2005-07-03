@@ -1,5 +1,5 @@
 /* DatagramChannelSelectionKey.java -- 
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -54,6 +54,8 @@ public final class DatagramChannelSelectionKey
 
   public int getNativeFD()
   {
-    return ((DatagramChannelImpl) ch).getNativeFD();
+    NIODatagramSocket socket =
+      (NIODatagramSocket) ((DatagramChannelImpl) ch).socket();
+    return socket.getPlainDatagramSocketImpl().getNativeFD();
   }
 }

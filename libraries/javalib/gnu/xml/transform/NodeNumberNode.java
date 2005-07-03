@@ -68,13 +68,11 @@ final class NodeNumberNode
   final Pattern count;
   final Pattern from;
 
-  NodeNumberNode(TemplateNode children, TemplateNode next,
-                 int level, Pattern count, Pattern from,
+  NodeNumberNode(int level, Pattern count, Pattern from,
                  TemplateNode format, String lang,
                  int letterValue, String groupingSeparator, int groupingSize)
   {
-    super(children, next, format, lang, letterValue, groupingSeparator,
-          groupingSize);
+    super(format, lang, letterValue, groupingSeparator, groupingSize);
     this.level = level;
     this.count = count;
     this.from = from;
@@ -82,17 +80,22 @@ final class NodeNumberNode
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new NodeNumberNode((children == null) ? null :
-                              children.clone(stylesheet),
-                              (next == null) ? null :
-                              next.clone(stylesheet),
-                              level,
-                              (count == null) ? null :
-                              (Pattern) count.clone(stylesheet),
-                              (from == null) ? from :
-                              (Pattern) from.clone(stylesheet),
-                              format, lang, letterValue,
-                              groupingSeparator, groupingSize);
+    TemplateNode ret = new NodeNumberNode(level,
+                                          (count == null) ? null :
+                                          (Pattern) count.clone(stylesheet),
+                                          (from == null) ? from :
+                                          (Pattern) from.clone(stylesheet),
+                                          format, lang, letterValue,
+                                          groupingSeparator, groupingSize);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   int[] compute(Stylesheet stylesheet, Node context, int pos, int len)
@@ -212,7 +215,15 @@ final class NodeNumberNode
                 return false;
               }
             String cn = current.getLocalName();
-            String nn = current.getLocalName();
+            if (cn == null)
+              {
+                cn = current.getNodeName();
+              }
+            String nn = node.getLocalName();
+            if (nn == null)
+              {
+                nn = node.getNodeName();
+              }
             if (!cn.equals(nn))
               {
                 return false;

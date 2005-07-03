@@ -48,7 +48,12 @@ import java.net.UnknownServiceException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import javax.xml.namespace.QName;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -241,8 +246,10 @@ class TransformerImpl
     boolean standalone = 
       "yes".equals(outputProperties.getProperty(OutputKeys.STANDALONE));
     String mediaType = outputProperties.getProperty(OutputKeys.MEDIA_TYPE);
-    // TODO cdata-section-elements
-    // TODO indent
+    String cdataSectionElements =
+      outputProperties.getProperty(OutputKeys.CDATA_SECTION_ELEMENTS);
+    boolean indent =
+      "yes".equals(outputProperties.getProperty(OutputKeys.INDENT));
     if (created)
       {
         // Discover document element
@@ -308,6 +315,44 @@ class TransformerImpl
     if (mediaType != null)
       {
         parent.setUserData("media-type", mediaType, stylesheet);
+      }
+    if (cdataSectionElements != null)
+      {
+        List list = new LinkedList();
+        StringTokenizer st = new StringTokenizer(cdataSectionElements);
+        while (st.hasMoreTokens())
+          {
+            String name = st.nextToken();
+            String localName = name;
+            String uri = null;
+            String prefix = null;
+            int ci = name.indexOf(':');
+            if (ci != -1)
+              {
+                // Use namespaces defined on xsl:output node to resolve
+                // namespaces for QName
+                prefix = name.substring(0, ci);
+                localName = name.substring(ci + 1);
+                uri = stylesheet.output.lookupNamespaceURI(prefix);
+              }
+            list.add(new QName(uri, localName, prefix));
+          }
+        if (!list.isEmpty())
+          {
+            Document resultDoc = (parent instanceof Document) ?
+              (Document) parent :
+              parent.getOwnerDocument();
+            convertCdataSectionElements(resultDoc, parent, list);
+          }
+      }
+    if (indent)
+      {
+        parent.normalize();
+        strip(parent);
+        Document resultDoc = (parent instanceof Document) ?
+          (Document) parent :
+          parent.getOwnerDocument();
+        reindent(resultDoc, parent, 0);
       }
     // Render result to the target device
     if (outputTarget instanceof DOMResult)
@@ -407,11 +452,20 @@ class TransformerImpl
           }
         parent.removeChild(node);
       }
-    if (nt == Node.TEXT_NODE) // CDATA sections ?
+    if (nt == Node.TEXT_NODE || nt == Node.CDATA_SECTION_NODE)
       {
         if (!stylesheet.isPreserved((Text) node))
           {
             node.getParentNode().removeChild(node);
+          }
+        else
+          {
+            String text = node.getNodeValue();
+            String stripped = text.trim();
+            if (!text.equals(stripped))
+              {
+                node.setNodeValue(stripped);
+              }
           }
       }
     else
@@ -575,6 +629,141 @@ class TransformerImpl
   public ErrorListener getErrorListener()
   {
     return errorListener;
+  }
+
+  static final String INDENT_WHITESPACE = "  ";
+
+  /*
+   * Apply indent formatting to the given tree.
+   */
+  void reindent(Document doc, Node node, int offset)
+  {
+    if (node.hasChildNodes())
+      {
+        boolean markupContent = false;
+        boolean textContent = false;
+        List children = new LinkedList();
+        Node ctx = node.getFirstChild();
+        while (ctx != null)
+          {
+            switch (ctx.getNodeType())
+              {
+              case Node.ELEMENT_NODE:
+              case Node.PROCESSING_INSTRUCTION_NODE:
+              case Node.DOCUMENT_TYPE_NODE:
+                markupContent = true;
+                break;
+              case Node.TEXT_NODE:
+              case Node.CDATA_SECTION_NODE:
+              case Node.ENTITY_REFERENCE_NODE:
+              case Node.COMMENT_NODE:
+                textContent = true;
+                break;
+              }
+            children.add(ctx);
+            ctx = ctx.getNextSibling();
+          }
+        if (markupContent)
+          {
+            if (textContent)
+              {
+                // XXX handle mixed content differently?
+              }
+            int nodeType = node.getNodeType();
+            if (nodeType == Node.DOCUMENT_NODE)
+              {
+                for (Iterator i = children.iterator(); i.hasNext(); )
+                  {
+                    ctx = (Node) i.next();
+                    reindent(doc, ctx, offset + 1);
+                  }
+              }
+            else
+              {
+                StringBuffer buf = new StringBuffer();
+                buf.append('\n');
+                for (int i = 0; i < offset + 1; i++)
+                  {
+                    buf.append(INDENT_WHITESPACE);
+                  }
+                String ws = buf.toString();
+                for (Iterator i = children.iterator(); i.hasNext(); )
+                  {
+                    ctx = (Node) i.next();
+                    node.insertBefore(doc.createTextNode(ws), ctx);
+                    reindent(doc, ctx, offset + 1);
+                  }
+                buf = new StringBuffer();
+                buf.append('\n');
+                ws = buf.toString();
+                for (int i = 0; i < offset; i++)
+                  {
+                    buf.append(INDENT_WHITESPACE);
+                  }
+                node.appendChild(doc.createTextNode(ws));
+              }
+          }
+      }
+  }
+
+  /**
+   * Converts the text node children of any cdata-section-elements in the
+   * tree to CDATA section nodes.
+   */
+  void convertCdataSectionElements(Document doc, Node node, List list)
+  {
+    if (node.getNodeType() == Node.ELEMENT_NODE)
+      {
+        boolean match = false;
+        for (Iterator i = list.iterator(); i.hasNext(); )
+          {
+            QName qname = (QName) i.next();
+            if (match(qname, node))
+              {
+                match = true;
+                break;
+              }
+          }
+        if (match)
+          {
+            Node ctx = node.getFirstChild();
+            while (ctx != null)
+              {
+                if (ctx.getNodeType() == Node.TEXT_NODE)
+                  {
+                    Node cdata = doc.createCDATASection(ctx.getNodeValue());
+                    node.replaceChild(cdata, ctx);
+                    ctx = cdata;
+                  }
+                ctx = ctx.getNextSibling();
+              }
+          }
+      }
+    Node ctx = node.getFirstChild();
+    while (ctx != null)
+      {
+        if (ctx.hasChildNodes())
+          {
+            convertCdataSectionElements(doc, ctx, list);
+          }
+        ctx = ctx.getNextSibling();
+      }
+  }
+
+  boolean match(QName qname, Node node)
+  {
+    String ln1 = qname.getLocalPart();
+    String ln2 = node.getLocalName();
+    if (ln2 == null)
+      {
+        return ln1.equals(node.getNodeName());
+      }
+    else
+      {
+        String uri1 = qname.getNamespaceURI();
+        String uri2 = node.getNamespaceURI();
+        return (uri1.equals(uri2) && ln1.equals(ln2));
+      }
   }
 
 }

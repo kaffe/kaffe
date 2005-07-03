@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.awt.event;
 
 import java.awt.AWTEvent;
+import java.awt.TextComponent;
 
 /**
  * This event is generated when a text box changes contents. This is an

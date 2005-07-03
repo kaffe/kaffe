@@ -63,11 +63,9 @@ final class ApplyTemplatesNode
   final List withParams;
   final boolean isDefault;
 
-  ApplyTemplatesNode(TemplateNode children, TemplateNode next,
-                     Expr select, QName mode,
+  ApplyTemplatesNode(Expr select, QName mode,
                      List sortKeys, List withParams, boolean isDefault)
   {
-    super(children, next);
     this.select = select;
     this.mode = mode;
     this.sortKeys = sortKeys;
@@ -89,12 +87,18 @@ final class ApplyTemplatesNode
       {
         withParams2.add(((WithParam) withParams.get(i)).clone(stylesheet));
       }
-    return new ApplyTemplatesNode((children == null) ? null :
-                                  children.clone(stylesheet),
-                                  (next == null) ? null :
-                                  next.clone(stylesheet),
-                                  select.clone(stylesheet),
-                                  mode, sortKeys2, withParams2, isDefault);
+    TemplateNode ret = new ApplyTemplatesNode(select.clone(stylesheet),
+                                              mode, sortKeys2, withParams2,
+                                              isDefault);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,
@@ -142,10 +146,6 @@ final class ApplyTemplatesNode
                                                     false);
             if (t != null)
               {
-                if (stylesheet.debug)
-                  {
-                    System.err.println("Applying " + t);
-                  }
                 stylesheet.current = node;
                 t.apply(stylesheet, effectiveMode, node, i + 1, l,
                         parent, nextSibling);

@@ -330,7 +330,12 @@ public class DomHTMLTableElement
         for (Node ctx = thead.getFirstChild(); ctx != null;
              ctx = ctx.getNextSibling())
           {
-            if (!"tr".equalsIgnoreCase(ctx.getLocalName()))
+            String ctxName = ctx.getLocalName();
+            if (ctxName == null)
+              {
+                ctxName = ctx.getNodeName();
+              }
+            if (!"tr".equalsIgnoreCase(ctxName))
               {
                 continue;
               }
@@ -349,7 +354,12 @@ public class DomHTMLTableElement
     for (Node ctx = tbody.getFirstChild(); ctx != null;
          ctx = ctx.getNextSibling())
       {
-        if (!"tr".equalsIgnoreCase(ctx.getLocalName()))
+        String ctxName = ctx.getLocalName();
+        if (ctxName == null)
+          {
+            ctxName = ctx.getNodeName();
+          }
+        if (!"tr".equalsIgnoreCase(ctxName))
           {
             continue;
           }
@@ -365,7 +375,12 @@ public class DomHTMLTableElement
         for (Node ctx = tfoot.getFirstChild(); ctx != null;
              ctx = ctx.getNextSibling())
           {
-            if (!"tr".equalsIgnoreCase(ctx.getLocalName()))
+            String ctxName = ctx.getLocalName();
+            if (ctxName == null)
+              {
+                ctxName = ctx.getNodeName();
+              }
+            if (!"tr".equalsIgnoreCase(ctxName))
               {
                 continue;
               }

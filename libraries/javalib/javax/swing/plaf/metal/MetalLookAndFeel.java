@@ -64,7 +64,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
 
   public boolean isNativeLookAndFeel()
   {
-    return true;
+    return false;
   }
 
   public boolean isSupportedLookAndFeel()

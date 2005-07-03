@@ -59,10 +59,8 @@ final class ForEachNode
   final Expr select;
   final List sortKeys;
 
-  ForEachNode(TemplateNode children, TemplateNode next, Expr select,
-              List sortKeys)
+  ForEachNode(Expr select, List sortKeys)
   {
-    super(children, next);
     this.select = select;
     this.sortKeys = sortKeys;
   }
@@ -75,12 +73,17 @@ final class ForEachNode
       {
         sortKeys2.add(((Key) sortKeys.get(i)).clone(stylesheet));
       }
-    return new ForEachNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet),
-                           select.clone(stylesheet),
-                           sortKeys2);
+    TemplateNode ret = new ForEachNode(select.clone(stylesheet),
+                                       sortKeys2);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

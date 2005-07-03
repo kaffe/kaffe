@@ -206,7 +206,7 @@ class Template
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    //System.err.println("...applying " + toString() + " to " + context);
+    System.err.println("...applying " + toString() + " to " + context);
     if (node != null)
       {
         node.apply(stylesheet, mode,

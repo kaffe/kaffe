@@ -42,8 +42,8 @@ import javax.swing.event.TableModelListener;
 /**
  * A <code>TableModel</code> is a two dimensional data structure that 
  * can store arbitrary <code>Object</code> instances, usually for the
- * purpose of display in a {@link JTable} component.  Individual objects
- * can be accessed by specifying the row index and column index for 
+ * purpose of display in a {@link javax.swing.JTable} component.  Individual 
+ * objects can be accessed by specifying the row index and column index for 
  * the object.  Each column in the model has a name associated with it.
  * <p>
  * The {@link DefaultTableModel} class provides one implementation of

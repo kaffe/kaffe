@@ -1000,6 +1000,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
     splitPane.setBackground(defaults.getColor("SplitPane.background"));
     splitPane.setBorder(defaults.getBorder("SplitPane.border"));
     splitPane.setDividerSize(defaults.getInt("SplitPane.dividerSize"));
+    splitPane.setOpaque(true);
   }
 
   /**

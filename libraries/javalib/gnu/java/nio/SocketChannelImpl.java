@@ -103,11 +103,6 @@ public final class SocketChannelImpl extends SocketChannel
     return impl;
   }
 
-  int getNativeFD()
-  {
-    return socket.getPlainSocketImpl().getNativeFD();
-  }
-
   protected void implCloseSelectableChannel () throws IOException
   {
     socket.close();

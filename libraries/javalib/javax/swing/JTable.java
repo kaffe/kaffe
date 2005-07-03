@@ -616,7 +616,7 @@ public class JTable extends JComponent
    */
   public JTable (TableModel dm, TableColumnModel cm, ListSelectionModel sm)
   {
-    this.dataModel = dm == null ? createDefaultDataModel() : dm;
+    setModel(dm == null ? createDefaultDataModel() : dm);
     setSelectionModel(sm == null ? createDefaultSelectionModel() : sm);
 
     this.columnModel = cm;
@@ -626,6 +626,7 @@ public class JTable extends JComponent
 
   protected void initializeLocalVars()
   {
+    setTableHeader(createDefaultTableHeader());
     this.autoCreateColumnsFromModel = false;
     if (columnModel == null)
       {
@@ -646,14 +647,14 @@ public class JTable extends JComponent
     this.rowSelectionAllowed = true;
     // this.accessibleContext = new AccessibleJTable();
     this.cellEditor = null;
-    this.dragEnabled = false;
+    // COMPAT: Both Sun and IBM have drag enabled
+    this.dragEnabled = true;
     this.preferredViewportSize = new Dimension(450,400);
     this.showHorizontalLines = true;
     this.showVerticalLines = true;
     this.editingColumn = -1;
     this.editingRow = -1;
     setIntercellSpacing(new Dimension(1,1));
-    setTableHeader(createDefaultTableHeader());
   }
 
   /**
@@ -778,6 +779,13 @@ public class JTable extends JComponent
 
   public void tableChanged (TableModelEvent event)
   {
+    // update the column model from the table model if the structure has
+    // changed and the flag autoCreateColumnsFromModel is set
+    if ((event.getFirstRow() ==TableModelEvent.HEADER_ROW)
+        && autoCreateColumnsFromModel)
+
+        createColumnsFromModel();
+
     repaint();
   }
 
@@ -906,9 +914,7 @@ public class JTable extends JComponent
    */
   public ListSelectionModel getSelectionModel()
   {
-    if (! rowSelectionAllowed)
-      return null;
-
+    //Neither Sun nor IBM returns null if rowSelection not allowed
     return selectionModel;
   }
   
@@ -1557,6 +1563,12 @@ public class JTable extends JComponent
         for (int i = 0; i < ncols; ++i)
           columnModel.getColumn(i).setHeaderValue(dataModel.getColumnName(i));
       }
+
+    // according to Sun's spec we also have to set the tableHeader's
+    // column model here
+    if (tableHeader != null)
+      tableHeader.setColumnModel(c);
+
     revalidate();
     repaint();
   }
@@ -2065,5 +2077,48 @@ public class JTable extends JComponent
   public TableColumn getColumn(Object identifier)
   {
     return columnModel.getColumn(columnModel.getColumnIndex(identifier));
+  }
+
+  public void changeSelection (int rowIndex, int columnIndex, boolean toggle, boolean extend)
+  {
+    if (toggle && extend)
+      {
+        // Leave the selection state as is, but move the anchor
+        //   index to the specified location
+        selectionModel.setAnchorSelectionIndex(rowIndex);
+        getColumnModel().getSelectionModel().setAnchorSelectionIndex(columnIndex);
+      }
+    else if (toggle)
+      {
+        // Toggle the state of the specified cell
+        if (isCellSelected(rowIndex,columnIndex))
+          {
+            selectionModel.removeSelectionInterval(rowIndex,rowIndex);
+            getColumnModel().getSelectionModel().removeSelectionInterval(columnIndex,columnIndex);
+          }
+        else
+          {
+            selectionModel.addSelectionInterval(rowIndex,rowIndex);
+            getColumnModel().getSelectionModel().addSelectionInterval(columnIndex,columnIndex);
+          }
+      }
+    else if (extend)
+      {
+        // Extend the previous selection from the anchor to the 
+        // specified cell, clearing all other selections
+        selectionModel.setLeadSelectionIndex(rowIndex);
+        getColumnModel().getSelectionModel().setLeadSelectionIndex(columnIndex);
+      }
+    else
+      {
+        // Clear the previous selection and ensure the new cell
+        // is selected
+         selectionModel.clearSelection();
+        selectionModel.setSelectionInterval(rowIndex,rowIndex);
+        getColumnModel().getSelectionModel().clearSelection();
+        getColumnModel().getSelectionModel().setSelectionInterval(columnIndex, columnIndex);
+        
+        
+      }
   }
 }

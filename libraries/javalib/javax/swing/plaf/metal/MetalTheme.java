@@ -140,7 +140,7 @@ public abstract class MetalTheme
 
   public ColorUIResource getMenuDisabledForeground()
   {
-    return getSecondary3();
+    return getSecondary2();
   }
 
   public ColorUIResource getMenuForeground()

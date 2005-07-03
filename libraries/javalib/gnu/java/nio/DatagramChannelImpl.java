@@ -93,11 +93,6 @@ public final class DatagramChannelImpl extends DatagramChannel
     configureBlocking(true);
   }
 
-  public int getNativeFD()
-  {
-    return socket.getPlainDatagramSocketImpl().getNativeFD();
-  }
-    
   public DatagramSocket socket ()
   {
     return socket;

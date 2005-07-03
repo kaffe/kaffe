@@ -73,10 +73,10 @@ am_libfdlibm_la_OBJECTS = dtoa.lo e_acos.lo e_asin.lo e_atan2.lo \
 	e_exp.lo e_fmod.lo e_log.lo e_pow.lo e_remainder.lo \
 	e_rem_pio2.lo e_scalb.lo e_sqrt.lo k_cos.lo k_rem_pio2.lo \
 	k_sin.lo k_tan.lo mprec.lo s_atan.lo s_ceil.lo s_copysign.lo \
-	s_cos.lo s_fabs.lo sf_fabs.lo s_floor.lo sf_rint.lo s_rint.lo \
-	s_scalbn.lo s_sin.lo s_tan.lo strtod.lo w_acos.lo w_asin.lo \
-	w_atan2.lo w_exp.lo w_fmod.lo w_log.lo w_pow.lo w_remainder.lo \
-	w_sqrt.lo
+	s_cos.lo s_fabs.lo s_finite.lo sf_fabs.lo s_floor.lo \
+	sf_rint.lo s_rint.lo s_scalbn.lo s_sin.lo s_tan.lo strtod.lo \
+	w_acos.lo w_asin.lo w_atan2.lo w_exp.lo w_fmod.lo w_log.lo \
+	w_pow.lo w_remainder.lo w_sqrt.lo
 libfdlibm_la_OBJECTS = $(am_libfdlibm_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -397,6 +397,7 @@ libfdlibm_la_SOURCES = \
 			s_copysign.c \
 			s_cos.c \
 			s_fabs.c \
+			s_finite.c \
 			sf_fabs.c \
 			s_floor.c \
 			sf_rint.c \
@@ -495,6 +496,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_copysign.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_cos.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_fabs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_finite.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_floor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_rint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/s_scalbn.Plo@am__quote@

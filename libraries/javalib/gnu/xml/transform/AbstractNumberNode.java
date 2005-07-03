@@ -66,12 +66,10 @@ abstract class AbstractNumberNode
   final String groupingSeparator;
   final int groupingSize;
 
-  AbstractNumberNode(TemplateNode children, TemplateNode next,
-                     TemplateNode format, String lang,
+  AbstractNumberNode(TemplateNode format, String lang,
                      int letterValue, String groupingSeparator,
                      int groupingSize)
   {
-    super(children, next);
     this.format = format;
     this.lang = lang;
     this.letterValue = letterValue;

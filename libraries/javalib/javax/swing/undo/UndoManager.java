@@ -78,7 +78,7 @@ import javax.swing.event.UndoableEditListener;
  * <code>javax.swing.undo</code> package, the public methods of an
  * <code>UndoManager</code> are safe to call from concurrent threads.
  * The caller does not need to perform external synchronization, and
- * {@link javax.swing.event.UndoableEvent} sources do not need to
+ * {@link javax.swing.event.UndoableEditEvent} sources do not need to
  * broadcast their events from inside the Swing worker thread.
  *
  * @author Sascha Brawer (brawer@dandelis.ch)
@@ -607,7 +607,7 @@ public class UndoManager
    * <p><b>Thread Safety:</b> This method may safely be invoked from
    * concurrent threads.  The caller does not need to perform external
    * synchronization. This means that {@link
-   * javax.swing.event.UndoableEvent} sources do not need to broadcast
+   * javax.swing.event.UndoableEditEvent} sources do not need to broadcast
    * their events from inside the Swing worker thread.
    *
    * @param event the event whose <code>edit</code> will be

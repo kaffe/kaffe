@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.awt.event;
 
 import java.awt.AWTEvent;
+import java.awt.Toolkit;
 import java.util.EventListenerProxy;
 
 /**

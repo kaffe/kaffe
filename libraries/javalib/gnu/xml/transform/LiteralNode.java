@@ -64,9 +64,8 @@ final class LiteralNode
 
   final Collection elementExcludeResultPrefixes;
 
-  LiteralNode(TemplateNode children, TemplateNode next, Node source)
+  LiteralNode(Node source)
   {
-    super(children, next);
     this.source = source;
     if (source.getNodeType() == Node.ELEMENT_NODE)
       {
@@ -95,11 +94,16 @@ final class LiteralNode
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new LiteralNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet),
-                           source);
+    TemplateNode ret = new LiteralNode(source);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,
@@ -174,13 +178,15 @@ final class LiteralNode
                       }
                   }
               }
-            result = doc.adoptNode(result);
-            if (result == null)
+            Node result2 = doc.adoptNode(result);
+            if (result2 == null)
               {
-                String msg = "Error adopting node to result tree";
+                String msg = "Error adopting node to result tree: " +
+                  result + " (" + result.getClass().getName() + ")";
                 DOMSourceLocator l = new DOMSourceLocator(context);
                 throw new TransformerException(msg, l);
               }
+            result = result2;
           }
         if (nextSibling != null)
           {

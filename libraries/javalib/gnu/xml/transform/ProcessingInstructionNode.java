@@ -57,20 +57,23 @@ final class ProcessingInstructionNode
 
   final String name;
 
-  ProcessingInstructionNode(TemplateNode children, TemplateNode next,
-                            String name)
+  ProcessingInstructionNode(String name)
   {
-    super(children, next);
     this.name = name;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ProcessingInstructionNode((children == null) ? null :
-                                         children.clone(stylesheet),
-                                         (next == null) ? null :
-                                         next.clone(stylesheet),
-                                         name);
+    TemplateNode ret = new ProcessingInstructionNode(name);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

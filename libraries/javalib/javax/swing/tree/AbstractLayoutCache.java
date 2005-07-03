@@ -48,7 +48,8 @@ import javax.swing.event.TreeModelEvent;
  * 
  * @author Andrew Selkirk
  */
-public abstract class AbstractLayoutCache implements RowMapper
+public abstract class AbstractLayoutCache
+		implements RowMapper
 {
 	/**
 	 * class NodeDimensions
@@ -74,8 +75,7 @@ public abstract class AbstractLayoutCache implements RowMapper
 		 * @return Rectangle
 		 */
 		public abstract Rectangle getNodeDimensions(Object value0, int value1,
-		                                            int value2, boolean value3,
-		                                            Rectangle value4);
+				int value2, boolean value3, Rectangle value4);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public abstract class AbstractLayoutCache implements RowMapper
 	 */
 	public AbstractLayoutCache()
 	{
-	  // Do nothing here.
+		// Do nothing here.
 	}
 
 	/**
@@ -142,9 +142,13 @@ public abstract class AbstractLayoutCache implements RowMapper
 	 * 
 	 * @return Rectangle
 	 */
-	protected Rectangle getNodeDimensions(Object value0, int value1, int value2, boolean value3, Rectangle value4)
+	protected Rectangle getNodeDimensions(Object value, int row, int depth,
+			boolean expanded, Rectangle bounds)
 	{
-		return null; // TODO
+		if (bounds == null)
+			return new Rectangle();
+		return null;
+		// TODO		
 	}
 
 	/**
@@ -154,7 +158,7 @@ public abstract class AbstractLayoutCache implements RowMapper
 	 */
 	public void setModel(TreeModel model)
 	{
-	  treeModel = model;
+		treeModel = model;
 	}
 
 	/**

@@ -50,17 +50,18 @@ final class ApplyImportsNode
   extends TemplateNode
 {
 
-  ApplyImportsNode(TemplateNode children, TemplateNode next)
-  {
-    super(children, next);
-  }
-
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ApplyImportsNode((children == null) ? null :
-                                children.clone(stylesheet),
-                                (next == null) ? null :
-                                next.clone(stylesheet));
+    TemplateNode ret = new ApplyImportsNode();
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
   
   void doApply(Stylesheet stylesheet, QName mode,

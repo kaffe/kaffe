@@ -207,6 +207,10 @@ public class DomHTMLTableRowElement
          ctx = ctx.getNextSibling())
       {
         String name = ctx.getLocalName();
+        if (name == null)
+          {
+            name = ctx.getNodeName();
+          }
         if (!"td".equalsIgnoreCase(name) &&
             !"th".equalsIgnoreCase(name))
           {

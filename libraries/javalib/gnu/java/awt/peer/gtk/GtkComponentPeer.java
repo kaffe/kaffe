@@ -63,6 +63,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
@@ -208,7 +209,12 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public Image createImage (int width, int height)
   {
-    GtkImage image = new GtkImage (width, height);
+    Image image;
+    if (GtkToolkit.useGraphics2D ())
+      image = new BufferedImage (width, height, BufferedImage.TYPE_INT_RGB);
+    else
+      image = new GtkImage (width, height);
+
     Graphics g = image.getGraphics();
     g.setColor(getBackground());
     g.fillRect(0, 0, width, height);

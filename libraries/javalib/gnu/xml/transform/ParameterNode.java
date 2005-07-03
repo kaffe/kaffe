@@ -59,10 +59,8 @@ final class ParameterNode
   final Expr select;
   final boolean global;
 
-  ParameterNode(TemplateNode children, TemplateNode next,
-                String name, Expr select, boolean global)
+  ParameterNode(String name, Expr select, boolean global)
   {
-    super(children, next);
     this.name = name;
     this.select = select;
     this.global = global;
@@ -70,13 +68,18 @@ final class ParameterNode
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ParameterNode((children == null) ? null :
-                             children.clone(stylesheet),
-                             (next == null) ? null :
-                             next.clone(stylesheet),
-                             name,
-                             select.clone(stylesheet),
-                             global);
+    TemplateNode ret = new ParameterNode(name,
+                                         select.clone(stylesheet),
+                                         global);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

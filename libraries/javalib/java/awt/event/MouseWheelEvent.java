@@ -38,7 +38,13 @@ exception statement from your version. */
 
 package java.awt.event;
 
+import java.awt.Adjustable;
 import java.awt.Component;
+import java.awt.Rectangle;
+import java.awt.ScrollPane;
+
+import javax.swing.JScrollPane;
+import javax.swing.Scrollable;
 
 /**
  * This event is generated for a mouse wheel rotation. The wheel (the middle
@@ -143,7 +149,7 @@ public class MouseWheelEvent extends MouseEvent
 
   /**
    * This method returns the scrolling pattern this event requests. Legal
-   * values are WHEEL_UNIT_SCROLL and WHEEL_BLOCK_SCROLL.
+   * values are {@link #WHEEL_UNIT_SCROLL} and {@link #WHEEL_BLOCK_SCROLL}.
    *
    * @return the scroll type
    * @see Adjustable#getUnitIncrement()

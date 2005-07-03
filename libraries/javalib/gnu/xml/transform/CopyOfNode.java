@@ -61,19 +61,23 @@ final class CopyOfNode
 
   final Expr select;
 
-  CopyOfNode(TemplateNode children, TemplateNode next, Expr select)
+  CopyOfNode(Expr select)
   {
-    super(children, next);
     this.select = select;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new CopyOfNode((children == null) ? null :
-                          children.clone(stylesheet),
-                          (next == null) ? null :
-                          next.clone(stylesheet),
-                          select.clone(stylesheet));
+    TemplateNode ret = new CopyOfNode(select.clone(stylesheet));
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

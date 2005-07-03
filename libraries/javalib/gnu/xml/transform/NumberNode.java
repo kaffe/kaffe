@@ -53,24 +53,27 @@ final class NumberNode
 
   final Expr value;
 
-  NumberNode(TemplateNode children, TemplateNode next,
-             Expr value, TemplateNode format, String lang,
+  NumberNode(Expr value, TemplateNode format, String lang,
              int letterValue, String groupingSeparator, int groupingSize)
   {
-    super(children, next, format, lang, letterValue, groupingSeparator,
-          groupingSize);
+    super(format, lang, letterValue, groupingSeparator, groupingSize);
     this.value = value;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new NumberNode((children == null) ? null :
-                          children.clone(stylesheet),
-                          (next == null) ? null :
-                          next.clone(stylesheet),
-                          value.clone(stylesheet),
-                          format, lang, letterValue,
-                          groupingSeparator, groupingSize);
+    TemplateNode ret = new NumberNode(value.clone(stylesheet),
+                                      format, lang, letterValue,
+                                      groupingSeparator, groupingSize);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   int[] compute(Stylesheet stylesheet, Node context, int pos, int len)

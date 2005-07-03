@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.awt.event;
 
+import java.awt.ItemSelectable;
 import java.util.EventListener;
 
 /**

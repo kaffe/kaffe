@@ -56,20 +56,23 @@ final class TextNode
 
   final boolean disableOutputEscaping;
 
-  TextNode(TemplateNode children, TemplateNode next,
-           boolean disableOutputEscaping)
+  TextNode(boolean disableOutputEscaping)
   {
-    super(children, next);
     this.disableOutputEscaping = disableOutputEscaping;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new TextNode((children == null) ? null :
-                        children.clone(stylesheet),
-                        (next == null) ? null :
-                        next.clone(stylesheet),
-                        disableOutputEscaping);
+    TemplateNode ret = new TextNode(disableOutputEscaping);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

@@ -165,6 +165,7 @@ public class BasicMenuBarUI extends MenuBarUI
     menuBar.setBorder(defaults.getBorder("MenuBar.border"));
     menuBar.setFont(defaults.getFont("MenuBar.font"));
     menuBar.setForeground(defaults.getColor("MenuBar.foreground"));
+    menuBar.setOpaque(true);
   }
 
   /**

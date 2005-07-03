@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package gnu.xml.transform;
 
+import java.util.Collection;
+import java.util.Iterator;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
@@ -56,22 +58,25 @@ final class ValueOfNode
   final Expr select;
   final boolean disableOutputEscaping;
 
-  ValueOfNode(TemplateNode children, TemplateNode next, Expr select,
-              boolean disableOutputEscaping)
+  ValueOfNode(Expr select, boolean disableOutputEscaping)
   {
-    super(children, next);
     this.select = select;
     this.disableOutputEscaping = disableOutputEscaping;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ValueOfNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet),
-                           select.clone(stylesheet),
-                           disableOutputEscaping);
+    TemplateNode ret = new ValueOfNode(select.clone(stylesheet),
+                                       disableOutputEscaping);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,
@@ -80,8 +85,25 @@ final class ValueOfNode
     throws TransformerException
   {
     Object ret = select.evaluate(context, pos, len);
-    String value = Expr._string(context, ret);
-    //System.err.println("value-of: "+context+" "+ select + " -> "+ value);
+    String value;
+    if (ret instanceof Collection)
+      {
+        StringBuffer buf = new StringBuffer();
+        for (Iterator i = ((Collection) ret).iterator(); i.hasNext(); )
+          {
+            Node node = (Node) i.next();
+            buf.append(Expr.stringValue(node));
+          }
+        value = buf.toString();
+      }
+    else
+      {
+        value = Expr._string(context, ret);
+      }
+    /*if (stylesheet.debug)
+      {
+        System.err.println("value-of: "+context+" "+ select + " -> "+ value);
+      }*/
     if (value != null && value.length() > 0)
       {
         Document doc = (parent instanceof Document) ?

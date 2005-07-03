@@ -1873,6 +1873,7 @@ class LightweightDispatcher implements Serializable
   private transient Component mouseEventTarget;
   private transient Component pressedComponent;
   private transient Component lastComponentEntered;
+  private transient Component tempComponent;
   private transient int pressCount;
   
   LightweightDispatcher(Container c)
@@ -1927,7 +1928,9 @@ class LightweightDispatcher implements Serializable
                                               me.getClickCount (),
                                               me.isPopupTrigger (),
                                               me.getButton ());
-          lastComponentEntered.dispatchEvent (exited); 
+          tempComponent = lastComponentEntered;
+          lastComponentEntered = null;
+          tempComponent.dispatchEvent(exited);
         }
         lastComponentEntered = null;
       }

@@ -1804,7 +1804,7 @@ if test x"$enable_native_awt" = x"yes"; then
         AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
                      [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
                      [${X_LIBS}])
-	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.6 gthread-2.0 >= 2.2 libart-2.0 gdk-pixbuf-2.0)
+	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 libart-2.0 gdk-pixbuf-2.0)
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
 

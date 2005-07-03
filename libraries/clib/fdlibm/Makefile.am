@@ -27,6 +27,7 @@ libfdlibm_la_SOURCES =  \
 			s_copysign.c \
 			s_cos.c \
 			s_fabs.c \
+			s_finite.c \
 			sf_fabs.c \
 			s_floor.c \
 			sf_rint.c \

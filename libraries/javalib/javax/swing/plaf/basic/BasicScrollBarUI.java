@@ -124,7 +124,6 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     {
       //       System.err.println(this + ".stateChanged()");
       calculatePreferredSize();
-      layoutContainer(scrollbar);
       getThumbBounds();
       scrollbar.repaint();
     }
@@ -167,9 +166,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	  incrButton.addMouseListener(buttonListener);
 	  decrButton.addMouseListener(buttonListener);
 	  calculatePreferredSize();
-	  layoutContainer(scrollbar);
         }
-      layoutContainer(scrollbar);
       scrollbar.repaint();
     }
   }
@@ -820,6 +817,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     scrollbar.setBackground(defaults.getColor("ScrollBar.background"));
     scrollbar.setBorder(defaults.getBorder("ScrollBar.border"));
     scrollbar.setOpaque(true);
+    scrollbar.setLayout(this);
 
     thumbColor = defaults.getColor("ScrollBar.thumb");
     thumbDarkShadowColor = defaults.getColor("ScrollBar.thumbDarkShadow");
@@ -888,7 +886,6 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	installListeners();
 
 	calculatePreferredSize();
-	layoutContainer(scrollbar);
       }
   }
 
@@ -973,7 +970,6 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   public void paint(Graphics g, JComponent c)
   {
-    layoutContainer(scrollbar);
     paintTrack(g, c, getTrackBounds());
     paintThumb(g, c, getThumbBounds());
 

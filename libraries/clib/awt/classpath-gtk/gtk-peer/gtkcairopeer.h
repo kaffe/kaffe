@@ -86,6 +86,7 @@ struct graphics2d
   jintArray jarray;
   jint width, height;
   jint *javabuf;
+  jint *javabuf_copy;
   jboolean isCopy;
 };
 

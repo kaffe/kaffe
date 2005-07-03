@@ -141,7 +141,12 @@ public class DomHTMLTableSectionElement
     for (Node ctx = getFirstChild(); ctx != null;
          ctx = ctx.getNextSibling())
       {
-        if (!"tr".equalsIgnoreCase(ctx.getLocalName()))
+        String name = ctx.getLocalName();
+        if (name == null)
+          {
+            name = ctx.getNodeName();
+          }
+        if (!"tr".equalsIgnoreCase(name))
           {
             continue;
           }

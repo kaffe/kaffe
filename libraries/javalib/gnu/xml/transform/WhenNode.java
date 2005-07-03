@@ -53,19 +53,23 @@ final class WhenNode
 
   final Expr test;
 
-  WhenNode(TemplateNode children, TemplateNode next, Expr test)
+  WhenNode(Expr test)
   {
-    super(children, next);
     this.test = test;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new WhenNode((children == null) ? null :
-                        children.clone(stylesheet),
-                        (next == null) ? null :
-                        next.clone(stylesheet),
-                        test.clone(stylesheet));
+    TemplateNode ret = new WhenNode(test.clone(stylesheet));
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

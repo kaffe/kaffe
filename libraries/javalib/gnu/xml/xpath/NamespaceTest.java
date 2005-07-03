@@ -98,7 +98,12 @@ public final class NamespaceTest
         return true;
       }
     String localName = qName.getLocalPart();
-    return (localName.equals(node.getLocalName()));
+    String nodeLocalName = node.getLocalName();
+    if (nodeLocalName == null)
+      {
+        nodeLocalName = node.getNodeName();
+      }
+    return (localName.equals(nodeLocalName));
   }
 
   public Test clone(Object context)

@@ -55,19 +55,23 @@ final class MessageNode
 
   final boolean terminate;
 
-  MessageNode(TemplateNode children, TemplateNode next, boolean terminate)
+  MessageNode(boolean terminate)
   {
-    super(children, next);
     this.terminate = terminate;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new MessageNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet),
-                           terminate);
+    TemplateNode ret = new MessageNode(terminate);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

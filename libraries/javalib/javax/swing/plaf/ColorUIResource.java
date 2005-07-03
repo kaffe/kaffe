@@ -1,5 +1,5 @@
 /* ColorUIResource.java
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -63,6 +63,9 @@ public class ColorUIResource
    * @param r the red intensity, which must be in the range [0 .. 255].
    * @param g the green intensity, which must be in the range [0 .. 255].
    * @param b the blue intensity, which must be in the range [0 .. 255].
+   *
+   * @throws IllegalArgumentException if any of the values is outside the 
+   *         specified range.
    */
   public ColorUIResource(int r, int g, int b)
   {
@@ -71,7 +74,7 @@ public class ColorUIResource
 
 
   /**
-   * Consructs a <code>ColorUIResource</code> using the specified
+   * Constructs a <code>ColorUIResource</code> using the specified
    * RGB value. The blue value is in bits 0-7, green in bits 8-15, and
    * red in bits 16-23. The other bits are ignored. The alpha value is set
    * to 255, meaning that the color is fully opaque.
@@ -93,6 +96,9 @@ public class ColorUIResource
    * @param r the red intensity, which must be in the range [0.0 .. 1.0].
    * @param g the green intensity, which must be in the range [0.0 .. 1.0].
    * @param b the blue intensity, which must be in the range [0.0 .. 1.0].
+   *
+   * @throws IllegalArgumentException if any of the values is outside the 
+   *         specified range.
    */
   public ColorUIResource(float r, float g, float b)
   {
@@ -105,7 +111,10 @@ public class ColorUIResource
    * of another color.
    *
    * @param c the color whose intensities will be considered when
-   *        constructing this <code>ColorUIResource</code>.
+   *        constructing this <code>ColorUIResource</code> (<code>null</code>
+   *        not permitted).
+   *
+   * @throws NullPointerException if <code>c</code> is <code>null</code>.
    */
   public ColorUIResource(Color c)
   {

@@ -60,11 +60,6 @@ public final class ServerSocketChannelImpl extends ServerSocketChannel
     configureBlocking(true);
   }
 
-  public int getNativeFD()
-  {
-    return serverSocket.getPlainSocketImpl().getNativeFD();
-  }
-  
   public void finalizer()
   {
     if (connected)

@@ -39,6 +39,7 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkToolkit.h"
 #include "gthread-jni.h"
+#include "jcl.h"
 
 #include <sys/time.h>
 
@@ -101,6 +102,14 @@ double dpi_conversion_factor;
 static void init_dpi_conversion_factor (void);
 static void dpi_changed_cb (GtkSettings  *settings,
                             GParamSpec   *pspec);
+
+#if GTK_MINOR_VERSION > 4
+static GLogFunc old_glog_func;
+static void glog_func (const gchar *log_domain,
+		       GLogLevelFlags log_level,
+		       const gchar *message,
+		       gpointer user_data);
+#endif
 
 /*
  * Call gtk_init.  It is very important that this happen before any other
@@ -176,6 +185,11 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   g_free (rcpath);
   g_free (argv[0]);
   g_free (argv);
+
+  /* On errors or warning print a whole stacktrace. */
+#if GTK_MINOR_VERSION > 4
+  old_glog_func = g_log_set_default_handler (&glog_func, NULL);
+#endif
 
   /* setup cached IDs for posting GTK events to Java */
 
@@ -362,6 +376,31 @@ within_human_latency_tolerance(struct timeval *init)
   return milliseconds_elapsed < 100;
 }
 
+#if GTK_MINOR_VERSION > 4
+static void
+glog_func (const gchar *log_domain,
+	   GLogLevelFlags log_level,
+	   const gchar *message,
+	   gpointer user_data)
+{
+  old_glog_func (log_domain, log_level, message, user_data);
+  if (log_level & (G_LOG_LEVEL_ERROR
+		   | G_LOG_LEVEL_CRITICAL
+		   | G_LOG_LEVEL_WARNING))
+    {
+      JNIEnv *env = gdk_env ();
+      jthrowable *exc = (*env)->ExceptionOccurred(env);
+      gchar *detail = g_strconcat (log_domain, ": ", message, NULL);
+      JCL_ThrowException (env, "java/lang/InternalError", detail);
+      g_free (detail);
+      (*env)->ExceptionDescribe (env);
+      if (exc != NULL)
+	(*env)->Throw (env, exc);
+      else
+	(*env)->ExceptionClear (env);
+    }
+}
+#endif
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue

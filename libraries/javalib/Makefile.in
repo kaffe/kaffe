@@ -1542,6 +1542,7 @@ gnu_inet_util_SRCS = \
 	gnu/inet/util/StderrLogger.java
 
 gnu_java_awt_SRCS = \
+	gnu/java/awt/AWTUtilities.java \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/BitwiseXORComposite.java \
 	gnu/java/awt/Buffers.java \

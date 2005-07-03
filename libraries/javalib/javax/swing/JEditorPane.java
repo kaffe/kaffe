@@ -117,8 +117,14 @@ public class JEditorPane extends JTextComponent
     return getEditorKit().getContentType();
   }
 
+  /**
+   * Returns the EditorKit. If there is no EditorKit set this method
+   * calls createDefaultEditorKit() and setEditorKit() first.
+   */
   public EditorKit getEditorKit()
   {
+    if (editorKit == null)
+      setEditorKit(createDefaultEditorKit());
     return editorKit;
   }
 

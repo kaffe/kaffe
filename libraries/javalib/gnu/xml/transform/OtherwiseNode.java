@@ -50,17 +50,18 @@ final class OtherwiseNode
   extends TemplateNode
 {
 
-  OtherwiseNode(TemplateNode children, TemplateNode next)
-  {
-    super(children, next);
-  }
-
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new OtherwiseNode((children == null) ? null :
-                             children.clone(stylesheet),
-                             (next == null) ? null :
-                             next.clone(stylesheet));
+    TemplateNode ret = new OtherwiseNode();
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

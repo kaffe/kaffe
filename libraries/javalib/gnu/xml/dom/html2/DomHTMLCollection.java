@@ -99,7 +99,12 @@ class DomHTMLCollection
       {
         return NodeFilter.FILTER_SKIP;
       }
-    if (nodeNames != null && !acceptName(n.getLocalName()))
+    String localName = n.getLocalName();
+    if (localName == null)
+      {
+        localName = n.getNodeName();
+      }
+    if (nodeNames != null && !acceptName(localName))
       {
         return NodeFilter.FILTER_SKIP;
       }
@@ -152,6 +157,10 @@ class DomHTMLCollection
       {
         Node attr = attrs.item(i);
         String attrName = attr.getLocalName();
+        if (attrName == null)
+          {
+            attrName = attr.getNodeName();
+          }
         if (name.equalsIgnoreCase(attrName))
           {
             return attr;

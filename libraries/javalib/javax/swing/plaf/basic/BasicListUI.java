@@ -200,14 +200,16 @@ public class BasicListUI extends ListUI
       if (evt.getKeyCode() == KeyEvent.VK_DOWN)
         {
           int lead = BasicListUI.this.list.getLeadSelectionIndex();
+          int max = BasicListUI.this.list.getModel().getSize() - 1;
           if (!evt.isShiftDown())
             {
               BasicListUI.this.list.clearSelection();
-              BasicListUI.this.list.setSelectedIndex(lead+1);
+              BasicListUI.this.list.setSelectedIndex(Math.min(lead+1,max));
             }
           else 
             {
-              BasicListUI.this.list.getSelectionModel().setLeadSelectionIndex(lead+1);
+              BasicListUI.this.list.getSelectionModel().
+                setLeadSelectionIndex(Math.min(lead+1,max));
             }
         }
       else if (evt.getKeyCode() == KeyEvent.VK_UP)
@@ -220,7 +222,8 @@ public class BasicListUI extends ListUI
             }
           else
             {
-              BasicListUI.this.list.getSelectionModel().setLeadSelectionIndex(Math.max(lead-1,0));
+              BasicListUI.this.list.getSelectionModel().
+                setLeadSelectionIndex(Math.max(lead-1,0));
             }
         }
     }
@@ -244,15 +247,39 @@ public class BasicListUI extends ListUI
       int index = BasicListUI.this.locationToIndex(list, click);
       if (index == -1)
         return;
-      boolean controlPressed = event.isControlDown();
-      if (controlPressed)
+      if (event.isControlDown())
         {
-          if (BasicListUI.this.list.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION)
+          if (BasicListUI.this.list.getSelectionMode() == 
+              ListSelectionModel.SINGLE_SELECTION)
             BasicListUI.this.list.setSelectedIndex(index);
           else if (BasicListUI.this.list.isSelectedIndex(index))
             BasicListUI.this.list.removeSelectionInterval(index,index);
           else
             BasicListUI.this.list.addSelectionInterval(index,index);
+        }
+      else if (event.isShiftDown())
+        {
+          if (BasicListUI.this.list.getSelectionMode() == 
+              ListSelectionModel.SINGLE_SELECTION)
+            BasicListUI.this.list.setSelectedIndex(index);
+          else if (BasicListUI.this.list.getSelectionMode() == 
+                   ListSelectionModel.SINGLE_INTERVAL_SELECTION)
+            // COMPAT: the IBM VM is compatible with the following line of code.
+            // However, compliance with Sun's VM would correspond to replacing 
+            // getAnchorSelectionIndex() with getLeadSelectionIndex().This is 
+            // both unnatural and contradictory to the way they handle other 
+            // similar UI interactions.
+            BasicListUI.this.list.setSelectionInterval
+              (BasicListUI.this.list.getAnchorSelectionIndex(), index);
+          else
+            // COMPAT: both Sun and IBM are compatible instead with:
+            // BasicListUI.this.list.setSelectionInterval
+            //     (BasicListUI.this.list.getLeadSelectionIndex(),index);
+            // Note that for IBM this is contradictory to what they did in 
+            // the above situation for SINGLE_INTERVAL_SELECTION.  
+            // The most natural thing to do is the following:
+            BasicListUI.this.list.getSelectionModel().
+              setLeadSelectionIndex(index);
         }
       else
         BasicListUI.this.list.setSelectedIndex(index);
@@ -555,8 +582,6 @@ public class BasicListUI extends ListUI
   void damageLayout()
   {
     updateLayoutStateNeeded = 1;
-    if (list != null)
-      list.revalidate();
   }
 
   /**

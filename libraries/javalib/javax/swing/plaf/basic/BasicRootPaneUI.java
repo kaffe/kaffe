@@ -56,7 +56,6 @@ public class BasicRootPaneUI extends RootPaneUI
 
   public void installUI(JComponent c)
   {
-    c.setOpaque(true);
     c.setBackground(UIManager.getColor("control"));
     super.installUI(c);
   }

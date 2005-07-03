@@ -92,15 +92,6 @@ public class JTextPane extends JEditorPane {
 	//-------------------------------------------------------------
 
 	/**
-	 * writeObject
-	 * @param stream TODO
-	 * @exception IOException TODO
-	 */
-	private void writeObject(ObjectOutputStream stream) throws IOException {
-		// TODO
-	} // writeObject()
-
-	/**
 	 * getUIClassID
 	 * @returns String
 	 */
@@ -113,7 +104,7 @@ public class JTextPane extends JEditorPane {
 	 * @param document TODO
 	 */
 	public void setDocument(Document document) {
-		// TODO
+		super.setDocument(document); // TODO
 	} // setDocument()
 
 	/**
@@ -137,7 +128,7 @@ public class JTextPane extends JEditorPane {
 	 * @param content TODO
 	 */
 	public void replaceSelection(String content) {
-		// TODO
+		super.replaceSelection(content); // TODO
 	} // replaceSelection()
 
 	/**
@@ -256,7 +247,7 @@ public class JTextPane extends JEditorPane {
 	 * @returns EditorKit
 	 */
 	protected EditorKit createDefaultEditorKit() {
-		return null; // TODO
+		return super.createDefaultEditorKit(); // TODO
 	} // createDefaultEditorKit()
 
 	/**
@@ -264,7 +255,7 @@ public class JTextPane extends JEditorPane {
 	 * @param editor TODO
 	 */
 	public final void setEditorKit(EditorKit editor) {
-		// TODO
+		super.setEditorKit(editor); // TODO
 	} // setEditorKit()
 
 	/**
@@ -272,7 +263,7 @@ public class JTextPane extends JEditorPane {
 	 * @returns String
 	 */
 	protected String paramString() {
-		return null; // TODO
+		return super.paramString(); // TODO
 	} // paramString()
 
 

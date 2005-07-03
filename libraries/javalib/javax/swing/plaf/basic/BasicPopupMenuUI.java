@@ -415,6 +415,7 @@ public class BasicPopupMenuUI extends PopupMenuUI
     private transient Component mouseEventTarget;
     private transient Component pressedComponent;
     private transient Component lastComponentEntered;
+    private transient Component tempComponent;
     private transient int pressCount;
 
     /**
@@ -552,7 +553,9 @@ public class BasicPopupMenuUI extends PopupMenuUI
 	                                         me.isPopupTrigger(),
 	                                         me.getButton());
 
-	      lastComponentEntered.dispatchEvent(exited);
+              tempComponent = lastComponentEntered;
+              lastComponentEntered = null;
+	      tempComponent.dispatchEvent(exited);
 	    }
 
 	  lastComponentEntered = null;

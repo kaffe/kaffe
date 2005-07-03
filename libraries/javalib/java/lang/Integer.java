@@ -1,5 +1,6 @@
 /* Integer.java -- object wrapper for int
-   Copyright (C) 1998, 1999, 2001, 2002, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2002, 2004, 2005
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -49,8 +50,9 @@ package java.lang;
  * @author John Keiser
  * @author Warren Levy
  * @author Eric Blake (ebb9@email.byu.edu)
+ * @author Tom Tromey (tromey@redhat.com)
  * @since 1.0
- * @status updated to 1.4
+ * @status largely updated to 1.5
  */
 public final class Integer extends Number implements Comparable
 {
@@ -77,6 +79,19 @@ public final class Integer extends Number implements Comparable
    * @since 1.1
    */
   public static final Class TYPE = VMClassLoader.getPrimitiveClass('I');
+
+  /**
+   * The number of bits needed to represent an <code>int</code>.
+   * @since 1.5
+   */
+  public static final int SIZE = 32;
+
+  // This caches some Integer values, and is used by boxing
+  // conversions via valueOf().  We must cache at least -128..127;
+  // these constants control how much we actually cache.
+  private static final int MIN_CACHE = -128;
+  private static final int MAX_CACHE = 127;
+  private static Integer[] intCache = new Integer[MAX_CACHE - MIN_CACHE + 1];
 
   /**
    * The immutable value of this Integer.
@@ -276,6 +291,26 @@ public final class Integer extends Number implements Comparable
   public static Integer valueOf(String s)
   {
     return new Integer(parseInt(s, 10, false));
+  }
+
+  /**
+   * Returns an <code>Integer</code> object wrapping the value.
+   * In contrast to the <code>Integer</code> constructor, this method
+   * will cache some values.  It is used by boxing conversion.
+   *
+   * @param val the value to wrap
+   * @return the <code>Integer</code>
+   */
+  public static Integer valueOf(int val)
+  {
+    if (val < MIN_CACHE || val > MAX_CACHE)
+      return new Integer(val);
+    synchronized (intCache)
+      {
+	if (intCache[val - MIN_CACHE] == null)
+	  intCache[val - MIN_CACHE] = new Integer(val);
+	return intCache[val - MIN_CACHE];
+      }
   }
 
   /**
@@ -504,6 +539,137 @@ public final class Integer extends Number implements Comparable
   public int compareTo(Object o)
   {
     return compareTo((Integer) o);
+  }
+
+  /**
+   * Return the number of bits set in x.
+   * @param x value to examine
+   * @since 1.5
+   */
+  public static int bitCount(int x)
+  {
+    // Successively collapse alternating bit groups into a sum.
+    x = ((x >> 1) & 0x55555555) + (x & 0x55555555);
+    x = ((x >> 2) & 0x33333333) + (x & 0x33333333);
+    x = ((x >> 4) & 0x0f0f0f0f) + (x & 0x0f0f0f0f);
+    x = ((x >> 8) & 0x00ff00ff) + (x & 0x00ff00ff);
+    return ((x >> 16) & 0x0000ffff) + (x & 0x0000ffff);
+  }
+
+  /**
+   * Rotate x to the left by distance bits.
+   * @param x the value to rotate
+   * @param distance the number of bits by which to rotate
+   * @since 1.5
+   */
+  public static int rotateLeft(int x, int distance)
+  {
+    // This trick works because the shift operators implicitly mask
+    // the shift count.
+    return (x << distance) | (x >>> - distance);
+  }
+
+  /**
+   * Rotate x to the right by distance bits.
+   * @param x the value to rotate
+   * @param distance the number of bits by which to rotate
+   * @since 1.5
+   */
+  public static int rotateRight(int x, int distance)
+  {
+    // This trick works because the shift operators implicitly mask
+    // the shift count.
+    return (x << - distance) | (x >>> distance);
+  }
+
+  /**
+   * Find the highest set bit in value, and return a new value
+   * with only that bit set.
+   * @param value the value to examine
+   * @since 1.5
+   */
+  public static int highestOneBit(int value)
+  {
+    value |= value >>> 1;
+    value |= value >>> 2;
+    value |= value >>> 4;
+    value |= value >>> 8;
+    value |= value >>> 16;
+    return value ^ (value >>> 1);
+  }
+
+  /**
+   * Return the number of leading zeros in value.
+   * @param value the value to examine
+   * @since 1.5
+   */
+  public static int numberOfLeadingZeros(int value)
+  {
+    value |= value >>> 1;
+    value |= value >>> 2;
+    value |= value >>> 4;
+    value |= value >>> 8;
+    value |= value >>> 16;
+    return bitCount(~value);
+  }
+
+  /**
+   * Find the lowest set bit in value, and return a new value
+   * with only that bit set.
+   * @param value the value to examine
+   * @since 1.5
+   */
+  public static int lowestOneBit(int value)
+  {
+    // Classic assembly trick.
+    return value & - value;
+  }
+
+  /**
+   * Find the number of trailing zeros in value.
+   * @param value the value to examine
+   * @since 1.5
+   */
+  public static int numberOfTrailingZeros(int value)
+  {
+    return bitCount((value & -value) - 1);
+  }
+
+  /**
+   * Return 1 if x is positive, -1 if it is negative, and 0 if it is
+   * zero.
+   * @param x the value to examine
+   * @since 1.5
+   */
+  public static int signum(int x)
+  {
+    return x < 0 ? -1 : (x > 0 ? 1 : 0);
+  }
+
+  /**
+   * Reverse the bytes in val.
+   * @since 1.5
+   */
+  public static int reverseBytes(int val)
+  {
+    return (  ((val >> 24) & 0xff)
+	    | ((val >> 8) & 0xff00)
+	    | ((val << 8) & 0xff0000)
+	    | ((val << 24) & 0xff000000));
+  }
+
+  /**
+   * Reverse the bits in val.
+   * @since 1.5
+   */
+  public static int reverse(int val)
+  {
+    // Successively swap alternating bit groups.
+    val = ((val >> 1) & 0x55555555) + ((val << 1) & ~0x55555555);
+    val = ((val >> 2) & 0x33333333) + ((val << 2) & ~0x33333333);
+    val = ((val >> 4) & 0x0f0f0f0f) + ((val << 4) & ~0x0f0f0f0f);
+    val = ((val >> 8) & 0x00ff00ff) + ((val << 8) & ~0x00ff00ff);
+    return ((val >> 16) & 0x0000ffff) + ((val << 16) & ~0x0000ffff);
   }
 
   /**

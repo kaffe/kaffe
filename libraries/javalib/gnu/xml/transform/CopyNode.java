@@ -56,19 +56,23 @@ final class CopyNode
 
   final String uas;
 
-  CopyNode(TemplateNode children, TemplateNode next, String uas)
+  CopyNode(String uas)
   {
-    super(children, next);
     this.uas = uas;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new CopyNode((children == null) ? null :
-                        children.clone(stylesheet),
-                        (next == null) ? null :
-                        next.clone(stylesheet),
-                        uas);
+    TemplateNode ret = new CopyNode(uas);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

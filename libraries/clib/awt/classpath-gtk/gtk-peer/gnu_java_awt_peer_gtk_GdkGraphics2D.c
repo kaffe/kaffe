@@ -203,9 +203,9 @@ init_graphics2d_as_pixbuf (struct graphics2d *gr)
 						gdk_pixbuf_get_height (gr->drawbuf), 
 						gdk_pixbuf_get_rowstride (gr->drawbuf));      
   g_assert (gr->surface != NULL);
-  g_assert (gr->cr != NULL);
   gr->mode = MODE_DRAWABLE_NO_RENDER;
-  cairo_destroy (gr->cr);
+  if (gr->cr != NULL)
+    cairo_destroy (gr->cr);
   gr->cr = cairo_create (gr->surface);
 }
 
@@ -230,13 +230,11 @@ init_graphics2d_as_renderable (struct graphics2d *gr)
   vis = gdk_x11_visual_get_xvisual (gdk_drawable_get_visual (gr->drawable));
   g_assert (vis != NULL);
   
-  gr->surface = cairo_xlib_surface_create (dpy, draw, vis, 
-					   CAIRO_FORMAT_ARGB32,
-					   DefaultColormap (dpy, DefaultScreen (dpy)));
+  gr->surface = cairo_xlib_surface_create (dpy, draw, vis, gr->width, gr->height);
   g_assert (gr->surface != NULL);
-  g_assert (gr->cr != NULL);
   gr->mode = MODE_DRAWABLE_WITH_RENDER;
-  cairo_destroy (gr->cr);
+  if (gr->cr != NULL)
+    cairo_destroy (gr->cr);
   gr->cr = cairo_create (gr->surface);
 }
 
@@ -275,16 +273,18 @@ begin_drawing_operation (JNIEnv *env, struct graphics2d * gr)
       break;
 
     case MODE_JAVA_ARRAY:
-      gr->javabuf = (*env)->GetIntArrayElements (env, gr->jarray, &gr->isCopy);
-      gr->surface = cairo_image_surface_create_for_data ((unsigned char *) gr->javabuf, 
-						    CAIRO_FORMAT_ARGB32, 
-						    gr->width, 
-						    gr->height, 
-						    gr->width * 4);
-      g_assert(gr->surface != NULL);
-      g_assert(gr->cr != NULL);
-      cairo_destroy (gr->cr);
-      gr->cr = cairo_create (gr->surface);
+      {
+        jboolean isCopy;
+        gr->javabuf = (*env)->GetPrimitiveArrayCritical (env, gr->jarray, &isCopy);
+        gr->isCopy |= isCopy;
+        if (gr->isCopy)
+          {
+	    /* Make sure that the pixel buffer copy is already initalized,
+	       i.e. we already failed to get direct access in initState. */
+	    g_assert (gr->javabuf_copy != NULL);
+	    memcpy (gr->javabuf_copy, gr->javabuf, gr->width * gr->height * 4);
+	  }
+      }
       break;
     }
 }
@@ -323,13 +323,9 @@ end_drawing_operation (JNIEnv *env, struct graphics2d * gr)
       break;
       
     case MODE_JAVA_ARRAY:
-      /* 
-       * FIXME: Perhaps this should use the isCopy flag to try to avoid
-       * tearing down the cairo surface.
-       */
-      cairo_surface_destroy (gr->surface);
-      gr->surface = NULL;
-      (*env)->ReleaseIntArrayElements (env, gr->jarray, gr->javabuf, JNI_COMMIT);
+      if (gr->isCopy)
+	memcpy (gr->javabuf, gr->javabuf_copy, gr->width * gr->height * 4);
+      (*env)->ReleasePrimitiveArrayCritical (env, gr->jarray, gr->javabuf, JNI_COMMIT);
     }
 }
 
@@ -382,20 +378,32 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_copyState
   g->debug = g_old->debug; 
   g->mode = g_old->mode;
 
+  g->width = g_old->width;
+  g->height = g_old->height;
+
   if (g_old->mode == MODE_JAVA_ARRAY)
     {
-      g->width = g_old->width;
-      g->height = g_old->height;
-      g->jarray = (*env)->NewGlobalRef(env, g_old->jarray);
+      jint size = g->width * g->height * 4;
+      
+      g->jarray = (*env)->NewGlobalRef (env, g_old->jarray);
+      g->javabuf = (*env)->GetIntArrayElements (env, g->jarray, &g->isCopy);
+      g->isCopy = JNI_TRUE;
+      g->javabuf_copy = (jint *) malloc (size);
+      memcpy (g->javabuf_copy, g->javabuf, size);
+      g->surface = cairo_image_surface_create_for_data ((unsigned char *) g->javabuf,
+						         CAIRO_FORMAT_ARGB32,
+						         g->width,
+						         g->height,
+						         g->width * 4);
+      g_assert (g->surface != NULL);
+      g->cr = cairo_create (g->surface);
+      g_assert (g->cr != NULL);
+      (*env)->ReleaseIntArrayElements (env, g->jarray, g->javabuf, JNI_ABORT);
     }
   else
     {
       g->drawable = g_old->drawable;
-
       g_object_ref (g->drawable);
-
-      g->cr = gdk_cairo_create (g->drawable);
-      g_assert (g->cr != NULL);
 
       if (x_server_has_render_extension ())
 	init_graphics2d_as_renderable (g);
@@ -416,6 +424,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState___3III
 (JNIEnv *env, jobject obj, jintArray jarr, jint width, jint height)
 {
   struct graphics2d *gr;
+  jint *cairobuf;
 
   gdk_threads_enter();
   gr = (struct graphics2d *) malloc (sizeof (struct graphics2d));
@@ -426,13 +435,35 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState___3III
 
   if (gr->debug) printf ("constructing java-backed image of size (%d,%d)\n",
 			 width, height);
-  
-  gr->cr = gdk_cairo_create (gr->drawable);
-  g_assert (gr->cr != NULL);
 
   gr->width = width;
   gr->height = height;
   gr->jarray = (*env)->NewGlobalRef(env, jarr);
+  gr->javabuf = (*env)->GetPrimitiveArrayCritical (env, gr->jarray, &gr->isCopy);
+  if (gr->isCopy)
+    {
+      /* We didn't get direct access to the pixel buffer, so we'll have to
+         maintain a separate copy for Cairo. */
+      jint size = gr->width * gr->height * 4;
+      gr->javabuf_copy = (jint *) malloc (size);
+      memcpy (gr->javabuf_copy, gr->javabuf, size);
+      cairobuf = gr->javabuf_copy;
+    }
+  else
+    {
+      /* Have Cairo write directly to the Java array. */
+      cairobuf = gr->javabuf;
+    }
+  gr->surface = cairo_image_surface_create_for_data ((unsigned char *) cairobuf,
+						     CAIRO_FORMAT_ARGB32,
+						     gr->width,
+						     gr->height,
+						     gr->width * 4);
+  g_assert (gr->surface != NULL);
+  gr->cr = cairo_create (gr->surface);
+  g_assert (gr->cr != NULL);
+  (*env)->ReleasePrimitiveArrayCritical (env, gr->jarray, gr->javabuf, JNI_COMMIT);
+  
   gr->mode = MODE_JAVA_ARRAY;
 
   if (gr->debug) printf ("constructed java-backed image of size (%d,%d)\n",
@@ -462,8 +493,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState__II
 						 gdk_rgb_get_visual ()->depth);
   g_assert (gr->drawable != NULL);
 
-  gr->cr = gdk_cairo_create (gr->drawable);
-  g_assert (gr->cr != NULL);
+  gr->width = width;
+  gr->height = height;
 
   if (x_server_has_render_extension ())
     init_graphics2d_as_renderable (gr);
@@ -509,7 +540,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
     cairo_pattern_set_matrix (src->pattern, &matrix); 
   tmp_op = cairo_get_operator (dst->cr); 
   cairo_set_operator(dst->cr, CAIRO_OPERATOR_SOURCE); 
-  cairo_set_source_surface (dst->cr, src->surface, width, height);
+  cairo_set_source_surface (dst->cr, src->surface, 0, 0);
   cairo_paint (dst->cr);
   cairo_set_operator(dst->cr, tmp_op);
 
@@ -550,8 +581,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState__Lgnu_java_awt_peer_gtk_GtkCo
   grab_current_drawable (widget, &(gr->drawable), &(gr->win));
   g_assert (gr->drawable != NULL);
 
-  gr->cr = gdk_cairo_create (gr->drawable);
-  g_assert (gr->cr != NULL);
+  gr->width = widget->allocation.width;
+  gr->height = widget->allocation.height;
 
   if (x_server_has_render_extension ())
     init_graphics2d_as_renderable (gr);
@@ -600,7 +631,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_dispose
   if (gr->drawbuf)
     g_object_unref (gr->drawbuf); 
 
-  g_object_unref (gr->drawable);
+  if (gr->drawable)
+    g_object_unref (gr->drawable);
 
   if (gr->pattern)
     cairo_pattern_destroy (gr->pattern);
@@ -612,7 +644,11 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_dispose
     free (gr->pattern_pixels);
 
   if (gr->mode == MODE_JAVA_ARRAY)
-    (*env)->DeleteGlobalRef(env, gr->jarray);
+    {
+      (*env)->DeleteGlobalRef (env, gr->jarray);
+      if (gr->javabuf_copy)
+        free (gr->javabuf_copy);
+    }
 
   if (gr->debug) printf ("disposed of graphics2d\n");
 
@@ -830,8 +866,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_drawPixels
    cairo_pattern_set_matrix (p, &mat);
    if (gr->pattern)
      cairo_pattern_set_filter (p, cairo_pattern_get_filter (gr->pattern));
-   cairo_set_source_surface (gr->cr, surf, w, h);
+   cairo_set_source (gr->cr, p);
    cairo_paint (gr->cr);
+   cairo_pattern_destroy (p);
    cairo_surface_destroy (surf);
  }
   

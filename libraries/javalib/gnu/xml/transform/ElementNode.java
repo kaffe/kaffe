@@ -67,10 +67,9 @@ final class ElementNode
   final Node source;
   final Collection elementExcludeResultPrefixes;
   
-  ElementNode(TemplateNode children, TemplateNode next, TemplateNode name,
+  ElementNode(TemplateNode name,
               TemplateNode namespace, String uas, Node source)
   {
-    super(children, next);
     this.name = name;
     this.namespace = namespace;
     this.uas = uas;
@@ -95,14 +94,19 @@ final class ElementNode
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ElementNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet),
-                           name.clone(stylesheet),
-                           (namespace == null) ? null :
-                           namespace.clone(stylesheet),
-                           uas, source);
+    TemplateNode ret = new ElementNode(name.clone(stylesheet),
+                                       (namespace == null) ? null :
+                                       namespace.clone(stylesheet),
+                                       uas, source);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

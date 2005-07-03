@@ -54,17 +54,18 @@ final class CommentNode
   extends TemplateNode
 {
 
-  CommentNode(TemplateNode children, TemplateNode next)
-  {
-    super(children, next);
-  }
-
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new CommentNode((children == null) ? null :
-                           children.clone(stylesheet),
-                           (next == null) ? null :
-                           next.clone(stylesheet));
+    TemplateNode ret = new CommentNode();
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

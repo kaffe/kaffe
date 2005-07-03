@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt.event;
 
+import java.awt.Frame;
+import java.awt.Image;
 import java.util.EventListener;
 
 /**

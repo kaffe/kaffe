@@ -57,10 +57,8 @@ final class CallTemplateNode
   final QName name;
   final List withParams;
 
-  CallTemplateNode(TemplateNode children, TemplateNode next,
-                   QName name, List withParams)
+  CallTemplateNode(QName name, List withParams)
   {
-    super(children, next);
     this.name = name;
     this.withParams = withParams;
   }
@@ -73,11 +71,16 @@ final class CallTemplateNode
       {
         withParams2.add(((WithParam) withParams.get(i)).clone(stylesheet));
       }
-    return new CallTemplateNode((children == null) ? null :
-                                children.clone(stylesheet),
-                                (next == null) ? null :
-                                next.clone(stylesheet),
-                                name, withParams2);
+    TemplateNode ret = new CallTemplateNode(name, withParams2);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

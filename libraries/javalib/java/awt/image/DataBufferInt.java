@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2002  Free Software Foundation
+/* Copyright (C) 2000, 2002, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -47,6 +47,9 @@ package java.awt.image;
    code is a maintenance nightmare.  */
 
 /**
+ * A {@link DataBuffer} that uses an array of <code>int</code> primitives
+ * to represent each of its banks. 
+ * 
  * @author Rolf W. Rasmussen (rolfwr@ii.uib.no)
  */
 public final class DataBufferInt extends DataBuffer

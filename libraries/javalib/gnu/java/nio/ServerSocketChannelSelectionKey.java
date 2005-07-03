@@ -51,6 +51,8 @@ public final class ServerSocketChannelSelectionKey
 
   public int getNativeFD()
   {
-    return ((ServerSocketChannelImpl) ch).getNativeFD();
+    NIOServerSocket socket =
+         (NIOServerSocket) ((ServerSocketChannelImpl) ch).socket();
+    return socket.getPlainSocketImpl().getNativeFD();
   }
 }

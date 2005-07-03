@@ -87,14 +87,6 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache {
 	} // setRootVisible()
 
 	/**
-	 * setRowHeight
-	 * @param value0 TODO
-	 */
-	public void setRowHeight(int value0) {
-		// TODO
-	} // setRowHeight()
-
-	/**
 	 * setNodeDimensions
 	 * @param value0 TODO
 	 */

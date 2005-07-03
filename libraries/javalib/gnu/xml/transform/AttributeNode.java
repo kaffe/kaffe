@@ -60,10 +60,9 @@ final class AttributeNode
   final TemplateNode namespace;
   final Node source;
   
-  AttributeNode(TemplateNode children, TemplateNode next, TemplateNode name,
+  AttributeNode(TemplateNode name,
                 TemplateNode namespace, Node source)
   {
-    super(children, next);
     this.name = name;
     this.namespace = namespace;
     this.source = source;
@@ -71,13 +70,19 @@ final class AttributeNode
 
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new AttributeNode((children == null) ? null :
-                             children.clone(stylesheet),
-                             (next == null) ? null : next.clone(stylesheet),
-                             name.clone(stylesheet),
-                             (namespace == null) ? null : 
-                             namespace.clone(stylesheet),
-                             source);
+    TemplateNode ret = new AttributeNode(name.clone(stylesheet),
+                                         (namespace == null) ? null :
+                                         namespace.clone(stylesheet),
+                                         source);
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

@@ -39,18 +39,29 @@ exception statement from your version. */
 package javax.swing.plaf.basic;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.PanelUI;
 
 public class BasicPanelUI extends PanelUI
 {
-    public static ComponentUI createUI(JComponent x) 
-    {
-        return new BasicPanelUI();
-    }
+  public static ComponentUI createUI(JComponent x) 
+  {
+    return new BasicPanelUI();
+  }
 
-    public void installUI(JComponent c)
-    {
-      super.installUI(c);
-    }
+  public void installUI(JComponent c)
+  {
+    super.installUI(c);
+    if (c instanceof JPanel)
+      {
+	JPanel p = (JPanel) c;
+	installDefaults(p);
+      }
+  }
+
+  public void installDefaults(JPanel p)
+  {
+    p.setOpaque(true);
+  }
 }

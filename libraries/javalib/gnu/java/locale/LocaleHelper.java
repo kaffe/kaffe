@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package gnu.java.locale;
 
-import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -87,17 +86,17 @@ public class LocaleHelper
 					  boolean checkRoot)
   {
     String localizedString;
-    Hashtable table;
+    String property;
 
     if (key.equals(""))
       return "";
+    property = name + "." + key;
     /* Localize to inLocale */
     try
       {
-        table = (Hashtable)
+        localizedString =
 	  ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
-				   inLocale).getObject(name);
-	localizedString = (String) table.get(key);
+				   inLocale).getString(property);
       }
     catch (MissingResourceException exception)
       {
@@ -110,10 +109,9 @@ public class LocaleHelper
 	  {
 	    ResourceBundle bundle;
 	    
-	    bundle =
+	    bundle = 
 	      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
-	    table = (Hashtable) bundle.getObject(name);
-	    localizedString = (String) table.get(key);
+	    localizedString = bundle.getString(property);
 	  }
 	catch (MissingResourceException exception)
 	  {
@@ -125,10 +123,9 @@ public class LocaleHelper
       {
 	try
 	  {
-	    table = (Hashtable)
+	    localizedString = 
 	      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
-				       Locale.ENGLISH).getObject(name);
-	    localizedString= (String) table.get(key);
+				       Locale.ENGLISH).getString(property);
 	  }
 	catch (MissingResourceException exception)
 	  {
@@ -140,10 +137,10 @@ public class LocaleHelper
       {
 	try
 	  {
-	    table = (Hashtable)
+	    localizedString = 
 	      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
-				       new Locale("","","")).getObject(name);
-	    localizedString= (String) table.get(key);
+				       new Locale("","","")
+				       ).getString(property);
 	  }
 	catch (MissingResourceException exception)
 	  {

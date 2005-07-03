@@ -95,7 +95,9 @@ public final class NameTest
         return true;
       }
     String uri = qName.getNamespaceURI();
-    if (!equal(uri, node.getNamespaceURI()))
+    String nodeUri = node.getNamespaceURI();
+    String nodeLocalName = node.getLocalName();
+    if (nodeLocalName != null && !equal(uri, nodeUri))
       {
         return false;
       }
@@ -104,7 +106,11 @@ public final class NameTest
         return true;
       }
     String localName = qName.getLocalPart();
-    return (localName.equals(node.getLocalName()));
+    if (nodeLocalName != null)
+      {
+        nodeLocalName = node.getNodeName();
+      }
+    return (localName.equals(nodeLocalName));
   }
 
   final boolean equal(String s1, String s2)

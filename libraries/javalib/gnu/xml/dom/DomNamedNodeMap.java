@@ -206,6 +206,10 @@ public class DomNamedNodeMap
         if (ns)
           {
             String tln = ctx.getLocalName();
+            if (tln == null)
+              {
+                tln = ctx.getNodeName();
+              }
             if (tln.equals(localName))
               {
                 String tu = ctx.getNamespaceURI();

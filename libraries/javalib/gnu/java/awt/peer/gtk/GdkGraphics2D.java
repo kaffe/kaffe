@@ -201,7 +201,7 @@ public class GdkGraphics2D extends Graphics2D
     initState(width, height);
 
     setColor(Color.black);
-    setBackground(Color.black);
+    setBackground(new Color(0, 0, 0, 0));
     setPaint(getColor());
     setFont(new Font("SansSerif", Font.PLAIN, 12));
     setTransform(new AffineTransform());
@@ -255,7 +255,7 @@ public class GdkGraphics2D extends Graphics2D
     initState(this.pixelBuffer, bimage.getWidth(), bimage.getHeight());
 
     setColor(Color.black);
-    setBackground(Color.black);
+    setBackground(new Color(0, 0, 0, 0));
     setPaint(getColor());
     setFont(new Font("SansSerif", Font.PLAIN, 12));
     setTransform(new AffineTransform());
@@ -545,7 +545,7 @@ public class GdkGraphics2D extends Graphics2D
 		// draw an image which has actually been loaded 
 		// into memory fully
 		BufferedImage b = (BufferedImage) img;
-		return drawRaster(b.getColorModel(), b.getData(),
+		return drawRaster(b.getColorModel(), b.getTile(0, 0),
 		                  invertedXform, bgcolor);
 	      }
 	    else

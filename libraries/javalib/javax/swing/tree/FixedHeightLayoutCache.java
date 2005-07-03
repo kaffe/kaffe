@@ -1,5 +1,5 @@
 /* FixedHeightLayoutCache.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+Copyright (C) 2002, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,7 +35,6 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-
 package javax.swing.tree;
 
 import java.awt.Rectangle;
@@ -45,192 +44,201 @@ import javax.swing.event.TreeModelEvent;
 
 /**
  * FixedHeightLayoutCache
+ * 
  * @author Andrew Selkirk
  */
-public class FixedHeightLayoutCache extends AbstractLayoutCache {
+public class FixedHeightLayoutCache
+		extends AbstractLayoutCache
+{
 
-	//-------------------------------------------------------------
+	// -------------------------------------------------------------
 	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+	// -------------------------------------------------------------
 
-
-	//-------------------------------------------------------------
+	// -------------------------------------------------------------
 	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+	// -------------------------------------------------------------
 
 	/**
 	 * Constructor FixedHeightLayoutCache
 	 */
-	public FixedHeightLayoutCache() {
+	public FixedHeightLayoutCache()
+	{
 		// TODO
 	} // FixedHeightLayoutCache()
 
-
-	//-------------------------------------------------------------
+	// -------------------------------------------------------------
 	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
-
-	/**
-	 * setModel
-	 * @param value0 TODO
-	 */
-	public void setModel(TreeModel value0) {
-		// TODO
-	} // setModel()
-
-	/**
-	 * setRootVisible
-	 * @param value0 TODO
-	 */
-	public void setRootVisible(boolean value0) {
-		// TODO
-	} // setRootVisible()
-
-	/**
-	 * setRowHeight
-	 * @param value0 TODO
-	 */
-	public void setRowHeight(int value0) {
-		// TODO
-	} // setRowHeight()
+	// -------------------------------------------------------------
 
 	/**
 	 * getRowCount
+	 * 
 	 * @returns int
 	 */
-	public int getRowCount() {
+	public int getRowCount()
+	{
 		return 0; // TODO
 	} // getRowCount()
 
 	/**
 	 * invalidatePathBounds
+	 * 
 	 * @param value0 TODO
 	 */
-	public void invalidatePathBounds(TreePath value0) {
+	public void invalidatePathBounds(TreePath value0)
+	{
 		// TODO
 	} // invalidatePathBounds()
 
 	/**
 	 * invalidateSizes
 	 */
-	public void invalidateSizes() {
+	public void invalidateSizes()
+	{
 		// TODO
 	} // invalidateSizes()
 
 	/**
 	 * isExpanded
+	 * 
 	 * @param value0 TODO
 	 * @returns boolean
 	 */
-	public boolean isExpanded(TreePath value0) {
+	public boolean isExpanded(TreePath value0)
+	{
 		return false; // TODO
 	} // isExpanded()
 
 	/**
 	 * getBounds
+	 * 
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 * @returns Rectangle
 	 */
-	public Rectangle getBounds(TreePath value0, Rectangle value1) {
+	public Rectangle getBounds(TreePath value0, Rectangle value1)
+	{
 		return null; // TODO
 	} // getBounds()
 
 	/**
 	 * getPathForRow
+	 * 
 	 * @param value0 TODO
 	 * @returns TreePath
 	 */
-	public TreePath getPathForRow(int value0) {
-		return null; // TODO
+	public TreePath getPathForRow(int row)
+	{
+		//TODO
+		return null;
 	} // getPathForRow()
 
 	/**
 	 * getRowForPath
+	 * 
 	 * @param value0 TODO
 	 * @returns int
 	 */
-	public int getRowForPath(TreePath value0) {
-		return 0; // TODO
+	public int getRowForPath(TreePath value0)
+	{
+		return 0;
 	} // getRowForPath()
 
 	/**
 	 * getPathClosestTo
+	 * 
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 * @returns TreePath
 	 */
-	public TreePath getPathClosestTo(int value0, int value1) {
+	public TreePath getPathClosestTo(int value0, int value1)
+	{
 		return null; // TODO
 	} // getPathClosestTo()
 
 	/**
 	 * getVisibleChildCount
+	 * 
 	 * @param value0 TODO
 	 * @returns int
 	 */
-	public int getVisibleChildCount(TreePath value0) {
+	public int getVisibleChildCount(TreePath value0)
+	{
 		return 0; // TODO
 	} // getVisibleChildCount()
 
 	/**
 	 * getVisiblePathsFrom
+	 * 
 	 * @param value0 TODO
 	 * @returns Enumeration
 	 */
-	public Enumeration getVisiblePathsFrom(TreePath value0) {
+	public Enumeration getVisiblePathsFrom(TreePath value0)
+	{
 		return null; // TODO
 	} // getVisiblePathsFrom()
 
 	/**
 	 * setExpandedState
+	 * 
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public void setExpandedState(TreePath value0, boolean value1) {
+	public void setExpandedState(TreePath value0, boolean value1)
+	{
 		// TODO
 	} // setExpandedState()
 
 	/**
 	 * getExpandedState
+	 * 
 	 * @param value0 TODO
 	 * @returns boolean
 	 */
-	public boolean getExpandedState(TreePath value0) {
+	public boolean getExpandedState(TreePath value0)
+	{
 		return false; // TODO
 	} // getExpandedState()
 
 	/**
 	 * treeNodesChanged
+	 * 
 	 * @param value0 TODO
 	 */
-	public void treeNodesChanged(TreeModelEvent value0) {
+	public void treeNodesChanged(TreeModelEvent value0)
+	{
 		// TODO
 	} // treeNodesChanged()
 
 	/**
 	 * treeNodesInserted
+	 * 
 	 * @param value0 TODO
 	 */
-	public void treeNodesInserted(TreeModelEvent value0) {
+	public void treeNodesInserted(TreeModelEvent value0)
+	{
 		// TODO
 	} // treeNodesInserted()
 
 	/**
 	 * treeNodesRemoved
+	 * 
 	 * @param value0 TODO
 	 */
-	public void treeNodesRemoved(TreeModelEvent value0) {
+	public void treeNodesRemoved(TreeModelEvent value0)
+	{
 		// TODO
 	} // treeNodesRemoved()
 
 	/**
 	 * treeStructureChanged
+	 * 
 	 * @param value0 TODO
 	 */
-	public void treeStructureChanged(TreeModelEvent value0) {
+	public void treeStructureChanged(TreeModelEvent value0)
+	{
 		// TODO
 	} // treeStructureChanged()
-
 
 } // FixedHeightLayoutCache

@@ -644,6 +644,9 @@ public class BasicInternalFrameUI extends InternalFrameUI
     /** The last component entered. */
     private transient Component lastComponentEntered;
 
+    /** Used to store/reset lastComponentEntered. */
+    private transient Component tempComponent;
+
     /** The number of presses. */
     private transient int pressCount;
 
@@ -764,8 +767,9 @@ public class BasicInternalFrameUI extends InternalFrameUI
 	                                     tp.x, tp.y, me.getClickCount(),
 	                                     me.isPopupTrigger(),
 	                                     me.getButton());
-	  lastComponentEntered.dispatchEvent(exited);
+          tempComponent = lastComponentEntered;
 	  lastComponentEntered = null;
+	  tempComponent.dispatchEvent(exited);
         }
 
       // If we have a candidate, maybe enter it.

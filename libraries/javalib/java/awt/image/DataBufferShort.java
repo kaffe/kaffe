@@ -1,5 +1,5 @@
 /* DataBufferShort.java --
-   Copyright (C) 2004  Free Software Foundation
+   Copyright (C) 2004, 2005  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -48,6 +48,9 @@ package java.awt.image;
    code is a maintenance nightmare.  */
 
 /**
+ * A {@link DataBuffer} that uses an array of <code>short</code> primitives
+ * to represent each of its banks. 
+ * 
  * @author Rolf W. Rasmussen (rolfwr@ii.uib.no)
  */
 public final class DataBufferShort extends DataBuffer

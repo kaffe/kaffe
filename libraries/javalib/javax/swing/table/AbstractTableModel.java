@@ -1,5 +1,5 @@
 /* AbstractTableModel.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -46,7 +46,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 /**
- * AbstractTableModel
+ * A base class that can be used to create implementations of the 
+ * {@link TableModel} interface.
  * 
  * @author Andrew Selkirk
  */
@@ -55,58 +56,60 @@ public abstract class AbstractTableModel implements TableModel, Serializable
   static final long serialVersionUID = -5798593159423650347L;
 
   /**
-   * listenerList
+   * Storage for the listeners registered with this model.
    */
   protected EventListenerList listenerList = new EventListenerList();
 
   /**
-   * Constructor AbstractTableModel
+   * Creates a default instance.
    */
   public AbstractTableModel()
   {
-    // TODO
+    // no setup required here
   }
 
   /**
-   * Get the name of the column for this index. If you do not override
-   * this methode, you'll get something like: 0, A; 1, B; ...; AA; AB;
-   * ...
+   * Returns the name of the specified column.  This method generates default 
+   * names in a sequence (starting with column 0):  A, B, C, ..., Z, AA, AB, 
+   * AC, ..., AZ, BA, BB, BC, and so on.  Subclasses may override this method
+   * to allow column names to be specified on some other basis. 
    *
-   * @param columnIndex The index of the column.
+   * @param columnIndex  the column index.
    *
    * @return The name of the column.
    */
-  public String getColumnName (int columnIndex)
+  public String getColumnName(int columnIndex)
   {
-    int index = columnIndex + 1;
     StringBuffer buffer = new StringBuffer();
-
-    while (index > 0)
+    while (columnIndex >= 0)
       {
-	buffer.insert (0, (char) ('A' + ((index - 1) % 26)));
-	index = (index - 1) / 26;
+        buffer.insert (0, (char) ('A' + columnIndex % 26));
+        columnIndex = columnIndex / 26 - 1;
       }
-    
-    // Return column name.
     return buffer.toString();
   }
 
   /**
-   * Return the index of the given name.
+   * Return the index of the specified column, or <code>-1</code> if there is
+   * no column with the specified name.
    *
-   * @param columnName The name of the column.
+   * @param columnName  the name of the column (<code>null</code> not permitted).
    *
    * @return The index of the column, -1 if not found.
+   * 
+   * @see #getColumnName(int)
+   * @throws NullPointerException if <code>columnName</code> is 
+   *         <code>null</code>.
    */
-  public int findColumn (String columnName)
+  public int findColumn(String columnName)
   {
     int count = getColumnCount();
     
     for (int index = 0; index < count; index++)
       {
-        String name = getColumnName (index);
+        String name = getColumnName(index);
         
-        if (name.equals (columnName))
+        if (columnName.equals(name))
           return index;
     }
 
@@ -115,142 +118,162 @@ public abstract class AbstractTableModel implements TableModel, Serializable
   }
 
   /**
-   * Returns the class of a comlumn.
-   *
-   * @param columnIndex The index of the column.
-   *
-   * @return The class type of the column.
+   * Returns the <code>Class</code> for all <code>Object</code> instances
+   * in the specified column.  
+   * 
+   * @param columnIndex the column index.
+   * 
+   * @return The class.
    */
-  public Class getColumnClass (int columnIndex)
+  public Class getColumnClass(int columnIndex)
   {
     return Object.class;
   }
 
   /**
-   * Tells whether a cell is editable.
+   * Returns <code>true</code> if the specified cell is editable, and 
+   * <code>false</code> if it is not.  This implementation returns 
+   * <code>false</code> for all arguments, subclasses should override the 
+   * method if necessary.
    *
-   * @param rowIndex The row of the cell.
-   * @param columnIndex The index of the cell.
+   * @param rowIndex  the row index of the cell.
+   * @param columnIndex  the column index of the cell.
    *
-   * @return True if cell is editable.
+   * @return <code>false</code>.
    */
-  public boolean isCellEditable (int rowIndex, int columnIndex)
+  public boolean isCellEditable(int rowIndex, int columnIndex)
   {
     return false;
   }
 
   /**
-   * Sets a cell to a value.
+   * Sets the value of the given cell.  This implementation ignores all 
+   * arguments and does nothing, subclasses should override the 
+   * method if necessary.
    *
-   * @param value New value of cell.
-   * @param rowIndex The row of the cell.
-   * @param columnIndex The column of the cell.
+   * @param value  the new value (<code>null</code> permitted).
+   * @param rowIndex  the row index of the cell.
+   * @param columnIndex  the column index of the cell.
    */
-  public void setValueAt (Object value, int rowIndex, int columnIndex)
+  public void setValueAt(Object value, int rowIndex, int columnIndex)
   {
     // Do nothing...
   }
 
   /**
-   * Add a TableModelListener.
+   * Adds a listener to the table model.  The listener will receive notification
+   * of all changes to the table model.
    *
-   * @param listener The listener to add.
+   * @param listener  the listener.
    */
-  public void addTableModelListener (TableModelListener listener)
+  public void addTableModelListener(TableModelListener listener)
   {
-    listenerList.add (TableModelListener.class, listener);
+    listenerList.add(TableModelListener.class, listener);
   }
 
   /**
-   * Removes a TableModelListener.
+   * Removes a listener from the table model so that it will no longer receive
+   * notification of changes to the table model.
    *
-   * @param listener The listener to remove.
+   * @param listener  the listener to remove.
    */
-  public void removeTableModelListener (TableModelListener listener)
+  public void removeTableModelListener(TableModelListener listener)
   {
-    listenerList.remove (TableModelListener.class, listener);
+    listenerList.remove(TableModelListener.class, listener);
   }
 
   /**
-   * Return all registered TableModelListener objects.
+   * Returns an array containing the listeners that have been added to the
+   * table model.
    *
-   * @return Array of TableModelListener objects.
+   * @return Array of {@link TableModelListener} objects.
    *
    * @since 1.4
    */
   public TableModelListener[] getTableModelListeners()
   {
     return (TableModelListener[])
-      listenerList.getListeners (TableModelListener.class);
+      listenerList.getListeners(TableModelListener.class);
   }
 
   /**
-   * fireTableDataChanged
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that the table data has changed.
    */
   public void fireTableDataChanged()
   {
-    fireTableChanged (new TableModelEvent (this));
+    fireTableChanged(new TableModelEvent(this, 0, Integer.MAX_VALUE));
   }
 
   /**
-   * fireTableStructureChanged
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that the table structure has changed.
    */
   public void fireTableStructureChanged()
   {
-    fireTableChanged (new TableModelEvent (this, TableModelEvent.HEADER_ROW));
+    fireTableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
   }
 
   /**
-   * fireTableRowsInserted
-   * @param value0 TODO
-   * @param value1 TODO
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that some rows have been inserted into the model.
+   * 
+   * @param firstRow  the index of the first row.
+   * @param lastRow  the index of the last row.
    */
   public void fireTableRowsInserted (int firstRow, int lastRow)
   {
-    fireTableChanged (new TableModelEvent (this, firstRow, lastRow,
-                                           TableModelEvent.ALL_COLUMNS,
-                                           TableModelEvent.INSERT));
+    fireTableChanged(new TableModelEvent(this, firstRow, lastRow,
+                                         TableModelEvent.ALL_COLUMNS,
+                                         TableModelEvent.INSERT));
   }
 
   /**
-   * fireTableRowsUpdated
-   * @param value0 TODO
-   * @param value1 TODO
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that some rows have been updated.
+   * 
+   * @param firstRow  the index of the first row.
+   * @param lastRow  the index of the last row.
    */
   public void fireTableRowsUpdated (int firstRow, int lastRow)
   {
-    fireTableChanged (new TableModelEvent (this, firstRow, lastRow,
-                                           TableModelEvent.ALL_COLUMNS,
-                                           TableModelEvent.UPDATE));
+    fireTableChanged(new TableModelEvent(this, firstRow, lastRow,
+                                         TableModelEvent.ALL_COLUMNS,
+                                         TableModelEvent.UPDATE));
   }
 
   /**
-   * fireTableRowsDeleted
-   * @param value0 TODO
-   * @param value1 TODO
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that some rows have been deleted from the model.
+   * 
+   * @param firstRow  the index of the first row.
+   * @param lastRow  the index of the last row.
    */
   public void fireTableRowsDeleted(int firstRow, int lastRow)
   {
-    fireTableChanged (new TableModelEvent (this, firstRow, lastRow,
-                                           TableModelEvent.ALL_COLUMNS,
-                                           TableModelEvent.DELETE));
+    fireTableChanged(new TableModelEvent(this, firstRow, lastRow,
+                                         TableModelEvent.ALL_COLUMNS,
+                                         TableModelEvent.DELETE));
   }
 
   /**
-   * fireTableCellUpdated
-   * @param value0 TODO
-   * @param value1 TODO
+   * Sends a {@link TableModelEvent} to all registered listeners to inform
+   * them that a single cell has been updated.
+   * 
+   * @param row  the row index.
+   * @param column  the column index.
    */
   public void fireTableCellUpdated (int row, int column)
   {
-    fireTableChanged (new TableModelEvent (this, row, row, column));
+    fireTableChanged(new TableModelEvent(this, row, row, column));
   }
 
   /**
-   * fireTableChanged
-   * @param value0 TODO
+   * Sends the specified event to all registered listeners.
+   * 
+   * @param event  the event to send.
    */
-  public void fireTableChanged (TableModelEvent event)
+  public void fireTableChanged(TableModelEvent event)
   {
     int	index;
     TableModelListener listener;
@@ -264,12 +287,15 @@ public abstract class AbstractTableModel implements TableModel, Serializable
   }
 
   /**
-   * getListeners
-   * @param value0 TODO
-   * @return EventListener[]
+   * Returns an array of listeners of the given type that are registered with
+   * this model.
+   * 
+   * @param listenerType  the listener class.
+   * 
+   * @return An array of listeners (possibly empty).
    */
-  public EventListener[] getListeners (Class listenerType)
+  public EventListener[] getListeners(Class listenerType)
   {
-    return listenerList.getListeners (listenerType);
+    return listenerList.getListeners(listenerType);
   }
 }

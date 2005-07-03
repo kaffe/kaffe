@@ -1840,7 +1840,7 @@ public abstract class DomNode
     if (ns1 != null && ns2 != null)
       {
         return ns1.equals(ns2) &&
-          getLocalName().equals(other.getLocalName());
+          equal(getLocalName(), other.getLocalName());
       }
 
     // if neither has a namespace, this is a "no-namespace" name.

@@ -592,7 +592,7 @@ public class JScrollPane
     if (view != null)
       getViewport().setView(view);
     viewport.addChangeListener(scrollListener);
-    add(viewport);
+    add(viewport,0);
     setLayout(new ScrollPaneLayout());
     setOpaque(false);
     updateUI();

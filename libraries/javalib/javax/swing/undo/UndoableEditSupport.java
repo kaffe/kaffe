@@ -187,7 +187,7 @@ public class UndoableEditSupport
 
 
   /**
-   * If {@link #beginEdit} has been called (so that the current
+   * If {@link #beginUpdate} has been called (so that the current
    * update level is greater than zero), adds the specified edit
    * to {@link #compoundEdit}. Otherwise, notify listeners of the
    * edit by calling {@link #_postEdit(UndoableEdit)}.
@@ -233,12 +233,12 @@ public class UndoableEditSupport
 
 
   /**
-   * Creates a new instance of {@link #CompoundEdit}. Called by {@link
+   * Creates a new instance of {@link CompoundEdit}. Called by {@link
    * #beginUpdate}. If a subclass wants {@link #beginUpdate} to work
    * on a specific {@link #compoundEdit}, it should override this
    * method.
    *
-   * @returns a newly created instance of {@link #CompoundEdit}.
+   * @returns a newly created instance of {@link CompoundEdit}.
    */
   protected CompoundEdit createCompoundEdit()
   {

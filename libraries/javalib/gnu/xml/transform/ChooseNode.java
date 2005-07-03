@@ -50,17 +50,18 @@ final class ChooseNode
   extends TemplateNode
 {
 
-  ChooseNode(TemplateNode children, TemplateNode next)
-  {
-    super(children, next);
-  }
-
   TemplateNode clone(Stylesheet stylesheet)
   {
-    return new ChooseNode((children == null) ? null :
-                          children.clone(stylesheet),
-                          (next == null) ? null :
-                          next.clone(stylesheet));
+    TemplateNode ret = new ChooseNode();
+    if (children != null)
+      {
+        ret.children = children.clone(stylesheet);
+      }
+    if (next != null)
+      {
+        ret.next = next.clone(stylesheet);
+      }
+    return ret;
   }
 
   void doApply(Stylesheet stylesheet, QName mode,

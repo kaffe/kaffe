@@ -76,6 +76,10 @@ public abstract class DomHTMLElement
           {
             Node attr = attrs.item(i);
             String attrName = attr.getLocalName();
+            if (attrName == null)
+              {
+                attrName = attr.getNodeName();
+              }
             if (attrName.equalsIgnoreCase(name))
               {
                 return attr.getNodeValue();
@@ -121,6 +125,10 @@ public abstract class DomHTMLElement
       {
         attr = attrs.item(i);
         String attrName = attr.getLocalName();
+        if (attrName == null)
+          {
+            attrName = attr.getNodeName();
+          }
         if (attrName.equalsIgnoreCase(name))
           {
             if (value != null)
@@ -162,7 +170,12 @@ public abstract class DomHTMLElement
     for (Node parent = getParentNode(); parent != null;
          parent = parent.getParentNode())
       {
-        if (name.equalsIgnoreCase(parent.getLocalName()))
+        String parentName = parent.getLocalName();
+        if (parentName == null)
+          {
+              parentName = parent.getNodeName();
+          }
+        if (name.equalsIgnoreCase(parentName))
           {
             return parent;
           }
@@ -178,7 +191,12 @@ public abstract class DomHTMLElement
     for (Node child = getFirstChild(); child != null;
          child = child.getNextSibling())
       {
-        if (name.equalsIgnoreCase(child.getLocalName()))
+        String childName = child.getLocalName();
+        if (childName == null)
+          {
+            childName = child.getLocalName();
+          }
+        if (name.equalsIgnoreCase(childName))
           {
             return child;
           }

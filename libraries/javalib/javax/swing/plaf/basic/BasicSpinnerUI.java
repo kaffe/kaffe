@@ -178,6 +178,7 @@ public class BasicSpinnerUI extends SpinnerUI
     spinner.setBorder(defaults.getBorder("Spinner.border"));
     */
     spinner.setLayout(createLayout());
+    spinner.setOpaque(true);
   }
 
   /*

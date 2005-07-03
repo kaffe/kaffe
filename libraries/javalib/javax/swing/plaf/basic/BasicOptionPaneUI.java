@@ -1146,6 +1146,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     optionPane.setBackground(defaults.getColor("OptionPane.background"));
     optionPane.setForeground(defaults.getColor("OptionPane.foreground"));
     optionPane.setBorder(defaults.getBorder("OptionPane.border"));
+    optionPane.setOpaque(true);
 
     messageBorder = defaults.getBorder("OptionPane.messageAreaBorder");
     messageForeground = defaults.getColor("OptionPane.messageForeground");
