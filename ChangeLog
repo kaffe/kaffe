@@ -1,5 +1,13 @@
 2005-07-04  Riccardo Mottola  <rmottola@users.sf.net>
 
+	*config/i386/netbsd1/jit-md.h,
+	config/i386/netbsd1/md.h:
+	Changed macros to use ucontext_t instead of sigcontext.
+	Also unified them to use macros provided by netbsd that 
+	are portable among different platforms to get SP and PC.
+
+2005-07-04  Riccardo Mottola  <rmottola@users.sf.net>
+
 	* config/sparc/netbsd1/jit-md.h, 
 	config/sparc/netbsd1/md.h:
 	Changed macros to use ucontext_t instead of sigcontext. 

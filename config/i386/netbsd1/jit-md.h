@@ -26,7 +26,8 @@
 
 /* Get the first exception frame from a signal handler */
 #define	EXCEPTIONFRAME(f, c)						\
-	(f).retbp = (c)->sc_ebp;					\
-	(f).retpc = (c)->sc_eip + 1
+        (f).retbp = _UC_MACHINE_SP(((ucontext_t *)(c)));                \
+	(f).retpc = _UC_MACHINE_PC(((ucontext_t *)(c)))
+
 
 #endif
