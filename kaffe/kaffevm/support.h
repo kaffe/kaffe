@@ -59,7 +59,7 @@ struct _errorInfo;
  * that describes where the parameters are, where the return value should
  * go and what the signature of the method is.
  *
- * `jvalue' is a union defined in include/kaffejtypes.h.  It corresponds
+ * `jvalue' is a union defined in include/jni.h.  It corresponds
  * to an entry on the Java stack. 
  * The suffixes i,j,b,c,s,l,f,d access the corresponding element of
  * (Java) type int, long, boolean, char, short, ref, float, and double.
@@ -96,10 +96,10 @@ struct _errorInfo;
  * sysdepCallMethod must store the return value in the proper type at *ret.
  */
 typedef struct {
-	void*			function;
-	jvalue*			args;
+	void*			function;  /* method information */
+	jvalue*			args; /* treated as an array of method arguments */
 	jvalue*			ret;
-	int			nrargs;
+	int			nrargs; /* number of arguments in args */
 	int			argsize;
 	char			retsize;
 	char			rettype;
