@@ -1,7 +1,7 @@
 package gnu.crypto.sasl.srp;
 
 // ----------------------------------------------------------------------------
-// $Id: SRPServer.java,v 1.1 2004/07/21 01:42:02 dalibor Exp $
+// $Id: SRPServer.java,v 1.2 2005/07/04 00:05:07 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.sasl.srp;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -77,7 +77,7 @@ import javax.security.sasl.SaslServer;
 /**
  * <p>The SASL-SRP server-side mechanism.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SRPServer extends ServerMechanism implements SaslServer {
 

@@ -1,7 +1,7 @@
 package gnu.crypto.mac;
 
 // ----------------------------------------------------------------------------
-// $Id: MacFactory.java,v 1.2 2004/10/17 19:06:55 robilad Exp $
+// $Id: MacFactory.java,v 1.3 2005/07/04 00:04:56 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.mac;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -56,7 +56,7 @@ import java.util.Set;
  * <p>A <i>Factory</i> that instantiates instances of every supported Message
  * Authentication Code algorithms, including all <i>HMAC</i> algorithms.</p>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MacFactory implements Registry {
 

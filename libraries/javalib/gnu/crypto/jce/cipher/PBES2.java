@@ -1,7 +1,7 @@
 package gnu.crypto.jce.cipher;  // -*- c-basic-offset: 3; -*-
 
 // --------------------------------------------------------------------------
-// $Id: PBES2.java,v 1.1 2004/07/21 01:41:29 dalibor Exp $
+// $Id: PBES2.java,v 1.2 2005/07/04 00:04:44 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.jce.cipher;  // -*- c-basic-offset: 3; -*-
 // along with this program; if not, write to the
 //
 //    Free Software Foundation, Inc.,
-//    59 Temple Place, Suite 330,
-//    Boston, MA  02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA  02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -63,7 +63,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * <p>.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class PBES2 extends CipherAdapter {
 

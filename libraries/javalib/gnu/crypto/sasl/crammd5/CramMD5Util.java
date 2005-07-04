@@ -1,7 +1,7 @@
 package gnu.crypto.sasl.crammd5;
 
 // ----------------------------------------------------------------------------
-// $Id: CramMD5Util.java,v 1.1 2004/07/21 01:42:00 dalibor Exp $
+// $Id: CramMD5Util.java,v 1.2 2005/07/04 00:05:06 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.sasl.crammd5;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -59,7 +59,7 @@ import javax.security.sasl.SaslException;
 /**
  * A package-private CRAM-MD5-specific utility class.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 class CramMD5Util {
 

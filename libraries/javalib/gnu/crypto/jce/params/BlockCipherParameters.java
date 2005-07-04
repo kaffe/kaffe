@@ -1,7 +1,7 @@
 package gnu.crypto.jce.params;
 
 // --------------------------------------------------------------------------
-// $Id: BlockCipherParameters.java,v 1.1 2004/07/21 01:41:36 dalibor Exp $
+// $Id: BlockCipherParameters.java,v 1.2 2005/07/04 00:04:47 robilad Exp $
 //
 // Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.jce.params;
 // along with this program; if not, write to the
 //
 //    Free Software Foundation, Inc.,
-//    59 Temple Place, Suite 330,
-//    Boston, MA  02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA  02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -58,7 +58,7 @@ import java.security.spec.InvalidParameterSpecException;
  * ciphers. This encompasses the cipher's block size, its key size, and
  * an optional initialization vector (IV).
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BlockCipherParameters extends AlgorithmParametersSpi {
 

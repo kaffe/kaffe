@@ -1,7 +1,7 @@
 package gnu.crypto.hash;
 
 // ----------------------------------------------------------------------------
-// $Id: MD5.java,v 1.2 2005/05/30 06:27:48 doogie Exp $
+// $Id: MD5.java,v 1.3 2005/07/04 00:04:41 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.hash;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -61,7 +61,7 @@ import gnu.crypto.util.Util;
  *    R. Rivest.</li>
  * </ol>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MD5 extends BaseHash {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Handler.java,v 1.5 2004/12/03 17:44:35 robilad Exp $
+ * $Id: Handler.java,v 1.6 2005/07/04 00:05:15 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -50,7 +50,7 @@ import gnu.java.net.protocol.http.HTTPURLConnection;
  * An HTTPS URL stream handler.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2004/12/03 17:44:35 $
+ * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:15 $
  */
 public class Handler extends URLStreamHandler
 {

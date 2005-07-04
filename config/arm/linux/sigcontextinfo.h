@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307 USA.  */
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+   02110-1301 USA.  */
 
 #define SIGCONTEXT int _a2, int _a3, int _a4, struct sigcontext
 #define SIGCONTEXT_EXTRA_ARGS _a2, _a3, _a4,

@@ -1,7 +1,7 @@
 package gnu.crypto.prng;
 
 // ----------------------------------------------------------------------------
-// $Id: IRandom.java,v 1.4 2004/10/17 19:06:56 robilad Exp $
+// $Id: IRandom.java,v 1.5 2005/07/04 00:05:02 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.prng;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -82,7 +82,7 @@ import java.util.Map;
  *    Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface IRandom extends Cloneable {
 

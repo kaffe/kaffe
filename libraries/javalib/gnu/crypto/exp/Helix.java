@@ -1,7 +1,7 @@
 package gnu.crypto.exp;  // -*- Mode: java; c-basic-offset: 3; -*-
 
 // ---------------------------------------------------------------------------
-// $Id: Helix.java,v 1.2 2005/05/30 06:27:40 doogie Exp $
+// $Id: Helix.java,v 1.3 2005/07/04 00:04:40 robilad Exp $
 //
 // Copyright (C) 2004 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.exp;  // -*- Mode: java; c-basic-offset: 3; -*-
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is

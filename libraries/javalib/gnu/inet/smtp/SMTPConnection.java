@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.7 2005/02/16 03:17:53 robilad Exp $
+ * $Id: SMTPConnection.java,v 1.8 2005/07/04 00:05:17 robilad Exp $
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -81,7 +81,7 @@ import gnu.inet.util.SaslPlain;
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.7 $ $Date: 2005/02/16 03:17:53 $
+ * @version $Revision: 1.8 $ $Date: 2005/07/04 00:05:17 $
  */
 public class SMTPConnection
 {

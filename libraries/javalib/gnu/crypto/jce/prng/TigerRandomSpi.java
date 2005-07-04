@@ -21,8 +21,8 @@ package gnu.crypto.jce.prng;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -49,7 +49,7 @@ import gnu.crypto.Registry;
  * The implementation of the Tiger based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.<p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class TigerRandomSpi extends SecureRandomAdapter {
 

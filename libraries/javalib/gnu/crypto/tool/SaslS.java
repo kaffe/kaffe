@@ -1,7 +1,7 @@
 package gnu.crypto.tool;
 
 // ----------------------------------------------------------------------------
-// $Id: SaslS.java,v 1.1 2004/07/21 01:42:06 dalibor Exp $
+// $Id: SaslS.java,v 1.2 2005/07/04 00:05:11 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.tool;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -75,7 +75,7 @@ import javax.security.sasl.SaslException;
  * to kill it. It should activate a shutdown thread that will orderly close all
  * live worker threads before exiting.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SaslS implements Runnable {
 

@@ -1,7 +1,7 @@
 package gnu.crypto.pad;
 
 // ----------------------------------------------------------------------------
-// $Id: PKCS7.java,v 1.1 2004/07/21 01:41:50 dalibor Exp $
+// $Id: PKCS7.java,v 1.2 2005/07/04 00:04:57 robilad Exp $
 //
 // Copyright (C) 2001, 2002, Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.pad;
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -63,7 +63,7 @@ import java.io.PrintWriter;
  * Cryptographic Message Syntax Standard - An RSA Laboratories Technical Note.<br>
  * <a href="http://www.rsasecurity.com/">RSA Security</a>.<p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class PKCS7 extends BasePad {
 

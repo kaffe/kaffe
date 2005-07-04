@@ -1,7 +1,7 @@
 package gnu.crypto.keyring;  // -*- c-basic-offset: 3 -*-
 
 // ---------------------------------------------------------------------------
-// $Id: GnuPrivateKeyring.java,v 1.1 2004/07/21 01:41:46 dalibor Exp $
+// $Id: GnuPrivateKeyring.java,v 1.2 2005/07/04 00:04:55 robilad Exp $
 //
 // Copyright (C) 2003 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.keyring;  // -*- c-basic-offset: 3 -*-
 // along with this program; see the file COPYING.  If not, write to the
 //
 //    Free Software Foundation Inc.,
-//    59 Temple Place - Suite 330,
-//    Boston, MA 02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA 02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -62,7 +62,7 @@ import java.util.List;
 /**
  * <p>.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GnuPrivateKeyring extends BaseKeyring implements IPrivateKeyring {
 

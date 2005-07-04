@@ -1,7 +1,7 @@
 package gnu.crypto.jce;
 
 // --------------------------------------------------------------------------
-// $Id: GnuCrypto.java,v 1.2 2004/10/17 19:06:52 robilad Exp $
+// $Id: GnuCrypto.java,v 1.3 2005/07/04 00:04:42 robilad Exp $
 //
 // Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 //
@@ -21,8 +21,8 @@ package gnu.crypto.jce;
 // along with this program; if not, write to the
 //
 //    Free Software Foundation, Inc.,
-//    59 Temple Place, Suite 330,
-//    Boston, MA  02111-1307
+//    51 Franklin Street, Fifth Floor,
+//    Boston, MA  02110-1301
 //    USA
 //
 // Linking this library statically or dynamically with other modules is
@@ -58,7 +58,7 @@ import java.util.Set;
  * <p>The GNU Crypto implementation of the Java Cryptographic Extension (JCE)
  * Provider.</p>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see java.security.Provider
  */
 public final class GnuCrypto extends Provider {
