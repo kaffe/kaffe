@@ -1,5 +1,20 @@
 2005-07-04  Riccardo Mottola  <rmottola@users.sf.net>
 
+	* config/powerpc/netbsd1/jit3-md.h
+	Added to start JIT support
+
+	* config/powerpc/darwin/jit3-md.h
+	A small comment added
+
+	* config/powerpc/linux/md.h,
+	config/powerpc/netbsd1/md.h
+	Changed macros to use ucontext_t instead of sigcontext.
+	Also unified them to use macros provided by netbsd that
+	are portable among different platforms to get SP and PC.
+	First patches to get JIT ported to powerpc-netbsd2.
+
+2005-07-04  Riccardo Mottola  <rmottola@users.sf.net>
+
 	*config/i386/netbsd1/jit-md.h,
 	config/i386/netbsd1/md.h:
 	Changed macros to use ucontext_t instead of sigcontext.

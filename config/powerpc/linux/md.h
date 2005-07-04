@@ -2,8 +2,11 @@
  * powerpc/linux/md.h
  * Linux PowerPC configuration information.
  *
- * Copyright (c) 1996, 1997, 2004
+ * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *      The kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -59,7 +62,7 @@ extern void init_md(void);
 #if defined(__GLIBC__)
 #define KAFFEMD_STACKEND
 extern void *mdGetStackEnd(void);
-#endif
+#endif /* __GLIBC__ */
 
 
 #endif

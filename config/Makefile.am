@@ -316,6 +316,7 @@ EXTRA_DIST = \
 	powerpc/netbsd1/config.frag \
 	powerpc/netbsd1/md.c \
 	powerpc/netbsd1/md.h \
+	powerpc/netbsd1/jit3-md.h \
 	powerpc/callmethod_ppc.h \
 	powerpc/jit.h \
 	powerpc/jit3-icode.h \
