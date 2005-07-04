@@ -140,9 +140,8 @@ public class LifespanPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of TRANSIENT, PERSISTENT.
+   * Returns the integer code of the policy value.
+   * @return _TRANSIENT or _PERSISTENT.
    */
   public int value()
   {

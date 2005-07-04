@@ -143,9 +143,8 @@ public class IdUniquenessPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of UNIQUE_ID, MULTIPLE_ID.
+   * Returns the integer code of the policy value.
+   * @return _UNIQUE_ID or _MULTIPLE_ID.
    */
   public int value()
   {

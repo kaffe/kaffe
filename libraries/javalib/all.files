@@ -4031,6 +4031,7 @@ org/omg/PortableServer/POAPackage/WrongPolicyHelper.java
 org/omg/PortableServer/REQUEST_PROCESSING_POLICY_ID.java
 org/omg/PortableServer/RequestProcessingPolicyValue.java
 org/omg/PortableServer/SERVANT_RETENTION_POLICY_ID.java
+org/omg/PortableServer/ServantLocatorPackage/CookieHolder.java
 org/omg/PortableServer/ServantRetentionPolicyValue.java
 org/omg/PortableServer/THREAD_POLICY_ID.java
 org/omg/SendingContext/RunTime.java

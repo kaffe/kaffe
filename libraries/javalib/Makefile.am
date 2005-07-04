@@ -334,6 +334,7 @@ Klasses_jar_SRCS = \
 	$(org_omg_PortableServer_CurrentPackage_SRCS) \
 	$(org_omg_PortableServer_POAManagerPackage_SRCS) \
 	$(org_omg_PortableServer_POAPackage_SRCS) \
+	$(org_omg_PortableServer_ServantLocatorPackage_SRCS) \
 	$(org_omg_SendingContext_SRCS) \
 	$(org_omg_stub_java_rmi_SRCS) \
 	$(org_tritonus_core_SRCS) \
@@ -4686,6 +4687,8 @@ org_omg_PortableServer_POAPackage_SRCS = \
 	org/omg/PortableServer/POAPackage/WrongAdapterHelper.java \
 	org/omg/PortableServer/POAPackage/WrongPolicy.java \
 	org/omg/PortableServer/POAPackage/WrongPolicyHelper.java
+org_omg_PortableServer_ServantLocatorPackage_SRCS = \
+	org/omg/PortableServer/ServantLocatorPackage/CookieHolder.java
 org_omg_SendingContext_SRCS = \
 	org/omg/SendingContext/RunTime.java \
 	org/omg/SendingContext/RunTimeOperations.java

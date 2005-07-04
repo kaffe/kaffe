@@ -1,3 +1,34 @@
+2005-07-04  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-07-03  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+        * org/omg/PortableServer/ServantLocatorPackage/package.html,
+        org/omg/PortableServer/ServantLocatorPackage/CookieHolder.java:
+        New files.
+
+	2005-07-02  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+        * gnu/CORBA/_PolicyImplBase.java: Ihnerit from Policy.
+        (ids): Made final non static, new constructor.
+        (type, value, policyCode): New fields.
+        (_invoke): Handle "value" operation.
+        (getValue, getCode, destroy, toString, copy, equals, hashCode):
+        New methods.
+        * org/omg/CORBA/PolicyHelper.java (narrow): Removed check for
+        repository for repository id.
+
+	2005-07-02  Audrius Meskauskas, <AudriusA@Bioinformatics.org>
+
+        * org/omg/PortableServer/IdAssignmentPolicyValue.java,
+        org/omg/PortableServer/IdUniquenessPolicyValue.java,
+        org/omg/PortableServer/ImplicitActivationPolicyValue.java,
+        org/omg/PortableServer/LifespanPolicyValue.java,
+        org/omg/PortableServer/ServantRetentionPolicyValue.java,
+        org/omg/PortableServer/RequestProcessingPolicyValue.java:
+        Documentation update.
+
 2005-07-04  Michael Franz  <mvfranz@gmail.com>
 
 	* kaffe/kaffevm/support.h (callMethodInfo): Improved and fixed docs.

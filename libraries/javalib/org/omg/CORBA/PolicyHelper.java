@@ -130,10 +130,12 @@ public abstract class PolicyHelper
       return null;
     else if (obj instanceof Policy)
       return (Policy) obj;
-    else if (!obj._is_a(id()))
-      throw new BAD_PARAM("Not a Policy");
     else
       {
+        // Check for the policy id cannot be performed because
+        // this helper must read various subclasses of the Policy,
+        // and the IOR profile currently supports only one id.
+
         Delegate delegate = ((ObjectImpl) obj)._get_delegate();
         return new _PolicyStub(delegate);
       }

@@ -40,8 +40,8 @@ package gnu.CORBA;
 
 import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.Policy;
 import org.omg.CORBA.PolicyHelper;
-import org.omg.CORBA.PolicyOperations;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.CORBA.portable.ObjectImpl;
@@ -49,7 +49,7 @@ import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ResponseHandler;
 
 /**
- * The server side implementatin base for the {@link Policy}.
+ * The server side implementation base for the {@link Policy}.
  *
  * @specnote The java 1.4 API does not define the server side policy
  * implementation base, but it defines the policy client side stub.
@@ -61,7 +61,7 @@ import org.omg.CORBA.portable.ResponseHandler;
  */
 public abstract class _PolicyImplBase
   extends ObjectImpl
-  implements PolicyOperations, InvokeHandler
+  implements Policy, InvokeHandler
 {
   /**
    * Use serialVersionUID for interoperability.
@@ -69,14 +69,60 @@ public abstract class _PolicyImplBase
   private static final long serialVersionUID = 1;
 
   /**
-   * The binding interator repository ids.
+   * The policy repository ids.
    */
-  private static String[] ids = { PolicyHelper.id() };
+  private final String[] ids;
+
+  /**
+   * The type of this policy.
+   */
+  private final int type;
+
+  /**
+   * The value of this policy. The value object is never the same
+   * for different policies.
+   */
+  private final java.lang.Object value;
+
+  /**
+   * The policy integer code, written in request to write
+   * the policy value.
+   */
+  private final int policyCode;
+
+  /**
+   * Create the new policy of the given type, having the given value.
+   * For security reasons, the method is kept package private.
+   *
+   * @param p_type the type of this policy.
+   * @param p_value the value of this policy.
+   * @param p_code the integer code of this policy.
+   * @param p_idl the policy IDL type string. The {@link #_ids()}
+   * will return array, first line being this string and another
+   * being PolicyHelper.id().
+   */
+  public _PolicyImplBase(int p_type, java.lang.Object p_value, int p_code,
+                         String p_idl
+                        )
+  {
+    type = p_type;
+    value = p_value;
+    policyCode = p_code;
+    ids = new String[] { p_idl, PolicyHelper.id() };
+  }
+
+  /**
+   * Get the integer code of the type of this policy.
+   */
+  public final int policy_type()
+  {
+    return type;
+  }
 
   /**
    * Return the list of repository ids.
    */
-  public String[] _ids()
+  public final String[] _ids()
   {
     return ids;
   }
@@ -84,9 +130,9 @@ public abstract class _PolicyImplBase
   /**
    * Call the required method.
    */
-  public OutputStream _invoke(String method, InputStream input,
-                              ResponseHandler rh
-                             )
+  public final OutputStream _invoke(String method, InputStream input,
+                                    ResponseHandler rh
+                                   )
   {
     OutputStream output = null;
 
@@ -101,7 +147,7 @@ public abstract class _PolicyImplBase
         // The "copy" has been invoked.
         org.omg.CORBA.Object returns = copy();
         output = rh.createReply();
-        output.write_Object(returns);
+        output.write_Object(this);
       }
     else if (method.equals("policy_type"))
       {
@@ -110,9 +156,76 @@ public abstract class _PolicyImplBase
         output = rh.createReply();
         output.write_long(returns);
       }
+    else if (method.equals("value"))
+      {
+        // The "value" can be invoked on the children types
+        // and must return an integer, representing the policy value
+        // (CORBA enumeration).
+        output = rh.createReply();
+        output.write_long(policyCode);
+      }
     else
       throw new BAD_OPERATION(method, 0, CompletionStatus.COMPLETED_MAYBE);
 
     return output;
+  }
+
+  /**
+   * Get the value of this policy
+   */
+  public final java.lang.Object getValue()
+  {
+    return value;
+  }
+
+  /**
+   * Get the integer code of this policy value.
+   */
+  public final int getCode()
+  {
+    return policyCode;
+  }
+
+  /**
+   * Returns without action. It is a work of garbage collector
+   * to remove the unused objects.
+   */
+  public final void destroy()
+  {
+  }
+
+  /**
+   * Returns the string representation of the given policy.
+   */
+  public final String toString()
+  {
+    return value.toString();
+  }
+
+  /**
+   * Create a copy of this policy. The object is not mutable, so
+   * <code>this</code> can be returned.
+   *
+   * @return <code>this</code>
+   */
+  public Policy copy()
+  {
+    return this;
+  }
+
+  /**
+   * Use the value to get a hash code.
+   */
+  public int hashCode()
+  {
+    return getValue().hashCode();
+  }
+
+  /**
+   * Check the values for equality.
+   */
+  public boolean equals(Object x)
+  {
+    return x == null ? false : getValue().equals(x);
   }
 }

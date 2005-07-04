@@ -143,9 +143,8 @@ public class IdAssignmentPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of USER_ID, SYSTEM_ID.
+   * Returns the integer code of the policy value.
+   * @return _USER_ID or _SYSTEM_ID.
    */
   public int value()
   {

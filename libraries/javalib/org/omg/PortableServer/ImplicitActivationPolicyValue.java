@@ -143,9 +143,8 @@ public class ImplicitActivationPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of IMPLICIT_ACTIVATION, NO_IMPLICIT_ACTIVATION.
+   * Returns the integer code of the policy value.
+   * @return _IMPLICIT_ACTIVATION or _NO_IMPLICIT_ACTIVATION.
    */
   public int value()
   {

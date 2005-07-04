@@ -165,9 +165,9 @@ public class RequestProcessingPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of USE_ACTIVE_OBJECT_MAP_ONLY, USE_DEFAULT_SERVANT, USE_SERVANT_MANAGER.
+   * Returns the integer code of the policy value.
+   * @return one of _USE_ACTIVE_OBJECT_MAP_ONLY,
+   * _USE_DEFAULT_SERVANT, _USE_SERVANT_MANAGER.
    */
   public int value()
   {

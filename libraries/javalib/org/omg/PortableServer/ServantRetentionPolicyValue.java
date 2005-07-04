@@ -140,9 +140,8 @@ public class ServantRetentionPolicyValue
   }
 
   /**
-   * Returns the value, representing the completion
-   * status of this object.
-   * @return one of RETAIN, NON_RETAIN.
+   * Returns the integer code of the policy value.
+   * @return _RETAIN or _NON_RETAIN.
    */
   public int value()
   {
