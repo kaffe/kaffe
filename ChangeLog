@@ -1,5 +1,10 @@
 2005-07-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni_i.h
+	(unveil): Fixed pointer arithmetic.
+
+2005-07-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* WHATSNEW: Added changes to JNI interface.
 
 	* kaffe/kaffevm/gc.h,

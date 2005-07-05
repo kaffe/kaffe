@@ -26,7 +26,9 @@ void KaffeJNI_removeJNIref(jref);
 static inline jobject
 unveil(jref w)
 {
-  return ( (((uintp)w) & 1) ? *((jobject *)w) : w);
+  uintp wp = (uintp) w;
+
+  return ( (wp & 1) ? *((jobject *)(wp & ~(uintp)1)) : w);
 }
 
 /*
