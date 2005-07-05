@@ -54,6 +54,7 @@ KaffeJNI_GetStringLength(JNIEnv* env UNUSED, jstring data)
   jsize len;
   BEGIN_EXCEPTION_HANDLING(0);
 
+  data = unveil(data);
   len = STRING_SIZE((Hjava_lang_String*)data);
   END_EXCEPTION_HANDLING();
   return (len);
@@ -65,6 +66,7 @@ KaffeJNI_GetStringChars(JNIEnv* env UNUSED, jstring data, jboolean* copy)
   jchar* c;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  data = unveil(data);
   if (copy != NULL) {
     *copy = JNI_FALSE;
   }
@@ -111,7 +113,7 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
 jsize
 KaffeJNI_GetStringUTFLength(JNIEnv* env UNUSED, jstring data)
 {
-  Hjava_lang_String* const str = (Hjava_lang_String*)data;
+  Hjava_lang_String* const str = (Hjava_lang_String*)unveil(data);
   jchar* ptr;
   jsize len;
   jsize count;
@@ -142,7 +144,7 @@ KaffeJNI_GetStringUTFLength(JNIEnv* env UNUSED, jstring data)
 const jbyte*
 KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jboolean* copy)
 {
-  Hjava_lang_String* const str = (Hjava_lang_String*)data;
+  Hjava_lang_String* const str = (Hjava_lang_String*)unveil(data);
   jchar* ptr;
   jbyte* buf;
   jsize len;
@@ -193,7 +195,7 @@ KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const ch
 void
 KaffeJNI_GetStringRegion(JNIEnv UNUSED *env, jstring data, jsize start, jsize len, jchar *buf)
 {
-  Hjava_lang_String* const str = (Hjava_lang_String*)data;
+  Hjava_lang_String* const str = (Hjava_lang_String*)unveil(data);
   jchar *str_ptr;
   jsize str_len;
 	
@@ -217,7 +219,7 @@ KaffeJNI_GetStringRegion(JNIEnv UNUSED *env, jstring data, jsize start, jsize le
 void
 KaffeJNI_GetStringUTFRegion(JNIEnv UNUSED *env, jstring data, jsize start, jsize len, char *buf)
 {
-  Hjava_lang_String* const str = (Hjava_lang_String*)data;
+  Hjava_lang_String* const str = (Hjava_lang_String*)unveil(data);
   jchar *str_ptr;
   jsize str_len;
 

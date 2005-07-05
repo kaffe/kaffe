@@ -1,3 +1,43 @@
+2005-07-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* WHATSNEW: Added changes to JNI interface.
+
+	* kaffe/kaffevm/gc.h,
+	kaffe/kaffevm/gcFuncs.c: Added new type KGC_ALLOC_VMWEAKREF.
+
+	* kaffe/kaffevm/javacall.c
+	(KaffeVM_classMethodA, KaffeVM_callMethodV):
+	Unveil an object reference passed into
+	arguments if needed.
+
+	* kaffe/kaffevm/intrp/methodcalls.c
+	(engine_callMethod): Unveil the return value if it is an object
+	reference.
+	
+	* kaffe/kaffevm/jit/native-wrapper.c
+	(Kaffe_wrapper): Added some JIT pseudo-code to unveil object
+	stored into weak references.
+	
+	* kaffe/kaffevm/jni/Makefile.am: Added jni-refs.c
+	
+	* kaffe/kaffevm/jni/Makefile.in: Regenerated.
+	
+	* kaffe/kaffevm/jni/jni-arrays.c,
+	kaffe/kaffevm/jni/jni-callmethod.c,
+	kaffe/kaffevm/jni/jni-fields.c,
+	kaffe/kaffevm/jni/jni-helpers.c,
+	kaffe/kaffevm/jni/jni-string.c: Updated to unveil all object
+	references passed as arguments.
+	
+	* kaffe/kaffevm/jni/jni.c: Moved out references handling.
+
+	* kaffe/kaffevm/jni/jni_funcs.h: Added new JNI exported functions.
+
+	* kaffe/kaffevm/jni/jni_i.h
+	(unveil): New function.
+
+	* kaffe/kaffevm/jni/jni-refs.c: New file.
+	
 2005-07-04  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

@@ -28,6 +28,7 @@ KaffeJNI_GetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem)
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (elem >= (jsize)obj_length((HArrayOfObject*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -42,6 +43,9 @@ void
 KaffeJNI_SetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem, jobject val)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
+
+  arr = unveil(arr);
+  val = unveil(val);
 
   if (elem >= (jsize)obj_length((HArrayOfObject*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
@@ -59,6 +63,8 @@ KaffeJNI_NewObjectArray(JNIEnv* env UNUSED, jsize len, jclass cls, jobject init)
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  cls = unveil(cls);
+  init = unveil(init);
   obj = (HArrayOfObject*)newArray((Hjava_lang_Class*)cls, len);
 
   /* I assume this is what init is for */
@@ -189,6 +195,7 @@ KaffeJNI_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jboolean
   jboolean* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -204,6 +211,7 @@ KaffeJNI_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jboolean* isco
   jbyte* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -224,7 +232,8 @@ KaffeJNI_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jboolean* isco
 {
   jchar* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
-
+  
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -240,6 +249,7 @@ KaffeJNI_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jboolean* is
   jshort* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -255,6 +265,7 @@ KaffeJNI_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jboolean* iscopy
   jint* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -270,6 +281,7 @@ KaffeJNI_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jboolean* isco
   jlong* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -285,6 +297,7 @@ KaffeJNI_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jboolean* is
   jfloat* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -300,6 +313,7 @@ KaffeJNI_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jboolean* 
   jdouble* array;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  arr = unveil(arr);
   if (iscopy != NULL) {
     *iscopy = JNI_FALSE;
   }
@@ -314,6 +328,7 @@ KaffeJNI_ReleaseBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jboo
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfBoolean*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -338,6 +353,7 @@ KaffeJNI_ReleaseByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbyte* ele
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfByte*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -368,6 +384,7 @@ KaffeJNI_ReleaseCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jchar* ele
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfChar*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -392,6 +409,7 @@ KaffeJNI_ReleaseShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jshort* 
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfShort*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -416,6 +434,7 @@ KaffeJNI_ReleaseIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jint* elems,
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfInt*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -440,6 +459,7 @@ KaffeJNI_ReleaseLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jlong* ele
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfLong*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -464,6 +484,7 @@ KaffeJNI_ReleaseFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jfloat* 
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfFloat*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -488,6 +509,7 @@ KaffeJNI_ReleaseDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jdoubl
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (elems != unhand_array((HArrayOfDouble*)arr)->body) {
     switch (mode) {
     case JNI_COMMIT:
@@ -512,6 +534,7 @@ KaffeJNI_GetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize star
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfBoolean*)arr) || start + len > obj_length((HArrayOfBoolean*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -525,6 +548,7 @@ KaffeJNI_GetByteArrayRegion(JNIEnv* env UNUSED, jbyteArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfByte*)arr) || start + len > obj_length((HArrayOfByte*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -538,6 +562,7 @@ KaffeJNI_GetCharArrayRegion(JNIEnv* env UNUSED, jcharArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfChar*)arr) || start + len > obj_length((HArrayOfChar*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -551,6 +576,7 @@ KaffeJNI_GetShortArrayRegion(JNIEnv* env UNUSED, jshortArray arr, jsize start, j
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfShort*)arr) || start + len > obj_length((HArrayOfShort*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -564,6 +590,7 @@ KaffeJNI_GetIntArrayRegion(JNIEnv* env UNUSED, jintArray arr, jsize start, jsize
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfInt*)arr) || start + len > obj_length((HArrayOfInt*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -577,6 +604,7 @@ KaffeJNI_GetLongArrayRegion(JNIEnv* env UNUSED, jlongArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfLong*)arr) || start + len > obj_length((HArrayOfLong*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -590,6 +618,7 @@ KaffeJNI_GetFloatArrayRegion(JNIEnv* env UNUSED, jfloatArray arr, jsize start, j
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfFloat*)arr) || start + len > obj_length((HArrayOfFloat*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -603,6 +632,7 @@ KaffeJNI_GetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start,
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfDouble*)arr) || start + len > obj_length((HArrayOfDouble*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -616,6 +646,7 @@ KaffeJNI_SetBooleanArrayRegion(JNIEnv* env UNUSED, jbooleanArray arr, jsize star
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfBoolean*)arr) || start+len > obj_length((HArrayOfBoolean*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -629,6 +660,7 @@ KaffeJNI_SetByteArrayRegion(JNIEnv* env UNUSED, jbyteArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfByte*)arr) || start+len > obj_length((HArrayOfByte*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -642,6 +674,7 @@ KaffeJNI_SetCharArrayRegion(JNIEnv* env UNUSED, jcharArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfChar*)arr) || start+len > obj_length((HArrayOfChar*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -655,6 +688,7 @@ KaffeJNI_SetShortArrayRegion(JNIEnv* env UNUSED, jshortArray arr, jsize start, j
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfShort*)arr) || start+len > obj_length((HArrayOfShort*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -668,6 +702,7 @@ KaffeJNI_SetIntArrayRegion(JNIEnv* env UNUSED, jintArray arr, jsize start, jsize
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfInt*)arr) || start+len > obj_length((HArrayOfInt*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -681,6 +716,7 @@ KaffeJNI_SetLongArrayRegion(JNIEnv* env UNUSED, jlongArray arr, jsize start, jsi
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfLong*)arr) || start+len > obj_length((HArrayOfLong*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -693,7 +729,8 @@ void
 KaffeJNI_SetFloatArrayRegion(JNIEnv* env UNUSED, jfloatArray arr, jsize start, jsize len, jfloat* data)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
-
+  
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfFloat*)arr) || start+len > obj_length((HArrayOfFloat*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
@@ -707,6 +744,7 @@ KaffeJNI_SetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start,
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
+  arr = unveil(arr);
   if (start >= obj_length((HArrayOfDouble*)arr) || start+len > obj_length((HArrayOfDouble*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }

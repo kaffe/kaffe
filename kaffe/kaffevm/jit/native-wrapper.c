@@ -86,6 +86,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	int count;
 	nativeCodeInfo ncode;
 	SlotInfo* tmp = NULL;
+	SlotInfo* tmp2 = NULL;
 	bool success = true;
 	int j;
 	int an;
@@ -319,6 +320,32 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			mon_exit(xmeth, local(0));
 		}
 		if (use_JNI) {
+		        slot_alloctmp(tmp2);
+		  
+#if SIZEOF_VOID_P == SIZEOF_INT
+			and_int_const(tmp2, tmp, 1);
+#elif SIZEOF_VOID_P == SIZEOF_LONG
+			and_long_const(tmp2, tmp, 1);
+#else
+#error "Unsupported size of pointer"
+#endif
+			end_sub_block();
+			begin_sync();
+			cbranch_int_const_eq(tmp2, 0, reference_label(1, 1));
+			end_sync();
+			
+			start_sub_block();
+#if SIZEOF_VOID_P == SIZEOF_INT
+			and_int_const(tmp2, tmp, ~(uintp)1);
+#elif SIZEOF_VOID_P == SIZEOF_LONG
+			and_long_const(tmp2, tmp, ~(uintp)1);
+#else
+#error "Unsupported size of pointer"
+#endif
+			load_ref(tmp, tmp2);
+			slot_freetmp(tmp2);
+			end_sub_block();
+			set_label(1, 1);
 			end_sub_block();
 			call_soft(finishJNIcall);
 			start_sub_block();
@@ -437,6 +464,7 @@ done:
 	globalMethod = NULL;
 
 	leaveTranslator();
+
 #if defined(KAFFE_FEEDBACK)
 	if( kaffe_feedback_file )
 		unlockMutex(kaffe_feedback_file);

@@ -80,7 +80,8 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkaffejni_la_LIBADD =
 am_libkaffejni_la_OBJECTS = jni.lo jni-base.lo jni-callmethod.lo \
-	jni-fields.lo jni-arrays.lo jni-string.lo jni-helpers.lo
+	jni-fields.lo jni-arrays.lo jni-string.lo jni-helpers.lo \
+	jni-refs.lo
 libkaffejni_la_OBJECTS = $(am_libkaffejni_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -397,7 +398,8 @@ libkaffejni_la_SOURCES = \
 	jni-fields.c \
 	jni-arrays.c \
 	jni-string.c \
-	jni-helpers.c
+	jni-helpers.c \
+	jni-refs.c
 
 noinst_HEADERS = \
 	jni_i.h \
@@ -460,6 +462,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-callmethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-fields.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-helpers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-refs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni-string.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jni.Plo@am__quote@
 

@@ -63,6 +63,8 @@ void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env, jobject buffer)
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
+  buffer = unveil(buffer);
+
   clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
 
   if (!(*env)->IsInstanceOf(env, buffer, clazz))
@@ -87,6 +89,8 @@ long KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
   jclass clazz;
 
   BEGIN_EXCEPTION_HANDLING(-1);
+  
+  buffer = unveil(buffer);
 
   clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
   if (!(*env)->IsInstanceOf(env, buffer, clazz))
@@ -108,11 +112,12 @@ long KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
 jmethodID
 KaffeJNI_FromReflectedMethod (JNIEnv *env UNUSED, jobject method)
 {
-	Hjava_lang_reflect_Method *realMethod = (Hjava_lang_reflect_Method *)method;
+	Hjava_lang_reflect_Method *realMethod = (Hjava_lang_reflect_Method *)unveil(method);
 	jmethodID id;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 	
+
 	id = (jmethodID) &(unhand(realMethod)->clazz->methods[unhand(realMethod)->slot]);
 
 	END_EXCEPTION_HANDLING();
@@ -123,7 +128,7 @@ KaffeJNI_FromReflectedMethod (JNIEnv *env UNUSED, jobject method)
 jfieldID
 KaffeJNI_FromReflectedField (JNIEnv *env UNUSED, jobject field)
 {
-	Hjava_lang_reflect_Field *realField = (Hjava_lang_reflect_Field *)field;
+	Hjava_lang_reflect_Field *realField = (Hjava_lang_reflect_Field *)unveil(field);
 	jfieldID id;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
@@ -143,8 +148,8 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	int i;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-	
-	clazz = (Hjava_lang_Class *)cls;
+
+	clazz = (Hjava_lang_Class *)unveil(cls);
 	refMeth = NULL;
 	for (allMethods = CLASS_METHODS(clazz), i = 0;
 	     i < CLASS_NMETHODS(clazz); 
@@ -171,7 +176,7 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	clazz = (Hjava_lang_Class *)cls;
+	clazz = (Hjava_lang_Class *)unveil(cls);
 	refField = NULL;
 	for (allFields = CLASS_FIELDS(clazz), i = 0;
 	     i < CLASS_NFIELDS(clazz);

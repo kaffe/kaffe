@@ -747,6 +747,7 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_SLOTS, "jit-slots");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_CODEBLOCK, "jit-codeblock");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_LABELS, "jit-labels");
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_VMWEAKREF, "vm-weak-ref");
 
 	DBG(INIT, dprintf("initCollector() done\n"); );
 	return (gc);

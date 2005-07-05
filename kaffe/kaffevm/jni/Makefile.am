@@ -31,7 +31,8 @@ libkaffejni_la_SOURCES = \
 	jni-fields.c \
 	jni-arrays.c \
 	jni-string.c \
-	jni-helpers.c
+	jni-helpers.c \
+	jni-refs.c
 
 noinst_HEADERS= \
 	jni_i.h \

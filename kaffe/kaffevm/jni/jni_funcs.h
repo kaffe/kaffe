@@ -25,6 +25,9 @@ jobject   KaffeJNI_ToReflectedField (JNIEnv *, jclass, jfieldID, jboolean);
 jobject   KaffeJNI_NewDirectByteBuffer(JNIEnv *, void *, jlong);
 void *    KaffeJNI_GetDirectBufferAddress(JNIEnv *, jobject);
 long      KaffeJNI_GetDirectBufferCapacity(JNIEnv *, jobject);
+void NONRETURNING
+          KaffeJNI_FatalError(JNIEnv* env, const char* mess);
+
 
 /* ====== String handling =========================================================== */
 
@@ -272,5 +275,18 @@ jboolean KaffeJNI_CallStaticBooleanMethodA(JNIEnv* env, jclass cls, jmethodID me
 jobject  KaffeJNI_CallStaticObjectMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list args);
 jobject  KaffeJNI_CallStaticObjectMethod(JNIEnv* env, jclass cls, jmethodID meth, ...);
 jobject  KaffeJNI_CallStaticObjectMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args);
+
+/* ====== Functions to handle java references ======================================= */
+
+void     KaffeJNI_DeleteGlobalRef(JNIEnv* env, jref obj);
+void     KaffeJNI_DeleteLocalRef(JNIEnv* env, jref obj);
+jboolean KaffeJNI_IsSameObject(JNIEnv* env, jobject obj1, jobject obj2);
+jref     KaffeJNI_NewGlobalRef(JNIEnv* env, jref obj);
+jint     KaffeJNI_EnsureLocalCapacity(JNIEnv* env, jint capacity);
+jobject  KaffeJNI_PopLocalFrame(JNIEnv* env, jobject obj);
+jobject  KaffeJNI_NewLocalRef(JNIEnv* env, jobject ref);
+jweak    KaffeJNI_NewWeakGlobalRef(JNIEnv *env, jobject obj);
+void     KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env, jweak obj);
+jint     KaffeJNI_PushLocalFrame(JNIEnv* env, jint capacity);
 
 #endif

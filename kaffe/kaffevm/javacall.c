@@ -40,6 +40,7 @@
 #include "jthread.h"
 #include "methodcalls.h"
 #include "native.h"
+#include "jni_i.h"
 
 /* This is defined in the alpha port.  It causes all integer arguments
    to be promoted to jlong, and all jfloats to be promoted to jdouble,
@@ -222,7 +223,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			call.args[i] = args[j];
+			call.args[i].l = unveil(args[j].l);
 			break;
 		default:
 			KAFFEVM_ABORT();
@@ -364,6 +365,7 @@ KaffeVM_callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* r
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			call.args[i].l = va_arg(args, jref);
+			call.args[i].l = unveil(call.args[i].l);
 			break;
 		default:
 			KAFFEVM_ABORT();

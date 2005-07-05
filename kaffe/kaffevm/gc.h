@@ -46,6 +46,7 @@ typedef enum {
 	KGC_ALLOC_REFARRAY,
 	KGC_ALLOC_FINALIZEOBJECT,
 	KGC_ALLOC_JAVALOADER,
+	KGC_ALLOC_VMWEAKREF,
 
 	/* allocation types related to the translator engines */
 	KGC_ALLOC_JITCODE,

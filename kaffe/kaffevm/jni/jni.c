@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004-2005
  * 	The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -57,48 +57,6 @@ static jint Kaffe_GetVersion(JNIEnv*);
 static jclass Kaffe_FindClass(JNIEnv*, const char*);
 static jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
 static jint Kaffe_Throw(JNIEnv* env, jobject obj);
-static void NONRETURNING Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess);
-
-void
-KaffeJNI_addJNIref(jref obj)
-{
-	jnirefs* table;
-	int idx;
-
-	table = THREAD_DATA()->jnireferences;
-
-	if (table->used == table->frameSize) {
-	  Kaffe_FatalError(THREAD_JNIENV(), "No more room for local references");
-	}
-
-	idx = table->next;
-	for (;;) {
-		if (table->objects[idx] == 0) {
-			table->objects[idx] = obj;
-			table->used++;
-			table->next = (idx + 1) % table->frameSize;
-			return;
-		}
-		idx = (idx + 1) % table->frameSize;
-	}
-}
-
-void
-KaffeJNI_removeJNIref(jref obj)
-{
-	int idx;
-	jnirefs* table;
-
-	table = THREAD_DATA()->jnireferences;
-
-	for (idx = 0; idx < table->frameSize; idx++) {
-		if (table->objects[idx] == obj) {
-			table->objects[idx] = NULL;
-			table->used--;
-			return;
-		}
-	}
-}
 
 /*
  * Everything from this point to Kaffe_GetVersion is not
@@ -108,46 +66,13 @@ KaffeJNI_removeJNIref(jref obj)
  * Everything from Kaffe_GetVersion to Kaffe_GetJavaVM
  * should be bracketed with BEGIN and END _EXCEPTION_HANDLING.
  */
-static void NONRETURNING
-Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess)
+void NONRETURNING
+KaffeJNI_FatalError(JNIEnv* env UNUSED, const char* mess)
 {
 	kprintf(stderr, "FATAL ERROR: %s\n", mess);
 	abort();
 }
 
-static void
-Kaffe_DeleteGlobalRef(JNIEnv* env UNUSED, jref obj)
-{
-#if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_GLOBALREF_FREE) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_JNI_GLOBALREF_FREE;
-		ev.u.jni_globalref_free.ref_id = obj;
-		jvmpiPostEvent(&ev);
-	}
-#endif
-	gc_rm_ref(obj);
-}
-
-static void
-/* ARGSUSED */
-Kaffe_DeleteLocalRef(JNIEnv* env UNUSED, jref obj)
-{
-	REMOVE_REF(obj);
-}
-
-static jboolean
-Kaffe_IsSameObject(JNIEnv* env UNUSED, jobject obj1, jobject obj2)
-{
-	if (obj1 == obj2) {
-		return (JNI_TRUE);
-	}
-	else {
-		return (JNI_FALSE);
-	}
-}
 static jint
 Kaffe_GetVersion(JNIEnv* UNUSED env)
 {
@@ -160,136 +85,7 @@ Kaffe_GetVersion(JNIEnv* UNUSED env)
 static void
 postError(JNIEnv* env, errorInfo* info)
 {
-	Kaffe_Throw(env, error2Throwable(info));
-}
-
-static jref
-Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
-{
-	BEGIN_EXCEPTION_HANDLING(NULL);
-	if (!gc_add_ref(obj)) {
-		errorInfo info;
-		postOutOfMemory(&info);
-		postError(env, &info);
-	}
-#if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_GLOBALREF_ALLOC) )
-	{
-		JVMPI_Event ev;
-
-		ev.event_type = JVMPI_EVENT_JNI_GLOBALREF_ALLOC;
-		ev.u.jni_globalref_alloc.obj_id = obj;
-		ev.u.jni_globalref_alloc.ref_id = obj;
-		jvmpiPostEvent(&ev);
-	}
-#endif
-	END_EXCEPTION_HANDLING();
-	return obj;
-}
-
-static jint
-KaffeJNI_PushLocalFrame(JNIEnv* env UNUSED, jint capacity)
-{
-  jnirefs *table;
-
-  BEGIN_EXCEPTION_HANDLING(-1);
-
-  if (capacity <= 0)
-    return -1;  
-
-  table = gc_malloc
-    (sizeof(jnirefs) + sizeof(jref)*capacity,
-     KGC_ALLOC_STATIC_THREADDATA);
-  if (table == NULL)
-    {
-      errorInfo info;
-      postOutOfMemory(&info);
-      postError(env, &info);
-      return -1;
-    }
-
-  table->prev = thread_data->jnireferences;
-  table->frameSize = capacity;
-  table->localFrames = thread_data->jnireferences->localFrames+1;
-
-  thread_data->jnireferences = table;
-
-  END_EXCEPTION_HANDLING();
-  
-  return 0;
-}
-
-static jint
-KaffeJNI_EnsureLocalCapacity(JNIEnv* env, jint capacity)
-{
-  jint ret = 0;
-
-  BEGIN_EXCEPTION_HANDLING(-1);
-
-  if (thread_data->jnireferences->used+capacity > 
-      thread_data->jnireferences->frameSize)
-    ret = KaffeJNI_PushLocalFrame(env, capacity);
-
-  END_EXCEPTION_HANDLING();
-
-  return ret;
-}
-
-static jobject
-KaffeJNI_PopLocalFrame(JNIEnv* env UNUSED, jobject obj)
-{
-  int localFrames;
-  int i;
-  jnirefs *table;
-
-  BEGIN_EXCEPTION_HANDLING(NULL);
-
-  table = thread_data->jnireferences;
-  localFrames = table->localFrames;
-
-  /* We must not delete the top JNI local frame as it is done by
-   * the native wrapper.
-   */
-  if (localFrames == 1)
-    goto popframe_end;
-  
-  localFrames = table->localFrames;
-  for (localFrames = table->localFrames; localFrames >= 1; localFrames--)
-    {
-      thread_data->jnireferences = table->prev;
-      gc_free(table);
-      table = thread_data->jnireferences;
-    }
-  
-  if (obj != NULL)
-    {
-      for (i = 0; i < table->frameSize; i++)
-	if (table->objects[i] == obj)
-	  break;
-      
-      /* If the object is not already referenced, add a new reference to it.
-       */
-      if (i == table->frameSize)
-	ADD_REF(obj); 
-    }
-  
-  END_EXCEPTION_HANDLING();
-
- popframe_end:
-  return obj;
-} 
-
-static jobject
-KaffeJNI_NewLocalRef(JNIEnv* env, jobject ref)
-{
-  BEGIN_EXCEPTION_HANDLING(NULL);
-
-  if (ref != NULL)
-    ADD_REF(ref);
-
-  END_EXCEPTION_HANDLING();
-
-  return ref;
+	(*env)->Throw(env, error2Throwable(info));
 }
 
 static jclass
@@ -300,6 +96,8 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
+
+	loader = unveil(loader);
 
 	classFileInit(&hand, NULL, buf, (size_t)len, CP_BYTEARRAY);
 
@@ -426,6 +224,9 @@ Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
 error_out:
 	utf8ConstRelease(utf8);
 	throwError (&einfo);
+
+	/* This is to make gcc silent on one warning */
+	return NULL;
 }
 
 static jclass
@@ -435,6 +236,7 @@ Kaffe_GetSuperClass(JNIEnv* env UNUSED, jclass cls)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	cls = unveil(cls);
 	clz = ((Hjava_lang_Class*)cls)->superclass;
 
 	END_EXCEPTION_HANDLING();
@@ -448,6 +250,9 @@ Kaffe_IsAssignableFrom(JNIEnv* env UNUSED, jclass cls1, jclass cls2)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
+	cls1 = unveil(cls1);
+	cls2 = unveil(cls2);
+	
 	if (instanceof(cls2, cls1) != 0) {
 		r = JNI_TRUE;
 	}
@@ -465,6 +270,8 @@ Kaffe_Throw(JNIEnv* env UNUSED, jobject obj)
 
 	if( obj )
 	{
+	        obj = unveil(obj);
+
 		assert(((Hjava_lang_Object *)obj)->vtable);
 		
 		thread_data->exceptObj = (struct Hjava_lang_Throwable*)obj;
@@ -480,7 +287,8 @@ Kaffe_ThrowNew(JNIEnv* env UNUSED, jclass cls, const char* mess)
 	Hjava_lang_Object* eobj;
 
 	BEGIN_EXCEPTION_HANDLING(0);
-
+	
+	cls = unveil(cls);
 	eobj = execute_java_constructor(NULL, NULL, cls,
 					"(Ljava/lang/String;)V",
 					checkPtr(stringC2Java(mess)));
@@ -585,6 +393,7 @@ Kaffe_AllocObject(JNIEnv* env UNUSED, jclass cls)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	cls = unveil(cls);
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz)) {
@@ -607,6 +416,7 @@ Kaffe_NewObjectV(JNIEnv* env UNUSED, jclass cls, jmethodID meth, va_list args)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	cls = unveil(cls);
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
@@ -629,6 +439,8 @@ Kaffe_NewObject(JNIEnv* env UNUSED, jclass cls, jmethodID meth, ...)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	cls = unveil(cls);
+
 	va_start(args, meth);
 	obj = Kaffe_NewObjectV(env, cls, meth, args);
 	va_end(args);
@@ -647,6 +459,7 @@ Kaffe_NewObjectA(JNIEnv* env UNUSED, jclass cls, jmethodID meth, jvalue* args)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	cls = unveil(cls);
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
@@ -668,6 +481,7 @@ Kaffe_GetObjectClass(JNIEnv* env UNUSED, jobject obj)
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
+	obj = unveil(obj);
 	cls = ((Hjava_lang_Object*)obj)->vtable->class;
 
 	END_EXCEPTION_HANDLING();
@@ -681,6 +495,8 @@ Kaffe_IsInstanceOf(JNIEnv* env UNUSED, jobject obj, jclass cls)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
+	obj = unveil(obj);
+	cls = unveil(cls);
 	if (soft_instanceof((Hjava_lang_Class*)cls, (Hjava_lang_Object*)obj) != 0) {
 		r = JNI_TRUE;
 	}
@@ -699,6 +515,8 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
+	cls = unveil(cls);
+
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
 	if (meth == NULL) {
 		postError(env, &info);
@@ -722,6 +540,8 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 	Utf8Const* utf8;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
+
+	cls = unveil(cls);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, false, &info);
 	utf8ConstRelease(utf8);
@@ -739,6 +559,8 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
+	
+	cls = unveil(cls);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
 	if (meth == NULL) {
 		postError(env, &info);
@@ -760,6 +582,8 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	Utf8Const* utf8;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
+
+	cls = unveil(cls);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
 	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, true, &info);
 	utf8ConstRelease(utf8);
@@ -777,6 +601,7 @@ Kaffe_GetArrayLength(JNIEnv* env UNUSED, jarray arr)
 	jsize len;
 	BEGIN_EXCEPTION_HANDLING(0);
 
+	arr = unveil(arr);
 	len = obj_length((HArrayOfObject*)arr);
 
 	END_EXCEPTION_HANDLING();
@@ -792,6 +617,8 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 	int j;
 
 	BEGIN_EXCEPTION_HANDLING(0);
+
+	cls = unveil(cls);
 
 	meth = CLASS_METHODS((Hjava_lang_Class*)cls);
 	nmeth = CLASS_NMETHODS((Hjava_lang_Class*)cls);
@@ -830,6 +657,7 @@ Kaffe_MonitorEnter(JNIEnv* env UNUSED, jobject obj)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	/* We should never throw out of a JNI call */
+	obj = unveil(obj);
 	lockObject(obj);
 
 	END_EXCEPTION_HANDLING();
@@ -841,6 +669,7 @@ Kaffe_MonitorExit(JNIEnv* env UNUSED, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
+	obj = unveil(obj);
 	unlockObject(obj);
 
 	END_EXCEPTION_HANDLING();
@@ -913,7 +742,7 @@ Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 	   given VM. This gets the JavaVM to which the current thread
 	   is attached.  I *think* this is a good way to do this. */
 	Kaffe_GetJavaVM(je, &currentVM);
-	if (!Kaffe_IsSameObject(je, currentVM, vm))
+	if (!KaffeJNI_IsSameObject(je, currentVM, vm))
 		return (JNI_EDETACHED);
 
 	/* Is the requested version of the interface known? */
@@ -968,13 +797,13 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_ExceptionOccurred,
 	Kaffe_ExceptionDescribe,
 	Kaffe_ExceptionClear,
-	Kaffe_FatalError,
+	KaffeJNI_FatalError,
 	KaffeJNI_PushLocalFrame,
 	KaffeJNI_PopLocalFrame,
-	Kaffe_NewGlobalRef,
-	Kaffe_DeleteGlobalRef,
-	Kaffe_DeleteLocalRef,
-	Kaffe_IsSameObject,
+	KaffeJNI_NewGlobalRef,
+	KaffeJNI_DeleteGlobalRef,
+	KaffeJNI_DeleteLocalRef,
+	KaffeJNI_IsSameObject,
 	KaffeJNI_NewLocalRef,
 	KaffeJNI_EnsureLocalCapacity,
 	Kaffe_AllocObject,
@@ -1174,10 +1003,10 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	KaffeJNI_GetStringUTFRegion,
 	KaffeJNI_GetPrimitiveArrayCritical,
 	KaffeJNI_ReleasePrimitiveArrayCritical,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
+	KaffeJNI_GetStringChars,
+	KaffeJNI_ReleaseStringChars,
+	KaffeJNI_NewWeakGlobalRef, //
+	KaffeJNI_DeleteWeakGlobalRef, //
 	Kaffe_ExceptionCheck,
 	KaffeJNI_NewDirectByteBuffer,
 	KaffeJNI_GetDirectBufferAddress,

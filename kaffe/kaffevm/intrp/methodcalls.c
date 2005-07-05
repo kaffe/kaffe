@@ -25,6 +25,7 @@
 #include "slots.h"
 #include "soft.h"
 #include "external.h"
+#include "jni_i.h"
 
 void *
 engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo UNUSED)
@@ -177,6 +178,8 @@ engine_callMethod (callMethodInfo *call)
 
 		/* If we have a pending exception and this is JNI, throw it */
 		if ((meth->accflags & ACC_JNI) != 0) {
+		        if (call->rettype == 'L')
+			        call->ret->l = unveil(call->ret->l);
 		        finishJNIcall();
 			thread_data->exceptObj = save_except;
 		}

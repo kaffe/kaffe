@@ -23,6 +23,12 @@ void KaffeJNI_removeJNIref(jref);
 #define	ADD_REF(O)		KaffeJNI_addJNIref(O)
 #define	REMOVE_REF(O)		KaffeJNI_removeJNIref(O)
 
+static inline jobject
+unveil(jref w)
+{
+  return ( (((uintp)w) & 1) ? *((jobject *)w) : w);
+}
+
 /*
  * Define how to set the frame pointer in a VmExceptHandler.
  */
