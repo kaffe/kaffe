@@ -83,7 +83,9 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
   
   static native void initStaticState();
   private final int native_state = GtkGenericPeer.getUniqueInteger ();
-  private boolean initialized = false;
+
+  // initState() has been called, but pumpDone() has not yet been called.
+  private boolean needsClose = false;
 
   // the current set of ImageConsumers for this decoder
   Vector curr;
@@ -92,7 +94,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
   native void initState ();
   native void pumpBytes (byte[] bytes, int len) throws IOException;
   native void pumpDone () throws IOException;
-  native void finish ();
+  native void finish (boolean needsClose);
   static native void streamImage(int[] bytes, String format, int width, int height, boolean hasAlpha, DataOutput sink);
   
   // gdk-pixbuf provids data in RGBA format
@@ -164,9 +166,11 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
     byte bytes[] = new byte[4096];
     int len = 0;
     initState();
+    needsClose = true;
     while ((len = is.read (bytes)) != -1)
       pumpBytes (bytes, len);
     pumpDone();
+    needsClose = false;
     
     for (int i = 0; i < curr.size (); i++)
       {
@@ -179,7 +183,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
 
   public void finalize()
   {
-    finish();
+    finish(needsClose);
   }
 
 

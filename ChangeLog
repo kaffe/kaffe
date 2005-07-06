@@ -2,6 +2,23 @@
 
 	Resynced with GNU Classpath.
 
+	2005-07-04  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/awt/peer/gtk/GdkPixbufDecoder.java (initialized):
+        Remove unused field.
+        (needsClose): New private field.
+        (finish): Take needsClose boolean argument.
+        (finalize): Call finish with needsClose.
+        (produce): Set needsClose.
+        * include/gnu_java_awt_peer_gtk_GdkPixbufDecoder.h: Regenerated.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c
+        (Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish): Only close
+        when needed.
+
+2005-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-07-04  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
 
         * org/omg/CORBA/ParameterModeHolder.java: New constructor.

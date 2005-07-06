@@ -299,7 +299,7 @@ Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_initStaticState
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
-  (JNIEnv *env, jobject obj)
+(JNIEnv *env, jobject obj, jboolean needs_close)
 {
   GdkPixbufLoader *loader = NULL;
 
@@ -308,7 +308,8 @@ Java_gnu_java_awt_peer_gtk_GdkPixbufDecoder_finish
     return;
 
   gdk_threads_enter ();
-  gdk_pixbuf_loader_close (loader, NULL);
+  if (needs_close)
+    gdk_pixbuf_loader_close (loader, NULL);
   g_object_unref (loader);
   gdk_threads_leave (); 
 
