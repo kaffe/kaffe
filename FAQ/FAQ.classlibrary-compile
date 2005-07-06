@@ -70,7 +70,7 @@ The preferred compiler is jikes. The URL for jikes is:
 Please note that jikes 1.14 and 1.15 have bugs that result in a
 miscompiled Klasses.jar file.
 
-The recommended version of jikes is 1.21 or higher.
+The recommended version of jikes is 1.22 or higher.
 
 * kjc
 
