@@ -1,3 +1,26 @@
+2005-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-07-04  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JTree.java
+        (addSelectionPath): if mouse click somewhere other than
+        a row, all selections are removed
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (mouseClicked): if mouse clicked on a row, all other
+        selections are cleared. DISCONTIGUOUS mode implemented.
+        (getCellBounds): Implemented
+        (paintLeaf): paints with cell bounds
+        (paintNonLeaf): paints with cell bounds
+        * javax/swing/tree/DefaultTreeCellRenderer.java:
+        (DefaultTreeCellRendererComponent): changed color of
+        selected row
+        (getFont): Implemented
+        * javax/swing/tree/DefaultTreeSelectionModel.java:
+        (addSelectionPaths): check if parameter is null
+        (removeSelectionPaths): check if parameter is null
+
 2005-07-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni_i.h

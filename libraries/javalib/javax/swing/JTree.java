@@ -1079,6 +1079,13 @@ public class JTree
 
 		if (path != null)
 			selectionModel.addSelectionPath(path);
+		else
+		{
+			selectionModel.clearSelection();
+			// need to repaint because cant fire an event with 
+			// null selection.
+			repaint();
+		}
 	}
 
 	public void addSelectionRows(int[] rows)

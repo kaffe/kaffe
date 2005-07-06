@@ -37,6 +37,8 @@ package javax.swing.plaf.basic;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -85,6 +87,7 @@ import javax.swing.tree.FixedHeightLayoutCache;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
@@ -1723,14 +1726,30 @@ public class BasicTreeUI
 		{
 			Point click = e.getPoint();
 			int row = ((int) click.getY() / getRowHeight()) - 1;
-
+			
 			if (BasicTreeUI.this.tree.isRowSelected(row))
 				BasicTreeUI.this.tree.removeSelectionRow(row);
 			else if (BasicTreeUI.this.tree.getSelectionModel()
-					.getSelectionMode() == treeSelectionModel.SINGLE_TREE_SELECTION)
+					.getSelectionMode() == 
+						treeSelectionModel.SINGLE_TREE_SELECTION)
+			{
+				// clear selection, since only able to select one row at a time.
+				BasicTreeUI.this.tree.getSelectionModel().clearSelection();
 				BasicTreeUI.this.tree.addSelectionRow(row);
-			// FIXME: add in selection for more than 1 row, or an entire
-			// path
+			}
+			else if (BasicTreeUI.this.tree.getSelectionModel()
+					.getSelectionMode() == 
+						treeSelectionModel.CONTIGUOUS_TREE_SELECTION)
+			{
+				//TODO
+			}
+			else
+			{
+				BasicTreeUI.this.tree.getSelectionModel()
+				.setSelectionMode(
+						treeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+				BasicTreeUI.this.tree.addSelectionRow(row);
+			}
 		}
 
 		/**
@@ -2257,6 +2276,25 @@ public class BasicTreeUI
 	/* * HELPER METHODS FOR PAINTING * */
 
 	/**
+	 * Returns the cell bounds for painting selected cells
+	 * 
+	 * @param x is the x location of the cell
+	 * @param y is the y location of the cell
+	 * @param cell is the Object to get the bounds for
+	 * 
+	 * @returns Rectangle that represents the cell bounds
+	 */
+	private Rectangle getCellBounds(int x, int y, Object cell)
+	{
+		String s = cell.toString();
+		Font f = tree.getFont();
+		FontMetrics fm = tree.getToolkit().getFontMetrics(tree.getFont());
+
+		return new Rectangle(x, y, SwingUtilities.computeStringWidth(fm, s), fm
+				.getHeight());
+	}
+
+	/**
 	 * Paints a leaf in the tree
 	 * 
 	 * @param g the Graphics context in which to paint
@@ -2270,21 +2308,22 @@ public class BasicTreeUI
 		TreePath tp = new TreePath(((DefaultMutableTreeNode) leaf).getPath());
 		boolean selected = tree.isPathSelected(tp);
 
-		Component c = tree.getCellRenderer().getTreeCellRendererComponent(tree,
-				leaf, selected, false, true, 0, false);
-
 		if (selected)
 		{
 			Component comp = tree.getCellRenderer()
 					.getTreeCellRendererComponent(tree, leaf, true, false,
 							true, 0, false);
-			rendererPane.paintComponent(g, comp, tree, new Rectangle(x, y, 10,
-					25));
+			rendererPane.paintComponent(g, comp, tree, getCellBounds(x, y, leaf));
 		}
-
-		g.translate(x, y);
-		c.paint(g);
-		g.translate(-x, -y);
+		else
+		{
+			Component c = tree.getCellRenderer().getTreeCellRendererComponent(tree,
+					leaf, false, false, true, 0, false);
+			
+			g.translate(x, y);
+			c.paint(g);
+			g.translate(-x, -y);
+		}
 	}
 
 	/**
@@ -2302,20 +2341,22 @@ public class BasicTreeUI
 		TreePath tp = new TreePath(((DefaultMutableTreeNode) nonLeaf).getPath());
 		boolean selected = tree.isPathSelected(tp);
 
-		Component c = tree.getCellRenderer().getTreeCellRendererComponent(tree,
-				nonLeaf, selected, false, false, 0, false);
-
 		if (selected)
 		{
 			Component comp = tree.getCellRenderer()
 					.getTreeCellRendererComponent(tree, nonLeaf, true, false,
 							true, 0, false);
-			rendererPane.paintComponent(g, comp, tree, new Rectangle(x, y, 10,
-					25));
+			rendererPane.paintComponent(g, comp, tree, getCellBounds(x, y, nonLeaf));
 		}
-		g.translate(x, y);
-		c.paint(g);
-		g.translate(-x, -y);
+		else
+		{
+			Component c = tree.getCellRenderer().getTreeCellRendererComponent(tree,
+					nonLeaf, false, false, false, 0, false);
+			
+			g.translate(x, y);
+			c.paint(g);
+			g.translate(-x, -y);
+		}
 	}
 
 	/**

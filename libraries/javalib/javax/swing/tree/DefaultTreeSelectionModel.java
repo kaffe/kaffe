@@ -274,7 +274,7 @@ public class DefaultTreeSelectionModel
 				selection = new TreePath[temp.length];
 				System.arraycopy(temp, 0, selection, 0, temp.length);
 			}
-
+			leadPath = value0;
 			fireValueChanged(new TreeSelectionEvent(this, value0, true,
 					leadPath, value0));
 		}
@@ -291,25 +291,29 @@ public class DefaultTreeSelectionModel
 	 */
 	public void addSelectionPaths(TreePath[] value0)
 	{
-		TreePath v0 = null;
-		for (int i = 0; i < value0.length; i++)
+		if (value0 != null)
 		{
-			v0 = value0[i];
-			if (!isPathSelected(v0))
+			TreePath v0 = null;
+			for (int i = 0; i < value0.length; i++)
 			{
-				if (isSelectionEmpty())
-					setSelectionPath(v0);
-				else
+				v0 = value0[i];
+				if (!isPathSelected(v0))
 				{
-					TreePath[] temp = new TreePath[selection.length + 1];
-					System.arraycopy(selection, 0, temp, 0, selection.length);
-					temp[temp.length - 1] = v0;
-					selection = new TreePath[temp.length];
-					System.arraycopy(temp, 0, selection, 0, temp.length);
+					if (isSelectionEmpty())
+						setSelectionPath(v0);
+					else
+					{
+						TreePath[] temp = new TreePath[selection.length + 1];
+						System.arraycopy(selection, 0, temp, 0,
+								selection.length);
+						temp[temp.length - 1] = v0;
+						selection = new TreePath[temp.length];
+						System.arraycopy(temp, 0, selection, 0, temp.length);
+					}
+					leadPath = value0[value0.length - 1];
+					fireValueChanged(new TreeSelectionEvent(this, v0, true,
+							leadPath, value0[0]));
 				}
-
-				fireValueChanged(new TreeSelectionEvent(this, v0, true,
-						leadPath, value0[0]));
 			}
 		}
 	}
@@ -357,30 +361,33 @@ public class DefaultTreeSelectionModel
 	 */
 	public void removeSelectionPaths(TreePath[] value0)
 	{
-		int index = -1;
-		TreePath v0 = null;
-		for (int i = 0; i < value0.length; i++)
+		if (value0 != null)
 		{
-			v0 = value0[i];
-			if (isPathSelected(v0))
+			int index = -1;
+			TreePath v0 = null;
+			for (int i = 0; i < value0.length; i++)
 			{
-				for (int x = 0; x < selection.length; x++)
+				v0 = value0[i];
+				if (isPathSelected(v0))
 				{
-					if (selection[i].equals(v0))
+					for (int x = 0; x < selection.length; x++)
 					{
-						index = x;
-						break;
+						if (selection[i].equals(v0))
+						{
+							index = x;
+							break;
+						}
 					}
-				}
-				TreePath[] temp = new TreePath[selection.length - 1];
-				System.arraycopy(selection, 0, temp, 0, index);
-				System.arraycopy(selection, index + 1, temp, index,
-						selection.length - index - 1);
-				selection = new TreePath[temp.length];
-				System.arraycopy(temp, 0, selection, 0, temp.length);
+					TreePath[] temp = new TreePath[selection.length - 1];
+					System.arraycopy(selection, 0, temp, 0, index);
+					System.arraycopy(selection, index + 1, temp, index,
+							selection.length - index - 1);
+					selection = new TreePath[temp.length];
+					System.arraycopy(temp, 0, selection, 0, temp.length);
 
-				fireValueChanged(new TreeSelectionEvent(this, v0, false,
-						leadPath, value0[0]));
+					fireValueChanged(new TreeSelectionEvent(this, v0, false,
+							leadPath, value0[0]));
+				}
 			}
 		}
 	}

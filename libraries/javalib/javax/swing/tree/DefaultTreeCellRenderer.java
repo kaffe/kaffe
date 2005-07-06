@@ -116,6 +116,7 @@ public class DefaultTreeCellRenderer
 	 * borderSelectionColor
 	 */
 	protected Color borderSelectionColor;
+	
 
 	// -------------------------------------------------------------
 	// Initialization ---------------------------------------------
@@ -380,17 +381,42 @@ public class DefaultTreeCellRenderer
 		this.hasFocus = hasFocus;
 
 		if (leaf)
-			setIcon(getLeafIcon());
+			setLeafIcon(getLeafIcon());
 		else if (expanded)
-			setIcon(getOpenIcon());
+			setOpenIcon(getOpenIcon());
 		else
-			setIcon(getClosedIcon());
+			setClosedIcon(getClosedIcon());
 
 		setText(val.toString());
 		setHorizontalAlignment(LEFT);
+		setOpaque(true);
 		setVerticalAlignment(TOP);
+		setEnabled(true);
+		setFont(getFont());
 
+		if (selected) 
+		{
+			super.setBackground(getBackgroundSelectionColor());
+			super.setForeground(getTextSelectionColor());
+		}
+		else
+		{
+			super.setBackground((tree.getParent()).getBackground());
+			super.setForeground(getTextNonSelectionColor());
+		}
+		
+		
 		return this;
+	}
+	
+	/**
+	 * getFont
+	 * 
+	 * @return the current Font
+	 */
+	public Font getFont()
+	{
+		return super.getFont();
 	}
 
 	/**
