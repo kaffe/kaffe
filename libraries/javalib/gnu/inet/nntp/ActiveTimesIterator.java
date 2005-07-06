@@ -1,5 +1,5 @@
 /*
- * $Id: ActiveTimesIterator.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * ActiveTimesIterator.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -47,56 +47,58 @@ import java.util.NoSuchElementException;
  * An iterator over an NNTP LIST ACTIVE.TIMES listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
-public class ActiveTimesIterator extends LineIterator
+public class ActiveTimesIterator
+  extends LineIterator
 {
 
-  ActiveTimesIterator (NNTPConnection connection)
+  ActiveTimesIterator(NNTPConnection connection)
   {
-    super (connection);
+    super(connection);
   }
   
   /**
    * Returns the next group active time.
    */
-  public Object next ()
+  public Object next()
   {
     try
       {
-        return nextGroup ();
+        return nextGroup();
       }
     catch (IOException e)
       {
-        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+        throw new NoSuchElementException("I/O error: " + e.getMessage());
       }
   }
 
   /**
    * Returns the next group active time.
    */
-  public ActiveTime nextGroup () throws IOException
+  public ActiveTime nextGroup()
+    throws IOException
   {
-    String line = nextLine ();
+    String line = nextLine();
 
     // Parse line
     try
       {
         int start = 0, end;
-        end = line.indexOf (' ', start);
-        String group = line.substring (start, end);
+        end = line.indexOf(' ', start);
+        String group = line.substring(start, end);
         start = end + 1;
-        end = line.indexOf (' ', start);
-        Date time = connection.parseDate (line.substring (start, end));
+        end = line.indexOf(' ', start);
+        Date time = connection.parseDate(line.substring(start, end));
         start = end + 1;
-        String email = line.substring (start);
+        String email = line.substring(start);
 
-        return new ActiveTime (group, time, email);
+        return new ActiveTime(group, time, email);
       }
     catch (ParseException e)
       {
-        throw new IOException (e.getMessage ());
+        throw new IOException(e.getMessage());
       }
   }
 
 }
+

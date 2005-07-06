@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -46,22 +46,23 @@ import java.io.IOException;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class BERException
-extends IOException
+  extends IOException
 {
 
   /**
    * Constructs a BER encoding exception with no message.
    */
-  public BERException ()
+  public BERException()
   {
   }
 
   /**
    * Constructs a BER encoding exception with the specified message.
    */
-  public BERException (String message)
+  public BERException(String message)
   {
-    super (message);
+    super(message);
   }
   
 }
+

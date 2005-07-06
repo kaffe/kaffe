@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -106,8 +106,8 @@ public class LDAPResult
    */
   public final String[] referrals;
 
-  protected LDAPResult (int status, String matchedDN, String errorMessage,
-                        String[] referrals)
+  protected LDAPResult(int status, String matchedDN, String errorMessage,
+                       String[] referrals)
   {
     this.status = status;
     this.matchedDN = matchedDN;
@@ -118,26 +118,27 @@ public class LDAPResult
   /**
    * Debugging.
    */
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buffer = new StringBuffer (getClass ().getName ());
-    buffer.append ('[');
-    buffer.append ("status=");
-    buffer.append (status);
-    buffer.append (",matchedDN=");
-    buffer.append (matchedDN);
+    StringBuffer buffer = new StringBuffer(getClass().getName());
+    buffer.append('[');
+    buffer.append("status=");
+    buffer.append(status);
+    buffer.append(",matchedDN=");
+    buffer.append(matchedDN);
     if (errorMessage != null)
       {
-        buffer.append (",errorMessage=");
-        buffer.append (errorMessage);
+        buffer.append(",errorMessage=");
+        buffer.append(errorMessage);
       }
     if (referrals != null)
       {
-        buffer.append (",referrals=");
-        buffer.append (referrals.toString ());
+        buffer.append(",referrals=");
+        buffer.append(referrals.toString());
       }
     buffer.append(']');
-    return buffer.toString ();
+    return buffer.toString();
   }
   
 }
+

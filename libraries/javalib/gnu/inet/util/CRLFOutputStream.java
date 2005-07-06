@@ -1,5 +1,5 @@
 /*
- * $Id: CRLFOutputStream.java,v 1.6 2005/07/04 00:05:19 robilad Exp $
+ * CRLFOutputStream.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -47,9 +47,9 @@ import java.io.UnsupportedEncodingException;
  * An output stream that filters LFs into CR/LF pairs.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @author $Revision: 1.6 $ $Date: 2005/07/04 00:05:19 $
  */
-public class CRLFOutputStream extends FilterOutputStream
+public class CRLFOutputStream
+  extends FilterOutputStream
 {
 
   static final String US_ASCII = "US-ASCII";
@@ -77,104 +77,109 @@ public class CRLFOutputStream extends FilterOutputStream
   /**
    * Constructs a CR/LF output stream connected to the specified output stream.
    */
-  public CRLFOutputStream (OutputStream out)
-    {
-      super (out);
-      last = -1;
-    }
+  public CRLFOutputStream(OutputStream out)
+  {
+    super(out);
+    last = -1;
+  }
 
   /**
    * Writes a character to the underlying stream.
    * @exception IOException if an I/O error occurred
    */
-  public void write (int ch) throws IOException
-    {
-      if (ch == CR)
-        {
-          out.write (CRLF);
-        }
-      else if (ch == LF)
-        {
-          if (last != CR)
-            {
-              out.write (CRLF);
-            }
-        }
-      else
-        {
-          out.write (ch);
-        }
-      last = ch;
-    }
-
+  public void write(int ch) throws IOException
+  {
+    if (ch == CR)
+      {
+        out.write(CRLF);
+      }
+    else if (ch == LF)
+      {
+        if (last != CR)
+          {
+            out.write(CRLF);
+          }
+      }
+    else
+      {
+        out.write(ch);
+      }
+    last = ch;
+  }
+  
   /**
    * Writes a byte array to the underlying stream.
    * @exception IOException if an I/O error occurred
    */
-  public void write(byte[] b) throws IOException
-    {
-      write (b, 0, b.length);
-    }
+  public void write(byte[] b)
+    throws IOException
+  {
+    write(b, 0, b.length);
+  }
 
   /**
    * Writes a portion of a byte array to the underlying stream.
    * @exception IOException if an I/O error occurred
    */
-  public void write (byte[] b, int off, int len) throws IOException
-    {
-      int d = off;
-      len += off;
-      for (int i = off; i < len; i++)
-        {
-          switch (b[i])
-            {
-            case CR:
-              out.write (b, d, i - d);
-              out.write (CRLF, 0, 2);
-              d = i + 1;
-              break;
-            case LF:
-              if (last != CR)
-                {
-                  out.write (b, d, i - d);
-                  out.write (CRLF, 0, 2);
-                }
-              d = i + 1;
-              break;
-            }
-          last = b[i];
-        }
-      if (len - d > 0)
-        {
-          out.write (b, d, len - d);
-        }
-    }
-
+  public void write(byte[] b, int off, int len)
+    throws IOException
+  {
+    int d = off;
+    len += off;
+    for (int i = off; i < len; i++)
+      {
+        switch (b[i])
+          {
+          case CR:
+            out.write (b, d, i - d);
+            out.write (CRLF, 0, 2);
+            d = i + 1;
+            break;
+          case LF:
+            if (last != CR)
+              {
+                out.write (b, d, i - d);
+                out.write (CRLF, 0, 2);
+              }
+            d = i + 1;
+            break;
+          }
+        last = b[i];
+      }
+    if (len - d > 0)
+      {
+        out.write (b, d, len - d);
+      }
+  }
+  
   /**
    * Writes the specified ASCII string to the underlying stream.
    * @exception IOException if an I/O error occurred
    */
-  public void write (String text) throws IOException
-    {
-      try
-        {
-          byte[] bytes = text.getBytes (US_ASCII);
-          write (bytes, 0, bytes.length);
+  public void write(String text)
+    throws IOException
+  {
+    try
+      {
+        byte[] bytes = text.getBytes(US_ASCII);
+        write(bytes, 0, bytes.length);
         }
-      catch (UnsupportedEncodingException e)
-        {
-          throw new IOException ("The US-ASCII encoding is not supported " +
-                                 "on this system");
-        }
-    }
+    catch (UnsupportedEncodingException e)
+      {
+        throw new IOException("The US-ASCII encoding is not supported " +
+                              "on this system");
+      }
+  }
 
   /**
    * Writes a newline to the underlying stream.
    * @exception IOException if an I/O error occurred
    */
-  public void writeln () throws IOException
-    {
-      out.write (CRLF, 0, 2);
-    }
+  public void writeln()
+    throws IOException
+  {
+    out.write(CRLF, 0, 2);
+  }
 
 }
+

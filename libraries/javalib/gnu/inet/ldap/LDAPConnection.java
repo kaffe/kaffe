@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -137,10 +137,10 @@ public class LDAPConnection
    * LDAP port.
    * @param host the host
    */
-  public LDAPConnection (String host)
+  public LDAPConnection(String host)
     throws IOException
   {
-    this (host, DEFAULT_PORT, 0, 0);
+    this(host, DEFAULT_PORT, 0, 0);
   }
 
   /**
@@ -148,10 +148,10 @@ public class LDAPConnection
    * @param host the host
    * @param port the port
    */
-  public LDAPConnection (String host, int port)
+  public LDAPConnection(String host, int port)
     throws IOException
   {
-    this (host, port, 0, 0);
+    this(host, port, 0, 0);
   }
 
   /**
@@ -161,8 +161,8 @@ public class LDAPConnection
    * @param connectionTimeout the connection timeout in ms
    * @param timeout the socket I/O timeout in ms
    */
-  public LDAPConnection (String host, int port,
-                         int connectionTimeout, int timeout)
+  public LDAPConnection(String host, int port,
+                        int connectionTimeout, int timeout)
     throws IOException
   {
     this.host = host;
@@ -172,22 +172,22 @@ public class LDAPConnection
       }
     this.port = port;
     messageId = 0;
-    asyncResponses = new HashMap ();
+    asyncResponses = new HashMap();
     version = 3;
 
     // Connect
-    socket = new Socket ();
-    SocketAddress address = new InetSocketAddress (host, port);
+    socket = new Socket();
+    SocketAddress address = new InetSocketAddress(host, port);
     if (connectionTimeout > 0)
       {
-        socket.connect (address, connectionTimeout);
+        socket.connect(address, connectionTimeout);
       }
     else
       {
-        socket.connect (address);
+        socket.connect(address);
       }
-    in = new BufferedInputStream (socket.getInputStream ());
-    out = new BufferedOutputStream (socket.getOutputStream ());
+    in = new BufferedInputStream(socket.getInputStream());
+    out = new BufferedOutputStream(socket.getOutputStream());
   }
 
   /**
@@ -195,11 +195,11 @@ public class LDAPConnection
    * This implementation supports versions 2 and 3.
    * @param version the LDAP version
    */
-  public void setVersion (int version)
+  public void setVersion(int version)
   {
     if (version < 2 || version > 3)
       {
-        throw new IllegalArgumentException (Integer.toString(version));
+        throw new IllegalArgumentException(Integer.toString(version));
       }
     this.version = version;
   }
@@ -213,55 +213,55 @@ public class LDAPConnection
    * @param credentials the security credentials to use
    * @return the LDAP result
    */
-  public LDAPResult bind (String name, String mechanism,
-                          byte[] credentials, Control[] controls)
+  public LDAPResult bind(String name, String mechanism,
+                         byte[] credentials, Control[] controls)
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder bind = new BEREncoder (utf8);
+    BEREncoder bind = new BEREncoder(utf8);
     if (mechanism == null)
       {
-        bind.append (version);
-        bind.append (name);
+        bind.append(version);
+        bind.append(name);
         if (credentials != null)
           {
-            bind.append (credentials);
+            bind.append(credentials);
           }
       }
     else
       {
-        bind.append (version);
-        bind.append (name);
+        bind.append(version);
+        bind.append(name);
         // SASL credentials
-        BEREncoder saslCredentials = new BEREncoder (utf8);
-        saslCredentials.append (mechanism);
+        BEREncoder saslCredentials = new BEREncoder(utf8);
+        saslCredentials.append(mechanism);
         if (credentials != null)
           {
-            saslCredentials.append (credentials);
+            saslCredentials.append(credentials);
           }
-        bind.append (saslCredentials.toByteArray (), BERConstants.SEQUENCE);
+        bind.append(saslCredentials.toByteArray(), BERConstants.SEQUENCE);
       }
     // Request controls
-    BEREncoder ctls = new BEREncoder (utf8);
+    BEREncoder ctls = new BEREncoder(utf8);
     if (controls != null)
       {
         for (int i = 0; i < controls.length; i++)
           {
-            ctls.append (controlSequence (controls[i], utf8),
-                         BERConstants.SEQUENCE);
+            ctls.append(controlSequence(controls[i], utf8),
+                        BERConstants.SEQUENCE);
           }
       }
-    bind.append (ctls.toByteArray (), BERConstants.CONTEXT);
+    bind.append(ctls.toByteArray(), BERConstants.CONTEXT);
     // Write request
-    write (id, BIND_REQUEST, bind.toByteArray ());
+    write(id, BIND_REQUEST, bind.toByteArray());
     // Read response
-    BERDecoder response = read (id);
-    BERDecoder resultSequence = response.parseSequence (BIND_RESPONSE);
-    LDAPResult result = parseResult (resultSequence);
-    if (resultSequence.available ())
+    BERDecoder response = read(id);
+    BERDecoder resultSequence = response.parseSequence(BIND_RESPONSE);
+    LDAPResult result = parseResult(resultSequence);
+    if (resultSequence.available())
       {
-        byte[] serverCreds = resultSequence.parseOctetString ();
+        byte[] serverCreds = resultSequence.parseOctetString();
         // TODO
       }
     // TODO response controls
@@ -273,16 +273,16 @@ public class LDAPConnection
    * has no more requests to issue and will terminate the connection. After
    * invoking this method, no further methods may be invoked.
    */
-  public void unbind ()
+  public void unbind()
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder unbind = new BEREncoder (utf8);
-    unbind.appendNull ();
-    write (id, UNBIND_REQUEST, unbind.toByteArray ());
+    BEREncoder unbind = new BEREncoder(utf8);
+    unbind.appendNull();
+    write(id, UNBIND_REQUEST, unbind.toByteArray());
     // Close socket
-    socket.close ();
+    socket.close();
   }
 
   /**
@@ -296,112 +296,112 @@ public class LDAPConnection
    * restriction
    * @param timeLimit the maximum time in seconds permitted for the search,
    * or 0 for no restriction
-   * @param typesOnly whether to return only attribute types (true) or both
-   * attribute types and values (false)
+   * @param typesOnly whether to return only attribute types(true) or both
+   * attribute types and values(false)
    * @param filter the search filter in RFC2254 format
    * @param attributes the IDs of the attributes to return
    * @param controls the request controls
    * @param handler the result handler to receive notification of results
    * @return the LDAP result
    */
-  public LDAPResult search (String name, int scope, int derefAliases,
-                            int sizeLimit, int timeLimit,
-                            boolean typesOnly, String filter,
-                            String[] attributes, Control[] controls,
-                            ResultHandler handler)
+  public LDAPResult search(String name, int scope, int derefAliases,
+                           int sizeLimit, int timeLimit,
+                           boolean typesOnly, String filter,
+                           String[] attributes, Control[] controls,
+                           ResultHandler handler)
     throws IOException
   {
-    if (filter == null || filter.length () == 0)
+    if (filter == null || filter.length() == 0)
       {
         filter = "(objectClass=*)";
       }
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder search = new BEREncoder (utf8);
-    search.append (name);
-    search.append (scope, BERConstants.ENUMERATED);
-    search.append (derefAliases, BERConstants.ENUMERATED);
-    search.append (sizeLimit);
-    search.append (timeLimit);
-    search.append (typesOnly);
-    search.appendFilter (filter);
-    BEREncoder attributeSequence = new BEREncoder (utf8);
+    BEREncoder search = new BEREncoder(utf8);
+    search.append(name);
+    search.append(scope, BERConstants.ENUMERATED);
+    search.append(derefAliases, BERConstants.ENUMERATED);
+    search.append(sizeLimit);
+    search.append(timeLimit);
+    search.append(typesOnly);
+    search.appendFilter(filter);
+    BEREncoder attributeSequence = new BEREncoder(utf8);
     if (attributes != null)
       {
         for (int i = 0; i < attributes.length; i++)
           {
-            attributeSequence.append (attributes[i]);
+            attributeSequence.append(attributes[i]);
           }
       }
-    search.append (attributeSequence.toByteArray (), BERConstants.SEQUENCE);
+    search.append(attributeSequence.toByteArray(), BERConstants.SEQUENCE);
     // Request controls
-    BEREncoder ctls = new BEREncoder (utf8);
+    BEREncoder ctls = new BEREncoder(utf8);
     if (controls != null)
       {
         for (int i = 0; i < controls.length; i++)
           {
-            ctls.append (controlSequence (controls[i], utf8),
-                         BERConstants.SEQUENCE);
+            ctls.append(controlSequence(controls[i], utf8),
+                        BERConstants.SEQUENCE);
           }
       }
-    search.append (ctls.toByteArray (), BERConstants.SEQUENCE);
+    search.append(ctls.toByteArray(), BERConstants.SEQUENCE);
     // Write request
-    write (id, SEARCH_REQUEST, search.toByteArray ());
+    write(id, SEARCH_REQUEST, search.toByteArray());
     do
       {
-        BERDecoder response = read (id);
-        int code = response.parseType ();
+        BERDecoder response = read(id);
+        int code = response.parseType();
         switch (code)
           {
           case SEARCH_RESULT:
-            BERDecoder entry = response.parseSequence (code);
-            String objectName = entry.parseString ();
-            BERDecoder attributeSeq = entry.parseSequence (0x30);
-            Map attrs = new TreeMap ();
-            while (attributeSeq.available ())
+            BERDecoder entry = response.parseSequence(code);
+            String objectName = entry.parseString();
+            BERDecoder attributeSeq = entry.parseSequence(0x30);
+            Map attrs = new TreeMap();
+            while (attributeSeq.available())
               {
-                BERDecoder attribute = attributeSeq.parseSequence (0x30);
-                String type = attribute.parseString ();
-                BERDecoder values = attribute.parseSet (0x31);
-                List acc = new ArrayList ();
-                while (values.available ())
+                BERDecoder attribute = attributeSeq.parseSequence(0x30);
+                String type = attribute.parseString();
+                BERDecoder values = attribute.parseSet(0x31);
+                List acc = new ArrayList();
+                while (values.available())
                   {
-                    int valueType = values.parseType ();
+                    int valueType = values.parseType();
                     switch (valueType)
                       {
                       case BERConstants.BOOLEAN:
-                        acc.add (Boolean.valueOf (values.parseBoolean ()));
+                        acc.add(Boolean.valueOf(values.parseBoolean()));
                         break;
                       case BERConstants.INTEGER:
                       case BERConstants.ENUMERATED:
-                        acc.add (new Integer (values.parseInt ()));
+                        acc.add(new Integer(values.parseInt()));
                         break;
                         // TODO float
                       case BERConstants.UTF8_STRING:
-                        acc.add (values.parseString ());
+                        acc.add(values.parseString());
                         break;
                       case BERConstants.OCTET_STRING:
-                        acc.add (values.parseOctetString ());
+                        acc.add(values.parseOctetString());
                         break;
                       }
                   }
-                attrs.put (type, acc);
+                attrs.put(type, acc);
               }
-            handler.searchResultEntry (objectName, attrs);
+            handler.searchResultEntry(objectName, attrs);
             break;
           case SEARCH_REFERENCE:
-            List acc = new ArrayList ();
-            BERDecoder urls = response.parseSequence (code);
-            while (urls.available ())
+            List acc = new ArrayList();
+            BERDecoder urls = response.parseSequence(code);
+            while (urls.available())
               {
-                acc.add (urls.parseString ());
+                acc.add(urls.parseString());
               }
-            handler.searchResultReference (acc);
+            handler.searchResultReference(acc);
             break;
           case SEARCH_RESULT_DONE:
-            return parseResult (response.parseSequence (code));
+            return parseResult(response.parseSequence(code));
           default:
-            throw new ProtocolException ("Unexpected response: " + code);
+            throw new ProtocolException("Unexpected response: " + code);
           }
       }
     while (true);
@@ -409,39 +409,39 @@ public class LDAPConnection
 
   /**
    * Issues a modify request.
-   * @param name the LDAP DN of the object to be modified (alias
+   * @param name the LDAP DN of the object to be modified(alias
    * dereferencing will not be performed)
    * @param modifications a sequence of modifications to be executed
    * to be executed
    * @see Modification
    */
-  public LDAPResult modify (String name, final Modification[] modifications)
+  public LDAPResult modify(String name, final Modification[] modifications)
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder modify = new BEREncoder (utf8);
-    modify.append (name);
-    BEREncoder modSeq = new BEREncoder (utf8);
+    BEREncoder modify = new BEREncoder(utf8);
+    modify.append(name);
+    BEREncoder modSeq = new BEREncoder(utf8);
     for (int i = 0; i < modifications.length; i++)
       {
-        BEREncoder mod = new BEREncoder (utf8);
-        mod.append (modifications[i].operation);
-        BEREncoder typeAndValues = new BEREncoder (utf8);
-        typeAndValues.append (modifications[i].type);
-        BEREncoder values = new BEREncoder (utf8);
-        appendValues (values, modifications[i].values);
-        typeAndValues.append (values.toByteArray (), BERConstants.SET);
-        mod.append (typeAndValues.toByteArray (), BERConstants.SEQUENCE);
-        modSeq.append (mod.toByteArray (), BERConstants.SEQUENCE);
+        BEREncoder mod = new BEREncoder(utf8);
+        mod.append(modifications[i].operation);
+        BEREncoder typeAndValues = new BEREncoder(utf8);
+        typeAndValues.append(modifications[i].type);
+        BEREncoder values = new BEREncoder(utf8);
+        appendValues(values, modifications[i].values);
+        typeAndValues.append(values.toByteArray(), BERConstants.SET);
+        mod.append(typeAndValues.toByteArray(), BERConstants.SEQUENCE);
+        modSeq.append(mod.toByteArray(), BERConstants.SEQUENCE);
       }
-    modify.append (modSeq.toByteArray (), BERConstants.SEQUENCE);
+    modify.append(modSeq.toByteArray(), BERConstants.SEQUENCE);
     // Write request
-    write (id, MODIFY_REQUEST, modify.toByteArray ());
+    write(id, MODIFY_REQUEST, modify.toByteArray());
     // Read response
-    BERDecoder response = read (id);
-    BERDecoder resultSequence = response.parseSequence (MODIFY_RESPONSE);
-    LDAPResult result = parseResult (resultSequence);
+    BERDecoder response = read(id);
+    BERDecoder resultSequence = response.parseSequence(MODIFY_RESPONSE);
+    LDAPResult result = parseResult(resultSequence);
     return result;
   }
 
@@ -450,30 +450,30 @@ public class LDAPConnection
    * @param name the LDAP DN of the new entry
    * @param attributes a sequence of attributes to assign to the new entry
    */
-  public LDAPResult add (String name, AttributeValues[] attributes)
+  public LDAPResult add(String name, AttributeValues[] attributes)
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder add = new BEREncoder (utf8);
-    add.append (name);
-    BEREncoder attrSeq = new BEREncoder (utf8);
+    BEREncoder add = new BEREncoder(utf8);
+    add.append(name);
+    BEREncoder attrSeq = new BEREncoder(utf8);
     for (int i = 0; i < attributes.length; i++)
       {
-        BEREncoder attr = new BEREncoder (utf8);
-        attr.append (attributes[i].type);
-        BEREncoder values = new BEREncoder (utf8);
-        appendValues (values, attributes[i].values);
-        attr.append (values.toByteArray (), BERConstants.SET);
-        attrSeq.append (attr.toByteArray (), BERConstants.SEQUENCE);
+        BEREncoder attr = new BEREncoder(utf8);
+        attr.append(attributes[i].type);
+        BEREncoder values = new BEREncoder(utf8);
+        appendValues(values, attributes[i].values);
+        attr.append(values.toByteArray(), BERConstants.SET);
+        attrSeq.append(attr.toByteArray(), BERConstants.SEQUENCE);
       }
-    add.append (attrSeq.toByteArray (), BERConstants.SEQUENCE);
+    add.append(attrSeq.toByteArray(), BERConstants.SEQUENCE);
     // Write request
-    write (id, ADD_REQUEST, add.toByteArray ());
+    write(id, ADD_REQUEST, add.toByteArray());
     // Read response
-    BERDecoder response = read (id);
-    BERDecoder resultSequence = response.parseSequence (ADD_RESPONSE);
-    LDAPResult result = parseResult (resultSequence);
+    BERDecoder response = read(id);
+    BERDecoder resultSequence = response.parseSequence(ADD_RESPONSE);
+    LDAPResult result = parseResult(resultSequence);
     return result;
   }
 
@@ -481,30 +481,30 @@ public class LDAPConnection
    * Requests the removal of an entry from the directory.
    * @param name the LDAP DN of the entry to remove
    */
-  public LDAPResult delete (String name)
+  public LDAPResult delete(String name)
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder del = new BEREncoder (utf8);
-    del.append (name);
+    BEREncoder del = new BEREncoder(utf8);
+    del.append(name);
     // Write request
-    write (id, DELETE_REQUEST, del.toByteArray ());
+    write(id, DELETE_REQUEST, del.toByteArray());
     // Read response
-    BERDecoder response = read (id);
-    int code = response.parseType ();
+    BERDecoder response = read(id);
+    int code = response.parseType();
     if (code != DELETE_RESPONSE)
       {
-        throw new ProtocolException ("Unexpected response type: " +
-                                     code);
+        throw new ProtocolException("Unexpected response type: " +
+                                    code);
       }
-    BERDecoder resultSequence = response.parseSequence ();
-    LDAPResult result = parseResult (resultSequence);
+    BERDecoder resultSequence = response.parseSequence();
+    LDAPResult result = parseResult(resultSequence);
     return result;
   }
 
   /**
-   * Changes the leftmost (least significant) component of the name of an
+   * Changes the leftmost(least significant) component of the name of an
    * entry in the directory, or move a subtree of entries to a new location
    * in the directory.
    * @param name the LDAP DN of the entry to be changed
@@ -515,26 +515,26 @@ public class LDAPConnection
    * @param newSuperior if non-null, the DN of the entry to become the
    * immediate superior of the existing entry
    */
-  public LDAPResult modifyDN (String name, String newRDN,
-                              boolean deleteOldRDN, String newSuperior)
+  public LDAPResult modifyDN(String name, String newRDN,
+                             boolean deleteOldRDN, String newSuperior)
     throws IOException
   {
     int id = messageId++;
     boolean utf8 = (version == 3);
-    BEREncoder modifyDN = new BEREncoder (utf8);
-    modifyDN.append (name);
-    modifyDN.append (newRDN);
-    modifyDN.append (deleteOldRDN);
+    BEREncoder modifyDN = new BEREncoder(utf8);
+    modifyDN.append(name);
+    modifyDN.append(newRDN);
+    modifyDN.append(deleteOldRDN);
     if (newSuperior != null)
       {
-        modifyDN.append (newSuperior);
+        modifyDN.append(newSuperior);
       }
     // Write request
-    write (id, MODIFY_DN_REQUEST, modifyDN.toByteArray ());
+    write(id, MODIFY_DN_REQUEST, modifyDN.toByteArray());
     // Read response
-    BERDecoder response = read (id);
-    BERDecoder resultSequence = response.parseSequence (MODIFY_DN_RESPONSE);
-    LDAPResult result = parseResult (resultSequence);
+    BERDecoder response = read(id);
+    BERDecoder resultSequence = response.parseSequence(MODIFY_DN_RESPONSE);
+    LDAPResult result = parseResult(resultSequence);
     return result;
   }
 
@@ -549,38 +549,38 @@ public class LDAPConnection
   /**
    * Appends the specified set of values to the given encoder.
    */
-  void appendValues (BEREncoder encoder, Set values)
+  void appendValues(BEREncoder encoder, Set values)
     throws BERException
   {
     if (values != null)
       {
-        for (Iterator i = values.iterator (); i.hasNext (); )
+        for (Iterator i = values.iterator(); i.hasNext(); )
           {
-            Object value = i.next ();
+            Object value = i.next();
             if (value == null)
               {
-                encoder.appendNull ();
+                encoder.appendNull();
               }
             else if (value instanceof String)
               {
-                encoder.append ((String) value);
+                encoder.append((String) value);
               }
             else if (value instanceof Integer)
               {
-                encoder.append (((Integer) value).intValue ());
+                encoder.append(((Integer) value).intValue());
               }
             else if (value instanceof Boolean)
               {
-                encoder.append (((Boolean) value).booleanValue ());
+                encoder.append(((Boolean) value).booleanValue());
               }
             else if (value instanceof byte[])
               {
-                encoder.append ((byte[]) value);
+                encoder.append((byte[]) value);
               }
             // TODO float
             else
               {
-                throw new ClassCastException (value.getClass ().getName ());
+                throw new ClassCastException(value.getClass().getName());
               }
           }
       }
@@ -589,45 +589,45 @@ public class LDAPConnection
   /**
    * Encode a control.
    */
-  byte[] controlSequence (final Control control, boolean utf8)
+  byte[] controlSequence(final Control control, boolean utf8)
     throws IOException
   {
-    BEREncoder encoder = new BEREncoder (utf8);
-    encoder.append (control.getID ());
-    if (control.isCritical ())
+    BEREncoder encoder = new BEREncoder(utf8);
+    encoder.append(control.getID());
+    if (control.isCritical())
       {
-        encoder.append (true);
+        encoder.append(true);
       }
-    return encoder.toByteArray ();
+    return encoder.toByteArray();
   }
 
   /**
    * Parse a response into an LDAP result object.
    */
-  LDAPResult parseResult (BERDecoder response)
+  LDAPResult parseResult(BERDecoder response)
     throws IOException
   {
-    int status = response.parseInt ();
-    String matchingDN = response.parseString ();
-    String errorMessage = response.parseString ();
+    int status = response.parseInt();
+    String matchingDN = response.parseString();
+    String errorMessage = response.parseString();
     String[] referrals = null;
-    if (response.available ())
+    if (response.available())
       {
-        int type = response.parseType ();
+        int type = response.parseType();
         if (type == BERConstants.SEQUENCE)
           {
-            ArrayList list = new ArrayList ();
-            BERDecoder sequence = response.parseSequence ();
-            type = sequence.parseType ();
+            ArrayList list = new ArrayList();
+            BERDecoder sequence = response.parseSequence();
+            type = sequence.parseType();
             while (type != -1)
               {
-                list.add (sequence.parseString ());
+                list.add(sequence.parseString());
               }
-            referrals = new String[list.size ()];
-            list.toArray (referrals);
+            referrals = new String[list.size()];
+            list.toArray(referrals);
           }
       }
-    return new LDAPResult (status, matchingDN, errorMessage, referrals);
+    return new LDAPResult(status, matchingDN, errorMessage, referrals);
   }
 
   /**
@@ -636,19 +636,19 @@ public class LDAPConnection
    * @param code the operation code
    * @param request the request body
    */
-  void write (int id, int code, byte[] request)
+  void write(int id, int code, byte[] request)
     throws IOException
   {
     boolean utf8 = (version == 3);
-    BEREncoder envelope = new BEREncoder (utf8);
-    envelope.append (id);
-    envelope.append (request, code);
-    BEREncoder message = new BEREncoder (utf8);
-    message.append (envelope.toByteArray (), MESSAGE);
-    byte[] toSend = message.toByteArray ();
+    BEREncoder envelope = new BEREncoder(utf8);
+    envelope.append(id);
+    envelope.append(request, code);
+    BEREncoder message = new BEREncoder(utf8);
+    message.append(envelope.toByteArray(), MESSAGE);
+    byte[] toSend = message.toByteArray();
     // Write to socket
-    out.write (toSend);
-    out.flush ();
+    out.write(toSend);
+    out.flush();
   }
 
   /**
@@ -656,30 +656,30 @@ public class LDAPConnection
    * @param id the message ID
    * @return a BERDecoder for the content of the message
    */
-  BERDecoder read (int id)
+  BERDecoder read(int id)
     throws IOException
   {
     // Check for an already received async response
-    Integer key = new Integer (id);
-    List responses = (List) asyncResponses.get (key);
+    Integer key = new Integer(id);
+    List responses = (List) asyncResponses.get(key);
     if (responses != null)
       {
-        BERDecoder response = (BERDecoder) responses.remove (0);
-        if (responses.size () == 0)
+        BERDecoder response = (BERDecoder) responses.remove(0);
+        if (responses.size() == 0)
           {
-            asyncResponses.remove (key);
+            asyncResponses.remove(key);
           }
         return response;
       }
     do
       {
         // Read LDAP message
-        byte[] bytes = readMessage ();
+        byte[] bytes = readMessage();
         boolean utf8 = (version == 3);
-        BERDecoder message = new BERDecoder (bytes, utf8);
-        message = message.parseSequence (MESSAGE);
+        BERDecoder message = new BERDecoder(bytes, utf8);
+        message = message.parseSequence(MESSAGE);
         // Check message ID
-        int msgId = message.parseInt ();
+        int msgId = message.parseInt();
         if (msgId == id)
           {
             return message;
@@ -687,14 +687,14 @@ public class LDAPConnection
         else
           {
             // Store this message for later processing
-            key = new Integer (msgId);
-            responses = (List) asyncResponses.get (key);
+            key = new Integer(msgId);
+            responses = (List) asyncResponses.get(key);
             if (responses == null)
               {
-                responses = new ArrayList ();
-                asyncResponses.put (key, responses);
+                responses = new ArrayList();
+                asyncResponses.put(key, responses);
               }
-            responses.add (message);
+            responses.add(message);
           }
       }
     while (true);
@@ -703,7 +703,7 @@ public class LDAPConnection
   /**
    * Read an LDAP message.
    */
-  byte[] readMessage ()
+  byte[] readMessage()
     throws IOException
   {
     // Peek at the length part of the BER encoding to determine the length
@@ -711,27 +711,27 @@ public class LDAPConnection
     // TODO normalize this with functionality in BERDecoder
     byte[] header = new byte[6];
     int offset = 0;
-    header[offset++] = (byte) readByte (); // type
-    int len = readByte (); // length 0
+    header[offset++] = (byte) readByte(); // type
+    int len = readByte(); // length 0
     header[offset++] = (byte) len;
     if ((len & 0x80) != 0)
       {
         int lsize = len - 0x80;
         if (lsize > 4)
           {
-            throw new BERException ("Data too long: " + lsize);
+            throw new BERException("Data too long: " + lsize);
           }
         len = 0;
         for (int i = 0; i < lsize; i++)
           {
-            int c = readByte ();
+            int c = readByte();
             header[offset++] = (byte) c;
             len = (len << 8) + c;
           }
       }
     // Allocate message array
     byte[] message = new byte[offset + len];
-    System.arraycopy (header, 0, message, 0, offset);
+    System.arraycopy(header, 0, message, 0, offset);
     if (len == 0)
       {
         return message;
@@ -740,10 +740,10 @@ public class LDAPConnection
     // Read message content
     do
       {
-        int l = in.read (message, offset, len);
+        int l = in.read(message, offset, len);
         if (l == -1)
           {
-            throw new IOException ("EOF");
+            throw new IOException("EOF");
           }
         offset += l;
         len -= l;
@@ -755,15 +755,16 @@ public class LDAPConnection
   /**
    * Read a single byte.
    */
-  int readByte ()
+  int readByte()
     throws IOException
   {
-    int ret = in.read ();
+    int ret = in.read();
     if (ret == -1)
       {
-        throw new IOException ("EOF");
+        throw new IOException("EOF");
       }
     return ret & 0xff;
   }
   
 }
+

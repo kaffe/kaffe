@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -63,11 +63,11 @@ public class AttributeValues
    * @param type the attribute type
    * @param values the values to assign
    */
-  public AttributeValues (String type, Set values)
+  public AttributeValues(String type, Set values)
   {
     if (type == null)
       {
-        throw new NullPointerException ("type");
+        throw new NullPointerException("type");
       }
     this.type = type;
     this.values = values;
@@ -76,7 +76,7 @@ public class AttributeValues
   /**
    * @see #type
    */
-  public String getType ()
+  public String getType()
   {
     return type;
   }
@@ -84,9 +84,10 @@ public class AttributeValues
   /**
    * @see #values
    */
-  public Set getValues ()
+  public Set getValues()
   {
     return values;
   }
   
 }
+

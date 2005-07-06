@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.8 2005/07/04 00:05:17 robilad Exp $
+ * SMTPConnection.java
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -49,8 +49,10 @@ import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -67,7 +69,6 @@ import gnu.inet.util.CRLFInputStream;
 import gnu.inet.util.CRLFOutputStream;
 import gnu.inet.util.EmptyX509TrustManager;
 import gnu.inet.util.LineInputStream;
-import gnu.inet.util.Logger;
 import gnu.inet.util.MessageOutputStream;
 import gnu.inet.util.SaslCallbackHandler;
 import gnu.inet.util.SaslCramMD5;
@@ -75,16 +76,26 @@ import gnu.inet.util.SaslInputStream;
 import gnu.inet.util.SaslLogin;
 import gnu.inet.util.SaslOutputStream;
 import gnu.inet.util.SaslPlain;
+import gnu.inet.util.TraceLevel;
 
 /**
  * An SMTP client.
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.8 $ $Date: 2005/07/04 00:05:17 $
  */
 public class SMTPConnection
 {
+
+  /**
+   * The logger used for SMTP protocol traces.
+   */
+  public static final Logger logger = Logger.getLogger("gnu.inet.smtp");
+
+  /**
+   * The network trace level.
+   */
+  public static final Level SMTP_TRACE = new TraceLevel("smtp");
 
   /**
    * The default SMTP port.
@@ -131,11 +142,6 @@ public class SMTPConnection
   protected CRLFOutputStream out;
 
   /**
-   * If true, log events.
-   */
-  protected boolean debug;
-
-  /**
    * The last response message received from the server.
    */
   protected String response;
@@ -155,9 +161,10 @@ public class SMTPConnection
    * port.
    * @param host the server hostname
    */
-  public SMTPConnection (String host) throws IOException
+  public SMTPConnection(String host)
+    throws IOException
   {
-    this (host, DEFAULT_PORT);
+    this(host, DEFAULT_PORT, 0, 0, false, null);
   }
 
   /**
@@ -166,9 +173,10 @@ public class SMTPConnection
    * @param host the server hostname
    * @param port the port to connect to
    */
-  public SMTPConnection (String host, int port) throws IOException
+  public SMTPConnection(String host, int port)
+    throws IOException
   {
-    this (host, port, 0, 0, false);
+    this(host, port, 0, 0, false, null);
   }
 
   /**
@@ -178,10 +186,28 @@ public class SMTPConnection
    * @param port the port to connect to
    * @param connectionTimeout the connection timeout in milliseconds
    * @param timeout the I/O timeout in milliseconds
-   * @param debug whether to log progress
    */
-  public SMTPConnection (String host, int port,
-                         int connectionTimeout, int timeout, boolean debug)
+  public SMTPConnection(String host, int port,
+                        int connectionTimeout, int timeout)
+    throws IOException
+  {
+    this(host, port, connectionTimeout, timeout, false, null);
+  }
+  
+  /**
+   * Creates a new connection to the specified host, using the specified
+   * port.
+   * @param host the server hostname
+   * @param port the port to connect to
+   * @param connectionTimeout the connection timeout in milliseconds
+   * @param timeout the I/O timeout in milliseconds
+   * @param secure true to create an SMTPS connection
+   * @param tm a trust manager used to check SSL certificates, or null to
+   * use the default
+   */
+  public SMTPConnection(String host, int port,
+                        int connectionTimeout, int timeout,
+                        boolean secure, TrustManager tm)
     throws IOException
   {
     if (port <= 0)
@@ -190,61 +216,80 @@ public class SMTPConnection
       }
     response = null;
     continuation = false;
-    this.debug = debug;
     
     // Initialise socket
-    socket = new Socket ();
-    InetSocketAddress address = new InetSocketAddress (host, port);
-    if (connectionTimeout > 0)
+    try
       {
-        socket.connect (address, connectionTimeout);
+        socket = new Socket();
+        InetSocketAddress address = new InetSocketAddress(host, port);
+        if (connectionTimeout > 0)
+          {
+            socket.connect(address, connectionTimeout);
+          }
+        else
+          {
+            socket.connect(address);
+          }
+        if (timeout > 0)
+          {
+            socket.setSoTimeout(timeout);
+          }
+        if (secure)
+          {
+            SSLSocketFactory factory = getSSLSocketFactory(tm);
+            SSLSocket ss =
+              (SSLSocket) factory.createSocket(socket, host, port, true);
+            String[] protocols = { "TLSv1", "SSLv3" };
+            ss.setEnabledProtocols(protocols);
+            ss.setUseClientMode(true);
+            ss.startHandshake();
+            socket = ss;
+          }
       }
-    else
+    catch (GeneralSecurityException e)
       {
-        socket.connect (address);
-      }
-    if (timeout > 0)
-      {
-        socket.setSoTimeout (timeout);
+        IOException e2 = new IOException();
+        e2.initCause(e);
+        throw e2;
       }
     
     // Initialise streams
-    InputStream in = socket.getInputStream ();
-    in = new BufferedInputStream (in);
-    in = new CRLFInputStream (in);
-    this.in = new LineInputStream (in);
-    OutputStream out = socket.getOutputStream ();
-    out = new BufferedOutputStream (out);
-    this.out = new CRLFOutputStream (out);
+    InputStream in = socket.getInputStream();
+    in = new BufferedInputStream(in);
+    in = new CRLFInputStream(in);
+    this.in = new LineInputStream(in);
+    OutputStream out = socket.getOutputStream();
+    out = new BufferedOutputStream(out);
+    this.out = new CRLFOutputStream(out);
     
     // Greeting
-    StringBuffer greetingBuffer = new StringBuffer ();
+    StringBuffer greetingBuffer = new StringBuffer();
     boolean notFirst = false;
     do
       {
-        if (getResponse () != READY)
+        if (getResponse() != READY)
           {
-            throw new ProtocolException (response);
+            throw new ProtocolException(response);
           }
         if (notFirst)
           {
-            greetingBuffer.append ('\n');
+            greetingBuffer.append('\n');
           }
         else
           {
             notFirst = true;
           }
-        greetingBuffer.append (response);
+        greetingBuffer.append(response);
         
       }
     while (continuation);
-    greeting = greetingBuffer.toString ();
+    greeting = greetingBuffer.toString();
   }
   
   /**
    * Returns the server greeting message.
    */
-  public String getGreeting ()
+  public String getGreeting()
   {
     return greeting;
   }
@@ -252,7 +297,7 @@ public class SMTPConnection
   /**
    * Returns the text of the last response received from the server.
    */
-  public String getLastResponse ()
+  public String getLastResponse()
   {
     return response;
   }
@@ -261,24 +306,24 @@ public class SMTPConnection
 
   /**
    * Execute a MAIL command.
-   * @param reversePath the source mailbox (from address)
+   * @param reversePath the source mailbox(from address)
    * @param parameters optional ESMTP parameters
    * @return true if accepted, false otherwise
    */
-  public boolean mailFrom (String reversePath, ParameterList parameters)
+  public boolean mailFrom(String reversePath, ParameterList parameters)
     throws IOException
   {
-    StringBuffer command = new StringBuffer (MAIL_FROM);
-    command.append ('<');
-    command.append (reversePath);
-    command.append ('>');
+    StringBuffer command = new StringBuffer(MAIL_FROM);
+    command.append('<');
+    command.append(reversePath);
+    command.append('>');
     if (parameters != null)
       {
-        command.append (SP);
-        command.append (parameters);
+        command.append(SP);
+        command.append(parameters);
       }
-    send (command.toString ());
-    switch (getAllResponses ())
+    send(command.toString());
+    switch (getAllResponses())
       {
       case OK:
       case OK_NOT_LOCAL:
@@ -291,24 +336,24 @@ public class SMTPConnection
 
   /**
    * Execute a RCPT command.
-   * @param forwardPath the forward-path (recipient address)
+   * @param forwardPath the forward-path(recipient address)
    * @param parameters optional ESMTP parameters
    * @return true if successful, false otherwise
    */
-  public boolean rcptTo (String forwardPath, ParameterList parameters)
+  public boolean rcptTo(String forwardPath, ParameterList parameters)
     throws IOException
   {
-    StringBuffer command = new StringBuffer (RCPT_TO);
-    command.append ('<');
-    command.append (forwardPath);
-    command.append ('>');
+    StringBuffer command = new StringBuffer(RCPT_TO);
+    command.append('<');
+    command.append(forwardPath);
+    command.append('>');
     if (parameters != null)
       {
-        command.append (SP);
-        command.append (parameters);
+        command.append(SP);
+        command.append(parameters);
       }
-    send (command.toString ());
-    switch (getAllResponses ())
+    send(command.toString());
+    switch (getAllResponses())
       {
       case OK:
       case OK_NOT_LOCAL:
@@ -328,15 +373,16 @@ public class SMTPConnection
    * must be called to complete the transfer and determine its success.
    * @return a stream for writing messages to
    */
-  public OutputStream data () throws IOException
+  public OutputStream data()
+    throws IOException
   {
-    send (DATA);
-    switch (getAllResponses ())
+    send(DATA);
+    switch (getAllResponses())
       {
       case SEND_DATA:
-        return new MessageOutputStream (out);
+        return new MessageOutputStream(out);
       default:
-        throw new ProtocolException (response);
+        throw new ProtocolException(response);
       }
   }
 
@@ -345,10 +391,11 @@ public class SMTPConnection
    * @see #data
    * @return true id transfer was successful, false otherwise
    */
-  public boolean finishData () throws IOException
+  public boolean finishData()
+    throws IOException
   {
-    send (FINISH_DATA);
-    switch (getAllResponses ())
+    send(FINISH_DATA);
+    switch (getAllResponses())
       {
       case OK:
         return true;
@@ -360,12 +407,13 @@ public class SMTPConnection
   /**
    * Aborts the current mail transaction.
    */
-  public void rset () throws IOException
+  public void rset()
+    throws IOException
   {
-    send (RSET);
-    if (getAllResponses () != OK)
+    send(RSET);
+    if (getAllResponses() != OK)
       {
-        throw new ProtocolException (response);
+        throw new ProtocolException(response);
       }
   }
 
@@ -376,29 +424,30 @@ public class SMTPConnection
    * null on failure.
    * @param address a mailbox, or real name and mailbox
    */
-  public List vrfy (String address) throws IOException
+  public List vrfy(String address)
+    throws IOException
   {
     String command = VRFY + ' ' + address;
-    send (command);
-    List list = new ArrayList ();
+    send(command);
+    List list = new ArrayList();
     do
       {
-        switch (getResponse ())
+        switch (getResponse())
           {
           case OK:
           case AMBIGUOUS:
-            response = response.trim ();
-            if (response.indexOf ('@') != -1)
+            response = response.trim();
+            if (response.indexOf('@') != -1)
               {
-                list.add (response);
+                list.add(response);
               }
-            else if (response.indexOf ('<') != -1)
+            else if (response.indexOf('<') != -1)
               {
-                list.add (response);
+                list.add(response);
               }
-            else if (response.indexOf (' ') == -1)
+            else if (response.indexOf(' ') == -1)
               {
-                list.add (response);
+                list.add(response);
               }
             break;
           default:
@@ -406,7 +455,7 @@ public class SMTPConnection
           }
       }
     while (continuation);
-    return Collections.unmodifiableList (list);
+    return Collections.unmodifiableList(list);
   }
 
   /**
@@ -414,25 +463,26 @@ public class SMTPConnection
    * or null on failure.
    * @param address a mailing list name
    */
-  public List expn (String address) throws IOException
+  public List expn(String address)
+    throws IOException
   {
     String command = EXPN + ' ' + address;
-    send (command);
-    List list = new ArrayList ();
+    send(command);
+    List list = new ArrayList();
     do
       {
-        switch (getResponse ())
+        switch (getResponse())
           {
           case OK:
-            response = response.trim ();
-            list.add (response);
+            response = response.trim();
+            list.add(response);
             break;
           default:
             return null;
           }
       }
     while (continuation);
-    return Collections.unmodifiableList (list);
+    return Collections.unmodifiableList(list);
   }
 
   /**
@@ -442,46 +492,49 @@ public class SMTPConnection
    * @return a list of possibly useful information, or null if the command
    * failed.
    */
-  public List help (String arg) throws IOException
+  public List help(String arg)
+    throws IOException
   {
     String command = (arg == null) ? HELP :
       HELP + ' ' + arg;
-    send (command);
-    List list = new ArrayList ();
+    send(command);
+    List list = new ArrayList();
     do
       {
-        switch (getResponse ())
+        switch (getResponse())
           {
           case INFO:
-            list.add (response);
+            list.add(response);
             break;
           default:
             return null;
           }
       }
     while (continuation);
-    return Collections.unmodifiableList (list);
+    return Collections.unmodifiableList(list);
   }
 
   /**
    * Issues a NOOP command.
    * This does nothing, but can be used to keep the connection alive.
    */
-  public void noop () throws IOException
+  public void noop()
+    throws IOException
   {
-    send (NOOP);
-    getAllResponses ();
+    send(NOOP);
+    getAllResponses();
   }
 
   /**
    * Close the connection to the server.
    */
-  public void quit () throws IOException
+  public void quit()
+    throws IOException
   {
     try
       {
-        send (QUIT);
-        getAllResponses ();
+        send(QUIT);
+        getAllResponses();
         /* RFC 2821 states that the server MUST send an OK reply here, but
          * many don't: postfix, for instance, sends 221.
          * In any case we have done our best. */
@@ -492,7 +545,7 @@ public class SMTPConnection
     finally
       {
         // Close the socket anyway.
-        socket.close ();
+        socket.close();
       }
   }
 
@@ -500,11 +553,12 @@ public class SMTPConnection
    * Issues a HELO command.
    * @param hostname the local host name
    */
-  public boolean helo (String hostname) throws IOException
+  public boolean helo(String hostname)
+    throws IOException
   {
     String command = HELO + ' ' + hostname;
-    send (command);
-    return (getAllResponses () == OK);
+    send(command);
+    return (getAllResponses() == OK);
   }
 
   /**
@@ -514,24 +568,43 @@ public class SMTPConnection
    * Otherwise returns null, and HELO should be called.
    * @param hostname the local host name
    */
-  public List ehlo (String hostname) throws IOException
+  public List ehlo(String hostname)
+    throws IOException
   {
     String command = EHLO + ' ' + hostname;
-    send (command);
-    List extensions = new ArrayList ();
+    send(command);
+    List extensions = new ArrayList();
     do
       {
-        switch (getResponse ())
+        switch (getResponse())
           {
           case OK:
-            extensions.add (response);
+            extensions.add(response);
             break;
           default:
             return null;
           }
       }
     while (continuation);
-    return Collections.unmodifiableList (extensions);
+    return Collections.unmodifiableList(extensions);
+  }
+
+  /**
+   * Returns a configured SSLSocketFactory to use in creating new SSL
+   * sockets.
+   * @param tm an optional trust manager to use
+   */
+  protected SSLSocketFactory getSSLSocketFactory(TrustManager tm)
+    throws GeneralSecurityException
+  {
+    if (tm == null)
+      {
+        tm = new EmptyX509TrustManager();
+      }
+    SSLContext context = SSLContext.getInstance("TLS");
+    TrustManager[] trust = new TrustManager[] { tm };
+    context.init(null, trust, null);
+    return context.getSocketFactory();
   }
 
   /**
@@ -539,9 +612,10 @@ public class SMTPConnection
    * This depends on many features, such as the JSSE classes being in the
    * classpath. Returns true if successful, false otherwise.
    */
-  public boolean starttls () throws IOException
+  public boolean starttls()
+    throws IOException
   {
-    return starttls (new EmptyX509TrustManager ());
+    return starttls(new EmptyX509TrustManager());
   }
   
   /**
@@ -550,41 +624,36 @@ public class SMTPConnection
    * classpath. Returns true if successful, false otherwise.
    * @param tm the custom trust manager to use
    */
-  public boolean starttls (TrustManager tm) throws IOException
+  public boolean starttls(TrustManager tm)
+    throws IOException
   {
     try
       {
-        // Use SSLSocketFactory to negotiate a TLS session and wrap the
-        // current socket.
-        SSLContext context = SSLContext.getInstance ("TLS");
-        // We don't require strong validation of the server certificate
-        TrustManager[] trust = new TrustManager[] { tm };
-        context.init (null, trust, null);
-        SSLSocketFactory factory = context.getSocketFactory ();
+        SSLSocketFactory factory = getSSLSocketFactory(tm);
         
-        send (STARTTLS);
-        if (getAllResponses () != READY)
+        send(STARTTLS);
+        if (getAllResponses() != READY)
           {
             return false;
           }
         
-        String hostname = socket.getInetAddress ().getHostName ();
-        int port = socket.getPort ();
+        String hostname = socket.getInetAddress().getHostName();
+        int port = socket.getPort();
         SSLSocket ss =
-          (SSLSocket) factory.createSocket (socket, hostname, port, true);
+          (SSLSocket) factory.createSocket(socket, hostname, port, true);
         String[] protocols = { "TLSv1", "SSLv3" };
-        ss.setEnabledProtocols (protocols);
-        ss.setUseClientMode (true);
-        ss.startHandshake ();
+        ss.setEnabledProtocols(protocols);
+        ss.setUseClientMode(true);
+        ss.startHandshake();
         
         // Set up streams
-        InputStream in = ss.getInputStream ();
-        in = new BufferedInputStream (in);
-        in = new CRLFInputStream (in);
-        this.in = new LineInputStream (in);
-        OutputStream out = ss.getOutputStream ();
-        out = new BufferedOutputStream (out);
-        this.out = new CRLFOutputStream (out);
+        InputStream in = ss.getInputStream();
+        in = new BufferedInputStream(in);
+        in = new CRLFInputStream(in);
+        this.in = new LineInputStream(in);
+        OutputStream out = ss.getOutputStream();
+        out = new BufferedOutputStream(out);
+        this.out = new CRLFOutputStream(out);
         return true;
       }
     catch (GeneralSecurityException e)
@@ -604,35 +673,35 @@ public class SMTPConnection
    * @param password the authentication credentials
    * @return true if authentication was successful, false otherwise
    */
-  public boolean authenticate (String mechanism, String username,
-                               String password) throws IOException
+  public boolean authenticate(String mechanism, String username,
+                              String password) throws IOException
   {
     try
       {
         String[] m = new String[] { mechanism };
-        CallbackHandler ch = new SaslCallbackHandler (username, password);
+        CallbackHandler ch = new SaslCallbackHandler(username, password);
         // Avoid lengthy callback procedure for GNU Crypto
-        Properties p = new Properties ();
-        p.put ("gnu.crypto.sasl.username", username);
-        p.put ("gnu.crypto.sasl.password", password);
+        HashMap p = new HashMap();
+        p.put("gnu.crypto.sasl.username", username);
+        p.put("gnu.crypto.sasl.password", password);
         SaslClient sasl =
-          Sasl.createSaslClient (m, null, "smtp",
-                                 socket.getInetAddress ().getHostName (),
-                                 p, ch);
+          Sasl.createSaslClient(m, null, "smtp",
+                                socket.getInetAddress().getHostName(),
+                                p, ch);
         if (sasl == null)
           {
             // Fall back to home-grown SASL clients
-            if ("LOGIN".equalsIgnoreCase (mechanism))
+            if ("LOGIN".equalsIgnoreCase(mechanism))
               {
-                sasl = new SaslLogin (username, password);
+                sasl = new SaslLogin(username, password);
               }
-            else if ("PLAIN".equalsIgnoreCase (mechanism))
+            else if ("PLAIN".equalsIgnoreCase(mechanism))
               {
-                sasl = new SaslPlain (username, password);
+                sasl = new SaslPlain(username, password);
               }
-            else if ("CRAM-MD5".equalsIgnoreCase (mechanism))
+            else if ("CRAM-MD5".equalsIgnoreCase(mechanism))
               {
-                sasl = new SaslCramMD5 (username, password);
+                sasl = new SaslCramMD5(username, password);
               }
             else
               {
@@ -640,71 +709,63 @@ public class SMTPConnection
               }
           }
         
-        StringBuffer cmd = new StringBuffer (AUTH);
-        cmd.append (' ');
-        cmd.append (mechanism);
-        if (sasl.hasInitialResponse ())
+        StringBuffer cmd = new StringBuffer(AUTH);
+        cmd.append(' ');
+        cmd.append(mechanism);
+        if (sasl.hasInitialResponse())
           {
-            cmd.append (' ');
-            byte[] init = sasl.evaluateChallenge (new byte[0]);
+            cmd.append(' ');
+            byte[] init = sasl.evaluateChallenge(new byte[0]);
             if (init.length == 0)
               {
-                cmd.append ('=');
+                cmd.append('=');
               }
             else
               {
-                cmd.append (new String (BASE64.encode (init), "US-ASCII"));
+                cmd.append(new String(BASE64.encode(init), "US-ASCII"));
               }
           }
-        send (cmd.toString ());
+        send(cmd.toString());
         while (true)
           {
-            switch (getAllResponses ())
+            switch (getAllResponses())
               {
               case 334:
                 try
                   {
-                    byte[] c0 = response.getBytes ("US-ASCII");
-                    byte[] c1 = BASE64.decode (c0);       // challenge
-                    byte[] r0 = sasl.evaluateChallenge (c1);
-                    byte[] r1 = BASE64.encode (r0);       // response
-                    out.write (r1);
-                    out.write (0x0d);
-                    out.flush ();
-                    if (debug)
-                      {
-                        Logger logger = Logger.getInstance ();
-                        logger.log ("smtp", "> " +
-                                    new String (r1, "US-ASCII"));
-                      }
+                    byte[] c0 = response.getBytes("US-ASCII");
+                    byte[] c1 = BASE64.decode(c0);       // challenge
+                    byte[] r0 = sasl.evaluateChallenge(c1);
+                    byte[] r1 = BASE64.encode(r0);       // response
+                    out.write(r1);
+                    out.write(0x0d);
+                    out.flush();
+                    logger.log(SMTP_TRACE, "> " +
+                                    new String(r1, "US-ASCII"));
                   }
                 catch (SaslException e)
                   {
                     // Error in SASL challenge evaluation - cancel exchange
-                    out.write (0x2a);
-                    out.write (0x0d);
-                    out.flush ();
-                    if (debug)
-                      {
-                        Logger logger = Logger.getInstance ();
-                        logger.log ("smtp", "> *");
-                      }
+                    out.write(0x2a);
+                    out.write(0x0d);
+                    out.flush();
+                    logger.log(SMTP_TRACE, "> *");
                   }
                 break;
               case 235:
-                String qop = (String) sasl.getNegotiatedProperty (Sasl.QOP);
-                if ("auth-int".equalsIgnoreCase (qop)
-                    || "auth-conf".equalsIgnoreCase (qop))
+                String qop = (String) sasl.getNegotiatedProperty(Sasl.QOP);
+                if ("auth-int".equalsIgnoreCase(qop)
+                    || "auth-conf".equalsIgnoreCase(qop))
                   {
-                    InputStream in = socket.getInputStream ();
-                    in = new BufferedInputStream (in);
-                    in = new SaslInputStream (sasl, in);
-                    in = new CRLFInputStream (in);
-                    this.in = new LineInputStream (in);
-                    OutputStream out = socket.getOutputStream ();
-                    out = new BufferedOutputStream (out);
-                    out = new SaslOutputStream (sasl, out);
-                    this.out = new CRLFOutputStream (out);
+                    InputStream in = socket.getInputStream();
+                    in = new BufferedInputStream(in);
+                    in = new SaslInputStream(sasl, in);
+                    in = new CRLFInputStream(in);
+                    this.in = new LineInputStream(in);
+                    OutputStream out = socket.getOutputStream();
+                    out = new BufferedOutputStream(out);
+                    out = new SaslOutputStream(sasl, out);
+                    this.out = new CRLFOutputStream(out);
                   }
                 return true;
               default:
@@ -714,12 +775,12 @@ public class SMTPConnection
       }
     catch (SaslException e)
       {
-        e.printStackTrace(System.err);
+        logger.log(SMTP_TRACE, e.getMessage(), e);
         return false;             // No provider for mechanism
       }
     catch (RuntimeException e)
       {
-        e.printStackTrace(System.err);
+        logger.log(SMTP_TRACE, e.getMessage(), e);
         return false;             // No javax.security.sasl classes
       }
   }
@@ -730,45 +791,39 @@ public class SMTPConnection
    * Send the specified command string to the server.
    * @param command the command to send
    */
-  protected void send (String command) throws IOException
+  protected void send(String command)
+    throws IOException
   {
-    if (debug)
-      {
-        Logger logger = Logger.getInstance ();
-        logger.log ("smtp", "> " + command);
-      }
-    out.write (command.getBytes ("US-ASCII"));
-    out.write (0x0d);
-    out.flush ();
+    logger.log(SMTP_TRACE, "> " + command);
+    out.write(command.getBytes("US-ASCII"));
+    out.write(0x0d);
+    out.flush();
   }
   
   /**
    * Returns the next response from the server.
    */
-  protected int getResponse () throws IOException
+  protected int getResponse()
+    throws IOException
   {
     String line = null;
     try
       {
-        line = in.readLine ();
+        line = in.readLine();
         // Handle special case eg 334 where CRLF occurs after code.
-        if (line.length () < 4)
+        if (line.length() < 4)
           {
             line = line + '\n' + in.readLine();
           }
-        if (debug)
-          {
-            Logger logger = Logger.getInstance ();
-            logger.log ("smtp", "< " + line);
-          }
-        int code = Integer.parseInt (line.substring (0, 3));
-        continuation = (line.charAt (3) == '-');
-        response = line.substring (4);
+        logger.log(SMTP_TRACE, "< " + line);
+        int code = Integer.parseInt(line.substring(0, 3));
+        continuation = (line.charAt(3) == '-');
+        response = line.substring(4);
         return code;
       }
     catch (NumberFormatException e)
       {
-        throw new ProtocolException ("Unexpected response: " + line);
+        throw new ProtocolException("Unexpected response: " + line);
       }
   }
 
@@ -778,11 +833,12 @@ public class SMTPConnection
    * continuation ceases. If a different response code from the first is
    * encountered, this causes a protocol exception.
    */
-  protected int getAllResponses () throws IOException
+  protected int getAllResponses()
+    throws IOException
   {
     int code1, code;
     boolean err = false;
-    code1 = code = getResponse ();
+    code1 = code = getResponse();
     while (continuation)
       {
         code = getResponse();
@@ -793,9 +849,10 @@ public class SMTPConnection
       }
     if (err)
       {
-        throw new ProtocolException ("Conflicting response codes");
+        throw new ProtocolException("Conflicting response codes");
       }
     return code;
   }
 
 }
+

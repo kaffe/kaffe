@@ -1,5 +1,5 @@
 /*
- * $Id: Namespaces.java,v 1.3 2005/07/04 00:05:15 robilad Exp $
+ * Namespaces.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -65,7 +65,7 @@ public class Namespaces
     /**
      * Returns the namespace prefix.
      */
-    public String getPrefix ()
+    public String getPrefix()
     {
       return prefix;
     }
@@ -73,7 +73,7 @@ public class Namespaces
     /**
      * Returns the delimiter character for the namespace.
      */
-    public char getDelimiter ()
+    public char getDelimiter()
     {
       return delimiter;
     }
@@ -82,7 +82,7 @@ public class Namespaces
      * Returns the dictionary of extension values for the namespace,
      * or <code>null</code> if there are no extensions.
      */
-    public Map getExtensions ()
+    public Map getExtensions()
     {
       return extensions;
     }
@@ -90,41 +90,41 @@ public class Namespaces
     /**
      * Debugging.
      */
-    public String toString ()
+    public String toString()
     {
-      StringBuffer buf = new StringBuffer ();
-      buf.append ('(');
-      buf.append (quote (prefix));
-      buf.append (' ');
-      buf.append (quote (delimiter));
+      StringBuffer buf = new StringBuffer();
+      buf.append('(');
+      buf.append(quote(prefix));
+      buf.append(' ');
+      buf.append(quote(delimiter));
       if (extensions != null)
         {
-          buf.append (' ');
-          for (Iterator i = extensions.entrySet ().iterator (); i.hasNext (); )
+          buf.append(' ');
+          for (Iterator i = extensions.entrySet().iterator(); i.hasNext(); )
             {
-              Map.Entry entry = (Map.Entry) i.next ();
-              String key = (String) entry.getKey ();
-              buf.append (quote (key));
-              buf.append (' ');
-              buf.append (format (entry.getValue ()));
+              Map.Entry entry = (Map.Entry) i.next();
+              String key = (String) entry.getKey();
+              buf.append(quote(key));
+              buf.append(' ');
+              buf.append(format(entry.getValue()));
             }
         }
-      buf.append (')');
-      return buf.toString ();
+      buf.append(')');
+      return buf.toString();
     }
 
-    static String quote (String text)
+    static String quote(String text)
     {
       return '"' + text + '"';
     }
 
-    static String quote (char c)
+    static String quote(char c)
     {
       char[] chars = new char[] { '"', c, '"' };
-      return new String (chars);
+      return new String(chars);
     }
 
-    private String format (Object value)
+    private String format(Object value)
     {
       if (value == null)
         {
@@ -132,24 +132,24 @@ public class Namespaces
         }
       else if (value instanceof String)
         {
-          return quote ((String) value);
+          return quote((String) value);
         }
       else
         {
           List list = (List) value;
-          int len = list.size ();
-          StringBuffer buf = new StringBuffer ();
-          buf.append ('(');
+          int len = list.size();
+          StringBuffer buf = new StringBuffer();
+          buf.append('(');
           for (int i = 0; i < len; i++)
             {
               if (i > 0)
                 {
-                  buf.append (' ');
+                  buf.append(' ');
                 }
-              buf.append (format (list.get (i)));
+              buf.append(format(list.get(i)));
             }
-          buf.append (')');
-          return buf.toString ();
+          buf.append(')');
+          return buf.toString();
         }
     }
     
@@ -159,22 +159,22 @@ public class Namespaces
   List other;
   List shared;
 
-  Namespaces (String text)
+  Namespaces(String text)
   {
-    List acc = new ArrayList ();
-    int len = text.length ();
-    parse (text, 0, len, acc);
+    List acc = new ArrayList();
+    int len = text.length();
+    parse(text, 0, len, acc);
 
-    len = acc.size ();
+    len = acc.size();
     if (len > 0)
       {
-        personal = parseNamespaceList (acc.get (0));
+        personal = parseNamespaceList(acc.get(0));
         if (len > 1)
           {
-            other = parseNamespaceList (acc.get (1));
+            other = parseNamespaceList(acc.get(1));
             if (len > 2)
               {
-                shared = parseNamespaceList (acc.get (2));
+                shared = parseNamespaceList(acc.get(2));
               }
           }
       }
@@ -183,60 +183,60 @@ public class Namespaces
   /**
    * Returns the list of personal namespaces.
    */
-  public Namespace[] getPersonal ()
+  public Namespace[] getPersonal()
   {
-    return toArray (personal);
+    return toArray(personal);
   }
 
   /**
    * Returns the list of other users' namespaces.
    */
-  public Namespace[] getOther ()
+  public Namespace[] getOther()
   {
-    return toArray (other);
+    return toArray(other);
   }
 
   /**
    * Returns the list of shared namespaces.
    */
-  public Namespace[] getShared ()
+  public Namespace[] getShared()
   {
-    return toArray (shared);
+    return toArray(shared);
   }
 
-  private Namespace[] toArray (List namespaceList)
+  private Namespace[] toArray(List namespaceList)
   {
     if (namespaceList == null)
       {
         return null;
       }
-    Namespace[] ret = new Namespace[namespaceList.size ()];
-    namespaceList.toArray (ret);
+    Namespace[] ret = new Namespace[namespaceList.size()];
+    namespaceList.toArray(ret);
     return ret;
   }
 
   /**
    * Parse the specified text into an S-expression.
    */
-  static int parse (String text, int start, int len, List acc)
+  static int parse(String text, int start, int len, List acc)
   {
-    StringBuffer buf = new StringBuffer ();
+    StringBuffer buf = new StringBuffer();
     boolean inLiteral = false;
     for (int i = start; i < len; i++)
       {
-        char c = text.charAt (i);
+        char c = text.charAt(i);
         if (inLiteral)
           {
             if (c == '"')
               {
-                String literal = buf.toString ();
-                buf.setLength (0);
+                String literal = buf.toString();
+                buf.setLength(0);
                 inLiteral = false;
-                acc.add (literal);
+                acc.add(literal);
               }
             else
               {
-                buf.append (c);
+                buf.append(c);
               }
           }
         else
@@ -244,21 +244,21 @@ public class Namespaces
             switch (c)
               {
               case ' ':
-                String token = buf.toString ();
-                if (IMAPConstants.NIL.equals (token))
+                String token = buf.toString();
+                if (IMAPConstants.NIL.equals(token))
                   {
-                    acc.add (null);
+                    acc.add(null);
                   }
-                buf.setLength (0);
+                buf.setLength(0);
                 break;
               case '"':
                 inLiteral = true;
-                buf.setLength (0);
+                buf.setLength(0);
                 break;
               case '(':
-                List sub = new ArrayList ();
-                i = parse (text, i + 1, len, sub);
-                acc.add (sub);
+                List sub = new ArrayList();
+                i = parse(text, i + 1, len, sub);
+                acc.add(sub);
                 break;
               case ')':
                 return i;
@@ -268,36 +268,36 @@ public class Namespaces
     return len;
   }
 
-  private List parseNamespaceList (Object ns)
+  private List parseNamespaceList(Object ns)
   {
     if (ns == null)
       {
         return null;
       }
     List list = (List) ns;
-    int len = list.size ();
-    List ret = new ArrayList (len);
+    int len = list.size();
+    List ret = new ArrayList(len);
     for (int i = 0; i < len; i++)
       {
-        ret.add (parseNamespace ((List) list.get (i)));
+        ret.add(parseNamespace((List) list.get(i)));
       }
     return ret;
   }
 
-  private Namespace parseNamespace (List comps)
+  private Namespace parseNamespace(List comps)
   {
-    int len = comps.size ();
-    Namespace ns = new Namespace ();
-    ns.prefix = (String) comps.get (0);
-    ns.delimiter = ((String) comps.get (1)).charAt (0);
+    int len = comps.size();
+    Namespace ns = new Namespace();
+    ns.prefix = (String) comps.get(0);
+    ns.delimiter = ((String) comps.get(1)).charAt(0);
     if (len > 2)
       {
-        ns.extensions = new TreeMap ();
+        ns.extensions = new TreeMap();
         for (int i = 2; i < len; i += 2)
           {
-            String key = (String) comps.get (i);
-            Object val = (i == len - 1) ? null : comps.get (i + 1);
-            ns.extensions.put (key, val);
+            String key = (String) comps.get(i);
+            Object val = (i == len - 1) ? null : comps.get(i + 1);
+            ns.extensions.put(key, val);
           }
       }
     return ns;
@@ -306,37 +306,38 @@ public class Namespaces
   /**
    * Debugging.
    */
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buf = new StringBuffer ();
-    appendNamespaceList (buf, personal);
-    buf.append (' ');
-    appendNamespaceList (buf, other);
-    buf.append (' ');
-    appendNamespaceList (buf, shared);
-    return buf.toString ();
+    StringBuffer buf = new StringBuffer();
+    appendNamespaceList(buf, personal);
+    buf.append(' ');
+    appendNamespaceList(buf, other);
+    buf.append(' ');
+    appendNamespaceList(buf, shared);
+    return buf.toString();
   }
 
-  private void appendNamespaceList (StringBuffer buf, List list)
+  private void appendNamespaceList(StringBuffer buf, List list)
   {
     if (list == null)
       {
-        buf.append (IMAPConstants.NIL);
+        buf.append(IMAPConstants.NIL);
       }
     else
       {
-        int len = list.size ();
-        buf.append ('(');
+        int len = list.size();
+        buf.append('(');
         for (int i = 0; i < len; i++)
           {
             if (i > 0)
               {
-                buf.append (' ');
+                buf.append(' ');
               }
-            buf.append (list.get (i));
+            buf.append(list.get(i));
           }
-        buf.append (')');
+        buf.append(')');
       }
   }
 
 }
+

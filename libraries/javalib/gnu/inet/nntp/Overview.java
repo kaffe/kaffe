@@ -1,5 +1,5 @@
 /*
- * $Id: Overview.java,v 1.5 2005/07/04 00:05:17 robilad Exp $
+ * Overview.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -45,7 +45,6 @@ import java.util.ArrayList;
  * An overview entry.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:17 $
  */
 public final class Overview
 {
@@ -53,21 +52,21 @@ public final class Overview
   int articleNumber;
   private List headers;
 
-  Overview (int articleNumber)
+  Overview(int articleNumber)
   {
     this.articleNumber = articleNumber;
     headers = new ArrayList(8);
   }
 
-  void add (String header)
+  void add(String header)
   {
-    headers.add (header);
+    headers.add(header);
   }
 
   /**
    * Returns the article number this overview entry is associated with.
    */
-  public int getArticleNumber ()
+  public int getArticleNumber()
   {
     return articleNumber;
   }
@@ -75,9 +74,10 @@ public final class Overview
   /**
    * Returns the header at the specified index.
    */
-  public String getHeader (int index)
+  public String getHeader(int index)
   {
-    return (String) headers.get (index);
+    return (String) headers.get(index);
   }
 
 }
+

@@ -1,5 +1,5 @@
 /*
- * $Id: FingerConnection.java,v 1.5 2005/07/04 00:05:14 robilad Exp $
+ * FingerConnection.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -35,6 +35,7 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
+
 package gnu.inet.finger;
 
 import java.io.BufferedOutputStream;
@@ -76,61 +77,61 @@ public class FingerConnection
    * Creates a new finger connection.
    * @param host the name of the internet host to connect to
    */
-  public FingerConnection (String host)
+  public FingerConnection(String host)
     throws IOException
-    {
-      this (host, DEFAULT_PORT);
-    }
+  {
+    this(host, DEFAULT_PORT);
+  }
 
   /**
    * Creates a new finger connection.
    * @param host the name of the internet host to connect to
    * @param port the port to connect to
    */
-  public FingerConnection (String host, int port)
+  public FingerConnection(String host, int port)
     throws IOException
-    {
-      socket = new Socket (host, port);
-    }
+  {
+    socket = new Socket(host, port);
+  }
 
   /**
    * Retrieves the verbose flag.
    * If true, the server should provide more output.
    */
-  public boolean isVerbose ()
-    {
-      return verbose;
-    }
+  public boolean isVerbose()
+  {
+    return verbose;
+  }
 
   /**
    * Sets the verbose flag.
    * If true, the server should provide more output.
    * @param verbose true for more verbose, false otherwise
    */
-  public void setVerbose (boolean verbose)
-    {
-      this.verbose = verbose;
-    }
+  public void setVerbose(boolean verbose)
+  {
+    this.verbose = verbose;
+  }
 
   /**
    * Lists the available users.
    */
-  public String list ()
+  public String list()
     throws IOException
-    {
-      return finger (null, null);
-    }
+  {
+    return finger(null, null);
+  }
 
   /**
    * Fingers the specified user.
    * @param username the user to finger
    * @return information about all matching users
    */
-  public String finger (String username)
+  public String finger(String username)
     throws IOException
-    {
-      return finger (username, null);
-    }
+  {
+    return finger(username, null);
+  }
 
   /**
    * Fingers the specified user at the specified host.
@@ -138,43 +139,44 @@ public class FingerConnection
    * @param hostname the domain of the user (null for any domain)
    * @return information about all matching users
    */
-  public String finger (String username, String hostname)
+  public String finger(String username, String hostname)
     throws IOException
-    {
-      // Send the command
-      OutputStream out = socket.getOutputStream ();
-      out = new BufferedOutputStream (out);
-      if (verbose)
-        {
-          out.write ('/');
-          out.write ('W');
-          if (username != null || hostname != null)
-            {
-              out.write (' ');
-            }
-        }
-      if (username != null)
-        {
-          out.write (username.getBytes (US_ASCII));
-        }
-      if (hostname != null)
-        {
-          out.write ('@');
-          out.write (hostname.getBytes (US_ASCII));
-        }
-      out.write ('\r');
-      out.write ('\n');
-      out.flush ();
+  {
+    // Send the command
+    OutputStream out = socket.getOutputStream();
+    out = new BufferedOutputStream(out);
+    if (verbose)
+      {
+        out.write('/');
+        out.write('W');
+        if (username != null || hostname != null)
+          {
+            out.write(' ');
+          }
+      }
+    if (username != null)
+      {
+        out.write(username.getBytes(US_ASCII));
+      }
+    if (hostname != null)
+      {
+        out.write('@');
+        out.write(hostname.getBytes(US_ASCII));
+      }
+    out.write('\r');
+    out.write('\n');
+    out.flush();
       
-      // Read the response
-      InputStream in = socket.getInputStream ();
-      ByteArrayOutputStream acc = new ByteArrayOutputStream ();
-      byte[] buf = new byte[4096];
-      for (int len = in.read (buf); len != -1; len = in.read (buf))
-        {
-          acc.write (buf, 0, len);
-        }
-      return acc.toString (US_ASCII);
-    }
+    // Read the response
+    InputStream in = socket.getInputStream();
+    ByteArrayOutputStream acc = new ByteArrayOutputStream();
+    byte[] buf = new byte[4096];
+    for (int len = in.read(buf); len != -1; len = in.read(buf))
+      {
+        acc.write(buf, 0, len);
+      }
+    return acc.toString(US_ASCII);
+  }
 
 }
+

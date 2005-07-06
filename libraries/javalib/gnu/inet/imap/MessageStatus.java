@@ -1,5 +1,5 @@
 /*
- * $Id: MessageStatus.java,v 1.6 2005/07/04 00:05:15 robilad Exp $
+ * MessageStatus.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -44,7 +44,6 @@ import java.util.List;
  * Represents the state of a message.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:15 $
  */
 public final class MessageStatus
 {
@@ -53,20 +52,21 @@ public final class MessageStatus
 
   private List code;
 
-  MessageStatus (int messageNumber, List code)
-    {
-      this.messageNumber = messageNumber;
-      this.code = code;
-    }
-
-  public int getMessageNumber ()
-    {
-      return messageNumber;
-    }
-
-  public List getCode ()
-    {
-      return code;
-    }
-
+  MessageStatus(int messageNumber, List code)
+  {
+    this.messageNumber = messageNumber;
+    this.code = code;
+  }
+  
+  public int getMessageNumber()
+  {
+    return messageNumber;
+  }
+  
+  public List getCode()
+  {
+    return code;
+  }
+  
 }
+

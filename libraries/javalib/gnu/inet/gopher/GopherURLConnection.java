@@ -1,5 +1,5 @@
 /*
- * $Id: GopherURLConnection.java,v 1.5 2005/07/04 00:05:14 robilad Exp $
+ * GopherURLConnection.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -49,9 +49,9 @@ import java.net.URLConnection;
  * A Gopher URL connection.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:14 $
  */
-public class GopherURLConnection extends URLConnection
+public class GopherURLConnection
+  extends URLConnection
 {
 
   /**
@@ -63,64 +63,70 @@ public class GopherURLConnection extends URLConnection
    * Constructs a Gopher connection to the specified URL.
    * @param url the URL
    */
-  public GopherURLConnection (URL url)
-    {
-      super (url);
-    }
-
+  public GopherURLConnection(URL url)
+  {
+    super(url);
+  }
+  
   /**
    * Establishes the connection.
    */
-  public void connect () throws IOException
-    {
-      if (connected)
-        {
-          return;
-        }
-      String host = url.getHost ();
-      int port = url.getPort ();
-      connection = new GopherConnection (host, port);
-    }
-
+  public void connect()
+    throws IOException
+  {
+    if (connected)
+      {
+        return;
+      }
+    String host = url.getHost();
+    int port = url.getPort();
+    connection = new GopherConnection(host, port);
+  }
+  
   /**
    * Returns an input stream that reads from this open connection.
    */
-  public InputStream getInputStream () throws IOException
-    {
-      if (!connected)
-        {
-          connect ();
-        }
-      String dir = url.getPath ();
-      String filename = url.getFile ();
-      if (dir == null && filename == null)
-        {
-          throw new UnsupportedOperationException ("not implemented");
-        }
-      else
-        {
-          String selector = (dir == null) ? filename :
-            dir + '/' + filename;
-          return connection.get (selector);
-        }
-    }
+  public InputStream getInputStream()
+    throws IOException
+  {
+    if (!connected)
+      {
+        connect();
+      }
+    String dir = url.getPath();
+    String filename = url.getFile();
+    if (dir == null && filename == null)
+      {
+        throw new UnsupportedOperationException("not implemented");
+      }
+    else
+      {
+        String selector = (dir == null) ? filename :
+          dir + '/' + filename;
+        return connection.get(selector);
+      }
+  }
 
   /**
    * Returns an output stream that writes to this connection.
    */
-  public OutputStream getOutputStream () throws IOException
-    {
-      throw new UnknownServiceException ();
-    }
+  public OutputStream getOutputStream()
+    throws IOException
+  {
+    throw new UnknownServiceException();
+  }
 
-  public Object getContent () throws IOException
-    {
-      return new GopherContentHandler ().getContent (this);
-    }
+  public Object getContent()
+    throws IOException
+  {
+    return new GopherContentHandler().getContent(this);
+  }
 
-  public Object getContent (Class[] classes) throws IOException
-    {
-      return new GopherContentHandler ().getContent (this, classes);
-    }
+  public Object getContent(Class[] classes)
+    throws IOException
+  {
+    return new GopherContentHandler().getContent(this, classes);
+  }
 
 }
+

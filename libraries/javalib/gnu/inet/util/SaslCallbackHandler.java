@@ -1,5 +1,5 @@
 /*
- * $Id: SaslCallbackHandler.java,v 1.7 2005/07/04 00:05:19 robilad Exp $
+ * SaslCallbackHandler.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -50,9 +50,9 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * A callback handler that can manage username and password callbacks.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.7 $ $Date: 2005/07/04 00:05:19 $
  */
-public final class SaslCallbackHandler implements CallbackHandler
+public final class SaslCallbackHandler
+  implements CallbackHandler
 {
 
   /*
@@ -70,33 +70,36 @@ public final class SaslCallbackHandler implements CallbackHandler
    * @param username the value to respond to Name callbacks with
    * @param password the value to respond to Password callbacks with
    */
-  public SaslCallbackHandler (String username, String password)
-    {
-      this.username = username;
-      this.password = password;
-    }
+  public SaslCallbackHandler(String username, String password)
+  {
+    this.username = username;
+    this.password = password;
+  }
 
   /**
    * Handle callbacks.
    */
-  public void handle (Callback[] callbacks)
+  public void handle(Callback[] callbacks)
     throws IOException, UnsupportedCallbackException
-    {
-      for (int i = 0; i < callbacks.length; i++)
-        {
-          if (callbacks[i] instanceof NameCallback)
-            {
-              NameCallback nc = (NameCallback) callbacks[i];
-              nc.setName (username);
-            }
-          else if (callbacks[i] instanceof PasswordCallback)
-            {
-              PasswordCallback pc = (PasswordCallback) callbacks[i];
-              pc.setPassword (password.toCharArray ());
-            }
-          else
-            throw new UnsupportedCallbackException (callbacks[i]);
-        }
-    }
+  {
+    for (int i = 0; i < callbacks.length; i++)
+      {
+        if (callbacks[i] instanceof NameCallback)
+          {
+            NameCallback nc = (NameCallback) callbacks[i];
+            nc.setName(username);
+          }
+        else if (callbacks[i] instanceof PasswordCallback)
+          {
+            PasswordCallback pc = (PasswordCallback) callbacks[i];
+            pc.setPassword(password.toCharArray ());
+          }
+        else
+          {
+            throw new UnsupportedCallbackException(callbacks[i]);
+          }
+      }
+  }
   
 }
+

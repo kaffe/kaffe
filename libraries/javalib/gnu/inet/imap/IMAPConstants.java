@@ -1,5 +1,5 @@
 /*
- * $Id: IMAPConstants.java,v 1.6 2005/07/04 00:05:15 robilad Exp $
+ * IMAPConstants.java
  * Copyright (C) 2003,2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -42,105 +42,104 @@ package gnu.inet.imap;
  * IMAP4rev1 string constants.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:15 $
  */
 public interface IMAPConstants
 {
 
   // Client commands
-  public static final String CAPABILITY = "CAPABILITY".intern ();
-  public static final String NOOP = "NOOP".intern ();
-  public static final String AUTHENTICATE = "AUTHENTICATE".intern ();
-  public static final String LOGIN = "LOGIN".intern ();
-  public static final String LOGOUT = "LOGOUT".intern ();
-  public static final String SELECT = "SELECT".intern ();
-  public static final String EXAMINE = "EXAMINE".intern ();
-  public static final String CREATE = "CREATE".intern ();
-  public static final String DELETE = "DELETE".intern ();
-  public static final String RENAME = "RENAME".intern ();
-  public static final String SUBSCRIBE = "SUBSCRIBE".intern ();
-  public static final String UNSUBSCRIBE = "UNSUBSCRIBE".intern ();
-  public static final String LIST = "LIST".intern ();
-  public static final String LSUB = "LSUB".intern ();
-  public static final String STATUS = "STATUS".intern ();
-  public static final String APPEND = "APPEND".intern ();
-  public static final String CHECK = "CHECK".intern ();
-  public static final String CLOSE = "CLOSE".intern ();
-  public static final String EXPUNGE = "EXPUNGE".intern ();
-  public static final String SEARCH = "SEARCH".intern ();
-  public static final String FETCH = "FETCH".intern ();
-  public static final String STORE = "STORE".intern ();
-  public static final String COPY = "COPY".intern ();
-  public static final String UID = "UID".intern ();
-  public static final String STARTTLS = "STARTTLS".intern ();
-  public static final String NAMESPACE = "NAMESPACE".intern ();
-  public static final String SETACL = "SETACL".intern ();
-  public static final String DELETEACL = "DELETEACL".intern ();
-  public static final String GETACL = "GETACL".intern ();
-  public static final String LISTRIGHTS = "LISTRIGHTS".intern ();
-  public static final String MYRIGHTS = "MYRIGHTS".intern ();
-  public static final String SETQUOTA = "SETQUOTA".intern ();
-  public static final String GETQUOTA = "GETQUOTA".intern ();
-  public static final String GETQUOTAROOT = "GETQUOTAROOT".intern ();
+  public static final String CAPABILITY = "CAPABILITY";
+  public static final String NOOP = "NOOP";
+  public static final String AUTHENTICATE = "AUTHENTICATE";
+  public static final String LOGIN = "LOGIN";
+  public static final String LOGOUT = "LOGOUT";
+  public static final String SELECT = "SELECT";
+  public static final String EXAMINE = "EXAMINE";
+  public static final String CREATE = "CREATE";
+  public static final String DELETE = "DELETE";
+  public static final String RENAME = "RENAME";
+  public static final String SUBSCRIBE = "SUBSCRIBE";
+  public static final String UNSUBSCRIBE = "UNSUBSCRIBE";
+  public static final String LIST = "LIST";
+  public static final String LSUB = "LSUB";
+  public static final String STATUS = "STATUS";
+  public static final String APPEND = "APPEND";
+  public static final String CHECK = "CHECK";
+  public static final String CLOSE = "CLOSE";
+  public static final String EXPUNGE = "EXPUNGE";
+  public static final String SEARCH = "SEARCH";
+  public static final String FETCH = "FETCH";
+  public static final String STORE = "STORE";
+  public static final String COPY = "COPY";
+  public static final String UID = "UID";
+  public static final String STARTTLS = "STARTTLS";
+  public static final String NAMESPACE = "NAMESPACE";
+  public static final String SETACL = "SETACL";
+  public static final String DELETEACL = "DELETEACL";
+  public static final String GETACL = "GETACL";
+  public static final String LISTRIGHTS = "LISTRIGHTS";
+  public static final String MYRIGHTS = "MYRIGHTS";
+  public static final String SETQUOTA = "SETQUOTA";
+  public static final String GETQUOTA = "GETQUOTA";
+  public static final String GETQUOTAROOT = "GETQUOTAROOT";
 
   // Server responses
-  public static final String OK = "OK".intern ();
-  public static final String NO = "NO".intern ();
-  public static final String BAD = "BAD".intern ();
-  public static final String PREAUTH = "PREAUTH".intern ();
-  public static final String BYE = "BYE".intern ();
+  public static final String OK = "OK";
+  public static final String NO = "NO";
+  public static final String BAD = "BAD";
+  public static final String PREAUTH = "PREAUTH";
+  public static final String BYE = "BYE";
 
   // Response codes
-  public static final String ALERT = "ALERT".intern ();
-  public static final String NEWNAME = "NEWNAME".intern ();
-  public static final String PARSE = "PARSE".intern ();
-  public static final String PERMANENTFLAGS = "PERMANENTFLAGS".intern ();
-  public static final String READ_ONLY = "READ-ONLY".intern ();
-  public static final String READ_WRITE = "READ-WRITE".intern ();
-  public static final String TRYCREATE = "TRYCREATE".intern ();
-  public static final String UIDVALIDITY = "UIDVALIDITY".intern ();
-  public static final String UNSEEN = "UNSEEN".intern ();
-  public static final String ACL = "ACL".intern ();
-  public static final String QUOTA = "QUOTA".intern ();
-  public static final String QUOTAROOT = "QUOTAROOT".intern ();
+  public static final String ALERT = "ALERT";
+  public static final String NEWNAME = "NEWNAME";
+  public static final String PARSE = "PARSE";
+  public static final String PERMANENTFLAGS = "PERMANENTFLAGS";
+  public static final String READ_ONLY = "READ-ONLY";
+  public static final String READ_WRITE = "READ-WRITE";
+  public static final String TRYCREATE = "TRYCREATE";
+  public static final String UIDVALIDITY = "UIDVALIDITY";
+  public static final String UNSEEN = "UNSEEN";
+  public static final String ACL = "ACL";
+  public static final String QUOTA = "QUOTA";
+  public static final String QUOTAROOT = "QUOTAROOT";
 
   // Select responses
-  public static final String FLAGS = "FLAGS".intern ();
-  public static final String EXISTS = "EXISTS".intern ();
-  public static final String RECENT = "RECENT".intern ();
-  public static final String FETCH_FLAGS = "FETCH FLAGS".intern ();
+  public static final String FLAGS = "FLAGS";
+  public static final String EXISTS = "EXISTS";
+  public static final String RECENT = "RECENT";
+  public static final String FETCH_FLAGS = "FETCH FLAGS";
 
   // Status items
-  public static final String MESSAGES = "MESSAGES".intern ();
-  public static final String UIDNEXT = "UIDNEXT".intern ();
+  public static final String MESSAGES = "MESSAGES";
+  public static final String UIDNEXT = "UIDNEXT";
 
   // List responses
-  public static final String LIST_NOINFERIORS = "\\Noinferiors".intern ();
-  public static final String LIST_NOSELECT = "\\Noselect".intern ();
-  public static final String LIST_MARKED = "\\Marked".intern ();
-  public static final String LIST_UNMARKED = "\\Unmarked".intern ();
+  public static final String LIST_NOINFERIORS = "\\Noinferiors";
+  public static final String LIST_NOSELECT = "\\Noselect";
+  public static final String LIST_MARKED = "\\Marked";
+  public static final String LIST_UNMARKED = "\\Unmarked";
 
   // Flags
-  public static final String FLAG_SEEN = "\\Seen".intern ();
-  public static final String FLAG_ANSWERED = "\\Answered".intern ();
-  public static final String FLAG_FLAGGED = "\\Flagged".intern ();
-  public static final String FLAG_DELETED = "\\Deleted".intern ();
-  public static final String FLAG_DRAFT = "\\Draft".intern ();
-  public static final String FLAG_RECENT = "\\Recent".intern ();
+  public static final String FLAG_SEEN = "\\Seen";
+  public static final String FLAG_ANSWERED = "\\Answered";
+  public static final String FLAG_FLAGGED = "\\Flagged";
+  public static final String FLAG_DELETED = "\\Deleted";
+  public static final String FLAG_DRAFT = "\\Draft";
+  public static final String FLAG_RECENT = "\\Recent";
 
   // Fetch data items
-  public static final String BODY = "BODY".intern ();
-  public static final String BODY_PEEK = "BODY.PEEK".intern ();
-  public static final String HEADER = "HEADER".intern ();
-  public static final String HEADER_FIELDS = "HEADER.FIELDS".intern ();
-  public static final String HEADER_FIELDS_NOT = "HEADER.FIELDS.NOT".intern ();
-  public static final String BODYSTRUCTURE = "BODYSTRUCTURE".intern ();
-  public static final String ENVELOPE = "ENVELOPE".intern ();
-  public static final String INTERNALDATE = "INTERNALDATE".intern ();
-  public static final String RFC822 = "RFC822".intern ();
-  public static final String RFC822_HEADER = "RFC822.HEADER".intern ();
-  public static final String RFC822_SIZE = "RFC822.SIZE".intern ();
-  public static final String RFC822_TEXT = "RFC822.TEXT".intern ();
+  public static final String BODY = "BODY";
+  public static final String BODY_PEEK = "BODY.PEEK";
+  public static final String HEADER = "HEADER";
+  public static final String HEADER_FIELDS = "HEADER.FIELDS";
+  public static final String HEADER_FIELDS_NOT = "HEADER.FIELDS.NOT";
+  public static final String BODYSTRUCTURE = "BODYSTRUCTURE";
+  public static final String ENVELOPE = "ENVELOPE";
+  public static final String INTERNALDATE = "INTERNALDATE";
+  public static final String RFC822 = "RFC822";
+  public static final String RFC822_HEADER = "RFC822.HEADER";
+  public static final String RFC822_SIZE = "RFC822.SIZE";
+  public static final String RFC822_TEXT = "RFC822.TEXT";
 
   // Search criteria
   public static final String SEARCH_ALL = "ALL";
@@ -180,7 +179,7 @@ public interface IMAPConstants
   public static final String SEARCH_UNSEEN = "UNSEEN";
 
   // NIL
-  public static final String NIL = "NIL".intern ();
+  public static final String NIL = "NIL";
 
   // ACL rights
   public static final int RIGHTS_LOOKUP = 0x0001;
@@ -204,3 +203,4 @@ public interface IMAPConstants
   public static final String LOGINDISABLED = "LOGINDISABLED";
 
 }
+

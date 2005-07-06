@@ -1,5 +1,5 @@
 /*
- * $Id: ActiveTime.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * ActiveTime.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -44,7 +44,6 @@ import java.util.Date;
  * An item in an NNTP newsgroup active time listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
 public final class ActiveTime
 {
@@ -53,7 +52,7 @@ public final class ActiveTime
   Date time;
   String email;
 
-  ActiveTime (String group, Date time, String email)
+  ActiveTime(String group, Date time, String email)
   {
     this.group = group;
     this.time = time;
@@ -63,7 +62,7 @@ public final class ActiveTime
   /**
    * The name of the newsgroup.
    */
-  public String getGroup ()
+  public String getGroup()
   {
     return group;
   }
@@ -71,7 +70,7 @@ public final class ActiveTime
   /**
    * The date the newsgroup was added to the hierarchy.
    */
-  public Date getTime ()
+  public Date getTime()
   {
     return time;
   }
@@ -79,9 +78,10 @@ public final class ActiveTime
   /**
    * The email address of the creator of the newsgroup.
    */
-  public String getEmail ()
+  public String getEmail()
   {
     return email;
   }
 
 }
+

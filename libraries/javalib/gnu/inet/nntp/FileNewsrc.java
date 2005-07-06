@@ -1,5 +1,5 @@
 /*
- * $Id: FileNewsrc.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * FileNewsrc.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -57,9 +57,9 @@ import java.util.Map;
  * A .newsrc configuration on a filesystem.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
-public class FileNewsrc implements Newsrc
+public class FileNewsrc
+  implements Newsrc
 {
 
   private static final String NEWSRC_ENCODING = "US-ASCII";
@@ -77,96 +77,96 @@ public class FileNewsrc implements Newsrc
    * @param file the disk file
    * @param debug for debugging information on stderr
    */
-  public FileNewsrc (File file, boolean debug)
+  public FileNewsrc(File file, boolean debug)
   {
     this.file = file;
     this.debug = debug;
   }
 
-  public void close ()
+  public void close()
   {
     if (!dirty)
       {
         return;
       }
-    save ();
+    save();
   }
   
   /**
    * Load the file.
    */
-  void load ()
+  void load()
   {
-    long fs = file.length ();
+    long fs = file.length();
     long max = (long) Integer.MAX_VALUE;
     int bs = (int) (fs > max ? max : fs);
     
-    groups = new LinkedList ();
-    lines = new HashMap (bs / 20);
-    subs = new LinkedList ();
+    groups = new LinkedList();
+    lines = new HashMap(bs / 20);
+    subs = new LinkedList();
     
     // Load
     try
       {
-        long t1 = System.currentTimeMillis ();
+        long t1 = System.currentTimeMillis();
         if (debug)
           {
-            System.err.println ("DEBUG: nntp: newsrc loading " +
-                                file.getPath ());
+            System.err.println("DEBUG: nntp: newsrc loading " +
+                               file.getPath());
           }
         
-        FileInputStream fr = new FileInputStream (file);
-        InputStreamReader ir = new InputStreamReader (fr, NEWSRC_ENCODING);
-        BufferedReader reader = new BufferedReader (ir, bs);
-        String line = reader.readLine ();
+        FileInputStream fr = new FileInputStream(file);
+        InputStreamReader ir = new InputStreamReader(fr, NEWSRC_ENCODING);
+        BufferedReader reader = new BufferedReader(ir, bs);
+        String line = reader.readLine();
         while (line != null)
           {
-            int cp = line.indexOf (':');
+            int cp = line.indexOf(':');
             if (cp > -1)
               {
                 // Subscribed newsgroup
-                String name = line.substring (0, cp);
-                groups.add (name);
-                subs.add (name);
+                String name = line.substring(0, cp);
+                groups.add(name);
+                subs.add(name);
                 cp++;
-                if (cp < line.length ())
+                if (cp < line.length())
                   {
-                    String tail = line.substring (cp).trim ();
+                    String tail = line.substring(cp).trim();
                     if (tail.length() > 0)
                       {
-                        lines.put (name, tail);
+                        lines.put(name, tail);
                       }
                   }
               }
             else
               {
-                int pp = line.indexOf ('!');
+                int pp = line.indexOf('!');
                 if (pp > -1)
                   {
                     // Unsubscribed newsgroup
-                    String name = line.substring (0, pp);
-                    groups.add (name);
+                    String name = line.substring(0, pp);
+                    groups.add(name);
                     pp++;
-                    if (pp < line.length ())
+                    if (pp < line.length())
                       {
-                        String tail = line.substring (pp).trim ();
-                        if (tail.length () > 0)
+                        String tail = line.substring(pp).trim();
+                        if (tail.length() > 0)
                           {
-                            lines.put (name, tail);
+                            lines.put(name, tail);
                           }
                       }
                   }
                 // else ignore - comments etc will not be saved!
               }
-            line = reader.readLine ();
+            line = reader.readLine();
           }
-        reader.close ();
-        long t2 = System.currentTimeMillis ();
+        reader.close();
+        long t2 = System.currentTimeMillis();
         if (debug)
           {
-            System.err.println ("DEBUG: nntp: newsrc load: " +
-                                groups.size () + " groups in " +
-                                (t2 - t1) + "ms");
+            System.err.println("DEBUG: nntp: newsrc load: " +
+                               groups.size() + " groups in " +
+                               (t2 - t1) + "ms");
           }
       }
     catch (FileNotFoundException e)
@@ -174,16 +174,16 @@ public class FileNewsrc implements Newsrc
       }
     catch (IOException e)
       {
-        System.err.println ("WARNING: nntp: unable to read newsrc file");
+        System.err.println("WARNING: nntp: unable to read newsrc file");
         if (debug)
           {
-            e.printStackTrace (System.err);
+            e.printStackTrace(System.err);
           }
       }
     catch (SecurityException e)
       {
-        System.err.println ("WARNING: nntp: " +
-                            "no read permission on newsrc file");
+        System.err.println("WARNING: nntp: " +
+                           "no read permission on newsrc file");
       }
     dirty = false;
   }
@@ -191,67 +191,67 @@ public class FileNewsrc implements Newsrc
   /**
    * Save the file.
    */
-  void save ()
+  void save()
   {
     try
       {
-        long t1 = System.currentTimeMillis ();
+        long t1 = System.currentTimeMillis();
         if (debug)
           {
-            System.err.println ("DEBUG: nntp: newsrc saving " +
-                                file.getPath ());
+            System.err.println("DEBUG: nntp: newsrc saving " +
+                               file.getPath());
           }
 
         int bs = (groups.size() * 20);    // guess an average line length
-        FileOutputStream fw = new FileOutputStream (file);
-        BufferedOutputStream writer = new BufferedOutputStream (fw, bs);
-        for (Iterator i = groups.iterator (); i.hasNext ();)
+        FileOutputStream fw = new FileOutputStream(file);
+        BufferedOutputStream writer = new BufferedOutputStream(fw, bs);
+        for (Iterator i = groups.iterator(); i.hasNext();)
           {
-            String group = (String) i.next ();
-            StringBuffer buffer = new StringBuffer (group);
-            if (subs.contains (group))
+            String group = (String) i.next();
+            StringBuffer buffer = new StringBuffer(group);
+            if (subs.contains(group))
               {
-                buffer.append (':');
+                buffer.append(':');
               }
             else
               {
-                buffer.append ('!');
+                buffer.append('!');
               }
-            Object r = lines.get (group);
+            Object r = lines.get(group);
             if (r instanceof String)
               {
-                buffer.append ((String) r);
+                buffer.append((String) r);
               }
             else
               {
                 RangeList ranges = (RangeList) r;
                 if (ranges != null)
                   {
-                    buffer.append (ranges.toString ());
+                    buffer.append(ranges.toString());
                   }
               }
-            buffer.append ('\n');
+            buffer.append('\n');
 
-            byte[] bytes = buffer.toString ().getBytes (NEWSRC_ENCODING);
-            writer.write (bytes);
+            byte[] bytes = buffer.toString().getBytes(NEWSRC_ENCODING);
+            writer.write(bytes);
           }
-        writer.flush ();
-        writer.close ();
+        writer.flush();
+        writer.close();
 
-        long t2 = System.currentTimeMillis ();
+        long t2 = System.currentTimeMillis();
         if (debug)
           {
             System.err.println("DEBUG: nntp: newsrc save: " +
-                               groups.size () + " groups in " +
+                               groups.size() + " groups in " +
                                (t2 - t1) + "ms");
           }
       }
     catch (IOException e)
       {
-        System.err.println ("WARNING: nntp: unable to save newsrc file");
+        System.err.println("WARNING: nntp: unable to save newsrc file");
         if (debug)
           {
-            e.printStackTrace (System.err);
+            e.printStackTrace(System.err);
           }
       }
     dirty = false;
@@ -261,87 +261,87 @@ public class FileNewsrc implements Newsrc
    * Returns an iterator over the names of the currently subscribed
    * newsgroups.
    */
-  public Iterator list ()
+  public Iterator list()
   {
     if (subs == null)
       {
-        load ();
+        load();
       }
-    return subs.iterator ();
+    return subs.iterator();
   }
 
-  public boolean isSubscribed (String newsgroup)
+  public boolean isSubscribed(String newsgroup)
   {
     if (subs == null)
       {
-        load ();
+        load();
       }
-    return (subs.contains (newsgroup));
+    return (subs.contains(newsgroup));
   }
 
-  public void setSubscribed (String newsgroup, boolean flag)
+  public void setSubscribed(String newsgroup, boolean flag)
   {
     if (subs == null)
       {
-        load ();
+        load();
       }
-    if (flag && !groups.contains (newsgroup))
+    if (flag && !groups.contains(newsgroup))
       {
-        groups.add (newsgroup);
+        groups.add(newsgroup);
       }
-    boolean subscribed = subs.contains (newsgroup);
+    boolean subscribed = subs.contains(newsgroup);
     if (flag && !subscribed)
       {
-        subs.add (newsgroup);
+        subs.add(newsgroup);
         dirty = true;
       }
     else if (!flag && subscribed)
       {
-        subs.remove (newsgroup);
+        subs.remove(newsgroup);
         dirty = true;
       }
   }
 
-  public boolean isSeen (String newsgroup, int article)
+  public boolean isSeen(String newsgroup, int article)
   {
     if (subs == null)
       {
-        load ();
+        load();
       }
-    Object value = lines.get (newsgroup);
+    Object value = lines.get(newsgroup);
     if (value instanceof String)
       {
-        value = new RangeList ((String) value);
+        value = new RangeList((String) value);
       }
     RangeList ranges = (RangeList) value;
     if (ranges != null)
       {
-        return ranges.isSeen (article);
+        return ranges.isSeen(article);
       }
     return false;
   }
 
-  public void setSeen (String newsgroup, int article, boolean flag)
+  public void setSeen(String newsgroup, int article, boolean flag)
   {
     if (subs == null)
       {
-        load ();
+        load();
       }
-    Object value = lines.get (newsgroup);
+    Object value = lines.get(newsgroup);
     if (value instanceof String)
       {
-        value = new RangeList ((String) value);
+        value = new RangeList((String) value);
       }
     RangeList ranges = (RangeList) value;
     if (ranges == null)
       {
-        ranges = new RangeList ();
-        lines.put (newsgroup, ranges);
+        ranges = new RangeList();
+        lines.put(newsgroup, ranges);
         dirty = true;
       }
-    if (ranges.isSeen (article) != flag)
+    if (ranges.isSeen(article) != flag)
       {
-        ranges.setSeen (article, flag);
+        ranges.setSeen(article, flag);
         dirty = true;
       }
   }
@@ -355,59 +355,59 @@ public class FileNewsrc implements Newsrc
 
     List seen;
 
-    RangeList ()
+    RangeList()
     {
-      seen = new ArrayList ();
+      seen = new ArrayList();
     }
 
-    RangeList (String line)
+    RangeList(String line)
     {
-      this ();
+      this();
       try
         {
           // Parse the line at comma delimiters.
           int start = 0;
-          int end = line.indexOf (',');
+          int end = line.indexOf(',');
           while (end > start)
             {
-              String token = line.substring (start, end);
-              addToken (token);
+              String token = line.substring(start, end);
+              addToken(token);
               start = end + 1;
-              end = line.indexOf (',', start);
+              end = line.indexOf(',', start);
             }
-          addToken (line.substring (start));
+          addToken(line.substring(start));
         }
       catch (NumberFormatException e)
         {
-          System.err.println ("ERROR: nntp: bad newsrc format: " + line);
+          System.err.println("ERROR: nntp: bad newsrc format: " + line);
         }
     }
 
     /*
      * Used during initial parse.
      */
-    private void addToken (String token) throws NumberFormatException
+    private void addToken(String token) throws NumberFormatException
     {
-      int hp = token.indexOf ('-');
+      int hp = token.indexOf('-');
       if (hp > -1)
         {
           // Range
-          String fs = token.substring (0, hp);
-          String ts = token.substring (hp + 1);
-          int from = Integer.parseInt (fs);
-          int to = Integer.parseInt (ts);
+          String fs = token.substring(0, hp);
+          String ts = token.substring(hp + 1);
+          int from = Integer.parseInt(fs);
+          int to = Integer.parseInt(ts);
           if (from > -1 && to > -1)
             {
-              insert (from, to);
+              insert(from, to);
             }
         }
       else
         {
           // Single number
-          int number = Integer.parseInt (token);
+          int number = Integer.parseInt(token);
           if (number > -1)
             {
-              insert (number);
+              insert(number);
             }
         }
     }
@@ -415,14 +415,14 @@ public class FileNewsrc implements Newsrc
     /**
      * Indicates whether the specified article is seen.
      */
-    public boolean isSeen (int num)
+    public boolean isSeen(int num)
     {
-      int len = seen.size ();
+      int len = seen.size();
       Range[] r = new Range[len];
-      seen.toArray (r);
+      seen.toArray(r);
       for (int i = 0; i < len; i++)
         {
-          if (r[i].contains (num))
+          if (r[i].contains(num))
             {
               return true;
             }
@@ -433,15 +433,15 @@ public class FileNewsrc implements Newsrc
     /**
      * Sets whether the specified article is seen.
      */
-    public void setSeen (int num, boolean flag)
+    public void setSeen(int num, boolean flag)
     {
       if (flag)
         {
-          insert (num);
+          insert(num);
         }
       else
         {
-          remove (num);
+          remove(num);
         }
     }
 
@@ -449,14 +449,14 @@ public class FileNewsrc implements Newsrc
      * Find the index within seen to insert the specified article.
      * The range object at the returned index may already contain num.
      */
-    int indexOf (int num)
+    int indexOf(int num)
     {
-      int len = seen.size ();
+      int len = seen.size();
       Range[] r = new Range[len];
-      seen.toArray (r);
+      seen.toArray(r);
       for (int i = 0; i < len; i++)
         {
-          if (r[i].contains (num))
+          if (r[i].contains(num))
             {
               return i;
             }
@@ -472,21 +472,21 @@ public class FileNewsrc implements Newsrc
       return len;
     }
 
-    void insert (int start, int end)
+    void insert(int start, int end)
     {
-      Range range = new Range (start, end);
-      int i1 = indexOf (range.from);
+      Range range = new Range(start, end);
+      int i1 = indexOf(range.from);
       // range is at end
-      if (i1 == seen.size ())
+      if (i1 == seen.size())
         {
-          seen.add (range);
+          seen.add(range);
           return;
         }
-      Range r1 = (Range) seen.get (i1);
+      Range r1 = (Range) seen.get(i1);
       // range is before r1
       if (range.to < r1.from)
         {
-          seen.add (i1, range);
+          seen.add(i1, range);
           return;
         }
       // range is a subset of r1
@@ -495,63 +495,63 @@ public class FileNewsrc implements Newsrc
           return;
         }
       // range is a superset of r1
-      int i2 = indexOf (range.to);
-      Range r2 = (Range) seen.get (i2);
-      System.err.println ("r2 " + r2 + " i2 " + i2);
+      int i2 = indexOf(range.to);
+      Range r2 = (Range) seen.get(i2);
+      System.err.println("r2 " + r2 + " i2 " + i2);
       // remove all ranges between
       for (int i = i2; i >= i1; i--)
         {
-          seen.remove (i);
+          seen.remove(i);
         }
       // merge
       int f = (range.from < r1.from) ? range.from : r1.from;
       int t = (range.to > r2.to) ? range.to : r2.to;
-      range = new Range (f, t);
-      seen.add (i1, range);
+      range = new Range(f, t);
+      seen.add(i1, range);
     }
 
-    void insert (int num)
+    void insert(int num)
     {
-      insert (num, num);
+      insert(num, num);
     }
 
-    void remove (int num)
+    void remove(int num)
     {
-      int i = indexOf (num);
-      Range r = (Range) seen.get (i);
-      seen.remove (i);
+      int i = indexOf(num);
+      Range r = (Range) seen.get(i);
+      seen.remove(i);
       // num == r
-      if ((r.from == r.to) && (r.to == num))
+      if ((r.from == r.to) &&(r.to == num))
         {
           return;
         }
       // split r
       if (r.to > num)
         {
-          Range r2 = new Range (num + 1, r.to);
-          seen.add (i, r2);
+          Range r2 = new Range(num + 1, r.to);
+          seen.add(i, r2);
         }
       if (r.from < num)
         {
-          Range r2 = new Range (r.from, num - 1);
-          seen.add (i, r2);
+          Range r2 = new Range(r.from, num - 1);
+          seen.add(i, r2);
         }
     }
 
-    public String toString ()
+    public String toString()
     {
-      StringBuffer buf = new StringBuffer ();
-      int len = seen.size ();
+      StringBuffer buf = new StringBuffer();
+      int len = seen.size();
       for (int i = 0; i < len; i++)
         {
-          Range range = (Range) seen.get (i);
+          Range range = (Range) seen.get(i);
           if (i > 0)
             {
-              buf.append (',');
+              buf.append(',');
             }
-          buf.append (range.toString ());
+          buf.append(range.toString());
         }
-      return buf.toString ();
+      return buf.toString();
     }
 
   }
@@ -564,12 +564,12 @@ public class FileNewsrc implements Newsrc
     int from;
     int to;
 
-    public Range (int i)
+    public Range(int i)
     {
       from = to = i;
     }
 
-    public Range (int f, int t)
+    public Range(int f, int t)
     {
       if (f > t)
         {
@@ -583,27 +583,28 @@ public class FileNewsrc implements Newsrc
         }
     }
 
-    public boolean contains (int num)
+    public boolean contains(int num)
     {
       return (num >= from && num <= to);
     }
 
-    public String toString ()
+    public String toString()
     {
       if (from != to)
         {
-          return new StringBuffer ()
-            .append (from)
-            .append ('-')
-            .append (to)
-            .toString ();
+          return new StringBuffer()
+            .append(from)
+            .append('-')
+            .append(to)
+            .toString();
         }
       else
         {
-          return Integer.toString (from);
+          return Integer.toString(from);
         }
     }
 
   }
 
 }
+

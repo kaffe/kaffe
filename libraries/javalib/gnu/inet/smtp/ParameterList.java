@@ -1,5 +1,5 @@
 /*
- * $Id: ParameterList.java,v 1.6 2005/07/04 00:05:17 robilad Exp $
+ * ParameterList.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -45,67 +45,67 @@ import java.util.List;
  * A list of ESMTP parameters.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:17 $
  */
 public final class ParameterList
 {
 
-  private List parameters = new ArrayList ();
+  private List parameters = new ArrayList();
 
   /**
    * Returns the number of parameters in the list.
    */
-  public int size ()
+  public int size()
   {
     synchronized (parameters)
       {
-        return parameters.size ();
+        return parameters.size();
       }
   }
   
   /**
    * Returns the parameter at the specified index.
    */
-  public Parameter get (int index)
+  public Parameter get(int index)
   {
     synchronized (parameters)
       {
-        return (Parameter) parameters.get (index);
+        return(Parameter) parameters.get(index);
       }
   }
 
   /**
    * Adds a new parameter to the list.
    */
-  public void add (Parameter parameter)
+  public void add(Parameter parameter)
   {
     synchronized (parameters)
       {
-        parameters.add (parameter);
+        parameters.add(parameter);
       }
   }
 
   /**
    * String form.
    */
-  public String toString ()
+  public String toString()
   {
     synchronized (parameters)
       {
-        int len = parameters.size ();
+        int len = parameters.size();
         if (len == 0)
           {
             return "";
           }
-        StringBuffer buffer = new StringBuffer ();
-        buffer.append (parameters.get (0));
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(parameters.get(0));
         for (int i = 1; i < len; i++)
           {
-            buffer.append (' ');
-            buffer.append (parameters.get (i));
+            buffer.append(' ');
+            buffer.append(parameters.get(i));
           }
-        return buffer.toString ();
+        return buffer.toString();
       }
   }
 
 }
+

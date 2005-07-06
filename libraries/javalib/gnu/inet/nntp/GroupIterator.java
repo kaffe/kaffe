@@ -1,5 +1,5 @@
 /*
- * $Id: GroupIterator.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * GroupIterator.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -45,54 +45,56 @@ import java.util.NoSuchElementException;
  * An iterator over an NNTP newsgroup listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
-public class GroupIterator extends LineIterator
+public class GroupIterator
+  extends LineIterator
 {
 
   static final String CAN_POST = "y";
 
-  GroupIterator (NNTPConnection connection)
+  GroupIterator(NNTPConnection connection)
   {
-    super (connection);
+    super(connection);
   }
 
   /**
    * Returns the next group.
    */
-  public Object next ()
+  public Object next()
   {
     try
       {
-        return nextGroup ();
+        return nextGroup();
       }
     catch (IOException e)
       {
-        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+        throw new NoSuchElementException("I/O error: " + e.getMessage());
       }
   }
 
   /**
    * Returns the next group.
    */
-  public Group nextGroup () throws IOException
+  public Group nextGroup()
+    throws IOException
   {
-    String line = nextLine ();
+    String line = nextLine();
 
     // Parse line
     int start = 0, end;
-    end = line.indexOf (' ', start);
-    String name = line.substring (start, end);
+    end = line.indexOf(' ', start);
+    String name = line.substring(start, end);
     start = end + 1;
-    end = line.indexOf (' ', start);
-    int last = Integer.parseInt (line.substring (start, end));
+    end = line.indexOf(' ', start);
+    int last = Integer.parseInt(line.substring(start, end));
     start = end + 1;
-    end = line.indexOf (' ', start);
-    int first = Integer.parseInt (line.substring (start, end));
+    end = line.indexOf(' ', start);
+    int first = Integer.parseInt(line.substring(start, end));
     start = end + 1;
-    boolean canPost = CAN_POST.equals (line.substring (start));
+    boolean canPost = CAN_POST.equals(line.substring(start));
 
-    return new Group (name, last, first, canPost);
+    return new Group(name, last, first, canPost);
   }
 
 }
+

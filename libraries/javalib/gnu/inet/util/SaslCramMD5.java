@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -50,37 +50,37 @@ import javax.security.sasl.SaslException;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class SaslCramMD5
-implements SaslClient
+  implements SaslClient
 {
 
   private String username;
   private String password;
   private boolean complete;
 
-  public SaslCramMD5 (String username, String password)
+  public SaslCramMD5(String username, String password)
   {
     this.username = username;
     this.password = password;
   }
 
-  public String getMechanismName ()
+  public String getMechanismName()
   {
     return "CRAM-MD5";
   }
 
-  public boolean hasInitialResponse ()
+  public boolean hasInitialResponse()
   {
     return false;
   }
 
-  public byte[] evaluateChallenge (byte[] challenge)
+  public byte[] evaluateChallenge(byte[] challenge)
     throws SaslException
   {
     try
       {
-        byte[] s = password.getBytes ("US-ASCII");
-        byte[] digest = hmac_md5 (s, challenge);
-        byte[] r0 = username.getBytes ("US-ASCII");
+        byte[] s = password.getBytes("US-ASCII");
+        byte[] digest = hmac_md5(s, challenge);
+        byte[] r0 = username.getBytes("US-ASCII");
         byte[] r1 = new byte[r0.length + digest.length + 1];
         System.arraycopy(r0, 0, r1, 0, r0.length); // add username
         r1[r0.length] = 0x20; // SPACE
@@ -91,42 +91,42 @@ implements SaslClient
     catch (UnsupportedEncodingException e)
       {
         String msg = "Username or password contains non-ASCII characters";
-        throw new SaslException (msg, e);
+        throw new SaslException(msg, e);
       }
     catch (NoSuchAlgorithmException e)
       {
         String msg = "MD5 algorithm not available";
-        throw new SaslException (msg, e);
+        throw new SaslException(msg, e);
       }
   }
 
-  public boolean isComplete ()
+  public boolean isComplete()
   {
     return complete;
   }
 
-  public byte[] unwrap (byte[] incoming, int off, int len)
+  public byte[] unwrap(byte[] incoming, int off, int len)
     throws SaslException
   {
     byte[] ret = new byte[len - off];
-    System.arraycopy (incoming, off, ret, 0, len);
+    System.arraycopy(incoming, off, ret, 0, len);
     return ret;
   }
 
-  public byte[] wrap (byte[] outgoing, int off, int len)
+  public byte[] wrap(byte[] outgoing, int off, int len)
     throws SaslException
   {
     byte[] ret = new byte[len - off];
-    System.arraycopy (outgoing, off, ret, 0, len);
+    System.arraycopy(outgoing, off, ret, 0, len);
     return ret;
   }
 
-  public Object getNegotiatedProperty (String name)
+  public Object getNegotiatedProperty(String name)
   {
     return null;
   }
 
-  public void dispose ()
+  public void dispose()
   {
   }
 
@@ -149,19 +149,19 @@ implements SaslClient
     MessageDigest md5 = MessageDigest.getInstance("MD5");
     // if key is longer than 64 bytes reset it to key=MD5(key)
     if (key.length>64)
-    {
-      md5.update(key);
-      key = md5.digest();
-    }
+      {
+        md5.update(key);
+        key = md5.digest();
+      }
     // start out by storing key in pads
     System.arraycopy(key, 0, k_ipad, 0, key.length);
     System.arraycopy(key, 0, k_opad, 0, key.length);
     // XOR key with ipad and opad values
     for (int i=0; i<64; i++)
-    {
-      k_ipad[i] ^= 0x36;
-      k_opad[i] ^= 0x5c;
-    }
+      {
+        k_ipad[i] ^= 0x36;
+        k_opad[i] ^= 0x5c;
+      }
     // perform inner MD5
     md5.reset();
     md5.update(k_ipad);
@@ -176,3 +176,4 @@ implements SaslClient
   }
   
 }
+

@@ -1,5 +1,5 @@
 /*
- * $Id: Parameter.java,v 1.6 2005/07/04 00:05:17 robilad Exp $
+ * Parameter.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -42,7 +42,6 @@ package gnu.inet.smtp;
  * An ESMTP parameter.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:17 $
  */
 public final class Parameter
 {
@@ -55,7 +54,7 @@ public final class Parameter
    * @param key the key
    * @param value the value
    */
-  public Parameter (String key, String value)
+  public Parameter(String key, String value)
   {
     this.key = key;
     this.value = value;
@@ -64,7 +63,7 @@ public final class Parameter
   /**
    * Returns the key.
    */
-  public String getKey ()
+  public String getKey()
   {
     return key;
   }
@@ -72,7 +71,7 @@ public final class Parameter
   /**
    * Returns the value.
    */
-  public String getValue ()
+  public String getValue()
   {
     return value;
   }
@@ -80,7 +79,7 @@ public final class Parameter
   /**
    * String form.
    */
-  public String toString ()
+  public String toString()
   {
     if (value == null)
       {
@@ -93,3 +92,4 @@ public final class Parameter
   }
 
 }
+

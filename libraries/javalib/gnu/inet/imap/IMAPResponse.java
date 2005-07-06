@@ -1,5 +1,5 @@
 /*
- * $Id: IMAPResponse.java,v 1.6 2005/07/04 00:05:15 robilad Exp $
+ * IMAPResponse.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -44,7 +44,6 @@ import java.util.List;
  * An IMAP4rev1 server response.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:15 $
  */
 public class IMAPResponse
 {
@@ -52,12 +51,12 @@ public class IMAPResponse
   /**
    * The untagged response tag.
    */
-  public static final String UNTAGGED = "*".intern ();
+  public static final String UNTAGGED = "*";
 
   /**
    * The continuation response tag.
    */
-  public static final String CONTINUATION = "+".intern ();
+  public static final String CONTINUATION = "+";
 
   /**
    * The tag for this response.
@@ -89,42 +88,42 @@ public class IMAPResponse
    */
   protected String text;
 
-  public String getTag ()
+  public String getTag()
   {
     return tag;
   }
 
-  public boolean isTagged ()
+  public boolean isTagged()
   {
     return (tag != UNTAGGED && tag != CONTINUATION);
   }
 
-  public boolean isUntagged ()
+  public boolean isUntagged()
   {
     return (tag == UNTAGGED);
   }
 
-  public boolean isContinuation ()
+  public boolean isContinuation()
   {
     return (tag == CONTINUATION);
   }
 
-  public String getID ()
+  public String getID()
   {
     return id;
   }
 
-  public int getCount ()
+  public int getCount()
   {
     return count;
   }
 
-  public List getResponseCode ()
+  public List getResponseCode()
   {
     return code;
   }
 
-  public String getText ()
+  public String getText()
   {
     return text;
   }
@@ -132,73 +131,74 @@ public class IMAPResponse
   /**
    * ANSI-coloured toString for debugging.
    */
-  public String toANSIString ()
+  public String toANSIString()
   {
-    StringBuffer buffer = new StringBuffer ();
-    buffer.append (tag);
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(tag);
     if (count != -1)
-    {
-      buffer.append (" \u001b[00;31m");
-      buffer.append (count);
-      buffer.append ("\u001b[00m");
-    }
-    if (!isContinuation ())
-    {
-      buffer.append (" \u001b[01m");
-      buffer.append (id);
-      buffer.append ("\u001b[00m");
-    }
+      {
+        buffer.append(" \u001b[00;31m");
+        buffer.append(count);
+        buffer.append("\u001b[00m");
+      }
+    if (!isContinuation())
+      {
+        buffer.append(" \u001b[01m");
+        buffer.append(id);
+        buffer.append("\u001b[00m");
+      }
     if (mailbox != null)
-    {
-      buffer.append (" \u001b[00;35m");
-      buffer.append (mailbox);
-      buffer.append ("\u001b[00m");
-    }
+      {
+        buffer.append(" \u001b[00;35m");
+        buffer.append(mailbox);
+        buffer.append("\u001b[00m");
+      }
     if (code != null)
-    {
-      buffer.append (" \u001b[00;36m");
-      buffer.append (code);
-      buffer.append ("\u001b[00m");
-    }
+      {
+        buffer.append(" \u001b[00;36m");
+        buffer.append(code);
+        buffer.append("\u001b[00m");
+      }
     if (text != null)
-    {
-      buffer.append (" \u001b[00;33m");
-      buffer.append (text);
-      buffer.append ("\u001b[00m");
-    }
-    return buffer.toString ();
+      {
+        buffer.append(" \u001b[00;33m");
+        buffer.append(text);
+        buffer.append("\u001b[00m");
+      }
+    return buffer.toString();
   }
 
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buffer = new StringBuffer ();
-    buffer.append (tag);
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(tag);
     if (count != -1)
-    {
-      buffer.append (' ');
-      buffer.append (count);
-    }
-    if (!isContinuation ())
-    {
-      buffer.append (' ');
-      buffer.append (id);
-    }
+      {
+        buffer.append(' ');
+        buffer.append(count);
+      }
+    if (!isContinuation())
+      {
+        buffer.append(' ');
+        buffer.append(id);
+      }
     if (mailbox != null)
-    {
-      buffer.append (' ');
-      buffer.append (mailbox);
-    }
+      {
+        buffer.append(' ');
+        buffer.append(mailbox);
+      }
     if (code != null)
-    {
-      buffer.append (' ');
-      buffer.append (code);
-    }
+      {
+        buffer.append(' ');
+        buffer.append(code);
+      }
     if (text != null)
-    {
-      buffer.append (' ');
-      buffer.append (text);
-    }
-    return buffer.toString ();
+      {
+        buffer.append(' ');
+        buffer.append(text);
+      }
+    return buffer.toString();
   }
 
 }
+

@@ -1,5 +1,5 @@
 /*
- * $Id: LineIterator.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * LineIterator.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -46,9 +46,9 @@ import java.util.NoSuchElementException;
  * An iterator over an NNTP multi-line response.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
-public class LineIterator implements Iterator, PendingData
+public class LineIterator
+  implements Iterator, PendingData
 {
 
   static final String DOT = ".";
@@ -57,19 +57,20 @@ public class LineIterator implements Iterator, PendingData
   NNTPConnection connection;
   String current;
 
-  LineIterator (NNTPConnection connection)
+  LineIterator(NNTPConnection connection)
   {
     this.connection = connection;
   }
 
-  void doRead () throws IOException
+  void doRead()
+    throws IOException
   {
     if (doneRead)
       {
         return;
       }
-    String line = connection.read ();
-    if (DOT.equals (line))
+    String line = connection.read();
+    if (DOT.equals(line))
       {
         current = null;
       }
@@ -83,43 +84,44 @@ public class LineIterator implements Iterator, PendingData
   /**
    * Indicates whether there are more lines to be read.
    */
-  public boolean hasNext ()
+  public boolean hasNext()
   {
     try
       {
-        doRead ();
+        doRead();
       }
     catch (IOException e)
       {
         return false;
       }
-    return (current != null);
+    return(current != null);
   }
 
   /**
    * Returns the next line.
    */
-  public Object next ()
+  public Object next()
   {
     try
       {
-        return nextLine ();
+        return nextLine();
       }
     catch (IOException e)
       {
-        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+        throw new NoSuchElementException("I/O error: " + e.getMessage());
       }
   }
 
   /**
    * Returns the next line.
    */
-  public String nextLine () throws IOException
+  public String nextLine()
+    throws IOException
   {
-    doRead ();
+    doRead();
     if (current == null)
       {
-        throw new NoSuchElementException ();
+        throw new NoSuchElementException();
       }
     doneRead = false;
     return current;
@@ -128,21 +130,23 @@ public class LineIterator implements Iterator, PendingData
   /**
    * This iterator is read-only.
    */
-  public void remove ()
+  public void remove()
   {
-    throw new UnsupportedOperationException ();
+    throw new UnsupportedOperationException();
   }
 
   /**
    * Read to the end of this iterator.
    */
-  public void readToEOF () throws IOException
+  public void readToEOF()
+    throws IOException
   {
     do
       {
-        doRead ();
+        doRead();
       }
     while (current != null);
   }
 
 }
+

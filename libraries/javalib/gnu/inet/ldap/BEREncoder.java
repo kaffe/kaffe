@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -58,9 +58,9 @@ public class BEREncoder
    * Constructor.
    * @param utf whether to use UTF-8 for encoding strings
    */
-  public BEREncoder (boolean utf8)
+  public BEREncoder(boolean utf8)
   {
-    this (utf8, 1024);
+    this(utf8, 1024);
   }
 
   /**
@@ -68,7 +68,7 @@ public class BEREncoder
    * @param utf whether to use UTF-8 for encoding strings
    * @param initialSize the initial buffer size
    */
-  public BEREncoder (boolean utf8, int initialSize)
+  public BEREncoder(boolean utf8, int initialSize)
   {
     this.utf8 = utf8;
     buffer = new byte[initialSize];
@@ -80,7 +80,7 @@ public class BEREncoder
   /**
    * Reset this encoder for reuse.
    */
-  public void reset ()
+  public void reset()
   {
     for (int i = 0; i < offset; i++)
       {
@@ -97,7 +97,7 @@ public class BEREncoder
   /**
    * Returns the current size of the encoded data.
    */
-  public int size ()
+  public int size()
   {
     return offset;
   }
@@ -105,10 +105,10 @@ public class BEREncoder
   /**
    * Returns the encoded data.
    */
-  public byte[] toByteArray ()
+  public byte[] toByteArray()
   {
     byte[] ret = new byte[offset];
-    System.arraycopy (buffer, 0, ret, 0, offset);
+    System.arraycopy(buffer, 0, ret, 0, offset);
     return ret;
   }
 
@@ -118,9 +118,9 @@ public class BEREncoder
    * Appends a boolean value.
    * @param value the value
    */
-  public void append (boolean value)
+  public void append(boolean value)
   {
-    append (value, BERConstants.BOOLEAN);
+    append(value, BERConstants.BOOLEAN);
   }
   
   /**
@@ -128,12 +128,12 @@ public class BEREncoder
    * @param value the value
    * @param code the type code
    */
-  public void append (boolean value, int code)
+  public void append(boolean value, int code)
   {
-    allocate (3);
+    allocate(3);
     buffer[offset++] = (byte) code;
     buffer[offset++] = (byte) 1; /* length */
-    buffer[offset++] = value ? (byte) 0xff : (byte) 0;
+    buffer[offset++] = value ? (byte) 0xff :(byte) 0;
   }
 
   // -- 8.3 Encoding of an integer value --
@@ -142,9 +142,9 @@ public class BEREncoder
    * Appends an integer value.
    * @param value the value
    */
-  public void append (int value)
+  public void append(int value)
   {
-    append (value, BERConstants.INTEGER);
+    append(value, BERConstants.INTEGER);
   }
   
   /**
@@ -152,7 +152,7 @@ public class BEREncoder
    * @param value the value
    * @param code the type code
    */
-  public void append (int value, int code)
+  public void append(int value, int code)
   {
     final int mask = 0xff800000;
     int len = 4;
@@ -161,7 +161,7 @@ public class BEREncoder
         len--;
         value <<= 8;
       }
-    allocate (len + 2);
+    allocate(len + 2);
     buffer[offset++] = (byte) code;
     buffer[offset++] = (byte) len;
     for (; len > 0; len--)
@@ -180,10 +180,10 @@ public class BEREncoder
    * Appends an octetstring value.
    * @param bytes the value
    */
-  public void append (byte[] bytes)
+  public void append(byte[] bytes)
     throws BERException
   {
-    append (bytes, BERConstants.OCTET_STRING);
+    append(bytes, BERConstants.OCTET_STRING);
   }
   
   /**
@@ -193,22 +193,22 @@ public class BEREncoder
    * @param bytes the value
    * @param code the type code
    */
-  public void append (byte[] bytes, int code)
+  public void append(byte[] bytes, int code)
     throws BERException
   {
     int len = (bytes == null) ? 0 : bytes.length;
-    append (bytes, 0, len, code);
+    append(bytes, 0, len, code);
   }
 
-  void append (byte[] bytes, int off, int len, int code)
+  void append(byte[] bytes, int off, int len, int code)
     throws BERException
   {
-    allocate (len + 5);
+    allocate(len + 5);
     buffer[offset++] = (byte) code;
-    appendLength (len);
+    appendLength(len);
     if (len > 0)
       {
-        System.arraycopy (bytes, off, buffer, offset, len);
+        System.arraycopy(bytes, off, buffer, offset, len);
         offset += len;
       }
   }
@@ -217,10 +217,10 @@ public class BEREncoder
    * Appends a string value.
    * @param value the value
    */
-  public void append (String value)
+  public void append(String value)
     throws BERException
   {
-    append (value, BERConstants.UTF8_STRING);
+    append(value, BERConstants.UTF8_STRING);
   }
   
   /**
@@ -228,7 +228,7 @@ public class BEREncoder
    * @param value the value
    * @param code the type code
    */
-  public void append (String value, int code)
+  public void append(String value, int code)
     throws BERException
   {
     byte[] bytes = null;
@@ -241,18 +241,18 @@ public class BEREncoder
         String encoding = utf8 ? "UTF-8" : "ISO-8859-1";
         try
           {
-            bytes = value.getBytes (encoding);
+            bytes = value.getBytes(encoding);
           }
         catch (UnsupportedEncodingException e)
           {
-            throw new BERException ("JVM does not support " + encoding);
+            throw new BERException("JVM does not support " + encoding);
           }
       }
     int len = bytes.length;
-    allocate (len + 5);
+    allocate(len + 5);
     buffer[offset++] = (byte) code;
-    appendLength (len);
-    System.arraycopy (bytes, 0, buffer, offset, len);
+    appendLength(len);
+    System.arraycopy(bytes, 0, buffer, offset, len);
     offset += len;
   }
 
@@ -261,9 +261,9 @@ public class BEREncoder
   /**
    * Appends a BER NULL value.
    */
-  public void appendNull ()
+  public void appendNull()
   {
-    allocate (2);
+    allocate(2);
     buffer[offset++] = BERConstants.NULL;
     buffer[offset++] = (byte) 0; /* length */
   }
@@ -271,7 +271,7 @@ public class BEREncoder
   /**
    * Allocate at least len bytes.
    */
-  private void allocate (int len)
+  private void allocate(int len)
   {
     if (buffer.length - offset < len)
       {
@@ -282,7 +282,7 @@ public class BEREncoder
           }
         while (size - offset < len);
         byte[] ret = new byte[size];
-        System.arraycopy (buffer, 0, ret, 0, offset);
+        System.arraycopy(buffer, 0, ret, 0, offset);
         buffer = ret;
       }
   }
@@ -290,7 +290,7 @@ public class BEREncoder
   /**
    * Append the specified length for a string.
    */
-  private void appendLength (int len)
+  private void appendLength(int len)
     throws BERException
   {
     if (len < 0x80)
@@ -305,19 +305,19 @@ public class BEREncoder
     else if (len < 0x10000)
       {
         buffer[offset++] = (byte) 0x82;
-        buffer[offset++] = (byte) (len >> 0x08);
-        buffer[offset++] = (byte) (len & 0xff);
+        buffer[offset++] = (byte)(len >> 0x08);
+        buffer[offset++] = (byte)(len & 0xff);
       }
     else if (len < 0x1000000)
       {
         buffer[offset++] = (byte) 0x83;
-        buffer[offset++] = (byte) (len >> 0x10);
-        buffer[offset++] = (byte) (len >> 0x08);
-        buffer[offset++] = (byte) (len & 0xff);
+        buffer[offset++] = (byte)(len >> 0x10);
+        buffer[offset++] = (byte)(len >> 0x08);
+        buffer[offset++] = (byte)(len & 0xff);
       }
     else
       {
-        throw new BERException ("Data too long: " + len);
+        throw new BERException("Data too long: " + len);
       }
   }
 
@@ -325,38 +325,38 @@ public class BEREncoder
    * Appends an RFC2254 search filter to this encoder.
    * @param filter the filter expression
    */
-  public void appendFilter (String filter)
+  public void appendFilter(String filter)
     throws BERException
   {
-    if (filter == null || filter.length () == 0)
+    if (filter == null || filter.length() == 0)
       {
-        throw new BERException ("Empty filter expression");
+        throw new BERException("Empty filter expression");
       }
     final byte[] bytes;
     String charset = utf8 ? "UTF-8" : "ISO-8859-1";
     try
       {
-        bytes = filter.getBytes (charset);
+        bytes = filter.getBytes(charset);
       }
     catch (UnsupportedEncodingException e)
       {
-        throw new BERException ("JVM does not support " + charset);
+        throw new BERException("JVM does not support " + charset);
       }
-    appendFilter (bytes, 0);
+    appendFilter(bytes, 0);
   }
 
-  int appendFilter (final byte[] bytes, int off)
+  int appendFilter(final byte[] bytes, int off)
     throws BERException
   {
     int depth = 0;
-    while (off < bytes.length)
+    while(off < bytes.length)
       {
         switch (bytes[off])
           {
           case 0x20: // SP
             off++;
             break; /* NOOP */
-          case 0x28: // (
+          case 0x28: //(
             depth++;
             off++;
             break;
@@ -368,52 +368,52 @@ public class BEREncoder
               }
             break;
           case 0x26: // &
-            off = appendFilterList (bytes, off + 1,
-                                    BERConstants.FILTER_AND);
+            off = appendFilterList(bytes, off + 1,
+                                   BERConstants.FILTER_AND);
             break;
           case 0x2c: // |
-            off = appendFilterList (bytes, off + 1,
-                                    BERConstants.FILTER_OR);
+            off = appendFilterList(bytes, off + 1,
+                                   BERConstants.FILTER_OR);
             break;
           case 0x21: // !
-            off = appendFilterList (bytes, off + 1,
-                                    BERConstants.FILTER_NOT);
+            off = appendFilterList(bytes, off + 1,
+                                   BERConstants.FILTER_NOT);
             break;
           default:
-            off = appendFilterItem (bytes, off);
+            off = appendFilterItem(bytes, off);
           }
       }
     if (depth != 0)
       {
         //System.err.println("depth="+depth+", off="+off);
-        throw new BERException ("Unbalanced parentheses");
+        throw new BERException("Unbalanced parentheses");
       }
     return off;
   }
 
-  int appendFilterList (final byte[] bytes, int off, int code)
+  int appendFilterList(final byte[] bytes, int off, int code)
     throws BERException
   {
-    BEREncoder sequence = new BEREncoder (utf8);
+    BEREncoder sequence = new BEREncoder(utf8);
     while (off < bytes.length && bytes[off] == '(')
       {
-        off = sequence.appendFilter (bytes, off);
+        off = sequence.appendFilter(bytes, off);
       }
-    append (sequence.toByteArray (), code);
+    append(sequence.toByteArray(), code);
     return off;
   }
 
-  int appendFilterItem (final byte[] bytes, int off)
+  int appendFilterItem(final byte[] bytes, int off)
     throws BERException
   {
-    int ei = indexOf (bytes, (byte) 0x3d, off); // =
+    int ei = indexOf(bytes,(byte) 0x3d, off); // =
     if (ei == -1)
       {
-        throw new BERException ("Missing '='");
+        throw new BERException("Missing '='");
       }
     int end = ei;
     int code;
-    BEREncoder item = new BEREncoder (utf8);
+    BEREncoder item = new BEREncoder(utf8);
     switch (bytes[ei - 1])
       {
       case 0x7e: // ~ approx
@@ -430,10 +430,10 @@ public class BEREncoder
         break;
       case 0x3a: // : ext
         code = BERConstants.FILTER_EXTENSIBLE;
-        // TODO return appendFilterExtensibleMatch (bytes, off, ei);
+        // TODO return appendFilterExtensibleMatch(bytes, off, ei);
         break;
       default: // equal/substring
-        int si = indexOf (bytes, (byte) 0x2a, ei + 1); // *
+        int si = indexOf(bytes,(byte) 0x2a, ei + 1); // *
         if (si == -1)
           {
             code = BERConstants.FILTER_EQUAL;
@@ -448,35 +448,35 @@ public class BEREncoder
             else
               {
                 // substring
-                BEREncoder substring = new BEREncoder (utf8);
-                substring.append (bytes, off, end, BERConstants.OCTET_STRING);
-                end = indexOf (bytes, (byte) 0x29, ei + 1); // )
+                BEREncoder substring = new BEREncoder(utf8);
+                substring.append(bytes, off, end, BERConstants.OCTET_STRING);
+                end = indexOf(bytes,(byte) 0x29, ei + 1); // )
                 if (end == -1)
                   {
-                    throw new BERException ("No terminating ')'");
+                    throw new BERException("No terminating ')'");
                   }
-                BEREncoder value = new BEREncoder (utf8);
-                value.append (unencode (bytes, ei + 1, end));
-                substring.append (value.toByteArray (), 48);
-                append (substring.toByteArray (),
-                        BERConstants.FILTER_SUBSTRING);
+                BEREncoder value = new BEREncoder(utf8);
+                value.append(unencode(bytes, ei + 1, end));
+                substring.append(value.toByteArray(), 48);
+                append(substring.toByteArray(),
+                       BERConstants.FILTER_SUBSTRING);
                 off = end;
                 return off;
               }
           }
           
       }
-    item.append (bytes, off, (end - off), BERConstants.OCTET_STRING);
-    end = indexOf (bytes, (byte) 0x29, ei + 1); // )
+    item.append(bytes, off,(end - off), BERConstants.OCTET_STRING);
+    end = indexOf(bytes,(byte) 0x29, ei + 1); // )
     if (end == -1)
       {
-        throw new BERException ("No terminating ')'");
+        throw new BERException("No terminating ')'");
       }
     if (code != BERConstants.FILTER_PRESENT)
       {
-        item.append (unencode (bytes, ei + 1, end));
+        item.append(unencode(bytes, ei + 1, end));
       }
-    append (item.toByteArray (), code);
+    append(item.toByteArray(), code);
     off = end;
     return off;
   }
@@ -486,7 +486,7 @@ public class BEREncoder
    * octet-string, starting at the given index. The filterlist terminator
    * ')' stops the search.
    */
-  static int indexOf (final byte[] bytes, byte c, int off)
+  static int indexOf(final byte[] bytes, byte c, int off)
   {
     for (int i = off; i < bytes.length; i++)
       {
@@ -508,38 +508,39 @@ public class BEREncoder
    * This routine converts each character encoded as "\xx" where xx is the ASCII
    * character code to a single character.
    */
-  static byte[] unencode (final byte[] bytes, int off, int end)
+  static byte[] unencode(final byte[] bytes, int off, int end)
     throws BERException
   {
     byte[] buf = new byte[end - off];
     int pos = 0;
-    int bsi = indexOf (bytes, (byte) 0x5c, off); // \
-    while (bsi != -1)
+    int bsi = indexOf(bytes,(byte) 0x5c, off); // \
+    while(bsi != -1)
       {
         if (bsi + 3 > end)
           {
-            throw new BERException ("Illegal filter value encoding");
+            throw new BERException("Illegal filter value encoding");
           }
         int l = bsi - off;
-        System.arraycopy (bytes, off, buf, pos, l);
+        System.arraycopy(bytes, off, buf, pos, l);
         pos += l;
-        int c = Character.digit ((char) bytes[bsi + 2], 0x10);
-        c += Character.digit ((char) bytes[bsi + 1], 0x10) * 0x10;
+        int c = Character.digit((char) bytes[bsi + 2], 0x10);
+        c += Character.digit((char) bytes[bsi + 1], 0x10) * 0x10;
         buf[pos++] = (byte) c;
         off += l + 3;
-        bsi = indexOf (bytes, (byte) 0x5c, off); // \
+        bsi = indexOf(bytes,(byte) 0x5c, off); // \
       }
     int l = end - off;
-    System.arraycopy (bytes, off, buf, pos, l);
+    System.arraycopy(bytes, off, buf, pos, l);
     pos += l;
     off += l;
     if (pos != buf.length)
       {
         byte[] swap = new byte[pos];
-        System.arraycopy (buf, 0, swap, 0, pos);
+        System.arraycopy(buf, 0, swap, 0, pos);
         buf = swap;
       }
     return buf;
   }
   
 }
+

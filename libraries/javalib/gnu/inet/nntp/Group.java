@@ -1,5 +1,5 @@
 /*
- * $Id: Group.java,v 1.5 2005/07/04 00:05:16 robilad Exp $
+ * Group.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -42,7 +42,6 @@ package gnu.inet.nntp;
  * An item in an NNTP newsgroup listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:16 $
  */
 public final class Group
 {
@@ -52,7 +51,7 @@ public final class Group
   int first;
   boolean canPost;
 
-  Group (String name, int last, int first, boolean canPost)
+  Group(String name, int last, int first, boolean canPost)
   {
     this.name = name;
     this.last = last;
@@ -63,7 +62,7 @@ public final class Group
   /**
    * The name of the newsgroup.
    */
-  public String getName ()
+  public String getName()
   {
     return name;
   }
@@ -71,7 +70,7 @@ public final class Group
   /**
    * The number of the last known article currently in the newsgroup.
    */
-  public int getLast ()
+  public int getLast()
   {
     return last;
   }
@@ -79,7 +78,7 @@ public final class Group
   /**
    * The number of the first article currently in the newsgroup.
    */
-  public int getFirst ()
+  public int getFirst()
   {
     return first;
   }
@@ -87,9 +86,10 @@ public final class Group
   /**
    * True if posting to this newsgroup is allowed.
    */
-  public boolean isCanPost ()
+  public boolean isCanPost()
   {
     return canPost;
   }
 
 }
+

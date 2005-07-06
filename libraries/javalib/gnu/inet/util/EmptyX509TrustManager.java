@@ -1,5 +1,5 @@
 /*
- * $Id: EmptyX509TrustManager.java,v 1.6 2005/07/04 00:05:19 robilad Exp $
+ * EmptyX509TrustManager.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -49,22 +49,23 @@ import javax.net.ssl.X509TrustManager;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class EmptyX509TrustManager
-implements X509TrustManager
+  implements X509TrustManager
 {
 
-  public void checkClientTrusted (X509Certificate[] chain, String authType)
+  public void checkClientTrusted(X509Certificate[] chain, String authType)
     throws CertificateException
-    {
-    }
+  {
+  }
 
-  public void checkServerTrusted (X509Certificate[] chain, String authType)
+  public void checkServerTrusted(X509Certificate[] chain, String authType)
     throws CertificateException
-    {
-    }
+  {
+  }
 
-  public X509Certificate[] getAcceptedIssuers ()
-    {
-      return new X509Certificate[0];
-    }
+  public X509Certificate[] getAcceptedIssuers()
+  {
+    return new X509Certificate[0];
+  }
   
 }
+

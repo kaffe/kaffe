@@ -1,5 +1,5 @@
 /*
- * $Id: MessageInputStream.java,v 1.6 2005/07/04 00:05:19 robilad Exp $
+ * MessageInputStream.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -48,9 +48,9 @@ import java.io.IOException;
  * sequence LF,END,LF is read from the underlying stream.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:19 $
  */
-public class MessageInputStream extends FilterInputStream
+public class MessageInputStream
+  extends FilterInputStream
 {
 
   /**
@@ -74,78 +74,80 @@ public class MessageInputStream extends FilterInputStream
   /**
    * Constructs a message input stream connected to the specified input stream.
    */
-  public MessageInputStream (InputStream in)
-    {
-      super (in);
-      eof = false;
-    }
+  public MessageInputStream(InputStream in)
+  {
+    super(in);
+    eof = false;
+  }
 
   /**
    * Reads the next byte of data from this message input stream.
    * Returns -1 if the end of the message stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read () throws IOException
-    {
-      if (eof)
-        {
-          return -1;
-        }
-      int c;
-      if (buf1 != -1)
-        {
-          c = buf1;
-          buf1 = buf2;
-          buf2 = -1;
-        }
-      else
-        {
-          c = super.read ();
-        }
-      if (c == LF)
-        {
-          if (buf1 == -1)
-            {
-              buf1 = super.read ();
-              if (buf1 == END)
-                {
-                  buf2 = super.read ();
-                  if (buf2 == LF)
-                    {
-                      eof = true;
-                      // Allow the final LF to be read
-                    }
-                }
-            }
-          else if (buf1 == END)
-            {
-              if (buf2 == -1)
-                {
-                  buf2 = super.read ();
-                  if (buf2 == LF)
-                    {
-                      eof = true;
-                    }
-                }
-              else if (buf2 == LF)
-                {
-                  eof = true;
-                }
-            }
-        }
-      return c;
-    }
-
+  public int read()
+    throws IOException
+  {
+    if (eof)
+      {
+        return -1;
+      }
+    int c;
+    if (buf1 != -1)
+      {
+        c = buf1;
+        buf1 = buf2;
+        buf2 = -1;
+      }
+    else
+      {
+        c = super.read();
+      }
+    if (c == LF)
+      {
+        if (buf1 == -1)
+          {
+            buf1 = super.read();
+            if (buf1 == END)
+              {
+                buf2 = super.read();
+                if (buf2 == LF)
+                  {
+                    eof = true;
+                    // Allow the final LF to be read
+                  }
+              }
+          }
+        else if (buf1 == END)
+          {
+            if (buf2 == -1)
+              {
+                buf2 = super.read();
+                if (buf2 == LF)
+                  {
+                    eof = true;
+                  }
+              }
+            else if (buf2 == LF)
+              {
+                eof = true;
+              }
+          }
+      }
+    return c;
+  }
+  
   /**
    * Reads up to b.length bytes of data from this input stream into
    * an array of bytes.
    * Returns -1 if the end of the stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read (byte[] b) throws IOException
-    {
-      return read (b, 0, b.length);
-    }
+  public int read(byte[] b)
+    throws IOException
+  {
+    return read(b, 0, b.length);
+  }
 
   /**
    * Reads up to len bytes of data from this input stream into an
@@ -153,46 +155,49 @@ public class MessageInputStream extends FilterInputStream
    * Returns -1 if the end of the stream has been reached.
    * @exception IOException if an I/O error occurs
    */
-  public int read (byte[] b, int off, int len) throws IOException
-    {
-      if (eof)
-        {
-          return -1;
-        }
-      int c, end = off + len;
-      for (int i = off; i < end; i++)
-        {
-          c = read ();
-          if (c == -1)
-            {
-              len = i - off;
-              break;
-            }
-          else
-            {
-              b[i] = (byte) c;
-            }
-        }
-      return len;
-    }
+  public int read(byte[] b, int off, int len)
+    throws IOException
+  {
+    if (eof)
+      {
+        return -1;
+      }
+    int c, end = off + len;
+    for (int i = off; i < end; i++)
+      {
+        c = read();
+        if (c == -1)
+          {
+            len = i - off;
+            break;
+          }
+        else
+          {
+            b[i] = (byte) c;
+          }
+      }
+    return len;
+  }
+  
+  public boolean markSupported()
+  {
+    return in.markSupported();
+  }
 
-  public boolean markSupported ()
-    {
-      return in.markSupported ();
-    }
+  public void mark(int readlimit)
+  {
+    in.mark(readlimit);
+    markBuf1 = buf1;
+    markBuf2 = buf2;
+  }
 
-  public void mark (int readlimit)
-    {
-      in.mark (readlimit);
-      markBuf1 = buf1;
-      markBuf2 = buf2;
-    }
-
-  public void reset () throws IOException
-    {
-      in.reset ();
-      buf1 = markBuf1;
-      buf2 = markBuf2;
-    }
+  public void reset()
+    throws IOException
+  {
+    in.reset();
+    buf1 = markBuf1;
+    buf2 = markBuf2;
+  }
 
 }
+

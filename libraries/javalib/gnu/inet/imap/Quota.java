@@ -1,5 +1,5 @@
 /*
- * $Id: Quota.java,v 1.3 2005/07/04 00:05:15 robilad Exp $
+ * Quota.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -66,12 +66,12 @@ public class Quota
      * @param name the resource name
      * @param limit the resource limit
      */
-    public Resource (String name, int limit)
+    public Resource(String name, int limit)
     {
-      this (name, -1, limit);
+      this(name, -1, limit);
     }
 
-    Resource (String name, int current, int limit)
+    Resource(String name, int current, int limit)
     {
       this.name = name;
       this.current = current;
@@ -81,7 +81,7 @@ public class Quota
     /**
      * Returns the resource name.
      */
-    public String getName ()
+    public String getName()
     {
       return name;
     }
@@ -90,7 +90,7 @@ public class Quota
      * Returns the current usage of the resource, or <code>-1</code> if not
      * known.
      */
-    public int getCurrentUsage ()
+    public int getCurrentUsage()
     {
       return current;
     }
@@ -98,7 +98,7 @@ public class Quota
     /**
      * Returns the resource limit.
      */
-    public int getLimit ()
+    public int getLimit()
     {
       return limit;
     }
@@ -106,20 +106,20 @@ public class Quota
     /**
      * Debugging.
      */
-    public String toString ()
+    public String toString()
     {
-      StringBuffer buf = new StringBuffer ();
-      buf.append ('(');
-      buf.append (name);
+      StringBuffer buf = new StringBuffer();
+      buf.append('(');
+      buf.append(name);
       if (current >= 0)
         {
-          buf.append (' ');
-          buf.append (current);
+          buf.append(' ');
+          buf.append(current);
         }
-      buf.append (' ');
-      buf.append (limit);
-      buf.append (')');
-      return buf.toString ();
+      buf.append(' ');
+      buf.append(limit);
+      buf.append(')');
+      return buf.toString();
     }
     
   }
@@ -127,36 +127,36 @@ public class Quota
   String quotaRoot;
   List resources;
 
-  Quota (String text)
+  Quota(String text)
   {
-    int len = text.length ();
-    List acc = new ArrayList ();
-    Namespaces.parse (text, 0, len, acc);
+    int len = text.length();
+    List acc = new ArrayList();
+    Namespaces.parse(text, 0, len, acc);
 
-    quotaRoot = (String) acc.get (0);
-    resources = new ArrayList ();
-    len = acc.size ();
+    quotaRoot = (String) acc.get(0);
+    resources = new ArrayList();
+    len = acc.size();
     for (int i = 1; i < len; i++)
       {
-        resources.add (parseResource ((List) acc.get (i)));
+        resources.add(parseResource((List) acc.get(i)));
       }
   }
 
-  private Resource parseResource (List triple)
+  private Resource parseResource(List triple)
   {
-    String name = (String) triple.get (0);
-    String current = (String) triple.get (1);
-    String limit = (String) triple.get (2);
-    return new Resource (name,
-                         Integer.parseInt (current),
-                         Integer.parseInt (limit));
+    String name = (String) triple.get(0);
+    String current = (String) triple.get(1);
+    String limit = (String) triple.get(2);
+    return new Resource(name,
+                        Integer.parseInt(current),
+                        Integer.parseInt(limit));
   }
 
   /**
    * Returns the quota root. All mailboxes that share the same named
    * quota root share the resource limits of the quota root.
    */
-  public String getQuotaRoot ()
+  public String getQuotaRoot()
   {
     return quotaRoot;
   }
@@ -164,27 +164,28 @@ public class Quota
   /**
    * Returns the list of quota resources.
    */
-  public Resource[] getResources ()
+  public Resource[] getResources()
   {
-    Resource[] ret = new Resource[resources.size ()];
-    resources.toArray (ret);
+    Resource[] ret = new Resource[resources.size()];
+    resources.toArray(ret);
     return ret;
   }
 
   /**
    * Debugging.
    */
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buf = new StringBuffer ();
-    buf.append (IMAPConnection.quote (UTF7imap.encode (quotaRoot)));
-    int len = resources.size ();
+    StringBuffer buf = new StringBuffer();
+    buf.append(IMAPConnection.quote(UTF7imap.encode(quotaRoot)));
+    int len = resources.size();
     for (int i = 0; i < len; i++)
       {
-        buf.append (' ');
-        buf.append (resources.get (i));
+        buf.append(' ');
+        buf.append(resources.get(i));
       }
-    return buf.toString ();
+    return buf.toString();
   }
   
 }
+

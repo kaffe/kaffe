@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -48,7 +48,7 @@ import javax.security.sasl.SaslException;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class SaslLogin
-implements SaslClient
+  implements SaslClient
 {
 
   private static final int STATE_USERNAME = 0;
@@ -59,24 +59,24 @@ implements SaslClient
   private String password;
   private int state;
 
-  public SaslLogin (String username, String password)
+  public SaslLogin(String username, String password)
   {
     this.username = username;
     this.password = password;
     state = STATE_USERNAME;
   }
 
-  public String getMechanismName ()
+  public String getMechanismName()
   {
     return "LOGIN";
   }
 
-  public boolean hasInitialResponse ()
+  public boolean hasInitialResponse()
   {
     return false;
   }
 
-  public byte[] evaluateChallenge (byte[] challenge)
+  public byte[] evaluateChallenge(byte[] challenge)
     throws SaslException
   {
     try
@@ -85,10 +85,10 @@ implements SaslClient
           {
           case STATE_USERNAME:
             state = STATE_PASSWORD;
-            return username.getBytes ("UTF-8");
+            return username.getBytes("UTF-8");
           case STATE_PASSWORD:
             state = STATE_COMPLETE;
-            return password.getBytes ("UTF-8");
+            return password.getBytes("UTF-8");
           default:
             return new byte[0];
           }
@@ -96,38 +96,39 @@ implements SaslClient
     catch (UnsupportedEncodingException e)
       {
         String msg = "The UTF-8 character set is not supported by the VM";
-        throw new SaslException (msg, e);
+        throw new SaslException(msg, e);
       }
   }
 
-  public boolean isComplete ()
+  public boolean isComplete()
   {
     return (state == STATE_COMPLETE);
   }
 
-  public byte[] unwrap (byte[] incoming, int off, int len)
+  public byte[] unwrap(byte[] incoming, int off, int len)
     throws SaslException
   {
     byte[] ret = new byte[len - off];
-    System.arraycopy (incoming, off, ret, 0, len);
+    System.arraycopy(incoming, off, ret, 0, len);
     return ret;
   }
 
-  public byte[] wrap (byte[] outgoing, int off, int len)
+  public byte[] wrap(byte[] outgoing, int off, int len)
     throws SaslException
   {
     byte[] ret = new byte[len - off];
-    System.arraycopy (outgoing, off, ret, 0, len);
+    System.arraycopy(outgoing, off, ret, 0, len);
     return ret;
   }
 
-  public Object getNegotiatedProperty (String name)
+  public Object getNegotiatedProperty(String name)
   {
     return null;
   }
 
-  public void dispose ()
+  public void dispose()
   {
   }
   
 }
+

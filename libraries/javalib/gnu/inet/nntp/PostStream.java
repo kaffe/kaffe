@@ -1,5 +1,5 @@
 /*
- * $Id: PostStream.java,v 1.5 2005/07/04 00:05:17 robilad Exp $
+ * PostStream.java
  * Copyright (C) 2002, 2003 The free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -46,32 +46,40 @@ import java.io.IOException;
  * A stream to which article contents should be written.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:17 $
  */
-public final class PostStream extends FilterOutputStream
+public final class PostStream
+  extends FilterOutputStream
 {
 
   NNTPConnection connection;
   boolean isTakethis;
   byte last;
   
-  PostStream (NNTPConnection connection, boolean isTakethis)
+  PostStream(NNTPConnection connection, boolean isTakethis)
   {
-    super (connection.out);
+    super(connection.out);
     this.connection = connection;
     this.isTakethis = isTakethis;
   }
   
-  public void write (int c) throws IOException
+  public void write(int c)
+    throws IOException
   {
-    super.write (c);
+    super.write(c);
     last = (byte) c;
   }
 
-  public void write (byte[] bytes, int pos, int len) throws IOException
+  public void write(byte[] bytes)
+    throws IOException
   {
-    super.write (bytes, pos, len);
-    if (len > 0)
+    write(bytes, 0, bytes.length);
+  }
+
+  public void write(byte[] bytes, int pos, int len)
+    throws IOException
+  {
+    super.write(bytes, pos, len);
+    if(len > 0)
       {
         last = bytes[pos + len - 1];
       }
@@ -81,21 +89,23 @@ public final class PostStream extends FilterOutputStream
    * Close the stream.
    * This calls NNTPConnection.postComplete().
    */
-  public void close () throws IOException
+  public void close()
+    throws IOException
   {
     if (last != 0x0d)
       {
         // Need to add LF
-        write (0x0d);
+        write(0x0d);
       }
     if (isTakethis)
       {
-        connection.takethisComplete ();
+        connection.takethisComplete();
       }
     else
       {
-        connection.postComplete ();
+        connection.postComplete();
       }
   }
   
 }
+

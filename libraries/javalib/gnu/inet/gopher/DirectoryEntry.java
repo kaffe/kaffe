@@ -1,5 +1,5 @@
 /*
- * $Id: DirectoryEntry.java,v 1.5 2005/07/04 00:05:14 robilad Exp $
+ * DirectoryEntry.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -47,7 +47,6 @@ import java.util.NoSuchElementException;
  * A gopher directory entry.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:14 $
  */
 public final class DirectoryEntry
 {
@@ -128,55 +127,56 @@ public final class DirectoryEntry
   final String hostname;
   final int port;
 
-  DirectoryEntry (int type, String title, String selector, String hostname,
-                  int port)
-    {
-      this.type = type;
-      this.title = title;
-      this.selector = selector;
-      this.hostname = hostname;
-      this.port = port;
-    }
+  DirectoryEntry(int type, String title, String selector, String hostname,
+                 int port)
+  {
+    this.type = type;
+    this.title = title;
+    this.selector = selector;
+    this.hostname = hostname;
+    this.port = port;
+  }
 
   /**
    * Returns the type of this entry.
    */
-  public int getType ()
-    {
-      return type;
-    }
-
+  public int getType()
+  {
+    return type;
+  }
+  
   /**
    * Returns the title for this entry.
    */
-  public String getTitle ()
-    {
-      return title;
-    }
-
+  public String getTitle()
+  {
+    return title;
+  }
+  
   /**
    * Returns the selector for this entry.
    * This is used to retrieve the content for the entry.
    */
-  public String getSelector ()
-    {
-      return selector;
-    }
-
+  public String getSelector()
+  {
+    return selector;
+  }
+  
   /**
    * Returns the hostname for the content of this entry.
    */
-  public String getHostname ()
-    {
-      return hostname;
-    }
-
+  public String getHostname()
+  {
+    return hostname;
+  }
+  
   /**
    * Returns the port on which the content for this entry can be retrieved.
    */
-  public int getPort ()
-    {
-      return port;
-    }
-
+  public int getPort()
+  {
+    return port;
+  }
+  
 }
+

@@ -1,5 +1,5 @@
 /*
- * $Id: Newsrc.java,v 1.5 2005/07/04 00:05:17 robilad Exp $
+ * Newsrc.java
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -44,7 +44,6 @@ import java.util.Iterator;
  * Interface for a .newsrc configuration.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:17 $
  */
 public interface Newsrc
 {
@@ -53,31 +52,32 @@ public interface Newsrc
    * Returns an iterator over the names of the subscribed newsgroups.
    * Each item returned is a String.
    */
-  public Iterator list ();
+  public Iterator list();
 
   /**
    * Indicates whether a newsgroup is subscribed in this newsrc.
    */
-  public boolean isSubscribed (String newsgroup);
+  public boolean isSubscribed(String newsgroup);
 
   /**
    * Sets whether a newsgroup is subscribed in this newsrc.
    */
-  public void setSubscribed (String newsgroup, boolean subs);
+  public void setSubscribed(String newsgroup, boolean subs);
 
   /**
    * Indicates whether an article is marked as seen in the specified newsgroup.
    */
-  public boolean isSeen (String newsgroup, int article);
+  public boolean isSeen(String newsgroup, int article);
 
   /**
    * Sets whether an article is marked as seen in the specified newsgroup.
    */
-  public void setSeen (String newsgroup, int article, boolean seen);
+  public void setSeen(String newsgroup, int article, boolean seen);
 
   /**
    * Closes the configuration, potentially saving any changes.
    */
-  public void close ();
+  public void close();
 
 }
+

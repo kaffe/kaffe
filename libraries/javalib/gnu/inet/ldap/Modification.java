@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -46,7 +46,7 @@ import java.util.Set;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public final class Modification
-extends AttributeValues
+  extends AttributeValues
 {
 
   /**
@@ -81,12 +81,12 @@ extends AttributeValues
    * @param type the attribute type
    * @param values the values to assign
    */
-  public Modification (int operation, String type, Set values)
+  public Modification(int operation, String type, Set values)
   {
-    super (type, values);
+    super(type, values);
     if (operation < ADD || operation > REPLACE)
       {
-        throw new IllegalArgumentException ("unknown operation");
+        throw new IllegalArgumentException("unknown operation");
       }
     this.operation = operation;
   }
@@ -94,9 +94,10 @@ extends AttributeValues
   /**
    * @see #operation
    */
-  public int getOperation ()
+  public int getOperation()
   {
     return operation;
   }
 
 }
+

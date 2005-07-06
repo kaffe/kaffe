@@ -607,7 +607,6 @@ gnu/inet/gopher/GopherConnection.java
 gnu/inet/gopher/GopherContentHandler.java
 gnu/inet/gopher/GopherURLConnection.java
 gnu/inet/gopher/Handler.java
-gnu/inet/https/Handler.java
 gnu/inet/imap/IMAPConnection.java
 gnu/inet/imap/IMAPConstants.java
 gnu/inet/imap/IMAPException.java
@@ -663,7 +662,6 @@ gnu/inet/util/CRLFOutputStream.java
 gnu/inet/util/EmptyX509TrustManager.java
 gnu/inet/util/GetLocalHostAction.java
 gnu/inet/util/LineInputStream.java
-gnu/inet/util/Logger.java
 gnu/inet/util/MessageInputStream.java
 gnu/inet/util/MessageOutputStream.java
 gnu/inet/util/SaslCallbackHandler.java
@@ -672,7 +670,7 @@ gnu/inet/util/SaslInputStream.java
 gnu/inet/util/SaslLogin.java
 gnu/inet/util/SaslOutputStream.java
 gnu/inet/util/SaslPlain.java
-gnu/inet/util/StderrLogger.java
+gnu/inet/util/TraceLevel.java
 gnu/java/awt/AWTUtilities.java
 gnu/java/awt/BitMaskExtent.java
 gnu/java/awt/BitwiseXORComposite.java

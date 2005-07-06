@@ -1,6 +1,6 @@
 /*
- * $Id: Handler.java,v 1.6 2005/07/04 00:05:15 robilad Exp $
- * Copyright (C) 2004 The Free Software Foundation
+ * TraceLevel.java
+ * Copyright (C) 2005 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -16,8 +16,8 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
  * conditions of the GNU General Public License cover the whole
@@ -36,37 +36,32 @@
  * exception statement from your version.
  */
 
-package gnu.inet.https;
+package gnu.inet.util;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-
-import gnu.java.net.protocol.http.HTTPConnection;
-import gnu.java.net.protocol.http.HTTPURLConnection;
+import java.util.logging.Level;
 
 /**
- * An HTTPS URL stream handler.
+ * A logging level used for network trace information.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.6 $ $Date: 2005/07/04 00:05:15 $
  */
-public class Handler extends URLStreamHandler
+public class TraceLevel
+  extends Level
 {
 
-  protected int getDefaultPort ()
-  {
-    return HTTPConnection.HTTPS_PORT;
-  }
+  /**
+   * The integer value for trace logging.
+   */
+  public static final int TRACE = 450;
 
   /**
-   * Returns an FTPURLConnection for the given URL.
+   * Constructor.
+   * @param name the name of this level, normally the network protocol
    */
-  public URLConnection openConnection (URL url)
-    throws IOException
+  public TraceLevel(String name)
   {
-    return new HTTPURLConnection (url);
+    super(name, TRACE);
   }
-
+  
 }
+

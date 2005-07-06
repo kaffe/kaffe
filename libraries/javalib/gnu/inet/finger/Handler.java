@@ -1,5 +1,5 @@
 /*
- * $Id: Handler.java,v 1.5 2005/07/04 00:05:14 robilad Exp $
+ * Handler.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -35,6 +35,7 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
+
 package gnu.inet.finger;
 
 import java.io.IOException;
@@ -47,17 +48,20 @@ import java.net.URLStreamHandler;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class Handler extends URLStreamHandler
+public class Handler
+  extends URLStreamHandler
 {
 
-  protected int getDefaultPort ()
-    {
-      return FingerConnection.DEFAULT_PORT;
-    }
+  protected int getDefaultPort()
+  {
+    return FingerConnection.DEFAULT_PORT;
+  }
 
-  protected URLConnection openConnection (URL url) throws IOException
-    {
-      return new FingerURLConnection (url);
-    }
+  protected URLConnection openConnection(URL url)
+    throws IOException
+  {
+    return new FingerURLConnection(url);
+  }
 
 }
+

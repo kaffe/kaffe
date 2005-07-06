@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -40,6 +40,7 @@ package gnu.inet.imap;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,8 +58,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -73,13 +75,13 @@ import javax.security.sasl.SaslException;
 import gnu.inet.util.BASE64;
 import gnu.inet.util.CRLFOutputStream;
 import gnu.inet.util.EmptyX509TrustManager;
-import gnu.inet.util.Logger;
 import gnu.inet.util.SaslCallbackHandler;
 import gnu.inet.util.SaslCramMD5;
 import gnu.inet.util.SaslInputStream;
 import gnu.inet.util.SaslLogin;
 import gnu.inet.util.SaslOutputStream;
 import gnu.inet.util.SaslPlain;
+import gnu.inet.util.TraceLevel;
 
 /**
  * The protocol class implementing IMAP4rev1.
@@ -89,6 +91,16 @@ import gnu.inet.util.SaslPlain;
 public class IMAPConnection
   implements IMAPConstants
 {
+
+  /**
+   * The logger used for IMAP protocol traces.
+   */
+  public static final Logger logger = Logger.getLogger("gnu.inet.imap");
+
+  /**
+   * The network trace level.
+   */
+  public static final Level IMAP_TRACE = new TraceLevel("imap");
 
   /**
    * Prefix for tags.
@@ -141,11 +153,6 @@ public class IMAPConnection
   private int tagIndex = 0;
 
   /*
-   * Print debugging output to stderr.
-   */
-  private boolean debug;
-
-  /*
    * Print debugging output using ANSI colour escape sequences.
    */
   private boolean ansiDebug = false;
@@ -157,7 +164,7 @@ public class IMAPConnection
   public IMAPConnection(String host)
     throws UnknownHostException, IOException
   {
-    this(host, -1, 0, 0, false, null, false);
+    this(host, -1, 0, 0, false, null);
   }
   
   /**
@@ -168,7 +175,7 @@ public class IMAPConnection
   public IMAPConnection(String host, int port)
     throws UnknownHostException, IOException
   {
-    this(host, port, 0, 0, false, null, false);
+    this(host, port, 0, 0, false, null);
   }
   
   /**
@@ -177,14 +184,12 @@ public class IMAPConnection
    * @param port the port to connect to, or -1 for the default
    * @param connectionTimeout the socket connection timeout
    * @param timeout the socket timeout
-   * @param debug log debugging information
    */
   public IMAPConnection(String host, int port,
-                        int connectionTimeout, int timeout,
-                        boolean debug)
+                        int connectionTimeout, int timeout)
     throws UnknownHostException, IOException
   {
-    this(host, port, connectionTimeout, timeout, false, null, debug);
+    this(host, port, connectionTimeout, timeout, false, null);
   }
   
   /**
@@ -197,7 +202,7 @@ public class IMAPConnection
   public IMAPConnection(String host, int port, TrustManager tm)
     throws UnknownHostException, IOException
   {
-    this(host, port, 0, 0, true, tm, false);
+    this(host, port, 0, 0, true, tm);
   }
   
   /**
@@ -209,15 +214,12 @@ public class IMAPConnection
    * @param secure if an IMAP-SSL connection should be made
    * @param tm a trust manager used to check SSL certificates, or null to
    * use the default
-   * @param debug log debugging information
    */
   public IMAPConnection(String host, int port,
                         int connectionTimeout, int timeout,
-                        boolean secure, TrustManager tm,
-                        boolean debug)
+                        boolean secure, TrustManager tm)
     throws UnknownHostException, IOException
   {
-    this.debug = debug;
     if (port < 0)
       {
         port = secure ? DEFAULT_SSL_PORT : DEFAULT_PORT;
@@ -254,8 +256,9 @@ public class IMAPConnection
       }
     catch (GeneralSecurityException e)
       {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
+        IOException e2 = new IOException();
+        e2.initCause(e);
+        throw e2;
       }
     
     InputStream in = socket.getInputStream();
@@ -291,11 +294,7 @@ public class IMAPConnection
   protected void sendCommand(String tag, String command)
     throws IOException
   {
-    if (debug)
-      {
-        Logger logger = Logger.getInstance();
-        logger.log("imap", "> " + tag + " " + command);
-      }
+    logger.log(IMAP_TRACE, "> " + tag + " " + command);
     out.write(tag + ' ' + command);
     out.writeln();
     out.flush();
@@ -356,25 +355,18 @@ public class IMAPConnection
     throws IOException
   {
     IMAPResponse response = in.next();
-    if (debug)
-      {
-        Logger logger = Logger.getInstance();
-        if (response == null)
-          {
-            logger.log("imap", "<EOF");
-          }
-        else if (ansiDebug)
-          {
-            logger.log("imap", "< " + response.toANSIString());
-          }
-        else
-          {
-            logger.log("imap", "< " + response.toString());
-          }
-      }
     if (response == null)
       {
-        throw new IOException("EOF");
+        logger.log(IMAP_TRACE, "<EOF");
+        throw new EOFException();
+      }
+    else if (ansiDebug)
+      {
+        logger.log(IMAP_TRACE, "< " + response.toANSIString());
+      }
+    else
+      {
+        logger.log(IMAP_TRACE, "< " + response.toString());
       }
     return response;
   }
@@ -677,7 +669,7 @@ public class IMAPConnection
         String[] m = new String[] { mechanism };
         CallbackHandler ch = new SaslCallbackHandler(username, password);
         // Avoid lengthy callback procedure for GNU Crypto
-        Properties p = new Properties();
+        HashMap p = new HashMap();
         p.put("gnu.crypto.sasl.username", username);
         p.put("gnu.crypto.sasl.password", password);
         SaslClient sasl = Sasl.createSaslClient(m, null, "imap",
@@ -700,11 +692,7 @@ public class IMAPConnection
               }
             else
               {
-                if (debug)
-                  {
-                    Logger logger = Logger.getInstance();
-                    logger.log("imap", mechanism + " not available");
-                  }
+                logger.log(IMAP_TRACE, mechanism + " not available");
                 return false;
               }
           }
@@ -759,11 +747,7 @@ public class IMAPConnection
                     out.write(r1);
                     out.writeln();
                     out.flush();
-                    if (debug)
-                      {
-                        Logger logger = Logger.getInstance();
-                        logger.log("imap", "> " + new String(r1, US_ASCII));
-                      }
+                    logger.log(IMAP_TRACE, "> " + new String(r1, US_ASCII));
                   }
                 catch (SaslException e)
                   {
@@ -771,11 +755,7 @@ public class IMAPConnection
                     out.write(0x2a);
                     out.writeln();
                     out.flush();
-                    if (debug)
-                      {
-                        Logger logger = Logger.getInstance();
-                        logger.log("imap", "> *");
-                      }
+                    logger.log(IMAP_TRACE, "> *");
                   }
               }
             else
@@ -786,20 +766,12 @@ public class IMAPConnection
       }
     catch (SaslException e)
       {
-        if (debug)
-          {
-            Logger logger = Logger.getInstance();
-            logger.error("imap", e);
-          }
+        logger.log(IMAP_TRACE, e.getMessage(), e);
         return false;             // No provider for mechanism
       }
     catch (RuntimeException e)
       {
-        if (debug)
-          {
-            Logger logger = Logger.getInstance();
-            logger.error("imap", e);
-          }
+        logger.log(IMAP_TRACE, e.getMessage(), e);
         return false;             // No javax.security.sasl classes
       }
   }

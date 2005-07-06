@@ -115,7 +115,6 @@ Klasses_jar_SRCS = \
 	$(gnu_inet_comsat_SRCS) \
 	$(gnu_inet_finger_SRCS) \
 	$(gnu_inet_gopher_SRCS) \
-	$(gnu_inet_https_SRCS) \
 	$(gnu_inet_imap_SRCS) \
 	$(gnu_inet_ldap_SRCS) \
 	$(gnu_inet_nntp_SRCS) \
@@ -1042,8 +1041,6 @@ gnu_inet_gopher_SRCS = \
 	gnu/inet/gopher/GopherContentHandler.java \
 	gnu/inet/gopher/GopherURLConnection.java \
 	gnu/inet/gopher/Handler.java
-gnu_inet_https_SRCS = \
-	gnu/inet/https/Handler.java
 gnu_inet_imap_SRCS = \
 	gnu/inet/imap/IMAPConnection.java \
 	gnu/inet/imap/IMAPConstants.java \
@@ -1105,7 +1102,6 @@ gnu_inet_util_SRCS = \
 	gnu/inet/util/EmptyX509TrustManager.java \
 	gnu/inet/util/GetLocalHostAction.java \
 	gnu/inet/util/LineInputStream.java \
-	gnu/inet/util/Logger.java \
 	gnu/inet/util/MessageInputStream.java \
 	gnu/inet/util/MessageOutputStream.java \
 	gnu/inet/util/SaslCallbackHandler.java \
@@ -1114,7 +1110,7 @@ gnu_inet_util_SRCS = \
 	gnu/inet/util/SaslLogin.java \
 	gnu/inet/util/SaslOutputStream.java \
 	gnu/inet/util/SaslPlain.java \
-	gnu/inet/util/StderrLogger.java
+	gnu/inet/util/TraceLevel.java
 gnu_java_awt_SRCS = \
 	gnu/java/awt/AWTUtilities.java \
 	gnu/java/awt/BitMaskExtent.java \

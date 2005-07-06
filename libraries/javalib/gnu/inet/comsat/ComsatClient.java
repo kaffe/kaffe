@@ -1,5 +1,5 @@
 /*
- * $Id: ComsatClient.java,v 1.3 2005/07/04 00:05:13 robilad Exp $
+ * ComsatClient.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -58,13 +58,13 @@ public class ComsatClient
 
   protected DatagramSocket socket;
 
-  public ComsatClient ()
+  public ComsatClient()
     throws IOException
   {
-    this (DEFAULT_PORT, 0);
+    this(DEFAULT_PORT, 0);
   }
   
-  public ComsatClient (int port, int timeout)
+  public ComsatClient(int port, int timeout)
     throws IOException
   {
     if (port < 0)
@@ -72,43 +72,43 @@ public class ComsatClient
         port = DEFAULT_PORT;
       }
     
-    socket = new DatagramSocket (port);
+    socket = new DatagramSocket(port);
     if (timeout > 0)
       {
-        socket.setSoTimeout (timeout);
+        socket.setSoTimeout(timeout);
       }
-    socket.setReceiveBufferSize (1024);
+    socket.setReceiveBufferSize(1024);
   }
 
-  public void close ()
+  public void close()
     throws IOException
   {
-    socket.close ();
+    socket.close();
   }
 
-  public ComsatInfo read ()
+  public ComsatInfo read()
     throws IOException
   {
-    byte[] buf = new byte[socket.getReceiveBufferSize ()];
+    byte[] buf = new byte[socket.getReceiveBufferSize()];
     int len = buf.length;
-    DatagramPacket packet = new DatagramPacket (buf, len);
-    socket.receive (packet);
-    buf = packet.getData ();
-    len = packet.getLength ();
-    String data = new String (buf, 0, len, "ISO-8859-1");
+    DatagramPacket packet = new DatagramPacket(buf, len);
+    socket.receive(packet);
+    buf = packet.getData();
+    len = packet.getLength();
+    String data = new String(buf, 0, len, "ISO-8859-1");
 
-    ComsatInfo info = new ComsatInfo ();
-    StringTokenizer st = new StringTokenizer (data, "\n");
-    String mailbox = st.nextToken ();
-    info.setMailbox (mailbox);
+    ComsatInfo info = new ComsatInfo();
+    StringTokenizer st = new StringTokenizer(data, "\n");
+    String mailbox = st.nextToken();
+    info.setMailbox(mailbox);
     boolean inBody = false;
     String lastHeader = null;
-    while (st.hasMoreTokens ())
+    while (st.hasMoreTokens())
       {
-        String line = st.nextToken ();
+        String line = st.nextToken();
         if (inBody)
           {
-            String body = info.getBody ();
+            String body = info.getBody();
             if (body == null)
               {
                 body = line;
@@ -117,28 +117,28 @@ public class ComsatClient
               {
                 body += "\n" + line;
               }
-            info.setBody (body);
+            info.setBody(body);
           }
         else
           {
-            if (line.length () == 0)
+            if (line.length() == 0)
               {
                 inBody = true;
               }
             else
               {
-                int ci = line.indexOf (':');
+                int ci = line.indexOf(':');
                 if (ci != -1)
                   {
-                    lastHeader = line.substring (0, ci);
-                    info.setHeader (lastHeader,
-                                    line.substring (ci + 1).trim ());
+                    lastHeader = line.substring(0, ci);
+                    info.setHeader(lastHeader,
+                                   line.substring(ci + 1).trim());
                   }
                 else
                   {
-                    String val = info.getHeader (lastHeader);
+                    String val = info.getHeader(lastHeader);
                     val += "\n" + line;
-                    info.setHeader (lastHeader, val);
+                    info.setHeader(lastHeader, val);
                   }
               }
           }
@@ -147,3 +147,4 @@ public class ComsatClient
   }
 
 }
+

@@ -1,5 +1,5 @@
 /*
- * $Id: GopherContentHandler.java,v 1.5 2005/07/04 00:05:14 robilad Exp $
+ * GopherContentHandler.java
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -49,33 +49,35 @@ import java.net.URLConnection;
  * This will return either directory listings or input streams.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2005/07/04 00:05:14 $
  */
-public class GopherContentHandler extends ContentHandler
+public class GopherContentHandler
+  extends ContentHandler
 {
 
-  public Object getContent(URLConnection urlc) throws IOException
-    {
-      if (urlc instanceof GopherURLConnection)
-        {
-          GopherURLConnection gurlc = (GopherURLConnection) urlc;
-          GopherConnection connection = gurlc.connection;
-          URL url = gurlc.getURL ();
-          String dir = url.getPath ();
-          String filename = url.getPath ();
-          if (dir == null && filename == null)
-            {
-              return connection.list ();
-            }
-          else
-            {
-              return gurlc.getInputStream ();
-            }
-        }
-      else
-        {
-          throw new UnknownServiceException ();
-        }
-    }
-
+  public Object getContent(URLConnection urlc)
+    throws IOException
+  {
+    if (urlc instanceof GopherURLConnection)
+      {
+        GopherURLConnection gurlc = (GopherURLConnection) urlc;
+        GopherConnection connection = gurlc.connection;
+        URL url = gurlc.getURL();
+        String dir = url.getPath();
+        String file = url.getFile();
+        if (dir == null && file == null)
+          {
+            return connection.list();
+          }
+        else
+          {
+            return gurlc.getInputStream();
+          }
+      }
+    else
+      {
+        throw new UnknownServiceException();
+      }
+  }
+  
 }
+

@@ -16,7 +16,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
@@ -38,6 +38,7 @@
 
 package gnu.inet.ldap;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -59,7 +60,7 @@ public class BERDecoder
   private boolean control;
   private boolean utf8;
 
-  public BERDecoder (byte[] data, boolean utf8)
+  public BERDecoder(byte[] data, boolean utf8)
   {
     buffer = data;
     offset = 0;
@@ -71,41 +72,41 @@ public class BERDecoder
    * Returns the type of the current value record.
    * If there are no more records to read, this method returns -1.
    */
-  public int parseType ()
+  public int parseType()
     throws BERException
   {
     if (offset >= buffer.length)
       {
         return -1;
       }
-    type = byteToInt (buffer[offset++]);
-    len = byteToInt (buffer[offset++]);
+    type = byteToInt(buffer[offset++]);
+    len = byteToInt(buffer[offset++]);
     if ((len & 0x80) != 0)
       {
         int lsize = len - 0x80;
         if (lsize > 4)
           {
-            throw new BERException ("Data too long: " + lsize);
+            throw new BERException("Data too long: " + lsize);
           }
         if (buffer.length - offset < lsize)
           {
-            throw new BERException ("Insufficient data");
+            throw new BERException("Insufficient data");
           }
         len = 0;
         for (int i = 0; i < lsize; i++)
           {
-            len = (len << 8) + byteToInt (buffer[offset++]);
+            len = (len << 8) + byteToInt(buffer[offset++]);
           }
         if (buffer.length - offset < len)
           {
-            throw new BERException ("Insufficient data");
+            throw new BERException("Insufficient data");
           }
       }
     control = false;
     return type;
   }
 
-  static int byteToInt (byte b)
+  static int byteToInt(byte b)
   {
     int ret = (int) b;
     if (ret < 0)
@@ -115,48 +116,48 @@ public class BERDecoder
     return ret;
   }
 
-  int getLength ()
+  int getLength()
   {
     return len;
   }
 
-  public boolean available ()
+  public boolean available()
   {
     return (offset < buffer.length);
   }
 
-  public void skip ()
+  public void skip()
   {
     offset += len;
     control = true;
   }
 
-  public boolean parseBoolean ()
+  public boolean parseBoolean()
     throws BERException
   {
     if (control)
       {
-        parseType ();
+        parseType();
       }
     if (type != BERConstants.BOOLEAN)
       {
-        throw new BERException ("Unexpected type: " + type);
+        throw new BERException("Unexpected type: " + type);
       }
     int c = (int) buffer[offset++];
     control = true;
     return (c != 0);
   }
 
-  public int parseInt ()
+  public int parseInt()
     throws BERException
   {
     if (control)
       {
-        parseType ();
+        parseType();
       }
     if (type != BERConstants.INTEGER && type != BERConstants.ENUMERATED)
       {
-        throw new BERException ("Unexpected type: " + type);
+        throw new BERException("Unexpected type: " + type);
       }
     byte c = buffer[offset++];
     int val = ((int) c) & 0x7f;
@@ -173,12 +174,12 @@ public class BERDecoder
     return val;
   }
 
-  public String parseString ()
+  public String parseString()
     throws BERException
   {
     if (control)
       {
-        parseType ();
+        parseType();
       }
     if (len == 0)
       {
@@ -187,144 +188,143 @@ public class BERDecoder
       }
     if (type != BERConstants.UTF8_STRING && type != BERConstants.OCTET_STRING)
       {
-        throw new BERException ("Unexpected type: " + type);
+        throw new BERException("Unexpected type: " + type);
       }
     String encoding = (type == BERConstants.UTF8_STRING) ? "UTF-8" :
       "ISO-8859-1";
     try
       {
-        String ret = new String (buffer, offset, len, encoding);
+        String ret = new String(buffer, offset, len, encoding);
         offset += len;
         control = true;
         return ret;
       }
-    catch (UnsupportedEncodingException e)
+    catch(UnsupportedEncodingException e)
       {
-        throw new BERException ("JVM does not support " + encoding);
+        throw new BERException("JVM does not support " + encoding);
       }
   }
 
-  public byte[] parseOctetString ()
+  public byte[] parseOctetString()
     throws BERException
   {
     if (control)
       {
-        parseType ();
+        parseType();
       }
     if (type != BERConstants.OCTET_STRING)
       {
-        throw new BERException ("Unexpected type: " + type);
+        throw new BERException("Unexpected type: " + type);
       }
     byte[] ret = new byte[len];
-    System.arraycopy (buffer, offset, ret, 0, len);
+    System.arraycopy(buffer, offset, ret, 0, len);
     offset += len;
     control = true;
     return ret;
   }
 
-  public BERDecoder parseSequence ()
+  public BERDecoder parseSequence()
     throws BERException
   {
-    return parseSequence (BERConstants.SEQUENCE);
+    return parseSequence(BERConstants.SEQUENCE);
   }
   
-  public BERDecoder parseSequence (int code)
+  public BERDecoder parseSequence(int code)
     throws BERException
   {
     if (control)
       {
-        parseType ();
+        parseType();
       }
     if (code != -1 && type != code)
       {
-        throw new BERException ("Unexpected type: " + type);
+        throw new BERException("Unexpected type: " + type);
       }
     byte[] ret = new byte[len];
-    System.arraycopy (buffer, offset, ret, 0, len);
+    System.arraycopy(buffer, offset, ret, 0, len);
     offset += len;
     control = true;
-    return new BERDecoder (ret, utf8);
+    return new BERDecoder(ret, utf8);
   }
   
-  public BERDecoder parseSet ()
+  public BERDecoder parseSet()
     throws BERException
   {
-    return parseSet (BERConstants.SET);
+    return parseSet(BERConstants.SET);
   }
 
-  public BERDecoder parseSet (int code)
+  public BERDecoder parseSet(int code)
     throws BERException
   {
-    return parseSequence (code);
+    return parseSequence(code);
   }
 
-  public static void main (String[] args)
+  public static void main(String[] args)
   {
     try
       {
-        java.io.ByteArrayOutputStream out =
-          new java.io.ByteArrayOutputStream ();
-        for (int c = System.in.read (); c != -1; c = System.in.read ())
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (int c = System.in.read(); c != -1; c = System.in.read())
           {
-            out.write (c);
+            out.write(c);
           }
-        byte[] code = out.toByteArray ();
-        BERDecoder decoder = new BERDecoder (code, true);
-        debug (decoder, 0);
+        byte[] code = out.toByteArray();
+        BERDecoder decoder = new BERDecoder(code, true);
+        debug(decoder, 0);
       }
     catch (Exception e)
       {
-        e.printStackTrace (System.err);
+        e.printStackTrace(System.err);
       }
   }
 
-  private static void debug (BERDecoder decoder, int depth)
+  private static void debug(BERDecoder decoder, int depth)
     throws BERException
   {
-    for (int t = decoder.parseType (); t != -1; t = decoder.parseType ())
+    for (int t = decoder.parseType(); t != -1; t = decoder.parseType())
       {
         for (int i = 0; i < depth; i++)
           {
-            System.out.print ('\t');
+            System.out.print('\t');
           } 
         switch (t)
           {
           case BERConstants.BOOLEAN:
-            System.out.println ("BOOLEAN: " + decoder.parseBoolean ());
+            System.out.println("BOOLEAN: " + decoder.parseBoolean());
             break;
           case BERConstants.INTEGER:
-            System.out.println ("INTEGER: " + decoder.parseInt ());
+            System.out.println("INTEGER: " + decoder.parseInt());
             break;
           case BERConstants.ENUMERATED:
-            System.out.println ("ENUMERATED: " + decoder.parseInt ());
+            System.out.println("ENUMERATED: " + decoder.parseInt());
             break;
           case BERConstants.OCTET_STRING:
-            System.out.println ("OCTET-STRING: " +
-                                toString (decoder.parseOctetString ()));
+            System.out.println("OCTET-STRING: " +
+                                toString(decoder.parseOctetString()));
             break;
           case BERConstants.UTF8_STRING:
-            System.out.println ("STRING: \"" + decoder.parseString () + "\"");
+            System.out.println("STRING: \"" + decoder.parseString() + "\"");
             break;
           default:
-            System.out.println ("SEQUENCE " + t + " (0x" +
-                                Integer.toHexString (t) + "): " +
-                                decoder.getLength ());
-            BERDecoder sequence = decoder.parseSequence (t);
-            debug (sequence, depth + 1);            
+            System.out.println("SEQUENCE " + t + "(0x" +
+                                Integer.toHexString(t) + "): " +
+                                decoder.getLength());
+            BERDecoder sequence = decoder.parseSequence(t);
+            debug(sequence, depth + 1);            
             break;
           }
       }
   }
 
-  private static String toString (byte[] bytes)
+  private static String toString(byte[] bytes)
   {
     try
       {
-        return "\"" + new String (bytes, "UTF-8") + "\"";
+        return "\"" + new String(bytes, "UTF-8") + "\"";
       }
     catch (UnsupportedEncodingException e)
       {
-        return bytes.toString ();
+        return bytes.toString();
       }
   }
   

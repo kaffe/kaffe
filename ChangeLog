@@ -1,5 +1,44 @@
 2005-07-06  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU inetlib.
+
+	2005-06-20  Chris Burdess  <dog@gnu.org>
+
+        * Request.java: If request method is HEAD or OPTIONS, never attempt
+        to read response body.
+
+	2005-06-15  Goffredo Baroncelli  <kreijack@inwind.it>
+
+        * HTTPURLConnection.java: Check index.
+
+	2005-06-06  Chris Burdess  <dog@gnu.org>
+
+        * IMAPConnection.java,POP3Connection.java,SMTPConnection.java,
+        NNTPConnection.java,TraceLevel.java: New logging framework.
+        * POP3Connection.java,SMTPConnection.java: Permit TLS negotiation on
+        socket connection.
+
+	2005-05-28  Chris Burdess  <dog@gnu.org>
+
+        * HTTPURLConnection.java: Check that Location is not null on
+        redirect.
+        * FTPURLConnection.java: URL paths are relative.
+
+	2005-04-28  Chris Burdess  <dog@gnu.org>
+
+        * NNTPConnection.java: As below for createSaslClient.
+
+	2005-04-27  Chris Burdess  <dog@gnu.org>
+
+        * HTTPURLConnection.java: Accept absolute and relative paths in
+        Location header. Throw FileNotFoundException and implement
+        getErrorStream on 404.
+        * SMTPConnection.java,IMAPConnection.java,POP3Connection.java:
+        Use HashMap instead of Properties in argument to createSaslClient
+        to ensure compatibility with Java 1.5 generics syntax.
+
+2005-07-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile: Recommend jikes 1.22.
 
         Reported by:  Akhilesh Shirbhate <akhilesh.hacking@gmail.com>
