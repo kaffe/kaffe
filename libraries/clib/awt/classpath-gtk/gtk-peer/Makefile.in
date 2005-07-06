@@ -113,7 +113,6 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkScrollbarPeer.c \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.c \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.c \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.c \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.c \
 	gnu_java_awt_peer_gtk_GtkToolkit.c \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c gthread-jni.c \
@@ -152,7 +151,6 @@ am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.lo \
-	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkToolkit.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkWindowPeer.lo \
@@ -495,7 +493,6 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkScrollbarPeer.c \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.c \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.c \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.c \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.c \
 	gnu_java_awt_peer_gtk_GtkToolkit.c \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c \
@@ -652,7 +649,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkToolkit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkWindowPeer.Plo@am__quote@
@@ -911,13 +907,6 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.lo: gnu_java_awt_peer_gtk_Gt
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkTextAreaPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkTextAreaPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkTextAreaPeer.c
-
-libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo: gnu_java_awt_peer_gtk_GtkTextComponentPeer.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkTextComponentPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkTextComponentPeer.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkTextComponentPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkTextComponentPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkTextComponentPeer.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.lo: gnu_java_awt_peer_gtk_GtkTextFieldPeer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkTextFieldPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkTextFieldPeer.c; \

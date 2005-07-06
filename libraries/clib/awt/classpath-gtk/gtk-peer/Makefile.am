@@ -42,7 +42,6 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkScrollbarPeer.c \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.c \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.c \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.c \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.c \
 	gnu_java_awt_peer_gtk_GtkToolkit.c \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c \
