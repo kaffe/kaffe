@@ -52,6 +52,13 @@ public class ParameterModeHolder
   public ParameterMode value;
 
   /**
+   * Create the unitialised instance.
+   */
+  public ParameterModeHolder()
+  {
+  }
+
+  /**
    * Create the initialised instance.
    * @param initialValue
    */
