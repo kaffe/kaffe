@@ -19,7 +19,7 @@
 #include "jni_i.h"
 #include "jni_funcs.h"
 #include "gc.h"
-
+#include "jvmpi_kaffe.h"
 
 static void
 postError(JNIEnv* env, errorInfo* info)

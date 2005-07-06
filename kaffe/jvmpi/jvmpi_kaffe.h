@@ -18,6 +18,7 @@
 
 #include <jvmpi.h>
 
+#include "classMethod.h"
 #include "lock-impl.h"
 #include "support.h"
 #include "code.h"
