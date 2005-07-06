@@ -48,7 +48,8 @@ import java.util.HashMap;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
- * AbstractAction
+ * A base class for implementing the {@link Action} interface.
+ * 
  * @author	Andrew Selkirk
  * @version	1.0
  */
@@ -58,12 +59,12 @@ public abstract class AbstractAction
   private static final long serialVersionUID = -6803159439231523484L;
 
   /**
-   * enabled
+   * A flag that indicates whether or not the action is enabled.
    */
   protected boolean enabled = true;
   
   /**
-   * changeSupport
+   * Provides support for property change event notification. 
    */
   protected SwingPropertyChangeSupport changeSupport =
     new SwingPropertyChangeSupport(this);
@@ -74,7 +75,8 @@ public abstract class AbstractAction
   private transient HashMap store = new HashMap();
 
   /**
-   * Constructor AbstractAction
+   * Creates a new action with an empty string for the name.  All other 
+   * properties are initialised to <code>null</code>
    */
   public AbstractAction()
   {
@@ -82,9 +84,10 @@ public abstract class AbstractAction
   }
 
   /**
-   * Constructor AbstractAction
+   * Creates a new action with the specified name.  All other properties are
+   * initialised to <code>null</code>.
    *
-   * @param name TODO
+   * @param name  the name (<code>null</code> permitted).
    */
   public AbstractAction(String name)
   {
@@ -92,10 +95,11 @@ public abstract class AbstractAction
   }
 
   /**
-   * Constructor AbstractAction
+   * Creates a new action with the specified name and icon.  All other 
+   * properties are initialised to <code>null</code>.
    *
-   * @param name TODO
-   * @param icon TODO
+   * @param name  the name (<code>null</code> permitted).
+   * @param icon  the icon (<code>null</code> permitted).
    */
   public AbstractAction(String name, Icon icon)
   {
@@ -144,11 +148,12 @@ public abstract class AbstractAction
   }
 
   /**
-   * Returns a value for a given key from the built-in store.
-   *
-   * @param key the key to get the value for
-   *
-   * @return Object
+   * Returns the value associated with the specified key.
+   * 
+   * @param key  the key (not <code>null</code>).
+   * 
+   * @return The value associated with the specified key, or 
+   *         <code>null</code> if the key is not found.
    */
   public Object getValue(String key)
   {
@@ -156,10 +161,16 @@ public abstract class AbstractAction
   }
 
   /**
-   * Puts a key/value pair into the built-in store.
-   *
-   * @param key the key
-   * @param value the value
+   * Sets the value associated with the specified key and sends a 
+   * {@link java.beans.PropertyChangeEvent} to all registered listeners.  
+   * The standard keys are: {@link #NAME}, {@link #SHORT_DESCRIPTION}, 
+   * {@link #LONG_DESCRIPTION}, {@link #SMALL_ICON}, 
+   * {@link #ACTION_COMMAND_KEY}, {@link #ACCELERATOR_KEY} and 
+   * {@link #MNEMONIC_KEY}. Any existing value associated with the key will be 
+   * overwritten.
+   * 
+   * @param key  the key (not <code>null</code>).
+   * @param value  the value (<code>null</code> permitted).
    */
   public void putValue(String key, Object value)
   {
@@ -172,9 +183,9 @@ public abstract class AbstractAction
   }
 
   /**
-   * isEnabled
+   * Returns the flag that indicates whether or not the action is enabled.
    *
-   * @return boolean
+   * @return The flag.
    */
   public boolean isEnabled()
   {
@@ -182,9 +193,11 @@ public abstract class AbstractAction
   }
 
   /**
-   * setEnabled
+   * Sets the flag that indicates whether or not the action is enabled and, if
+   * the value of the flag changed from the previous setting, sends a 
+   * {@link java.beans.PropertyChangeEvent} to all registered listeners.
    *
-   * @param enabled TODO
+   * @param enabled  the new flag value.
    */
   public void setEnabled(boolean enabled)
   {

@@ -356,10 +356,10 @@ public class JTable extends JComponent
    * {@link TableColumnModel} and assign it to the {@link #columnModel}
    * property when the {@link #dataModel} property is changed. 
    *
-   * @see #setModel()
+   * @see #setModel(TableModel)
    * @see #createColumnsFromModel()
-   * @see #setColumnModel()
-   * @see #setAutoCreateColumnsFromModel()
+   * @see #setColumnModel(TableColumnModel)
+   * @see #setAutoCreateColumnsFromModel(boolean)
    * @see #getAutoCreateColumnsFromModel()
    */
   protected boolean autoCreateColumnsFromModel;
@@ -371,7 +371,7 @@ public class JTable extends JComponent
    * #AUTO_RESIZE_SUBSEQUENT_COLUMNS}, or {@link #AUTO_RESIZE_OFF}.
    * 
    * @see #doLayout()
-   * @see #setAutoResizeMode()
+   * @see #setAutoResizeMode(int)
    * @see #getAutoResizeMode()
    */
   protected int autoResizeMode;
@@ -383,21 +383,21 @@ public class JTable extends JComponent
    * {@link #columnModel}.
    * 
    * @see #getRowHeight()
-   * @see #setRowHeight()
+   * @see #setRowHeight(int)
    * @see TableColumn#getWidth()
-   * @see TableColumn#setWidth()
+   * @see TableColumn#setWidth(int)
    */
   protected int rowHeight;
 
   /**
    * The height in pixels of the gap left between any two rows of the table. 
    * 
-   * @see #setRowMargin()
+   * @see #setRowMargin(int)
    * @see #getRowHeight()
    * @see #getIntercellSpacing()
-   * @see #setIntercellSpacing()
+   * @see #setIntercellSpacing(Dimension)
    * @see TableColumnModel#getColumnMargin()
-   * @see TableColumnModel#setColumnMargin()
+   * @see TableColumnModel#setColumnMargin(int)
    */
   protected int rowMargin;
 
@@ -408,18 +408,18 @@ public class JTable extends JComponent
    * selection as an independent concept, but it is now represented solely
    * in terms of simultaneous row and column selection.
    *
-   * @see TableColumnModel#columnSelectionAllowed()
-   * @see #setRowSelectionAllowed()
+   * @see TableColumnModel#getColumnSelectionAllowed()
+   * @see #setRowSelectionAllowed(boolean)
    * @see #getRowSelectionAllowed()
    * @see #getCellSelectionEnabled()
-   * @see #setCellSelectionEnabled()
+   * @see #setCellSelectionEnabled(boolean)
    */
   protected boolean rowSelectionAllowed;
 
   /**
-   * @deprecated Use {@link #rowSelectionAllowed}, {@link
-   * #columnSelectionAllowed}, or the combined methods {@link
-   * getCellSelectionEnabled} and {@link setCellSelectionEnabled}.
+   * @deprecated Use {@link #rowSelectionAllowed}, {@link 
+   * #getColumnSelectionAllowed}, or the combined methods {@link
+   * #getCellSelectionEnabled} and {@link #setCellSelectionEnabled(boolean)}.
    */
   protected boolean cellSelectionEnabled;
   
@@ -429,8 +429,8 @@ public class JTable extends JComponent
    * property name. The table listens to its model as a {@link
    * TableModelListener}.
    *
-   * @see #tableChanged()
-   * @see TableModel#addTableModelListener()
+   * @see #tableChanged(TableModelEvent)
+   * @see TableModel#addTableModelListener(TableModelListener)
    */
   protected TableModel dataModel;
 
@@ -444,7 +444,7 @@ public class JTable extends JComponent
    *
    * <p>The TableColumnModel also contains a {@link ListSelectionModel} which
    * indicates which columns are currently selected. This selection model
-   * works in combination with the {@link selectionModel} of the table
+   * works in combination with the {@link #selectionModel} of the table
    * itself to specify a <em>table selection</em>: a combination of row and
    * column selections.</p>
    *
@@ -453,7 +453,7 @@ public class JTable extends JComponent
    * columnModel automatically, and the table acts as a facade for most of
    * the interesting properties of the columnModel anyways.</p>
    * 
-   * @see #setColumnModel()
+   * @see #setColumnModel(TableColumnModel)
    * @see #getColumnModel()
    */
   protected TableColumnModel columnModel;
@@ -461,14 +461,14 @@ public class JTable extends JComponent
   /**
    * A model of the rows of this table which are currently selected. This
    * model is used in combination with the column selection model held as a
-   * member of the {@link columnModel} property, to represent the rows and
+   * member of the {@link #columnModel} property, to represent the rows and
    * columns (or both: cells) of the table which are currently selected.
    *
    * @see #rowSelectionAllowed
-   * @see #setSelectionModel()
+   * @see #setSelectionModel(ListSelectionModel)
    * @see #getSelectionModel()
    * @see TableColumnModel#getSelectionModel()
-   * @see ListSelectionModel#addListSelectionListener()   
+   * @see ListSelectionModel#addListSelectionListener(ListSelectionListener)   
    */
   protected ListSelectionModel selectionModel;
 
@@ -494,7 +494,7 @@ public class JTable extends JComponent
    * The color to paint the grid lines of the table, when either {@link
    * #showHorizontalLines} or {@link #showVerticalLines} is set.
    *
-   * @see #setGridColor()
+   * @see #setGridColor(Color)
    * @see #getGridColor()
    */
   protected Color gridColor;
@@ -503,7 +503,7 @@ public class JTable extends JComponent
    * The size this table would prefer its viewport assume, if it is
    * contained in a {@link JScrollPane}.
    *
-   * @see #setPreferredScrollableViewportSize()
+   * @see #setPreferredScrollableViewportSize(Dimension)
    * @see #getPreferredScrollableViewportSize()
    */
   protected Dimension preferredViewportSize;
@@ -513,7 +513,7 @@ public class JTable extends JComponent
    * change event with name {@link #SELECTION_BACKGROUND_CHANGED_PROPERTY}
    * when its value changes.
    *
-   * @see #setSelectionBackground()
+   * @see #setSelectionBackground(Color)
    * @see #getSelectionBackground()
    */
   protected Color selectionBackground;
@@ -529,7 +529,7 @@ public class JTable extends JComponent
    * change event with name {@link #SELECTION_FOREGROUND_CHANGED_PROPERTY}
    * when its value changes.
    *
-   * @see #setSelectionForeground()
+   * @see #setSelectionForeground(Color)
    * @see #getSelectionForeground()
    */
   protected Color selectionForeground;
@@ -672,8 +672,8 @@ public class JTable extends JComponent
   {
     if (column.getHeaderValue() == null)
       {
-	String name = getColumnName(column.getModelIndex());
-	column.setHeaderValue(name);
+        String name = dataModel.getColumnName(column.getModelIndex());
+        column.setHeaderValue(name);
       }
     
     columnModel.addColumn(column);
@@ -896,7 +896,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedRow} property by delegation to
+   * Get the value of the selectedRow property by delegation to
    * the {@link ListSelectionModel#getMinSelectionIndex} method of the
    * {@link #selectionModel} field.
    *
@@ -927,23 +927,21 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #scrollableTracksViewportHeight} property.
+   * Get the value of the <code>scrollableTracksViewportHeight</code> property.
    *
    * @return The constant value <code>false</code>
    */
-
   public boolean getScrollableTracksViewportHeight()
   {
     return false;
   }
   
   /**
-   * Get the value of the {@link #scrollableTracksViewportWidth} property.
+   * Get the value of the <code>scrollableTracksViewportWidth</code> property.
    *
-   * @return <code>true</code> unless the {@link autoResizeMode} prperty is
+   * @return <code>true</code> unless the {@link #autoResizeMode} property is
    * <code>AUTO_RESIZE_OFF</code>
    */
-
   public boolean getScrollableTracksViewportWidth()
   {
     if (autoResizeMode == AUTO_RESIZE_OFF)
@@ -1027,8 +1025,6 @@ public class JTable extends JComponent
   {
     if (vc < 0)
       return vc;
-    else if (vc > getColumnCount())
-      return -1;
     else
       return columnModel.getColumn(vc).getModelIndex();
   }
@@ -1138,7 +1134,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #columnCount} property by
+   * Get the value of the <code>columnCount</code> property by
    * delegation to the @{link #columnModel} field.
    *
    * @return The current value of the columnCount property
@@ -1149,7 +1145,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #rowCount} property by
+   * Get the value of the <code>rowCount</code> property by
    * delegation to the @{link #dataModel} field.
    *
    * @return The current value of the rowCount property
@@ -1170,7 +1166,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedColumn} property by
+   * Get the value of the <code>selectedColumn</code> property by
    * delegation to the @{link #columnModel} field.
    *
    * @return The current value of the selectedColumn property
@@ -1240,7 +1236,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedColumnCount} property by
+   * Get the value of the <code>selectedColumnCount</code> property by
    * delegation to the @{link #columnModel} field.
    *
    * @return The current value of the selectedColumnCount property
@@ -1251,7 +1247,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedColumns} property by
+   * Get the value of the <code>selectedColumns</code> property by
    * delegation to the @{link #columnModel} field.
    *
    * @return The current value of the selectedColumns property
@@ -1262,7 +1258,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #columnSelectionAllowed} property.
+   * Get the value of the <code>columnSelectionAllowed</code> property.
    *
    * @return The current value of the columnSelectionAllowed property
    */
@@ -1272,7 +1268,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedRowCount} property by
+   * Get the value of the <code>selectedRowCount</code> property by
    * delegation to the @{link #selectionModel} field.
    *
    * @return The current value of the selectedRowCount property
@@ -1283,7 +1279,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #selectedRows} property by
+   * Get the value of the <code>selectedRows</code> property by
    * delegation to the @{link #selectionModel} field.
    *
    * @return The current value of the selectedRows property
@@ -1334,7 +1330,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #intercellSpacing} property.
+   * Get the value of the <code>intercellSpacing</code> property.
    *
    * @return The current value of the property
    */
@@ -1574,7 +1570,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #columnSelectionAllowed} property.
+   * Set the value of the <code>columnSelectionAllowed</code> property.
    *
    * @param c The new value of the property
    */ 
@@ -1606,7 +1602,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #selectionMode} property by
+   * Set the value of the <code>selectionMode</code> property by
    * delegation to the {@link #selectionModel} field. The same selection
    * mode is set for row and column selection models.
    *
@@ -1661,7 +1657,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #intercellSpacing} property.
+   * Set the value of the <code>intercellSpacing</code> property.
    *
    * @param i The new value of the intercellSpacing property
    */ 
@@ -1708,7 +1704,7 @@ public class JTable extends JComponent
    * <p>Set the value of the {@link #selectionForeground} property.</p>
    *
    * <p>Fire a PropertyChangeEvent with name {@link
-   * SELECTION_FOREGROUND_CHANGED_PROPERTY} to registered listeners, if
+   * #SELECTION_FOREGROUND_CHANGED_PROPERTY} to registered listeners, if
    * selectionForeground changed.</p>
    *
    * @param s The new value of the selectionForeground property
@@ -1725,7 +1721,7 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #showGrid} property.
+   * Set the value of the <code>showGrid</code> property.
    *
    * @param s The new value of the showGrid property
    */ 
@@ -1948,7 +1944,8 @@ public class JTable extends JComponent
   
   public String getColumnName(int column)
   {
-    return dataModel.getColumnName(column);
+    int modelColumn = columnModel.getColumn(column).getModelIndex();
+    return dataModel.getColumnName(modelColumn);
   }
 
   public int getEditingColumn()
@@ -2077,6 +2074,47 @@ public class JTable extends JComponent
   public TableColumn getColumn(Object identifier)
   {
     return columnModel.getColumn(columnModel.getColumnIndex(identifier));
+  }
+
+  /**
+   * Returns <code>true</code> if the specified cell is editable, and
+   * <code>false</code> otherwise.
+   *
+   * @param row  the row index.
+   * @param column  the column index.
+   *
+   * @return A boolean.
+   */
+  public boolean isCellEditable(int row, int column)
+  {
+    return dataModel.isCellEditable(row, convertColumnIndexToModel(column));
+  }
+
+  /**
+   * Clears any existing columns from the <code>JTable</code>'s
+   * {@link TableColumnModel} and creates new columns to match the values in
+   * the data ({@link TableModel}) used by the table.
+   *
+   * @see #setAutoCreateColumnsFromModel(boolean)
+   */
+  public void createDefaultColumnsFromModel()
+  {
+    // remove existing columns
+    int columnIndex = columnModel.getColumnCount() - 1;
+    while (columnIndex >= 0)
+    {
+      columnModel.removeColumn(columnModel.getColumn(columnIndex));
+      columnIndex--;
+    }
+  
+    // add new columns to match the TableModel
+    int columnCount = dataModel.getColumnCount();
+    for (int c = 0; c < columnCount; c++)
+    {
+      TableColumn column = new TableColumn(c);
+      column.setIdentifier(dataModel.getColumnName(c));
+      columnModel.addColumn(column);
+    }
   }
 
   public void changeSelection (int rowIndex, int columnIndex, boolean toggle, boolean extend)

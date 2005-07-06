@@ -50,7 +50,7 @@ package java.util;
  * lying in the AD era.
  *
  * @see Calendar
- * @see GregorianCalender
+ * @see GregorianCalendar
  * @author Jochen Hoenicke
  */
 public class SimpleTimeZone extends TimeZone
@@ -126,7 +126,7 @@ public class SimpleTimeZone extends TimeZone
 
   /**
    * This variable can have different meanings.  See startMode for details
-   * @see #startMode;
+   * @see #startMode
    * @serial
    */
   private int startDay;
@@ -135,7 +135,7 @@ public class SimpleTimeZone extends TimeZone
    * This variable specifies the day of week the change takes place.  If
    * startMode == DOM_MODE, this is undefined.
    * @serial
-   * @see #startMode;
+   * @see #startMode
    */
   private int startDayOfWeek;
 
@@ -173,7 +173,7 @@ public class SimpleTimeZone extends TimeZone
   /**
    * This variable can have different meanings.  See startMode for details
    * @serial
-   * @see #startMode;
+   * @see #startMode
    */
   private int endDay;
 
@@ -181,7 +181,7 @@ public class SimpleTimeZone extends TimeZone
    * This variable specifies the day of week the change takes place.  If
    * endMode == DOM_MODE, this is undefined.
    * @serial
-   * @see #startMode;
+   * @see #startMode
    */
   private int endDayOfWeek;
 
@@ -309,13 +309,13 @@ public class SimpleTimeZone extends TimeZone
    * @param id  The identifier of this time zone.
    * @param startMonth The start month of daylight savings; use the
    * constants in Calendar.
-   * @param startday A day in month or a day of week number, as
+   * @param startDayOfWeekInMonth A day in month or a day of week number, as
    * described above.
    * @param startDayOfWeek The start rule day of week; see above.
    * @param startTime A time in millis in standard time.
    * @param endMonth The end month of daylight savings; use the
    * constants in Calendar.
-   * @param endday A day in month or a day of week number, as
+   * @param endDayOfWeekInMonth A day in month or a day of week number, as
    * described above.
    * @param endDayOfWeek The end rule day of week; see above.
    * @param endTime A time in millis in standard time.
@@ -562,7 +562,7 @@ public class SimpleTimeZone extends TimeZone
    * @param day A day in month, or a day of week in month.
    * @param dayOfWeek A day of week, when daylight savings ends.
    * @param time A time in millis in standard time.
-   * @see #setStartRule
+   * @see #setStartRule(int, int, int, int)
    */
   public void setEndRule(int month, int day, int dayOfWeek, int time)
   {
@@ -602,7 +602,7 @@ public class SimpleTimeZone extends TimeZone
    * @param after If true, day and dayOfWeek specify first day of week on or
    * after day, else first day of week on or before.
    * @since 1.2
-   * @see #setStartRule
+   * @see #setStartRule(int, int, int, int, boolean)
    */
   public void setEndRule(int month, int day, int dayOfWeek, int time,
                          boolean after)
@@ -638,9 +638,8 @@ public class SimpleTimeZone extends TimeZone
    *
    * @param month The end month of daylight savings.
    * @param day A day in month, or a day of week in month.
-   * @param dayOfWeek A day of week, when daylight savings ends.
    * @param time A time in millis in standard time.
-   * @see #setStartRule
+   * @see #setStartRule(int, int, int)
    */
   public void setEndRule(int month, int day, int time)
   {

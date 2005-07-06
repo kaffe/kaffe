@@ -897,7 +897,6 @@ public abstract class Calendar implements Serializable, Cloneable
 
   /**
    * Fills any unset fields in the time field list
-   * @return true if the specified field has a value.
    */
   protected void complete()
   {

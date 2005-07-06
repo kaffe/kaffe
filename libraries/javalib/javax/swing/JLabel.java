@@ -101,14 +101,14 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   }
 
   /**
-   * Creates a new vertically centered, horizontally on the leading edge
+   * Creates a new vertically and horizontally centered
    * JLabel object with no text and the given icon.
    *
    * @param image The icon to use with the label.
    */
   public JLabel(Icon image)
   {
-    this(null, image, LEADING);
+    this(null, image, CENTER);
   }
 
   /**

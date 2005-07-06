@@ -116,8 +116,8 @@ public class BitSet implements Cloneable, Serializable
    * given <code>set</code>.  This means it builds the intersection
    * of the two sets.  The result is stored into this bit set.
    *
-   * @param set the second bit set
-   * @throws NullPointerException if set is null
+   * @param bs the second bit set
+   * @throws NullPointerException if bs is null
    */
   public void and(BitSet bs)
   {
@@ -131,13 +131,13 @@ public class BitSet implements Cloneable, Serializable
 
   /**
    * Performs the logical AND operation on this bit set and the
-   * complement of the given <code>set</code>.  This means it
+   * complement of the given <code>bs</code>.  This means it
    * selects every element in the first set, that isn't in the
    * second set.  The result is stored into this bit set and is
    * effectively the set difference of the two.
    *
-   * @param set the second bit set
-   * @throws NullPointerException if set is null
+   * @param bs the second bit set
+   * @throws NullPointerException if bs is null
    * @since 1.2
    */
   public void andNot(BitSet bs)
@@ -190,12 +190,12 @@ public class BitSet implements Cloneable, Serializable
   }
 
   /**
-   * Removes the integer <code>bitIndex</code> from this set. That is
+   * Removes the integer <code>pos</code> from this set. That is
    * the corresponding bit is cleared.  If the index is not in the set,
    * this method does nothing.
    *
-   * @param bitIndex a non-negative integer
-   * @throws IndexOutOfBoundsException if bitIndex &lt; 0
+   * @param pos a non-negative integer
+   * @throws IndexOutOfBoundsException if pos &lt; 0
    */
   public void clear(int pos)
   {
@@ -336,8 +336,8 @@ public class BitSet implements Cloneable, Serializable
    * set, otherwise false.
    *
    * @param pos a non-negative integer
-   * @return the value of the bit at the specified index
-   * @throws IndexOutOfBoundsException if the index is negative
+   * @return the value of the bit at the specified position
+   * @throws IndexOutOfBoundsException if the pos is negative
    */
   public boolean get(int pos)
   {

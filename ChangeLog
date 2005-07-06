@@ -2,6 +2,85 @@
 
 	Resynced with GNU Classpath.
 
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/JTable.java
+        (getColumnName): return name from column in data model.
+
+	2005-07-05  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/DefaultKeyboardFocusManager.java (dispatchEvent): Check
+        parent and target before casting target to Window.
+
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/AbstractAction.java: updated API docs,
+        * javax/swing/Action.java: likewise.
+
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/applet/Applet.java: added import to fix API doc link.
+
+	2005-07-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * javax/swing/text/StyleContext.java
+        (defaultStyle): New field.
+        (constructor): Add defaultStyle to the styleTable.
+        (DEFAULT_STYLE, getStyle, getStyleNames): Documented.
+
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/JTable.java:
+        (addColumn): retrieve correct column name,
+        (convertColumnIndexToModel): remove check for > columnCount and let
+        exception happen,
+        (getColumnName): retrieve name from TableColumn,
+        (isCellEditable): implemented,
+        (createDefaultColumnsFromModel): implemented.
+        * javax/swing/table/DefaultTableColumnModel.java:
+        (addColumn): throw exception for null argument, set correct column
+        index in TableColumnModelEvent,
+        (removeColumn): use correct column index,
+        (moveColumn): move the column, don't swap it. Also added argument
+        checks,
+        (getColumnIndex): reimplemented.
+
+	2005-07-05  Sven de Marothy  <sven@physto.se>
+
+        * javax/swing/JLabel.java:
+        (JLabel): Revert previous change for JLabel(Icon) constructor.
+
+	2005-07-05  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JScrollPane.java:
+        Added API documentation for class and constructors.
+
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/util/BitSet.java: fixed minor problems in API docs,
+        * java/util/Calendar.java: likewise,
+        * java/util/Collections.java: likewise,
+        * java/util/Date.java: likewise,
+        * java/util/Hashtable.java: likewise,
+        * java/util/LinkedList.java: likewise,
+        * java/util/Properties.java: likewise,
+        * java/util/PropertyResourceBundle.java: likewise,
+        * java/util/ResourceBundle.java: likewise,
+        * java/util/SimpleTimeZone.java: likewise,
+        * java/util/TreeMap.java: likewise.
+
+	2005-07-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * javax/swing/text/JTextComponent.java (read, write): New methods.
+
+	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/JTable.java: fixed API doc links all over.
+
+2005-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-07-05  Mark Wielaard  <mark@klomp.org>
 
         * include/Makefile.am (GTKPEER_H_FILES): Removed GtkTextComponentPeer.

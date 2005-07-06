@@ -1,5 +1,5 @@
 /* DefaultTableColumnModel.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -119,9 +119,11 @@ public class DefaultTableColumnModel
    */
   public void addColumn(TableColumn col)
   {
+    if (col == null)
+      throw new IllegalArgumentException("Null 'col' argument.");
     tableColumns.add(col);
     invalidateWidthCache();
-    fireColumnAdded(new TableColumnModelEvent(this,0,tableColumns.size()));
+    fireColumnAdded(new TableColumnModelEvent(this, 0, tableColumns.size() - 1));
   }
 
   /**
@@ -132,8 +134,10 @@ public class DefaultTableColumnModel
    */
   public void removeColumn(TableColumn col)
   {
-    int index = getColumnIndex(col);
-    fireColumnRemoved(new TableColumnModelEvent(this,index,0));    
+    int index = this.tableColumns.indexOf(col);
+    if (index < 0)
+      return;
+    fireColumnRemoved(new TableColumnModelEvent(this, index, 0));    
     tableColumns.remove(col);
     invalidateWidthCache();
   }
@@ -147,10 +151,14 @@ public class DefaultTableColumnModel
    */
   public void moveColumn(int i, int j)
   {
-    Object tmp = tableColumns.get(i);
-    tableColumns.set(i, tableColumns.get(j));
-    tableColumns.set(j, tmp);
-    fireColumnAdded(new TableColumnModelEvent(this,i,j));
+    int columnCount = getColumnCount();
+    if (i < 0 || i >= columnCount)
+      throw new IllegalArgumentException("Index 'i' out of range.");
+    if (j < 0 || j >= columnCount)
+      throw new IllegalArgumentException("Index 'j' out of range.");
+    Object column = tableColumns.remove(i);
+    tableColumns.add(j, column);
+    fireColumnAdded(new TableColumnModelEvent(this, i, j));
   }
 
   /**
@@ -182,14 +190,27 @@ public class DefaultTableColumnModel
   }
 
   /**
-   * getColumnIndex returns index of the specified column
+   * Returns the index of the {@link TableColumn} with the given identifier.
    *
-   * @param identifier identifier of the column
-   * @return int index of the given column
+   * @param identifier  the identifier (<code>null</code> not permitted).
+   * 
+   * @return The index of the {@link TableColumn} with the given identifier.
+   * 
+   * @throws IllegalArgumentException if <code>identifier</code> is 
+   *         <code>null</code> or there is no column with that identifier.
    */
   public int getColumnIndex(Object identifier)
   {
-    return tableColumns.indexOf(identifier, 0);
+    if (identifier == null)
+      throw new IllegalArgumentException("Null identifier.");
+    int columnCount = tableColumns.size();
+    for (int i = 0; i < columnCount; i++) 
+    {
+      TableColumn tc = (TableColumn) tableColumns.get(i);
+      if (identifier.equals(tc.getIdentifier()))
+        return i;
+    }
+    throw new IllegalArgumentException("No TableColumn with that identifier.");
   }
 
   /**

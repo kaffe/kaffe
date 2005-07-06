@@ -196,7 +196,7 @@ public class Hashtable extends Dictionary
 
     /**
      * Resets the value.
-     * @param newValue the new value
+     * @param newVal the new value
      * @return the prior value
      * @throws NullPointerException if <code>newVal</code> is null
      */

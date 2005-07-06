@@ -54,6 +54,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputMethodListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -1611,4 +1613,55 @@ public abstract class JTextComponent extends JComponent
   {
     navigationFilter = filter;
   }
+  
+  /**
+   * Read and set the content this component. If not overridden, the
+   * method reads the component content as a plain text.
+   *
+   * The second parameter of this method describes the input stream. It can
+   * be String, URL, File and so on. If not null, this object is added to
+   * the properties of the associated document under the key
+   * {@link Document#StreamDescriptionProperty}.
+   *
+   * @param input an input stream to read from.
+   * @param streamDescription an object, describing the stream.
+   *
+   * @throws IOException if the reader throws it.
+   *
+   * @see getDocument()
+   * @see Document#getProperty(Object)
+   */
+  public void read(Reader input, Object streamDescription)
+            throws IOException
+  {
+    if (streamDescription != null)
+      {
+        Document d = getDocument();
+        if (d != null)
+          d.putProperty(Document.StreamDescriptionProperty, streamDescription);
+      }
+
+    StringBuffer b = new StringBuffer();
+    int c;
+
+    // Read till -1 (EOF).
+    while ((c = input.read()) >= 0)
+      b.append((char) c);
+
+    setText(b.toString());
+  }
+
+  /**
+   * Write the content of this component to the given stream. If not
+   * overridden, the method writes the component content as a plain text.
+   *
+   * @param output the writer to write into.
+   *
+   * @throws IOException if the writer throws it.
+   */
+  public void write(Writer output)
+             throws IOException
+  {
+    output.write(getText());
+  }  
 }

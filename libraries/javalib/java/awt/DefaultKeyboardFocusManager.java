@@ -187,20 +187,26 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
 
             // Keep track of this window's focus owner.
 
-            // Find the target Component's top-level ancestor.
+            // Find the target Component's top-level ancestor.  target
+            // may be a window.
             Container parent = target.getParent ();
 
             while (parent != null
                    && !(parent instanceof Window))
               parent = parent.getParent ();
 
-            Window toplevel = parent == null ?
-              (Window) target : (Window) parent;
+            // If the parent is null and target is not a window, then target is an
+            // unanchored component and so we don't want to set the focus owner.
+            if (! (parent == null && ! (target instanceof Window)))
+              {
+                Window toplevel = parent == null ?
+                  (Window) target : (Window) parent;
 
-            Component focusOwner = getFocusOwner ();
-            if (focusOwner != null
-                && ! (focusOwner instanceof Window))
-              toplevel.setFocusOwner (focusOwner);
+                Component focusOwner = getFocusOwner ();
+                if (focusOwner != null
+                    && ! (focusOwner instanceof Window))
+                  toplevel.setFocusOwner (focusOwner);
+              }
           }
         else if (e.id == FocusEvent.FOCUS_LOST)
           {

@@ -173,7 +173,7 @@ weekdays: Sunday,Monday,Tuesday,Wednesday,\\
 # The safest way to include a space at the end of a value:
 label   = Name:\\u0020</pre>
    *
-   * @param in the input stream
+   * @param inStream the input stream
    * @throws IOException if an error occurred when reading the input
    * @throws NullPointerException if in is null
    */

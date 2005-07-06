@@ -207,7 +207,7 @@ public class TreeMap extends AbstractMap
    * comparable by the Comparator, otherwise map operations may throw a
    * {@link ClassCastException}.
    *
-   * @param comparator the sort order for the keys of this map, or null
+   * @param c the sort order for the keys of this map, or null
    *        for the natural order
    */
   public TreeMap(Comparator c)

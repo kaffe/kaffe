@@ -380,8 +380,16 @@ public class StyleContext
   // FIXME: also not sure if these tables ought to be static (singletons),
   // shared across all StyleContexts. I think so, but it's not clear in
   // docs. revert to non-shared if you think it matters.
-
+  
+  /**
+   * The name of the default style.
+   */
   public static final String DEFAULT_STYLE = "default";
+  
+  /**
+   * The default style for this style context.
+   */
+  NamedStyle defaultStyle = new NamedStyle(DEFAULT_STYLE, null);
   
   static Hashtable sharedAttributeSets = new Hashtable();
   static Hashtable sharedFonts = new Hashtable();
@@ -392,10 +400,15 @@ public class StyleContext
   EventListenerList listenerList;
   Hashtable styleTable;
   
+  /**
+   * Creates a new instance of the style context. Add the default style
+   * to the style table.
+   */
   public StyleContext()
   {
     listenerList = new EventListenerList();
     styleTable = new Hashtable();
+    styleTable.put(DEFAULT_STYLE, defaultStyle);
   }
 
   protected SmallAttributeSet createSmallAttributeSet(AttributeSet a)
@@ -436,11 +449,25 @@ public class StyleContext
     styleTable.remove(name);
   }
 
+  /**
+   * Get the style from the style table. If the passed name
+   * matches {@link #DEFAULT_STYLE}, returns the default style.
+   * Otherwise returns the previously defined style of
+   * <code>null</code> if the style with the given name is not defined.
+   *
+   * @param name the name of the style.
+   *
+   * @return the style with the given name or null if no such defined.
+   */
   public Style getStyle(String name)
   {
     return (Style) styleTable.get(name);
   }
-
+  
+  /**
+   * Get the names of the style. The returned enumeration always
+   * contains at least one member, the default style.
+   */
   public Enumeration getStyleNames()
   {
     return styleTable.keys();

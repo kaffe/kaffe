@@ -385,7 +385,7 @@ public class LinkedList extends AbstractSequentialList
   /**
    * Adds an element to the end of the list.
    *
-   * @param e the entry to add
+   * @param o the entry to add
    * @return true, as it always succeeds
    */
   public boolean add(Object o)

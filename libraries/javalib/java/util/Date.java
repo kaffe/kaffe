@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * <p>
@@ -240,8 +242,8 @@ public class Date
    *             <code>TimeZone</code> instead.
    * @param year the difference between the required year and 1900.
    * @param month the month as a value between 0 and 11.
-   * @param day the day as a value between 0 and 31.
-   * @param hour the hour as a value between 0 and 23, in 24-hour
+   * @param date the day as a value between 0 and 31.
+   * @param hrs the hour as a value between 0 and 23, in 24-hour
    *        clock notation.
    * @param min the minute as a value between 0 and 59.
    * @param sec the second as a value between 0 and 61 (with 60
@@ -718,7 +720,7 @@ public class Date
    * </li>
    * </ul>
    *
-   * @param s The String to parse.
+   * @param string The String to parse.
    * @return The time in milliseconds since the epoch.
    * @throws IllegalArgumentException if the string fails to parse.
    * @deprecated Use DateFormat.parse(String)

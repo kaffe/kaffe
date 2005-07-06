@@ -87,7 +87,7 @@ s16=1,3
  * @author Jochen Hoenicke
  * @see ResourceBundle
  * @see ListResourceBundle
- * @see Properties#load()
+ * @see Properties#load(InputStream)
  * @since 1.1
  * @status updated to 1.4
  */

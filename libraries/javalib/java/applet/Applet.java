@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.applet;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
