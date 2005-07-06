@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.util.Properties;
+
 /**
  * This abstract class represents a print job.
  *

@@ -38,8 +38,10 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.applet.Applet;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
@@ -335,8 +337,8 @@ public abstract class KeyboardFocusManager
    * @param owner the Component to return from getFocusOwner and
    * getGlobalFocusOwner
    *
-   * @see Component.requestFocus ()
-   * @see Component.requestFocusInWindow ()
+   * @see Component#requestFocus()
+   * @see Component#requestFocusInWindow()
    */
   protected void setGlobalFocusOwner (Component owner)
   {
@@ -419,8 +421,8 @@ public abstract class KeyboardFocusManager
    * @param focusOwner the Component to return from
    * getPermanentFocusOwner and getGlobalPermanentFocusOwner
    *
-   * @see Component.requestFocus ()
-   * @see Component.requestFocusInWindow ()
+   * @see Component#requestFocus()
+   * @see Component#requestFocusInWindow()
    */
   protected void setGlobalPermanentFocusOwner (Component focusOwner)
   {

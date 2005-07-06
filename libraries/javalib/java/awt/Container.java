@@ -269,7 +269,7 @@ public class Container extends Component
    *
    * @return The same component that was added.
    *
-   * @throws ArrayIndexOutOfBounds If the specified index is invalid.
+   * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
    */
   public Component add(Component comp, int index)
   {
@@ -300,7 +300,7 @@ public class Container extends Component
    * @param index The index in the component list to insert this child
    * at, or -1 to add at the end of the list.
    *
-   * @throws ArrayIndexOutOfBounds If the specified index is invalid.
+   * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
    */
   public void add(Component comp, Object constraints, int index)
   {
@@ -320,7 +320,7 @@ public class Container extends Component
    * @param index The index in the component list to insert this child
    * at, or -1 to add at the end of the list.
    *
-   * @throws ArrayIndexOutOfBounds If the specified index is invalid.
+   * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
    */
   protected void addImpl(Component comp, Object constraints, int index)
   {
@@ -436,7 +436,7 @@ public class Container extends Component
   /**
    * Removes the specified component from this container.
    *
-   * @return component The component to remove from this container.
+   * @param comp The component to remove from this container.
    */
   public void remove(Component comp)
   {
@@ -1367,7 +1367,7 @@ public class Container extends Component
    * however, ContainerOrderFocusTraversalPolicy is in effect, and it
    * supports implicit down-cycle traversal operations.
    *
-   * @return true if this is a focus cycle root, false otherwise
+   * @param focusCycleRoot true if this is a focus cycle root, false otherwise
    *
    * @since 1.4
    */

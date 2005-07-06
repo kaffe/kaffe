@@ -105,8 +105,8 @@ class ColorPaintContext implements PaintContext
    *
    * @param x the x-coordinate, in device space
    * @param y the y-coordinate, in device space
-   * @param w the width, in device space
-   * @param h the height, in device space
+   * @param width the width, in device space
+   * @param height the height, in device space
    * @return a raster for the given area and color
    */
   public Raster getRaster(int x, int y, int width, int height)

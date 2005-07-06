@@ -53,7 +53,7 @@ import java.awt.peer.RobotPeer;
  * create self-running demo programs.
  *
  * Since Robot generates native windowing system events, rather than
- * simply inserting {@link AWTEvents} on the AWT event queue, its use
+ * simply inserting {@link AWTEvent}s on the AWT event queue, its use
  * is not restricted to Java programs.  It can be used to
  * programatically drive any graphical application.
  *
@@ -227,7 +227,7 @@ public class Robot
   /**
    * Press a key.
    *
-   * @param keycode key to press, a {@link KeyEvent} VK_ constant
+   * @param keycode key to press, a {@link java.awt.event.KeyEvent} VK_ constant
    *
    * @exception IllegalArgumentException if keycode is not a valid key
    */
@@ -245,7 +245,8 @@ public class Robot
   /**
    * Release a key.
    *
-   * @param keycode key to release, a {@link KeyEvent} VK_ constant
+   * @param keycode key to release, a {@link java.awt.event.KeyEvent} VK_ 
+   *                constant
    *
    * @exception IllegalArgumentException if keycode is not a valid key
    */
@@ -312,7 +313,7 @@ public class Robot
   }
 
   /**
-   * Check if this Robot automatically calls {@link waitForIdle} after
+   * Check if this Robot automatically calls {@link #waitForIdle()} after
    * generating an event.
    *
    * @return true if waitForIdle is automatically called
@@ -324,7 +325,7 @@ public class Robot
 
   /**
    * Set whether or not this Robot automatically calls {@link
-   * waitForIdle} after generating an event.
+   * #waitForIdle()} after generating an event.
    *
    * @param isOn true if waitForIdle should be called automatically
    */

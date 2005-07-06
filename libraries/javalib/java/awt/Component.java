@@ -3500,9 +3500,9 @@ public abstract class Component
   /**
    * Sets the focus traversal keys for one of the three focus
    * traversal directions supported by Components:
-   * {@link #KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS},
-   * {@link #KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS}, or
-   * {@link #KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS}. Normally, the
+   * {@link KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS},
+   * {@link KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS}, or
+   * {@link KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS}. Normally, the
    * default values should match the operating system's native
    * choices. To disable a given traversal, use
    * <code>Collections.EMPTY_SET</code>. The event dispatcher will

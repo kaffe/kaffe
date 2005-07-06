@@ -48,7 +48,7 @@ import java.util.ArrayList;
   * Media objects are tracked by assigning them an ID. It is possible
   * to assign the same ID to mutliple objects, effectivly grouping them
   * together. In this case the status flags ({@link #statusID}) and error flag
-  * (@link #isErrorID} and {@link #getErrorId}) are ORed together. This
+  * (@link #isErrorID} and {@link #getErrorsID}) are ORed together. This
   * means that you cannot say exactly which media object has which status,
   * at most you can say that there <em>are</em> certain media objects with
   * some certain status.
@@ -123,7 +123,7 @@ public class MediaTracker implements java.io.Serializable
      * @return <code>true</code> if more data is needed, <code>false</code>
      *         otherwise
      *
-     * @see {@link java.awt.image.ImageObserver}
+     * @see java.awt.image.ImageObserver
      */
     public boolean imageUpdate(Image img, int flags, int x, int y, 
                                int width, int height)

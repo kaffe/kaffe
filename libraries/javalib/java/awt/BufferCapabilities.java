@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.awt.image.BufferStrategy;
+
 /**
  * A double-buffering capability descriptor.  This class exposes
  * details about the double-buffering algorithms used by image
@@ -60,7 +62,7 @@ package java.awt;
  * @author Eric Blake (ebb9@email.byu.edu)
  *
  * @see BufferStrategy#getCapabilities()
- * @see GraphicsConfiguration#getCapabilities()
+ * @see GraphicsConfiguration#getBufferCapabilities()
  *
  * @since 1.4
  */

@@ -94,7 +94,7 @@ public abstract class Image
    * Constant indicating that the area averaging scaling algorithm should be
    * used.
    *
-   * @see AreaAveragingScaleFilter
+   * @see java.awt.image.AreaAveragingScaleFilter
    * @since 1.1
    */
   public static final int SCALE_AREA_AVERAGING = 16;
@@ -141,7 +141,7 @@ public abstract class Image
    * This method is only valid for off-screen objects.
    *
    * @return a graphics context object for an off-screen object
-   * @see Graphics#createImage(int, int)
+   * @see Graphics#getcreateImage(int, int)
    */
   public abstract Graphics getGraphics();
 

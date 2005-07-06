@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.ObjectStreamException;
 import java.io.Serializable;

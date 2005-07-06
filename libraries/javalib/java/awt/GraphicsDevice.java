@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.awt.image.VolatileImage;
+
 /**
  * This describes a graphics device available to the given environment. This
  * includes screen and printer devices, and the different configurations for
@@ -163,8 +165,8 @@ public abstract class GraphicsDevice
    *
    * @param w the window to toggle
    * @see #isFullScreenSupported()
-   * @see getFullScreenWindow()
-   * @see setDisplayMode(DisplayMode)
+   * @see #getFullScreenWindow()
+   * @see #setDisplayMode(DisplayMode)
    * @see Component#enableInputMethods(boolean)
    * @since 1.4
    */

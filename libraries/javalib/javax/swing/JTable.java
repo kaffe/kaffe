@@ -1421,13 +1421,20 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #autoCreateColumnsFromModel} property.
+   * Set the value of the {@link #autoCreateColumnsFromModel} flag.  If the
+   * flag changes from <code>false</code> to <code>true</code>, the
+   * {@link #createDefaultColumnsFromModel()} method is called.
    *
-   * @param a The new value of the autoCreateColumnsFromModel property
+   * @param autoCreate  the new value of the flag.
    */ 
-  public void setAutoCreateColumnsFromModel(boolean a)
+  public void setAutoCreateColumnsFromModel(boolean autoCreate)
   {
-    autoCreateColumnsFromModel = a;
+    if (autoCreateColumnsFromModel != autoCreate)
+    {
+      autoCreateColumnsFromModel = autoCreate;
+      if (autoCreate)
+        createDefaultColumnsFromModel();
+    }
   }
 
   /**

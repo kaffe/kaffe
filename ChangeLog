@@ -2,6 +2,31 @@
 
 	Resynced with GNU Classpath.
 
+	2005-07-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/awt/AWTKeyStroke.java: fixed API doc links,
+        * java/awt/BufferCapabilities.java: likewise,
+        * java/awt/ColorPaintContext.java: likewise,
+        * java/awt/Component.java: likewise,
+        * java/awt/Container.java: likewise,
+        * java/awt/EventQueue.java: likewise,
+        * java/awt/GraphicsDevice.java: likewise,
+        * java/awt/Image.java: likewise,
+        * java/awt/KeyboardFocusManager.java: likewise,
+        * java/awt/MediaTracker.java: likewise,
+        * java/awt/PrintJob.java: likewise,
+        * java/awt/Robot.java: likewise.
+
+	2005-07-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/JTable.java
+        (setAutoCreateColumnsFromModel): when the flag changes from false to
+        true, call createDefaultColumnsFromModel().
+
+2005-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-07-05  David Gilbert  <david.gilbert@object-refinery.com>
 
         * javax/swing/JTable.java

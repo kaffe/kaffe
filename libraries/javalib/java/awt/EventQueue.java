@@ -42,6 +42,7 @@ import gnu.java.awt.ClasspathToolkit;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.InputMethodEvent;
 import java.awt.event.InvocationEvent;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
