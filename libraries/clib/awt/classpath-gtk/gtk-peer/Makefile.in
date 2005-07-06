@@ -110,7 +110,7 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkMenuPeer.c \
 	gnu_java_awt_peer_gtk_GtkPanelPeer.c \
 	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c \
-	gnu_java_awt_peer_gtk_GtkScrollBarPeer.c \
+	gnu_java_awt_peer_gtk_GtkScrollbarPeer.c \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.c \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.c \
 	gnu_java_awt_peer_gtk_GtkTextComponentPeer.c \
@@ -149,7 +149,7 @@ am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkMenuPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPanelPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPopupMenuPeer.lo \
-	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo \
+	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.lo \
@@ -492,7 +492,7 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkMenuPeer.c \
 	gnu_java_awt_peer_gtk_GtkPanelPeer.c \
 	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c \
-	gnu_java_awt_peer_gtk_GtkScrollBarPeer.c \
+	gnu_java_awt_peer_gtk_GtkScrollbarPeer.c \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.c \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.c \
 	gnu_java_awt_peer_gtk_GtkTextComponentPeer.c \
@@ -649,8 +649,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkMenuPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPanelPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPopupMenuPeer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextAreaPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextComponentPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkTextFieldPeer.Plo@am__quote@
@@ -891,12 +891,12 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPopupMenuPeer.lo: gnu_java_awt_peer_gtk_G
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkPopupMenuPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c
 
-libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo: gnu_java_awt_peer_gtk_GtkScrollBarPeer.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkScrollBarPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkScrollBarPeer.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkScrollBarPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo' libtool=yes @AMDEPBACKSLASH@
+libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo: gnu_java_awt_peer_gtk_GtkScrollbarPeer.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkScrollbarPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkScrollbarPeer.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkScrollbarPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollBarPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkScrollBarPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkScrollBarPeer.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollbarPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkScrollbarPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkScrollbarPeer.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.lo: gnu_java_awt_peer_gtk_GtkScrollPanePeer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkScrollPanePeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkScrollPanePeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkScrollPanePeer.c; \

@@ -1994,7 +1994,7 @@ public abstract class JComponent extends Container implements Serializable
   {
     boolean oldEnabled = isEnabled();
     super.setEnabled(enable);
-    firePropertyChange("enabeld", oldEnabled, enable);
+    firePropertyChange("enabled", oldEnabled, enable);
   }
 
   /**

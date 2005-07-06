@@ -523,7 +523,7 @@ public class JTabbedPane extends JComponent implements Serializable,
       if (index < -1 || title != null && index >= title.length())
 	throw new IllegalArgumentException();
 
-      if (title == null || mnemonicKey == 0 || title.charAt(index) != mnemonicKey)
+      if (title == null || mnemonicKey == 0 || (index > -1 && title.charAt(index) != mnemonicKey))
 	index = -1;
 
       underlinedChar = index;

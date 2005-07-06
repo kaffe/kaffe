@@ -40,7 +40,6 @@ package gnu.java.awt.peer.gtk;
 
 import gnu.classpath.Configuration;
 import gnu.java.awt.EmbeddedWindow;
-import gnu.java.awt.EmbeddedWindowSupport;
 import gnu.java.awt.peer.ClasspathFontPeer;
 import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 import gnu.java.awt.peer.EmbeddedWindowPeer;
@@ -86,7 +85,6 @@ import javax.imageio.spi.IIORegistry;
  * object to be used.
  */
 public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
-  implements EmbeddedWindowSupport
 {
   Hashtable containers = new Hashtable();
   static EventQueue q;

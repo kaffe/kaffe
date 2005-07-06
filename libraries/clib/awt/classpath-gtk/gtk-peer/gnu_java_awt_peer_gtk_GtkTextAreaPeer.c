@@ -39,7 +39,6 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkTextAreaPeer.h"
 
-#define TEXT_FROM_SW(obj) (GTK_TEXT_VIEW(GTK_SCROLLED_WINDOW (obj)->container.child))
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_create
   (JNIEnv *env, jobject obj,
@@ -47,10 +46,10 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_create
 {
   GtkWidget *text, *sw;
 
+  gdk_threads_enter ();
+
   /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
-
-  gdk_threads_enter ();
 
   text = gtk_text_view_new ();
   gtk_widget_set_size_request (text, textview_width, textview_height);
@@ -76,9 +75,37 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_create
 				|| scroll == AWT_TEXTAREA_SCROLLBARS_HORIZONTAL_ONLY)
 			       ? GTK_WRAP_NONE : GTK_WRAP_WORD);
 
-  gdk_threads_leave ();
-
   NSA_SET_PTR (env, obj, sw);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_connectSignals
+  (JNIEnv *env, jobject obj)
+{
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  void *ptr;
+  jobject *gref;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  gref = NSA_GET_GLOBAL_REF (env, obj);
+
+  /* Unwrap the text view from the scrolled window */
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+
+  /* TextComponent signals */
+  classpath_gtk_textcomponent_connect_signals (G_OBJECT (buf), gref);
+
+  /* Component signals */
+  classpath_gtk_component_connect_signals (G_OBJECT (text), gref);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL 
@@ -120,12 +147,12 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_replaceRange
   int mystart = start;
   int myend = end;
 
+  gdk_threads_enter ();
+  
   ptr = NSA_GET_PTR (env, obj);
   str = (*env)->GetStringUTFChars (env, contents, NULL);
   
-  gdk_threads_enter ();
-  
-  text = GTK_WIDGET (TEXT_FROM_SW (ptr));
+  text = gtk_bin_get_child (GTK_BIN (ptr));
 
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
 
@@ -136,8 +163,9 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_replaceRange
   gtk_text_buffer_get_iter_at_offset (buf, &iter, mystart);
   gtk_text_buffer_insert(buf, &iter, str, (size_t) strlen (str));
 
-  gdk_threads_leave ();
   (*env)->ReleaseStringUTFChars (env, contents, str);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -149,16 +177,17 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_gtkWidgetModifyFont
   GtkWidget *text;
   PangoFontDescription *font_desc;
 
+  gdk_threads_enter();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  text = GTK_WIDGET (TEXT_FROM_SW (ptr));
+  text = gtk_bin_get_child (GTK_BIN (ptr));
 
   font_name = (*env)->GetStringUTFChars (env, name, NULL);
 
-  gdk_threads_enter();
-
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -170,9 +199,9 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_gtkWidgetModifyFont
 
   pango_font_description_free (font_desc);
 
-  gdk_threads_leave();
-
   (*env)->ReleaseStringUTFChars (env, name, font_name);
+
+  gdk_threads_leave();
 }
 
 JNIEXPORT void JNICALL 
@@ -182,11 +211,11 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_gtkWidgetRequestFocus
   void *ptr;
   GtkWidget *text;
 
-  ptr = NSA_GET_PTR (env, obj);
-  
   gdk_threads_enter ();
 
-  text = GTK_WIDGET (TEXT_FROM_SW (ptr));
+  ptr = NSA_GET_PTR (env, obj);
+  
+  text = gtk_bin_get_child (GTK_BIN (ptr));
 
   gtk_widget_grab_focus (text);
 
@@ -203,9 +232,10 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getHScrollbarHeight
   jint height = 0;
   jint spacing = 0;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW (ptr);
 
   if (sw)
@@ -230,9 +260,10 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getVScrollbarWidth
   jint width = 0;
   jint spacing = 0;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW (ptr);
 
   if (sw)
@@ -245,4 +276,244 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getVScrollbarWidth
   gdk_threads_leave ();
 
   return width;
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getCaretPosition
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextMark *mark;
+  GtkTextIter iter;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+  mark = gtk_text_buffer_get_insert (buf);
+  gtk_text_buffer_get_iter_at_mark (buf, &iter, mark);
+  pos = gtk_text_iter_get_offset (&iter);
+
+  gdk_threads_leave ();
+  
+  return pos;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_setCaretPosition
+  (JNIEnv *env, jobject obj, jint pos)
+{
+  void *ptr;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextIter iter;
+  GtkTextMark *oldmark;
+  GtkTextIter olditer;
+  int oldpos;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+
+  /* Save old position. */
+  oldmark = gtk_text_buffer_get_insert (buf);
+  gtk_text_buffer_get_iter_at_mark (buf, &olditer, oldmark);
+  oldpos = gtk_text_iter_get_offset (&olditer);
+
+  /* Move to new position. */
+  gtk_text_buffer_get_iter_at_offset (buf, &iter, pos);
+  gtk_text_buffer_place_cursor (buf, &iter);
+
+  /* Scroll to new position. Alignment is determined
+     comparing the new position to the old position. */
+  if (oldpos > pos)
+    gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (text),
+                                  &iter, 0, TRUE, 0, 0);
+  else if (oldpos < pos)
+    gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (text),
+                                  &iter, 0, TRUE, 1, 1);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getSelectionStart
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextIter start;
+  GtkTextIter end;
+  GtkTextMark *mark;
+  GtkTextIter iter;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+
+  if (gtk_text_buffer_get_selection_bounds (buf, &start, &end))
+    {
+      pos = gtk_text_iter_get_offset (&start);
+    }
+  else
+    {
+      mark = gtk_text_buffer_get_insert (buf);
+      gtk_text_buffer_get_iter_at_mark (buf, &iter, mark);
+      pos = gtk_text_iter_get_offset (&iter);
+    }
+
+  gdk_threads_leave ();
+
+  return pos;
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getSelectionEnd
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextIter start;
+  GtkTextIter end;
+  GtkTextMark *mark;
+  GtkTextIter iter;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+
+  if (gtk_text_buffer_get_selection_bounds (buf, &start, &end))
+    {
+      pos = gtk_text_iter_get_offset (&end);
+    }
+  else
+    {
+      mark = gtk_text_buffer_get_insert (buf);
+      gtk_text_buffer_get_iter_at_mark (buf, &iter, mark);
+      pos = gtk_text_iter_get_offset (&iter);
+    }
+
+  gdk_threads_leave ();
+
+  return pos;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_select
+  (JNIEnv *env, jobject obj, jint start, jint end)
+{
+  void *ptr;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextIter iter;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+  gtk_text_buffer_get_iter_at_offset (buf, &iter, start);
+  /* quickly move both 'insert' and 'selection_bound' to the 
+     same position */
+  gtk_text_buffer_place_cursor (buf, &iter);  
+  gtk_text_buffer_get_iter_at_offset (buf, &iter, end);
+  gtk_text_buffer_move_mark_by_name (buf, "selection_bound", &iter);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_setEditable
+  (JNIEnv *env, jobject obj, jboolean state)
+{
+  void *ptr;
+  GtkWidget *text = NULL;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  gtk_text_view_set_editable (GTK_TEXT_VIEW (text), state);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_getText
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  char *contents = NULL;
+  jstring jcontents;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+  GtkTextIter start, end;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+  gtk_text_buffer_get_start_iter (buf, &start);
+  gtk_text_buffer_get_end_iter (buf, &end);
+  contents = gtk_text_buffer_get_text (buf, &start, &end, FALSE);
+
+  jcontents = (*env)->NewStringUTF (env, contents);
+  g_free (contents);
+
+  gdk_threads_leave ();
+
+  return jcontents;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_setText
+  (JNIEnv *env, jobject obj, jstring contents)
+{
+  void *ptr;
+  const char *str;
+  GtkWidget *text = NULL;
+  GtkTextBuffer *buf;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  str = (*env)->GetStringUTFChars (env, contents, NULL);
+
+  text = gtk_bin_get_child (GTK_BIN (ptr));
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
+  gtk_text_buffer_set_text (buf, str, strlen (str));
+
+  (*env)->ReleaseStringUTFChars (env, contents, str);
+
+  gdk_threads_leave ();
 }

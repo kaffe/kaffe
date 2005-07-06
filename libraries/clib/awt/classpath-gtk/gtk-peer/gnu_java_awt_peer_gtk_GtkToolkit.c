@@ -133,7 +133,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   char *homedir, *rcpath = NULL;
 
   jclass gtkgenericpeer, gtkcomponentpeer, gtkchoicepeer, gtkwindowpeer, gtkscrollbarpeer, gtklistpeer,
-    gtkmenuitempeer, gtktextcomponentpeer, window, gdkgraphics;
+    gtkmenuitempeer, window, gdkgraphics;
 #ifdef GTK_CAIRO
   jclass gdkgraphics2d;
 #endif
@@ -206,8 +206,6 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   gtklistpeer = (*env)->FindClass (env, "gnu/java/awt/peer/gtk/GtkListPeer");
   gtkmenuitempeer = (*env)->FindClass (env,
                                      "gnu/java/awt/peer/gtk/GtkMenuItemPeer");
-  gtktextcomponentpeer = (*env)->FindClass (env,
-                                     "gnu/java/awt/peer/gtk/GtkTextComponentPeer");
   gdkgraphics = (*env)->FindClass (env,
                                    "gnu/java/awt/peer/gtk/GdkGraphics");
 #ifdef GTK_CAIRO
@@ -262,7 +260,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   postListItemEventID = (*env)->GetMethodID (env, gtklistpeer,
 					     "postItemEvent",
 					     "(II)V");
-  postTextEventID = (*env)->GetMethodID (env, gtktextcomponentpeer,
+  postTextEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
 					     "postTextEvent",
 					     "()V");
   initComponentGraphicsID = (*env)->GetMethodID (env, gdkgraphics,

@@ -63,6 +63,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
+import java.awt.event.TextEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
@@ -528,6 +529,11 @@ public class GtkComponentPeer extends GtkGenericPeer
     q().postEvent (new ItemEvent ((ItemSelectable)awtComponent, 
 				ItemEvent.ITEM_STATE_CHANGED,
 				item, stateChange));
+  }
+
+  protected void postTextEvent ()
+  {
+    q().postEvent (new TextEvent (awtComponent, TextEvent.TEXT_VALUE_CHANGED));
   }
 
   public GraphicsConfiguration getGraphicsConfiguration ()

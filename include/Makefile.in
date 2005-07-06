@@ -537,7 +537,6 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextComponentPeer.h \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
 	gnu_java_awt_peer_gtk_GtkToolkit.h \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.h \

@@ -41,11 +41,13 @@ package gnu.java.awt.peer.gtk;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Rectangle;
 import java.awt.TextArea;
 import java.awt.peer.TextAreaPeer;
+import java.awt.peer.TextComponentPeer;
 
-public class GtkTextAreaPeer extends GtkTextComponentPeer
-  implements TextAreaPeer
+public class GtkTextAreaPeer extends GtkComponentPeer
+  implements TextComponentPeer, TextAreaPeer
 {
   private static transient int DEFAULT_ROWS = 10;
   private static transient int DEFAULT_COLS = 80;
@@ -54,6 +56,35 @@ public class GtkTextAreaPeer extends GtkTextComponentPeer
 
   native void gtkWidgetModifyFont (String name, int style, int size);
   native void gtkWidgetRequestFocus ();
+
+  public native void connectSignals ();
+
+  public native int getCaretPosition ();
+  public native void setCaretPosition (int pos);
+  public native int getSelectionStart ();
+  public native int getSelectionEnd ();
+  public native String getText ();
+  public native void select (int start, int end);
+  public native void setEditable (boolean state);
+  public native void setText (String text);
+
+  public int getIndexAtPoint(int x, int y)
+  {
+    // FIXME
+    return 0;
+  }
+
+  public Rectangle getCharacterBounds (int pos)
+  {
+    // FIXME
+    return null;
+  }
+
+  public long filterEvents (long filter)
+  {
+    // FIXME
+    return filter;
+  }
 
   void create ()
   {
@@ -87,6 +118,9 @@ public class GtkTextAreaPeer extends GtkTextComponentPeer
   public GtkTextAreaPeer (TextArea ta)
   {
     super (ta);
+
+    setText (ta.getText ());
+    setCaretPosition (0);
   }
 
   public native void insert (String str, int pos);

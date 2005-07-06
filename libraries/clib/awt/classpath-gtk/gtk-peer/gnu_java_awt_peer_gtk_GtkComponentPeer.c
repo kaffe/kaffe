@@ -1076,3 +1076,43 @@ focus_out_cb (GtkWidget *widget __attribute((unused)),
   gdk_threads_enter ();
   return FALSE;
 }
+
+void
+classpath_gtk_component_connect_nonfocus_signals (GObject *ptr, jobject *gref)
+ {
+   /* FIXME */
+#if 0
+  g_signal_connect (G_OBJECT (ptr), "button-press-event",
+                    G_CALLBACK (component_button_press_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "button-release-event",
+                    G_CALLBACK (component_button_release_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "enter-notify-event",
+                    G_CALLBACK (component_enter_notify_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "expose-event",
+                    G_CALLBACK (component_expose_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "leave-notify-event",
+                    G_CALLBACK (component_leave_notify_cb), *gref);
+
+  g_signal_connect (G_OBJECT (ptr), "motion-notify-event",
+                    G_CALLBACK (component_motion_notify_cb), *gref);
+#endif
+}
+
+void
+classpath_gtk_component_connect_signals (GObject *ptr, jobject *gref)
+{
+   /* FIXME */
+#if 0
+  classpath_gtk_component_connect_nonfocus_signals (ptr, gref);
+ 
+   g_signal_connect (G_OBJECT (ptr), "focus-in-event",
+                    G_CALLBACK (component_focus_in_cb), *gref);
+ 
+   g_signal_connect (G_OBJECT (ptr), "focus-out-event",
+                    G_CALLBACK (component_focus_out_cb), *gref);
+#endif
+}

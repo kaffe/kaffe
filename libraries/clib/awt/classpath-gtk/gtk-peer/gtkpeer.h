@@ -504,6 +504,14 @@ union widget_union
   GtkWidget **widget;
 };
 
+/* JNI initialization functions */
+void classpath_gtk_textcomponent_init_jni (void);
+
+/* Signal connection convience functions */
+void classpath_gtk_component_connect_signals (GObject *ptr, jobject *gref);
+void classpath_gtk_component_connect_nonfocus_signals (GObject *ptr, jobject *gref);
+void classpath_gtk_textcomponent_connect_signals (GObject *ptr, jobject *gref);
+
 /* GtkImage functions used by other gtk peer native routines */
 GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj);
 GdkPixmap *gnu_java_awt_peer_gtk_GtkImage_getPixmap(JNIEnv *env, jobject obj);

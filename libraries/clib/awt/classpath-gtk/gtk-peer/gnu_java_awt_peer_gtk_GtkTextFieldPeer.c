@@ -45,8 +45,22 @@ exception statement from your version. */
 #define BB_GREEN  26985
 #define BB_BLUE   31611
 
-static jint
-get_border_width (GtkWidget *entry);
+void
+classpath_gtk_textcomponent_init_jni (void)
+{
+  jclass gtkcomponentpeer;
+
+  gtkcomponentpeer = (*gdk_env())->FindClass (gdk_env(),
+                                              "gnu/java/awt/peer/gtk/GtkComponentPeer");
+
+  postTextEventID = (*gdk_env())->GetMethodID (gdk_env(), gtkcomponentpeer,
+					     "postTextEvent",
+					     "()V");
+}
+
+static void textcomponent_changed_cb (GtkEditable *editable, jobject peer);
+
+static jint get_border_width (GtkWidget *entry);
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_create
@@ -54,18 +68,39 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_create
 {
   GtkWidget *entry;
 
+  gdk_threads_enter ();
+
   /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
-
-  gdk_threads_enter ();
 
   entry = gtk_entry_new ();
   gtk_widget_set_size_request (entry,
 			       text_width + 2 * get_border_width (entry), -1);
 
-  gdk_threads_leave ();
-
   NSA_SET_PTR (env, obj, entry);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_connectSignals
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  jobject *gref;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  gref = NSA_GET_GLOBAL_REF (env, obj);
+
+  /* TextComponent signals */
+  classpath_gtk_textcomponent_connect_signals (G_OBJECT (ptr), gref);
+
+  /* Component signals */
+  classpath_gtk_component_connect_signals (G_OBJECT (ptr), gref);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -75,13 +110,13 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetSetBackground
   GdkColor color;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   color.red = (red / 255.0) * 65535;
   color.green = (green / 255.0) * 65535;
   color.blue = (blue / 255.0) * 65535;
-
-  gdk_threads_enter ();
 
   gtk_widget_modify_base (GTK_WIDGET (ptr), GTK_STATE_NORMAL, &color);
 
@@ -95,14 +130,14 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetSetForeground
   GdkColor color;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   color.red = (red / 255.0) * 65535;
   color.green = (green / 255.0) * 65535;
   color.blue = (blue / 255.0) * 65535;
   
-  gdk_threads_enter ();
-
   gtk_widget_modify_text (GTK_WIDGET (ptr), GTK_STATE_NORMAL, &color);
 
   if ( red == 0 && green == 0 && blue == 0)
@@ -123,9 +158,9 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkEntryGetBorderWidth
   void *ptr;
   int border_width = 0;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   border_width = get_border_width (GTK_WIDGET (ptr));
 
@@ -168,9 +203,9 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_setEchoChar
   void *ptr;
   GtkEntry *entry;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   entry = GTK_ENTRY (ptr);
 
@@ -193,18 +228,17 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetModifyFont
 {
   const char *font_name;
   void *ptr;
-  GtkWidget *entry;
   PangoFontDescription *font_desc;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  entry = GTK_WIDGET (ptr);
-  font_name = (*env)->GetStringUTFChars (env, name, NULL);
 
   gdk_threads_enter();
 
+  ptr = NSA_GET_PTR (env, obj);
+
+  font_name = (*env)->GetStringUTFChars (env, name, NULL);
+
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -212,11 +246,176 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetModifyFont
   if (style & AWT_STYLE_ITALIC)
     pango_font_description_set_style (font_desc, PANGO_STYLE_OBLIQUE);
 
-  gtk_widget_modify_font (GTK_WIDGET(entry), font_desc);
+  gtk_widget_modify_font (GTK_WIDGET (ptr), font_desc);
 
   pango_font_description_free (font_desc);
 
-  gdk_threads_leave();
-
   (*env)->ReleaseStringUTFChars (env, name, font_name);
+
+  gdk_threads_leave();
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_getCaretPosition
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  pos = gtk_editable_get_position (GTK_EDITABLE (ptr));
+
+  gdk_threads_leave ();
+  
+  return pos;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_setCaretPosition
+  (JNIEnv *env, jobject obj, jint pos)
+{
+  void *ptr;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gtk_editable_set_position (GTK_EDITABLE (ptr), pos);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_getSelectionStart
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+  int starti, endi;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  if (gtk_editable_get_selection_bounds (GTK_EDITABLE (ptr), &starti, &endi))
+    pos = starti;
+  else
+    pos = gtk_editable_get_position (GTK_EDITABLE (ptr));
+
+  gdk_threads_leave ();
+
+  return pos;
+}
+
+JNIEXPORT jint JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_getSelectionEnd
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  int pos = 0;
+  int starti, endi;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  if (gtk_editable_get_selection_bounds (GTK_EDITABLE (ptr), &starti, &endi))
+    pos = endi;
+  else
+    pos = gtk_editable_get_position (GTK_EDITABLE (ptr));
+
+  gdk_threads_leave ();
+
+  return pos;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_select
+  (JNIEnv *env, jobject obj, jint start, jint end)
+{
+  void *ptr;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gtk_editable_select_region (GTK_EDITABLE (ptr), start, end);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_setEditable
+  (JNIEnv *env, jobject obj, jboolean state)
+{
+  void *ptr;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gtk_editable_set_editable (GTK_EDITABLE (ptr), state);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_getText
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  char *contents = NULL;
+  jstring jcontents;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  
+  contents = gtk_editable_get_chars (GTK_EDITABLE (ptr), 0, -1);
+
+  jcontents = (*env)->NewStringUTF (env, contents);
+
+  g_free (contents);
+
+  gdk_threads_leave ();
+
+  return jcontents;
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_setText
+  (JNIEnv *env, jobject obj, jstring contents)
+{
+  void *ptr;
+  const char *str;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  str = (*env)->GetStringUTFChars (env, contents, NULL);
+  
+  gtk_entry_set_text (GTK_ENTRY (ptr), str);
+
+  (*env)->ReleaseStringUTFChars (env, contents, str);
+
+  gdk_threads_leave ();
+}
+
+void
+classpath_gtk_textcomponent_connect_signals (GObject *ptr, jobject *gref)
+{
+  g_signal_connect (G_OBJECT(ptr), "changed",
+                    G_CALLBACK (textcomponent_changed_cb), *gref);
+}
+
+static void
+textcomponent_changed_cb (GtkEditable *editable __attribute__((unused)),
+			  jobject peer)
+{
+  gdk_threads_leave ();
+  (*gdk_env())->CallVoidMethod (gdk_env(), peer, postTextEventID);
+  gdk_threads_enter ();
 }

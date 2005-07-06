@@ -85,12 +85,8 @@ public class EmbeddedWindow extends Frame
    */
   public void addNotify()
   {
-    Toolkit tk = getToolkit();
-
-    if (! (tk instanceof EmbeddedWindowSupport))
-      throw new UnsupportedOperationException
-        ("Embedded windows are not supported by the current peers: "
-	 + tk.getClass());
+    // Assume we're using ClasspathToolkit
+    ClasspathToolkit tk = (ClasspathToolkit) getToolkit();
 
     // Circumvent the package-privateness of the AWT internal
     // java.awt.Component.peer member variable.
@@ -98,7 +94,7 @@ public class EmbeddedWindow extends Frame
       {
 	Field peerField = Component.class.getDeclaredField("peer");
 	AccessController.doPrivileged(new SetAccessibleAction(peerField));
-	peerField.set(this, ((EmbeddedWindowSupport) tk).createEmbeddedWindow (this));
+	peerField.set(this, tk.createEmbeddedWindow (this));
       }
     catch (IllegalAccessException e)
       {

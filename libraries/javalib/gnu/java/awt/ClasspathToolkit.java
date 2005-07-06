@@ -38,7 +38,9 @@ exception statement from your version. */
 
 package gnu.java.awt;
 
+import gnu.java.awt.EmbeddedWindow;
 import gnu.java.awt.peer.ClasspathFontPeer;
+import gnu.java.awt.peer.EmbeddedWindowPeer;
 import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 
 import java.awt.AWTException;
@@ -354,6 +356,14 @@ public abstract class ClasspathToolkit
 
   public abstract RobotPeer createRobot (GraphicsDevice screen)
     throws AWTException;
+
+  /**
+   * Creates an embedded window peer, and associates it with an
+   * EmbeddedWindow object.
+   *
+   * @param w The embedded window with which to associate a peer.
+   */
+  public abstract EmbeddedWindowPeer createEmbeddedWindow (EmbeddedWindow w);
 
   /** 
    * Used to register ImageIO SPIs provided by the toolkit.

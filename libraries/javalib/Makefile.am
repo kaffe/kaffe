@@ -1123,7 +1123,6 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/ClasspathToolkit.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EmbeddedWindow.java \
-	gnu/java/awt/EmbeddedWindowSupport.java \
 	gnu/java/awt/EventModifier.java \
 	gnu/java/awt/GradientPaintContext.java
 gnu_java_awt_color_SRCS = \
@@ -1190,7 +1189,6 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkScrollPanePeer.java \
 	gnu/java/awt/peer/gtk/GtkScrollbarPeer.java \
 	gnu/java/awt/peer/gtk/GtkTextAreaPeer.java \
-	gnu/java/awt/peer/gtk/GtkTextComponentPeer.java \
 	gnu/java/awt/peer/gtk/GtkTextFieldPeer.java \
 	gnu/java/awt/peer/gtk/GtkToolkit.java \
 	gnu/java/awt/peer/gtk/GtkVolatileImage.java \

@@ -42,16 +42,47 @@ import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Rectangle;
 import java.awt.TextField;
 import java.awt.event.KeyEvent;
 import java.awt.peer.TextFieldPeer;
+import java.awt.peer.TextComponentPeer;
 
-public class GtkTextFieldPeer extends GtkTextComponentPeer
-  implements TextFieldPeer
+public class GtkTextFieldPeer extends GtkComponentPeer
+  implements TextComponentPeer, TextFieldPeer
 {
   native void create (int width);
   native void gtkWidgetSetBackground (int red, int green, int blue);
   native void gtkWidgetSetForeground (int red, int green, int blue);
+
+  public native void connectSignals ();
+
+  public native int getCaretPosition ();
+  public native void setCaretPosition (int pos);
+  public native int getSelectionStart ();
+  public native int getSelectionEnd ();
+  public native String getText ();
+  public native void select (int start, int end);
+  public native void setEditable (boolean state);
+  public native void setText (String text);
+
+  public int getIndexAtPoint(int x, int y)
+  {
+    // FIXME
+    return 0;
+  }
+
+  public Rectangle getCharacterBounds (int pos)
+  {
+    // FIXME
+    return null;
+  }
+
+  public long filterEvents (long filter)
+  {
+    // FIXME
+    return filter;
+  }
 
   void create ()
   {
@@ -85,6 +116,9 @@ public class GtkTextFieldPeer extends GtkTextComponentPeer
   public GtkTextFieldPeer (TextField tf)
   {
     super (tf);
+
+    setText (tf.getText ());
+    setCaretPosition (0);
 
     if (tf.echoCharIsSet ())
       setEchoChar (tf.getEchoChar ());
