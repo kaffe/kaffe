@@ -130,7 +130,7 @@ main(int argc, char* argv[])
 		}
 #endif
 	}
-	vmargs.classpath = cp;
+	vmargs.classpath = strdup(cp);
 
         cp = getenv(LIBRARYPATH1);
 	if (cp == 0) {

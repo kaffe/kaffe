@@ -1,5 +1,10 @@
 2005-07-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/main.c (main): Duplicate classpath string received from getenv
+	in order to be able to free it later.
+
+2005-07-07  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU classpath.
 
 	2005-07-06  David Gilbert  <david.gilbert@object-refinery.com>
