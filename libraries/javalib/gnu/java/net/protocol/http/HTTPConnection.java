@@ -402,7 +402,7 @@ public class HTTPConnection
    * Retrieves the socket associated with this connection.
    * This creates the socket if necessary.
    */
-  protected Socket getSocket()
+  protected synchronized Socket getSocket()
     throws IOException
   {
     if (socket == null)
@@ -489,7 +489,7 @@ public class HTTPConnection
     sslSocketFactory = factory;
   }
 
-  protected InputStream getInputStream()
+  protected synchronized InputStream getInputStream()
     throws IOException
   {
     if (socket == null)
@@ -499,7 +499,7 @@ public class HTTPConnection
     return in;
   }
 
-  protected OutputStream getOutputStream()
+  protected synchronized OutputStream getOutputStream()
     throws IOException
   {
     if (socket == null)
@@ -512,7 +512,7 @@ public class HTTPConnection
   /**
    * Closes the underlying socket, if any.
    */
-  protected void closeConnection()
+  protected synchronized void closeConnection()
     throws IOException
   {
     if (socket != null)

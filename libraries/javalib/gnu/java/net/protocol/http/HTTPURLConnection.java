@@ -328,6 +328,8 @@ public class HTTPURLConnection
     if (keepAlive)
       {
         StringBuffer buf = new StringBuffer(secure ? "https://" : "http://");
+        buf.append(Thread.currentThread().hashCode());
+        buf.append('@');
         buf.append(host);
         buf.append(':');
         buf.append(port);

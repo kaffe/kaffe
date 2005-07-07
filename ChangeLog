@@ -1,3 +1,24 @@
+2005-07-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU classpath.
+
+	2005-07-07  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (MouseInputHandler.mouseClicked): Access static TreeSelectionModel
+        fields via the class and not via an instance.
+
+	2005-07-07  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java:
+        Reformatted source file to better match our coding standards.
+
+	2005-07-06  Chris Burdess  <dog@gnu.org>
+
+        * gnu/java/net/protocol/http/HTTPConnection.java,
+        gnu/java/net/protocol/http/HTTPURLConnection.java:
+        Fix bug with multiple threads and persistent connections.
+
 2005-07-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/main.c (main): Duplicate classpath string received from getenv
