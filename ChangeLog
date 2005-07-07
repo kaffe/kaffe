@@ -1,5 +1,11 @@
 2005-07-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.classlibrary-compile: Updated URL for jikes.
+
+	Reported by:  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+2005-07-07  Dalibor Topic  <robilad@kaffe.org>
+
         * THIRDPARTY: Updated to DNSJava 2.0.0.
 
         * libraries/javalib/org/xbill/DNS/A6Record.java,

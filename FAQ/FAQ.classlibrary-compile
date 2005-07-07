@@ -65,7 +65,7 @@ What compilers are known to work?
 
 The preferred compiler is jikes. The URL for jikes is:
 
-  http://www10.software.ibm.com/developerworks/opensource/jikes/
+  http://jikes.sf.net/
 
 Please note that jikes 1.14 and 1.15 have bugs that result in a
 miscompiled Klasses.jar file.
