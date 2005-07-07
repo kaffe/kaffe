@@ -273,7 +273,7 @@ public class JTree
 	 * TreePath of a note to to its state. Valid states are EXPANDED and
 	 * COLLAPSED. Nodes not in this Hashtable are assumed state COLLAPSED.
 	 */
-	private Hashtable nodeStates;
+	private Hashtable nodeStates = new Hashtable();
 	protected transient TreeCellEditor cellEditor;
 	protected transient TreeCellRenderer cellRenderer;
 	protected boolean editable;
@@ -1079,13 +1079,6 @@ public class JTree
 
 		if (path != null)
 			selectionModel.addSelectionPath(path);
-		else
-		{
-			selectionModel.clearSelection();
-			// need to repaint because cant fire an event with 
-			// null selection.
-			repaint();
-		}
 	}
 
 	public void addSelectionRows(int[] rows)
@@ -1299,7 +1292,7 @@ public class JTree
 		// Don't expand if last path component is a leaf node.
 		if ((path == null) || (treeModel.isLeaf(path.getLastPathComponent())))
 			return;
-
+		
 		setExpandedState(path, true);
 	}
 
@@ -1519,9 +1512,12 @@ public class JTree
 	private void doExpandParents(TreePath path, boolean state)
 	{
 		TreePath parent = path.getParentPath();
-
+		
 		if (isExpanded(parent))
+		{
+			nodeStates.put(path, state ? EXPANDED : COLLAPSED);
 			return;
+		}
 
 		if (parent != null)
 			doExpandParents(parent, false);
@@ -1538,9 +1534,10 @@ public class JTree
 
 		try
 		{
-			while (parent != null)
+			if (parent != null)
 				checkExpandParents(parent);
-		} catch (ExpandVetoException e)
+		} 
+		catch (ExpandVetoException e)
 		{
 			// Expansion vetoed.
 			return;

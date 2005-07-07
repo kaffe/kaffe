@@ -1,5 +1,63 @@
 2005-07-07  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU classpath.
+
+	2005-07-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicBorders.java: fixed API docs all over.
+
+	2005-07-06  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/transform/StreamSerializer.java,
+        gnu/xml/xpath/EqualityExpr.java: XSLT conformance fixes.
+
+	2005-07-06  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getPathForRow): took out redundant code.
+
+	2005-07-06  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getNextVisibleNode): Implemented
+        (getPathForRow): Fixed so the next node retrieved is visible.
+
+	2005-07-06  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JTree.java
+        Initialized the Hashtable.
+        (addSelectionPath): removed redundant code.
+        (doExpandParents): added in line so that state is
+        changed for current path. Changed while loop to if
+        statement, an infinite loop was occurring.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getPathForRow): Implemented to work with visibility.
+        (isLeaf): Implemented
+        (mouseClicked): add in check for expand/collapse.
+        Selection for DISCONTIGUOUS tree selection is
+        implemented.
+        (treeExpanded): called repaint, so the tree updates
+        visually when something is expanded.
+        (treeCollapse): Similar to treeExpanded.
+        (paintLeaf): changed to paint leaf only when visible.
+        (paintNonLeaf): paints only when visible.
+        (paintRecursive): lines for tree are only painted when
+        needed. checked for visibility of current object and
+        parent.
+        * javax/swing/tree/DefaultTreeCellRenderer.java
+        (getTreeCellRendererComponent): setting icons when
+        expanded.
+        * javax/swing/tree/DefaultTreeSelectionModel.java
+        (clearSelection): set leadPath to null because selection
+        should be completely reset.
+
+	2005-07-06  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/AbstractButton.java
+        (setContentAreaFilled): Set the opaque property here.
+
+2005-07-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile: Updated URL for jikes.
 
 	Reported by:  Ito Kazumitsu  <kaz@maczuka.gcd.org>

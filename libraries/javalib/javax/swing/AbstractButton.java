@@ -1881,8 +1881,9 @@ public abstract class AbstractButton extends JComponent
     boolean old = contentAreaFilled;
     contentAreaFilled = b;
     firePropertyChange(CONTENT_AREA_FILLED_CHANGED_PROPERTY, old, b);
-    revalidate();
-    repaint();
+    // The JDK sets the opaque property to the value of the contentAreaFilled
+    // property, so should we do.
+    setOpaque(b);
    }
 
   /**

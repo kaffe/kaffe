@@ -91,6 +91,10 @@ final class EqualityExpr
       {
         Collection lns = (Collection) left;
         Collection rns = (Collection) right;
+        if (lns.isEmpty())
+          {
+            return false;
+          }
         boolean all = true;
         for (Iterator i = lns.iterator(); i.hasNext(); )
           {
@@ -119,7 +123,7 @@ final class EqualityExpr
                   }
               }
           }
-        return false;
+        return all;
       }
     /* 
      * If one object to be compared is a node-set and the other is a number,

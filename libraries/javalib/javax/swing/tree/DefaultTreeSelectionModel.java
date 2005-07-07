@@ -466,6 +466,7 @@ public class DefaultTreeSelectionModel
 	 */
 	public void clearSelection()
 	{
+		leadPath = null;
 		selection = null;
 	}
 

@@ -1,5 +1,5 @@
 /* BasicBorders.java --
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -89,9 +89,9 @@ public class BasicBorders
    * height="170" alt="[A screen shot of the returned border]" />
    *
    * @return a {@link
-   *         javax.swing.plaf.BorderUIResource#CompoundBorderUIResource}
-   *         whose outer border is a {@link #ButtonBorder} and whose
-   *         inner border is a {@link #MarginBorder}.
+   *         javax.swing.plaf.BorderUIResource.CompoundBorderUIResource}
+   *         whose outer border is a {@link ButtonBorder} and whose
+   *         inner border is a {@link MarginBorder}.
    */
   public static Border getButtonBorder()
   {
@@ -139,9 +139,9 @@ public class BasicBorders
    * height="135" alt="[A screen shot of the returned border]" />
    *
    * @return a {@link
-   *         javax.swing.plaf.BorderUIResource#CompoundBorderUIResource}
-   *         whose outer border is a {@link #RadioButtonBorder} and whose
-   *         inner border is a {@link #MarginBorder}.
+   *         javax.swing.plaf.BorderUIResource.CompoundBorderUIResource}
+   *         whose outer border is a {@link RadioButtonBorder} and whose
+   *         inner border is a {@link MarginBorder}.
    */
   public static Border getRadioButtonBorder()
   {
@@ -191,9 +191,9 @@ public class BasicBorders
    * height="135" alt="[A screen shot of the returned border]" />
    *
    * @return a {@link
-   *         javax.swing.plaf.BorderUIResource#CompoundBorderUIResource}
-   *         whose outer border is a {@link #ToggleButtonBorder} and whose
-   *         inner border is a {@link #MarginBorder}.
+   *         javax.swing.plaf.BorderUIResource.CompoundBorderUIResource}
+   *         whose outer border is a {@link ToggleButtonBorder} and whose
+   *         inner border is a {@link MarginBorder}.
    */
   public static Border getToggleButtonBorder()
   {
@@ -241,7 +241,7 @@ public class BasicBorders
    * <p><img src="doc-files/BasicBorders.MenuBarBorder-1.png" width="500"
    * height="140" alt="[A screen shot of a JMenuBar with this border]" />
    *
-   * @return a {@link #MenuBarBorder}.
+   * @return a {@link MenuBarBorder}.
    *
    * @see javax.swing.JMenuBar
    */
@@ -272,7 +272,7 @@ public class BasicBorders
    * <p><img src="doc-files/BasicBorders.SplitPaneBorder-2.png" width="520"
    * height="200" alt="[A screen shot for JSplitPane.VERTICAL_SPLIT]" />
    *
-   * @return a {@link #SplitPaneBorder}.
+   * @return a {@link SplitPaneBorder}.
    *
    * @see javax.swing.JSplitPane
    * @see #getSplitPaneDividerBorder()
@@ -339,8 +339,7 @@ public class BasicBorders
    * height="200" alt="[A screen shot of a border returned by
    * this method]" />
    *
-   * @return an instance of
-   * {@link javax.swing.plaf.basic.BasicBorders$FieldBorder}.
+   * @return an instance of {@link FieldBorder}.
    *
    * @see javax.swing.JTextField
    * @see javax.swing.text.JTextComponent
@@ -592,7 +591,7 @@ public class BasicBorders
      *
      * @return the same object that was passed for <code>insets</code>.
      *
-     * @see #getBorderInsets()
+     * @see #getBorderInsets(Component)
      */
     public Insets getBorderInsets(Component c, Insets insets)
     {
@@ -756,7 +755,7 @@ public class BasicBorders
      *
      * @return the same object that was passed for <code>insets</code>.
      *
-     * @see #getBorderInsets()
+     * @see #getBorderInsets(Component)
      */
     public Insets getBorderInsets(Component c, Insets insets)
     {
@@ -1020,7 +1019,7 @@ public class BasicBorders
      *
      * @return the same object that was passed for <code>insets</code>.
      *
-     * @see #getBorderInsets()
+     * @see #getBorderInsets(Component)
      */
     public Insets getBorderInsets(Component c, Insets insets)
     {
@@ -1176,7 +1175,7 @@ public class BasicBorders
      *
      * @return the same object that was passed for <code>insets</code>.
      *
-     * @see #getBorderInsets()
+     * @see #getBorderInsets(Component)
      */
     public Insets getBorderInsets(Component c, Insets insets)
     {
@@ -1230,7 +1229,7 @@ public class BasicBorders
      * Paints the border around a rollover button.  If <code>c</code>
      * is not an {@link javax.swing.AbstractButton} whose model
      * returns <code>true</code> for {@link
-     * javax.swing.ButtonModel#isRollver}, nothing gets painted at
+     * javax.swing.ButtonModel#isRollover}, nothing gets painted at
      * all.
      *
      * @param c the button whose border is to be painted.
@@ -1309,8 +1308,8 @@ public class BasicBorders
    * appearance of the Sun reference implementation. A bug report has
    * been filed with Sun (review ID 188774).
    *
-   * @see {@link #getSplitPaneBorder()}
-   * @see {@link #getSplitPaneDividerBorder()}
+   * @see #getSplitPaneBorder()
+   * @see #getSplitPaneDividerBorder()
    *
    * @author Sascha Brawer (brawer@dandelis.ch)
    */
@@ -1797,7 +1796,7 @@ public class BasicBorders
      *
      * @return the same object that was passed for <code>insets</code>.
      *
-     * @see #getBorderInsets()
+     * @see #getBorderInsets(Component)
      */
     public Insets getBorderInsets(Component c, Insets insets)
     {

@@ -627,15 +627,30 @@ public class StreamSerializer
         text = buf.toString();
       }
     ByteBuffer encoded = encoder.encode(CharBuffer.wrap(text));
+    int len = encoded.limit() - encoded.position();
     if (encoded.hasArray())
       {
-        return encoded.array();
+        byte[] ret = encoded.array();
+        if (ret.length > len)
+          {
+            // Why?
+            byte[] ret2 = new byte[len];
+            System.arraycopy(ret, 0, ret2, 0, len);
+            ret = ret2;
+          }
+        return ret;
       }
     encoded.flip();
-    int len = encoded.limit() - encoded.position();
     byte[] ret = new byte[len];
     encoded.get(ret, 0, len);
     return ret;
+  }
+
+  String hex(byte[] b) {
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < b.length; i++)
+      buf.append(Integer.toHexString(b[i])).append(' ');
+    return buf.toString();
   }
 
   String encode(String text, boolean encodeCtl, boolean inAttr)
