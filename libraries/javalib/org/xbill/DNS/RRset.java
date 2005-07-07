@@ -16,59 +16,142 @@ import java.util.*;
 
 public class RRset implements TypedObject {
 
+/*
+ * rrs contains both normal and SIG/RRSIG records, with the SIG/RRSIG records
+ * at the end.
+ */
 private List rrs;
-private List sigs;
-private int start;
-private int securityStatus;
+private short nsigs;
+private short position;
 
 /** Creates an empty RRset */
 public
 RRset() {
 	rrs = new ArrayList(1);
-	sigs = null;
-	start = 0;
-	securityStatus = DNSSEC.Insecure;
+	nsigs = 0;
+	position = 0;
+}
+
+/** Creates an RRset and sets its contents to the specified record */
+public
+RRset(Record record) {
+	this();
+	safeAddRR(record);
+}
+
+/** Creates an RRset with the contents of an existing RRset */
+public
+RRset(RRset rrset) {
+	synchronized (rrset) {
+		rrs = (List) ((ArrayList)rrset.rrs).clone();
+		nsigs = rrset.nsigs;
+		position = rrset.position;
+	}
+}
+
+private void
+safeAddRR(Record r) {
+	if (!(r instanceof SIGBase)) {
+		if (nsigs == 0)
+			rrs.add(r);
+		else
+			rrs.add(rrs.size() - nsigs, r);
+	} else {
+		rrs.add(r);
+		nsigs++;
+	}
 }
 
 /** Adds a Record to an RRset */
-public void
+public synchronized void
 addRR(Record r) {
-	if (!(r instanceof SIGBase)) {
-		synchronized (rrs) {
-			if (!rrs.contains(r))
-				rrs.add(r);
-			start = 0;
+	if (rrs.size() == 0) {
+		safeAddRR(r);
+		return;
+	}
+	Record first = first();
+	if (!r.sameRRset(first))
+		throw new IllegalArgumentException("record does not match " +
+						   "rrset");
+
+	if (r.getTTL() != first.getTTL()) {
+		if (r.getTTL() > first.getTTL()) {
+			r = r.cloneRecord();
+			r.setTTL(first.getTTL());
+		} else {
+			for (int i = 0; i < rrs.size(); i++) {
+				Record tmp = (Record) rrs.get(i);
+				tmp = tmp.cloneRecord();
+				tmp.setTTL(r.getTTL());
+				rrs.set(i, tmp);
+			}
 		}
 	}
-	else {
-		if (sigs == null)
-			sigs = new ArrayList();
-		if (!sigs.contains(r))
-			sigs.add(r);
-	}
+
+	if (!rrs.contains(r))
+		safeAddRR(r);
 }
 
 /** Deletes a Record from an RRset */
-public void
+public synchronized void
 deleteRR(Record r) {
-	if (!(r instanceof SIGBase)) {
-		synchronized (rrs) {
-			rrs.remove(r);
-			start = 0;
-		}
-	}
-	else if (sigs != null)
-		sigs.remove(r);
+	if (rrs.remove(r) && (r instanceof SIGBase))
+		nsigs--;
 }
 
 /** Deletes all Records from an RRset */
-public void
+public synchronized void
 clear() {
-	synchronized (rrs) {
-		rrs.clear();
-		start = 0;
+	rrs.clear();
+	position = 0;
+	nsigs = 0;
+}
+
+private synchronized Iterator
+iterator(boolean data, boolean cycle) {
+	int size, start, total;
+
+	total = rrs.size();
+
+	if (data)
+		size = total - nsigs;
+	else
+		size = nsigs;
+	if (size == 0)
+		return Collections.EMPTY_LIST.iterator();
+
+	if (data) {
+		if (!cycle)
+			start = 0;
+		else {
+			if (position >= size)
+				position = 0;
+			start = position++;
+		}
+	} else {
+		start = total - nsigs;
 	}
-	sigs = null;
+
+	List list = new ArrayList(size);
+	if (data) {
+		list.addAll(rrs.subList(start, size));
+		if (start != 0)
+			list.addAll(rrs.subList(0, start));
+	} else {
+		list.addAll(rrs.subList(start, total));
+	}
+
+	return list.iterator();
+}
+
+/**
+ * Returns an Iterator listing all (data) records.
+ * @param cycle If true, cycle through the records so that each Iterator will
+ * start with a different record.
+ */
+public synchronized Iterator
+rrs(boolean cycle) {
+	return iterator(true, cycle);
 }
 
 /**
@@ -77,31 +160,19 @@ clear() {
  */
 public synchronized Iterator
 rrs() {
-	int size = rrs.size();
-	if (size == 0)
-		return Collections.EMPTY_LIST.iterator();
-	if (start == size)
-		start = 0;
-	if (start++ == 0)
-		return (rrs.iterator());
-	List list = new ArrayList(rrs.subList(start - 1, size));
-	list.addAll(rrs.subList(0, start - 1));
-	return list.iterator();
+	return iterator(true, true);
 }
 
 /** Returns an Iterator listing all signature records */
-public Iterator
+public synchronized Iterator
 sigs() {
-	if (sigs == null)
-		return Collections.EMPTY_LIST.iterator();
-	else
-		return sigs.iterator();
+	return iterator(false, false);
 }
 
 /** Returns the number of (data) records */
 public int
 size() {
-	return rrs.size();
+	return rrs.size() - nsigs;
 }
 
 /**
@@ -110,10 +181,7 @@ size() {
  */
 public Name
 getName() {
-	Record r = first();
-	if (r == null)
-		return null;
-	return r.getName();
+	return first().getName();
 }
 
 /**
@@ -122,10 +190,7 @@ getName() {
  */
 public int
 getType() {
-	Record r = first();
-	if (r == null)
-		return 0;
-	return r.getType();
+	return first().getRRsetType();
 }
 
 /**
@@ -134,50 +199,24 @@ getType() {
  */
 public int
 getDClass() {
-	Record r = first();
-	if (r == null)
-		return 0;
-	return r.getDClass();
+	return first().getDClass();
 }
 
 /** Returns the ttl of the records */
-public long
+public synchronized long
 getTTL() {
-	synchronized (rrs) {
-		if (rrs.size() == 0)
-			return 0;
-		long ttl = 0xFFFFFFFFL;
-		Iterator it = rrs.iterator();
-		while (it.hasNext()) {
-			Record r = (Record)it.next();
-			if (r.getTTL() < ttl)
-				ttl = r.getTTL();
-		}
-		return ttl;
-	}
+	return first().getTTL();
 }
 
-/** Returns the first record */
-public Record
+/**
+ * Returns the first record
+ * @throws IllegalStateException if the rrset is empty
+ */
+public synchronized Record
 first() {
-	try {
-		return (Record) rrs.get(0);
-	}
-	catch (IndexOutOfBoundsException e) {
-		return null;
-	}
-}
-
-/** Sets the DNSSEC security of the RRset. */
-void
-setSecurity(int status) {
-	securityStatus = status;
-}
-
-/** Returns the DNSSEC security of the RRset. */
-public int
-getSecurity() {
-	return securityStatus;
+	if (rrs.size() == 0)
+		throw new IllegalStateException("rrset is empty");
+	return (Record) rrs.get(0);
 }
 
 private String
@@ -205,10 +244,10 @@ toString() {
 	sb.append(getTTL() + " ");
 	sb.append(DClass.string(getDClass()) + " ");
 	sb.append(Type.string(getType()) + " ");
-	sb.append(iteratorToString(rrs.iterator()));
-	if (sigs != null) {
+	sb.append(iteratorToString(iterator(true, false)));
+	if (nsigs > 0) {
 		sb.append(" sigs: ");
-		sb.append(iteratorToString(sigs.iterator()));
+		sb.append(iteratorToString(iterator(false, false)));
 	}
 	sb.append(" }");
 	return sb.toString();

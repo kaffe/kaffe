@@ -4,7 +4,6 @@ package org.xbill.DNS;
 
 import java.io.*;
 import java.util.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * Key - contains a cryptographic public key.  The data can be converted
@@ -306,11 +305,6 @@ KEYRecord(Name name, int dclass, long ttl, int flags, int proto, int alg,
 	  byte [] key)
 {
 	super(name, Type.KEY, dclass, ttl, flags, proto, alg, key);
-}
-
-private boolean
-isNullKEY() {
-	return ((flags & FLAG_NOKEY) == FLAG_NOKEY);
 }
 
 void

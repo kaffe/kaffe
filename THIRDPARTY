@@ -188,7 +188,7 @@ translate it into languages other than English.
 
 * org.xbill.DNS
 
-This code has been taken from DNSJava 1.6.4. 
+This code has been taken from DNSJava 2.0.0. 
 
 dnsjava is placed under the BSD license.  Several files are also under
 additional licenses; see the individual files for details.

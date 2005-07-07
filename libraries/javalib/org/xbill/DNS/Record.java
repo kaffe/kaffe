@@ -20,7 +20,6 @@ public abstract class Record implements Cloneable, Comparable {
 protected Name name;
 protected int type, dclass;
 protected long ttl;
-private boolean empty;
 
 private static final Record [] knownRecords = new Record[256];
 private static final Record unknownRecord = new UNKRecord();
@@ -62,12 +61,10 @@ getTypedObject(int type) {
 		return knownRecords[type];
 
 	/* Construct the class name by putting the type before "Record". */
-	String s = Record.class.getName();
-	StringBuffer sb = new StringBuffer(s);
-	sb.insert(s.lastIndexOf("Record"), Type.string(type));
-
+	String s = Record.class.getPackage().getName() + "." +
+		   Type.string(type).replace('-', '_') + "Record";
 	try {
-		Class c = Class.forName(sb.toString().replace('-', '_'));
+		Class c = Class.forName(s);
 		Constructor m = c.getDeclaredConstructor(emptyClassArray);
 		knownRecords[type] = (Record) m.newInstance(emptyObjectArray);
 	}
@@ -84,9 +81,12 @@ getTypedObject(int type) {
 }
 
 private static final Record
-getEmptyRecord(Name name, int type, int dclass, long ttl) {
-	Record rec = getTypedObject(type);
-	rec = rec.getObject();
+getEmptyRecord(Name name, int type, int dclass, long ttl, boolean hasData) {
+	Record rec;
+	if (hasData)
+		rec = getTypedObject(type).getObject();
+	else
+		rec = new EmptyRecord();
 	rec.name = name;
 	rec.type = type;
 	rec.dclass = dclass;
@@ -106,17 +106,16 @@ throws IOException
 {
 	Record rec;
 	int recstart;
-	rec = getEmptyRecord(name, type, dclass, ttl);
-	if (in != null)
-		in.setActive(length);
-	else
-		rec.empty = true;
-
-	rec.rrFromWire(in);
-
+	rec = getEmptyRecord(name, type, dclass, ttl, in != null);
 	if (in != null) {
+		if (in.remaining() < length)
+			throw new WireParseException("truncated record");
+		in.setActive(length);
+
+		rec.rrFromWire(in);
+
 		if (in.remaining() > 0)
-			throw new IOException("Invalid record length");
+			throw new WireParseException("invalid record length");
 		in.clearActive();
 	}
 	return rec;
@@ -183,9 +182,7 @@ newRecord(Name name, int type, int dclass, long ttl) {
 	DClass.check(dclass);
 	TTL.check(ttl);
 
-	Record rec = getEmptyRecord(name, type, dclass, ttl);
-	rec.empty = true;
-	return rec;
+	return getEmptyRecord(name, type, dclass, ttl, false);
 }
 
 /**
@@ -203,7 +200,7 @@ newRecord(Name name, int type, int dclass) {
 }
 
 static Record
-fromWire(DNSInput in, int section) throws IOException {
+fromWire(DNSInput in, int section, boolean isUpdate) throws IOException {
 	int type, dclass;
 	long ttl;
 	int length;
@@ -219,10 +216,15 @@ fromWire(DNSInput in, int section) throws IOException {
 
 	ttl = in.readU32();
 	length = in.readU16();
-	if (length == 0)
+	if (length == 0 && isUpdate)
 		return newRecord(name, type, dclass, ttl);
 	rec = newRecord(name, type, dclass, ttl, length, in);
 	return rec;
+}
+
+static Record
+fromWire(DNSInput in, int section) throws IOException {
+	return fromWire(in, section, false);
 }
 
 /**
@@ -230,12 +232,11 @@ fromWire(DNSInput in, int section) throws IOException {
  */
 public static Record
 fromWire(byte [] b, int section) throws IOException {
-	return fromWire(new DNSInput(b), section);
+	return fromWire(new DNSInput(b), section, false);
 }
 
 void
 toWire(DNSOutput out, int section, Compression c) {
-	int start = out.current();
 	name.toWire(out, c);
 	out.writeU16(type);
 	out.writeU16(dclass);
@@ -244,8 +245,7 @@ toWire(DNSOutput out, int section, Compression c) {
 	out.writeU32(ttl);
 	int lengthPosition = out.current();
 	out.writeU16(0); /* until we know better */
-	if (!empty)
-		rrToWire(out, c, false);
+	rrToWire(out, c, false);
 	int rrlength = out.current() - lengthPosition - 2;
 	out.save();
 	out.jump(lengthPosition);
@@ -275,8 +275,7 @@ toWireCanonical(DNSOutput out, boolean noTTL) {
 	}
 	int lengthPosition = out.current();
 	out.writeU16(0); /* until we know better */
-	if (!empty)
-		rrToWire(out, null, true);
+	rrToWire(out, null, true);
 	int rrlength = out.current() - lengthPosition - 2;
 	out.save();
 	out.jump(lengthPosition);
@@ -310,8 +309,6 @@ toWireCanonical() {
  */
 public byte []
 rdataToWireCanonical() {
-	if (empty)
-		return new byte[0];
 	DNSOutput out = new DNSOutput();
 	rrToWire(out, null, true);
 	return out.toByteArray();
@@ -327,8 +324,6 @@ abstract String rrToString();
  */
 public String
 rdataToString() {
-	if (empty)
-		return "";
 	return rrToString();
 }
 
@@ -354,9 +349,10 @@ toString() {
 		sb.append("\t");
 	}
 	sb.append(Type.string(type));
-	if (!empty) {
+	String rdata = rrToString();
+	if (!rdata.equals("")) {
 		sb.append("\t");
-		sb.append(rrToString());
+		sb.append(rdata);
 	}
 	return sb.toString();
 }
@@ -439,7 +435,7 @@ byteArrayToString(byte [] array, boolean quote) {
 	if (quote)
 		sb.append('"');
 	for (int i = 0; i < array.length; i++) {
-		short b = (short)(array[i] & 0xFF);
+		int b = array[i] & 0xFF;
 		if (b < 0x20 || b >= 0x7f) {
 			sb.append('\\');
 			sb.append(byteFormat.format(b));
@@ -504,7 +500,7 @@ throws IOException
 		return newRecord(name, type, dclass, ttl, length, in);
 	}
 	st.unget();
-	rec = getEmptyRecord(name, type, dclass, ttl);
+	rec = getEmptyRecord(name, type, dclass, ttl, true);
 	rec.rdataFromString(st, origin);
 	t = st.get();
 	if (t.type != Tokenizer.EOL && t.type != Tokenizer.EOF) {
@@ -590,6 +586,18 @@ abstract void
 rrToWire(DNSOutput out, Compression c, boolean canonical);
 
 /**
+ * Determines if two Records could be part of the same RRset.
+ * This compares the name, type, and class of the Records; the ttl and
+ * rdata are not compared.
+ */
+public boolean
+sameRRset(Record rec) {
+	return (getRRsetType() == rec.getRRsetType() &&
+		dclass == rec.dclass &&
+		name.equals(rec.name));
+}
+
+/**
  * Determines if two Records are identical.  This compares the name, type,
  * class, and rdata (with names canonicalized).  The TTLs are not compared.
  * @param arg The record to compare to
@@ -601,10 +609,6 @@ equals(Object arg) {
 		return false;
 	Record r = (Record) arg;
 	if (type != r.type || dclass != r.dclass || !name.equals(r.name))
-		return false;
-	if (empty && r.empty)
-		return true;
-	else if (empty || r.empty)
 		return false;
 	byte [] array1 = rdataToWireCanonical();
 	byte [] array2 = r.rdataToWireCanonical();
@@ -623,7 +627,7 @@ hashCode() {
 	return code;
 }
 
-private Record
+Record
 cloneRecord() {
 	try {
 		return (Record) clone();
@@ -658,6 +662,12 @@ withDClass(int dclass, long ttl) {
 	return rec;
 }
 
+/* Sets the TTL to the specified value.  This is intentionally not public. */
+void
+setTTL(long ttl) {
+	this.ttl = ttl;
+}
+
 /**
  * Compares this Record to another Object.
  * @param o The Object to be compared.
@@ -684,12 +694,6 @@ compareTo(Object o) {
 	n = type - arg.type;
 	if (n != 0)
 		return (n);
-	if (empty && arg.empty)
-		return 0;
-	else if (empty)
-		return -1;
-	else if (arg.empty)
-		return 1;
 	byte [] rdata1 = rdataToWireCanonical();
 	byte [] rdata2 = arg.rdataToWireCanonical();
 	for (int i = 0; i < rdata1.length && i < rdata2.length; i++) {
@@ -717,7 +721,7 @@ static int
 checkU8(String field, int val) {
 	if (val < 0 || val > 0xFF)
 		throw new IllegalArgumentException("\"" + field + "\" " + val + 
-						   "must be an unsigned 8 " +
+						   " must be an unsigned 8 " +
 						   "bit value");
 	return val;
 }
@@ -727,7 +731,7 @@ static int
 checkU16(String field, int val) {
 	if (val < 0 || val > 0xFFFF)
 		throw new IllegalArgumentException("\"" + field + "\" " + val + 
-						   "must be an unsigned 16 " +
+						   " must be an unsigned 16 " +
 						   "bit value");
 	return val;
 }
@@ -737,7 +741,7 @@ static long
 checkU32(String field, long val) {
 	if (val < 0 || val > 0xFFFFFFFFL)
 		throw new IllegalArgumentException("\"" + field + "\" " + val + 
-						   "must be an unsigned 32 " +
+						   " must be an unsigned 32 " +
 						   "bit value");
 	return val;
 }

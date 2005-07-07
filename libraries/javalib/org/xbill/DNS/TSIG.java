@@ -2,7 +2,6 @@
 
 package org.xbill.DNS;
 
-import java.io.*;
 import java.util.*;
 import org.xbill.DNS.utils.*;
 
@@ -16,65 +15,122 @@ import org.xbill.DNS.utils.*;
 
 public class TSIG {
 
-/**
- * The domain name representing the HMAC-MD5 algorithm (the only supported
- * algorithm)
- */
-public static final Name HMAC		= Name.fromConstantString
-						("HMAC-MD5.SIG-ALG.REG.INT.");
+private static final String HMAC_MD5_STR = "HMAC-MD5.SIG-ALG.REG.INT.";
+private static final String HMAC_SHA1_STR = "hmac-sha1.";
+private static final String HMAC_SHA256_STR = "hmac-sha256.";
 
-/** The default fudge value for outgoing packets.  Can be overriden by the
+/** The domain name representing the HMAC-MD5 algorithm. */
+public static final Name HMAC_MD5 = Name.fromConstantString(HMAC_MD5_STR);
+
+/** The domain name representing the HMAC-MD5 algorithm (deprecated). */
+public static final Name HMAC = HMAC_MD5;
+
+/** The domain name representing the HMAC-SHA1 algorithm. */
+public static final Name HMAC_SHA1 = Name.fromConstantString(HMAC_SHA1_STR);
+
+/** The domain name representing the HMAC-SHA256 algorithm. */
+public static final Name HMAC_SHA256 = Name.fromConstantString(HMAC_SHA256_STR);
+
+/**
+ * The default fudge value for outgoing packets.  Can be overriden by the
  * tsigfudge option.
  */
 public static final short FUDGE		= 300;
 
 private Name name, alg;
+private String digest;
 private byte [] key;
 
-static {
-	if (Options.check("verbosehmac"))
-		hmacSigner.verbose = true;
+private void
+getDigest() {
+	if (alg.equals(HMAC_MD5))
+		digest = "md5";
+	else if (alg.equals(HMAC_SHA1))
+		digest = "sha-1";
+	else if (alg.equals(HMAC_SHA256))
+		digest = "sha-256";
+	else
+		throw new IllegalArgumentException("Invalid algorithm");
 }
 
 /**
- * Creates a new TSIG object, which can be used to sign or verify a message.
- * @param name The name of the shared key
- * @param key The shared key's data
+ * Creates a new TSIG key, which can be used to sign or verify a message.
+ * @param algorithm The algorithm of the shared key.
+ * @param name The name of the shared key.
+ * @param key The shared key's data.
+ */
+public
+TSIG(Name algorithm, Name name, byte [] key) {
+	this.name = name;
+	this.alg = algorithm;
+	this.key = key;
+	getDigest();
+}
+
+/**
+ * Creates a new TSIG key with the hmac-md5 algorithm, which can be used to
+ * sign or verify a message.
+ * @param name The name of the shared key.
+ * @param key The shared key's data.
  */
 public
 TSIG(Name name, byte [] key) {
-	this.name = name;
-	this.alg = HMAC;
-	this.key = key;
+	this(HMAC_MD5, name, key);
 }
 
 /**
  * Creates a new TSIG object, which can be used to sign or verify a message.
  * @param name The name of the shared key
- * @param key The shared key's data, represented as either a base64 encoded
- * string or (if the first character is ':') a hex encoded string
+ * @param key The shared key's data represented as a base64 encoded string.
+ * @throws IllegalArgumentException The key name is an invalid name
+ * @throws IllegalArgumentException The key data is improperly encoded
+ */
+public
+TSIG(Name algorithm, String name, String key) {
+	this.key = base64.fromString(key);
+	if (this.key == null)
+		throw new IllegalArgumentException("Invalid TSIG key string");
+	try {
+		this.name = Name.fromString(name, Name.root);
+	}
+	catch (TextParseException e) {
+		throw new IllegalArgumentException("Invalid TSIG key name");
+	}
+	this.alg = algorithm;
+	getDigest();
+}
+
+/**
+ * Creates a new TSIG object with the hmac-md5 algorithm, which can be used to
+ * sign or verify a message.
+ * @param name The name of the shared key
+ * @param key The shared key's data, represented as a base64 encoded string.
  * @throws IllegalArgumentException The key name is an invalid name
  * @throws IllegalArgumentException The key data is improperly encoded
  */
 public
 TSIG(String name, String key) {
-	byte [] keyArray;
-	Name keyname;
-	if (key.length() > 1 && key.charAt(0) == ':')
-		keyArray = base16.fromString(key.substring(1));
-	else
-		keyArray = base64.fromString(key);
-	if (keyArray == null)
-		throw new IllegalArgumentException("Invalid TSIG key string");
-	try {
-		keyname = Name.fromString(name, Name.root);
-	}
-	catch (TextParseException e) {
-		throw new IllegalArgumentException("Invalid TSIG key name");
-	}
-	this.name = keyname;
-	this.alg = HMAC;
-	this.key = keyArray;
+	this(HMAC_MD5, name, key);
+}
+
+/**
+ * Creates a new TSIG object with the hmac-md5 algorithm, which can be used to
+ * sign or verify a message.
+ * @param str The TSIG key, in the form name/secret or name:secret.
+ * @throws IllegalArgumentException The string does not contain both a name
+ * and secret.
+ * @throws IllegalArgumentException The key name is an invalid name
+ * @throws IllegalArgumentException The key data is improperly encoded
+ */
+static public TSIG
+fromString(String str) {
+	int index = str.indexOf('/');
+	if (index < 0)
+		index = str.indexOf(':');
+	if (index < 0)
+		throw new IllegalArgumentException("String does not contain " +
+						   "both name and secret");
+	return new TSIG(str.substring(0, index), str.substring(index + 1));
 }
 
 /**
@@ -94,9 +150,9 @@ generate(Message m, byte [] b, int error, TSIGRecord old) {
 	else
 		timeSigned = old.getTimeSigned();
 	int fudge;
-	hmacSigner h = null;
+	HMAC hmac = null;
 	if (error == Rcode.NOERROR || error == Rcode.BADTIME)
-		h = new hmacSigner(key);
+		hmac = new HMAC(digest, key);
 
 	fudge = Options.intValue("tsigfudge");
 	if (fudge < 0 || fudge > 0x7FFF)
@@ -105,15 +161,15 @@ generate(Message m, byte [] b, int error, TSIGRecord old) {
 	if (old != null) {
 		DNSOutput out = new DNSOutput();
 		out.writeU16(old.getSignature().length);
-		if (h != null) {
-			h.addData(out.toByteArray());
-			h.addData(old.getSignature());
+		if (hmac != null) {
+			hmac.update(out.toByteArray());
+			hmac.update(old.getSignature());
 		}
 	}
 
 	/* Digest the message */
-	if (h != null)
-		h.addData(b);
+	if (hmac != null)
+		hmac.update(b);
 
 	DNSOutput out = new DNSOutput();
 	name.toWireCanonical(out);
@@ -130,12 +186,12 @@ generate(Message m, byte [] b, int error, TSIGRecord old) {
 	out.writeU16(error);
 	out.writeU16(0); /* No other data */
 
-	if (h != null)
-		h.addData(out.toByteArray());
+	if (hmac != null)
+		hmac.update(out.toByteArray());
 
 	byte [] signature;
-	if (h != null)
-		signature = h.sign();
+	if (hmac != null)
+		signature = hmac.sign();
 	else
 		signature = new byte[0];
 
@@ -191,7 +247,7 @@ applyStream(Message m, TSIGRecord old, boolean first) {
 	}
 	Date timeSigned = new Date();
 	int fudge;
-	hmacSigner h = new hmacSigner(key);
+	HMAC hmac = new HMAC(digest, key);
 
 	fudge = Options.intValue("tsigfudge");
 	if (fudge < 0 || fudge > 0x7FFF)
@@ -199,11 +255,11 @@ applyStream(Message m, TSIGRecord old, boolean first) {
 
 	DNSOutput out = new DNSOutput();
 	out.writeU16(old.getSignature().length);
-	h.addData(out.toByteArray());
-	h.addData(old.getSignature());
+	hmac.update(out.toByteArray());
+	hmac.update(old.getSignature());
 
 	/* Digest the message */
-	h.addData(m.toWire());
+	hmac.update(m.toWire());
 
 	out = new DNSOutput();
 	long time = timeSigned.getTime() / 1000;
@@ -213,9 +269,9 @@ applyStream(Message m, TSIGRecord old, boolean first) {
 	out.writeU32(timeLow);
 	out.writeU16(fudge);
 
-	h.addData(out.toByteArray());
+	hmac.update(out.toByteArray());
 
-	byte [] signature = h.sign();
+	byte [] signature = hmac.sign();
 	byte [] other = null;
 
 	Record r = new TSIGRecord(name, DClass.ANY, 0, alg, timeSigned, fudge,
@@ -241,7 +297,7 @@ applyStream(Message m, TSIGRecord old, boolean first) {
 public byte
 verify(Message m, byte [] b, int length, TSIGRecord old) {
 	TSIGRecord tsig = m.getTSIG();
-	hmacSigner h = new hmacSigner(key);
+	HMAC hmac = new HMAC(digest, key);
 	if (tsig == null)
 		return Rcode.FORMERR;
 
@@ -264,16 +320,16 @@ verify(Message m, byte [] b, int length, TSIGRecord old) {
 	{
 		DNSOutput out = new DNSOutput();
 		out.writeU16(old.getSignature().length);
-		h.addData(out.toByteArray());
-		h.addData(old.getSignature());
+		hmac.update(out.toByteArray());
+		hmac.update(old.getSignature());
 	}
 	m.getHeader().decCount(Section.ADDITIONAL);
 	byte [] header = m.getHeader().toWire();
 	m.getHeader().incCount(Section.ADDITIONAL);
-	h.addData(header);
+	hmac.update(header);
 
 	int len = m.tsigstart - header.length;	
-	h.addData(b, header.length, len);
+	hmac.update(b, header.length, len);
 
 	DNSOutput out = new DNSOutput();
 	tsig.getName().toWireCanonical(out);
@@ -294,9 +350,9 @@ verify(Message m, byte [] b, int length, TSIGRecord old) {
 		out.writeU16(0);
 	}
 
-	h.addData(out.toByteArray());
+	hmac.update(out.toByteArray());
 
-	if (h.verify(tsig.getSignature()))
+	if (hmac.verify(tsig.getSignature()))
 		return Rcode.NOERROR;
 	else {
 		if (Options.check("verbose"))
@@ -329,7 +385,7 @@ verify(Message m, byte [] b, TSIGRecord old) {
 public int
 recordLength() {
 	return (name.length() + 10 +
-		HMAC.length() +
+		alg.length() +
 		8 +	// time signed, fudge
 		18 +	// 2 byte MAC length, 16 byte MAC
 		4 +	// original id, error
@@ -342,7 +398,7 @@ public static class StreamVerifier {
 	 */
 
 	private TSIG key;
-	private hmacSigner verifier;
+	private HMAC verifier;
 	private int nresponses;
 	private int lastsigned;
 	private TSIGRecord lastTSIG;
@@ -351,7 +407,7 @@ public static class StreamVerifier {
 	public
 	StreamVerifier(TSIG tsig, TSIGRecord old) {
 		key = tsig;
-		verifier = new hmacSigner(key.key);
+		verifier = new HMAC(key.digest, key.key);
 		nresponses = 0;
 		lastTSIG = old;
 	}
@@ -378,8 +434,8 @@ public static class StreamVerifier {
 				byte [] signature = tsig.getSignature();
 				DNSOutput out = new DNSOutput();
 				out.writeU16(signature.length);
-				verifier.addData(out.toByteArray());
-				verifier.addData(signature);
+				verifier.update(out.toByteArray());
+				verifier.update(signature);
 			}
 			lastTSIG = tsig;
 			return result;
@@ -390,14 +446,14 @@ public static class StreamVerifier {
 		byte [] header = m.getHeader().toWire();
 		if (tsig != null)
 			m.getHeader().incCount(Section.ADDITIONAL);
-		verifier.addData(header);
+		verifier.update(header);
 
 		int len;
 		if (tsig == null)
 			len = b.length - header.length;
 		else
 			len = m.tsigstart - header.length;
-		verifier.addData(b, header.length, len);
+		verifier.update(b, header.length, len);
 
 		if (tsig != null) {
 			lastsigned = nresponses;
@@ -426,7 +482,7 @@ public static class StreamVerifier {
 		out.writeU16(timeHigh);
 		out.writeU32(timeLow);
 		out.writeU16(tsig.getFudge());
-		verifier.addData(out.toByteArray());
+		verifier.update(out.toByteArray());
 
 		if (verifier.verify(tsig.getSignature()) == false) {
 			if (Options.check("verbose"))
@@ -437,8 +493,8 @@ public static class StreamVerifier {
 		verifier.clear();
 		out = new DNSOutput();
 		out.writeU16(tsig.getSignature().length);
-		verifier.addData(out.toByteArray());
-		verifier.addData(tsig.getSignature());
+		verifier.update(out.toByteArray());
+		verifier.update(tsig.getSignature());
 
 		return Rcode.NOERROR;
 	}

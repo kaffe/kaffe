@@ -4,8 +4,6 @@ package org.xbill.DNS;
 
 import java.util.*;
 
-import org.xbill.DNS.utils.*;
-
 /**
  * Constants and functions relating to DNSSEC (algorithm constants).
  * DNSSEC provides authentication for DNS information.  RRsets are
@@ -87,6 +85,20 @@ public static class Algorithm {
 	}
 }
 
+private static class ByteArrayComparator implements Comparator {
+	public int compare(Object o1, Object o2) {
+		byte [] b1 = (byte []) o1;
+		byte [] b2 = (byte []) o2;
+		int len = Math.min(b1.length, b2.length);
+		for (int i = 0; i < len; i++) {
+			int diff = (b1[i] & 0xFF) - (b2[i] & 0xFF);
+			if (diff != 0)
+				return diff;
+		}
+		return b1.length - b2.length;
+	}
+}
+
 public static final int RSAMD5 = Algorithm.RSAMD5;
 public static final int RSA = Algorithm.RSAMD5;
 public static final int DH = Algorithm.DH;
@@ -96,6 +108,8 @@ public static final int RSASHA1 = Algorithm.RSASHA1;
 public static final int Failed = -1;
 public static final int Insecure = 0;
 public static final int Secure = 1;
+
+private static Comparator byteArrayComparator = new ByteArrayComparator();
 
 private
 DNSSEC() { }
@@ -113,8 +127,9 @@ digestSIG(DNSOutput out, SIGRecord sig) {
 }
 
 /**
- * Creates an array containing fields of the SIG record and the RRsets to
- * be signed/verified.
+ * Creates a byte array containing the concatenation of the fields of the
+ * SIG record and the RRsets to be signed/verified.  This does not perform
+ * a cryptographic digest.
  * @param sig The SIG record used to sign/verify the rrset.
  * @param rrset The data to be signed/verified.
  * @return The data to be cryptographically signed or verified.
@@ -130,23 +145,25 @@ digestRRset(SIGRecord sig, RRset rrset) {
 	Iterator it = rrset.rrs();
 	Name name = rrset.getName();
 	Name wild = null;
-	if (name.labels() > sig.getLabels())
-		wild = name.wild(name.labels() - sig.getLabels());
+	int sigLabels = sig.getLabels() + 1; // Add the root label back.
+	if (name.labels() > sigLabels)
+		wild = name.wild(name.labels() - sigLabels);
 	while (it.hasNext()) {
 		Record rec = (Record) it.next();
 		if (wild != null)
 			rec = rec.withName(wild);
 		records[--size] = rec.toWireCanonical();
 	}
-	Arrays.sort(records);
+	Arrays.sort(records, byteArrayComparator);
 	for (int i = 0; i < records.length; i++)
 		out.writeByteArray(records[i]);
 	return out.toByteArray();
 }
 
 /**
- * Creates an array containing fields of the SIG record and the message to
- * be signed.
+ * Creates a byte array containing the concatenation of the fields of the
+ * SIG record and the message to be signed/verified.  This does not perform
+ * a cryptographic digest.
  * @param sig The SIG record used to sign/verify the rrset.
  * @param msg The message to be signed/verified.
  * @param previous If this is a response, the signature from the query.

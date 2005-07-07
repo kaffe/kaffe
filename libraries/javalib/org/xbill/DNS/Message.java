@@ -4,7 +4,6 @@ package org.xbill.DNS;
 
 import java.util.*;
 import java.io.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * A DNS Message.  A message is the basic unit of communication between
@@ -20,7 +19,7 @@ import org.xbill.DNS.utils.*;
 public class Message implements Cloneable {
 
 /** The maximum length of a message in wire format. */
-public final static int MAXLENGTH = 65535;
+public static final int MAXLENGTH = 65535;
 
 private Header header;
 private List [] sections;
@@ -68,7 +67,7 @@ Message(int id) {
 /** Creates a new Message with a random Message ID */
 public
 Message() {
-	this(Header.randomID());
+	this(new Header());
 }
 
 /**
@@ -97,17 +96,24 @@ newUpdate(Name zone) {
 
 Message(DNSInput in) throws IOException {
 	this(new Header(in));
-	for (int i = 0; i < 4; i++) {
-		int count = header.getCount(i);
-		if (count > 0)
-			sections[i] = new ArrayList(count);
-		for (int j = 0; j < count; j++) {
-			int pos = in.current();
-			Record rec = Record.fromWire(in, i);
-			sections[i].add(rec);
-			if (rec.getType() == Type.TSIG)
-				tsigstart = pos;
+	boolean isUpdate = (header.getOpcode() == Opcode.UPDATE);
+	boolean truncated = header.getFlag(Flags.TC);
+	try {
+		for (int i = 0; i < 4; i++) {
+			int count = header.getCount(i);
+			if (count > 0)
+				sections[i] = new ArrayList(count);
+			for (int j = 0; j < count; j++) {
+				int pos = in.current();
+				Record rec = Record.fromWire(in, i, isUpdate);
+				sections[i].add(rec);
+				if (rec.getType() == Type.TSIG)
+					tsigstart = pos;
+			}
 		}
+	} catch (WireParseException e) {
+		if (!truncated)
+			throw e;
 	}
 	size = in.current();
 }
@@ -335,11 +341,6 @@ sameSet(Record r1, Record r2) {
 		r1.getName().equals(r2.getName()));
 }
 
-private static boolean
-sameSet(RRset set, Record rec) {
-	return (sameSet(set.first(), rec));
-}
-
 /**
  * Returns an array containing all records in the given section grouped into
  * RRsets.
@@ -370,9 +371,8 @@ getSectionRRsets(int section) {
 			}
 		}
 		if (newset) {
-			RRset set = new RRset();
+			RRset set = new RRset(recs[i]);
 			sets.add(set);
-			set.addRR(recs[i]);
 			hash.add(name);
 		}
 	}

@@ -4,7 +4,6 @@ package org.xbill.DNS;
 
 import java.io.*;
 import java.util.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * A DNS message header
@@ -16,9 +15,7 @@ import org.xbill.DNS.utils.*;
 public class Header {
 
 private int id; 
-private boolean [] flags;
-private int rcode;
-private int opcode;
+private int flags;
 private int [] counts;
 
 private static Random random = new Random();
@@ -26,15 +23,21 @@ private static Random random = new Random();
 /** The length of a DNS Header in wire format. */
 public static final int LENGTH = 12;
 
+private void
+init() {
+	counts = new int[4];
+	flags = 0;
+	id = -1;
+}
+
 /**
  * Create a new empty header.
  * @param id The message id
  */
 public
 Header(int id) {
-	counts = new int[4];
-	flags = new boolean[16];
-	this.id = id;
+	init();
+	setID(id);
 }
 
 /**
@@ -42,7 +45,7 @@ Header(int id) {
  */
 public
 Header() {
-	this(random.nextInt(0xffff));
+	init();
 }
 
 /**
@@ -50,7 +53,7 @@ Header() {
  */
 Header(DNSInput in) throws IOException {
 	this(in.readU16());
-	readFlags(in);
+	flags = in.readU16();
 	for (int i = 0; i < counts.length; i++)
 		counts[i] = in.readU16();
 }
@@ -67,7 +70,7 @@ Header(byte [] b) throws IOException {
 void
 toWire(DNSOutput out) {
 	out.writeU16(getID());
-	writeFlags(out);
+	out.writeU16(flags);
 	for (int i = 0; i < counts.length; i++)
 		out.writeU16(counts[i]);
 }
@@ -79,13 +82,26 @@ toWire() {
 	return out.toByteArray();
 }
 
+static private boolean
+validFlag(int bit) {
+	return (bit >= 0 && bit <= 0xF && Flags.isFlag(bit));
+}
+
+static private void
+checkFlag(int bit) {
+	if (!validFlag(bit))
+		throw new IllegalArgumentException("invalid flag bit " + bit);
+}
+
 /**
  * Sets a flag to the supplied value
  * @see Flags
  */
 public void
 setFlag(int bit) {
-	flags[bit] = true;
+	checkFlag(bit);
+	// bits are indexed from left to right
+	flags |= (1 << (15 - bit));
 }
 
 /**
@@ -94,7 +110,9 @@ setFlag(int bit) {
  */
 public void
 unsetFlag(int bit) {
-	flags[bit] = false;
+	checkFlag(bit);
+	// bits are indexed from left to right
+	flags &= ~(1 << (15 - bit));
 }
 
 /**
@@ -103,12 +121,18 @@ unsetFlag(int bit) {
  */
 public boolean
 getFlag(int bit) {
-	return flags[bit];
+	checkFlag(bit);
+	// bits are indexed from left to right
+	return (flags & (1 << (15 - bit))) != 0;
 }
 
 boolean []
 getFlags() {
-	return flags;
+	boolean [] array = new boolean[16];
+	for (int i = 0; i < array.length; i++)
+		if (validFlag(i))
+			array[i] = getFlag(i);
+	return array;
 }
 
 /**
@@ -116,7 +140,13 @@ getFlags() {
  */
 public int
 getID() {
-	return id & 0xFFFF;
+	if (id >= 0)
+		return id;
+	synchronized (this) {
+		if (id < 0)
+			id = random.nextInt(0xffff);
+		return id;
+	}
 }
 
 /**
@@ -124,18 +154,10 @@ getID() {
  */
 public void
 setID(int id) {
-	if (opcode > 0xFF)
+	if (id < 0 || id > 0xffff)
 		throw new IllegalArgumentException("DNS message ID " + id +
-						   "is out of range");
+						   " is out of range");
 	this.id = id;
-}
-
-/**
- * Generates a random number suitable for use as a message ID
- */
-static int
-randomID() {
-	return (random.nextInt(0xffff));
 }
 
 /**
@@ -144,10 +166,11 @@ randomID() {
  */
 public void
 setRcode(int value) {
-	if (opcode > 0xF)
+	if (value < 0 || value > 0xF)
 		throw new IllegalArgumentException("DNS Rcode " + value +
-						   "is out of range");
-	rcode = value;
+						   " is out of range");
+	flags &= ~0xF;
+	flags |= value;
 }
 
 /**
@@ -156,7 +179,7 @@ setRcode(int value) {
  */
 public int
 getRcode() {
-	return rcode;
+	return flags & 0xF;
 }
 
 /**
@@ -165,10 +188,11 @@ getRcode() {
  */
 public void
 setOpcode(int value) {
-	if (opcode > 0xF)
+	if (value < 0 || value > 0xF)
 		throw new IllegalArgumentException("DNS Opcode " + value +
 						   "is out of range");
-	opcode = value;
+	flags &= 0x87FF;
+	flags |= (value << 11);
 }
 
 /**
@@ -177,25 +201,30 @@ setOpcode(int value) {
  */
 public int
 getOpcode() {
-	return opcode;
+	return (flags >> 11) & 0xF;
 }
 
 void
 setCount(int field, int value) {
-	if (value > 0xFF)
+	if (value < 0 || value > 0xFF)
 		throw new IllegalArgumentException("DNS section count " +
-						   value +
-						   "is out of range");
+						   value + " is out of range");
 	counts[field] = value;
 }
 
 void
 incCount(int field) {
+	if (counts[field] == 0xFF)
+		throw new IllegalStateException("DNS section count cannot " +
+						"be incremented");
 	counts[field]++;
 }
 
 void
 decCount(int field) {
+	if (counts[field] == 0)
+		throw new IllegalStateException("DNS section count cannot " +
+						"be decremented");
 	counts[field]--;
 }
 
@@ -208,35 +237,13 @@ getCount(int field) {
 	return counts[field];
 }
 
-private void
-writeFlags(DNSOutput out) {
-	int flagsval = 0;
-	for (int i = 0; i < 16; i++) {
-		if (flags[i])
-			flagsval |= (1 << (15-i));
-	}
-	flagsval |= (opcode << 11);
-	flagsval |= (rcode);
-	out.writeU16(flagsval);
-}
-
-private void
-readFlags(DNSInput in) throws IOException {
-	int flagsval = in.readU16();
-	for (int i = 0; i < 16; i++) {
-		flags[i] = ((flagsval & (1 << (15 - i))) != 0);
-	}
-	opcode = (byte) ((flagsval >> 11) & 0xF);
-	rcode = (byte) (flagsval & 0xF);
-}
-
 /** Converts the header's flags into a String */
 public String
 printFlags() {
 	StringBuffer sb = new StringBuffer();
 
-	for (int i = 0; i < flags.length; i++)
-		if (Flags.isFlag(i) && getFlag(i)) {
+	for (int i = 0; i < 16; i++)
+		if (validFlag(i) && getFlag(i)) {
 			sb.append(Flags.string(i));
 			sb.append(" ");
 		}
@@ -269,12 +276,10 @@ toString() {
 /* Creates a new Header identical to the current one */
 public Object
 clone() {
-	Header h = new Header(id);
+	Header h = new Header();
+	h.id = id;
+	h.flags = flags;
 	System.arraycopy(counts, 0, h.counts, 0, counts.length);
-	System.arraycopy(flags, 0, h.flags, 0, flags.length);
-	h.rcode = rcode;
-	h.rcode = rcode;
-	h.opcode = opcode;
 	return h;
 }
 

@@ -4,7 +4,6 @@ package org.xbill.DNS;
 
 import java.io.*;
 import java.util.*;
-import java.lang.ref.*;
 
 /**
  * A cache of DNS records.  The cache obeys TTLs, so items are purged after
@@ -18,18 +17,41 @@ import java.lang.ref.*;
  * @author Brian Wellington
  */
 
-public class Cache extends NameSet {
+public class Cache {
 
-private abstract static class Element implements TypedObject {
+private interface Element extends TypedObject {
+	public boolean expired();
+	public int compareCredibility(int cred);
+	public int getType();
+}
+
+private static int
+limitExpire(long ttl, long maxttl) {
+	if (maxttl >= 0 && maxttl < ttl)
+		ttl = maxttl;
+	int expire = (int)((System.currentTimeMillis() / 1000) + ttl);
+	if (expire < 0 || expire > Integer.MAX_VALUE)
+		return Integer.MAX_VALUE;
+	return expire;
+}
+
+private static class CacheRRset extends RRset implements Element {
 	int credibility;
 	int expire;
 
-	protected void
-	setValues(int credibility, long ttl) {
-		this.credibility = credibility;
-		this.expire = (int)((System.currentTimeMillis() / 1000) + ttl);
-		if (this.expire < 0 || this.expire > Integer.MAX_VALUE)
-			this.expire = Integer.MAX_VALUE;
+	public
+	CacheRRset(Record rec, int cred, long maxttl) {
+		super();
+		this.credibility = cred;
+		this.expire = limitExpire(rec.getTTL(), maxttl);
+		addRR(rec);
+	}
+
+	public
+	CacheRRset(RRset rrset, int cred, long maxttl) {
+		super(rrset);
+		this.credibility = cred;
+		this.expire = limitExpire(rrset.getTTL(), maxttl);
 	}
 
 	public final boolean
@@ -38,40 +60,27 @@ private abstract static class Element implements TypedObject {
 		return (now >= expire);
 	}
 
-	public abstract int getType();
-}
-
-private static class PositiveElement extends Element {
-	RRset rrset;
-
-	public
-	PositiveElement(RRset r, int cred, long maxttl) {
-		rrset = r;
-		long ttl = r.getTTL();
-		if (maxttl >= 0 && maxttl < ttl)
-			ttl = maxttl;
-		setValues(cred, ttl);
-	}
-
-	public int
-	getType() {
-		return rrset.getType();
+	public final int
+	compareCredibility(int cred) {
+		return credibility - cred;
 	}
 
 	public String
 	toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(rrset);
+		sb.append(super.toString());
 		sb.append(" cl = ");
 		sb.append(credibility);
 		return sb.toString();
 	}
 }
 
-private static class NegativeElement extends Element {
+private static class NegativeElement implements Element {
 	int type;
 	Name name;
 	SOARecord soa;
+	int credibility;
+	int expire;
 
 	public
 	NegativeElement(Name name, int type, SOARecord soa, int cred,
@@ -81,17 +90,26 @@ private static class NegativeElement extends Element {
 		this.type = type;
 		this.soa = soa;
 		long cttl = 0;
-		if (soa != null) {
+		if (soa != null)
 			cttl = soa.getMinimum();
-			if (maxttl >= 0)
-				cttl = Math.min(cttl, maxttl);
-		}
-		setValues(cred, cttl);
+		this.credibility = cred;
+		this.expire = limitExpire(cttl, maxttl);
 	}
 
 	public int
 	getType() {
 		return type;
+	}
+
+	public final boolean
+	expired() {
+		int now = (int)(System.currentTimeMillis() / 1000);
+		return (now >= expire);
+	}
+
+	public final int
+	compareCredibility(int cred) {
+		return credibility - cred;
 	}
 
 	public String
@@ -107,98 +125,63 @@ private static class NegativeElement extends Element {
 	}
 }
 
-private static class CacheCleaner extends Thread {
-	private Reference cacheref;
-	private long interval;
+private static class CacheMap extends LinkedHashMap {
+	private int maxsize = -1;
 
-	public
-	CacheCleaner(Cache cache, int cleanInterval) {
-		this.cacheref = new WeakReference(cache);
-		this.interval = cleanInterval * 60 * 1000;
-		setDaemon(true);
-		setName("org.xbill.DNS.Cache.CacheCleaner");
-		start();
+	CacheMap(int maxsize) {
+		super(16, (float) 0.75, true);
+		this.maxsize = maxsize;
 	}
 
-	private boolean
-	clean(Cache cache) {
-		Iterator it = cache.names();
-		while (it.hasNext()) {
-			Name name;
-			try {
-				name = (Name) it.next();
-			} catch (ConcurrentModificationException e) {
-				return false;
-			}
-			Object [] elements = cache.findExactSets(name);
-			for (int i = 0; i < elements.length; i++) {
-				Element element = (Element) elements[i];
-				if (element.expired())
-					cache.removeSet(name,
-							element.getType(),
-							element);
-			}
-		}
-		return true;
+	int
+	getMaxSize() {
+		return maxsize;
 	}
 
-	public void
-	run() {
-		while (true) {
-			long now = System.currentTimeMillis();
-			long next = now + interval;
-			while (now < next) {
-				try {
-					Thread.sleep(next - now);
-				}
-				catch (InterruptedException e) {
-					return;
-				}
-				now = System.currentTimeMillis();
-			}
-			Cache cache = (Cache) cacheref.get();
-			if (cache == null) {
-				return;
-			}
-			for (int i = 0; i < 4; i++)
-				if (clean(cache))
-					break;
-		}
+	void
+	setMaxSize(int maxsize) {
+		/*
+		 * Note that this doesn't shrink the size of the map if
+		 * the maximum size is lowered, but it should shrink as
+		 * entries expire.
+		 */
+		this.maxsize = maxsize;
+	}
+
+	protected boolean removeEldestEntry(Map.Entry eldest) {
+		return maxsize >= 0 && size() > maxsize;
 	}
 }
 
-private static final int defaultCleanInterval = 30;
-
-private Verifier verifier;
-private boolean secure;
+private CacheMap data;
 private int maxncache = -1;
 private int maxcache = -1;
-private CacheCleaner cleaner;
 private int dclass;
 
-/**
- * Creates an empty Cache
- *
- * @param dclass The dns class of this cache
- * @param cleanInterval The interval between cache cleanings, in minutes.
- * @see #setCleanInterval(int)
- */
-public
-Cache(int dclass, int cleanInterval) {
-	super(true);
-	this.dclass = dclass;
-	setCleanInterval(cleanInterval);
-}
+private static final int defaultMaxEntries = 50000;
 
 /**
  * Creates an empty Cache
  *
- * @param dclass The dns class of this cache
+ * @param dclass The DNS class of this cache
  * @see DClass
  */
 public
 Cache(int dclass) {
-	this(dclass, defaultCleanInterval);
+	this.dclass = dclass;
+	data = new CacheMap(defaultMaxEntries);
+}
+
+/**
+ * Creates an empty Cache
+ *
+ * @param dclass The DNS class of this cache
+ * @param cleanInterval unused
+ * @deprecated Use Cache(int) instead.
+ */
+public
+Cache(int dclass, int cleanInterval) {
+	this(dclass);
 }
 
 /**
@@ -207,13 +190,7 @@ Cache(int dclass) {
  */
 public
 Cache() {
-	this(DClass.IN, defaultCleanInterval);
-}
-
-/** Empties the Cache. */
-public void
-clearCache() {
-	clear();
+	this(DClass.IN);
 }
 
 /**
@@ -221,12 +198,134 @@ clearCache() {
  */
 public
 Cache(String file) throws IOException {
-	super(true);
-	cleaner = new CacheCleaner(this, defaultCleanInterval);
+	data = new CacheMap(defaultMaxEntries);
 	Master m = new Master(file);
 	Record record;
 	while ((record = m.nextRecord()) != null)
 		addRecord(record, Credibility.HINT, m);
+}
+
+private synchronized Object
+exactName(Name name) {
+	return data.get(name);
+}
+
+private synchronized void
+removeName(Name name) {
+	data.remove(name);
+}
+
+private synchronized Element []
+allElements(Object types) {
+	if (types instanceof List) {
+		List typelist = (List) types;
+		int size = typelist.size();
+		return (Element []) typelist.toArray(new Element[size]);
+	} else {
+		Element set = (Element) types;
+		return new Element[] {set};
+	}
+}
+
+private synchronized Element
+oneElement(Name name, Object types, int type, int minCred) {
+	Element found = null;
+
+	if (type == Type.ANY)
+		throw new IllegalArgumentException("oneElement(ANY)");
+	if (types instanceof List) {
+		List list = (List) types;
+		for (int i = 0; i < list.size(); i++) {
+			Element set = (Element) list.get(i);
+			if (set.getType() == type) {
+				found = set;
+				break;
+			}
+		}
+	} else {
+		Element set = (Element) types;
+		if (set.getType() == type)
+			found = set;
+	}
+	if (found == null)
+		return null;
+	if (found.expired()) {
+		removeElement(name, type);
+		return null;
+	}
+	if (found.compareCredibility(minCred) < 0)
+		return null;
+	return found;
+}
+
+private synchronized Element
+findElement(Name name, int type, int minCred) {
+	Object types = exactName(name);
+	if (types == null)
+		return null;
+	return oneElement(name, types, type, minCred);
+}
+
+private synchronized void
+addElement(Name name, Element element) {
+	Object types = data.get(name);
+	if (types == null) {
+		data.put(name, element);
+		return;
+	}
+	int type = element.getType();
+	if (types instanceof List) {
+		List list = (List) types;
+		for (int i = 0; i < list.size(); i++) {
+			Element elt = (Element) list.get(i);
+			if (elt.getType() == type) {
+				list.set(i, element);
+				return;
+			}
+		}
+		list.add(element);
+	} else {
+		Element elt = (Element) types;
+		if (elt.getType() == type)
+			data.put(name, element);
+		else {
+			LinkedList list = new LinkedList();
+			list.add(elt);
+			list.add(element);
+			data.put(name, list);
+		}
+	}
+}
+
+private synchronized void
+removeElement(Name name, int type) {
+	Object types = data.get(name);
+	if (types == null) {
+		return;
+	}
+	if (types instanceof List) {
+		List list = (List) types;
+		for (int i = 0; i < list.size(); i++) {
+			Element elt = (Element) list.get(i);
+			if (elt.getType() == type) {
+				list.remove(i);
+				if (list.size() == 0)
+					data.remove(name);
+				return;
+			}
+		}
+	} else {
+		Element elt = (Element) types;
+		if (elt.getType() != type)
+			return;
+		data.remove(name);
+	}
+}
+
+/** Empties the Cache. */
+public synchronized void
+clearCache() {
+	data.clear();
 }
 
 /**
@@ -236,23 +335,20 @@ Cache(String file) throws IOException {
  * @param o The source of the record (this could be a Message, for example)
  * @see Record
  */
-public void
+public synchronized void
 addRecord(Record r, int cred, Object o) {
 	Name name = r.getName();
 	int type = r.getRRsetType();
 	if (!Type.isRR(type))
 		return;
-	boolean addrrset = false;
-	Element element = (Element) findExactSet(name, type);
-	if (element == null || cred > element.credibility) {
-		RRset rrset = new RRset();
-		rrset.addRR(r);
-		addRRset(rrset, cred);
-	}
-	else if (cred == element.credibility) {
-		if (element instanceof PositiveElement) {
-			PositiveElement pe = (PositiveElement) element;
-			pe.rrset.addRR(r);
+	Element element = findElement(name, type, cred);
+	if (element == null) {
+		CacheRRset crrset = new CacheRRset(r, cred, maxcache);
+		addRRset(crrset, cred);
+	} else if (element.compareCredibility(cred) == 0) {
+		if (element instanceof CacheRRset) {
+			CacheRRset crrset = (CacheRRset) element;
+			crrset.addRR(r);
 		}
 	}
 }
@@ -263,23 +359,27 @@ addRecord(Record r, int cred, Object o) {
  * @param cred The credibility of these records
  * @see RRset
  */
-public void
+public synchronized void
 addRRset(RRset rrset, int cred) {
 	long ttl = rrset.getTTL();
 	Name name = rrset.getName();
 	int type = rrset.getType();
-	if (verifier != null)
-		rrset.setSecurity(verifier.verify(rrset, this));
-	if (secure && rrset.getSecurity() < DNSSEC.Secure)
-		return;
-	Element element = (Element) findExactSet(name, type);
+	Element element = findElement(name, type, 0);
 	if (ttl == 0) {
-		if (element != null && cred >= element.credibility)
-			removeSet(name, type, element);
+		System.out.println("adding RRset, element = " + element);
+		if (element != null && element.compareCredibility(cred) <= 0)
+			removeElement(name, type);
 	} else {
-		if (element == null || cred >= element.credibility)
-			addSet(name, type,
-				new PositiveElement(rrset, cred, maxcache));
+		if (element != null && element.compareCredibility(cred) <= 0)
+			element = null;
+		if (element == null) {
+			CacheRRset crrset;
+			if (rrset instanceof CacheRRset)
+				crrset = (CacheRRset) rrset;
+			else
+				crrset = new CacheRRset(rrset, cred, maxcache);
+			addElement(name, crrset);
+		}
 	}
 }
 
@@ -291,24 +391,127 @@ addRRset(RRset rrset, int cred) {
  * The negative cache ttl is derived from the SOA.
  * @param cred The credibility of the negative entry
  */
-public void
+public synchronized void
 addNegative(Name name, int type, SOARecord soa, int cred) {
-	if (verifier != null && secure)
-		return;
-	Element element = (Element) findExactSet(name, type);
-	if (soa == null || soa.getTTL() == 0) {
-		if (element != null && cred >= element.credibility)
-			removeSet(name, type, element);
+	long ttl = 0;
+	if (soa != null)
+		ttl = soa.getTTL();
+	Element element = findElement(name, type, 0);
+	if (ttl == 0) {
+		if (element != null && element.compareCredibility(cred) <= 0)
+			removeElement(name, type);
+	} else {
+		if (element != null && element.compareCredibility(cred) <= 0)
+			element = null;
+		if (element == null)
+			addElement(name, new NegativeElement(name, type,
+							     soa, cred,
+							     maxncache));
 	}
-	if (element == null || cred >= element.credibility)
-		addSet(name, type,
-		       new NegativeElement(name, type, soa, cred, maxncache));
 }
 
-private void
-logLookup(Name name, int type, String msg) {
-	System.err.println("lookupRecords(" + name + " " +
-			   Type.string(type) + "): " + msg);
+/**
+ * Finds all matching sets or something that causes the lookup to stop.
+ */
+protected synchronized SetResponse
+lookup(Name name, int type, int minCred) {
+	int labels;
+	int tlabels;
+	Element element;
+	CacheRRset crrset;
+	Name tname;
+	Object types;
+	SetResponse sr;
+
+	labels = name.labels();
+
+	for (tlabels = labels; tlabels >= 1; tlabels--) {
+		boolean isRoot = (tlabels == 1);
+		boolean isExact = (tlabels == labels);
+
+		if (isRoot)
+			tname = Name.root;
+		else if (isExact)
+			tname = name;
+		else
+			tname = new Name(name, labels - tlabels);
+
+		types = data.get(tname);
+		if (types == null)
+			continue;
+
+		/* If this is an ANY lookup, return everything. */
+		if (isExact && type == Type.ANY) {
+			sr = new SetResponse(SetResponse.SUCCESSFUL);
+			Element [] elements = allElements(types);
+			int added = 0;
+			for (int i = 0; i < elements.length; i++) {
+				element = elements[i];
+				if (element.expired()) {
+					removeElement(tname, element.getType());
+					continue;
+				}
+				if (!(element instanceof CacheRRset))
+					continue;
+				if (element.compareCredibility(minCred) < 0)
+					continue;
+				sr.addRRset((CacheRRset)element);
+				added++;
+			}
+			/* There were positive entries */
+			if (added > 0)
+				return sr;
+		}
+
+		/* Look for an NS */
+		element = oneElement(tname, types, Type.NS, minCred);
+		if (element != null && element instanceof CacheRRset)
+			return new SetResponse(SetResponse.DELEGATION,
+					       (CacheRRset) element);
+
+		/*
+		 * If this is the name, look for the actual type or a CNAME.
+		 * Otherwise, look for a DNAME.
+		 */
+		if (isExact) {
+			element = oneElement(tname, types, type, minCred);
+			if (element != null &&
+			    element instanceof CacheRRset)
+			{
+				sr = new SetResponse(SetResponse.SUCCESSFUL);
+				sr.addRRset((CacheRRset) element);
+				return sr;
+			} else if (element != null) {
+				sr = new SetResponse(SetResponse.NXRRSET);
+				return sr;
+			}
+
+			element = oneElement(tname, types, Type.CNAME, minCred);
+			if (element != null &&
+			    element instanceof CacheRRset)
+			{
+				return new SetResponse(SetResponse.CNAME,
+						       (CacheRRset) element);
+			}
+		} else {
+			element = oneElement(tname, types, Type.DNAME, minCred);
+			if (element != null &&
+			    element instanceof CacheRRset)
+			{
+				return new SetResponse(SetResponse.DNAME,
+						       (CacheRRset) element);
+			}
+		}
+
+		/* Check for the special NXDOMAIN element. */
+		if (isExact) {
+			element = oneElement(tname, types, 0, minCred);
+			if (element != null)
+				return SetResponse.ofType(SetResponse.NXDOMAIN);
+		}
+
+	}
+	return SetResponse.ofType(SetResponse.UNKNOWN);
 }
 
 /**
@@ -323,171 +526,7 @@ logLookup(Name name, int type, String msg) {
  */
 public SetResponse
 lookupRecords(Name name, int type, int minCred) {
-	SetResponse cr = null;
-	boolean verbose = Options.check("verbosecache");
-	Object o = lookup(name, type);
-
-	if (verbose)
-		logLookup(name, type, "Starting");
-
- 	if (o == null || o == NXRRSET) {
-		/*
-		 * The name exists, but the type was not found.  Or, the
-		 * name does not exist and no parent does either.  Punt.
-		 */
-		if (verbose)
-			logLookup(name, type, "no information found");
-		return SetResponse.ofType(SetResponse.UNKNOWN);
-	}
-
-	Object [] objects;
-	if (o instanceof Element)
-		objects = new Object[] {o};
-	else
-		objects = (Object[]) o;
-		
-	int nelements = 0;
-	for (int i = 0; i < objects.length; i++) {
-		Element element = (Element) objects[i];
-		if (element.expired()) {
-			if (verbose) {
-				logLookup(name, type, element.toString());
-				logLookup(name, type, "expired: ignoring");
-			}
-			removeSet(name, type, element);
-			objects[i] = null;
-		}
-		else if (element.credibility < minCred) {
-			if (verbose) {
-				logLookup(name, type, element.toString());
-				logLookup(name, type, "not credible: ignoring");
-			}
-			objects[i] = null;
-		}
-		else {
-			nelements++;
-		}
-	}
-	if (nelements == 0) {
-		/* We have data, but can't use it.  Punt. */
-		if (verbose)
-			logLookup(name, type, "no useful data found");
-		return SetResponse.ofType(SetResponse.UNKNOWN);
-	}
-
-	/*
-	 * We have something at the name.  It could be the answer,
-	 * a CNAME, DNAME, or NS, or a negative cache entry.
-	 * 
-	 * Ignore wildcards, since it's pretty unlikely that any will be
-	 * cached.  The occasional extra query is easily balanced by the
-	 * reduced number of lookups.
-	 */
-
-	for (int i = 0; i < objects.length; i++) {
-		if (objects[i] == null)
-			continue;
-		Element element = (Element) objects[i];
-		if (verbose)
-			logLookup(name, type, element.toString());
-		RRset rrset = null;
-		if (element instanceof PositiveElement)
-			rrset = ((PositiveElement) element).rrset;
-
-		/* Is this a negatively cached entry? */
-		if (rrset == null) {
-			/*
-			 * If this is an NXDOMAIN entry, return NXDOMAIN.
-			 */
-			if (element.getType() == 0) {
-				if (verbose)
-					logLookup(name, type, "NXDOMAIN");
-				return SetResponse.ofType(SetResponse.NXDOMAIN);
-			}
-
-			/*
-			 * If we're not looking for type ANY, return NXRRSET.
-			 * Otherwise ignore this.
-			 */
-			if (type != Type.ANY) {
-				if (verbose)
-					logLookup(name, type, "NXRRSET");
-				return SetResponse.ofType(SetResponse.NXRRSET);
-			} else {
-				if (verbose)
-					logLookup(name, type,
-						  "ANY query; " +
-						  "ignoring NXRRSET");
-				continue;
-			}
-		}
-
-		int rtype = rrset.getType();
-		Name rname = rrset.getName();
-		if (name.equals(rname)) {
-			if (type != Type.CNAME && type != Type.ANY &&
-			    rtype == Type.CNAME)
-			{
-				if (verbose)
-					logLookup(name, type, "cname");
-				return new SetResponse(SetResponse.CNAME,
-						       rrset);
-			} else if (type != Type.NS && type != Type.ANY &&
-				   rtype == Type.NS)
-			{
-				if (verbose)
-					logLookup(name, type,
-						  "exact delegation");
-				return new SetResponse(SetResponse.DELEGATION,
-						       rrset);
-			} else {
-				if (verbose)
-					logLookup(name, type, "exact match");
-				if (cr == null)
-					cr = new SetResponse
-						(SetResponse.SUCCESSFUL);
-				cr.addRRset(rrset);
-			}
-		}
-		else if (name.subdomain(rname)) {
-			if (rtype == Type.DNAME) {
-				if (verbose)
-					logLookup(name, type, "dname");
-				return new SetResponse(SetResponse.DNAME,
-						       rrset);
-			} else if (rtype == Type.NS) {
-				if (verbose)
-					logLookup(name, type,
-						  "parent delegation");
-				return new SetResponse(SetResponse.DELEGATION,
-						       rrset);
-			} else {
-				if (verbose)
-					logLookup(name, type,
-						  "ignoring rrset (" +
-						  rname + " " +
-						  Type.string(rtype) + ")");
-			}
-		} else {
-			if (verbose)
-				logLookup(name, type,
-					  "ignoring rrset (" + rname + " " +
-					  Type.string(rtype) + ")");
-		}
-	}
-
-	/*
-	 * As far as I can tell, the only legitimate time cr will be null is
-	 * if we queried for ANY and only saw negative responses, but not an
-	 * NXDOMAIN.  Return UNKNOWN.
-	 */
-	if (cr == null && type == Type.ANY)
-		return SetResponse.ofType(SetResponse.UNKNOWN);
-	else if (cr == null)
-		throw new IllegalStateException("looking up (" + name + " " +
-						Type.string(type) + "): " +
-						"cr == null.");
-	return cr;
+	return lookup(name, type, minCred);
 }
 
 private RRset []
@@ -523,32 +562,6 @@ findRecords(Name name, int type) {
 public RRset []
 findAnyRecords(Name name, int type) {
 	return findRecords(name, type, Credibility.GLUE);
-}
-
-private void
-verifyRecords(Cache tcache) {
-	Iterator it;
-
-	it = tcache.names();
-	while (it.hasNext()) {
-		Name name = (Name) it.next();
-		Object [] elements = findExactSets(name);
-		for (int i = 0; i < elements.length; i++) {
-			Element element = (Element) elements[i];
-			if (element instanceof PositiveElement)
-				continue;
-			RRset rrset = ((PositiveElement) element).rrset;
-
-			/* for now, ignore negative cache entries */
-			if (rrset == null)
-				continue;
-			if (verifier != null)
-				rrset.setSecurity(verifier.verify(rrset, this));
-			if (rrset.getSecurity() < DNSSEC.Secure)
-				continue;
-			addSet(name, rrset.getType(), element);
-		}
-	}
 }
 
 private final int
@@ -737,10 +750,7 @@ addMessage(Message in) {
  */
 public void
 flushSet(Name name, int type) {
-	Element element = (Element) findExactSet(name, type);
-	if (element == null)
-		return;
-	removeSet(name, type, element);
+	removeElement(name, type);
 }
 
 /**
@@ -754,25 +764,6 @@ flushName(Name name) {
 }
 
 /**
- * Defines a module to be used for data verification (DNSSEC).  An
- * implementation is found in org.xbill.DNSSEC.security.DNSSECVerifier,
- * which requires Java 2 or above and the Java Cryptography Extensions.
- */
-public void
-setVerifier(Verifier v) {
-	verifier = v;
-}
-
-/**
- * Mandates that all data stored in this Cache must be verified and proven
- * to be secure, using a verifier (as defined in setVerifier).
- */
-public void
-setSecurePolicy() {
-	secure = true;
-}
-
-/**
  * Sets the maximum length of time that a negative response will be stored
  * in this Cache.  A negative value disables this feature (that is, sets
  * no limit).
@@ -780,6 +771,15 @@ setSecurePolicy() {
 public void
 setMaxNCache(int seconds) {
 	maxncache = seconds;
+}
+
+/**
+ * Gets the maximum length of time that a negative response will be stored
+ * in this Cache.  A negative value indicates no limit.
+ */
+public int
+getMaxNCache() {
+	return maxncache;
 }
 
 /**
@@ -792,23 +792,82 @@ setMaxCache(int seconds) {
 }
 
 /**
- * Sets the periodic interval (in minutes) that all expired records will be
- * expunged from the cache.  The default is 30 minutes.  0 or a negative value
- * disables this feature.
- * @param cleanInterval The interval between cache cleanings, in minutes.
+ * Gets the maximum length of time that records will be stored
+ * in this Cache.  A negative value indicates no limit.
+ */
+public int
+getMaxCache() {
+	return maxcache;
+}
+
+/**
+ * Gets the current number of entries in the Cache, where an entry consists
+ * of all records with a specific Name.
+ */
+public int
+getSize() {
+	return data.size();
+}
+
+/**
+ * Gets the maximum number of entries in the Cache, where an entry consists
+ * of all records with a specific Name.  A negative value is treated as an
+ * infinite limit.
+ */
+public int
+getMaxEntries() {
+	return data.getMaxSize();
+}
+
+/**
+ * Sets the maximum number of entries in the Cache, where an entry consists
+ * of all records with a specific Name.  A negative value is treated as an
+ * infinite limit.
+ *
+ * Note that setting this to a value lower than the current number
+ * of entries will not cause the Cache to shrink immediately.
+ *
+ * The default maximum number of entries is 50000.
+ *
+ * @param entries The maximum number of entries in the Cache.
+ */
+public void
+setMaxEntries(int entries) {
+	data.setMaxSize(entries);
+}
+
+/**
+ * Returns the DNS class of this cache.
+ */
+public int
+getDClass() {
+	return dclass;
+}
+
+/**
+ * @deprecated Caches are no longer periodically cleaned.
  */
 public void
 setCleanInterval(int cleanInterval) {
-	if (cleaner != null) {
-		cleaner.interrupt();
-	}
-	if (cleanInterval > 0)
-		cleaner = new CacheCleaner(this, cleanInterval);
 }
 
-protected void
-finalize() {
-	setCleanInterval(0);
+/**
+ * Returns the contents of the Cache as a string.
+ */ 
+public String
+toString() {
+	StringBuffer sb = new StringBuffer();
+	synchronized (this) {
+		Iterator it = data.values().iterator();
+		while (it.hasNext()) {
+			Element [] elements = allElements(it.next());
+			for (int i = 0; i < elements.length; i++) {
+				sb.append(elements[i]);
+				sb.append("\n");
+			}
+		}
+	}
+	return sb.toString();
 }
 
 }

@@ -4996,6 +4996,7 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/CERTRecord.java \
 	org/xbill/DNS/CNAMERecord.java \
 	org/xbill/DNS/Cache.java \
+	org/xbill/DNS/Client.java \
 	org/xbill/DNS/Compression.java \
 	org/xbill/DNS/Credibility.java \
 	org/xbill/DNS/DClass.java \
@@ -5005,16 +5006,16 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/DNSOutput.java \
 	org/xbill/DNS/DNSSEC.java \
 	org/xbill/DNS/DSRecord.java \
+	org/xbill/DNS/EmptyRecord.java \
 	org/xbill/DNS/ExtendedFlags.java \
 	org/xbill/DNS/ExtendedResolver.java \
-	org/xbill/DNS/FindServer.java \
 	org/xbill/DNS/Flags.java \
 	org/xbill/DNS/FormattedTime.java \
 	org/xbill/DNS/GPOSRecord.java \
+	org/xbill/DNS/Generator.java \
 	org/xbill/DNS/HINFORecord.java \
 	org/xbill/DNS/Header.java \
 	org/xbill/DNS/ISDNRecord.java \
-	org/xbill/DNS/Inet6Address.java \
 	org/xbill/DNS/InvalidDClassException.java \
 	org/xbill/DNS/InvalidTTLException.java \
 	org/xbill/DNS/InvalidTypeException.java \
@@ -5041,7 +5042,6 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/NULLRecord.java \
 	org/xbill/DNS/NXTRecord.java \
 	org/xbill/DNS/Name.java \
-	org/xbill/DNS/NameSet.java \
 	org/xbill/DNS/NameTooLongException.java \
 	org/xbill/DNS/OPTRecord.java \
 	org/xbill/DNS/Opcode.java \
@@ -5057,6 +5057,7 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/RelativeNameException.java \
 	org/xbill/DNS/ResolveThread.java \
 	org/xbill/DNS/Resolver.java \
+	org/xbill/DNS/ResolverConfig.java \
 	org/xbill/DNS/ResolverListener.java \
 	org/xbill/DNS/ReverseMap.java \
 	org/xbill/DNS/SIGBase.java \
@@ -5070,6 +5071,7 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/SimpleResolver.java \
 	org/xbill/DNS/SingleCompressedNameBase.java \
 	org/xbill/DNS/SingleNameBase.java \
+	org/xbill/DNS/TCPClient.java \
 	org/xbill/DNS/TKEYRecord.java \
 	org/xbill/DNS/TSIG.java \
 	org/xbill/DNS/TSIGRecord.java \
@@ -5080,6 +5082,7 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/Type.java \
 	org/xbill/DNS/TypedObject.java \
 	org/xbill/DNS/U16NameBase.java \
+	org/xbill/DNS/UDPClient.java \
 	org/xbill/DNS/UNKRecord.java \
 	org/xbill/DNS/Update.java \
 	org/xbill/DNS/Verifier.java \
@@ -5088,8 +5091,7 @@ org_xbill_DNS_SRCS = \
 	org/xbill/DNS/X25Record.java \
 	org/xbill/DNS/Zone.java \
 	org/xbill/DNS/ZoneTransferException.java \
-	org/xbill/DNS/ZoneTransferIn.java \
-	org/xbill/DNS/dns.java
+	org/xbill/DNS/ZoneTransferIn.java
 org_xbill_DNS_security_SRCS = \
 	org/xbill/DNS/security/CERTConverter.java \
 	org/xbill/DNS/security/DHPubKey.java \
@@ -5100,11 +5102,10 @@ org_xbill_DNS_security_SRCS = \
 	org/xbill/DNS/security/RSAPubKey.java \
 	org/xbill/DNS/security/SIG0Signer.java
 org_xbill_DNS_utils_SRCS = \
+	org/xbill/DNS/utils/HMAC.java \
 	org/xbill/DNS/utils/base16.java \
 	org/xbill/DNS/utils/base64.java \
-	org/xbill/DNS/utils/hexdump.java \
-	org/xbill/DNS/utils/hmacSigner.java \
-	org/xbill/DNS/utils/md5.java
+	org/xbill/DNS/utils/hexdump.java
 org_xml_sax_SRCS = \
 	org/xml/sax/AttributeList.java \
 	org/xml/sax/Attributes.java \

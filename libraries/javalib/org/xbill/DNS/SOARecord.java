@@ -3,7 +3,6 @@
 package org.xbill.DNS;
 
 import java.io.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * Start of Authority - describes properties of a zone.
@@ -25,7 +24,7 @@ getObject() {
 
 /**
  * Creates an SOA Record from the given data
- * @param host The primary nameserver for the zone
+ * @param host The primary name server for the zone
  * @param admin The zone administrator's address
  * @param serial The zone's serial number
  * @param refresh The amount of time until a secondary checks for a new serial
@@ -65,10 +64,10 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 	host = st.getName(origin);
 	admin = st.getName(origin);
 	serial = st.getUInt32();
-	refresh = st.getTTL();
-	retry = st.getTTL();
-	expire = st.getTTL();
-	minimum = st.getTTL();
+	refresh = st.getTTLLike();
+	retry = st.getTTLLike();
+	expire = st.getTTLLike();
+	minimum = st.getTTLLike();
 }
 
 /** Convert to a String */
@@ -105,7 +104,7 @@ rrToString() {
 	return sb.toString();
 }
 
-/** Returns the primary nameserver */
+/** Returns the primary name server */
 public Name
 getHost() {  
 	return host;

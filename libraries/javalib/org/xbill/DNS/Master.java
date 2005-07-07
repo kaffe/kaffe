@@ -3,6 +3,7 @@
 package org.xbill.DNS;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * A DNS master file parser.  This incrementally parses the file, returning
@@ -20,14 +21,22 @@ private Record last = null;
 private long defaultTTL;
 private Master included = null;
 private Tokenizer st;
+private int currentType;
+private int currentDClass;
+private long currentTTL;
+private boolean needSOATTL;
 
-Master(File file, Name initialOrigin, long initialTTL) throws IOException {
+private Generator generator;
+private List generators;
+private boolean noExpandGenerate;
+
+Master(File file, Name origin, long initialTTL) throws IOException {
 	if (origin != null && !origin.isAbsolute()) {
 		throw new RelativeNameException(origin);
 	}
 	this.file = file;
 	st = new Tokenizer(file);
-	origin = initialOrigin;
+	this.origin = origin;
 	defaultTTL = initialTTL;
 }
 
@@ -75,6 +84,7 @@ Master(InputStream in, Name origin, long ttl) {
 	if (origin != null && !origin.isAbsolute()) {
 		throw new RelativeNameException(origin);
 	}
+	TTL.check(ttl);
 	st = new Tokenizer(in);
 	this.origin = origin;
 	defaultTTL = ttl;
@@ -109,6 +119,150 @@ parseName(String s, Name origin) throws TextParseException {
 	}
 }
 
+private void
+parseTTLClassAndType() throws IOException {
+	String s;
+	boolean seen_class = false;
+
+
+	// This is a bit messy, since any of the following are legal:
+	//   class ttl type
+	//   ttl class type
+	//   class type
+	//   ttl type
+	//   type
+	seen_class = false;
+	s = st.getString();
+	if ((currentDClass = DClass.value(s)) >= 0) {
+		s = st.getString();
+		seen_class = true;
+	}
+
+	currentTTL = -1;
+	try {
+		currentTTL = TTL.parseTTL(s);
+		s = st.getString();
+	}
+	catch (NumberFormatException e) {
+		if (defaultTTL >= 0)
+			currentTTL = defaultTTL;
+		else if (last != null)
+			currentTTL = last.getTTL();
+	}
+
+	if (!seen_class) {
+		if ((currentDClass = DClass.value(s)) >= 0) {
+			s = st.getString();
+		} else {
+			currentDClass = DClass.IN;
+		}
+	}
+
+	if ((currentType = Type.value(s)) < 0)
+		throw st.exception("Invalid type '" + s + "'");
+
+	// BIND allows a missing TTL for the initial SOA record, and uses
+	// the SOA minimum value.  If the SOA is not the first record,
+	// this is an error.
+	if (currentTTL < 0) {
+		if (currentType != Type.SOA)
+			throw st.exception("missing TTL");
+		needSOATTL = true;
+		currentTTL = 0;
+	}
+}
+
+private long
+parseUInt32(String s) {
+	if (!Character.isDigit(s.charAt(0)))
+		return -1;
+	try {
+		long l = Long.parseLong(s);
+		if (l < 0 || l > 0xFFFFFFFFL)
+			return -1;
+		return l;
+	}
+	catch (NumberFormatException e) {
+		return -1;
+	}
+}
+
+private void
+startGenerate() throws IOException {
+	String s;
+	int n;
+
+	// The first field is of the form start-end[/step]
+	// Regexes would be useful here.
+	s = st.getIdentifier();
+	n = s.indexOf("-");
+	if (n < 0)
+		throw st.exception("Invalid $GENERATE range specifier: " + s);
+	String startstr = s.substring(0, n);
+	String endstr = s.substring(n + 1);
+	String stepstr = null;
+	n = endstr.indexOf("/");
+	if (n >= 0) {
+		stepstr = endstr.substring(n + 1);
+		endstr = endstr.substring(0, n);
+	}
+	long start = parseUInt32(startstr);
+	long end = parseUInt32(endstr);
+	long step;
+	if (stepstr != null)
+		step = parseUInt32(stepstr);
+	else
+		step = 1;
+	if (start < 0 || end < 0 || start > end || step <= 0)
+		throw st.exception("Invalid $GENERATE range specifier: " + s);
+
+	// The next field is the name specification.
+	String nameSpec = st.getIdentifier();
+
+	// Then the ttl/class/type, in the same form as a normal record.
+	// Only some types are supported.
+	parseTTLClassAndType();
+	if (!Generator.supportedType(currentType))
+		throw st.exception("$GENERATE does not support " +
+				   Type.string(currentType) + " records");
+
+	// Next comes the rdata specification.
+	String rdataSpec = st.getIdentifier();
+
+	// That should be the end.  However, we don't want to move past the
+	// line yet, so put back the EOL after reading it.
+	st.getEOL();
+	st.unget();
+
+	generator = new Generator(start, end, step, nameSpec,
+				  currentType, currentDClass, currentTTL,
+				  rdataSpec, origin);
+	if (generators == null)
+		generators = new ArrayList(1);
+	generators.add(generator);
+}
+
+private void
+endGenerate() throws IOException {
+	// Read the EOL that we put back before.
+	st.getEOL();
+
+	generator = null;
+}
+
+private Record
+nextGenerated() throws IOException {
+	try {
+		return generator.nextRecord();
+	}
+	catch (Tokenizer.TokenizerException e) {
+		throw st.exception("Parsing $GENERATE: " + e.getBaseMessage());
+	}
+	catch (TextParseException e) {
+		throw st.exception("Parsing $GENERATE: " + e.getMessage());
+	}
+}
+
 /**
  * Returns the next record in the master file.  This will process any
  * directives before the next record.
@@ -127,11 +281,14 @@ _nextRecord() throws IOException {
 			return rec;
 		included = null;
 	}
+	if (generator != null) {
+		Record rec = nextGenerated();
+		if (rec != null)
+			return rec;
+		endGenerate();
+	}
 	while (true) {
 		Name name;
-		long ttl;
-		int type, dclass;
-		boolean seen_class;
 
 		token = st.get(true, false);
 		if (token.type == Tokenizer.WHITESPACE) {
@@ -164,7 +321,7 @@ _nextRecord() throws IOException {
 			} else  if (s.equalsIgnoreCase("$INCLUDE")) {
 				String filename = st.getString();
 				String parent = file.getParent();
-				File newfile = new File(filename);
+				File newfile = new File(parent, filename);
 				Name incorigin = origin;
 				token = st.get();
 				if (token.isString()) {
@@ -179,6 +336,16 @@ _nextRecord() throws IOException {
 				 * the new file.  Recursing works better.
 				 */
 				return nextRecord();
+			} else  if (s.equalsIgnoreCase("$GENERATE")) {
+				if (generator != null)
+					throw new IllegalStateException
+						("cannot nest $GENERATE");
+				startGenerate();
+				if (noExpandGenerate) {
+					endGenerate();
+					continue;
+				}
+				return nextGenerated();
 			} else {
 				throw st.exception("Invalid directive: " + s);
 			}
@@ -190,44 +357,15 @@ _nextRecord() throws IOException {
 			}
 		}
 
-		// This is a bit messy, since any of the following are legal:
-		//   class ttl type
-		//   ttl class type
-		//   class type
-		//   ttl type
-		//   type
-		seen_class = false;
-		s = st.getString();
-		if ((dclass = DClass.value(s)) >= 0) {
-			s = st.getString();
-			seen_class = true;
+		parseTTLClassAndType();
+		last = Record.fromString(name, currentType, currentDClass,
+					 currentTTL, st, origin);
+		if (needSOATTL) {
+			long ttl = ((SOARecord)last).getMinimum();
+			last.setTTL(ttl);
+			defaultTTL = ttl;
+			needSOATTL = false;
 		}
-
-		try {
-			ttl = TTL.parseTTL(s);
-			s = st.getString();
-		}
-		catch (NumberFormatException e) {
-			if (last == null && defaultTTL < 0)
-				throw st.exception("missing TTL");
-			else if (defaultTTL >= 0)
-				ttl = defaultTTL;
-			else
-				ttl = last.getTTL();
-		}
-
-		if (!seen_class) {
-			if ((dclass = DClass.value(s)) >= 0) {
-				s = st.getString();
-			} else {
-				dclass = DClass.IN;
-			}
-		}
-
-		if ((type = Type.value(s)) < 0)
-			throw st.exception("Invalid type '" + s + "'");
-
-		last = Record.fromString(name, type, dclass, ttl, st, origin);
 		return last;
 	}
 }
@@ -251,6 +389,30 @@ nextRecord() throws IOException {
 		}
 	}
 	return rec;
+}
+
+/**
+ * Specifies whether $GENERATE statements should be expanded.  Whether
+ * expanded or not, the specifications for generated records are available
+ * by calling {@link #generators}.  This must be called before a $GENERATE
+ * statement is seen during iteration to have an effect.
+ */
+public void
+expandGenerate(boolean wantExpand) {
+	noExpandGenerate = !wantExpand;
+}
+
+/**
+ * Returns an iterator over the generators specified in the master file; that
+ * is, the parsed contents of $GENERATE statements.
+ * @see Generator
+ */
+public Iterator
+generators() {
+	if (generators != null)
+		return Collections.unmodifiableList(generators).iterator();
+	else
+		return Collections.EMPTY_LIST.iterator();
 }
 
 protected void

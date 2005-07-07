@@ -3,6 +3,8 @@
 package org.xbill.DNS;
 
 import java.net.*;
+import java.net.Inet6Address;
+import java.util.*;
 
 /**
  * Routines dealing with IP addresses.  Includes functions similar to
@@ -13,22 +15,22 @@ import java.net.*;
 
 public final class Address {
 
+public static final int IPv4 = 1;
+public static final int IPv6 = 2;
+
 private
 Address() {}
 
-/**
- * Convert a string containing an IP address to an array of 4 integers.
- * @param s The string
- * @return The address
- */
-public static int []
-toArray(String s) {
+private static byte []
+parseV4(String s) {
 	int numDigits;
 	int currentOctet;
-	int [] values = new int[4];
+	byte [] values = new byte[4];
+	int currentValue;
 	int length = s.length();
 
 	currentOctet = 0;
+	currentValue = 0;
 	numDigits = 0;
 	for (int i = 0; i < length; i++) {
 		char c = s.charAt(i);
@@ -37,13 +39,13 @@ toArray(String s) {
 			if (numDigits == 3)
 				return null;
 			/* Octets shouldn't start with 0, unless they are 0. */
-			if (numDigits > 0 && values[currentOctet] == 0)
+			if (numDigits > 0 && currentValue == 0)
 				return null;
 			numDigits++;
-			values[currentOctet] *= 10;
-			values[currentOctet] += (c - '0');
+			currentValue *= 10;
+			currentValue += (c - '0');
 			/* 255 is the maximum value for an octet. */
-			if (values[currentOctet] > 255)
+			if (currentValue > 255)
 				return null;
 		} else if (c == '.') {
 			/* Can't have more than 3 dots. */
@@ -52,7 +54,8 @@ toArray(String s) {
 			/* Two consecutive dots are bad. */
 			if (numDigits == 0)
 				return null;
-			currentOctet++;
+			values[currentOctet++] = (byte) currentValue;
+			currentValue = 0;
 			numDigits = 0;
 		} else
 			return null;
@@ -63,7 +66,123 @@ toArray(String s) {
 	/* The fourth octet can't be empty. */
 	if (numDigits == 0)
 		return null;
+	values[currentOctet] = (byte) currentValue;
 	return values;
+}
+
+private static byte []
+parseV6(String s) {
+	boolean parsev4 = false;
+	List l = new ArrayList();
+	int range = -1;
+
+	byte [] data = new byte[16];
+
+	StringTokenizer st = new StringTokenizer(s, ":", true);
+	while (st.hasMoreTokens())
+		l.add(st.nextToken());
+	l.add("");
+	l.add("");
+
+	String [] tokens = (String []) l.toArray(new String[l.size()]);
+
+	int i = 0, j = 0;
+	while (i < tokens.length - 2) {
+		if (tokens[i].equals(":")) {
+			if (tokens[i+1].equals(":")) {
+				if (tokens[i+2].equals(":") || range >= 0)
+					return null;
+				range = j;
+				if (tokens[i+2].equals(""))
+					break;
+				i++;
+			}
+			i++;
+		}
+
+		if (tokens[i].indexOf('.') >= 0) {
+			parsev4 = true;
+			if (!tokens[i+1].equals(""))
+				return null;
+			break;
+		}
+
+		try {
+			int x = Integer.parseInt(tokens[i], 16);
+			if (x > 0xFFFF || x < 0)
+				return null;
+			if (j > 16 - 2)
+				return null;
+			data[j++] = (byte)(x >>> 8);
+			data[j++] = (byte)(x & 0xFF);
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
+		i++;
+	}
+
+	if (parsev4) {
+		byte [] v4addr = Address.toByteArray(tokens[i], IPv4);
+		if (v4addr == null)
+			return null;
+		for (int k = 0; k < 4; k++)
+			data[j++] = v4addr[k];
+	}
+	if (range >= 0) {
+		int left = 16 - j;
+		for (int k = 15; k >= 0; k--) {
+			if (k >= range + left)
+				data[k] = data[k - left];
+			else if (k >= range)
+				data[k] = 0;
+		}
+	} else if (j < 16)
+		return null;
+	return data;
+}
+
+/**
+ * Convert a string containing an IP address to an array of 4 or 16 integers.
+ * @param s The address, in text format.
+ * @param family The address family.
+ * @return The address
+ */
+public static int []
+toArray(String s, int family) {
+	byte [] byteArray = toByteArray(s, family);
+	if (byteArray == null)
+		return null;
+	int [] intArray = new int[byteArray.length];
+	for (int i = 0; i < byteArray.length; i++)
+		intArray[i] = byteArray[i] & 0xFF;
+	return intArray;
+}
+
+/**
+ * Convert a string containing an IPv4 address to an array of 4 integers.
+ * @param s The address, in text format.
+ * @return The address
+ */
+public static int []
+toArray(String s) {
+	return toArray(s, IPv4);
+}
+
+/**
+ * Convert a string containing an IP address to an array of 4 or 16 bytes.
+ * @param s The address, in text format.
+ * @param family The address family.
+ * @return The address
+ */
+public static byte []
+toByteArray(String s, int family) {
+	if (family == IPv4)
+		return parseV4(s);
+	else if (family == IPv6)
+		return parseV6(s);
+	else
+		throw new IllegalArgumentException("unknown address family");
 }
 
 /**
@@ -73,7 +192,7 @@ toArray(String s) {
  */
 public static boolean
 isDottedQuad(String s) {
-	int [] address = Address.toArray(s);
+	byte [] address = Address.toByteArray(s, IPv4);
 	return (address != null);
 }
 
@@ -159,6 +278,34 @@ getHostName(InetAddress addr) throws UnknownHostException {
 		throw new UnknownHostException("unknown address");
 	PTRRecord ptr = (PTRRecord) records[0];
 	return ptr.getTarget().toString();
+}
+
+/**
+ * Returns the family of an InetAddress.
+ * @param address The supplied address.
+ * @return The family, either IPv4 or IPv6.
+ */
+public static int
+familyOf(InetAddress address) {
+	if (address instanceof Inet4Address)
+		return IPv4;
+	if (address instanceof Inet6Address)
+		return IPv6;
+	throw new IllegalArgumentException("unknown address family");
+}
+
+/**
+ * Returns the family of an InetAddress.
+ * @param family The address family, either IPv4 or IPv6.
+ * @return The length of addresses in that family.
+ */
+public static int
+addressLength(int family) {
+	if (family == IPv4)
+		return 4;
+	if (family == IPv6)
+		return 16;
+	throw new IllegalArgumentException("unknown address family");
 }
 
 }

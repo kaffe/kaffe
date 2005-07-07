@@ -6,21 +6,29 @@ import java.io.*;
 import java.util.*;
 
 /**
- * A helper class that tries to locate name servers and the search path to
+ * A class that tries to locate name servers and the search path to
  * be appended to unqualified names.  Currently, this works if either the
  * appropriate properties are set, the OS has a unix-like /etc/resolv.conf,
- * or the system is Windows based with ipconfig or winipcfg.  There is no
- * reason for these routines to be called directly except curiosity.
+ * or the system is Windows based with ipconfig or winipcfg.  These routines
+ * will be called internally by the Lookup class, and can also be called
+ * directly if desired.
  *
  * @author Brian Wellington
  */
 
-public class FindServer {
+public class ResolverConfig {
 
 private static String [] servers = null;
 private static Name [] searchlist = null;
 
+private static ResolverConfig currentConfig;
+
 static {
+	refresh();
+}
+
+public
+ResolverConfig() {
 	findProperty();
 	if (servers == null || searchlist == null) {
 		String OS = System.getProperty("os.name");
@@ -38,10 +46,7 @@ static {
 	}
 }
 
-private
-FindServer() {}
-
-private static void
+private void
 addServer(String server, List list) {
 	if (list.contains(server))
 		return;
@@ -50,7 +55,7 @@ addServer(String server, List list) {
 	list.add(server);
 }
 
-private static void
+private void
 addSearch(String search, List list) {
 	Name name;
 	if (Options.check("verbose"))
@@ -71,7 +76,7 @@ addSearch(String search, List list) {
  * Servers are defined by dns.server=server1,server2...
  * The search path is defined by dns.search=domain1,domain2...
  */
-private static void
+private void
 findProperty() {
 	String s, prop;
 	List l = new ArrayList(0);
@@ -103,7 +108,7 @@ findProperty() {
  * "nameserver" lines specify servers.  "domain" and "search" lines
  * define the search path.
  */
-private static void
+private void
 findResolvConf(String file) {
 	InputStream in = null;
 	try {
@@ -153,12 +158,12 @@ findResolvConf(String file) {
 			(Name [])lsearch.toArray(new Name[lsearch.size()]);
 }
 
-private static void
+private void
 findUnix() {
 	findResolvConf("/etc/resolv.conf");
 }
 
-private static void
+private void
 findNetware() {
 	findResolvConf("sys:/etc/resolv.cfg");
 }
@@ -166,8 +171,17 @@ findNetware() {
 /**
  * Parses the output of winipcfg or ipconfig.
  */
-private static void
+private void
 findWin(InputStream in) {
+	String packageName = ResolverConfig.class.getPackage().getName();
+	String resPackageName = packageName + ".windows.DNSServer";
+	ResourceBundle res = ResourceBundle.getBundle(resPackageName);
+
+	String host_name = res.getString("host_name");
+	String primary_dns_suffix = res.getString("primary_dns_suffix");
+	String dns_suffix = res.getString("dns_suffix");
+	String dns_servers = res.getString("dns_servers");
+
 	BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	try {
 		List lserver = new ArrayList();
@@ -188,7 +202,7 @@ findWin(InputStream in) {
 				readingSearches = false;
 			}
 			
-			if (line.indexOf("Host Name") != -1) {
+			if (line.indexOf(host_name) != -1) {
 				while (st.hasMoreTokens())
 					s = st.nextToken();
 				Name name;
@@ -201,7 +215,7 @@ findWin(InputStream in) {
 				if (name.labels() == 1)
 					continue;
 				addSearch(s, lsearch);
-			} else if (line.indexOf("Primary Dns Suffix") != -1) {
+			} else if (line.indexOf(primary_dns_suffix) != -1) {
 				while (st.hasMoreTokens())
 					s = st.nextToken();
 				if (s.equals(":"))
@@ -209,7 +223,7 @@ findWin(InputStream in) {
 				addSearch(s, lsearch);
 				readingSearches = true;
 			} else if (readingSearches ||
-				   line.indexOf("DNS Suffix") != -1)
+				   line.indexOf(dns_suffix) != -1)
 			{
 				while (st.hasMoreTokens())
 					s = st.nextToken();
@@ -218,7 +232,7 @@ findWin(InputStream in) {
 				addSearch(s, lsearch);
 				readingSearches = true;
 			} else if (readingServers ||
-				   line.indexOf("DNS Servers") != -1)
+				   line.indexOf(dns_servers) != -1)
 			{
 				while (st.hasMoreTokens())
 					s = st.nextToken();
@@ -232,6 +246,10 @@ findWin(InputStream in) {
 		if (servers == null && lserver.size() > 0)
 			servers = (String [])lserver.toArray
 						(new String[lserver.size()]);
+
+		if (searchlist == null && lsearch.size() > 0)
+			searchlist =
+			    (Name [])lsearch.toArray(new Name[lsearch.size()]);
 	}
 	catch (IOException e) {
 	}
@@ -248,7 +266,7 @@ findWin(InputStream in) {
 /**
  * Calls winipcfg and parses the result to find servers and a search path.
  */
-private static void
+private void
 find95() {
 	String s = "winipcfg.out";
 	try {
@@ -267,7 +285,7 @@ find95() {
 /**
  * Calls ipconfig and parses the result to find servers and a search path.
  */
-private static void
+private void
 findNT() {
 	try {
 		Process p;
@@ -281,13 +299,13 @@ findNT() {
 }
 
 /** Returns all located servers */
-public static String []
+public String []
 servers() {
 	return servers;
 }
 
 /** Returns the first located server */
-public static String
+public String
 server() {
 	if (servers == null)
 		return null;
@@ -295,9 +313,21 @@ server() {
 }
 
 /** Returns all entries in the located search path */
-public static Name []
+public Name []
 searchPath() {
 	return searchlist;
+}
+
+/** Gets the current configuration */
+public static synchronized ResolverConfig
+getCurrentConfig() {
+	return currentConfig;
+}
+
+/** Gets the current configuration */
+public static synchronized void
+refresh() {
+	currentConfig = new ResolverConfig();
 }
 
 }

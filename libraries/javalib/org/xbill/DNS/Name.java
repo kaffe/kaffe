@@ -4,7 +4,6 @@ package org.xbill.DNS;
 
 import java.io.*;
 import java.text.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * A representation of a domain name.  It may either be absolute (fully
@@ -70,9 +69,10 @@ static {
 			lowercase[i] = (byte)(i - 'A' + 'a');
 	}
 	root = new Name();
-	empty = new Name();
-	wild = new Name();
 	root.appendSafe(emptyLabel, 0, 1);
+	empty = new Name();
+	empty.name = new byte[0];
+	wild = new Name();
 	wild.appendSafe(wildLabel, 0, 1);
 }
 
@@ -111,6 +111,8 @@ setoffset(int n, int offset) {
 
 private final int
 offset(int n) {
+	if (n == 0 && getlabels() == 0)
+		return 0;
 	if (n < 0 || n >= getlabels())
 		throw new IllegalArgumentException("label out of range");
 	if (n < MAXOFFSETS) {
@@ -137,8 +139,19 @@ getlabels() {
 
 private static final void
 copy(Name src, Name dst) {
-	dst.name = src.name;
-	dst.offsets = src.offsets;
+	if (src.offset(0) == 0) {
+		dst.name = src.name;
+		dst.offsets = src.offsets;
+	} else {
+		int offset0 = src.offset(0);
+		int namelen = src.name.length - offset0;
+		int labels = src.labels();
+		dst.name = new byte[namelen];
+		System.arraycopy(src.name, offset0, dst.name, 0, namelen);
+		for (int i = 0; i < labels && i < MAXOFFSETS; i++)
+			dst.setoffset(i, src.offset(i) - offset0);
+		dst.setlabels(labels);
+	}
 }
 
 private final void
@@ -212,8 +225,9 @@ Name(String s, Name origin) throws TextParseException {
 		throw parseException(s, "empty name");
 	else if (s.equals("@")) {
 		if (origin == null)
-			return;
-		copy(origin, this);
+			copy(empty, this);
+		else
+			copy(origin, this);
 		return;
 	} else if (s.equals(".")) {
 		copy(root, this);
@@ -535,6 +549,8 @@ isAbsolute() {
  */
 public short
 length() {
+	if (getlabels() == 0)
+		return 0;
 	return (short)(name.length - offset(0));
 }
 
@@ -565,7 +581,7 @@ byteString(byte [] array, int pos) {
 	StringBuffer sb = new StringBuffer();
 	int len = array[pos++];
 	for (int i = pos; i < pos + len; i++) {
-		short b = (short)(array[i] & 0xFF);
+		int b = array[i] & 0xFF;
 		if (b <= 0x20 || b >= 0x7f) {
 			sb.append('\\');
 			sb.append(byteFormat.format(b));
@@ -698,13 +714,13 @@ toWireCanonical() {
 	if (labels == 0)
 		return (new byte[0]);
 	byte [] b = new byte[name.length - offset(0)];
-	for (int i = 0, pos = offset(0); i < labels; i++) {
-		int len = name[pos];
+	for (int i = 0, spos = offset(0), dpos = 0; i < labels; i++) {
+		int len = name[spos];
 		if (len > MAXLABEL)
 			throw new IllegalStateException("invalid label");
-		b[pos] = name[pos++];
+		b[dpos++] = name[spos++];
 		for (int j = 0; j < len; j++)
-			b[pos] = lowercase[(name[pos++] & 0xFF)];
+			b[dpos++] = lowercase[(name[spos++] & 0xFF)];
 	}
 	return b;
 }

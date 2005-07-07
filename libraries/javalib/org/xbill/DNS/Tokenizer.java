@@ -18,7 +18,6 @@
 package org.xbill.DNS;
 
 import java.io.*;
-import java.util.*;
 
 import org.xbill.DNS.utils.*;
 
@@ -120,6 +119,21 @@ public static class Token {
 	public boolean
 	isEOL() {
 		return (type == EOL || type == EOF);
+	}
+}
+
+class TokenizerException extends TextParseException {
+	String message;
+
+	public
+	TokenizerException(String filename, int line, String message) {
+		super(filename + ":" + line + ": " + message);
+		this.message = message;
+	}
+
+	public String
+	getBaseMessage() {
+		return message;
 	}
 }
 
@@ -228,8 +242,11 @@ get(boolean wantWhitespace, boolean wantComment) throws IOException {
 		} else if (current.type == COMMENT) {
 			if (wantComment)
 				return current;
-		} else
+		} else {
+			if (current.type == EOL)
+				line++;
 			return current;
+		}
 	}
 	int skipped = skipWhitespace();
 	if (skipped > 0 && wantWhitespace)
@@ -338,6 +355,8 @@ unget() {
 	if (ungottenToken)
 		throw new IllegalStateException
 				("Cannot unget multiple tokens");
+	if (current.type == EOL)
+		line--;
 	ungottenToken = true;
 }
 
@@ -439,26 +458,7 @@ getUInt8() throws IOException {
 }
 
 /**
- * Gets the next token from a tokenizer and converts it to a double.
- * @return The next token in the stream, as a double.
- * @throws TextParseException The input was invalid or not a double.
- * @throws IOException An I/O error occurred.
- */
-public double
-getDouble() throws IOException {
-	String next = getIdentifier();
-	if (!Character.isDigit(next.charAt(0)))
-		throw exception("expecting an integer");
-	try {
-		return Double.parseDouble(next);
-	} catch (NumberFormatException e) {
-		throw exception("expecting an floating point value");
-	}
-}
-
-/**
- * Gets the next token from a tokenizer and converts it to a 32 bit unsigned
- * integer which may be encoded in the BIND TTL format.
+ * Gets the next token from a tokenizer and parses it as a TTL.
  * @return The next token in the stream, as an unsigned 32 bit integer.
  * @throws TextParseException The input was not valid.
  * @throws IOException An I/O error occurred.
@@ -471,7 +471,25 @@ getTTL() throws IOException {
 		return TTL.parseTTL(next);
 	}
 	catch (NumberFormatException e) {
-		throw exception("expecting an 32 bit unsigned integer");
+		throw exception("expecting a valid TTL value");
+	}
+}
+
+/**
+ * Gets the next token from a tokenizer and parses it as if it were a TTL.
+ * @return The next token in the stream, as an unsigned 32 bit integer.
+ * @throws TextParseException The input was not valid.
+ * @throws IOException An I/O error occurred.
+ * @see TTL
+ */
+public long
+getTTLLike() throws IOException {
+	String next = getIdentifier();
+	try {
+		return TTL.parse(next, false);
+	}
+	catch (NumberFormatException e) {
+		throw exception("expecting a valid TTL-like value");
 	}
 }
 
@@ -614,7 +632,7 @@ getHex() throws IOException {
  */
 public TextParseException
 exception(String s) {
-	return new TextParseException(filename + ":" + line + ": " + s);
+	return new TokenizerException(filename, line, s);
 }
 
 /**

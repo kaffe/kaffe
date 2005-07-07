@@ -5,7 +5,6 @@ package org.xbill.DNS;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import org.xbill.DNS.utils.*;
 
 /**
  * Well Known Services - Lists services offered by this host.
@@ -595,6 +594,8 @@ WKSRecord(Name name, int dclass, long ttl, InetAddress address, int protocol,
 	  int [] services)
 {
 	super(name, Type.WKS, dclass, ttl);
+	if (Address.familyOf(address) != Address.IPv4)
+		throw new IllegalArgumentException("invalid IPv4 address");
 	this.address = address.getAddress();
 	this.protocol = checkU8("protocol", protocol);
 	for (int i = 0; i < services.length; i++) {
@@ -628,13 +629,9 @@ rrFromWire(DNSInput in) throws IOException {
 void
 rdataFromString(Tokenizer st, Name origin) throws IOException {
 	String s = st.getString();
-	int [] array = Address.toArray(s);
-	if (array == null)
+	address = Address.toByteArray(s, Address.IPv4);
+	if (address == null)
 		throw st.exception("invalid address");
-	address = new byte[4];
-	for (int i = 0; i < 4; i++) {
-		address[i] = (byte)array[i];
-	}
 
 	s = st.getString();
 	protocol = Protocol.value(s);
@@ -682,9 +679,9 @@ rrToString() {
 public InetAddress
 getAddress() {
 	try {
-		return Address.getByName(Address.toDottedQuad(address));
+		return InetAddress.getByAddress(address);
 	} catch (UnknownHostException e) {
-		throw new IllegalStateException("dotted quad lookup failure");
+		return null;
 	}
 }
 

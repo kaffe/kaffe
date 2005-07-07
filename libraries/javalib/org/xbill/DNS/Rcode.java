@@ -2,8 +2,6 @@
 
 package org.xbill.DNS;
 
-import org.xbill.DNS.utils.*;
-
 /**
  * Constants and functions relating to DNS rcodes (error values)
  *
@@ -31,6 +29,9 @@ public static final int SERVFAIL	= 2;
 public static final int NXDOMAIN	= 3;
 
 /** The operation requested is not implemented */
+public static final int NOTIMP		= 4;
+
+/** Deprecated synonym for NOTIMP. */
 public static final int NOTIMPL		= 4;
 
 /** The operation was refused by the server */
@@ -77,7 +78,8 @@ static {
 	rcodes.add(FORMERR, "FORMERR");
 	rcodes.add(SERVFAIL, "SERVFAIL");
 	rcodes.add(NXDOMAIN, "NXDOMAIN");
-	rcodes.add(NOTIMPL, "NOTIMPL");
+	rcodes.add(NOTIMP, "NOTIMP");
+	rcodes.addAlias(NOTIMP, "NOTIMPL");
 	rcodes.add(REFUSED, "REFUSED");
 	rcodes.add(YXDOMAIN, "YXDOMAIN");
 	rcodes.add(YXRRSET, "YXRRSET");
