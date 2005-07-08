@@ -1,5 +1,10 @@
 2005-07-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/main.c (main): Only use strdup if parameter is known
+	not to be NULL. Brown paper bag time.
+
+2005-07-08  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU classpath.
 
 	2005-07-07  Roman Kennke  <roman@kennke.org>
