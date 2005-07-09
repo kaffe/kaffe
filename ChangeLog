@@ -1,5 +1,11 @@
 2005-07-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/javadoc.in,
+	kaffe/scripts/compat/javadoc.in:
+	Make sure the scripts find gjdoc.jar.
+
+2005-07-09  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with gjdoc.
 
 	2005-07-01  Tom Tromey  <tromey@redhat.com>
