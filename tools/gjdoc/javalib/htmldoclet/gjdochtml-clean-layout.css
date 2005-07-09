@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 /* --- GNU Clean Style: Layout --- */
 
@@ -162,7 +162,7 @@ li.inheritance
         marker-offset: 0em !important;
 }
 
-ul.inheritance > li:before
+ul.inheritance > li.inheritance:before
 {
         display: marker;
         width: 12px;
@@ -172,7 +172,7 @@ ul.inheritance > li:before
         content: url(inherit.png);
 }
 
-[class="inheritance 0"] > li:before
+[class="inheritance 0"] > li.inheritance:before
 {
         display: none;
 }
@@ -261,7 +261,8 @@ table.navbar.div td
         margin-top: 0em;
 }
 
-.table.container
+.table.container,
+.table.container dd
 {
         padding: 0em;
         margin: 0em;
@@ -287,6 +288,11 @@ table.navbar.top
 {
         margin-top: 0.0em;
         margin-bottom: 1.0em;
+}
+
+.class.description
+{
+        margin-bottom: 0.8em;
 }
 
 [class="overview description top"]
@@ -432,12 +438,12 @@ td.usage.summary
         padding-left: 2em;
 }
 
-ul.tree li
+ul.tree li.node
 {
         list-style-type: disc;
 }
 
-ul.tree li div
+ul.tree li.node div
 {
         text-indent: -3em;
         padding-left: 3em;
@@ -447,4 +453,9 @@ ul.tree ul
 {
         margin-left: 0em;
         padding-left: 1.8em;
+}
+
+li.level
+{
+        list-style-type: none;
 }

@@ -1,3 +1,286 @@
+2005-07-09  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with gjdoc.
+
+	2005-07-01  Tom Tromey  <tromey@redhat.com>
+
+        * src/gnu/classpath/tools/gjdoc/Parser.java
+        (PackageComponent.process): Don't add to importedStatementList.
+        (processSourceFile): Don't add java.lang.* to
+        importedStatementList.
+        (classOpened): Update importedStatementList here.
+
+	2005-05-24  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/ClassDocImpl.java (findClass): New
+        method variant which accepts a dimension specifier and caches
+        results.
+
+        * src/gnu/classpath/tools/gjdoc/MemberDocImpl.java (resolve):
+        Optimized for reduced memory usage.
+
+        * src/gnu/classpath/tools/gjdoc/ParameterImpl.java (resolve):
+        Optimized for reduced memory usage.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+        Implemented new option -baseurl.  Refactored to use newHtmlPage
+        factory methods.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java:
+        Likewise.
+
+        * src/gnu/classpath/tools/gjdoc/Main.java (usage): Added usage
+        information for option -baseurl.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/resources/htmldoclet/gjdochtml-clean-layout.css: Minor
+        improvement to layout of class description.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java
+        (anchorName): Output ID in addition to NAME attribute for anchors,
+        as per W3C recommendation.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+        Option -validhtml implemented.
+        (getMemberDocURL): Now works for external documentation set.
+        (createTypeHref): Minor refactoring.
+        (getPackageURL): Now takes external documentation sets into
+        account.
+        (getClassURL): Likewise.
+        (renderSeeTag): Likewise.
+        (run): Capitalized warnings for options -serialwarn and
+        -title. Added warning for option -validhtml.  Now writes
+        gjdoc.properties to output directory.
+        (getMemberAnchor): Refactored to take -validhtml into account.
+        (transformReferencedMemberName): New method.
+        (writeGjdocProperties): New method.
+        (isJavadocCompatibleNames): New method.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java
+        (load): Try to load gjdoc.properties from external documentation
+        for detecting the external set's compatibility mode.
+        (getClassDocURL): No longer throws a checked exception.
+        (getPackageDocURL): New method.
+        (isJavadocCompatible): New Method.
+
+        * src/gnu/classpath/tools/gjdoc/Main.java:
+        (usage): Added usage information for option -validhtml.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/MemberDocImpl.java: Honor
+        dimension when replacing ClassDocProxies with ClassDocImpl.
+
+        * src/gnu/classpath/tools/gjdoc/ParameterImpl.java: Likewise.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/resources/htmldoclet/xhtml11-strict-target10.dtd: Renamed to
+        xhtml11-target10.dtd.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+        Rename DTD.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java:
+        Likewise, and fixed link to DTD in DOCTYPE descriptor.
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+        Improved generated code for better XHTML compatibility.  Now falls
+        back to platform default charset if -charset hasn't been
+        specified.
+
+        * src/resources/htmldoclet/gjdochtml-clean-layout.css: Made the
+        new HTML structure display the same as the old ones.
+
+        * src/gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java:
+        Omit text which occurs in invalid contexts (e.g. in a <ul>
+        element.)
+
+	2005-05-23  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java:
+        Improved CSS class definitions for better XHTML compatibility.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java: Use
+        custom DTD (which includes the XHTML Target 1.0 extension) instead
+        of the plain XHTML DTD.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: Copy
+        the custom DTD to the output directory.
+
+        * src/resources/htmldoclet/xhtml11-strict-target10.dtd: Added.
+
+        * src/resources/htmldoclet/gjdochtml-clean-layout.css: Made the
+        new CSS class definitions display the same as the old ones.
+
+	2005-05-22  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/FieldDocImpl.java
+        (createFromSource): Do not skip contents of strings when parsing
+        static field values.  Fixed a bug which would break parsing when a
+        backslash is encountered in single quotes.  See Savannah bug
+        #12816.
+
+	2005-05-20  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/Main.java (start): Use stdout
+        instead of stderr for printing version information.
+        (main, execute, start, startDoclet): Do not immediately call
+        System.exit in case of error; instead, pass error count back to
+        entry method.  This allows the execute() method to be better used
+        via reflection.  For normal command line usage, this shouldn't
+        change anything.
+        (shutdown): Removed.
+
+        * src/gnu/classpath/tools/doclets/PackageMatcher.java (match):
+        Actually return true on a match.  This makes option -group work.
+        (toString) Added.
+
+        * src/gnu/classpath/tools/taglets/ValueTaglet.java (toString):
+        Remove debug message.
+
+	2005-05-18  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/Main.java (isValidJavaFile):
+        Implemented, removed static modifier.
+        (findPackages): Removed static modifier. Better handling of
+        default package.
+        (startDoclet): Better handling of default package.
+
+        * src/gnu/classpath/tools/gjdoc/RootDocImpl.java
+        (build): Better handling of default package. Use Set instead of
+        List for collecting package names.
+
+        * src/gnu/classpath/tools/gjdoc/Parser.java (classOpened): Better
+        reporting for ignored files. Better handling of default package.
+
+	2005-05-11  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/RootDocImpl.java
+        (findSourceFile, findOrCreatePackageDoc, build): Modified to
+        better handle multiple source directories.
+
+        * src/gnu/classpath/tools/gjdoc/Main.java (startDoclet): Likewise.
+
+	2005-05-05  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java
+        (createFromSource): Do not require whitespace to separate type
+        dimension qualifier from member name.  Replace some uses of String
+        by StringBuffer.
+
+        * src/gnu/classpath/tools/gjdoc/MemberDocImpl.java
+        (parseModifiers): Likewise.
+
+        * src/gnu/classpath/tools/doclets/AbstractDoclet.java (addUsedBy):
+        Use TreeMap instead of HashMap for deterministic usage type sort
+        order.
+        (UsageType): Implements Comparable
+        (UsageType.compareTo): New method.
+
+	2005-05-04  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/Main.java: Handle single quotes in
+        command files.
+
+	2005-04-27  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/Main.java: Treat command line
+        flags as case-insensitive.
+
+        * src/gnu/classpath/tools/doclets/AbstractDoclet.java: Likewise.
+
+	2005-04-26  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java
+        (load): Throw a FileNotFoundException when URL.openStream()
+        returns null.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java
+        (run): When an external package-list cannot be retrieved, print a
+        warning instead of raising an exception.
+
+	2005-04-25  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/ParameterImpl.java (name): Fix
+        capitalized public keyword.
+
+	2005-04-25  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/ParameterImpl.java (resolve): Do
+        not replace unresolvable ClassDocProxy with TypeImpl.
+
+	2005-04-25  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java
+        (getTypeParameters): do not return "<>" string when type parameter
+        array is empty.
+
+	2005-04-17  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * src/com/sun/javadoc/ClassDoc.java:
+        (typeParameters()): New method for retrieving type variables.
+        * src/com/sun/javadoc/Type.java:
+        (asTypeVariable()): New method for casting to a type variable.
+        * src/com/sun/javadoc/TypeVariable.java:
+        New class to handle type variables.
+        (bounds()): New method to retrieve variable bounds.
+        (owner()): New method to retrieve owning class.
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+        (printIndexEntry(HtmlPage,Doc)): Add type variables to class name.
+        (printClassPage(File,String,ClassDoc,ClassDoc,ClassDoc)):
+        Likewise.
+        (createTypeHref(HtmlPage,Type,boolean)): Likewise.
+        (getTypeParameters(ClassDoc)): New method to construct a String
+        containing the type parameters.
+        * src/gnu/classpath/tools/gjdoc/ClassDocImpl.java:
+        (asTypeVariable()): New method.
+        (createInstance(ClassDoc,PackageDoc,ClassDoc[],PackageDoc[],char[],
+        int,int,List)): Add parsing of type variables, which may contain ','.
+        (typeParameters()): New method to return the type parameters.
+        (parseTypeVariables(ClassDocImpl, String)): New method to parse
+        the type variables.
+        * src/gnu/classpath/tools/gjdoc/ClassDocProxy.java:
+        (asTypeVariable()): New method.
+        (typeParameters()): New method.
+        * src/gnu/classpath/tools/gjdoc/ClassDocReflectedImpl.java:
+        (asTypeVariable()): New method.
+        (typeParameters()): New method.
+        * src/gnu/classpath/tools/gjdoc/TypeImpl.java:
+        (asTypeVariable()): New variable to cast type variables.
+        * src/gnu/classpath/tools/gjdoc/TypeVariableImpl.java:
+        New class to represent type variables.
+        (TypeVariableImpl(String,String,String,ProgramElementDoc)):
+        New constructor, which also handles owning class.
+        (setBounds(List)): New method to set bounds.
+        (bounds()): New method to retrieve bounds.
+        (owner()): New method to retrieve owner.
+
+	2005-04-08  Julian Scheid  <julian@sektor37.de>
+
+        * src/gnu/classpath/tools/gjdoc/FieldDocImpl.java
+        (createFromSource): Reimplemented. Fixes a number of bugs, most
+        importantly comma-separated field lists are now recognized and
+        nested brackets/braces as well as comments are dealt with
+        properly. (createFieldDoc): added helper method.
+
+        * src/gnu/classpath/tools/gjdoc/ClassDocImpl.java (isIncluded):
+        Include inner classes if outer class is included and access level
+        is covered according to command line options.
+
+        * src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java
+        (printClassPage): Only output "Nested Classes" header if there are
+        nested classes to list.
+
 2005-07-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/main.c (main): Only use strdup if parameter is known

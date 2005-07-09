@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets.xmldoclet;
 
@@ -64,6 +64,8 @@ public final class HtmlRepairer {
 
    private static Map tagInfoMap;
 
+   private static Set noTextParentTags;
+
    static {
       tagInfoMap = new HashMap();
       tagInfoMap.put("li", new TagInfo(new String[] { "ul", "ol", "nl", "menu", "dir" }));
@@ -73,6 +75,17 @@ public final class HtmlRepairer {
       tagInfoMap.put("dt", new TagInfo(new String[] { "dl" }));
       tagInfoMap.put("dd", new TagInfo(new String[] { "dl" }));
       tagInfoMap.put("param", new TagInfo(new String[] { "applet" }));
+
+      String[] noTextParentTagArr = {
+         "area", "base", "body", "br", "dd", "dt", "head", "hr", "html", 
+         "img", "input", "link", "map", "meta", "ol", "optgroup", "param",
+         "select", "table", "tbody", "tfoot", "thead", "tr", "ul",
+      };
+
+      noTextParentTags = new HashSet();
+      for (int i=0; i<noTextParentTagArr.length; ++i) {
+         noTextParentTags.add(noTextParentTagArr[i]);
+      }
    }
 
    public HtmlRepairer(DocErrorReporter warningReporter, 
@@ -104,16 +117,22 @@ public final class HtmlRepairer {
          }
       }
 
-      text = replaceStr(text, "&lt1", "&lt;1");
-      text = replaceStr(text, "&&", "&amp;&amp;");
-      text = replaceStr(text, "& ", "&amp; ");
-      text = replaceStr(text, "&\t", "&amp;\t");
-      text = replaceStr(text, "&\r", "&amp;\r");
-      text = replaceStr(text, "&\n", "&amp;\n");
-      for (char c='0'; c<='9'; ++c)
-	 text = replaceStr(text, "&"+c, "&amp;"+c);
-      text = replaceStr(text, "\u00a7", "&sect;");
-      output.append(text);
+      if (tagStack.isEmpty() || !noTextParentTags.contains(tagStack.peek())) {
+
+         text = replaceStr(text, "&lt1", "&lt;1");
+         text = replaceStr(text, "&&", "&amp;&amp;");
+         text = replaceStr(text, "& ", "&amp; ");
+         text = replaceStr(text, "&\t", "&amp;\t");
+         text = replaceStr(text, "&\r", "&amp;\r");
+         text = replaceStr(text, "&\n", "&amp;\n");
+         for (char c='0'; c<='9'; ++c)
+            text = replaceStr(text, "&"+c, "&amp;"+c);
+         text = replaceStr(text, "\u00a7", "&sect;");
+         output.append(text);
+      }
+      else {
+         printWarning("Discarded text in <" + tagStack.peek() + "> element");
+      }
    }
 
    private void haveStartOrEndTag(String tag) {

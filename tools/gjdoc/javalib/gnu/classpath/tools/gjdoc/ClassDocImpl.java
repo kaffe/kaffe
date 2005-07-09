@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -98,6 +98,37 @@ public class ClassDocImpl
    }
 
    private Map findClassCache = new HashMap();
+
+   public ClassDoc findClass(String className, String dimension)
+   {
+      ClassDoc cached = (ClassDoc)findClassCache.get(className + dimension);
+      if (null != cached) {
+         return cached;
+      }
+      else {
+         ClassDoc classDoc = findClass(className);
+
+         if (null!=classDoc) {
+            try {
+               if (classDoc.dimension().equals(dimension)) {
+                  return classDoc;
+               }
+               else {
+                  ClassDoc rc = (ClassDoc) ((WritableType)classDoc).clone();
+                  ((WritableType)rc).setDimension(dimension);
+                  findClassCache.put(className + dimension, rc);
+                  return rc;
+               }
+            }
+            catch (CloneNotSupportedException e) {
+               throw new RuntimeException(e);
+            }
+         }
+         else {
+            return null;
+         }
+      }
+   }
 
    public ClassDoc findClass(String className) 
    {
@@ -258,6 +289,7 @@ public class ClassDocImpl
 
    public String toString() { return "ClassDoc{"+qualifiedTypeName()+"}"; }
 
+   public TypeVariable asTypeVariable() { return null; }
 
    public static ClassDocImpl createInstance(ClassDoc containingClass,
 					     PackageDoc containingPackage,
@@ -284,9 +316,11 @@ public class ClassDocImpl
       final int STATE_STARC  = 3;
 
       int state=STATE_NORMAL;
+      int varLevel=0;
       char prev=0;
       for (int ndx=startIndex; ndx<=endIndex; ++ndx) {
 	 char c=(ndx==endIndex)?10:source[ndx];
+	 boolean processWord=false;
 	 if (state==STATE_SLASHC) {
 	    if (c=='\n') {
 	       state=STATE_NORMAL;
@@ -300,9 +334,6 @@ public class ClassDocImpl
 	    }
 	 }
 	 else {
-
-	    boolean processWord=false;
-
 	    if (c=='/' && prev=='/') {
 	       state=STATE_SLASHC;
 	       c=0;
@@ -315,7 +346,18 @@ public class ClassDocImpl
 	       word=word.substring(0,word.length()-1);
 	       processWord=true;
 	    }
-	    else if (c=='{' || c==',' || Parser.WHITESPACE.indexOf(c)>=0) {
+	    else if (c=='<')
+	      {
+		++varLevel;
+		word += c;
+	      }
+	    else if (c=='>')
+	      {
+		--varLevel;
+		word += c;
+	      }
+	    else if (c=='{' || c==',' && varLevel == 0 || 
+		     Parser.WHITESPACE.indexOf(c)>=0) {
 	       processWord=true;
 	    }
 	    else {
@@ -355,14 +397,36 @@ public class ClassDocImpl
 		  item=3;
 	       }
 	       else if (item==1) {
-		  rc.setClass(word);
+		 int parameterIndex = word.indexOf("<");
+		 if (parameterIndex == -1)
+		   rc.setClass(word);
+		 else
+		   {
+		     rc.setClass(word.substring(0, parameterIndex));
+		     parseTypeVariables(rc,word.substring(parameterIndex,
+							  word.length()));
+		   }
 	       }
 	       else if (item==2) {
 		  //Debug.log(9,"setting baseclass of "+rc+" to "+word);
-		  superclassName=word;
+		 int parameterIndex = word.indexOf("<");
+		 if (parameterIndex == -1)
+		   superclassName=word;
+		 else
+		   {
+		     /* FIXME: Parse type parameters */
+		     superclassName=word.substring(0,parameterIndex);
+		   }
 	       }
 	       else if (item==3) {
-		  implementedInterfaces.add(word);
+		 int parameterIndex = word.indexOf("<");
+		 if (parameterIndex == -1)
+		   implementedInterfaces.add(word);
+		 else
+		   {
+		     /* FIXME: Parse type parameters */
+		     implementedInterfaces.add(word.substring(0,parameterIndex));
+		   }
 	       }      
 	       word="";
 	    }
@@ -603,6 +667,7 @@ public class ClassDocImpl
    private MethodDoc[] unfilteredMethods;
    private ConstructorDoc[] filteredConstructors;
    private ConstructorDoc[] unfilteredConstructors;
+   private TypeVariable[] typeParameters;
 
    private boolean resolved=false;
 
@@ -617,8 +682,7 @@ public class ClassDocImpl
    public boolean isIncluded() {
       if (this == baseClassDoc) {
          return isIncluded
-            || (null != containingClass && isProtected()); 
-         // && Main.getRootDoc().includeAccessLevel(accessLevel);
+            || (null != containingClass && Main.getInstance().includeAccessLevel(accessLevel));
       }
       else {
          return baseClassDoc.isIncluded();
@@ -650,21 +714,9 @@ public class ClassDocImpl
 	 typeName=typeName.substring(0,ndx).trim();
       }
 
-      ClassDoc classDoc = findClass(typeName);
-      if (null!=classDoc) {
-	 try {
-            if (classDoc.dimension().equals(dim)) {
-               return classDoc;
-            }
-            else {
-               Type rc = (Type) ((WritableType)classDoc).clone();
-               ((WritableType)rc).setDimension(dim);
-               return rc;
-            }
-	 }
-	 catch (CloneNotSupportedException e) {
-	    throw new ParseException(e.toString());
-	 }
+      ClassDoc classDoc = findClass(typeName, dim);
+      if (null != classDoc) {
+         return classDoc;
       }
 
       Type type = (Type)typeMap.get(typeName+dim);
@@ -1015,5 +1067,83 @@ public class ClassDocImpl
    {
       return importStatementList;
    }
+
+  public TypeVariable[] typeParameters()
+  {
+    return typeParameters;
+  }
+
+  /**
+   * <p>
+   * Parses the type variables declared in the class definition.
+   * The syntax is:
+   * </p>
+   * <p>
+   * <dl>
+   * <dt>TypeParameters:</dt>
+   * <dd><code>&lt; <em>TypeParameter</em> { <em>, TypeParameter }</code></dd>
+   * <dt>TypeParameter:</dt>
+   * <dd><code><em>Identifier</em> { <strong>extends</strong> <em>Bound</em>
+   *     }</dd>
+   * <dt>Bound:</dt>
+   * <dd><code><em>Type</em>{<strong>&</strong> <em>Type</em> } </dd>
+   * </dl>
+   *
+   * @param rc the owning class.
+   * @param typeVariables the string to be parsed.
+   * @throws ParseException if parsing fails.
+   */
+  public static void parseTypeVariables(ClassDocImpl rc,
+					String typeVariables)
+    throws ParseException
+  {
+    List parsedBounds = null;
+    StringTokenizer parameters = new StringTokenizer(typeVariables,
+						     Parser.WHITESPACE +
+						     "<>,");
+    List variables = new ArrayList();
+    while (parameters.hasMoreTokens())
+      {
+	String parameter = parameters.nextToken();
+	StringTokenizer parts = new StringTokenizer(parameter,
+						    Parser.WHITESPACE);
+	TypeVariableImpl variable = new TypeVariableImpl(rc.qualifiedName(),
+							 parts.nextToken(),"",
+							 rc);
+	if (parts.hasMoreTokens())
+	  {
+	    if (!parts.nextToken().equals("extends"))
+	      throw new ParseException("Invalid type parameter: " + parameter);
+	    StringTokenizer bounds = new StringTokenizer(parts.nextToken(),
+							 Parser.WHITESPACE
+							 + "&");
+	    parsedBounds = new ArrayList();
+	    while (bounds.hasMoreTokens())
+	      {
+		String bound = bounds.nextToken();
+		int nameSep = bound.lastIndexOf(".");
+		String packageName = bound.substring(0, nameSep);
+		String boundName = bound.substring(nameSep, bound.length());
+		parsedBounds.add(new TypeImpl(packageName,boundName,""));
+	      }
+	  }
+	if (parsedBounds != null)
+	  variable.setBounds(parsedBounds);
+	variables.add(variable);
+      }
+    rc.setTypeParameters(variables);
+  }
+
+  /**
+   * Set the type parameters to the contents of the supplied list.
+   *
+   * @param variables a list of type parameters.
+   */
+  void setTypeParameters(List variables)
+  {
+    typeParameters = 
+      (TypeVariable[]) variables.toArray(new TypeVariable[variables.size()]);
+  }
+
 }
 

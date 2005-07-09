@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -55,8 +55,11 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 
       int state = STATE_NORMAL;
 
-      String word = "";
+      StringBuffer word = new StringBuffer();
+      StringBuffer typeNameBuf = new StringBuffer();
       int lastWordStart = startIndex;
+      int firstChar = 0;
+      int lastChar = 0;
       for (; startIndex<endIndex; ++startIndex) {
 	 if (state==STATE_STARC) {
 	    if (startIndex<endIndex-1 && source[startIndex]=='*' && source[startIndex+1]=='/') {
@@ -74,34 +77,41 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 	    state=STATE_STARC;
 	 }
 	 else if (source[startIndex]=='=' || source[startIndex]=='(' || source[startIndex]==';') {
+            typeName = typeNameBuf.toString();
             return lastWordStart;
 	 }
-	 else if (Parser.WHITESPACE.indexOf(source[startIndex])>=0) {
-	    if (word.length()>0 && !word.endsWith(".")) {
-	       if (processModifier(word)) {
+	 else if (Parser.WHITESPACE.indexOf(source[startIndex])>=0
+                  || (startIndex > 0 && source[startIndex-1] == ']' && source[startIndex] != '[')) {
+	    if (word.length()>0 && lastChar != '.') {
+	       if (processModifier(word.toString())) {
 	       }
-	       else if (typeName==null && !isConstructor()) {
-		  typeName=word;
+	       else if (typeNameBuf.length()==0 && !isConstructor()) {
+                  typeNameBuf.setLength(0);
+		  typeNameBuf.append(word);
 	       }
-	       else if ((word.startsWith("[") || word.startsWith("]")) && !isConstructor()) {
-		  typeName+=word;
+	       else if ((firstChar=='[' || firstChar==']') && !isConstructor()) {
+		  typeNameBuf.append(word);
 	       }
 	       else {
+                  typeName = typeNameBuf.toString();
 		  return lastWordStart;
-		  //throw new Error("In FieldComponent: cannot understand word '"+word+"' (typeName="+typeName+", name="+name()+")");
 	       }
-	       word="";
+	       word.setLength(0);
 	       lastWordStart=startIndex;
 	    }
 	 }
 	 else {
 	    if (lastWordStart<0) lastWordStart=startIndex;
-	    word+=source[startIndex];
+            lastChar = source[startIndex];
+            if (0 == word.length()) {
+               firstChar = lastChar;
+            }
+	    word.append((char)lastChar);
 	 }
       }
 
+      typeName = typeNameBuf.toString();
       return startIndex;
-
    }
 
     public Type type() {
@@ -170,9 +180,9 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 
       if (type instanceof ClassDocProxy) {
 	 String className=type.qualifiedTypeName();
-	 ClassDoc realClassDoc=containingClass().findClass(className);
+	 ClassDoc realClassDoc=((ClassDocImpl)containingClass()).findClass(className, type.dimension());
 	 if (realClassDoc!=null) {
-	    type=realClassDoc;
+            type=realClassDoc;
 	 }
 	 else {
 	    //throw new Error("Class not found: "+className);

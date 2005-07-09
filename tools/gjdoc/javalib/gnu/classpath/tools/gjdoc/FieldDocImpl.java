@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -47,6 +47,36 @@ public class FieldDocImpl
             position);
    }
 
+   private static FieldDocImpl createFieldDoc(FieldDocImpl prototype,
+                                              String fieldDef,
+                                              String fieldValueLiteral)
+   {
+      if (null != fieldValueLiteral && fieldValueLiteral.length() == 0) {
+         fieldValueLiteral = null;
+      }
+
+      try {
+         FieldDocImpl fieldDoc=(FieldDocImpl)prototype.clone();
+         String dimSuffix="";
+         while (fieldDef.trim().endsWith("[")
+                || fieldDef.trim().endsWith("]")) {
+            fieldDef=fieldDef.trim();
+            dimSuffix=fieldDef.charAt(fieldDef.length()-1)+dimSuffix;
+            fieldDef=fieldDef.substring(0,fieldDef.length()-1);
+         }
+         
+         fieldDoc.setTypeName(fieldDoc.getTypeName()+dimSuffix);
+         fieldDoc.setName(fieldDef.trim());
+         fieldDoc.setValueLiteral(fieldValueLiteral);
+         return fieldDoc;
+      }
+      catch (CloneNotSupportedException e) {
+         // should not happen
+         e.printStackTrace();
+         return null;
+      }
+   }
+
    public static Collection createFromSource(ClassDoc containingClass,
 					     PackageDoc containingPackage,
 					     char[] source, int startIndex, int endIndex) {
@@ -63,94 +93,140 @@ public class FieldDocImpl
          fd.accessLevel = ACCESS_PUBLIC;
       }
 
-      String definition=new String(source, ndx, endIndex-ndx-1);
-
-      final int STATE_INITIAL = 1;
-      final int STATE_BRACKET = 2;
-      final int STATE_QUOTE   = 3;
-      final int STATE_QUOTEBS = 4;
+      final int STATE_FIELDNAME   = 1;
+      final int STATE_FIELDVALUE  = 2;
+      final int STATE_QUOTE       = 3;
+      final int STATE_QUOTEBS     = 4;
+      final int STATE_SQUOTE      = 5;
+      final int STATE_SQUOTEBS    = 6;
+      final int STATE_COMMENT     = 7;
+      final int STATE_LINECOMMENT = 8;
 
       int lastFieldDefStart = ndx;
-      int state = STATE_INITIAL;
+      int state = STATE_FIELDNAME;
+      int prevState = state;
 
-      List fieldDefComponents = new ArrayList();
+      int bracketCount = 0;
+
+      StringBuffer fieldNameBuf = new StringBuffer();
+      StringBuffer fieldValueLiteralBuf = new StringBuffer();
 
       for (int i=ndx; i<endIndex; ++i) {
 
-	 char c = source[ndx];
+	 char c = source[i];
+         char nextChar = '\0';
+         if (i + 1 < endIndex) {
+            nextChar = source[i + 1];
+         }
 	 switch (state) {
-	 case STATE_INITIAL:
-	    if ('\"' == c) {
+         case STATE_FIELDNAME:
+            if ('/' == c && '/' == nextChar) {
+               prevState = state;
+               state = STATE_LINECOMMENT;
+            }
+            else if ('/' == c && '*' == nextChar) {
+               prevState = state;
+               state = STATE_COMMENT;
+            }
+            else if (',' == c || ';' == c) {
+               rcList.add(createFieldDoc(fd, fieldNameBuf.toString(), null));
+               fieldNameBuf.setLength(0);
+            }
+            else if ('=' == c) {
+               state = STATE_FIELDVALUE;
+            }
+            else if (!(' ' == c || '\n' == c || '\r' == c || '\t' == c)) {
+               fieldNameBuf.append(c);
+            }
+            break;
+
+	 case STATE_FIELDVALUE:
+            if ('/' == c && '/' == nextChar) {
+               prevState = state;
+               state = STATE_LINECOMMENT;
+            }
+            else if ('/' == c && '*' == nextChar) {
+               prevState = state;
+               state = STATE_COMMENT;
+            }
+	    else if ('\"' == c) {
+               prevState = state;
 	       state = STATE_QUOTE;
+               fieldValueLiteralBuf.append(c);
 	    }
-	    else if ('(' == c) {
-	       state = STATE_BRACKET;
+	    else if ('\'' == c) {
+               prevState = state;
+	       state = STATE_SQUOTE;
+               fieldValueLiteralBuf.append(c);
 	    }
-	    else if (',' == c) {
-	       String fieldDefComponent = new String(source, lastFieldDefStart, i-lastFieldDefStart-1);
-	       fieldDefComponents.add(fieldDefComponent);
-	       lastFieldDefStart = i+1;
+	    else if ('{' == c || '(' == c) {
+               ++ bracketCount;
+               fieldValueLiteralBuf.append(c);
 	    }
+	    else if ('}' == c || ')' == c) {
+               -- bracketCount;
+               fieldValueLiteralBuf.append(c);
+	    }
+	    else if (0 == bracketCount && (',' == c || ';' == c)) {
+               rcList.add(createFieldDoc(fd, fieldNameBuf.toString(), 
+                                         fieldValueLiteralBuf.toString()));
+               fieldNameBuf.setLength(0);
+               fieldValueLiteralBuf.setLength(0);
+	       state = STATE_FIELDNAME;
+	    }
+            else {
+               fieldValueLiteralBuf.append(c);
+            }
 	    break;
 	    
 	 case STATE_QUOTE:
+            fieldValueLiteralBuf.append(c);
 	    if ('\\' == c) {
 	       state = STATE_QUOTEBS;
 	    }
 	    else if ('\"' == c) {
-	       state = STATE_INITIAL;
+	       state = prevState;
 	    }
 	    break;
-
+	    
+	 case STATE_SQUOTE:
+            fieldValueLiteralBuf.append(c);
+	    if ('\\' == c) {
+	       state = STATE_SQUOTEBS;
+	    }
+	    else if ('\'' == c) {
+	       state = prevState;
+	    }
+	    break;
 	    
 	 case STATE_QUOTEBS:
+            fieldValueLiteralBuf.append(c);
 	    state = STATE_QUOTE;
 	    break;
 
-	    
-	 case STATE_BRACKET:
-	    if ('\"' == c) {
-	       state = STATE_QUOTE;
-	    }
-	    else if (')' == c) {
-	       state = STATE_INITIAL;
-	    } // end of else
+	 case STATE_SQUOTEBS:
+            fieldValueLiteralBuf.append(c);
+	    state = STATE_SQUOTE;
 	    break;
-	 }
-      }
 
-      String fieldDefComponent = new String(source, lastFieldDefStart, endIndex-lastFieldDefStart-1);
-      fieldDefComponents.add(fieldDefComponent);
+         case STATE_LINECOMMENT:
+            if ('\n' == c) {
+               state = prevState;
+            }
+            break;
 
-      for (Iterator it = fieldDefComponents.iterator(); it.hasNext(); ) {
-	 String fieldDef = (String) it.next();
-         String fieldValueLiteral = null;
-
-	 int endx=fieldDef.indexOf('=');
-	 if (endx>=0) {
-            fieldValueLiteral = fieldDef.substring(endx + 1);
-            fieldDef = fieldDef.substring(0,endx);
+         case STATE_COMMENT:
+            if ('*' == c && '/' == nextChar) {
+               ++ i;
+               state = prevState;
+            }
+            break;
          }
-	 Debug.log(9,"  Field Definition: '"+fieldDef+"'");
-	 
-	 try {
-	    FieldDocImpl fieldDoc=(FieldDocImpl)fd.clone();
-	    String dimSuffix="";
-	    while (fieldDef.trim().endsWith("[")
-		   || fieldDef.trim().endsWith("]")) {
-	       fieldDef=fieldDef.trim();
-	       dimSuffix=fieldDef.charAt(fieldDef.length()-1)+dimSuffix;
-	       fieldDef=fieldDef.substring(0,fieldDef.length()-1);
-	    }
-
-	    fieldDoc.setTypeName(fieldDoc.getTypeName()+dimSuffix);
-	    fieldDoc.setName(fieldDef.trim());
-            fieldDoc.setValueLiteral(fieldValueLiteral);
-	    rcList.add(fieldDoc);
-	 }
-	 catch (CloneNotSupportedException e) {
-	    e.printStackTrace();
-	 }
+      }
+      
+      if (fieldNameBuf.length() > 0) {
+         rcList.add(createFieldDoc(fd, fieldNameBuf.toString(), 
+                                   fieldValueLiteralBuf.toString()));
       }
 
       return rcList;

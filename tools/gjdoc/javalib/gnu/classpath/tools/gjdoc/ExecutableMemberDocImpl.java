@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -94,13 +94,16 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 							  char[] source, int startIndex, int endIndex) throws IOException, ParseException {
 
       int lastchar=32;
-      String methodName="";
+      StringBuffer methodName=new StringBuffer();
       for (int i=startIndex; i<endIndex && source[i]!='('; ++i) {
-	 if (Parser.WHITESPACE.indexOf(lastchar)>=0 && Parser.WHITESPACE.indexOf(source[i])<0)
-	    methodName=""+source[i];
-	 else if (Parser.WHITESPACE.indexOf(source[i])<0)
-	    methodName+=source[i];
-	    
+	 if ((Parser.WHITESPACE.indexOf(lastchar)>=0 && Parser.WHITESPACE.indexOf(source[i])<0)
+             || (lastchar == ']' && Parser.WHITESPACE.indexOf(source[i])<0 && '[' != source[i])) {
+            methodName.setLength(0);
+            methodName.append(source[i]);
+         }
+	 else if (Parser.WHITESPACE.indexOf(source[i])<0) {
+            methodName.append(source[i]);
+         }
 	 lastchar=source[i];
       }
 
@@ -108,7 +111,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 
       SourcePosition position = DocImpl.getPosition(containingClass, source, startIndex);
 
-      if (methodName.equals(((ClassDocImpl)containingClass).getClassName())) {
+      if (methodName.toString().equals(((ClassDocImpl)containingClass).getClassName())) {
 	 
 	 // Constructor
 
@@ -129,7 +132,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 rc.accessLevel=ACCESS_PUBLIC;
 
       int ndx=rc.parseModifiers(source, startIndex, endIndex);
-      String name="";
+      StringBuffer name = new StringBuffer();
 
       final int STATE_NORMAL=1;
       final int STATE_STARC=2;
@@ -148,7 +151,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	       state=STATE_STARC;
 	    }
 	    else {
-	       name+=source[ndx];
+	       name.append(source[ndx]);
 	    }
 	 }
 	 else if (state==STATE_SLASHC) {
@@ -163,7 +166,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 }
 	 ++ndx;
       }
-      rc.setName(name.trim());
+      rc.setName(name.toString().trim());
 
       state=STATE_NORMAL;
       

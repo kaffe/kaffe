@@ -1,5 +1,5 @@
 /* gnu.classpath.tools.gjdoc.Parser
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2005 Free Software Foundation, Inc.
 
    This file is part of GNU Classpath.
 
@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GNU Classpath; see the file COPYING.  If not, write to the
-   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301 USA. */
+   Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -208,7 +208,6 @@ import gnu.classpath.tools.MalformedInputEvent;
       int process(Parser parser, char[] source, int startIndex, int endIndex) {
 	 String packageName=new String(source,startIndex+8,endIndex-startIndex-8-1).trim();
 	 parser.packageOpened(packageName);
-         parser.importedStatementList.add(packageName + ".*");
 	 return endIndex;
       }
    }
@@ -733,10 +732,9 @@ public class Parser {
       importedStringList.clear();
       importedPackagesList.clear();
       importedStatementList.clear();
-      importedStatementList.add("java.lang.*");
       
       currentLine = 1;
-      
+
       char[] source = loadFile(file, encoding);
 
       try {
@@ -828,7 +826,7 @@ public class Parser {
             if (null == currentPackageName ||
                 !currentPackageName.equals(expectedPackageName)) {
 
-               Main.getRootDoc().printWarning("Ignoring file " + currentFile + ": (wrong package)");
+               Main.getRootDoc().printWarning("Ignoring file " + currentFile + ": (wrong package, " + currentPackageName + "!=" + expectedPackageName + ")");
                throw new IgnoredFileParseException();
             }
          }
@@ -837,9 +835,13 @@ public class Parser {
             currentPackage = Main.getRootDoc().findOrCreatePackageDoc(currentPackageName);
          }
          else {
-            currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
+            currentPackage = Main.getRootDoc().findOrCreatePackageDoc("");
          }
       }
+
+      if (currentPackageName != null)
+	 importedStatementList.add(currentPackageName + ".*");
+      importedStatementList.add("java.lang.*");
 
       ClassDocImpl classDoc
 	 = ClassDocImpl.createInstance((ctx!=null)?(ctx.classDoc):null, currentPackage, 

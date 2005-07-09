@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA. */
+Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307 USA. */
 
 
 package com.sun.javadoc;
@@ -86,6 +86,17 @@ asClassDoc();
   */
 public abstract boolean
 isPrimitive();
+
+/**
+ * Returns this type as a <code>TypeVariable</code>, if it is an
+ * instance of the <code>TypeVariable</code> class.  Otherwise,
+ * it returns null.
+ *
+ * @return this cast to a <code>TypeVariable</code> instance, or null
+ *         if this is not a type variable.
+ */
+TypeVariable
+asTypeVariable();
 
 } // interface Type
 

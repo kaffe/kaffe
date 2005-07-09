@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets.htmldoclet;
 
@@ -52,17 +52,18 @@ public class HtmlPage
    private PrintWriter out;
    private String pathToRoot;
    private String docType;
+   private String baseUrl;
+   private File rootDir;
 
    public static final String DOCTYPE_FRAMESET = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">";
-   public static final String DOCTYPE_STRICT = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
 
-   public HtmlPage(File file, String pathToRoot, String encoding)
+   public HtmlPage(File file, String pathToRoot, String encoding, String baseUrl, File rootDir)
       throws IOException
    {
-      this(file, pathToRoot, encoding, DOCTYPE_STRICT);
+      this(file, pathToRoot, encoding, baseUrl, rootDir, "<!DOCTYPE html PUBLIC \"-//gnu.org///DTD XHTML 1.1 plus Target 1.0//EN\" \"" + pathToRoot + "/resources/xhtml11-target10.dtd\">");
    }
 
-   public HtmlPage(File file, String pathToRoot, String encoding, String docType)
+   public HtmlPage(File file, String pathToRoot, String encoding, String baseUrl, File rootDir, String docType)
       throws IOException
    {
       this.file = file;
@@ -78,6 +79,8 @@ public class HtmlPage
       this.out = new PrintWriter(new BufferedWriter(writer));
       this.pathToRoot = pathToRoot;
       this.docType = docType;
+      this.baseUrl = baseUrl;
+      this.rootDir = rootDir;
    }
 
    public void beginElement(String elementName)
@@ -267,12 +270,14 @@ public class HtmlPage
    }
 
    public void beginPage(String title, String charset, Map stylesheets)
+      throws IOException
    {
       beginPage(title, charset, Collections.EMPTY_SET, stylesheets);
    }
 
    public void beginPage(String title, String charset, 
                          Collection keywords, Map stylesheets)
+      throws IOException
    {
       print("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>\n");
       print(docType);
@@ -281,6 +286,17 @@ public class HtmlPage
       beginElement("title");
       print(title);
       endElement("title");
+      if (null != baseUrl && baseUrl.length() > 0) {
+         StringBuffer url = new StringBuffer();
+         url.append(baseUrl);
+         if ('/' == url.charAt(url.length() - 1)) {
+            url.delete(url.length() - 1, url.length());
+         }
+         url.append(file.getCanonicalPath().substring(rootDir.getCanonicalPath().length()));
+         atomicElement("base", 
+                       new String[] { "href" },
+                       new String[] { url.toString() });
+      }
       beginElement("script", 
                     new String[] { "src", "type" },
                     new String[] { pathToRoot + "/resources/gjdoc.js", "text/javascript" });
@@ -433,7 +449,7 @@ public class HtmlPage
 
    public void anchorName(String name)
    {
-      atomicElement("a", "name", name);
+      atomicElement("a", new String[] { "name", "id" }, new String[] { name, name });
    }
 
    public String getPathToRoot()

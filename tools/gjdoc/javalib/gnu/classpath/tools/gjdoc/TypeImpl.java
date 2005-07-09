@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -80,4 +80,13 @@ public class TypeImpl implements Type, WritableType {
       _primitiveNames.add("double");
       primitiveNames = Collections.unmodifiableSet(_primitiveNames);
    }
+
+  public TypeVariable asTypeVariable() 
+  {
+    if (this instanceof TypeVariable)
+      return (TypeVariable) this;
+    else
+      return null;
+  }
+
 }

@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets;
 
@@ -176,7 +176,7 @@ public abstract class AbstractDoclet
          String[] optionArr = rootDoc.options()[i];
          String _optionTag = optionArr[0];
 
-         DocletOption option = (DocletOption)nameToOptionMap.get(_optionTag);
+         DocletOption option = (DocletOption)nameToOptionMap.get(_optionTag.toLowerCase());
 
          if (null != option) {
             option.set(optionArr);
@@ -546,7 +546,7 @@ public abstract class AbstractDoclet
    private int getOptionLength(String optionName)
    {
       registerOptions();
-      DocletOption option = (DocletOption)nameToOptionMap.get(optionName);
+      DocletOption option = (DocletOption)nameToOptionMap.get(optionName.toLowerCase());
       if (null != option) {
          return option.getLength();
       }
@@ -772,7 +772,7 @@ public abstract class AbstractDoclet
 
       Map usageTypeToUsersMap = (Map)packageToUsageTypeMap.get(userPackage);
       if (null == usageTypeToUsersMap) {
-         usageTypeToUsersMap = new HashMap();
+         usageTypeToUsersMap = new TreeMap();
          packageToUsageTypeMap.put(userPackage, usageTypeToUsersMap);
       }
 
@@ -909,6 +909,7 @@ public abstract class AbstractDoclet
    }
 
    protected static class UsageType
+      implements Comparable
    {
       public static final UsageType CLASS_DERIVED_FROM = new UsageType("class-derived-from");
       public static final UsageType CLASS_IMPLEMENTING = new UsageType("class-implementing");
@@ -923,6 +924,11 @@ public abstract class AbstractDoclet
       private UsageType(String id)
       {
          this.id = id;
+      }
+
+      public int compareTo(Object other)
+      {
+         return this.id.compareTo(((UsageType)other).id);
       }
 
       public String toString() { 

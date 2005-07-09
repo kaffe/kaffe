@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -240,7 +240,7 @@ public final class Main
    * 
    * @param allOptions List of all command line tokens
    */
-  private void startDoclet(List allOptions)
+  private boolean startDoclet(List allOptions)
   {
 
     try
@@ -360,7 +360,7 @@ public final class Main
               int ndx = propertyValue.indexOf('=');
               if (ndx <= 0) {
                 reporter.printError("Illegal format in option " + option + ": use -JDproperty=value");
-                shutdown();
+                return false;
               }
               else {
                 String property = propertyValue.substring(0, ndx);
@@ -376,7 +376,7 @@ public final class Main
               //--- Complain if not found
 
               reporter.printError("Unknown option " + option);
-              shutdown();
+              return false;
             }
           }
           else
@@ -391,7 +391,7 @@ public final class Main
               if (!it.hasNext())
               {
                 reporter.printError("Missing value for option " + option);
-                shutdown();
+                return false;
               }
               else
               {
@@ -442,9 +442,16 @@ public final class Main
         Set foundPackages = new LinkedHashSet();
         for (Iterator pit = option_sourcepath.iterator(); pit.hasNext(); ) {
           File sourceDir = (File)pit.next();
-          findPackages(null, sourceDir, foundPackages);
+          findPackages("", sourceDir, foundPackages);
         }
         addFoundPackages(null, foundPackages);
+        for (Iterator packageIt = foundPackages.iterator(); packageIt.hasNext(); ) {
+          String packageName = (String)packageIt.next();
+          if (null == packageName) {
+            packageName = "";
+          }
+          rootDoc.addSpecifiedPackageName(packageName);
+        }
       }
 
       for (Iterator it = packageAndClasses.iterator(); it.hasNext();)
@@ -484,19 +491,11 @@ public final class Main
         //--- Create one file object each for a possible package directory
         //         and a possible class file, and find out if they exist.
 
-        File packageDir = rootDoc.findSourceFile(classOrPackageRelPath);
-        File sourceFile = rootDoc.findSourceFile(classOrPackageRelPath
-            + ".java");
+        List packageDirs = rootDoc.findSourceFiles(classOrPackageRelPath);
+        List sourceFiles = rootDoc.findSourceFiles(classOrPackageRelPath + ".java");
 
-        boolean packageDirExists = packageDir != null
-            && packageDir.exists()
-            && packageDir.getCanonicalFile().getAbsolutePath().endsWith(
-                classOrPackageRelPath);
-
-        boolean sourceFileExists = sourceFile != null
-            && sourceFile.exists()
-            && sourceFile.getCanonicalFile().getAbsolutePath().endsWith(
-                classOrPackageRelPath + ".java");
+        boolean packageDirExists = !packageDirs.isEmpty();
+        boolean sourceFileExists = !sourceFiles.isEmpty();
 
         //--- Complain if neither exists: not found
 
@@ -504,7 +503,7 @@ public final class Main
         {
           reporter.printError("Class or package " + classOrPackage
               + " not found.");
-          shutdown();
+          return false;
         }
 
         //--- Complain if both exist: ambigious
@@ -514,23 +513,26 @@ public final class Main
           {
             reporter.printError("Ambigious class/package name "
                 + classOrPackage + ".");
-            shutdown();
+            return false;
           }
 
           //--- Otherwise, if the package directory exists, it is a package
 
           else
-            if (packageDirExists)
-            {
-              if (!packageDir.isDirectory())
-              {
-                reporter.printError("File \"" + packageDir
-                    + "\" doesn't have .java extension.");
-                shutdown();
+            if (packageDirExists) {
+              Iterator packageDirIt = packageDirs.iterator();
+              boolean packageDirFound = false;
+              while (packageDirIt.hasNext()) {
+                File packageDir = (File)packageDirIt.next();
+                if (packageDir.isDirectory()) {
+                  rootDoc.addSpecifiedPackageName(classOrPackage);
+                  packageDirFound = true;
+                  break;
+                }
               }
-              else
-              {
-                rootDoc.addSpecifiedPackageName(classOrPackage);
+              if (!packageDirFound) {
+                reporter.printError("No suitable file or directory found for" + classOrPackage);
+                return false;
               }
             }
 
@@ -548,7 +550,7 @@ public final class Main
       {
         reporter.printError("No packages or classes specified.");
         usage();
-        shutdown();
+        return false;
       }
 
       //--- Validate custom options passed on command line
@@ -561,7 +563,7 @@ public final class Main
             { customOptionArr, reporter })).booleanValue())
       {
         // Not ok: shutdown system.
-        shutdown();
+        return false;
       }
 
       rootDoc.setOptions(customOptionArr);
@@ -575,7 +577,7 @@ public final class Main
           && 0 == rootDoc.specifiedClasses().length)
       {
         reporter.printError("No packages or classes found(!).");
-        shutdown();
+        return false;
       }
 
       //--- Our work is done, tidy up memory
@@ -621,10 +623,12 @@ public final class Main
       System.gc();
 
       //--- Done.
+      return true;
     }
     catch (Exception e)
     {
       e.printStackTrace();
+      return false;
     }
   }
 
@@ -668,14 +672,103 @@ public final class Main
    *  Verify that the given file is a valid Java source file and that
    *  it specifies the given package.
    */
-  private static boolean isValidJavaFile(File file,
-                                         String expectedPackage)
+  private boolean isValidJavaFile(File file,
+                                  String expectedPackage)
   {
-    // FIXME: Scan file looking for package declaration and check that
-    // it's matching; perhaps check that name of public class and
-    // filename match.
+    try {
+      InputStream in = new BufferedInputStream(new FileInputStream(file));
 
-    return true;
+      int ch, prevChar = 0;
+
+      final int STATE_DEFAULT = 0;
+      final int STATE_COMMENT = 1;
+      final int STATE_LINE_COMMENT = 2;
+
+      int state = STATE_DEFAULT;
+
+      StringBuffer word = new StringBuffer();
+      int wordIndex = 0;
+
+      while ((ch = in.read()) >= 0) {
+        String completeWord = null;
+
+        switch (state) {
+        case STATE_COMMENT:
+          if (prevChar == '*' && ch == '/') {
+            state = STATE_DEFAULT;
+          }
+          break;
+
+        case STATE_LINE_COMMENT:
+          if (ch == '\n') {
+            state = STATE_DEFAULT;
+          }
+          break;
+
+        case STATE_DEFAULT:
+          if (prevChar == '/' && ch == '*') {
+            word.deleteCharAt(word.length() - 1);
+            if (word.length() > 0) {
+              completeWord = word.toString();
+              word.setLength(0);
+            }
+            state = STATE_COMMENT;
+          }
+          else if (prevChar == '/' && ch == '/') {
+            word.deleteCharAt(word.length() - 1);
+            if (word.length() > 0) {
+              completeWord = word.toString();
+              word.setLength(0);
+            }
+            state = STATE_LINE_COMMENT;
+          }
+          else if (" \t\r\n".indexOf(ch) >= 0) {
+            if (word.length() > 0) {
+              completeWord = word.toString();
+              word.setLength(0);
+            }
+          }
+          else if (1 == wordIndex && ';' == ch) {
+            if (word.length() > 0) {
+              completeWord = word.toString();
+              word.setLength(0);
+            }
+            else {
+              // empty package name in source file: "package ;" -> invalid source file
+              in.close();
+              return false;
+            }
+          }
+          else {
+            word.append((char)ch);
+          }
+          break;
+        }
+
+        if (null != completeWord) {
+          if (0 == wordIndex && !"package".equals(completeWord)) {
+            in.close();
+            return "".equals(expectedPackage);
+          }
+          else if (1 == wordIndex) {
+            in.close();
+            return expectedPackage.equals(completeWord);
+          }
+          ++ wordIndex;
+        }
+
+        prevChar = ch;
+      }
+
+      // no package or class found before end-of-file -> invalid source file
+
+      in.close();
+      return false;
+    }
+    catch (IOException e) {
+      reporter.printWarning("Could not examine file " + file + ": " + e);
+      return false;
+    }
   }
 
   /**
@@ -683,9 +776,9 @@ public final class Main
    *  package specified by its name and its directory. Add the names
    *  of all valid packages to the result list.
    */
-  private static void findPackages(String subpackage, 
-                                   File packageDir, 
-                                   Set result)
+  private void findPackages(String subpackage, 
+                            File packageDir, 
+                            Set result)
   {
     File[] files = packageDir.listFiles();
     if (null != files) {
@@ -693,7 +786,12 @@ public final class Main
         File file = files[i];
         if (!file.isDirectory() && file.getName().endsWith(".java")) {
           if (isValidJavaFile(file, subpackage)) {
-            result.add(subpackage);
+            if ("".equals(subpackage)) {
+              result.add(null);
+            }
+            else {
+              result.add(subpackage);
+            }
             break;
           }
         }
@@ -702,7 +800,7 @@ public final class Main
         File file = files[i];
         if (file.isDirectory()) {
           String newSubpackage;
-          if (null != subpackage) {
+          if (null != subpackage && subpackage.length() > 0) {
             newSubpackage = subpackage + "." + file.getName();
           }
           else {
@@ -725,7 +823,7 @@ public final class Main
     for (int i = 0; i < options.length; i++)
     {
       String[] opt = options[i];
-      if (opt[0].equals("-doclet"))
+      if (opt[0].equalsIgnoreCase("-doclet"))
       {
         if (foundDocletOption)
         {
@@ -760,13 +858,24 @@ public final class Main
 
       //--- Handle control to the Singleton instance of this class
 
-      instance.start(args);
+      int result = instance.start(args);
+
+      if (result < 0) {
+        // fatal error
+        System.exit(5);
+      }
+      else if (result > 0) {
+        // errors encountered
+        System.exit(1);
+      }
+      else {
+        // success
+        System.exit(0);
+      }
     }
     catch (Exception e)
     {
-
-      //--- Report any error
-
+      //--- unexpected error
       e.printStackTrace();
       System.exit(1);
     }
@@ -782,14 +891,25 @@ public final class Main
    {
      try
      {
-       instance.start(args);
+       int result = instance.start(args);
+       if (result < 0) {
+         // fatal error
+         return 5;
+       }
+       else if (result > 0) {
+         // errors encountered
+         return 1;
+       }
+       else {
+         // success
+         return 0;
+       }
      }
      catch (Exception e)
      {
+       // unexpected error
        return 1;
      }
- 
-     return 0;
    }
 
   /**
@@ -854,12 +974,14 @@ public final class Main
    * 
    * @param args
    *          Command line arguments, as passed to the main() method
+   * @return {@code -1} in case of a fatal error (invalid arguments),
+   * or the number of errors encountered.
    * @exception ParseException
    *              FIXME
    * @exception IOException
    *              if an IO problem occur
    */
-  public void start(String[] args) throws ParseException, IOException
+  public int start(String[] args) throws ParseException, IOException
   {
 
     //--- Collect unparsed arguments in array and resolve references
@@ -880,6 +1002,7 @@ public final class Main
         st.resetSyntax();
         st.wordChars('\u0000', '\uffff');
         st.quoteChar('\"');
+        st.quoteChar('\'');
         st.whitespaceChars(' ', ' ');
         st.whitespaceChars('\t', '\t');
         st.whitespaceChars('\r', '\r');
@@ -983,7 +1106,7 @@ public final class Main
       //--- Show version and exit if requested by user
 
       if (option_showVersion) {
-        System.err.println("gjdoc " + getGjdocVersion());
+        System.out.println("gjdoc " + getGjdocVersion());
         System.exit(0);
       }
 
@@ -1009,15 +1132,12 @@ public final class Main
 
       //addJavaLangClasses();
 
-      startDoclet(arguments);
+      if (!startDoclet(arguments)) {
+        return -1;
+      }
     }
 
-    if (reporter.getErrorCount() > 0) {
-      System.exit(1);
-    }
-    else {
-      System.exit(0);
-    }
+    return reporter.getErrorCount();
   }
 
   private void addJavaLangClasses()
@@ -1379,7 +1499,7 @@ public final class Main
   private static int optionLength(String option)
   {
 
-    OptionProcessor op = (OptionProcessor) options.get(option);
+    OptionProcessor op = (OptionProcessor) options.get(option.toLowerCase());
     if (op != null)
       return op.argCount;
     else
@@ -1405,7 +1525,7 @@ public final class Main
       String[] opt = optionArr[i];
       String[] args = new String[opt.length - 1];
       System.arraycopy(opt, 1, args, 0, opt.length - 1);
-      OptionProcessor op = (OptionProcessor) options.get(opt[0]);
+      OptionProcessor op = (OptionProcessor) options.get(opt[0].toLowerCase());
       op.process(args);
     }
   }
@@ -1500,6 +1620,8 @@ public final class Main
             + "Gjdoc extension options:\n"
             + "  -reflection             Use reflection for resolving unqualified class names\n"
             + "  -licensetext            Include license text from source files\n"
+            + "  -validhtml              Use valid HTML/XML names (breaks compatibility)\n"
+            + "  -baseurl <url>          Hardwire the given base URL into generated pages\n"
                /**
             + "  -genhtml                Generate HTML code instead of XML code. This is the\n"
             + "                          default.\n"
@@ -1532,14 +1654,6 @@ public final class Main
             + "     name-mangled-address   replace by Real Name (<a>abc AT foo DOT com</a>).\n"
                **/
             );
-  }
-
-  /**
-   * Shutdown the generator.
-   */
-  public void shutdown()
-  {
-    System.exit(5);
   }
 
   /**

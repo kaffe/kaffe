@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA. */
+Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307 USA. */
 
 
 package com.sun.javadoc;
@@ -286,6 +286,19 @@ importedClasses();
   */
 public abstract PackageDoc[]
 importedPackages();
+
+/*************************************************************************/
+
+/**
+  * This method returns the formal type parameters of this class.
+  * The returned array is empty if the class does not represent a
+  * parameterized type.
+  *
+  * @return The list of type parameters.
+  * @since 1.5
+  */
+TypeVariable[]
+typeParameters();
 
 } // interface ClassDoc
 

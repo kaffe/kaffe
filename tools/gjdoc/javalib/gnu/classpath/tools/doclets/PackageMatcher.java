@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets;
 
@@ -122,9 +122,14 @@ public class PackageMatcher
          Pattern pattern = (Pattern)it.next();
          Matcher matcher = pattern.matcher(packageDoc.name());
          if (matcher.matches()) {
-            break;
+            return true;
          }
       }
       return false;
+   }
+
+   public String toString()
+   {
+      return "PackageMatcher{patterns=" + patterns + "}";
    }
 }

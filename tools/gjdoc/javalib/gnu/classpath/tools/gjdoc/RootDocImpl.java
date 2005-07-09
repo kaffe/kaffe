@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GNU Classpath; see the file COPYING.  If not, write to the
-   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301 USA. */
+   Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -55,7 +55,7 @@ public class RootDocImpl
     *
     *  @contains String
     */
-   private List specifiedPackageNames = new LinkedList();
+   private Set specifiedPackageNames = new LinkedHashSet();
 
    /**
     *  Stores all classes specified by the user: those given by
@@ -204,9 +204,14 @@ public class RootDocImpl
 
       //--- Parse all files in "java.lang".
 
-      File javaLangSources = findSourceFile("java/lang");
-      if (null!=javaLangSources) {
-	 parser.processSourceDir(javaLangSources, sourceEncoding, "java.lang");
+      List javaLangSourceDirs = findSourceFiles("java/lang");
+      if (!javaLangSourceDirs.isEmpty()) {
+         Iterator it = javaLangSourceDirs.iterator();
+         while (it.hasNext()) {
+            File javaLangSourceDir = (File)it.next();
+            parser.processSourceDir(javaLangSourceDir, 
+                                    sourceEncoding, "java.lang");
+         }
       }
       else {
 
@@ -223,10 +228,25 @@ public class RootDocImpl
       for (Iterator it=specifiedPackageNames.iterator(); it.hasNext(); ) {
 
 	 String specifiedPackageName = (String)it.next();
-	 printNotice("Loading classes for package "+specifiedPackageName+"...");
-	 File sourceDir = findSourceFile(specifiedPackageName.replace('.',File.separatorChar));
-	 if (null!=sourceDir) {
-	    parser.processSourceDir(sourceDir, sourceEncoding, specifiedPackageName);
+         String displayPackageName = specifiedPackageName;
+         if (null == displayPackageName || 0 == displayPackageName.length()) {
+            displayPackageName = "<unnamed>";
+         }
+	 printNotice("Loading classes for package "+displayPackageName+"...");
+         String relPath;
+         if (null != specifiedPackageName) {
+            relPath = specifiedPackageName.replace('.',File.separatorChar);
+         }
+         else {
+            relPath = "";
+         }
+	 List sourceDirs = findSourceFiles(relPath);
+	 if (!sourceDirs.isEmpty()) {
+            Iterator sourceDirIt = sourceDirs.iterator();
+            while (sourceDirIt.hasNext()) {
+               File sourceDir = (File)sourceDirIt.next();
+               parser.processSourceDir(sourceDir, sourceEncoding, specifiedPackageName);
+            }
 	 }
 	 else {
 	    printError("Package '"+specifiedPackageName+"' not found.");
@@ -246,9 +266,7 @@ public class RootDocImpl
             specifiedClassesList.add(classDoc);
             classesList.add(classDoc);
             classDoc.setIsIncluded(true);
-            if (0 == classDoc.containingPackage().name().length()) {
-               addPackageDoc(classDoc.containingPackage());
-            }
+            addPackageDoc(classDoc.containingPackage());
          }
       }
 
@@ -370,15 +388,18 @@ public class RootDocImpl
       }
    }
 
-   File findSourceFile(String relPath) {
+   List findSourceFiles(String relPath) {
 
+      List result = new LinkedList();
       for (Iterator it = sourcePath.iterator(); it.hasNext(); ) {
 	 File path = (File)it.next();
 	 File file = new File(path, relPath);
-	 if (file.exists()) return file;
+	 if (file.exists()) {
+            result.add(file);
+         }
       }
 
-      return null;
+      return result;
    }
 
    PackageDocImpl findOrCreatePackageDoc(String packageName) {
@@ -387,20 +408,27 @@ public class RootDocImpl
 	 rc=new PackageDocImpl(packageName);
 	 if (specifiedPackageNames.contains(packageName)) {
             String packageDirectoryName = packageName.replace('.', File.separatorChar);
-            File packageDirectory = findSourceFile(packageDirectoryName);
-	    File packageDocFile = new File(packageDirectory, "package.html");
-            rc.setPackageDirectory(packageDirectory);
-	    if (null!=packageDocFile && packageDocFile.exists()) {
-	       try {
-                  rc.setRawCommentText(readHtmlBody(packageDocFile));
-	       }
-	       catch (IOException e) {
-		  printWarning("Error while reading documentation for package "+packageName+": "+e.getMessage());
-	       }
-	    }
-	    else {
-	       printNotice("No description found for package "+packageName);
-	    }
+            List packageDirectories = findSourceFiles(packageDirectoryName);
+            Iterator it = packageDirectories.iterator();
+            boolean packageDocFound = false;
+            while (it.hasNext()) {
+               File packageDirectory = (File)it.next();
+               File packageDocFile = new File(packageDirectory, "package.html");
+               rc.setPackageDirectory(packageDirectory);
+               packageDocFound = true;
+               if (null!=packageDocFile && packageDocFile.exists()) {
+                  try {
+                     rc.setRawCommentText(readHtmlBody(packageDocFile));
+                  }
+                  catch (IOException e) {
+                     printWarning("Error while reading documentation for package "+packageName+": "+e.getMessage());
+                  }
+                  break;
+               }
+            }
+            if (!packageDocFound) {
+               printNotice("No description found for package "+packageName);
+            }
 	 }
 	 addPackageDoc(rc);
       }

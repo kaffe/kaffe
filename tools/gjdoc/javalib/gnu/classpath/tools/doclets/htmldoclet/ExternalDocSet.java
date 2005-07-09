@@ -15,13 +15,14 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets.htmldoclet;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import com.sun.javadoc.ClassDoc;
@@ -53,6 +55,7 @@ public class ExternalDocSet
    }
 
    private Set packageNames = new HashSet();
+   private boolean javadocCompatible;
 
    public void load(File targetDirectory)
       throws IOException, MalformedURLException
@@ -76,16 +79,63 @@ public class ExternalDocSet
       URL packageListURL = new URL(packageListDirURL,
                                     "package-list");
       InputStream in = packageListURL.openStream();
-      readPackages(in);
-      in.close();
+      if (null != in) {
+         readPackages(in);
+         in.close();
+      }
+      else {
+         throw new FileNotFoundException(packageListURL.toString());
+      }
+
+      URL gjdocPropertiesURL = new URL(packageListDirURL,
+                                       "gjdoc.properties");
+      InputStream propertiesIn = gjdocPropertiesURL.openStream();
+      if (null != in) {
+         Properties properties = new Properties();
+         properties.load(propertiesIn);
+         propertiesIn.close();
+         
+         String gjdocCompatProperty = properties.getProperty("gjdoc.compat");
+         if (null != gjdocCompatProperty) {
+            javadocCompatible = "true".equals(properties.getProperty("gjdoc.compat"));
+         }
+         else {
+            javadocCompatible = true;
+         }
+      }
+      else {
+         javadocCompatible = true;
+      }
+   }
+
+   public String getPackageDocURL(String packageName)
+   {
+      try {
+         URL packageURL = new URL(docSetDirectoryURL,
+                                  packageName.replace('.', '/'));
+         return packageURL.toString();
+      }
+      catch (MalformedURLException e) {
+         // This should not happen since we know that packageName is a
+         // proper Java identifiers, so the resulting URL can't be
+         // invalid
+         throw new RuntimeException(e);
+      }
    }
 
    public String getClassDocURL(String packageName, String typeName)
-      throws MalformedURLException
    {
-      URL fileURL = new URL(docSetDirectoryURL,
-                            packageName.replace('.', '/') + "/" + typeName + ".html");
-      return fileURL.toString();
+      try {
+         URL fileURL = new URL(docSetDirectoryURL,
+                               packageName.replace('.', '/') + "/" + typeName + ".html");
+         return fileURL.toString();
+      }
+      catch (MalformedURLException e) {
+         // This should not happen since we know that packageName and
+         // typeName are proper Java identifiers, so the resulting URL
+         // can't be invalid
+         throw new RuntimeException(e);
+      }
    }
 
    protected void readPackages(InputStream in)
@@ -103,5 +153,10 @@ public class ExternalDocSet
    public Set getPackageNames()
    {
       return packageNames;
+   }
+
+   public boolean isJavadocCompatible()
+   {
+      return javadocCompatible;
    }
 }

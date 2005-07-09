@@ -33,6 +33,7 @@ gjdoc_jar_SRCS = \
 	com/sun/javadoc/Tag.java \
 	com/sun/javadoc/ThrowsTag.java \
 	com/sun/javadoc/Type.java \
+	com/sun/javadoc/TypeVariable.java \
 	com/sun/javadoc/SourcePosition.java \
 	com/sun/tools/doclets/Taglet.java \
 	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTranslet.java \
@@ -151,6 +152,7 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/Timer.java \
 	gnu/classpath/tools/gjdoc/TimerDoclet.java \
 	gnu/classpath/tools/gjdoc/TypeImpl.java \
+	gnu/classpath/tools/gjdoc/TypeVariableImpl.java \
 	gnu/classpath/tools/gjdoc/WritableType.java \
 	gnu/classpath/tools/gjdoc/GjdocPackageDoc.java \
 	gnu/classpath/tools/gjdoc/GjdocRootDoc.java \
@@ -235,6 +237,7 @@ gjdoc_ressources = \
 	htmldoclet/help.xhtml \
 	htmldoclet/HtmlDoclet.properties \
 	htmldoclet/inherit.png \
+	htmldoclet/xhtml11-target10.dtd \
         rng/gjdoc-classdoc.rng \
         rng/gjdoc-common.rng \
         rng/gjdoc-index.rng \

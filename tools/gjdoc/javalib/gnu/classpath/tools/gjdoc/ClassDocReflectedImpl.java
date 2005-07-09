@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GNU Classpath; see the file COPYING.  If not, write to the
-   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301 USA. */
+   Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   02111-1307 USA. */
 
 package gnu.classpath.tools.gjdoc;
 
@@ -173,6 +173,7 @@ public class ClassDocReflectedImpl
    public String typeName() { return name; }
    public String qualifiedTypeName() { return qualifiedName(); }
    public ClassDoc asClassDoc() { return this; }
+   public TypeVariable asTypeVariable() { return null; }
    public boolean isPrimitive() { return false; }
 
    public String toString() { return "ClassDocReflectedImpl{"+qualifiedName()+"}"; }
@@ -195,4 +196,7 @@ public class ClassDocReflectedImpl
    public Object clone() throws CloneNotSupportedException {
       return super.clone();
    }
+
+   public TypeVariable[] typeParameters() { return new TypeVariable[0]; } 
+
 }

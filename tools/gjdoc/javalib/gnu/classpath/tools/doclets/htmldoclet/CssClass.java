@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.doclets.htmldoclet;
 
@@ -156,16 +156,16 @@ public class CssClass
    public static final CssClass MEMBER_DETAIL_OVERRIDDEN_LIST = new CssClass("member detail overridden list", "dl");
    public static final CssClass MEMBER_DETAIL_OVERRIDDEN_HEADER = new CssClass("member detail overridden header", "dt", "b");
    public static final CssClass MEMBER_DETAIL_OVERRIDDEN_ITEM = new CssClass("member detail overridden item", "dd");
-   public static final CssClass MEMBER_DETAIL_PARAMETER_LIST = new CssClass("parameter", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_PARAMETER_LIST = new CssClass("parameter", "div", "dl");
    public static final CssClass MEMBER_DETAIL_PARAMETER_HEADER = new CssClass("header", "dt", "b");
    public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM = new CssClass("item", "dd");
    public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_NAME = new CssClass("name", "code");
    public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_SEPARATOR = new CssClass("separator");
    public static final CssClass MEMBER_DETAIL_PARAMETER_ITEM_DESCRIPTION = new CssClass("description");
-   public static final CssClass MEMBER_DETAIL_RETURN_LIST = new CssClass("member detail return list", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_RETURN_LIST = new CssClass("member detail return list", "div", "dl");
    public static final CssClass MEMBER_DETAIL_RETURN_HEADER = new CssClass("member detail return header", "dt", "b");
    public static final CssClass MEMBER_DETAIL_RETURN_ITEM = new CssClass("member detail return item", "dd");
-   public static final CssClass MEMBER_DETAIL_THROWN_LIST = new CssClass("member detail thrown list", "p", "dl");
+   public static final CssClass MEMBER_DETAIL_THROWN_LIST = new CssClass("member detail thrown list", "div", "dl");
    public static final CssClass MEMBER_DETAIL_THROWN_HEADER = new CssClass("member detail thrown header", "dt", "b");
    public static final CssClass MEMBER_DETAIL_THROWN_ITEM = new CssClass("member detail thrown item", "dd");
    public static final CssClass MEMBER_DETAIL_THROWN_ITEM_NAME = new CssClass("name", "code");
@@ -174,12 +174,12 @@ public class CssClass
 
    public static final CssClass TABLE_HEADER = new CssClass("table header", "h2");
    public static final CssClass TABLE_SUB_HEADER = new CssClass("table sub header", "h3");
-   public static final CssClass TABLE_CONTAINER = new CssClass("table container", "dl");
+   public static final CssClass TABLE_CONTAINER = new CssClass("table container", "dl", "dd");
 
    public static final CssClass SECTION = new CssClass("section", "div");
    public static final CssClass SECTION_HEADER = new CssClass("section header", "h2");
 
-   public static final CssClass NAVBAR_TOP = new CssClass("navbar div top", new String[] { "colspan" }, new String[] { "2" });
+   public static final CssClass NAVBAR_TOP = new CssClass("navbar div top");
    public static final CssClass NAVBAR_TOP_NAVI = new CssClass("navi");
    public static final CssClass NAVBAR_TOP_HEADER = new CssClass("header", new String[] { "rowspan" }, new String[] { "2" });
    public static final CssClass NAVBAR_BOTTOM = new CssClass("navbar div bottom");
@@ -188,7 +188,7 @@ public class CssClass
    public static final CssClass NAVBAR_ITEM_DISABLED = new CssClass("navbar item disabled");
    public static final CssClass NAVBAR_ITEM_ACTIVE = new CssClass("navbar item active");
 
-   public static final CssClass TAGLET = new CssClass("taglet", "p");
+   public static final CssClass TAGLET = new CssClass("taglet", "div");
 
    public static final CssClass ABOUT_TITLE = new CssClass("about title", "h1");
    public static final CssClass ABOUT_GENERATOR = new CssClass("about generator", "p");
