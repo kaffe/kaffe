@@ -1,3 +1,10 @@
+2005-07-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU classpath.
+
+	* libraries/javalib/gnu/java/security/provider/SHA1PRNG.java:
+	Updaed copyright information.
+
 2005-07-09  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU classpath.
