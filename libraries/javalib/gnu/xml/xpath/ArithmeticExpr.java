@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -115,6 +116,11 @@ final class ArithmeticExpr
   public Expr clone(Object context)
   {
     return new ArithmeticExpr(lhs.clone(context), rhs.clone(context), op);
+  }
+
+  public boolean references(QName var)
+  {
+    return (lhs.references(var) || rhs.references(var));
   }
 
   public String toString()

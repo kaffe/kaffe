@@ -1,5 +1,5 @@
 /* SpinnerUI.java --
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -161,7 +161,7 @@ public class BasicSpinnerUI extends SpinnerUI
    * obtained from <code>UIManager.getLookAndFeelDefaults</code>, as well as
    * set the layout obtained from <code>createLayout</code>
    *
-   * @see #javax.swing.UIManager#getLookAndFeelDefaults
+   * @see javax.swing.UIManager#getLookAndFeelDefaults
    * @see #createLayout
    * @see #installUI
    */

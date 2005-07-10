@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -69,6 +70,11 @@ class Predicate
   public Test clone(Object context)
   {
     return new Predicate(expr.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return expr.references(var);
   }
   
   public String toString()

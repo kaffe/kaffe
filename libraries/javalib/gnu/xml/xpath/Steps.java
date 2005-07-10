@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
@@ -217,6 +218,18 @@ public final class Steps
         path2.add(((Expr) path.get(i)).clone(context));
       }
     return new Steps(path2);
+  }
+
+  public boolean references(QName var)
+  {
+    for (Iterator i = path.iterator(); i.hasNext(); )
+      {
+        if (((Expr) i.next()).references(var))
+          {
+            return true;
+          }
+      }
+    return false;
   }
 
   public String toString()

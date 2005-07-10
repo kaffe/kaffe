@@ -97,7 +97,7 @@ public class BasicToolTipUI extends ToolTipUI
 			 * @param x The x coordinate to start painting at.
 			 * @param y The y coordinate to start painting at.
 			 * @param w The width of the Component.
-			 * @param y The height of the Component.
+			 * @param h The height of the Component.
 			 */
       public void paintBorder(Component c, Graphics g, int x, int y, int w,
                               int h)

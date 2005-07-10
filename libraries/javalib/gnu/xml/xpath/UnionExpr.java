@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -92,6 +93,11 @@ public final class UnionExpr
   public Expr clone(Object context)
   {
     return new UnionExpr(lhs.clone(context), rhs.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return (lhs.references(var) || rhs.references(var));
   }
 
   public String toString()

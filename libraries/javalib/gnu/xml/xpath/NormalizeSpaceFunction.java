@@ -39,6 +39,7 @@ package gnu.xml.xpath;
 
 import java.util.List;
 import java.util.StringTokenizer;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -89,6 +90,11 @@ final class NormalizeSpaceFunction
   public Expr clone(Object context)
   {
     return new NormalizeSpaceFunction(arg.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return (arg == null) ? false : arg.references(var);
   }
 
   public String toString()

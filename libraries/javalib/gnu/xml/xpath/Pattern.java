@@ -40,7 +40,7 @@ package gnu.xml.xpath;
 import org.w3c.dom.Node;
 
 /**
- * Interface implemented by expressions that can for part of XSL patterns.
+ * Interface implemented by expressions that can form part of XSL patterns.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */

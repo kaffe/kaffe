@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -51,5 +52,7 @@ public abstract class Test
   public abstract boolean matches(Node node, int pos, int len);
 
   public abstract Test clone(Object context);
+
+  public abstract boolean references(QName var);
 
 }

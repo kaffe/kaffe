@@ -177,6 +177,8 @@ public abstract class Expr
   public abstract Object evaluate(Node context, int pos, int len);
 
   public abstract Expr clone(Object context);
+
+  public abstract boolean references(QName var);
   
   /* -- 4.1 Node Set Functions -- */
 

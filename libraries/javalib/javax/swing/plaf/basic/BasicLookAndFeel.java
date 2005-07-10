@@ -47,7 +47,6 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 
-import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
@@ -55,7 +54,6 @@ import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.DimensionUIResource;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.JTextComponent;
 
@@ -69,7 +67,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
   static final long serialVersionUID = -6096995660290287879L;
 
   /**
-   * Constructor BasicLookAndFeel
+   * Creates a new instance of the Basic look and feel.
    */
   public BasicLookAndFeel()
   {
@@ -77,8 +75,10 @@ public abstract class BasicLookAndFeel extends LookAndFeel
   }
 
   /**
-   * getDefaults
-   * @return UIDefaults
+   * Creates and returns a new instance of the default resources for this look 
+   * and feel.
+   * 
+   * @return The UI defaults.
    */
   public UIDefaults getDefaults()
   {
@@ -95,8 +95,10 @@ public abstract class BasicLookAndFeel extends LookAndFeel
   }
 
   /**
-   * initClassDefaults
-   * @param value0 TODO
+   * Populates the <code>defaults</code> table with mappings between class IDs 
+   * and fully qualified class names for the UI delegates.
+   * 
+   * @param defaults  the defaults table (<code>null</code> not permitted).
    */
   protected void initClassDefaults(UIDefaults defaults)
   {
@@ -155,8 +157,9 @@ public abstract class BasicLookAndFeel extends LookAndFeel
   }
 
   /**
-   * initSystemColorDefaults
-   * @param defaults TODO
+   * Populates the <code>defaults</code> table with system color defaults.
+   * 
+   * @param defaults  the defaults table (<code>null</code> not permitted).
    */
   protected void initSystemColorDefaults(UIDefaults defaults)
   {
@@ -198,13 +201,14 @@ public abstract class BasicLookAndFeel extends LookAndFeel
   }
 
   /**
-   * loadSystemColors
-   * @param defaults TODO
-   * @param value1 TODO
-   * @param value2 TODO
+   * Loads the system colors.  This method is not implemented yet.
+   * 
+   * @param defaults  the defaults table (<code>null</code> not permitted).
+   * @param systemColors TODO
+   * @param useNative TODO
    */
-  protected void loadSystemColors(UIDefaults defaults, String[] value1,
-                                  boolean value2)
+  protected void loadSystemColors(UIDefaults defaults, String[] systemColors,
+                                  boolean useNative)
   {
     // TODO
   }
@@ -232,7 +236,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
 
   /**
    * initComponentDefaults
-   * @param defaults TODO
+   * @param defaults  the defaults table (<code>null</code> not permitted).
    */
   protected void initComponentDefaults(UIDefaults defaults)
   {
@@ -826,7 +830,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Table.focusCellBackground", new ColorUIResource(light),
       "Table.focusCellForeground", new ColorUIResource(darkShadow),
       "Table.focusCellHighlightBorder",
-      new BorderUIResource.LineBorderUIResource(Color.white),
+      new BorderUIResource.LineBorderUIResource(
+                                             new ColorUIResource(255, 255, 0)),
       "Table.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "Table.foreground", new ColorUIResource(darkShadow),
       "Table.gridColor", new ColorUIResource(Color.gray),
@@ -838,7 +843,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "TableHeader.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "TableHeader.foreground", new ColorUIResource(darkShadow),
 
-			"TextArea.background", new ColorUIResource(light),
+            "TextArea.background", new ColorUIResource(light),
       "TextArea.border", new BasicBorders.MarginBorder(),
       "TextArea.caretBlinkRate", new Integer(500),
       "TextArea.caretForeground", new ColorUIResource(Color.black),
@@ -879,11 +884,11 @@ public abstract class BasicLookAndFeel extends LookAndFeel
                                                              0),
                                       "notify-field-accept"),
         new JTextComponent.KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-							     InputEvent.SHIFT_DOWN_MASK),
-							     "selection-backward"),
+                                 InputEvent.SHIFT_DOWN_MASK),
+                                 "selection-backward"),
         new JTextComponent.KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-							     InputEvent.SHIFT_DOWN_MASK),
-							     "selection-forward"),
+                                 InputEvent.SHIFT_DOWN_MASK),
+                                 "selection-forward"),
           },
       "TextField.margin", new InsetsUIResource(0, 0, 0, 0),
       "TextField.selectionBackground", new ColorUIResource(Color.black),

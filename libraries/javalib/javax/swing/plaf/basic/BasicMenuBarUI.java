@@ -105,7 +105,7 @@ public class BasicMenuBarUI extends MenuBarUI
    * Factory method to create a BasicMenuBarUI for the given {@link
    * JComponent}, which should be a {@link JMenuBar}.
    *
-   * @param b The {@link JComponent} a UI is being created for.
+   * @param x The {@link JComponent} a UI is being created for.
    *
    * @return A BasicMenuBarUI for the {@link JComponent}.
    */

@@ -1120,6 +1120,7 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EmbeddedWindow.java \
 	gnu/java/awt/EventModifier.java \
+	gnu/java/awt/FocusManager.java \
 	gnu/java/awt/GradientPaintContext.java
 gnu_java_awt_color_SRCS = \
 	gnu/java/awt/color/CieXyzConverter.java \
@@ -3838,6 +3839,7 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalCheckBoxUI.java \
 	javax/swing/plaf/metal/MetalComboBoxUI.java \
 	javax/swing/plaf/metal/MetalDesktopIconUI.java \
+	javax/swing/plaf/metal/MetalIconFactory.java \
 	javax/swing/plaf/metal/MetalInternalFrameUI.java \
 	javax/swing/plaf/metal/MetalLabelUI.java \
 	javax/swing/plaf/metal/MetalLookAndFeel.java \

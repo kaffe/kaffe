@@ -237,6 +237,19 @@ final class AttributeNode
       }
     return ret;
   }
+
+  public boolean references(QName var)
+  {
+    if (name != null && name.references(var))
+      {
+        return true;
+      }
+    if (namespace != null && namespace.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
   
   public String toString()
   {

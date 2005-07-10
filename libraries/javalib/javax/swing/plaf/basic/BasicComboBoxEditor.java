@@ -1,5 +1,5 @@
 /* BasicComboBoxEditor.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -81,13 +81,13 @@ public class BasicComboBoxEditor extends Object implements ComboBoxEditor,
   }
 
   /**
-   * Sets item that should be editted when any editting operation is performed
+   * Sets item that should be edited when any editing operation is performed
    * by the user. The value is always equal to the currently selected value
    * in the combo box. Thus whenever a different value is selected from the
-   * combo box list then this method should be  called to change editting
+   * combo box list then this method should be  called to change editing
    * item to the new selected item.
    *
-   * @param selectedItem item that is currently selected in the combo box
+   * @param item item that is currently selected in the combo box
    */
   public void setItem(Object item)
   {

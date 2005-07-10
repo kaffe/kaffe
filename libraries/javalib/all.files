@@ -679,6 +679,7 @@ gnu/java/awt/ClasspathToolkit.java
 gnu/java/awt/ComponentDataBlitOp.java
 gnu/java/awt/EmbeddedWindow.java
 gnu/java/awt/EventModifier.java
+gnu/java/awt/FocusManager.java
 gnu/java/awt/GradientPaintContext.java
 gnu/java/awt/color/CieXyzConverter.java
 gnu/java/awt/color/ClutProfileConverter.java
@@ -3249,6 +3250,7 @@ javax/swing/plaf/metal/MetalButtonUI.java
 javax/swing/plaf/metal/MetalCheckBoxUI.java
 javax/swing/plaf/metal/MetalComboBoxUI.java
 javax/swing/plaf/metal/MetalDesktopIconUI.java
+javax/swing/plaf/metal/MetalIconFactory.java
 javax/swing/plaf/metal/MetalInternalFrameUI.java
 javax/swing/plaf/metal/MetalLabelUI.java
 javax/swing/plaf/metal/MetalLookAndFeel.java

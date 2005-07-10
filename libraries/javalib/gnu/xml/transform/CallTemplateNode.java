@@ -39,6 +39,7 @@ package gnu.xml.transform;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
@@ -90,14 +91,30 @@ final class CallTemplateNode
   {
     if (withParams != null)
       {
-        // push the parameter context
-        stylesheet.bindings.push(false);
-        // set the parameters
+        // compute the parameter values
+        LinkedList values = new LinkedList();
         for (Iterator i = withParams.iterator(); i.hasNext(); )
           {
             WithParam p = (WithParam) i.next();
             Object value = p.getValue(stylesheet, mode, context, pos, len);
-            stylesheet.bindings.set(p.name, value, false);
+            Object[] pair = new Object[2];
+            pair[0] = p.name;
+            pair[1] = value;
+            values.add(pair);
+          }
+        // push the parameter context
+        stylesheet.bindings.push(Bindings.WITH_PARAM);
+        // set the parameters
+        for (Iterator i = values.iterator(); i.hasNext(); )
+          {
+            Object[] pair = (Object[]) i.next();
+            QName name = (QName) pair[0];
+            Object value = pair[1];
+            stylesheet.bindings.set(name, value, Bindings.WITH_PARAM);
+            if (stylesheet.debug)
+              {
+                System.err.println("with-param: " + name + " = " + value);
+              }
           }
       }
     TemplateNode t = stylesheet.getTemplate(mode, name);
@@ -109,7 +126,7 @@ final class CallTemplateNode
     if (withParams != null)
       {
         // pop the variable context
-        stylesheet.bindings.pop(false);
+        stylesheet.bindings.pop(Bindings.WITH_PARAM);
       }
     // call-template doesn't have processable children
     if (next != null)
@@ -118,6 +135,21 @@ final class CallTemplateNode
                    context, pos, len,
                    parent, nextSibling);
       }
+  }
+  
+  public boolean references(QName var)
+  {
+    if (withParams != null)
+      {
+        for (Iterator i = withParams.iterator(); i.hasNext(); )
+          {
+            if (((WithParam) i.next()).references(var))
+              {
+                return true;
+              }
+          }
+      }
+    return super.references(var);
   }
   
   public String toString()

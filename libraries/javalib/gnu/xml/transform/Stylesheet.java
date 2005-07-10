@@ -354,13 +354,21 @@ class Stylesheet
   void initTopLevelVariables(Node context)
     throws TransformerException
   {
-    for (Iterator i = variables.iterator(); i.hasNext(); )
+    current = context;
+    // Sort the variables into order
+    // See XSLT 11.4: "If the template or expression specifying the value of
+    // a global variable x references a global variable y, then the value
+    // for y must be computed before the value of x."
+    List topLevel = new ArrayList(variables);
+    Collections.sort(topLevel);
+    for (Iterator i = topLevel.iterator(); i.hasNext(); )
       {
         ParameterNode var = (ParameterNode) i.next();
         bindings.set(var.name,
                      var.getValue(this, null, context, 1, 1),
-                     var.global);
+                     var.type);
       }
+    current = null;
   }
 
   // -- NamespaceContext --
@@ -379,6 +387,19 @@ class Stylesheet
   {
     // TODO
     return Collections.singleton(getPrefix(namespaceURI)).iterator();
+  }
+
+  final QName getQName(String name)
+  {
+    String localName = name, uri = null, prefix = null;
+    int ci = name.indexOf(':');
+    if (ci != -1)
+      {
+        prefix = name.substring(0, ci);
+        localName = name.substring(ci + 1);
+        uri = getNamespaceURI(prefix);
+      }
+    return new QName(uri, localName, prefix);
   }
   
   // -- Template selection --
@@ -713,9 +734,11 @@ class Stylesheet
             else if ("param".equals(name) ||
                      "variable".equals(name))
               {
-                boolean global = "variable".equals(name);
+                int type = "variable".equals(name) ?
+                  Bindings.VARIABLE : Bindings.PARAM;
                 TemplateNode content = parse(node.getFirstChild());
-                String paramName = getRequiredAttribute(attrs, "name", node);
+                QName paramName =
+                  getQName(getRequiredAttribute(attrs, "name", node));
                 String select = getAttribute(attrs, "select");
                 ParameterNode param;
                 if (select != null && select.length() > 0)
@@ -728,15 +751,14 @@ class Stylesheet
                         throw new TransformerConfigurationException(msg, l);
                       }
                     Expr expr = (Expr) xpath.compile(select);
-                    param = new ParameterNode(paramName, expr, global);
+                    param = new ParameterNode(paramName, expr, type);
                   }
                 else
                   {
-                    param = new ParameterNode(paramName, null, global);
+                    param = new ParameterNode(paramName, null, type);
                     param.children = content;
                   }
                 variables.add(param);
-                bindings.set(paramName, content, global);
               }
             else if ("include".equals(name) || "import".equals(name))
               {
@@ -858,20 +880,6 @@ class Stylesheet
         QName qName = getQName(token);
         return new NameTest(qName, false, false);
       }
-  }
-
-  final QName getQName(String name)
-  {
-    QName qName = QName.valueOf(name);
-    String prefix = qName.getPrefix();
-    String uri = qName.getNamespaceURI();
-    if (prefix != null && (uri == null || uri.length() == 0))
-      {
-        uri = getNamespaceURI(prefix);
-        String localName = qName.getLocalPart();
-        qName = new QName(uri, localName, prefix);
-      }
-    return qName;
   }
 
   final TemplateNode parseAttributeValueTemplate(String value, Node source)
@@ -1501,11 +1509,13 @@ class Stylesheet
             else if ("param".equals(name) ||
                      "variable".equals(name))
               {
-                boolean global = "variable".equals(name);
+                int type = "variable".equals(name) ?
+                  Bindings.VARIABLE : Bindings.PARAM;
                 NamedNodeMap attrs = node.getAttributes();
                 Node children = node.getFirstChild();
                 TemplateNode content = parse(children);
-                String paramName = getRequiredAttribute(attrs, "name", node);
+                QName paramName = 
+                  getQName(getRequiredAttribute(attrs, "name", node));
                 String select = getAttribute(attrs, "select");
                 ParameterNode ret;
                 if (select != null)
@@ -1518,11 +1528,11 @@ class Stylesheet
                         throw new TransformerConfigurationException(msg, l);
                       }
                     Expr expr = (Expr) xpath.compile(select);
-                    ret = new ParameterNode(paramName, expr, global);
+                    ret = new ParameterNode(paramName, expr, type);
                   }
                 else
                   {
-                    ret = new ParameterNode(paramName, null, global);
+                    ret = new ParameterNode(paramName, null, type);
                     ret.children = content;
                   }
                 return ret;
@@ -1563,6 +1573,11 @@ class Stylesheet
             if (!isPreserved(text))
               {
                 // Strip
+                /*String data = text.getData().trim();
+                if (data.length() > 0)
+                  {
+                    text.setData(data);
+                  } // else */
                 text.getParentNode().removeChild(text);
                 return null;
               }
@@ -1697,7 +1712,8 @@ class Stylesheet
           {
             NamedNodeMap attrs = node.getAttributes();
             TemplateNode content = parse(node.getFirstChild());
-            String name = getRequiredAttribute(attrs, "name", node);
+            QName name =
+              getQName(getRequiredAttribute(attrs, "name", node));
             String select = getAttribute(attrs, "select");
             if (select != null)
               {

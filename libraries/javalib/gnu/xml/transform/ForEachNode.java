@@ -139,6 +139,25 @@ final class ForEachNode
       }
   }
 
+  public boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    if (sortKeys != null)
+      {
+        for (Iterator i = sortKeys.iterator(); i.hasNext(); )
+          {
+            if (((SortKey) i.next()).references(var))
+              {
+                return true;
+              }
+          }
+      }
+    return super.references(var);
+  }
+  
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());

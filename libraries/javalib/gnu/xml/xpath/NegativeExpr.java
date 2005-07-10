@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -65,6 +66,11 @@ final class NegativeExpr
   public Expr clone(Object context)
   {
     return new NegativeExpr(expr.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return expr.references(var);
   }
 
   public String toString()

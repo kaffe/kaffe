@@ -39,6 +39,7 @@ package gnu.xml.xpath;
 
 import java.util.Collection;
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -86,6 +87,11 @@ public final class IdFunction
   public Expr clone(Object context)
   {
     return new IdFunction(arg.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return arg.references(var);
   }
 
   public String toString()

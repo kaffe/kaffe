@@ -1,5 +1,252 @@
 2005-07-09  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU classpath.
+
+	2005-07-09  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/transform/AbstractNumberNode.java,
+        gnu/xml/transform/ApplyImportsNode.java,
+        gnu/xml/transform/ApplyTemplatesNode.java,
+        gnu/xml/transform/AttributeNode.java,
+        gnu/xml/transform/Bindings.java,
+        gnu/xml/transform/CallTemplateNode.java,
+        gnu/xml/transform/CopyOfNode.java,
+        gnu/xml/transform/CurrentFunction.java,
+        gnu/xml/transform/DocumentFunction.java,
+        gnu/xml/transform/ElementAvailableFunction.java,
+        gnu/xml/transform/ElementNode.java,
+        gnu/xml/transform/ForEachNode.java,
+        gnu/xml/transform/FormatNumberFunction.java,
+        gnu/xml/transform/FunctionAvailableFunction.java,
+        gnu/xml/transform/GenerateIdFunction.java,
+        gnu/xml/transform/IfNode.java,
+        gnu/xml/transform/KeyFunction.java,
+        gnu/xml/transform/ParameterNode.java,
+        gnu/xml/transform/SortKey.java,
+        gnu/xml/transform/StreamSerializer.java,
+        gnu/xml/transform/Stylesheet.java,
+        gnu/xml/transform/SystemPropertyFunction.java,
+        gnu/xml/transform/TemplateNode.java,
+        gnu/xml/transform/TransformerImpl.java,
+        gnu/xml/transform/UnparsedEntityUriFunction.java,
+        gnu/xml/transform/ValueOfNode.java,
+        gnu/xml/transform/WhenNode.java,
+        gnu/xml/transform/WithParam.java,
+        gnu/xml/xpath/AndExpr.java,
+        gnu/xml/xpath/ArithmeticExpr.java,
+        gnu/xml/xpath/BooleanFunction.java,
+        gnu/xml/xpath/CeilingFunction.java,
+        gnu/xml/xpath/ConcatFunction.java,
+        gnu/xml/xpath/Constant.java,
+        gnu/xml/xpath/ContainsFunction.java,
+        gnu/xml/xpath/CountFunction.java,
+        gnu/xml/xpath/EqualityExpr.java,
+        gnu/xml/xpath/Expr.java,
+        gnu/xml/xpath/FalseFunction.java,
+        gnu/xml/xpath/FloorFunction.java,
+        gnu/xml/xpath/FunctionCall.java,
+        gnu/xml/xpath/IdFunction.java,
+        gnu/xml/xpath/LangFunction.java,
+        gnu/xml/xpath/LastFunction.java,
+        gnu/xml/xpath/LocalNameFunction.java,
+        gnu/xml/xpath/NameFunction.java,
+        gnu/xml/xpath/NameTest.java,
+        gnu/xml/xpath/NamespaceTest.java,
+        gnu/xml/xpath/NamespaceUriFunction.java,
+        gnu/xml/xpath/NegativeExpr.java,
+        gnu/xml/xpath/NodeTypeTest.java,
+        gnu/xml/xpath/NormalizeSpaceFunction.java,
+        gnu/xml/xpath/NotFunction.java,
+        gnu/xml/xpath/NumberFunction.java,
+        gnu/xml/xpath/OrExpr.java,
+        gnu/xml/xpath/ParenthesizedExpr.java,
+        gnu/xml/xpath/Pattern.java,
+        gnu/xml/xpath/PositionFunction.java,
+        gnu/xml/xpath/Predicate.java,
+        gnu/xml/xpath/RelationalExpr.java,
+        gnu/xml/xpath/Root.java,
+        gnu/xml/xpath/RoundFunction.java,
+        gnu/xml/xpath/Selector.java,
+        gnu/xml/xpath/StartsWithFunction.java,
+        gnu/xml/xpath/Steps.java,
+        gnu/xml/xpath/StringFunction.java,
+        gnu/xml/xpath/StringLengthFunction.java,
+        gnu/xml/xpath/SubstringAfterFunction.java,
+        gnu/xml/xpath/SubstringBeforeFunction.java,
+        gnu/xml/xpath/SubstringFunction.java,
+        gnu/xml/xpath/SumFunction.java,
+        gnu/xml/xpath/Test.java,
+        gnu/xml/xpath/TranslateFunction.java,
+        gnu/xml/xpath/TrueFunction.java,
+        gnu/xml/xpath/UnionExpr.java,
+        gnu/xml/xpath/VariableReference.java,
+        gnu/xml/xpath/XPathParser.java,
+        gnu/xml/xpath/XPathParser.y,
+        javax/xml/namespace/QName.java: Corrections to handling of XSL
+        variables and minor conformance updates.
+
+	2005-07-09  Archie Cobbs  <archie@dellroad.org>
+
+        * java/net/URLClassLoader.java: disallow directories as resources
+
+	2005-07-09  Casey Marshall  <csm@gnu.org>
+
+        * java/util/logging/FileHandler.java
+        (written): new field.
+        (logFiles): new field.
+        (<init>): initialize the OutputStream last.
+        (createFileStream): made non-static; append '.%g' to 'pattern'
+        if not included; open existing files if 'append' is set; return
+        byte-counting stream; use 'has', not 'String.indexOf'.
+        (publish): rotate the file if we go beyond the byte limit; flush
+        the stream after publishing each record.
+        (rotate): new method.
+        (has): new method.
+        (ostr): new member class.
+
+	2005-07-08  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicFileChooserUI.java:
+        (ApproveSelectionAction.actionPerformed): Allow directories to be
+        selected unless selection mode is FILES_ONLY.
+
+	2005-07-08  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicButtonUI.java: minor API doc fixes,
+        * javax/swing/plaf/basic/BasicComboBoxEditor.java: likewise,
+        * javax/swing/plaf/basic/BasicGraphicsUtils.java: likewise,
+        * javax/swing/plaf/basic/BasicLabelUI.java: likewise,
+        * javax/swing/plaf/basic/BasicListUI.java: likewise,
+        * javax/swing/plaf/basic/BasicLookAndFeel.java: likewise,
+        * javax/swing/plaf/basic/BasicMenuBarUI.java: likewise,
+        * javax/swing/plaf/basic/BasicMenuUI.java: likewise,
+        * javax/swing/plaf/basic/BasicPopupMenuUI.java: likewise,
+        * javax/swing/plaf/basic/BasicScrollBarUI.java: likewise,
+        * javax/swing/plaf/basic/BasicSpinnerUI.java: likewise,
+        * javax/swing/plaf/basic/BasicSplitPaneDivider.java: likewise,
+        * javax/swing/plaf/basic/BasicToolTipUI.java: likewise.
+
+	2005-07-08  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/filechooser/FileSystemView.java:
+        (getFiles): Added check for non-existent directory, in which case
+        default to home directory.
+
+	2005-07-08  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalIconFactory.java: new file, implements
+        core tree icons.
+
+	2005-07-08  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (getDefaults): Call theme.addCustomEntriesToTable() only once
+        during initialization of the defaults table.
+
+	2005-07-08  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTableUI.java
+        (installDefaults): Initialize cell borders.
+        (paint): Set correct cell border before painting.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefault): Corrected color value for the
+        Table.focusCellHighlightBorder UIResource.
+
+	2005-07-07  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/ObjectStreamClass.java
+        (findAccessibleMethod): Added code to make method accessible.
+
+	2005-07-07  Robert Schuster <robertschuster@fsfe.org>
+
+        * javax/swing/JMenu.java
+        (setSelected): Added isEnabled() to expression.
+
+	2005-07-07  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JTable.java:
+        (clearSelection): Added clearing of columns as well as rows.
+
+	2005-07-07  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (MouseInputHandler.mousePressed): Added check for control being pressed
+        and mouse clicked on already selected cell.  In this case, deselect
+        the cell.
+
+	2005-07-07  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/DefaultListSelectionModel.java:
+        (addSelectionInterval): Added check for leadSelectionIndex being
+        unselected (ie - after a remove operation).
+
+	2005-07-07  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getRowCount): Implemented
+        (getPreferredSize): Implemented
+        (getMinimumSize): Implemented
+        (getMaximumSize): Implemented
+        (getCellBounds): checked if parameter is null
+        (paintRecursive): added in a variable to keep track of the
+        length of vertical line to be drawn. Now paints tree nicely.
+
+	2005-07-07  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        Formatted code so else's are on new lines
+
+	2005-07-07  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        Formatted code to get rid of TABs
+        (getPathForRow): took out redundant code.
+        (getNextVisibleNode): took out redundant code.
+
+	2005-07-07  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (DocumentHandler.insertUpdate): Update caret position when document
+        changes.
+        (DocumentHandler.removeUpdate): Update caret position when document
+        changes.
+
+	2005-07-07  Roman Kennke  <roman@kennke.org>
+
+        * gnu/java/awt/FocusManager.java: New class. Provides a concrete
+        implementation of javax.swing.FocusManager so that we can support
+        the old-style FocusManager in Swing and AWT.
+        * gnu/classpath/SystemProperties.java: Add new system property
+        gnu.java.awt.FocusManager that sets the class that should be used
+        as the default FocusManager in AWT and Swing.
+        * java/awt/KeyboardFocusManager.java
+        (setCurrentKeyboardFocusManager): Use createFocusManager instead
+        of creating the instance directly.
+        (createFocusManager): New method. Instantiate a KeyboardFocusManager
+        that is set by the system property gnu.java.awt.FocusManager.
+        * javax/swing.FocusManager.java
+        (constructor): Call super() here.
+        (getCurrentManager): Return the current AWT KeyboardFocusManager
+        here.
+        (setCurrentManager): Set the current AWT KeyboardFocusManager
+        here.
+        (processKeyEvent): Removed method. This is no longer in the
+        API.
+        (focusNextComponent): Removed method. This is no longer in the
+        API.
+        (focusPreviousComponent): Removed method. This is no longer in the
+        API.
+
+	2005-07-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/JProgressBar.java
+        (JProgressBar(int, int, int)): fix order of parameters,
+        (JProgressBar()): reorder arguments in call to other constructor,
+        (JProgressBar(int): likewise,
+        (JProgressBar(int, int): likewise.
+
+2005-07-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/javadoc.in,
 	kaffe/scripts/compat/javadoc.in:
 	Make sure the scripts find gjdoc.jar.

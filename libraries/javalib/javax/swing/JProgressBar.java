@@ -88,8 +88,6 @@ public class JProgressBar extends JComponent implements SwingConstants,
   
     /**
      * Constructor AccessibleJProgressBar
-     *
-     * @param component TODO
      */
     protected AccessibleJProgressBar()
     {
@@ -200,7 +198,7 @@ public class JProgressBar extends JComponent implements SwingConstants,
    */
   public JProgressBar()
   {
-    this(0, 100, HORIZONTAL);
+    this(HORIZONTAL, 0, 100);
   }
 
   /**
@@ -208,10 +206,13 @@ public class JProgressBar extends JComponent implements SwingConstants,
    * a maximum of 100, and the given orientation.
    *
    * @param orientation The orientation of the JProgressBar.
+   * 
+   * @throws IllegalArgumentException if <code>orientation</code> is not either
+   *         {@link #HORIZONTAL} or {@link #VERTICAL}.
    */
   public JProgressBar(int orientation)
   {
-    this(0, 100, orientation);
+    this(orientation, 0, 100);
   }
 
   /**
@@ -223,7 +224,7 @@ public class JProgressBar extends JComponent implements SwingConstants,
    */
   public JProgressBar(int minimum, int maximum)
   {
-    this(minimum, maximum, HORIZONTAL);
+    this(HORIZONTAL, minimum, maximum);
   }
 
   /**
@@ -233,8 +234,11 @@ public class JProgressBar extends JComponent implements SwingConstants,
    * @param minimum The minimum of the JProgressBar.
    * @param maximum The maximum of the JProgressBar.
    * @param orientation The orientation of the JProgressBar.
+   * 
+   * @throws IllegalArgumentException if <code>orientation</code> is not either
+   *         {@link #HORIZONTAL} or {@link #VERTICAL}.
    */
-  public JProgressBar(int minimum, int maximum, int orientation)
+  public JProgressBar(int orientation, int minimum, int maximum)
   {
     model = new DefaultBoundedRangeModel(minimum, 0, minimum, maximum);
     if (orientation != HORIZONTAL && orientation != VERTICAL)

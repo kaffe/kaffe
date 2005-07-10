@@ -90,10 +90,12 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   public UIDefaults getDefaults()
   {
     if (LAF_defaults == null)
-      LAF_defaults = super.getDefaults();
+      {
+        LAF_defaults = super.getDefaults();
 
-    // add custom theme entries to the table
-    theme.addCustomEntriesToTable(LAF_defaults);
+        // add custom theme entries to the table
+        theme.addCustomEntriesToTable(LAF_defaults);
+      }
     
     // Returns the default values for this look and feel. 
     return LAF_defaults;

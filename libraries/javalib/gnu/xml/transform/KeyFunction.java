@@ -212,5 +212,17 @@ final class KeyFunction
     return f;
   }
 
+  public boolean references(QName var)
+  {
+    for (Iterator i = args.iterator(); i.hasNext(); )
+      {
+        if (((Expr) i.next()).references(var))
+          {
+            return true;
+          }
+      }
+    return false;
+  }
+
 }
 

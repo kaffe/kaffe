@@ -39,6 +39,7 @@ package gnu.xml.xpath;
 
 import java.util.Collection;
 import java.util.Collections;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -71,6 +72,11 @@ public final class Root
   public Expr clone(Object context)
   {
     return new Root();
+  }
+
+  public boolean references(QName var)
+  {
+    return false;
   }
 
   public String toString()

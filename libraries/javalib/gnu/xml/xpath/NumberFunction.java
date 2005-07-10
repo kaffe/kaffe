@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.xml.xpath;
 
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -86,6 +87,11 @@ final class NumberFunction
   public Expr clone(Object context)
   {
     return new NumberFunction(arg.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return arg.references(var);
   }
 
   public String toString()

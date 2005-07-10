@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -56,6 +57,11 @@ final class FalseFunction
   public Expr clone(Object context)
   {
     return new FalseFunction();
+  }
+
+  public boolean references(QName var)
+  {
+    return false;
   }
 
   public String toString()

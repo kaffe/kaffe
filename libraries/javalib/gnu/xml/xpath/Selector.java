@@ -44,6 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -424,6 +425,18 @@ public final class Selector
     return new Selector(axis, tests2);
   }
 
+  public boolean references(QName var)
+  {
+    for (int i = 0; i < tests.length; i++)
+      {
+        if (tests[i].references(var))
+          {
+            return true;
+          }
+      }
+    return false;
+  }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
@@ -436,7 +449,15 @@ public final class Selector
         buf.append("ancestor-or-self::");
         break;
       case ATTRIBUTE:
-        buf.append("attribute::");
+        if (tests.length == 0 ||
+            (tests[0] instanceof NameTest))
+          {
+            buf.append('@');
+          }
+        else
+          {
+            buf.append("attribute::");
+          }
         break;
       case CHILD:
         //buf.append("child::");

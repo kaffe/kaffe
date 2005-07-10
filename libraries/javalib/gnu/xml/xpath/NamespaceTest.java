@@ -111,6 +111,11 @@ public final class NamespaceTest
     return new NamespaceTest(qName, anyLocalName, any);
   }
 
+  public boolean references(QName var)
+  {
+    return false;
+  }
+
   public String toString ()
   {
     if (any)

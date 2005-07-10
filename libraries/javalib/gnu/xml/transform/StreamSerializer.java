@@ -646,13 +646,6 @@ public class StreamSerializer
     return ret;
   }
 
-  String hex(byte[] b) {
-    StringBuffer buf = new StringBuffer();
-    for (int i = 0; i < b.length; i++)
-      buf.append(Integer.toHexString(b[i])).append(' ');
-    return buf.toString();
-  }
-
   String encode(String text, boolean encodeCtl, boolean inAttr)
   {
     int len = text.length();

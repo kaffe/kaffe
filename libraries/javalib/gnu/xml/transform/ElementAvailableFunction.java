@@ -40,8 +40,10 @@ package gnu.xml.transform;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import javax.xml.namespace.QName;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
@@ -163,6 +165,18 @@ class ElementAvailableFunction
       }
     f.setArguments(args2);
     return f;
+  }
+
+  public boolean references(QName var)
+  {
+    for (Iterator i = args.iterator(); i.hasNext(); )
+      {
+        if (((Expr) i.next()).references(var))
+          {
+            return true;
+          }
+      }
+    return false;
   }
 
 }

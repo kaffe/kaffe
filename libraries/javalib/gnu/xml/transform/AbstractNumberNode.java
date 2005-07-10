@@ -306,6 +306,15 @@ abstract class AbstractNumberNode
   abstract int[] compute(Stylesheet stylesheet, Node context, int pos, int len)
     throws TransformerException;
 
+  public boolean references(QName var)
+  {
+    if (format.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());

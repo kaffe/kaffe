@@ -200,7 +200,7 @@ public class BasicButtonUI extends ButtonUI
 
   /**
    * Calculate the preferred size of this component, by delegating to
-   * {@link BasicGraphicsUtils.getPreferredButtonSize}.
+   * {@link BasicGraphicsUtils#getPreferredButtonSize}.
    *
    * @param c The component to measure
    *
@@ -300,8 +300,8 @@ public class BasicButtonUI extends ButtonUI
    * @param tr Text rectangle, contained in visible rectangle
    * @param ir Icon rectangle, contained in visible rectangle
    *
-   * @see AbstractButton.isFocusPainted()
-   * @see JComponent.hasFocus()
+   * @see AbstractButton#isFocusPainted()
+   * @see JComponent#hasFocus()
    */
   protected void paintFocus(Graphics g, AbstractButton b, Rectangle vr,
                             Rectangle tr, Rectangle ir)

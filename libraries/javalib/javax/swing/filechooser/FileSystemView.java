@@ -134,7 +134,7 @@ public abstract class FileSystemView
    */
   public File[] getFiles(File dir, boolean useFileHiding)
   {
-    if (dir == null)
+    if (dir == null || dir.listFiles() == null)
       return null;
     File[] files = dir.listFiles();
     if (! useFileHiding)

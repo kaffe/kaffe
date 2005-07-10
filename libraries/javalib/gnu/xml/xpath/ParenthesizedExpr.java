@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -74,6 +75,11 @@ final class ParenthesizedExpr
   public Expr clone(Object context)
   {
     return new ParenthesizedExpr(expr.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return expr.references(var);
   }
 
   public String toString()

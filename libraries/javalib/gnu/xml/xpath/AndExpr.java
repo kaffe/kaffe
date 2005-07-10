@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -71,6 +72,11 @@ public final class AndExpr
   public Expr clone(Object context)
   {
     return new AndExpr(lhs.clone(context), rhs.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return (lhs.references(var) || rhs.references(var));
   }
 
   public String toString()

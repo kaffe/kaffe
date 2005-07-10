@@ -53,24 +53,25 @@ import gnu.xml.xpath.Expr;
  */
 final class ParameterNode
   extends TemplateNode
+  implements Comparable
 {
 
-  final String name;
+  final QName name;
   final Expr select;
-  final boolean global;
+  final int type;
 
-  ParameterNode(String name, Expr select, boolean global)
+  ParameterNode(QName name, Expr select, int type)
   {
     this.name = name;
     this.select = select;
-    this.global = global;
+    this.type = type;
   }
 
   TemplateNode clone(Stylesheet stylesheet)
   {
     TemplateNode ret = new ParameterNode(name,
                                          select.clone(stylesheet),
-                                         global);
+                                         type);
     if (children != null)
       {
         ret.children = children.clone(stylesheet);
@@ -83,20 +84,20 @@ final class ParameterNode
   }
 
   void doApply(Stylesheet stylesheet, QName mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
-    boolean apply = global || !stylesheet.bindings.containsKey(name, global);
-    if (apply)
+    // push the variable context
+    stylesheet.bindings.push(type);
+    // set the variable
+    Object value = getValue(stylesheet, mode, context, pos, len);
+    if (value != null)
       {
-        // push the variable context
-        stylesheet.bindings.push(global);
-        // set the variable
-        Object value = getValue(stylesheet, mode, context, pos, len);
-        if (value != null)
+        stylesheet.bindings.set(name, value, type);
+        if (stylesheet.debug)
           {
-            stylesheet.bindings.set(name, value, global);
+            System.err.println(this + ": set to " + value);
           }
       }
     // variable and param don't process children as such
@@ -107,11 +108,8 @@ final class ParameterNode
                    context, pos, len,
                    parent, nextSibling);
       }
-    if (apply)
-      {
-        // pop the variable context
-        stylesheet.bindings.pop(global);
-      }
+    // pop the variable context
+    stylesheet.bindings.pop(type);
   }
   
   Object getValue(Stylesheet stylesheet, QName mode,
@@ -136,6 +134,38 @@ final class ParameterNode
       }
   }
   
+  public boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
+
+  public int compareTo(Object other)
+  {
+    if (other instanceof ParameterNode)
+      {
+        ParameterNode pn = (ParameterNode) other;
+        boolean r1 = references(pn.name);
+        boolean r2 = pn.references(name);
+        if (r1 && r2)
+          {
+            throw new IllegalArgumentException("circular definitions");
+          }
+        if (r1)
+          {
+            return 1;
+          }
+        if (r2)
+          {
+            return -1;
+          }
+      }
+    return 0;
+  }
+  
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());
@@ -147,9 +177,18 @@ final class ParameterNode
         buf.append(",select=");
         buf.append(select);
       }
-    if (global)
+    buf.append(",type=");
+    switch (type)
       {
-        buf.append(",global");
+      case Bindings.VARIABLE:
+        buf.append("variable");
+        break;
+      case Bindings.PARAM:
+        buf.append("param");
+        break;
+      case Bindings.WITH_PARAM:
+        buf.append("with-param");
+        break;
       }
     buf.append(']');
     return buf.toString();

@@ -151,4 +151,29 @@ final class SortKey
       }
   }
 
+  boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    if (langTemplate != null && langTemplate.references(var))
+      {
+        return true;
+      }
+    if (dataTypeTemplate != null && dataTypeTemplate.references(var))
+      {
+        return true;
+      }
+    if (orderTemplate != null && orderTemplate.references(var))
+      {
+        return true;
+      }
+    if (caseOrderTemplate != null && caseOrderTemplate.references(var))
+      {
+        return true;
+      }
+    return false;
+  }
+
 }

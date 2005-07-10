@@ -273,7 +273,7 @@ public class BasicSplitPaneDivider extends Container
    *
    * @param border the new border. Typically, this will be an instance of
    *        {@link
-   *        javax.swing.plaf.basic.BasicBorders.SplitPaneDividerBorder}.
+   *        javax.swing.plaf.basic.BasicBorders.SplitPaneBorder}.
    *
    * @since 1.3
    */

@@ -57,6 +57,10 @@ public class Bindings
   implements XPathVariableResolver, Cloneable
 {
 
+  static final int VARIABLE = 0;
+  static final int PARAM = 1;
+  static final int WITH_PARAM = 2;
+
   final Stylesheet stylesheet;
 
   /**
@@ -69,13 +73,21 @@ public class Bindings
    */
   final LinkedList parameters;
 
+  /**
+   * Argument (with-param) value stack.
+   */
+  final LinkedList withParameters;
+
   Bindings(Stylesheet stylesheet)
   {
     this.stylesheet = stylesheet;
     variables = new LinkedList();
     parameters = new LinkedList();
-    push(true);
-    push(false);
+    withParameters = new LinkedList();
+    for (int i = 0; i < 3; i++)
+      {
+        push(i);
+      }
   }
 
   public Object clone()
@@ -90,53 +102,87 @@ public class Bindings
       }
   }
 
-  void push(boolean global)
+  void push(int type)
   {
-    if (global)
+    switch (type)
       {
+      case VARIABLE:
         variables.addFirst(new HashMap());
-      }
-    else
-      {
+        break;
+      case PARAM:
         parameters.addFirst(new HashMap());
+        break;
+      case WITH_PARAM:
+        withParameters.addFirst(new HashMap());
+        break;
       }
   }
 
-  void pop(boolean global)
+  void pop(int type)
   {
-    if (global)
+    switch (type)
       {
+      case VARIABLE:
         variables.removeFirst();
-      }
-    else
-      {
+        break;
+      case PARAM:
         parameters.removeFirst();
+        break;
+      case WITH_PARAM:
+        withParameters.removeFirst();
+        break;
       }
   }
 
-  public boolean containsKey(String name, boolean global)
+  public boolean containsKey(QName name, int type)
   {
-    Iterator i = global ? variables.iterator() : parameters.iterator();
-    while (i.hasNext())
+    Iterator i = null;
+    switch (type)
       {
-        Map ctx = (Map) i.next();
-        if (ctx.containsKey(name))
+      case VARIABLE:
+        i = variables.iterator();
+        break;
+      case PARAM:
+        i = parameters.iterator();
+        break;
+      case WITH_PARAM:
+        Map ctx = (Map) withParameters.getFirst();
+        return ctx.containsKey(name);
+      }
+    if (i != null)
+      {
+        while (i.hasNext())
           {
-            return true;
+            Map ctx = (Map) i.next();
+            if (ctx.containsKey(name))
+              {
+                return true;
+              }
           }
       }
     return false;
   }
 
-  public Object get(String name, Node context, int pos, int len)
+  public Object get(QName name, Node context, int pos, int len)
   {
     //System.err.println("bindings.get: "+name);
     //System.err.println("\t"+toString());
     Object ret = null;
-    for (Iterator i = variables.iterator(); i.hasNext() && ret == null; )
+    //if (parameters.size() > 1 && containsKey(name, PARAM))
+      // check that template defines parameter
       {
-        Map vctx = (Map) i.next();
-        ret = vctx.get(name);
+        Map cwp = (Map) withParameters.getFirst();
+        ret = cwp.get(name);
+        //System.err.println("\twith-param: ret="+ret);
+      }
+    if (ret == null)
+      {
+        for (Iterator i = variables.iterator(); i.hasNext() && ret == null; )
+          {
+            Map vctx = (Map) i.next();
+            ret = vctx.get(name);
+          }
+        //System.err.println("\tvariable: ret="+ret);
       }
     if (ret == null)
       {
@@ -145,6 +191,7 @@ public class Bindings
             Map pctx = (Map) i.next();
             ret = pctx.get(name);
           }
+        //System.err.println("\tparam: ret="+ret);
       }
     /*if (ret instanceof Expr && context != null)
       {
@@ -163,23 +210,29 @@ public class Bindings
     return ret;
   }
 
-  void set(String name, Object value, boolean global)
+  void set(QName name, Object value, int type)
   {
-    if (global)
+    switch (type)
       {
-        Map context = (Map) variables.getFirst();
-        context.put(name, value);
+      case VARIABLE:
+        Map vctx = (Map) variables.getFirst();
+        vctx.put(name, value);
+        break;
+      case PARAM:
+        Map pctx = (Map) parameters.getFirst();
+        pctx.put(name, value);
+        break;
+      case WITH_PARAM:
+        Map wctx = (Map) withParameters.getFirst();
+        wctx.put(name, value);
+        break;
       }
-    else
-      {
-        Map context = (Map) parameters.getFirst();
-        context.put(name, value);
-      }
+    //System.err.println("Set "+name+"="+value);
   }
 
   public Object resolveVariable(QName qName)
   {
-    return get(qName.toString(), null, 1, 1);
+    return get(qName, null, 1, 1);
   }
   
   public String toString()
@@ -187,6 +240,31 @@ public class Bindings
     StringBuffer buf = new StringBuffer();
     boolean next = false;
     Collection seen = new HashSet();
+    Map wctx = (Map) withParameters.getFirst();
+    buf.append('(');
+    for (Iterator i = wctx.entrySet().iterator(); i.hasNext(); )
+      {
+        if (next)
+          {
+            buf.append(',');
+          }
+        else
+          {
+            next = true;
+          }
+        Map.Entry entry = (Map.Entry) i.next();
+        Object key = entry.getKey();
+        if (!seen.contains(key))
+          {
+            buf.append(key);
+            buf.append('=');
+            buf.append(entry.getValue());
+            seen.add(key);
+          }
+      }
+    buf.append(')');
+    next = false;
+    seen.clear();
     buf.append('{');
     for (Iterator i = variables.iterator(); i.hasNext(); )
       {
@@ -212,6 +290,10 @@ public class Bindings
               }
           } 
       }
+    buf.append('}');
+    next = false;
+    seen.clear();
+    buf.append('[');
     for (Iterator i = parameters.iterator(); i.hasNext(); )
       {
         Map ctx = (Map) i.next();
@@ -236,7 +318,8 @@ public class Bindings
               }
           } 
       }
-    buf.append('}');
+    buf.append(']');
     return buf.toString();
   }
+
 }

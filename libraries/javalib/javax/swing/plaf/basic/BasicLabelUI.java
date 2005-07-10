@@ -92,7 +92,8 @@ public class BasicLabelUI extends LabelUI implements PropertyChangeListener
 
   /**
    * Returns the preferred size of this component as calculated by the
-   * {@link layoutCL} method.
+   * {@link #layoutCL(JLabel, FontMetrics, String, Icon, Rectangle, Rectangle, 
+   * Rectangle)} method.
    *
    * @param c This {@link JComponent} to get a preferred size for.
    *

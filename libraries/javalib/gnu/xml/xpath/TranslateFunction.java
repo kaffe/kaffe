@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.xml.xpath;
 
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -116,6 +117,12 @@ final class TranslateFunction
   {
     return new TranslateFunction(arg1.clone(context), arg2.clone(context),
                                  arg3.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return (arg1.references(var) || arg2.references(var) ||
+            arg3.references(var));
   }
   
   public String toString()

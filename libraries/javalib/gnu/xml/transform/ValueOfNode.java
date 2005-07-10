@@ -85,6 +85,10 @@ final class ValueOfNode
     throws TransformerException
   {
     Object ret = select.evaluate(context, pos, len);
+    /*if (stylesheet.debug)
+      {
+        System.err.println("value-of: " + select + " -> " + ret);
+      }*/
     String value;
     if (ret instanceof Collection)
       {
@@ -100,10 +104,10 @@ final class ValueOfNode
       {
         value = Expr._string(context, ret);
       }
-    /*if (stylesheet.debug)
+    if (stylesheet.debug)
       {
         System.err.println("value-of: "+context+" "+ select + " -> "+ value);
-      }*/
+      }
     if (value != null && value.length() > 0)
       {
         Document doc = (parent instanceof Document) ?
@@ -131,6 +135,15 @@ final class ValueOfNode
       }
   }
 
+  public boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
+  
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());

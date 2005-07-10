@@ -170,6 +170,15 @@ final class CopyOfNode
       }
   }
   
+  public boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
+  
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());

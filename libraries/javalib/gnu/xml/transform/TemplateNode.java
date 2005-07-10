@@ -88,6 +88,19 @@ abstract class TemplateNode
 
   abstract TemplateNode clone(Stylesheet stylesheet);
 
+  public boolean references(QName var)
+  {
+    if (children != null && children.references(var))
+      {
+        return true;
+      }
+    if (next != null && next.references(var))
+      {
+        return true;
+      }
+    return false;
+  }
+
   /**
    * Debugging
    */

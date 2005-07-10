@@ -47,9 +47,9 @@ public class VariableReference
 {
 
   final XPathVariableResolver resolver;
-  final String name;
+  final QName name;
 
-  public VariableReference(XPathVariableResolver resolver, String name)
+  public VariableReference(XPathVariableResolver resolver, QName name)
   {
     this.resolver = resolver;
     this.name = name;
@@ -64,8 +64,7 @@ public class VariableReference
             // Needs context to operate properly
             return ((Bindings) resolver).get(name, context, pos, len);
           }
-        QName qname = QName.valueOf(name);
-        return resolver.resolveVariable(qname);
+        return resolver.resolveVariable(name);
       }
     throw new IllegalStateException("no variable resolver");
   }
@@ -80,9 +79,22 @@ public class VariableReference
     return new VariableReference(r, name);
   }
 
+  public boolean references(QName var)
+  {
+    return name.equals(var);
+  }
+
   public String toString()
   {
-    return "$" + name;
+    StringBuffer buf = new StringBuffer("$");
+    String prefix = name.getPrefix();
+    if (prefix != null && !"".equals(prefix))
+      {
+        buf.append(prefix);
+        buf.append(':');
+      }
+    buf.append(name.getLocalPart());
+    return buf.toString();
   }
   
 }

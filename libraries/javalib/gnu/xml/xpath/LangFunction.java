@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.xml.xpath;
 
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -100,6 +101,11 @@ final class LangFunction
   public Expr clone(Object context)
   {
     return new IdFunction(arg.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return arg.references(var);
   }
 
   public String toString()

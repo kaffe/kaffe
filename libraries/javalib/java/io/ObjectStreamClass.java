@@ -520,6 +520,7 @@ outer:
 		    || ! Modifier.isPublic(mods) && ! inSamePackage(c, from)))
 	      continue;
 
+	    AccessController.doPrivileged(new SetAccessibleAction(res));
 	    return res;
 	  }
 	catch (NoSuchMethodException e)

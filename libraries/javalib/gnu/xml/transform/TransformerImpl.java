@@ -106,7 +106,7 @@ class TransformerImpl
     if (stylesheet != null)
       {
         // Set up parameter context for this transformer
-        stylesheet.bindings.push(false);
+        stylesheet.bindings.push(Bindings.PARAM);
       }
   }
 
@@ -559,7 +559,7 @@ class TransformerImpl
   {
     if (stylesheet != null)
       {
-        stylesheet.bindings.set(name, value, false);
+        stylesheet.bindings.set(new QName(null, name), value, Bindings.PARAM);
       }
   }
 
@@ -567,7 +567,7 @@ class TransformerImpl
   {
     if (stylesheet != null)
       {
-        return stylesheet.bindings.get(name, null, 1, 1);
+        return stylesheet.bindings.get(new QName(null, name), null, 1, 1);
       }
     return null;
   }
@@ -576,8 +576,8 @@ class TransformerImpl
   {
     if (stylesheet != null)
       {
-        stylesheet.bindings.pop(false);
-        stylesheet.bindings.push(false);
+        stylesheet.bindings.pop(Bindings.PARAM);
+        stylesheet.bindings.push(Bindings.PARAM);
       }
   }
 

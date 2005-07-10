@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.xpath.XPathFunction;
@@ -238,6 +239,18 @@ final class DocumentFunction
       }
     f.setArguments(args2);
     return f;
+  }
+
+  public boolean references(QName var)
+  {
+    for (Iterator i = args.iterator(); i.hasNext(); )
+      {
+        if (((Expr) i.next()).references(var))
+          {
+            return true;
+          }
+      }
+    return false;
   }
   
 }

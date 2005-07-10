@@ -125,6 +125,11 @@ public final class NameTest
     return new NameTest(qName, anyLocalName, any);
   }
 
+  public boolean references(QName var)
+  {
+    return false;
+  }
+
   public String toString ()
   {
     if (any)

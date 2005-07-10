@@ -1,5 +1,5 @@
-/* CurrentFunction.java -- 
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* FocusManager.java -- Provide Swing FocusManager API compatibility
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,70 +35,18 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.xml.transform;
-
-import java.util.Collections;
-import java.util.List;
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathFunction;
-import javax.xml.xpath.XPathFunctionException;
-import org.w3c.dom.Node;
-import gnu.xml.xpath.Expr;
-import gnu.xml.xpath.Function;
+package gnu.java.awt;
 
 /**
- * The XSLT <code>current()</code>function.
+ * This is a subclass of the otherwise abstract class
+ * {@link javax.swing.FocusManager}. Its sole purpose is to make the Swing
+ * FocusManager usable as a FocusManager in AWT, so that we can provide both
+ * the new (1.4) KeyboardFocusManager API and still support the older
+ * Swing FocusManager.
  *
- * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ * @author Roman Kennke
  */
-final class CurrentFunction
-  extends Expr
-  implements Function, XPathFunction
+public class FocusManager
+  extends javax.swing.FocusManager
 {
-
-  final Stylesheet stylesheet;
-
-  CurrentFunction(Stylesheet stylesheet)
-  {
-    this.stylesheet = stylesheet;
-  }
-
-  public Object evaluate(List args)
-    throws XPathFunctionException
-  {
-    // We can't do anything useful here.
-    // So much for the JAXP API...
-    return Collections.EMPTY_SET;
-  }
-
-  public void setArguments(List args)
-  {
-  }
-
-  public Object evaluate(Node context, int pos, int len)
-  {
-    return Collections.singleton(stylesheet.current);
-  }
-
-  public Expr clone(Object context)
-  {
-    Stylesheet s = stylesheet;
-    if (context instanceof Stylesheet)
-      {
-        s = (Stylesheet) context;
-      }
-    return new CurrentFunction(s);
-  }
-
-  public boolean references(QName var)
-  {
-    return false;
-  }
-
-  public String toString()
-  {
-    return "current()";
-  }
-
 }
-

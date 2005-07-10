@@ -419,7 +419,7 @@ public class BasicMenuUI extends BasicMenuItemUI
       *
       * @param e The PropertyChangeEvent.
       */
-    public void propertyChange(PropertyChangeEvent evt)
+    public void propertyChange(PropertyChangeEvent e)
     {
     }
   }

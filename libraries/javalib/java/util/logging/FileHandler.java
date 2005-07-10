@@ -40,7 +40,15 @@ package java.util.logging;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * A <code>FileHandler</code> publishes log records to a set of log
@@ -219,6 +227,19 @@ public class FileHandler
 
 
   /**
+   * The number of bytes that have currently been written to the stream.
+   */
+  private long written;
+
+
+  /**
+   * A linked list of files we are, or have written to. The entries
+   * are file path strings, kept in the order 
+   */
+  private LinkedList logFiles;
+
+
+  /**
    * Constructs a <code>FileHandler</code>, taking all property values
    * from the current {@link LogManager LogManager} configuration.
    *
@@ -331,8 +352,7 @@ public class FileHandler
 		     boolean append)
     throws IOException, SecurityException
   {
-    super(createFileStream(pattern, limit, count, append,
-			   /* generation */ 0),
+    super(/* output stream, created below */ null,
 	  "java.util.logging.FileHandler",
 	  /* default level */ Level.ALL,
 	  /* formatter */ null,
@@ -345,15 +365,20 @@ public class FileHandler
     this.limit = limit;
     this.count = count;
     this.append = append;
+    this.written = 0;
+    this.logFiles = new LinkedList ();
+
+    setOutputStream (createFileStream (pattern, limit, count, append,
+                                       /* generation */ 0));
   }
 
 
   /* FIXME: Javadoc missing. */
-  private static java.io.OutputStream createFileStream(String pattern,
-						       int limit,
-						       int count,
-						       boolean append,
-						       int generation)
+  private OutputStream createFileStream(String pattern,
+                                        int limit,
+                                        int count,
+                                        boolean append,
+                                        int generation)
   {
     String  path;
     int     unique = 0;
@@ -372,6 +397,9 @@ public class FileHandler
     if (pattern == null)
       pattern = "%h/java%u.log";
 
+    if (count > 1 && !has (pattern, 'g'))
+      pattern = pattern + ".%g";
+
     do
     {
       path = replaceFileNameEscapes(pattern, generation, unique, count);
@@ -379,16 +407,28 @@ public class FileHandler
       try
       {
 	File file = new File(path);
-	if (file.createNewFile())
-	  return new FileOutputStream(path, append);
+        if (!file.exists () || append)
+          {
+            FileOutputStream fout = new FileOutputStream (file, append);
+            // FIXME we need file locks for this to work properly, but they
+            // are not implemented yet in Classpath! Madness!
+//             FileChannel channel = fout.getChannel ();
+//             FileLock lock = channel.tryLock ();
+//             if (lock != null) // We've locked the file.
+//               {
+                if (logFiles.isEmpty ())
+                  logFiles.addFirst (path);
+                return new ostr (fout);
+//               }
+          }
       }
       catch (Exception ex)
       {
-	ex.printStackTrace();	
+        reportError (null, ex, ErrorManager.OPEN_FAILURE);
       }
 
       unique = unique + 1;
-      if (pattern.indexOf("%u") < 0)
+      if (!has (pattern, 'u'))
         pattern = pattern + ".%u";
     }
     while (true);
@@ -486,21 +526,120 @@ public class FileHandler
   }
 
 
-  /* FIXME: Javadoc missing, implementation incomplete. */
+  /* FIXME: Javadoc missing. */
   public void publish(LogRecord record)
   {
+    if (limit > 0 && written >= limit)
+      rotate ();
     super.publish(record);
+    flush ();
+  }
 
-    /* FIXME: Decide when to switch over. How do we get to
-     * the number of bytes published so far? Two possibilities:
-     * 1. File.length, 2. have metering wrapper around
-     * output stream counting the number of written bytes.
-     */
-  
-    /* FIXME: Switch over if needed! This implementation always
-     * writes into a single file, i.e. behaves as if limit
-     * always was zero. So, the implementation is somewhat
-     * functional but incomplete.
-     */
+  /**
+   * Rotates the current log files, possibly removing one if we
+   * exceed the file count.
+   */
+  private synchronized void rotate ()
+  {
+    if (logFiles.size () > 0)
+      {
+        File f1 = null;
+        ListIterator lit = null;
+
+        // If we reach the file count, ditch the oldest file.
+        if (logFiles.size () == count)
+          {
+            f1 = new File ((String) logFiles.getLast ());
+            f1.delete ();
+            lit = logFiles.listIterator (logFiles.size () - 1);
+          }
+        // Otherwise, move the oldest to a new location.
+        else
+          {
+            String path = replaceFileNameEscapes (pattern, logFiles.size (),
+                                                  /* unique */ 0, count);
+            f1 = new File (path);
+            logFiles.addLast (path);
+            lit = logFiles.listIterator (logFiles.size () - 1);
+          }
+
+        // Now rotate the files.
+        while (lit.hasPrevious ())
+          {
+            String s = (String) lit.previous ();
+            File f2 = new File (s);
+            f2.renameTo (f1);
+            f1 = f2;
+          }
+      }
+
+    setOutputStream (createFileStream (pattern, limit, count, append,
+                                       /* generation */ 0));
+
+    // Reset written count.
+    written = 0;
+  }
+
+  /**
+   * Tell if <code>pattern</code> contains the pattern sequence
+   * with character <code>escape</code>. That is, if <code>escape</code>
+   * is 'g', this method returns true if the given pattern contains
+   * "%g", and not just the substring "%g" (for example, in the case of
+   * "%%g").
+   *
+   * @param pattern The pattern to test.
+   * @param escape The escape character to search for.
+   * @return True iff the pattern contains the escape sequence with the
+   *  given character.
+   */
+  private static boolean has (final String pattern, final char escape)
+  {
+    final int len = pattern.length ();
+    boolean sawPercent = false;
+    for (int i = 0; i < len; i++)
+      {
+        char c = pattern.charAt (i);
+        if (sawPercent)
+          {
+            if (c == escape)
+              return true;
+            if (c == '%') // Double percent
+              {
+                sawPercent = false;
+                continue;
+              }
+          }
+        sawPercent = (c == '%');
+      }
+    return false;
+  }
+
+  /**
+   * An output stream that tracks the number of bytes written to it.
+   */
+  private final class ostr extends FilterOutputStream
+  {
+    private ostr (OutputStream out)
+    {
+      super (out);
+    }
+
+    public void write (final int b) throws IOException
+    {
+      out.write (b);
+      FileHandler.this.written++; // FIXME: synchronize?
+    }
+
+    public void write (final byte[] b) throws IOException
+    {
+      write (b, 0, b.length);
+    }
+
+    public void write (final byte[] b, final int offset, final int length)
+      throws IOException
+    {
+      out.write (b, offset, length);
+      FileHandler.this.written += length; // FIXME: synchronize?
+    }
   }
 }

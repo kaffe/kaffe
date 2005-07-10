@@ -101,6 +101,15 @@ final class WhenNode
       }
   }
   
+  public boolean references(QName var)
+  {
+    if (test != null && test.references(var))
+      {
+        return true;
+      }
+    return super.references(var);
+  }
+  
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());

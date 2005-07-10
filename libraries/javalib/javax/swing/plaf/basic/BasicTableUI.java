@@ -50,12 +50,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.TableUI;
@@ -76,6 +78,12 @@ public class BasicTableUI
   protected MouseInputListener	mouseInputListener;   
   protected CellRendererPane rendererPane;   
   protected JTable table;
+
+  /** The normal cell border. */
+  Border cellBorder;
+
+  /** The cell border for selected/highlighted cells. */
+  Border highlightCellBorder;
 
   class FocusHandler implements FocusListener
   {
@@ -113,7 +121,8 @@ public class BasicTableUI
           ListSelectionModel rowModel = table.getSelectionModel();
           if (lo_row != -1 && hi_row != -1)
             {
-              if (controlPressed && rowModel.getSelectionMode() != ListSelectionModel.SINGLE_SELECTION)
+              if (controlPressed && rowModel.getSelectionMode() 
+                  != ListSelectionModel.SINGLE_SELECTION)
                 rowModel.addSelectionInterval(lo_row, hi_row);
               else
                 rowModel.setSelectionInterval(lo_row, hi_row);
@@ -124,10 +133,12 @@ public class BasicTableUI
         {
           int lo_col = table.columnAtPoint(begin);
           int hi_col = table.columnAtPoint(curr);
-          ListSelectionModel colModel = table.getColumnModel().getSelectionModel();
+          ListSelectionModel colModel = table.getColumnModel().
+            getSelectionModel();
           if (lo_col != -1 && hi_col != -1)
             {
-              if (controlPressed && colModel.getSelectionMode() != ListSelectionModel.SINGLE_SELECTION)
+              if (controlPressed && colModel.getSelectionMode() != 
+                  ListSelectionModel.SINGLE_SELECTION)
                 colModel.addSelectionInterval(lo_col, hi_col);
               else
                 colModel.setSelectionInterval(lo_col, hi_col);
@@ -156,7 +167,19 @@ public class BasicTableUI
     {
       begin = new Point(e.getX(), e.getY());
       curr = new Point(e.getX(), e.getY());
-      updateSelection(e.isControlDown());
+      //if control is pressed and the cell is already selected, deselect it
+      if (e.isControlDown() && table.
+          isCellSelected(table.rowAtPoint(begin),table.columnAtPoint(begin)))
+        {                                       
+          table.getSelectionModel().
+            removeSelectionInterval(table.rowAtPoint(begin), 
+                                    table.rowAtPoint(begin));
+          table.getColumnModel().getSelectionModel().
+            removeSelectionInterval(table.columnAtPoint(begin), 
+                                    table.columnAtPoint(begin));
+        }
+      else
+        updateSelection(e.isControlDown());
       
     }
     public void mouseReleased(MouseEvent e) 
@@ -206,6 +229,9 @@ public class BasicTableUI
     table.setSelectionForeground(defaults.getColor("Table.selectionForeground"));
     table.setSelectionBackground(defaults.getColor("Table.selectionBackground"));
     table.setOpaque(true);
+
+    highlightCellBorder = defaults.getBorder("Table.focusCellHighlightBorder");
+    cellBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
   }
   protected void installKeyboardActions() 
   {
@@ -305,6 +331,14 @@ public class BasicTableUI
                 Component comp = table.prepareRenderer(rend, r, c);
                 gfx.translate(x, y);
                 comp.setBounds(new Rectangle(0, 0, width, height));
+                // Set correct border on cell renderer.
+                if (comp instanceof JComponent)
+                  {
+                    if (table.isCellSelected(r, c))
+                      ((JComponent) comp).setBorder(highlightCellBorder);
+                    else
+                      ((JComponent) comp).setBorder(cellBorder);
+                  }
                 comp.paint(gfx);
                 gfx.translate(-x, -y);
               }

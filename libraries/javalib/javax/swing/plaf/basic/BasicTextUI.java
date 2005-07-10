@@ -208,7 +208,7 @@ public abstract class BasicTextUI extends TextUI
 
   /**
    * Listens for changes on the underlying model and forwards notifications
-   * to the View.
+   * to the View. This also updates the caret position of the text component.
    *
    * TODO: Maybe this should somehow be handled through EditorKits
    */
@@ -236,6 +236,9 @@ public abstract class BasicTextUI extends TextUI
       Dimension size = textComponent.getSize();
       rootView.insertUpdate(ev, new Rectangle(0, 0, size.width, size.height),
                             BasicTextUI.this);
+      int caretPos = textComponent.getCaretPosition();
+      if (caretPos >= ev.getOffset())
+        textComponent.setCaretPosition(caretPos + ev.getLength());
     }
 
     /**
@@ -248,6 +251,9 @@ public abstract class BasicTextUI extends TextUI
       Dimension size = textComponent.getSize();
       rootView.removeUpdate(ev, new Rectangle(0, 0, size.width, size.height),
                             BasicTextUI.this);
+      int caretPos = textComponent.getCaretPosition();
+      if (caretPos >= ev.getOffset())
+        textComponent.setCaretPosition(caretPos - ev.getLength());
     }
   }
 

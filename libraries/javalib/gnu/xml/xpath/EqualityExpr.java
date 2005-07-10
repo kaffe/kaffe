@@ -39,6 +39,7 @@ package gnu.xml.xpath;
 
 import java.util.Collection;
 import java.util.Iterator;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -245,6 +246,11 @@ final class EqualityExpr
   public Expr clone(Object context)
   {
     return new EqualityExpr(lhs.clone(context), rhs.clone(context), invert);
+  }
+
+  public boolean references(QName var)
+  {
+    return (lhs.references(var) || rhs.references(var));
   }
 
   public String toString()

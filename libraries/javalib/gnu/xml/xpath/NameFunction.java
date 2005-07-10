@@ -39,6 +39,7 @@ package gnu.xml.xpath;
 
 import java.util.Collection;
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -85,6 +86,11 @@ final class NameFunction
   {
     return new NameFunction((arg == null) ? null :
                             arg.clone(context));
+  }
+
+  public boolean references(QName var)
+  {
+    return (arg == null) ? false : arg.references(var);
   }
   
   public String toString()

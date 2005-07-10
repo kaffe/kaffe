@@ -51,6 +51,8 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.AbstractButton;
+import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 
@@ -585,7 +587,9 @@ public class BasicGraphicsUtils
    *         and <code>height</code> fields indicate the preferred
    *         extent in pixels.
    *
-   * @see javax.swing.SwingUtilities#layoutCompoundLabel
+   * @see javax.swing.SwingUtilities#layoutCompoundLabel(JComponent, 
+   *      FontMetrics, String, Icon, int, int, int, int, Rectangle, Rectangle, 
+   *      Rectangle, int)
    */
   public static Dimension getPreferredButtonSize(AbstractButton b,
                                                  int textIconGap)

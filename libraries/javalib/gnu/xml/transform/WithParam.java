@@ -55,18 +55,18 @@ import gnu.xml.xpath.Expr;
 final class WithParam
 {
 
-  final String name;
+  final QName name;
   final Expr select;
   final TemplateNode content;
 
-  WithParam(String name, Expr select)
+  WithParam(QName name, Expr select)
   {
     this.name = name;
     this.select = select;
     content = null;
   }
 
-  WithParam(String name, TemplateNode content)
+  WithParam(QName name, TemplateNode content)
   {
     this.name = name;
     this.content = content;
@@ -105,6 +105,19 @@ final class WithParam
         return new WithParam(name,
                              content.clone(stylesheet));
       }
+  }
+
+  boolean references(QName var)
+  {
+    if (select != null && select.references(var))
+      {
+        return true;
+      }
+    if (content != null && content.references(var))
+      {
+        return true;
+      }
+    return false;
   }
 
 }

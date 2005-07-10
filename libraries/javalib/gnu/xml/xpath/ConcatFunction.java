@@ -40,6 +40,7 @@ package gnu.xml.xpath;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -79,6 +80,18 @@ final class ConcatFunction
         args2.add(((Expr) args.get(i)).clone(context));
       }
     return new ConcatFunction(args2);
+  }
+
+  public boolean references(QName var)
+  {
+    for (Iterator i = args.iterator(); i.hasNext(); )
+      {
+        if (((Expr) i.next()).references(var))
+          {
+            return true;
+          }
+      }
+    return false;
   }
 
   public String toString()

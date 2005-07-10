@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -104,6 +105,11 @@ public final class NodeTypeTest
   public Test clone(Object context)
   {
     return new NodeTypeTest(type, data);
+  }
+
+  public boolean references(QName var)
+  {
+    return false;
   }
 
   public String toString()

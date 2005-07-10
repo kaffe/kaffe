@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.xpath;
 
+import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 /**
@@ -63,6 +64,11 @@ public final class Constant
   public Expr clone(Object context)
   {
     return new Constant(value);
+  }
+
+  public boolean references(QName var)
+  {
+    return false;
   }
 
   public String toString()
