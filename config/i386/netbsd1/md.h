@@ -32,7 +32,9 @@
 #endif
 
 
+#if defined(HAVE_SYS_UCONTEXT_H)
 #include <sys/ucontext.h>
+#endif
 
 /* older netbsd's could have this macro missing, so we provide it */
 #ifdef _UC_MACHINE_SP

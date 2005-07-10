@@ -175,7 +175,6 @@ Java_java_nio_VMDirectByteBuffer_get__Lgnu_classpath_RawData_2I
   (JNIEnv *env, jclass clazz __attribute__ ((__unused__)),
    jobject address, jint index)
 {
-	printf("address is %p,   index is %d\n", address, index);
   return ((jbyte *) NIOGetPointer (env, address))[index];
 }
 
