@@ -1,5 +1,10 @@
 2005-07-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/i386/netbsd1/jit-md.h: Updated macro to retrieve the base
+	stack pointer and not the current stack pointer.
+
+2005-07-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/i386/netbsd1/md.h,
 	config/i386/netbsd1/jit-md.h: Use old sigcontext if ucontext.h is not 
 	available.
