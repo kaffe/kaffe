@@ -25,9 +25,15 @@
 #define	EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
+#if defined(HAVE_SYS_UCONTEXT_H)
 #define	EXCEPTIONFRAME(f, c)						\
         (f).retbp = _UC_MACHINE_SP(((ucontext_t *)(c)));                \
 	(f).retpc = _UC_MACHINE_PC(((ucontext_t *)(c)))
+#else
+#define EXCEPTIONFRAME(f, c)						\
+	(f).retbp = (c)->sc_ebp;					\
+	(f).retpc = (c)->sc_eip + 1;
+#endif
 
 
 #endif

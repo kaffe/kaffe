@@ -1,3 +1,9 @@
+2005-07-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/i386/netbsd1/md.h,
+	config/i386/netbsd1/jit-md.h: Use old sigcontext if ucontext.h is not 
+	available.
+
 2005-07-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Check for sys/ucontext.h

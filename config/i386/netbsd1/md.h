@@ -32,9 +32,14 @@
 #endif
 
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef SP_OFFSET
+#define SP_OFFSET 2
+
 #if defined(HAVE_SYS_UCONTEXT_H)
 #include <sys/ucontext.h>
-#endif
 
 /* older netbsd's could have this macro missing, so we provide it */
 #ifdef _UC_MACHINE_SP
@@ -44,20 +49,23 @@
 #define _UC_MACHINE_PC(uc)      ((uc)->uc_mcontext.__gregs[_REG_EIP])
 #endif
 
-
-/*
- * Redefine stack pointer offset.
- */
-#undef SP_OFFSET
-#define SP_OFFSET 2
-
 #define SIGCONTEXT ucontext_t
 
 #define SIGNAL_ARGS(sig, sc) int sig, siginfo_t *__si, void *sc
 #define SIGNAL_CONTEXT_POINTER(scp) SIGCONTEXT *scp
-#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
 #define SIGNAL_PC(scp) _UC_MACHINE_PC(((SIGCONTEXT *)(scp)))
 #define STACK_POINTER(scp) _UC_MACHINE_SP(((SIGCONTEXT *)(scp)))
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+
+#else
+
+#define SIGNAL_ARGS(sig, sc) int sig, int __code, struct sigcontext *sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) (scp)->sc_pc
+#define STACK_POINTER(scp) (scp)->sc_sp
+
+#endif
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
