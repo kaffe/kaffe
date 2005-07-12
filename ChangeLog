@@ -1,3 +1,20 @@
+2005-07-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/jni/Makefile.am: (check_PROGRAMS) Added jniWeakTest.
+	(check_LTLIBRARIES, libjniweaklib_la_SOURCES, libjniweaklib_la_LDFLAGS,
+	JAVA_CLASSES, CPATH, JNIWeakTest.class, jniWeakTest_SOURCES, 
+	jniWeakTest_LDADD, jniWeakTest_DEPENDECIES, jniWeakTest.o): New rules.
+	(TESTS_ENVIRONMENT) Set BOOTCLASSPATH and KAFFELIBRARYPATH.
+	(EXTRA_DIST) Added JNIWeakTest.java.
+
+	* test/jni/Makefile.in: Regenerated.
+
+2005-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* test/jni/JNIWeakTest.java,
+	test/jni/jniWeakTest.c,
+	test/jni/jniweaklib.c: New test.
+
 2005-07-12  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU classpath.

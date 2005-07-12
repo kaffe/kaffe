@@ -21,7 +21,7 @@
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
-SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) $(jniReflect_SOURCES)
+SOURCES = $(libjniweaklib_la_SOURCES) $(jniBase_SOURCES) $(jniExecClass_SOURCES) $(jniReflect_SOURCES) $(jniWeakTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -46,7 +46,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = jniBase$(EXEEXT) jniExecClass$(EXEEXT) \
-	jniReflect$(EXEEXT)
+	jniReflect$(EXEEXT) jniWeakTest$(EXEEXT)
 subdir = test/jni
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -76,6 +76,9 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
+libjniweaklib_la_LIBADD =
+am_libjniweaklib_la_OBJECTS = jniweaklib.lo
+libjniweaklib_la_OBJECTS = $(am_libjniweaklib_la_OBJECTS)
 am_jniBase_OBJECTS = jniBase.$(OBJEXT)
 jniBase_OBJECTS = $(am_jniBase_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -90,6 +93,11 @@ am_jniExecClass_OBJECTS = jniExecClass.$(OBJEXT)
 jniExecClass_OBJECTS = $(am_jniExecClass_OBJECTS)
 am_jniReflect_OBJECTS = jniReflect.$(OBJEXT)
 jniReflect_OBJECTS = $(am_jniReflect_OBJECTS)
+am_jniWeakTest_OBJECTS = jniWeakTest.$(OBJEXT)
+jniWeakTest_OBJECTS = $(am_jniWeakTest_OBJECTS)
+jniWeakTest_DEPENDENCIES = $(top_builddir)/test/jni/libjniweaklib.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4) \
+	$(am__DEPENDENCIES_5) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -100,10 +108,12 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) \
-	$(jniReflect_SOURCES)
-DIST_SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) \
-	$(jniReflect_SOURCES)
+SOURCES = $(libjniweaklib_la_SOURCES) $(jniBase_SOURCES) \
+	$(jniExecClass_SOURCES) $(jniReflect_SOURCES) \
+	$(jniWeakTest_SOURCES)
+DIST_SOURCES = $(libjniweaklib_la_SOURCES) $(jniBase_SOURCES) \
+	$(jniExecClass_SOURCES) $(jniReflect_SOURCES) \
+	$(jniWeakTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -423,8 +433,54 @@ jniReflect_LDADD = \
 	@LIBLTDL@
 
 jniReflect_DEPENDENCIES = $(LIBKAFFEVM)
-EXTRA_DIST = HelloWorldApp.class
-TESTS_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+
+# Okay, the following is a bit convulted and hackish, and makes me feel dizzy.
+# But as I found no way to do it better, here it goes:
+#
+# We need to have a JNI library built just for make check purpose, i.e
+# a) it may not be installed
+# b) it may only build on check
+# c) in must be dlopen-able for JNI library loading to work
+# d) it must actually load the library and run it
+# 
+# Solution for a and b: Fortunately, automake lets us build libtool libraries for 
+# make check purpose only using check_LTLIBRARIES.
+# Solution for c: Unfortunately, it builds convenience libraries by default, which
+# can not be dlopened. Adding -module or -static to LDFLAGS does not help, one 
+# needs to add -rpath with a fake absolute directory to it to make libtool build
+# a dlopenable library.
+# Solution for d: Adding . to KAFFELIBRARYPATH allows the resulting test to find the
+# so created library.
+# 
+# Amazingly enough, this actually seems to work.
+check_LTLIBRARIES = libjniweaklib.la
+libjniweaklib_la_SOURCES = jniweaklib.c
+libjniweaklib_la_LDFLAGS = \
+	$(KLIBFLAGS) \
+	-no-undefined \
+	-module \
+	-rpath $(nativedir) \
+	-release $(PACKAGE_VERSION)
+
+JAVA_CLASSES = \
+	JNIWeakTest.class
+
+CPATH = .:$(top_builddir)/libraries/javalib/rt.jar
+jniWeakTest_SOURCES = jniWeakTest.c
+jniWeakTest_LDADD = \
+	-dlopen $(top_builddir)/test/jni/libjniweaklib.la \
+	$(DLOPEN_JAVA_LIBS) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
+
+jniWeakTest_DEPENDECIES = $(LIBKAFFEVM) libjniweaklib.la
+EXTRA_DIST = \
+	JNIWeakTest.java \
+	HelloWorldApp.class
+
+TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH="." ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; sed  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
 CLEANFILES = *.fail *.out core *.core
 all: all-am
@@ -461,6 +517,17 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
+clean-checkLTLIBRARIES:
+	-test -z "$(check_LTLIBRARIES)" || rm -f $(check_LTLIBRARIES)
+	@list='$(check_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libjniweaklib.la: $(libjniweaklib_la_OBJECTS) $(libjniweaklib_la_DEPENDENCIES) 
+	$(LINK)  $(libjniweaklib_la_LDFLAGS) $(libjniweaklib_la_OBJECTS) $(libjniweaklib_la_LIBADD) $(LIBS)
+
 clean-checkPROGRAMS:
 	@list='$(check_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
@@ -476,6 +543,9 @@ jniExecClass$(EXEEXT): $(jniExecClass_OBJECTS) $(jniExecClass_DEPENDENCIES)
 jniReflect$(EXEEXT): $(jniReflect_OBJECTS) $(jniReflect_DEPENDENCIES) 
 	@rm -f jniReflect$(EXEEXT)
 	$(LINK) $(jniReflect_LDFLAGS) $(jniReflect_OBJECTS) $(jniReflect_LDADD) $(LIBS)
+jniWeakTest$(EXEEXT): $(jniWeakTest_OBJECTS) $(jniWeakTest_DEPENDENCIES) 
+	@rm -f jniWeakTest$(EXEEXT)
+	$(LINK) $(jniWeakTest_LDFLAGS) $(jniWeakTest_OBJECTS) $(jniWeakTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -486,6 +556,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniExecClass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniReflect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniWeakTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniweaklib.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -667,7 +739,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile
@@ -699,8 +771,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
-	mostlyclean-am
+clean-am: clean-checkLTLIBRARIES clean-checkPROGRAMS clean-generic \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -749,17 +821,22 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-checkLTLIBRARIES clean-checkPROGRAMS clean-generic \
+	clean-libtool ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-info-am
 
+
+JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
+	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
+
+jniWeakTest.o: JNIWeakTest.class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
