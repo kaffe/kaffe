@@ -4559,7 +4559,7 @@ loop:
                           encoding.substring(temp + 1,
                                              encoding.indexOf('"', temp + 2));
                       }
-                    encoding.trim();
+                    encoding = encoding.trim();
                   }
                 else
                   {

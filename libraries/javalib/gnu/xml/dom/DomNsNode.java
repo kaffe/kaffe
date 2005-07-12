@@ -54,7 +54,7 @@ public abstract class DomNsNode
   private String name;
   private String namespace;
   private String prefix;
-  private String localName;
+  String localName;
   
   /**
    * Constructs a node associated with the specified document, and

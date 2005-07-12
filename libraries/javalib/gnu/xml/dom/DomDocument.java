@@ -581,7 +581,9 @@ public class DomDocument
       }
     else
       {
-        element = new DomElement(this, null, name);
+        DomElement domElement = new DomElement(this, null, name);
+        domElement.localName = null;
+        element = domElement;
       }
     defaultAttributes(element, name);
     return element;
@@ -776,7 +778,9 @@ public class DomDocument
       }
     else
       {
-        return new DomAttr(this, null, name);
+        DomAttr ret = new DomAttr(this, null, name);
+        ret.localName = null;
+        return ret;
       }
   }
 

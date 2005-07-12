@@ -1,3 +1,14 @@
+2005-07-12  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU classpath.
+
+	2005-06-14  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/aelfred2/XmlParser.java: ensure that charset parameter of
+        external MIME entity is trimmed.
+        * gnu/xml/dom/DomDocument.java: DomNsNodes retrieved via
+        createElement/createAttribute should not have localNames.
+
 2005-07-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/i386/netbsd1/jit-md.h: Updated macro to retrieve the base
@@ -26,7 +37,7 @@
 	Resynced with GNU classpath.
 
 	* libraries/javalib/gnu/java/security/provider/SHA1PRNG.java:
-	Updaed copyright information.
+	Updated copyright information.
 
 2005-07-09  Dalibor Topic  <robilad@kaffe.org>
 
