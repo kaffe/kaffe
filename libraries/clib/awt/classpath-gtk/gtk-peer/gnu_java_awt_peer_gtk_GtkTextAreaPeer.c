@@ -117,22 +117,21 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_insert
   GtkWidget *text;
   void *ptr;
   const char *str;
-  int pos=position;
+
+  gdk_threads_enter ();
 
   ptr = NSA_GET_PTR (env, obj);
   str = (*env)->GetStringUTFChars (env, contents, NULL);
   
-  gdk_threads_enter ();
-
-  text = GTK_WIDGET (TEXT_FROM_SW (ptr));
+  text = gtk_bin_get_child (GTK_BIN (ptr));
 
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
-  gtk_text_buffer_get_iter_at_offset (buf, &iter, pos);
+  gtk_text_buffer_get_iter_at_offset (buf, &iter, position);
   gtk_text_buffer_insert (buf, &iter, str, (size_t) strlen (str));
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseStringUTFChars (env, contents, str);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL 

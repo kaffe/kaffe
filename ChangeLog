@@ -2,6 +2,18 @@
 
 	Resynced with GNU classpath.
 
+	Added missing hunk reported by  Wolfgang Baer <WBaer@gmx.de>
+
+	2005-07-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c: Add
+        method implementations from
+        gnu_java_awt_peer_gtk_GtkTextComponentPeer.c.
+
+2005-07-12  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU classpath.
+
 	2005-06-14  Chris Burdess  <dog@gnu.org>
 
         * gnu/xml/aelfred2/XmlParser.java: ensure that charset parameter of
