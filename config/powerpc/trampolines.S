@@ -3,6 +3,7 @@
  *
  */
 
+#define L(x) x
 #include "kaffe/trampoline.h"
 
 /* include common ppc asm syntax header */
@@ -67,7 +68,7 @@ TRAMPOLINE_FUNCTION()
 # Call soft_fixup_trampoline(). Return value will be in r3,
 # which is the address of the translated native code.
 
-     bl C_FUNC_NAME(soft_fixup_trampoline)
+     bl Lsoft_fixup_trampoline$stub
 
 # Save return value in ctr, so that we can jump there at the
 # end of this function
@@ -115,3 +116,25 @@ TRAMPOLINE_FUNCTION()
      bctr
 
 #endif
+
+.data
+	.align 2
+LDFCM0:
+	.section __TEXT,__picsymbolstub1,symbol_stubs,pure_instructions,32
+	.align	2
+Lsoft_fixup_trampoline$stub:
+	.indirect_symbol _soft_fixup_trampoline
+	mflr	r0
+	bcl	20,31,LO$soft_fixup_trampoline
+LO$soft_fixup_trampoline:
+	mflr	r11
+	addis	r11,r11,ha16(L_soft_fixup_trampoline$lazy_ptr - LO$soft_fixup_trampoline)
+	mtlr	r0
+	lwzu	r12,lo16(L_soft_fixup_trampoline$lazy_ptr - LO$soft_fixup_trampoline)(r11)
+	mtctr	r12
+	bctr
+.data
+.lazy_symbol_pointer
+L_soft_fixup_trampoline$lazy_ptr:
+	.indirect_symbol _soft_fixup_trampoline
+	.long   dyld_stub_binding_helper

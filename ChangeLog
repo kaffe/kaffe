@@ -1,5 +1,10 @@
 2005-07-13  Andreas Tobler  <toa@pop.agri.ch>
 
+	* config/powerpc/trampolines.S:
+	Fixed to work with PIC on darwin. All jitBasic tests pass now on Panther.
+
+2005-07-13  Andreas Tobler  <toa@pop.agri.ch>
+
 	* config/powerpc/darwin/jit3-md.h: Removed broken comment
 	delimiters.
 
