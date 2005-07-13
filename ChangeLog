@@ -1,10 +1,15 @@
-2004-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-07-13  Andreas Tobler  <toa@pop.agri.ch>
+
+	* config/powerpc/darwin/jit3-md.h: Removed broken comment
+	delimiters.
+
+2005-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/jni/JNIWeakTest.java: New tests.
 
 	* test/jni/jniweaklib.c: Added support functions for the new tests.
 
-2004-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* TODO: Added some TODO entries.
 

@@ -10,7 +10,7 @@
  * the given sigcontext structure.
  *
  * from ppc/signal.h sigcontext definition:
- void    *sc_regs;               /* (kernel private) saved state */
+ void    *sc_regs;                (kernel private) saved state 
  */
 #define EXCEPTIONFRAME(f, c) \
 do { \
