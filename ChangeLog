@@ -1,5 +1,11 @@
 2004-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* test/jni/JNIWeakTest.java: New tests.
+
+	* test/jni/jniweaklib.c: Added support functions for the new tests.
+
+2004-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* TODO: Added some TODO entries.
 
 	* kaffe/kaffe/main.c
