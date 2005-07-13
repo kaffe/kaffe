@@ -127,6 +127,8 @@ int gc_system_alloc_cnt;
 #define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
 
 static char * gc_block_base = NULL;
+static size_t gc_num_blocks = 0;
+static size_t gc_num_live_pages = 0;
 
 #define KGC_BLOCKS		((gc_block *) gc_block_base)
 
@@ -255,7 +257,7 @@ gc_heap_initialise(void)
 	/*
 	 * Perform some sanity checks.
 	 */
-	if (gc_heap_initial_size > gc_heap_limit) {
+	if (gc_heap_initial_size > gc_heap_limit && gc_heap_limit != UNLIMITED_HEAP) {
 		dprintf(
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
 		    (int) (gc_heap_initial_size/1024), (int)(gc_heap_limit/1024));
@@ -1085,17 +1087,15 @@ static void *
 gc_block_alloc(size_t size)
 {
 	int size_pg = (size>>gc_pgbits);
-	static int n_live = 0;	/* number of pages in java heap */
-	static int nblocks;	/* number of gc_blocks in array */
 	uintp heap_addr;
 	static uintp last_addr;
 
 	if (!gc_block_base) {
-		nblocks = (gc_heap_limit+gc_pgsize-1)>>gc_pgbits;
+		gc_num_blocks = (size+gc_pgsize-1)>>gc_pgbits;
 
-		gc_block_base = malloc(nblocks * sizeof(gc_block));
+		gc_block_base = malloc(gc_num_blocks * sizeof(gc_block));
 		if (!gc_block_base) return NULL;
-		memset(gc_block_base, 0, nblocks * sizeof(gc_block));
+		memset(gc_block_base, 0, gc_num_blocks * sizeof(gc_block));
 	}
 
 	DBG(GCSYSALLOC, dprintf("pagealloc(%ld)", (long) size));
@@ -1109,10 +1109,10 @@ gc_block_alloc(size_t size)
 	}
 
 	if (gc_mem2block((void *) (heap_addr + size))
-	    > ((gc_block *)gc_block_base) + nblocks
+	    > ((gc_block *)gc_block_base) + gc_num_blocks
 	    || heap_addr < gc_heap_base) {
 		char * old_blocks = gc_block_base;
-		int onb = nblocks;
+		int onb = gc_num_blocks;
 		int min_nb;	/* minimum size of array to hold heap_addr */
 #if defined(KAFFE_STATS)
 		static timespent growtime;
@@ -1127,29 +1127,41 @@ gc_block_alloc(size_t size)
 		   currently fit in the gc_block array.  But, we must
 		   also make sure to allocate enough blocks to cover
 		   the current allocation */
-		nblocks = (nblocks * (gc_heap_limit >> gc_pgbits))
-			/ n_live;
+		gc_num_blocks = (gc_num_blocks * ((gc_heap_total + size) >> gc_pgbits))
+			/ gc_num_live_pages;
 		if (heap_addr < gc_heap_base) 
-			min_nb = nblocks
+			min_nb = gc_num_blocks
 			  + ((gc_heap_base - heap_addr) >> gc_pgbits);
 		else
 			min_nb = ((heap_addr + size) - gc_heap_base) >>
 			  gc_pgbits;
-		nblocks = MAX(nblocks, min_nb);
+		gc_num_blocks = MAX(gc_num_blocks, min_nb);
 		DBG(GCSYSALLOC,
 		    dprintf("growing block array from %d to %d elements\n",
-			    onb, nblocks));
+			    onb, gc_num_blocks));
 
 		KTHREAD(spinon)(NULL);
 		gc_block_base = realloc(old_blocks,
-						nblocks * sizeof(gc_block));
+					gc_num_blocks * sizeof(gc_block));
 		if (!gc_block_base) {
-			/* roll back this call */
-			pagefree(heap_addr, size);
-			gc_block_base = old_blocks;
-			nblocks = onb;
-			KTHREAD(spinoff)(NULL);
-			return NULL;
+			/* In some implementations, realloc is not smart enough to acquire new block
+			 * in a non-contiguous region. Even if internally it calls some malloc procedure
+			 * it fails evenly. A countermeasure is to use slow real malloc if realloc fails
+			 * and only if that call also fails we put throw a OOM.
+			 */
+			DBG(GCSYSALLOC, dprintf("realloc has failed. Trying malloc.\n"));
+			gc_block_base = malloc(gc_num_blocks * sizeof(gc_block));
+			if (!gc_block_base) {
+				/* roll back this call */
+				DBG(GCSYSALLOC, dprintf("failed to grow the block list\n"));
+				pagefree(heap_addr, size);
+				gc_block_base = old_blocks;
+				gc_num_blocks = onb;
+				KTHREAD(spinoff)(NULL);
+				return NULL;
+			}
+			memcpy(gc_block_base, old_blocks, onb * sizeof(gc_block));
+			free(old_blocks);
 		}
 
 		DBG(GCSYSALLOC, dprintf("old block_base = %p, new block_base = %p\n", old_blocks, gc_block_base));
@@ -1177,7 +1189,7 @@ gc_block_alloc(size_t size)
 			  }
 
 			memset(b + onb, 0,
-			       (nblocks - onb) * sizeof(gc_block));
+			       (gc_num_blocks - onb) * sizeof(gc_block));
 
 			for (i = 0; i<=KGC_PRIM_LIST_COUNT; i++)
 				R(gc_block, gc_prim_freelist[i]);
@@ -1191,7 +1203,7 @@ gc_block_alloc(size_t size)
 		KTHREAD(spinoff)(NULL);
 		stopTiming(&growtime);
 	}
-	n_live += size_pg;
+	gc_num_live_pages += size_pg;
 	last_addr = MAX(last_addr, heap_addr + size);
 	gc_heap_range = last_addr - gc_heap_base;
 	DBG(GCSYSALLOC, dprintf("%ld unused bytes in heap addr range\n",
@@ -1231,7 +1243,7 @@ gc_heap_grow(size_t sz)
 	if (gc_heap_total == gc_heap_limit) {
 		unlockStaticMutex(&gc_heap_lock);
 		return (NULL);
-	} else if (gc_heap_total + sz > gc_heap_limit) {
+	} else if (gc_heap_total + sz > gc_heap_limit && gc_heap_limit != UNLIMITED_HEAP) {
 		/* take as much memory as we can */
 		sz = gc_heap_limit - gc_heap_total;
 		assert(sz % gc_pgsize == 0);
@@ -1252,7 +1264,7 @@ gc_heap_grow(size_t sz)
 	}
 
 	gc_heap_total += sz;
-	assert(gc_heap_total <= gc_heap_limit);
+	assert(gc_heap_total <= gc_heap_limit || gc_heap_limit == UNLIMITED_HEAP);
 
 	/* Place block into the freelist for subsequent use */
 	DBG(GCDIAG, gc_set_magic_marker(blk));

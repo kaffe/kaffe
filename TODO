@@ -3,7 +3,11 @@
  * writer.close() flushing the internal buffer on encoder(already fixed)
  * Calendar.getInstance().get(YEAR) returning non-zero
 
+* Engine changes:
+ * JIT must support thread concurrency. Variable must be in thread local storage and not globally visible.
+
 * Architectural changes:
+ * Kaffe-GC must be capable of running without heap limit.
  * Make threading model runtime selectable.
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable

@@ -13,14 +13,6 @@
 #ifndef __gc_incremental_h
 #define __gc_incremental_h
 
-/*
- * Default values for initial and maximum heap size and heap increment.
- */
-#define	MIN_HEAPSIZE	(5*1024*1024)
-#define	MAX_HEAPSIZE	(64*1024*1024)
-#define	ALLOC_HEAPSIZE	(1024*1024)
-
-
 /* ------------------------------------------------------------------------ */
 
 /*

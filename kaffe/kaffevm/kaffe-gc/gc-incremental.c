@@ -1048,7 +1048,7 @@ void throwOutOfMemory(void) NONRETURNING;
 
 static
 void*
-gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
+gcMalloc(Collector* gcif, size_t size, gc_alloc_type_t fidx)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -1077,7 +1077,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 				/* Try invoking GC if it is available */
 				if (garbageman != 0) {
 					unlockStaticMutex(&gc_lock);
-					adviseGC();
+					KGC_invoke(gcif, 0);
 					lockStaticMutex(&gc_lock);
 				}
 				break;

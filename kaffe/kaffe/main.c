@@ -687,9 +687,15 @@ options(char** argv, int argc)
 					fprintf(stderr,  _("Error: No heap size found for -mx option.\n"));
 					exit(1);
 				}
-				vmargs.maxHeapSize = parseSize(argv[i]);
+				if (strcmp(argv[i], "unlimited") == 0)
+					vmargs.maxHeapSize = UNLIMITED_HEAP;
+				else
+					vmargs.maxHeapSize = parseSize(argv[i]);
 			} else {
-				vmargs.maxHeapSize = parseSize(&argv[i][j]);
+				if (strcmp(&argv[i][j], "unlimited") == 0)
+					vmargs.maxHeapSize = UNLIMITED_HEAP;
+				else
+					vmargs.maxHeapSize = parseSize(&argv[i][j]);
 			}
 		}
 		else if ((strncmp(argv[i], "-ms", (j=3)) == 0)

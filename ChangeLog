@@ -1,3 +1,30 @@
+2004-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* TODO: Added some TODO entries.
+
+	* kaffe/kaffe/main.c
+	(parseArgs): -Xmx may detect unlimited now.
+
+	* kaffe/kaffe/version.c
+	(printVersion): Kaffe reports unlimited if the internal default
+	value is UNLIMITED_HEAP.
+
+	* kaffe/kaffevm/gc.h
+	(UNLIMITED_HEAP): New key value.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(gcMalloc): Use directly KGC_invoke and adviseGC.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h: Removed unsed default
+	values.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_num_blocks, gc_num_live_pages): Moved from gc_block_alloc.
+	(gc_block_alloc): Do not use gc_heap_limit anymore for computing the
+	needed memory blocks.
+	(gc_heap_grow): Only limit the heap if gc_heap_limit !=
+	UNLIMITED_HEAP.
+
 2005-07-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* test/jni/Makefile.am: (check_PROGRAMS) Added jniWeakTest.

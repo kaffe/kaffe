@@ -17,8 +17,9 @@
 /*
  * Default values for initial and maximum heap size and heap increment.
  */
+#define UNLIMITED_HEAP  (-1)
 #define	MIN_HEAPSIZE	(5*1024*1024)
-#define	MAX_HEAPSIZE	(64*1024*1024)
+#define	MAX_HEAPSIZE	(UNLIMITED_HEAP)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
 /* 
