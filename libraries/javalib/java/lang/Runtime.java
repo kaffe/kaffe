@@ -313,6 +313,15 @@ private static void exitJavaCleanupHook() {
 	Runtime.getRuntime().exitJavaCleanup();
 }
 
+public int availableProcessors()
+{
+	/* We are using here a dummy implementation. The issue will be
+	 * fixed once we have replaced Runtime.
+	 */
+	return 1;
+}
+
+
 native public void runFinalization();
 
 native public static void runFinalizersOnExit(boolean value);

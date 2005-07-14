@@ -1,3 +1,10 @@
+2005-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/fdlibm/ieeefp.h: Readded arm specific ifdefs.
+
+	* libraries/javalib/java/lang/Runtime.java
+	(availableProcessors): Dummy function for compatibility.
+	
 2005-07-14  Daniel Bonniot  <bonniot@users.sf.net>
 
 	* kaffe/kaffevm/gcFuncs.c
