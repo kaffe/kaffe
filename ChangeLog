@@ -1,3 +1,8 @@
+2005-07-14  Daniel Bonniot  <bonniot@users.sf.net>
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Removed break because entries may be duplicated.
+
 2005-07-13  Andreas Tobler  <toa@pop.agri.ch>
 
 	* config/powerpc/trampolines.S:

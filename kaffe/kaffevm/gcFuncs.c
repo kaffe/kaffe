@@ -211,7 +211,9 @@ DBG(CLASSGC,
 		  if ((*impl_clazz)->interfaces[i] == clazz)
 		    {
 		      (*impl_clazz)->interfaces[i] = NULL;
-		      break;
+		      /* We cannot here because there may exist duplicates
+		       * in the current list.
+		       */
 		    }
 	      }
 	    
