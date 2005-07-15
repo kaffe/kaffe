@@ -1,5 +1,12 @@
 2005-07-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* developers/math_symbols: Removed log10 as it is not implemented in
+	fdlibm.
+
+	* libraries/clib/fdlibm/namespace.h: Regenerated.
+
+2005-07-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* developers/math_symbols, developers/build_mathnamespace: Added a
 	dwarf script to build the namespace.h file.
 	

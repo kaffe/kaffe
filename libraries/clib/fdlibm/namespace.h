@@ -12,7 +12,6 @@
 #define frexp KaffeMath_frexp
 #define ldexp KaffeMath_ldexp
 #define log KaffeMath_log
-#define log10 KaffeMath_log10
 #define modf KaffeMath_modf
 #define pow KaffeMath_pow
 #define sqrt KaffeMath_sqrt
