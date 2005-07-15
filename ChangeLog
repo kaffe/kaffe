@@ -1,3 +1,22 @@
+2005-07-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* developers/math_symbols, developers/build_mathnamespace: Added a
+	dwarf script to build the namespace.h file.
+	
+	* libraries/clib/fdlibm/namespace.h: New generated file.
+
+	* libraries/clib/fdlibm/fdlibm.h,
+	libraries/clib/fdlibm/mprec.h: Include namespace.h.
+
+	* libraries/clib/fdlibm/Makefile.am: Added namespace.h.
+
+	* libraries/clib/fdlibm/Makefile.in: Regenerated.
+
+2005-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Fixed comment.
+
 2005-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/fdlibm/ieeefp.h: Readded arm specific ifdefs.

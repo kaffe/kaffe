@@ -32,6 +32,7 @@
 #include <config.h>
 #include "config-int.h"
 #include "ieeefp.h"
+#include "namespace.h"
 
 #if defined HAVE_SYS_TYPES_H
 #include <sys/types.h>

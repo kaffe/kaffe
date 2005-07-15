@@ -386,6 +386,7 @@ libfdlibm_la_SOURCES = \
 			fdlibm.h \
 			ieeefp.h \
 			java-assert.h \
+			namespace.h \
 			k_cos.c \
 			k_rem_pio2.c \
 			k_sin.c \
