@@ -31,7 +31,7 @@
 #endif
 
 #define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* sc
-#define SIGNAL_CONTEXT_POINTER(scp) struct ucontext_t * scp
+#define SIGNAL_CONTEXT_POINTER(scp) ucontext_t * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
 #define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[EIP])
 #define STACK_POINTER(scp) ((scp)->uc_mcontext.gregs[ESP])
