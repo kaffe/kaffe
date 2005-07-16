@@ -417,6 +417,7 @@ Klasses_jar_SRCS = \
 	$(gnu_CORBA_Poa_SRCS) \
 	$(gnu_bytecode_SRCS) \
 	$(gnu_classpath_SRCS) \
+	$(gnu_classpath_debug_SRCS) \
 	$(gnu_classpath_tools_SRCS) \
 	$(gnu_classpath_tools_javap_SRCS) \
 	$(gnu_classpath_tools_native2ascii_SRCS) \
@@ -901,6 +902,11 @@ gnu_classpath_SRCS = \
 	gnu/classpath/SystemProperties.java \
 	gnu/classpath/VMStackWalker.java \
 	gnu/classpath/VMSystemProperties.java
+
+gnu_classpath_debug_SRCS = \
+	gnu/classpath/debug/Component.java \
+	gnu/classpath/debug/PreciseFilter.java \
+	gnu/classpath/debug/SystemLogger.java
 
 gnu_classpath_tools_SRCS = \
 	gnu/classpath/tools/Util.java

@@ -154,6 +154,9 @@ gnu/classpath/ServiceProviderLoadingAction.java
 gnu/classpath/SystemProperties.java
 gnu/classpath/VMStackWalker.java
 gnu/classpath/VMSystemProperties.java
+gnu/classpath/debug/Component.java
+gnu/classpath/debug/PreciseFilter.java
+gnu/classpath/debug/SystemLogger.java
 gnu/classpath/tools/Util.java
 gnu/classpath/tools/javap/GnuByteCodeJavap.java
 gnu/classpath/tools/javap/Javap.java
