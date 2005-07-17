@@ -1,3 +1,8 @@
+2005-07-17  Eric Anholt  <eta@lclark.edu>
+
+	* config/config-net.h: Include sys/types.h to
+	fix build on FreeBSD.
+
 2005-07-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure: Regenerated.

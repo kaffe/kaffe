@@ -11,6 +11,9 @@
 #ifndef __config_net_h
 #define __config_net_h
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
 #if defined(HAVE_SYS_SOCKET_H)
 #include <sys/socket.h>
 #endif
