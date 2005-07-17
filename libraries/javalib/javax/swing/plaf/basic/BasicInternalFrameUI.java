@@ -56,6 +56,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
 import javax.swing.JComponent;
@@ -64,11 +65,16 @@ import javax.swing.JInternalFrame;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.AbstractBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.InternalFrameUI;
 import javax.swing.plaf.UIResource;
@@ -1172,9 +1178,27 @@ public class BasicInternalFrameUI extends InternalFrameUI
    * This method installs the defaults specified by the look and feel.
    */
   protected void installDefaults()
-  {
-    // FIXME: Move border to MetalBorders
-    frame.setBorder(new InternalFrameBorder());
+    {
+      // This is the border of InternalFrames in the BasicLookAndFeel.
+      // Note that there exist entries for various border colors in
+      // BasicLookAndFeel's defaults, but obviously they differ
+      // from the colors that are actually used by the JDK.
+      UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+      Color lineColor = new Color(238, 238, 238);
+      Border inner = BorderFactory.createLineBorder(lineColor, 1);
+      Color shadowInner = new Color(184, 207, 229);
+      Color shadowOuter = new Color(122, 138, 153);
+      Border outer = BorderFactory.createBevelBorder(BevelBorder.RAISED,
+						     Color.WHITE,
+						     Color.WHITE,
+						     shadowOuter,
+						     shadowInner);
+      Border border = new BorderUIResource.CompoundBorderUIResource(outer,
+								    inner);
+      frame.setBorder(border);
+
+      // InternalFrames are invisible by default.
+      frame.setVisible(false);
   }
 
   /**

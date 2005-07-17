@@ -1165,7 +1165,7 @@ public class JInternalFrame extends JComponent implements Accessible,
       {
 	// Do nothing if they don't want to be restored first.
       }
-    doLayout();
+    setSize(getPreferredSize());
   }
 
   /**

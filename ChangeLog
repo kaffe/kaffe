@@ -1,5 +1,21 @@
 2005-07-17  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-07-10  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JInternalFrame.java
+        (pack): Set the JInternalFrame's own size here instead of
+        layouting its children (this is triggered by setSize anyway).
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java
+        (installDefaults): Set the correct border for InternalFrames.
+        Set InternalFrames to invisible by default.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefaults): Set correct color values for
+        InternalFrames.
+
+2005-07-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/nio/FileChannelImpl.c:
 	(getFD) Renamed to get_native_fd. No longer static since it is used in
 	gnu_java_nio_channels_FileChannelImpl.c as well.
