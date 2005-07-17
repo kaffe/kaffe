@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2003, 2004
+ * Copyright (c) 2003-2005
  *      Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -56,8 +56,8 @@
 #error Do not know how to define EXCEPTIONPROTO
 #endif
 
-#define SIGNAL_PC(scp) (scp)->eip
-#define STACK_POINTER(scp) (scp)->esp
+#define SIGNAL_PC(scp) (scp)->sc_eip
+#define STACK_POINTER(scp) (scp)->sc_uesp
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

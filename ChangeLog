@@ -1,4 +1,9 @@
-2005-07-16  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-07-17  Riccardo Mottola  <multix@gmail.com>
+
+	* config/i386/gnu/md.h
+	(SIGNAL_PC, STACK_POINTER): Get the right field in sigcontext.
+
+2005-07-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c
 	(gc_block_alloc): Relocate gc_last_block too.
