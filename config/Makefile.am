@@ -126,6 +126,7 @@ EXTRA_DIST = \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
 	i386/atomic.h \
+	i386/fpu_set.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \
@@ -204,6 +205,7 @@ EXTRA_DIST = \
 	i386/sco3.2v5/md.h \
 	i386/solaris2/config.frag \
 	i386/solaris2/jit-md.h \
+	i386/solaris2/jit3-md.h \
 	i386/solaris2/md.c \
 	i386/solaris2/md.h \
 	i386/sysdepCallMethod.h \

@@ -27,9 +27,11 @@ libreplace_la_SOURCES = \
 	memset.c \
 	repsemaphore.h \
 	semaphores.c
+	ifaddrs.h
 
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
 
 EXTRA_DIST = \
-	ifaddrs_linux.c
+	ifaddrs_linux.c \
+	ifaddrs_bsd.c

@@ -1,3 +1,28 @@
+2005-07-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/i386/trampolines.S: Fixed PIC usage for x86.
+
+	* config/i386/fpu-set.h: New file.
+
+	* config/i386/linux/md.c: Do not use fpu_control.h but the new
+	function in fpu-set.h
+
+	* config/i386/solaris2/md.h
+	(INIT_MD): Call fpu_set_precision.
+
+	* configure.ac: Removed fpu_control.h
+
+	* config/Makefile.am: Added i386/fpu-set.h
+	
+	* replace/Makefile.am: Added ifaddrs_bsd.c
+
+	* replace/ifaddrs_bsd.c: New file.
+
+	* configure,
+	config/config.h.in,
+	config/Makefile.in,
+	replace/Makefile.in: Regenerated.
+
 2005-07-17  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

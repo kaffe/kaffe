@@ -396,7 +396,8 @@ libreplace_la_LIBADD = \
         $(LTLIBINTL)
 
 EXTRA_DIST = \
-	ifaddrs_linux.c
+	ifaddrs_linux.c \
+	ifaddrs_bsd.c
 
 all: all-am
 
@@ -654,6 +655,7 @@ uninstall-am: uninstall-info-am
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-info-am
 
+	ifaddrs.h
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

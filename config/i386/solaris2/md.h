@@ -40,6 +40,9 @@
 #include "jit-md.h"
 #endif
 
+#include "i386/fpu-set.h"
+#define INIT_MD fpu_set_precision
+
 #include "kaffe-unix-stack.h"
 
 #endif

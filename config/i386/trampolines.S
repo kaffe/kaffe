@@ -25,13 +25,26 @@ TRAMPOLINE_FUNCTION()
      .text
      .align 4
      .globl C_FUNC_NAME(i386_do_fixup_trampoline)
+     .type C_FUNC_NAME(i386_do_fixup_trampoline), @function
 
      C_FUNC_NAME(i386_do_fixup_trampoline) :
         popl	%eax
 	push	%ebp
 	mov	%esp,%ebp
+#if defined(PIC)
+	pushl	%ebx
+	call	.L2
+     .L2:
+	popl	%ebx
+	addl	$_GLOBAL_OFFSET_TABLE_+[.-.L2], %ebx
+	subl	$4, %esp
+	push	%eax
+	call	C_FUNC_NAME(soft_fixup_trampoline@PLT)
+	movl	-4(%ebp), %ebx
+#else
 	push	%eax
 	call	C_FUNC_NAME(soft_fixup_trampoline)
+#endif
 	leave
 	jmp	*%eax
 

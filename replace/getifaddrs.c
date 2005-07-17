@@ -14,6 +14,15 @@
  */
 
 #include "config.h"
+#include "config-net.h"
+
+#if defined(HAVE_SYS_SOCKIO_H)
+#include <sys/sockio.h>
+#endif
+
+#if defined(HAVE_NET_IF_H)
+#include <net/if.h>
+#endif
 
 #if defined(HAVE_GETIFADDRS)
 
@@ -27,13 +36,15 @@
 #define __close(x) close(x)
 #endif
 
-#include "ifaddrs_linux.c"
+#elif defined(SIOCGIFINFO)
+
+#include "ifaddrs_bsd.c"
 
 #else
 
 #include <errno.h>
 #include <sys/types.h>
-#include <ifaddrs.h>
+#include "ifaddrs.h"
 
 int getifaddrs(struct ifaddrs **ifap)
 {

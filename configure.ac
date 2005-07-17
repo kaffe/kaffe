@@ -1019,6 +1019,7 @@ malloc.h \
 memory.h \
 mips/cachectl.h \
 netdb.h \
+net/if.h \
 netinet/in.h \
 netinet/in_systm.h \
 netinet/tcp.h \
@@ -1046,14 +1047,14 @@ sys/sysctl.h \
 sys/param.h \
 sys/signal.h \
 sys/ucontext.h \
+sys/sockio.h \
 syslog.h \
 time.h \
 unistd.h \
 utime.h \
 wintypes.h \
 wtypes.h \
-zlib.h \
-fpu_control.h])
+zlib.h])
 
 dnl GNU/Linux sigcontext headers
 AC_CHECK_HEADERS([asm/sigcontext.h])

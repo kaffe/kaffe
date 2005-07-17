@@ -20,9 +20,7 @@
 #include <features.h>
 #endif
 
-#if defined(HAVE_FPU_CONTROL_H)
-#include <fpu_control.h>
-#endif
+#include "i386/fpu-set.h"
 
 void
 init_md(void)
@@ -31,7 +29,6 @@ init_md(void)
 	mallopt(M_MMAP_MAX, 0);
 #endif
 
-#if defined(HAVE_FPU_CONTROL_H)
 	/* See http://www.srware.com/linux_numerics.txt */
         /*
 	  This puts the X86 FPU in 64-bit precision mode.  The default
@@ -40,12 +37,7 @@ init_md(void)
 	  (int)(1000*atof("0.3")) is 300 in 64-bit mode, 299 in 80-bit
 	  mode.
         */
-        fpu_control_t cw;
-        _FPU_GETCW(cw);
-        cw &= ~_FPU_EXTENDED;
-        cw |= _FPU_DOUBLE;
-        _FPU_SETCW(cw);
-#endif
+	set_fpu_precision();
 }
 
 #if defined(__GLIBC__)
