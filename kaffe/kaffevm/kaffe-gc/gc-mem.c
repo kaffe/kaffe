@@ -363,8 +363,12 @@ gc_heap_malloc(size_t sz)
 	gc_block** mptr;
 	gc_block* blk;
 	size_t nsz;
+#if defined(KAFFE_STATS)
+	static timespent heap_alloc_time;
+#endif
 
 	lockStaticMutex(&gc_heap_lock);
+	startTiming(&heap_alloc_time, "gc_heap_malloc");
 
 DBG(SLACKANAL,
 	if (KGC_SMALL_OBJECT(sz)) {
@@ -445,6 +449,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n",
 	assert(KGC_OBJECT_SIZE(mem) >= sz);
 
 	out:
+	stopTiming(&heap_alloc_time);
 	unlockStaticMutex(&gc_heap_lock);
 
 	return (mem);
@@ -461,6 +466,9 @@ gc_heap_free(void* mem)
 	int lnr;
 	int msz;
 	int idx;
+#if defined(KAFFE_STATS)
+	static timespent heap_free_time;
+#endif
 
 	info = gc_mem2block(mem);
 	idx = GCMEM2IDX(info, mem);
@@ -476,6 +484,7 @@ DBG(GCFREE,
 	dprintf("gc_heap_free: memory %p size %d\n", mem, info->size);	);
 
 	lockStaticMutex(&gc_heap_lock);
+	startTiming(&heap_free_time, "gc_heap_free");
 
 	if (KGC_SMALL_OBJECT(info->size)) {
 		lnr = sztable[info->size].list;
@@ -532,6 +541,7 @@ DBG(GCFREE,
 		gc_primitive_free(info);
 	}
 
+	stopTiming(&heap_free_time);
 	unlockStaticMutex(&gc_heap_lock);
 
 DBG(GCDIAG,
@@ -1198,6 +1208,7 @@ gc_block_alloc(size_t size)
 				R(gc_block, freelist[i].list);
 
 			R(gc_block, gc_reserve_pages);
+			R(gc_block, gc_last_block);
 #undef R
 		}
 		KTHREAD(spinoff)(NULL);

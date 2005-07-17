@@ -1,3 +1,8 @@
+2005-07-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_block_alloc): Relocate gc_last_block too.
+
 2005-07-17  Kurt Miller <truk@optonline.net>
 
 	* kaffe/kaffeh/main.c
