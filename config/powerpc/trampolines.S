@@ -68,7 +68,11 @@ TRAMPOLINE_FUNCTION()
 # Call soft_fixup_trampoline(). Return value will be in r3,
 # which is the address of the translated native code.
 
+#if defined(__APPLE__)
      bl Lsoft_fixup_trampoline$stub
+#else
+     bl soft_fixup_trampoline
+#endif
 
 # Save return value in ctr, so that we can jump there at the
 # end of this function
@@ -116,7 +120,8 @@ TRAMPOLINE_FUNCTION()
      bctr
 
 #endif
-
+	
+#if defined(__APPLE__)
 .data
 	.align 2
 LDFCM0:
@@ -138,3 +143,4 @@ LO$soft_fixup_trampoline:
 L_soft_fixup_trampoline$lazy_ptr:
 	.indirect_symbol _soft_fixup_trampoline
 	.long   dyld_stub_binding_helper
+#endif
