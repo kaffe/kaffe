@@ -27,6 +27,7 @@ libnio_la_SOURCES = \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
 	gnu_java_nio_charset_iconv_IconvEncoder.c \
 	gnu_java_nio_VMSelector.c \
+	gnu_java_nio_channels_FileChannelImpl.c \
 	FileChannelImpl.c
 
 libnio_la_DEPENDENCIES = \

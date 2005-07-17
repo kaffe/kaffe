@@ -119,8 +119,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_open(JNIEnv *env, jobject filechannel
   return fd;
 }
 
-static
-jint getFD(JNIEnv *env, jobject filechannel)
+jint get_native_fd(JNIEnv *env, jobject filechannel)
 {
   jclass filechannel_class = (*env)->GetObjectClass(env, filechannel);
   jfieldID fid = (*env)->GetFieldID(env, filechannel_class, "fd", "I");
@@ -132,7 +131,7 @@ jint JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_available(JNIEnv *env, jobject filechannel)
 {
   int r, nr, rc;
-  int nativeFd = getFD(env, filechannel);
+  int nativeFd = get_native_fd(env, filechannel);
   off_t cur = 0;
   
   r = KLSEEK(nativeFd, cur, SEEK_CUR, &cur);
@@ -183,7 +182,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_available(JNIEnv *env, jobject filech
 jlong JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_implPosition(JNIEnv *env, jobject filechannel)
 {  
-  int nativeFd = getFD(env, filechannel);
+  int nativeFd = get_native_fd(env, filechannel);
   off_t cur;
   int rc;
 
@@ -200,7 +199,7 @@ void JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_seek(JNIEnv *env, jobject filechannel,
 						jlong offset)
 {
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   int sysWhence = SEEK_SET;
   int rc;
   off_t sysOffset = (off_t)offset;
@@ -232,7 +231,7 @@ void JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_implTruncate(JNIEnv *env, jobject filechannel,
 							jlong newSize)
 {
-  int nativeFd = (int) getFD(env, filechannel);
+  int nativeFd = (int) get_native_fd(env, filechannel);
   off_t fileSize;
   off_t new_length = (off_t)newSize;
   off_t cur, oldPosition;
@@ -319,7 +318,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl(JNIEnv *env, jobject filechan
   /* Kaffe's mmapping mode corresponds exactly to java.nio.channels.FileChannel.MapMode numbers. */
   void *memory;
   int rc;
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   off_t nativePos = (off_t)pos;
   size_t nativeSize = (size_t)size;
   jclass bytebuffer_class = (*env)->FindClass(env, "java.nio.MappedByteBufferImpl");
@@ -359,7 +358,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl(JNIEnv *env, jobject filechan
 jlong JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_size(JNIEnv *env, jobject filechannel)
 {
-  int fd = (int)getFD(env, filechannel);
+  int fd = (int)get_native_fd(env, filechannel);
   int rc;
   off_t fileSize;
 
@@ -377,7 +376,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_read___3BII(JNIEnv *env, jobject file
 						       jbyteArray bytes, jint offset, jint len)
 {
   int rc;
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   ssize_t nativeLen = (ssize_t)len;
   ssize_t nativeRead = 0;
   off_t off = (off_t)offset;
@@ -414,7 +413,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_read__(JNIEnv *env, jobject filechann
 {
   int rc;
   uint8 one_byte;
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   ssize_t ret;
 
   do 
@@ -440,7 +439,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_write___3BII(JNIEnv *env, jobject fil
 							jbyteArray bytes, jint offset, jint len)
 {
   int rc;
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   ssize_t nativeLen = (ssize_t)len;
   ssize_t nativeWritten = 0;
   off_t off = (off_t)offset;
@@ -467,7 +466,7 @@ void JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_write__I(JNIEnv *env, jobject filechannel, jint byte)						  
 {
   int rc;
-  int nativeFd = (int)getFD(env, filechannel);
+  int nativeFd = (int)get_native_fd(env, filechannel);
   uint8 real_byte = byte;
   ssize_t ret;
 
@@ -484,27 +483,11 @@ Java_gnu_java_nio_channels_FileChannelImpl_write__I(JNIEnv *env, jobject filecha
 void JNICALL
 Java_gnu_java_nio_channels_FileChannelImpl_implCloseChannel(JNIEnv *env, jobject filechannel)
 {
-  int fd = (int)getFD(env, filechannel);
+  int fd = (int)get_native_fd(env, filechannel);
   int rc = KCLOSE(fd);
 
   if (rc != 0)
     throwIOException(env, rc);
-}
-
-jboolean JNICALL
-Java_gnu_java_nio_channels_FileChannelImpl_lock(JNIEnv *env UNUSED, jobject filechannel UNUSED, jlong position UNUSED,
-						jlong size UNUSED, jboolean shared UNUSED, 
-						jboolean wait_lock UNUSED)
-{
-  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.io.IOException"), "java.nio.FileChannelImpl.lock(): not implemented");
-  return false;
-}
-
-void JNICALL
-Java_gnu_java_nio_channels_FileChannelImpl_unlock(JNIEnv *env UNUSED, jobject filechannel UNUSED, jlong position UNUSED,
-						  jlong size UNUSED)
-{
-  (*env)->ThrowNew(env, (*env)->FindClass(env, "java.io.IOException"), "java.nio.FileChannelImpl.unlock(): not implemented");
 }
 
 /*

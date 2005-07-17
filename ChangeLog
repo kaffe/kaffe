@@ -1,3 +1,35 @@
+2005-07-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/nio/FileChannelImpl.c:
+	(getFD) Renamed to get_native_fd. No longer static since it is used in
+	gnu_java_nio_channels_FileChannelImpl.c as well.
+	(Java_gnu_java_nio_channels_FileChannelImpl_available,
+	Java_gnu_java_nio_channels_FileChannelImpl_implPosition,
+	Java_gnu_java_nio_channels_FileChannelImpl_seek,
+	Java_gnu_java_nio_channels_FileChannelImpl_implTruncate,
+	Java_gnu_java_nio_channels_FileChannelImpl_size,
+	Java_gnu_java_nio_channels_FileChannelImpl_write__I,
+	Java_gnu_java_nio_channels_FileChannelImpl_implCloseChannel) Use get_native_fd 
+	instead of getFD.
+	(Java_gnu_java_nio_channels_FileChannelImpl_lock,
+	Java_gnu_java_nio_channels_FileChannelImpl_unlock) Removed.
+
+	* libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c:
+	New file. Taken from GNU Classpath. Removed unused functions.
+
+	* libraries/clib/nio/Makefile.am (libnio_la_SOURCES): Added
+	gnu_java_nio_channels_FileChannelImpl.c.
+
+	Resynced with GNU Classpath.
+
+	2005-07-10  Casey Marshall  <csm@gnu.org>
+
+        * native/jni/java-nio/gnu_java_nio_channels_FileChannel.c:
+        Include <fcntl.h> if HAVE_FCNTL_H.
+        (Java_gnu_java_nio_channels_FileChannelImpl_lock,
+        Java_gnu_java_nio_channels_FileChannelImpl_unlock): implemented
+        if HAVE_FCNTL.
+
 2005-07-17  Riccardo Mottola  <multix@gmail.com>
 
 	* config/i386/gnu/md.h
