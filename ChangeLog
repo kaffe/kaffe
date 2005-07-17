@@ -1,3 +1,34 @@
+2005-07-17  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+        * libraries/javalib/Makefile.am.in:
+	(classpath_icons) Added the icons directory.
+	(JAR_CMD_TOOLS) Renamed from JAR_CMD_6.
+	(JAR_CMD_6) Added command for archiving the icons.
+
+	* libraries/javalib/gnu/javax/swing/plaf/gtk/icons/Error.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/Inform.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/JavaCup.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/JavaCupLarge.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/Question.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/TreeClosed.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/TreeLeaf-normal.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/TreeLeaf.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/TreeOpen.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/Warn.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/file-folders.png,
+	libraries/javalib/gnu/javax/swing/plaf/gtk/icons/slider.png:
+	New files. Taken from GNU Classpath.
+
+	2005-07-11  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getCellBounds): added width of icon, so selection fits over
+        the cell properly.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        added in icons for the tree.
+
 2005-07-17  Andreas Tobler  <toa@pop.agri.ch>
 
 	* config/powerpc/trampolines.S: Fixed PIC code for powerpc-linux.

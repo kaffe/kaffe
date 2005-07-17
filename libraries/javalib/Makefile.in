@@ -6093,6 +6093,20 @@ classpath_resources = \
 	gnu/java/locale/LocaleInformation_zh_TW_Hant.properties \
 	java/util/iso4217.properties
 
+classpath_icons = \
+	gnu/javax/swing/plaf/gtk/icons/Error.png \
+	gnu/javax/swing/plaf/gtk/icons/Inform.png Ã\
+	gnu/javax/swing/plaf/gtk/icons/JavaCup.png \
+	gnu/javax/swing/plaf/gtk/icons/JavaCupLarge.png \
+	gnu/javax/swing/plaf/gtk/icons/Question.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeClosed.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeLeaf-normal.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeLeaf.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeOpen.png \
+	gnu/javax/swing/plaf/gtk/icons/Warn.png \
+	gnu/javax/swing/plaf/gtk/icons/file-folders.png \
+	gnu/javax/swing/plaf/gtk/icons/slider.png
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	META-INF \
@@ -6107,7 +6121,8 @@ JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
-JAR_CMD6 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools)
+JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_icons))
+JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools)
 all: all-recursive
 
 .SUFFIXES:
@@ -6472,7 +6487,7 @@ new-classes: $(top_srcdir)/developers/update-class-list
 
 @USE_PRECOMPILED_RT_JAR_TRUE@tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 @USE_PRECOMPILED_RT_JAR_TRUE@	rm -f tools.jar
-@USE_PRECOMPILED_RT_JAR_TRUE@	$(JAR_CMD6)
+@USE_PRECOMPILED_RT_JAR_TRUE@	$(JAR_CMD_TOOLS)
 @USE_PRECOMPILED_RT_JAR_TRUE@	mv $@.new $@
 @USE_PRECOMPILED_RT_JAR_FALSE@compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	rm -rf $(LIBDIR)
@@ -6492,13 +6507,14 @@ new-classes: $(top_srcdir)/developers/update-class-list
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD3)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD4)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD5)
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD6)
 @USE_PRECOMPILED_RT_JAR_FALSE@	mv $@.new $@
 
 # Put gnu.bytecode into tools.jar to avoid problems
 # with applications using their own version of it.
 @USE_PRECOMPILED_RT_JAR_FALSE@tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	rm -f tools.jar
-@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD6)
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD_TOOLS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	mv $@.new $@
 
 .PHONY: build-classes Klasses

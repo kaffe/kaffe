@@ -5422,6 +5422,20 @@ classpath_resources = \
 	gnu/java/locale/LocaleInformation_zh_TW_Hant.properties \
 	java/util/iso4217.properties
 
+classpath_icons = \
+	gnu/javax/swing/plaf/gtk/icons/Error.png \
+	gnu/javax/swing/plaf/gtk/icons/Inform.png Ã\
+	gnu/javax/swing/plaf/gtk/icons/JavaCup.png \
+	gnu/javax/swing/plaf/gtk/icons/JavaCupLarge.png \
+	gnu/javax/swing/plaf/gtk/icons/Question.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeClosed.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeLeaf-normal.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeLeaf.png \
+	gnu/javax/swing/plaf/gtk/icons/TreeOpen.png \
+	gnu/javax/swing/plaf/gtk/icons/Warn.png \
+	gnu/javax/swing/plaf/gtk/icons/file-folders.png \
+	gnu/javax/swing/plaf/gtk/icons/slider.png
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	META-INF \
@@ -5454,7 +5468,8 @@ JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
-JAR_CMD6 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools)
+JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_icons))
+JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools)
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
@@ -5470,7 +5485,7 @@ compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_
 
 tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar
-	$(JAR_CMD6)
+	$(JAR_CMD_TOOLS)
 	mv $@.new $@
 else
 ## classes is provided for backward compatibility; use compile-classes
@@ -5492,13 +5507,14 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD3)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
+	$(JAR_CMD6)
 	mv $@.new $@
 
 # Put gnu.bytecode into tools.jar to avoid problems
 # with applications using their own version of it.
 tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar
-	$(JAR_CMD6)
+	$(JAR_CMD_TOOLS)
 	mv $@.new $@
 endif
 
