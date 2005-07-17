@@ -36,7 +36,7 @@
 #define __close(x) close(x)
 #endif
 
-#elif defined(SIOCGIFINFO)
+#elif defined(SIOCGIFCONF)
 
 #include "ifaddrs_bsd.c"
 

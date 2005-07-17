@@ -41,7 +41,7 @@
 #endif
 
 #include "i386/fpu-set.h"
-#define INIT_MD fpu_set_precision
+#define INIT_MD set_fpu_precision
 
 #include "kaffe-unix-stack.h"
 

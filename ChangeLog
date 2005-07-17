@@ -1,5 +1,14 @@
 2005-07-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* configure: Regenerated.
+
+	* replace/getifaddrs.c: Fixed macro name.
+
+	* config/i386/solaris2/md.h
+	(INIT_MD): Fixed function name.
+	
+2005-07-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/i386/trampolines.S: Fixed PIC usage for x86.
 
 	* config/i386/fpu-set.h: New file.
