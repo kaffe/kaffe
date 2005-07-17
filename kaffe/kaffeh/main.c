@@ -63,7 +63,7 @@ int
 main(int argc, char* argv[])
 {
 	char* nm;
-	int i, first = 1;
+	int i, j, first = 1;
 	int farg;
 
 	/* Process arguments */
@@ -91,28 +91,37 @@ main(int argc, char* argv[])
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {
 
 		/* Derive various names from class name */
-		for (i = 0; nm[i] != 0; i++) {
-			if (i >= BUFSZ - 100) {
+		for (i = j = 0; nm[i] != 0; i++, j++) {
+			if (i >= BUFSZ - 100 || j >= BUFSZ - 105) {
 				dprintf(
 				    "kaffeh: class name too long\n");
 				exit(1);
 			}
 			switch (nm[i]) {
 			case '/':
-			case '$':
 			case '.':
-				className[i] = '_';
+				className[j] = '_';
 				pathName[i] = '/';
 				includeName[i] = '_';
 				break;
+			case '$':
+				className[j++] = '_';
+				className[j++] = '0';
+				className[j++] = '0';
+				className[j++] = '0';
+				className[j++] = '2';
+				className[j] = '4';
+				pathName[i] = nm[i];
+				includeName[i] = '_';
+				break;
 			default:
-				className[i] = nm[i];
+				className[j] = nm[i];
 				pathName[i] = nm[i];
 				includeName[i] = nm[i];
 				break;
 			}
 		}
-		className[i] = 0;
+		className[j] = 0;
 		pathName[i] = 0;
 		includeName[i] = 0;
 
@@ -237,6 +246,10 @@ options(int argc, char** argv)
 			i++;
 			strcpy(realClassPath, argv[i]);
 		}
+		else if (strcmp(argv[i], "-bootclasspath") == 0) {
+			i++;
+			strcpy(realClassPath, argv[i]);
+		}
 		else if (strcmp(argv[i], "-o") == 0) {
 			i++;
 			outputName = argv[i];
@@ -266,6 +279,7 @@ usage(void)
 	dprintf("	-help			Print this message\n");
 	dprintf("	-version		Print version number\n");
 	dprintf("	-classpath <path>	Set classpath\n");
+	dprintf("	-bootclasspath <path>	Set classpath\n");
 	dprintf("	-jni			Generate JNI interface\n");
 #ifdef KAFFE_VMDEBUG
 	dprintf("	-Xdebug <opts>		Kaffe debug options.\n");
