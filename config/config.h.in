@@ -82,6 +82,9 @@
 /* Does mprotect support protecting region not covered by mmap ? */
 #undef HAVE_COMPATIBLE_MPROTECT
 
+/* Define to 1 if you have the <crt_externs.h> header file. */
+#undef HAVE_CRT_EXTERNS_H
+
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
 #undef HAVE_DCGETTEXT

@@ -1006,6 +1006,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([stdarg.h \
 alloca.h \
 bsd/libc.h \
+crt_externs.h \
 dlfcn.h \
 fcntl.h \
 features.h \
