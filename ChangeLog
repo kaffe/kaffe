@@ -1,5 +1,11 @@
 2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.h,
+	kaffe/jvmpi/jvmpi_kaffe.c
+	(jvmpiFillThreadStart): Use really VMThread as a second argument.
+
+2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/jvmpi/jvmpi_kaffe.c
 	(jvmpiCreateSystemThread): Increased stack size.
 	(jvmpiFillMethodLoad): Typo fix.

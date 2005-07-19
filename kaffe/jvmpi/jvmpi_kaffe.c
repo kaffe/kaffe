@@ -186,9 +186,10 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
 	ev->u.obj_alloc.obj_id = obj;
 }
 
-void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
+void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_VMThread *vmtid)
 {
 	struct Hjava_lang_String *name;
+	struct Hjava_lang_Thread *tid = unhand(vmtid)->thread;
 	
 	assert(ev != NULL);
 	assert(tid != NULL);

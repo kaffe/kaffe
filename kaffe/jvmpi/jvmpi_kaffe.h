@@ -121,7 +121,7 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj);
  * @param ev The object to fill out.
  * @param obj The object to describe in the event.
  */
-void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid);
+void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_VMThread *tid);
 
 /**
  * Free all requested memory by jvmpiFillThreadStart. This must be called after the
