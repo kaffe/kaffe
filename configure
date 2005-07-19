@@ -29829,6 +29829,7 @@ fi
 
 
 
+
 for ac_header in stdarg.h \
 alloca.h \
 bsd/libc.h \
@@ -29845,6 +29846,7 @@ malloc.h \
 memory.h \
 mips/cachectl.h \
 netdb.h \
+net/if.h \
 netinet/in.h \
 netinet/in_systm.h \
 netinet/tcp.h \
@@ -29872,14 +29874,14 @@ sys/sysctl.h \
 sys/param.h \
 sys/signal.h \
 sys/ucontext.h \
+sys/sockio.h \
 syslog.h \
 time.h \
 unistd.h \
 utime.h \
 wintypes.h \
 wtypes.h \
-zlib.h \
-fpu_control.h
+zlib.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
