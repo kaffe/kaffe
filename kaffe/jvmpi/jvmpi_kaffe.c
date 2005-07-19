@@ -270,9 +270,9 @@ void jvmpiFillMethodLoad(JVMPI_Event *ev, Method *xmeth)
 			     &xmeth->lines->entry[lpc],
 			     METHOD_NATIVECODE(xmeth));
 	}
-      ev.u.compiled_method_load.lineno_table_size =
+      ev->u.compiled_method_load.lineno_table_size =
 	xmeth->lines->length;
-      ev.u.compiled_method_load.lineno_table =
+      ev->u.compiled_method_load.lineno_table =
 	jvmpi_lineno;
     }
   else
@@ -319,7 +319,7 @@ static jint jvmpiCreateSystemThread(char *name,
 				       name,
 				       NULL,
 				       mapped_priority,
-				       32 * 1024, // XXX
+				       1024 * 1024, // XXX
 				       &einfo)) != NULL )
 		{
 			retval = JNI_OK;

@@ -1,5 +1,14 @@
 2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c
+	(jvmpiCreateSystemThread): Increased stack size.
+	(jvmpiFillMethodLoad): Typo fix.
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(JNI_CreateJavaVM): Typo fix.
+
+2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* include/jvmpi.h: Added support for JVMPI_VERSION_1_2.
 
 	* include/kaffe_jni.h: Added new VM parameters about the profiler

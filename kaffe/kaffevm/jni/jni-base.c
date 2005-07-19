@@ -317,7 +317,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
     {
       jint (*onloadProfiler)(JavaVM *jvm, const char *options, void *reserved);
 
-      if (loadNativeLibrary(Kaffe_JavaVMArgs.profilerLibname, NULL, NULL, errbuf, sizeof(errbuf)) < 0)
+      if (loadNativeLibrary(Kaffe_JavaVMArgs.profilerLibname, NULL, errbuf, sizeof(errbuf)) < 0)
 	{
 	  fprintf(stderr,
 		  "Unable to load %s: %s\n",
