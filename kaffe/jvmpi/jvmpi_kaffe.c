@@ -5,6 +5,10 @@
  * Copyright (c) 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
+ * Copyright (c) 2003-2005 
+ *    The Kaffe.org's developers. All Rights reserved.
+ *    See ChangeLog for details.
+ *
  * This file is licensed under the terms of the GNU Public License.
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -41,7 +45,8 @@ JVMPI_Interface *jvmpiCreateInterface(jint version)
 	JVMPI_Interface *retval;
 
 	assert((version == JVMPI_VERSION_1) ||
-	       (version == JVMPI_VERSION_1_1));
+	       (version == JVMPI_VERSION_1_1) ||
+	       (version == JVMPI_VERSION_1_2));
 	
 	retval = &jvmpi_data.jk_Interface;
 	retval->version = version;
@@ -133,37 +138,44 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
 	if( CLASS_IS_ARRAY(cl) )
 	{
 		jint prim_type = 0;
+		Hjava_lang_Class *eclazz = CLASS_ELEMENT_TYPE(cl);
 		
-		switch( CLASS_PRIM_SIG(CLASS_ELEMENT_TYPE(cl)) )
-		{
-		case 'I':
+		if (CLASS_IS_PRIMITIVE(eclazz))
+		  {
+		    switch( CLASS_PRIM_SIG(eclazz) )
+		      {
+		      case 'I':
 			prim_type = JVMPI_INT;
 			break;
-		case 'Z':
+		      case 'Z':
 			prim_type = JVMPI_BOOLEAN;
 			break;
-		case 'S':
+		      case 'S':
 			prim_type = JVMPI_SHORT;
 			break;
-		case 'B':
+		      case 'B':
 			prim_type = JVMPI_BYTE;
 			break;
-		case 'C':
+		      case 'C':
 			prim_type = JVMPI_CHAR;
 			break;
-		case 'F':
+		      case 'F':
 			prim_type = JVMPI_FLOAT;
 			break;
-		case 'D':
+		      case 'D':
 			prim_type = JVMPI_DOUBLE;
 			break;
-		case 'J':
+		      case 'J':
 			prim_type = JVMPI_LONG;
 			break;
-		default:
-			assert(0);
+		      default:
+			dprintf("Invalid primitive signature in jvmpiFillObjectAlloc\n");
+			KAFFEVM_ABORT();
 			break;
-		}
+		      }
+		  }
+		else
+		  prim_type = JVMPI_CLASS;
 		ev->u.obj_alloc.is_array = prim_type;
 	}
 	else
@@ -198,6 +210,13 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
 		&KTHREAD(get_data)((jthread_t)tid->vmThread->vmdata)->jniEnv;
 }
 
+void jvmpiCleanupThreadStart(JVMPI_Event *ev)
+{
+        KFREE(ev->u.thread_start.parent_name);
+	KFREE(ev->u.thread_start.group_name);
+	KFREE(ev->u.thread_start.thread_name);
+}
+
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
 {
 	int lpc;
@@ -217,7 +236,7 @@ void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
 	}
 	for( lpc = 0; lpc < CLASS_NIFIELDS(cl); lpc++ )
 	{
-		jvmpiConvertField(&ev->u.class_load.statics[lpc],
+		jvmpiConvertField(&ev->u.class_load.instances[lpc],
 				  &CLASS_IFIELDS(cl)[lpc]);
 	}
 	ev->event_type = JVMPI_EVENT_CLASS_LOAD;
@@ -228,6 +247,39 @@ void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
 	ev->u.class_load.num_static_fields = CLASS_NSFIELDS(cl);
 	ev->u.class_load.num_instance_fields = CLASS_NIFIELDS(cl);
 	ev->u.class_load.class_id = cl;
+}
+
+void jvmpiFillMethodLoad(JVMPI_Event *ev, Method *xmeth)
+{
+  ev->event_type = JVMPI_EVENT_COMPILED_METHOD_LOAD;
+  ev->u.compiled_method_load.method_id = xmeth;
+  ev->u.compiled_method_load.code_addr = METHOD_NATIVECODE(xmeth);
+  ev->u.compiled_method_load.code_size =
+    (uintp)xmeth->c.ncode.ncode_end - (uintp)xmeth->c.ncode.ncode_start;
+  
+  if( xmeth->lines )
+    {
+      JVMPI_Lineno *jvmpi_lineno = NULL;
+      int lpc;
+      
+      jvmpi_lineno = alloca(sizeof(JVMPI_Lineno) *
+			    xmeth->lines->length);
+      for( lpc = 0; lpc < xmeth->lines->length; lpc++ )
+	{
+	  jvmpiConvertLineno(&jvmpi_lineno[lpc],
+			     &xmeth->lines->entry[lpc],
+			     METHOD_NATIVECODE(xmeth));
+	}
+      ev.u.compiled_method_load.lineno_table_size =
+	xmeth->lines->length;
+      ev.u.compiled_method_load.lineno_table =
+	jvmpi_lineno;
+    }
+  else
+    {
+      ev->u.compiled_method_load.lineno_table_size = 0;
+      ev->u.compiled_method_load.lineno_table = NULL;
+    }
 }
 
 static jint jvmpiCreateSystemThread(char *name,
@@ -505,8 +557,7 @@ static JVMPI_RawMonitor jvmpiRawMonitorCreate(char *lock_name)
 
 	if( (retval = jmalloc(sizeof(struct _JVMPI_RawMonitor))) != NULL )
 	{
-		jmutex_initialise(&retval->mux);
-		jcondvar_initialise(&retval->cv);
+	        initStaticLock(&retval->monitor);
 		retval->lock_name = lock_name;
 	}
 	return( retval );
@@ -516,8 +567,7 @@ static void jvmpiRawMonitorDestroy(JVMPI_RawMonitor lock_id)
 {
 	if( lock_id != NULL )
 	{
-		KMUTEX(destroy)(&lock_id->mux);
-		KCONDVAR(destroy)(&lock_id->cv);
+	        destroyStaticLock(&lock_id->monitor);
 		jfree(lock_id);
 	}
 }
@@ -526,28 +576,28 @@ static void jvmpiRawMonitorEnter(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	KMUTEX(lock)(&lock_id->mux);
+	lockStaticMutex(&lock_id->monitor);
 }
 
 static void jvmpiRawMonitorExit(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	KMUTEX(unlock)(&lock_id->mux);
+	unlockStaticMutex(&lock_id->monitor);
 }
 
 static void jvmpiRawMonitorNotifyAll(JVMPI_RawMonitor lock_id)
 {
 	assert(lock_id != NULL);
 	
-	KCONDVAR(broadcast)(&lock_id->cv, &lock_id->mux);
+	broadcastStaticCond(&lock_id->monitor);
 }
 
 static void jvmpiRawMonitorWait(JVMPI_RawMonitor lock_id, jlong ms)
 {
 	assert(lock_id != NULL);
 	
-	KCONDVAR(wait)(&lock_id->cv, &lock_id->mux, ms);
+	waitStaticCond(&lock_id->monitor, ms);
 }
 
 static jint jvmpiRequestEvent(jint event_type, void *arg)
@@ -569,6 +619,7 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 			JVMPI_Field *jvmpi_fields;
 			JVMPI_Event ev;
 
+			retval = JVMPI_SUCCESS;
 			cl = (struct Hjava_lang_Class *)arg;
 			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
 					       CLASS_NMETHODS(cl));
@@ -589,6 +640,7 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 			struct Hjava_lang_Thread *tid;
 			JVMPI_Event ev;
 
+			retval = JVMPI_SUCCESS;
 			tid = (struct Hjava_lang_Thread *)arg;
 			jvmpiFillThreadStart(&ev, tid);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;
@@ -603,6 +655,7 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 			struct Hjava_lang_Object *obj;
 			JVMPI_Event ev;
 
+			retval = JVMPI_SUCCESS;
 			obj = (struct Hjava_lang_Object *)arg;
 			jvmpiFillObjectAlloc(&ev, obj);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;

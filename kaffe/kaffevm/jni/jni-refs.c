@@ -254,9 +254,22 @@ jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env, jobject obj)
   *((jobject *)ref) = obj;
   KGC_addWeakRef(main_collector, ref, obj);
 
+  ref = (jweak) ((uintp)ref | 1);
+
+#if defined(ENABLE_JVMPI)
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_WEAK_GLOBALREF_ALLOC) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_JNI_WEAK_GLOBALREF_ALLOC;
+      ev.u.jni_globalref_alloc.obj_id = obj;
+      ev.u.jni_globalref_alloc.ref_id = ref;
+      jvmpiPostEvent(&ev);
+    }
+#endif
   END_EXCEPTION_HANDLING();
 
-  return (jweak)((uintp)ref | 1);
+  return ref;
 }
 
 void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env, jweak ref)
@@ -266,6 +279,17 @@ void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env, jweak ref)
   BEGIN_EXCEPTION_HANDLING_VOID();
 
   assert(KGC_getObjectIndex(main_collector, ref) == KGC_ALLOC_VMWEAKREF);
+
+#if defined(ENABLE_JVMPI)
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_WEAK_GLOBALREF_FREE) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_JNI_WEAK_GLOBALREF_FREE;
+      ev.u.jni_globalref_free.ref_id = ref;
+      jvmpiPostEvent(&ev);
+    }
+#endif
 
   obj = unveil(ref);
 

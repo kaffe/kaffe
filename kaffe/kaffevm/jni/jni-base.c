@@ -26,6 +26,7 @@
 #include "support.h"
 #include "classMethod.h"
 #include "jvmpi_kaffe.h"
+#include "external.h"
 
 /*
  * Keep track of how many VM's are active. Right now
@@ -272,6 +273,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   JavaVMInitArgs *vm_args = (JavaVMInitArgs *)args;
   JNIEnv **env = (JNIEnv **)penv;
   jnirefs *reftable;
+  char errbuf[256];
 
   switch (vm_args->version)
     {
@@ -311,6 +313,24 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   Kaffe_NumVM++;
 
 #if defined(ENABLE_JVMPI)
+  if (Kaffe_JavaVMArgs.profilerLibname != NULL)
+    {
+      jint (*onloadProfiler)(JavaVM *jvm, const char *options, void *reserved);
+
+      if (loadNativeLibrary(Kaffe_JavaVMArgs.profilerLibname, NULL, NULL, errbuf, sizeof(errbuf)) < 0)
+	{
+	  fprintf(stderr,
+		  "Unable to load %s: %s\n",
+		  Kaffe_JavaVMArgs.profilerLibname,
+		  errbuf);
+	  exit(1);
+	}
+      
+      onloadProfiler = (jint (*)(JavaVM *jvm, const char *options, void *reserved))loadNativeLibrarySym("JVM_OnLoad");
+      if (onloadProfiler != NULL && onloadProfiler (*vm, Kaffe_JavaVMArgs.profilerArguments, NULL) < 0)
+	exit(1);
+    }
+  
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JVM_INIT_DONE) )
     {
       JVMPI_Event ev;

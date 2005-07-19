@@ -141,6 +141,7 @@ void call(SlotInfo*);
 void call_indirect_method(Method*);
 void call_soft(void*);
 void ret(void);
+void exit_method(void);
 
 label* build_code_ref(uint8*, uintp);
 label* reference_code_label(uintp);

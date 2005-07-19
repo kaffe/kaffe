@@ -63,6 +63,7 @@
 #include "jvmpi_kaffe.h"
 #include "kaffe_jni.h"
 #include "native-wrapper.h"
+#include "stats.h"
 
 const char* engine_name = "Just-in-time v3";
 
@@ -216,6 +217,8 @@ translate(Method* xmeth, errorInfo* einfo)
 	 * hasn't been done by someone else once we get it.
 	 */
 	enterTranslator();
+
+	startTiming(&fulljit, "JIT translation");
 
 	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tms = currentTime();
@@ -423,6 +426,8 @@ DBG(MOREJIT,
 		       METHOD_NATIVECODE(xmeth), xmeth);
 	}
 
+	stopTiming(&fulljit);
+
 	leaveTranslator();
 #if defined(KAFFE_FEEDBACK)
 	if( kaffe_feedback_file )
@@ -432,42 +437,13 @@ done3:;
 	unlockClass(xmeth->class);
 
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_COMPILED_METHOD_LOAD) &&
-	    success )
-	{
-		JVMPI_Event ev;
+	if (success && JVMPI_EVENT_ISENABLED(JVMPI_EVENT_COMPILED_METHOD_LOAD) )
+	  {
+	    JVMPI_Event ev;
 
-		ev.event_type = JVMPI_EVENT_COMPILED_METHOD_LOAD;
-		ev.u.compiled_method_load.method_id = xmeth;
-		ev.u.compiled_method_load.code_addr =
-			METHOD_NATIVECODE(xmeth);
-		ev.u.compiled_method_load.code_size =
-			(uintp)xmeth->c.ncode.ncode_end - (uintp)xmeth->c.ncode.ncode_start;
-		if( xmeth->lines )
-		{
-			JVMPI_Lineno *jvmpi_lineno = NULL;
-			int lpc;
-			
-			jvmpi_lineno = alloca(sizeof(JVMPI_Lineno) *
-					      xmeth->lines->length);
-			for( lpc = 0; lpc < xmeth->lines->length; lpc++ )
-			{
-				jvmpiConvertLineno(&jvmpi_lineno[lpc],
-						   &xmeth->lines->entry[lpc],
-						   METHOD_NATIVECODE(xmeth));
-			}
-			ev.u.compiled_method_load.lineno_table_size =
-				xmeth->lines->length;
-			ev.u.compiled_method_load.lineno_table =
-				jvmpi_lineno;
-		}
-		else
-		{
-			ev.u.compiled_method_load.lineno_table_size = 0;
-			ev.u.compiled_method_load.lineno_table = NULL;
-		}
-		jvmpiPostEvent(&ev);
-	}
+	    jvmpiFillMethodLoad(&ev, xmeth);
+	    jvmpiPostEvent(&ev);
+	  }
 #endif
 
 	return (success);

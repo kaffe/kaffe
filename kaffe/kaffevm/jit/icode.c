@@ -202,6 +202,20 @@ prologue(Method* meth)
 
 	/* Emit prologue code */
 	slot_const_const(NULL, (jword)l, (jword)meth, HAVE_prologue, Tnull);
+
+#if defined(ENABLE_JVMPI)
+	{
+		SlotInfo *tmp;
+
+		slot_alloctmp(tmp);
+		if( METHOD_IS_STATIC(meth) )
+			move_ref_const(tmp, NULL);
+		else
+			move_ref(tmp, local(0));
+		softcall_enter_method(tmp, meth);
+		slot_freetmp(tmp);
+	}
+#endif
 }
 
 void
@@ -223,6 +237,14 @@ void
 epilogue(void)
 {
 	slot_slot_slot(NULL, NULL, NULL, HAVE_epilogue, Tnull);
+}
+
+void
+exit_method(void)
+{
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
 }
 
 void
@@ -3687,8 +3709,24 @@ softcall_exit_method(Method *meth)
 	popargs();
 	end_func_sync();
 }
-#endif
 
+void
+softcall_enter_method(SlotInfo *obj, Method *meth)
+{
+        begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref(obj, 0);
+	pusharg_ref_const(meth, 1);
+#else
+	pusharg_ref_const(meth, 1);
+	pusharg_ref(obj, 0);
+#endif
+	call_soft(soft_enter_method);
+	popargs();
+	end_func_sync();
+}
+
+#endif
 
 #if defined(GC_INCREMENTAL)
 void

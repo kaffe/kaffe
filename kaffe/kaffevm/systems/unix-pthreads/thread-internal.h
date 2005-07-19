@@ -31,7 +31,7 @@
 #define THREAD_SUSPENDED	0
 #define THREAD_RUNNING		1
 #define THREAD_DEAD		2
-#define THREAD_KILL		3
+#define THREAD_KILL             3
 
 /* suspend states (these are exclusive) */
 typedef enum {
@@ -340,6 +340,38 @@ void jthread_set_blocking (int fd, int blocking);
  * Check the blocking state of a file descriptor
  */
 int jthread_is_blocking (int fd);
+
+/**
+ * Check whether the specified thread is locked in a condvar.
+ * 
+ * @param th The thread to check.
+ * @return 1 if it is locked, 0 else.
+ */
+int jthread_on_condvar (jthread_t th);
+
+/**
+ * Check whether the specified thread is locked in a mutex.
+ *
+ * @param th The thread to check.
+ * @return 1 if it is locked, 0 else.
+ */
+int jthread_on_mutex (jthread_t th);
+
+/**
+ * Check whether the thread has been run since the last
+ * clear.
+ *
+ * @param jt The thread to check the status of.
+ * @return 1 if it has been run, 0 else.
+ */
+int jthread_has_run (jthread_t jt);
+
+/**
+ * Clear the run state of the specified thread.
+ *
+ * @param jt The thread to clear the run status of.
+ */
+void jthread_clear_run (jthread_t jt);
 
 void jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender);
 

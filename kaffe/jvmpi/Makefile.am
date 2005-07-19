@@ -17,6 +17,7 @@ libkaffejvmpi_la_DEPENDENCIES = \
 
 libkaffejvmpi_la_LIBADD = \
 	$(libkaffejvmpi_la_DEPENDENCIES) \
+	$(KVMLIBFLAGS) \
 	$(VM_LIBS) \
 	$(M_LIBS)
 

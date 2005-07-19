@@ -1066,10 +1066,10 @@ soft_trace(Method* meth, void* args UNUSED)
     dprintf("soft_trace: %s.%s%s\n", CLASS_CNAME(meth->class), meth->name->data, METHOD_SIGD(meth));
 }
 
-void
-soft_enter_method(Hjava_lang_Object *obj UNUSED, Method *meth UNUSED)
-{
 #if defined(ENABLE_JVMPI)
+void
+soft_enter_method(Hjava_lang_Object *obj, Method *meth)
+{
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_ENTRY) )
 	{
 		JVMPI_Event ev;
@@ -1087,8 +1087,13 @@ soft_enter_method(Hjava_lang_Object *obj UNUSED, Method *meth UNUSED)
 		ev.u.method_entry2.obj_id = obj;
 		jvmpiPostEvent(&ev);
 	}
-#endif
 }
+#else
+void
+soft_enter_method(Hjava_lang_Object *obj UNUSED, Method *meth UNUSED)
+{
+}
+#endif
 
 #if defined(ENABLE_JVMPI)
 void

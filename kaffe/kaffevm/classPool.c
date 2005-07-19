@@ -553,7 +553,7 @@ walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param)
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entry = classEntryPool[ipool];
 		for (; entry != NULL; entry = entry->next) {
-			if (entry->data.cl
+			if (entry->state != NMS_EMPTY && entry->data.cl
 			    && entry->loader == entry->data.cl->loader) {
 				walker(entry->data.cl, param);
 			}

@@ -438,9 +438,7 @@ firstStartThread(void* arg)
 
 		jvmpiFillThreadStart(&ev, tid);
 		jvmpiPostEvent(&ev);
-		KFREE(ev.u.thread_start.parent_name);
-		KFREE(ev.u.thread_start.group_name);
-		KFREE(ev.u.thread_start.thread_name);
+		jvmpiCleanupThreadStart(&ev);
 	}
 #endif
 

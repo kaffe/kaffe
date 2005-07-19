@@ -23,6 +23,9 @@
 #include "debug.h"
 #include "stats.h"
 
+#if defined(KAFFE_STATS)
+
+timespent fulljit;
 counter jitmem;
 counter jitcodeblock;
 counter utf8new;
@@ -32,8 +35,6 @@ counter ltmem;
 counter jarmem;
 counter cpemem;
 timespent jit_time;
-
-#if defined(KAFFE_STATS)
 
 /*
  * The format for statMask (set by statsSetMaskStr) is like so:

@@ -765,6 +765,7 @@ Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 #if defined(ENABLE_JVMPI)
 	case JVMPI_VERSION_1:
 	case JVMPI_VERSION_1_1:
+	case JVMPI_VERSION_1_2:
 		(*penv) = jvmpiCreateInterface(interface_id);
 		return (JNI_OK);
 #endif
@@ -1059,6 +1060,8 @@ KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	ALLOC_HEAPSIZE,	/* Inc heap size */
 	NULL,		/* Class home */
 	NULL,		/* Library home */
+	NULL,           /* No profiler */
+	NULL            /* No arguments to profiler */
 };
 
 /*

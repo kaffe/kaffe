@@ -134,6 +134,7 @@ static const int32 UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
 						virtualMachine(m, sp+1, retval, thread_data)
 
 #define	ret()					goto end
+#define exit_method()				do { } while(0)
 
 #define	returnarg_int(s)			retval[0].v.tint = (s)[0].v.tint
 #define	returnarg_ref(s)			retval[0].v.taddr = (s)[0].v.taddr

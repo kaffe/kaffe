@@ -29,7 +29,7 @@ struct _methods;
 struct _errorInfo;
 
 void	initNative(void);
-int	loadNativeLibrary(char*, struct Hjava_lang_ClassLoader*, char*, size_t);
+int	loadNativeLibrary(const char*, struct Hjava_lang_ClassLoader*, char*, size_t);
 void	unloadNativeLibraries(struct Hjava_lang_ClassLoader*);
 void*	loadNativeLibrarySym(const char*);
 nativecode*	native(struct _methods*, struct _errorInfo*);

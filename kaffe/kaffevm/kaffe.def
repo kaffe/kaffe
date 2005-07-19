@@ -2115,6 +2115,7 @@ define_insn(IRETURN)
 	check_stack_int(0);
 
 	monitor_exit();
+	exit_method();
 	returnarg_int(rstack(0));
 	ret();
 }
@@ -2126,6 +2127,7 @@ define_insn(LRETURN)
 	check_stack_long(0);
 
 	monitor_exit();
+	exit_method();
 	returnarg_long(rstack_long(0));
 	ret();
 }
@@ -2137,6 +2139,7 @@ define_insn(FRETURN)
 	check_stack_float(0);
 
 	monitor_exit();
+	exit_method();
 	returnarg_float(rstack_float(0));
 	ret();
 }
@@ -2148,6 +2151,7 @@ define_insn(DRETURN)
 	check_stack_double(0);
 
 	monitor_exit();
+	exit_method();
 	returnarg_double(rstack_double(0));
 	ret();
 }
@@ -2159,6 +2163,7 @@ define_insn(ARETURN)
 	check_stack_ref(0);
 
 	monitor_exit();
+	exit_method();
 	returnarg_ref(rstack_ref(0));
 	ret();
 }
@@ -2168,9 +2173,7 @@ define_insn(RETURN)
 	trace_jcode ("return\n");
 
 	monitor_exit();
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
+	exit_method();
 	ret();
 }
 

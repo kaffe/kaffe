@@ -426,6 +426,17 @@ done2:
 	leaveTranslator();
 done3:
 	unlockClass(meth->class);
+	
+#if defined(ENABLE_JVMPI)
+	if (success && JVMPI_EVENT_ISENABLED(JVMPI_EVENT_COMPILED_METHOD_LOAD) )
+	  {
+	    JVMPI_Event ev;
+
+	    jvmpiFillMethodLoad(&ev, meth);
+	    jvmpiPostEvent(&ev);
+	  }
+#endif
+
 	return (success);
 }
 

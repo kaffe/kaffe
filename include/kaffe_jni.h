@@ -25,6 +25,8 @@ typedef struct KaffeVM_Arguments {
         jint            allocHeapSize;
         const char*     classhome;
         const char*     libraryhome;
+        const char*     profilerLibname;
+        const char*     profilerArguments;
 } KaffeVM_Arguments;
 
 extern KaffeVM_Arguments Kaffe_JavaVMArgs;

@@ -316,6 +316,14 @@ epilogue(Method* meth UNUSED)
 }
 
 void
+exit_method(void)
+{
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+}
+
+void
 ret(void)
 {
 	label *l;
@@ -3815,10 +3823,6 @@ return_double(SlotInfo* dst)
 void
 returnarg_int(SlotInfo* src)
 {
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
-
 	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_int, Tcopy);
 }
 #endif
@@ -3827,10 +3831,6 @@ returnarg_int(SlotInfo* src)
 void
 returnarg_ref(SlotInfo* src)
 {
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
-
 	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_ref, Tcopy);
 }
 #endif
@@ -3839,10 +3839,6 @@ returnarg_ref(SlotInfo* src)
 void
 returnarg_long(SlotInfo* src)
 {
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
-
 	lslot_lslot_lslot(NULL, NULL, src, HAVE_returnarg_long, Tcopy);
 }
 #endif
@@ -3850,10 +3846,6 @@ returnarg_long(SlotInfo* src)
 void
 returnarg_float(SlotInfo* src)
 {
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
-
 #if defined(HAVE_returnarg_float)
 	slot_slot_slot(NULL, NULL, src, HAVE_returnarg_float, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
@@ -3866,10 +3858,6 @@ returnarg_float(SlotInfo* src)
 void
 returnarg_double(SlotInfo* src)
 {
-#if defined(ENABLE_JVMPI)
-	softcall_exit_method(globalMethod);
-#endif
-
 #if defined(HAVE_returnarg_double)
 	lslot_lslot_lslot(NULL, NULL, src, HAVE_returnarg_double, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT) || defined(PS2LINUX)

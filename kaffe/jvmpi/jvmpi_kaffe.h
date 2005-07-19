@@ -22,14 +22,13 @@
 #include "lock-impl.h"
 #include "support.h"
 #include "code.h"
+#include "locks.h"
 
 /**
- * Implementation of a JVMPI_RawMonitor.  Just uses jmutex/jcondvar to do the
- * work.
+ * Implementation of a JVMPI_RawMonitor.  We use internal kaffe reentrant fast lock.
  */
 struct _JVMPI_RawMonitor {
-	jmutex mux;
-	jcondvar cv;
+        iStaticLock monitor;
 	char *lock_name;
 };
 
@@ -125,6 +124,14 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj);
 void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid);
 
 /**
+ * Free all requested memory by jvmpiFillThreadStart. This must be called after the
+ * event has been posted to the profiler.
+ *
+ * @param ev The event object to cleanup. 
+ */
+void jvmpiCleanupThreadStart(JVMPI_Event *ev);
+
+/**
  * Fill in a JVMPI_Event structure with the data for a JVMPI_EVENT_CLASS_LOAD
  * event.  Note:  The class_load.methods, class_load.statics, and
  * class_load.instances arrays must be allocated before calling this method.
@@ -133,6 +140,15 @@ void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid);
  * @param obj The object to describe in the event.
  */
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl);
+
+/**
+ * Fill in a JVMPI_Event structure with the data for a JVMPI_EVENT_METHOD_LOAD
+ * event.
+ *
+ * @param ev The event data structure to be filled.
+ * @param meth The method which will be used for filling.
+ */
+void jvmpiFillMethodLoad(JVMPI_Event *ev, Method *meth);
 
 #else
 

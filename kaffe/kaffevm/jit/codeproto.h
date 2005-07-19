@@ -122,6 +122,7 @@ void call(SlotInfo*);
 void call_indirect_method(Method*);
 void call_soft(void*);
 void ret(void);
+void exit_method(void);
 
 label* build_code_ref(uint8*, uintp);
 label* reference_code_label(uintp);
@@ -245,4 +246,7 @@ void softcall_checkarraystore(SlotInfo*, SlotInfo*);
 void softcall_addreference(SlotInfo*, SlotInfo*);
 void softcall_addreference_static(void*, SlotInfo*);
 void softcall_abstractmethod(Utf8Const*, Utf8Const*);
+void softcall_exit_method(Method *meth);
+void softcall_enter_method(SlotInfo *obj, Method *meth);
+
 #endif

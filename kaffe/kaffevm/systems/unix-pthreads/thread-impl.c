@@ -1837,6 +1837,33 @@ void* jthread_stacklimit(void)
 #endif
 }
 
+int jthread_on_condvar(jthread_t jt)
+{
+	return (jt->blockState & (BS_CV|BS_CV_TO)) != 0;
+}
+
+int jthread_on_mutex(jthread_t jt)
+{
+	return (jt->blockState & (BS_MUTEX)) != 0;
+}
+
+int jthread_get_status(jthread_t jt)
+{
+  if (jt->status == THREAD_KILL)
+    return THREAD_DEAD;
+
+  return jt->status;
+}
+
+int jthread_has_run(jthread_t jt)
+{
+  return 1;
+}
+
+void jthread_clear_run(UNUSED jthread_t jt)
+{
+}
+
 void jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender)
 {
 	/* TODO */
@@ -1847,10 +1874,28 @@ void jthread_resume(UNUSED jthread_t jt, UNUSED void *suspender)
 	/* TODO */
 }
 
-jthread_t jthread_from_data(UNUSED threadData *td, UNUSED void *suspender)
+jthread_t jthread_from_data(threadData *td, UNUSED void *suspender)
 {
-	/* TODO */
-	return NULL;
+  jthread_t cur = jthread_current();
+  jthread_t iterator;
+
+  protectThreadList(cur);
+  iterator = activeThreads;
+  while (iterator != NULL)
+    {
+      if (td == &iterator->data)
+	{
+	  unprotectThreadList(cur);
+	  /* Thread handles are garbage collected so the stack is protecting
+	   * us.
+	   */
+	  return iterator;
+	}
+      iterator = iterator->next;
+    }
+
+  unprotectThreadList(cur);
+  return NULL;
 }
 
 jlong jthread_get_usage(UNUSED jthread_t jt)
@@ -1858,3 +1903,4 @@ jlong jthread_get_usage(UNUSED jthread_t jt)
 	/* TODO */
 	return 0;
 }
+

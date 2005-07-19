@@ -230,12 +230,10 @@ DBG(SLOWLOCKS,
  for (;;) {
    lk = getHeavyLock(lkp, heavyLock);
    
-   startTiming(&locksTime, "slowlocks-time");
    /* If I hold the heavy lock then just keep on going */
    if (cur == lk->holder) {
      lk->lockCount++;
      putHeavyLock(lk);
-     stopTiming(&locksTime);
      KTHREAD(enable_stop)();
      return;
    }
@@ -248,7 +246,6 @@ DBG(SLOWLOCKS,
      }
      lk->holder = cur;
      lk->lockCount++;
-     stopTiming(&locksTime);
      putHeavyLock(lk);
      KTHREAD(enable_stop)();
      return;
@@ -258,7 +255,6 @@ DBG(SLOWLOCKS,
    tdata->nextlk = lk->mux;
    lk->mux = cur;
    putHeavyLock(lk);
-   stopTiming(&locksTime);
    KSEM(get)(&tdata->sem, (jlong)0);
  }
 }
@@ -282,13 +278,11 @@ slowUnlockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
   KTHREAD(disable_stop)(); /* protect the heavy lock, and its queues */
   lk = getHeavyLock(lkp, heavyLock);
 
-  startTiming(&locksTime, "slowlocks-time");
   
   /* Only the lock holder can be doing an unlock */
   if (cur != lk->holder) {
     putHeavyLock(lk);
     KTHREAD(enable_stop)();
-    stopTiming(&locksTime);
     throwException(IllegalMonitorStateException);
   }
 
@@ -298,7 +292,6 @@ slowUnlockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
   lk->lockCount--;
   if (lk->lockCount != 0) {
     putHeavyLock(lk);
-    stopTiming(&locksTime);
     KTHREAD(enable_stop)();
     return;
   }
@@ -322,7 +315,6 @@ slowUnlockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
     putHeavyLock(lk);
   }
   KTHREAD(enable_stop)();
-  stopTiming(&locksTime);
 }
 
 void
@@ -534,18 +526,35 @@ void
 slowLockObject(Hjava_lang_Object* obj)
 {
 #if defined(ENABLE_JVMPI)
+  jboolean isContention;
+
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTER) )
     {
       JVMPI_Event ev;
       
-      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTER;
-      ev.u.monitor.object = obj;
-      jvmpiPostEvent(&ev);
+      /* 
+       * There may be a race here. Let's hope the profiler
+       * does not rely on the exact count of all contention
+       * but acquiring the heavy lock here will be too heavy.
+       */
+      if (IS_HEAVY_LOCK(obj->lock))
+	{
+	  iLock *hlk = GET_HEAVYLOCK(obj->lock);
+	  
+	  if (hlk->lockCount != 0)
+	    {
+	      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTER;
+	      ev.u.monitor.object = obj;
+	      jvmpiPostEvent(&ev);
+
+	      isContention = true;
+	    }
+	}
     }
 #endif
   slowLockMutex((volatile iLock * volatile *)&obj->lock, NULL);
 #if defined(ENABLE_JVMPI)
-  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) )
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) && isContention)
     {
       JVMPI_Event ev;
       
@@ -562,11 +571,15 @@ slowUnlockObject(Hjava_lang_Object* obj)
 #if defined(ENABLE_JVMPI)
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_EXIT) )
     {
+      iLock *hlk = GET_HEAVYLOCK(obj->lock);
       JVMPI_Event ev;
       
-      ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_EXIT;
-      ev.u.monitor.object = obj;
-      jvmpiPostEvent(&ev);
+      if (hlk->lockCount > 1)
+	{
+	  ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_EXIT;
+	  ev.u.monitor.object = obj;
+	  jvmpiPostEvent(&ev);
+	}
     }
 #endif
   slowUnlockMutex((volatile iLock *volatile *)&obj->lock, NULL);

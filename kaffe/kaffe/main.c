@@ -62,7 +62,6 @@ KaffeVM_Arguments vmargs;
 JNIEnv* global_env;
 JavaVM* global_vm;
 static int isJar = 0;
-static char *jvm_onload;
 
 static int options(char**, int);
 static void usage(void);
@@ -178,46 +177,6 @@ main(int argc, char* argv[])
 
 	/* Initialise */
 	JNI_CreateJavaVM(&global_vm, &global_env, &vmargs);
-
-	/* Handle the '-Xrun' argument. */
-	if( jvm_onload != NULL )
-	{
-		char *libpath, *libargs;
-		char errbuf[512];
-		int i;
-
-		/* XXX Pull findLibrary() from the JanosVM. */
-		libpath = &jvm_onload[2];
-		libpath[0] = 'l';
-		libpath[1] = 'i';
-		libpath[2] = 'b';
-
-		if( (libargs = strchr(jvm_onload, ':')) != NULL )
-		{
-			*libargs = '\0';
-			libargs += 1;
-		}
-		
-		i = loadNativeLibrary(libpath, NULL, errbuf, sizeof(errbuf));
-		if( i > 0 )
-		{
-			jint (*onload_func)(JavaVM *jvm, char *, void *);
-
-			if( (onload_func =
-			     loadNativeLibrarySym("JVM_OnLoad")) != NULL )
-			{
-				(void)onload_func(global_vm, libargs, NULL);
-			}
-		}
-		else
-		{
-			fprintf(stderr,
-				"Unable to load %s: %s\n",
-				libpath,
-				errbuf);
-			exit(1);
-		}
-	}
 
 	return main2(global_env, argv, farg, argc);
 }
@@ -779,7 +738,24 @@ options(char** argv, int argc)
                         isJar = 1;
                 }
 		else if (strncmp(argv[i], "-Xrun", 5) == 0) {
-			jvm_onload = argv[i];
+		  char *argPos;
+		  char *libName;
+		  int libnameLen;
+
+		  argPos = strchr(argv[i], ':');
+		  if (argPos != NULL)
+		    {
+		      libnameLen = argPos - &argv[i][5];
+		      vmargs.profilerArguments = strdup(argPos+1);
+		    }
+		  else
+		    libnameLen = strlen(argv[i]) - 1;
+
+		  libName = malloc(libnameLen+4);
+		  strcpy(libName, "lib");
+		  strncat(libName, &argv[i][5], libnameLen);
+
+		  vmargs.profilerLibname = libName;
 		}
 #if defined(KAFFE_PROFILER)
 		else if (strcmp(argv[i], "-prof") == 0) {

@@ -88,6 +88,7 @@ extern counter utf8release;
 extern counter ltmem;
 extern counter jarmem;
 extern counter cpemem;
+extern counter fulljit;
 
 extern void statsComputeSumMedian(int *v, int n, int *sum, int *med);
 extern void statsSetMaskStr(char *);

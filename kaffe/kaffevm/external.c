@@ -196,7 +196,7 @@ initNative(void)
  * fills errbuf (if not NULL) with the error message. Assumes synchronization.
  */
 int
-loadNativeLibrary(char* path, struct Hjava_lang_ClassLoader* loader, char *errbuf, size_t errsiz)
+loadNativeLibrary(const char* path, struct Hjava_lang_ClassLoader* loader, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
 	int libIndex;

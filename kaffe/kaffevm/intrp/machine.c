@@ -138,6 +138,14 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, MET
 
 	/* If this is native, then call the real function */
 	methaccflags = meth->accflags;
+
+#if defined(ENABLE_JVMPI)
+	if (methaccflags & ACC_STATIC)
+	  soft_enter_method(NULL, meth);
+	else
+	  soft_enter_method(argv[0].l, meth);
+#endif
+
 	if (methaccflags & ACC_NATIVE) {
 NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); );
 		if (methaccflags & ACC_STATIC) {
@@ -146,6 +154,11 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		else {
 			KaffeVM_callMethodA(meth, meth, ((jvalue*)arg)[0].l, &((jvalue*)arg)[1], (jvalue*)retval, 1);
 		}
+
+#if defined(ENABLE_JVMPI)
+		soft_exit_method(meth);
+#endif
+
 		return;
 	}
 
@@ -241,6 +254,11 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 	cleanupExceptionHandling(&mjbuf, thread_data);
+
+
+#if defined(ENABLE_JVMPI)
+	soft_exit_method(meth);
+#endif
 
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); );
 }

@@ -121,9 +121,8 @@ DBG(CLASSGC,
 			if (!CLASS_IS_INTERFACE(clazz))
 			{
 				ncode = METHOD_NATIVECODE(m);
-#if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 				if (METHOD_JITTED(m)) {
-#if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
+#if defined(TRANSLATOR) && defined (MD_UNREGISTER_JIT_EXCEPTION_INFO)
 					MD_UNREGISTER_JIT_EXCEPTION_INFO (m->c.ncode.ncode_start,
 									  ncode,
 									  m->c.ncode.ncode_end);
@@ -140,7 +139,6 @@ DBG(CLASSGC,
 					}
 #endif
 				}
-#endif
 			}
 			utf8ConstRelease(m->name);
                         utf8ConstRelease(METHOD_SIG(m));
@@ -211,8 +209,8 @@ DBG(CLASSGC,
 		  if ((*impl_clazz)->interfaces[i] == clazz)
 		    {
 		      (*impl_clazz)->interfaces[i] = NULL;
-		      /* We cannot here because there may exist duplicates
-		       * in the current list.
+		      /* We cannot break here because there may exist
+		       * duplicates in the current list.
 		       */
 		    }
 	      }

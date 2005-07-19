@@ -1,5 +1,101 @@
 2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* include/jvmpi.h: Added support for JVMPI_VERSION_1_2.
+
+	* include/kaffe_jni.h: Added new VM parameters about the profiler
+	to load at startup.
+
+	* kaffe/jvmpi/Makefile.am: JVMPI should be compiled and linked
+	like the rest of the VM.
+
+	* kaffe/jvmpi/Makefile.in: Regenerated.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c,
+	kaffe/jvmpi/jvmpi_kaffe.h
+	(jvmpiFillObjectLoad): Handle array more correctly.
+	(jvmpiFillClassLoad): Fill the right structure entry using the
+	instance field lists.
+	(jvmpiFillMethodLoad): New function.
+	(jvmpiRawMonitorCreate,
+	jvmpiRawMonitorEnter,
+	jvmpiRawMonitorExit,
+	jvmpiRawMonitorWait,
+	jvmpiRawMonitorNotifyAll,
+	jvmpiRawMonitorDestroy): Use Klocks.
+	(jvmpiRequestEvent): Return success if successful.
+	(jvmpiCleanupThreadStart): New function.
+	
+	* kaffe/kaffe/main.c
+	(options): Loading and executing the profiler is now handled by
+	JNI itself.
+
+	* kaffe/kaffevm/classPool.c
+	(walkClassPool): Only walk valid entries.
+
+	* kaffe/kaffevm/external.c,
+	kaffe/kaffevm/external.h
+	(loadNativeLibrary): Use "const char *" for the library name.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): JVMPI is supported for all translators. Fixed
+	typo.
+
+	* kaffe/kaffevm/kaffe.def
+	(IRETURN, LRETURN, FRETURN,
+	DRETURN, ARETURN, RETURN): Acknowledge method exit.
+
+	* kaffe/kaffevm/locks.c: Removed slowlock's timing. Updated JVMPI
+	event handling for contended mutexes as the algorithm has changed.
+
+	* kaffe/kaffevm/soft.c
+	(soft_enter_method): Rearranged ifdefs.
+
+	* kaffe/kaffevm/stats.c,
+	kaffe/kaffevm/stats.h: Put variable definitions in KAFFE_STATS
+	(for darwin). Added fulljit timer.
+
+	* kaffe/kaffevm/thread.c
+	(firstStartThread): Use jvmpiCleanupThreadStart now.
+	
+	* kaffe/kaffevm/intrp/machine.c
+	(virtualMachine): Acknowledge enter/exit method using JVMPI.
+
+	* kaffe/kaffevm/jit/machine.c
+	(translate): Acknowledge translate completion.
+
+	* kaffe/kaffevm/jit/native-wrapper.c
+	(Kaffe_wrapper): Invoke exit_method() before method exit.
+
+	* kaffe/kaffevm/jit3/machine.c
+	(translate): Measure translation time using fulljit. Moved JVMPI
+	event handling into an helper function.
+	
+	* kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/jit/codeproto.h,
+	kaffe/kaffevm/jit/icode.c,
+	kaffe/kaffevm/jit3/codeproto.h,
+	kaffe/kaffevm/jit3/icode.c
+	(exit_method) New icode to be called before exiting a method.
+	(softcall_enter_method, softcall_exit_method): Implemented in JIT.
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(JNI_CreateJavaVM): Load and invoke the profiler if needed.
+
+	* kaffe/kaffevm/jni/jni-refs.c
+	(KaffeJNI_NewWeakGlobalRef, KaffeJNI_DeleteWeakGlobalRef): Handle
+	JVMPI events.
+
+	* kaffe/kaffevm/jni/jni.c
+	(Kaffe_GetEnv): Accept JVMPI 1.2.
+	(Kaffe_JavaVMInitArgs): Initialize the new fields to NULL.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_on_condvar, jthread_on_mutex, jthread_has_run,
+	jthread_clear_run, jthread_get_status, jthread_from_data): Implemented.
+
+2005-07-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure: Regenerated.
 
 2005-07-19  Dalibor Topic  <robilad@kaffe.org>

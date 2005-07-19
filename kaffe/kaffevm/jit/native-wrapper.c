@@ -350,6 +350,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			call_soft(finishJNIcall);
 			start_sub_block();
 		}
+		exit_method();
 		returnarg_ref(tmp);
 		break;
 	case 'I':
@@ -368,6 +369,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			call_soft(finishJNIcall);
 			start_sub_block();
 		}
+		exit_method();
 		returnarg_int(tmp);
 		break;
 	case 'F':
@@ -382,6 +384,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			call_soft(finishJNIcall);
 			start_sub_block();
 		}
+		exit_method();
 		returnarg_float(tmp);
 		break;
 	case 'J':
@@ -396,6 +399,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			call_soft(finishJNIcall);
 			start_sub_block();
 		}
+		exit_method();
 		returnarg_long(tmp);
 		break;
 	case 'D':
@@ -410,6 +414,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			call_soft(finishJNIcall);
 			start_sub_block();
 		}
+		exit_method();
 		returnarg_double(tmp);
 		break;
 	case 'V':
@@ -419,9 +424,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		}
 		if (use_JNI)
 			call_soft(finishJNIcall);
-#if defined(ENABLE_JVMPI)
-		softcall_exit_method(globalMethod);
-#endif
+		exit_method();
 		ret();
 		break;
 	default:
