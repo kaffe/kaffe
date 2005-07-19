@@ -2256,6 +2256,12 @@ for ac_option in $CFLAGS; do
 done
 AC_SUBST(CFLAGS_WITHOUT_PG)
 
+dnl -----------------------------------------------------------
+dnl Add the include files for the native abstraction layer.
+dnl Used by AM_CPPFLAGS in the different modules.
+dnl -----------------------------------------------------------
+CLASSPATH_INCLUDES="-I\$(top_srcdir)/libraries/clib/target/Linux -I\$(top_srcdir)/libraries/clib/target/generic"
+AC_SUBST(CLASSPATH_INCLUDES)
 
 AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])
@@ -2294,6 +2300,9 @@ AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
 AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
+AC_CONFIG_FILES([libraries/clib/target/Makefile])
+AC_CONFIG_FILES([libraries/clib/target/generic/Makefile])
+AC_CONFIG_FILES([libraries/clib/target/Linux/Makefile])
 AC_CONFIG_FILES([libraries/clib/classpath/Makefile])
 AC_CONFIG_FILES([libraries/clib/fdlibm/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])

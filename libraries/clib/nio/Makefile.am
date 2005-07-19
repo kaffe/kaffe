@@ -6,6 +6,7 @@
 # of this file. 
 
 AM_CPPFLAGS = \
+	$(CLASSPATH_INCLUDES) \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/libraries/clib/classpath
@@ -27,8 +28,7 @@ libnio_la_SOURCES = \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
 	gnu_java_nio_charset_iconv_IconvEncoder.c \
 	gnu_java_nio_VMSelector.c \
-	gnu_java_nio_channels_FileChannelImpl.c \
-	FileChannelImpl.c
+	gnu_java_nio_channels_FileChannelImpl.c 
 
 libnio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la

@@ -85,8 +85,8 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = classpath fdlibm native io nio net zip math security \
-	management libxmlj awt sound
+DIST_SUBDIRS = target classpath fdlibm native io nio net zip math \
+	security management libxmlj awt sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -115,6 +115,7 @@ CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
 COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
@@ -368,6 +369,7 @@ with_engine = @with_engine@
 @COND_NATIVE_AWT_TRUE@MAYBE_NATIVE_AWT_DIR = awt
 @COND_NATIVE_SOUND_TRUE@MAYBE_NATIVE_SOUND_DIR = sound
 SUBDIRS = \
+	target \
 	classpath \
 	fdlibm \
 	native \

@@ -167,7 +167,7 @@ class VMSystemProperties
       properties.setProperty("gnu.cpu.endian", GNU_CPU_ENDIAN);
 
       final String KAFFE_LIBRARY_PATH = getKaffeLibraryPath();
-      properties.setProperty("kaffe.library.path", KAFFE_LIBRARY_PATH);
+      properties.setProperty("gnu.classpath.boot.library.path", KAFFE_LIBRARY_PATH);
 
       final String SUN_BOOT_CLASS_PATH = getSunBootClassPath();
       properties.setProperty("sun.boot.class.path", SUN_BOOT_CLASS_PATH);

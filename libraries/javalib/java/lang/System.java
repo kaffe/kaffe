@@ -509,9 +509,8 @@ public final class System
    */
   public static void loadLibrary(String libname)
   {
-    final Runtime runtime = Runtime.getRuntime();
-    final ClassLoader invokingMethodsClassLoader = VMStackWalker.getCallingClassLoader();
-    runtime.loadLibrary(libname, invokingMethodsClassLoader);
+    Runtime.getRuntime().loadLibrary(libname,
+      VMStackWalker.getCallingClassLoader());
   }
 
   /**
@@ -523,7 +522,7 @@ public final class System
    */
   public static String mapLibraryName(String libname)
   {
-    return Runtime.mapLibraryName(libname);
+    return VMRuntime.mapLibraryName(libname);
   }
 
 } // class System

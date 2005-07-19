@@ -35,6 +35,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_VMObject.h \
 	java_lang_VMClass.h \
 	java_lang_VMClassLoader.h \
+	java_lang_VMRuntime.h \
 	java_lang_String.h \
 	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
@@ -58,7 +59,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Integer.h \
 	java_lang_Long.h \
 	java_lang_Math.h \
-	java_lang_Runtime.h \
 	java_lang_Short.h \
 	java_lang_reflect_Array.h \
 	java_lang_reflect_Constructor.h \
@@ -213,6 +213,7 @@ endif
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_VMDouble.h \
+	java_lang_VMProcess.h \
 	java_lang_VMFloat.h \
 	java_lang_ref_Reference.h \
 	gnu_classpath_VMSystemProperties.h \
@@ -225,7 +226,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_io_VMObjectStreamClass.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
-	kaffe_lang_MemoryAdvice.h \
 	kaffe_lang_UNIXProcess.h \
 	kaffe_management_JIT.h \
 	kaffe_management_Debug.h \

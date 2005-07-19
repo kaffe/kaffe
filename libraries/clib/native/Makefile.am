@@ -12,6 +12,7 @@
 native_LTLIBRARIES = libnative.la
 
 AM_CPPFLAGS = \
+        $(CLASSPATH_INCLUDES) \
 	-I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/libraries/clib/classpath \
@@ -20,20 +21,19 @@ AM_CPPFLAGS = \
 LANG_SRCS = \
 		gnu_classpath_VMStackWalker.c \
 		gnu_classpath_VMSystemProperties.c \
-		java_lang_VMFloat.c \
 		java_lang_Math.c \
+		java_lang_VMFloat.c \
 		java_lang_VMDouble.c \
+		java_lang_VMProcess.c \
 		java_lang_VMSystem.c \
 		Class.c \
 		ClassLoader.c \
-		MemoryAdvice.c \
 		Object.c \
 		Runtime.c \
 		String.c \
 		System.c \
 		Thread.c \
 		Throwable.c \
-		UNIXProcess.c \
 		ZipFile.c
 
 REF_SRCS= \

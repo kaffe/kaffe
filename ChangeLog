@@ -1,3 +1,96 @@
+2005-07-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Merged in Runtime/VMRuntime, Process/VMProcess, target native layer and
+	FileChannel from GNU Classpath.
+	
+	* configure.ac: Merged in support for CLASSPATH_INCLUDES. 
+	Added Makefiles in libraries/clib/target and subdirs to config files.	
+
+	* include/Makefile.am: (NOINSTALL_DERIVED_HDRS) Added java_lang_VMRuntime.h.
+	Removed java_lang_Runtime.h. Added java_lang_VMProcess.h. 
+	Removed kaffe_lang_MemoryAdvice.h.
+
+	* kaffe/kaffevm/thread.c: (runfinalizer) Removed call into Runtime hook,
+	to avoid loop.
+
+	* libraries/clib/Makefile.am: (SUBDIRS) Added target subdir.
+
+	* libraries/clib/native/Makefile.am: (AM_CPPFLAGS) Added CLASSPATH_INCLUDES.
+	(LANG_SRCS) Added java_lang_VMProcess.c. Removed MemoryAdvice.c and 
+	UNIXProcess.c.
+
+	* libraries/clib/native/Runtime.c: (java_lang_Runtime_exit0) Renamed to 
+	java_lang_VMRuntime_exit.
+	(java_lang_Runtime_execInternal) Removed.
+	(java_lang_Runtime_freeMemory) Renamed to java_lang_VMRuntime_freeMemory.
+	(java_lang_Runtime_maxMemory) Renamed to java_lang_VMRuntime_maxMemory.
+	(java_lang_Runtime_totalMemory) Renamed to java_lang_VMRuntime_totalMemory.
+	(java_lang_Runtime_gc) Renamed to java_lang_VMRuntime_gc.
+	(java_lang_Runtime_runFinalization) Renamed to java_lang_VMRuntime_runFinalization.
+	(java_lang_VMRuntime_runFinalizationForExit) New method.
+	(java_lang_Runtime_traceInstructions) Renamed to java_lang_VMRuntime_traceInstructions.
+	(java_lang_Runtime_traceMethodCalls) Renamed to java_lang_VMRuntime_traceMethodCalls.
+	(java_lang_Runtime_runFinalizersOnExit) Renamed to java_lang_VMRuntime_runFinalizersOnExit.
+	(java_lang_Runtime_linkLibrary) Renamed to java_lang_VMRuntime_nativeLoad.
+	(java_lang_Runtime_getLibPrefix) Renamed to java_lang_VMRuntime_getLibPrefix.
+	(java_lang_Runtime_getLibSuffix) Renamed to java_lang_VMRuntime_getLibSuffix.
+
+	* libraries/clib/nio/Makefile.am: (AM_CPPFLAGS) Added CLASSPATH_INCLUDES.
+	(libnio_la_SOURCES) Removed FileChannelImpl.c.
+
+	* libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c: Replaced with 
+	full file from GNU Classpath.
+
+	* libraries/javalib/gnu/classpath/VMSystemProperties.java: (preInit)
+	Set gnu.classpath.boot.library.path instead of kaffe.library.path.
+
+	* libraries/javalib/java/lang/Runtime.java: Replaced with implementation
+	from GNU Classpath.
+	
+	* libraries/javalib/java/lang/System.java: Fully synced up with GNU Classpath.
+
+	* libraries/clib/native/java_lang_VMProcess.c,
+	libraries/clib/target/Makefile.am,
+	libraries/clib/target/Makefile.in,
+	libraries/clib/target/readme.txt,
+	libraries/clib/target/Linux/Makefile.am,
+	libraries/clib/target/Linux/Makefile.in,
+	libraries/clib/target/Linux/target_native.h,
+	libraries/clib/target/Linux/target_native_file.h,
+	libraries/clib/target/Linux/target_native_io.h,
+	libraries/clib/target/Linux/target_native_math_float.h,
+	libraries/clib/target/Linux/target_native_math_int.h,
+	libraries/clib/target/Linux/target_native_misc.h,
+	libraries/clib/target/Linux/target_native_network.h,
+	libraries/clib/target/generic/Makefile.am,
+	libraries/clib/target/generic/Makefile.in,
+	libraries/clib/target/generic/target_generic.h,
+	libraries/clib/target/generic/target_generic_file.h,
+	libraries/clib/target/generic/target_generic_io.h,
+	libraries/clib/target/generic/target_generic_math_float.h,
+	libraries/clib/target/generic/target_generic_math_int.h,
+	libraries/clib/target/generic/target_generic_misc.h,
+	libraries/clib/target/generic/target_generic_network.h,
+	libraries/javalib/java/lang/VMProcess.java,
+	libraries/javalib/java/lang/VMRuntime.java:
+	New files, taken from GNU Classpath.
+	
+	* libraries/clib/native/MemoryAdvice.c,
+	libraries/clib/native/UNIXProcess.c,
+	libraries/clib/nio/FileChannelImpl.c,
+	libraries/javalib/kaffe/lang/MemoryAdvice.java,
+	libraries/javalib/kaffe/lang/MemoryAdviceCallback.java: Removed.
+
+	* libraries/javalib/gnu/java/nio/channels/FileChannelImpl.java:
+	Resynced with GNU Classpath.
+
+	2005-07-10  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/nio/channels/FileChannelImpl.java (force): New native
+        method.
+        (force(boolean)): Call new native force method.
+
+
 2005-07-17  Eric Anholt  <eta@lclark.edu>
 
 	* config/config-net.h: Include sys/types.h to

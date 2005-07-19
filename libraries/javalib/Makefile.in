@@ -137,6 +137,7 @@ CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
 COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
@@ -2961,6 +2962,8 @@ java_lang_SRCS = \
 	java/lang/VMDouble.java \
 	java/lang/VMFloat.java \
 	java/lang/VMObject.java \
+	java/lang/VMProcess.java \
+	java/lang/VMRuntime.java \
 	java/lang/VMSystem.java \
 	java/lang/VMThread.java \
 	java/lang/VMThrowable.java \
@@ -4674,8 +4677,6 @@ kaffe_jar_SRCS = \
 
 kaffe_lang_SRCS = \
 	kaffe/lang/ClassPathReader.java \
-	kaffe/lang/MemoryAdvice.java \
-	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/PackageHelper.java \
 	kaffe/lang/ResourceReader.java \
 	kaffe/lang/UNIXProcess.java

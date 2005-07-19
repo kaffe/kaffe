@@ -22,6 +22,7 @@ if COND_NATIVE_SOUND
 endif
 
 SUBDIRS = \
+	target \
 	classpath \
 	fdlibm \
 	native \

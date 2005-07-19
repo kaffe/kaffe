@@ -609,9 +609,6 @@ runfinalizer(void)
 		KaffeVM_attachFakedThreadInstance("main", false);
 	}
 
-	/* Do java-land cleanup */
-	do_execute_java_method(NULL, RuntimeClass, "exitJavaCleanupHook",
-			       "()V", NULL, true);
 	if (runFinalizerOnExit) {
 		invokeFinalizer();
 	}

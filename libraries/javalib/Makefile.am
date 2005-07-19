@@ -2457,6 +2457,8 @@ java_lang_SRCS = \
 	java/lang/VMDouble.java \
 	java/lang/VMFloat.java \
 	java/lang/VMObject.java \
+	java/lang/VMProcess.java \
+	java/lang/VMRuntime.java \
 	java/lang/VMSystem.java \
 	java/lang/VMThread.java \
 	java/lang/VMThrowable.java \
@@ -4076,8 +4078,6 @@ kaffe_jar_SRCS = \
 	kaffe/jar/ExecJarName.java
 kaffe_lang_SRCS = \
 	kaffe/lang/ClassPathReader.java \
-	kaffe/lang/MemoryAdvice.java \
-	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/PackageHelper.java \
 	kaffe/lang/ResourceReader.java \
 	kaffe/lang/UNIXProcess.java

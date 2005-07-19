@@ -302,7 +302,11 @@ public final class FileChannelImpl extends FileChannel
   {
     if (!isOpen ())
       throw new ClosedChannelException ();
+
+    force ();
   }
+
+  private native void force ();
 
   // like transferTo, but with a count of less than 2Gbytes
   private int smallTransferTo (long position, int count, 
