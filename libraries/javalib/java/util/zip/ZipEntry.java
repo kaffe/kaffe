@@ -16,6 +16,31 @@ import java.util.GregorianCalendar;
 
 public class ZipEntry implements Cloneable, ZipConstants {
 
+    /* Clone method taken from GNU Classpath:
+     * Copyright (C) 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
+     */
+  /**
+   * Creates a copy of this zip entry.
+   */
+  /**
+   * Clones the entry.
+   */
+  public Object clone()
+  {
+    try
+      {
+	// The JCL says that the `extra' field is also copied.
+	ZipEntry clone = (ZipEntry) super.clone();
+	if (extra != null)
+	  clone.extra = (byte[]) extra.clone();
+	return clone;
+      }
+    catch (CloneNotSupportedException ex)
+      {
+	throw new InternalError();
+      }
+  }
+
   public static final int STORED = Deflater.NO_COMPRESSION;
   public static final int DEFLATED = Deflater.DEFLATED;
 

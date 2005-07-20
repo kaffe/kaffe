@@ -1,3 +1,10 @@
+2005-07-20  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for gump issue bootstrap-ant.
+
+	* libraries/javalib/java/util/zip/ZipEntry.java (clone):
+	New method. Taken from GNU Classpath.
+
 2005-07-20  Wolfgang Baer <WBaer@gmx.de>
 
 	* po/de.po: Translation for German.
