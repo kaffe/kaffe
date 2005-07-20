@@ -1,0 +1,311 @@
+# translation of de.po to 
+# translation of de.po to
+# translation of kaffe.po to
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR Kaffe.org contributors., 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: de\n"
+"Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
+"POT-Creation-Date: 2005-05-19 10:28+0200\n"
+"PO-Revision-Date: 2005-07-18 23:27+0200\n"
+"Last-Translator: \n"
+"Language-Team:  <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
+
+#: kaffe/kaffe/main.c:426 kaffe/kaffe/main.c:504 kaffe/kaffe/main.c:567
+#: kaffe/kaffe/main.c:594 kaffe/kaffe/main.c:619 kaffe/kaffe/main.c:641
+#, c-format
+msgid "Error: out of memory.\n"
+msgstr "Fehler: Nicht genügend Speicher.\n"
+
+#: kaffe/kaffe/main.c:656
+#, c-format
+msgid "Error: No stack size found for -ss option.\n"
+msgstr "Fehler: Keine Stack Angabe für -ss Option gefunden.\n"
+
+#: kaffe/kaffe/main.c:664
+#, c-format
+msgid "Warning: Attempt to set stack size smaller than %d - ignored.\n"
+msgstr "Warnung: Versuch die Größe des Stacks kleiner als %d zu setzen ignoriert.\n"
+
+#: kaffe/kaffe/main.c:675
+#, c-format
+msgid "Error: No heap size found for -mx option.\n"
+msgstr "Fehler: Keine Heap-Größenangabe für -mx Option gefunden.\n"
+
+#: kaffe/kaffe/main.c:688
+#, c-format
+msgid "Error: No heap size found for -ms option.\n"
+msgstr "Fehler: Keine Heap-Größenangabe für -ms Option gefunden.\n"
+
+#: kaffe/kaffe/main.c:700
+#, c-format
+msgid "Error: No heap size found for -as option.\n"
+msgstr "Fehler: Keine Heap-Größenangabe für -as Option gefunden.\n"
+
+#: kaffe/kaffe/main.c:756
+#, c-format
+msgid "Error: -Xxprof_syms option requires a file name.\n"
+msgstr "Fehler: -Xxprof_syms Option benötigt einen Dateinamen.\n"
+
+#: kaffe/kaffe/main.c:762
+#, c-format
+msgid "Unable to create profiler symbol file %s.\n"
+msgstr "Kann die Profiler Symboldatei %s nicht erstellen.\n"
+
+#: kaffe/kaffe/main.c:771
+#, c-format
+msgid "Error: -Xxprof_gmon option requires a file name.\n"
+msgstr "Fehler: -Xxprof_gmon Option benötigt einen Dateinamen.\n"
+
+#: kaffe/kaffe/main.c:777
+#, c-format
+msgid "Unable to create gmon file %s.\n"
+msgstr "Kann die gmon Datei %s nicht erstellen.\n"
+
+#: kaffe/kaffe/main.c:791
+#, c-format
+msgid "Error: -Xxdebug_file option requires a file name.\n"
+msgstr "Fehler: -Xxdebug_file Option benötigt einen Dateinamen.\n"
+
+#: kaffe/kaffe/main.c:805
+#, c-format
+msgid "Error: -Xfeedback option requires a file name.\n"
+msgstr "Fehler: -Xfeedback Option benötigt einen Dateinamen.\n"
+
+#: kaffe/kaffe/main.c:823
+#, c-format
+msgid "Error: -vmstats option requires a second arg.\n"
+msgstr "Fehler: -vmstats Option benötigt ein zweites Argument.\n"
+
+#: kaffe/kaffe/main.c:835
+#, c-format
+msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
+msgstr "Fehler: -vmdebug Option benötigt ein Debug-Flag. Verwende `list' für eine Liste.\n"
+
+#: kaffe/kaffe/main.c:848
+#, c-format
+msgid "Error: -debug-fd an open descriptor.\n"
+msgstr "Fehler: -debug-fd ist ein offener Deskriptor.\n"
+
+#: kaffe/kaffe/main.c:854
+#, c-format
+msgid "Error: -debug-fd requires an integer.\n"
+msgstr "Fehler: -debug-fd benötigt eine Ganzzahl.\n"
+
+#: kaffe/kaffe/main.c:866
+#, c-format
+msgid "Error: Unrecognized JVM specific option `%s'.\n"
+msgstr "Fehler: Unbekannte JVM spezifische Option %s'.\n"
+
+#: kaffe/kaffe/main.c:881
+#, c-format
+msgid "Unknown flag: %s\n"
+msgstr "Unbekanntes Flag: %s\n"
+
+#: kaffe/kaffe/main.c:897
+#, c-format
+msgid ""
+"usage: kaffe [-options] class\n"
+"Options are:\n"
+"\t-help\t\t\t Print this message\n"
+"\t-version\t\t Print version number\n"
+"\t-fullversion\t\t Print verbose version info\n"
+msgstr ""
+"Verwendung: kaffe [-Optionen] Klasse\n"
+"Optionen sind:\n"
+"\t-help\t\t\t Ausgabe dieser Meldung\n"
+"\t-version\t\t Ausgabe der Versionsnummer\n"
+"\t-fullversion\t\t Ausgabe ausführlicher Versionsinformationen\n"
+
+#: kaffe/kaffe/main.c:903
+#, c-format
+msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
+msgstr "\t-ia32\t\t\t Ausführung der ia32 Version von Kaffe\n"
+
+#: kaffe/kaffe/main.c:905
+#, c-format
+msgid ""
+"\t-ss <size>\t\t Maximum native stack size\n"
+"\t-mx <size> \t\t Maximum heap size\n"
+"\t-ms <size> \t\t Initial heap size\n"
+"\t-as <size> \t\t Heap increment\n"
+"\t-classpath <path>        Set classpath\n"
+"\t-Xbootclasspath:<path>   Set bootclasspath\n"
+"\t-Xbootclasspath/a:<path> Append path to bootclasspath\n"
+"\t-Xbootclasspath/p:<path> Prepend path to bootclasspath\n"
+"\t-D<property>=<value>     Set a property\n"
+"\t-verify *\t\t Verify all bytecode\n"
+"\t-verifyremote *\t\t Verify bytecode loaded from network\n"
+"\t-noverify\t\t Do not verify any bytecode\n"
+"\t-noclassgc\t\t Disable class garbage collection\n"
+"\t-verbosegc\t\t Print message during garbage collection\n"
+"\t-v, -verbose\t\t Be verbose\n"
+"\t-verbosejit\t\t Print message during JIT code generation\n"
+"\t-verbosemem\t\t Print detailed memory allocation statistics\n"
+"\t-verbosecall\t\t Print detailed call flow information\n"
+"\t-nodeadlock\t\t Disable deadlock detection\n"
+msgstr ""
+"\t-ss <Größe>\t\t Maximale native Stack Größe\n"
+"\t-mx <Größe> \t\t Maximale Heap Größe\n"
+"\t-ms <Größe> \t\t Initiale Heap Größe\n"
+"\t-as <Größe> \t\t Heap Inkrement\n"
+"\t-classpath <Pfad>        Setzen des classpath\n"
+"\t-Xbootclasspath:<Pfad>   Setzen des bootclasspath\n"
+"\t-Xbootclasspath/a:<Pfad> Füge Pfad zum bootclasspath hinzu\n"
+"\t-Xbootclasspath/p:<Pfad> Füge Pfad vor den bootclasspath hinzu\n"
+"\t-D<Eigenschaft>=<Wert>     Eine Eigenschaft setzen\n"
+"\t-verify *\t\t Verifiziere gesamten Bytecode\n"
+"\t-verifyremote *\t\t Verifiziere vom Netzwerk geladenen Bytecode\n"
+"\t-noverify\t\t Verifiziere keinerlei Bytecode\n"
+"\t-noclassgc\t\t Abschalten der Speicherbereinigung\n"
+"\t-verbosegc\t\t Ausgabe von Meldungen während Speicherbereinigung\n"
+"\t-v, -verbose\t\t Sei ausführlich\n"
+"\t-verbosejit\t\t Ausgabe von Meldungen während JIT Code Generierung\n"
+"\t-verbosemem\t\t Ausgabe detaillierter Statistik der Speicherbelegung\n"
+"\t-verbosecall\t\t Ausgabe detaillierter Informationen zum Aufrufverlauf\n"
+"\t-nodeadlock\t\t Abschalten der Deadlock Erkennung\n"
+
+#: kaffe/kaffe/main.c:925
+#, c-format
+msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
+msgstr "\t-prof\t\t\t Aktiviere Profiling von Java Methoden\n"
+
+#: kaffe/kaffe/main.c:928
+#, c-format
+msgid ""
+"\t-Xxprof\t\t\t Enable cross language profiling\n"
+"\t-Xxprof_syms <file>\t Name of the profiling symbols file [Default: kaffe-"
+"jit-symbols.s]\n"
+"\t-Xxprof_gmon <file>\t Base name for gmon files [Default: xgmon.out]\n"
+msgstr ""
+"\t-Xxprof\t\t\t Aktiviere Profiling über Sprachgrenzen hinweg\n"
+"\t-Xxprof_syms <file>\t Name der Profiling symbols Datei [Standard: kaffe-"
+"jit-symbols.s]\n"
+"\t-Xxprof_gmon <file>\t Basisname für gmon Dateien [Standard: xgmon.out]\n"
+
+#: kaffe/kaffe/main.c:933
+#, c-format
+msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
+msgstr "\t-Xxdebug_file <Datei>\t Name der Debug symbols Datei\n"
+
+#: kaffe/kaffe/main.c:936
+#, c-format
+msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
+msgstr "\t-Xfeedback <Datei>\t Dateiname zum Schreiben der Rückmeldungsdaten\n"
+
+#: kaffe/kaffe/main.c:938
+#, c-format
+msgid ""
+"\t-debug * \t\t Trace method calls\n"
+"\t-noasyncgc *\t\t Do not garbage collect asynchronously\n"
+"\t-cs, -checksource *\t Check source against class files\n"
+"\t-oss <size> *\t\t Maximum java stack size\n"
+"\t-jar                     Executable is a JAR\n"
+msgstr ""
+"\t-debug * \t\t Methodenaufrufe verfolgen\n"
+"\t-noasyncgc *\t\t Keine asynchrone Speicherbereinigung\n"
+"\t-cs, -checksource *\tSource gegen die class Dateien überprüfen\n"
+"\t-oss <Größe> *\t\t Maximale Java Stack-Größe\n"
+"\t-jar                     Ausführbare Datei ist eine JAR Datei\n"
+
+#: kaffe/kaffe/main.c:944
+#, c-format
+msgid "\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
+msgstr "\t-vmdebug <Flag{,Flag}>\t Internes Debuggen der VM.  Setze Flag=list für eine Liste\n"
+
+#: kaffe/kaffe/main.c:946
+#, c-format
+msgid "\t-debug-fd <descriptor>\t Descriptor to send debug info to\n"
+msgstr "\t-debug-fd <Deskriptor>\t Deskriptor an den die Debug Informationen gesendet werden\n"
+
+#: kaffe/kaffe/main.c:948
+#, c-format
+msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
+msgstr "\t-vmstats <Flag{,Flag}>\t Ausgabe von VM Statistiken.  Setze Flag=all für alle\n"
+
+#: kaffe/kaffe/main.c:951
+#, c-format
+msgid "\t-Xnative-big-math\t Use GMP for faster, native bignum calculations\n"
+msgstr "\t-Xnative-big-math\t Nutze GMP für schnellere, native bignum Berechnungen\n"
+
+#: kaffe/kaffe/main.c:954
+#, c-format
+msgid "\t-Xkaffe-xlib-awt\t Use Kaffe's Xlib AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\t Benutze Kaffe's Xlib AWT Implementierung\n"
+
+#: kaffe/kaffe/main.c:957
+#, c-format
+msgid "\t-Xkaffe-qt-awt\t\t Use Kaffe's Qt2/3/Embedded AWT backend\n"
+msgstr "\t-Xkaffe-qt-awt\t\t Benutze Kaffe's Qt2/3/Embedded AWT Implementierung\n"
+
+#: kaffe/kaffe/main.c:960
+#, c-format
+msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
+msgstr "\t-Xkaffe-nanox-awt\t Benutze Kaffe's Nano-X AWT Implementierung\n"
+
+#: kaffe/kaffe/main.c:963
+#, c-format
+msgid ""
+"  * Option currently ignored.\n"
+"\n"
+"Compatibility options:\n"
+"\t-Xss <size>\t\t Maximum native stack size\n"
+"\t-Xmx <size> \t\t Maximum heap size\n"
+"\t-Xms <size> \t\t Initial heap size\n"
+"\t-cp <path> \t\t Set classpath\n"
+msgstr ""
+"  * Zurzeit ignorierte Optionen.\n"
+"\n"
+"Kompatibilitätsoptionen:\n"
+"\t-Xss <Größe>\t\t Maximale native Stack-Größe\n"
+"\t-Xmx <Größe> \t\t Maximale Heap-Größe\n"
+"\t-Xms <Größe> \t\t Initiale Heap-Größe\n"
+"\t-cp <Pfad> \t\t Setzt den classpath\n"
+
+#: kaffe/kaffe/version.c:45
+#, c-format
+msgid ""
+"Copyright (c) 1996-2005 Kaffe.org project contributors (please see\n"
+"  the source code for a full list of contributors).  All rights reserved.\n"
+"Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n"
+"\n"
+"The Kaffe virtual machine is free software, licensed under the terms of\n"
+"the GNU General Public License.  Kaffe.org is a an independent, free "
+"software\n"
+"community project, not directly affiliated with Transvirtual Technologies,\n"
+"Inc.  Kaffe is a Trademark of Transvirtual Technologies, Inc.  Kaffe comes\n"
+"with ABSOLUTELY NO WARRANTY.\n"
+"\n"
+msgstr ""
+"Copyright (c) 1996-2005 Kaffe.org Projekt Mitwirkende (Der Source code\n"
+"enthält eine vollständige Liste der Mitwirkenden).  All rights reserved.\n"
+"Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n"
+"\n"
+"Die Kaffe virtual machine ist freie Software, lizenziert unter den Bedingungen\n"
+"der GNU General Public License.  Kaffe.org ist ein unabhängiges, freies\n"
+"Software Gemeinschaftsprojekt, nicht direkt verbunden mit Transvirtual\n"
+"Technologies, Inc.  Kaffe ist ein Markenname von Transvirtual Technologies,\n"
+"Inc.  Kaffe kommt mit ABSOLUT KEINER GARANTIE.\n"
+"\n"
+
+#: kaffe/kaffe/version.c:54
+#, c-format
+msgid "Engine: %s   Version: %s   Java Version: %s\n"
+msgstr "Engine: %s   Version: %s   Java Version: %s\n"
+
+#: kaffe/kaffe/version.c:56
+#, c-format
+msgid "Heap defaults: minimum size: %d MB, maximum size: %d MB\n"
+msgstr "Heap-Standards: minimale Größe: %d MB, maximale Größe: %d MB\n"
+
+#: kaffe/kaffe/version.c:58
+#, c-format
+msgid "Stack default size: %d KB\n"
+msgstr "Stack Standardgröße: %d KB\n"
+

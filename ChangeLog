@@ -1,3 +1,9 @@
+2005-07-20  Wolfgang Baer <WBaer@gmx.de>
+
+	* po/de.po: Translation for German.
+
+	* po/LINGUAS: Added de.po.
+
 2005-07-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for crt_externs.h to fix build on darwin.
