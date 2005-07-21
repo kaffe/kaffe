@@ -380,34 +380,35 @@ initScaledImage ( Toolkit* tk, Image *tgt, Image *src,
  */
 
 
-void*
+jobject
 Java_java_awt_Toolkit_imgCreateImage ( JNIEnv* env, jclass clazz, jint width, jint height )
 {
   Image *img = createImage( width, height);
   createXImage( X, img);
-  return img;
+  return JCL_NewRawDataObject(env, img);
 }
 
 
-void*
+jobject
 Java_java_awt_Toolkit_imgCreateScreenImage ( JNIEnv* env, jclass clazz, jint width, jint height )
 {
   Image  *img = createImage( width, height);
   int    depth = DefaultDepth(  X->dsp, DefaultScreen( X->dsp));
 
   img->pix  = XCreatePixmap( X->dsp, X->root, width, height, depth);
-  return img;
+  return JCL_NewRawDataObject(env, img);
 }
 
 
 /* generic (ImageProducer) based image construction */
 
 void
-Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
+Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, jobject nimg,
 		jint x, jint y, jint w, jint h,
 		jintArray clrMap, jbyteArray idxPels, jint trans,
 		jint off, jint scan)
 {
+  Image *img = UNVEIL_IMG(nimg);
   register int    row, col;
   unsigned long   pix;
   jint            rgb;
@@ -443,10 +444,11 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 
 
 void
-Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
-									  jint x, jint y, jint w, jint h,
-									  jintArray rgbPels, jint off, jint scan)
+Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, jobject nimg,
+				      jint x, jint y, jint w, jint h,
+				      jintArray rgbPels, jint off, jint scan)
 {
+  Image *img = UNVEIL_IMG(nimg);
   register int    row, col;
   unsigned long   pix = 0;
   jboolean        isCopy;
@@ -488,8 +490,9 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 }
 
 void
-Java_java_awt_Toolkit_imgComplete( JNIEnv* env, jclass clazz, Image * img, jint status )
+Java_java_awt_Toolkit_imgComplete( JNIEnv* env, jclass clazz, jobject nimg, jint status )
 {
+  Image *img = UNVEIL_IMG(nimg);
   /*
    * Check for alpha channel reduction. Note that full alpha images aren't created
    * with Shm (by policy), so you might loose the Shm speed factor. This method is just
@@ -501,7 +504,13 @@ Java_java_awt_Toolkit_imgComplete( JNIEnv* env, jclass clazz, Image * img, jint 
 }
 
 void
-Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
+Java_java_awt_Toolkit_imgFreeImage(JNIEnv *env, jclass clazz UNUSED, jobject nimg)
+{
+  imgFreeImage(UNVEIL_IMG(nimg));
+}
+
+void
+imgFreeImage( Image *img )
 {
   Image *next, *first = img;
 
@@ -561,10 +570,11 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 }
 
 
-void*
+jobject
 Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
-											 Image* img, int width, int height )
+					     jobject nimg, int width, int height )
 {
+  Image *img = UNVEIL_IMG(nimg);
   int depth;
 
   Image *scaledImg = createImage( width, height);
@@ -583,13 +593,14 @@ Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
 	scaledImg->pix  = XCreatePixmap( X->dsp, X->root, width, height, depth);
   }
 
-  return scaledImg;
+  return JCL_NewRawDataObject(env, scaledImg);
 }
 
 
 void
-Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject producer, Image* img )
+Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject producer, jobject nimg )
 {
+  Image *img = UNVEIL_IMG(nimg);
   int            i, j;
   int            r, g, b;
   unsigned long  pix;
@@ -678,7 +689,7 @@ static int imageFormat ( unsigned char* sig ) {
   return 0;
 }
 
-void*
+jobject
 Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fileName )
 {
   Image *img = 0;
@@ -710,12 +721,12 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
 	AWT_CLOSE( infile);
   }
 
-  return img;
+  return JCL_NewRawDataObject(env, img);
 }
 
-void*
+jobject
 Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
-										  jbyteArray jbuffer, jint off, jint len )
+					  jbyteArray jbuffer, jint off, jint len )
 {
   Image *img = 0;
   jboolean isCopy;
@@ -741,12 +752,13 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
   }
 
   (*env)->ReleaseByteArrayElements( env, jbuffer, jb, JNI_ABORT);
-  return img;  
+  return JCL_NewRawDataObject(env, img);
 }
 
-void*
-Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int frameNo )
+jobject
+Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, jobject nimg, int frameNo )
 {
+  Image *img = UNVEIL_IMG(nimg);
   Image *imgCur = img;
 
   if ( !img->next )
@@ -759,7 +771,7 @@ Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int f
 	}
   }
 
-  return img;
+  return nimg;
 }
 
 
@@ -768,31 +780,31 @@ Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int f
  */
 
 jint
-Java_java_awt_Toolkit_imgGetWidth ( JNIEnv* env, jclass clazz, Image* img)
+Java_java_awt_Toolkit_imgGetWidth ( JNIEnv* env, jclass clazz, jobject nimg)
 {
-  return img->width;
+  return UNVEIL_IMG(nimg)->width;
 }
 
 jint
-Java_java_awt_Toolkit_imgGetHeight ( JNIEnv* env, jclass clazz, Image* img)
+Java_java_awt_Toolkit_imgGetHeight ( JNIEnv* env, jclass clazz, jobject nimg)
 {
-  return img->height;
+  return UNVEIL_IMG(nimg)->height;
 }
 
 jboolean
-Java_java_awt_Toolkit_imgIsMultiFrame ( JNIEnv* env, jclass clazz, Image* img)
+Java_java_awt_Toolkit_imgIsMultiFrame ( JNIEnv* env, jclass clazz, jobject nimg)
 {
-  return (img->next != 0);
+  return (UNVEIL_IMG(nimg)->next != 0);
 }
 
 jint
-Java_java_awt_Toolkit_imgGetLatency ( JNIEnv* env, jclass clazz, Image* img)
+Java_java_awt_Toolkit_imgGetLatency ( JNIEnv* env, jclass clazz, jobject nimg)
 {
-  return img->latency;
+  return UNVEIL_IMG(nimg)->latency;
 }
 
 void*
-Java_java_awt_Toolkit_imgGetNextFrame ( JNIEnv* env, jclass clazz, Image* img )
+Java_java_awt_Toolkit_imgGetNextFrame ( JNIEnv* env, jclass clazz, jobject nimg)
 {
-  return img->next;   /* next in the ring */
+  return UNVEIL_IMG(nimg)->next;   /* next in the ring */
 }

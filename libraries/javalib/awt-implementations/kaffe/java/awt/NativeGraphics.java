@@ -32,12 +32,12 @@
 package java.awt;
 
 import java.awt.image.ImageObserver;
-import kaffe.util.Ptr;
+import gnu.classpath.RawData;
 
 class NativeGraphics
   extends Graphics
 {
-	Ptr nativeData;
+	RawData nativeData;
 	int xOffset;
 	int yOffset;
 	Color fgClr;
@@ -533,7 +533,7 @@ public FontMetrics getFontMetrics ( Font fnt ) {
 	return FontMetrics.getFontMetrics( fnt);
 }
 
-static NativeGraphics getGraphics ( Object target, Ptr tgtData, int tgtType,
+static NativeGraphics getGraphics ( Object target, RawData tgtData, int tgtType,
                   int xOffset, int yOffset,
 									int xClip, int yClip, int wClip, int hClip,
 									Color fg, Color bg, Font fnt, boolean blank ) {
@@ -686,7 +686,7 @@ public void setFont ( Font newFnt ) {
 	}
 }
 
-void setGraphics ( Ptr tgtData, int tgtType, int xOffset, int yOffset,
+void setGraphics ( RawData tgtData, int tgtType, int xOffset, int yOffset,
 		               int xClip, int yClip, int wClip, int hClip,
 		               Color fg, Color bg, Font fnt, boolean blank ) {
 

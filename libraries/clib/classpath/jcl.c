@@ -65,10 +65,10 @@ JCL_ThrowException (JNIEnv * env, const char *className, const char *errMsg)
 	  errExcClass = (*env)->FindClass (env, "java/lang/InternalError");
 	  if (errExcClass == NULL)
 	    {
-	      fputs ("JCL: Utterly failed to throw exeption ", stderr);
-	      fputs (className, stderr);
-	      fputs (" with message ", stderr);
-	      fputs (errMsg, stderr);
+	      fprintf (stderr, "JCL: Utterly failed to throw exeption ");
+	      fprintf (stderr, className);
+	      fprintf (stderr, " with message ");
+	      fprintf (stderr, errMsg);
 	      return;
 	    }
 	}
@@ -177,4 +177,48 @@ JCL_FindClass (JNIEnv * env, const char *className)
       JCL_ThrowException (env, "java/lang/ClassNotFoundException", className);
     }
   return retval;
+}
+
+
+/*
+ * Build a RawData object. The function caches the class type 
+ */
+
+static jclass rawDataClass;
+static jfieldID rawData_fid;
+static jmethodID rawData_mid;
+
+JNIEXPORT jobject JNICALL
+JCL_NewRawDataObject (JNIEnv * env, void *data)
+{
+  if (rawDataClass == NULL)
+    {
+#ifdef POINTERS_ARE_64BIT
+      rawDataClass = (*env)->FindClass (env, "gnu/classpath/RawData64");
+      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(J)V");
+      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "J");
+#else
+      rawDataClass = (*env)->FindClass (env, "gnu/classpath/RawData32");
+      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(I)V");
+      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "I");
+#endif
+      (*env)->DeleteLocalRef(env, rawDataClass);
+      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
+    }
+
+#ifdef POINTERS_ARE_64BIT
+  return (*env)->NewObject (env, rawDataClass, rawData_mid, (jlong) data);
+#else
+  return (*env)->NewObject (env, rawDataClass, rawData_mid, (jint) data);
+#endif
+}
+
+JNIEXPORT void * JNICALL
+JCL_GetRawData (JNIEnv * env, jobject rawdata)
+{
+#ifdef POINTERS_ARE_64BIT
+  return (void *) (*env)->GetLongField (env, rawdata, rawData_fid);
+#else
+  return (void *) (*env)->GetIntField (env, rawdata, rawData_fid);
+#endif  
 }

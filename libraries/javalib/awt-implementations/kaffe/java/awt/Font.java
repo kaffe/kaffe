@@ -1,12 +1,12 @@
 package java.awt;
 
+import gnu.classpath.RawData;
+
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.peer.FontPeer;
 import java.io.Serializable;
 import java.text.CharacterIterator;
-
-import kaffe.util.Ptr;
 
 /**
  * XXX: implement serial form! 
@@ -14,7 +14,7 @@ import kaffe.util.Ptr;
 public class Font
   implements Serializable
 {
-	Ptr nativeData;
+	RawData nativeData;
 	protected String name;
 	protected int style;
 	protected int size;

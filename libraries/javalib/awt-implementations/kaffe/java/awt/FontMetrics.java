@@ -12,9 +12,8 @@
 
 package java.awt;
 
+import gnu.classpath.RawData;
 import java.util.Hashtable;
-
-import kaffe.util.Ptr;
 
 public class FontMetrics
   implements java.io.Serializable
@@ -29,7 +28,7 @@ public class FontMetrics
 
         Font font;  
 
-	transient Ptr nativeData;
+	transient RawData nativeData;
 	protected String fontSpec;
 	transient int height;
 	transient int descent;

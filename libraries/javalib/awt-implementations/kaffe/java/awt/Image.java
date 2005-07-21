@@ -22,12 +22,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import kaffe.util.Ptr;
+import gnu.classpath.RawData;
 import kaffe.util.VectorSnapshot;
 
 public class Image
 {
-	Ptr nativeData;
+	RawData nativeData;
 	int width = -1;
 	int height = -1;
 	ImageProducer producer;
@@ -343,7 +343,7 @@ private boolean scale (int w, int h) {
 		return (false);
 	}
 	if (w != width || h != height) {
-		Ptr oldNativeData = nativeData;
+		RawData oldNativeData = nativeData;
 		nativeData = Toolkit.imgCreateScaledImage( nativeData, w, h );
 		Toolkit.imgFreeImage( oldNativeData);
 		width = w;

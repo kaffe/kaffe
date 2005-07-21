@@ -1,5 +1,39 @@
 2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Font.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/FontMetrics.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Image.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageFrameLoader.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageNativeProducer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeClipboard.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeGraphics.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Toolkit.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java:
+	Use gnu.classpath.RawData instead of kaffe.util.Ptr.
+
+	* libraries/clib/awt/X/cbd.c,
+	libraries/clib/awt/X/evt.c,
+	libraries/clib/awt/X/fnt.c,
+	libraries/clib/awt/X/gra.c,
+	libraries/clib/awt/X/img.c,
+	libraries/clib/awt/X/toolkit.h,
+	libraries/clib/awt/X/wnd.c: Encapuslate the system pointers into a
+	RawData object. Cleaned up type uses.
+
+	* libraries/clib/classpath/jcl.c,
+	libraries/clib/jcl.h
+	(JCL_NewRawDataObject, JCL_GetRawData): New functions to build and
+	retrieve data from RawData instances.
+
+	* libraries/clib/awt/X/Makefile.am: Added dependence on
+	libclasspath.
+
+	* libraries/clib/awt/X/Makefile.in: Regenerated.
+
+2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/jvmpi/jvmpi_kaffe.c
 	(jvmpiRequestEvent): Return failure if the argument is wrong.
 

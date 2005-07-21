@@ -95,7 +95,7 @@ static XOC create_xoc(Toolkit *tk, const char *font_name)
 }
 #endif
 
-void*
+jobject
 Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jSpec,
                                     jint style, jint size )
 {
@@ -154,7 +154,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jS
 	}
   }
 
-  return (void*) xoc;
+  return JCL_NewRawDataObject (env, xoc);
 #else  
   if ( ! fs ){
     /* now we are getting desperate, try the spec directly (without vars) */
@@ -168,21 +168,21 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jS
 	}
   }
 
-  return (void*) fs;
+  return JCL_NewRawDataObject (env, fs);
 #endif  
 }
 
 #ifdef KAFFE_I18N
 void
-Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env UNUSED, jclass clazz UNUSED, XOC xoc )
+Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz UNUSED, jobject nativeXoc )
 {
-  XDestroyOC(xoc);
+  XDestroyOC(UNVEIL_XOC(nativeXoc));
 }
 #else
 void
-Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XFontStruct* fs )
+Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, jobject fs )
 {
-  XFreeFont( X->dsp, fs);
+  XFreeFont( X->dsp, UNVEIL_FS(fs));
 }
 #endif
 
@@ -191,7 +191,7 @@ Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, XFontStruct* fs )
  */
 
 #ifdef KAFFE_I18N
-KAFFE_FONT_FUNC_DECL( void *, Java_java_awt_Toolkit_fntInitFontMetrics )
+KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntInitFontMetrics )
 {
   return xoc;
 }
@@ -202,25 +202,25 @@ KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics )
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetAscent )
 {
-  return -XExtentsOfFontSet(xoc)->max_logical_extent.y;	
+  return -XExtentsOfFontSet(UNVEIL_XOC(xoc))->max_logical_extent.y;	
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent )
 {
-  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  XFontSetExtents *xfse=XExtentsOfFontSet(UNVEIL_XOC(xoc));
   return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth )
 {
-  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  XFontSetExtents *xfse=XExtentsOfFontSet(UNVEIL_XOC(xoc));
   return ( xfse->max_logical_extent.width == xfse->max_ink_extent.width ) ?
 	  xfse->max_logical_extent.width : 0;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight )
 {
-  return XExtentsOfFontSet(xoc)->max_logical_extent.height;
+  return XExtentsOfFontSet(UNVEIL_XOC(xoc))->max_logical_extent.height;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
@@ -230,18 +230,18 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance )
 {
-  return XExtentsOfFontSet(xoc)->max_logical_extent.width;
+  return XExtentsOfFontSet(UNVEIL_XOC(xoc))->max_logical_extent.width;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent )
 {
-  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  XFontSetExtents *xfse=XExtentsOfFontSet(UNVEIL_XOC(xoc));
   return -xfse->max_logical_extent.y;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxDescent )
 {
-  XFontSetExtents *xfse=XExtentsOfFontSet(xoc);
+  XFontSetExtents *xfse=XExtentsOfFontSet(UNVEIL_XOC(xoc));
   return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
 }
 
@@ -252,7 +252,7 @@ KAFFE_FONT_FUNC_DECL( jboolean, Java_java_awt_Toolkit_fntIsWideFont )
 
 #else
 
-KAFFE_FONT_FUNC_DECL( void *, Java_java_awt_Toolkit_fntInitFontMetrics )
+KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntInitFontMetrics )
 {
   return fs;
 }
@@ -263,22 +263,26 @@ KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetAscent )
 {
-  return fs->ascent;
+  return UNVEIL_FS(fs)->ascent;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent )
 {
-  return fs->descent;
+  return UNVEIL_FS(fs)->descent;
 }
 
-KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth 
+KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth )
 {
-  return (fs->min_bounds.width == fs->max_bounds.width) ? fs->max_bounds.width : 0;
+  XFontStruct *xfs = UNVEIL_FS(fs);
+
+  return (xfs->min_bounds.width == xfs->max_bounds.width) ? xfs->max_bounds.width : 0;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight )
 {
-  return fs->ascent + fs->descent +1;
+  XFontStruct *xfs = UNVEIL_FS(fs);
+
+  return xfs->ascent + xfs->descent +1;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
@@ -288,22 +292,24 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance )
 {
-  return fs->max_bounds.width;
+  return UNVEIl_FS(fs)->max_bounds.width;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent )
 {
-  return fs->max_bounds.ascent;
+  return UNVEIL_FS(fs)->max_bounds.ascent;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxDescent )
 {
-  return fs->max_bounds.descent;
+  return UNVEIL_FS(fs)->max_bounds.descent;
 }
 
 KAFFE_FONT_FUNC_DECL( jboolean, Java_java_awt_Toolkit_fntIsWideFont )
 {
-  return (fs->min_byte1 | fs->max_byte1);
+  XFontStruct *xfs = UNVEIL_FS(fs);
+
+  return (xfs->min_byte1 | xfs->max_byte1);
 }
 
 #endif
@@ -320,6 +326,7 @@ KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths )
   wchar_t wch;
   int num;
 #else  
+  XFontStruct *xfs = UNVEIL_FS(fs);
   register  int i, j;
   const int n = 256;
 #endif  
@@ -331,7 +338,7 @@ KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths )
   for( i = 0; i < 256; i++ ) {
     wch = i;
     if (!XwcTextPerCharExtents(
-	 xoc ,&wch ,1 ,&ink_array, &logical_array, 1,
+	 UNVEIL_XOC(xoc) ,&wch ,1 ,&ink_array, &logical_array, 1,
          &num,&overall_ink, &overall_logical )){
       DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
         "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
@@ -339,15 +346,15 @@ KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths )
     jw[i] = overall_logical.width;
   }
 #else  
-  if ( fs->max_char_or_byte2 < n ) n = fs->max_char_or_byte2;
+  if ( xfs->max_char_or_byte2 < n ) n = xfs->max_char_or_byte2;
 
-  if ( fs->min_bounds.width == fs->max_bounds.width ) {
-	for ( i=fs->min_char_or_byte2, j=0; i < n; i++, j++ )
-	  jw[i] = fs->max_bounds.width;
+  if ( xfs->min_bounds.width == xfs->max_bounds.width ) {
+	for ( i=xfs->min_char_or_byte2, j=0; i < n; i++, j++ )
+	  jw[i] = xfs->max_bounds.width;
   }
   else {
-	for ( i=fs->min_char_or_byte2, j=0; i < n; i++, j++ )
-	  jw[i] = fs->per_char[j].width;
+	for ( i=xfs->min_char_or_byte2, j=0; i < n; i++, j++ )
+	  jw[i] = xfs->per_char[j].width;
   }
 #endif
   (*env)->ReleaseIntArrayElements( env, widths, jw, 0);
@@ -376,7 +383,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntBytesWidth, jbyteArray jByt
   wch = jbyte2wchar( jb + off, len );
   ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
   logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
-  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+  if(!XwcTextPerCharExtents(UNVEIL_XOC(xoc) ,wch ,len ,ink_array,logical_array, len,
       &num,&overall_ink ,&overall_logical)){
     DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
          "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
@@ -385,7 +392,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntBytesWidth, jbyteArray jByt
   free( (void *)ink_array );
   free( (void *)wch );
 #else  
-  w = XTextWidth( fs, jb+off, len);
+  w = XTextWidth( UNVEIL_FS(fs), jb+off, len);
 #endif
   
   (*env)->ReleaseByteArrayElements( env, jBytes, jb, JNI_ABORT);
@@ -406,7 +413,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharWidth, jchar jChar )
   int num;
 
   wch = jChar;
-  if(!XwcTextPerCharExtents(xoc ,&wch ,1 ,&ink_array, &logical_array,
+  if(!XwcTextPerCharExtents(UNVEIL_XOC(xoc) ,&wch ,1 ,&ink_array, &logical_array,
 	1, &num, &overall_ink, &overall_logical)){
     DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
          "):" "XwcTextPerCharExtents Error\n",__LINE__ ));			
@@ -419,7 +426,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharWidth, jchar jChar )
   jChar = (jChar << 8) | (jChar >> 8);
 #endif
 
-  return XTextWidth16( fs, (XChar2b*)&jChar, 1);
+  return XTextWidth16( UNVEIL_FS(fs), (XChar2b*)&jChar, 1);
 #endif  
 }
 
@@ -444,7 +451,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharsWidth, jcharArray jCha
   wch = jchar2wchar( jc + off, len );
   ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
   logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
-  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+  if(!XwcTextPerCharExtents(UNVEIL_XOC(xoc) ,wch ,len ,ink_array,logical_array, len,
 	&num,&overall_ink ,&overall_logical)){
     DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
          "):" "XwcTextPerCharExtents Error\n",__LINE__ ));			    }
@@ -465,7 +472,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntCharsWidth, jcharArray jCha
   free( (void *)ink_array );
   free( (void *)wch );
 #else  
-  w = XTextWidth16( fs, b, len);
+  w = XTextWidth16( UNVEIL_FS(fs), b, len);
 #endif
   
   (*env)->ReleaseCharArrayElements( env, jChars, jc, JNI_ABORT);
@@ -490,7 +497,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntStringWidth, jstring jStr )
   wch = jchar2wchar( jc, len );
   ink_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
   logical_array = (XRectangle *)malloc(sizeof(XRectangle)*len);
-  if(!XwcTextPerCharExtents(xoc ,wch ,len ,ink_array,logical_array, len,
+  if(!XwcTextPerCharExtents(UNVEIL_XOC(xoc) ,wch ,len ,ink_array,logical_array, len,
 	&num,&overall_ink ,&overall_logical)){
     DBG( AWT, fprintf(stderr, __FILE__ "(%d)"
          "):" "XwcTextPerCharExtents Error\n",__LINE__ ));
@@ -513,7 +520,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntStringWidth, jstring jStr )
   b = (XChar2b*) jc;
 #endif
 
-  w = XTextWidth16( fs, b, len);
+  w = XTextWidth16( UNVEIL_FS(fs), b, len);
 #endif /* !KAFFE_I18N */  
 
   (*env)->ReleaseStringChars( env, jStr, jc);

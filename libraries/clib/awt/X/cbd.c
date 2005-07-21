@@ -13,6 +13,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include "toolkit.h"
+#include "jcl.h"
 
 
 jclass     NativeClipboard;
@@ -162,7 +163,7 @@ Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz UNUSED)
 }
 
 void
-Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env UNUSED, jclass clazz UNUSED, ClipBoard* cbd UNUSED )
+Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject cbd UNUSED )
 {
 }
 

@@ -15,6 +15,7 @@
 #include <X11/keysym.h>
 #include "toolkit.h"
 #include "keysyms.h"
+#include "jcl.h"
 
 
 #if !defined (USE_POLLING_AWT)
@@ -348,7 +349,7 @@ keyNotify ( JNIEnv* env, Toolkit* tk )
   }
 
   return (*env)->CallStaticObjectMethod( env, KeyEvent, getKeyEvent,
-										 idx, tk->evtId, keyCode, keyChar, mod);
+					 idx, tk->evtId, keyCode, keyChar, mod);
 }
 
 
@@ -366,9 +367,9 @@ buttonNotify ( JNIEnv* env, Toolkit* tk )
   }
 
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
-										 tk->srcIdx, tk->evtId,
-										 tk->event.xbutton.button,
-										 tk->event.xbutton.x, tk->event.xbutton.y);
+					 tk->srcIdx, tk->evtId,
+					 tk->event.xbutton.button,
+					 tk->event.xbutton.x, tk->event.xbutton.y);
 }
 
 
@@ -376,8 +377,8 @@ static jobject
 motionNotify ( JNIEnv* env, Toolkit* tk )
 {
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
-										 tk->srcIdx, (tk->evtId = MOUSE_MOVED),
-										 0, tk->event.xmotion.x, tk->event.xmotion.y);
+					 tk->srcIdx, (tk->evtId = MOUSE_MOVED),
+					 0, tk->event.xmotion.x, tk->event.xmotion.y);
 }
 
 
@@ -387,8 +388,8 @@ mouseNotify ( JNIEnv* env, Toolkit* tk )
   tk->evtId = (tk->event.xany.type == EnterNotify) ? MOUSE_ENTERED : MOUSE_EXITED;
 
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
-										 tk->srcIdx, tk->evtId,
-										 0, tk->event.xcrossing.x, tk->event.xcrossing.y);
+					 tk->srcIdx, tk->evtId,
+					 0, tk->event.xcrossing.x, tk->event.xcrossing.y);
 }
 
 
@@ -471,8 +472,8 @@ expose ( JNIEnv* env, Toolkit* tk )
   }
 
   return (*env)->CallStaticObjectMethod( env, PaintEvent, getPaintEvent,
-										 tk->srcIdx, (tk->evtId = UPDATE),
-										 x, y, w, h);
+					 tk->srcIdx, (tk->evtId = UPDATE),
+					 x, y, w, h);
 }
 
 
@@ -487,7 +488,7 @@ destroyNotify ( JNIEnv* env, Toolkit* tk )
   tk->windows[tk->srcIdx].flags &= ~WND_MAPPED;
 
   return (*env)->CallStaticObjectMethod( env, WMEvent, getWMEvent,
-										 tk->srcIdx, (tk->evtId = WM_KILLED));
+					 tk->srcIdx, (tk->evtId = WM_KILLED));
 }
 
 
@@ -510,8 +511,8 @@ mapNotify ( JNIEnv* env, Toolkit* tk )
   }
 
   if ( id ) {
-	return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
-										   tk->srcIdx, id);
+    return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
+					   tk->srcIdx, id);
   }
   else {
 	  /* we do the ComponentEvent show/hide in Java */
@@ -536,9 +537,9 @@ configureNotify ( JNIEnv* env, Toolkit* tk )
 
   if ( (tk->event.xconfigure.x == 0) && (tk->event.xconfigure.y == 0) ) {
 	XTranslateCoordinates( tk->dsp, tk->event.xconfigure.window,
-						   DefaultRootWindow( tk->dsp),
-						   tk->event.xconfigure.x, tk->event.xconfigure.y,
-						   &tk->event.xconfigure.x, &tk->event.xconfigure.y, &child);
+			       DefaultRootWindow( tk->dsp),
+			       tk->event.xconfigure.x, tk->event.xconfigure.y,
+			       &tk->event.xconfigure.x, &tk->event.xconfigure.y, &child);
   }
 
   x = tk->event.xconfigure.x;
@@ -548,7 +549,7 @@ configureNotify ( JNIEnv* env, Toolkit* tk )
   X->evtId = COMPONENT_RESIZED;
 
   return (*env)->CallStaticObjectMethod( env, ComponentEvent, getComponentEvent,
-										 tk->srcIdx, tk->evtId, x, y, w, h);
+					 tk->srcIdx, tk->evtId, x, y, w, h);
 }
 
 
@@ -601,7 +602,7 @@ clientMessage ( JNIEnv* env, Toolkit* tk )
 		tk->fwdIdx = tk->srcIdx;
 		tk->focusFwd = tk->event.xany.window;
 		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
-											   tk->srcIdx, FOCUS_GAINED, JNI_TRUE);
+						       tk->srcIdx, FOCUS_GAINED, JNI_TRUE);
 	  }
 	  else {
 		return 0;
@@ -613,7 +614,7 @@ clientMessage ( JNIEnv* env, Toolkit* tk )
 	  if ( tk->fwdIdx >= 0 ) {
 		resetFocusForwarding( tk);
 		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
-											   tk->srcIdx, FOCUS_LOST, JNI_FALSE);
+						       tk->srcIdx, FOCUS_LOST, JNI_FALSE);
 	  }
 	  else {
 		return 0;
@@ -624,7 +625,7 @@ clientMessage ( JNIEnv* env, Toolkit* tk )
 	  if ( tk->event.xany.window == tk->focus ) {
 		resetFocusForwarding( tk);
 		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
-											   tk->srcIdx, FOCUS_GAINED, JNI_FALSE);
+						       tk->srcIdx, FOCUS_GAINED, JNI_FALSE);
 	  }
 	}
   }
@@ -922,8 +923,10 @@ Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env UNUSED, jclass clazz UNUSED, 
 
 
 jint
-Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, Window wnd )
+Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject nativeWnd )
 {
+  Window wnd = UNVEIL_WND(nativeWnd);
+
   /*
    * We have done that already during the various wndCreateXX()
    */
@@ -936,8 +939,9 @@ Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSE
 
 
 jint
-Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, Window wnd )
+Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject nativeWnd )
 {
+  Window wnd = UNVEIL_WND(nativeWnd);
   int i = getSourceIdx( X, wnd);
 
   if ( i >= 0 ){

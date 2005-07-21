@@ -16,6 +16,9 @@
 #include "config-mem.h"
 #include "config-setjmp.h"
 
+#include "jcl.h"
+#undef DBG
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -630,7 +633,7 @@ static inline void resetFocusForwarding ( Toolkit* tk )
   tk->fwdIdx = -1;
   tk->focusFwd = 0;
 }
-extern void forwardFocus( int cmd, Window* wnd );
+extern void forwardFocus( int cmd, Window wnd );
 
 /*****************************************************************************************
  * Macros to implement keyboard handling for owned windows (which don't ever get
@@ -662,16 +665,18 @@ extern jobject Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz );
 extern jobject Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id );
 extern void Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz );
 extern void Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env, jclass clazz, jobject wmEvt );
-extern jint Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd );
-extern jint Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wnd );
+extern jint Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, jobject wnd );
+extern jint Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, jobject wnd );
 
 /* Font */
 extern void* Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, jint style, jint size );
 
 #ifdef KAFFE_I18N
-#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XOC xoc , ## args )
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, jobject  xoc , ## args )
+#define UNVEIL_XOC(xoc)  ((XOC)JCL_GetRawData (env, xoc))
 #else
-#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, XFontStruct* fs , ## args )
+#define KAFFE_FONT_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, jobject  fs , ## args )
+#define UNVEIL_FS(fs)  ((XFontStruct *)JCL_GetRawData (env, fs))
 #endif
 
 extern KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFont );
@@ -712,9 +717,10 @@ typedef struct {
 #define  IMAGE    1
 #define  GRAPHICS 2
 
-#define KAFFE_GRA_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, Graphics *gr , ## args )
+#define KAFFE_GRA_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, jobject ngr , ## args )
+#define UNVEIL_GR(ngr) ((Graphics *)JCL_GetRawData(env, ngr))
 
-extern KAFFE_GRA_FUNC_DECL( void*, Java_java_awt_Toolkit_graInitGraphics, jobject tgt, jint tgtType, jint xOff, jint yOff, jint xClip, jint yClip, jint wClip, jint hClip, jobject fnt, jint fg, jint bg, jboolean blank );
+extern KAFFE_GRA_FUNC_DECL( jobject, Java_java_awt_Toolkit_graInitGraphics, jobject tgt, jint tgtType, jint xOff, jint yOff, jint xClip, jint yClip, jint wClip, jint hClip, jobject fnt, jint fg, jint bg, jboolean blank );
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graFreeGraphics );
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graCopyArea, jint x, jint y, jint width, jint height, jint xDelta, jint yDelta );
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graClearRect, jint x, jint y, jint width, jint height );
@@ -744,47 +750,50 @@ extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graSetOffset, jint xOff,
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graSetPaintMode );
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graSetXORMode, jint xorClr );
 extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graSetVisible, jint isVisible );
-extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graDrawImage, Image* img, jint srcX, jint srcY, jint dstX, jint dstY, jint width, jint height, jint bgval );
-extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graDrawImageScaled, Image* img, jint dx0, jint dy0, jint dx1, jint dy1, jint sx0, jint sy0, jint sx1, jint sy1, jint bgval );
+extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graDrawImage, jobject img, jint srcX, jint srcY, jint dstX, jint dstY, jint width, jint height, jint bgval );
+extern KAFFE_GRA_FUNC_DECL( void, Java_java_awt_Toolkit_graDrawImageScaled, jobject img, jint dx0, jint dy0, jint dx1, jint dy1, jint sx0, jint sy0, jint sx1, jint sy1, jint bgval );
 
   /* Image */
 #define KAFFE_CREATE_IMG_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz , ## args )
-#define KAFFE_IMG_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, Image *img , ## args )
+#define KAFFE_IMG_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, jobject nimg , ## args )
+#define UNVEIL_IMG(nimg) ((Image *)JCL_GetRawData(env, nimg))
 
-extern KAFFE_CREATE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgCreateImage, jint width, jint height );
-extern KAFFE_CREATE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgCreateScreenImage, jint width, jint height );
+extern KAFFE_CREATE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgCreateImage, jint width, jint height );
+extern KAFFE_CREATE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgCreateScreenImage, jint width, jint height );
 extern KAFFE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgSetIdxPels, jint x, jint y, jint w, jint h, jintArray clrMap, jbyteArray idxPels, jint trans, jint off, jint scan );
 extern KAFFE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgSetRGBPels, jint x, jint y, jint w, jint h, jintArray rgbPels, jint off, jint scan );
 extern KAFFE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgComplete, jint status );
 extern KAFFE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgFreeImage );
-extern KAFFE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgCreateScaledImage, int width, int height );
-extern KAFFE_CREATE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgProduceImage, jobject producer, Image* img );
-extern KAFFE_CREATE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgCreateFromFile, jstring fileName );
-extern KAFFE_CREATE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgCreateFromData, jbyteArray jbuffer, jint off, jint len );
-extern KAFFE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgSetFrame, int frameNo );
+extern void imgFreeImage( Image *img );
+extern KAFFE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgCreateScaledImage, int width, int height );
+extern KAFFE_CREATE_IMG_FUNC_DECL( void, Java_java_awt_Toolkit_imgProduceImage, jobject producer, jobject nimg );
+extern KAFFE_CREATE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgCreateFromFile, jstring fileName );
+extern KAFFE_CREATE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgCreateFromData, jbyteArray jbuffer, jint off, jint len );
+extern KAFFE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgSetFrame, int frameNo );
 extern KAFFE_IMG_FUNC_DECL( jint, Java_java_awt_Toolkit_imgGetWidth );
 extern KAFFE_IMG_FUNC_DECL( jint, Java_java_awt_Toolkit_imgGetHeight );
 extern KAFFE_IMG_FUNC_DECL( jboolean, Java_java_awt_Toolkit_imgIsMultiFrame );
 extern KAFFE_IMG_FUNC_DECL( jint, Java_java_awt_Toolkit_imgGetLatency );
-extern KAFFE_IMG_FUNC_DECL( void*, Java_java_awt_Toolkit_imgGetNextFrame );
+extern KAFFE_IMG_FUNC_DECL( jobject, Java_java_awt_Toolkit_imgGetNextFrame );
 
 /* Window */
 
 #define KAFFE_GLBL_WND_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, ## args )
-#define KAFFE_WND_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, Window* wnd , ## args )
+#define KAFFE_WND_FUNC_DECL( ret, name, args... ) ret name( JNIEnv* env, jclass clazz, jobject nwnd , ## args )
+#define UNVEIL_WND(wnd) ((Window)JCL_GetRawData(env, wnd))
 
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetTitle, jstring jTitle );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetResizable, jboolean isResizable, int x, int y, int width, int height );
-extern KAFFE_GLBL_WND_FUNC_DECL( void*, Java_java_awt_Toolkit_wndCreateFrame, jstring jTitle, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack, jboolean isResizable );
-extern KAFFE_GLBL_WND_FUNC_DECL( void*, Java_java_awt_Toolkit_wndCreateWindow, Window* owner, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack );
-extern KAFFE_GLBL_WND_FUNC_DECL( void*, Java_java_awt_Toolkit_wndCreateDialog, Window* owner, jstring jTitle, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack, jboolean isResizable );
+extern KAFFE_GLBL_WND_FUNC_DECL( jobject, Java_java_awt_Toolkit_wndCreateFrame, jstring jTitle, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack, jboolean isResizable );
+extern KAFFE_GLBL_WND_FUNC_DECL( jobject, Java_java_awt_Toolkit_wndCreateWindow, jobject nowner, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack );
+extern KAFFE_GLBL_WND_FUNC_DECL( jobject, Java_java_awt_Toolkit_wndCreateDialog, jobject nowner, jstring jTitle, jint x, jint y, jint width, jint height, jint jCursor, jint clrBack, jboolean isResizable );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndDestroyWindow );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndRequestFocus );
 extern KAFFE_GLBL_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetFrameInsets, jint top, jint left, jint bottom, jint right );
 extern KAFFE_GLBL_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetDialogInsets, jint top, jint left, jint bottom, jint right );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetBounds, jint x, jint y, jint width, jint height, jboolean isResizable );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndRepaint, jint x, jint y, jint width, jint height );
-extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetIcon, Image* img );
+extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetIcon, jobject nimg );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndSetVisible, jboolean showIt );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndToBack );
 extern KAFFE_WND_FUNC_DECL( void, Java_java_awt_Toolkit_wndToFront );

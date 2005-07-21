@@ -56,6 +56,9 @@ JNIEXPORT void JNICALL JCL_free_cstring (JNIEnv * env, jstring s,
 JNIEXPORT jint JNICALL JCL_MonitorEnter (JNIEnv * env, jobject o);
 JNIEXPORT jint JNICALL JCL_MonitorExit (JNIEnv * env, jobject o);
 
+JNIEXPORT jobject JNICALL JCL_NewRawDataObject (JNIEnv * env, void *data);
+JNIEXPORT void * JNICALL JCL_GetRawData (JNIEnv * env, jobject rawdata);
+
 #define JCL_RETHROW_EXCEPTION(env) if((*(env))->ExceptionOccurred((env)) != NULL) return NULL;
 
 /* Simple debug macro */

@@ -10,7 +10,8 @@ native_LTLIBRARIES = libxawt.la
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	-I$(top_srcdir)/libraries/clib/classpath
 
 libxawt_la_CFLAGS = \
 	$(CFLAGS_PG) \
@@ -23,7 +24,9 @@ libxawt_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
+libxawt_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS) \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libxawt_la_SOURCES = \
 	tlk.c \

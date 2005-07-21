@@ -5,7 +5,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.peer.ComponentPeer;
 
-import kaffe.util.Ptr;
+import gnu.classpath.RawData;
 
 /**
  * Window -
@@ -21,7 +21,7 @@ import kaffe.util.Ptr;
 public class Window
   extends Container
 {
-	Ptr nativeData;
+	RawData nativeData;
 	WindowListener wndListener;
 	Frame owner;
 	static Window dummy = new Window();
@@ -157,7 +157,7 @@ public Graphics getGraphics () {
 	}
 }
 
-Ptr getNativeData () {
+RawData getNativeData () {
 	return nativeData;
 }
 

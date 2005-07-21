@@ -1,5 +1,6 @@
 package java.awt;
 
+import gnu.classpath.RawData;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureListener;
@@ -18,7 +19,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import kaffe.awt.DoNothingPeer;
-import kaffe.util.Ptr;
 import kaffe.util.log.LogClient;
 import kaffe.util.log.LogStream;
 
@@ -144,13 +144,13 @@ public void beep () {
 	tlkBeep();
 }
 
-native static synchronized void cbdFreeClipboard ( Ptr cbdData );
+native static synchronized void cbdFreeClipboard ( RawData cbdData );
 
-native static synchronized Transferable cbdGetContents( Ptr cbdData);
+native static synchronized Transferable cbdGetContents( RawData cbdData);
 
-native static synchronized Ptr cbdInitClipboard ();
+native static synchronized RawData cbdInitClipboard ();
 
-native static synchronized boolean cbdSetOwner ( Ptr cbdData );
+native static synchronized boolean cbdSetOwner ( RawData cbdData );
 
 public int checkImage(Image image, int width, int height, ImageObserver observer) {
 	return (image.checkImage( width, height, observer, false));
@@ -286,49 +286,49 @@ native static synchronized AWTEvent evtPeekEvent ();
 
 native static synchronized AWTEvent evtPeekEventId ( int eventId );
 
-native static synchronized int evtRegisterSource ( Ptr wndData );
+native static synchronized int evtRegisterSource ( RawData wndData );
 
 native static synchronized void evtSendWMEvent ( WMEvent e );
 
-native static synchronized int evtUnregisterSource ( Ptr wndData );
+native static synchronized int evtUnregisterSource ( RawData wndData );
 
 native static synchronized void evtWakeup ();
 
-native static synchronized int fntBytesWidth ( Ptr fmData, byte[] data, int off, int len );
+native static synchronized int fntBytesWidth ( RawData fmData, byte[] data, int off, int len );
 
-native static synchronized int fntCharWidth ( Ptr fmData, char c );
+native static synchronized int fntCharWidth ( RawData fmData, char c );
 
-native static synchronized int fntCharsWidth ( Ptr fmData, char[] data, int off, int len );
+native static synchronized int fntCharsWidth ( RawData fmData, char[] data, int off, int len );
 
-native static synchronized void fntFreeFont ( Ptr fontData );
+native static synchronized void fntFreeFont ( RawData fontData );
 
-native static synchronized void fntFreeFontMetrics ( Ptr fmData );
+native static synchronized void fntFreeFontMetrics ( RawData fmData );
 
-native static synchronized int fntGetAscent ( Ptr fmData);
+native static synchronized int fntGetAscent ( RawData fmData);
 
-native static synchronized int fntGetDescent ( Ptr fmData);
+native static synchronized int fntGetDescent ( RawData fmData);
 
-native static synchronized int fntGetFixedWidth ( Ptr fmData);
+native static synchronized int fntGetFixedWidth ( RawData fmData);
 
-native static synchronized int fntGetHeight ( Ptr fmData);
+native static synchronized int fntGetHeight ( RawData fmData);
 
-native static synchronized int fntGetLeading ( Ptr fmData);
+native static synchronized int fntGetLeading ( RawData fmData);
 
-native static synchronized int fntGetMaxAdvance ( Ptr fmData);
+native static synchronized int fntGetMaxAdvance ( RawData fmData);
 
-native static synchronized int fntGetMaxAscent ( Ptr fmData);
+native static synchronized int fntGetMaxAscent ( RawData fmData);
 
-native static synchronized int fntGetMaxDescent ( Ptr fmData);
+native static synchronized int fntGetMaxDescent ( RawData fmData);
 
-native static synchronized int[] fntGetWidths ( Ptr fmData );
+native static synchronized int[] fntGetWidths ( RawData fmData );
 
-native static synchronized Ptr fntInitFont ( String fntSpec, int style, int size );
+native static synchronized RawData fntInitFont ( String fntSpec, int style, int size );
 
-native static synchronized Ptr fntInitFontMetrics ( Ptr fontData);
+native static synchronized RawData fntInitFontMetrics ( RawData fontData);
 
-native static synchronized boolean fntIsWideFont ( Ptr fmData);
+native static synchronized boolean fntIsWideFont ( RawData fmData);
 
-native static synchronized int fntStringWidth ( Ptr fmData, String s );
+native static synchronized int fntStringWidth ( RawData fmData, String s );
 
 public ColorModel getColorModel () {
 	if ( colorModel == null ){
@@ -401,111 +401,111 @@ public EventQueue getSystemEventQueue () {
 	return eventQueue;
 }
 
-native static synchronized void graAddClip ( Ptr grData, int xClip, int yClip, int wClip, int hClip );
+native static synchronized void graAddClip ( RawData grData, int xClip, int yClip, int wClip, int hClip );
 
-native static synchronized void graClearRect ( Ptr grData, int x, int y, int width, int height );
+native static synchronized void graClearRect ( RawData grData, int x, int y, int width, int height );
 
-native static synchronized void graCopyArea ( Ptr grData, int x, int y, int width, int height,
+native static synchronized void graCopyArea ( RawData grData, int x, int y, int width, int height,
 					   int xDelta, int yDelta );
 
-native static synchronized void graDraw3DRect ( Ptr grData, int x, int y, int width, int height,
+native static synchronized void graDraw3DRect ( RawData grData, int x, int y, int width, int height,
 		     boolean raised, int rgbValue );
 
-native static synchronized void graDrawArc ( Ptr grData, int x, int y, int width, int height, int startAngle, int arcAngle );
+native static synchronized void graDrawArc ( RawData grData, int x, int y, int width, int height, int startAngle, int arcAngle );
 
-native static synchronized void graDrawBytes ( Ptr grData, byte[] data, int offset, int length, int x, int y );
+native static synchronized void graDrawBytes ( RawData grData, byte[] data, int offset, int length, int x, int y );
 
-native static synchronized void graDrawChars ( Ptr grData, char[] data, int offset, int length, int x, int y );
+native static synchronized void graDrawChars ( RawData grData, char[] data, int offset, int length, int x, int y );
 
-native static synchronized void graDrawImage( Ptr grData, Ptr imgData, int src_x, int src_y, int dst_x, int dst_y, int w, int h, int bgval );
+native static synchronized void graDrawImage( RawData grData, RawData imgData, int src_x, int src_y, int dst_x, int dst_y, int w, int h, int bgval );
 
-native static synchronized void graDrawImageScaled ( Ptr grData, Ptr imgData,
+native static synchronized void graDrawImageScaled ( RawData grData, RawData imgData,
 			  int dx0, int dy0, int dx1, int dy1,
 			  int sx0, int sy0, int sx1, int sy1, int bgval );
 
-native static synchronized void graDrawLine ( Ptr grData, int x1, int y1, int x2, int y2 );
+native static synchronized void graDrawLine ( RawData grData, int x1, int y1, int x2, int y2 );
 
-native static synchronized void graDrawOval ( Ptr grData, int x, int y, int width, int height );
+native static synchronized void graDrawOval ( RawData grData, int x, int y, int width, int height );
 
-native static synchronized void graDrawPolygon ( Ptr grData, int[] xPoints, int[] yPoints, int nPoints );
+native static synchronized void graDrawPolygon ( RawData grData, int[] xPoints, int[] yPoints, int nPoints );
 
-native static synchronized void graDrawPolyline ( Ptr grData, int[] xPoints, int[] yPoints, int nPoints );
+native static synchronized void graDrawPolyline ( RawData grData, int[] xPoints, int[] yPoints, int nPoints );
 
-native static synchronized void graDrawRect ( Ptr grData, int x, int y, int width, int height );
+native static synchronized void graDrawRect ( RawData grData, int x, int y, int width, int height );
 
-native static synchronized void graDrawRoundRect ( Ptr grData, int x, int y, int width, int height,
+native static synchronized void graDrawRoundRect ( RawData grData, int x, int y, int width, int height,
 						int arcWidth, int arcHeight );
 
-native static synchronized void graDrawString ( Ptr grData, String s, int x, int y );
+native static synchronized void graDrawString ( RawData grData, String s, int x, int y );
 
-native static synchronized void graFill3DRect ( Ptr grData, int x, int y, int width, int height,
+native static synchronized void graFill3DRect ( RawData grData, int x, int y, int width, int height,
 		     boolean raised, int rgbValue );
 
-native static synchronized void graFillArc ( Ptr grData, int x, int y, int width, int height, int startAngle, int arcAngle );
+native static synchronized void graFillArc ( RawData grData, int x, int y, int width, int height, int startAngle, int arcAngle );
 
-native static synchronized void graFillOval ( Ptr grData, int x, int y, int width, int height );
+native static synchronized void graFillOval ( RawData grData, int x, int y, int width, int height );
 
-native static synchronized void graFillPolygon ( Ptr grData, int[] xPoints, int[] yPoints, int nPoints );
+native static synchronized void graFillPolygon ( RawData grData, int[] xPoints, int[] yPoints, int nPoints );
 
-native static synchronized void graFillRect ( Ptr grData, int x, int y, int width, int height );
+native static synchronized void graFillRect ( RawData grData, int x, int y, int width, int height );
 
-native static synchronized void graFillRoundRect ( Ptr grData, int x, int y, int width, int height,
+native static synchronized void graFillRoundRect ( RawData grData, int x, int y, int width, int height,
 						int arcWidth, int arcHeight );
 
-native static synchronized void graFreeGraphics ( Ptr grData );
+native static synchronized void graFreeGraphics ( RawData grData );
 
-native static synchronized Ptr graInitGraphics ( Ptr grData, Ptr tgtData, int tgtType,
+native static synchronized RawData graInitGraphics ( RawData grData, RawData tgtData, int tgtType,
 					      int xOffset, int yOffset,
 					      int xClip, int yClip, int wClip, int hClip,
-					      Ptr fontData, int fgClr, int bgClr, boolean blank );
+					      RawData fontData, int fgClr, int bgClr, boolean blank );
 
-native static synchronized void graSetBackColor ( Ptr grData, int pixelValue );
+native static synchronized void graSetBackColor ( RawData grData, int pixelValue );
 
-native static synchronized void graSetClip ( Ptr grData, int xClip, int yClip, int wClip, int hClip );
+native static synchronized void graSetClip ( RawData grData, int xClip, int yClip, int wClip, int hClip );
 
-native static synchronized void graSetColor ( Ptr grData, int pixelValue );
+native static synchronized void graSetColor ( RawData grData, int pixelValue );
 
-native static synchronized void graSetFont ( Ptr grData, Ptr fontData );
+native static synchronized void graSetFont ( RawData grData, RawData fontData );
 
-native static synchronized void graSetOffset ( Ptr grData, int xOffset, int yOffset );
+native static synchronized void graSetOffset ( RawData grData, int xOffset, int yOffset );
 
-native static synchronized void graSetPaintMode ( Ptr grData );
+native static synchronized void graSetPaintMode ( RawData grData );
 
-native static synchronized void graSetVisible ( Ptr grData, boolean isVisible );
+native static synchronized void graSetVisible ( RawData grData, boolean isVisible );
 
-native static synchronized void graSetXORMode ( Ptr grData, int xClr );
+native static synchronized void graSetXORMode ( RawData grData, int xClr );
 
-native static synchronized void imgComplete ( Ptr imgData, int status );
+native static synchronized void imgComplete ( RawData imgData, int status );
 
-native static synchronized Ptr imgCreateFromData( byte[] buf, int offset, int len);
+native static synchronized RawData imgCreateFromData( byte[] buf, int offset, int len);
 
-native static synchronized Ptr imgCreateFromFile( String gifPath);
+native static synchronized RawData imgCreateFromFile( String gifPath);
 
-native static synchronized Ptr imgCreateImage( int w, int h);
+native static synchronized RawData imgCreateImage( int w, int h);
 
-native static synchronized Ptr imgCreateScaledImage( Ptr imgData, int w, int h);
+native static synchronized RawData imgCreateScaledImage( RawData imgData, int w, int h);
 
-native static synchronized Ptr imgCreateScreenImage( int w, int h);
+native static synchronized RawData imgCreateScreenImage( int w, int h);
 
-native static synchronized void imgFreeImage ( Ptr imgData );
+native static synchronized void imgFreeImage ( RawData imgData );
 
-native static synchronized int imgGetHeight( Ptr imgData);
+native static synchronized int imgGetHeight( RawData imgData);
 
-native static synchronized int imgGetLatency ( Ptr imgData );
+native static synchronized int imgGetLatency ( RawData imgData );
 
-native static synchronized Ptr imgGetNextFrame ( Ptr imgData );
+native static synchronized RawData imgGetNextFrame ( RawData imgData );
 
-native static synchronized int imgGetWidth( Ptr imgData);
+native static synchronized int imgGetWidth( RawData imgData);
 
-native static synchronized boolean imgIsMultiFrame( Ptr imgData);
+native static synchronized boolean imgIsMultiFrame( RawData imgData);
 
-native static synchronized void imgProduceImage( ImageNativeProducer prod, Ptr imgData);
+native static synchronized void imgProduceImage( ImageNativeProducer prod, RawData imgData);
 
-native static synchronized Ptr imgSetFrame( Ptr imgData, int frame);
+native static synchronized RawData imgSetFrame( RawData imgData, int frame);
 
-native static synchronized void imgSetIdxPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
+native static synchronized void imgSetIdxPels( RawData imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
 
-native static synchronized void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
+native static synchronized void imgSetRGBPels( RawData imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
 
 static synchronized void initToolkit () {
 	// this is called when the native layer has been initialized, and it is safe
@@ -636,39 +636,39 @@ native static synchronized void tlkTerminate ();
 
 native static synchronized String tlkVersion ();
 
-native static synchronized Ptr wndCreateDialog ( Ptr ownerData, String title, int x, int y, int width, int height,
+native static synchronized RawData wndCreateDialog ( RawData ownerData, String title, int x, int y, int width, int height,
 		      int cursorType, int bgColor, boolean isResizable );
 
-native static synchronized Ptr wndCreateFrame ( String title, int x, int y, int width, int height,
+native static synchronized RawData wndCreateFrame ( String title, int x, int y, int width, int height,
 		     int cursorType, int bgColor, boolean isResizable );
 
-native static synchronized Ptr wndCreateWindow ( Ptr ownerData, int x, int y, int width, int height,
+native static synchronized RawData wndCreateWindow ( RawData ownerData, int x, int y, int width, int height,
 		      int cursorType, int bgColor );
 
-native static synchronized void wndDestroyWindow ( Ptr wndData );
+native static synchronized void wndDestroyWindow ( RawData wndData );
 
-native static synchronized void wndRepaint ( Ptr wndData, int x, int y, int width, int height );
+native static synchronized void wndRepaint ( RawData wndData, int x, int y, int width, int height );
 
-native static synchronized void wndRequestFocus ( Ptr wndData );
+native static synchronized void wndRequestFocus ( RawData wndData );
 
-native static synchronized void wndSetBounds ( Ptr wndData, int x, int y, int width, int height, boolean isResizable );
+native static synchronized void wndSetBounds ( RawData wndData, int x, int y, int width, int height, boolean isResizable );
 
-native static synchronized void wndSetCursor ( Ptr wndData, int cursorType );
+native static synchronized void wndSetCursor ( RawData wndData, int cursorType );
 
 native static synchronized int wndSetDialogInsets ( int top, int left, int bottom, int right);
 
 native static synchronized int wndSetFrameInsets ( int top, int left, int bottom, int right);
 
-native static synchronized void wndSetIcon ( Ptr wndData, Ptr iconData );
+native static synchronized void wndSetIcon ( RawData wndData, RawData iconData );
 
-native static synchronized void wndSetResizable ( Ptr wndData, boolean isResizable,
+native static synchronized void wndSetResizable ( RawData wndData, boolean isResizable,
 		       int x, int y, int width, int height );
 
-native static synchronized void wndSetTitle ( Ptr wndData, String title );
+native static synchronized void wndSetTitle ( RawData wndData, String title );
 
-native static synchronized void wndSetVisible ( Ptr wndData, boolean showIt );
+native static synchronized void wndSetVisible ( RawData wndData, boolean showIt );
 
-native static synchronized void wndToBack ( Ptr wndData );
+native static synchronized void wndToBack ( RawData wndData );
 
-native static synchronized void wndToFront ( Ptr wndData );
+native static synchronized void wndToFront ( RawData wndData );
 }

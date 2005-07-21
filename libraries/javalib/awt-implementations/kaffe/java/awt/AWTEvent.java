@@ -6,7 +6,8 @@ import java.util.EventObject;
 import kaffe.awt.FocusHook;
 import kaffe.awt.KeyHook;
 import kaffe.awt.MouseHook;
-import kaffe.util.Ptr;
+
+import gnu.classpath.RawData;
 
 /**
  *
@@ -117,7 +118,7 @@ protected void recycle () {
 	next = null;
 }
 
-static void registerSource ( Component c, Ptr nativeData ) {
+static void registerSource ( Component c, RawData nativeData ) {
 	int idx = Toolkit.evtRegisterSource( nativeData);
 	sources[idx] = c;
 
@@ -160,7 +161,7 @@ public String toString () {
 	return result.toString();
 }
 
-static void unregisterSource ( Component c, Ptr nativeData ) {
+static void unregisterSource ( Component c, RawData nativeData ) {
 	int idx = Toolkit.evtUnregisterSource( nativeData);
 	sources[idx] = null;
 

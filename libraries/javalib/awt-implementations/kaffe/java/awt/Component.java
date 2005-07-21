@@ -1,5 +1,6 @@
 package java.awt;
 
+import gnu.classpath.RawData;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
@@ -26,7 +27,6 @@ import java.io.Serializable;
 import java.util.Locale;
 
 import kaffe.awt.DoNothingPeer;
-import kaffe.util.Ptr;
 
 /**
  * Component - abstract root of all widgets
@@ -510,7 +510,7 @@ public String getName () {
 	return (name == null) ? getClass().getName() : name;
 }
 
-Ptr getNativeData () {
+RawData getNativeData () {
 	return null;  // no nativeData, all lightweight
 }
 

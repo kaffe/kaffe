@@ -1,8 +1,7 @@
 package java.awt;
 
+import gnu.classpath.RawData;
 import java.awt.image.ImageObserver;
-
-import kaffe.util.Ptr;
 
 /**
  * Copyright (c) 1998
@@ -45,7 +44,7 @@ public void run () {
 public void runINPLoop () {
 	int w, h, latency, dt;
 	long t;
-	Ptr ptr = img.nativeData;
+	RawData ptr = img.nativeData;
 
 	img.flags |= Image.IS_ANIMATION;
 
