@@ -7,7 +7,11 @@ What's New in CVS
   for the Java Extension Mechanism and the Java security
   model.
 * Force double precision on x86 FPU for Linux OS.
-* JIT3/PowerPC operational on Darwin/OSX.
+* JIT3/PowerPC operational on Darwin/OSX (real applications 
+does not work yet though).
+* JVMPI cleaned up. Kaffe now works with JMP (http://www.khelekore.org/jmp/)
+* Xlib-AWT fixed on Darwin.
+* Runtime/VMProcess merged from GNU Classpath.
 
 What's New in Kaffe 1.1.5
 ------------------------------------------------------

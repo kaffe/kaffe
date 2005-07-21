@@ -1,5 +1,9 @@
 2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* WHATSNEW, TODO: Updated.
+
+2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/Font.java,

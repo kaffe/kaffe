@@ -25,6 +25,9 @@
   * gcjwebplugin
   * verifier from gcj (rob gonzalez)
 
+* AWT:
+  * Win32 port must be updated to use RawData.
+
 * Build system: (dalibor)
   * Explicit support to use an installed javac/jikes/gcjx/kjc for bootstrap
   * Non-recursive build, single Makefile.am for kaffe.
