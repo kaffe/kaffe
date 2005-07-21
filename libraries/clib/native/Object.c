@@ -126,11 +126,11 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
 #endif
   waitCond(o, timeout);
 #if defined(ENABLE_JVMPI)
-  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAIT) )
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAITED) )
     {
       JVMPI_Event ev;
       
-      ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
+      ev.event_type = JVMPI_EVENT_MONITOR_WAITED;
       if( o == getCurrentThread()->vmThread )
 	{
 	  ev.u.monitor_wait.object = NULL;

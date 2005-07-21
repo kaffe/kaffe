@@ -1,3 +1,12 @@
+2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/jvmpi/jvmpi_kaffe.c
+	(jvmpiRequestEvent): Return failure if the argument is wrong.
+
+	* libraries/clib/native/Object.c
+	(java_lang_VMObject_wait): Send JVMPI_EVENT_MONITOR_WAITED and not
+	JVMPI_EVENT_MONITOR_WAIT when the waiting finishes.
+	
 2005-07-20  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for gump issue bootstrap-ant.

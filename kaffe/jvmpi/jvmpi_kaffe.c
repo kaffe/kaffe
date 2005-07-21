@@ -622,6 +622,8 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 
 			retval = JVMPI_SUCCESS;
 			cl = (struct Hjava_lang_Class *)arg;
+			if (cl == NULL)
+				return JVMPI_FAIL;
 			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
 					       CLASS_NMETHODS(cl));
 			jvmpi_fields = alloca(sizeof(JVMPI_Field) *
@@ -643,6 +645,8 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 
 			retval = JVMPI_SUCCESS;
 			tid = (struct Hjava_lang_Thread *)arg;
+			if (tid == NULL)
+				return JVMPI_FAIL;
 			jvmpiFillThreadStart(&ev, tid);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;
 			jvmpiPostEvent(&ev);
@@ -656,11 +660,13 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 			struct Hjava_lang_Object *obj;
 			JVMPI_Event ev;
 
-			retval = JVMPI_SUCCESS;
 			obj = (struct Hjava_lang_Object *)arg;
+			if (obj == NULL)
+				return JVMPI_FAIL;
 			jvmpiFillObjectAlloc(&ev, obj);
 			ev.event_type |= JVMPI_REQUESTED_EVENT;
 			jvmpiPostEvent(&ev);
+			retval = JVMPI_SUCCESS;
 		}
 		break;
 	}
