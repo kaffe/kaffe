@@ -54,7 +54,7 @@ writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 
 #define CHECK(gifOp) \
   if ( gifOp == GIF_ERROR ) { \
-    if ( img )    Java_java_awt_Toolkit_imgFreeImage( 0, 0, img); \
+    if ( img )    imgFreeImage( img); \
     if ( rowBuf ) AWT_FREE( rowBuf); \
     return 0; \
   }

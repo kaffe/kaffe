@@ -798,15 +798,12 @@ drawAlphaImage ( Graphics *gr, Image* img,
   }
 }
 
-
-void
-Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject ngr, jobject nimg,
-				     jint srcX, jint srcY,
-				     jint dstX, jint dstY,
-				     jint width, jint height, jint bgval )
+static void
+drawImage (Graphics *gr, Image *img, 
+	   jint srcX, jint srcY,
+	   jint dstX, jint dstY,
+	   jint width, jint height, jint bgval )
 {
-  Graphics *gr = UNVEIL_GR(ngr);
-  Image *img = UNVEIL_IMG(nimg);
   XGCValues values;
 
   DBG( AWT_GRA, printf("drawImage: %p %p (%p,%p,%p %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
@@ -880,6 +877,18 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env UNUSED, jclass clazz UNUSED, jo
 
 
 void
+Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject ngr, jobject nimg,
+				     jint srcX, jint srcY,
+				     jint dstX, jint dstY,
+				     jint width, jint height, jint bgval )
+{
+  if (nimg == NULL)
+    return;
+
+  drawImage(UNVEIL_GR(ngr), UNVEIL_IMG(nimg), srcX, srcY, dstX, dstY, width, height, bgval);
+}
+
+void
 Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, jobject ngr, jobject nimg,
 					   jint dx0, jint dy0, jint dx1, jint dy1,
 					   jint sx0, jint sy0, jint sx1, jint sy1, jint bgval )
@@ -929,8 +938,8 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, jobject ng
   createXImage( X, tgt);
 
   initScaledImage( X, tgt, img, dx0-x0, dy0-y0, dx1-x0, dy1-y0, sx0, sy0, sx1, sy1);
-  Java_java_awt_Toolkit_graDrawImage ( env, clazz, gr, tgt, 0, 0,
-									   x0, y0, tgt->width, tgt->height, bgval);
+  drawImage ( gr, tgt, 0, 0,
+	      x0, y0, tgt->width, tgt->height, bgval);
   if ( tgt->shmiImg ) {
 	XSync( X->dsp, False); /* since we're going to destroy tgt, process its drawing first */
   }

@@ -1,3 +1,11 @@
+2005-07-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/awt/X/gra.c,
+	libraries/clib/awt/X/imggif.c,
+	libraries/clib/awt/X/imgjpeg.c,
+	libraries/clib/awt/X/imgpng.c: Fixed the use of real raw data
+	inside native calls.
+
 2005-07-22  Kurt Miller <truk@optonline.net>
 
 	* m4/ax_create_stdint_h.m4: Define intmax_t if it is not available.

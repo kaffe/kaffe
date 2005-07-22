@@ -309,7 +309,7 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
 
   if ( setjmp(jerr.setjmp_buffer)) {
     if ( img ) {
-      Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
+      imgFreeImage(img);
     }
     return 0;
   }

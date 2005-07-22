@@ -173,7 +173,7 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 
   if ( setjmp(png_ptr->jmpbuf) ) {
 	if ( img )
-	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, img);
+	  imgFreeImage(img);
 	if ( rows )
 	  AWT_FREE( rows);
 	if ( data )
