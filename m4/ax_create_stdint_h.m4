@@ -30,7 +30,7 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @version $Id: ax_create_stdint_h.m4,v 1.4 2005/06/21 16:11:57 guilhem Exp $
+dnl @version $Id: ax_create_stdint_h.m4,v 1.5 2005/07/22 11:36:26 guilhem Exp $
 dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CHECK_DATA_MODEL],[
@@ -351,9 +351,10 @@ echo "" >>$ac_stdint
 
 #ifndef _STDINT_HEADER_INTPTR
 #define _STDINT_NEED_INTPTR_T
+#endif
+
 #ifndef _STDINT_HAVE_INTMAX_T
 #define _STDINT_NEED_INTMAX_T
-#endif
 #endif
 
 

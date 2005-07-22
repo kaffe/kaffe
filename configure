@@ -53246,9 +53246,10 @@ echo "" >>$ac_stdint
 
 #ifndef _STDINT_HEADER_INTPTR
 #define _STDINT_NEED_INTPTR_T
+#endif
+
 #ifndef _STDINT_HAVE_INTMAX_T
 #define _STDINT_NEED_INTMAX_T
-#endif
 #endif
 
 

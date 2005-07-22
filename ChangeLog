@@ -1,3 +1,9 @@
+2005-07-22  Kurt Miller <truk@optonline.net>
+
+	* m4/ax_create_stdint_h.m4: Define intmax_t if it is not available.
+
+	* configure: Regenerated.
+
 2005-07-21  Kurt Miller <truk@optonline.net>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java
