@@ -642,8 +642,8 @@ public class Jar {
 
 
 		// see if the current ZipEntry's name equals 
-		// the file we want to extract. If equal then
-		// print the name of the file to stdout.
+		// the file we want to extract or if it starts
+		// with a path matching the dir we want to extract.
 
 		String entry_name = entry.getName();
 		boolean match = (shortnames == null);
@@ -657,6 +657,17 @@ public class Jar {
 		    for (int i = 0; i < shortnames.length ; i++) {
 			if (entry_name.equals(shortnames[i])) {
 			    match = true;
+			    break;
+			} else if (shortnames[i].endsWith("/")) {
+			    if (entry_name.startsWith(shortnames[i])) {
+				match = true;
+				break;
+			    }
+			} else {
+			    if (entry_name.startsWith(shortnames[i] + '/')) { 
+				match = true;
+				break;
+			    }
 			}
 		    }
 		}
@@ -752,6 +763,20 @@ public class Jar {
 			if (entry_name.equals(shortnames[i])) {
 			    match = true;
 			    longname = longnames[i];
+			    break;
+			} else if (shortnames[i].endsWith("/")) {
+			    if (entry_name.startsWith(shortnames[i])) {
+				String shortname = shortnames[i].substring(0, shortnames[i].length() -1);
+				match = true;
+				longname = longnames[i].substring(0, longnames[i].lastIndexOf(shortname)) + entry_name;
+				break;
+			    }
+			} else {
+			    if (entry_name.startsWith(shortnames[i] + '/')) { 
+				match = true;
+				longname = longnames[i].substring(0, longnames[i].lastIndexOf(shortnames[i])) + entry_name;
+				break;
+			    }
 			}
 		    }
 		}

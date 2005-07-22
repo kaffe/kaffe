@@ -1,3 +1,8 @@
+2005-07-21  Kurt Miller <truk@optonline.net>
+
+	* libraries/javalib/kaffe/tools/jar/Jar.java
+	(listFilesInJar,extractFilesInJar): Handle correctly -t and -x arguments.
+
 2005-07-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* WHATSNEW, TODO: Updated.
