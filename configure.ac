@@ -689,13 +689,13 @@ if test x$with_threads = xunix-pthreads ; then
                      CC="$PTHREAD_CC"])
 	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB="-lsemaphore")
 	AC_SUBST(SEMAPHORE_LIB)
+	KAFFE_LIB_SOLARIS_PTHREAD
 	KAFFE_CHECK_SEMAPHORE
 
 	if test -z "$THREADLIBS"; then
 		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
 	fi
 
-	KAFFE_LIB_SOLARIS_PTHREAD
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
 	CPPFLAGS="$CPPFLAGS -D_REENTRANT"
  else

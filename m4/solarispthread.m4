@@ -5,7 +5,10 @@ dnl Derived from Python 2.3.4 check in their GPL-comaptible configure.in.
 AC_DEFUN([KAFFE_LIB_SOLARIS_PTHREAD],
 
 [
-	AC_SEARCH_LIBS([sem_init],[rt posix4])
+	oldLIBS="$LIBS"
+	LIBS=
+	AC_SEARCH_LIBS([sem_init],[rt posix4],[PTHREAD_LIBS="$PTHREAD_LIBS $LIBS"])
+	LIBS="$oldLIBS"
 	case $Khost_os in
 		solaris*)
 			CPPFLAGS="$CPPFLAGS -D_POSIX_PTHREAD_SEMANTICS"
