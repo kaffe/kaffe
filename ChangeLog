@@ -1,5 +1,12 @@
 2005-07-23  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/awt/X/img.c
+	(Java_java_awt_Toolkit_imgCreateImageFromFile,
+	Java_java_awt_Toolkit_imgCreateFromData): Return NULL if the image
+	has not been created.
+
+2005-07-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac: Swapped some commands for semaphore detection.
 
 	* m4/solarispthread.m4: Add semaphore library to PTHREAD_LIBS.
@@ -8,15 +15,6 @@
 	
 	* configure: Regenerated.
 	
-2005-07-22  Guilhem Lavaux  <guilhem@kaffe.org>
-
-	* m4/solaris_pthread.m4: Push the detected library into
-	THREADLIBS.
-
-	* configure.ac: Detect the library needed for semaphores before
-	checking semaphores themselves.
-	
-	* configure: Regenerated.
 2005-07-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/awt/X/gra.c,

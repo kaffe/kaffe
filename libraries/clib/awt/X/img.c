@@ -719,16 +719,18 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
 	  }
 	}
 	AWT_CLOSE( infile);
+        return JCL_NewRawDataObject(env, img);
   }
 
-  return JCL_NewRawDataObject(env, img);
+  return NULL;
 }
 
 jobject
 Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 					  jbyteArray jbuffer, jint off, jint len )
 {
-  Image *img = 0;
+  Image *img = NULL;
+  jobject nimg = NULL;
   jboolean isCopy;
   jint   length = (*env)->GetArrayLength( env, jbuffer);
   jbyte  *jb = (*env)->GetByteArrayElements( env, jbuffer, &isCopy);
@@ -749,10 +751,12 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 	default:
 	  img = unknownImage;
 	}
+     
+     nimg = JCL_NewRawDataObject(env, img);
   }
 
   (*env)->ReleaseByteArrayElements( env, jbuffer, jb, JNI_ABORT);
-  return JCL_NewRawDataObject(env, img);
+  return nimg;
 }
 
 jobject
