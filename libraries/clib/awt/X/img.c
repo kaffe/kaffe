@@ -719,8 +719,10 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
 	  }
 	}
 	AWT_CLOSE( infile);
-        return JCL_NewRawDataObject(env, img);
   }
+
+  if (img != NULL)
+    return JCL_NewRawDataObject(env, img);
 
   return NULL;
 }
@@ -752,10 +754,11 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 	  img = unknownImage;
 	}
      
-     nimg = JCL_NewRawDataObject(env, img);
   }
 
   (*env)->ReleaseByteArrayElements( env, jbuffer, jb, JNI_ABORT);
+  if (img != NULL)
+     nimg = JCL_NewRawDataObject(env, img);
   return nimg;
 }
 
