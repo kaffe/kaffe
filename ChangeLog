@@ -1,5 +1,10 @@
 2005-07-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/awt/X/fnt.c
+	(fntInitFont): Return NULL if an error occured.
+
+2005-07-24  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/clib/awt/X/img.c:
 	(Java_java_awt_Toolkit_imgCreateImageFromFile,
 	Java_java_awt_Toolkit_imgCreateFromData): Another fixlet for NULL

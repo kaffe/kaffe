@@ -154,7 +154,9 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jS
 	}
   }
 
-  return JCL_NewRawDataObject (env, xoc);
+  if (xoc != NULL)
+    return JCL_NewRawDataObject (env, xoc);
+  return NULL;
 #else  
   if ( ! fs ){
     /* now we are getting desperate, try the spec directly (without vars) */
@@ -168,7 +170,9 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz UNUSED, jstring jS
 	}
   }
 
-  return JCL_NewRawDataObject (env, fs);
+  if (fs != NULL)
+    return JCL_NewRawDataObject (env, fs);
+  return NULL;
 #endif  
 }
 
