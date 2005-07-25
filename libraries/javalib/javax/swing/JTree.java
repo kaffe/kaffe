@@ -1145,6 +1145,7 @@ public class JTree
 	public void clearSelection()
 	{
 		selectionModel.clearSelection();
+      setLeadSelectionPath(null);
 	}
 
 	public TreePath getLeadSelectionPath()

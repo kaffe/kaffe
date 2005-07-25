@@ -39,6 +39,10 @@ exception statement from your version. */
 
 package java.lang;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 /**
  * Thrown whenever a reflective method tries to do something that the
  * compiler would not allow.  For example, using reflection to set a private

@@ -2,6 +2,73 @@
 
 	Resynced with GNU Classpath.
 
+	2005-07-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/lang/IllegalAccessException.java: fixed minor API doc errors,
+        
+	2005-07-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/io/DataOutput.java: fixed minor API doc errors,
+        * java/io/LineNumberInputStream.java: likewise.
+
+	2005-07-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalIconFactory.java
+        (HorizontalSliderThumbIcon): new inner class,
+        (VerticalSliderThumbIcon): new inner class,
+        (getHorizontalSliderThumbIcon): implemented,
+        (getVerticalSliderThumbIcon): implemented.
+
+	2005-07-11  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/gtk/GtkImage.java:
+        (setImage): Set error flag on bad width, height or pixels.
+        (checkImage): Return error flag.
+
+	2005-07-11  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JInternalFrame.java
+        (addImpl): Add to the frame itself if we are in the init
+        stage, otherwise add to the contentPane.
+
+	2005-07-11  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        Changed the default row height for the tree.
+
+	2005-07-11  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/JFileChooser.java (getSelectedFiles): Return an one
+        element array containing selectedFile if selectedFiles is null.
+
+	2005-07-11  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getPreviousVisibleNode): Implemented
+        (selectPath): helper method, implemented.
+        (keyPressed): handles up/down/left/right keys
+        (mouseClicked): made more efficent and implemented double 
+        clicking for folders.
+        * javax/swing/JTree.java
+        (clearSelection): Lead selection path is set to null when 
+        nothing is currently selected.
+
+	2005-07-11  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicMenuUI.java:
+        (MouseHandler.popupVisible): new method.
+        (MouseHandler.mouseEntered): Removed check for menu being armed to
+        comply with reference implementation.  Calls popupVisible to check
+        for menus with their popup menu visible.
+
+	2005-07-11  Mark Wielaard  <mark@klomp.org>
+
+        * java/net/DatagramSocket.java (getImpl): Record cause of Exception.
+
+2005-07-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-07-11  Anthony Balkissoon  <abalkiss@redhat.com>
 
         * javax/swing/plaf/basic/BasicMenuUI.java:

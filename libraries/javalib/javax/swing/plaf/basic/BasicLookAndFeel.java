@@ -1032,7 +1032,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
          new IconUIResource(new ImageIcon(getClass().getResource(
             "/gnu/javax/swing/plaf/gtk/icons/TreeOpen.png"))),
       "Tree.rightChildIndent", new Integer(13),
-      "Tree.rowHeight", new Integer(16),
+      "Tree.rowHeight", new Integer(19),
       "Tree.scrollsOnExpand", Boolean.TRUE,
       "Tree.selectionBackground", new ColorUIResource(Color.black),
       "Tree.selectionBorderColor", new ColorUIResource(Color.black),

@@ -653,6 +653,39 @@ public class BasicTreeUI
    }
 
    /**
+    * Get previous visible node in the tree.
+    * 
+    * @param the current node
+    * @return the next visible node in the JTree. Return null if there are no
+    *         more.
+    */
+   private DefaultMutableTreeNode getPreviousVisibleNode
+                                             (DefaultMutableTreeNode node)
+   {
+      DefaultMutableTreeNode prev = null;
+      TreePath current = null;
+
+      if (node != null)
+         prev = node.getPreviousNode();
+
+      if (prev != null)
+      {
+         current = new TreePath(prev.getPath());
+         if (tree.isVisible(current))
+            return prev;
+
+         while (prev != null && !tree.isVisible(current))
+         {
+            prev = prev.getPreviousNode();
+
+            if (prev != null)
+               current = new TreePath(prev.getPath());
+         }
+      }
+      return prev;
+   }
+   
+   /**
     * Returns the row that the last item identified in path is visible at. Will
     * return -1 if any of the elments in the path are not currently visible.
     * 
@@ -1523,6 +1556,40 @@ public class BasicTreeUI
          return true;
    }
 
+   /**
+    * Selects the specified path in the tree depending on modes.
+    * 
+    * @param tree is the tree we are selecting the path in
+    * @param path is the path we are selecting
+    */
+   private void selectPath(JTree tree, TreePath path)
+   {
+      if (path != null)
+      {
+         if (tree.isPathSelected(path))
+            tree.removeSelectionPath(path);
+         else if (tree.getSelectionModel().getSelectionMode() 
+               == TreeSelectionModel.SINGLE_TREE_SELECTION)
+         {
+            tree.getSelectionModel().clearSelection();
+            tree.addSelectionPath(path);
+            tree.setLeadSelectionPath(path);
+         }
+         else if (tree.getSelectionModel().getSelectionMode() 
+               == TreeSelectionModel.CONTIGUOUS_TREE_SELECTION)
+         {
+            // TODO
+         }
+         else
+         {
+            tree.getSelectionModel().setSelectionMode(
+                  TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+            tree.addSelectionPath(path);
+            tree.setLeadSelectionPath(path);
+         }
+      }
+   }
+   
    /* * INTERNAL CLASSES * */
 
    /**
@@ -1692,7 +1759,53 @@ public class BasicTreeUI
        * @param e the key pressed
        */
       public void keyPressed(KeyEvent e)
-      {
+      {         
+         TreePath start = BasicTreeUI.this.tree.getLeadSelectionPath();
+         DefaultMutableTreeNode last = null;
+         
+         if (start != null)
+            last = (DefaultMutableTreeNode) start.getLastPathComponent();
+         if (last != null)
+         {
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
+            {
+               DefaultMutableTreeNode next = (DefaultMutableTreeNode) 
+                  BasicTreeUI.this.getNextVisibleNode(last);
+               
+               if (next != null)
+                  BasicTreeUI.this.selectPath(BasicTreeUI.this.tree,
+                        new TreePath(next.getPath()));
+            }
+            else if (e.getKeyCode() == KeyEvent.VK_UP)
+            {
+               DefaultMutableTreeNode prev = (DefaultMutableTreeNode) 
+               BasicTreeUI.this.getPreviousVisibleNode(last);
+            
+            if (prev != null)
+               BasicTreeUI.this.selectPath(BasicTreeUI.this.tree,
+                     new TreePath(prev.getPath()));
+            }
+            else if (e.getKeyCode() == KeyEvent.VK_LEFT)
+            {
+               TreePath path = new TreePath(last.getPath());
+               
+               if (!last.isLeaf() && BasicTreeUI.this.tree.isExpanded(path))
+               {
+                  BasicTreeUI.this.tree.collapsePath(path);
+                  BasicTreeUI.this.tree.fireTreeCollapsed(path);
+               }
+            }
+            else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+            {
+               TreePath path = new TreePath(last.getPath());
+   
+               if (!last.isLeaf() && BasicTreeUI.this.tree.isCollapsed(path))
+               {
+                  BasicTreeUI.this.tree.expandPath(path);
+                  BasicTreeUI.this.tree.fireTreeExpanded(path);
+               }
+            }
+         }
       }
 
       /**
@@ -1775,6 +1888,9 @@ public class BasicTreeUI
 
       /** Destination that receives all events. */
       protected Component destination;
+      
+      /** Number of mouse clicks on a non-leaf */
+      private int clickCount = 0;
 
       /**
        * Constructor
@@ -1806,39 +1922,28 @@ public class BasicTreeUI
             BasicTreeUI.this.tree.getSelectionModel().clearSelection();
             BasicTreeUI.this.tree.repaint();
          }
-
-         if (BasicTreeUI.this.tree.isVisible(path))
-         {
-            if (BasicTreeUI.this.tree.isExpanded(path))
-            {
-               BasicTreeUI.this.tree.collapsePath(path);
-               BasicTreeUI.this.tree.fireTreeCollapsed(path);
-            }
-            else
-            {
-               BasicTreeUI.this.tree.expandPath(path);
-               BasicTreeUI.this.tree.fireTreeExpanded(path);
-            }
-
-            if (BasicTreeUI.this.tree.isRowSelected(row))
-               BasicTreeUI.this.tree.removeSelectionRow(row);
-            else if (BasicTreeUI.this.tree.getSelectionModel()
-                  .getSelectionMode() == TreeSelectionModel.SINGLE_TREE_SELECTION)
+         else if (BasicTreeUI.this.tree.isVisible(path))
+         {           
+            if (!BasicTreeUI.this.isLeaf(row))
+               clickCount++;
+            
+            if (clickCount == 2)
             {
                BasicTreeUI.this.tree.getSelectionModel().clearSelection();
-               BasicTreeUI.this.tree.addSelectionRow(row);
+               clickCount = 0;
+               if (BasicTreeUI.this.tree.isExpanded(path))
+               {
+                  BasicTreeUI.this.tree.collapsePath(path);
+                  BasicTreeUI.this.tree.fireTreeCollapsed(path);
+               }
+               else
+               {
+                  BasicTreeUI.this.tree.expandPath(path);
+                  BasicTreeUI.this.tree.fireTreeExpanded(path);
+               }
             }
-            else if (BasicTreeUI.this.tree.getSelectionModel()
-                  .getSelectionMode() == TreeSelectionModel.CONTIGUOUS_TREE_SELECTION)
-            {
-               // TODO
-            }
-            else
-            {
-               BasicTreeUI.this.tree.getSelectionModel().setSelectionMode(
-                     TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-               BasicTreeUI.this.tree.addSelectionRow(row);
-            }
+            
+            BasicTreeUI.this.selectPath(BasicTreeUI.this.tree, path);
          }
       }
 

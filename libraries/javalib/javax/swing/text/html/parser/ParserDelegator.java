@@ -113,7 +113,7 @@ public class ParserDelegator
 
     DTD getDTD()
     {
-      return dtd;
+      return super.dtd;
     }
   }
 

@@ -216,8 +216,8 @@ public class LineNumberInputStream extends FilterInputStream
    * a single "\n" value which is stored in the buffer.  Only a single
    * byte is counted towards the number of bytes read in this case.
    *
-   * @param buf The array into which the bytes read should be stored
-   * @param offset The offset into the array to start storing bytes
+   * @param b The array into which the bytes read should be stored
+   * @param off The offset into the array to start storing bytes
    * @param len The requested number of bytes to read
    *
    * @return The actual number of bytes read, or -1 if end of stream

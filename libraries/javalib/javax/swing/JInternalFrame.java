@@ -584,9 +584,10 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    // If we're adding the rootPane (initialization stages) use super.add.
-    // otherwise pass the add onto the content pane.
-    if (comp==rootPane)
+    // If we're in the initialization stage use super.add. Here we add the
+    // rootPane as well as the title bar and other stuff.
+    // Otherwise pass the add onto the content pane.
+    if (!initStageDone)
       super.addImpl(comp,constraints, index);
     else
       {

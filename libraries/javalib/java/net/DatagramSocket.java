@@ -209,7 +209,9 @@ public class DatagramSocket
       }
     catch (IOException e)
       {
-	throw new SocketException(e.getMessage());
+	SocketException se = new SocketException();
+	se.initCause(e);
+	throw se;
       }
   }
 

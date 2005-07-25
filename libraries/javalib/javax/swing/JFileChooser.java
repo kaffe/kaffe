@@ -357,7 +357,11 @@ public class JFileChooser extends JComponent implements Accessible
    */
   public File[] getSelectedFiles()
   {
-    return selectedFiles;
+    if (selectedFiles != null)
+      return selectedFiles;
+    if (selectedFile != null)
+      return new File[] { selectedFile };
+    return null;
   }
 
   /**

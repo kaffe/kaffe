@@ -100,6 +100,11 @@ public class GtkImage extends Image
   boolean offScreen;
 
   /**
+   * Error flag for loading.
+   */
+  boolean errorLoading;
+
+  /**
    * Original source, if created from an ImageProducer.
    */
   ImageProducer source;
@@ -176,6 +181,7 @@ public class GtkImage extends Image
     isLoaded = false;
     observers = new Vector();
     source = producer;
+    errorLoading = false;
     source.startProduction(new GtkImageConsumer(this, source));
     offScreen = false;
   }
@@ -243,6 +249,13 @@ public class GtkImage extends Image
     this.width = width;
     this.height = height;
     props = (properties != null) ? properties : new Hashtable();
+
+    if (width <= 0 || height <= 0 || pixels == null)
+      {
+	errorLoading = true;
+	return;
+      }
+
     isLoaded = true;
     deliver();
     createPixmap();
@@ -346,7 +359,12 @@ public class GtkImage extends Image
   public int checkImage (ImageObserver observer)
   {
     if (addObserver(observer))
-      return 0;
+      {
+	if (errorLoading == true)
+	  return ImageObserver.ERROR;
+	else
+	  return 0;
+      }
 
     return ImageObserver.ALLBITS | ImageObserver.WIDTH | ImageObserver.HEIGHT;
   }

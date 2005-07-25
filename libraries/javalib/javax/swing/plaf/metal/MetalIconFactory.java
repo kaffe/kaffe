@@ -44,6 +44,7 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 import javax.swing.Icon;
+import javax.swing.JSlider;
 
 /**
  * Creates icons for the {@link MetalLookAndFeel}.
@@ -206,7 +207,205 @@ public class MetalIconFactory implements Serializable
     }
         
   }
+   
+    /**
+   * The icon used to display the thumb control on a horizontally oriented
+   * {@link JSlider} component.
+   */
+  private static class HorizontalSliderThumbIcon 
+      implements Icon, Serializable 
+  {
+
+    /**
+     * Creates a new instance.
+     */
+    public HorizontalSliderThumbIcon() 
+    {
+    }
     
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 15;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 16;
+    }
+    
+    /**
+     * Paints the icon, taking into account whether or not the component has 
+     * the focus.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      boolean focus = false;
+      if (c != null) 
+        focus = c.hasFocus();    
+      // TODO: pick up the colors from the look and feel
+      
+      // draw the outline
+      g.setColor(Color.black);
+      g.drawLine(x + 1, y, x + 13, y);
+      g.drawLine(x + 14, y + 1, x + 14, y + 7);
+      g.drawLine(x + 14, y + 8, x + 7, y + 15);
+      g.drawLine(x + 6, y + 14, x, y + 8);
+      g.drawLine(x, y + 7, x, y + 1);
+      
+      // fill the icon
+      g.setColor(focus ? new Color(153, 153, 204) : new Color(204, 204, 204));  // medium
+      g.fillRect(x + 2, y + 2, 12, 7);
+      g.drawLine(x + 2, y + 9, x + 12, y + 9);
+      g.drawLine(x + 3, y + 10, x + 11, y + 10);
+      g.drawLine(x + 4, y + 11, x + 10, y + 11);
+      g.drawLine(x + 5, y + 12, x + 9, y + 12);
+      g.drawLine(x + 6, y + 13, x + 8, y + 13);
+      g.drawLine(x + 7, y + 14, x + 7, y + 14);
+      
+      // draw highlights
+      g.setColor(focus ? new Color(204, 204, 255) : new Color(255, 255, 255));  // light
+      g.drawLine(x + 1, y + 1, x + 13, y + 1);
+      g.drawLine(x + 1, y + 2, x + 1, y + 8);
+      g.drawLine(x + 2, y + 2, x + 2, y + 2);
+      g.drawLine(x + 6, y + 2, x + 6, y + 2);
+      g.drawLine(x + 10, y + 2, x + 10, y + 2);
+
+      g.drawLine(x + 4, y + 4, x + 4, y + 4);
+      g.drawLine(x + 8, y + 4, x + 8, y + 4);
+
+      g.drawLine(x + 2, y + 6, x + 2, y + 6);
+      g.drawLine(x + 6, y + 6, x + 6, y + 6);
+      g.drawLine(x + 10, y + 6, x + 10, y + 6);
+
+      // draw dots
+      g.setColor(focus ? new Color(102, 102, 153) : Color.black);                 // dark
+      g.drawLine(x + 3, y + 3, x + 3, y + 3);
+      g.drawLine(x + 7, y + 3, x + 7, y + 3);
+      g.drawLine(x + 11, y + 3, x + 11, y + 3);
+
+      g.drawLine(x + 5, y + 5, x + 5, y + 5);
+      g.drawLine(x + 9, y + 5, x + 9, y + 5);
+
+      g.drawLine(x + 3, y + 7, x + 3, y + 7);
+      g.drawLine(x + 7, y + 7, x + 7, y + 7);
+      g.drawLine(x + 11, y + 7, x + 11, y + 7);
+
+    }        
+  }
+  
+  /**
+   * The icon used to display the thumb control on a horizontally oriented
+   * {@link JSlider} component.
+   */
+  private static class VerticalSliderThumbIcon implements Icon, Serializable 
+  {
+    /**
+     * Creates a new instance.
+     */
+    public VerticalSliderThumbIcon() 
+    {
+    }
+    
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 16;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 15;
+    }
+    
+    /**
+     * Paints the icon taking into account whether the slider control has the
+     * focus or not.
+     * 
+     * @param c  the slider (must be a non-<code>null</code> instance of
+     *           {@link JSlider}.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      boolean focus = false;
+      if (c != null) 
+        focus = c.hasFocus();    
+      // TODO: pick up the colors from the look and feel
+      
+      // draw the outline
+      g.setColor(Color.black);
+      g.drawLine(x + 1, y, x + 7, y);
+      g.drawLine(x + 8, y, x + 15, y + 7);
+      g.drawLine(x + 14, y + 8, x + 8, y + 14);
+      g.drawLine(x + 8, y + 14, x + 1, y + 14);
+      g.drawLine(x, y + 13, x, y + 1);
+      
+      // fill the icon
+      g.setColor(focus ? new Color(153, 153, 204) : new Color(204, 204, 204));  // medium
+      g.fillRect(x + 2, y + 2, 7, 12);
+      g.drawLine(x + 9, y + 2, x + 9, y + 12);
+      g.drawLine(x + 10, y + 3, x + 10, y + 11);
+      g.drawLine(x + 11, y + 4, x + 11, y + 10);
+      g.drawLine(x + 12, y + 5, x + 12, y + 9);
+      g.drawLine(x + 13, y + 6, x + 13, y + 8);
+      g.drawLine(x + 14, y + 7, x + 14, y + 7);
+      
+      // draw highlights
+      g.setColor(focus ? new Color(204, 204, 255) : new Color(255, 255, 255));  // light
+      g.drawLine(x + 1, y + 1, x + 8, y + 1);
+      g.drawLine(x + 1, y + 2, x + 1, y + 13);
+      g.drawLine(x + 2, y + 2, x + 2, y + 2);
+      g.drawLine(x + 2, y + 6, x + 2, y + 6);
+      g.drawLine(x + 2, y + 10, x + 2, y + 10);
+
+      g.drawLine(x + 4, y + 4, x + 4, y + 4);
+      g.drawLine(x + 4, y + 8, x + 4, y + 8);
+
+      g.drawLine(x + 6, y + 2, x + 6, y + 2);
+      g.drawLine(x + 6, y + 6, x + 6, y + 6);
+      g.drawLine(x + 6, y + 10, x + 6, y + 10);
+
+      // draw dots
+      g.setColor(focus ? new Color(102, 102, 153) : Color.black);                 // dark
+      g.drawLine(x + 3, y + 3, x + 3, y + 3);
+      g.drawLine(x + 3, y + 7, x + 3, y + 7);
+      g.drawLine(x + 3, y + 11, x + 3, y + 11);
+
+      g.drawLine(x + 5, y + 5, x + 5, y + 5);
+      g.drawLine(x + 5, y + 9, x + 5, y + 9);
+
+      g.drawLine(x + 7, y + 3, x + 7, y + 3);
+      g.drawLine(x + 7, y + 7, x + 7, y + 7);
+      g.drawLine(x + 7, y + 11, x + 7, y + 11);
+    }        
+  }
+  
   /**
    * A tree control icon.  This icon can be in one of two states: expanded and
    * collapsed.
@@ -415,6 +614,28 @@ public class MetalIconFactory implements Serializable
   {   
   }
   
+  /**
+   * Returns the icon used to display the thumb for a horizontally oriented
+   * {@link JSlider}.
+   * 
+   * @return The icon.
+   */
+  public static Icon getHorizontalSliderThumbIcon() 
+  {
+    return new HorizontalSliderThumbIcon();
+  }
+    
+  /**
+   * Returns the icon used to display the thumb for a vertically oriented
+   * {@link JSlider}.
+   * 
+   * @return The icon.
+   */
+  public static Icon getVerticalSliderThumbIcon() 
+  {
+    return new VerticalSliderThumbIcon();
+  }
+    
   /**
    * Creates and returns a new tree folder icon.
    * 

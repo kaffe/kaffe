@@ -195,7 +195,7 @@ public interface DataOutput
    *
    * @exception IOException If an error occurs
    *
-   * @see writeInt
+   * @see #writeInt
    * @see DataInput#readFloat
    * @see Float#floatToIntBits
    */
@@ -216,7 +216,7 @@ public interface DataOutput
    *
    * @exception IOException If any other error occurs
    *
-   * @see writeLong
+   * @see #writeLong
    * @see DataInput#readDouble
    * @see Double#doubleToLongBits
    */
@@ -245,7 +245,7 @@ public interface DataOutput
    *
    * @exception IOException If an error occurs
    *
-   * @see writeChar
+   * @see #writeChar(int)
    */
   void writeChars(String value) throws IOException;
 
