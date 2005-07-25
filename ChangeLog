@@ -1,3 +1,26 @@
+2005-07-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-07-11  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicMenuUI.java:
+        (MouseInputHandler.mouseEntered): Added check: if a different menu in
+        the menubar was selected, we don't select this one unless the old one
+        had its popup menu showing.  This complies with the reference
+        implementation.
+
+	2005-07-11  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JMenu.java:
+        (setSelectedHelper): new method.
+        (setSelected): Code moved to setSelectedHelper. Calls
+        setSelectedHelper(selected,true,false) which doesn't expand the popup
+        menu and works whether the menu is enabled or not.
+        (menuSelectionChanged): Changed call to setSelected(changed) to 
+        setSelectedHelper(changed,isEnabled(),true) which does expand the
+        popup menu, but only if the menu is enabled.
+
 2005-07-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/awt/X/fnt.c

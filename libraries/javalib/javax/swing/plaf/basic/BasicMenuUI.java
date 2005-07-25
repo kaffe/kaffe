@@ -297,14 +297,18 @@ public class BasicMenuUI extends BasicMenuItemUI
       /* When mouse enters menu item, it should be considered selected
 
        if (i) if this menu is a submenu in some other menu
-          (ii) or if this menu is in a menu bar and some other menu in a menu bar was just
-               selected. (If nothing was selected, menu should be pressed before
+          (ii) or if this menu is in a menu bar and some other menu in a 
+          menu bar was just selected and has its popup menu visible. 
+               (If nothing was selected, menu should be pressed before
                it will be selected)
       */
       JMenu menu = (JMenu) menuItem;
+      JMenuBar mb = (JMenuBar) menu.getParent();
       if (! menu.isTopLevelMenu()
-          || (menu.isTopLevelMenu()
-          && (((JMenuBar) menu.getParent()).isSelected() && ! menu.isArmed())))
+          || (mb.isSelected() && (((JMenu)(mb.getComponent             
+                                           (mb.getSelectionModel().
+                                            getSelectedIndex()))).
+                                  isPopupMenuVisible()) && ! menu.isArmed()))
         {
 	  // set new selection and forward this event to MenuSelectionManager
 	  MenuSelectionManager manager = MenuSelectionManager.defaultManager();

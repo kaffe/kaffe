@@ -332,52 +332,53 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   }
 
   /**
-   * Changes this menu selected state if selected is true and false otherwise
-   * This method fires menuEvents to menu's registered listeners.
-   *
-   * @param selected true if the menu should be selected and false otherwise
+   * A helper method to handle setSelected calls from both mouse events and 
+   * direct calls to setSelected.  Direct calls shouldn't expand the popup
+   * menu and should select the JMenu even if it is disabled.  Mouse events
+   * only select the JMenu if it is enabled and should expand the popup menu
+   * associated with this JMenu.
+   * @param selected whether or not the JMenu was selected
+   * @param menuEnabled whether or not selecting the menu is "enabled".  This
+   * is always true for direct calls, and is set to isEnabled() for mouse 
+   * based calls.
+   * @param showMenu whether or not to show the popup menu
    */
-  public void setSelected(boolean selected)
+  private void setSelectedHelper(boolean selected, boolean menuEnabled, boolean showMenu)
   {
     // If menu is selected and enabled, activates the menu and 
     // displays associated popup.	
-    if (selected && isEnabled())
+    if (selected && menuEnabled)
       {
 	super.setArmed(true);
 	super.setSelected(true);
-
-	// FIXME: The reference implementation behaves different here. When
-	// calling setSelected(true) it will *not* open the popup but appear
-	// selected. This is even true when the menu is disabled. Our
-	// implementation will always open the popup (when enabled) and 
-	// will not appear selected when disabled.
-
-	// FIXME: The popup menu should be shown on the screen after certain
-	// number of seconds pass. The 'delay' property of this menu indicates
-	// this amount of seconds. 'delay' property is 0 by default.
+        
+        // FIXME: The popup menu should be shown on the screen after certain
+        // number of seconds pass. The 'delay' property of this menu indicates
+        // this amount of seconds. 'delay' property is 0 by default.
 	if (isShowing())
 	  {
 	    fireMenuSelected();
-
+            
 	    int x = 0;
 	    int y = 0;
-
-	    if (menuLocation == null)
-	      {
-		// Calculate correct position of the popup. Note that location of the popup 
-		// passed to show() should be relative to the popup's invoker
-		if (isTopLevelMenu())
-		  y = this.getHeight();
-		else
-		  x = this.getWidth();
-
-		getPopupMenu().show(this, x, y);
-	      }
-	    else
-	      getPopupMenu().show(this, menuLocation.x, menuLocation.y);
+            if (showMenu)
+              if (menuLocation == null)
+                {
+                  // Calculate correct position of the popup. Note that location of the popup 
+                  // passed to show() should be relative to the popup's invoker
+                  if (isTopLevelMenu())
+                    y = this.getHeight();
+                  else
+                    x = this.getWidth();
+                  getPopupMenu().show(this, x, y);
+                }
+              else
+                {
+                  getPopupMenu().show(this, menuLocation.x, menuLocation.y);
+                }
 	  }
       }
-
+    
     else
       {
 	super.setSelected(false);
@@ -385,6 +386,17 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
 	fireMenuDeselected();
 	popupMenu.setVisible(false);
       }
+  }
+
+  /**
+   * Changes this menu selected state if selected is true and false otherwise
+   * This method fires menuEvents to menu's registered listeners.
+   *
+   * @param selected true if the menu should be selected and false otherwise
+   */
+  public void setSelected(boolean selected)
+  {
+    setSelectedHelper(selected, true, false); 
   }
 
   /**
@@ -715,7 +727,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   {
     // if this menu selection is true, then activate this menu and 
     // display popup associated with this menu
-    setSelected(changed);
+    setSelectedHelper(changed, isEnabled(), true);
   }
 
   /**
