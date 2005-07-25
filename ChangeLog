@@ -2,6 +2,49 @@
 
 	Resynced with GNU Classpath.
 
+	2005-07-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c:
+        Replace occurrences of malloc with g_malloc and free with g_free.
+
+        * gnu/java/awt/peer/gtk/GtkChoicePeer.java (connectSignals): New method.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c: Move
+        gdk_threads_enter calls to start of method bodies.  Move
+        gdk_threads_leave calls to end of method definitions bodies.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCanvasPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPopupMenuPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollPanePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c: Likewise.
+
+2005-07-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-07-11  David Gilbert  <david.gilbert@object-refinery.com>
 
         * java/lang/IllegalAccessException.java: fixed minor API doc errors,

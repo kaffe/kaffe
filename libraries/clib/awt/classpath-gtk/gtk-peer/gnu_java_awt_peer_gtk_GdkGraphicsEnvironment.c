@@ -52,9 +52,10 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetFontFamilies
 (JNIEnv *env, jobject  self __attribute__((unused)), jobjectArray family_name)
 {
-  PangoContext *context;
-  PangoFontFamily **families;
-  int n_families, idx;
+  PangoContext *context = NULL;
+  PangoFontFamily **families = NULL;
+  int n_families = 0;
+  int idx = 0;
 
   gdk_threads_enter ();
 
@@ -72,6 +73,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetFontFamilies
       (*env)->SetObjectArrayElement (env, family_name, idx, name);
     }
   g_free (families);
+
   gdk_threads_leave ();
 }
 
@@ -79,10 +81,10 @@ JNIEXPORT jint JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetNumFontFamilies
 (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
-  PangoContext *context;
-  PangoFontFamily **families;
-  gint n_families;
-  jint num;
+  PangoContext *context = NULL;
+  PangoFontFamily **families = NULL;
+  gint n_families = 0;
+  gint num = 0;
 
   gdk_threads_enter ();
 
@@ -93,6 +95,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeGetNumFontFamilies
 
   num = n_families;
   g_free (families);
+
   gdk_threads_leave ();
   
   return num;

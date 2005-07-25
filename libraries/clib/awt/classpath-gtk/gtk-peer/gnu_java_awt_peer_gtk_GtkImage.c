@@ -64,6 +64,8 @@ Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf
   int width, height;
   GdkPixbuf *pixbuf;
 
+  gdk_threads_enter ();
+
   /* Don't use the JCL convert function because it throws an exception
      on failure */
   filename = (*env)->GetStringUTFChars (env, name, 0);
@@ -71,23 +73,23 @@ Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf
   if (filename == NULL)
     return JNI_FALSE;
 
-  gdk_threads_enter ();
-
   pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
   if (pixbuf == NULL)
     {
-      gdk_threads_leave ();
       (*env)->ReleaseStringUTFChars (env, name, filename);
+      gdk_threads_leave ();
       return JNI_FALSE;
     }
 
   width =  gdk_pixbuf_get_width (pixbuf);
   height = gdk_pixbuf_get_height (pixbuf);
-  gdk_threads_leave ();
   
   createRawData (env, obj, pixbuf);
   setWidthHeight(env, obj, width, height);
   (*env)->ReleaseStringUTFChars (env, name, filename);
+
+  gdk_threads_leave ();
+
   return JNI_TRUE;
 }
 
@@ -143,10 +145,11 @@ Java_gnu_java_awt_peer_gtk_GtkImage_getPixels(JNIEnv *env, jobject obj)
   
   if (offScreen (env, obj) == JNI_TRUE)
     gdk_pixbuf_unref (pixbuf);
+
+  (*env)->ReleaseIntArrayElements (env, result_array, result_array_iter, 0);
     
   gdk_threads_leave ();
 
-  (*env)->ReleaseIntArrayElements (env, result_array, result_array_iter, 0);
   return result_array;
 }
 
@@ -181,9 +184,9 @@ Java_gnu_java_awt_peer_gtk_GtkImage_setPixels(JNIEnv *env, jobject obj,
       pixeldata += rowstride;
     }
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseIntArrayElements (env, pixels, src_array_iter, 0);
+
+  gdk_threads_leave ();
 }
 
 /**
@@ -196,6 +199,8 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createPixmap(JNIEnv *env, jobject obj)
   jclass cls;
   jfieldID field;
 
+  gdk_threads_enter ();
+
   cls = (*env)->GetObjectClass (env, obj);
   field = (*env)->GetFieldID (env, cls, "width", "I");
   g_assert (field != 0);
@@ -205,7 +210,6 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createPixmap(JNIEnv *env, jobject obj)
   g_assert (field != 0);
   height = (*env)->GetIntField (env, obj, field);
 
-  gdk_threads_enter ();
   if (offScreen (env, obj) == JNI_FALSE)
     createRawData (env, obj, gdk_pixbuf_new (GDK_COLORSPACE_RGB, 
 					     TRUE,
@@ -251,6 +255,8 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createScaledPixmap(JNIEnv *env,
 
   GdkPixbuf *pixbuf;
 
+  gdk_threads_enter ();
+
   cls = (*env)->GetObjectClass (env, destination);
   field = (*env)->GetFieldID (env, cls, "width", "I");
   g_assert (field != 0);
@@ -259,8 +265,6 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createScaledPixmap(JNIEnv *env,
   field = (*env)->GetFieldID (env, cls, "height", "I");
   g_assert (field != 0);
   height = (*env)->GetIntField (env, destination, field);
-
-  gdk_threads_enter ();
 
   pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, source);
 
@@ -271,9 +275,9 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createScaledPixmap(JNIEnv *env,
   if (offScreen (env, source) == JNI_TRUE)
       gdk_pixbuf_unref (pixbuf);
 
-  gdk_threads_leave ();
-
   createRawData (env, destination, (void *)dst);
+
+  gdk_threads_leave ();
 }
 
 /**
@@ -290,11 +294,11 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaled
   struct graphics *g;
   guint32 bgColor;
 
+  gdk_threads_enter ();
+  
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     
-  gdk_threads_enter ();
-  
   g = (struct graphics *) NSA_GET_PTR (env, gc_obj);
   
   if (!g || !GDK_IS_DRAWABLE (g->drawable))
@@ -363,11 +367,11 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped
   struct graphics *g;
   guint32 bgColor;
 
+  gdk_threads_enter ();
+  
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     
-  gdk_threads_enter ();
-  
   g = (struct graphics *) NSA_GET_PTR (env, gc_obj);
   
   if (!g || !GDK_IS_DRAWABLE (g->drawable))
@@ -446,6 +450,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped
 		   GDK_RGB_DITHER_NORMAL, 0, 0);
   
   gdk_pixbuf_unref (dst);
+
   gdk_threads_leave ();
 }
 

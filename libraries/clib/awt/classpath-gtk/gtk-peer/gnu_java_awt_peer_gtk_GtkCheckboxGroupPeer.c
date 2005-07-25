@@ -56,8 +56,9 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer_remove
   void *ptr;
   GSList *list;
 
-  ptr = NSA_GET_PTR (env, checkbox);
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, checkbox);
   button = GTK_RADIO_BUTTON (ptr);
 
   /* Update the group to point to some other widget in the group.  We
@@ -70,8 +71,7 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer_remove
        break;
     }
 
-  gdk_threads_leave ();
-
   NSA_SET_PTR (env, obj, list ? list->data : NULL);
-}
 
+  gdk_threads_leave ();
+}

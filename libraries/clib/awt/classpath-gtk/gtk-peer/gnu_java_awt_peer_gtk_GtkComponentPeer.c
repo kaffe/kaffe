@@ -38,6 +38,7 @@ exception statement from your version. */
 
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
+
 #include <gtk/gtkprivate.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -405,7 +406,6 @@ awt_keycode_to_keysym (jint keyCode, jint keyLocation)
     }
 }
 
-
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor 
   (JNIEnv *env, jobject obj, jint type) 
@@ -414,6 +414,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor
   GtkWidget *widget;
   GdkCursorType gdk_cursor_type;
   GdkCursor *gdk_cursor;
+
+  gdk_threads_enter ();
 
   ptr = NSA_GET_PTR (env, obj);
 
@@ -462,8 +464,6 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor
       gdk_cursor_type = GDK_LEFT_PTR;
     }
       
-  gdk_threads_enter ();
-
   widget = GTK_WIDGET(ptr);
 
   gdk_cursor = gdk_cursor_new (gdk_cursor_type);
@@ -482,10 +482,10 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetParent
   GtkWidget *widget;
   GtkWidget *parent_widget;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
   parent_ptr = NSA_GET_PTR (env, parent);
-
-  gdk_threads_enter ();
 
   widget = GTK_WIDGET (ptr);
   parent_widget = GTK_WIDGET (parent_ptr);
@@ -527,9 +527,9 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetSensitive
 {
   void *ptr;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   gtk_widget_set_sensitive (GTK_WIDGET (ptr), sensitive);
 
@@ -542,10 +542,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetRequestFocus
 {
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
   
-  gdk_threads_enter ();
   gtk_widget_grab_focus (GTK_WIDGET (ptr));
+
   gdk_threads_leave ();
 }
 
@@ -564,9 +566,9 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetDispatchKeyEvent
   gint n_keys = 0;
   guint lookup_keyval = 0;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   if (id == AWT_KEY_PRESSED)
     event = gdk_event_new (GDK_KEY_PRESS);
@@ -692,9 +694,9 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
       *(point+1) += GTK_WIDGET(ptr)->allocation.y;
     }
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseIntArrayElements(env, jpoint, point, 0);
+
+  gdk_threads_leave ();
 }
 
 /*
@@ -772,9 +774,9 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetPreferredDimensions
       dims[1] = natural_req.height;
     }
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseIntArrayElements (env, jdims, dims, 0);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -784,9 +786,9 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setNativeBounds
   GtkWidget *widget;
   void *ptr;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   widget = GTK_WIDGET (ptr);
 
@@ -819,11 +821,11 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetBackground
   int *rgb;
   GdkColor bg;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   bg = GTK_WIDGET (ptr)->style->bg[GTK_STATE_NORMAL];
-  gdk_threads_leave ();
 
   array = (*env)->NewIntArray (env, 3);
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
@@ -832,6 +834,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetBackground
   rgb[1] = bg.green >> 8;
   rgb[2] = bg.blue  >> 8;
   (*env)->ReleaseIntArrayElements (env, array, rgb, 0);
+
+  gdk_threads_leave ();
 
   return array;
 }
@@ -845,11 +849,11 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetForeground
   jint *rgb;
   GdkColor fg;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   fg = GTK_WIDGET (ptr)->style->fg[GTK_STATE_NORMAL];
-  gdk_threads_leave ();
 
   array = (*env)->NewIntArray (env, 3);
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
@@ -858,6 +862,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetForeground
   rgb[1] = fg.green >> 8;
   rgb[2] = fg.blue  >> 8;
   (*env)->ReleaseIntArrayElements (env, array, rgb, 0);
+
+  gdk_threads_leave ();
 
   return array;
 }
@@ -871,6 +877,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetBackground
   GtkWidget *widget;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   normal_color.red = (red / 255.0) * 65535;
@@ -882,8 +890,6 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetBackground
   active_color.red = 0.85 * (red / 255.0) * 65535;
   active_color.green = 0.85 * (green / 255.0) * 65535;
   active_color.blue = 0.85 * (blue / 255.0) * 65535;
-
-  gdk_threads_enter ();
 
   widget = find_bg_color_widget (GTK_WIDGET (ptr));
 
@@ -902,13 +908,13 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetForeground
   GtkWidget *widget;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   color.red = (red / 255.0) * 65535;
   color.green = (green / 255.0) * 65535;
   color.blue = (blue / 255.0) * 65535;
-
-  gdk_threads_enter ();
 
   widget = find_fg_color_widget (GTK_WIDGET (ptr));
 
@@ -925,10 +931,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_show
 {
   void *ptr;
 
+  gdk_threads_enter();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter();
   gtk_widget_show (GTK_WIDGET (ptr));
+
   gdk_threads_leave();
 }
 
@@ -938,10 +946,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_hide
 {
   void *ptr;
 
+  gdk_threads_enter();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter();
   gtk_widget_hide (GTK_WIDGET (ptr));
+
   gdk_threads_leave();
 }
 
@@ -952,10 +962,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_isEnabled
   void *ptr;
   jboolean ret_val;
   
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   ret_val = GTK_WIDGET_IS_SENSITIVE (GTK_WIDGET (ptr));
+
   gdk_threads_leave ();
 
   return ret_val;
@@ -968,13 +980,15 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_isRealized
   void *ptr;
   jboolean ret_val;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   if (ptr == NULL)
     return FALSE;
 
-  gdk_threads_enter ();
   ret_val = GTK_WIDGET_REALIZED (GTK_WIDGET (ptr));
+
   gdk_threads_leave ();
 
   return ret_val;
@@ -988,8 +1002,10 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_modalHasGrab
   jboolean retval;
 
   gdk_threads_enter ();
+
   widget = gtk_grab_get_current ();
   retval = (widget && GTK_IS_WINDOW (widget) && GTK_WINDOW (widget)->modal);
+
   gdk_threads_leave ();
 
   return retval;
@@ -1001,14 +1017,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals
 {
   void *ptr;
   jobject *gref;
-
   ptr = NSA_GET_PTR (env, obj);
   gref = NSA_GET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
 
   /* Connect EVENT signal, which happens _before_ any specific signal. */
-
   g_signal_connect (GTK_OBJECT (ptr), "event",
                     G_CALLBACK (pre_event_handler), *gref);
 
@@ -1024,6 +1038,8 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals
   gdk_threads_leave ();
 }
 
+/* FIXME: these functions should be implemented by overridding the
+   appropriate GtkComponentPeer methods. */
 static GtkWidget *
 find_fg_color_widget (GtkWidget *widget)
 {
@@ -1055,25 +1071,31 @@ focus_in_cb (GtkWidget *widget __attribute((unused)),
              jobject peer)
 {
   gdk_threads_leave ();
+
   (*gdk_env())->CallVoidMethod (gdk_env(), peer,
-                              postFocusEventID,
-                              AWT_FOCUS_GAINED,
-                              JNI_FALSE);
+                                postFocusEventID,
+                                AWT_FOCUS_GAINED,
+                                JNI_FALSE);
+
   gdk_threads_enter ();
+
   return FALSE;
 }
 
 static gboolean
 focus_out_cb (GtkWidget *widget __attribute((unused)),
-              GdkEventFocus *event __attribute((unused)),
-              jobject peer)
+                        GdkEventFocus *event __attribute((unused)),
+                        jobject peer)
 {
   gdk_threads_leave ();
+
   (*gdk_env())->CallVoidMethod (gdk_env(), peer,
-                              postFocusEventID,
-                              AWT_FOCUS_LOST,
-                              JNI_FALSE);
+                                postFocusEventID,
+                                AWT_FOCUS_LOST,
+                                JNI_FALSE);
+
   gdk_threads_enter ();
+
   return FALSE;
 }
 

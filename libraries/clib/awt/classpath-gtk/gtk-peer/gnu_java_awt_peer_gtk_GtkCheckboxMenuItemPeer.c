@@ -46,20 +46,20 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer_create
   GtkWidget *widget;
   const char *str;
 
+  gdk_threads_enter ();
+  
   NSA_SET_GLOBAL_REF (env, obj);
 
   str = (*env)->GetStringUTFChars (env, label, NULL);
 
-  gdk_threads_enter ();
-  
   widget = gtk_check_menu_item_new_with_label (str);
   gtk_widget_show (widget);
-
-  gdk_threads_leave ();
 
   (*env)->ReleaseStringUTFChars (env, label, str);
 
   NSA_SET_PTR (env, obj, widget);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -68,9 +68,11 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer_setState
 {
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
   
-  gdk_threads_enter ();
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (ptr), state);
+
   gdk_threads_leave ();
 }

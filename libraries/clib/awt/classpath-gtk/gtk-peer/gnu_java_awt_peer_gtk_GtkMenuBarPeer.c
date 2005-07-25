@@ -45,16 +45,16 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_create
 {
   GtkWidget *widget;
 
-  NSA_SET_GLOBAL_REF (env, obj);
-
   gdk_threads_enter ();
   
+  NSA_SET_GLOBAL_REF (env, obj);
+
   widget = gtk_menu_bar_new ();
   gtk_widget_show (widget);
 
-  gdk_threads_leave ();
-
   NSA_SET_PTR (env, obj, widget);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -63,11 +63,13 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_addMenu
 {
   void *mbar, *menu;
 
+  gdk_threads_enter ();
+
   mbar = NSA_GET_PTR (env, obj);
   menu = NSA_GET_PTR (env, menupeer);
 
-  gdk_threads_enter ();
   gtk_menu_shell_append (GTK_MENU_SHELL (mbar), GTK_WIDGET (menu));
+
   gdk_threads_leave ();
 }
 
@@ -79,10 +81,11 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMenu
   void *mbar, *menu;
   GList *list;
 
+  gdk_threads_enter ();
+
   mbar = NSA_GET_PTR (env, obj);
   menu = NSA_GET_PTR (env, menupeer);
 
-  gdk_threads_enter ();
   if (helpmenu != NULL)
     {
       list = gtk_container_children (GTK_CONTAINER (mbar));
@@ -92,6 +95,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMenu
         gtk_container_remove (GTK_CONTAINER (mbar), GTK_WIDGET (list->data));
     }
   helpmenu = menu;
+
   gdk_threads_leave ();
 }
 

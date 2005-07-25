@@ -45,18 +45,18 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_create
 {
   GtkWidget *sw;
 
+  gdk_threads_enter ();
+  
   /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
 
-  gdk_threads_enter ();
-  
   sw = gtk_scrolled_window_new (NULL, NULL);
 
   gtk_widget_set_size_request (sw, width, height);
 
-  gdk_threads_leave ();
-
   NSA_SET_PTR (env, obj, sw);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL 
@@ -67,9 +67,10 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_setScrollPosition
   GtkScrolledWindow *sw;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW (ptr);
 
   hadj = gtk_scrolled_window_get_hadjustment (sw);
@@ -77,6 +78,7 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_setScrollPosition
 
   gtk_adjustment_set_value (hadj, x);
   gtk_adjustment_set_value (vadj, y);
+
   gdk_threads_leave ();
 }
 
@@ -88,9 +90,10 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_gtkScrolledWindowSetHScrollIncremen
   GtkScrolledWindow *sw;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW(ptr);
 
   hadj = gtk_scrolled_window_get_hadjustment (sw);
@@ -107,9 +110,10 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_gtkScrolledWindowSetVScrollIncremen
   GtkScrolledWindow *sw;
   void *ptr;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW(ptr);
 
   vadj = gtk_scrolled_window_get_hadjustment (sw);
@@ -128,9 +132,10 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_getHScrollbarHeight
   jint height = 0;
   jint spacing = 0;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW (ptr);
 
   gtk_widget_size_request (sw->hscrollbar, &requisition);
@@ -152,9 +157,10 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_getVScrollbarWidth
   jint width = 0;
   jint spacing = 0;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   sw = GTK_SCROLLED_WINDOW (ptr);
 
   gtk_widget_size_request (sw->vscrollbar, &requisition);
@@ -171,6 +177,8 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_setPolicy
   (JNIEnv *env, jobject obj, jint policy)
 {
   void *ptr;
+
+  gdk_threads_enter ();
 
   ptr = NSA_GET_PTR (env, obj);
 
@@ -189,7 +197,7 @@ Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_setPolicy
       break;
     }
 
-  gdk_threads_enter ();
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (ptr), policy, policy);
+
   gdk_threads_leave ();
 }

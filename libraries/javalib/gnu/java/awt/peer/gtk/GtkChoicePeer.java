@@ -72,6 +72,8 @@ public class GtkChoicePeer extends GtkComponentPeer
   native void nativeRemove (int index);
   native void nativeRemoveAll ();
 
+  native void connectSignals ();
+
   public native void select (int position);
  
   public void add (String item, int index)

@@ -51,9 +51,9 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_removeMenuBarPeer
   void *fixed;
   GList* children;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   fixed = gtk_container_get_children (GTK_CONTAINER (ptr))->data;
   children = gtk_container_get_children (GTK_CONTAINER (fixed));
@@ -86,10 +86,10 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarPeer
   void *mptr;
   void *fixed;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
   mptr = NSA_GET_PTR (env, menubar);
-
-  gdk_threads_enter ();
 
   fixed = gtk_container_get_children (GTK_CONTAINER (ptr))->data;
   gtk_fixed_put (GTK_FIXED (fixed), mptr, 0, 0);
@@ -105,9 +105,9 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_getMenuBarHeight
   GtkWidget *ptr;
   GtkRequisition requisition;
 
-  ptr = NSA_GET_PTR (env, menubar);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, menubar);
 
   gtk_widget_size_request (ptr, &requisition);
 
@@ -123,9 +123,9 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarWidth
   GtkWidget *ptr;
   GtkRequisition natural_req;
 
-  ptr = NSA_GET_PTR (env, menubar);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, menubar);
 
   /* Get the menubar's natural size request. */
   gtk_widget_set_size_request (GTK_WIDGET (ptr), -1, -1);
@@ -145,9 +145,9 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_gtkFixedSetVisible
   void *ptr;
   void *fixed;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   fixed = gtk_container_get_children (GTK_CONTAINER (ptr))->data;
 
@@ -164,13 +164,14 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImage
   (JNIEnv *env, jobject obj, jobject gtkimage)
 {
   void *ptr;
-  GdkPixbuf *pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, gtkimage);
+  GdkPixbuf *pixbuf = NULL;
 
+  gdk_threads_enter ();
+
+  pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, gtkimage);
   g_assert (pixbuf != NULL);
 
   ptr = NSA_GET_PTR (env, obj);
-
-  gdk_threads_enter ();
 
   gtk_window_set_icon (GTK_WINDOW (ptr), pixbuf);
 
@@ -181,5 +182,3 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImage
 
   gdk_threads_leave ();
 }
-
-

@@ -58,12 +58,14 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_initState
   struct textlayout *tl;
 
   gdk_threads_enter ();
+
   g_assert(self != NULL);
   tl = g_malloc0 (sizeof (struct textlayout));
   g_assert(tl != NULL);
   tl->pango_layout = pango_layout_new(gdk_pango_context_get());
   g_assert(tl->pango_layout != NULL);
   NSA_SET_TEXT_LAYOUT_PTR (env, self, tl);
+
   gdk_threads_leave ();
 }
 
@@ -76,6 +78,7 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
   gint len = 0;
 
   gdk_threads_enter ();
+
   g_assert(self != NULL);
   g_assert(text != NULL);
 
@@ -90,6 +93,7 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_setText
   pango_layout_set_text (tl->pango_layout, text, len);
 
   (*env)->ReleaseStringUTFChars (env, text, str);
+
   gdk_threads_leave ();  
 }
 
@@ -102,6 +106,7 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_indexToPos
   jdouble *nativePos;
 
   gdk_threads_enter ();
+
   g_assert(self != NULL);
   g_assert(javaPos != NULL);
 
@@ -121,6 +126,7 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_indexToPos
   nativePos[3] = (jdouble) pangoPos.height;
 
   (*env)->ReleaseDoubleArrayElements (env, javaPos, nativePos, 0);
+
   gdk_threads_leave ();  
 }
 
@@ -133,6 +139,7 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_getExtents
   jdouble *nativeInkExtents, *nativeLogExtents;
 
   gdk_threads_enter ();
+
   g_assert(self != NULL);
   g_assert(javaInkExtents != NULL);
   g_assert(javaLogExtents != NULL);
@@ -173,11 +180,13 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_dispose
   struct textlayout *tl;
 
   gdk_threads_enter ();
+
   g_assert(self != NULL);
   tl = (struct textlayout *) NSA_DEL_TEXT_LAYOUT_PTR (env, self);
   g_assert(tl != NULL);
   if (tl->pango_layout != NULL)
     g_object_unref (tl->pango_layout);
   g_free(tl);
+
   gdk_threads_leave ();
 }

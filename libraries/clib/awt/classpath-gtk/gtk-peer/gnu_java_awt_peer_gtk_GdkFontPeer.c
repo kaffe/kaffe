@@ -75,11 +75,14 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_initState
   (JNIEnv *env, jobject self)
 {
   struct peerfont *pfont = NULL;
+
   gdk_threads_enter ();
+
   g_assert (self != NULL);
   pfont = (struct peerfont *) g_malloc0 (sizeof (struct peerfont));
   g_assert (pfont != NULL);
   NSA_SET_FONT_PTR (env, self, pfont);
+
   gdk_threads_leave ();
 }
 
@@ -91,6 +94,7 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose
   struct peerfont *pfont = NULL;
 
   gdk_threads_enter ();
+
   pfont = (struct peerfont *)NSA_DEL_FONT_PTR (env, self);
   g_assert (pfont != NULL);
   if (pfont->layout != NULL)
@@ -102,6 +106,7 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose
   if (pfont->desc != NULL)
     pango_font_description_free (pfont->desc);
   g_free (pfont);
+
   gdk_threads_leave ();
 }
 
@@ -114,11 +119,13 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector
    jobject fontRenderContext)
 {
   struct peerfont *pfont = NULL;
-  GList *items = NULL, *i = NULL;
+  GList *items = NULL;
+  GList *i = NULL;
   gchar *str = NULL;
-  int len, j;
-  double *native_extents;
-  int *native_codes;
+  int len = 0;
+  int j = 0;
+  double *native_extents = NULL;
+  int *native_codes = NULL;
   jintArray java_codes = NULL;
   jdoubleArray java_extents = NULL;
 
@@ -227,7 +234,7 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getFontMetrics
 {
   struct peerfont *pfont = NULL;
   jdouble *native_metrics = NULL;
-  PangoFontMetrics *pango_metrics;
+  PangoFontMetrics *pango_metrics = NULL;
 
   gdk_threads_enter();
 
@@ -329,9 +336,10 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   struct peerfont *pfont = NULL;
   char const *family_name = NULL;
   enum java_awt_font_style style;
-  PangoFT2FontMap *ft2_map;
+  PangoFT2FontMap *ft2_map = NULL;
 
   gdk_threads_enter ();
+
   style = (enum java_awt_font_style) style_int;
 
   g_assert (self != NULL);

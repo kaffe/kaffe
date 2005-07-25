@@ -455,9 +455,13 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_nativeQueueEmpty
   (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
   jboolean empty = FALSE;
+
   gdk_threads_enter ();
+
   empty = ! gtk_events_pending();
+
   gdk_threads_leave ();
+
   return empty;
 }
 
@@ -470,7 +474,9 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_beep
   (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
   gdk_threads_enter ();
+
   gdk_beep ();
+
   gdk_threads_leave ();
 }
 
@@ -479,7 +485,9 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_sync
   (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
   gdk_threads_enter ();
+
   gdk_flush ();
+
   gdk_threads_leave ();
 }
 
@@ -511,6 +519,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_getScreenResolution
   res = gdk_screen_width () / (gdk_screen_width_mm () / 25.4);
 
   gdk_threads_leave ();
+
   return res;
 }
 
@@ -558,9 +567,9 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_loadSystemColors
   colors[AWT_INFO]                    = CONVERT (bg, NORMAL);
   colors[AWT_INFO_TEXT]               = CONVERT (fg, NORMAL);
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseIntArrayElements(env, jcolors, colors, 0);
+
+  gdk_threads_leave ();
 }
 
 #undef CONVERT
