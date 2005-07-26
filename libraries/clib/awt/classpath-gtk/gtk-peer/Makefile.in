@@ -97,7 +97,6 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkChoicePeer.c \
 	gnu_java_awt_peer_gtk_GtkClipboard.c \
 	gnu_java_awt_peer_gtk_GtkComponentPeer.c \
-	gnu_java_awt_peer_gtk_GtkEvents.c \
 	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c \
 	gnu_java_awt_peer_gtk_GtkFramePeer.c \
 	gnu_java_awt_peer_gtk_GtkGenericPeer.c \
@@ -135,7 +134,6 @@ am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkChoicePeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkClipboard.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkComponentPeer.lo \
-	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFramePeer.lo \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.lo \
@@ -478,7 +476,6 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GtkChoicePeer.c \
 	gnu_java_awt_peer_gtk_GtkClipboard.c \
 	gnu_java_awt_peer_gtk_GtkComponentPeer.c \
-	gnu_java_awt_peer_gtk_GtkEvents.c \
 	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c \
 	gnu_java_awt_peer_gtk_GtkFramePeer.c \
 	gnu_java_awt_peer_gtk_GtkGenericPeer.c	\
@@ -634,7 +631,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkClipboard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkComponentPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFileDialogPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkFramePeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkGenericPeer.Plo@am__quote@
@@ -796,13 +792,6 @@ libgtkpeer_la-gnu_java_awt_peer_gtk_GtkComponentPeer.lo: gnu_java_awt_peer_gtk_G
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkComponentPeer.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkComponentPeer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkComponentPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkComponentPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkComponentPeer.c
-
-libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo: gnu_java_awt_peer_gtk_GtkEvents.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo `test -f 'gnu_java_awt_peer_gtk_GtkEvents.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkEvents.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.Tpo" "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.Plo"; else rm -f "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_awt_peer_gtk_GtkEvents.c' object='libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEvents.lo `test -f 'gnu_java_awt_peer_gtk_GtkEvents.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkEvents.c
 
 libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.lo: gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgtkpeer_la_CPPFLAGS) $(CPPFLAGS) $(libgtkpeer_la_CFLAGS) $(CFLAGS) -MT libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.lo -MD -MP -MF "$(DEPDIR)/libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.Tpo" -c -o libgtkpeer_la-gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.lo `test -f 'gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c' || echo '$(srcdir)/'`gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c; \

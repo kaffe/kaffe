@@ -38,7 +38,7 @@
 #include "gdkfont.h"
 #include "gnu_java_awt_peer_gtk_GdkFontPeer.h"
 
-struct state_table *native_font_state_table;
+struct state_table *cp_gtk_native_font_state_table;
 
 enum java_awt_font_style {
   java_awt_font_PLAIN = 0,
@@ -134,7 +134,7 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector
   pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, self);
   g_assert (pfont != NULL);
 
-  len = (*gdk_env())->GetStringUTFLength (env, chars);  
+  len = (*cp_gtk_gdk_env())->GetStringUTFLength (env, chars);  
   str = (gchar *)(*env)->GetStringUTFChars (env, chars, NULL);
   g_assert (str != NULL);
 
@@ -150,8 +150,12 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector
 
   if (i == NULL)       
     {
+      gdk_threads_leave ();
+
       java_extents = (*env)->NewDoubleArray (env, 0);
       java_codes = (*env)->NewIntArray (env, 0);
+
+      gdk_threads_enter ();
     }
   else
     { 
@@ -173,8 +177,13 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector
 	  int x = 0;
 	  double scale = ((double) PANGO_SCALE);
 
+          gdk_threads_leave ();
+
 	  java_extents = (*env)->NewDoubleArray (env, glyphs->num_glyphs * NUM_GLYPH_METRICS);
 	  java_codes = (*env)->NewIntArray (env, glyphs->num_glyphs);
+
+          gdk_threads_enter ();
+
 	  native_extents = (*env)->GetDoubleArrayElements (env, java_extents, NULL);
 	  native_codes = (*env)->GetIntArrayElements (env, java_codes, NULL);
 
@@ -380,8 +389,8 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   else
     {
       /* GDK uses a slightly different DPI setting. */
-      pango_font_description_set_size (pfont->desc, 
-				       size * dpi_conversion_factor);
+      pango_font_description_set_size (pfont->desc,
+				   size * cp_gtk_dpi_conversion_factor);
       if (pfont->ctx == NULL)
 	pfont->ctx = gdk_pango_context_get();
     }

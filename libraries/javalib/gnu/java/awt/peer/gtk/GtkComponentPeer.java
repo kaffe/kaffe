@@ -105,6 +105,13 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   native boolean isRealized ();
 
+  void realize ()
+  {
+    // Default implementation does nothing
+  }
+
+  native void setNativeEventMask ();
+
   void create ()
   {
     throw new RuntimeException ();
@@ -137,6 +144,10 @@ public class GtkComponentPeer extends GtkGenericPeer
     if (awtComponent instanceof Window
         || (parent != null && ! parent.isShowing ()))
       setParentAndBounds ();
+
+    setNativeEventMask ();
+
+    realize ();
   }
 
   void setParentAndBounds ()

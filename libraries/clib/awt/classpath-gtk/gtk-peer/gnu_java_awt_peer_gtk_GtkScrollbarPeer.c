@@ -41,14 +41,36 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkScrollbarPeer.h"
 
+#define AWT_ADJUSTMENT_UNIT_INCREMENT 1
+#define AWT_ADJUSTMENT_UNIT_DECREMENT 2
+#define AWT_ADJUSTMENT_BLOCK_DECREMENT 3
+#define AWT_ADJUSTMENT_BLOCK_INCREMENT 4
+#define AWT_ADJUSTMENT_TRACK 5
+
+static jmethodID postAdjustmentEventID;
+
+void
+cp_gtk_scrollbar_init_jni (void)
+{
+  jclass gtkscrollbarpeer;
+
+  gtkscrollbarpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                     "gnu/java/awt/peer/gtk/GtkScrollbarPeer");
+
+  postAdjustmentEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(),
+                                                     gtkscrollbarpeer,
+                                                     "postAdjustmentEvent",
+                                                     "(II)V");
+}
+
 #if GTK_MINOR_VERSION > 4
 static gboolean slider_moved_cb (GtkRange *range,
                                  GtkScrollType scroll,
                                  gdouble value,
                                  jobject obj);
 #else
-static void post_change_event (GtkRange *range,
-			       jobject peer);
+static void post_change_event_cb (GtkRange *range,
+                                  jobject peer);
 #endif
 
 JNIEXPORT void JNICALL
@@ -97,18 +119,19 @@ Java_gnu_java_awt_peer_gtk_GtkScrollbarPeer_connectSignals
 
   gdk_threads_enter ();
 
+  /* Scrollbar signals */
 #if GTK_MINOR_VERSION > 4
   g_signal_connect (G_OBJECT (ptr), "change-value",
-                    GTK_SIGNAL_FUNC (slider_moved_cb), *gref);
+                    G_CALLBACK (slider_moved_cb), *gref);
 #else
   g_signal_connect (G_OBJECT (ptr), "value-changed",
-                    G_CALLBACK (post_change_event), *gref);
+                    G_CALLBACK (post_change_event_cb), *gref);
 #endif
 
-  gdk_threads_leave ();
+  /* Component signals */
+  cp_gtk_component_connect_signals (G_OBJECT (ptr), gref);
 
-  /* Connect the superclass signals.  */
-  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals (env, obj);
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -195,28 +218,28 @@ slider_moved_cb (GtkRange *range,
   switch (scroll)
     {
     case GTK_SCROLL_STEP_BACKWARD:
-      (*gdk_env())->CallVoidMethod (gdk_env(), obj, postAdjustmentEventID,
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), obj, postAdjustmentEventID,
                                     AWT_ADJUSTMENT_UNIT_DECREMENT,
                                     (jint) value);
       break;
     case GTK_SCROLL_STEP_FORWARD:
-      (*gdk_env())->CallVoidMethod (gdk_env(), obj, postAdjustmentEventID,
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), obj, postAdjustmentEventID,
                                     AWT_ADJUSTMENT_UNIT_INCREMENT,
                                     (jint) value);
       break;
     case GTK_SCROLL_PAGE_BACKWARD:
-      (*gdk_env())->CallVoidMethod (gdk_env(), obj, postAdjustmentEventID,
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), obj, postAdjustmentEventID,
                                     AWT_ADJUSTMENT_BLOCK_DECREMENT,
                                     (jint) value);
       break;
     case GTK_SCROLL_PAGE_FORWARD:
-      (*gdk_env())->CallVoidMethod (gdk_env(), obj, postAdjustmentEventID,
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), obj, postAdjustmentEventID,
                                     AWT_ADJUSTMENT_BLOCK_INCREMENT,
                                     (jint) value);
       break;
     default:
       /* GTK_SCROLL_JUMP: */
-      (*gdk_env())->CallVoidMethod (gdk_env(), obj, postAdjustmentEventID,
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), obj, postAdjustmentEventID,
                                     AWT_ADJUSTMENT_TRACK,
                                     (jint) value);
       break;
@@ -225,11 +248,11 @@ slider_moved_cb (GtkRange *range,
 }
 #else
 static void
-post_change_event (GtkRange *range, jobject peer)
+post_change_event_cb (GtkRange *range, jobject peer)
 {
   GtkAdjustment *adj;
   adj = gtk_range_get_adjustment (range);
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer, postAdjustmentEventID,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postAdjustmentEventID,
 				AWT_ADJUSTMENT_TRACK, (jint) adj->value);
 }
 #endif

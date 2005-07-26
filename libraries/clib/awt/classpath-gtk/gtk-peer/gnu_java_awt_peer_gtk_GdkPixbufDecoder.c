@@ -48,7 +48,19 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct state_table *native_pixbufdecoder_state_table;
+static struct state_table *native_pixbufdecoder_state_table;
+
+#define NSA_PB_INIT(env, clazz) \
+  native_pixbufdecoder_state_table = cp_gtk_init_state_table (env, clazz)
+
+#define NSA_GET_PB_PTR(env, obj) \
+  cp_gtk_get_state (env, obj, native_pixbufdecoder_state_table)
+
+#define NSA_SET_PB_PTR(env, obj, ptr) \
+  cp_gtk_set_state (env, obj, native_pixbufdecoder_state_table, (void *)ptr)
+
+#define NSA_DEL_PB_PTR(env, obj) \
+  cp_gtk_remove_state_slot (env, obj, native_pixbufdecoder_state_table)
 
 /* Union used for type punning. */
 union env_union
@@ -130,7 +142,13 @@ area_updated_cb (GdkPixbufLoader *loader,
 
   e.jni_env = &env;
   (*vm)->GetEnv (vm, e.void_env, JNI_VERSION_1_1);
+
+  gdk_threads_leave ();
+
   jpixels = (*env)->NewIntArray (env, n_pixels);
+
+  gdk_threads_enter ();
+
   java_pixels = (*env)->GetIntArrayElements (env, jpixels, NULL);
 
   memcpy (java_pixels, 

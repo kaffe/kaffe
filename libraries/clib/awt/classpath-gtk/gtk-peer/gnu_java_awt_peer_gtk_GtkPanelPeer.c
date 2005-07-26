@@ -88,7 +88,9 @@ Java_gnu_java_awt_peer_gtk_GtkPanelPeer_connectSignals
   g_signal_connect (G_OBJECT (ptr), "focus-out-event",
                     G_CALLBACK (panel_focus_out_cb), *gref);
 
-  classpath_gtk_component_connect_nonfocus_signals (G_OBJECT (ptr), gref);
+  /* Component signals.  Exclude focus signals. */
+  cp_gtk_component_connect_expose_signals (ptr, gref);
+  cp_gtk_component_connect_mouse_signals (ptr, gref);
 
   gdk_threads_leave ();
 }
@@ -108,4 +110,3 @@ panel_focus_out_cb (GtkWidget * widget __attribute__((unused)),
 {
   return TRUE;
 }
-

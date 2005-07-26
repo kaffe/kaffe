@@ -1,3 +1,78 @@
+2005-07-26 Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-07-14  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkChoicePeer.java (choicePostItemEvent):
+        Rename to postChoiceItemEvent.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java (realize): New method.
+        (setNativeEventMask): Likewise.
+        * gnu/java/awt/peer/gtk/GtkGenericPeer.java (printCurrentThread): New method.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java (realize): New method.
+        * native/jni/gtk-peer/gtkpeer.h: Move widget-specific macro,
+        variable and function declarations into the widget-specific file.
+        Add cp_gtk_ namespace prefix to external symbols.
+        (cp_gtk_graphics2d_init_jni): New function.
+        (cp_gtk_graphics_init_jni): Likewise.
+        (cp_gtk_button_init_jni): Likewise.
+        (cp_gtk_checkbox_init_jni): Likewise.
+        (cp_gtk_choice_init_jni): Likewise.
+        (cp_gtk_component_init_jni): Likewise.
+        (cp_gtk_list_init_jni): Likewise.
+        (cp_gtk_menuitem_init_jni): Likewise.
+        (cp_gtk_scrollbar_init_jni): Likewise.
+        (cp_gtk_textcomponent_init_jni): Likewise.
+        (cp_gtk_window_init_jni): Likewise.
+        (cp_gtk_component_connect_expose_signals): Likewise.
+        (cp_gtk_component_connect_focus_signals): Likewise.
+        (cp_gtk_component_connect_mouse_signals): Likewise.
+        (cp_gtk_component_connect_signals): Likewise.
+        (cp_gtk_textcomponent_connect_signals): Likewise.
+        (cp_gtk_print_current_thread): Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c: Remove
+        file.  Move widget-specific functions into the widget-specific
+        files.  Break main event handler into multiple widget-specific
+        callbacks.
+        * native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Remove
+        gnu_java_awt_peer_gtk_GtkEvents.c.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c: Add
+        cp_gtk_ namespace prefix to external symbols.  Add widget-specific
+        macros, variables and function declarations from
+        gnu_java_awt_peer_gtk_GtkEvents.c.  Add widget-specific callbacks
+        to replace main event handling loop.
+        * native/jni/classpath/native_state.c: Likewise.
+        * native/jni/classpath/native_state.h: Likewise.
+        * native/jni/gtk-peer/gdkfont.h: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollPanePeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkScrollbarPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c: Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c: Likewise.
+        * native/jni/gtk-peer/gthread-jni.c: Likewise.
+        * native/jni/gtk-peer/gthread-jni.h: Likewise.
+
 2005-07-25  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

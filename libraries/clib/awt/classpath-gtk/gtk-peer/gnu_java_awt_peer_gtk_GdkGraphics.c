@@ -41,11 +41,26 @@ exception statement from your version. */
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkx.h>
 
+static jmethodID initComponentGraphicsID;
+
+void
+cp_gtk_graphics_init_jni (void)
+{
+  jclass gdkgraphics;
+
+  gdkgraphics = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                         "gnu/java/awt/peer/gtk/GdkGraphics");
+
+  initComponentGraphicsID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gdkgraphics,
+                                                       "initComponentGraphics",
+                                                       "()V");
+}
+
 #define GDK_STABLE_IS_PIXMAP(d) (GDK_IS_PIXMAP(d))
 
-GdkPoint *
-translate_points (JNIEnv *env, jintArray xpoints, jintArray ypoints, 
-		  jint npoints, jint x_offset, jint y_offset);
+static GdkPoint *translate_points (JNIEnv *env, jintArray xpoints,
+                                   jintArray ypoints, jint npoints,
+                                   jint x_offset, jint y_offset);
 static void realize_cb (GtkWidget *widget, jobject jgraphics);
 
 JNIEXPORT void JNICALL
@@ -108,7 +123,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initFromImage
 
   gdk_threads_enter ();
 
-  pixmap = gnu_java_awt_peer_gtk_GtkImage_getPixmap(env, source);
+  pixmap = cp_gtk_image_get_pixmap (env, source);
   g_assert(pixmap != NULL);
   gdk_pixmap_ref (pixmap);
 
@@ -441,7 +456,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawArc
   gdk_threads_leave ();
 }  
 
-GdkPoint *
+static GdkPoint *
 translate_points (JNIEnv *env, jintArray xpoints, jintArray ypoints, 
 		  jint npoints, jint x_offset, jint y_offset)
 {
@@ -619,9 +634,9 @@ realize_cb (GtkWidget *widget __attribute__ ((unused)), jobject jgraphics)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), jgraphics, initComponentGraphicsID);
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), jgraphics, initComponentGraphicsID);
 
-  NSA_DEL_GLOBAL_REF (gdk_env(), jgraphics);
+  NSA_DEL_GLOBAL_REF (cp_gtk_gdk_env(), jgraphics);
 
   gdk_threads_enter ();
 }

@@ -207,7 +207,8 @@ Java_gnu_java_awt_peer_gtk_GdkRobotPeer_keyPress
   display = gdk_display_get_default ();
   xdisplay = GDK_DISPLAY_XDISPLAY (display);
 
-  lookup_keyval = awt_keycode_to_keysym (keycode, AWT_KEY_LOCATION_LEFT);
+  lookup_keyval = cp_gtk_awt_keycode_to_keysym (keycode,
+                                                       AWT_KEY_LOCATION_LEFT);
 
   if (!gdk_keymap_get_entries_for_keyval (gdk_keymap_get_default (),
                                           lookup_keyval,
@@ -251,7 +252,8 @@ Java_gnu_java_awt_peer_gtk_GdkRobotPeer_keyRelease
   display = gdk_display_get_default ();
   xdisplay = GDK_DISPLAY_XDISPLAY (display);
 
-  lookup_keyval = awt_keycode_to_keysym (keycode, AWT_KEY_LOCATION_LEFT);
+  lookup_keyval = cp_gtk_awt_keycode_to_keysym (keycode,
+                                                       AWT_KEY_LOCATION_LEFT);
 
   if (!gdk_keymap_get_entries_for_keyval (gdk_keymap_get_default (),
                                           lookup_keyval,
@@ -311,7 +313,12 @@ Java_gnu_java_awt_peer_gtk_GdkRobotPeer_nativeGetRGBPixels
   n_pixels = height * stride_pixels;
   gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
 
+  gdk_threads_leave ();
+
   jpixels = (*env)->NewIntArray (env, n_pixels);
+
+  gdk_threads_enter ();
+
   java_pixels = (*env)->GetIntArrayElements (env, jpixels, NULL);
 
   memcpy (java_pixels,

@@ -43,40 +43,43 @@ exception statement from your version. */
 
 #include <sys/time.h>
 
-#ifdef JVM_SUN
-  struct state_table *native_state_table;
-  struct state_table *native_global_ref_table;
-#endif
+#define RC_FILE ".classpath-gtkrc"
 
-jmethodID setBoundsCallbackID;
+/* From java.awt.SystemColor */
+#define AWT_DESKTOP                  0
+#define AWT_ACTIVE_CAPTION           1
+#define AWT_ACTIVE_CAPTION_TEXT      2
+#define AWT_ACTIVE_CAPTION_BORDER    3
+#define AWT_INACTIVE_CAPTION         4
+#define AWT_INACTIVE_CAPTION_TEXT    5
+#define AWT_INACTIVE_CAPTION_BORDER  6
+#define AWT_WINDOW                   7
+#define AWT_WINDOW_BORDER            8
+#define AWT_WINDOW_TEXT              9
+#define AWT_MENU                    10
+#define AWT_MENU_TEXT               11
+#define AWT_TEXT                    12
+#define AWT_TEXT_TEXT               13
+#define AWT_TEXT_HIGHLIGHT          14
+#define AWT_TEXT_HIGHLIGHT_TEXT     15
+#define AWT_TEXT_INACTIVE_TEXT      16
+#define AWT_CONTROL                 17
+#define AWT_CONTROL_TEXT            18
+#define AWT_CONTROL_HIGHLIGHT       19
+#define AWT_CONTROL_LT_HIGHLIGHT    20
+#define AWT_CONTROL_SHADOW          21
+#define AWT_CONTROL_DK_SHADOW       22
+#define AWT_SCROLLBAR               23
+#define AWT_INFO                    24
+#define AWT_INFO_TEXT               25
+#define AWT_NUM_COLORS              26
 
-jmethodID postActionEventID;
-jmethodID postMenuActionEventID;
-jmethodID postMouseEventID;
-jmethodID postConfigureEventID;
-jmethodID postExposeEventID;
-jmethodID postKeyEventID;
-jmethodID postFocusEventID;
-jmethodID postAdjustmentEventID;
-jmethodID postItemEventID;
-jmethodID choicePostItemEventID;
-jmethodID postListItemEventID;
-jmethodID postTextEventID;
-jmethodID postWindowEventID;
-jmethodID postInsetsChangedEventID;
-jmethodID windowGetWidthID;
-jmethodID windowGetHeightID;
+struct state_table *cp_gtk_native_state_table;
+struct state_table *cp_gtk_native_global_ref_table;
 
-jmethodID beginNativeRepaintID;
-jmethodID endNativeRepaintID;
-
-jmethodID initComponentGraphicsID;
-#ifdef GTK_CAIRO
-jmethodID initComponentGraphics2DID;
-#endif
-jmethodID setCursorID;
-
-JavaVM *java_vm;
+static jclass gtkgenericpeer;
+static JavaVM *java_vm;
+static jmethodID printCurrentThreadID;
 
 union env_union
 {
@@ -85,7 +88,7 @@ union env_union
 };
 
 JNIEnv *
-gdk_env()
+cp_gtk_gdk_env()
 {
   union env_union tmp;
   g_assert((*java_vm)->GetEnv(java_vm, &tmp.void_env, JNI_VERSION_1_2) == JNI_OK);
@@ -93,11 +96,10 @@ gdk_env()
 }
 
 
-GtkWindowGroup *global_gtk_window_group;
+GtkWindowGroup *cp_gtk_global_window_group;
+double cp_gtk_dpi_conversion_factor;
 
 static void init_glib_threads(JNIEnv *, jint);
-
-double dpi_conversion_factor;
 
 static void init_dpi_conversion_factor (void);
 static void dpi_changed_cb (GtkSettings  *settings,
@@ -132,29 +134,20 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   char **argv;
   char *homedir, *rcpath = NULL;
 
-  jclass gtkgenericpeer, gtkcomponentpeer, gtkchoicepeer, gtkwindowpeer, gtkscrollbarpeer, gtklistpeer,
-    gtkmenuitempeer, window, gdkgraphics;
-#ifdef GTK_CAIRO
-  jclass gdkgraphics2d;
-#endif
-
   gtkgenericpeer = (*env)->FindClass(env, "gnu/java/awt/peer/gtk/GtkGenericPeer");
 
+  printCurrentThreadID = (*env)->GetStaticMethodID (env, gtkgenericpeer,
+                                                    "printCurrentThread", "()V");
+ 
   NSA_INIT (env, gtkgenericpeer);
 
   g_assert((*env)->GetJavaVM(env, &java_vm) == 0);
 
   /* GTK requires a program's argc and argv variables, and requires that they
-     be valid.   Set it up. */
+     be valid.  Set it up. */
   argv = (char **) g_malloc (sizeof (char *) * 2);
   argv[0] = (char *) g_malloc(1);
-#if 1
-  strcpy(argv[0], "");
-#else  /* The following is a more efficient alternative, but less intuitively
-	* expresses what we are trying to do.   This code is only run once, so
-	* I'm going for intuitive. */
   argv[0][0] = '\0';
-#endif
   argv[1] = NULL;
 
   init_glib_threads(env, portableNativeSync);
@@ -171,8 +164,6 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   /* Make sure queued calls don't get sent to GTK/GDK while 
      we're shutting down. */
   atexit (gdk_threads_enter);
-
-  gdk_event_handler_set ((GdkEventFunc)awt_event_handler, NULL, NULL);
 
   if ((homedir = getenv ("HOME")))
     {
@@ -191,87 +182,21 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   old_glog_func = g_log_set_default_handler (&glog_func, NULL);
 #endif
 
-  /* setup cached IDs for posting GTK events to Java */
-
-  window = (*env)->FindClass (env, "java/awt/Window");
-
-  gtkcomponentpeer = (*env)->FindClass (env,
-				     "gnu/java/awt/peer/gtk/GtkComponentPeer");
-  gtkchoicepeer = (*env)->FindClass (env,
-				     "gnu/java/awt/peer/gtk/GtkChoicePeer");
-  gtkwindowpeer = (*env)->FindClass (env,
-				     "gnu/java/awt/peer/gtk/GtkWindowPeer");
-  gtkscrollbarpeer = (*env)->FindClass (env, 
-				     "gnu/java/awt/peer/gtk/GtkScrollbarPeer");
-  gtklistpeer = (*env)->FindClass (env, "gnu/java/awt/peer/gtk/GtkListPeer");
-  gtkmenuitempeer = (*env)->FindClass (env,
-                                     "gnu/java/awt/peer/gtk/GtkMenuItemPeer");
-  gdkgraphics = (*env)->FindClass (env,
-                                   "gnu/java/awt/peer/gtk/GdkGraphics");
-#ifdef GTK_CAIRO
-  gdkgraphics2d = (*env)->FindClass (env,
-                                     "gnu/java/awt/peer/gtk/GdkGraphics2D");
+#if GTK_CAIRO
+  cp_gtk_graphics2d_init_jni ();
 #endif
-  setBoundsCallbackID = (*env)->GetMethodID (env, window,
-					     "setBoundsCallback",
-					     "(IIII)V");
+  cp_gtk_graphics_init_jni ();
+  cp_gtk_button_init_jni ();
+  cp_gtk_checkbox_init_jni ();
+  cp_gtk_choice_init_jni ();
+  cp_gtk_component_init_jni ();
+  cp_gtk_list_init_jni ();
+  cp_gtk_menuitem_init_jni ();
+  cp_gtk_scrollbar_init_jni ();
+  cp_gtk_textcomponent_init_jni ();
+  cp_gtk_window_init_jni ();
 
-  postMenuActionEventID = (*env)->GetMethodID (env, gtkmenuitempeer,
-					       "postMenuActionEvent",
-					       "()V");
-  postMouseEventID = (*env)->GetMethodID (env, gtkcomponentpeer, 
-                                          "postMouseEvent", "(IJIIIIZ)V");
-  setCursorID = (*env)->GetMethodID (env, gtkcomponentpeer,
-                                     "setCursor", "()V");
-  beginNativeRepaintID = (*env)->GetMethodID (env, gtkcomponentpeer, 
-                                              "beginNativeRepaint", "()V");
-
-  endNativeRepaintID = (*env)->GetMethodID (env, gtkcomponentpeer, 
-                                            "endNativeRepaint", "()V");
-
-  postConfigureEventID = (*env)->GetMethodID (env, gtkwindowpeer, 
-					      "postConfigureEvent", "(IIII)V");
-  postWindowEventID = (*env)->GetMethodID (env, gtkwindowpeer,
-					   "postWindowEvent",
-					   "(ILjava/awt/Window;I)V");
-  postInsetsChangedEventID = (*env)->GetMethodID (env, gtkwindowpeer,
-						  "postInsetsChangedEvent",
-						  "(IIII)V");
-  windowGetWidthID = (*env)->GetMethodID (env, gtkwindowpeer,
-					  "getWidth", "()I");
-  windowGetHeightID = (*env)->GetMethodID (env, gtkwindowpeer,
-					  "getHeight", "()I");
-
-  postExposeEventID = (*env)->GetMethodID (env, gtkcomponentpeer, 
-					  "postExposeEvent", "(IIII)V");
-  postKeyEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
-					"postKeyEvent", "(IJIICI)V");
-  postFocusEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
-					  "postFocusEvent", "(IZ)V");
-  postAdjustmentEventID = (*env)->GetMethodID (env, gtkscrollbarpeer,
-					       "postAdjustmentEvent", 
-					       "(II)V");
-  postItemEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
-					 "postItemEvent", 
-					 "(Ljava/lang/Object;I)V");
-  choicePostItemEventID = (*env)->GetMethodID (env, gtkchoicepeer,
-					 "choicePostItemEvent", 
-					 "(Ljava/lang/String;I)V");
-  postListItemEventID = (*env)->GetMethodID (env, gtklistpeer,
-					     "postItemEvent",
-					     "(II)V");
-  postTextEventID = (*env)->GetMethodID (env, gtkcomponentpeer,
-					     "postTextEvent",
-					     "()V");
-  initComponentGraphicsID = (*env)->GetMethodID (env, gdkgraphics,
-                                                 "initComponentGraphics",
-                                                 "()V");
-#ifdef GTK_CAIRO
-  initComponentGraphics2DID = (*env)->GetMethodID (env, gdkgraphics2d,
-                                                   "initComponentGraphics2D",
-                                                   "()V");
-#endif
-  global_gtk_window_group = gtk_window_group_new ();
+  cp_gtk_global_window_group = gtk_window_group_new ();
 
   init_dpi_conversion_factor ();
 }
@@ -295,11 +220,11 @@ init_glib_threads(JNIEnv *env, jint portableNativeSync)
 #endif
     }
   
-  (*env)->GetJavaVM( env, &the_vm );
+  (*env)->GetJavaVM( env, &cp_gtk_the_vm );
   if (!g_thread_supported ())
     {
       if (portableNativeSync)
-        g_thread_init ( &portable_native_sync_jni_functions );
+        g_thread_init ( &cp_gtk_portable_native_sync_jni_functions );
       else
         g_thread_init ( NULL );
     }
@@ -317,6 +242,11 @@ init_glib_threads(JNIEnv *env, jint portableNativeSync)
   /*   printf("called gthread init\n"); */
 }
 
+void
+cp_gtk_print_current_thread (void)
+{
+  (*cp_gtk_gdk_env())->CallStaticVoidMethod (cp_gtk_gdk_env(), gtkgenericpeer, printCurrentThreadID);
+}
 
 /* This is a big hack, needed until this pango bug is resolved:
    http://bugzilla.gnome.org/show_bug.cgi?id=119081.
@@ -336,16 +266,17 @@ init_dpi_conversion_factor ()
       /* If int_dpi == -1 gtk-xft-dpi returns the default value. So we
 	 have to do approximate calculation here.  */
       if (int_dpi < 0)
-	dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+	cp_gtk_dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
       else
-	dpi_conversion_factor = PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
+	cp_gtk_dpi_conversion_factor =
+          PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
 
       g_signal_connect (settings, "notify::gtk-xft-dpi",
 			G_CALLBACK (dpi_changed_cb), NULL);
     }
   else
     /* Approximate. */
-    dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+    cp_gtk_dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
 }
 
 static void
@@ -355,9 +286,10 @@ dpi_changed_cb (GtkSettings  *settings,
   int int_dpi;
   g_object_get (settings, "gtk-xft-dpi", &int_dpi, NULL);
   if (int_dpi < 0)
-    dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
+    cp_gtk_dpi_conversion_factor = PANGO_SCALE * 72.0 / 96.;
   else
-    dpi_conversion_factor = PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
+    cp_gtk_dpi_conversion_factor =
+      PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
 }
 
 static int
@@ -386,7 +318,7 @@ glog_func (const gchar *log_domain,
 		   | G_LOG_LEVEL_CRITICAL
 		   | G_LOG_LEVEL_WARNING))
     {
-      JNIEnv *env = gdk_env ();
+      JNIEnv *env = cp_gtk_gdk_env ();
       jthrowable *exc = (*env)->ExceptionOccurred(env);
       gchar *detail = g_strconcat (log_domain, ": ", message, NULL);
       JCL_ThrowException (env, "java/lang/InternalError", detail);
@@ -534,9 +466,9 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_loadSystemColors
   jint *colors;
   GtkStyle *style;
 
-  colors = (*env)->GetIntArrayElements (env, jcolors, NULL);
-
   gdk_threads_enter ();
+
+  colors = (*env)->GetIntArrayElements (env, jcolors, NULL);
 
   style = gtk_widget_get_default_style ();
 

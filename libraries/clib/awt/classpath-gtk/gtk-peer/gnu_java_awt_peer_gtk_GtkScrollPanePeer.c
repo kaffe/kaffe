@@ -39,6 +39,10 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkScrollPanePeer.h"
 
+#define AWT_SCROLLPANE_SCROLLBARS_AS_NEEDED 0
+#define AWT_SCROLLPANE_SCROLLBARS_ALWAYS 1
+#define AWT_SCROLLPANE_SCROLLBARS_NEVER 2
+
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkScrollPanePeer_create 
   (JNIEnv *env, jobject obj, int width, int height)

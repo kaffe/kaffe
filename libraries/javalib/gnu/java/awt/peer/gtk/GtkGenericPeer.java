@@ -90,4 +90,9 @@ public class GtkGenericPeer
   }
 
   native void gtkWidgetModifyFont (String name, int style, int size);
+
+  static void printCurrentThread ()
+  {
+    System.out.println ("gtkgenericpeer, thread: " + Thread.currentThread ());
+  }
 }

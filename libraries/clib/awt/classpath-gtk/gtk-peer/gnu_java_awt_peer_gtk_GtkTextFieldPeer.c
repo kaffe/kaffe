@@ -45,15 +45,17 @@ exception statement from your version. */
 #define BB_GREEN  26985
 #define BB_BLUE   31611
 
+static jmethodID postTextEventID;
+
 void
-classpath_gtk_textcomponent_init_jni (void)
+cp_gtk_textcomponent_init_jni (void)
 {
   jclass gtkcomponentpeer;
 
-  gtkcomponentpeer = (*gdk_env())->FindClass (gdk_env(),
+  gtkcomponentpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
                                               "gnu/java/awt/peer/gtk/GtkComponentPeer");
 
-  postTextEventID = (*gdk_env())->GetMethodID (gdk_env(), gtkcomponentpeer,
+  postTextEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcomponentpeer,
 					     "postTextEvent",
 					     "()V");
 }
@@ -95,10 +97,10 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_connectSignals
   gref = NSA_GET_GLOBAL_REF (env, obj);
 
   /* TextComponent signals */
-  classpath_gtk_textcomponent_connect_signals (G_OBJECT (ptr), gref);
+  cp_gtk_textcomponent_connect_signals (G_OBJECT (ptr), gref);
 
   /* Component signals */
-  classpath_gtk_component_connect_signals (G_OBJECT (ptr), gref);
+  cp_gtk_component_connect_signals (G_OBJECT (ptr), gref);
 
   gdk_threads_leave ();
 }
@@ -238,7 +240,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_gtkWidgetModifyFont
 
   font_desc = pango_font_description_from_string (font_name);
   pango_font_description_set_size (font_desc,
-                                   size * dpi_conversion_factor);
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -405,7 +407,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextFieldPeer_setText
 }
 
 void
-classpath_gtk_textcomponent_connect_signals (GObject *ptr, jobject *gref)
+cp_gtk_textcomponent_connect_signals (GObject *ptr, jobject *gref)
 {
   g_signal_connect (G_OBJECT(ptr), "changed",
                     G_CALLBACK (textcomponent_changed_cb), *gref);
@@ -416,6 +418,6 @@ textcomponent_changed_cb (GtkEditable *editable __attribute__((unused)),
 			  jobject peer)
 {
   gdk_threads_leave ();
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer, postTextEventID);
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postTextEventID);
   gdk_threads_enter ();
 }

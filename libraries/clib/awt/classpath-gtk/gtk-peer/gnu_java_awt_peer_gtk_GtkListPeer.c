@@ -38,6 +38,21 @@
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkListPeer.h"
 
+static jmethodID postListItemEventID;
+
+void
+cp_gtk_list_init_jni (void)
+{
+  jclass gtklistpeer;
+
+  gtklistpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                         "gnu/java/awt/peer/gtk/GtkListPeer");
+
+  postListItemEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtklistpeer,
+                                                   "postItemEvent",
+                                                   "(II)V");
+}
+
 enum
   {
     COLUMN_STRING,
@@ -133,7 +148,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_connectSignals
   gtk_tree_selection_set_select_function (selection, item_highlighted_cb,
                                           *gref, NULL);
 
-  classpath_gtk_component_connect_signals (G_OBJECT (list), gref);
+  cp_gtk_component_connect_signals (G_OBJECT (list), gref);
 
   gdk_threads_leave ();
 }
@@ -156,7 +171,8 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_gtkWidgetModifyFont
   font_name = (*env)->GetStringUTFChars (env, name, NULL);
 
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -230,7 +246,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_append
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_add
-  (JNIEnv *env, jobject obj, jstring text, jint i)
+  (JNIEnv *env, jobject obj, jstring text, jint index)
 {
   void *ptr;
   const char *str;
@@ -246,10 +262,10 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_add
   list = gtk_bin_get_child (GTK_BIN (ptr));
   list_store = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
 
-  if (i == -1)
+  if (index == -1)
     gtk_list_store_append (GTK_LIST_STORE (list_store), &iter);
   else
-    gtk_list_store_insert (GTK_LIST_STORE (list_store), &iter, i);
+    gtk_list_store_insert (GTK_LIST_STORE (list_store), &iter, index);
 
   gtk_list_store_set (GTK_LIST_STORE (list_store), &iter,
                       COLUMN_STRING, str, -1);
@@ -298,39 +314,39 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_delItems
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_select
-  (JNIEnv *env, jobject obj, jint i)
+  (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;
-  GtkTreeView *list;
+  GtkWidget *list;
   GtkTreePath *path;
     
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
 
-  list = TREE_VIEW_FROM_SW (ptr);
-  path = gtk_tree_path_new_from_indices (i, -1);
-  gtk_tree_view_set_cursor (list, path, NULL, FALSE);
+  ptr = NSA_GET_PTR (env, obj);
+
+  list = gtk_bin_get_child (GTK_BIN (ptr));
+  path = gtk_tree_path_new_from_indices (index, -1);
+  gtk_tree_view_set_cursor (GTK_TREE_VIEW (list), path, NULL, FALSE);
 
   gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_deselect
-  (JNIEnv *env, jobject obj, jint i)
+  (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;
-  GtkTreeView *list;
+  GtkWidget *list;
   GtkTreeSelection *selection;
   GtkTreePath *path;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
 
-  list = TREE_VIEW_FROM_SW (ptr);
-  selection = gtk_tree_view_get_selection (list);
-  path = gtk_tree_path_new_from_indices (i, -1);
+  ptr = NSA_GET_PTR (env, obj);
+
+  list = gtk_bin_get_child (GTK_BIN (ptr));
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (list));
+  path = gtk_tree_path_new_from_indices (index, -1);
   gtk_tree_selection_unselect_path (selection, path);
 
   gdk_threads_leave ();
@@ -407,7 +423,12 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_getSelectedIndexes
     {
       current_row = rows = gtk_tree_selection_get_selected_rows (selection, NULL);
 
+      gdk_threads_leave ();
+
       result_array = (*env)->NewIntArray (env, count);
+
+      gdk_threads_enter ();
+
       result_array_iter = (*env)->GetIntArrayElements (env, result_array, NULL);
 
       for (i = 0; i < count; i++)
@@ -435,19 +456,20 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_getSelectedIndexes
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_makeVisible
-  (JNIEnv *env, jobject obj, jint i)
+  (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;
-  GtkTreeView *list;
+  GtkWidget *list;
   GtkTreePath *path;
-
-  ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
 
-  list = TREE_VIEW_FROM_SW (ptr);
-  path = gtk_tree_path_new_from_indices (i, -1);
-  gtk_tree_view_scroll_to_cell (list, path, NULL, FALSE, 0.0, 0.0);
+  ptr = NSA_GET_PTR (env, obj);
+
+  list = gtk_bin_get_child (GTK_BIN (ptr));
+  path = gtk_tree_path_new_from_indices (index, -1);
+  gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (list), path,
+                                NULL, FALSE, 0.0, 0.0);
 
   gdk_threads_leave ();
 }
@@ -492,19 +514,23 @@ item_highlighted_cb (GtkTreeSelection *selection __attribute__((unused)),
       if (!path_currently_selected)
         {
           gdk_threads_leave ();
-          (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+
+          (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                         postListItemEventID,
                                         row,
                                         (jint) AWT_ITEM_SELECTED);
+
           gdk_threads_enter ();
         }
       else
         {
           gdk_threads_leave ();
-          (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+
+          (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                         postListItemEventID,
                                         row,
                                         (jint) AWT_ITEM_DESELECTED);
+
           gdk_threads_enter ();
         }
     }

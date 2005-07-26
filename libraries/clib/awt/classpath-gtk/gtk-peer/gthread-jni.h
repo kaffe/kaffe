@@ -42,7 +42,7 @@ exception statement from your version. */
 #include <glib.h>
 #include "gtkpeer.h"
 
-extern GThreadFunctions portable_native_sync_jni_functions;
-extern JavaVM *the_vm;
+extern GThreadFunctions cp_gtk_portable_native_sync_jni_functions;
+extern JavaVM *cp_gtk_the_vm;
 
 #endif /* __GTHREADJNI_H__ */

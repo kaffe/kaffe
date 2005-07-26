@@ -42,7 +42,7 @@
 #include "gdkfont.h"
 #include "gnu_java_awt_peer_gtk_GdkTextLayout.h"
 
-struct state_table *native_text_layout_state_table;
+struct state_table *cp_gtk_native_text_layout_state_table;
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkTextLayout_initStaticState 

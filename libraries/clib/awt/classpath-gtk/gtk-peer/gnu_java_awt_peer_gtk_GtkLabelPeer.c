@@ -47,11 +47,11 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_create
   GtkWidget *eventbox;
   const char *str;
 
+  gdk_threads_enter ();
+
   NSA_SET_GLOBAL_REF (env, obj);
 
-  str = (*env)->GetStringUTFChars (env, text, NULL);
-
-  gdk_threads_enter ();
+  str = (*env)->GetStringUTFChars (env, text, 0);
 
   eventbox = gtk_event_box_new ();
   label = gtk_label_new (str);
@@ -59,11 +59,11 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_create
   gtk_container_add (GTK_CONTAINER (eventbox), label);
   gtk_widget_show (label);
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseStringUTFChars (env, text, str);
 
   NSA_SET_PTR (env, obj, eventbox);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -84,10 +84,14 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_gtkWidgetModifyFont
   label = gtk_bin_get_child (GTK_BIN (ptr));
 
   if (!label)
-    return;
+    {
+      gdk_threads_leave ();
+      return;
+    }
 
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -112,19 +116,19 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_setText
   void *ptr;
   GtkWidget *label;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   str = (*env)->GetStringUTFChars (env, text, NULL);
-
-  gdk_threads_enter ();
 
   label = gtk_bin_get_child (GTK_BIN (ptr));
 
   gtk_label_set_label (GTK_LABEL (label), str);
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseStringUTFChars (env, text, str);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL

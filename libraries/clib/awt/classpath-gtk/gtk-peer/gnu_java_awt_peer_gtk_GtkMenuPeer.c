@@ -95,7 +95,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuPeer_create
   toplevel = gtk_widget_get_toplevel (menu);
   if (GTK_IS_WINDOW (toplevel))
     {
-      gtk_window_group_add_window (global_gtk_window_group,
+      gtk_window_group_add_window (cp_gtk_global_window_group,
                                    GTK_WINDOW(toplevel));
     }
 
@@ -145,7 +145,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addItem
   if (key)
     {
       gtk_widget_add_accelerator (GTK_WIDGET (ptr2), "activate",
-				  gtk_menu_get_accel_group (GTK_MENU (menu)), (unsigned int) key, 
+				  gtk_menu_get_accel_group (GTK_MENU (menu)), key, 
 				  (GDK_CONTROL_MASK
 				   | ((shift) ? GDK_SHIFT_MASK : 0)), 
 				  GTK_ACCEL_VISIBLE);
@@ -156,18 +156,18 @@ Java_gnu_java_awt_peer_gtk_GtkMenuPeer_addItem
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkMenuPeer_delItem
-  (JNIEnv *env, jobject obj, jint i)
+  (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;
   GList *list;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
-  gdk_threads_enter ();
   list = gtk_container_children (GTK_CONTAINER (ptr));
-  list = g_list_nth (list, (unsigned int) i);
+  list = g_list_nth (list, index);
   gtk_container_remove (GTK_CONTAINER (ptr), GTK_WIDGET (list->data));
+
   gdk_threads_leave ();
 }
-
-

@@ -39,6 +39,10 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkTextAreaPeer.h"
 
+#define AWT_TEXTAREA_SCROLLBARS_BOTH 0
+#define AWT_TEXTAREA_SCROLLBARS_VERTICAL_ONLY 1
+#define AWT_TEXTAREA_SCROLLBARS_HORIZONTAL_ONLY 2
+
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_create
   (JNIEnv *env, jobject obj,
@@ -100,10 +104,10 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_connectSignals
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
 
   /* TextComponent signals */
-  classpath_gtk_textcomponent_connect_signals (G_OBJECT (buf), gref);
+  cp_gtk_textcomponent_connect_signals (G_OBJECT (buf), gref);
 
   /* Component signals */
-  classpath_gtk_component_connect_signals (G_OBJECT (text), gref);
+  cp_gtk_component_connect_signals (G_OBJECT (text), gref);
 
   gdk_threads_leave ();
 }
@@ -127,7 +131,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_insert
 
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text));
   gtk_text_buffer_get_iter_at_offset (buf, &iter, position);
-  gtk_text_buffer_insert (buf, &iter, str, (size_t) strlen (str));
+  gtk_text_buffer_insert (buf, &iter, str, strlen (str));
 
   (*env)->ReleaseStringUTFChars (env, contents, str);
 
@@ -160,7 +164,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_replaceRange
   gtk_text_buffer_delete (buf, &startIter, &endIter);
 
   gtk_text_buffer_get_iter_at_offset (buf, &iter, mystart);
-  gtk_text_buffer_insert(buf, &iter, str, (size_t) strlen (str));
+  gtk_text_buffer_insert(buf, &iter, str, strlen (str));
 
   (*env)->ReleaseStringUTFChars (env, contents, str);
 
@@ -186,7 +190,7 @@ Java_gnu_java_awt_peer_gtk_GtkTextAreaPeer_gtkWidgetModifyFont
 
   font_desc = pango_font_description_from_string (font_name);
   pango_font_description_set_size (font_desc,
-                                   size * dpi_conversion_factor);
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);

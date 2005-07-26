@@ -40,6 +40,21 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkCheckboxPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 
+static jmethodID postItemEventID;
+
+void
+cp_gtk_checkbox_init_jni (void)
+{
+  jclass gtkcheckboxpeer;
+
+  gtkcheckboxpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                             "gnu/java/awt/peer/gtk/GtkCheckboxPeer");
+
+  postItemEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcheckboxpeer,
+                                               "postItemEvent", 
+                                               "(Ljava/lang/Object;I)V");
+}
+
 static void item_toggled_cb (GtkToggleButton *item, jobject peer);
 
 JNIEXPORT void JNICALL
@@ -83,13 +98,14 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxPeer_connectSignals
   ptr = NSA_GET_PTR (env, obj);
   gref = NSA_GET_GLOBAL_REF (env, obj);
 
+  /* Checkbox signals */
   g_signal_connect (G_OBJECT (ptr), "toggled",
                     G_CALLBACK (item_toggled_cb), *gref);
 
-  gdk_threads_leave ();
+  /* Component signals */
+  cp_gtk_component_connect_signals (G_OBJECT (ptr), gref);
 
-  /* Connect the superclass signals.  */
-  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals (env, obj);
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL 
@@ -168,7 +184,8 @@ Java_gnu_java_awt_peer_gtk_GtkCheckboxPeer_gtkWidgetModifyFont
   font_name = (*env)->GetStringUTFChars (env, name, NULL);
 
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -212,7 +229,7 @@ item_toggled_cb (GtkToggleButton *item, jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postItemEventID,
                                 peer,
                                 item->active ?

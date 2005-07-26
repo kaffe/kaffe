@@ -63,6 +63,8 @@ public class GtkWindowPeer extends GtkContainerPeer
   native void gtkWindowSetResizable (boolean resizable);
   native void gtkWindowSetModal (boolean modal);
 
+  native void realize ();
+
   int getWidth ()
   {
     return awtComponent.getWidth();

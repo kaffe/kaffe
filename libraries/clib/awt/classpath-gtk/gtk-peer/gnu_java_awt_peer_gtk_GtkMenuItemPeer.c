@@ -40,6 +40,22 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkMenuItemPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 
+static jmethodID postMenuActionEventID;
+
+void
+cp_gtk_menuitem_init_jni (void)
+{
+  jclass gtkmenuitempeer;
+
+  gtkmenuitempeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                      "gnu/java/awt/peer/gtk/GtkMenuItemPeer");
+
+  postMenuActionEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(),
+                                                     gtkmenuitempeer,
+                                                     "postMenuActionEvent",
+                                                     "()V");
+}
+
 static void item_activate_cb (GtkMenuItem *item __attribute__((unused)),
                               jobject peer_obj);
 
@@ -109,7 +125,8 @@ Java_gnu_java_awt_peer_gtk_GtkMenuItemPeer_gtkWidgetModifyFont
   if (label)
     {
       font_desc = pango_font_description_from_string (font_name);
-      pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+      pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
       if (style & AWT_STYLE_BOLD)
         pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -170,7 +187,7 @@ static void
 item_activate_cb (GtkMenuItem *item __attribute__((unused)), jobject peer_obj)
 {
   gdk_threads_leave ();
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer_obj,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer_obj,
                                 postMenuActionEventID);
   gdk_threads_enter ();
 }

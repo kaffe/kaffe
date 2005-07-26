@@ -38,10 +38,6 @@
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkFramePeer.h"
 
-/* lives in GtkImage.c */
-GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj);
-jboolean gnu_java_awt_peer_gtk_GtkImage_isOffScreen(JNIEnv *env, jobject obj);
-
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkFramePeer_removeMenuBarPeer
   (JNIEnv *env, jobject obj)
@@ -168,7 +164,7 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImage
 
   gdk_threads_enter ();
 
-  pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, gtkimage);
+  pixbuf = cp_gtk_image_get_pixbuf (env, gtkimage);
   g_assert (pixbuf != NULL);
 
   ptr = NSA_GET_PTR (env, obj);
@@ -177,7 +173,7 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImage
 
   /* if the GtkImage is offscreen, this is a temporary pixbuf which should 
    be thrown out. */
-  if(gnu_java_awt_peer_gtk_GtkImage_isOffScreen(env, gtkimage) == JNI_TRUE)
+  if(cp_gtk_image_is_offscreen (env, gtkimage) == JNI_TRUE)
     gdk_pixbuf_unref (pixbuf);
 
   gdk_threads_leave ();

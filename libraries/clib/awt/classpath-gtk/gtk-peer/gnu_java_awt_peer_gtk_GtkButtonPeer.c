@@ -39,12 +39,24 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkButtonPeer.h"
 
-static gboolean focus_in_cb (GtkWidget *widget,
-                             GdkEventFocus *event,
-                             jobject peer);
-static gboolean focus_out_cb (GtkWidget *widget,
-                              GdkEventFocus *event,
-                              jobject peer);
+static jmethodID beginNativeRepaintID;
+static jmethodID endNativeRepaintID;
+ 
+void
+cp_gtk_button_init_jni (void)
+{
+  jclass gtkbuttonpeer;
+
+  gtkbuttonpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                           "gnu/java/awt/peer/gtk/GtkButtonPeer");
+
+  beginNativeRepaintID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkbuttonpeer,
+                                                    "beginNativeRepaint",
+                                                    "()V");
+
+  endNativeRepaintID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkbuttonpeer,
+                                                  "endNativeRepaint", "()V");
+}
 
 static void block_expose_event_cb (GtkWidget *widget,
                                    jobject peer);
@@ -89,23 +101,15 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_connectSignals
 
   button = gtk_bin_get_child (GTK_BIN (ptr));
 
-  g_signal_connect (G_OBJECT (ptr), "event",
-                    G_CALLBACK (pre_event_handler), *gref);
-
-  g_signal_connect (G_OBJECT (button), "event",
-                    G_CALLBACK (pre_event_handler), *gref);
-
-  g_signal_connect (G_OBJECT (button), "focus-in-event",
-                    G_CALLBACK (focus_in_cb), *gref);
-
-  g_signal_connect (G_OBJECT (button), "focus-out-event",
-                    G_CALLBACK (focus_out_cb), *gref);
-
+  /* Button signals */
   g_signal_connect_after (G_OBJECT (button), "pressed",
                           G_CALLBACK (block_expose_event_cb), *gref);
 
   g_signal_connect_after (G_OBJECT (button), "released",
                           G_CALLBACK (block_expose_event_cb), *gref);
+
+  /* Component signals */
+  cp_gtk_component_connect_signals (G_OBJECT (button), gref);
 
   gdk_threads_leave ();
 }
@@ -154,7 +158,8 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkWidgetModifyFont
   label = gtk_bin_get_child (GTK_BIN (button));
 
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -312,40 +317,12 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_setNativeBounds
   gdk_threads_leave ();
 }
 
-static gboolean
-focus_in_cb (GtkWidget *widget __attribute((unused)),
-             GdkEventFocus *event __attribute((unused)),
-             jobject peer)
-{
-  gdk_threads_leave ();
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
-                                postFocusEventID,
-                                AWT_FOCUS_GAINED,
-                                JNI_FALSE);
-  gdk_threads_enter ();
-  return FALSE;
-}
-
-static gboolean
-focus_out_cb (GtkWidget *widget __attribute((unused)),
-              GdkEventFocus *event __attribute((unused)),
-              jobject peer)
-{
-  gdk_threads_leave ();
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
-                                postFocusEventID,
-                                AWT_FOCUS_LOST,
-                                JNI_FALSE);
-  gdk_threads_enter ();
-  return FALSE;
-}
-
 static void
 block_expose_event_cb (GtkWidget *widget, jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 beginNativeRepaintID);
 
   gdk_threads_enter ();
@@ -354,7 +331,7 @@ block_expose_event_cb (GtkWidget *widget, jobject peer)
 
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                               endNativeRepaintID);
 
   gdk_threads_enter ();

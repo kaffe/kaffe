@@ -52,19 +52,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct state_table *native_graphics2d_state_table;
+static jmethodID initComponentGraphics2DID;
+
+void
+cp_gtk_graphics2d_init_jni (void)
+{
+  jclass gdkgraphics2d;
+
+  gdkgraphics2d = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                           "gnu/java/awt/peer/gtk/GdkGraphics2D");
+
+  initComponentGraphics2DID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gdkgraphics2d,
+                                                         "initComponentGraphics2D",
+                                                         "()V");
+}
+
+static struct state_table *native_graphics2d_state_table;
 
 #define NSA_G2D_INIT(env, clazz) \
-  native_graphics2d_state_table = init_state_table (env, clazz)
+  native_graphics2d_state_table = cp_gtk_init_state_table (env, clazz)
 
 #define NSA_GET_G2D_PTR(env, obj) \
-  get_state (env, obj, native_graphics2d_state_table)
+  cp_gtk_get_state (env, obj, native_graphics2d_state_table)
 
 #define NSA_SET_G2D_PTR(env, obj, ptr) \
-  set_state (env, obj, native_graphics2d_state_table, (void *)ptr)
+  cp_gtk_set_state (env, obj, native_graphics2d_state_table, (void *)ptr)
 
 #define NSA_DEL_G2D_PTR(env, obj) \
-  remove_state_slot (env, obj, native_graphics2d_state_table)
+  cp_gtk_remove_state_slot (env, obj, native_graphics2d_state_table)
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initStaticState 
@@ -356,7 +371,7 @@ realize_cb (GtkWidget *widget __attribute__ ((unused)), jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer, initComponentGraphics2DID);
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, initComponentGraphics2DID);
 
   gdk_threads_enter ();
 }
@@ -391,7 +406,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_copyState
       g->jarray = (*env)->NewGlobalRef (env, g_old->jarray);
       g->javabuf = (*env)->GetIntArrayElements (env, g->jarray, &g->isCopy);
       g->isCopy = JNI_TRUE;
-      g->javabuf_copy = (jint *) malloc (size);
+      g->javabuf_copy = (jint *) g_malloc (size);
       memcpy (g->javabuf_copy, g->javabuf, size);
       g->surface = cairo_image_surface_create_for_data ((unsigned char *) g->javabuf,
 						         CAIRO_FORMAT_ARGB32,
@@ -450,7 +465,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_initState___3III
       /* We didn't get direct access to the pixel buffer, so we'll have to
          maintain a separate copy for Cairo. */
       jint size = gr->width * gr->height * 4;
-      gr->javabuf_copy = (jint *) malloc (size);
+      gr->javabuf_copy = (jint *) g_malloc (size);
       memcpy (gr->javabuf_copy, gr->javabuf, size);
       cairobuf = gr->javabuf_copy;
     }
@@ -677,7 +692,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_dispose
     {
       (*env)->DeleteGlobalRef (env, gr->jarray);
       if (gr->javabuf_copy)
-        free (gr->javabuf_copy);
+        g_free (gr->javabuf_copy);
     }
 
   if (gr->debug) printf ("disposed of graphics2d\n");
@@ -804,7 +819,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_setGradient
     cairo_surface_destroy (gr->pattern_surface);
 
   if (gr->pattern_pixels)
-    free (gr->pattern_pixels);
+    g_free (gr->pattern_pixels);
   
   gr->pattern_pixels = NULL;  
   gr->pattern_surface = surf;  
@@ -843,13 +858,13 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_setTexturePixels
     cairo_surface_destroy (gr->pattern_surface);
 
   if (gr->pattern_pixels)
-    free (gr->pattern_pixels);
+    g_free (gr->pattern_pixels);
 
   gr->pattern = NULL;
   gr->pattern_surface = NULL;
   gr->pattern_pixels = NULL;
 
-  gr->pattern_pixels = (char *) malloc (h * stride * 4);
+  gr->pattern_pixels = (char *) g_malloc (h * stride * 4);
   g_assert (gr->pattern_pixels != NULL);
 
   jpixels = (*env)->GetIntArrayElements (env, jarr, NULL);
@@ -1183,7 +1198,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGlyphVector
 
   install_font_peer(gr->cr, pfont, gr->debug);
 
-  glyphs = malloc( sizeof(cairo_glyph_t) * n);
+  glyphs = g_malloc( sizeof(cairo_glyph_t) * n);
   g_assert (glyphs != NULL);
 
   native_codes = (*env)->GetIntArrayElements (env, java_codes, NULL);

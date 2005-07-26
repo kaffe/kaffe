@@ -241,7 +241,7 @@ exception statement from your version. */
 
 /*  The VM handle.  This is set in
     Java_gnu_java_awt_peer_gtk_GtkMainThread_gtkInit */
-JavaVM *the_vm;
+JavaVM *cp_gtk_the_vm;
 
 /* Unions used for type punning. */
 union env_union
@@ -399,8 +399,8 @@ tracing (const char fmt[], ...)
 
 /* Cached info for Exception-wrapping */
 
-jclass runtimeException_class;	/* java.lang.RuntimeException */
-jmethodID runtimeException_ctor; /* constructor for it */
+static jclass runtimeException_class;	/* java.lang.RuntimeException */
+static jmethodID runtimeException_ctor; /* constructor for it */
 
 
 /* Throw a new RuntimeException.  It may wrap around an existing exception.
@@ -1452,7 +1452,7 @@ mutex_new_jni_impl (void)
     tracing ("mutex_new_jni_impl()");
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   if (setup_cache (env) < 0)
     {
@@ -1484,7 +1484,7 @@ mutex_lock_jni_impl (GMutex * mutex)
 
   assert (mutexObj);
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   if (setup_cache (env) < 0)
     goto done;
@@ -1522,7 +1522,7 @@ mutex_trylock_jni_impl (GMutex * gmutex)
   assert (mutexObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1593,7 +1593,7 @@ mutex_unlock_jni_impl (GMutex * gmutex)
     tracing ("mutex_unlock_jni_impl(mutexObj=%p)", mutexObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1625,7 +1625,7 @@ mutex_free_jni_impl (GMutex * mutex)
   union env_union e;
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   if (TRACE_API_CALLS)
     tracing ("mutex_free_jni_impl(%p)", mutexObj);
@@ -1655,7 +1655,7 @@ cond_new_jni_impl (void)
     tracing ("mutex_free_jni_impl()");
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   condObj = allocatePlainObject (env);
 
@@ -1679,7 +1679,7 @@ cond_signal_jni_impl (GCond * gcond)
     tracing ("cond_signal_jni_impl(condObj = %p)", condObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1721,7 +1721,7 @@ cond_broadcast_jni_impl (GCond * gcond)
     tracing ("cond_broadcast_jni_impl(condObj=%p)", condObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1768,7 +1768,7 @@ cond_wait_jni_impl (GCond * gcond, GMutex * gmutex)
 	     condObj, mutexObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1847,7 +1847,7 @@ cond_timed_wait_jni_impl (GCond * gcond, GMutex * gmutex, GTimeVal * end_time)
 
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -1938,7 +1938,7 @@ cond_free_jni_impl (GCond * cond)
   if (TRACE_API_CALLS)
     tracing ("cond_free_jni_impl(condObj = %p)", condObj);
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   freeObject (env, condObj);
 
@@ -1970,7 +1970,7 @@ private_new_jni_impl (GDestroyNotify notify __attribute__ ((unused)))
     tracing ("private_new_jni_impl()");
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -2019,7 +2019,7 @@ private_get_jni_impl (GPrivate * gkey)
     tracing ("private_get_jni_impl(keyObj=%p)", keyObj);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -2075,7 +2075,7 @@ private_set_jni_impl (GPrivate * gkey, gpointer thread_specific_data)
 	     keyObj, thread_specific_data);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -2169,7 +2169,7 @@ thread_create_jni_impl (GThreadFunc	    func,
     }
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     {
       /*  The failed call to setup the cache is certainly not recoverable;
@@ -2243,7 +2243,7 @@ thread_yield_jni_impl (void)
     tracing ("thread_yield_jni_impl()");
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -2271,7 +2271,7 @@ thread_join_jni_impl (gpointer threadID)
     tracing ("thread_join_jni_impl(threadID=%p) ", threadID);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
   HIDE_OLD_TROUBLE (env);
@@ -2319,7 +2319,7 @@ thread_exit_jni_impl (void)
     tracing ("thread_exit_jni_impl() ");
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     goto done;
 
@@ -2408,7 +2408,7 @@ thread_set_priority_jni_impl (gpointer gThreadID, GThreadPriority gpriority)
 	     gThreadID, gpriority);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   if (setup_cache (env) < 0)
     goto done;
@@ -2465,7 +2465,7 @@ thread_self_jni_impl (/* Another confusing glib prototype.  This is
     tracing ("thread_self_jni_impl(my_thread_IDp=%p)", my_thread_IDp);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
 
   if (setup_cache (env) < 0)
     return;
@@ -2510,7 +2510,7 @@ thread_equal_jni_impl (gpointer thread1, gpointer thread2)
 	     threadID1, threadID2);
 
   e.jni_env = &env;
-  (*the_vm)->GetEnv (the_vm, e.void_env, JNI_VERSION_1_1);
+  (*cp_gtk_the_vm)->GetEnv (cp_gtk_the_vm, e.void_env, JNI_VERSION_1_1);
   if (setup_cache (env) < 0)
     {
       ret = FALSE;		/* what is safer?  We really don't ever want
@@ -2552,7 +2552,7 @@ done:
 /************************************************************************/
 
 /* set of function pointers to give to glib. */
-GThreadFunctions portable_native_sync_jni_functions = {
+GThreadFunctions cp_gtk_portable_native_sync_jni_functions = {
   mutex_new_jni_impl,		/* mutex_new */
   mutex_lock_jni_impl,		/* mutex_lock */
   mutex_trylock_jni_impl,	/* mutex_trylock */

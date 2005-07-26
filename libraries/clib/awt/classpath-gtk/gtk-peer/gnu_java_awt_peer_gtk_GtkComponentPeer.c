@@ -40,370 +40,145 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 
 #include <gtk/gtkprivate.h>
-#include <gdk/gdkkeysyms.h>
+
+#define AWT_DEFAULT_CURSOR 0
+#define AWT_CROSSHAIR_CURSOR 1
+#define AWT_TEXT_CURSOR 2
+#define AWT_WAIT_CURSOR 3
+#define AWT_SW_RESIZE_CURSOR 4
+#define AWT_SE_RESIZE_CURSOR 5
+#define AWT_NW_RESIZE_CURSOR 6
+#define AWT_NE_RESIZE_CURSOR 7
+#define AWT_N_RESIZE_CURSOR 8
+#define AWT_S_RESIZE_CURSOR 9
+#define AWT_W_RESIZE_CURSOR 10
+#define AWT_E_RESIZE_CURSOR 11
+#define AWT_HAND_CURSOR 12
+#define AWT_MOVE_CURSOR 13
+
+#define AWT_BUTTON1_DOWN_MASK (1 << 10)
+#define AWT_BUTTON2_DOWN_MASK (1 << 11)
+#define AWT_BUTTON3_DOWN_MASK (1 << 12)
+
+/* FIXME: use gtk-double-click-time, gtk-double-click-distance */
+#define MULTI_CLICK_TIME   250
+/* as opposed to a MULTI_PASS_TIME :) */
+
+#define AWT_MOUSE_CLICKED  500
+#define AWT_MOUSE_PRESSED  501
+#define AWT_MOUSE_RELEASED 502
+#define AWT_MOUSE_MOVED    503
+#define AWT_MOUSE_ENTERED  504
+#define AWT_MOUSE_EXITED   505
+#define AWT_MOUSE_DRAGGED  506
+
+#define AWT_FOCUS_GAINED 1004
+#define AWT_FOCUS_LOST 1005
 
 static GtkWidget *find_fg_color_widget (GtkWidget *widget);
 static GtkWidget *find_bg_color_widget (GtkWidget *widget);
-static gboolean focus_in_cb (GtkWidget *widget,
+
+static jmethodID postMouseEventID;
+static jmethodID setCursorID;
+static jmethodID postExposeEventID;
+static jmethodID postFocusEventID;
+
+void
+cp_gtk_component_init_jni (void)
+ {
+  jclass gtkcomponentpeer;
+
+  gtkcomponentpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
+                                     "gnu/java/awt/peer/gtk/GtkComponentPeer");
+
+  postMouseEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcomponentpeer,
+                                               "postMouseEvent", "(IJIIIIZ)V");
+
+  setCursorID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcomponentpeer,
+                                           "setCursor", "()V");
+
+  postExposeEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcomponentpeer,
+                                                 "postExposeEvent", "(IIII)V");
+
+  postFocusEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkcomponentpeer,
+                                                "postFocusEvent", "(IZ)V");
+}
+
+static gboolean component_button_press_cb (GtkWidget *widget,
+                                           GdkEventButton *event,
+                                           jobject peer);
+static gboolean component_button_release_cb (GtkWidget *widget,
+                                             GdkEventButton *event,
+                                             jobject peer);
+static gboolean component_motion_notify_cb (GtkWidget *widget,
+                                            GdkEventMotion *event,
+                                            jobject peer);
+static gboolean component_enter_notify_cb (GtkWidget *widget,
+                                           GdkEventCrossing *event,
+                                           jobject peer);
+static gboolean component_leave_notify_cb (GtkWidget *widget,
+                                           GdkEventCrossing *event,
+                                           jobject peer);
+static gboolean component_expose_cb (GtkWidget *widget,
+                                     GdkEventExpose *event,
+                                     jobject peer);
+static gboolean component_focus_in_cb (GtkWidget *widget,
                              GdkEventFocus *event,
                              jobject peer);
-static gboolean focus_out_cb (GtkWidget *widget,
+static gboolean component_focus_out_cb (GtkWidget *widget,
                               GdkEventFocus *event,
                               jobject peer);
 
-/*
- * This method returns a GDK keyval that corresponds to one of the
- * keysyms in the X keymap table.  The return value is only used to
- * determine the keyval's corresponding hardware keycode, and doesn't
- * reflect an accurate translation of a Java virtual key value to a
- * GDK keyval.
- */
-#ifdef __GNUC__
-__inline
-#endif
-guint
-awt_keycode_to_keysym (jint keyCode, jint keyLocation)
+static jint
+button_to_awt_mods (int button)
 {
-  /* GDK_A through GDK_Z */
-  if (keyCode >= VK_A && keyCode <= VK_Z)
-    return gdk_keyval_to_lower ((unsigned int) keyCode);
-
-  /* GDK_0 through GDK_9 */
-  if (keyCode >= VK_0 && keyCode <= VK_9)
-    return keyCode;
-
-  switch (keyCode)
+  switch (button)
     {
-    case VK_ENTER:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Enter : GDK_Return;
-    case VK_BACK_SPACE:
-      return GDK_BackSpace;
-    case VK_TAB:
-      return GDK_Tab;
-    case VK_CANCEL:
-      return GDK_Cancel;
-    case VK_CLEAR:
-      return GDK_Clear;
-    case VK_SHIFT:
-      return keyLocation == AWT_KEY_LOCATION_LEFT ? GDK_Shift_L : GDK_Shift_R;
-    case VK_CONTROL:
-      return keyLocation == AWT_KEY_LOCATION_LEFT ? GDK_Control_L : GDK_Control_R;
-    case VK_ALT:
-      return keyLocation == AWT_KEY_LOCATION_LEFT ? GDK_Alt_L : GDK_Alt_R;
-    case VK_PAUSE:
-      return GDK_Pause;
-    case VK_CAPS_LOCK:
-      return GDK_Caps_Lock;
-    case VK_ESCAPE:
-      return GDK_Escape;
-    case VK_SPACE:
-      return GDK_space;
-    case VK_PAGE_UP:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Page_Up : GDK_Page_Up;
-    case VK_PAGE_DOWN:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Page_Down : GDK_Page_Down;
-    case VK_END:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_End : GDK_End;
-    case VK_HOME:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Home : GDK_Home;
-    case VK_LEFT:
-      return GDK_Left;
-    case VK_UP:
-      return GDK_Up;
-    case VK_RIGHT:
-      return GDK_Right;
-    case VK_DOWN:
-      return GDK_Down;
-    case VK_COMMA:
-      return GDK_comma;
-    case VK_MINUS:
-      return GDK_minus;
-    case VK_PERIOD:
-      return GDK_period;
-    case VK_SLASH:
-      return GDK_slash;
-      /*
-    case VK_0:
-    case VK_1:
-    case VK_2:
-    case VK_3:
-    case VK_4:
-    case VK_5:
-    case VK_6:
-    case VK_7:
-    case VK_8:
-    case VK_9:
-      */
-    case VK_SEMICOLON:
-      return GDK_semicolon;
-    case VK_EQUALS:
-      return GDK_equal;
-      /*
-    case VK_A:
-    case VK_B:
-    case VK_C:
-    case VK_D:
-    case VK_E:
-    case VK_F:
-    case VK_G:
-    case VK_H:
-    case VK_I:
-    case VK_J:
-    case VK_K:
-    case VK_L:
-    case VK_M:
-    case VK_N:
-    case VK_O:
-    case VK_P:
-    case VK_Q:
-    case VK_R:
-    case VK_S:
-    case VK_T:
-    case VK_U:
-    case VK_V:
-    case VK_W:
-    case VK_X:
-    case VK_Y:
-    case VK_Z:
-      */
-    case VK_OPEN_BRACKET:
-      return GDK_bracketleft;
-    case VK_BACK_SLASH:
-      return GDK_backslash;
-    case VK_CLOSE_BRACKET:
-      return GDK_bracketright;
-    case VK_NUMPAD0:
-      return GDK_KP_0;
-    case VK_NUMPAD1:
-      return GDK_KP_1;
-    case VK_NUMPAD2:
-      return GDK_KP_2;
-    case VK_NUMPAD3:
-      return GDK_KP_3;
-    case VK_NUMPAD4:
-      return GDK_KP_4;
-    case VK_NUMPAD5:
-      return GDK_KP_5;
-    case VK_NUMPAD6:
-      return GDK_KP_6;
-    case VK_NUMPAD7:
-      return GDK_KP_7;
-    case VK_NUMPAD8:
-      return GDK_KP_8;
-    case VK_NUMPAD9:
-      return GDK_KP_9;
-    case VK_MULTIPLY:
-      return GDK_KP_Multiply;
-    case VK_ADD:
-      return GDK_KP_Add;
-      /*
-    case VK_SEPARATER:
-      */
-    case VK_SEPARATOR:
-      return GDK_KP_Separator;
-    case VK_SUBTRACT:
-      return GDK_KP_Subtract;
-    case VK_DECIMAL:
-      return GDK_KP_Decimal;
-    case VK_DIVIDE:
-      return GDK_KP_Divide;
-    case VK_DELETE:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Delete : GDK_Delete;
-    case VK_NUM_LOCK:
-      return GDK_Num_Lock;
-    case VK_SCROLL_LOCK:
-      return GDK_Scroll_Lock;
-    case VK_F1:
-      return GDK_F1;
-    case VK_F2:
-      return GDK_F2;
-    case VK_F3:
-      return GDK_F3;
-    case VK_F4:
-      return GDK_F4;
-    case VK_F5:
-      return GDK_F5;
-    case VK_F6:
-      return GDK_F6;
-    case VK_F7:
-      return GDK_F7;
-    case VK_F8:
-      return GDK_F8;
-    case VK_F9:
-      return GDK_F9;
-    case VK_F10:
-      return GDK_F10;
-    case VK_F11:
-      return GDK_F11;
-    case VK_F12:
-      return GDK_F12;
-    case VK_F13:
-      return GDK_F13;
-    case VK_F14:
-      return GDK_F14;
-    case VK_F15:
-      return GDK_F15;
-    case VK_F16:
-      return GDK_F16;
-    case VK_F17:
-      return GDK_F17;
-    case VK_F18:
-      return GDK_F18;
-    case VK_F19:
-      return GDK_F19;
-    case VK_F20:
-      return GDK_F20;
-    case VK_F21:
-      return GDK_F21;
-    case VK_F22:
-      return GDK_F22;
-    case VK_F23:
-      return GDK_F23;
-    case VK_F24:
-      return GDK_F24;
-    case VK_PRINTSCREEN:
-      return GDK_Print;
-    case VK_INSERT:
-      return keyLocation == AWT_KEY_LOCATION_NUMPAD ? GDK_KP_Insert : GDK_Insert;
-    case VK_HELP:
-      return GDK_Help;
-    case VK_META:
-      return keyLocation == AWT_KEY_LOCATION_LEFT ? GDK_Meta_L : GDK_Meta_R;
-    case VK_BACK_QUOTE:
-      return GDK_grave;
-    case VK_QUOTE:
-      return GDK_apostrophe;
-    case VK_KP_UP:
-      return GDK_KP_Up;
-    case VK_KP_DOWN:
-      return GDK_KP_Down;
-    case VK_KP_LEFT:
-      return GDK_KP_Left;
-    case VK_KP_RIGHT:
-      return GDK_KP_Right;
-    case VK_DEAD_GRAVE:
-      return GDK_dead_grave;
-    case VK_DEAD_ACUTE:
-      return GDK_dead_acute;
-    case VK_DEAD_CIRCUMFLEX:
-      return GDK_dead_circumflex;
-    case VK_DEAD_TILDE:
-      return GDK_dead_tilde;
-    case VK_DEAD_MACRON:
-      return GDK_dead_macron;
-    case VK_DEAD_BREVE:
-      return GDK_dead_breve;
-    case VK_DEAD_ABOVEDOT:
-      return GDK_dead_abovedot;
-    case VK_DEAD_DIAERESIS:
-      return GDK_dead_diaeresis;
-    case VK_DEAD_ABOVERING:
-      return GDK_dead_abovering;
-    case VK_DEAD_DOUBLEACUTE:
-      return GDK_dead_doubleacute;
-    case VK_DEAD_CARON:
-      return GDK_dead_caron;
-    case VK_DEAD_CEDILLA:
-      return GDK_dead_cedilla;
-    case VK_DEAD_OGONEK:
-      return GDK_dead_ogonek;
-    case VK_DEAD_IOTA:
-      return GDK_dead_iota;
-    case VK_DEAD_VOICED_SOUND:
-      return GDK_dead_voiced_sound;
-    case VK_DEAD_SEMIVOICED_SOUND:
-      return GDK_dead_semivoiced_sound;
-    case VK_AMPERSAND:
-      return GDK_ampersand;
-    case VK_ASTERISK:
-      return GDK_asterisk;
-    case VK_QUOTEDBL:
-      return GDK_quotedbl;
-    case VK_LESS:
-      return GDK_less;
-    case VK_GREATER:
-      return GDK_greater;
-    case VK_BRACELEFT:
-      return GDK_braceleft;
-    case VK_BRACERIGHT:
-      return GDK_braceright;
-    case VK_AT:
-      return GDK_at;
-    case VK_COLON:
-      return GDK_colon;
-    case VK_CIRCUMFLEX:
-      return GDK_asciicircum;
-    case VK_DOLLAR:
-      return GDK_dollar;
-    case VK_EURO_SIGN:
-      return GDK_EuroSign;
-    case VK_EXCLAMATION_MARK:
-      return GDK_exclam;
-    case VK_INVERTED_EXCLAMATION_MARK:
-      return GDK_exclamdown;
-    case VK_LEFT_PARENTHESIS:
-      return GDK_parenleft;
-    case VK_NUMBER_SIGN:
-      return GDK_numbersign;
-    case VK_PLUS:
-      return GDK_plus;
-    case VK_RIGHT_PARENTHESIS:
-      return GDK_parenright;
-    case VK_UNDERSCORE:
-      return GDK_underscore;
-      /*
-    case VK_FINAL:
-    case VK_CONVERT:
-    case VK_NONCONVERT:
-    case VK_ACCEPT:
-      */
-    case VK_MODECHANGE:
-      return GDK_Mode_switch;
-      /*
-    case VK_KANA:
-      */
-    case VK_KANJI:
-      return GDK_Kanji;
-      /*
-    case VK_ALPHANUMERIC:
-      */
-    case VK_KATAKANA:
-      return GDK_Katakana;
-    case VK_HIRAGANA:
-      return GDK_Hiragana;
-      /*
-    case VK_FULL_WIDTH:
-    case VK_HALF_WIDTH:
-    case VK_ROMAN_CHARACTERS:
-    case VK_ALL_CANDIDATES:
-      */
-    case VK_PREVIOUS_CANDIDATE:
-      return GDK_PreviousCandidate;
-    case VK_CODE_INPUT:
-      return GDK_Codeinput;
-      /*
-    case VK_JAPANESE_KATAKANA:
-    case VK_JAPANESE_HIRAGANA:
-    case VK_JAPANESE_ROMAN:
-      */
-    case VK_KANA_LOCK:
-      return GDK_Kana_Lock;
-      /*
-    case VK_INPUT_METHOD_ON_OFF:
-    case VK_CUT:
-    case VK_COPY:
-    case VK_PASTE:
-    case VK_UNDO:
-    case VK_AGAIN:
-    case VK_FIND:
-    case VK_PROPS:
-    case VK_STOP:
-    case VK_COMPOSE:
-    case VK_ALT_GRAPH:
-      */
-    default:
-      return GDK_VoidSymbol;
+    case 1:
+      return AWT_BUTTON1_MASK;
+    case 2:
+      return AWT_BUTTON2_MASK;
+    case 3:
+      return AWT_BUTTON3_MASK;
     }
+
+  return 0;
+}
+
+static jint
+state_to_awt_mods (guint state)
+{
+  jint result = 0;
+
+  if (state & GDK_SHIFT_MASK)
+    result |= AWT_SHIFT_DOWN_MASK;
+  if (state & GDK_CONTROL_MASK)
+    result |= AWT_CTRL_DOWN_MASK;
+  if (state & GDK_MOD1_MASK)
+    result |= AWT_ALT_DOWN_MASK;
+
+  return result;
+}
+
+static jint
+state_to_awt_mods_with_button_states (guint state)
+{
+  jint result = 0;
+
+  if (state & GDK_SHIFT_MASK)
+    result |= AWT_SHIFT_DOWN_MASK;
+  if (state & GDK_CONTROL_MASK)
+    result |= AWT_CTRL_DOWN_MASK;
+  if (state & GDK_MOD1_MASK)
+    result |= AWT_ALT_DOWN_MASK;
+  if (state & GDK_BUTTON1_MASK)
+    result |= AWT_BUTTON1_DOWN_MASK;
+  if (state & GDK_BUTTON2_MASK)
+    result |= AWT_BUTTON2_DOWN_MASK;
+  if (state & GDK_BUTTON3_MASK)
+    result |= AWT_BUTTON3_DOWN_MASK;
+
+  return result;
 }
 
 JNIEXPORT void JNICALL 
@@ -619,7 +394,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetDispatchKeyEvent
   event->key.length = 0;
   event->key.string = NULL;
 
-  lookup_keyval = awt_keycode_to_keysym (keyCode, keyLocation);
+  lookup_keyval = cp_gtk_awt_keycode_to_keysym (keyCode, keyLocation);
 
   if (!gdk_keymap_get_entries_for_keyval (gdk_keymap_get_default (),
                                           lookup_keyval,
@@ -681,10 +456,10 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
   void *ptr;
   jint *point;
 
-  ptr = NSA_GET_PTR (env, obj);
-  point = (*env)->GetIntArrayElements (env, jpoint, NULL);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  point = (*env)->GetIntArrayElements (env, jpoint, 0);
 
   gdk_window_get_origin (GTK_WIDGET (ptr)->window, point, point+1);
 
@@ -710,21 +485,21 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetDimensions
   jint *dims;
   GtkRequisition requisition;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   dims = (*env)->GetIntArrayElements (env, jdims, NULL);  
   dims[0] = dims[1] = 0;
-
-  gdk_threads_enter ();
 
   gtk_widget_size_request (GTK_WIDGET (ptr), &requisition);
 
   dims[0] = requisition.width;
   dims[1] = requisition.height;
 
-  gdk_threads_leave ();
-
   (*env)->ReleaseIntArrayElements (env, jdims, dims, 0);
+
+  gdk_threads_leave ();
 }
 
 /*
@@ -739,12 +514,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetPreferredDimensions
   GtkRequisition current_req;
   GtkRequisition natural_req;
 
+  gdk_threads_enter ();
+
   ptr = NSA_GET_PTR (env, obj);
 
   dims = (*env)->GetIntArrayElements (env, jdims, NULL);  
   dims[0] = dims[1] = 0;
-
-  gdk_threads_enter ();
 
   /* Widgets that extend GtkWindow such as GtkFileChooserDialog may have
      a default size.  These values seem more useful then the natural
@@ -827,7 +602,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetBackground
 
   bg = GTK_WIDGET (ptr)->style->bg[GTK_STATE_NORMAL];
 
+  gdk_threads_leave ();
+
   array = (*env)->NewIntArray (env, 3);
+
+  gdk_threads_enter ();
+
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
   /* convert color data from 16 bit values down to 8 bit values */
   rgb[0] = bg.red   >> 8;
@@ -855,7 +635,12 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetForeground
 
   fg = GTK_WIDGET (ptr)->style->fg[GTK_STATE_NORMAL];
 
+  gdk_threads_leave ();
+
   array = (*env)->NewIntArray (env, 3);
+
+  gdk_threads_enter ();
+
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
   /* convert color data from 16 bit values down to 8 bit values */
   rgb[0] = fg.red   >> 8;
@@ -1017,23 +802,39 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals
 {
   void *ptr;
   jobject *gref;
-  ptr = NSA_GET_PTR (env, obj);
-  gref = NSA_GET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
 
-  /* Connect EVENT signal, which happens _before_ any specific signal. */
-  g_signal_connect (GTK_OBJECT (ptr), "event",
-                    G_CALLBACK (pre_event_handler), *gref);
+  ptr = NSA_GET_PTR (env, obj);
+  gref = NSA_GET_GLOBAL_REF (env, obj);
 
-  g_signal_connect (G_OBJECT (ptr), "focus-in-event",
-                    G_CALLBACK (focus_in_cb), *gref);
+  cp_gtk_component_connect_signals (ptr, gref);
 
-  g_signal_connect (G_OBJECT (ptr), "focus-out-event",
-                    G_CALLBACK (focus_out_cb), *gref);
+  gdk_threads_leave ();
+}
 
-  g_signal_connect_after (G_OBJECT (ptr), "realize",
-                          G_CALLBACK (connect_awt_hook_cb), *gref);
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setNativeEventMask
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gtk_widget_add_events (GTK_WIDGET (ptr),
+                         GDK_POINTER_MOTION_MASK
+			 | GDK_BUTTON_MOTION_MASK
+			 | GDK_BUTTON_PRESS_MASK
+			 | GDK_BUTTON_RELEASE_MASK
+			 | GDK_KEY_PRESS_MASK
+			 | GDK_KEY_RELEASE_MASK
+			 | GDK_ENTER_NOTIFY_MASK
+			 | GDK_LEAVE_NOTIFY_MASK
+			 | GDK_STRUCTURE_MASK
+			 | GDK_KEY_PRESS_MASK
+                         | GDK_FOCUS_CHANGE_MASK);
 
   gdk_threads_leave ();
 }
@@ -1065,14 +866,274 @@ find_bg_color_widget (GtkWidget *widget)
   return bg_color_widget;
 }
 
+void
+cp_gtk_component_connect_expose_signals (GObject *ptr, jobject *gref)
+{
+  g_signal_connect (G_OBJECT (ptr), "expose-event",
+                    G_CALLBACK (component_expose_cb), *gref);
+}
+
+void
+cp_gtk_component_connect_focus_signals (GObject *ptr, jobject *gref)
+{
+  g_signal_connect (G_OBJECT (ptr), "focus-in-event",
+                    G_CALLBACK (component_focus_in_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "focus-out-event",
+                    G_CALLBACK (component_focus_out_cb), *gref);
+}
+
+void
+cp_gtk_component_connect_mouse_signals (GObject *ptr, jobject *gref)
+{
+  g_signal_connect (G_OBJECT (ptr), "button-press-event",
+                    G_CALLBACK (component_button_press_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "button-release-event",
+                    G_CALLBACK (component_button_release_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "enter-notify-event",
+                    G_CALLBACK (component_enter_notify_cb), *gref);
+ 
+  g_signal_connect (G_OBJECT (ptr), "leave-notify-event",
+                    G_CALLBACK (component_leave_notify_cb), *gref);
+
+  g_signal_connect (G_OBJECT (ptr), "motion-notify-event",
+                    G_CALLBACK (component_motion_notify_cb), *gref);
+}
+
+void
+cp_gtk_component_connect_signals (GObject *ptr, jobject *gref)
+{
+  cp_gtk_component_connect_expose_signals (ptr, gref);
+  cp_gtk_component_connect_focus_signals (ptr, gref);
+  cp_gtk_component_connect_mouse_signals (ptr, gref);
+}
+
+/* These variables are used to keep track of click counts.  The AWT
+   allows more than a triple click to occur but GTK doesn't report
+   more-than-triple clicks. */
+static jint click_count = 1;
+static guint32 button_click_time = 0;
+static GdkWindow *button_window = NULL;
+static guint button_number = -1;
+static int hasBeenDragged;
+
 static gboolean
-focus_in_cb (GtkWidget *widget __attribute((unused)),
-             GdkEventFocus *event __attribute((unused)),
+component_button_press_cb (GtkWidget *widget __attribute__((unused)),
+                           GdkEventButton *event,
              jobject peer)
+{
+  /* Ignore double and triple click events. */
+  if (event->type == GDK_2BUTTON_PRESS
+      || event->type == GDK_3BUTTON_PRESS)
+    return FALSE;
+
+  if ((event->time < (button_click_time + MULTI_CLICK_TIME))
+      && (event->window == button_window)
+      && (event->button == button_number))
+    click_count++;
+  else
+    click_count = 1;
+      
+  button_click_time = event->time;
+  button_window = event->window;
+  button_number = event->button;
+
+  gdk_threads_leave ();
+
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                postMouseEventID,
+                                AWT_MOUSE_PRESSED, 
+                                (jlong)event->time,
+                                state_to_awt_mods (event->state)
+                                | button_to_awt_mods (event->button),
+                                (jint)event->x,
+                                (jint)event->y, 
+                                click_count, 
+                                (event->button == 3) ? JNI_TRUE :
+                                JNI_FALSE);
+
+  gdk_threads_enter ();
+
+  hasBeenDragged = FALSE;
+
+  return FALSE;
+}
+
+static gboolean
+component_button_release_cb (GtkWidget *widget __attribute__((unused)),
+                             GdkEventButton *event,
+                        jobject peer)
+{
+  int width, height;
+
+  gdk_threads_leave ();
+
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                postMouseEventID,
+                                AWT_MOUSE_RELEASED, 
+                                (jlong)event->time,
+                                state_to_awt_mods (event->state)
+                                | button_to_awt_mods (event->button),
+                                (jint)event->x,
+                                (jint)event->y, 
+                                click_count,
+                                JNI_FALSE);
+
+  gdk_threads_enter ();
+
+  /* Generate an AWT click event only if the release occured in the
+     window it was pressed in, and the mouse has not been dragged since
+     the last time it was pressed. */
+  gdk_window_get_size (event->window, &width, &height);
+  if (! hasBeenDragged
+      && event->x >= 0
+      && event->y >= 0
+      && event->x <= width 
+      && event->y <= height)
+    {
+      gdk_threads_leave ();
+
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                    postMouseEventID,
+                                    AWT_MOUSE_CLICKED, 
+                                    (jlong)event->time,
+                                    state_to_awt_mods (event->state)
+                                    | button_to_awt_mods (event->button),
+                                    (jint)event->x,
+                                    (jint)event->y, 
+                                    click_count,
+                                    JNI_FALSE);
+
+      gdk_threads_enter ();
+    }
+  return FALSE;
+}
+
+static gboolean
+component_motion_notify_cb (GtkWidget *widget __attribute__((unused)),
+                            GdkEventMotion *event,
+                            jobject peer)
+ {
+  if (event->state & (GDK_BUTTON1_MASK
+                      | GDK_BUTTON2_MASK
+                      | GDK_BUTTON3_MASK
+                      | GDK_BUTTON4_MASK
+                      | GDK_BUTTON5_MASK))
+    {
+      gdk_threads_leave ();
+ 
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                    postMouseEventID,
+                                    AWT_MOUSE_DRAGGED,
+                                    (jlong)event->time,
+                                    state_to_awt_mods_with_button_states (event->state),
+                                    (jint)event->x,
+                                    (jint)event->y,
+                                    0,
+                                    JNI_FALSE);
+ 
+      gdk_threads_enter ();
+ 
+      hasBeenDragged = TRUE;
+    }
+  else
+    {
+      gdk_threads_leave ();
+ 
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postMouseEventID,
+                                    AWT_MOUSE_MOVED,
+                                    (jlong)event->time,
+                                    state_to_awt_mods (event->state),
+                                    (jint)event->x,
+                                    (jint)event->y,
+                                    0,
+                                    JNI_FALSE);
+
+      gdk_threads_enter ();
+    }
+  return FALSE;
+}
+
+static gboolean
+component_enter_notify_cb (GtkWidget *widget __attribute__((unused)),
+                           GdkEventCrossing *event,
+                           jobject peer)
+{
+  /* We are not interested in enter events that are due to
+     grab/ungrab and not to actually crossing boundaries */
+  if (event->mode == GDK_CROSSING_NORMAL)
+    {
+      gdk_threads_leave ();
+ 
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postMouseEventID,
+                                    AWT_MOUSE_ENTERED, 
+                                    (jlong)event->time,
+                                    state_to_awt_mods_with_button_states (event->state), 
+                                    (jint)event->x,
+                                    (jint)event->y, 
+                                    0,
+                                    JNI_FALSE);
+ 
+      gdk_threads_enter ();
+    }
+  return FALSE;
+}
+
+static gboolean
+component_leave_notify_cb (GtkWidget *widget __attribute__((unused)),
+                           GdkEventCrossing *event,
+                           jobject peer)
+{
+  /* We are not interested in leave events that are due to
+     grab/ungrab and not to actually crossing boundaries */
+  if (event->mode == GDK_CROSSING_NORMAL)
+    {
+      gdk_threads_leave ();
+
+      (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                    postMouseEventID,
+                                    AWT_MOUSE_EXITED, 
+                                    (jlong)event->time,
+                                    state_to_awt_mods_with_button_states (event->state),
+                                    (jint)event->x,
+                                    (jint)event->y, 
+                                    0,
+                                    JNI_FALSE);
+
+      gdk_threads_enter ();
+    }
+  return FALSE;
+}
+
+static gboolean
+component_expose_cb (GtkWidget *widget __attribute__((unused)),
+                     GdkEventExpose *event,
+                     jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
+                                postExposeEventID,
+                                (jint)event->area.x,
+                                (jint)event->area.y,
+                                (jint)event->area.width,
+                                (jint)event->area.height);
+
+  gdk_threads_enter ();
+
+  return FALSE;
+}
+
+static gboolean
+component_focus_in_cb (GtkWidget *widget __attribute((unused)),
+                       GdkEventFocus *event __attribute((unused)),
+                       jobject peer)
+{
+  gdk_threads_leave ();
+
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postFocusEventID,
                                 AWT_FOCUS_GAINED,
                                 JNI_FALSE);
@@ -1083,13 +1144,13 @@ focus_in_cb (GtkWidget *widget __attribute((unused)),
 }
 
 static gboolean
-focus_out_cb (GtkWidget *widget __attribute((unused)),
+component_focus_out_cb (GtkWidget *widget __attribute((unused)),
                         GdkEventFocus *event __attribute((unused)),
                         jobject peer)
 {
   gdk_threads_leave ();
 
-  (*gdk_env())->CallVoidMethod (gdk_env(), peer,
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postFocusEventID,
                                 AWT_FOCUS_LOST,
                                 JNI_FALSE);
@@ -1097,44 +1158,4 @@ focus_out_cb (GtkWidget *widget __attribute((unused)),
   gdk_threads_enter ();
 
   return FALSE;
-}
-
-void
-classpath_gtk_component_connect_nonfocus_signals (GObject *ptr, jobject *gref)
- {
-   /* FIXME */
-#if 0
-  g_signal_connect (G_OBJECT (ptr), "button-press-event",
-                    G_CALLBACK (component_button_press_cb), *gref);
- 
-  g_signal_connect (G_OBJECT (ptr), "button-release-event",
-                    G_CALLBACK (component_button_release_cb), *gref);
- 
-  g_signal_connect (G_OBJECT (ptr), "enter-notify-event",
-                    G_CALLBACK (component_enter_notify_cb), *gref);
- 
-  g_signal_connect (G_OBJECT (ptr), "expose-event",
-                    G_CALLBACK (component_expose_cb), *gref);
- 
-  g_signal_connect (G_OBJECT (ptr), "leave-notify-event",
-                    G_CALLBACK (component_leave_notify_cb), *gref);
-
-  g_signal_connect (G_OBJECT (ptr), "motion-notify-event",
-                    G_CALLBACK (component_motion_notify_cb), *gref);
-#endif
-}
-
-void
-classpath_gtk_component_connect_signals (GObject *ptr, jobject *gref)
-{
-   /* FIXME */
-#if 0
-  classpath_gtk_component_connect_nonfocus_signals (ptr, gref);
- 
-   g_signal_connect (G_OBJECT (ptr), "focus-in-event",
-                    G_CALLBACK (component_focus_in_cb), *gref);
- 
-   g_signal_connect (G_OBJECT (ptr), "focus-out-event",
-                    G_CALLBACK (component_focus_out_cb), *gref);
-#endif
 }

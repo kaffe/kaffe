@@ -71,7 +71,10 @@ Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf
   filename = (*env)->GetStringUTFChars (env, name, 0);
 
   if (filename == NULL)
-    return JNI_FALSE;
+    {
+      gdk_threads_leave ();
+      return JNI_FALSE;
+    }
 
   pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
   if (pixbuf == NULL)
@@ -108,18 +111,26 @@ Java_gnu_java_awt_peer_gtk_GtkImage_getPixels(JNIEnv *env, jobject obj)
 
   gdk_threads_enter ();
 
-  pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, obj);
+  pixbuf = cp_gtk_image_get_pixbuf (env, obj);
   width =  gdk_pixbuf_get_width (pixbuf);
   height = gdk_pixbuf_get_height (pixbuf);
   rowstride = gdk_pixbuf_get_rowstride (pixbuf);
 
+  /* Must release the GDK lock before allocating memory through the
+     JVM, since some JVMs use the same lock for allocations and
+     finalization.  Deadlock can occur on those JVMs. */
+  gdk_threads_leave ();
+
   result_array = (*env)->NewIntArray (env, (width * height));
+
+  gdk_threads_enter ();
+
   dst = result_array_iter = 
     (*env)->GetIntArrayElements (env, result_array, NULL);
 
+
   pixeldata = gdk_pixbuf_get_pixels (pixbuf);
 
-  /* FIXME: handle more bit depths here? */
   g_assert (gdk_pixbuf_get_bits_per_sample (pixbuf) == 8);
 
   if (gdk_pixbuf_get_has_alpha (pixbuf))
@@ -266,7 +277,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_createScaledPixmap(JNIEnv *env,
   g_assert (field != 0);
   height = (*env)->GetIntField (env, destination, field);
 
-  pixbuf = gnu_java_awt_peer_gtk_GtkImage_getPixbuf(env, source);
+  pixbuf = cp_gtk_image_get_pixbuf (env, source);
 
   dst = gdk_pixbuf_scale_simple(pixbuf,
 				width, height,
@@ -457,7 +468,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped
 /**
  * Used by GtkFramePeer
  */
-GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj)
+GdkPixbuf *cp_gtk_image_get_pixbuf (JNIEnv *env, jobject obj)
 {
   int width, height;
   GdkPixbuf *pixbuf;
@@ -491,14 +502,14 @@ GdkPixbuf *gnu_java_awt_peer_gtk_GtkImage_getPixbuf(JNIEnv *env, jobject obj)
 /**
  * Used by GdkGraphics
  */
-GdkPixmap *gnu_java_awt_peer_gtk_GtkImage_getPixmap(JNIEnv *env, jobject obj)
+GdkPixmap *cp_gtk_image_get_pixmap (JNIEnv *env, jobject obj)
 {
   if (offScreen (env, obj) == JNI_FALSE)
     return NULL;
   return (GdkPixmap *)getData (env, obj);
 }
 
-jboolean gnu_java_awt_peer_gtk_GtkImage_isOffScreen(JNIEnv *env, jobject obj)
+jboolean cp_gtk_image_is_offscreen (JNIEnv *env, jobject obj)
 {
   return offScreen(env, obj);
 }

@@ -45,19 +45,19 @@ Java_gnu_java_awt_peer_gtk_GtkGenericPeer_dispose
 {
   void *ptr;
 
-  ptr = NSA_GET_PTR (env, obj);
-
   gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
 
   /* For now the native state for any object must be a widget.
      However, a subclass could override dispose() if required.  */
   gtk_widget_destroy (GTK_WIDGET (ptr));
 
-  gdk_threads_leave ();
-
   /* Remove entries from state tables */
   NSA_DEL_GLOBAL_REF (env, obj);
   NSA_DEL_PTR (env, obj);
+
+  gdk_threads_leave ();
 
   /* 
    * Wake up the main thread, to make sure it re-checks the window
@@ -75,14 +75,15 @@ Java_gnu_java_awt_peer_gtk_GtkGenericPeer_gtkWidgetModifyFont
   void *ptr;
   PangoFontDescription *font_desc;
 
+  gdk_threads_enter();
+
   ptr = NSA_GET_PTR (env, obj);
 
   font_name = (*env)->GetStringUTFChars (env, name, NULL);
 
-  gdk_threads_enter();
-
   font_desc = pango_font_description_from_string (font_name);
-  pango_font_description_set_size (font_desc, size * dpi_conversion_factor);
+  pango_font_description_set_size (font_desc,
+                                   size * cp_gtk_dpi_conversion_factor);
 
   if (style & AWT_STYLE_BOLD)
     pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
@@ -94,7 +95,7 @@ Java_gnu_java_awt_peer_gtk_GtkGenericPeer_gtkWidgetModifyFont
 
   pango_font_description_free (font_desc);
 
-  gdk_threads_leave();
-
   (*env)->ReleaseStringUTFChars (env, name, font_name);
+
+  gdk_threads_leave();
 }

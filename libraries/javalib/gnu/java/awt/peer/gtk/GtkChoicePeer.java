@@ -120,7 +120,7 @@ public class GtkChoicePeer extends GtkComponentPeer
     add (item, position);
   }
 
-  protected void choicePostItemEvent (String label, int stateChange)
+  protected void postChoiceItemEvent (String label, int stateChange)
   {
     // Must set our state before notifying listeners
     if (stateChange == ItemEvent.SELECTED)
