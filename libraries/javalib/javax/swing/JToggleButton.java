@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -132,20 +133,46 @@ public class JToggleButton extends AbstractButton implements Accessible
     /**
      * Sets the pressed state of the button.  The selected state
      * of the button also changes follwing the button being pressed.
+     * Unlike DefaultButtonModel, does not fire an ActionEvent.
      *
      * @param b true if the button is pressed down.
      */
-    public void setPressed(boolean b)  
+    public void setPressed(boolean p)  
     {
+      // cannot change PRESSED state unless button is enabled
       if (! isEnabled())
         return;
       
-      super.setPressed(b);
+      // if this call does not represent a CHANGE in state, then return
+      if ((p && isPressed()) || (!p && !isPressed()))
+        return;
+      
+      // make the change
+      if (p)
+        stateMask = stateMask | PRESSED;
+      else
+        stateMask = stateMask & (~PRESSED);
+      
+      // notify interested ChangeListeners
+      fireStateChanged();
       
       // setPressed(false) == mouse release on us,
       // if we were armed, we flip the selected state.
-      if (!b && isArmed())
+      if (!p && isArmed())
         setSelected(! isSelected());
+    }
+
+    /**
+     * Sets the selected state of the button.  Unlike DefaultButtonModel,
+     * fires an ActionEvent.
+     *
+     * @param s true if button is selected
+     */
+    public void setSelected(boolean s)
+    {
+      super.setSelected(s);
+      fireActionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
+                                          actionCommand));
     }
   }
 
@@ -246,7 +273,6 @@ public class JToggleButton extends AbstractButton implements Accessible
 
     setModel(new ToggleButtonModel());	
     model.setSelected(selected);
-    model.setActionCommand("");
   }
 
   /**
@@ -287,7 +313,7 @@ public class JToggleButton extends AbstractButton implements Accessible
    */
   protected  String paramString()
   {
-    return "JToggleButton";
+    return super.paramString();
   }
   
   /**

@@ -190,9 +190,9 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
 
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    // If we're adding the rootPane (initialization stages) use super.add.
+    // If we're adding in the initialization stage use super.add.
     // otherwise pass the add onto the content pane.
-    if (comp == rootPane)
+    if (!initStageDone)
       super.addImpl(comp, constraints, index);
     else
       {

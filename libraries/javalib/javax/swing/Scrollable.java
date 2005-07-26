@@ -40,6 +40,12 @@ package javax.swing;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+/**
+ * Defines the method that a component should implement to behave nicely
+ * in {@link JScrollPane}s. Note that this is not required for a component
+ * to be used in a <code>JScrollPane</code>, but can highly improve the
+ * user experience when scrolling the component.
+ */
 public interface Scrollable
 {
     Dimension getPreferredScrollableViewportSize();

@@ -874,76 +874,74 @@ public class BasicFileChooserUI extends FileChooserUI
       }
     };
 
-  // -- begin private --
+  // -- begin private, but package local since used in inner classes --
+
+  JFileChooser filechooser;
 
   /** DOCUMENT ME! */
-  private JFileChooser filechooser;
+  JList filelist;
 
   /** DOCUMENT ME! */
-  private JList filelist;
+  JComboBox filters;
 
   /** DOCUMENT ME! */
-  private JComboBox filters;
+  BasicDirectoryModel model;
 
   /** DOCUMENT ME! */
-  private BasicDirectoryModel model;
+  FileFilter acceptAll = new AcceptAllFileFilter();
 
   /** DOCUMENT ME! */
-  private FileFilter acceptAll = new AcceptAllFileFilter();
+  FileView fv = new BasicFileView();
 
   /** DOCUMENT ME! */
-  private FileView fv = new BasicFileView();
+  static final int ICON_SIZE = 24;
 
   /** DOCUMENT ME! */
-  private static final int ICON_SIZE = 24;
+  JComboBox parents;
 
   /** DOCUMENT ME! */
-  private JComboBox parents;
+  String filename;
 
   /** DOCUMENT ME! */
-  private String filename;
+  JButton accept;
 
   /** DOCUMENT ME! */
-  private JButton accept;
+  JButton cancel;
 
   /** DOCUMENT ME! */
-  private JButton cancel;
+  JButton upFolderButton;
 
   /** DOCUMENT ME! */
-  private JButton upFolderButton;
+  JButton newFolderButton;
 
   /** DOCUMENT ME! */
-  private JButton newFolderButton;
+  JButton homeFolderButton;
 
   /** DOCUMENT ME! */
-  private JButton homeFolderButton;
+  JPanel accessoryPanel;
 
   /** DOCUMENT ME! */
-  private JPanel accessoryPanel;
+  PropertyChangeListener propertyChangeListener;
 
   /** DOCUMENT ME! */
-  private PropertyChangeListener propertyChangeListener;
+  String acceptAllFileFilterText;
 
   /** DOCUMENT ME! */
-  private String acceptAllFileFilterText;
+  String dirDescText;
 
   /** DOCUMENT ME! */
-  private String dirDescText;
+  String fileDescText;
 
   /** DOCUMENT ME! */
-  private String fileDescText;
+  boolean dirSelected = false;
 
   /** DOCUMENT ME! */
-  private boolean dirSelected = false;
+  File currDir = null;
+
+  JPanel bottomPanel;
 
   /** DOCUMENT ME! */
-  private File currDir = null;
-
-  /** DOCUMENT ME! */
-  private JPanel bottomPanel;
-
-  /** DOCUMENT ME! */
-  private JPanel closePanel;
+  JPanel closePanel;
 
   // -- end private --
   private class ListLabelRenderer
@@ -1029,10 +1027,7 @@ public class BasicFileChooserUI extends FileChooserUI
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   */
-  private void closeDialog()
+  void closeDialog()
   {
     Window owner = SwingUtilities.windowForComponent(filechooser);
     if (owner instanceof JDialog)
@@ -1168,10 +1163,7 @@ public class BasicFileChooserUI extends FileChooserUI
       };
   }
 
-  /**
-   * DOCUMENT ME!
-   */
-  private void filterEntries()
+  void filterEntries()
   {
     FileFilter[] list = filechooser.getChoosableFileFilters();
     if (filters.getItemCount() > 0)

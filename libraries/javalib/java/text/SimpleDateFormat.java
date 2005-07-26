@@ -73,14 +73,16 @@ public class SimpleDateFormat extends DateFormat
   private class CompiledField
   {
     /**
-     * The ID of the field within the local pattern characters,
+     * The ID of the field within the local pattern characters.
+     * Package private for use in out class.
      */
-    private int field;
+    int field;
 
     /**
      * The size of the character sequence.
+     * Package private for use in out class.
      */
-    private int size;
+    int size;
 
     /**
      * The character used.

@@ -309,55 +309,6 @@ public class DefaultButtonModel implements ButtonModel, Serializable
   }
 
   /**
-   * Helper method to fire a ChangeEvent with the model as the event's source.
-   *
-   * @param stateflag DOCUMENT ME!
-   * @param b DOCUMENT ME!
-   */
-  private void changeState(int stateflag, boolean b)
-  {
-    int oldstate = stateMask;
-    int newstate;
-
-    if (b)
-      newstate = oldstate | stateflag;
-    else
-      newstate = oldstate & ~ stateflag;
-
-    if (oldstate == newstate)
-      return;
-
-    if ((stateflag != SELECTED) && (stateflag != ENABLED)
-        && (stateMask & ENABLED) == 0)
-      return;
-
-    stateMask = newstate;
-
-    fireStateChanged();
-
-    if ((oldstate & SELECTED) == 0 && (newstate & SELECTED) == SELECTED)
-      {
-        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
-                                           null, ItemEvent.SELECTED));
-        if (group != null)
-          group.setSelected(this, true);
-      }
-
-    else if ((oldstate & SELECTED) == SELECTED && (newstate & SELECTED) == 0)
-      {
-        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
-                                           null, ItemEvent.DESELECTED));
-        if (group != null)
-          group.setSelected(this, false);
-      }
-
-    else if (((oldstate & ARMED) == ARMED && (oldstate & PRESSED) == PRESSED)
-             && ((newstate & ARMED) == ARMED && (newstate & PRESSED) == 0))
-      fireActionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
-                                          actionCommand));
-  }
-
-  /**
    * Get the value of the model's "armed" property.
    *
    * @return The current "armed" property
@@ -374,7 +325,22 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    */
   public void setArmed(boolean a)
   {
-    changeState(ARMED, a);
+    // if this call does not represent a CHANGE in state, then return
+    if ((a && isArmed()) || (!a && !isArmed()))
+      return;
+    
+    // cannot change ARMED state unless button is enabled
+    if (!isEnabled())
+      return;
+
+    // make the change
+    if (a)
+      stateMask = stateMask | ARMED;
+    else
+      stateMask = stateMask & (~ARMED);
+
+    // notify interested ChangeListeners
+    fireStateChanged();
   }
 
   /**
@@ -394,7 +360,18 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    */
   public void setEnabled(boolean e)
   {
-    changeState(ENABLED, e);
+    // if this call does not represent a CHANGE in state, then return
+    if ((e && isEnabled()) || (!e && !isEnabled()))
+      return;
+
+    // make the change
+    if (e)
+      stateMask = stateMask | ENABLED;
+    else
+      stateMask = stateMask & (~ENABLED);
+
+    // notify interested ChangeListeners
+    fireStateChanged();
   }
 
   /**
@@ -404,7 +381,27 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    */
   public void setPressed(boolean p)
   {
-    changeState(PRESSED, p);
+    // if this call does not represent a CHANGE in state, then return
+    if ((p && isPressed()) || (!p && !isPressed()))
+      return;
+
+    // cannot changed PRESSED state unless button is enabled
+    if (!isEnabled())
+      return;
+
+    // make the change
+    if (p)
+      stateMask = stateMask | PRESSED;
+    else
+      stateMask = stateMask & (~PRESSED);
+
+    // notify interested ChangeListeners
+    fireStateChanged();
+
+    // if button is armed and was released, fire action event
+    if (!p && isArmed())
+      fireActionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
+                                          actionCommand));
   }
 
   /**
@@ -424,7 +421,22 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    */
   public void setRollover(boolean r)
   {
-    changeState(ROLLOVER, r);
+    // if this call does not represent a CHANGE in state, then return
+    if ((r && isRollover()) || (!r && !isRollover()))
+      return;
+    
+    // cannot set ROLLOVER property unless button is enabled
+    if (!isEnabled())
+      return;
+
+    // make the change
+    if (r)
+      stateMask = stateMask | ROLLOVER;
+    else
+      stateMask = stateMask & (~ROLLOVER);
+
+    // notify interested ChangeListeners
+    fireStateChanged();
   }
 
   /**
@@ -434,7 +446,34 @@ public class DefaultButtonModel implements ButtonModel, Serializable
    */
   public void setSelected(boolean s)
   {
-    changeState(SELECTED, s);
+    // if this call does not represent a CHANGE in state, then return
+    if ((s && isSelected()) || (!s && !isSelected()))
+      return;
+    
+    // make the change
+    if (s)
+      stateMask = stateMask | SELECTED;
+    else
+      stateMask = stateMask & (~SELECTED);
+
+    // notify interested ChangeListeners
+    fireStateChanged();
+
+    // fire ItemStateChanged events
+    if (s)
+      {
+        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
+                                           null, ItemEvent.SELECTED));
+        if (group != null)
+          group.setSelected(this, true);
+      }
+    else
+      {
+        fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
+                                           null, ItemEvent.DESELECTED));
+        if (group != null)
+          group.setSelected(this, false);
+      }
   }
 
   /**

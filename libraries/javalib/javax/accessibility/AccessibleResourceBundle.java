@@ -39,13 +39,14 @@ exception statement from your version. */
 package javax.accessibility;
 
 import java.util.ListResourceBundle;
+import java.util.Locale;
 
 /**
  * This class is deprecated. It once was used for localizing accessibility
  * strings, and was never meant for external use anyway.
  *
  * @author Eric Blake (ebb9@email.byu.edu)
- * @see AccessibleBundle.toDisplayString(String, Locale)
+ * @see AccessibleBundle#toDisplayString(String, Locale)
  * @since 1.2
  * @deprecated this class is no longer used
  * @status updated to 1.4

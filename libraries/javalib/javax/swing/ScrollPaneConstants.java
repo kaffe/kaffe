@@ -38,9 +38,10 @@ exception statement from your version. */
 package javax.swing;
 
 /**
- * ScrollPaneConstants
- * @author	Andrew Selkirk
- * @version	1.0
+ * Defines some constants that are used in {@link JScrollPane} and related
+ * components.
+ *
+ * @author Andrew Selkirk
  */
 public interface ScrollPaneConstants
 {

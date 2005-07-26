@@ -236,7 +236,7 @@ public class JRadioButton extends JToggleButton
    */  
   protected  String paramString()
   {
-    return "JRadioButton";
+    return super.paramString();
   }
   
   /**

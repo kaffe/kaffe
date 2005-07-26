@@ -1,5 +1,5 @@
 /* TableColumn.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,13 +38,16 @@ exception statement from your version. */
 
 package javax.swing.table;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
- * TableColumn
+ * Represents the attributes of a column in a table, including the column index,
+ * width, minimum width, preferred width and maximum width.
+ * 
  * @author	Andrew Selkirk
  * @version	1.0
  */
@@ -54,52 +57,53 @@ public class TableColumn
   static final long serialVersionUID = -6113660025878112608L;
 
   /**
-   * COLUMN_WIDTH_PROPERTY
+   * The name for the <code>columnWidth</code> property.  Note that the typo
+   * in the name value is deliberate, to match the specification.
    */
   public static final String COLUMN_WIDTH_PROPERTY = "columWidth";
 
   /**
-   * HEADER_VALUE_PROPERTY
+   * The name for the <code>headerValue</code> property.
    */
   public static final String HEADER_VALUE_PROPERTY = "headerValue";
 
   /**
-   * HEADER_RENDERER_PROPERTY
+   * The name for the <code>headerRenderer</code> property.
    */
   public static final String HEADER_RENDERER_PROPERTY = "headerRenderer";
 
   /**
-   * CELL_RENDERER_PROPERTY
+   * The name for the <code>cellRenderer</code> property.
    */
   public static final String CELL_RENDERER_PROPERTY = "cellRenderer";
 
   /**
-   * modelIndex
+   * The index of the corresponding column in the table model.
    */
   protected int modelIndex;
 
   /**
-   * identifier
+   * The identifier for the column.
    */
   protected Object identifier;
 
   /**
-   * width
+   * The width.
    */
   protected int width;
 
   /**
-   * minWidth
+   * The minimum width.
    */
   protected int minWidth = 15;
 
   /**
-   * preferredWidth
+   * The preferred width.
    */
   private int preferredWidth;
 
   /**
-   * maxWidth
+   * The maximum width.
    */
   protected int maxWidth = Integer.MAX_VALUE;
 
@@ -109,7 +113,7 @@ public class TableColumn
   protected TableCellRenderer headerRenderer;
 
   /**
-   * headerValue
+   * The header value.
    */
   protected Object headerValue;
 
@@ -142,7 +146,8 @@ public class TableColumn
     new SwingPropertyChangeSupport(this);
 
   /**
-   * Constructor TableColumn
+   * Creates a new <code>TableColumn</code> that maps to column 0 in the
+   * related table model.  The default width is <code>75</code> units.
    */
   public TableColumn()
   {
@@ -150,7 +155,8 @@ public class TableColumn
   }
 
   /**
-   * Constructor TableColumn
+   * Creates a new <code>TableColumn</code> that maps to the specified column 
+   * in the related table model.  The default width is <code>75</code> units.
    * 
    * @param modelIndex the index of the column in the model
    */
@@ -160,7 +166,8 @@ public class TableColumn
   }
 
   /**
-   * Constructor TableColumn
+   * Creates a new <code>TableColumn</code> that maps to the specified column 
+   * in the related table model, and has the specified <code>width</code>.
    * 
    * @param modelIndex the index of the column in the model
    * @param width the width
@@ -171,12 +178,14 @@ public class TableColumn
   }
 
   /**
-   * Constructor TableColumn
+   * Creates a new <code>TableColumn</code> that maps to the specified column 
+   * in the related table model, and has the specified <code>width</code>,
+   * <code>cellRenderer</code> and <code>cellEditor</code>.
    * 
    * @param modelIndex the index of the column in the model
    * @param width the width
-   * @param cellRenderer the cell renderer
-   * @param cellEditor the cell editor
+   * @param cellRenderer the cell renderer (<code>null</code> permitted).
+   * @param cellEditor the cell editor (<code>null</code> permitted).
    */
   public TableColumn(int modelIndex, int width,
                      TableCellRenderer cellRenderer, TableCellEditor cellEditor)
@@ -230,9 +239,10 @@ public class TableColumn
   }
 
   /**
-   * setModelIndex
+   * Sets the index of the column in the related {@link TableModel} that this
+   * <code>TableColumn</code> maps to.
    * 
-   * @param modelIndex the index to set
+   * @param modelIndex the column index in the model.
    */
   public void setModelIndex(int modelIndex)
   {
@@ -240,7 +250,8 @@ public class TableColumn
   }
 
   /**
-   * getModelIndex
+   * Returns the index of the column in the related {@link TableModel} that
+   * this <code>TableColumn</code> maps to.
    * 
    * @return the model index
    */
@@ -250,7 +261,7 @@ public class TableColumn
   }
 
   /**
-   * setIdentifier
+   * Sets the identifier for the column.
    * 
    * @param identifier the identifier
    */
@@ -260,9 +271,11 @@ public class TableColumn
   }
 
   /**
-   * getIdentifier
+   * Returns the identifier for the column, or {@link #getHeaderValue()} if the 
+   * identifier is <code>null</code>.
    * 
-   * @return the identifier
+   * @return The identifier (or {@link #getHeaderValue()} if the identifier is 
+   *         <code>null</code>).
    */
   public Object getIdentifier()
   {
@@ -272,7 +285,9 @@ public class TableColumn
   }
 
   /**
-   * setHeaderValue
+   * Sets the header value and sends a {@link PropertyChangeEvent} to all
+   * registered listeners.  The header value property uses the name
+   * {@link #HEADER_VALUE_PROPERTY}.
    * 
    * @param headerValue the value of the header
    */
@@ -287,7 +302,7 @@ public class TableColumn
   }
 
   /**
-   * getHeaderValue
+   * Returns the header value.
    * 
    * @return the value of the header
    */
@@ -299,7 +314,7 @@ public class TableColumn
   /**
    * setHeaderRenderer
    * 
-   * @param headerRenderer the renderer to se
+   * @param renderer the renderer to use
    */
   public void setHeaderRenderer(TableCellRenderer renderer)
   {
@@ -322,9 +337,10 @@ public class TableColumn
   }
 
   /**
-   * setCellRenderer
+   * Sets the renderer for cells in this column and sends a 
+   * {@link PropertyChangeEvent} to all registered listeners.
    * 
-   * @param cellRenderer the cell renderer
+   * @param renderer the cell renderer (<code>null</code> permitted).
    */
   public void setCellRenderer(TableCellRenderer renderer)
   {
@@ -338,9 +354,9 @@ public class TableColumn
   }
 
   /**
-   * getCellRenderer
+   * Returns the renderer for the table cells in this column.
    * 
-   * @return the cell renderer
+   * @return The cell renderer.
    */
   public TableCellRenderer getCellRenderer()
   {
@@ -425,9 +441,10 @@ public class TableColumn
   }
 
   /**
-   * setMinWidth
+   * Sets the minimum width for the column and, if necessary, updates the
+   * <code>width</code> and <code>preferredWidth</code>.
    * 
-   * @param minWidth the minium width
+   * @param minWidth the minimum width
    */
   public void setMinWidth(int minWidth)
   {
@@ -437,9 +454,9 @@ public class TableColumn
   }
 
   /**
-   * getMinWidth
+   * Returns the <code>TableColumn</code>'s minimum width.
    * 
-   * @return the minimum width
+   * @return The minimum width.
    */
   public int getMinWidth()
   {
@@ -447,7 +464,8 @@ public class TableColumn
   }
 
   /**
-   * setMaxWidth
+   * Sets the maximum width and, if necessary, updates the <code>width</code>
+   * and <code>preferredWidth</code>.
    * 
    * @param maxWidth the maximum width
    */
@@ -459,8 +477,9 @@ public class TableColumn
   }
 
   /**
-   * getMaxWidth
-   * @return the maximim width
+   * Returns the maximum width.
+   * 
+   * @return The maximum width.
    */
   public int getMaxWidth()
   {
@@ -498,8 +517,7 @@ public class TableColumn
   }
 
   /**
-   * disableResizedPosting
-   *
+   * This method is empty, unused and deprecated.
    * @deprecated 1.3
    */
   public void disableResizedPosting()
@@ -508,8 +526,7 @@ public class TableColumn
   }
 
   /**
-   * enableResizedPosting
-   *
+   * This method is empty, unused and deprecated.
    * @deprecated 1.3
    */
   public void enableResizedPosting()
@@ -518,8 +535,9 @@ public class TableColumn
   }
 
   /**
-   * addPropertyChangeListener
-   * @param listener the listener to all
+   * Adds a property change listener.
+   * 
+   * @param listener the listener to add
    */
   public synchronized void addPropertyChangeListener(PropertyChangeListener listener)
   {
@@ -536,6 +554,7 @@ public class TableColumn
   }
 
   /**
+   * Returns the property change listeners for this <code>TableColumn</code>.
    * @since 1.4
    */
   public PropertyChangeListener[] getPropertyChangeListeners()

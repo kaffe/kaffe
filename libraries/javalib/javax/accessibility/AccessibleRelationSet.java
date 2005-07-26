@@ -1,5 +1,5 @@
 /* AccessibleRelationSet.java -- the combined relations of an accessible object
-   Copyright (C) 2002 Free Software Foundation
+   Copyright (C) 2002, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package javax.accessibility;
 
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -159,7 +160,7 @@ public class AccessibleRelationSet
   /**
    * Check if the relation key is in the set.
    *
-   * @param relation the relation to locate
+   * @param key the relation to locate
    * @return true if it is in the set
    */
   public boolean contains(String key)
@@ -174,7 +175,7 @@ public class AccessibleRelationSet
   /**
    * Get the relation that matches the key.
    *
-   * @param relation the relation to locate
+   * @param key the relation to locate
    * @return the relation in the set, or null
    */
   public AccessibleRelation get(String key)

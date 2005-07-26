@@ -41,6 +41,9 @@ package javax.swing;
 import javax.swing.event.ChangeListener;
 
 /**
+ * The data model that is used in components that display a range of values,
+ * like {@link JProgressBar} and {@link JSlider}.
+ *
  * @author Andrew Selkirk
  */
 public interface BoundedRangeModel

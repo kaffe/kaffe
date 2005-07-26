@@ -328,7 +328,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
    */
   public boolean isSelected()
   {
-    return super.isArmed();
+    return super.isSelected();
   }
 
   /**
@@ -351,7 +351,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
       {
 	super.setArmed(true);
 	super.setSelected(true);
-        
+
         // FIXME: The popup menu should be shown on the screen after certain
         // number of seconds pass. The 'delay' property of this menu indicates
         // this amount of seconds. 'delay' property is 0 by default.

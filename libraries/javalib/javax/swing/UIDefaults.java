@@ -74,6 +74,13 @@ public class UIDefaults extends Hashtable
   /** We use this for firing PropertyChangeEvents. */
   private PropertyChangeSupport propertyChangeSupport;
 
+  /**
+   * Used for lazy instantiation of UIDefaults values so that they are not
+   * all loaded when a Swing application starts up, but only the values that
+   * are really needed. An <code>ActiveValue</code> is newly instantiated
+   * every time when the value is requested, as opposed to the normal
+   * {@link LazyValue} that is only instantiated once.
+   */
   public static interface ActiveValue
   {
     Object createValue(UIDefaults table);
@@ -98,6 +105,13 @@ public class UIDefaults extends Hashtable
     }
   }
 
+  /**
+   * Used for lazy instantiation of UIDefaults values so that they are not
+   * all loaded when a Swing application starts up, but only the values that
+   * are really needed. A <code>LazyValue</code> is only instantiated once,
+   * as opposed to the {@link ActiveValue} that is newly created every time
+   * it is requested.
+   */
   public static interface LazyValue
   {
     Object createValue(UIDefaults table);

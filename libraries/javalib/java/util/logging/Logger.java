@@ -1181,4 +1181,17 @@ public class Logger
     return stackTrace[index];
   }
   
+  /**
+   * Reset and close handlers attached to this logger. This function is package
+   * private because it must only be avaiable to the LogManager.
+   */
+  void resetLogger()
+  {
+    for (int i = 0; i < handlers.length; i++)
+      {
+        handlers[i].close();
+        handlerList.remove(handlers[i]);
+      }
+    handlers = getHandlers();
+  }
 }

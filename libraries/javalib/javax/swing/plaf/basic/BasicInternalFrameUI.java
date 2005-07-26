@@ -1184,15 +1184,19 @@ public class BasicInternalFrameUI extends InternalFrameUI
       // BasicLookAndFeel's defaults, but obviously they differ
       // from the colors that are actually used by the JDK.
       UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-      Color lineColor = new Color(238, 238, 238);
-      Border inner = BorderFactory.createLineBorder(lineColor, 1);
-      Color shadowInner = new Color(184, 207, 229);
-      Color shadowOuter = new Color(122, 138, 153);
+      Color borderColor = defaults.getColor("InternalFrame.borderColor");
+      Border inner = BorderFactory.createLineBorder(borderColor, 1);
+      Color borderDarkShadow = defaults.getColor
+	  ("InternalFrame.borderDarkShadow");
+      Color borderHighlight = defaults.getColor
+	  ("InternalFrame.borderHighlight");
+      Color borderShadow = defaults.getColor("InternalFrame.borderShadow");
+      Color borderLight = defaults.getColor("InternalFrame.borderLight");
       Border outer = BorderFactory.createBevelBorder(BevelBorder.RAISED,
-						     Color.WHITE,
-						     Color.WHITE,
-						     shadowOuter,
-						     shadowInner);
+						     borderShadow,
+						     borderHighlight,
+						     borderDarkShadow,
+						     borderShadow);
       Border border = new BorderUIResource.CompoundBorderUIResource(outer,
 								    inner);
       frame.setBorder(border);

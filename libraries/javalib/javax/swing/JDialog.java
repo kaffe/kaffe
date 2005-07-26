@@ -438,9 +438,9 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   protected void addImpl(Component comp, Object constraints, int index)
   {
-    // If we're adding the rootPane (initialization stages) use super.add.
+    // If we're adding in the initialization stage use super.add.
     // Otherwise pass the add onto the content pane.
-    if (comp == rootPane)
+    if (!initStageDone)
       super.addImpl(comp, constraints, index);
     else
       {

@@ -495,7 +495,8 @@ public class JarFile extends ZipFile
   }
 
   // Only called with lock on this JarFile.
-  private void readSignatures() throws IOException
+  // Package private for use in inner classes.
+  void readSignatures() throws IOException
   {
     Map pkcs7Dsa = new HashMap();
     Map pkcs7Rsa = new HashMap();

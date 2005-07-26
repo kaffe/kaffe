@@ -1,5 +1,5 @@
 /* AccessibleRole.java -- the primary role of an accessible object
-   Copyright (C) 2002 Free Software Foundation
+   Copyright (C) 2002, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -36,6 +36,8 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 package javax.accessibility;
+
+import java.util.Locale;
 
 /**
  * The role of an accessible object. For example, this could be "button" or

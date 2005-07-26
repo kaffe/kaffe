@@ -1,5 +1,5 @@
 /* TableColumnModel.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -40,29 +40,39 @@ package javax.swing.table;
 
 import java.util.Enumeration;
 
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableColumnModelListener;
 
 /**
- * TableColumnModel public interface
+ * The interface used by {@link JTable} to access the columns in the table
+ * view.
+ * 
  * @author Andrew Selkirk
  */
 public interface TableColumnModel
 {
   /**
-   * addColumn
-   * @param column TableColumn
+   * Adds a column to the model.
+   * 
+   * @param column  the new column (<code>null</code> not permitted).
+   * 
+   * @throws IllegalArgumentException if <code>column</code> is 
+   *         <code>null</code>.
    */
   void addColumn(TableColumn column);
 
   /**
-   * removeColumn
+   * Removes a column from the model.  If <code>column</code> is not defined
+   * in the model, this method does nothing.
+   * 
    * @param column TableColumn
    */
   void removeColumn(TableColumn column);
 
   /**
-   * moveColumn
+   * Moves a column.
+   * 
    * @param columnIndex Index of column to move
    * @param newIndex New index of column
    */
@@ -75,8 +85,9 @@ public interface TableColumnModel
   void setColumnMargin(int margin);
 
   /**
-   * getColumnCount
-   * @return Column count
+   * Returns the number of columns in the model.
+   * 
+   * @return The column count
    */
   int getColumnCount();
 
@@ -87,20 +98,30 @@ public interface TableColumnModel
   Enumeration getColumns();
 
   /**
-   * getColumnIndex
-   * @param columnIdentifier Column id
+   * Returns the index of the {@link TableColumn} with the given identifier.
+   *
+   * @param identifier  the identifier (<code>null</code> not permitted).
+   * 
+   * @return The index of the {@link TableColumn} with the given identifier.
+   * 
+   * @throws IllegalArgumentException if <code>identifier</code> is 
+   *         <code>null</code> or there is no column with that identifier.
    */
   int getColumnIndex(Object columnIdentifier);
 
   /**
-   * getColumn
-   * @param columnIndex Index of column
+   * Returns the <code>TableColumn</code> at the specified index.
+   * 
+   * @param columnIndex  the column index.
+   * 
+   * @return The table column.
    */
   TableColumn getColumn(int columnIndex);
 
   /**
-   * getColumnMargin
-   * @return Column margin
+   * Returns the column margin.
+   * 
+   * @return The column margin.
    */
   int getColumnMargin();
 

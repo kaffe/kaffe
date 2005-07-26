@@ -39,6 +39,9 @@ package javax.swing;
 
 import java.awt.Component;
 
+/**
+ * Renders the cells of a {@link JList}.
+ */
 public interface ListCellRenderer
 {
     Component getListCellRendererComponent(JList list,

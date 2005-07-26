@@ -40,6 +40,10 @@ package javax.swing;
 import java.awt.Component;
 import java.awt.Graphics;
 
+/**
+ * Defines the methods that an object must implement if it should be used
+ * as an icon in Swing.
+ */
 public interface Icon
 {
   int getIconHeight();

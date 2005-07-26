@@ -1,3 +1,4 @@
+
 /* AWTEvent.java -- the root event in AWT
    Copyright (C) 1999, 2000, 2002, 2005 Free Software Foundation
 
@@ -238,16 +239,7 @@ public abstract class AWTEvent extends EventObject
    */
   public String toString ()
   {
-    String string = null;
-
-    if (source instanceof Component)
-      string = getClass ().getName () + "[" + paramString () + "] on "
-        + ((Component) source).getName ();
-    else if (source instanceof MenuComponent)
-      string = getClass ().getName () + "[" + paramString () + "] on "
-        + ((MenuComponent) source).getName ();
-    else 
-      string = getClass ().getName () + "[" + paramString () + "] on "
+    String string = getClass ().getName () + "[" + paramString () + "] on "
     + source;
 
     return string;

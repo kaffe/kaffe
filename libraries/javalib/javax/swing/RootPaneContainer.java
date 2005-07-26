@@ -42,9 +42,11 @@ import java.awt.Component;
 import java.awt.Container;
 
 /**
- * RootPaneContainer
- * @author	Andrew Selkirk
- * @version	1.0
+ * Components that contain a single {@link JRootPane} as only child
+ * implement this interface, typically this is implemented by the
+ * Swing top-level containers.
+ *
+ * @author Andrew Selkirk
  */
 public interface RootPaneContainer {
 

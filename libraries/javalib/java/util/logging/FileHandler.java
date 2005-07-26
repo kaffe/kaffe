@@ -228,8 +228,9 @@ public class FileHandler
 
   /**
    * The number of bytes that have currently been written to the stream.
+   * Package private for use in inner classes.
    */
-  private long written;
+  long written;
 
 
   /**

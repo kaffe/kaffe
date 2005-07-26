@@ -39,49 +39,95 @@ exception statement from your version. */
 package javax.swing.plaf.metal;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Insets;
 
+import javax.swing.ImageIcon;
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 
+/**
+ * A custom look and feel that is designed to look similar across different
+ * operating systems.
+ */
 public class MetalLookAndFeel extends BasicLookAndFeel
 {	   
   private static final long serialVersionUID = 6680646159193457980L;
+  
+  /** The current theme. */
   private static MetalTheme theme;
+  
+  /** The look and feel defaults. */
   private UIDefaults LAF_defaults;
 
+  /**
+   * Creates a new instance of the Metal look and feel.
+   */
   public MetalLookAndFeel()
   {
     createDefaultTheme();
   }
 
+  /**
+   * Sets the current theme to a new instance of {@link DefaultMetalTheme}.
+   */
   protected void createDefaultTheme()
   {
     setCurrentTheme(new DefaultMetalTheme());
   }
 
+  /**
+   * Returns <code>false</code> to indicate that this look and feel does not
+   * attempt to emulate the look and feel of native applications on the host
+   * platform.
+   * 
+   * @return <code>false</code>.
+   */
   public boolean isNativeLookAndFeel()
   {
     return false;
   }
 
+  /**
+   * Returns <code>true</code> to indicate that this look and feel is supported
+   * on all platforms.
+   * 
+   * @return <code>true</code>.
+   */
   public boolean isSupportedLookAndFeel()
   {
     return true;
   }
 
+  /**
+   * Returns a string describing the look and feel.  In this case, the method
+   * returns "Metal look and feel".
+   * 
+   * @return A string describing the look and feel.
+   */
   public String getDescription()
   {
     return "Metal look and feel";
   }
 
+  /**
+   * Returns the look and feel identifier.
+   * 
+   * @return "MetalLookAndFeel".
+   */
   public String getID()
   {
     return "MetalLookAndFeel";
   }
 
+  /**
+   * Returns the look and feel name.
+   * 
+   * @return "MetalLookAndFeel".
+   */
   public String getName()
   {
     return "MetalLookAndFeel";
@@ -101,216 +147,463 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     return LAF_defaults;
   }
 
+  /**
+   * Returns the accelerator foreground color from the installed theme.
+   * 
+   * @return The accelerator foreground color.
+   */
   public static ColorUIResource getAcceleratorForeground()
   {
     return theme.getAcceleratorForeground();
   }
 
+  /**
+   * Returns the accelerator selected foreground color from the installed 
+   * theme.
+   * 
+   * @return The accelerator selected foreground color.
+   */
   public static ColorUIResource getAcceleratorSelectedForeground()
   {
     return theme.getAcceleratorSelectedForeground();
   }
 
+  /**
+   * Returns the color black from the installed theme.
+   * 
+   * @return The color black.
+   */
   public static ColorUIResource getBlack()
   {
     return theme.getBlack();
   }
 
+  /**
+   * Returns the control color from the installed theme.
+   * 
+   * @return The control color.
+   */
   public static ColorUIResource getControl()
   {
     return theme.getControl();
   }
 
+  /**
+   * Returns the color used for dark shadows on controls, from the installed
+   * theme.
+   * 
+   * @return The color used for dark shadows on controls.
+   */
   public static ColorUIResource getControlDarkShadow()
   {
     return theme.getControlDarkShadow();
   }
 
+  /**
+   * Returns the color used for disabled controls, from the installed theme.
+   * 
+   * @return The color used for disabled controls.
+   */
   public static ColorUIResource getControlDisabled()
   {
     return theme.getControlDisabled();
   }
 
+  /**
+   * Returns the color used to draw highlights for controls, from the installed
+   * theme.
+   * 
+   * @return The color used to draw highlights for controls.
+   */
   public static ColorUIResource getControlHighlight()
   {
     return theme.getControlHighlight();
   }
 
+  /**
+   * Returns the color used to display control info, from the installed 
+   * theme.
+   * 
+   * @return The color used to display control info.
+   */
   public static ColorUIResource getControlInfo()
   {
     return theme.getControlInfo();
   }
 
+  /**
+   * Returns the color used to draw shadows for controls, from the installed
+   * theme.
+   * 
+   * @return The color used to draw shadows for controls.
+   */
   public static ColorUIResource getControlShadow()
   {
     return theme.getControlShadow();
   }
 
+  /**
+   * Returns the color used for text on controls, from the installed theme.
+   * 
+   * @return The color used for text on controls.
+   */
   public static ColorUIResource getControlTextColor()
   {
     return theme.getControlTextColor();
   }
 
+  /**
+   * Returns the font used for text on controls, from the installed theme.
+   * 
+   * @return The font used for text on controls.
+   */
   public static FontUIResource getControlTextFont()
   {
     return theme.getControlTextFont();
   }
 
+  /**
+   * Returns the color used for the desktop background, from the installed 
+   * theme.
+   * 
+   * @return The color used for the desktop background.
+   */
   public static ColorUIResource getDesktopColor()
   {
     return theme.getDesktopColor();
   }
 
+  /**
+   * Returns the color used to draw focus highlights, from the installed 
+   * theme.
+   * 
+   * @return The color used to draw focus highlights.
+   */
   public static ColorUIResource getFocusColor()
   {
     return theme.getFocusColor();
   }
 
+  /**
+   * Returns the color used to draw highlighted text, from the installed
+   * theme.
+   * 
+   * @return The color used to draw highlighted text.
+   */
   public static ColorUIResource getHighlightedTextColor()
   {
     return theme.getHighlightedTextColor();
   }
 
+  /**
+   * Returns the color used to draw text on inactive controls, from the
+   * installed theme.
+   * 
+   * @return The color used to draw text on inactive controls.
+   */
   public static ColorUIResource getInactiveControlTextColor()
   {
     return theme.getInactiveControlTextColor();
   }
 
+  /**
+   * Returns the color used to draw inactive system text, from the installed
+   * theme.
+   * 
+   * @return The color used to draw inactive system text.
+   */
   public static ColorUIResource getInactiveSystemTextColor()
   {
     return theme.getInactiveSystemTextColor();
   }
 
+  /**
+   * Returns the background color for menu items, from the installed theme.
+   * 
+   * @return The background color for menu items.
+   * 
+   * @see #getMenuSelectedBackground()
+   */
   public static ColorUIResource getMenuBackground()
   {
     return theme.getMenuBackground();
   }
 
+  /**
+   * Returns the foreground color for disabled menu items, from the installed
+   * theme.
+   * 
+   * @return The foreground color for disabled menu items.
+   * 
+   * @see #getMenuForeground()
+   */
   public static ColorUIResource getMenuDisabledForeground()
   {
     return theme.getMenuDisabledForeground();
   }
 
+  /**
+   * Returns the foreground color for menu items, from the installed theme.
+   * 
+   * @return The foreground color for menu items.
+   * 
+   * @see #getMenuDisabledForeground()
+   * @see #getMenuSelectedForeground()
+   */
   public static ColorUIResource getMenuForeground()
   {
     return theme.getMenuForeground();
   }
 
+  /**
+   * Returns the background color for selected menu items, from the installed
+   * theme.
+   * 
+   * @return The background color for selected menu items.
+   * 
+   * @see #getMenuBackground()
+   */
   public static ColorUIResource getMenuSelectedBackground()
   {
     return theme.getMenuSelectedBackground();
   }
 
+  /**
+   * Returns the foreground color for selected menu items, from the installed
+   * theme.
+   * 
+   * @return The foreground color for selected menu items.
+   * 
+   * @see #getMenuForeground()
+   */
   public static ColorUIResource getMenuSelectedForeground()
   {
     return theme.getMenuSelectedForeground();
   }
 
+  /**
+   * Returns the font used for text in menus, from the installed theme.
+   * 
+   * @return The font used for text in menus.
+   */
   public static FontUIResource getMenuTextFont()
   {
     return theme.getMenuTextFont();
   }
 
+  /**
+   * Returns the primary color for controls, from the installed theme.
+   * 
+   * @return The primary color for controls.
+   */
   public static ColorUIResource getPrimaryControl()
   {
     return theme.getPrimaryControl();
   }
 
+  /**
+   * Returns the primary color for the dark shadow on controls, from the 
+   * installed theme.
+   * 
+   * @return The primary color for the dark shadow on controls.
+   */
   public static ColorUIResource getPrimaryControlDarkShadow()
   {
     return theme.getPrimaryControlDarkShadow();
   }
 
+  /**
+   * Returns the primary color for the highlight on controls, from the 
+   * installed theme.
+   * 
+   * @return The primary color for the highlight on controls.
+   */
   public static ColorUIResource getPrimaryControlHighlight()
   {
     return theme.getPrimaryControlHighlight();
   }
 
+  /**
+   * Returns the primary color for the information on controls, from the 
+   * installed theme.
+   * 
+   * @return The primary color for the information on controls.
+   */
   public static ColorUIResource getPrimaryControlInfo()
   {
     return theme.getPrimaryControlInfo();
   }
 
+  /**
+   * Returns the primary color for the shadow on controls, from the installed
+   * theme.
+   * 
+   * @return The primary color for the shadow on controls.
+   */
   public static ColorUIResource getPrimaryControlShadow()
   {
     return theme.getPrimaryControlShadow();
   }
 
+  /**
+   * Returns the background color for separators, from the installed theme.
+   * 
+   * @return The background color for separators.
+   */
   public static ColorUIResource getSeparatorBackground()
   {
     return theme.getSeparatorBackground();
   }
 
+  /**
+   * Returns the foreground color for separators, from the installed theme.
+   * 
+   * @return The foreground color for separators.
+   */
   public static ColorUIResource getSeparatorForeground()
   {
     return theme.getSeparatorForeground();
   }
 
+  /**
+   * Returns the font used for sub text, from the installed theme.
+   * 
+   * @return The font used for sub text.
+   */
   public static FontUIResource getSubTextFont()
   {
     return theme.getSubTextFont();
   }
 
+  /**
+   * Returns the color used for system text, from the installed theme.
+   * 
+   * @return The color used for system text.
+   */
   public static ColorUIResource getSystemTextColor()
   {
     return theme.getSystemTextColor();
   }
 
+  /**
+   * Returns the font used for system text, from the installed theme.
+   * 
+   * @return The font used for system text.
+   */
   public static FontUIResource getSystemTextFont()
   {
     return theme.getSystemTextFont();
   }
 
+  /**
+   * Returns the color used to highlight text, from the installed theme.
+   * 
+   * @return The color used to highlight text.
+   */
   public static ColorUIResource getTextHighlightColor()
   {
     return theme.getTextHighlightColor();
   }
 
+  /**
+   * Returns the color used to display user text, from the installed theme.
+   * 
+   * @return The color used to display user text.
+   */
   public static ColorUIResource getUserTextColor()
   {
     return theme.getUserTextColor();
   }
 
+  /**
+   * Returns the font used for user text, obtained from the current theme.
+   * 
+   * @return The font used for user text.
+   */
   public static FontUIResource getUserTextFont()
   {
     return theme.getUserTextFont();
   }
 
+  /**
+   * Returns the color used for white, from the installed theme.
+   * 
+   * @return The color used for white.
+   */
   public static ColorUIResource getWhite()
   {
     return theme.getWhite();
   }
 
+  /**
+   * Returns the window background color, from the installed theme.
+   * 
+   * @return The window background color.
+   */
   public static ColorUIResource getWindowBackground()
   {
     return theme.getWindowBackground();
   }
 
+  /**
+   * Returns the window title background color, from the installed theme.
+   * 
+   * @return The window title background color.
+   */
   public static ColorUIResource getWindowTitleBackground()
   {
     return theme.getWindowTitleBackground();
   }
 
+  /**
+   * Returns the window title font from the current theme.
+   * 
+   * @return The window title font.
+   * 
+   * @see MetalTheme
+   */
   public static FontUIResource getWindowTitleFont()
   {
     return theme.getWindowTitleFont();
   }
 
+  /**
+   * Returns the window title foreground color, from the installed theme.
+   * 
+   * @return The window title foreground color.
+   */
   public static ColorUIResource getWindowTitleForeground()
   {
     return theme.getWindowTitleForeground();
   }
 
+  /**
+   * Returns the background color for an inactive window title, from the 
+   * installed theme.
+   * 
+   * @return The background color for an inactive window title.
+   */
   public static ColorUIResource getWindowTitleInactiveBackground()
   {
     return theme.getWindowTitleInactiveBackground();
   }
 
+  /**
+   * Returns the foreground color for an inactive window title, from the 
+   * installed theme.
+   * 
+   * @return The foreground color for an inactive window title.
+   */
   public static ColorUIResource getWindowTitleInactiveForeground()
   {
     return theme.getWindowTitleInactiveForeground();
   }
 
+  /**
+   * Sets the current theme for the look and feel.
+   * 
+   * @param theme  the theme.
+   */
   public static void setCurrentTheme(MetalTheme theme)
   {
     MetalLookAndFeel.theme = theme;
@@ -419,7 +712,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
    * </tr><tr>
    * <td>Button.background</td><td>0xcccccc</td>
    * </tr><tr>
-   * <td>Button.border</td><td>{@link MetalBorders.ButtonBorder}</td>
+   * <td>Button.border</td><td>{@link MetalBorders#getButtonBorder()}</td>
    * </tr><tr>
    * <td>Button.font</td><td>{@link #getControlTextFont}</td>
    * </tr><tr>
@@ -509,6 +802,26 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "SplitPane.highlight",
       new ColorUIResource(getControlHighlight()),
 
+      "Tree.openIcon", MetalIconFactory.getTreeFolderIcon(),
+      "Tree.closedIcon", MetalIconFactory.getTreeFolderIcon(),
+      "Tree.leafIcon", MetalIconFactory.getTreeLeafIcon(),
+      "Tree.collapsedIcon", MetalIconFactory.getTreeControlIcon(true),
+      "Tree.expandedIcon", MetalIconFactory.getTreeControlIcon(false),
+      "Tree.font", new FontUIResource(new Font("Helvetica", Font.PLAIN, 12)),
+      "Tree.background", new ColorUIResource(Color.white),
+      "Tree.foreground", new ColorUIResource(new Color(204, 204, 255)),
+      "Tree.hash", new ColorUIResource(new Color(204, 204, 255)),
+      "Tree.leftChildIndent", new Integer(7),
+      "Tree.rightChildIndent", new Integer(13),
+      "Tree.rowHeight", new Integer(20),
+      "Tree.scrollsOnExpand", Boolean.TRUE,
+      "Tree.selectionBackground", new ColorUIResource(new Color(204, 204, 255)),
+      "Tree.nonSelectionBackground", new ColorUIResource(Color.white),
+      "Tree.selectionBorderColor", new ColorUIResource(new Color(102, 102, 153)),
+      "Tree.selectionForeground", new ColorUIResource(Color.black),
+      "Tree.textBackground", new ColorUIResource(new Color(204, 204, 255)),
+      "Tree.textForeground", new ColorUIResource(Color.black),
+      "Tree.selectionForeground", new ColorUIResource(Color.black),
       "PopupMenu.border", new MetalBorders.PopupMenuBorder()
     };
     defaults.putDefaults(myDefaults);

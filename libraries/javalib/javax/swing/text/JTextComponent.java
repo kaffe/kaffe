@@ -322,7 +322,9 @@ public abstract class JTextComponent extends JComponent
      */
     public void actionPerformed(ActionEvent ev)
     {
-      caret.setVisible(!caret.isVisible());
+      Caret c = caret;
+      if (c != null)
+	c.setVisible(!c.isVisible());
     }
 
     /**
@@ -331,11 +333,15 @@ public abstract class JTextComponent extends JComponent
     public void update()
     {
       stop();
-      setDelay(caret.getBlinkRate());
-      if (editable)
-        start();
-      else
-        caret.setVisible(false);
+      Caret c = caret;
+      if (c != null)
+	{
+	  setDelay(c.getBlinkRate());
+	  if (editable)
+	    start();
+	  else
+	    c.setVisible(false);
+	}
     }
   }
 
@@ -928,15 +934,16 @@ public abstract class JTextComponent extends JComponent
     return getUI().getEditorKit(this).getActions();
   }
     
-  // This is package-private to avoid an accessor method.
+  // These are package-private to avoid an accessor method.
   Document doc;
-  private Caret caret;
+  Caret caret;
+  boolean editable;
+  
   private Highlighter highlighter;
   private Color caretColor;
   private Color disabledTextColor;
   private Color selectedTextColor;
   private Color selectionColor;
-  private boolean editable;
   private Insets margin;
   private boolean dragEnabled;
 

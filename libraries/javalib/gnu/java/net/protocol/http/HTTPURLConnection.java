@@ -82,11 +82,12 @@ public class HTTPURLConnection
    */
   private HTTPConnection connection;
 
-  private String proxyHostname;
-  private int proxyPort;
-  private String agent;
-  private boolean keepAlive;
-  private int maxConnections;
+  // These are package private for use in anonymous inner classes.
+  String proxyHostname;
+  int proxyPort;
+  String agent;
+  boolean keepAlive;
+  int maxConnections;
 
   private Request request;
   private Headers requestHeaders;

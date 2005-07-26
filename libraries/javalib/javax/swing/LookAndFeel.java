@@ -1,5 +1,5 @@
 /* LookAndFeel.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -56,16 +56,32 @@ public abstract class LookAndFeel
     return null;
   }
 
+  /**
+   * Returns a description of the look and feel.
+   * 
+   * @return A description of the look and feel.
+   */
   public abstract String getDescription();
 
-  public static Object getDesktopPropertyValue(String systemPropertyName, Object fallbackValue)
+  public static Object getDesktopPropertyValue(String systemPropertyName, 
+      Object fallbackValue)
   {
     Object value = Toolkit.getDefaultToolkit().getDesktopProperty(systemPropertyName);
     return value != null ? value : fallbackValue;
   }
   
+  /**
+   * Returns an identifier for the look and feel.
+   * 
+   * @return An identifier for the look and feel.
+   */
   public abstract String getID();
 
+  /**
+   * Returns the name for the look and feel.
+   * 
+   * @return The name for the look and feel.
+   */
   public abstract String getName();
 
   /**
@@ -118,8 +134,25 @@ public abstract class LookAndFeel
   {
   }
 
+  /**
+   * Returns <code>true</code> if the look and feel is the "native" look and
+   * feel for the current platform, and <code>false</code> otherwise.
+   * 
+   * @return A flag indicating whether or not this is the native look and feel
+   *         for the current platform.
+   */
   public abstract boolean isNativeLookAndFeel();
 
+  /**
+   * Returns <code>true</code> if the look and feel is supported on the 
+   * current operating system, and <code>false</code> otherwise.  This 
+   * mechanism is provided so that it is possible to prevent a look and feel
+   * from being used on some operating systems (usually for legal, not
+   * technical, reasons).
+   * 
+   * @return A flag indicating whether or not the look and feel is supported
+   *         on the current platform.
+   */
   public abstract boolean isSupportedLookAndFeel();
 
   /**

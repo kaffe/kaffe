@@ -39,13 +39,12 @@ package javax.swing;
 
 
 /**
- * ComboBoxModel is a data model for JComboBox. This model keeps
+ * The data model for {@link JComboBox}. This model keeps
  * track of elements contained in the JComboBox as well as the current
  * combo box selection. Whenever selection in the JComboBox changes, the
  * ComboBoxModel should fire ListDataEvents to ComboBox's ListDataListeners.
  *
- * @author        Andrew Selkirk
- * @version        1.0
+ * @author Andrew Selkirk
  */
 public interface ComboBoxModel extends ListModel
 {

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.util.HashMap;
+
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicTreeUI;
@@ -46,9 +48,8 @@ public class MetalTreeUI
   extends BasicTreeUI
 {
 
-  // FIXME: maybe replace by a Map of instances when this becomes stateful
-  /** The shared UI instance for MetalTreeUIs */
-  private static MetalTreeUI instance = null;
+  /** The UI instances for MetalTreeUIs */
+  private static HashMap instances = null;
 
   /**
    * Constructs a new instance of MetalTreeUI.
@@ -67,8 +68,19 @@ public class MetalTreeUI
    */
   public static ComponentUI createUI(JComponent component)
   {
-    if (instance == null)
-      instance = new MetalTreeUI();
+    if (instances == null)
+      instances = new HashMap();
+
+    Object o = instances.get(component);
+    MetalTreeUI instance;
+    if (o == null)
+      {
+	instance = new MetalTreeUI();
+	instances.put(component, instance);
+      }
+    else
+      instance = (MetalTreeUI) o;
+
     return instance;
   }
 }

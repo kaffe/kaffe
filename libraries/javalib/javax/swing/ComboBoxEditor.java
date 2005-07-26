@@ -41,11 +41,10 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 
 /**
- * ComboBoxEditor
+ * Provides edit capabilities for {@link JComboBox}es.
  *
  * @author Andrew Selkirk
  * @author Olga Rodimina
- * @version 1.0
  */
 public interface ComboBoxEditor
 {

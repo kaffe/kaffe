@@ -79,7 +79,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
   private static final long serialVersionUID = 5654585963292734470L;
 
   /**
-   * KeySelectionManager interface. Class implementing this interface are
+   * Classes implementing this interface are
    * responsible for matching key characters typed by the user with combo
    * box's items.
    */

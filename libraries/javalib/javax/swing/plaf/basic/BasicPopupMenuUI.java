@@ -74,8 +74,8 @@ public class BasicPopupMenuUI extends PopupMenuUI
   /* popupMenu for which this UI delegate is for*/
   protected JPopupMenu popupMenu;
 
-  /* MouseInputListener listens to mouse events */
-  private static transient MouseInputListener mouseInputListener;
+  /* MouseInputListener listens to mouse events. Package private for inner classes. */
+  static transient MouseInputListener mouseInputListener;
 
   /* PopupMenuListener listens to popup menu events fired by JPopupMenu*/
   private transient PopupMenuListener popupMenuListener;

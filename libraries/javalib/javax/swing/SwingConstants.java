@@ -38,6 +38,9 @@ exception statement from your version. */
 
 package javax.swing;
 
+/**
+ * Defines constant values that are used throughout the Swing packages.
+ */
 public interface SwingConstants
 {
   int CENTER       = 0;

@@ -117,7 +117,7 @@ public interface AccessibleComponent
    * Get the font of this component
    *
    * @return the font of the component, or null if not supported
-   * @see setFont(Font)
+   * @see #setFont(Font)
    */
   Font getFont();
 

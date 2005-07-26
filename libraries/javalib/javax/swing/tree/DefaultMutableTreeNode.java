@@ -232,7 +232,7 @@ public class DefaultMutableTreeNode
    * Inserts given child node at the given index.
    *
    * @param node the child node
-   * @param value the index.
+   * @param index the index.
    */
   public void insert(MutableTreeNode node, int index)
   {
@@ -389,7 +389,7 @@ public class DefaultMutableTreeNode
   /**
    * isNodeDescendant
    *
-   * @param node0 TODO
+   * @param node TODO
    *
    * @return boolean
    */

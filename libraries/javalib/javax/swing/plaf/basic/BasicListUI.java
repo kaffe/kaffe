@@ -197,10 +197,17 @@ public class BasicListUI extends ListUI
     
     public void keyPressed( KeyEvent evt ) 
     {
-      if (evt.getKeyCode() == KeyEvent.VK_DOWN)
+      int lead = BasicListUI.this.list.getLeadSelectionIndex();
+      int max = BasicListUI.this.list.getModel().getSize() - 1;
+      // Do nothing if list is empty
+      if (max == -1)
+        return;
+
+      // Process the key event.  Bindings can be found in
+      // javax.swing.plaf.basic.BasicLookAndFeel.java
+      if ((evt.getKeyCode() == KeyEvent.VK_DOWN)
+          || (evt.getKeyCode() == KeyEvent.VK_KP_DOWN))
         {
-          int lead = BasicListUI.this.list.getLeadSelectionIndex();
-          int max = BasicListUI.this.list.getModel().getSize() - 1;
           if (!evt.isShiftDown())
             {
               BasicListUI.this.list.clearSelection();
@@ -212,9 +219,9 @@ public class BasicListUI extends ListUI
                 setLeadSelectionIndex(Math.min(lead+1,max));
             }
         }
-      else if (evt.getKeyCode() == KeyEvent.VK_UP)
+      else if ((evt.getKeyCode() == KeyEvent.VK_UP)
+               || (evt.getKeyCode() == KeyEvent.VK_KP_UP))
         {
-          int lead = BasicListUI.this.list.getLeadSelectionIndex();
           if (!evt.isShiftDown())
             {
               BasicListUI.this.list.clearSelection();
@@ -226,6 +233,47 @@ public class BasicListUI extends ListUI
                 setLeadSelectionIndex(Math.max(lead-1,0));
             }
         }
+      else if (evt.getKeyCode() == KeyEvent.VK_PAGE_UP)
+        {
+          // FIXME: implement, need JList.ensureIndexIsVisible to work
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
+        {
+          // FIXME: implement, need JList.ensureIndexIsVisible to work
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_BACK_SLASH
+               && evt.isControlDown())
+        {
+            BasicListUI.this.list.clearSelection();
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_HOME)
+               || evt.getKeyCode() == KeyEvent.VK_END)
+        {
+          // index is either 0 for HOME, or last cell for END
+          int index = (evt.getKeyCode() == KeyEvent.VK_HOME) ? 0 : max;
+          
+          if (!evt.isShiftDown() ||(BasicListUI.this.list.getSelectionMode() 
+                                    == ListSelectionModel.SINGLE_SELECTION))
+            BasicListUI.this.list.setSelectedIndex(index);
+          else if (BasicListUI.this.list.getSelectionMode() == 
+                   ListSelectionModel.SINGLE_INTERVAL_SELECTION)
+            BasicListUI.this.list.setSelectionInterval
+              (BasicListUI.this.list.getAnchorSelectionIndex(), index);
+          else
+            BasicListUI.this.list.getSelectionModel().
+              setLeadSelectionIndex(index);
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_A || evt.getKeyCode()
+                == KeyEvent.VK_SLASH) && evt.isControlDown())
+        {
+          BasicListUI.this.list.setSelectionInterval(0, max);
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_SPACE && evt.isControlDown())
+        {
+          BasicListUI.this.list.getSelectionModel().
+            setLeadSelectionIndex(Math.min(lead+1,max));
+        }
+      
     }
   }
   

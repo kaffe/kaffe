@@ -40,9 +40,14 @@ package javax.swing;
 import java.awt.Component;
 
 /**
- * Renderer
- * @author	Andrew Selkirk
- * @version	1.0
+ * This interface is not used and exists only for compatibility.
+ * It probably has been replaced by {@link ListCellRenderer}, {@link
+ * javax.swing.table.TableCellRenderer} and {@link
+ * javax.swing.tree.TreeCellRenderer}.
+ *
+ * @specnote This interface is not used and exists only for compatibility.
+ *           
+ * @author Andrew Selkirk
  */
 public interface Renderer {
 

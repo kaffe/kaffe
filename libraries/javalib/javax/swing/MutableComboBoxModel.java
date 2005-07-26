@@ -38,14 +38,13 @@ exception statement from your version. */
 package javax.swing;
 
 /**
- * MutableComboBoxModel is interface for data model that keeps track of the
+ * A data model used in {@link JComboBox}es that keeps track of the
  * components data and provides methods to insert and remove elements from
- * it. The Classes implementing this interface should  fire appropriate
- * events indicating the undergoing change in the data model.
+ * it. The classes implementing this interface should
+ * fire appropriate events indicating the undergoing change in the data model.
  *
  * @author Andrew Selkirk
  * @author Olga Rodimina
- * @version 1.0
  */
 public interface MutableComboBoxModel extends ComboBoxModel
 {

@@ -125,7 +125,7 @@ public interface AccessibleText
    * Returns the section of text at the index, or null if the index or part
    * is invalid.
    *
-   * @param part {@link CHARACTER}, {@link WORD}, or {@link SENTENCE}
+   * @param part {@link #CHARACTER}, {@link #WORD}, or {@link #SENTENCE}
    * @param index the 0-based character index
    * @return the selection of text at that index, or null
    */
@@ -135,7 +135,7 @@ public interface AccessibleText
    * Returns the section of text after the index, or null if the index or part
    * is invalid.
    *
-   * @param part {@link CHARACTER}, {@link WORD}, or {@link SENTENCE}
+   * @param part {@link #CHARACTER}, {@link #WORD}, or {@link #SENTENCE}
    * @param index the 0-based character index
    * @return the selection of text after that index, or null
    */
@@ -145,7 +145,7 @@ public interface AccessibleText
    * Returns the section of text before the index, or null if the index or part
    * is invalid.
    *
-   * @param part {@link CHARACTER}, {@link WORD}, or {@link SENTENCE}
+   * @param part {@link #CHARACTER}, {@link #WORD}, or {@link #SENTENCE}
    * @param index the 0-based character index
    * @return the selection of text before that index, or null
    */

@@ -446,11 +446,15 @@ public class LogManager
 	    if (logger == null)
 	      iter.remove();
 	    else if (logger != rootLogger)
-	      logger.setLevel(null);
+	      {
+	        logger.resetLogger();
+	        logger.setLevel(null);
+	      }
 	  }
       }
 
     rootLogger.setLevel(Level.INFO);
+    rootLogger.resetLogger();
   }
 
   /**
@@ -513,6 +517,7 @@ public class LogManager
     checkAccess();
     newProperties = new Properties();
     newProperties.load(inputStream);
+    reset();
     this.properties = newProperties;
     keys = newProperties.propertyNames();
 
@@ -534,7 +539,7 @@ public class LogManager
 		String handlerName = tokenizer.nextToken();
 		try
 		  {
-		    Class handlerClass = Class.forName(handlerName);
+		    Class handlerClass = ClassLoader.getSystemClassLoader().loadClass(handlerName);
 		    getLogger("").addHandler((Handler) handlerClass
 		                             .newInstance());
 		  }

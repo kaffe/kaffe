@@ -1,5 +1,5 @@
 /* JButton.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -79,7 +79,6 @@ public class JButton extends AbstractButton
   {
     super(text, icon);
     setModel(new DefaultButtonModel());
-    setActionCommand(text);
   }
 
   public Object[] getSelectedObjects()
@@ -123,7 +122,14 @@ public class JButton extends AbstractButton
 
   protected String paramString()
   {
-    return "JButton";
+    String superParam = super.paramString();
+
+    // 41 is the maximum number of chars which may be needed.
+    StringBuffer sb = new StringBuffer(41);
+    sb.append(",defaultButton=").append(is_def);
+    sb.append(",defaultCapable=").append(def);
+
+    return superParam + sb.toString();
   }
 
   /**

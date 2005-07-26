@@ -44,6 +44,9 @@ import java.awt.event.ItemListener;
 
 import javax.swing.event.ChangeListener;
 
+/**
+ * The data model that is used in all kinds of buttons.
+ */
 public interface ButtonModel extends ItemSelectable
 {  
     boolean isArmed();     

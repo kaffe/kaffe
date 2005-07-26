@@ -41,6 +41,8 @@ package javax.swing;
 import javax.swing.event.ChangeListener;
 
 /**
+ * The data model that is used in {@link JSpinner}s.
+ *
  * @since 1.4
  */
 public interface SpinnerModel

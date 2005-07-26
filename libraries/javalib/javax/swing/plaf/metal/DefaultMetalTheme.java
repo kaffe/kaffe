@@ -1,5 +1,5 @@
 /* DefaultMetalTheme.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,6 +43,11 @@ import java.awt.Font;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
+/**
+ * The default theme for the {@link MetalLookAndFeel}.
+ * 
+ * @see MetalLookAndFeel#setCurrentTheme(MetalTheme)
+ */
 public class DefaultMetalTheme extends MetalTheme
 {
   private static final ColorUIResource PRIMARY1 =
@@ -71,71 +76,144 @@ public class DefaultMetalTheme extends MetalTheme
   private static final FontUIResource WINDOW_TITLE_FONT =
     new FontUIResource("Dialog", Font.BOLD, 12);
   
+  /**
+   * Creates a new instance of this theme.
+   */
   public DefaultMetalTheme()
   {
     // Do nothing here.
   }
 
+  /**
+   * Returns the name of the theme.
+   * 
+   * @return <code>"Steel"</code>.
+   */
   public String getName()
   {
     return "Steel";
   }
 
+  /**
+   * Returns the first primary color for this theme.
+   * 
+   * @return The first primary color.
+   */
   protected ColorUIResource getPrimary1()
   {
     return PRIMARY1;
   }
 
+  /**
+   * Returns the second primary color for this theme.
+   * 
+   * @return The second primary color.
+   */
   protected ColorUIResource getPrimary2()
   {
     return PRIMARY2;
   }
 
+  /**
+   * Returns the third primary color for this theme.
+   * 
+   * @return The third primary color.
+   */
   protected ColorUIResource getPrimary3()
   {
     return PRIMARY3;
   }
 
+  /**
+   * Returns the first secondary color for this theme.
+   * 
+   * @return The first secondary color.
+   */
   protected ColorUIResource getSecondary1()
   {
     return SECONDARY1;
   }
 
+  /**
+   * Returns the second secondary color for this theme.
+   * 
+   * @return The second secondary color.
+   */
   protected ColorUIResource getSecondary2()
   {
     return SECONDARY2;
   }
 
+  /**
+   * Returns the third secondary color for this theme.
+   * 
+   * @return The third secondary color.
+   */
   protected ColorUIResource getSecondary3()
   {
     return SECONDARY3;
   }
 
+  /**
+   * Returns the font used for text on controls.  In this case, the font is
+   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>.
+   * 
+   * @return The font.
+   */
   public FontUIResource getControlTextFont()
   {
     return CONTROL_TEXT_FONT;
   }
-
+  /**
+   * Returns the font used for text in menus.  In this case, the font is
+   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>.
+   * 
+   * @return The font used for text in menus.
+   */
   public FontUIResource getMenuTextFont()
   {
     return MENU_TEXT_FONT;
   }
   
+  /**
+   * Returns the font used for sub text.  In this case, the font is
+   * <code>FontUIResource("Dialog", Font.PLAIN, 10)</code>.
+   * 
+   * @return The font used for sub text.
+   */
   public FontUIResource getSubTextFont()
   {
     return SUB_TEXT_FONT;
   }
   
+  /**
+   * Returns the font used for system text.  In this case, the font is
+   * <code>FontUIResource("Dialog", Font.PLAIN, 12)</code>.
+   * 
+   * @return The font used for system text.
+   */
   public FontUIResource getSystemTextFont()
   {
     return SYSTEM_TEXT_FONT;
   }
   
+  /**
+   * Returns the font used for user text.  In this case, the font is
+   * <code>FontUIResource("Dialog", Font.PLAIN, 12)</code>.
+   * 
+   * @return The font used for user text. 
+   */
   public FontUIResource getUserTextFont()
   {
     return USER_TEXT_FONT;
   }
   
+  /**
+   * Returns the font used for window titles.  In this case, the font is 
+   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>.
+   * 
+   * @return The font used for window titles.
+   */
   public FontUIResource getWindowTitleFont()
   {
     return WINDOW_TITLE_FONT;

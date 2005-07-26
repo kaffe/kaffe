@@ -1,5 +1,5 @@
 /* AccessibleStateSet.java -- the combined state of an accessible object
-   Copyright (C) 2002 Free Software Foundation
+   Copyright (C) 2002, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package javax.accessibility;
 
+import java.util.Locale;
 import java.util.Vector;
 
 /**

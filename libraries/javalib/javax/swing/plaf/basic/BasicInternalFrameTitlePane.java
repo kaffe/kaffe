@@ -253,11 +253,29 @@ public class BasicInternalFrameTitlePane extends JComponent
      */
     public void propertyChange(PropertyChangeEvent evt)
     {
-      // The title and frameIcon are taken care of during painting time.
-      // The only other thing this will care about are the "is----izable"
-      // properties. So we call enable actions to properly handle the 
-      // buttons and menu items for us.
-      enableActions();
+      String propName = evt.getPropertyName();
+      if (propName.equals("closable"))
+	{
+	  if (evt.getNewValue().equals(Boolean.TRUE))
+	    closeButton.setVisible(true);
+	  else
+	    closeButton.setVisible(false);
+	}
+      else if (propName.equals("iconifiable"))
+	{
+	  if (evt.getNewValue().equals(Boolean.TRUE))
+	    iconButton.setVisible(true);
+	  else
+	    iconButton.setVisible(false);
+	}
+      else if (propName.equals("maximizable"))
+	{
+	  if (evt.getNewValue().equals(Boolean.TRUE))
+	    maxButton.setVisible(true);
+	  else
+	    maxButton.setVisible(false);
+	}
+	
     }
   }
 
@@ -349,48 +367,36 @@ public class BasicInternalFrameTitlePane extends JComponent
      */
     public void layoutContainer(Container c)
     {
-      enableActions();
-
+      Dimension size = c.getSize();
       Insets insets = c.getInsets();
-      int width = c.getBounds().width - insets.left - insets.right;
-      int height = c.getBounds().height - insets.top - insets.bottom;
+      int width = size.width - insets.left - insets.right;
+      int height = size.height - insets.top - insets.bottom;
 
       // MenuBar is always present and located at the top left corner.
       Dimension menupref = menuBar.getPreferredSize();
       menuBar.setBounds(insets.left, insets.top, menupref.width, height);
 
-      int loc = width + insets.left;
-
-      Insets i = closeButton.getInsets();
-      Dimension prefs = new Dimension(iconSize + i.left + i.right,
-                                      iconSize + i.top + i.bottom);
-      int top = insets.top + (height - prefs.height) / 2;
-      if (closeAction.isEnabled())
+      int loc = width + insets.left - 1;
+      int top = insets.top + 1;
+      int buttonWidth = height - 2;
+      int buttonHeight = height - 4;
+      if (closeButton.isVisible())
         {
-	  loc -= prefs.width;
-	  closeButton.setVisible(true);
-	  closeButton.setBounds(loc, top, prefs.width, prefs.height);
+	  loc -= buttonWidth + 2;
+	  closeButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
-      else
-	closeButton.setVisible(false);
 
-      if (maximizeAction.isEnabled())
+      if (maxButton.isVisible())
         {
-	  loc -= prefs.width;
-	  maxButton.setVisible(true);
-	  maxButton.setBounds(loc, top, prefs.width, prefs.height);
+	  loc -= buttonWidth + 2;
+	  maxButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
-      else
-	maxButton.setVisible(false);
 
-      if (iconifyAction.isEnabled())
+      if (iconButton.isVisible())
         {
-	  loc -= prefs.width;
-	  iconButton.setVisible(true);
-	  iconButton.setBounds(loc, top, prefs.width, prefs.height);
+	  loc -= buttonWidth + 2;
+	  iconButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
-      else
-	iconButton.setVisible(false);
 
       if (title != null)
 	title.setBounds(insets.left + menupref.width, insets.top,
@@ -420,26 +426,7 @@ public class BasicInternalFrameTitlePane extends JComponent
      */
     public Dimension preferredLayoutSize(Container c)
     {
-      Insets frameInsets = frame.getInsets();
-
-      // Height is the max of the preferredHeights of all components
-      // inside the pane
-      int height = 0;
-      int width = 0;
-      Dimension d;
-
-      Component[] components = BasicInternalFrameTitlePane.this.getComponents();
-      for (int i = 0; i < components.length; i++)
-        {
-	  d = components[i].getPreferredSize();
-	  height = Math.max(height, d.height);
-	  width += d.width;
-        }
-
-      Insets insets = BasicInternalFrameTitlePane.this.getInsets();
-      height += insets.top + insets.bottom;
-
-      return new Dimension(width, height);
+      return new Dimension(22, 18);
     }
 
     /**
@@ -468,7 +455,6 @@ public class BasicInternalFrameTitlePane extends JComponent
     {
       super(a);
       setMargin(new Insets(0, 0, 0, 0));
-      setBorder(null);
     }
 
     /**
@@ -540,110 +526,14 @@ public class BasicInternalFrameTitlePane extends JComponent
   /** Inactive foreground color. */
   protected Color inactiveFGColor;
 
-  // FIXME: These icons need to be moved to MetalIconFactory.
-
-  /** The size of the icons in the buttons. */
-  private static final int iconSize = 16;
-
-  /** The icon displayed in the close button. */
-  protected Icon closeIcon = new Icon()
-    {
-      public int getIconHeight()
-      {
-	return iconSize;
-      }
-
-      public int getIconWidth()
-      {
-	return iconSize;
-      }
-
-      public void paintIcon(Component c, Graphics g, int x, int y)
-      {
-	g.translate(x, y);
-	Color saved = g.getColor();
-	g.setColor(Color.BLACK);
-
-	int four = iconSize / 4;
-	int six = iconSize * 6 / 16;
-	int ten = iconSize * 10 / 16;
-	int twelve = iconSize * 12 / 16;
-
-	Polygon a = new Polygon(new int[] { four, six, ten, twelve },
-	                        new int[] { six, four, twelve, ten }, 4);
-	Polygon b = new Polygon(new int[] { four, six, ten, twelve },
-	                        new int[] { ten, twelve, four, six }, 4);
-
-	g.fillPolygon(a);
-	g.fillPolygon(b);
-
-	g.setColor(saved);
-	g.translate(-x, -y);
-      }
-    };
-
-  // FIXME: Create new icon.
-
   /** The icon displayed in the restore button. */
-  protected Icon minIcon;
+  protected Icon minIcon = BasicIconFactory.createEmptyFrameIcon();
 
   /** The icon displayed in the maximize button. */
-  protected Icon maxIcon = new Icon()
-    {
-      public int getIconHeight()
-      {
-	return iconSize;
-      }
-
-      public int getIconWidth()
-      {
-	return iconSize;
-      }
-
-      public void paintIcon(Component c, Graphics g, int x, int y)
-      {
-	g.translate(x, y);
-	Color saved = g.getColor();
-	g.setColor(Color.BLACK);
-
-	int four = iconSize / 4;
-	int two = four / 2;
-	int six = iconSize * 6 / 16;
-	int eight = four * 2;
-
-	g.fillRect(four, four, eight, two);
-	g.drawRect(four, six, eight, six);
-
-	g.setColor(saved);
-	g.translate(-x, -y);
-      }
-    };
+  protected Icon maxIcon = BasicIconFactory.createEmptyFrameIcon();
 
   /** The icon displayed in the iconify button. */
-  protected Icon iconIcon = new Icon()
-    {
-      public int getIconHeight()
-      {
-	return iconSize;
-      }
-
-      public int getIconWidth()
-      {
-	return iconSize;
-      }
-
-      public void paintIcon(Component c, Graphics g, int x, int y)
-      {
-	g.translate(x, y);
-	Color saved = g.getColor();
-	g.setColor(Color.BLACK);
-
-	g.fillRect(iconSize / 4, iconSize * 10 / 16, iconSize / 2, iconSize / 8);
-
-	g.setColor(saved);
-	g.translate(-x, -y);
-      }
-    };
+  protected Icon iconIcon = BasicIconFactory.createEmptyFrameIcon();
 
   /** The JInternalFrame that this TitlePane is used in. */
   protected JInternalFrame frame;
@@ -813,26 +703,23 @@ public class BasicInternalFrameTitlePane extends JComponent
   protected void createButtons()
   {
     closeButton = new PaneButton(closeAction);
-    closeButton.setOpaque(false);
-
+    if (!frame.isClosable())
+      closeButton.setVisible(false);
     iconButton = new PaneButton(iconifyAction);
-    iconButton.setOpaque(false);
-
+    if (!frame.isIconifiable())
+      iconButton.setVisible(false);
     maxButton = new PaneButton(maximizeAction);
-    maxButton.setOpaque(false);
+    if (!frame.isMaximizable())
+      maxButton.setVisible(false);
   }
 
   /**
-   * This method sets the icons in the buttons.
+   * This method sets the icons in the buttons. This is a no-op method here, it
+   * can be overridden by subclasses to set icons for the minimize-, maximize-
+   * and close-buttons.
    */
   protected void setButtonIcons()
   {
-    if (closeButton != null)
-      closeButton.setIcon(closeIcon);
-    if (iconButton != null)
-      iconButton.setIcon(iconIcon);
-    if (maxButton != null)
-      maxButton.setIcon(maxIcon);
   }
 
   /**

@@ -40,6 +40,10 @@ package javax.swing;
 
 import javax.swing.event.ListSelectionListener;
 
+/**
+ * The model that is used in {@link JList} to define the selected/not-selected
+ * cells of that list.
+ */
 public interface ListSelectionModel
 {
   int SINGLE_SELECTION = 0;

@@ -113,6 +113,8 @@ public class ParserDelegator
 
     DTD getDTD()
     {
+      // Accessing the inherited gnu.javax.swing.text.html.parser.support.Parser
+      // field. super. is a workaround, required to support JDK1.3's javac.
       return super.dtd;
     }
   }

@@ -1,37 +1,40 @@
-/*
- * BasicTreeUI.java -- Copyright (C) 2002, 2004, 2005 Free Software Foundation,
- * Inc.
- * 
- * This file is part of GNU Classpath.
- * 
- * GNU Classpath is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2, or (at your option) any later version.
- * 
- * GNU Classpath is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * GNU Classpath; see the file COPYING. If not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
- * Linking this library statically or dynamically with other modules is making a
- * combined work based on this library. Thus, the terms and conditions of the
- * GNU General Public License cover the whole combination.
- * 
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules, and
- * to copy and distribute the resulting executable under terms of your choice,
- * provided that you also meet, for each linked independent module, the terms
- * and conditions of the license of that module. An independent module is a
- * module which is not derived from or based on this library. If you modify this
- * library, you may extend this exception to your version of the library, but
- * you are not obligated to do so. If you do not wish to do so, delete this
- * exception statement from your version.
- */
+/* BasicTreeUI.java --
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package javax.swing.plaf.basic;
 
@@ -69,6 +72,7 @@ import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -88,7 +92,6 @@ import javax.swing.tree.FixedHeightLayoutCache;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
@@ -622,12 +625,12 @@ public class BasicTreeUI
 
    /**
     * Get next visible node in the tree.
-    * 
+    * Package private for use in inner classes.
     * @param the current node
     * @return the next visible node in the JTree. Return null if there are no
     *         more.
     */
-   private DefaultMutableTreeNode getNextVisibleNode(DefaultMutableTreeNode node)
+   DefaultMutableTreeNode getNextVisibleNode(DefaultMutableTreeNode node)
    {
       DefaultMutableTreeNode next = null;
       TreePath current = null;
@@ -654,12 +657,13 @@ public class BasicTreeUI
 
    /**
     * Get previous visible node in the tree.
+    * Package private for use in inner classes.
     * 
     * @param the current node
     * @return the next visible node in the JTree. Return null if there are no
     *         more.
     */
-   private DefaultMutableTreeNode getPreviousVisibleNode
+   DefaultMutableTreeNode getPreviousVisibleNode
                                              (DefaultMutableTreeNode node)
    {
       DefaultMutableTreeNode prev = null;
@@ -1218,6 +1222,9 @@ public class BasicTreeUI
       installDefaults((JTree) c);
       tree = (JTree) c;
       setModel(tree.getModel());
+      tree.setRootVisible(true);
+      tree.expandPath(new TreePath(((DefaultMutableTreeNode) 
+            (tree.getModel()).getRoot()).getPath()));
       treeSelectionModel = tree.getSelectionModel();
       installListeners();
       installKeyboardActions();
@@ -1269,6 +1276,7 @@ public class BasicTreeUI
       TreeModel mod = tree.getModel();
       g.translate(10, 10);
       paintRecursive(g, 0, 0, 0, 0, tree, mod, mod.getRoot());
+      paintControlIcons(g, 0, 0, 0, 0, tree, mod, mod.getRoot());
       g.translate(-10, -10);
    }
 
@@ -1558,11 +1566,12 @@ public class BasicTreeUI
 
    /**
     * Selects the specified path in the tree depending on modes.
+    * Package private for use in inner classes.
     * 
     * @param tree is the tree we are selecting the path in
     * @param path is the path we are selecting
     */
-   private void selectPath(JTree tree, TreePath path)
+   void selectPath(JTree tree, TreePath path)
    {
       if (path != null)
       {
@@ -1942,7 +1951,7 @@ public class BasicTreeUI
                   BasicTreeUI.this.tree.fireTreeExpanded(path);
                }
             }
-            
+
             BasicTreeUI.this.selectPath(BasicTreeUI.this.tree, path);
          }
       }
@@ -2489,9 +2498,8 @@ public class BasicTreeUI
          Font f = tree.getFont();
          FontMetrics fm = tree.getToolkit().getFontMetrics(tree.getFont());
          
-         // add 22 to width for icon, FIXME later
-         return new Rectangle(x, y, SwingUtilities.computeStringWidth(fm, s)
-               + 22, fm.getHeight());
+         return new Rectangle(x, y, SwingUtilities.computeStringWidth(fm, s),
+               fm.getHeight());
       }
       return null;
    }
@@ -2511,23 +2519,45 @@ public class BasicTreeUI
       boolean selected = tree.isPathSelected(curr);
 
       if (tree.isVisible(curr))
+      {          
+         DefaultTreeCellRenderer dtcr = (DefaultTreeCellRenderer) 
+                                             tree.getCellRenderer();
+         boolean hasIcons = false;
+         Icon li = dtcr.getLeafIcon();
+         if (li != null)
+            hasIcons = true;
+         
          if (selected)
          {
-            Component comp = tree.getCellRenderer()
-                  .getTreeCellRendererComponent(tree, leaf, true, false, true,
-                        0, false);
-            rendererPane.paintComponent(g, comp, tree,
-                  getCellBounds(x, y, leaf));
+            Component c = dtcr.getTreeCellRendererComponent(tree, leaf,
+                  true, false, true, 0, false);
+            
+            if (hasIcons)
+            {
+               li.paintIcon(c, g, x, y + 2);
+               x += li.getIconWidth() + 4;
+            }
+            rendererPane.paintComponent(g, c, tree, 
+                                    getCellBounds(x, y, leaf));
          }
          else
-         {
-            Component c = tree.getCellRenderer().getTreeCellRendererComponent(
+         {            
+            Component c = dtcr.getTreeCellRendererComponent(
                   tree, leaf, false, false, true, 0, false);
-
+            
             g.translate(x, y);
+            
+            if (hasIcons)
+            {
+               Component icon = dtcr.getTreeCellRendererComponent(tree, 
+                  li, false, false, true, 0, false); 
+               icon.paint(g);
+            }
+            
             c.paint(g);
             g.translate(-x, -y);
          }
+      }
    }
 
    /**
@@ -2547,23 +2577,61 @@ public class BasicTreeUI
       boolean expanded = tree.isExpanded(curr);
 
       if (tree.isVisible(curr))
-         if (selected)
-         {
-            Component comp = tree.getCellRenderer()
-                  .getTreeCellRendererComponent(tree, nonLeaf, true, expanded,
-                        false, 0, false);
-            rendererPane.paintComponent(g, comp, tree, getCellBounds(x, y,
-                  nonLeaf));
-         }
-         else
-         {
-            Component c = tree.getCellRenderer().getTreeCellRendererComponent(
-                  tree, nonLeaf, false, expanded, false, 0, false);
+      {
+            DefaultTreeCellRenderer dtcr = (DefaultTreeCellRenderer) 
+                                                tree.getCellRenderer();
+            boolean hasIcons = false;
+            boolean hasOtherIcons = false;
+            Icon oi = dtcr.getOpenIcon();
+            Icon ci = dtcr.getClosedIcon();
+            
+            if (oi != null || ci != null)
+               hasIcons = true;
+            
+            if (selected)
+            {      
+               Component c = dtcr.getTreeCellRendererComponent(tree, nonLeaf,
+                     true, expanded, false, 0, false);
 
-            g.translate(x, y);
-            c.paint(g);
-            g.translate(-x, -y);
-         }
+               if (hasIcons)
+               {
+                  if (expanded)
+                  {
+                     oi.paintIcon(c, g, x, y + 2);
+                     x += (oi.getIconWidth() + 4);
+                  }
+                  else
+                  {
+                     ci.paintIcon(c, g, x, y + 2);
+                     x += (ci.getIconWidth() + 4);
+                  }
+                  
+               }
+               rendererPane.paintComponent(g, c, tree, 
+                           getCellBounds(x, y, nonLeaf));
+            }
+            else
+            {
+               Component c = dtcr.getTreeCellRendererComponent(tree, nonLeaf, 
+                                          false, expanded, false, 0, false);
+               g.translate(x, y);
+               
+               if (hasIcons)
+               {
+                  Component icon;
+                  if (expanded)
+                     icon = dtcr.getTreeCellRendererComponent(tree, 
+                        oi, false, false, false, 0, false);
+                  else
+                     icon = dtcr.getTreeCellRendererComponent(tree, 
+                        ci, false, false, false, 0, false);
+                  
+                  icon.paint(g);
+               }
+               c.paint(g);
+               g.translate(-x, -y);
+            }
+      }
    }
 
    /**
@@ -2598,7 +2666,7 @@ public class BasicTreeUI
          paintLeaf(g, indentation, descent, tree, curr);
          descent += getRowHeight();
       }
-      else
+      else 
       {
          if (depth > 0 || tree.isRootVisible())
          {
@@ -2606,18 +2674,22 @@ public class BasicTreeUI
             descent += getRowHeight();
             y0 += halfHeight;
          }
+         
          int max = mod.getChildCount(curr);
          if (tree.isExpanded(new TreePath(((DefaultMutableTreeNode) curr)
                .getPath())))
+         {
             for (int i = 0; i < max; ++i)
             {
                g.setColor(getHashColor());
                heightOfLine = descent + halfHeight;
                g.drawLine(indentation + halfWidth, heightOfLine,
                      indentation + rightChildIndent, heightOfLine);
+                              
                descent = paintRecursive(g, indentation + rightChildIndent,
                      descent, i, depth + 1, tree, mod, mod.getChild(curr, i));
             }
+         }
       }
 
       if (tree.isExpanded(new TreePath(((DefaultMutableTreeNode) curr)
@@ -2628,7 +2700,68 @@ public class BasicTreeUI
             g.drawLine(indentation + halfWidth, y0, indentation + halfWidth,
                   heightOfLine);
          }
+      
       return descent;
    }
-
+   
+   /**
+    * Recursively paints all the control icons on the tree.
+    * 
+    * @param g the Graphics context in which to paint
+    * @param indentation of the current object
+    * @param descent is the number of elements drawn
+    * @param childNumber is the index of the current child in the tree
+    * @param depth is the depth of the current object in the tree
+    * @param tree is the tree to draw to
+    * @param mod is the TreeModel we are using to draw
+    * @param curr is the current object to draw
+    * 
+    * @return int - current descent of the tree
+    */
+   private int paintControlIcons(Graphics g, int indentation, int descent,
+         int childNumber, int depth, JTree tree, TreeModel mod, Object node)
+   {
+      int h = descent;
+      int rowHeight = getRowHeight();
+      Icon ei = UIManager.getLookAndFeelDefaults().
+         getIcon("Tree.expandedIcon");
+      Icon ci = UIManager.getLookAndFeelDefaults().
+         getIcon("Tree.collapsedIcon");
+      Rectangle clip = g.getClipBounds();
+      if (ci == null || ei == null || indentation > clip.x + clip.width +
+            rightChildIndent || descent > clip.y + clip.height + 
+               getRowHeight())
+         return descent;
+      
+      if (mod.isLeaf(node))
+      {
+         descent += rowHeight;
+      }
+      else 
+      {
+         if (depth > 0 || tree.isRootVisible())
+         {
+            descent += rowHeight;
+         }
+         
+         int max = mod.getChildCount(node);
+         if (tree.isExpanded(new TreePath(((DefaultMutableTreeNode) node)
+               .getPath())))
+         {
+            if (!node.equals(mod.getRoot()))
+               ei.paintIcon(tree, g, indentation - rightChildIndent - 3, h);
+            
+            for (int i = 0; i < max; ++i)
+            {           
+               descent = paintControlIcons(g, indentation + rightChildIndent,
+                     descent, i, depth + 1, tree, mod, mod.getChild(node, i));
+            }
+         }
+         else if (!node.equals(mod.getRoot()))
+            ci.paintIcon(tree, g, indentation - rightChildIndent - 3, 
+                  descent - getRowHeight());
+      }
+      
+      return descent;
+   }
 } // BasicTreeUI

@@ -1,5 +1,5 @@
 /* MutableTreeNode.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -61,7 +61,7 @@ public interface MutableTreeNode extends TreeNode
    *
    * @param index the index
    *
-   * @see #add(MutableTreeNode,int)
+   * @see #insert(MutableTreeNode,int)
    * @see #remove(MutableTreeNode)
    * @see #removeFromParent()
    */
@@ -72,7 +72,7 @@ public interface MutableTreeNode extends TreeNode
    *
    * @param node the node to remove
    *
-   * @see #add(MutableTreeNode,int)
+   * @see #insert(MutableTreeNode,int)
    * @see #remove(int)
    * @see #removeFromParent()
    */
@@ -98,7 +98,7 @@ public interface MutableTreeNode extends TreeNode
    *
    * @param parent the parent
    *
-   * @see insert(MutableTreeNode,int)
+   * @see #insert(MutableTreeNode,int)
    */
   void setParent(MutableTreeNode parent);
 }
