@@ -45,7 +45,8 @@
    the first argument that can't be passed in a register.  */
 #if defined(__APPLE__)
   /* -6 but __buildin_alloca() handle it */
-# define ARG_DISPLACEMENT	0
+  /* it was 0, but it was displaced by 2.... so we try standard PPC displacement */
+# define ARG_DISPLACEMENT	-2
 #elif defined(_AIX)
 # define ARG_DISPLACEMENT	-6
 #else

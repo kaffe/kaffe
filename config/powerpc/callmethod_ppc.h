@@ -83,9 +83,9 @@ void sysdepCallMethod_ppc(
      n = 0;
      f = 0;
      argidx = 0;
-
+     
      /* set up a pointer to the stack parameter area */
-     __asm__ __volatile__ ( "addi %0,1,8" : "=r" (p) : /* no inputs */ );
+     __asm__ __volatile__ ( "addi %0,r1,8" : "=r" (p) : /* no inputs */ );
 
      /* now loop through each argument and assign it properly to
         either gpr, fpr, or the param area */
@@ -171,27 +171,27 @@ void sysdepCallMethod_ppc(
 
     __asm__ __volatile__ (
 	"
-		lwz	3,	0(%3)
-		lwz	4,	4(%3)
-		lwz	5,	8(%3)
-		lwz	6,	12(%3)
-		lwz	7,	16(%3)
-		lwz	8,	20(%3)
-		lwz	9,	24(%3)
-		lwz	10,	28(%3)
-		lfd	1,	0(%4)
-		lfd	2,	8(%4)
-		lfd	3,	16(%4)
-		lfd	4,	24(%4)
-		lfd	5,	32(%4)
-		lfd	6,	40(%4)
-		lfd	7,	48(%4)
-		lfd	8,	56(%4)
+		lwz	r3,	0(%3)
+		lwz	r4,	4(%3)
+		lwz	r5,	8(%3)
+		lwz	r6,	12(%3)
+		lwz	r7,	16(%3)
+		lwz	r8,	20(%3)
+		lwz	r9,	24(%3)
+		lwz	r10,	28(%3)
+		lfd	f1,	0(%4)
+		lfd	f2,	8(%4)
+		lfd	f3,	16(%4)
+		lfd	f4,	24(%4)
+		lfd	f5,	32(%4)
+		lfd	f6,	40(%4)
+		lfd	f7,	48(%4)
+		lfd	f8,	56(%4)
 		mtctr	%5
 		bctrl
-		mr	%1,	3
-		mr	%2,	4
-		fmr	%0,	1
+		mr	%1,	r3
+		mr	%2,	r4
+		fmr	%0,	f1
 	" : "=f" (dret), "=r" (iret), "=r" (iret2)
 	  : "r" (gpr), "r" (fpr), "r" (CALL->function)
 	  : "0", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"

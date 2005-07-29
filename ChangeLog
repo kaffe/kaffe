@@ -1,3 +1,12 @@
+2005-07-29  Guilhem Lavaux <guilhem@kaffe.org>
+	Riccardo Mottola  <multix@gmail.com>
+
+	* config/powerpc/callmethod_ppc.h: Updated register names to match
+	GAS syntax.
+	
+	* config/powerpc/sysdepCallMethod.h
+	(ARG_DISPLACEMENT): By tests, chose -2 on APPLE.
+	
 2005-07-28 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* test/regression/SecureRandomTest.java:
