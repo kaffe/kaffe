@@ -50,9 +50,13 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreeCellEditor;
 
 /**
- * DefaultCellEditor
- * @author	Andrew Selkirk
- * @version	1.0
+ * The default implementation of {@link TableCellEditor} and
+ * {@link TreeCellEditor}. It provides editor components for
+ * some standard object types.
+ * 
+ * @author Andrew Selkirk
+ *
+ * @status mostly unimplemented
  */
 public class DefaultCellEditor
   extends AbstractCellEditor
@@ -61,7 +65,9 @@ public class DefaultCellEditor
   private static final long serialVersionUID = 3564035141373880027L;
 
   /**
-   * EditorDelegate
+   * Delegates a couple of method calls (such as {@link #isCellEditable)
+   * to the component it contains and listens for events that indicate
+   * that editing has stopped.
    */
   protected class EditorDelegate
     implements ActionListener, ItemListener, Serializable
@@ -75,8 +81,6 @@ public class DefaultCellEditor
 
     /**
      * Constructor EditorDelegate
-     *
-     * @param value0 TODO
      */
     protected EditorDelegate()
     {

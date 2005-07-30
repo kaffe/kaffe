@@ -182,7 +182,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setOpenIcon
 	 * 
-	 * @param value0 TODO
+	 * @param i the icon.
 	 */
 	public void setOpenIcon(Icon i)
 	{
@@ -202,7 +202,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setClosedIcon
 	 * 
-	 * @param value0 TODO
+	 * @param i the icon.
 	 */
 	public void setClosedIcon(Icon i)
 	{
@@ -222,7 +222,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setLeafIcon
 	 * 
-	 * @param value0 TODO
+	 * @param i the icon.
 	 */
 	public void setLeafIcon(Icon i)
 	{
@@ -242,7 +242,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setTextSelectionColor
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setTextSelectionColor(Color c)
 	{
@@ -262,7 +262,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setTextNonSelectionColor
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setTextNonSelectionColor(Color c)
 	{
@@ -282,7 +282,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setBackgroundSelectionColor
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setBackgroundSelectionColor(Color c)
 	{
@@ -302,7 +302,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setBackgroundNonSelectionColor
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setBackgroundNonSelectionColor(Color c)
 	{
@@ -322,7 +322,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setBorderSelectionColor
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setBorderSelectionColor(Color c)
 	{
@@ -342,7 +342,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setFont
 	 * 
-	 * @param value0 TODO
+	 * @param f the font.
 	 */
 	public void setFont(Font f)
 	{
@@ -354,7 +354,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * setBackground
 	 * 
-	 * @param value0 TODO
+	 * @param c the color.
 	 */
 	public void setBackground(Color c)
 	{
@@ -366,33 +366,34 @@ public class DefaultTreeCellRenderer
 	/**
 	 * getTreeCellRendererComponent
 	 * 
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 * @param value2 TODO
-	 * @param value3 TODO
-	 * @param value4 TODO
-	 * @param value5 TODO
-	 * @param value6 TODO
+	 * @param tree TODO
+	 * @param val TODO
+	 * @param selected TODO
+	 * @param expanded TODO
+	 * @param leaf TODO
+	 * @param row TODO
+	 * @param hasFocus TODO
 	 * @returns Component
 	 */
 	public Component getTreeCellRendererComponent(JTree tree, Object val,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus)
 	{
-		if (val instanceof Icon)
-      	setIcon((Icon) val);
+      if (leaf)
+         setIcon(getLeafIcon());
+      else if (expanded)
+         setIcon(getOpenIcon());
       else
-      {
-         setText(val.toString());
-         setIcon(null);
-         this.selected = selected;
-         this.hasFocus = hasFocus;
-         setHorizontalAlignment(LEFT);
-         setOpaque(true);
-         setVerticalAlignment(TOP);
-         setEnabled(true);
-         super.setFont(UIManager.getLookAndFeelDefaults().getFont("Tree.font"));
-      }
+         setIcon(getClosedIcon());
+      
+      setText(val.toString());
+      this.selected = selected;
+      this.hasFocus = hasFocus;
+      setHorizontalAlignment(LEFT);
+      setOpaque(true);
+      setVerticalAlignment(TOP);
+      setEnabled(true);
+      super.setFont(UIManager.getLookAndFeelDefaults().getFont("Tree.font"));
 
 		if (selected) 
 		{
@@ -404,7 +405,7 @@ public class DefaultTreeCellRenderer
 			super.setBackground(getBackgroundNonSelectionColor());
 			setForeground(getTextNonSelectionColor());
 		}		
-		
+      
 		return this;
 	}
 	
@@ -421,7 +422,7 @@ public class DefaultTreeCellRenderer
 	/**
 	 * paint
 	 * 
-	 * @param value0 TODO
+	 * @param g the graphics device.
 	 */
 	public void paint(Graphics g)
 	{
@@ -579,11 +580,11 @@ public class DefaultTreeCellRenderer
 	/**
 	 * firePropertyChange
 	 * 
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 * @param value2 TODO
+	 * @param name the property name.
+	 * @param v1 the old value.
+	 * @param v2 the new value.
 	 */
-	public void firePropertyChange(String value0, boolean v1, boolean v2)
+	public void firePropertyChange(String name, boolean v1, boolean v2)
 	{
 		//  Overridden for performance reasons.
 	} // firePropertyChange()

@@ -124,12 +124,12 @@ import java.util.StringTokenizer;
 public abstract class ClassLoader
 {
   /**
-   * All classes loaded by this classloader. VM's may choose to implement
-   * this cache natively; but it is here available for use if necessary. It
-   * is not private in order to allow native code (and trusted subclasses)
-   * access to this field.
+   * All classes loaded by this classloader. If the VM's chooses to implement
+   * this cache natively this field will be null.
+   * It is not private in order to allow VMClassLoader access to this field.
    */
-  final HashMap loadedClasses = new HashMap();
+  final HashMap loadedClasses =
+                    VMClassLoader.USE_VM_CACHE ? null : new HashMap();
 
   /**
    * All packages defined by this classloader. It is not private in order to
@@ -479,7 +479,8 @@ public abstract class ClassLoader
     
     Class retval = VMClassLoader.defineClass(this, name, data,
 					     offset, len, domain);
-    loadedClasses.put(retval.getName(), retval);
+    if (! VMClassLoader.USE_VM_CACHE)
+      loadedClasses.put(retval.getName(), retval);
     return retval;
   }
 
@@ -556,9 +557,7 @@ public abstract class ClassLoader
    */
   protected final synchronized Class findLoadedClass(String name)
   {
-    // NOTE: If the VM is keeping its own cache, it may make sense to have
-    // this method be native.
-    return (Class) loadedClasses.get(name);
+    return VMClassLoader.findLoadedClass(this, name);
   }
 
   /**

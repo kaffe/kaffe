@@ -592,6 +592,7 @@ public class BasicInternalFrameTitlePane extends JComponent
     setOpaque(true);
 
     setBackground(Color.LIGHT_GRAY);
+    setOpaque(true);
 
     installTitlePane();
   }

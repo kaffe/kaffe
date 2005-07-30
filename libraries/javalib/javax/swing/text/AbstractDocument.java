@@ -108,16 +108,7 @@ public abstract class AbstractDocument
 
   public Position createPosition(final int offset) throws BadLocationException
   {
-    if (offset < 0 || offset > getLength())
-      throw new BadLocationException(getText(0, getLength()), offset);
-
-    return new Position()
-      {
-	public int getOffset()
-	{
-	  return offset;
-	}
-      };
+    return content.createPosition(offset);
   }
 
   protected void fireChangedUpdate(DocumentEvent event)
@@ -847,15 +838,28 @@ public abstract class AbstractDocument
   public class LeafElement extends AbstractElement
   {
     private static final long serialVersionUID = 5115368706941283802L;
-    int start;
-    int end;
+
+    /** Manages the start offset of this element. */
+    Position startPos;
+
+    /** Manages the end offset of this element. */
+    Position endPos;
 
     public LeafElement(Element parent, AttributeSet attributes, int start,
                        int end)
     {
       super(parent, attributes);
-      this.start = start;
-      this.end = end;
+      try
+	{
+	  startPos = parent.getDocument().createPosition(start);
+	  endPos = parent.getDocument().createPosition(end);
+	}
+      catch (BadLocationException ex)
+	{
+	  throw new AssertionError("BadLocationException must not be thrown "
+				   + "here. start=" + start + ", end=" + end
+				   + ", length=" + getLength());
+	}
     }
 
     public Enumeration children()
@@ -885,7 +889,7 @@ public abstract class AbstractDocument
 
     public int getEndOffset()
     {
-      return end;
+      return endPos.getOffset();
     }
 
     public String getName()
@@ -895,7 +899,7 @@ public abstract class AbstractDocument
 
     public int getStartOffset()
     {
-      return start;
+      return startPos.getOffset();
     }
 
     public boolean isLeaf()

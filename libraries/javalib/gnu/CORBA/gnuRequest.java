@@ -40,7 +40,6 @@ package gnu.CORBA;
 
 import gnu.CORBA.CDR.cdrBufInput;
 import gnu.CORBA.CDR.cdrBufOutput;
-import gnu.CORBA.GIOP.CloseMessage;
 import gnu.CORBA.GIOP.MessageHeader;
 import gnu.CORBA.GIOP.ReplyHeader;
 import gnu.CORBA.GIOP.RequestHeader;
@@ -52,6 +51,7 @@ import org.omg.CORBA.ARG_OUT;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_INV_ORDER;
 import org.omg.CORBA.Bounds;
+import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
 import org.omg.CORBA.Environment;
@@ -65,7 +65,6 @@ import org.omg.CORBA.Request;
 import org.omg.CORBA.SystemException;
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.UnknownUserException;
-import org.omg.CORBA.UserException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -211,6 +210,11 @@ public class gnuRequest
     ior = an_ior;
     setBigEndian(ior.Big_Endian);
   }
+
+  /**
+   * Used when redirecting request to another target.
+   */
+  gnuRequest redirected;
 
   /**
    * Get the IOR data, sufficient to find the invocation target.
@@ -745,7 +749,8 @@ public class gnuRequest
       {
         MARSHAL m =
           new MARSHAL("Unable to open a socket at " + ior.Internet.host + ":" +
-                      ior.Internet.port
+                      ior.Internet.port, 10000 + ior.Internet.port,
+                      CompletionStatus.COMPLETED_NO
                      );
         m.initCause(io_ex);
         throw m;
@@ -836,8 +841,6 @@ public class gnuRequest
     // The stream must be aligned sinve v1.2, but only once.
     boolean align = response.header.version.since_inclusive(1, 2);
 
-    boolean moved_permanently = false;
-
     switch (rh.reply_status)
       {
         case ReplyHeader.NO_EXCEPTION :
@@ -925,7 +928,9 @@ public class gnuRequest
             }
           catch (IOException ex)
             {
-              throw new MARSHAL(ex + " while reading the forwarding info");
+              new MARSHAL("Cant read forwarding info", 5103,
+                          CompletionStatus.COMPLETED_NO
+                         );
             }
 
           setIor(forwarded);
@@ -935,7 +940,9 @@ public class gnuRequest
           return;
 
         default :
-          throw new MARSHAL("Unknow reply status: " + rh.reply_status);
+          throw new MARSHAL("Unknow reply status", 8100 + rh.reply_status,
+                            CompletionStatus.COMPLETED_NO
+                           );
       }
   }
 
@@ -947,10 +954,10 @@ public class gnuRequest
    *
    * @throws MARSHAL if the attempt to write the parameters has failde.
    */
-  private void write_parameter_buffer(MessageHeader header,
-                                      cdrBufOutput request_part
-                                     )
-                               throws MARSHAL
+  protected void write_parameter_buffer(MessageHeader header,
+                                        cdrBufOutput request_part
+                                       )
+                                 throws MARSHAL
   {
     try
       {
@@ -974,8 +981,10 @@ public class gnuRequest
    *
    * @throws MARSHAL if the attempt to write the parameters has failde.
    */
-  private void write_parameters(MessageHeader header, cdrBufOutput request_part)
-                         throws MARSHAL
+  protected void write_parameters(MessageHeader header,
+                                  cdrBufOutput request_part
+                                 )
+                           throws MARSHAL
   {
     // Align after 1.2, but only once.
     boolean align = header.version.since_inclusive(1, 2);
@@ -1002,7 +1011,9 @@ public class gnuRequest
       }
     catch (Bounds ex)
       {
-        throw new MARSHAL("Unable to write method arguments to CDR output.");
+        InternalError ierr = new InternalError();
+        ierr.initCause(ex);
+        throw ierr;
       }
   }
 }

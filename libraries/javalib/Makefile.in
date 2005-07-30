@@ -678,6 +678,7 @@ Klasses_jar_SRCS = \
 	$(org_omg_CosNaming_NamingContextExtPackage_SRCS) \
 	$(org_omg_CosNaming_NamingContextPackage_SRCS) \
 	$(org_omg_Dynamic_SRCS) \
+	$(org_omg_DynamicAny_SRCS) \
 	$(org_omg_DynamicAny_DynAnyFactoryPackage_SRCS) \
 	$(org_omg_DynamicAny_DynAnyPackage_SRCS) \
 	$(org_omg_IOP_SRCS) \
@@ -691,6 +692,7 @@ Klasses_jar_SRCS = \
 	$(org_omg_PortableServer_POAManagerPackage_SRCS) \
 	$(org_omg_PortableServer_POAPackage_SRCS) \
 	$(org_omg_PortableServer_ServantLocatorPackage_SRCS) \
+	$(org_omg_PortableServer_portable_SRCS) \
 	$(org_omg_SendingContext_SRCS) \
 	$(org_omg_stub_java_rmi_SRCS) \
 	$(org_tritonus_core_SRCS) \
@@ -750,6 +752,7 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/DuplicateNameHolder.java \
 	gnu/CORBA/EmptyExceptionHolder.java \
 	gnu/CORBA/ExceptionCreator.java \
+	gnu/CORBA/ForwardRequestHelper.java \
 	gnu/CORBA/Functional_ORB.java \
 	gnu/CORBA/IOR.java \
 	gnu/CORBA/IOR_Delegate.java \
@@ -846,7 +849,31 @@ gnu_CORBA_NamingService_SRCS = \
 	gnu/CORBA/NamingService/snConverter.java
 
 gnu_CORBA_Poa_SRCS = \
-	gnu/CORBA/Poa/InvalidPolicyHolder.java
+	gnu/CORBA/Poa/ForwardRequestHolder.java \
+	gnu/CORBA/Poa/ForwardedServant.java \
+	gnu/CORBA/Poa/InvalidPolicyHolder.java \
+	gnu/CORBA/Poa/LocalDelegate.java \
+	gnu/CORBA/Poa/LocalRequest.java \
+	gnu/CORBA/Poa/LocalServerRequest.java \
+	gnu/CORBA/Poa/ORB_1_4.java \
+	gnu/CORBA/Poa/activeObjectMap.java \
+	gnu/CORBA/Poa/dynImpHandler.java \
+	gnu/CORBA/Poa/gnuAdapterActivator.java \
+	gnu/CORBA/Poa/gnuForwardRequest.java \
+	gnu/CORBA/Poa/gnuIdAssignmentPolicy.java \
+	gnu/CORBA/Poa/gnuIdUniquenessPolicy.java \
+	gnu/CORBA/Poa/gnuImplicitActivationPolicy.java \
+	gnu/CORBA/Poa/gnuLifespanPolicy.java \
+	gnu/CORBA/Poa/gnuPOA.java \
+	gnu/CORBA/Poa/gnuPOAManager.java \
+	gnu/CORBA/Poa/gnuPoaCurrent.java \
+	gnu/CORBA/Poa/gnuRequestProcessingPolicy.java \
+	gnu/CORBA/Poa/gnuServantObject.java \
+	gnu/CORBA/Poa/gnuServantRetentionPolicy.java \
+	gnu/CORBA/Poa/gnuThreadPolicy.java \
+	gnu/CORBA/Poa/policySets.java \
+	gnu/CORBA/Poa/servantDelegate.java \
+	gnu/CORBA/Poa/vPolicy.java
 
 gnu_bytecode_SRCS = \
 	gnu/bytecode/Access.java \
@@ -4419,7 +4446,9 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/DefaultMetalTheme.java \
 	javax/swing/plaf/metal/MetalBorders.java \
 	javax/swing/plaf/metal/MetalButtonUI.java \
+	javax/swing/plaf/metal/MetalCheckBoxIcon.java \
 	javax/swing/plaf/metal/MetalCheckBoxUI.java \
+	javax/swing/plaf/metal/MetalComboBoxIcon.java \
 	javax/swing/plaf/metal/MetalComboBoxUI.java \
 	javax/swing/plaf/metal/MetalDesktopIconUI.java \
 	javax/swing/plaf/metal/MetalIconFactory.java \
@@ -4461,9 +4490,11 @@ javax_swing_text_SRCS = \
 	javax/swing/text/AbstractDocument.java \
 	javax/swing/text/AttributeSet.java \
 	javax/swing/text/BadLocationException.java \
+	javax/swing/text/BoxView.java \
 	javax/swing/text/Caret.java \
 	javax/swing/text/ChangedCharSetException.java \
 	javax/swing/text/ComponentView.java \
+	javax/swing/text/CompositeView.java \
 	javax/swing/text/DateFormatter.java \
 	javax/swing/text/DefaultCaret.java \
 	javax/swing/text/DefaultEditorKit.java \
@@ -4475,14 +4506,19 @@ javax_swing_text_SRCS = \
 	javax/swing/text/EditorKit.java \
 	javax/swing/text/Element.java \
 	javax/swing/text/FieldView.java \
+	javax/swing/text/FlowView.java \
 	javax/swing/text/GapContent.java \
+	javax/swing/text/GlyphView.java \
 	javax/swing/text/Highlighter.java \
+	javax/swing/text/IconView.java \
 	javax/swing/text/InternationalFormatter.java \
 	javax/swing/text/JTextComponent.java \
 	javax/swing/text/Keymap.java \
+	javax/swing/text/LabelView.java \
 	javax/swing/text/LayeredHighlighter.java \
 	javax/swing/text/MutableAttributeSet.java \
 	javax/swing/text/NavigationFilter.java \
+	javax/swing/text/ParagraphView.java \
 	javax/swing/text/PasswordView.java \
 	javax/swing/text/PlainDocument.java \
 	javax/swing/text/PlainView.java \
@@ -5205,6 +5241,24 @@ org_omg_CosNaming_NamingContextPackage_SRCS = \
 org_omg_Dynamic_SRCS = \
 	org/omg/Dynamic/Parameter.java
 
+org_omg_DynamicAny_SRCS = \
+	org/omg/DynamicAny/DynAny.java \
+	org/omg/DynamicAny/DynAnyOperations.java \
+	org/omg/DynamicAny/DynArray.java \
+	org/omg/DynamicAny/DynArrayOperations.java \
+	org/omg/DynamicAny/DynEnum.java \
+	org/omg/DynamicAny/DynEnumOperations.java \
+	org/omg/DynamicAny/DynFixed.java \
+	org/omg/DynamicAny/DynFixedOperations.java \
+	org/omg/DynamicAny/DynSequence.java \
+	org/omg/DynamicAny/DynSequenceOperations.java \
+	org/omg/DynamicAny/DynStruct.java \
+	org/omg/DynamicAny/DynStructOperations.java \
+	org/omg/DynamicAny/DynUnion.java \
+	org/omg/DynamicAny/DynUnionOperations.java \
+	org/omg/DynamicAny/NameDynAnyPair.java \
+	org/omg/DynamicAny/NameValuePair.java
+
 org_omg_DynamicAny_DynAnyFactoryPackage_SRCS = \
 	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCode.java \
 	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCodeHelper.java
@@ -5283,19 +5337,60 @@ org_omg_PortableInterceptor_ORBInitInfoPackage_SRCS = \
 	org/omg/PortableInterceptor/ORBInitInfoPackage/ObjectIdHelper.java
 
 org_omg_PortableServer_SRCS = \
+	org/omg/PortableServer/AdapterActivator.java \
+	org/omg/PortableServer/AdapterActivatorOperations.java \
+	org/omg/PortableServer/Current.java \
+	org/omg/PortableServer/CurrentHelper.java \
+	org/omg/PortableServer/CurrentOperations.java \
+	org/omg/PortableServer/DynamicImplementation.java \
+	org/omg/PortableServer/ForwardRequest.java \
+	org/omg/PortableServer/ForwardRequestHelper.java \
 	org/omg/PortableServer/ID_ASSIGNMENT_POLICY_ID.java \
 	org/omg/PortableServer/ID_UNIQUENESS_POLICY_ID.java \
 	org/omg/PortableServer/IMPLICIT_ACTIVATION_POLICY_ID.java \
+	org/omg/PortableServer/IdAssignmentPolicy.java \
+	org/omg/PortableServer/IdAssignmentPolicyOperations.java \
 	org/omg/PortableServer/IdAssignmentPolicyValue.java \
+	org/omg/PortableServer/IdUniquenessPolicy.java \
+	org/omg/PortableServer/IdUniquenessPolicyOperations.java \
 	org/omg/PortableServer/IdUniquenessPolicyValue.java \
+	org/omg/PortableServer/ImplicitActivationPolicy.java \
+	org/omg/PortableServer/ImplicitActivationPolicyOperations.java \
 	org/omg/PortableServer/ImplicitActivationPolicyValue.java \
 	org/omg/PortableServer/LIFESPAN_POLICY_ID.java \
+	org/omg/PortableServer/LifespanPolicy.java \
+	org/omg/PortableServer/LifespanPolicyOperations.java \
 	org/omg/PortableServer/LifespanPolicyValue.java \
+	org/omg/PortableServer/POA.java \
+	org/omg/PortableServer/POAHelper.java \
+	org/omg/PortableServer/POAManager.java \
+	org/omg/PortableServer/POAManagerOperations.java \
+	org/omg/PortableServer/POAOperations.java \
 	org/omg/PortableServer/REQUEST_PROCESSING_POLICY_ID.java \
+	org/omg/PortableServer/RequestProcessingPolicy.java \
+	org/omg/PortableServer/RequestProcessingPolicyOperations.java \
 	org/omg/PortableServer/RequestProcessingPolicyValue.java \
 	org/omg/PortableServer/SERVANT_RETENTION_POLICY_ID.java \
+	org/omg/PortableServer/Servant.java \
+	org/omg/PortableServer/ServantActivator.java \
+	org/omg/PortableServer/ServantActivatorHelper.java \
+	org/omg/PortableServer/ServantActivatorOperations.java \
+	org/omg/PortableServer/ServantActivatorPOA.java \
+	org/omg/PortableServer/ServantLocator.java \
+	org/omg/PortableServer/ServantLocatorHelper.java \
+	org/omg/PortableServer/ServantLocatorOperations.java \
+	org/omg/PortableServer/ServantLocatorPOA.java \
+	org/omg/PortableServer/ServantManager.java \
+	org/omg/PortableServer/ServantManagerOperations.java \
+	org/omg/PortableServer/ServantRetentionPolicy.java \
+	org/omg/PortableServer/ServantRetentionPolicyOperations.java \
 	org/omg/PortableServer/ServantRetentionPolicyValue.java \
-	org/omg/PortableServer/THREAD_POLICY_ID.java
+	org/omg/PortableServer/THREAD_POLICY_ID.java \
+	org/omg/PortableServer/ThreadPolicy.java \
+	org/omg/PortableServer/ThreadPolicyOperations.java \
+	org/omg/PortableServer/ThreadPolicyValue.java \
+	org/omg/PortableServer/_ServantActivatorStub.java \
+	org/omg/PortableServer/_ServantLocatorStub.java
 
 org_omg_PortableServer_CurrentPackage_SRCS = \
 	org/omg/PortableServer/CurrentPackage/NoContext.java \
@@ -5330,6 +5425,9 @@ org_omg_PortableServer_POAPackage_SRCS = \
 
 org_omg_PortableServer_ServantLocatorPackage_SRCS = \
 	org/omg/PortableServer/ServantLocatorPackage/CookieHolder.java
+
+org_omg_PortableServer_portable_SRCS = \
+	org/omg/PortableServer/portable/Delegate.java
 
 org_omg_SendingContext_SRCS = \
 	org/omg/SendingContext/RunTime.java \

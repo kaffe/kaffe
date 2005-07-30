@@ -38,14 +38,14 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * TreePath
+ * A <code>TreePath</code> represents a sequence of tree elements that form
+ * a path starting from the root of a tree.  A tree element can be represented
+ * by any {@link Object}.
+ * 
  * @author Andrew Selkirk
  */
 public class TreePath implements Serializable
@@ -59,39 +59,48 @@ public class TreePath implements Serializable
 
 
   /**
-   * Constructor TreePath
-   * @param path TODO
+   * Creates a path from the list of objects representing tree elements.  The
+   * incoming array is copied so that subsequent changes do not affect this
+   * tree path.
+   * 
+   * @param path  the elements in the path (<code>null</code> not permitted).
+   * 
+   * @throws IllegalArgumentException if <code>path</code> is <code>null</code>.
    */
   public TreePath(Object[] path)
   {
-    // Create Path
+    if (path == null)
+      throw new IllegalArgumentException("Null 'path' not permitted.");
     this.path = new Object[path.length];
     System.arraycopy(path, 0, this.path, 0, path.length);
   }
 
   /**
-   * Constructor TreePath
-   * @param element TODO
+   * Creates a new path from a single element.
+   * 
+   * @param element the element (<code>null</code> not permitted).
+   * 
+   * @throws IllegalArgumentException if <code>element</code> is 
+   *         <code>null</code>.
    */
   public TreePath(Object element)
   {
-    // Create Path
     path = new Object[1];
     path[0] = element;
   }
 
   /**
-   * Constructor TreePath
-   * @param path TODO
-   * @param element TODO
+   * Creates a new tree path by adding the specified <code>element</code> to
+   * the <code>path</code>.
+   * 
+   * @param path  a tree path.
+   * @param element  a path element.
    */
   protected TreePath(TreePath path, Object element)
   {
-    // Variables
-    Object[]	treepath;
-
-    // Get Tree Path
-    treepath = path.getPath();
+    if (element == null)
+      throw new NullPointerException("Null 'element' argument.");
+    Object[] treepath = path.getPath();
 
     // Create Tree Path
     this.path = new Object[treepath.length + 1];
@@ -100,9 +109,11 @@ public class TreePath implements Serializable
   }
 
   /**
-   * Constructor TreePath
-   * @param path TODO
-   * @param length TODO
+   * Creates a new tree path using the first <code>length</code> elements
+   * from the given array.
+   * 
+   * @param path  the path elements.
+   * @param length  the path length.
    */
   protected TreePath(Object[] path, int length)
   {
@@ -112,7 +123,7 @@ public class TreePath implements Serializable
   }
 
   /**
-   * Constructor TreePath
+   * Default constructor.
    */
   protected TreePath()
   {
@@ -121,8 +132,9 @@ public class TreePath implements Serializable
 
 
   /**
-   * hashCode
-   * @returns int
+   * Returns a hashcode for the path.
+   * 
+   * @return A hashcode.
    */
   public int hashCode()
   {
@@ -130,30 +142,33 @@ public class TreePath implements Serializable
   }
 
   /**
-   * equals
-   * @param object TODO
-   * @returns boolean
+   * Tests this path for equality with an arbitrary object.  An object is 
+   * considered equal to this path if and only if:
+   * <ul>
+   * <li>the object is not <code>null</code>;</li>
+   * <li>the object is an instanceof {@link TreePath};</li>
+   * <li>the object contains the same elements in the same order as this
+   * {@link TreePath};</li>
+   * </ul>
+   * 
+   * @param object  the object (<code>null</code> permitted).
+   * 
+   * @returns <code>true</code> if <code>obj</code> is equal to this tree path,
+   *          and <code>false</code> otherwise.
    */
   public boolean equals(Object object)
   {
-    // Variables
-    Object[]	treepath;
-    int			index;
+    Object[] treepath;
+    int index;
 
-    // Check for TreePath
     if (object instanceof TreePath)
       {
-        // Get Path Elements
         treepath = ((TreePath) object).getPath();
-
-        // Check length
         if (treepath.length != path.length)
           return false;
-
-        // Check Elements
         for (index = 0; index < path.length; index++)
           {
-            if (treepath[index] != path[index])
+            if (!treepath[index].equals(path[index]))
               return false;
           }
 
@@ -166,8 +181,9 @@ public class TreePath implements Serializable
   }
 
   /**
-   * toString
-   * @returns String
+   * Returns a string representation of this path.
+   * 
+   * @return A string representation of this path.
    */
   public String toString()
   {
@@ -178,40 +194,19 @@ public class TreePath implements Serializable
   }
 
   /**
-   * writeObject
-   * @param value0 TODO
-   * @exception IOException TODO
-   */
-  private void writeObject(ObjectOutputStream value0)
-    throws IOException
-  {
-    // TODO
-  }
-
-  /**
-   * readObject
-   * @param value0 TODO
-   * @exception IOException TODO
-   * @exception ClassNotFoundException TODO
-   */
-  private void readObject(ObjectInputStream value0)
-    throws IOException, ClassNotFoundException
-  {
-    // TODO
-  }
-
-  /**
-   * getPath
-   * @returns Object[]
+   * Returns an array containing the path elements.
+   * 
+   * @returns An array containing the path elements.
    */
   public Object[] getPath()
   {
-    return path;
+    return (Object[]) path.clone();
   }
 
   /**
-   * getLastPathComponent
-   * @returns Object
+   * Returns the last object in the path.
+   * 
+   * @return The last object in the path.
    */
   public Object getLastPathComponent()
   {
@@ -219,8 +214,9 @@ public class TreePath implements Serializable
   }
 
   /**
-   * getPathCount
-   * @returns int
+   * Returns the number of elements in the path.
+   * 
+   * @returns The number of elements in the path.
    */
   public int getPathCount()
   {
@@ -228,57 +224,55 @@ public class TreePath implements Serializable
   }
 
   /**
-   * getPathComponent
-   * @param position TODO
-   * @returns Object
+   * Returns the element at the specified position in the path.
+   * 
+   * @param position the element position (<code>0 &lt N - 1</code>, where 
+   *                 <code>N</code> is the number of elements in the path).
+   * 
+   * @return The element at the specified position.
+   * 
+   * @throws IllegalArgumentException if <code>position</code> is outside the
+   *         valid range.
    */
   public Object getPathComponent(int position)
   {
+    if (position < 0 || position >= getPathCount()) 
+      throw new IllegalArgumentException("Invalid position: " + position);
     return path[position];
   }
 
   /**
-   * isDescendant
-   * @param path TODO
-   * @returns boolean
+   * Returns <code>true</code> if <code>path</code> is a descendant of this
+   * path, and <code>false</code> otherwise.  If <code>path</code> is 
+   * <code>null</code>, this method returns <code>false</code>.
+   * 
+   * @param path  the path to check (<code>null</code> permitted).
+   * 
+   * @returns <code>true</code> if <code>path</code> is a descendant of this
+   *          path, and <code>false</code> otherwise
    */
   public boolean isDescendant(TreePath path)
   {
-
-    // Variables
-    Object[]	treepath;
-    int			index;
-    int			index2;
-
-    // Get Descendant path
-    treepath = path.getPath();
-
-    // Locate Start Index
-    index = 0;
-    index2 = 0;
-    while (treepath[index] != this.path[index2])
-      index++;
-
-    // Verify Paths
-    while (treepath[index] == this.path[index2])
-      {
-        index++;
-        index2++;
-      }
-
-    // Check for descendant
-    if (index2 != this.path.length)
+    if (path == null)
       return false;
-
-    // Is Descendant
+    int count = getPathCount();
+    if (path.getPathCount() < count)
+      return false;
+    for (int i = 0; i < count; i++)
+    {
+      if (!this.path[i].equals(path.getPathComponent(i)))
+        return false;
+    }
     return true;
-
   }
 
   /**
-   * pathByAddingChild
-   * @param element TODO
-   * @returns TreePath
+   * Creates a new path that is equivalent to this path plus the specified
+   * element.
+   * 
+   * @param element  the element.
+   * 
+   * @returns A tree path.
    */
   public TreePath pathByAddingChild(Object element)
   {
@@ -286,8 +280,12 @@ public class TreePath implements Serializable
   }
 
   /**
-   * getParentPath
-   * @returns TreePath
+   * Returns the parent path, which is a path containing all the same elements
+   * as this path, except for the last one.  If this path contains only one
+   * element, the method returns <code>null</code>.
+   * 
+   * @returns The parent path, or <code>null</code> if this path has only one
+   *          element.
    */
   public TreePath getParentPath()
   {

@@ -83,6 +83,20 @@ extern struct state_table *cp_gtk_native_global_ref_table;
     (*env)->DeleteGlobalRef (env, *globRefPtr); \
     free (globRefPtr);} while (0)
 
+extern struct state_table *cp_gtk_native_graphics_state_table;
+
+#define NSA_G_INIT(env, clazz) \
+  cp_gtk_native_graphics_state_table = cp_gtk_init_state_table (env, clazz)
+
+#define NSA_GET_G_PTR(env, obj) \
+  cp_gtk_get_state (env, obj, cp_gtk_native_graphics_state_table)
+
+#define NSA_SET_G_PTR(env, obj, ptr) \
+  cp_gtk_set_state (env, obj, cp_gtk_native_graphics_state_table, (void *)ptr)
+
+#define NSA_DEL_G_PTR(env, obj) \
+  cp_gtk_remove_state_slot (env, obj, cp_gtk_native_graphics_state_table)
+
 #define SWAPU32(w)							\
   (((w) << 24) | (((w) & 0xff00) << 8) | (((w) >> 8) & 0xff00) | ((w) >> 24))
 

@@ -83,7 +83,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem()
   {
-    super(null, null);
+    super();
   }
 
   /**
@@ -95,7 +95,8 @@ public class JMenuItem extends AbstractButton implements Accessible,
   {
     // FIXME: The requestedFocusEnabled property should
     // be set to false, when only icon is set for menu item.
-    super(null, icon);
+    super();
+    init(null, icon);
   }
 
   /**
@@ -105,7 +106,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem(String text)
   {
-    super(text, null);
+    this(text, null);
   }
 
   /**
@@ -115,7 +116,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem(Action action)
   {
-    super(null, null);
+    super();
     super.setAction(action);
   }
 
@@ -128,7 +129,8 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem(String text, Icon icon)
   {
-    super(text, icon);
+    super();
+    init(text, icon);
   }
 
   /**
@@ -141,7 +143,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem(String text, int mnemonic)
   {
-    super(text, null);
+    this(text, null);
     setMnemonic(mnemonic);
   }
 

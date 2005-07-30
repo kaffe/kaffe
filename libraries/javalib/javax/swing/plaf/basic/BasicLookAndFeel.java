@@ -57,6 +57,7 @@ import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.DimensionUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.JTextComponent;
 
@@ -285,7 +286,14 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       }),
       "CheckBox.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "CheckBox.foreground", new ColorUIResource(darkShadow),
-      "CheckBox.icon", BasicIconFactory.getCheckBoxIcon(),
+      "CheckBox.icon",
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return BasicIconFactory.getCheckBoxIcon();
+        }
+      },
       "CheckBox.margin",new InsetsUIResource(2, 2, 2, 2),
       "CheckBox.textIconGap", new Integer(4),
       "CheckBox.textShiftOffset", new Integer(0),
@@ -480,8 +488,15 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "InternalFrame.borderLight", new ColorUIResource(Color.LIGHT_GRAY),
       "InternalFrame.borderShadow", new ColorUIResource(Color.GRAY),
       "InternalFrame.closeIcon", BasicIconFactory.createEmptyFrameIcon(),
-      // XXX Don't use gif
-//      "InternalFrame.icon", new IconUIResource(new ImageIcon("icons/JavaCup.gif")),
+      // FIXME: Set a nice icon for InternalFrames here.
+      "InternalFrame.icon",
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return new IconUIResource(BasicIconFactory.createEmptyFrameIcon());
+        }
+      },
       "InternalFrame.iconifyIcon", BasicIconFactory.createEmptyFrameIcon(),
       "InternalFrame.inactiveTitleBackground", new ColorUIResource(Color.gray),
       "InternalFrame.inactiveTitleForeground",
@@ -524,6 +539,9 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "List.foreground", new ColorUIResource(darkShadow),
       "List.selectionBackground", new ColorUIResource(Color.black),
       "List.selectionForeground", new ColorUIResource(Color.white),
+      "List.focusCellHighlightBorder",
+      new BorderUIResource.
+      LineBorderUIResource(new ColorUIResource(Color.yellow)),
       "Menu.acceleratorFont", new FontUIResource("Dialog", Font.PLAIN, 12),
       "Menu.acceleratorForeground", new ColorUIResource(darkShadow),
       "Menu.acceleratorSelectionForeground", new ColorUIResource(Color.white),
@@ -649,7 +667,14 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "RadioButton.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "RadioButton.foreground", new ColorUIResource(darkShadow),
       "RadioButton.highlight", new ColorUIResource(highLight),
-      "RadioButton.icon", BasicIconFactory.getRadioButtonIcon(),
+      "RadioButton.icon",
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return BasicIconFactory.getRadioButtonIcon();
+        }
+      },
       "RadioButton.light", new ColorUIResource(highLight),
       "RadioButton.margin", new InsetsUIResource(2, 2, 2, 2),
       "RadioButton.shadow", new ColorUIResource(shadow),
@@ -748,7 +773,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Slider.highlight", new ColorUIResource(highLight),
       "Slider.shadow", new ColorUIResource(shadow),
       "Slider.thumbHeight", new Integer(20),
-      "Slider.thumbWidth", new Integer(10),
+      "Slider.thumbWidth", new Integer(11),
       "Slider.tickHeight", new Integer(12),
       "Spinner.background", new ColorUIResource(light),
       "Spinner.foreground", new ColorUIResource(light),

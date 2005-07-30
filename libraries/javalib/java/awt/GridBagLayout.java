@@ -913,7 +913,7 @@ public class GridBagLayout
           sizes[start] = Math.max(sizes[start], size);
           weights[start] = Math.max(weights[start], weight);
         }
-      else
+      else if (span > 1)
         {
           int numOccupied = span;
           int lastOccupied = -1;

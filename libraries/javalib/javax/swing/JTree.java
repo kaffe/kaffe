@@ -1729,8 +1729,8 @@ public class JTree
 	 * 
 	 * @param prefix the prefix to search for in the cell values
 	 * @param startingRow the index of the row where to start searching from
-	 * @param bias the search direction, either {@link Position.Bias.Forward} or
-	 *        {@link Position.Bias.Backward}
+	 * @param bias the search direction, either {@link Position.Bias#Forward} or
+	 *        {@link Position.Bias#Backward}
 	 * 
 	 * @return the path to the found element or -1 if no such element has been
 	 *         found
@@ -1802,7 +1802,7 @@ public class JTree
 	 * it will be removed too.
 	 * 
 	 * @param path the path from which selected descendants are to be removed
-	 * @param includePath if <code>true</code> then <code>path</code> itself
+	 * @param includeSelected if <code>true</code> then <code>path</code> itself
 	 *        will also be remove if it's selected
 	 * 
 	 * @return <code>true</code> if something has been removed,

@@ -310,7 +310,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaled
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     
-  g = (struct graphics *) NSA_GET_PTR (env, gc_obj);
+  g = (struct graphics *) NSA_GET_G_PTR (env, gc_obj);
   
   if (!g || !GDK_IS_DRAWABLE (g->drawable))
     {
@@ -383,7 +383,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     
-  g = (struct graphics *) NSA_GET_PTR (env, gc_obj);
+  g = (struct graphics *) NSA_GET_G_PTR (env, gc_obj);
   
   if (!g || !GDK_IS_DRAWABLE (g->drawable))
     {

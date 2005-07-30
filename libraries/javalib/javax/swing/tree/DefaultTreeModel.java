@@ -75,7 +75,7 @@ public class DefaultTreeModel
 
 	/**
 	 * Constructor DefaultTreeModel
-	 * @param value0 TODO
+	 * @param root the tree root.
 	 */
 	public DefaultTreeModel(TreeNode root)
 	{
@@ -86,8 +86,8 @@ public class DefaultTreeModel
 
 	/**
 	 * Constructor DefaultTreeModel
-	 * @param value0 TODO
-	 * @param value1 TODO
+	 * @param root the tree root.
+	 * @param asksAllowsChildren TODO
 	 */
 	public DefaultTreeModel(TreeNode root, boolean asksAllowsChildren)
 	{
@@ -97,10 +97,10 @@ public class DefaultTreeModel
 
 	/**
 	 * writeObject
-	 * @param value0 TODO
+	 * @param obj the object.
 	 * @exception IOException TODO
 	 */
-	private void writeObject(ObjectOutputStream value0) throws IOException
+	private void writeObject(ObjectOutputStream obj) throws IOException
 	{
 		// TODO
 	}
@@ -128,7 +128,7 @@ public class DefaultTreeModel
 
 	/**
 	 * setAsksAllowsChildren
-	 * @param value0 TODO
+	 * @param value TODO
 	 */
 	public void setAsksAllowsChildren(boolean value)
 	{
@@ -137,7 +137,7 @@ public class DefaultTreeModel
 
 	/**
 	 * setRoot
-	 * @param value0 TODO
+	 * @param root the root node.
 	 */
 	public void setRoot(TreeNode root)
 	{
@@ -163,8 +163,8 @@ public class DefaultTreeModel
 
 	/**
 	 * getIndexOfChild
-	 * @param value0 TODO
-	 * @param value1 TODO
+	 * @param parent TODO
+	 * @param child TODO
 	 * @return int
 	 */
 	public int getIndexOfChild(Object parent, Object child)
@@ -174,8 +174,8 @@ public class DefaultTreeModel
 
 	/**
 	 * getChild
-	 * @param value0 TODO
-	 * @param value1 TODO
+	 * @param node TODO
+	 * @param idx TODO
 	 * @return Object
 	 */
 	public Object getChild(Object node, int idx)
@@ -188,7 +188,7 @@ public class DefaultTreeModel
 
 	/**
 	 * getChildCount
-	 * @param value0 TODO
+	 * @param node TODO
 	 * @return int
 	 */
 	public int getChildCount(Object node)
@@ -201,7 +201,7 @@ public class DefaultTreeModel
 
 	/**
 	 * isLeaf
-	 * @param value0 TODO
+	 * @param node TODO
 	 * @return boolean
 	 */
 	public boolean isLeaf(Object node)

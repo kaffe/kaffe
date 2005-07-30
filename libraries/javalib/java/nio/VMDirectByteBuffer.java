@@ -61,6 +61,7 @@ final class VMDirectByteBuffer
   static native byte get(RawData address, int index);
   static native void get(RawData address, int index, byte[] dst, int offset, int length);
   static native void put(RawData address, int index, byte value);
+  static native void put(RawData address, int index, byte[] src, int offset, int length);
   static native RawData adjustAddress(RawData address, int offset);
   static native void shiftDown(RawData address, int dst_offset, int src_offset, int count);
 }

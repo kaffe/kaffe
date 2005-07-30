@@ -39,10 +39,10 @@ exception statement from your version. */
 package org.omg.CORBA;
 
 import gnu.CORBA.Restricted_ORB;
-import gnu.CORBA.primitiveTypeCode;
 import gnu.CORBA.fixedTypeCode;
 import gnu.CORBA.generalTypeCode;
 import gnu.CORBA.gnuContext;
+import gnu.CORBA.primitiveTypeCode;
 import gnu.CORBA.recordTypeCode;
 import gnu.CORBA.recursiveTypeCode;
 
@@ -118,13 +118,14 @@ public abstract class ORB
   /**
    * The class, implementing the default fully functional ORB.
    */
-  private static final String DEFAULT_FUNCTIONAL_ORB = "gnu.CORBA.Functional_ORB";
+  private static final String DEFAULT_FUNCTIONAL_ORB =
+    gnu.CORBA.Poa.ORB_1_4.class.getName();
 
   /**
    * The class, implementing the default restricted ORB.
    */
-  private static final String DEFAULT_RESTRICTED_ORB = "gnu.CORBA.Restricted_ORB";
-
+  private static final String DEFAULT_RESTRICTED_ORB =
+    gnu.CORBA.Restricted_ORB.class.getName();
 
   /**
    * Connect the given CORBA object to this ORB. After the object is
@@ -161,7 +162,6 @@ public abstract class ORB
   {
     throw new NO_IMPLEMENT();
   }
-
 
   /**
    * Create alias typecode for the given typecode.
@@ -204,10 +204,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynAny create_basic_dyn_any(org.omg.CORBA.TypeCode t)
-                             throws InconsistentTypeCode
+                              throws InconsistentTypeCode
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * The support for {@link DynAny} and derived interfaces
@@ -222,7 +223,8 @@ public abstract class ORB
   public DynAny create_dyn_any(org.omg.CORBA.Any a)
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * The support for {@link DynArray}
@@ -235,10 +237,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynArray create_dyn_array(org.omg.CORBA.TypeCode t)
-                       throws InconsistentTypeCode
-   {
-     throw new NO_IMPLEMENT();
-   };
+                            throws InconsistentTypeCode
+  {
+    throw new NO_IMPLEMENT();
+  }
+  ;
 
   /**
    * The support for {@link DynEnum}
@@ -251,10 +254,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynEnum create_dyn_enum(org.omg.CORBA.TypeCode t)
-                       throws InconsistentTypeCode
+                          throws InconsistentTypeCode
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * The support for {@link DynSequence}
@@ -267,10 +271,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynSequence create_dyn_sequence(org.omg.CORBA.TypeCode t)
-                       throws InconsistentTypeCode
+                                  throws InconsistentTypeCode
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * The support for {@link DynStruct} and derived interfaces
@@ -283,10 +288,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynStruct create_dyn_struct(org.omg.CORBA.TypeCode t)
-                       throws InconsistentTypeCode
+                              throws InconsistentTypeCode
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * The support for {@link DynUnion} and derived interfaces
@@ -299,10 +305,11 @@ public abstract class ORB
    * @throws NO_IMPLEMENT, always.
    */
   public DynUnion create_dyn_union(org.omg.CORBA.TypeCode t)
-                       throws InconsistentTypeCode
+                            throws InconsistentTypeCode
   {
     throw new NO_IMPLEMENT();
-  };
+  }
+  ;
 
   /**
    * Create a typecode, defining the given enumeration.
@@ -442,8 +449,7 @@ public abstract class ORB
    * particular transaction.
    */
   public abstract Request get_next_response()
-                                   throws WrongTransaction;
-
+                                     throws WrongTransaction;
 
   /**
    * Create a new CDR output stream, where the parameter values can be written
@@ -489,8 +495,6 @@ public abstract class ORB
   {
     throw new NO_IMPLEMENT();
   }
-
-
 
   /**
    * Create typecode, defining the sequence of the elements, having
@@ -553,7 +557,6 @@ public abstract class ORB
    * @return the corresponding string typecode.
    */
   public abstract TypeCode create_wstring_tc(int bound);
-
 
   /**
    * Create a typecode for an abstract interface. The abstract interface
@@ -675,15 +678,19 @@ public abstract class ORB
 
   /**
    * This should return the information, related to the current thread.
+   * The information is needed, for instance, to get the current object
+   * from the code that serves several objects in parallel threads.
    * The {@link Current} is very general interface, with no fields and
    * operations defined. This method is not implemented in Suns
-   * releases at least till v1.4 inclusive.
+   * releases at least till v1.5 inclusive. To obtain the
+   * {@link org.omg.PortableServer.Current}, use
+   * {@link #resolve_initial_references}, passing "POACurrent".
    *
-   * @deprecated since 1.2
+   * @deprecated since 1.2, use {@link #resolve_initial_references}.
    *
    * @return never
    *
-   * @throws NO_IMPLEMENT, always.
+   * @throws NO_IMPLEMENT always.
    */
   public Current get_current()
   {
@@ -693,7 +700,7 @@ public abstract class ORB
   /**
    * This should return the information about the CORBA facilities and
    * services, available from this ORB. However this method is oficially
-   * documented as not implemented at least till v1.4 inclusive.
+   * documented as not implemented at least till v1.5 inclusive.
    *
    * @param service_type a type of the service being requested. The OMG
    * specification currently defines only one value, 1, for security
@@ -705,10 +712,11 @@ public abstract class ORB
    * @return should return true if the service information is available
    * from the ORB, but this method never returns.
    *
-   * @throws NO_IMPLEMENT, always.
+   * @throws NO_IMPLEMENT always.
    */
   public boolean get_service_information(short service_type,
-                                       ServiceInformationHolder service_info)
+                                         ServiceInformationHolder service_info
+                                        )
   {
     throw new NO_IMPLEMENT();
   }
@@ -846,7 +854,34 @@ public abstract class ORB
    * Find and return the easily accessible CORBA object, addressed
    * by name.  The returned object is typically casted to the more
    * specific reference using the <code>narrow(Object)</code> method
-   * of its helper.
+   * of its helper. The method resolves the following string values,
+   * returning the working objects:
+   * <table border="1"><tr><th>String</th><th>Object class</th>
+   * <th>Object use</th></tr>
+   *
+   * <tr><td>NameService</td><td>{@link org.omg.CosNaming.NamingContextExt}</td>
+   * <td>Finds (usually remote) object by its name.</td></tr>
+   *
+   * <tr><td>RootPOA</td><td>{@link org.omg.PortableServer.POA}</td>
+   * <td>Holds the POA tree for this ORB, where since 1.4 all servants
+   * should be connected.</td></tr>
+   *
+   * <tr><td>RootPOAManager</td><td>{@link org.omg.PortableServer.POAManager}
+   * </td><td>Regulates (suspends/resumes) the root POA
+   * activity</td></tr>
+   *
+   * <tr><td>POACurrent</td><td>{@link org.omg.PortableServer.Current}
+   * </td><td>Informs the current thread about the Id and POA of the
+   * object being currently served (the methods of
+   * <code>Current</code> return different values for
+   * different threads).
+   * </td></tr>
+   *
+   * <tr><td>CodecFactory</td><td>{@link org.omg.IOP.Codec}</td>
+   * <td>Encodes/decodes IDL data types into/from byte arrays.</td>
+   * </tr>
+   *
+   * </table>
    *
    * @param name the object name.
    * @return the object
@@ -887,20 +922,20 @@ public abstract class ORB
   {
   }
 
-   /**
-   * Checks if the ORB needs the main thread to perform some work.
-   * The method should return true if the ORB needs the main thread,
-   * and false if it does not.
-   *
-   * This method is part of the support for the distribute use of the
-   * single execution thread.
-   *
-   * Same as in Suns releases at least till 1.4 inclusive,
-   * the distributed use of the single thread is not implemented.
-   * Use multiple threads, provided by jre.
-   *
-   * @return false, always.
-   */
+  /**
+  * Checks if the ORB needs the main thread to perform some work.
+  * The method should return true if the ORB needs the main thread,
+  * and false if it does not.
+  *
+  * This method is part of the support for the distribute use of the
+  * single execution thread.
+  *
+  * Same as in Suns releases at least till 1.4 inclusive,
+  * the distributed use of the single thread is not implemented.
+  * Use multiple threads, provided by jre.
+  *
+  * @return false, always.
+  */
   public boolean work_pending()
   {
     return false;

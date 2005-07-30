@@ -98,7 +98,7 @@ public class JFrame extends Frame
    * @param gc the <code>GraphicsConfiguration</code> that is used for
    *     the new <code>JFrame</code>
    *
-   * @see Frame(GraphicsConfiguration)
+   * @see Frame#Frame(GraphicsConfiguration)
    */
   public JFrame(GraphicsConfiguration gc)
   {
@@ -114,7 +114,7 @@ public class JFrame extends Frame
    * @param gc the <code>GraphicsConfiguration</code> that is used for
    *     the new <code>JFrame</code>
    *
-   * @see Frame(String, GraphicsConfiguration)
+   * @see Frame#Frame(String, GraphicsConfiguration)
    */
   public JFrame(String title, GraphicsConfiguration gc)
   {

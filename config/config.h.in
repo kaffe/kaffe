@@ -353,6 +353,9 @@
 /* Define to 1 if you have the `mergesort' function. */
 #undef HAVE_MERGESORT
 
+/* Define to 1 if you have the `mincore' function. */
+#undef HAVE_MINCORE
+
 /* Enable MIPS II instructions */
 #undef HAVE_MIPSII_INSTRUCTIONS
 
@@ -367,6 +370,12 @@
 
 /* Define to 1 if you have the `mprotect' function. */
 #undef HAVE_MPROTECT
+
+/* Define to 1 if you have the `msync' function. */
+#undef HAVE_MSYNC
+
+/* Define to 1 if you have the `munmap' function. */
+#undef HAVE_MUNMAP
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
@@ -562,6 +571,9 @@
 
 /* Define to 1 if you have the `sync' function. */
 #undef HAVE_SYNC
+
+/* Define to 1 if you have the `sysconf' function. */
+#undef HAVE_SYSCONF
 
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H

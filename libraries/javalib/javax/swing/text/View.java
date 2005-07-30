@@ -459,5 +459,58 @@ public abstract class View implements SwingConstants
     if (ec != null)
       preferenceChanged(this, true, true);
   }
-}
 
+  /**
+   * Maps a position in the document into the coordinate space of the View.
+   * The output rectangle usually reflects the font height but has a width
+   * of zero.
+   *
+   * @param pos the position of the character in the model
+   * @param a the area that is occupied by the view
+   * @param bias either {@link Position.Bias.Forward} or
+   *        {@link Position.Bias.Backward} depending on the preferred
+   *        direction bias. If <code>null</code> this defaults to
+   *        <code>Position.Bias.Forward</code>
+   *
+   * @return a rectangle that gives the location of the document position
+   *         inside the view coordinate space
+   *
+   * @throws BadLocationException if <code>pos</code> is invalid
+   * @throws IllegalArgumentException if b is not one of the above listed
+   *         valid values
+   */
+  public abstract Shape modelToView(int pos, Shape a, Position.Bias b)
+    throws BadLocationException;
+
+  /**
+   * Maps a region in the document into the coordinate space of the View.
+   *
+   * @param p1 the beginning position inside the document
+   * @param b1 the direction bias for the beginning position
+   * @param p2 the end position inside the document
+   * @param b2 the direction bias for the end position
+   * @param a the area that is occupied by the view
+   *
+   * @return a rectangle that gives the span of the document region
+   *         inside the view coordinate space
+   *
+   * @throws BadLocationException if <code>p1</code> or <code>p2</code> are
+   *         invalid
+   * @throws IllegalArgumentException if b1 or b2 is not one of the above
+   *         listed valid values
+   */
+  public Shape modelToView(int p1, Position.Bias b1,
+			   int p2, Position.Bias b2, Shape a)
+    throws BadLocationException
+  {
+    if (b1 != Position.Bias.Forward && b1 != Position.Bias.Backward)
+      throw new IllegalArgumentException
+	("b1 must be either Position.Bias.Forward or Position.Bias.Backward");
+    if (b2 != Position.Bias.Forward && b2 != Position.Bias.Backward)
+      throw new IllegalArgumentException
+	("b2 must be either Position.Bias.Forward or Position.Bias.Backward");
+    Shape s1 = modelToView(p1, a, b1);
+    Shape s2 = modelToView(p2, a, b2);
+    return s1.getBounds().union(s2.getBounds());
+  }
+}

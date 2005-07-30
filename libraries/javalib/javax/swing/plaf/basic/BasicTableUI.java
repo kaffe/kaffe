@@ -46,6 +46,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -97,12 +98,418 @@ public class BasicTableUI
 
   class KeyHandler implements KeyListener
   {
-    public void keyPressed(KeyEvent e) 
+
+    /**
+     * A helper method for the keyPressed event.  Used because the actions
+     * for TAB, SHIFT-TAB, ENTER, and SHIFT-ENTER are very similar.
+     *
+     * Selects the next (previous if SHIFT pressed) column for TAB, or row for
+     * ENTER from within the currently selected cells.
+     *
+     * @param firstModel the ListSelectionModel for columns (TAB) or
+     * rows (ENTER)
+     * @param firstMin the first selected index in firstModel
+     * @param firstMax the last selected index in firstModel
+     * @param secondModel the ListSelectionModel for rows (TAB) or 
+     * columns (ENTER)
+     * @param secondMin the first selected index in secondModel
+     * @param secondMax the last selected index in secondModel
+     * @param reverse true if shift was held for the event
+     * @param eventIsTab true if TAB was pressed, false if ENTER pressed
+     */
+    void advanceMultipleSelection (ListSelectionModel firstModel, int firstMin,
+                                   int firstMax, ListSelectionModel secondModel, 
+                                   int secondMin, int secondMax, boolean reverse,
+                                   boolean eventIsTab)
     {
+      // If eventIsTab, all the "firsts" correspond to columns, otherwise, to rows
+      // "seconds" correspond to the opposite
+      int firstLead = firstModel.getLeadSelectionIndex();
+      int secondLead = secondModel.getLeadSelectionIndex();
+      int numFirsts = eventIsTab ? 
+        table.getModel().getColumnCount() : table.getModel().getRowCount();
+      int numSeconds = eventIsTab ? 
+        table.getModel().getRowCount() : table.getModel().getColumnCount();
+
+      // check if we have to wrap the "firsts" around, going to the other side
+      if ((firstLead == firstMax && !reverse) || 
+          (reverse && firstLead == firstMin))
+        {
+          firstModel.addSelectionInterval(reverse ? firstMax : firstMin, 
+                                          reverse ? firstMax : firstMin);
+          
+          // check if we have to wrap the "seconds"
+          if ((secondLead == secondMax && !reverse) || 
+              (reverse && secondLead == secondMin))
+            secondModel.addSelectionInterval(reverse ? secondMax : secondMin, 
+                                             reverse ? secondMax : secondMin);
+
+          // if we're not wrapping the seconds, we have to find out where we
+          // are within the secondModel and advance to the next cell (or 
+          // go back to the previous cell if reverse == true)
+          else
+            {
+              int[] secondsSelected;
+              if (eventIsTab && table.getRowSelectionAllowed() || 
+                  !eventIsTab && table.getColumnSelectionAllowed())
+                secondsSelected = eventIsTab ? 
+                  table.getSelectedRows() : table.getSelectedColumns();
+              else
+                {
+                  // if row selection is not allowed, then the entire column gets
+                  // selected when you click on it, so consider ALL rows selected
+                  secondsSelected = new int[numSeconds];
+                  for (int i = 0; i < numSeconds; i++)
+                  secondsSelected[i] = i;
+                }
+
+              // and now find the "next" index within the model
+              int secondIndex = reverse ? secondsSelected.length - 1 : 0;
+              if (!reverse)
+                while (secondsSelected[secondIndex] <= secondLead)
+                  secondIndex++;
+              else
+                while (secondsSelected[secondIndex] >= secondLead)
+                  secondIndex--;
+              
+              // and select it - updating the lead selection index
+              secondModel.addSelectionInterval(secondsSelected[secondIndex], 
+                                               secondsSelected[secondIndex]);
+            }
+        }
+      // We didn't have to wrap the firsts, so just find the "next" first
+      // and select it, we don't have to change "seconds"
+      else
+        {
+          int[] firstsSelected;
+          if (eventIsTab && table.getColumnSelectionAllowed() || 
+              !eventIsTab && table.getRowSelectionAllowed())
+            firstsSelected = eventIsTab ? 
+              table.getSelectedColumns() : table.getSelectedRows();
+          else
+            {
+              // if selection not allowed, consider ALL firsts to be selected
+              firstsSelected = new int[numFirsts];
+              for (int i = 0; i < numFirsts; i++)
+                firstsSelected[i] = i;
+            }
+          int firstIndex = reverse ? firstsSelected.length - 1 : 0;
+          if (!reverse)
+            while (firstsSelected[firstIndex] <= firstLead)
+              firstIndex++;
+          else 
+            while (firstsSelected[firstIndex] >= firstLead)
+              firstIndex--;
+          firstModel.addSelectionInterval(firstsSelected[firstIndex], 
+                                          firstsSelected[firstIndex]);
+          secondModel.addSelectionInterval(secondLead, secondLead);
+        }
     }
+    
+    /** 
+     * A helper method for the keyPressed event. Used because the actions
+     * for TAB, SHIFT-TAB, ENTER, and SHIFT-ENTER are very similar.
+     *
+     * Selects the next (previous if SHIFT pressed) column (TAB) or row (ENTER)
+     * in the table, changing the current selection.  All cells in the table
+     * are eligible, not just the ones that are currently selected.
+     * @param firstModel the ListSelectionModel for columns (TAB) or rows
+     * (ENTER)
+     * @param firstMax the last index in firstModel
+     * @param secondModel the ListSelectionModel for rows (TAB) or columns
+     * (ENTER)
+     * @param secondMax the last index in secondModel
+     * @param reverse true if SHIFT was pressed for the event
+     */
+
+    void advanceSingleSelection (ListSelectionModel firstModel, int firstMax, 
+                                 ListSelectionModel secondModel, int secondMax, 
+                                 boolean reverse)
+    {
+      // for TABs, "first" corresponds to columns and "seconds" to rows.
+      // the opposite is true for ENTERs
+      int firstLead = firstModel.getLeadSelectionIndex();
+      int secondLead = secondModel.getLeadSelectionIndex();
+      
+      // if we are going backwards subtract 2 because we later add 1
+      // for a net change of -1
+      if (reverse && (firstLead == 0))
+        {
+          // check if we have to wrap around
+          if (secondLead == 0)
+            secondLead += secondMax + 1;
+          secondLead -= 2;
+        }
+      
+      // do we have to wrap the "seconds"?
+      if (reverse && (firstLead == 0) || !reverse && (firstLead == firstMax))
+        secondModel.setSelectionInterval((secondLead + 1)%(secondMax + 1), 
+                                         (secondLead + 1)%(secondMax + 1));
+      // if not, just reselect the current lead
+      else
+        secondModel.setSelectionInterval(secondLead, secondLead);
+      
+      // if we are going backwards, subtract 2  because we add 1 later
+      // for net change of -1
+      if (reverse)
+        {
+          // check for wraparound
+          if (firstLead == 0)
+            firstLead += firstMax + 1;
+          firstLead -= 2;
+        }
+      // select the next "first"
+      firstModel.setSelectionInterval ((firstLead + 1)%(firstMax + 1), 
+                                       (firstLead + 1)%(firstMax + 1));
+    }
+
+    public void keyPressed(KeyEvent evt) 
+    {
+      ListSelectionModel rowModel = table.getSelectionModel();
+      ListSelectionModel colModel = table.getColumnModel().getSelectionModel();
+      
+      int rowLead = rowModel.getLeadSelectionIndex();
+      int rowMax = table.getModel().getRowCount() - 1;
+      
+      int colLead = colModel.getLeadSelectionIndex();
+      int colMax = table.getModel().getColumnCount() - 1;
+      
+      if ((evt.getKeyCode() == KeyEvent.VK_DOWN)
+          || (evt.getKeyCode() == KeyEvent.VK_KP_DOWN))
+        {
+          if (evt.getModifiers() == 0)
+            {
+              
+              table.clearSelection();
+              rowModel.setSelectionInterval(Math.min(rowLead + 1, rowMax),
+                                            Math.min(rowLead + 1, rowMax));
+              colModel.setSelectionInterval(colLead,colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              rowModel.setLeadSelectionIndex(Math.min(rowLead + 1, rowMax));
+              colModel.setLeadSelectionIndex(colLead);
+            }
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_UP)
+               || (evt.getKeyCode() == KeyEvent.VK_KP_UP))
+        {
+          if (evt.getModifiers() == 0)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(Math.max(rowLead - 1, 0),
+                                            Math.max(rowLead - 1, 0));
+              colModel.setSelectionInterval(colLead,colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              rowModel.setLeadSelectionIndex(Math.max(rowLead - 1, 0));
+              colModel.setLeadSelectionIndex(colLead);
+            }
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_LEFT)
+               || (evt.getKeyCode() == KeyEvent.VK_KP_LEFT))
+        {
+          if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              colModel.setLeadSelectionIndex(Math.max(colLead - 1, 0));
+              rowModel.setLeadSelectionIndex(rowLead);
+            }
+          else if (evt.getModifiers() == 0)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(rowLead,rowLead);
+              colModel.setSelectionInterval(Math.max(colLead - 1, 0),
+                                            Math.max(colLead - 1, 0));
+            }
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_RIGHT)
+               || (evt.getKeyCode() == KeyEvent.VK_KP_RIGHT))
+        {
+          if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              colModel.setLeadSelectionIndex(Math.min(colLead + 1, colMax));
+              rowModel.setLeadSelectionIndex(rowLead);
+            }
+          else if (evt.getModifiers() == 0)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(rowLead,rowLead);
+              colModel.setSelectionInterval(Math.min(colLead + 1, colMax),
+                                            Math.min(colLead + 1, colMax));
+            }
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_END)
+        {
+          if (evt.getModifiers() == (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
+            {
+              rowModel.setLeadSelectionIndex(rowMax);
+              colModel.setLeadSelectionIndex(colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.CTRL_MASK)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(rowMax,rowMax);
+              colModel.setSelectionInterval(colLead, colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              colModel.setLeadSelectionIndex(colMax);
+              rowModel.setLeadSelectionIndex(rowLead);
+            }
+          else if (evt.getModifiers() == 0)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(rowLead, rowLead);
+              colModel.setSelectionInterval(colMax, colMax);
+            }
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_HOME)
+        {
+          if (evt.getModifiers() == (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
+            {
+              rowModel.setLeadSelectionIndex(0);
+              colModel.setLeadSelectionIndex(colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.CTRL_MASK)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(0,0);
+              colModel.setSelectionInterval(colLead, colLead);
+            }
+          else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+            {
+              colModel.setLeadSelectionIndex(0);
+              rowModel.setLeadSelectionIndex(rowLead);
+            }
+          else if (evt.getModifiers() == 0)
+            {
+              table.clearSelection();
+              rowModel.setSelectionInterval(rowLead, rowLead);
+              colModel.setSelectionInterval(0, 0);
+            }
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_F2)
+        {
+          // FIXME: Implement "start editing"
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_PAGE_UP)
+        {
+          // FIXME: implement, need JList.ensureIndexIsVisible to work
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
+        {
+          // FIXME: implement, need JList.ensureIndexIsVisible to work
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_TAB
+               || evt.getKeyCode() == KeyEvent.VK_ENTER)
+        {
+          // If modifers other than SHIFT are pressed, do nothing
+          if (evt.getModifiers() != 0 && evt.getModifiers() !=
+              InputEvent.SHIFT_MASK)
+            return;
+          
+          // If nothing is selected, select the first cell in the table
+          if (table.getSelectedRowCount() == 0 && 
+              table.getSelectedColumnCount() == 0)
+            {
+              rowModel.setSelectionInterval(0, 0);
+              colModel.setSelectionInterval(0, 0);
+              return;
+            }
+          
+          // If the lead selection index isn't selected (ie a remove operation
+          // happened, then set the lead to the first selected cell in the
+          // table
+          if (!table.isCellSelected(rowLead, colLead))
+            {
+              rowModel.addSelectionInterval(rowModel.getMinSelectionIndex(), 
+                                            rowModel.getMinSelectionIndex());
+              colModel.addSelectionInterval(colModel.getMinSelectionIndex(), 
+                                            colModel.getMinSelectionIndex());
+              return;
+            }
+          
+          // multRowsSelected and multColsSelected tell us if multiple rows or
+          // columns are selected, respectively
+          boolean multRowsSelected, multColsSelected;
+          multRowsSelected = (table.getSelectedRowCount() > 1) ||
+            (!table.getRowSelectionAllowed() && 
+             table.getSelectedColumnCount() > 0);
+          multColsSelected = (table.getSelectedColumnCount() > 1) ||
+            (!table.getColumnSelectionAllowed() && 
+             table.getSelectedRowCount() > 0);
+          
+          // If there is just one selection, select the next cell, and wrap
+          // when you get to the edges of the table.
+          if (!multColsSelected || !multRowsSelected)
+            {
+              if (evt.getKeyCode() == KeyEvent.VK_TAB)
+                advanceSingleSelection(colModel, colMax, rowModel, rowMax, 
+                                       (evt.getModifiers() == 
+                                        InputEvent.SHIFT_MASK));
+              else
+                advanceSingleSelection(rowModel, rowMax, colModel, colMax, 
+                                       (evt.getModifiers() == 
+                                        InputEvent.SHIFT_MASK));
+              return;
+            }
+          
+          
+          // rowMinSelected and rowMaxSelected are the minimum and maximum
+          // values respectively of selected cells in the row selection model
+          // Similarly for colMinSelected and colMaxSelected.
+          int rowMaxSelected = table.getRowSelectionAllowed() ? 
+            rowModel.getMaxSelectionIndex() : table.getModel().getRowCount() - 1;
+          int rowMinSelected = table.getRowSelectionAllowed() ? 
+            rowModel.getMinSelectionIndex() : 0; 
+          int colMaxSelected = table.getColumnSelectionAllowed() ? 
+            colModel.getMaxSelectionIndex() : 
+            table.getModel().getColumnCount() - 1;
+          int colMinSelected = table.getColumnSelectionAllowed() ? 
+            colModel.getMinSelectionIndex() : 0;
+          
+          // If there are multiple rows and columns selected, select the next
+          // cell and wrap at the edges of the selection.  
+          if (evt.getKeyCode() == KeyEvent.VK_TAB)
+            advanceMultipleSelection(colModel, colMinSelected, colMaxSelected, 
+                                     rowModel, rowMinSelected, rowMaxSelected, 
+                                     (evt.getModifiers() == 
+                                      InputEvent.SHIFT_MASK), true);
+          else
+            advanceMultipleSelection(rowModel, rowMinSelected, rowMaxSelected, 
+                                     colModel, colMinSelected, colMaxSelected, 
+                                     (evt.getModifiers() == 
+                                      InputEvent.SHIFT_MASK), false);
+          
+          table.repaint();
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_ESCAPE)
+        {
+          // FIXME: implement "cancel"
+        }
+      else if ((evt.getKeyCode() == KeyEvent.VK_A || evt.getKeyCode()
+                == KeyEvent.VK_SLASH) && (evt.getModifiers() == 
+                                          InputEvent.CTRL_MASK))
+        {
+          table.selectAll();
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_BACK_SLASH
+               && (evt.getModifiers() == InputEvent.CTRL_MASK))
+        {
+          table.clearSelection();
+        }
+      else if (evt.getKeyCode() == KeyEvent.VK_SPACE 
+               && (evt.getModifiers() == InputEvent.CTRL_MASK))
+        {
+          table.changeSelection(rowLead, colLead, true, false);
+        }
+    }
+
     public void keyReleased(KeyEvent e) 
     {
     }
+
     public void keyTyped(KeyEvent e) 
     {
     }
@@ -114,35 +521,31 @@ public class BasicTableUI
 
     private void updateSelection(boolean controlPressed)
     {
-      if (table.getRowSelectionAllowed())
+      // Update the rows
+      int lo_row = table.rowAtPoint(begin);
+      int hi_row  = table.rowAtPoint(curr);
+      ListSelectionModel rowModel = table.getSelectionModel();
+      if (lo_row != -1 && hi_row != -1)
         {
-          int lo_row = table.rowAtPoint(begin);
-          int hi_row  = table.rowAtPoint(curr);
-          ListSelectionModel rowModel = table.getSelectionModel();
-          if (lo_row != -1 && hi_row != -1)
-            {
-              if (controlPressed && rowModel.getSelectionMode() 
-                  != ListSelectionModel.SINGLE_SELECTION)
-                rowModel.addSelectionInterval(lo_row, hi_row);
-              else
-                rowModel.setSelectionInterval(lo_row, hi_row);
-            }
+          if (controlPressed && rowModel.getSelectionMode() 
+              != ListSelectionModel.SINGLE_SELECTION)
+            rowModel.addSelectionInterval(lo_row, hi_row);
+          else
+            rowModel.setSelectionInterval(lo_row, hi_row);
         }
-
-      if (table.getColumnSelectionAllowed())
+      
+      // Update the columns
+      int lo_col = table.columnAtPoint(begin);
+      int hi_col = table.columnAtPoint(curr);
+      ListSelectionModel colModel = table.getColumnModel().
+        getSelectionModel();
+      if (lo_col != -1 && hi_col != -1)
         {
-          int lo_col = table.columnAtPoint(begin);
-          int hi_col = table.columnAtPoint(curr);
-          ListSelectionModel colModel = table.getColumnModel().
-            getSelectionModel();
-          if (lo_col != -1 && hi_col != -1)
-            {
-              if (controlPressed && colModel.getSelectionMode() != 
-                  ListSelectionModel.SINGLE_SELECTION)
-                colModel.addSelectionInterval(lo_col, hi_col);
-              else
-                colModel.setSelectionInterval(lo_col, hi_col);
-            }
+          if (controlPressed && colModel.getSelectionMode() != 
+              ListSelectionModel.SINGLE_SELECTION)
+            colModel.addSelectionInterval(lo_col, hi_col);
+          else
+            colModel.setSelectionInterval(lo_col, hi_col);
         }
     }
 
@@ -332,9 +735,12 @@ public class BasicTableUI
                 gfx.translate(x, y);
                 comp.setBounds(new Rectangle(0, 0, width, height));
                 // Set correct border on cell renderer.
+                // Only the lead selection cell gets a border
                 if (comp instanceof JComponent)
                   {
-                    if (table.isCellSelected(r, c))
+                    if (table.getSelectionModel().getLeadSelectionIndex() == r
+                        && table.getColumnModel().getSelectionModel().
+                        getLeadSelectionIndex() == c)
                       ((JComponent) comp).setBorder(highlightCellBorder);
                     else
                       ((JComponent) comp).setBorder(cellBorder);
@@ -394,5 +800,4 @@ public class BasicTableUI
       }
 
   }
-
 }

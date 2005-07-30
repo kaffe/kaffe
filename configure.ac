@@ -1335,6 +1335,7 @@ AC_CHECK_FUNCS([memcpy memmove])
 AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
+AC_CHECK_FUNCS([munmap mincore msync madvise getpagesize sysconf])
 
 AM_ICONV
 

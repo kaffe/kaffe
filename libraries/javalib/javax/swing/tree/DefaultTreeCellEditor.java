@@ -82,7 +82,7 @@ public class DefaultTreeCellEditor
 
     /**
      * This method only exists for API compatibility and is useless as it does
-     * nothing. It probably got introduced by accident.
+     * nothing. It got probably introduced by accident.
      */
     public void EditorContainer()
     {

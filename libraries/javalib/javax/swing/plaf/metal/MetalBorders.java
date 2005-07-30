@@ -46,6 +46,9 @@ import java.awt.Insets;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
@@ -78,7 +81,7 @@ public class MetalBorders
   /**
    * The border that is drawn around Swing buttons.
    */
-  public static class MetalButtonBorder
+  public static class ButtonBorder
     extends AbstractBorder
     implements UIResource
   {
@@ -88,7 +91,7 @@ public class MetalBorders
     /**
      * Creates a new instance of ButtonBorder.
      */
-    public MetalButtonBorder()
+    public ButtonBorder()
     {
     }
 
@@ -180,6 +183,168 @@ public class MetalBorders
       newInsets.right = borderInsets.right;
       newInsets.top = borderInsets.top;
       return newInsets;
+    }
+  }
+
+  /**
+   * A border used for {@link JMenu} and {@link JMenuItem} components.
+   */
+  public static class MenuItemBorder
+      extends AbstractBorder
+      implements UIResource
+  {
+    /** The border insets. */
+    protected static Insets borderInsets = new Insets(2, 2, 2, 2);
+    
+    // TODO: find where the real colors come from
+    private static Color borderColorDark = new Color(102, 102, 153);
+    private static Color borderColorLight = new Color(255, 255, 255);
+    
+    /**
+     * Creates a new border instance.
+     */
+    public MenuItemBorder()
+    {
+    }
+    
+    /**
+     * Paints the border for the component.  A border is painted only if the
+     * component is a selected {@link JMenu} or an armed {@link JMenuItem}.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate of the border area.
+     * @param y  the y-coordinate of the border area.
+     * @param w  the width of the border area.
+     * @param h  the height of the border area.
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w,
+        int h)
+    {
+      if (c instanceof JMenu) {
+        JMenu menu = (JMenu) c;
+        if (menu.isSelected())
+        {
+          g.setColor(borderColorDark);
+          g.drawLine(x, y, x, y + h);
+          g.drawLine(x, y, x + w, y);
+          g.drawLine(x + w - 2, y + 1, x + w - 2, y + h);
+          g.setColor(borderColorLight);
+          g.drawLine(x + w - 1, y + 1, x + w - 1, y + h);
+        }
+      }
+      else if (c instanceof JMenuItem)
+      {
+        JMenuItem item = (JMenuItem) c;
+        if (item.isArmed()) 
+        {
+          g.setColor(borderColorDark);
+          g.drawLine(x, y, x + w, y);
+          g.setColor(borderColorLight);
+          g.drawLine(x, y + h - 1, x + w, y + h - 1);
+        }          
+      }
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * 
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c)
+    {
+      return borderInsets;
+    }
+    
+    /**
+     * Populates <code>insets</code> with the border insets, then returns it.
+     * 
+     * @param c  the component (ignored).
+     * @param insets  the object to populate with the border insets.
+     * 
+     * @return The border insets.
+     * 
+     * @throws NullPointerException if <code>insets</code> is <code>null</code>.
+     */
+    public Insets getBorderInsets(Component c, Insets insets)
+    {
+      insets.left = borderInsets.left;
+      insets.top = borderInsets.top;
+      insets.bottom = borderInsets.bottom;
+      insets.right = borderInsets.right;
+      return insets;
+    }
+  }
+
+  /**
+   * A border used for {@link JMenuBar} components.
+   */
+  public static class MenuBarBorder
+      extends AbstractBorder
+      implements UIResource
+  {
+    /** The border insets. */
+    protected static Insets borderInsets = new Insets(1, 0, 1, 0);
+    
+    // TODO: find where this color really comes from
+    private static Color borderColor = new Color(153, 153, 153);
+    
+    /**
+     * Creates a new border instance.
+     */
+    public MenuBarBorder()
+    {
+    }
+    
+    /**
+     * Paints the border for the component.  A border is painted only if the
+     * component is a selected {@link JMenu} or an armed {@link JMenuItem}.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate of the border area.
+     * @param y  the y-coordinate of the border area.
+     * @param w  the width of the border area.
+     * @param h  the height of the border area.
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w,
+        int h)
+    {
+      g.setColor(borderColor);
+      g.drawLine(x, y + h - 1, x + w, y + h - 1);
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * 
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c)
+    {
+      return borderInsets;
+    }
+    
+    /**
+     * Populates <code>insets</code> with the border insets, then returns it.
+     * 
+     * @param c  the component (ignored).
+     * @param insets  the object to populate with the border insets.
+     * 
+     * @return The border insets.
+     * 
+     * @throws NullPointerException if <code>insets</code> is <code>null</code>.
+     */
+    public Insets getBorderInsets(Component c, Insets insets)
+    {
+      insets.left = borderInsets.left;
+      insets.top = borderInsets.top;
+      insets.bottom = borderInsets.bottom;
+      insets.right = borderInsets.right;
+      return insets;
     }
   }
 
@@ -301,6 +466,7 @@ public class MetalBorders
         newInsets = new Insets(0, 0, 0, 0);
 
       AbstractButton b = (AbstractButton) c;
+      Insets margin = b.getMargin();
       newInsets.bottom = borderInsets.bottom;
       newInsets.left = borderInsets.left;
       newInsets.right = borderInsets.right;
@@ -403,7 +569,7 @@ public class MetalBorders
   {
     if (buttonBorder == null)
       {
-        Border outer = new MetalButtonBorder();
+        Border outer = new ButtonBorder();
         Border inner = getMarginBorder();
         buttonBorder = new BorderUIResource.CompoundBorderUIResource
             (outer, inner);
@@ -420,7 +586,7 @@ public class MetalBorders
   {
     if (toolbarButtonBorder == null)
       {
-        Border outer = new MetalButtonBorder();
+        Border outer = new ButtonBorder();
         Border inner = new RolloverMarginBorder();
         toolbarButtonBorder = new BorderUIResource.CompoundBorderUIResource
           (outer, inner);

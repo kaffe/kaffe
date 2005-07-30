@@ -44,7 +44,9 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 import javax.swing.Icon;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.plaf.UIResource;
 
 /**
  * Creates icons for the {@link MetalLookAndFeel}.
@@ -208,6 +210,103 @@ public class MetalIconFactory implements Serializable
         
   }
    
+  /**
+   * An {@link Icon} implementation for {@link JCheckBox}es in the
+   * Metal Look &amp; Feel.
+   *
+   * @author Roman Kennke (roman@kennke.org)
+   */
+  static class RadioButtonIcon
+    implements Icon, UIResource, Serializable
+  {
+    /**
+     * Draws the check in the RadioButton.
+     *
+     * @param c the component to draw on
+     * @param g the Graphics context to draw with
+     */
+    protected void drawCheck(Component c, Graphics g)
+    {
+      g.setColor(MetalLookAndFeel.getBlack());
+      g.fillRect(4, 3, 4, 6);
+      g.drawLine(3, 4, 3, 7);
+      g.drawLine(8, 4, 8, 7);
+    }
+
+    /**
+     * Returns the width of the icon in pixels.
+     *
+     * @return the width of the icon in pixels
+     */
+    public int getIconWidth()
+    {
+      return 13;
+    }
+
+    /**
+     * Returns the height of the icon in pixels.
+     *
+     * @return the height of the icon in pixels
+     */
+    public int getIconHeight()
+    {
+      return 13;
+    }
+
+    /**
+     * Paints the icon. This first paints the border of the RadioButton and
+     * if the CheckBox is selected it calls {@link #drawCheck} to draw
+     * the check.
+     *
+     * @param c the Component to draw on (gets casted to JCheckBox)
+     * @param g the Graphics context to draw with
+     * @param x the X position
+     * @param y the Y position
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y)
+    {
+      Color dark = MetalLookAndFeel.getControlDarkShadow();
+      Color light = MetalLookAndFeel.getWhite();
+      g.translate(x, y);
+
+      // The light 'circle'
+      g.setColor(light);
+      g.drawLine(4, 1, 10, 1);
+      g.drawLine(2, 2, 3, 2);
+      g.drawLine(8, 2, 11, 2);
+      g.drawLine(2, 3, 2, 3);
+      g.drawLine(11, 2, 11, 9);
+      g.drawLine(1, 4, 1, 7);
+      g.drawLine(12, 4, 12, 7);
+      g.drawLine(2, 8, 2, 11);
+      g.drawLine(11, 8, 11, 9);
+      g.drawLine(10, 10, 10, 10);
+      g.drawLine(2, 11, 9, 11);
+      g.drawLine(4, 12, 7, 12);
+
+      // The dark 'circle'
+      g.setColor(dark);
+      g.drawLine(4, 0, 7, 0);
+      g.drawLine(2, 1, 3, 1);
+      g.drawLine(8, 1, 9, 1);
+      g.drawLine(1, 2, 1, 3);
+      g.drawLine(10, 2, 10, 3);
+      g.drawLine(0, 4, 0, 7);
+      g.drawLine(11, 4, 11, 7);
+      g.drawLine(1, 8, 1, 9);
+      g.drawLine(10, 8, 10, 9);
+      g.drawLine(2, 10, 3, 10);
+      g.drawLine(8, 10, 9, 10);
+      g.drawLine(4, 11, 7, 11);
+
+      JRadioButton rb = (JRadioButton) c;
+      if (rb.isSelected())
+        drawCheck(c, g);
+
+      g.translate(-x, -y);
+    }
+  }
+
     /**
    * The icon used to display the thumb control on a horizontally oriented
    * {@link JSlider} component.
@@ -606,6 +705,9 @@ public class MetalIconFactory implements Serializable
     }
   }
     
+  /** The cached RadioButtonIcon instance. */
+  private static RadioButtonIcon radioButtonIcon;
+
   /**
    * Creates a new instance.  All the methods are static, so creating an 
    * instance isn't necessary.
@@ -613,7 +715,19 @@ public class MetalIconFactory implements Serializable
   public MetalIconFactory() 
   {   
   }
-  
+
+  /**
+   * Returns an icon for RadioButtons in the Metal L&amp;F.
+   *
+   * @return an icon for RadioButtons in the Metal L&amp;F
+   */
+  public static Icon getRadioButtonIcon()
+  {
+    if (radioButtonIcon == null)
+      radioButtonIcon = new RadioButtonIcon();
+    return radioButtonIcon;
+  }
+
   /**
    * Returns the icon used to display the thumb for a horizontally oriented
    * {@link JSlider}.

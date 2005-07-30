@@ -53,6 +53,11 @@ import javax.accessibility.AccessibleIcon;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleStateSet;
 
+/**
+ * An {@link Icon} implementation that is backed by an {@link Image}.
+ *
+ * @author original author unknown
+ */
 public class ImageIcon
   implements Icon, Serializable, Accessible
 {
@@ -338,9 +343,9 @@ public class ImageIcon
    *
    * @return the load status of the icon image
    *
-   * @see {@link MediaTracker.COMPLETE}
-   * @see {@link MediaTracker.ABORTED}
-   * @see {@link MediaTracker.ERRORED}
+   * @see MediaTracker#COMPLETE
+   * @see MediaTracker#ABORTED
+   * @see MediaTracker#ERRORED
    */
   public int getImageLoadStatus()
   {

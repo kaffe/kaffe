@@ -180,8 +180,8 @@ public class SimpleDateFormat extends DateFormat
    * years to be interpreted as representing
    * the years between 2004 and 2104.
    *
-   * @see get2DigitYearStart()
-   * @see set2DigitYearStart(java.util.Date)
+   * @see #get2DigitYearStart()
+   * @see #set2DigitYearStart(java.util.Date)
    * @see Date
    * @serial The start date of the century for parsing two digit years.
    *         May not be null.
@@ -192,8 +192,8 @@ public class SimpleDateFormat extends DateFormat
    * The year at which interpretation of two
    * digit years starts.
    *
-   * @see get2DigitYearStart()
-   * @see set2DigitYearStart(java.util.Date)
+   * @see #get2DigitYearStart()
+   * @see #set2DigitYearStart(java.util.Date)
    * @serial Ignored.
    */
   private transient int defaultCentury;
@@ -204,10 +204,10 @@ public class SimpleDateFormat extends DateFormat
    * stored in standardChars.  Localized patterns
    * are translated to this form.
    *
-   * @see applyPattern(String)
-   * @see applyLocalizedPattern(String)
-   * @see toPattern()
-   * @see toLocalizedPattern()
+   * @see #applyPattern(String)
+   * @see #applyLocalizedPattern(String)
+   * @see #toPattern()
+   * @see #toLocalizedPattern()
    * @serial The non-localized pattern string.  May not be null.
    */
   private String pattern;
@@ -611,7 +611,7 @@ public class SimpleDateFormat extends DateFormat
    * <li>Is using the same century for two digit years.</li>
    * </ul>
    *
-   * @param obj The object to compare for equality against.
+   * @param o The object to compare for equality against.
    *
    * @return <code>true</code> if the specified object is equal to this object,
    * <code>false</code> otherwise.

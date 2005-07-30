@@ -63,7 +63,7 @@ import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.InputMapUIResource;
 
 /**
- * This class contains a number of static utility functions which are
+ * A number of static utility functions which are
  * useful when drawing swing components, dispatching events, or calculating
  * regions which need painting.
  *

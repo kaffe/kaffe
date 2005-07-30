@@ -45,14 +45,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.Vector;
+
 
 /**
  * DefaultMutableTreeNode
  *
  * @author Andrew Selkirk
+ * @author Robert Schuster (robertschuster@fsfe.org)
  */
 public class DefaultMutableTreeNode
   implements Cloneable, MutableTreeNode, Serializable
@@ -353,7 +358,7 @@ public class DefaultMutableTreeNode
    */
   public void removeFromParent()
   {
-    // FIXME: IS this implementation really correct ?
+    parent.remove(this);
     parent = null;
   }
 
@@ -656,7 +661,7 @@ public class DefaultMutableTreeNode
    */
   public Enumeration preorderEnumeration()
   {
-    return null; // TODO: Implement me.
+    return new PreorderEnumeration(this);
   }
 
   /**
@@ -666,7 +671,7 @@ public class DefaultMutableTreeNode
    */
   public Enumeration postorderEnumeration()
   {
-    return null; // TODO: Implement me.
+    return new PostorderEnumeration(this);
   }
 
   /**
@@ -676,7 +681,7 @@ public class DefaultMutableTreeNode
    */
   public Enumeration breadthFirstEnumeration()
   {
-    return null; // TODO: Implement me.
+    return new BreadthFirstEnumeration(this);
   }
 
   /**
@@ -913,6 +918,7 @@ public class DefaultMutableTreeNode
     if (parent == null)
       return null;
 
+    // TODO: Fix implementation.
     return null;
     //return parent.getChildAfter(this);
   }
@@ -926,7 +932,8 @@ public class DefaultMutableTreeNode
   {
     if (parent == null)
       return null;
-    
+
+    // TODO: Fix implementation.
     return null;
     //return parent.getChildBefore(this);
   }
@@ -951,4 +958,155 @@ public class DefaultMutableTreeNode
 
     return count;
   }
+
+  /** Provides an enumeration of a tree in breadth-first traversal
+   * order.
+   */
+  static class BreadthFirstEnumeration implements Enumeration
+  {
+
+      LinkedList queue = new LinkedList();
+
+      BreadthFirstEnumeration(TreeNode node)
+      {
+          queue.add(node);
+      }
+
+      public boolean hasMoreElements()
+      {
+          return !queue.isEmpty();
+      }
+
+      public Object nextElement()
+      {
+          if(queue.isEmpty())
+              throw new NoSuchElementException("No more elements left.");
+
+          TreeNode node = (TreeNode) queue.removeFirst();
+
+          Enumeration children = node.children();
+          while (children.hasMoreElements())
+              queue.add(children.nextElement());
+
+          return node;
+      }
+  }
+
+  /** Provides an enumeration of a tree traversing it
+   * preordered.
+   */
+  static class PreorderEnumeration implements Enumeration
+  {
+	  TreeNode next;
+
+      Stack childrenEnums = new Stack();
+
+      PreorderEnumeration(TreeNode node)
+      {
+          next = node;
+          childrenEnums.push(node.children());
+      }
+
+      public boolean hasMoreElements()
+      {
+          return next != null;
+      }
+
+      public Object nextElement()
+      {
+          if( next == null )
+              throw new NoSuchElementException("No more elements left.");
+
+          Object current = next;
+
+          Enumeration children = (Enumeration) childrenEnums.peek();
+
+          // Retrieves the next element.
+          next = traverse(children);
+
+          return current;
+      }
+
+      private TreeNode traverse(Enumeration children)
+      {
+          // If more children are available step down.
+          if( children.hasMoreElements() )
+          {
+              TreeNode child = (TreeNode) children.nextElement();
+              childrenEnums.push(child.children());
+
+              return child;
+          }
+          
+          // If no children are left, we return to a higher level.
+          childrenEnums.pop();
+
+          // If there are no more levels left, there is no next
+          // element to return.
+          if ( childrenEnums.isEmpty() )
+              return null;
+          else
+          {
+              return traverse((Enumeration) childrenEnums.peek());
+          }
+      }
+   }
+
+  /** Provides an enumeration of a tree traversing it
+   * postordered (= depth-first).
+   */
+   static class PostorderEnumeration implements Enumeration
+   {
+
+       Stack nodes = new Stack();
+       Stack childrenEnums = new Stack();
+
+       PostorderEnumeration(TreeNode node)
+       {
+           nodes.push(node);
+           childrenEnums.push(node.children());
+       }
+
+       public boolean hasMoreElements()
+       {
+           return !nodes.isEmpty();
+       }
+
+       public Object nextElement()
+       {
+           if( nodes.isEmpty() )
+               throw new NoSuchElementException("No more elements left!");
+
+           Enumeration children = (Enumeration) childrenEnums.peek();
+
+           return traverse(children);
+       }
+
+       private Object traverse(Enumeration children)
+       {
+           if ( children.hasMoreElements() )
+           {
+               TreeNode node = (TreeNode) children.nextElement();
+               nodes.push(node);
+
+               Enumeration newChildren = node.children();
+               childrenEnums.push(newChildren);
+
+               return traverse(newChildren);
+           }
+           else
+           {
+               childrenEnums.pop();
+
+               // Returns the node whose children
+               // have all been visited. (= postorder)
+               Object next = nodes.peek();
+               nodes.pop();
+
+               return next;
+           }
+       }
+
+    }
+
 }

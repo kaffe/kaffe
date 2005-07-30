@@ -70,6 +70,8 @@ import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.image.VolatileImage;
 import java.awt.peer.ComponentPeer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GtkComponentPeer extends GtkGenericPeer
   implements ComponentPeer
@@ -82,6 +84,8 @@ public class GtkComponentPeer extends GtkGenericPeer
   Insets insets;
 
   boolean isInRepaint;
+
+  Timer repaintTimer = new Timer (true);
 
   /* this isEnabled differs from Component.isEnabled, in that it
      knows if a parent is disabled.  In that case Component.isEnabled 
@@ -372,8 +376,26 @@ public class GtkComponentPeer extends GtkGenericPeer
     if (x == 0 && y == 0 && width == 0 && height == 0)
       return;
 
-    q().postEvent (new PaintEvent (awtComponent, PaintEvent.UPDATE,
-                                 new Rectangle (x, y, width, height)));
+    repaintTimer.schedule(new RepaintTimerTask(x, y, width, height), tm);
+  }
+
+  private class RepaintTimerTask extends TimerTask
+  {
+    private int x, y, width, height;
+
+    RepaintTimerTask(int x, int y, int width, int height)
+    {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    }
+
+    public void run()
+    {
+      q().postEvent (new PaintEvent (awtComponent, PaintEvent.UPDATE,
+                                     new Rectangle (x, y, width, height)));
+    }
   }
 
   public void requestFocus ()
@@ -586,7 +608,8 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void updateCursorImmediately ()
   {
-    
+    if (awtComponent.getCursor() != null)
+      setCursor(awtComponent.getCursor());
   }
 
   public boolean handlesWheelScrolling ()

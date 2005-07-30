@@ -285,7 +285,8 @@ public class BasicButtonUI extends ButtonUI
     paintIcon(g, c, ir);
     if (text != null)
       paintText(g, b, tr, text);
-    paintFocus(g, b, vr, tr, ir);
+    if (b.isFocusOwner())
+      paintFocus(g, b, vr, tr, ir);
   }
 
   /**
@@ -306,15 +307,8 @@ public class BasicButtonUI extends ButtonUI
   protected void paintFocus(Graphics g, AbstractButton b, Rectangle vr,
                             Rectangle tr, Rectangle ir)
   {
-    if (b.hasFocus() && b.isFocusPainted())
-      {
-        Color saved_color = g.getColor();
-        g.setColor(focusColor);
-        Rectangle focusRect = ir.union(tr);
-        g.drawRect(focusRect.x, focusRect.y,
-                   focusRect.width, focusRect.height);
-        g.setColor(saved_color);
-      }
+    // In the BasicLookAndFeel no focus border is drawn. This can be
+    // overridden in subclasses to implement such behaviour.
   }
 
   /**

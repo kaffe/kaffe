@@ -40,14 +40,14 @@ package gnu.CORBA;
 
 import gnu.CORBA.CDR.cdrBufInput;
 import gnu.CORBA.CDR.cdrBufOutput;
+import gnu.CORBA.GIOP.CloseMessage;
 import gnu.CORBA.GIOP.ErrorMessage;
 import gnu.CORBA.GIOP.MessageHeader;
 import gnu.CORBA.GIOP.ReplyHeader;
 import gnu.CORBA.GIOP.RequestHeader;
-import gnu.CORBA.GIOP.CloseMessage;
 import gnu.CORBA.NamingService.NamingServiceTransient;
+import gnu.CORBA.Poa.gnuForwardRequest;
 
-import org.omg.CORBA.BAD_INV_ORDER;
 import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.CompletionStatus;
@@ -78,6 +78,7 @@ import java.net.UnknownHostException;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -87,7 +88,9 @@ import java.util.TreeMap;
 
 /**
  * The ORB implementation, capable to handle remote invocations on the
- * registered object.
+ * registered object. This class implements all features, required till
+ * the jdk 1.3 inclusive, but does not support the POA that appears since
+ * 1.4. The POA is supported by {@link gnu.CORBA.Poa.ORB_1_4}.
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
@@ -155,7 +158,7 @@ public class Functional_ORB
         {
           try
             {
-              serve(this, service);
+              tick();
             }
           catch (SocketException ex)
             {
@@ -177,6 +180,16 @@ public class Functional_ORB
                 }
             }
         }
+    }
+
+    /**
+     * Perform a single serving step.
+     * @throws java.lang.Exception
+     */
+    void tick()
+       throws Exception
+    {
+      serve(this, service);
     }
 
     /**
@@ -202,6 +215,34 @@ public class Functional_ORB
     protected void finalize()
     {
       close_now();
+    }
+  }
+
+  /**
+   * A server, responsible for listening on requests on some
+   * local port and serving multiple requests (probably to the
+   * different objects) on the same thread.
+   */
+  class sharedPortServer
+    extends portServer
+  {
+    /**
+     * Create a new portServer, serving on specific port.
+     */
+    sharedPortServer(int _port)
+    {
+      super(_port);
+    }
+
+    /**
+     * Perform a single serving step.
+     * @throws java.lang.Exception
+     */
+    void tick()
+       throws Exception
+    {
+      Socket request = service.accept();
+      serveStep(request, false);
     }
   }
 
@@ -319,7 +360,7 @@ public class Functional_ORB
   /**
    * The map of the initial references.
    */
-  private Map initial_references = new TreeMap();
+  protected Map initial_references = new TreeMap();
 
   /**
    * The currently active portServers.
@@ -356,6 +397,11 @@ public class Functional_ORB
    * The list of the freed ports. The ORB reuses ports, when possible.
    */
   protected LinkedList freed_ports = new LinkedList();
+
+  /**
+   * Maps a single-threaded POAs to they sharedPortServants.
+   */
+  protected Hashtable identities = new Hashtable();
 
   /**
    * The maximal allowed number of the currently running parallel
@@ -536,7 +582,8 @@ public class Functional_ORB
   {
     int a_port = getFreePort();
 
-    Connected_objects.cObject ref = connected_objects.add(key, object, a_port);
+    Connected_objects.cObject ref =
+      connected_objects.add(key, object, a_port, null);
     IOR ior = createIOR(ref);
     prepareObject(object, ior);
     if (running)
@@ -544,11 +591,57 @@ public class Functional_ORB
   }
 
   /**
+   * Connect the given CORBA object to this ORB, explicitly specifying
+   * the object key and the identity of the thread (and port), where the
+   * object must be served. The identity is normally the POA.
+   *
+   * The new port server will be started only if there is no one
+   * already running for the same identity. Otherwise, the task of
+   * the existing port server will be widened, including duty to serve
+   * the given object. All objects, connected to a single identity by
+   * this method, will process they requests subsequently in the same
+   * thread. The method is used when the expected number of the
+   * objects is too large to have a single port and thread per object.
+   * This method is used by POAs, having a single thread policy.
+   *
+   * @param object the object, must implement the {@link InvokeHandler})
+   * interface.
+   * @param key the object key, usually used to identify the object from
+   * remote side.
+   * @param port the port, where the object must be connected.
+   *
+   * @throws BAD_PARAM if the object does not implement the
+   * {@link InvokeHandler}).
+   */
+  public void connect_1_thread(org.omg.CORBA.Object object, byte[] key,
+                               java.lang.Object identity
+                              )
+  {
+    sharedPortServer shared = (sharedPortServer) identities.get(identity);
+    if (shared == null)
+      {
+        int a_port = getFreePort();
+        shared = new sharedPortServer(a_port);
+        identities.put(identity, shared);
+        if (running)
+          {
+            portServers.add(shared);
+            shared.start();
+          }
+      }
+
+    Connected_objects.cObject ref =
+      connected_objects.add(key, object, shared.s_port, identity);
+    IOR ior = createIOR(ref);
+    prepareObject(object, ior);
+  }
+
+  /**
    * Start the service on the given port of this IOR.
    *
    * @param ior the ior (only Internet.port is used).
    */
-  private void startService(IOR ior)
+  public void startService(IOR ior)
   {
     portServer p = new portServer(ior.Internet.port);
     portServers.add(p);
@@ -609,7 +702,7 @@ public class Functional_ORB
         for (int i = 0; i < portServers.size(); i++)
           {
             p = (portServer) portServers.get(i);
-            if (p.s_port == rmKey.port)
+            if (p.s_port == rmKey.port && !(p instanceof sharedPortServer))
               {
                 p.close_now();
                 freed_ports.addFirst(new Integer(rmKey.port));
@@ -618,6 +711,41 @@ public class Functional_ORB
             connected_objects.remove(rmKey.key);
           }
       }
+  }
+
+  /**
+   * Notifies ORB that the shared service indentity (usually POA)
+   * is destroyed. The matching shared port server is terminated
+   * and the identity table entry is deleted. If this identity
+   * is not known for this ORB, the method returns without action.
+   *
+   * @param identity the identity that has been destroyed.
+   */
+  public void identityDestroyed(java.lang.Object identity)
+  {
+    if (identity == null)
+      return;
+
+    sharedPortServer ise = (sharedPortServer) identities.get(identity);
+    if (ise != null)
+      synchronized (connected_objects)
+        {
+          ise.close_now();
+          identities.remove(identity);
+
+          Connected_objects.cObject obj;
+          Map.Entry m;
+          Iterator iter = connected_objects.entrySet().iterator();
+          while (iter.hasNext())
+            {
+              m = (Map.Entry) iter.next();
+              obj = (Connected_objects.cObject) m.getValue();
+              if (obj.identity == identity)
+                {
+                  iter.remove();
+                }
+            }
+        }
   }
 
   /**
@@ -758,19 +886,31 @@ public class Functional_ORB
         m = (Map.Entry) iter.next();
         obj = (Connected_objects.cObject) m.getValue();
 
-        portServer subserver = new portServer(obj.port);
-        portServers.add(subserver);
+        portServer subserver;
 
-        // Reuse the current thread for the last portServer.
-        if (!iter.hasNext())
+        if (obj.identity == null)
           {
-            // Discard the iterator, eliminating lock checks.
-            iter = null;
-            subserver.run();
-            return;
+            subserver = new portServer(obj.port);
+            portServers.add(subserver);
           }
         else
-          subserver.start();
+          {
+            subserver = (portServer) identities.get(obj.identity);
+          }
+
+        if (!subserver.isAlive())
+          {
+            // Reuse the current thread for the last portServer.
+            if (!iter.hasNext())
+              {
+                // Discard the iterator, eliminating lock checks.
+                iter = null;
+                subserver.run();
+                return;
+              }
+            else
+              subserver.start();
+          }
       }
   }
 
@@ -828,7 +968,7 @@ public class Functional_ORB
           }
 
         object = impl;
-        connected_objects.add(ior.key, impl, ior.Internet.port);
+        connected_objects.add(ior.key, impl, ior.Internet.port, null);
       }
     return object;
   }
@@ -1018,10 +1158,12 @@ public class Functional_ORB
   private void prepareObject(org.omg.CORBA.Object object, IOR ior)
                       throws BAD_PARAM
   {
+    /*
     if (!(object instanceof InvokeHandler))
       throw new BAD_PARAM(object.getClass().getName() +
                           " does not implement InvokeHandler. "
                          );
+     */
 
     // If no delegate is set, set the default delegate.
     if (object instanceof ObjectImpl)
@@ -1093,6 +1235,43 @@ public class Functional_ORB
 
     // Write the reply.
     msh_reply.write(net_out);
+    out.buffer.writeTo(net_out);
+    net_out.flush();
+  }
+
+  /**
+   * Forward request to another target, as indicated by the passed
+   * exception.
+   */
+  private void forward_request(OutputStream net_out, MessageHeader msh_request,
+                               RequestHeader rh_request, gnuForwardRequest info
+                              )
+                        throws IOException
+  {
+    MessageHeader msh_forward = new MessageHeader();
+    msh_forward.version = msh_request.version;
+
+    ReplyHeader rh_forward = msh_forward.create_reply_header();
+    msh_forward.message_type = MessageHeader.REPLY;
+    rh_forward.reply_status = info.forwarding_code;
+    rh_forward.request_id = rh_request.request_id;
+
+    // The forwarding code is either LOCATION_FORWARD or LOCATION_FORWARD_PERM.
+    cdrBufOutput out = new cdrBufOutput();
+    out.setOrb(this);
+    out.setOffset(msh_forward.getHeaderSize());
+
+    rh_forward.write(out);
+
+    if (msh_forward.version.since_inclusive(1, 2))
+      out.align(8);
+
+    out.write_Object(info.forward_reference);
+
+    msh_forward.message_size = out.buffer.size();
+
+    // Write the forwarding instruction.
+    msh_forward.write(net_out);
     out.buffer.writeTo(net_out);
     net_out.flush();
   }
@@ -1246,6 +1425,18 @@ public class Functional_ORB
                       throw new OBJECT_NOT_EXIST();
                     target._invoke(rh_request.operation, cin, handler);
                   }
+                catch (gnuForwardRequest forwarded)
+                  {
+                    OutputStream sou = service.getOutputStream();
+                    forward_request(sou, msh_request, rh_request, forwarded);
+                    if (service != null && !service.isClosed())
+                      {
+                        // Wait for the subsequent invocations on the
+                        // same socket for the TANDEM_REQUEST duration.
+                        service.setSoTimeout(TANDEM_REQUESTS);
+                        continue Serving;
+                      }
+                  }
                 catch (SystemException ex)
                   {
                     sysEx = ex;
@@ -1256,6 +1447,7 @@ public class Functional_ORB
                   }
                 catch (Exception except)
                   {
+                    except.printStackTrace();
                     sysEx =
                       new UNKNOWN("Unknown", 2, CompletionStatus.COMPLETED_MAYBE);
 
@@ -1282,8 +1474,7 @@ public class Functional_ORB
                 service.close();
                 return;
               }
-            else
-              ;
+            ;
 
             // TODO log error: "Not a request message."
             if (service != null && !service.isClosed())

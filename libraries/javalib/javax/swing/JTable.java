@@ -618,9 +618,14 @@ public class JTable extends JComponent
   {
     setModel(dm == null ? createDefaultDataModel() : dm);
     setSelectionModel(sm == null ? createDefaultSelectionModel() : sm);
-
+    
     this.columnModel = cm;
     initializeLocalVars();
+    // The next two lines are for compliance with the JDK which starts
+    // the JLists associated with a JTable  with both lead selection 
+    // indices at 0, rather than -1 as in regular JLists
+    selectionModel.setLeadSelectionIndex(0);
+    columnModel.getSelectionModel().setLeadSelectionIndex(0);
     updateUI();
   }    
 
@@ -893,6 +898,7 @@ public class JTable extends JComponent
   public void clearSelection()
   {
     selectionModel.clearSelection();
+    getColumnModel().getSelectionModel().clearSelection();
   }
 
   /**
@@ -1463,7 +1469,20 @@ public class JTable extends JComponent
     revalidate();
     repaint();
   }
-
+  
+  /**
+   * Sets the value of the rowHeight property for the specified
+   * row.
+   * 
+   * @param rh is the new rowHeight
+   * @param row is the row to change the rowHeight of
+   */
+  public void setRowHeight(int rh, int row)
+  {
+     setRowHeight(rh);
+     // FIXME: not implemented
+  }
+  
   /**
    * Set the value of the {@link #rowMargin} property.
    *
@@ -2064,8 +2083,17 @@ public class JTable extends JComponent
   
   public void selectAll()
   {
+    // rowLead and colLead store the current lead selection indices
+    int rowLead = selectionModel.getLeadSelectionIndex();
+    int colLead = getColumnModel().getSelectionModel().getLeadSelectionIndex();
+    // the following calls to setSelectionInterval change the lead selection
+    // indices
     setColumnSelectionInterval(0, getColumnCount() - 1);
     setRowSelectionInterval(0, getRowCount() - 1);
+    // the following addSelectionInterval calls restore the lead selection
+    // indices to their previous values
+    addColumnSelectionInterval(colLead,colLead);
+    addRowSelectionInterval(rowLead, rowLead);
   }
 
   public Object getValueAt(int row, int column)

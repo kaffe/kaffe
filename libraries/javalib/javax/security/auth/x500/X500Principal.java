@@ -1,5 +1,5 @@
 /* X500Principal.java -- X.500 principal.
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -209,7 +209,7 @@ public final class X500Principal implements Principal, Serializable
               str.append ("OU");
             else if (oid.equals (DC) && rfc2253)
               str.append ("DC");
-            else if (oid.equals ("UID") && rfc2253)
+            else if (oid.equals (UID) && rfc2253)
               str.append ("UID");
             else
               str.append (oid.toString());

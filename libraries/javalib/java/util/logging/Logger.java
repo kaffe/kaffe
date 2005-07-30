@@ -290,7 +290,7 @@ public class Logger
 	if (!couldBeAdded)
 	  throw new IllegalStateException("cannot register new logger");
       }
-      else if (resourceBundleName != null)
+      else
       {
 	/* The logger already exists. Make sure it uses
 	 * the same resource bundle for localizing messages.
@@ -303,7 +303,7 @@ public class Logger
 	 * resourceBundle of the registered logger to the bundle
 	 * whose name was passed to getLogger.
 	 */
-	if (existingBundleName == null)
+	if ((existingBundleName == null) && (resourceBundleName != null))
 	{
 	  /* If ResourceBundle.getBundle throws an exception, the
 	   * existing logger will be unchanged.  This would be
@@ -319,11 +319,7 @@ public class Logger
 	    && ((existingBundleName == null)
 		|| !existingBundleName.equals(resourceBundleName)))
 	{
-	  throw new IllegalArgumentException("name: " + name 
-					     + ", existing bundle name: " 
-					     + existingBundleName
-					     + ", resource bundle name: "
-					     + resourceBundleName);
+	  throw new IllegalArgumentException();
 	}
       }
     }
@@ -589,10 +585,10 @@ public class Logger
 			       String message,
 			       Object param)
   {
-  	StackTraceElement caller = getCallerStackFrame();
+    StackTraceElement caller = getCallerStackFrame();
     logp(level,
-	 caller.getClassName(),
-	 caller.getMethodName(),
+	 caller != null ? caller.getClassName() : "<unknown>",
+	 caller != null ? caller.getMethodName() : "<unknown>",
 	 message,
 	 param);
   }
@@ -604,8 +600,8 @@ public class Logger
   {
     StackTraceElement caller = getCallerStackFrame();
     logp(level,
-	 caller.getClassName(),
-	 caller.getMethodName(),
+	 caller != null ? caller.getClassName() : "<unknown>",
+	 caller != null ? caller.getMethodName() : "<unknown>",
 	 message,
 	 params);
   }
@@ -615,10 +611,10 @@ public class Logger
 			       String message,
 			       Throwable thrown)
   {
-	StackTraceElement caller = getCallerStackFrame();    
+    StackTraceElement caller = getCallerStackFrame();    
     logp(level,
-	 caller.getClassName(),
-	 caller.getMethodName(),
+	 caller != null ? caller.getClassName() : "<unknown>",
+	 caller != null ? caller.getMethodName() : "<unknown>",
 	 message,
 	 thrown);
   }
@@ -1166,19 +1162,25 @@ public class Logger
   /**
    * Gets the StackTraceElement of the first class that is not this class.
    * That should be the initial caller of a logging method.
-   * @return caller of the initial looging method
+   * @return caller of the initial logging method or null if unknown.
    */
   private StackTraceElement getCallerStackFrame()
   {
     Throwable t = new Throwable();
     StackTraceElement[] stackTrace = t.getStackTrace();
     int index = 0;
-    // skip to stackentries until this class
-    while(!stackTrace[index].getClassName().equals(getClass().getName())){index++;}
-    // skip the stackentries of this class
-    while(stackTrace[index].getClassName().equals(getClass().getName())){index++;}
 
-    return stackTrace[index];
+    // skip to stackentries until this class
+    while(index < stackTrace.length
+	  && !stackTrace[index].getClassName().equals(getClass().getName()))
+      index++;
+
+    // skip the stackentries of this class
+    while(index < stackTrace.length
+	  && stackTrace[index].getClassName().equals(getClass().getName()))
+      index++;
+
+    return index < stackTrace.length ? stackTrace[index] : null;
   }
   
   /**

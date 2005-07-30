@@ -113,7 +113,7 @@ public final class StringCharacterIterator implements CharacterIterator
    * @param end The ending position in the character range.
    * @param index The initial index position.
    *
-   * @param IllegalArgumentException If any of the range values are
+   * @throws IllegalArgumentException If any of the range values are
    * invalid.
    */
   public StringCharacterIterator (String text, int begin, int end, int index)

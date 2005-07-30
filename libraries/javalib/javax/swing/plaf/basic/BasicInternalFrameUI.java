@@ -1150,7 +1150,6 @@ public class BasicInternalFrameUI extends InternalFrameUI
 	installKeyboardActions();
 
 	frame.setOpaque(true);
-	titlePane.setOpaque(true);
 	frame.invalidate();
       }
   }
@@ -1200,7 +1199,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
       Border border = new BorderUIResource.CompoundBorderUIResource(outer,
 								    inner);
       frame.setBorder(border);
-
+      frame.setFrameIcon(defaults.getIcon("InternalFrame.icon"));
       // InternalFrames are invisible by default.
       frame.setVisible(false);
   }

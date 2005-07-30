@@ -47,6 +47,7 @@ import javax.swing.UIDefaults;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.IconUIResource;
+import javax.swing.plaf.InsetsUIResource;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 
 /**
@@ -771,6 +772,9 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Button.select", new ColorUIResource(getPrimaryControlShadow()),
       "Button.shadow", new ColorUIResource(getPrimaryControlShadow()),
       "CheckBox.background", new ColorUIResource(getControl()),
+      "CheckBox.icon",
+      new UIDefaults.ProxyLazyValue
+      ("javax.swing.plaf.metal.MetalCheckBoxIcon"),
       "CheckBoxMenuItem.background", new ColorUIResource(getControl()),
       "ToolBar.background", new ColorUIResource(getControl()),
       "Panel.background", new ColorUIResource(getControl()),
@@ -784,11 +788,28 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Label.disabledForeground", new ColorUIResource(getControlDisabled()),
       "Label.foreground", new ColorUIResource(getSystemTextColor()),
       "Menu.background", new ColorUIResource(getControl()),
+      "Menu.border", new MetalBorders.MenuItemBorder(),
+      "Menu.borderPainted", Boolean.TRUE,
       "Menu.font", getControlTextFont(),
+      "Menu.selectionBackground", getMenuSelectedBackground(),
+      "Menu.selectionForeground", getMenuSelectedForeground(),
       "MenuBar.background", new ColorUIResource(getControl()),
+      "MenuBar.border", new MetalBorders.MenuBarBorder(),
       "MenuBar.font", getControlTextFont(),
       "MenuItem.background", new ColorUIResource(getControl()),
+      "MenuItem.border", new MetalBorders.MenuItemBorder(),
       "MenuItem.font", getControlTextFont(),
+      "MenuItem.selectionBackground", getMenuSelectedBackground(),
+      "MenuItem.selectionForeground", getMenuSelectedForeground(),
+      "Panel.background", new ColorUIResource(getControl()),
+      "RadioButton.icon",
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+          {
+            return MetalIconFactory.getRadioButtonIcon();
+          }
+      },
       "ScrollBar.background", new ColorUIResource(getControl()),
       "ScrollBar.shadow", new ColorUIResource(getControlShadow()),
       "ScrollBar.thumb", new ColorUIResource(getPrimaryControlShadow()),
@@ -801,6 +822,27 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       new ColorUIResource(getControlDarkShadow()),
       "SplitPane.highlight",
       new ColorUIResource(getControlHighlight()),
+
+      "Slider.focusInsets", new InsetsUIResource(0, 0, 0, 0),
+      "Slider.horizontalThumbIcon", 
+      MetalIconFactory.getHorizontalSliderThumbIcon(),
+      "Slider.verticalThumbIcon", 
+      MetalIconFactory.getVerticalSliderThumbIcon(),
+      "Slider.trackWidth", new Integer(7),
+      "Slider.majorTickLength", new Integer(6),
+      
+      "ToggleButton.background", new ColorUIResource(getControl()),
+      "ToggleButton.border", MetalBorders.getButtonBorder(),
+      "ToggleButton.darkShadow", new ColorUIResource(getControlDarkShadow()),
+      "ToggleButton.disabledText", new ColorUIResource(getControlDisabled()),
+      "ToggleButton.focus", new ColorUIResource(getFocusColor()),
+      "ToggleButton.font", getControlTextFont(),
+      "ToggleButton.foreground", new ColorUIResource(getSystemTextColor()),
+      "ToggleButton.highlight", new ColorUIResource(getControlHighlight()),
+      "ToggleButton.light", new ColorUIResource(getControlHighlight()),
+      "ToggleButton.margin", new Insets(2, 14, 2, 14),
+      "ToggleButton.select", new ColorUIResource(getPrimaryControlShadow()),
+      "ToggleButton.shadow", new ColorUIResource(getPrimaryControlShadow()),
 
       "Tree.openIcon", MetalIconFactory.getTreeFolderIcon(),
       "Tree.closedIcon", MetalIconFactory.getTreeFolderIcon(),

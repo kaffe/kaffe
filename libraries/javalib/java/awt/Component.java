@@ -858,8 +858,10 @@ public abstract class Component
    */
   public void enableInputMethods(boolean enable)
   {
-    // XXX Implement.
-    throw new Error("not implemented");
+    if (enable)
+      eventMask |= AWTEvent.INPUT_ENABLED_EVENT_MASK;
+    else
+      eventMask &= ~AWTEvent.INPUT_ENABLED_EVENT_MASK;
   }
 
   /**
@@ -895,9 +897,21 @@ public abstract class Component
     if(!isVisible())
       {
         this.visible = true;
-        if (peer != null)
-          peer.setVisible(true);
-        invalidate();
+        // Avoid NullPointerExceptions by creating a local reference.
+        ComponentPeer currentPeer=peer;
+        if (currentPeer != null)
+            currentPeer.setVisible(true);
+
+        // Invalidate the parent if we have one. The component itself must
+        // not be invalidated. We also avoid NullPointerException with
+        // a local reference here.
+        Container currentParent = parent;
+        if (currentParent != null)
+          {
+            currentParent.invalidate();
+            currentParent.repaint();
+          }
+
         ComponentEvent ce =
           new ComponentEvent(this,ComponentEvent.COMPONENT_SHOWN);
         getToolkit().getSystemEventQueue().postEvent(ce);
@@ -928,10 +942,23 @@ public abstract class Component
   {
     if (isVisible())
       {
-        if (peer != null)
-          peer.setVisible(false);
+        // Avoid NullPointerExceptions by creating a local reference.
+        ComponentPeer currentPeer=peer;
+        if (currentPeer != null)
+            currentPeer.setVisible(false);
+        
         this.visible = false;
-        invalidate();
+        
+        // Invalidate the parent if we have one. The component itself must
+        // not be invalidated. We also avoid NullPointerException with
+        // a local reference here.
+        Container currentParent = parent;
+        if (currentParent != null)
+          {
+            currentParent.invalidate();
+            currentParent.repaint();
+          }
+
         ComponentEvent ce =
           new ComponentEvent(this,ComponentEvent.COMPONENT_HIDDEN);
         getToolkit().getSystemEventQueue().postEvent(ce);
@@ -961,10 +988,12 @@ public abstract class Component
    */
   public void setForeground(Color c)
   {
-    firePropertyChange("foreground", foreground, c);
     if (peer != null)
       peer.setForeground(c);
+    
+    Color previous = foreground;
     foreground = c;
+    firePropertyChange("foreground", previous, c);
   }
 
   /**
@@ -990,7 +1019,7 @@ public abstract class Component
   {
     if (background != null)
       return background;
-    return parent == null ? SystemColor.window : parent.getBackground();
+    return parent == null ? null : parent.getBackground();
   }
 
   /**
@@ -1004,16 +1033,18 @@ public abstract class Component
   public void setBackground(Color c)
   {
     // return if the background is already set to that color.
-    if (background != null && c != null)
-      if (background.equals(c))
-	return;
+    if ((c != null) && c.equals(background))
+      return;
+
     // If c is null, inherit from closest ancestor whose bg is set.
     if (c == null && parent != null)
       c = parent.getBackground();
-    firePropertyChange("background", background, c);
     if (peer != null && c != null)
       peer.setBackground(c);
+    
+    Color previous = background;
     background = c;
+    firePropertyChange("background", previous, c);
   }
 
   /**
@@ -1037,13 +1068,15 @@ public abstract class Component
    */
   public Font getFont()
   {
-    if (font != null)
-      return font;
+    Font f = font;
+    if (f != null)
+      return f;
 
-    if (parent != null)
-      return parent.getFont ();
+    Component p = parent;
+    if (p != null)
+      return p.getFont();
     else
-      return new Font ("Dialog", Font.PLAIN, 12);
+      return new Font("Dialog", Font.PLAIN, 12);
   }
 
   /**
@@ -1056,15 +1089,16 @@ public abstract class Component
    */
   public void setFont(Font newFont)
   {
-    if (font == newFont)
-      return;
-    
-    Font oldFont = font;
-    font = newFont;
-    if (peer != null)
-      peer.setFont(font);
-    firePropertyChange("font", oldFont, newFont);
-    invalidate();
+    if((newFont != null && (font == null || !font.equals(newFont)))
+       || newFont == null)
+      {
+        Font oldFont = font;
+        font = newFont;
+        if (peer != null)
+          peer.setFont(font);
+        firePropertyChange("font", oldFont, newFont);
+        invalidate();
+      }
   }
 
   /**
@@ -4181,6 +4215,10 @@ public abstract class Component
       param.append(",translucent");
     if (isDoubleBuffered())
       param.append(",doublebuffered");
+    if (parent == null)
+      param.append(",parent==null");
+    else
+      param.append(",parent==").append(parent.getName());
     return param.toString();
   }
 

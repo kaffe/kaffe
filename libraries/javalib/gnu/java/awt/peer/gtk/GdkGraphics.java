@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
+import gnu.classpath.Configuration;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -52,7 +54,17 @@ import java.text.AttributedCharacterIterator;
 
 public class GdkGraphics extends Graphics
 {
-  private final int native_state = GtkGenericPeer.getUniqueInteger();
+  static 
+  {
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary("gtkpeer");
+      }
+    initStaticState ();
+  }
+  
+  static native void initStaticState();
+  private final int native_state = GtkGenericPeer.getUniqueInteger ();
 
   Color color, xorColor;
   GtkComponentPeer component;

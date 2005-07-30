@@ -507,7 +507,8 @@ public class BasicMenuItemUI extends MenuItemUI
     br.height += insets.top + insets.bottom;
 
     // Menu item is considered to be highlighted when it is selected.
-    if (m.isSelected() || m.getModel().isArmed() && 
+    // But we don't want to paint the background of JCheckBoxMenuItems
+    if ((m.isSelected() && checkIcon == null) || m.getModel().isArmed() && 
         (m.getParent() instanceof MenuElement)) 
       {
 	if (m.isContentAreaFilled())
@@ -605,7 +606,8 @@ public class BasicMenuItemUI extends MenuItemUI
 	if (menuItem.isEnabled())
           {
             // Menu item is considered to be highlighted when it is selected.
-            if (menuItem.isSelected() || menuItem.getModel().isArmed() && 
+            // But not if it's a JCheckBoxMenuItem
+            if ((menuItem.isSelected() && checkIcon == null) || menuItem.getModel().isArmed() && 
                 (menuItem.getParent() instanceof MenuElement)) 
               g.setColor(selectionForeground);
             else

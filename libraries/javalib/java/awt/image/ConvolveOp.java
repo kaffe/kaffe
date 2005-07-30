@@ -177,11 +177,13 @@ public class ConvolveOp implements BufferedImageOp, RasterOp
   }
   
   /**
+   * Returns (a clone of) the convolution kernel.
+   *
    * @return The convolution kernel.
    */
   public Kernel getKernel()
   {
-    return kernel;
+    return (Kernel) kernel.clone();
   }
 
   /* (non-Javadoc)
