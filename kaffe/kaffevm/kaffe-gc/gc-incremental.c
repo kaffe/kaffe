@@ -878,6 +878,7 @@ static void finaliserJob(Collector *gcif)
   gc_block* info = NULL;
   gc_unit* unit = NULL;
   int idx = 0;
+  int func = 0;
 
   /*
    * Loop until the list of objects whose finaliser needs to be run is empty
@@ -904,8 +905,11 @@ static void finaliserJob(Collector *gcif)
    */
   while (gclists[finalise].cnext != &gclists[finalise]) {
     unit = gclists[finalise].cnext;
+    lockStaticMutex(&gc_lock);
     info = gc_mem2block(unit);
     idx = GCMEM2IDX(info, unit);
+    func = KGC_GET_FUNCS(info, idx); 
+    unlockStaticMutex(&gc_lock);
 
     /* Clear weak references to this object. Because according to the Java API spec.
      * "Suppose that the garbage collector determines at a certain point in time 
@@ -918,11 +922,12 @@ static void finaliserJob(Collector *gcif)
 
     /* Call finaliser */
     unlockStaticMutex(&finman);
-    (*gcFunctions[KGC_GET_FUNCS(info,idx)].final)(gcif, UTOMEM(unit));
+    (*gcFunctions[func].final)(gcif, UTOMEM(unit));
     lockStaticMutex(&finman);
     
     /* and remove unit from the finaliser list */
     lockStaticMutex(&gc_lock);
+    info = gc_mem2block(unit);
     UREMOVELIST(unit);
     UAPPENDLIST(gclists[nofin_white], unit);
     

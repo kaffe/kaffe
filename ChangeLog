@@ -1,3 +1,10 @@
+2005-07-31  Guilhem Lavaux <guilhem@kaffe.org>
+	Riccardo Mottola  <multix@gmail.com>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(finaliserJob): Protect the access to the block structure
+	as the heap may grow at the same time.
+	
 2005-07-31 Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* test/regression/BufferedInputStreamAvailableTest.java:
