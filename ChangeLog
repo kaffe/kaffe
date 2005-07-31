@@ -1,3 +1,13 @@
+2005-07-31 Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* test/regression/BufferedInputStreamAvailableTest.java:
+	New file.
+
+	* test/regression/Makefile.am:
+	Added BufferedInputStreamAvailableTest.java.
+
+	* test/regression/Makefile.in: regenerated.
+
 2005-07-26 Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

@@ -152,6 +152,7 @@ TEST_MISC = \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 	InputStreamTest.java \
+	BufferedInputStreamAvailableTest.java \
 	PipeTest.java \
         DateFormatTest.java \
 	GetField.java \
