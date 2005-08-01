@@ -36,6 +36,9 @@ int main(void)
   jmethodID mainid;
 
   /* set up libtool/libltdl dlopen emulation */
+  LTDL_SET_PRELOADED_SYMBOLS();
+
+  /* set up libtool/libltdl dlopen emulation */
   myoptions[0].optionString = concatString("-Xbootclasspath:", getenv("BOOTCLASSPATH"));
   myoptions[1].optionString = concatString("-Xclasspath:", CLASSPATH_SOURCE_DIR);  
   myoptions[2].optionString = "-Xvmdebug:NATIVELIB";  

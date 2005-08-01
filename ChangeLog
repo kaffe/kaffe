@@ -1,5 +1,14 @@
 2005-08-01  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* test/jni/Makefile.am: Fixed typo.
+
+	* test/jni/Makefile.in: Regenerated.
+
+	* test/jni/jniWeakTest.c
+	(main): Register preloaded symbols.
+
+2005-08-01  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* test/internal/VirtualMethod.java: New test.
 
 	* test/internal/Makefile.am: Added the test.

@@ -106,7 +106,7 @@ jniWeakTest_LDADD= \
         $(LTLIBINTL) \
 	@LIBLTDL@
 
-jniWeakTest_DEPENDECIES = $(LIBKAFFEVM) libjniweaklib.la
+jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la
 
 jniWeakTest.o: JNIWeakTest.class
 

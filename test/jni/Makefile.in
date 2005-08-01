@@ -95,9 +95,6 @@ am_jniReflect_OBJECTS = jniReflect.$(OBJEXT)
 jniReflect_OBJECTS = $(am_jniReflect_OBJECTS)
 am_jniWeakTest_OBJECTS = jniWeakTest.$(OBJEXT)
 jniWeakTest_OBJECTS = $(am_jniWeakTest_OBJECTS)
-jniWeakTest_DEPENDENCIES = $(top_builddir)/test/jni/libjniweaklib.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4) \
-	$(am__DEPENDENCIES_5) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -476,7 +473,7 @@ jniWeakTest_LDADD = \
         $(LTLIBINTL) \
 	@LIBLTDL@
 
-jniWeakTest_DEPENDECIES = $(LIBKAFFEVM) libjniweaklib.la
+jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la
 EXTRA_DIST = \
 	JNIWeakTest.java \
 	HelloWorldApp.class
