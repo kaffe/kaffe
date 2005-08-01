@@ -81,7 +81,8 @@ JAVA_CLASSES = \
 	ObjectFields.class \
 	MethodOptimizations.class \
 	NativeMethodCall.class \
-	Exceptions.class
+	Exceptions.class \
+	VirtualMethod.class
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
@@ -132,6 +133,9 @@ NativeMethodCall.class java/lang/System.class java/lang/VMSystem.class: $(srcdir
 
 Exceptions.class: $(srcdir)/Exceptions.java
 	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/Exceptions.java
+	
+VirtualMethod.class: $(srcdir)/VirtualMethod.java
+	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/VirtualMethod.java
 
 jit_stub.o: java/lang/System.class java/lang/VMSystem.class $(JAVA_CLASSES)
 
@@ -155,6 +159,7 @@ EXTRA_DIST = \
 	MethodOptimizations.java \
 	NativeMethodCall.java \
 	Exceptions.java \
+	VirtualMethod.java \
 	java/lang/System.java \
 	java/lang/VMSystem.java
 

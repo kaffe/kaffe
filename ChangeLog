@@ -1,3 +1,11 @@
+2005-08-01  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* test/internal/VirtualMethod.java: New test.
+
+	* test/internal/Makefile.am: Added the test.
+
+	* test/internal/Makefile.in: Regenerated.
+
 2005-07-31  Guilhem Lavaux <guilhem@kaffe.org>
 	Riccardo Mottola  <multix@gmail.com>
 
