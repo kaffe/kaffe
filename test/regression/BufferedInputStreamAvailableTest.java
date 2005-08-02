@@ -8,7 +8,9 @@ public class BufferedInputStreamAvailableTest {
 	BufferedInputStream is = new BufferedInputStream(
 	  new FileInputStream(file), (int)flen);
 	int alen = is.available();
-	System.out.println((int)flen == alen);
+	// System.out.println((int)flen == alen);
+	// We are happy if (int)flen == alen, but that is not necessarily true.
+	System.out.println(alen >= 0);
     }
 }
 
