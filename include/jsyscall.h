@@ -108,12 +108,56 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
  * Define some convenience macros
  */
 
-#define	KOPEN(A,B,C,D)	(*Kaffe_SystemCallInterface._open)(A,B,C,D)
+/**
+ * Open a file in a platform-independant, thread-safe way, and
+ * set the filedescriptor to the opened file's descriptor.
+ *
+ * @param filename name of file to open.
+ * @param flags flags to pass to open
+ * @param permissions permissions with which the file is to be opened
+ * @param filedescriptor pointer to the filedescriptor to store the result in
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KOPEN(filename, flags, permissions, filedescriptor)	\
+  (*Kaffe_SystemCallInterface._open)(filename, flags, permissions, filedescriptor)
+
 #define	KREAD(A,B,C,D)	(*Kaffe_SystemCallInterface._read)(A,B,C,D)
 #define	KWRITE(A,B,C,D)	(*Kaffe_SystemCallInterface._write)(A,B,C,D)
-#define	KLSEEK(A,B,C,D)	(*Kaffe_SystemCallInterface._lseek)(A,B,C,D)
-#define	KCLOSE(A)	(*Kaffe_SystemCallInterface._close)(A)
-#define	KFSTAT(A,B)	(*Kaffe_SystemCallInterface._fstat)(A,B)
+
+/**
+ * Reposition read/write offset in a file in a 
+ * platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to stat
+ * @param offset offset to set
+ * @param whence how to set the offset
+ * @param new_offset new value of read/write offset
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KLSEEK(filedescriptor, offset, whence, new_offset) \
+  (*Kaffe_SystemCallInterface._lseek)(filedescriptor, offset, whence, new_offset)
+
+/**
+ * Close a file in a platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to close
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KCLOSE(filedescriptor)	\
+  (*Kaffe_SystemCallInterface._close)(filedescriptor)
+
+/**
+ * FStat a file in a platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to stat
+ * @param stats return buffer
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KFSTAT(filedescriptor, stats)	(*Kaffe_SystemCallInterface._fstat)(filedescriptor, stats)
 #define	KSTAT(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
 #define KFTRUNCATE(A,B) (*Kaffe_SystemCallInterface._ftruncate)(A,B)
 #define KFSYNC(A)       (*Kaffe_SystemCallInterface._fsync)(A)

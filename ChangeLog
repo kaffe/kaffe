@@ -1,3 +1,16 @@
+2005-08-02 Dalibor Topic  <robilad@kaffe.org>
+
+	* include/jsyscall.h:
+	(KOPEN, KLSEEK, KCLOSE, KFSTAT) Documented.
+
+	* libraries/clib/target/Linux/target_native_file.h
+	(TARGET_NATIVE_FILE_OPEN, TARGET_NATIVE_FILE_CLOSE,
+	TARGET_NATIVE_FILE_AVAILABLE, TARGET_NATIVE_FILE_SIZE,
+	TARGET_NATIVE_FILE_TELL): New macros used to delegate
+	system calls to thread-safe wrappers for system calls.
+
+	Reported by:  Guilhem Lavaux <guilhem@kaffe.org>
+
 2005-08-01  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* test/jni/Makefile.am: Fixed typo.
@@ -32,7 +45,7 @@
 
 	* test/regression/Makefile.in: regenerated.
 
-2005-07-26 Dalibor Topic  <robilad@kaffe.org>
+2005-07-30 Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 
