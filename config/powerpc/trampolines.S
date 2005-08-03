@@ -29,10 +29,11 @@ TRAMPOLINE_FUNCTION()
 
      C_FUNC_NAME(powerpc_do_fixup_trampoline) :
 
-# Function prologue: establish a minimum stack frame. We don't
-# save lr - it was already saved at 8(r1) by the trampoline
-# code. However, we must save r3 and r4, as we will use them
-# to call soft_fixup_trampoline().
+/* Function prologue: establish a minimum stack frame. We don't
+ * save lr - it was already saved at 8(r1) by the trampoline
+ * code. However, we must save r3 and r4, as we will use them
+ * to call soft_fixup_trampoline().
+ */
      stw  r3, -4(r1)
      stw  r4, -8(r1)
      stw  r5, -12(r1)

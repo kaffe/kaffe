@@ -1,3 +1,10 @@
+2005-08-03  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/powerpc/trampolines.S: Changed commentary type for
+	gcc.
+
+	Reported by: Riccardo Mottola <multix@gmail.com>.
+
 2005-08-02 Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* test/regression/BufferedInputStreamAvailableTest.java:
