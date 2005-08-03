@@ -1,3 +1,10 @@
+2005-08-03 Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/BufferedInputStreamAvailableTest.java:
+	Use file TestScript for testing input, as it exists in
+	both builddir and srcdir, so if these are different, the 
+	test still passes.
+
 2005-08-03  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/powerpc/trampolines.S: Changed commentary type for

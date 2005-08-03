@@ -3,7 +3,7 @@ import java.io.*;
 public class BufferedInputStreamAvailableTest {
     public static void main(String av[]) throws Exception {
 
-	File file = new File("BufferedInputStreamAvailableTest.java");
+	File file = new File("TestScript");
 	long flen = file.length();
 	BufferedInputStream is = new BufferedInputStream(
 	  new FileInputStream(file), (int)flen);
