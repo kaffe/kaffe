@@ -1,3 +1,10 @@
+2005-08-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/target/Linux/target_native_file.h 
+	(TARGET_NATIVE_FILE_SEEK_END, TARGET_NATIVE_FILE_SEEK_CURRENT,
+	TARGET_NATIVE_FILE_SEEK_BEGIN): New macros used to delegate
+	system calls to thread-safe wrappers for system calls.
+
 2005-08-03 Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for fstat.

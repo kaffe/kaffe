@@ -240,6 +240,49 @@ extern "C" {
     } while (0)
 #endif
 
+/***********************************************************************\
+* Name       : TARGET_NATIVE_FILE_SEEK_BEGIN|CURRENT|END
+* Purpose    : set file position relativ to begin/current/end
+* Input      : -
+* Output     : -
+* Return     : -
+* Side-effect: unknown
+* Notes      : -
+\***********************************************************************/
+
+#ifndef TARGET_NATIVE_FILE_SEEK_BEGIN
+  #include <sys/types.h>
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_SEEK_BEGIN(filedescriptor,offset,newoffset,result) \
+    do { \
+      int klseek_result; \
+      klseek_result=KLSEEK(filedescriptor,offset,SEEK_SET, &newoffset);			\
+      result=(klseek_result==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+#ifndef TARGET_NATIVE_FILE_SEEK_CURRENT
+  #include <sys/types.h>
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_SEEK_CURRENT(filedescriptor,offset,newoffset,result) \
+    do { \
+      int klseek_result; \
+      klseek_result=KLSEEK(filedescriptor,offset,SEEK_CUR, &newoffset);	      \
+      result=(klseek_result==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+#ifndef TARGET_NATIVE_FILE_SEEK_END
+  #include <sys/types.h>
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_SEEK_END(filedescriptor,offset,newoffset,result) \
+    do { \
+      int klseek_result; \
+      klseek_result=KLSEEK(filedescriptor,offset,SEEK_END, &newoffset);		\
+      result=(klseek_result==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+
+/* TODO: WRITE, READ, TRUNCATE, FSYNC */
+
 /* include rest of definitions from generic file (do not move it to 
    another position!) */
 #include "target_generic_file.h"
