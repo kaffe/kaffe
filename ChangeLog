@@ -1,5 +1,11 @@
 2005-08-03 Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Check for fstat.
+
+	Reported by:  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+2005-08-03 Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/BufferedInputStreamAvailableTest.java:
 	Use file TestScript for testing input, as it exists in
 	both builddir and srcdir, so if these are different, the 

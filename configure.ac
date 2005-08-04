@@ -1330,7 +1330,7 @@ AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 AC_FUNC_UTIME_NULL
 
-AC_CHECK_FUNCS([select socket getsockname getpagesize])
+AC_CHECK_FUNCS([select socket getsockname getpagesize fstat])
 AC_CHECK_FUNCS([memcpy memmove])
 AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])

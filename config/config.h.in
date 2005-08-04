@@ -135,6 +135,9 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the `fstat' function. */
+#undef HAVE_FSTAT
+
 /* Define to 1 if you have the `fsync' function. */
 #undef HAVE_FSYNC
 
