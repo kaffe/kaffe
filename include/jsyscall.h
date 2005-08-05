@@ -122,8 +122,33 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	KOPEN(filename, flags, permissions, filedescriptor)	\
   (*Kaffe_SystemCallInterface._open)(filename, flags, permissions, filedescriptor)
 
-#define	KREAD(A,B,C,D)	(*Kaffe_SystemCallInterface._read)(A,B,C,D)
-#define	KWRITE(A,B,C,D)	(*Kaffe_SystemCallInterface._write)(A,B,C,D)
+/**
+ * Read bytes from a file into a buffer in a 
+ * platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to read from
+ * @param buffer buffer to read the bytes into
+ * @param length number of bytes to be read
+ * @param bytesRead number of bytes actually read
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KREAD(filedescriptor, buffer, length, bytesRead)	\
+  (*Kaffe_SystemCallInterface._read)(filedescriptor, buffer, length, bytesRead)
+
+/**
+ * Write bytes to a file from a buffer in a 
+ * platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to write to
+ * @param buffer buffer to write the bytes from
+ * @param length number of bytes to be written
+ * @param bytesWritten number of bytes actually written
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define	KWRITE(filedescriptor, buffer, length, bytesWritten)	\
+  (*Kaffe_SystemCallInterface._write)(filedescriptor, buffer, length, bytesWritten)
 
 /**
  * Reposition read/write offset in a file in a 
@@ -157,10 +182,30 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
  * 
  * @return 0 on success, or errno on failure.
  */
-#define	KFSTAT(filedescriptor, stats)	(*Kaffe_SystemCallInterface._fstat)(filedescriptor, stats)
+#define	KFSTAT(filedescriptor, stats)	\
+  (*Kaffe_SystemCallInterface._fstat)(filedescriptor, stats)
 #define	KSTAT(A,B)	(*Kaffe_SystemCallInterface._stat)(A,B)
-#define KFTRUNCATE(A,B) (*Kaffe_SystemCallInterface._ftruncate)(A,B)
-#define KFSYNC(A)       (*Kaffe_SystemCallInterface._fsync)(A)
+
+/**
+ * FTruncate a file in a platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to truncate
+ * @param offset pffest at which the filedescriptor should be truncated
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define KFTRUNCATE(filedescriptor,offset) \
+  (*Kaffe_SystemCallInterface._ftruncate)(filedescriptor, offset)
+
+/**
+ * Synchrnoze a file in a platform-independant, thread-safe way.
+ *
+ * @param filedescriptor filedescriptor to synchronize
+ * 
+ * @return 0 on success, or errno on failure.
+ */
+#define KFSYNC(filedescriptor) \
+  (*Kaffe_SystemCallInterface._fsync)(filedescriptor)
 
 #define	KMKDIR(A,B)	(*Kaffe_SystemCallInterface._mkdir)(A,B)
 #define	KRMDIR(A)	(*Kaffe_SystemCallInterface._rmdir)(A)

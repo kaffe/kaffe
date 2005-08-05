@@ -281,7 +281,67 @@ extern "C" {
     } while (0)
 #endif
 
-/* TODO: WRITE, READ, TRUNCATE, FSYNC */
+/***********************************************************************\
+* Name       : TARGET_NATIVE_FILE_READ|WRITE
+* Purpose    : read/write from/to frile
+* Input      : -
+* Output     : -
+* Return     : -
+* Side-effect: unknown
+* Notes      : -
+\***********************************************************************/
+
+#ifndef TARGET_NATIVE_FILE_READ
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_READ(filedescriptor,buffer,length,bytesRead,result) \
+    do { \
+      int kread_result = KREAD(filedescriptor,buffer,length, &bytesRead); \
+      result=(kread_result==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+#ifndef TARGET_NATIVE_FILE_WRITE
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_WRITE(filedescriptor,buffer,length,bytesWritten,result) \
+    do { \
+      int kwrite_result=KWRITE(filedescriptor,buffer,length, &bytesWritten);	      \
+      result=(kwrite_result==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+
+/***********************************************************************\
+* Name       : TARGET_NATIVE_FILE_TRUNCATE
+* Purpose    : truncate a file
+* Input      : -
+* Output     : -
+* Return     : -
+* Side-effect: unknown
+* Notes      : -
+\***********************************************************************/
+
+#ifndef TARGET_NATIVE_FILE_TRUNCATE
+  #include <unistd.h>
+  #define TARGET_NATIVE_FILE_TRUNCATE(filedescriptor,offset,result) \
+    do { \
+      result=(KFTRUNCATE(filedescriptor,offset)==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while (0)
+#endif
+
+/***********************************************************************\
+* Name       : TARGET_NATIVE_FILE_FSYNC
+* Purpose    : do filesystem sync
+* Input      : -
+* Output     : -
+* Return     : -
+* Side-effect: unknown
+* Notes      : -
+\***********************************************************************/
+
+#ifndef TARGET_NATIVE_FILE_FSYNC
+  #define TARGET_NATIVE_FILE_FSYNC(filedescriptor,result) \
+    do { \
+      result=(fsync(filedescriptor)==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+    } while(0)
+#endif
 
 /* include rest of definitions from generic file (do not move it to 
    another position!) */
