@@ -828,7 +828,7 @@ extern "C" {
 #ifndef TARGET_NATIVE_FILE_FSYNC
   #define TARGET_NATIVE_FILE_FSYNC(filedescriptor,result) \
     do { \
-      result=(KFSYNC(filedescriptor)==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
+      result=(fsync(filedescriptor)==0)?TARGET_NATIVE_OK:TARGET_NATIVE_ERROR; \
     } while(0)
 #endif
 

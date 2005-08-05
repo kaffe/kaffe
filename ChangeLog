@@ -1,3 +1,10 @@
+2005-08-05  Dalibor Topic  <topic@clerks.kaffe.org>
+
+	* libraries/clib/target/generic/target_generic_file.h (TARGET_NATIVE_FILE_FSYNC): 
+	Swapped with
+	* libraries/clib/target/Linux/target_native_file.h (TARGET_NATIVE_FILE_FSYNC): 
+	to make sure all the wrapped native calls are in the Linux layer.
+
 2005-08-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/jsyscall.h (KFTRUNCATE, KFSYNC, KREAD, KWRITE): Documented.
@@ -8,7 +15,6 @@
 	TARGET_NATIVE_FILE_TRUNCATE, TARGET_NATIVE_FILE_WRITE,
 	TARGET_NATIVE_FILE_READ): New macros used to delegate
 	system calls to thread-safe wrappers for system calls.
-
 	
 2005-08-04  Dalibor Topic  <robilad@kaffe.org>
 
