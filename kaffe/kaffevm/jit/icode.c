@@ -3152,7 +3152,6 @@ cvt_double_int(SlotInfo* dst, SlotInfo* src)
 #elif defined(HAVE_cvt_double_int_ieee)
 	{
 	  SlotInfo *tmp;
-	  int i;
 	  
 	  end_sub_block();
 	  slot_alloc2tmp(tmp);

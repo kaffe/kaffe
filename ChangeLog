@@ -1,4 +1,9 @@
-2005-08-05  Dalibor Topic  <topic@clerks.kaffe.org>
+2005-08-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit/icode.c
+	(cvt_double_int) Removed unused variable i.
+
+2005-08-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/target/generic/target_generic_file.h (TARGET_NATIVE_FILE_FSYNC): 
 	Swapped with
