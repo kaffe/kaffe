@@ -487,7 +487,7 @@ jarSeek(jarFile *jf, off_t offset, int whence)
 #ifdef HAVE_MMAP
 	if( jf->data != (uint8*)-1 )
 	{
-		off_t pos;
+		off_t pos = 0;
 		
 		switch( whence )
 		{
@@ -804,7 +804,7 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
  */
 static int readJarEntries(jarFile *jf)
 {
-	unsigned int dir_size;
+	unsigned int dir_size = 0;
 	int retval = 0;
 
 	assert(jf != 0);

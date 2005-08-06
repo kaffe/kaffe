@@ -1,3 +1,26 @@
+2005-08-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jar.c (jarSeek): Initialize pos
+	before use.
+	(getCentralDirCount) Initialize dir_size before use.
+
+	* kaffe/kaffevm/locks.c (slowLockObject): Initialize
+	isContention before use.
+
+	* kaffe/kaffevm/jni/jni-helpers.c (KaffeJNI_GetDirectBufferCapacity)
+	Return jlong.
+
+	* kaffe/kaffevm/jni/jni-string.c (KaffeJNI_GetStringUTFChars) Return
+	const char*. Changed type of return buffer to char*.
+
+	* kaffe/kaffevm/jni/jni_funcs.h (KaffeJNI_GetDirectBufferCapacity,
+	KaffeJNI_GetStringUTFChars): Fixed prototypes to match declarations
+	in jni.h.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c (jthreadedBind,
+	jthreadedConnect) Fixed to match declaration. Removed no longer
+	necessary socklen_t casts.
+
 2005-08-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit/codeproto.h  (and_int_const): 

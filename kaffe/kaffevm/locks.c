@@ -526,7 +526,7 @@ void
 slowLockObject(Hjava_lang_Object* obj)
 {
 #if defined(ENABLE_JVMPI)
-  jboolean isContention;
+  jboolean isContention = false;
 
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTER) )
     {

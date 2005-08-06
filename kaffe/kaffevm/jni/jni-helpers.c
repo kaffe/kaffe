@@ -82,7 +82,7 @@ void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env, jobject buffer)
   return address;
 }
 
-long KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
+jlong KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
 {  
   jmethodID capacity_method;
   jint capacity;

@@ -196,11 +196,11 @@ jthreadedKill(int pid, int sig)
 }
 
 static int
-jthreadedBind(int fd, struct sockaddr *addr, int namelen)
+jthreadedBind(int fd, struct sockaddr *addr, socklen_t namelen)
 {
 	int rc = 0;
 
-	if (bind(fd, addr, (socklen_t)namelen) == -1) {
+	if (bind(fd, addr, namelen) == -1) {
 		rc = errno;
 	}
 	return (rc);
@@ -420,7 +420,7 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
  * Threaded socket connect.
  */
 static int
-jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
+jthreadedConnect(int fd, struct sockaddr* addr, socklen_t len, int timeout)
 {
 	int r;
 	jlong deadline = 0;
@@ -428,7 +428,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
-		r = connect(fd, addr, (socklen_t)len);
+		r = connect(fd, addr, len);
 		if (r == 0 || !(errno == EINPROGRESS 
 				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */

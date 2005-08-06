@@ -141,12 +141,12 @@ KaffeJNI_GetStringUTFLength(JNIEnv* env UNUSED, jstring data)
   return (count);
 }
 
-const jbyte*
+const char*
 KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jboolean* copy)
 {
   Hjava_lang_String* const str = (Hjava_lang_String*)unveil(data);
   jchar* ptr;
-  jbyte* buf;
+  char* buf;
   jsize len;
   jsize i;
   jsize j;

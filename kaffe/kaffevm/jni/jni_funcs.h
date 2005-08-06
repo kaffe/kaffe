@@ -24,7 +24,7 @@ jobject   KaffeJNI_ToReflectedMethod (JNIEnv *, jclass, jmethodID, jboolean);
 jobject   KaffeJNI_ToReflectedField (JNIEnv *, jclass, jfieldID, jboolean);
 jobject   KaffeJNI_NewDirectByteBuffer(JNIEnv *, void *, jlong);
 void *    KaffeJNI_GetDirectBufferAddress(JNIEnv *, jobject);
-long      KaffeJNI_GetDirectBufferCapacity(JNIEnv *, jobject);
+jlong     KaffeJNI_GetDirectBufferCapacity(JNIEnv *, jobject);
 void NONRETURNING
           KaffeJNI_FatalError(JNIEnv* env, const char* mess);
 
@@ -38,7 +38,7 @@ const jchar*
         KaffeJNI_GetStringChars(JNIEnv* env, jstring data, jboolean* copy);
 jstring KaffeJNI_NewStringUTF(JNIEnv* env, const char* data);
 jsize   KaffeJNI_GetStringUTFLength(JNIEnv* env, jstring data);
-const jbyte*
+const char*
         KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jboolean* copy);
 void    KaffeJNI_ReleaseStringUTFChars(JNIEnv* env, jstring data, const char* chars);
 void    KaffeJNI_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jchar *buf);
