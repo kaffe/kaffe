@@ -692,4 +692,6 @@ extern Utf8Const* Exceptions_name;	/* "Exceptions" */
 extern Utf8Const* SourceFile_name;	/* "SourceFile" */
 extern Utf8Const* InnerClasses_name;	/* "InnerClasses" */
 
+void initialiseSecurity (void);
+
 #endif

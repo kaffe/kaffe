@@ -1,5 +1,14 @@
 2005-08-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/sparc/jit-sparc.def:
+	(argcount) removed as argcount is handled in jit code
+	already. Removed all uses to fix Debian bug #321209.
+
+	* kaffe/kaffevm/classMethod.h (initialiseSecurity)
+	Added missing prototype to fix compiler warning.
+	
+2005-08-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jar.c (jarSeek): Initialize pos
 	before use.
 	(getCentralDirCount) Initialize dir_size before use.

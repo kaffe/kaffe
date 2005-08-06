@@ -45,8 +45,6 @@ static const char* rnames[] = {
 #define	fregname(n)	rnames[(n)+32]
 #endif
 
-static int argcount = 0;
-
 /* --------------------------------------------------------------------- */
 /* Instruction formats							 */
 
@@ -1036,7 +1034,6 @@ define_insn(push_int, push_xRC)
 		ldst_RRC(0x04, r, REG_sp, w);
 		debug(("st %s,[sp+%d]\n", regname(r), w));
 	}
-	argcount++;
 }
 
 define_insn(push_float, fpush_xRC)
@@ -1062,7 +1059,6 @@ define_insn(push_float, fpush_xRC)
 		ldst_RRC(0x24, r, REG_sp, w);
 		debug(("stf %s,[sp+%d]\n", fregname(r), w));
 	}
-	argcount++;
 }
 
 define_insn(push_double, fpushl_xRC)
@@ -1106,13 +1102,10 @@ define_insn(push_double, fpushl_xRC)
 		ldst_RRC(0x24, r+1, REG_sp, w);
 		debug(("stf %s,[sp+%d]\n", fregname(r+1), w));
 	}
-
-	argcount += 2;
 }
 
 define_insn(popargs, popargs_xxC)
 {
-	argcount = 0;
 }
 
 define_insn(return_int, return_Rxx)
