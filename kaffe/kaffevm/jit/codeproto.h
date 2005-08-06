@@ -41,6 +41,7 @@ void move_float(SlotInfo*, SlotInfo*);
 void move_double(SlotInfo*, SlotInfo*);
 
 void add_int(SlotInfo*, SlotInfo*, SlotInfo*);
+void and_int_const(SlotInfo*, SlotInfo*, jint);
 void sub_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void mul_int(SlotInfo*, SlotInfo*, SlotInfo*);
 void div_int(SlotInfo*, SlotInfo*, SlotInfo*);
