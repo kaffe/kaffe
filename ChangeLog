@@ -1,3 +1,10 @@
+2005-08-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac : Always execute configure for boehm-gc to avoid
+	confusing distcheck.
+
+	* config/Makefile.am: Fixed spelling of i386/fpu-set.h
+
 2005-08-07  Riccardo Mottola  <multix@gmail.com>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:

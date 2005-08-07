@@ -126,7 +126,7 @@ EXTRA_DIST = \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
 	i386/atomic.h \
-	i386/fpu_set.h \
+	i386/fpu-set.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \
