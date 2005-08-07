@@ -15,6 +15,15 @@
  */
 
 #include "config.h"
+
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
+#if defined(HAVE_SYS_WAIT_H)
+#include <sys/wait.h>
+#endif /* defined(HAVE_SYS_WAIT_H) */
+
 #include "jthread.h"
 #include "jsignal.h"
 #include "xprofiler.h"

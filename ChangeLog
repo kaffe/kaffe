@@ -1,3 +1,8 @@
+2005-08-07  Riccardo Mottola  <multix@gmail.com>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Added missing includes for waitpid to fix build on gnu hurd.
+
 2005-08-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/sparc/jit-sparc.def:
