@@ -1,5 +1,11 @@
 2005-08-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/sparc/jit-sparc.def: Removed empty popargs function.
+
+	* config/sparc/jit-icode.h: Undefined popargs.
+
+2005-08-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac : Always execute configure for boehm-gc to avoid
 	confusing distcheck.
 

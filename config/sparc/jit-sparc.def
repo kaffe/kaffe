@@ -1104,10 +1104,6 @@ define_insn(push_double, fpushl_xRC)
 	}
 }
 
-define_insn(popargs, popargs_xxC)
-{
-}
-
 define_insn(return_int, return_Rxx)
 {
 	forceRegister(seq_dst(s), REG_o0, Rint);

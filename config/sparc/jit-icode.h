@@ -85,7 +85,6 @@
 #define	HAVE_pusharg_float		fpush_xRC
 #define	HAVE_pusharg_double		fpushl_xRC
 #define	HAVE_pusharg_ref		push_xRC
-#define	HAVE_popargs			popargs_xxC
 
 #define	HAVE_cmp_int			cmp_xRR
 #define	HAVE_cmp_ref			cmp_xRR
