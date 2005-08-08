@@ -1,6 +1,5 @@
 /* DynArrayOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -47,7 +46,8 @@ import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface DynArrayOperations extends DynAnyOperations
+public interface DynArrayOperations
+  extends DynAnyOperations
 {
   /**
    * Returns the array.
@@ -68,25 +68,26 @@ public interface DynArrayOperations extends DynAnyOperations
    *
    * @param value the array of elements an DynAny's.
    *
-   * @throws TypeMismatch if the members of the passed array does not
-   * match array component type.
+   * @throws TypeMismatch if the members of the passed array does not match
+   * array component type.
    *
-   * @throws InvalidValue if the number of elements in the passed array
-   * is not the same as the size of this DynArray.
+   * @throws InvalidValue if the number of elements in the passed array is not
+   * the same as the size of this DynArray.
    */
-  void set_elements_as_dyn_any(DynAny[] value) throws TypeMismatch,
-      InvalidValue;
+  void set_elements_as_dyn_any(DynAny[] value)
+    throws TypeMismatch, InvalidValue;
 
   /**
    * Sets the array.
    *
    * @param value the array of elements as Any's.
    *
-   * @throws TypeMismatch if the members of the passed array does not
-   * match array component type.
+   * @throws TypeMismatch if the members of the passed array does not match
+   * array component type.
    *
-   * @throws InvalidValue if the number of elements in the passed array
-   * is not the same as the size of this DynArray.
+   * @throws InvalidValue if the number of elements in the passed array is not
+   * the same as the size of this DynArray.
    */
-  void set_elements(Any[] value) throws TypeMismatch, InvalidValue;
+  void set_elements(Any[] value)
+    throws TypeMismatch, InvalidValue;
 }

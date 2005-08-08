@@ -1,6 +1,5 @@
 /* DynStructOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -47,7 +46,8 @@ import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface DynStructOperations extends DynAnyOperations
+public interface DynStructOperations
+  extends DynAnyOperations
 {
   /**
    * Get the kind of the structure field at the current position.
@@ -57,7 +57,8 @@ public interface DynStructOperations extends DynAnyOperations
    * @throws TypeMismatch for an empty structure (normally exception).
    * @throws InvalidValue if the current position does not indicate a memeber.
    */
-  TCKind current_member_kind() throws TypeMismatch, InvalidValue;
+  TCKind current_member_kind()
+    throws TypeMismatch, InvalidValue;
 
   /**
    * Get the name of the structure field at the current position.
@@ -67,7 +68,8 @@ public interface DynStructOperations extends DynAnyOperations
    * @throws TypeMismatch for an empty structure (normally exception).
    * @throws InvalidValue if the current position does not indicate a memeber.
    */
-  String current_member_name() throws TypeMismatch, InvalidValue;
+  String current_member_name()
+    throws TypeMismatch, InvalidValue;
 
   /**
    * Return array, describing describing the name and the value of each member
@@ -102,14 +104,14 @@ public interface DynStructOperations extends DynAnyOperations
    * @param an array of NameDynValuePair's, each defining a single field in the
    * structure.
    *
-   * @throws TypeMismatch if the member of the passed array has a different
-   * type than the corresponding structure field.
+   * @throws TypeMismatch if the member of the passed array has a different type
+   * than the corresponding structure field.
    *
    * @throws InvalidValue if the size of the passed array is not the same as the
    * number of fields in this structure.
    */
-  void set_members_as_dyn_any(NameDynAnyPair[] value) throws TypeMismatch,
-      InvalidValue;
+  void set_members_as_dyn_any(NameDynAnyPair[] value)
+    throws TypeMismatch, InvalidValue;
 
   /**
    * Set the structure contend from the array, where each member defines the
@@ -126,12 +128,13 @@ public interface DynStructOperations extends DynAnyOperations
    * @param an array of NameValuePair's, each defining a single field in the
    * structure.
    *
-   * @throws TypeMismatch if the member of the passed array has a different
-   * type than the corresponding structure field.
+   * @throws TypeMismatch if the member of the passed array has a different type
+   * than the corresponding structure field.
    *
    * @throws InvalidValue if the size of the passed array is not the same as the
    * number of fields in this structure.
    */
-  void set_members(NameValuePair[] value) throws TypeMismatch, InvalidValue;
+  void set_members(NameValuePair[] value)
+    throws TypeMismatch, InvalidValue;
 
 }

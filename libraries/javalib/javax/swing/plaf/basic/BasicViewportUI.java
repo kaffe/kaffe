@@ -160,8 +160,8 @@ public class BasicViewportUI extends ViewportUI
                            Rectangle viewBounds, 
                            Rectangle portBounds)
   {
-    Rectangle oldClip = g.getClipBounds ();
-    g.setClip (oldClip.intersection (viewBounds));
+    Rectangle oldClip = g.getClipBounds();
+    g.setClip(portBounds);
     g.translate (-pos.x, -pos.y);
     try
       {   

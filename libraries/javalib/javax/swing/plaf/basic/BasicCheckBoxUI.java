@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.UIDefaults;
@@ -59,6 +60,9 @@ public class BasicCheckBoxUI extends BasicRadioButtonUI
   
   public void installUI(final JComponent c)  {
     super.installUI(c);
+    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+    ((AbstractButton) c).setIcon(defaults.getIcon("CheckBox.icon"));
+    ((AbstractButton) c).setSelectedIcon(defaults.getIcon("CheckBox.checkIcon"));
   }
 
   // Overridden to change method access.

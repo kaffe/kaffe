@@ -1848,10 +1848,19 @@ public abstract class Component
    *
    * @see #paint(Graphics)
    * @see #repaint()
+   *
+   * @specnote In contrast to what the spec says, tests show that the exact
+   *           behaviour is to clear the background on lightweight and
+   *           top-level components only. Heavyweight components are not
+   *           affected by this method and only call paint().
    */
   public void update(Graphics g)
   {
-    if (!isLightweight())
+    // Tests show that the clearing of the background is only done in
+    // two cases:
+    // - If the component is lightwight (yes this is in contrast to the spec).
+    // - If the component is a toplevel container.
+    if (isLightweight() || getParent() == null)
       {
         Rectangle clip = g.getClipBounds();
         if (clip == null)
@@ -1859,7 +1868,6 @@ public abstract class Component
         else
           g.clearRect(clip.x, clip.y, clip.width, clip.height);
       }
-
     paint(g);
   }
 

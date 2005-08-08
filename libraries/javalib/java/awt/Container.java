@@ -654,10 +654,10 @@ public class Container extends Component
       {  
         if(valid && prefSize != null)
           return new Dimension(prefSize);
-
-        if (layoutMgr != null)
+        LayoutManager layout = getLayout();
+        if (layout != null)
           {
-            Dimension layoutSize = layoutMgr.preferredLayoutSize (this);
+            Dimension layoutSize = layout.preferredLayoutSize(this);
             if(valid)
               prefSize = layoutSize;
             return new Dimension(layoutSize);
@@ -686,8 +686,15 @@ public class Container extends Component
    */
   public Dimension minimumSize()
   {
-    if (layoutMgr != null)
-      return layoutMgr.minimumLayoutSize (this);
+    if(valid && minSize != null)
+      return new Dimension(minSize);
+
+    LayoutManager layout = getLayout();
+    if (layout != null)
+      {
+        minSize = layout.minimumLayoutSize (this);
+        return minSize;
+      }    
     else
       return super.minimumSize ();
   }
@@ -699,10 +706,15 @@ public class Container extends Component
    */
   public Dimension getMaximumSize()
   {
-    if (layoutMgr != null && layoutMgr instanceof LayoutManager2)
+    if (valid && maxSize != null)
+      return new Dimension(maxSize);
+
+    LayoutManager layout = getLayout();
+    if (layout != null && layout instanceof LayoutManager2)
       {
-        LayoutManager2 lm2 = (LayoutManager2) layoutMgr;
-        return lm2.maximumLayoutSize(this);
+        LayoutManager2 lm2 = (LayoutManager2) layout;
+        maxSize = lm2.maximumLayoutSize(this);
+        return maxSize;
       }
     else
       return super.getMaximumSize();
@@ -760,10 +772,21 @@ public class Container extends Component
    * drawn.
    *
    * @param g The graphics context for this update.
+   *
+   * @specnote The specification suggests that this method forwards the
+   *           update() call to all its lightweight children. Tests show
+   *           that this is not done either in the JDK. The exact behaviour
+   *           seems to be that top-level container call super.update()
+   *           (causing the background to be cleared), and all other containers
+   *           directly call paint(), causing the (lightweight) children to
+   *           be painted.
    */
   public void update(Graphics g)
   {
-    super.update(g);
+    if (getParent() == null)
+      super.update(g);
+    
+    paint(g);
   }
 
   /**
@@ -1492,12 +1515,8 @@ public class Container extends Component
         for (int i = ncomponents - 1; i >= 0; --i)
           {
             Component comp = component[i];
-            // If we're visiting heavyweights as well,
-            // don't recurse into Containers here. This avoids
-            // painting the same nested child multiple times.
             boolean applicable = comp.isVisible()
-              && (comp.isLightweight()
-                  || !lightweightOnly && ! (comp instanceof Container));
+              && (comp.isLightweight() || !lightweightOnly);
 
             if (applicable)
               visitChild(gfx, visitor, comp);

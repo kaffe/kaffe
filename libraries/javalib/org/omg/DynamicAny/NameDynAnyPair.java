@@ -1,6 +1,5 @@
 /* NameDynAnyPair.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -48,7 +47,8 @@ import java.io.Serializable;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public final class NameDynAnyPair implements IDLEntity, Serializable
+public final class NameDynAnyPair
+  implements IDLEntity, Serializable
 {
   /**
    * Use serialVersionUID (v1.4) for interoperability.

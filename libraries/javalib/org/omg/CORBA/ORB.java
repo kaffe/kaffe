@@ -881,6 +881,10 @@ public abstract class ORB
    * <td>Encodes/decodes IDL data types into/from byte arrays.</td>
    * </tr>
    *
+   * <tr><td>DynAnyFactory</td><td>{@link org.omg.DynamicAny.DynAnyFactory}</td>
+   * <td>Creates DynAny's.</td>
+   * </tr>
+   *
    * </table>
    *
    * @param name the object name.

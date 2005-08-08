@@ -277,7 +277,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Button.shadow", new ColorUIResource(Color.GRAY),
       "Button.textIconGap", new Integer(4),
       "Button.textShiftOffset", new Integer(0),
-      "CheckBox.background", new ColorUIResource(light),
+      "CheckBox.background", new ColorUIResource(new Color(204, 204, 204)),
       "CheckBox.border", new BorderUIResource.CompoundBorderUIResource(null,
                                                                        null),
       "CheckBox.focusInputMap", new UIDefaults.LazyInputMap(new Object[] {
@@ -294,20 +294,43 @@ public abstract class BasicLookAndFeel extends LookAndFeel
           return BasicIconFactory.getCheckBoxIcon();
         }
       },
+      "CheckBox.checkIcon", 
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return BasicIconFactory.getMenuItemCheckIcon();
+        }
+      },
       "CheckBox.margin",new InsetsUIResource(2, 2, 2, 2),
       "CheckBox.textIconGap", new Integer(4),
       "CheckBox.textShiftOffset", new Integer(0),
+      "CheckBoxMenuItem.icon", 
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return BasicIconFactory.getCheckBoxIcon();
+        }
+      },
       "CheckBoxMenuItem.acceleratorFont", new FontUIResource("Dialog",
                                                              Font.PLAIN, 12),
       "CheckBoxMenuItem.acceleratorForeground",
-      new ColorUIResource(darkShadow),
+      new ColorUIResource(new Color(16, 16, 16)),
       "CheckBoxMenuItem.acceleratorSelectionForeground",
       new ColorUIResource(Color.white),
       "CheckBoxMenuItem.arrowIcon", BasicIconFactory.getMenuItemArrowIcon(),
       "CheckBoxMenuItem.background", new ColorUIResource(light),
       "CheckBoxMenuItem.border", new BasicBorders.MarginBorder(),
       "CheckBoxMenuItem.borderPainted", Boolean.FALSE,
-      "CheckBoxMenuItem.checkIcon", BasicIconFactory.getCheckBoxMenuItemIcon(),
+      "CheckBoxMenuItem.checkIcon", 
+      new UIDefaults.LazyValue()
+      {
+        public Object createValue(UIDefaults def)
+        {
+          return BasicIconFactory.getMenuItemCheckIcon();
+        }
+      },
       "CheckBoxMenuItem.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "CheckBoxMenuItem.foreground", new ColorUIResource(darkShadow),
       "CheckBoxMenuItem.margin", new InsetsUIResource(2, 2, 2, 2),

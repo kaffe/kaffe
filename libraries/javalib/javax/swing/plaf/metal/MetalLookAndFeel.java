@@ -772,7 +772,11 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Button.select", new ColorUIResource(getPrimaryControlShadow()),
       "Button.shadow", new ColorUIResource(getPrimaryControlShadow()),
       "CheckBox.background", new ColorUIResource(getControl()),
+      "CheckBox.border", MetalBorders.getButtonBorder(),
       "CheckBox.icon",
+      new UIDefaults.ProxyLazyValue
+          ("javax.swing.plaf.metal.MetalCheckBoxIcon"),
+      "CheckBox.checkIcon",
       new UIDefaults.ProxyLazyValue
       ("javax.swing.plaf.metal.MetalCheckBoxIcon"),
       "CheckBoxMenuItem.background", new ColorUIResource(getControl()),

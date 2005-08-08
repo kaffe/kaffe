@@ -149,6 +149,7 @@ public class JCheckBoxMenuItem extends JMenuItem implements SwingConstants,
     super(text, icon);
     setModel(new JToggleButton.ToggleButtonModel());
     this.state = state;
+    this.setVisible(true);
   }
 
   private void writeObject(ObjectOutputStream stream) throws IOException

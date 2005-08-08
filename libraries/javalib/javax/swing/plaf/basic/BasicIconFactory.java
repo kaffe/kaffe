@@ -157,16 +157,37 @@ public class BasicIconFactory implements Serializable
       // The icon is empty and needs no painting.
     }
   }
-
   /** The cached CheckBoxIcon instance. */
   private static CheckBoxIcon checkBoxIcon;
-
-  /** The cached CheckBoxIcon instance. */
+  
+  /** The cached RadioButtonIcon instance. */
   private static RadioButtonIcon radioButtonIcon;
 
   public static Icon getMenuItemCheckIcon()
   {
-    return new DummyIcon();
+    return new Icon()
+    {
+      public int getIconHeight()
+      {
+        return 13;
+      }
+
+      public int getIconWidth()
+      {
+        return 13;
+      }
+
+      public void paintIcon(Component c, Graphics g, int x, int y)
+      {
+        Color saved = g.getColor();
+        g.setColor(Color.BLACK);
+        g.drawLine(3 + x, 5 + y, 3 + x, 9 + y);
+        g.drawLine(4 + x, 5 + y, 4 + x, 9 + y);
+        g.drawLine(5 + x, 7 + y, 9 + x, 3 + y);
+        g.drawLine(5 + x, 8 + y, 9 + x, 4 + y);
+        g.setColor(saved);
+      }
+    };
   }
   public static Icon getMenuItemArrowIcon()
   {
@@ -236,10 +257,12 @@ public class BasicIconFactory implements Serializable
   {
     return getCheckBoxIcon();
   }
+  
   public static Icon getRadioButtonMenuItemIcon()
   {
     return getRadioButtonIcon();
   }
+  
   public static Icon createEmptyFrameIcon()
   {
     return new DummyIcon();

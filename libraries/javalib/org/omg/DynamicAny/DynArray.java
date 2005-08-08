@@ -1,6 +1,5 @@
 /* DynArray.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -43,11 +42,13 @@ import java.io.Serializable;
 import org.omg.CORBA.portable.IDLEntity;
 
 /**
- * Represents a fixed size array. All components in the array have the same type.
+ * Represents a fixed size array. All components in the array have the same
+ * type.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface DynArray extends DynArrayOperations, DynAny, IDLEntity,
-    org.omg.CORBA.Object, Serializable
+public interface DynArray
+  extends DynArrayOperations, DynAny, IDLEntity, org.omg.CORBA.Object,
+  Serializable
 {
 }

@@ -51,7 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 /**
  * GtkImage - wraps a GdkPixbuf or GdkPixmap.
@@ -87,7 +87,7 @@ public class GtkImage extends Image
   /**
    * Pointer to the GdkPixbuf
    */
-  RawData pixmap;
+  Pointer pixmap;
 
   /**
    * Observer queue.

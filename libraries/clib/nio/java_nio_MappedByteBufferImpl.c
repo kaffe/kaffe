@@ -45,6 +45,7 @@ exception statement from your version. */
 
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
@@ -56,8 +57,8 @@ exception statement from your version. */
 
 /* FIXME these are defined in gnu_java_nio_channels_FileChannelImpl
    too; should be someplace common. */
-#define ALIGN_DOWN(p,s) ((p) - ((p) % (s)))
-#define ALIGN_UP(p,s) ((p) + ((s) - ((p) % (s))))
+#define ALIGN_DOWN(p,s) ((jpointer)(p) - ((jpointer)(p) % (s)))
+#define ALIGN_UP(p,s) ((jpointer)(p) + ((s) - ((jpointer)(p) % (s))))
 
 /**
  * Returns the memory page size of this platform.
@@ -96,14 +97,13 @@ get_raw_values (JNIEnv *env, jobject this, void **address, size_t *size)
   const long pagesize = get_pagesize ();
   jfieldID MappedByteBufferImpl_address;
   jfieldID MappedByteBufferImpl_size;
-  jfieldID RawData_data;
-  jobject MappedByteBufferImpl_address_value;
+  jobject MappedByteBufferImpl_address_value = NULL;
 
   *address = NULL;
   /* 'address' is declared in java.nio.Buffer */
   MappedByteBufferImpl_address
     = (*env)->GetFieldID (env, (*env)->GetObjectClass (env, this),
-			  "address", "Lgnu/classpath/RawData;");
+			  "address", "Lgnu/classpath/Pointer;");
   /* 'cap' -- likewise, the capacity */
   MappedByteBufferImpl_size
     = (*env)->GetFieldID (env, (*env)->GetObjectClass (env, this),
@@ -115,23 +115,15 @@ get_raw_values (JNIEnv *env, jobject this, void **address, size_t *size)
     }
   if ((*env)->ExceptionOccurred (env))
     return;
+  if (MappedByteBufferImpl_address_value == NULL)
+    {
+      JCL_ThrowException (env, "java/lang/NullPointerException",
+                          "mapped address is NULL");
+      return;
+    }
 
-#if (SIZEOF_VOID_P == 4)
-  RawData_data =
-    (*env)->GetFieldID (env, (*env)->GetObjectClass (env, MappedByteBufferImpl_address_value),
-			"data", "I");
   *address = (void *)
-    ALIGN_DOWN ((*env)->GetIntField (env, MappedByteBufferImpl_address_value,
-				     RawData_data), pagesize);
-#elif (SIZEOF_VOID_P == 8)
-  RawData_data =
-    (*env)->GetFieldID (env, (*env)->GetObjectClass (env, MappedByteBufferImpl_address_value),
-			"data", "J");
-  *address = (void *)
-    ALIGN_DOWN ((*env)->GetLongField (env, MappedByteBufferImpl_address_value,
-				      RawData_data), pagesize);
-#endif /* SIZEOF_VOID_P */
-
+    ALIGN_DOWN (JCL_GetRawData (env, MappedByteBufferImpl_address_value), pagesize);
   *size = (size_t)
     ALIGN_UP ((*env)->GetIntField (env, this, MappedByteBufferImpl_size),
 	      pagesize);
@@ -166,21 +158,31 @@ Java_java_nio_MappedByteBufferImpl_isLoadedImpl (JNIEnv * env, jobject this)
 #ifdef HAVE_MINCORE
   void *address;
   size_t size;
-  unsigned char *vec;
-  size_t count;
-  int i;
+  char *vec;
+  size_t count, i;
   const long pagesize = get_pagesize ();
 
   /*
-   * FIXME this does not work if the mapped region is exactly one
-   * page long; i.e., 'mincore' tells us it isn't loaded.
+   * FIXME on Darwin this does not work if the mapped region is
+   * exactly one page long; i.e., 'mincore' tells us it isn't loaded.
    */
   get_raw_values (env, this, &address, &size);
   if (address == NULL)
     return JNI_FALSE;
   count = (size_t) ((size + pagesize - 1) / pagesize);
-  vec = (unsigned char *) malloc (count * sizeof (unsigned char));
+  vec = (char *) malloc (count * sizeof (unsigned char));
+
+  /*
+   * Darwin (and BSD?) define argument 3 of 'mincore' to be 'char *',
+   * while GNU libc defines it to be 'unsigned char *'. Casting the
+   * argument to 'void *' fixes this, but not with C++. So you might
+   * be SOL if you compile this with g++ (!) on GNU with -Werror.
+   */
+#ifdef __cplusplus
   if (mincore (address, size, vec) != 0)
+#else
+  if (mincore (address, size, (void *) vec) != 0)
+#endif /* __cplusplus */
     {
       free (vec);
       JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
@@ -206,6 +208,8 @@ Java_java_nio_MappedByteBufferImpl_loadImpl (JNIEnv *env, jobject this)
   size_t size;
 
   get_raw_values (env, this, &address, &size);
+  if (address == NULL)
+    return;
 
   madvise (address, size, MADV_WILLNEED);
 #else

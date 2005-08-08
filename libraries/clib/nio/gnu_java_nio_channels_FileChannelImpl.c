@@ -512,11 +512,9 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
 {
 #ifdef HAVE_MMAP
   jclass MappedByteBufferImpl_class;
-  jclass RawData_class;
-  jmethodID MappedByteBufferImpl_init;
-  jmethodID RawData_init;
-  jobject RawData_instance;
-  jobject buffer;
+  jmethodID MappedByteBufferImpl_init = NULL;
+  jobject Pointer_instance;
+  volatile jobject buffer;
   long pagesize;
   int prot, flags;
   int fd;
@@ -534,26 +532,6 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
 		      "can't determine memory page size");
   return NULL;
 #endif /* HAVE_GETPAGESIZE/HAVE_SYSCONF */
-
-#if (SIZEOF_VOID_P == 4)
-  RawData_class = (*env)->FindClass (env, "gnu/classpath/RawData32");
-  if (RawData_class != NULL)
-    {
-      RawData_init = (*env)->GetMethodID (env, RawData_class,
-					  "<init>", "(I)V");
-    }
-#elif (SIZEOF_VOID_P == 8)
-  RawData_class = (*env)->FindClass (env, "gnu/classpath/RawData64");
-  if (RawData_class != NULL)
-    {
-      RawData_init = (*env)->GetMethodID (env, RawData_class,
-					  "<init>", "(J)V");
-    }
-#else
-  JCL_ThrowException (env, IO_EXCEPTION,
-		      "pointer size not supported");
-  return NULL;
-#endif /* SIZEOF_VOID_P */
 
   if ((*env)->ExceptionOccurred (env))
     {
@@ -575,15 +553,9 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
 
   /* Unalign the mapped value back up, since we aligned offset
      down to a multiple of the page size. */
-  address = p + (position % pagesize);
+  address = (void *) ((char *) p + (position % pagesize));
 
-#if (SIZEOF_VOID_P == 4)
-  RawData_instance = (*env)->NewObject (env, RawData_class,
-					RawData_init, (jint) address);
-#elif (SIZEOF_VOID_P == 8)
-  RawData_instance = (*env)->NewObject (env, RawData_class,
-					RawData_init, (jlong) address);
-#endif /* SIZEOF_VOID_P */
+  Pointer_instance = JCL_NewRawDataObject(env, address);
 
   MappedByteBufferImpl_class = (*env)->FindClass (env,
 						  "java/nio/MappedByteBufferImpl");
@@ -591,7 +563,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
     {
       MappedByteBufferImpl_init =
 	(*env)->GetMethodID (env, MappedByteBufferImpl_class,
-			     "<init>", "(Lgnu/classpath/RawData;IZ)V");
+			     "<init>", "(Lgnu/classpath/Pointer;IZ)V");
     }
 
   if ((*env)->ExceptionOccurred (env))
@@ -599,9 +571,16 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
       munmap (p, ALIGN_UP (size, pagesize));
       return NULL;
     }
+  if (MappedByteBufferImpl_init == NULL)
+    {
+      JCL_ThrowException (env, "java/lang/InternalError",
+                          "could not get MappedByteBufferImpl constructor");
+      munmap (p, ALIGN_UP (size, pagesize));
+      return NULL;
+    }
 
   buffer = (*env)->NewObject (env, MappedByteBufferImpl_class,
-                              MappedByteBufferImpl_init, RawData_instance,
+                              MappedByteBufferImpl_init, Pointer_instance,
                               (jint) size, mode == 'r');
   return buffer;
 #else
@@ -838,17 +817,23 @@ Java_gnu_java_nio_channels_FileChannelImpl_lock (JNIEnv *env, jobject obj,
   flock.l_type = shared ? F_RDLCK : F_WRLCK;
   flock.l_whence = SEEK_SET;
   flock.l_start = (off_t) position;
-  flock.l_len = (off_t) size;
+  /* Long.MAX_VALUE means lock everything possible starting at pos. */
+  if (size == 9223372036854775807LL)
+    flock.l_len = 0;
+  else
+    flock.l_len = (off_t) size;
 
   ret = fcntl (fd, cmd, &flock);
+  /* fprintf(stderr, "fd %d, wait %d, shared %d, ret %d, position %lld, size %lld, l_start %ld, l_len %ld\n", fd, wait, shared,ret, position, size, (long) flock.l_start, (long) flock.l_len); */
   if (ret)
     {
       /* Linux man pages for fcntl state that errno might be either
          EACCES or EAGAIN if we try F_SETLK, and another process has
-         an overlapping lock. */
+         an overlapping lock. We should not get an unexpected errno. */
       if (errno != EACCES && errno != EAGAIN)
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, "java/lang/InternalError",
+			      strerror (errno));
         }
       return JNI_FALSE;
     }
@@ -879,12 +864,17 @@ Java_gnu_java_nio_channels_FileChannelImpl_unlock (JNIEnv *env,
   flock.l_type = F_UNLCK;
   flock.l_whence = SEEK_SET;
   flock.l_start = (off_t) position;
-  flock.l_len = (off_t) length;
+  /* Long.MAX_VALUE means unlock everything possible starting at pos. */
+  if (length == 9223372036854775807LL)
+    flock.l_len = 0;
+  else
+    flock.l_len = (off_t) length;
 
   ret = fcntl (fd, F_SETLK, &flock);
   if (ret)
     {
-      JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+      JCL_ThrowException (env, "java/lang/InternalError",
+			  strerror (errno));
     }
 #else
   (void) obj;

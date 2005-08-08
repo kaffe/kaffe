@@ -392,6 +392,7 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/Connected_objects.java \
 	gnu/CORBA/DefinitionKindHolder.java \
 	gnu/CORBA/DuplicateNameHolder.java \
+	gnu/CORBA/DynAnySeqHolder.java \
 	gnu/CORBA/EmptyExceptionHolder.java \
 	gnu/CORBA/ExceptionCreator.java \
 	gnu/CORBA/ForwardRequestHelper.java \
@@ -399,6 +400,10 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/IOR.java \
 	gnu/CORBA/IOR_Delegate.java \
 	gnu/CORBA/IOR_contructed_object.java \
+	gnu/CORBA/NameDynAnyPairHolder.java \
+	gnu/CORBA/NameDynAnyPairSeqHolder.java \
+	gnu/CORBA/NameValuePairHolder.java \
+	gnu/CORBA/NameValuePairSeqHolder.java \
 	gnu/CORBA/ObjectCreator.java \
 	gnu/CORBA/OctetHolder.java \
 	gnu/CORBA/Restricted_ORB.java \
@@ -429,6 +434,7 @@ gnu_CORBA_SRCS = \
 	gnu/CORBA/gnuNVList.java \
 	gnu/CORBA/gnuNamedValue.java \
 	gnu/CORBA/gnuRequest.java \
+	gnu/CORBA/gnuValueHolder.java \
 	gnu/CORBA/holderFactory.java \
 	gnu/CORBA/primitiveArrayTypeCode.java \
 	gnu/CORBA/primitiveTypeCode.java \
@@ -454,9 +460,25 @@ gnu_CORBA_CDR_SRCS = \
 	gnu/CORBA/CDR/cdrBufOutput.java \
 	gnu/CORBA/CDR/cdrInput.java \
 	gnu/CORBA/CDR/cdrOutput.java \
-	gnu/CORBA/CDR/encapsulatedOutput.java
+	gnu/CORBA/CDR/encapsulatedOutput.java \
+	gnu/CORBA/CDR/noHeaderInput.java
 gnu_CORBA_DynAn_SRCS = \
-	gnu/CORBA/DynAn/NameValuePairHolder.java
+	gnu/CORBA/DynAn/NameValuePairHolder.java \
+	gnu/CORBA/DynAn/abstractDynAny.java \
+	gnu/CORBA/DynAn/abstractRecord.java \
+	gnu/CORBA/DynAn/anyDivideable.java \
+	gnu/CORBA/DynAn/anyUndivideable.java \
+	gnu/CORBA/DynAn/gnuDynAny.java \
+	gnu/CORBA/DynAn/gnuDynAnyFactory.java \
+	gnu/CORBA/DynAn/gnuDynArray.java \
+	gnu/CORBA/DynAn/gnuDynEnum.java \
+	gnu/CORBA/DynAn/gnuDynFixed.java \
+	gnu/CORBA/DynAn/gnuDynSequence.java \
+	gnu/CORBA/DynAn/gnuDynStruct.java \
+	gnu/CORBA/DynAn/gnuDynUnion.java \
+	gnu/CORBA/DynAn/gnuDynValue.java \
+	gnu/CORBA/DynAn/gnuDynValueBox.java \
+	gnu/CORBA/DynAn/valueChangedListener.java
 gnu_CORBA_GIOP_SRCS = \
 	gnu/CORBA/GIOP/CancelHeader.java \
 	gnu/CORBA/GIOP/CharSets_OSF.java \
@@ -555,9 +577,9 @@ gnu_bytecode_SRCS = \
 	gnu/bytecode/ZipLoader.java \
 	gnu/bytecode/dump.java
 gnu_classpath_SRCS = \
-	gnu/classpath/RawData.java \
-	gnu/classpath/RawData32.java \
-	gnu/classpath/RawData64.java \
+	gnu/classpath/Pointer.java \
+	gnu/classpath/Pointer32.java \
+	gnu/classpath/Pointer64.java \
 	gnu/classpath/ServiceFactory.java \
 	gnu/classpath/ServiceProviderLoadingAction.java \
 	gnu/classpath/SystemProperties.java \
@@ -2039,6 +2061,8 @@ java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
 	java/awt/datatransfer/DataFlavor.java \
+	java/awt/datatransfer/FlavorEvent.java \
+	java/awt/datatransfer/FlavorListener.java \
 	java/awt/datatransfer/FlavorMap.java \
 	java/awt/datatransfer/FlavorTable.java \
 	java/awt/datatransfer/MimeTypeParseException.java \
@@ -4614,22 +4638,45 @@ org_omg_CosNaming_NamingContextPackage_SRCS = \
 org_omg_Dynamic_SRCS = \
 	org/omg/Dynamic/Parameter.java
 org_omg_DynamicAny_SRCS = \
+	org/omg/DynamicAny/AnySeqHelper.java \
 	org/omg/DynamicAny/DynAny.java \
+	org/omg/DynamicAny/DynAnyFactory.java \
+	org/omg/DynamicAny/DynAnyFactoryHelper.java \
+	org/omg/DynamicAny/DynAnyFactoryOperations.java \
+	org/omg/DynamicAny/DynAnyHelper.java \
 	org/omg/DynamicAny/DynAnyOperations.java \
+	org/omg/DynamicAny/DynAnySeqHelper.java \
 	org/omg/DynamicAny/DynArray.java \
+	org/omg/DynamicAny/DynArrayHelper.java \
 	org/omg/DynamicAny/DynArrayOperations.java \
 	org/omg/DynamicAny/DynEnum.java \
+	org/omg/DynamicAny/DynEnumHelper.java \
 	org/omg/DynamicAny/DynEnumOperations.java \
 	org/omg/DynamicAny/DynFixed.java \
+	org/omg/DynamicAny/DynFixedHelper.java \
 	org/omg/DynamicAny/DynFixedOperations.java \
 	org/omg/DynamicAny/DynSequence.java \
+	org/omg/DynamicAny/DynSequenceHelper.java \
 	org/omg/DynamicAny/DynSequenceOperations.java \
 	org/omg/DynamicAny/DynStruct.java \
+	org/omg/DynamicAny/DynStructHelper.java \
 	org/omg/DynamicAny/DynStructOperations.java \
 	org/omg/DynamicAny/DynUnion.java \
+	org/omg/DynamicAny/DynUnionHelper.java \
 	org/omg/DynamicAny/DynUnionOperations.java \
+	org/omg/DynamicAny/DynValue.java \
+	org/omg/DynamicAny/DynValueBox.java \
+	org/omg/DynamicAny/DynValueBoxOperations.java \
+	org/omg/DynamicAny/DynValueCommon.java \
+	org/omg/DynamicAny/DynValueCommonOperations.java \
+	org/omg/DynamicAny/DynValueHelper.java \
+	org/omg/DynamicAny/DynValueOperations.java \
 	org/omg/DynamicAny/NameDynAnyPair.java \
-	org/omg/DynamicAny/NameValuePair.java
+	org/omg/DynamicAny/NameDynAnyPairHelper.java \
+	org/omg/DynamicAny/NameDynAnyPairSeqHelper.java \
+	org/omg/DynamicAny/NameValuePair.java \
+	org/omg/DynamicAny/NameValuePairHelper.java \
+	org/omg/DynamicAny/NameValuePairSeqHelper.java
 org_omg_DynamicAny_DynAnyFactoryPackage_SRCS = \
 	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCode.java \
 	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCodeHelper.java

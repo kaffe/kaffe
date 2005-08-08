@@ -1,5 +1,5 @@
-/* RawData.java -- Pointer to VM specific data
-   Copyright (C) 1999, 2000, 2004  Free Software Foundation
+/* DynValueCommon.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,13 +35,42 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* This file is originally part of libgcj. */
 
-package gnu.classpath;
+package org.omg.DynamicAny;
 
-/** A type used to indicate special data used by native code that should not 
-    be marked by the garbage collector. */
+import org.omg.CORBA.portable.IDLEntity;
 
-public abstract class RawData
+import java.io.Serializable;
+
+/**
+ * Defines DynAny that may hold CORBA <code>null</code>. The
+ * {@link DynValueCommonOperations} provides methods for setting the value to
+ * <code>null</code> or non-<code>null</code> and checking if the value is
+ * <code>null</code>.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public interface DynValueCommon
+  extends DynValueCommonOperations, DynAny, IDLEntity, org.omg.CORBA.Object,
+  Serializable
 {
+  /**
+   * Check if this {@link DynAny} is holding the <code>null</code>.
+   *
+   * @return true if this {@link DynAny} is holding the <code>null</code>,
+   * false otherwise.
+   */
+  boolean is_null();
+
+  /**
+   * Set the value of this {@link DynAny} to CORBA <code>null</code>.
+   */
+  void set_to_null();
+
+  /**
+   * Set the value of this {@link DynAny} to the default non-null value. The
+   * target {@link DynAny} creates a new data structure, intialised to the
+   * agreed default values, as defined in {@link DynAnyFactoryOperations}.
+   */
+  void set_to_value();
 }

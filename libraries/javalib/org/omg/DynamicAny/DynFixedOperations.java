@@ -1,6 +1,5 @@
 /* DynFixedOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -48,6 +47,7 @@ import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public interface DynFixedOperations
+  extends DynAnyOperations
 {
   /**
    * Get the value of the enclosed DynFixed, as string.
@@ -66,5 +66,6 @@ public interface DynFixedOperations
    * @return true if the passed value can be represented without the loss of
    * precision, false if some fractional digits were truncated.
    */
-  boolean set_value(String fixed_value) throws TypeMismatch, InvalidValue;
+  boolean set_value(String fixed_value)
+    throws TypeMismatch, InvalidValue;
 }

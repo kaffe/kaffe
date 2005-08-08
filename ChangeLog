@@ -1,5 +1,587 @@
 2005-08-08  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/DynamicAny/AnySeqHelper.java,
+        org/omg/DynamicAny/NameDynAnyPairSeqHelper.java,
+        org/omg/DynamicAny/NameValuePairHelper.java,
+        org/omg/DynamicAny/NameDynAnyPairHelper.java,
+        org/omg/DynamicAny/NameValuePairSeqHelper.java,
+        org/omg/DynamicAny/DynAnySeqHelper.java,
+        gnu/CORBA/DynAnySeqHolder.java,
+        gnu/CORBA/NameDynAnyPairSeqHolder.java,
+        gnu/CORBA/NameDynAnyPairHolder.java,
+        gnu/CORBA/NameValuePairSeqHolder.java,
+        gnu/CORBA/NameValuePairHolder.java: New files.
+
+	2005-08-07  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+        Fixes bug #22929
+        * libraries/javalib/java/net/NetworkInterface.java
+        (condense): New static private method.
+        (getNetworkInterfaces): Call condense().
+        (getByName, getByInetAddress): Call getNetworkInterfaces()
+        so that condensed result may be returned.
+
+        * vm/reference/java/net/VMNetworkInterface.java (getInterfaces):
+        Clarify return value in documentation.
+
+	2005-08-07  Mark Wielaard  <mark@klomp.org>
+
+        Fixes bug #22920
+        * java/net/DatagramSocket.java (DatagramSocket(SocketAddress)):
+        Use gnu.classpath.SystemProperties to get impl.prefix.
+
+	2005-08-03  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * gnu/CORBA/CDR/noHeaderInput.java,
+        gnu/CORBA/gnuValueHolder.java,
+        gnu/CORBA/DynAn/gnuDynAny.java,
+        gnu/CORBA/DynAn/gnuDynArray.java,
+        gnu/CORBA/DynAn/gnuDynSequence.java,
+        gnu/CORBA/DynAn/gnuDynValueBox.java,
+        gnu/CORBA/DynAn/abstractRecord.java,
+        gnu/CORBA/DynAn/gnuDynAnyFactory.java,
+        gnu/CORBA/DynAn/gnuDynValue.java,
+        gnu/CORBA/DynAn/gnuDynStruct.java,
+        gnu/CORBA/DynAn/anyDivideable.java,
+        gnu/CORBA/DynAn/anyUndivideable.java,
+        gnu/CORBA/DynAn/gnuDynEnum.java,
+        gnu/CORBA/DynAn/abstractDynAny.java,
+        gnu/CORBA/DynAn/gnuDynFixed.java,
+        gnu/CORBA/DynAn/valueChangedListener.java,
+        gnu/CORBA/DynAn/gnuDynUnion.java: New files.
+        * org/omg/DynamicAny/DynUnionOperations.java,
+        org/omg/DynamicAny/DynAnyOperations.java,
+        org/omg/DynamicAny/DynAnyFactoryOperations.java,
+        org/omg/DynamicAny/DynValueBox.java,
+        org/omg/DynamicAny/DynValueCommon.java,
+        org/omg/DynamicAny/DynAnyFactoryHelper.java,
+        gnu/CORBA/typeNamer.java,
+        gnu/CORBA/fixedTypeCode.java,
+        gnu/CORBA/CDR/Vio.java,
+        gnu/CORBA/CDR/cdrInput.java,
+        gnu/CORBA/CDR/cdrOutput.java,
+        gnu/CORBA/holderFactory.java,
+        gnu/CORBA/universalHolder.java,
+        gnu/CORBA/Poa/ORB_1_4.java,
+        gnu/CORBA/Restricted_ORB.java,
+        gnu/CORBA/gnuAny.java,
+        org/omg/CORBA/TypeCode.java
+        org/omg/CORBA/Any.java,
+        org/omg/CORBA/ORB.java,
+        org/omg/CORBA/ObjectHelper.java,
+        org/omg/CORBA/ObjectHolder.java,
+        org/omg/CORBA_2_3/portable/InputStream.java,
+        org/omg/CORBA_2_3/portable/OutputStream.java,
+        gnu/CORBA/DynAn/NameValuePairHolder.java: Rewritten.
+
+	2005-08-06  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/ObjectInputStream.java
+        (readClassDescriptor): Removed bogus handling of primitive types.
+        (readFields.GetField.defaulted): Pass cause to exception.
+        (readFields.GetField.getField): Pass cause to exception.
+        (newObject, callReadMethod): Call initCause on exception.
+
+	2005-08-06  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/lang/IllegalArgumentException.java,
+        java/lang/IllegalStateException.java,
+        java/lang/SecurityException.java,
+        java/lang/UnsupportedOperationException.java: Merged from generics
+        branch.
+
+	2005-08-05  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java:
+        (getPathBounds): Changed to use TreeNode and not
+        DefaultMutableTreeNode.
+        (getPathForRow): Likewise.
+        (getRowCount): Likewise.
+        (getPreferredSize): Likewise.
+        (keyPressed): Likewise.
+        (paintNode): Likewise.
+        (getCellLocation): Likewise.
+        (paintRecursive): Likewise.
+        (paintControlIcons): Likewise.
+        (getNextVisibleNode): Likewise.
+        (getPreviousVisibleNode): Likewise.
+        (getNextNode): Implemented because not using DefaultMutableTreeNode.
+        (getPreviousNode): Implemented
+        (getNextSibling): Implemented
+        (getPreviousSibling): Implemented
+        (getPathToRoot): Implemented
+        (getLevel): Implemented
+
+	2005-08-05  Mark Wielaard  <mark@klomp.org>
+
+        * java/awt/datatransfer/FlavorEvent.java: New class.
+        * java/awt/datatransfer/FlavorListener.java: Likewise.
+        * java/awt/datatransfer/Clipboard.java (name): Made final.
+        (listeners): New final ArrayList field.
+        (setContents): Reimplemented.
+        (getAvailableDataFlavors): New method.
+        (isDataFlavorAvailable): Likewise.
+        (getData): Likewise.
+        (addFlavorListener): Likewise.
+        (removeFlavorListener): Likewise.
+        (getFlavorListeners): Likewise.
+        * java/awt/datatransfer/DataFlavor.java (javaFileListFlavor):
+        Construct with mime media-type application/x-java-file-list.
+        (DataFlavor(String mimeType, String humanPresentableName)): Call
+        constructor that uses given mimeType.
+        (getSubType): Reimplemented.
+        (getParameter): Handle 'vitual' humanPresentableName parameter.
+        (isMimeTypeEqual): Reimplement.
+        (isRepresentationClassRemote): Implement.
+        (toString): Add formatting.
+
+	2005-08-05  Lillian Angel  <langel@redhat.com>
+
+        * java/awt/GridBagLayout.java
+        (setConstraints): Removed checks in if statements because if the height
+        or width is less than 0, it should be updated to a positive number in
+        all cases.
+
+	2005-08-05  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c: Include
+        jcl.h.
+        (createRawData): Removed unused variable method.
+        (getData): Removed unused variable field.
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c
+        (createRawData): Removed unused variable method.
+        (getData): Removed unused variable field.
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c
+        (createRawData): Removed unused variable method.
+        (getData): Removed unused variable field.
+        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c
+        (Java_java_nio_VMDirectByteBuffer_init): Removed.
+        * vm/reference/java/nio/VMDirectByteBuffer.java (init): Removed.
+        * include/java_nio_VMDirectByteBuffer.h: Regenerated.
+
+	2005-08-05  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Container.java:
+        (preferredSize): Call getLayout() instead of directly referencing
+        the private field. This makes components work that override
+        getLayout().
+        (minimumSize): Call getLayout() instead of directly referencing
+        the private field. This makes components work that override
+        getLayout(). Use cached size if component is still valid.
+        (maximumSize): Call getLayout() instead of directly referencing
+        the private field. This makes components work that override
+        getLayout(). Use cached size if component is still valid.
+        (update): If we are a top-level-container, call super.update(),
+        otherwise directly call paint().
+        (visitChildren): Also visit children that are itself Containers.
+        * java/awt/Component.java
+        (update): Clear the background only for lightweight and top-level
+        components.
+
+	2005-08-05  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicGraphicsUtils.java
+        (getPreferredButtonSize): Added horizontalAdjustment to width
+        to create gap at end of label text.
+        * javax/swing/plaf/basic/BasicMenuItemUI.java
+        (getPreferredSize): Removed "*2" since fix was moved to
+        BasicGraphicsUtils
+
+	2005-08-05  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/DefaultCaret.java: Added API comments all
+        over.
+        * javax/swing/text/DefaultEditorKit.java: Added API comments
+        all over.
+
+	2005-08-05  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/ObjectInputStream.java
+        (read(byte[],int,int)): Simplified and fixed bug 23236.
+
+	2005-08-04  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicMenuItemUI.java
+        (getPreferredSize): Multiplied defaultTextIconGap by 2,
+        so there is equal space around the MenuItem
+
+	2005-08-04  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicMenuItemUI.java
+        (paintIcon): Added in border painting code for MenuItem
+        * javax/swing/plaf/metal/MetalLookAndFeel.java:
+        Added in default for CheckBox border
+
+	2005-08-04  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/BorderLayout.java: Reformatted this file to meet our
+        coding standards.
+
+	2005-08-04  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/BorderLayout.java
+        (layoutContainer): Replaced getSize() call with getWidth() and
+        getHeight(). This avoids heap allocation and fixes a bug in
+        an application here.
+
+	2005-08-04  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JCheckBox.java
+        (init): Moved these to ui
+        * javax/swing/plaf/basic/BasicCheckBoxUI.java
+        (installUI): initalized icons
+        * javax/swing/plaf/metal/MetalLookAndFeel.java:
+        Took out CheckBoxMenuItem defaults because did not
+        work as expected. For now it uses the BasicL&F's defaults.
+
+	2005-08-04  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JList.java:
+        (getFirstVisibleIndex): Translate visible rectangle by one less pixel.
+        (getLastVisibleIndex): Likewise.
+
+	2005-08-04  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JCheckBox.java
+        (init): Initialized icons. Was not working otherwise.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Added in checkIcon for the CheckBox.
+        * javax/swing/plaf/metal/MetalLookAndFeel.java:
+        Added in checkIcon for CheckBox and defaults for
+        CheckBoxMenuItem.
+
+	2005-08-03  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JCheckBoxMenuItem.java
+        (installUI): set the items visible. Fixes exceptions that are
+        thrown because item is not explicitly set visible.
+
+	2005-08-03  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicViewportUI.java
+        (paintSimple): Corrected the clip that is used to draw the
+        viewport's content. This fixes scrolling in JScrollPane and
+        JViewport.
+
+	2005-08-03  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Changed the fonts from Helvetica to Dialog.
+
+	2005-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * include/java_nio_VMDirectByteBuffer.h:
+        Regenerated.
+
+        * native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c
+        (getData): Fixed function call.
+
+        Reported by: Andreas Tobler <toa@pop.agri.ch>
+
+	2005-08-03  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicIconFactory.java:
+        (getMenuItemCheckIcon): Implemented so a check mark is drawn when
+        the item is selected.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Modified the checkbox defaults
+        * javax/swing/plaf/basic/BasicMenuItemUI.java:
+        (paintMenuItem): Changed to only draw check when item is selected.
+
+	2005-08-03  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/FontMetrics.java
+        (charsWidth): Iterate to len + offset instead to len.
+
+	2005-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * native/jni/classpath/jcl.c
+        (JCL_NewRawDataObject): Fixed typo.
+
+	2005-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * gnu/classpath/Pointer.java,
+        gnu/classpath/Pointer32.java,
+        gnu/classpath/Pointer64.java,
+        gnu/classpath/RawData.java,
+        gnu/classpath/RawData32.java,
+        gnu/classpath/RawData64.java,
+        gnu/java/awt/peer/gtk/GtkImage.java,
+        gnu/java/nio/charset/iconv/IconvDecoder.java,
+        gnu/java/nio/charset/iconv/IconvEncoder.java,
+        java/nio/Buffer.java,
+        java/nio/DirectByteBufferImpl.java,
+        java/nio/MappedByteBufferImpl.java,
+        native/jni/classpath/jcl.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c,
+        native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c,
+        native/jni/java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+        native/jni/java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+        native/jni/java-nio/java_nio_MappedByteBufferImpl.c,
+        native/jni/java-nio/java_nio_VMDirectByteBuffer.c,
+        vm/reference/java/nio/VMDirectByteBuffer.java: Renamed
+        references to gnu/classpath/RawData to gnu/classpath/Pointer.
+
+	2005-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * java-nio/gnu_java_nio_channels_FileChannelImpl.c
+        (mapImpl): Fixed typo.
+
+	2005-08-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * classpath/jcl.c
+        (JCl_NewRawDataObject): Added error handling.
+
+        * classpath/jcl.h
+        (jpointer): New integer type to represent a pointer.
+
+        * gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c,
+        java-nio/gnu_java_nio_channels_FileChannelImpl.c,
+        java-nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+        java-nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+        java-nio/java_nio_MappedByteBufferImpl.c,
+        java-nio/java_nio_VMDirectByteBuffer.c,
+        xmlj/xmlj_util.c: Use JCL functions instead of directly
+        accessing gnu/classpath/RawData.
+
+	2005-08-03  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/AttributeSet.java: Added some API comments
+        to class description.
+        * javax/swing/text/BadLocationException.java: Added / fixed
+        API comments all over.
+        * javax/swing/text/Caret.java: Added API comments all over.
+
+	2005-08-02  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Component.java
+        (getBounds): Removed debug statements that accidentally slipped in.
+
+	2005-08-02  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JTable.java:
+        (getCellRect): Height should be the row height, not the entire table
+        height.
+        (getRowHeight): New public method, part of API.
+        * javax/swing/JViewport.java:
+        (scrollRectToVisible): Fixed buggy scrolling conditions.
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (KeyHandler.keyPressed): Implemented PAGE-UP, PAGE-DOWN, CTRL-PAGE-UP,
+        and CTRL-PAGE-DOWN key actions.  Also added line to scroll the table
+        appropriately after changing the selection.
+        (KeyHandler.getFirstVisibleColumnIndex): New implementation method.
+        (KeyHandler.getLastVisibleColumnIndex): Likewise.
+        (KeyHandler.getFirstVisibleRowIndex): Likewise.
+        (KeyHandler.getLastVisibleRowIndex): Likewise.
+	2005-08-02  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/AbstractDocument.java
+        (AbstractElement.AbstractElement): Create an empty AttributeSet
+        if the argument s == null.
+        (AbstractElement.getAttribute): Return the element itself instead
+        of the wrapped attributes.
+
+	2005-08-02  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Toolkit.java
+        (createCustomCursor): Added check for headless environment.
+        (getBestCursorSize): Added check for headless environment.
+
+	2005-08-02  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/text/GapContent.java
+        (shiftGap): Changed to used '&&'. both indexes should be
+        greater than 0.
+
+	2005-08-02  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/text/GapContent.java:
+        Formatting code.
+
+	2005-08-02  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/text/GapContent.java
+        (shiftGap): Added in if statement to check if indexes are negative.
+        Does not work properly if they are.
+
+	2005-08-02  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (RootView.viewToModel): New method.
+        * javax/swing/text/BoxView.java
+        (isBefore): New method. This is a stub method to implement the
+        new abstract method from CompositeView.
+        (isAfter): New method. This is a stub method to implement the
+        new abstract method from CompositeView.
+        (getViewAtPoint): New method. This is a stub method to implement the
+        new abstract method from CompositeView.
+        (childAllocation): New method. This is a stub method to implement the
+        new abstract method from CompositeView.
+        * javax/swing/text/ComponentView.java
+        (viewToModel): New method. This is a stub method to implement the
+        new abstract method from View.
+        * javax/swing/text/CompositeView.java
+        (loadChildren): Implemented new method.
+        (setParent): Implemented new method.
+        (getViewCount): Implemented new method.
+        (getView): Implemented new method.
+        (replace): Implemented new method.
+        (getChildAllocation): Implemented new method.
+        (modelToView(int, Shape, Position.Bias)): Implemented this method.
+        (modelToView(int, Position.Bias, int, Position.Bias, Shape):
+        Implemented new method.
+        (viewToModel): Implemented new method.
+        (getNextVisualPositionFrom): Implemented new method.
+        (getViewIndex): Implemented new method.
+        (isBefore): New abstract method.
+        (isAfter): New abstract method.
+        (getViewAtPoint): New abstract method.
+        (childAllocation): New abstract method.
+        (getViewAtPosition): Implemented new method.
+        (getViewIndexAtPosition): Implemented new method.
+        (getInsideAllocation): Implemented new method.
+        (setParagraphInsets): Implemented new method.
+        (setInsets): Implemented new method.
+        (getLeftInset): Implemented new method.
+        (getRightInset): Implemented new method.
+        (getTopInset): Implemented new method.
+        (getBottomInset): Implemented new method.
+        (getNextNorthSouthVisualPositionFrom): New method.
+        (getNextEastWestVisualPositionFrom): New method.
+        (flipEastAndWestAtEnds): Implemented new method.
+        * javax/swing/text/GlyphView.java
+        (viewToModel): New method. This is a stub method to implement the
+        new abstract method from View.
+        * javax/swing/text/IconView.java
+        (viewToModel): New method. This is a stub method to implement the
+        new abstract method from View.
+        * javax/swing/text/PlainView.java
+        (viewToModel): New method. This is a stub method to implement the
+        new abstract method from View.
+        * javax/swing/text/View.java
+        (viewToModel): New abstract method.
+
+	2005-08-02  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/DynamicAny/DynValueCommon.java: Inherit from
+        DynValueOperations, DynAny, IDLEntity, org.omg.CORBA.Object,
+        Serializable.
+        * org/omg/DynamicAny/DynValueCommonOperations.java: Inherit from
+        DynAnyOperations.
+        * org/omg/DynamicAny/DynAnyHelper.java,
+        org/omg/DynamicAny/DynStructHelper.java,
+        org/omg/DynamicAny/DynUnionHelper.java,
+        org/omg/DynamicAny/DynValueHelper.java,
+        org/omg/DynamicAny/DynAnyFactoryHelper.java,
+        org/omg/DynamicAny/DynArrayHelper.java,
+        org/omg/DynamicAny/DynEnumHelper.java,
+        org/omg/DynamicAny/DynFixedHelper.java,
+        org/omg/DynamicAny/DynSequenceHelper.java: New files.
+
+	2005-08-01  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/AttributeSet.java: Added API comments all over.
+
+	2005-08-01  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/AbstractDocument.java: Added API comments all over.
+
+	2005-08-01  Mark Wielaard  <mark@klomp.org>
+
+        Reported by Wolfgang Baer <WBaer@gmx.de>
+        * javax/swing/text/GapContent.java (shiftGap): Use new
+        CapContentPosition in binarySearch.
+        (shiftEnd): Likewise.
+
+	2005-08-01  Jan Roehrich <jan@roehrich.info>
+
+        * javax.swing.plaf.basic.BasicTreeUI: Method drawCentered
+        added / corrected javadoc issues in paintHorizonalLine
+        and paintVerticalLine / fixed getRightChildIndent signature
+        (problem probably caused by copy/paste)
+
+	2005-08-01  Jan Roehrich <jan@roehrich.info>
+
+        * javax.swing.plaf.basic.BasicTreeUI: paintVerticalLine and
+        paintHorizontalLine added.
+
+	2005-07-31  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        org/omg/DynamicAny/DynValueOperations.java,
+        org/omg/DynamicAny/DynAnyFactory.java,
+        org/omg/DynamicAny/DynAnyFactoryOperations.java,
+        org/omg/DynamicAny/DynValue.java,
+        org/omg/DynamicAny/DynValueBox.java,
+        org/omg/DynamicAny/DynValueBoxOperations.java,
+        org/omg/DynamicAny/DynValueCommon.java,
+        org/omg/DynamicAny/DynValueCommonOperations.java: New files.
+
+	2005-07-31  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/DynamicAny/DynFixedOperations.java,
+        org/omg/DynamicAny/DynEnum.java,
+        org/omg/DynamicAny/DynArrayOperations.java: Inherit from
+        DynAnyOperations.
+        * org/omg/DynamicAny/NameDynAnyPair.java: Inherit from
+        org.omg.CORBA.portable.IDLEntity.
+        * org/omg/DynamicAny/DynAnyOperations.java
+        (assign, current_component): Fixes in throws declaration.
+        * org/omg/DynamicAny/DynEnumOperations.java,
+        org/omg/DynamicAny/DynSequenceOperations.java,
+        org/omg/DynamicAny/DynStructOperations.java,
+        org/omg/DynamicAny/DynUnionOperations.java,
+        org/omg/DynamicAny/DynAny.java,
+        org/omg/DynamicAny/DynFixed.java,
+        org/omg/DynamicAny/DynSequence.java,
+        org/omg/DynamicAny/DynStruct.java,
+        org/omg/DynamicAny/DynUnion.java,
+        org/omg/DynamicAny/DynArray.java,
+        org/omg/DynamicAny/NameValuePair.java: Reformatted.
+
+	2005-07-31  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/nio/FileLockImpl.java: Mark class final.
+        (ch): Removed field.
+        (valid): New field.
+        (FileLockImpl): Set valid to true.
+        (isValid): Test and set valid field.
+        (release): Release lock if it is still valid.
+        * java/nio/channels/FileLock.java: Mark all fields private final.
+        * native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c
+        (Java_gnu_java_nio_channels_FileChannelImpl_lock): Translate
+        Long.MAX_VALUE to zero for fcntl.
+        (Java_gnu_java_nio_channels_FileChannelImpl_unlock): Likewise.
+
+	2005-07-31  Jan Roehrich  <jan@roehrich.info>
+
+        * javax.swing.plaf.basic.BasicTreeUI: fixed indentation.
+
+	2005-07-30  Casey Marshall  <csm@gnu.org>
+
+        * native/jni/java-nio/java_nio_MappedByteBuffer.c
+        (Java_java_nio_MappedByteBufferImpl_isLoadedImpl): cast argument 3
+        to 'mincore' to 'void *' to avoid warnings on GNU.
+
+	2005-07-30  Casey Marshall  <csm@gnu.org>
+
+        * native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c
+        (Java_gnu_java_nio_channels_FileChannelImpl_mapImpl):
+        eliminate various compiler warnings; mark 'buffer' as 'volatile;'
+        throw an exception if we can't get a constructor method ID.
+        * native/jni/java-nio/java_nio_MappedByteBufferImpl.c:
+        include 'stdlib.h.'
+        (get_raw_values): eliminate compiler warnings.
+        (Java_java_nio_MappedByteBufferImpl_isLoadedImpl): likewise.
+        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c
+        (Java_java_nio_VMDirectByteBuffer_put__Lgnu_classpath_RawData_2I_3BII):
+        eliminate compiler warning.
+
+2005-08-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/sparc/jit-sparc.def: Removed empty popargs function.
 
 	* config/sparc/jit-icode.h: Undefined popargs.

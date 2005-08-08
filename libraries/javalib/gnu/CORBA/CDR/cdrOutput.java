@@ -99,7 +99,7 @@ public abstract class cdrOutput
   /**
    * The GIOP version.
    */
-  protected Version giop = new Version(1, 0);
+  protected Version giop = new Version(1, 2);
 
   /**
    * The code set information.

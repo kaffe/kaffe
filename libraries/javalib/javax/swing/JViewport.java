@@ -498,11 +498,11 @@ public class JViewport extends JComponent
     Point pos = getViewPosition();
     Rectangle viewBounds = getView().getBounds();
     Rectangle portBounds = getBounds();
-
+    
     // FIXME: should validate the view if it is not valid, however
     // this may cause excessive validation when the containment
     // hierarchy is being created.
-
+    
     // if contentRect is larger than the portBounds, center the view
     if (contentRect.height > portBounds.height || 
         contentRect.width > portBounds.width)
@@ -510,24 +510,22 @@ public class JViewport extends JComponent
         setViewPosition(new Point(contentRect.x, contentRect.y));
         return;
       }
-
+    
     // Y-DIRECTION
-    if (contentRect.y + viewBounds.y < portBounds.y)
+    if (contentRect.y < -viewBounds.y)
       setViewPosition(new Point(pos.x, contentRect.y));
-    else if (contentRect.y + viewBounds.y + contentRect.height > 
-             (portBounds.y+portBounds.height))
+    else if (contentRect.y + contentRect.height > 
+             -viewBounds.y + portBounds.height)
       setViewPosition (new Point(pos.x, contentRect.y - 
-                                 (portBounds.height - contentRect.height) -
-                                 portBounds.y));
-
+                                 (portBounds.height - contentRect.height)));
+    
     // X-DIRECTION
     pos = getViewPosition();
-    if (contentRect.x + viewBounds.x < portBounds.x)
+    if (contentRect.x < -viewBounds.x)
       setViewPosition(new Point(contentRect.x, pos.y));
-    else if (contentRect.x + viewBounds.x + contentRect.width > 
-             (portBounds.x + portBounds.height))
+    else if (contentRect.x + contentRect.width > 
+             -viewBounds.x + portBounds.width)
       setViewPosition (new Point(contentRect.x - 
-                                 (portBounds.width - contentRect.width)
-                                 - portBounds.x, pos.y));
+                                 (portBounds.width - contentRect.width), pos.y));
   }
 }

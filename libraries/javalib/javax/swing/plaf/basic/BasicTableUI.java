@@ -40,6 +40,7 @@ package javax.swing.plaf.basic;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -366,7 +367,8 @@ public class BasicTableUI
         }
       else if (evt.getKeyCode() == KeyEvent.VK_HOME)
         {
-          if (evt.getModifiers() == (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
+          if (evt.getModifiers() == 
+              (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
             {
               rowModel.setLeadSelectionIndex(0);
               colModel.setLeadSelectionIndex(colLead);
@@ -395,11 +397,93 @@ public class BasicTableUI
         }
       else if (evt.getKeyCode() == KeyEvent.VK_PAGE_UP)
         {
-          // FIXME: implement, need JList.ensureIndexIsVisible to work
+          int target;
+          if (!evt.isControlDown())
+            {
+              if (rowLead == getFirstVisibleRowIndex())
+                target = Math.max
+                  (0, rowLead - (getLastVisibleRowIndex() - 
+                                      getFirstVisibleRowIndex() + 1));
+              else
+                target = getFirstVisibleRowIndex();
+              
+              if (evt.getModifiers() == 0)
+                {
+                  rowModel.setSelectionInterval(target, target);
+                  colModel.setSelectionInterval(colLead, colLead);
+                }
+              else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+                {
+                  rowModel.setLeadSelectionIndex(target);
+                  colModel.setLeadSelectionIndex(colLead);
+                }
+            }
+          else
+            {
+              if (colLead == getFirstVisibleColumnIndex())
+                target = Math.max
+                  (0, colLead - (getLastVisibleColumnIndex() -
+                                      getFirstVisibleColumnIndex() + 1));
+              else
+                target = getFirstVisibleColumnIndex();
+              
+              if (evt.getModifiers() == InputEvent.CTRL_MASK)
+                {
+                  colModel.setSelectionInterval(target, target);
+                  rowModel.setSelectionInterval(rowLead, rowLead);
+                }
+              else if (evt.getModifiers() == 
+                       (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
+                {
+                  colModel.setLeadSelectionIndex(target);
+                  rowModel.setLeadSelectionIndex(rowLead);
+                }
+            }
         }
       else if (evt.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
         {
-          // FIXME: implement, need JList.ensureIndexIsVisible to work
+          int target;
+          if (!evt.isControlDown())
+            {
+              if (rowLead == getLastVisibleRowIndex())
+                target = Math.min
+                  (rowMax, rowLead + (getLastVisibleRowIndex() - 
+                                      getFirstVisibleRowIndex() + 1));
+              else
+                target = getLastVisibleRowIndex();
+              
+              if (evt.getModifiers() == 0)
+                {
+                  rowModel.setSelectionInterval(target, target);
+                  colModel.setSelectionInterval(colLead, colLead);
+                }
+              else if (evt.getModifiers() == InputEvent.SHIFT_MASK)
+                {
+                  rowModel.setLeadSelectionIndex(target);
+                  colModel.setLeadSelectionIndex(colLead);
+                }
+            }
+          else
+            {
+              if (colLead == getLastVisibleColumnIndex())
+                target = Math.min
+                  (colMax, colLead + (getLastVisibleColumnIndex() -
+                                      getFirstVisibleColumnIndex() + 1));
+              else
+                target = getLastVisibleColumnIndex();
+              
+              if (evt.getModifiers() == InputEvent.CTRL_MASK)
+                {
+                  colModel.setSelectionInterval(target, target);
+                  rowModel.setSelectionInterval(rowLead, rowLead);
+                }
+              else if (evt.getModifiers() == 
+                       (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK))
+                {
+                  colModel.setLeadSelectionIndex(target);
+                  rowModel.setLeadSelectionIndex(rowLead);
+                }
+            }
         }
       else if (evt.getKeyCode() == KeyEvent.VK_TAB
                || evt.getKeyCode() == KeyEvent.VK_ENTER)
@@ -504,6 +588,9 @@ public class BasicTableUI
         {
           table.changeSelection(rowLead, colLead, true, false);
         }
+      table.scrollRectToVisible
+        (table.getCellRect(rowModel.getLeadSelectionIndex(), 
+                           colModel.getLeadSelectionIndex(), false));
     }
 
     public void keyReleased(KeyEvent e) 
@@ -512,6 +599,69 @@ public class BasicTableUI
 
     public void keyTyped(KeyEvent e) 
     {
+    }
+
+    /**
+     * Returns the column index of the first visible column.
+     *
+     */
+    int getFirstVisibleColumnIndex()
+    {
+      ComponentOrientation or = table.getComponentOrientation();
+      Rectangle r = table.getVisibleRect();
+      if (!or.isLeftToRight())
+        r.translate((int) r.getWidth() - 1, 0);
+      return table.columnAtPoint(r.getLocation());
+    }
+    
+    /**
+     * Returns the column index of the last visible column.
+     *
+     */
+    int getLastVisibleColumnIndex()
+    {
+      ComponentOrientation or = table.getComponentOrientation();
+      Rectangle r = table.getVisibleRect();
+      if (or.isLeftToRight())
+        r.translate((int) r.getWidth() - 1, 0);
+      return table.columnAtPoint(r.getLocation());      
+    }
+    
+    /**
+     * Returns the row index of the first visible row.
+     *
+     */
+    int getFirstVisibleRowIndex()
+    {
+      ComponentOrientation or = table.getComponentOrientation();
+      Rectangle r = table.getVisibleRect();
+      if (!or.isLeftToRight())
+        r.translate((int) r.getWidth() - 1, 0);
+      return table.rowAtPoint(r.getLocation());
+    }
+    
+    /**
+     * Returns the row index of the last visible row.
+     *
+     */
+    int getLastVisibleRowIndex()
+    {
+      ComponentOrientation or = table.getComponentOrientation();
+      Rectangle r = table.getVisibleRect();
+      r.translate(0, (int) r.getHeight() - 1);
+      if (or.isLeftToRight())
+        r.translate((int) r.getWidth() - 1, 0);
+      // The next if makes sure that we don't return -1 simply because
+      // there is white space at the bottom of the table (ie, the display
+      // area is larger than the table)
+      if (table.rowAtPoint(r.getLocation()) == -1)
+        {
+          if (getFirstVisibleRowIndex() == -1)
+            return -1;
+          else
+            return table.getModel().getRowCount() - 1;
+        }
+      return table.rowAtPoint(r.getLocation());
     }
   }
 

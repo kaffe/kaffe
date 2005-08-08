@@ -35,6 +35,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+#include "jcl.h"
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkImage.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -573,24 +574,15 @@ static void
 createRawData (JNIEnv * env, jobject obj, void *ptr)
 {
   jclass cls;
-  jmethodID method;
   jobject data;
   jfieldID data_fid;
 
   cls = (*env)->GetObjectClass (env, obj);
   data_fid = (*env)->GetFieldID (env, cls, "pixmap", 
-				 "Lgnu/classpath/RawData;");
+				 "Lgnu/classpath/Pointer;");
   g_assert (data_fid != 0);
 
-#if SIZEOF_VOID_P == 8
-  cls = (*env)->FindClass (env, "gnu/classpath/RawData64");
-  method = (*env)->GetMethodID (env, cls, "<init>", "(J)V");
-  data = (*env)->NewObject (env, cls, method, (jlong) ptr);
-#else
-  cls = (*env)->FindClass (env, "gnu/classpath/RawData32");
-  method = (*env)->GetMethodID (env, cls, "<init>", "(I)V");
-  data = (*env)->NewObject (env, cls, method, (jint) ptr);
-#endif
+  data = JCL_NewRawDataObject (env, ptr);
 
   (*env)->SetObjectField (env, obj, data_fid, data);
 }
@@ -599,23 +591,14 @@ static void *
 getData (JNIEnv * env, jobject obj)
 {
   jclass cls;
-  jfieldID field;
   jfieldID data_fid;
   jobject data;
 
   cls = (*env)->GetObjectClass (env, obj);
   data_fid = (*env)->GetFieldID (env, cls, "pixmap", 
-				 "Lgnu/classpath/RawData;");
+				 "Lgnu/classpath/Pointer;");
   g_assert (data_fid != 0);
   data = (*env)->GetObjectField (env, obj, data_fid);
 
-#if SIZEOF_VOID_P == 8
-  cls = (*env)->FindClass (env, "gnu/classpath/RawData64");
-  field = (*env)->GetFieldID (env, cls, "data", "J");
-  return (void *) (*env)->GetLongField (env, data, field);
-#else
-  cls = (*env)->FindClass (env, "gnu/classpath/RawData32");
-  field = (*env)->GetFieldID (env, cls, "data", "I");
-  return (void *) (*env)->GetIntField (env, data, field);
-#endif
+  return JCL_GetRawData (env, data);
 }

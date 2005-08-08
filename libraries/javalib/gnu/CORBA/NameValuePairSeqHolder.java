@@ -1,5 +1,5 @@
-/* RawData32.java -- 32 bit Pointer
-   Copyright (C) 2004  Free Software Foundation
+/* NameValuePairSeqHolder.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,18 +35,71 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.classpath;
+
+package gnu.CORBA;
+
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.Streamable;
+import org.omg.DynamicAny.NameValuePair;
+import org.omg.DynamicAny.NameValuePairSeqHelper;
 
 /**
- * A type used to indicate special data used by native code that should not 
- * be marked by the garbage collector.
+ * A holder for the sequence of {@link NameValuePair}.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public final class RawData32 extends RawData
+public class NameValuePairSeqHolder
+  implements Streamable
 {
-   final int data;
-   
-   public RawData32(int data)
-   {
-     this.data = data;
-   }
+  /**
+   * The stored array of <code>NameValuePair</code>.
+   */
+  public NameValuePair[] value;
+
+  /**
+   * Create the unitialised instance, leaving the value array
+   * with default <code>null</code> value.
+   */
+  public NameValuePairSeqHolder()
+  {
+  }
+
+  /**
+   * Create the initialised instance.
+   * @param initialValue the array that will be assigned to
+   * the <code>value</code> array.
+   */
+  public NameValuePairSeqHolder(NameValuePair[] initialValue)
+  {
+    value = initialValue;
+  }
+
+  /**
+   * Read the {@link value} array from the CDR stream.
+   *
+   * @param input the org.omg.CORBA.portable stream to read.
+   */
+  public void _read(InputStream input)
+  {
+    value = NameValuePairSeqHelper.read(input);
+  }
+
+  /**
+   * Write the stored value into the CDR stream.
+   *
+   * @param output the org.omg.CORBA.portable stream to write.
+   */
+  public void _write(OutputStream output)
+  {
+    NameValuePairSeqHelper.write(output, value);
+  }
+
+  /**
+   * Get the typecode of the NameValuePair.
+   */
+  public org.omg.CORBA.TypeCode _type()
+  {
+    return NameValuePairSeqHelper.type();
+  }
 }

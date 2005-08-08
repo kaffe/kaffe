@@ -872,7 +872,7 @@ public class JTable extends JComponent
                                int column,
                                boolean includeSpacing)
   {
-    int height = getHeight();
+    int height = getRowHeight(row);
     int width = columnModel.getColumn(column).getWidth();
     int x_gap = columnModel.getColumnMargin();
     int y_gap = rowMargin;
@@ -1098,6 +1098,19 @@ public class JTable extends JComponent
   {
     return rowHeight;
   }
+
+  /**
+   * Get the height of the specified row.
+   *
+   * @param row the row whose height to return
+   */
+  public int getRowHeight(int row)
+  {
+    // FIXME: return the height of the specified row
+    // which may be different from the general rowHeight
+    return rowHeight;
+  }
+
 
   /**
    * Get the value of the {@link #rowMargin} property.

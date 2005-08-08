@@ -240,13 +240,16 @@ public class Restricted_ORB
   }
 
   /** {@inheritDoc} */
-  public TypeCode create_union_tc(String id, String name, TypeCode type,
+  public TypeCode create_union_tc(String id, String name,
+                                  TypeCode discriminator_type,
                                   UnionMember[] members
                                  )
   {
     recordTypeCode r = new recordTypeCode(TCKind.tk_union);
     r.setId(id);
     r.setName(name);
+    r.setDiscriminator_type(discriminator_type);
+    r.setDefaultIndex(0);
 
     for (int i = 0; i < members.length; i++)
       {
@@ -454,7 +457,9 @@ public class Restricted_ORB
     if (f != null)
       return f;
 
-    f = (ValueFactory) ObjectCreator.createObject(repository_id, "DefaultFactory");
+    f = (ValueFactory) ObjectCreator.createObject(repository_id,
+                                                  "DefaultFactory"
+                                                 );
     if (f != null)
       factories.put(repository_id, f);
 

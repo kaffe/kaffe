@@ -574,7 +574,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     ComponentOrientation or = getComponentOrientation();
     Rectangle r = getVisibleRect();
     if (or == ComponentOrientation.RIGHT_TO_LEFT)
-      r.translate((int) r.getWidth(), 0);
+      r.translate((int) r.getWidth() - 1, 0);
     return getUI().locationToIndex(this, r.getLocation());      
   }
 
@@ -612,9 +612,9 @@ public class JList extends JComponent implements Accessible, Scrollable
   {
     ComponentOrientation or = getComponentOrientation();
     Rectangle r = getVisibleRect();
-    r.translate(0, (int) r.getHeight());
+    r.translate(0, (int) r.getHeight() - 1);
     if (or == ComponentOrientation.LEFT_TO_RIGHT)
-      r.translate((int) r.getWidth(), 0);
+      r.translate((int) r.getWidth() - 1, 0);
     return getUI().locationToIndex(this, r.getLocation());      
   }
 

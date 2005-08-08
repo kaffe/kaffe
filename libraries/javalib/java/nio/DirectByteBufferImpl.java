@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package java.nio;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 abstract class DirectByteBufferImpl extends ByteBuffer
 {
@@ -59,7 +59,7 @@ abstract class DirectByteBufferImpl extends ByteBuffer
 
   static final class ReadOnly extends DirectByteBufferImpl
   {
-    ReadOnly(Object owner, RawData address,
+    ReadOnly(Object owner, Pointer address,
              int capacity, int limit,
              int position)
     {
@@ -89,7 +89,7 @@ abstract class DirectByteBufferImpl extends ByteBuffer
       super(capacity);
     }
 
-    ReadWrite(Object owner, RawData address,
+    ReadWrite(Object owner, Pointer address,
               int capacity, int limit,
               int position)
     {
@@ -109,7 +109,7 @@ abstract class DirectByteBufferImpl extends ByteBuffer
     this.address = VMDirectByteBuffer.allocate(capacity);
   }
 
-  DirectByteBufferImpl(Object owner, RawData address,
+  DirectByteBufferImpl(Object owner, Pointer address,
                        int capacity, int limit,
                        int position)
   {

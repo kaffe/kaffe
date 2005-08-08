@@ -1,6 +1,5 @@
 /* DynSequenceOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -53,6 +52,7 @@ import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public interface DynSequenceOperations
+  extends DynAnyOperations
 {
   /**
    * Get the length of the sequence.
@@ -74,7 +74,8 @@ public interface DynSequenceOperations
    * @throws InvalidValue if this is a bounded sequence, and the size being set
    * exceeds the sequence bound.
    */
-  public void set_length(int length) throws InvalidValue;
+  public void set_length(int length)
+    throws InvalidValue;
 
   /**
    * Returns the array, containing the sequence elements.
@@ -102,8 +103,8 @@ public interface DynSequenceOperations
    * @throws InvalidValue if this is a bounded sequence and the number of
    * elements in the passed array exceeds the sequence bound.
    */
-  void set_elements_as_dyn_any(DynAny[] value) throws TypeMismatch,
-      InvalidValue;
+  void set_elements_as_dyn_any(DynAny[] value)
+    throws TypeMismatch, InvalidValue;
 
   /**
    * Sets the sequence elements from the array. The length of the sequence is
@@ -118,5 +119,6 @@ public interface DynSequenceOperations
    * @throws InvalidValue if this is a bounded sequence and the number of
    * elements in the passed array exceeds the sequence bound.
    */
-  void set_elements(Any[] value) throws TypeMismatch, InvalidValue;
+  void set_elements(Any[] value)
+    throws TypeMismatch, InvalidValue;
 }

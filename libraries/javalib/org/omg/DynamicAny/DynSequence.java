@@ -1,6 +1,5 @@
 /* DynSequence.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -48,7 +47,8 @@ import org.omg.CORBA.portable.IDLEntity;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface DynSequence extends DynSequenceOperations, DynAny, IDLEntity,
-    org.omg.CORBA.Object, Serializable
+public interface DynSequence
+  extends DynSequenceOperations, DynAny, IDLEntity, org.omg.CORBA.Object,
+  Serializable
 {
 }

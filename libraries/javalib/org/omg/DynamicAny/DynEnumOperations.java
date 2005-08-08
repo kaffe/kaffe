@@ -1,6 +1,5 @@
 /* DynEnumOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -50,6 +49,7 @@ import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public interface DynEnumOperations
+  extends DynAnyOperations
 {
   /**
    * Get the current enumeration value, as string.
@@ -67,7 +67,8 @@ public interface DynEnumOperations
    * @throws InvalidValue if the passed string is not one of the allowed values
    * for this enumeration.
    */
-  void set_as_string(String value) throws InvalidValue;
+  void set_as_string(String value)
+    throws InvalidValue;
 
   /**
    * Set the current enumeration value, as int.
@@ -75,6 +76,7 @@ public interface DynEnumOperations
    * @throws InvalidValue if the passed string is not one of the allowed values
    * for this enumeration.
    */
-  void set_as_ulong(int value) throws InvalidValue;
+  void set_as_ulong(int value)
+    throws InvalidValue;
 
 }

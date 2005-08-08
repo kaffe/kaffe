@@ -1,6 +1,5 @@
 /* DynAnyOperations.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
-
 This file is part of GNU Classpath.
 
 GNU Classpath is free software; you can redistribute it and/or modify
@@ -60,7 +59,7 @@ public interface DynAnyOperations
    * @throws TypeMismatch if the source DynAny is invalid.
    */
   void assign(DynAny from)
-       throws TypeMismatch, InvalidValue;
+       throws TypeMismatch;
 
   /**
    * Fully clones the content of this Any, returning a deep copy.
@@ -73,8 +72,12 @@ public interface DynAnyOperations
    * DynAny can be used to get or set the value of the focused component. If the
    * DynAny holds a primitive type with no components, this implementation
    * returns <code>null</code>.
+   *
+   * @throws TypeMismatch if called on DynAny that cannot have active
+   * components, like {@link DynEnum}.
    */
-  DynAny current_component();
+  DynAny current_component()
+                    throws TypeMismatch;
 
   /**
    * Destroys this DynAny, freeing the used resources. In java, resources are
@@ -381,7 +384,7 @@ public interface DynAnyOperations
    * enclosed {@link Any}.
    */
   void insert_typecode(TypeCode a_x)
-  throws InvalidValue, TypeMismatch;
+                throws InvalidValue, TypeMismatch;
 
   /**
    * Insert the int (CORBA unsinged long) value into the enclosed {@link Any}
@@ -481,8 +484,7 @@ public interface DynAnyOperations
    *
    * @return shallow copy of the enclosed {@link Any}.
    */
-  Any to_any()
-      throws TypeMismatch;
+  Any to_any();
 
   /**
    * Returns the typecode of the object, inserted into this DynAny.
@@ -508,10 +510,10 @@ public interface DynAnyOperations
    *
    *
    * @specnote This method is currently only implemented only for case when
-   * another DynAny was created by the factory of this implementation and
-   * is not an independent class, just implementing interface. Otherwise,
-   * a NO_IMPLEMENT minor 8148 will be thrown. General implementation is
-   * highly ineffective, but we will do if somebody would ever need it.
+   * another DynAny was created by the factory of this implementation and is not
+   * an independent class, just implementing interface. Otherwise, a
+   * NO_IMPLEMENT minor 8148 will be thrown. General implementation is highly
+   * ineffective, but we will do if somebody would ever need it.
    */
   boolean equal(DynAny other);
 
