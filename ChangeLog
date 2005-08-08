@@ -1,3 +1,8 @@
+2005-08-08   Wolfgang Baer <WBaer@gmx.de>
+
+	* kaffe/man/kaffe.1.xml,
+	kaffe/man/kaffe.1.in: Fixes for manpages.
+
 2005-08-08  Andreas Tobler  <toa@pop.agri.ch>
 
 	* config/sparc/trampolines.S: Set alignment to 8

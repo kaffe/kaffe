@@ -339,8 +339,7 @@
 				<varlistentry>
 	        <term><option>-vmdebug flag{,flag}</option></term>
 	        <listitem>
-	          <para>Enable VM debugging. Set &ldquo;-vmdebug list&rdquo;
-	          for a list.</para>
+	          <para>Enable VM debugging. Set flag=list for a list.</para>
 	        </listitem>
 	      </varlistentry>
 				<varlistentry>

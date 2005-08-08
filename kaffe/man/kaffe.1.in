@@ -72,19 +72,19 @@ Same as \fB\-version\fR plus compile date and flags, changelog head\&.
 
 .TP
 \fB\-ss \fR\fIsize\fR
-Set the maximum stack size to size\&.
+Set the maximum stack size to \fIsize\fR\&.
 
 .TP
 \fB\-mx \fR\fIsize\fR
-Set the maximum heap size to size\&. Kilobytes are indicated by the letters k or K and megabytes by m or M\&.
+Set the maximum heap size to \fIsize\fR\&. Kilobytes are indicated by the letters k or K and megabytes by m or M\&.
 
 .TP
 \fB\-ms \fR\fIsize\fR
-Set the initial heap size to size\&. Kilobytes are indicated by the letters k or K and megabytes by m or M\&.
+Set the initial heap size to \fIsize\fR\&. Kilobytes are indicated by the letters k or K and megabytes by m or M\&.
 
 .TP
 \fB\-as \fR\fIsize\fR
-Set the heap increment size to size
+Set the heap increment size to \fIsize\fR
 
 .TP
 \fB\-classpath \fR\fIpath\fR
@@ -241,7 +241,7 @@ Use GMP for faster, native bignum calculations\&.
 
 .TP
 \fB\-vmdebug flag{,flag}\fR
-Enable VM debugging\&. Set “\-vmdebug list” for a list\&.
+Enable VM debugging\&. Set flag=list for a list\&.
 
 .TP
 \fB\-Xkaffe\-xlib\-awt\fR
@@ -290,17 +290,17 @@ Not documented yet\&.
 Java is a registered trademark of Sun Microsystems, Inc\&.
 
 .PP
-Kaffe is available from various sites, the primary one being <http://www\&.kaffe\&.org: \fIhttp://www.kaffe.org\fR>\&.
+Kaffe is available from various sites, the primary one being <\fIhttp://www\&.kaffe\&.org: \fIhttp://www.kaffe.org\fR>\fR\&.
 
 .PP
 There are several mailing lists for Kaffe:
 
 .TP
-kaffe@kaffe\&.org
+\fIkaffe@kaffe\&.org\fR
 General Kaffe discussions
 
 .TP
-kaffe\-announce@kaffe\&.org
+\fIkaffe\-announce@kaffe\&.org\fR
 Kaffe related announcements
 
 .SH "BUGS"
@@ -311,21 +311,21 @@ See the file FAQ\&.Known\-Bugs for an updated list\&.
 .SH "AUTHOR"
 
 .PP
-Kaffe was originally written by Tim Wilkinson, 1996\&. Many others contributed to the Kaffe project\&. They are listed in the source distribution's AUTHORS file\&.
+Kaffe was originally written by Tim Wilkinson, 1996\&. Many others contributed to the Kaffe project\&. They are listed in the source distribution's \fIAUTHORS\fR file\&.
 
 .SH "COPYING"
 
 .PP
-Kaffe is distributed under the GNU GPL\&. For full details, see the file license\&.terms in the source distribution for full details\&.
+Kaffe is distributed under the GNU GPL\&. For full details, see the file \fIlicense\&.terms\fR in the source distribution for full details\&.
 
 .PP
-The included DOM bindings are published under the W3C Software Copyright Notice and License\&. For full details, see the file license\-w3c\&.terms in the source distribution for full details\&.
+The included DOM bindings are published under the W3C Software Copyright Notice and License\&. For full details, see the file \fIlicense\-w3c\&.terms\fR in the source distribution for full details\&.
 
 .SH "SEE ALSO"
 
 .PP
-jikes, a fast Java(tm) compiler
+\fIjikes\fR, a fast Java(tm) compiler
 
 .PP
-gjdoc, the GNU javadoc tool
+\fIgjdoc\fR, the GNU javadoc tool
 
