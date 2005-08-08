@@ -1,3 +1,8 @@
+2005-08-08  Andreas Tobler  <toa@pop.agri.ch>
+
+	* config/sparc/trampolines.S: Set alignment to 8
+	to accomodate 64bit sparcs.
+
 2005-08-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-base.c (JNI_CreateJavaVM):

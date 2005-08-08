@@ -23,7 +23,7 @@ TRAMPOLINE_FUNCTION()
  */
 
     .text
-    .align 4
+    .align 8
     .global C_FUNC_NAME(sparc_do_fixup_trampoline)
 
 C_FUNC_NAME(sparc_do_fixup_trampoline) :
