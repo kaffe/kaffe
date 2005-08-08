@@ -294,7 +294,8 @@ pkginclude_HEADERS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h
+	kaffe/jmalloc.h \
+	kaffe/trampoline.h
 
 stamp-kaffeh:
 ## If KAFFEH does not exist, build it
@@ -361,6 +362,7 @@ CLEANFILES = \
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
+	config-int.h \
 	stamp-h0all \
 	stamp-h1all \
 	stamp-libtritonusalsa \

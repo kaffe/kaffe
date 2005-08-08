@@ -117,4 +117,4 @@ EXTRA_DIST = \
 TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH="." ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; sed  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
 
-CLEANFILES = *.fail *.out core *.core
+CLEANFILES = *.fail *.out core *.core *.class

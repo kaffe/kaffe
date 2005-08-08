@@ -1,5 +1,20 @@
 2005-08-08  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed make distcheck.
+
+	* include/Makefile.am: Added kaffe/trampoline.h.
+	(DISTCLEANFILES) Added config-int.h.
+
+	* test/jni/Makefile.am (CLEANFILES) Added *.class files.
+
+	* po/de.po,
+	po/fr.po,
+	po/kaffe.pot,
+	po/zh_CN.po,
+	po/zh_TW.po: Regenerated.
+
+2005-08-08  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-08-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
