@@ -354,6 +354,9 @@ setUserProperty(char * propStr)
  * @param propStr AWT backend
  * @return updated user properties
  */
+
+#if defined (KAFFE_X_AWT_INCLUDED) || defined (KAFFE_QT_AWT_INCLUDED)	\
+  || defined (KAFFE_NANOX_AWT_INCLUDED)
 static 
 userProperty*
 setKaffeAWT(const char * propStr)
@@ -403,7 +406,7 @@ setKaffeAWT(const char * propStr)
 
 	return prop;
 }
-
+#endif
 /*
  * Process program's flags.
  */

@@ -1,3 +1,9 @@
+2005-08-08  Andreas Tobler  <toa@pop.agri.ch>
+
+	* kaffe/kaffe/main.c (setKaffeAWT): Only define if using Kaffe's AWT.
+
+	* kaffe/kaffevm/jit3/icode.c (cvt_double_int): Removed unused variable i.
+
 2005-08-08   Wolfgang Baer <WBaer@gmx.de>
 
 	* kaffe/man/kaffe.1.xml,
