@@ -1,5 +1,10 @@
 2005-08-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-base.c (JNI_CreateJavaVM):
+	Moved errbuf into JVMPI section to fix compiler warning.
+
+2005-08-08  Dalibor Topic  <robilad@kaffe.org>
+
 	Fixed make distcheck.
 
 	* include/Makefile.am: Added kaffe/trampoline.h.

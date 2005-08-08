@@ -273,7 +273,6 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   JavaVMInitArgs *vm_args = (JavaVMInitArgs *)args;
   JNIEnv **env = (JNIEnv **)penv;
   jnirefs *reftable;
-  char errbuf[256];
 
   switch (vm_args->version)
     {
@@ -315,6 +314,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 #if defined(ENABLE_JVMPI)
   if (Kaffe_JavaVMArgs.profilerLibname != NULL)
     {
+      char errbuf[256];
       jint (*onloadProfiler)(JavaVM *jvm, const char *options, void *reserved);
 
       if (loadNativeLibrary(Kaffe_JavaVMArgs.profilerLibname, NULL, errbuf, sizeof(errbuf)) < 0)
