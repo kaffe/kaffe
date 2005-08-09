@@ -1,3 +1,32 @@
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-08  Casey Marshall  <csm@gnu.org>
+
+        Fixes bug #22914
+        * gnu/classpath/debug/Component.java (POLICY): new constant.
+        * gnu/java/security/PolicyFile.java (logger): new constant.
+        (DEBUG,debug,debug): removed.
+        (DEFAULT_POLICY): use 'SystemProperties' class to bypass security
+        check.
+        (DEFAULT_USER_POLICY): new constant.
+        (getPermissions): replace 'debug' calls with logger calls.
+        (refresh): add 'DEFAULT_USER_POLICY' to the initial list;
+        interpret 'java.security.policy' and 'policy.url' properties
+        properly; replace 'debug' calls with logger calls.
+        (parse): replace 'debug' calls with logger calls.
+
+	2005-08-07  Casey Marshall  <csm@gnu.org>
+
+        * javax/security/auth/x500/X500Principal.java
+        (encodeDer): use the right iterator for the inner loop.
+        (parseString): test for end of input.
+        (readAttributeType): provide detail message for exception.
+        (readAttributeValue): return the result on end of input;
+        read the next character while looping.
+        (putComponent): accept 'o' and 'ou' short names.
+
 2005-08-09  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java
