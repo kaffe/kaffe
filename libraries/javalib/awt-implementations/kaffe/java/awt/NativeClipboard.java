@@ -17,12 +17,12 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 
 import kaffe.awt.ExportTransferable;
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 class NativeClipboard
   extends Clipboard
 {
-	RawData nativeData;
+	Pointer nativeData;
 	static NativeClipboard singleton;
 
 NativeClipboard () {

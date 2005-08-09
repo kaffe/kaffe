@@ -1,6 +1,6 @@
 package java.awt;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -14,7 +14,7 @@ import java.text.CharacterIterator;
 public class Font
   implements Serializable
 {
-	RawData nativeData;
+	Pointer nativeData;
 	protected String name;
 	protected int style;
 	protected int size;

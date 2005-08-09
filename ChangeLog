@@ -1,3 +1,51 @@
+2005-08-09  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java
+	(registerSource) (unregisterSource),
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java
+	(getNativeData),
+	libraries/javalib/awt-implementations/kaffe/java/awt/Font.java
+	(Font.nativeData),
+	libraries/javalib/awt-implementations/kaffe/java/awt/FontMetrics.java
+	(FontMetrics.nativeData),
+	libraries/javalib/awt-implementations/kaffe/java/awt/Image.java
+	(Image.oldNativeData),
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageFrameLoader.java
+	(runINPLoop),
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageNativeProducer.java
+	(produceFrom) (produceFrom),
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeClipboard.java
+	(NativeClipboard.nativeData),
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeGraphics.java
+	(NativeGraphics.nativeData) (getGraphics) (setGraphics),
+	libraries/javalib/awt-implementations/kaffe/java/awt/Toolkit.java
+	(cbdFreeClipboard) (cbdGetContents) (cbdInitClipboard) (cbdSetOwner)
+	(evtRegisterSource) (evtUnregisterSource) (fntBytesWidth)
+	(fntCharWidth) (fntFreeFont) (fntFreeFontMetrics) (fntGetAscent)
+	(fntGetDescent) (fntGetFixedWidth) (fntGetHeight) (fntGetLeading)
+	(fntGetMaxAdvance) (fntGetMaxDescent) (fntGetWidths) (fntInitFont)
+	(fntInitFontMetrics) (fntIsWideFont) (fntStringWidth) (graAddClip)
+	(graClearRect) (graCopyArea) (graDraw3DRect) (graDrawArc)
+	(graDrawChars) (graDrawImage) (graDrawImageScaled) (graDrawLine)
+	(graDrawOval) (graDrawPolygon) (graDrawPolyline) (graDrawRect)
+	(graDrawRoundRect) (graDrawString) (graFill3DRect) (graFillArc)
+	(graFillOval) (graFillPolygon) (graFillRect) (graFillRoundRect)
+	(graFreeGraphics) (graInitGraphics) (graSetBackColor) (graSetClip)
+	(graSetColor) (graSetFont) (graSetOffset) (graSetPaintMode)
+	(graSetVisible) (graSetXORMode) (imgComplete) (imgCreateFromData)
+	(imgCreateFromFile) (imgCreateImage) (imgCreateScaledImage)
+	(imgCreateScreenImage) (imgFreeImage) (imgGetHeight) (imgGetLatency)
+	(imgGetNextFrame) (imgGetWidth) (imgIsMultiFrame) (imgProduceImage)
+	(imgSetFrame) (imgSetIdxPels) (imgSetRGBPels) (wndCreateDialog)
+	(wndCreateFrame) (wndCreateWindow) (wndDestroyWindow) (wndRepaint)
+	(wndRequestFocus) (wndSetBounds) (wndSetCursor) (wndSetIcon)
+	(wndSetResizable) (wndSetTitle) (wndSetVisible) (wndToBack)
+	(wndToFront),
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java
+	(Window.nativeData) (getNativeData):
+	Reflect recent changes in GNU Classpath. Change gnu.classpath.RawData
+	to gnu.classpath.Pointer.
+
 2005-08-08  Andreas Tobler  <toa@pop.agri.ch>
 
 	* kaffe/kaffe/main.c (setKaffeAWT): Only define if using Kaffe's AWT.

@@ -1,6 +1,6 @@
 package java.awt;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 import java.awt.image.ImageObserver;
 
 /**
@@ -44,7 +44,7 @@ public void run () {
 public void runINPLoop () {
 	int w, h, latency, dt;
 	long t;
-	RawData ptr = img.nativeData;
+	Pointer ptr = img.nativeData;
 
 	img.flags |= Image.IS_ANIMATION;
 

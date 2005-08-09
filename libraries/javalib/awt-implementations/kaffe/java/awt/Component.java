@@ -1,6 +1,6 @@
 package java.awt;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
@@ -510,7 +510,7 @@ public String getName () {
 	return (name == null) ? getClass().getName() : name;
 }
 
-RawData getNativeData () {
+Pointer getNativeData () {
 	return null;  // no nativeData, all lightweight
 }
 

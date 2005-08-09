@@ -12,7 +12,7 @@
 
 package java.awt;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 import java.util.Hashtable;
 
 public class FontMetrics
@@ -28,7 +28,7 @@ public class FontMetrics
 
         Font font;  
 
-	transient RawData nativeData;
+	transient Pointer nativeData;
 	protected String fontSpec;
 	transient int height;
 	transient int descent;

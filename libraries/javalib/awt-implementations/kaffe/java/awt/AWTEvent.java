@@ -7,7 +7,7 @@ import kaffe.awt.FocusHook;
 import kaffe.awt.KeyHook;
 import kaffe.awt.MouseHook;
 
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 /**
  *
@@ -118,7 +118,7 @@ protected void recycle () {
 	next = null;
 }
 
-static void registerSource ( Component c, RawData nativeData ) {
+static void registerSource ( Component c, Pointer nativeData ) {
 	int idx = Toolkit.evtRegisterSource( nativeData);
 	sources[idx] = c;
 
@@ -161,7 +161,7 @@ public String toString () {
 	return result.toString();
 }
 
-static void unregisterSource ( Component c, RawData nativeData ) {
+static void unregisterSource ( Component c, Pointer nativeData ) {
 	int idx = Toolkit.evtUnregisterSource( nativeData);
 	sources[idx] = null;
 

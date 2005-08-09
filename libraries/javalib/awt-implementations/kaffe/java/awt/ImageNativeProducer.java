@@ -11,7 +11,7 @@ import java.net.URLConnection;
 import java.util.Vector;
 
 import kaffe.io.AccessibleBAOStream;
-import gnu.classpath.RawData;
+import gnu.classpath.Pointer;
 
 /**
  * Copyright (c) 1998
@@ -107,7 +107,7 @@ public boolean isConsumer ( ImageConsumer ic ) {
 }
 
 void produceFrom ( File file ) {
-	RawData ptr;
+	Pointer ptr;
 
 	if ( file.exists() &&
 	     (ptr = Toolkit.imgCreateFromFile( file.getAbsolutePath())) != null ){
@@ -118,7 +118,7 @@ void produceFrom ( File file ) {
 	}
 }
 
-void produceFrom ( RawData ptr ) {
+void produceFrom ( Pointer ptr ) {
 	if ( consumer instanceof ImageLoader ) {
 		ImageLoader loader = (ImageLoader)consumer;
 		Image img = loader.img;
@@ -163,7 +163,7 @@ void produceFrom ( URL url ) {
 			if ( in != null ) {
 				out.readFrom(in);
 				in.close();
-				RawData ptr = Toolkit.imgCreateFromData(out.getBuffer(), 0, out.size());
+				Pointer ptr = Toolkit.imgCreateFromData(out.getBuffer(), 0, out.size());
 				if ( ptr != null ){
 					produceFrom( ptr);
 					return;
@@ -177,7 +177,7 @@ void produceFrom ( URL url ) {
 }
 
 void produceFrom ( byte[] data, int off, int len ) {
-	RawData ptr;
+	Pointer ptr;
 
 	if ( (ptr = Toolkit.imgCreateFromData( data, off, len)) != null )
 		produceFrom( ptr);
