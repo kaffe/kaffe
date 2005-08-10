@@ -77,9 +77,9 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libengine_la_LIBADD =
-am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo icode.lo \
-	labels.lo machine.lo registers.lo seq.lo slots.lo \
-	native-wrapper.lo methodcalls.lo
+am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo \
+	global-regs.lo icode.lo labels.lo machine.lo registers.lo \
+	seq.lo slots.lo native-wrapper.lo methodcalls.lo
 nodist_libengine_la_OBJECTS = trampolines.lo
 libengine_la_OBJECTS = $(am_libengine_la_OBJECTS) \
 	$(nodist_libengine_la_OBJECTS)
@@ -408,6 +408,8 @@ libengine_la_SOURCES = \
 	constpool.h \
 	funcs.c \
 	funcs.h \
+	global-regs.c  \
+	global-regs.h \
 	icode.c \
 	labels.c \
 	labels.h \
@@ -490,6 +492,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basecode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constpool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funcs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/global-regs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine.Plo@am__quote@

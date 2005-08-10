@@ -39,6 +39,8 @@ libengine_la_SOURCES = \
 	constpool.h \
 	funcs.c \
 	funcs.h \
+	global-regs.c  \
+	global-regs.h \
 	icode.c \
 	labels.c \
 	labels.h \

@@ -37,6 +37,7 @@
 #include "funcs.h"
 #include "kaffe_jni.h"
 #include "fp.h"
+#include "global-regs.h"
 
 #if defined(HAVE_branch_and_link)
 #define blink 0x8000000
@@ -225,7 +226,9 @@ prologue(Method* meth)
 	l->from = 0;
 
 	setupSlotsForBasicBlock();
+#if defined(NR_GLOBALS)
 	setupGlobalRegisters();
+#endif
 	setupArgumentRegisters();
 
 	/* Emit prologue code */

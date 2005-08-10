@@ -11,6 +11,8 @@
 #ifndef __registers_h
 #define __registers_h
 
+#include "slots.h"
+
 /* Register types */
 #define	Reserved		0x80
 #define	Rglobal			0x40

@@ -11,6 +11,8 @@
 #ifndef __code_analyse_h
 #define __code_analyse_h
 
+#include "classMethod.h"
+
 typedef	struct {
 	Hjava_lang_Class*	type;
 	uint8			used;

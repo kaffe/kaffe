@@ -13,6 +13,8 @@
 #ifndef __machine_h
 #define __machine_h
 
+#include "gtypes.h"
+
 /* -------------------------------------------------------------------- */
 
 #define KJIT(funcName) KaffeJIT3_ ## funcName
@@ -175,7 +177,6 @@ typedef struct _nativeCodeInfo {
 #define	willCatch(FLAG)	willcatch. FLAG = true
 #define	canCatch(FLAG)	willcatch. FLAG
 
-void setupGlobalRegisters(void);
 void setupArgumentRegisters(void);
 
 /* Desktop edition */

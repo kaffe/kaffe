@@ -1,5 +1,32 @@
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jit3/global-regs.c,
+	kaffe/kaffevm/jit3/global-regs.h:
+	New files. Spilt out global register handling code 
+	from machine.c.
+
+	* config/i386/common.h: Include gtypes.h.
+
+	* kaffe/kaffevm/code-analyse.h: Include classMethod.h
+
+	* kaffe/kaffevm/jit3/Makefile.am:
+	Added global-regs.c and global-regs.h.
+
+	* kaffe/kaffevm/jit3/icode.c: Include global-regs.h.
+	Only call setupGlobalRegisters if NR_GLOBALS is defined.
+
+	* kaffe/kaffevm/jit3/machine.c (sortSlots, bindSlotToGlobal,
+	setupGlobalRegisters): Moved over to global-regs.c.
+
+	* kaffe/kaffevm/jit3/machine.h: Include gtypes.h.
+	Removed setupGlobalRegisters prototype.
+
+	* kaffe/kaffevm/jit3/registers.h: Include slots.h.
+
+	Reported by:  Andreas Tobler  <toa@pop.agri.ch>
+
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-08-08  Casey Marshall  <csm@gnu.org>
@@ -75,11 +102,11 @@
 	Reflect recent changes in GNU Classpath. Change gnu.classpath.RawData
 	to gnu.classpath.Pointer.
 
-2005-08-08  Andreas Tobler  <toa@pop.agri.ch>
+2005-08-08  Andreas Tobler  <a.tobler@schweiz.ch>
 
-	* kaffe/kaffe/main.c (setKaffeAWT): Only define if using Kaffe's AWT.
+	* kaffe/kaffevm/jit3/icode.c (cvt_double_int): Remove unused variable.
 
-	* kaffe/kaffevm/jit3/icode.c (cvt_double_int): Removed unused variable i.
+	* kaffe/kaffe/main.c (setKaffeAWT): Silence unused function warnings.
 
 2005-08-08   Wolfgang Baer <WBaer@gmx.de>
 

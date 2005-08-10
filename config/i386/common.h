@@ -16,6 +16,7 @@
 #define __i386_h
 
 #include "generic/gentypes.h"
+#include "gtypes.h"
 
 #if defined(NEED_sysdepCallMethod)
 #include "sysdepCallMethod.h"
