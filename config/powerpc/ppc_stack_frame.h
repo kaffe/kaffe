@@ -83,8 +83,8 @@ typedef struct _exceptionFrame {
  * a NULL here otherwise we'll segfault when examining the top frame.
  */
 #define PCFRAME(f) ((f)->sp == 0 ? 0 : (f)->sp->lr - 1)
-/* Get the frame pointer from an exceptionFrame. */
-#define FPFRAME(f) ((f)->sp)
+/* Get the frame pointer address from an exceptionFrame. */
+#define FPFRAME(f) ((unsigned long)(f)->sp)
 
 /* Get the "this" object out of a stack frame. */
 #define FRAMEOBJECT(obj, f, einfo) \
