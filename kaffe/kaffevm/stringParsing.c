@@ -434,11 +434,11 @@ void skipBlock(stringScript *script, void **values,
 }
 
 static
-char *skipChars(unsigned char *str, unsigned char *str_end)
+char *skipChars(char *str, char *str_end)
 {
 	assert(str != 0);
 	assert(str_end != 0);
-	
+
 	while( (str < str_end) && !isspace(*str) )
 	{
 		str++;
@@ -447,11 +447,11 @@ char *skipChars(unsigned char *str, unsigned char *str_end)
 }
 
 static
-char *skipSpace(unsigned char *str, unsigned char *str_end)
+char *skipSpace(char *str, char *str_end)
 {
 	assert(str != 0);
 	assert(str_end != 0);
-	
+
 	while( (str < str_end) && isspace(*str) )
 	{
 		str++;
