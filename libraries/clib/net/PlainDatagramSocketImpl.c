@@ -209,7 +209,7 @@ gnu_java_net_PlainDatagramSocketImpl_send0(struct Hgnu_java_net_PlainDatagramSoc
 	int rc;
 	ssize_t bsent;
 	KaffeSocketAddr addr;
-	int alen;
+	int alen = 0;
 	
 DBG(NATIVENET,
 	dprintf("datagram_send(%p, %p [%d bytes])\n",
@@ -480,7 +480,7 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 jint
 gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jint opt)
 {
-	int k, r, v;
+	int k, r = 0, v;
 	socklen_t vsize = sizeof(v);
 	struct sockaddr_in addr;
 	socklen_t alen = sizeof(addr);
@@ -617,7 +617,7 @@ gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagra
 #if defined(IP_ADD_MEMBERSHIP)
 	struct Hjava_net_InetSocketAddress *jisa;
 	struct ip_mreq ipm;
-	int r;
+	int r = 0;
 
 	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
 

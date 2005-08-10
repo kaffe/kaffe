@@ -1,3 +1,10 @@
+2005-08-09  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c
+	(gnu_java_net_PlainDatagramSocketImpl_send0): Initialize alen.
+	(gnu_java_net_PlainDatagramSocketImpl_socketGetOption): Likewise for r.
+	(gnu_java_net_PlainDatagramSocketImpl_joinGroup): Likewise.
+
 2005-08-10  Andreas Tobler  <a.tobler@schweiz.ch>
 
 	* kaffe/kaffevm/stringParsing.c (skipChars): Change arguments to
