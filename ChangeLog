@@ -1,5 +1,70 @@
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-08  Casey Marshall  <csm@gnu.org>
+
+        PR classpath/23120
+        * gnu/java/security/provider/DSAKeyPairGenerator.java
+        (<init>): made public; set default values.
+        (initialize): just call 'initialize(int,boolean,SecureRandom).'
+        (initialize): just call 'initialize(DSAParams,SecureRandom).'
+        (initialize): check all values for 'null' before overwriting.
+        (initialize): fill in defaults or generate new parameters here.
+        (generateKeyPair): don't create parameters; fill in 'random' if
+        'null;' use 'random,' not a new Random object, when generating
+        random numbers.
+        (getDefaults): fix keysize check.
+
+        PR classpath/22990
+        * java/security/KeyPairGenerator.java (initialize): do nothing.
+
+	2005-08-08  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/23285:
+        * native/jni/classpath/classpath_jawt.h
+        (classpath_jawt_get_awt_version, classpath_jawt_lock,
+        classpath_jawt_unlock, classpath_jawt_create_lock,
+        classpath_jawt_destroy_lock): Use '(void)' in prototype.
+        * native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Added
+        gtk_jawt.c.
+        * native/jni/gtk-peer/gtk_jawt.c: New file from libgcj.
+        (classpath_jawt_create_lock, classpath_jawt_destroy_lock): Use
+        cp_gtk_gdk_env.
+
+	2005-08-08  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/DynamicAny/FieldNameHelper.java: New file.
+
+	2005-08-08  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/DynamicAny/_DynAnyFactoryStub.java,
+        org/omg/DynamicAny/_DynAnyStub.java,
+        org/omg/DynamicAny/_DynArrayStub.java,
+        org/omg/DynamicAny/_DynEnumStub.java,
+        org/omg/DynamicAny/_DynFixedStub.java,
+        org/omg/DynamicAny/_DynStructStub.java,
+        org/omg/DynamicAny/_DynUnionStub.java,
+        org/omg/DynamicAny/_DynValueStub.java,
+        org/omg/DynamicAny/_DynSequenceStub.java: New files.
+
+	2005-08-08  Lillian Angel  <langel@redhat.com>
+
+        Fixes bug #23252
+        * javax/swing/JTree.java
+        (setModel): Changed to allow model to be null.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (setModel): Changed to depend on JTree functions
+        (getPathBounds): Fixed to work when model = null.
+        (getPathForRow): Likewise.
+        (getRowCount): Likewise.
+        (installListeners): Likewise.
+        (installUI): Likewise.
+        (paint): Likewise.
+        (getPreferredSize): Likewise.
+
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit3/global-regs.c,
 	kaffe/kaffevm/jit3/global-regs.h:
 	New files. Spilt out global register handling code 

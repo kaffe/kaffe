@@ -50,15 +50,15 @@ exception statement from your version. */
 
 #define CLASSPATH_JAWT_VERSION 0x10004
 
-jint     classpath_jawt_get_awt_version ();
+jint     classpath_jawt_get_awt_version (void);
 Display* classpath_jawt_get_default_display (JNIEnv* env, jobject canvas);
 Drawable classpath_jawt_get_drawable (JNIEnv* env, jobject canvas);
 VisualID classpath_jawt_get_visualID (JNIEnv* env, jobject canvas);
 jint     classpath_jawt_object_lock (jobject lock);
 void     classpath_jawt_object_unlock (jobject lock);
-jint     classpath_jawt_lock ();
-void     classpath_jawt_unlock ();
-jobject  classpath_jawt_create_lock ();
+jint     classpath_jawt_lock (void);
+void     classpath_jawt_unlock (void);
+jobject  classpath_jawt_create_lock (void);
 void     classpath_jawt_destroy_lock (jobject lock);
 
 #endif /* __classpath_jawt_h__ */

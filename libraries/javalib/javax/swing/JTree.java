@@ -775,16 +775,17 @@ public class JTree
 	{
 		if (treeModel == model)
 			return;
-
-		TreeModel oldValue = treeModel;
-		treeModel = model;
-
-		firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
-
+    
 		// add treeModelListener to the new model
 		if (treeModelListener == null)
 			treeModelListener = createTreeModelListener();
-		model.addTreeModelListener(treeModelListener);
+		if (model != null) // as setModel(null) is allowed
+			model.addTreeModelListener(treeModelListener);
+    
+    TreeModel oldValue = treeModel;
+    treeModel = model;
+
+    firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
 	}
 
 	/**

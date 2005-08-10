@@ -449,7 +449,7 @@ public class BasicTreeUI extends TreeUI
   protected void setModel(TreeModel model)
   {
     tree.setModel(model);
-    treeModel = model;
+    treeModel = tree.getModel();
   }
   
   /**
@@ -583,13 +583,16 @@ public class BasicTreeUI extends TreeUI
       {
         Object cell = path.getLastPathComponent();
         TreeModel mod = tree.getModel();
-        TreeNode root = (TreeNode) mod.getRoot();
-        if (!tree.isRootVisible()
-            && tree.isExpanded(new TreePath(root)))
-          root = getNextNode(root);
-        
-        Point loc = getCellLocation(0, 0, tree, mod, cell, root);
-        return getCellBounds(loc.x, loc.y, cell);
+        if (mod != null)
+        {
+          TreeNode root = (TreeNode) mod.getRoot();
+          if (!tree.isRootVisible()
+              && tree.isExpanded(new TreePath(root)))
+            root = getNextNode(root);
+          
+          Point loc = getCellLocation(0, 0, tree, mod, cell, root);
+          return getCellBounds(loc.x, loc.y, cell);
+        }
       }
     return null;
   }
@@ -605,20 +608,23 @@ public class BasicTreeUI extends TreeUI
    */
   public TreePath getPathForRow(JTree tree, int row)
   {
-    TreeNode node = ((TreeNode) (tree.getModel()).getRoot());
-    if (!tree.isRootVisible()
-        && tree.isExpanded(new TreePath(getPathToRoot(node, 0))))
-      node = getNextNode(node);
-    
-    for (int i = 0; i < row; i++)
-      node = getNextVisibleNode(node);
-    
-    // in case nothing was found
-    if (node == null)
-      return null;
-    
-    // something was found
-    return new TreePath(getPathToRoot(node, 0));
+    TreeModel mod = tree.getModel();
+    if (mod != null)
+    {
+      TreeNode node = ((TreeNode) mod.getRoot());
+      if (!tree.isRootVisible()
+          && tree.isExpanded(new TreePath(getPathToRoot(node, 0))))
+        node = getNextNode(node);
+      
+      for (int i = 0; i < row; i++)
+        node = getNextVisibleNode(node);
+      
+      if (node == null)
+        return null;
+      
+      return new TreePath(getPathToRoot(node, 0));
+    }
+    return null;
   }
   
   /**
@@ -647,20 +653,21 @@ public class BasicTreeUI extends TreeUI
    */
   public int getRowCount(JTree tree)
   {
-    TreeNode node = ((TreeNode) (tree.getModel())
-        .getRoot());
-    if (!tree.isRootVisible()
-        && tree.isExpanded(new TreePath((getPathToRoot(node, 0)))))
-      node = getNextNode(node);
-    
+    TreeModel mod = tree.getModel();
     int count = 0;
-    
-    while (node != null)
+    if (mod != null)
+    {
+      TreeNode node = ((TreeNode) mod.getRoot());
+      if (!tree.isRootVisible()
+          && tree.isExpanded(new TreePath((getPathToRoot(node, 0)))))
+        node = getNextNode(node);
+
+      while (node != null)
       {
         count++;
         node = getNextVisibleNode(node);
       }
-    
+    }
     return count;
   }
   
@@ -1162,7 +1169,8 @@ public class BasicTreeUI extends TreeUI
     tree.addComponentListener(componentListener);
     cellEditor.addCellEditorListener(cellEditorListener);
     tree.addTreeExpansionListener(treeExpansionListener);
-    treeModel.addTreeModelListener(treeModelListener);
+    if (treeModel != null)
+      treeModel.addTreeModelListener(treeModelListener);
   }
   
   /**
@@ -1175,9 +1183,11 @@ public class BasicTreeUI extends TreeUI
     super.installUI(c);
     installDefaults((JTree) c);
     tree = (JTree) c;
-    setModel(tree.getModel());
+    TreeModel mod = tree.getModel();
+    setModel(mod);
     tree.setRootVisible(true);
-    tree.expandPath(new TreePath(tree.getModel().getRoot()));
+    if (mod != null)
+      tree.expandPath(new TreePath(mod.getRoot()));
     treeSelectionModel = tree.getSelectionModel();
     installListeners();
     installKeyboardActions();
@@ -1227,15 +1237,18 @@ public class BasicTreeUI extends TreeUI
   {
     JTree tree = (JTree) c;
     TreeModel mod = tree.getModel();
-    Object root = mod.getRoot();
-    
-    if (!tree.isRootVisible())
-      tree.expandPath(new TreePath(root));
-    
-    paintRecursive(g, 0, 0, 0, 0, tree, mod, root);
-    
-    if (hasControlIcons())
-      paintControlIcons(g, 0, 0, 0, 0, tree, mod, root);
+    if (mod != null)
+    {
+      Object root = mod.getRoot();
+      
+      if (!tree.isRootVisible())
+        tree.expandPath(new TreePath(root));
+      
+      paintRecursive(g, 0, 0, 0, 0, tree, mod, root);
+      
+      if (hasControlIcons())
+        paintControlIcons(g, 0, 0, 0, 0, tree, mod, root);
+    }
   }
   
   /**
@@ -1295,23 +1308,26 @@ public class BasicTreeUI extends TreeUI
   public Dimension getPreferredSize(JComponent c, boolean checkConsistancy)
   {
     // FIXME: checkConsistancy not implemented, c not used
-    TreeNode node = ((TreeNode) (tree.getModel())
-        .getRoot());
+    TreeModel model = tree.getModel();
     int maxWidth = 0;
     int count = 0;
-    if (node != null)
+    if (model != null)
+    {
+      TreeNode node = (TreeNode) model.getRoot();
+      if (node != null)
       {
         maxWidth = (int) (getCellBounds(0, 0, node).getWidth());
         while (node != null)
-          {
-            count++;
-            TreeNode nextNode = getNextVisibleNode(node);
-            if (nextNode != null)
-              maxWidth = Math.max(maxWidth, (int) (getCellBounds(0, 0, nextNode)
-                  .getWidth()));
-            node = nextNode;
-          }
+        {
+          count++;
+          TreeNode nextNode = getNextVisibleNode(node);
+          if (nextNode != null)
+            maxWidth = Math.max(maxWidth, (int) (getCellBounds(0, 0, nextNode)
+                .getWidth()));
+          node = nextNode;
+        }
       }
+    }
     return new Dimension(maxWidth, (getRowHeight() * count));
   }
   
