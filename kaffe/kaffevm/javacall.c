@@ -119,7 +119,7 @@
 /**
  * Generic routine to call a native or Java method (array style).
  *
- * @param meth the struct _methods of the method to be executed
+ * @param meth the struct _jmethodID of the method to be executed
  * @param func the code that's to be executed
  * @param obj  the object whose method is to be called (my be 0 iff method is static)
  * @param args the arguments to be passed to the method
@@ -280,7 +280,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 /**
  * Generic routine to call a native or Java method (varargs style).
  *
- * @param meth the struct _methods of the method to be executed
+ * @param meth the struct _jmethodID of the method to be executed
  * @param func the code that's to be executed
  * @param obj  the object whose method is to be called (my be 0 iff method is static)
  * @param args the arguments to be passed to the method

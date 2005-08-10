@@ -108,10 +108,10 @@
 #define	SOFT_ADDREFERENCE_STATIC(_f, _t)
 #endif
 
-struct _methods;
+struct _jmethodID;
 struct _slots;
-void virtualMachine(struct _methods*, struct _slots*, struct _slots*, threadData*); 
-void setupExceptionHandling(VmExceptHandler* eh, struct _methods* meth, struct Hjava_lang_Object* syncobj, threadData*);
+void virtualMachine(struct _jmethodID*, struct _slots*, struct _slots*, threadData*); 
+void setupExceptionHandling(VmExceptHandler* eh, struct _jmethodID* meth, struct Hjava_lang_Object* syncobj, threadData*);
 void cleanupExceptionHandling(VmExceptHandler* eh, threadData*); 
 
 #endif

@@ -26,7 +26,7 @@ extern void powerpc_do_fixup_trampoline(void);
  */
 typedef struct _methodTrampoline {
 	ppc_code_t code[6];
-	struct _methods *meth;
+	struct _jmethodID *meth;
 	void **where;
 } methodTrampoline;
 

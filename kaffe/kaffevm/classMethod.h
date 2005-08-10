@@ -303,7 +303,7 @@ typedef struct _parsed_signature {
 	   etc */
 } parsed_signature_t;
 
-typedef struct _methods {
+typedef struct _jmethodID {
 	Utf8Const*		name;
 	parsed_signature_t*	parsed_sig;
 	accessFlags		accflags;
@@ -329,7 +329,7 @@ typedef struct _methods {
 	int			ndeclared_exceptions;
 	union {
 		constIndex*		local_exceptions;
-		struct _methods*	remote_exceptions;
+		struct _jmethodID*	remote_exceptions;
 	} declared_exceptions_u;
 #define declared_exceptions declared_exceptions_u.local_exceptions
 	int			framesize;	/* JIT only: size of frame */
@@ -372,7 +372,7 @@ typedef struct _dispatchTable {
 #define	DTABLE_METHODOFFSET	(sizeof(void*)*2)
 #define	DTABLE_METHODSIZE	(sizeof(void*))
 
-typedef struct _fields {
+typedef struct _jfieldID {
 	Hjava_lang_Class*	clazz;
 	Utf8Const*		name;
 	Utf8Const*		signature;

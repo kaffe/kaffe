@@ -104,7 +104,7 @@ typedef struct _exceptionFrame {
 typedef struct _methodTrampoline {
 	unsigned int loadlr	PACKED;
 	unsigned int branch	PACKED;
-	struct _methods* meth	PACKED;
+	struct _jmethodID* meth	PACKED;
 	void** where		PACKED;
 	void** trampaddr	PACKED;
 } methodTrampoline;

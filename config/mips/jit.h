@@ -61,7 +61,7 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 
 typedef struct _methodTrampoline {
 	unsigned code[4];
-	struct _methods *meth;
+	struct _jmethodID *meth;
 	void** where;
 	unsigned pad[2];
 } methodTrampoline;
@@ -272,8 +272,8 @@ extern void mips_do_fixup_trampoline(void);
  */
 
 /* We need to do some special initialization for the MIPS JIT */
-struct _methods;
-extern void __mipsInitJit(struct _methods*);
+struct _jmethodID;
+extern void __mipsInitJit(struct _jmethodID*);
 #define	INIT_JIT_MD(M)		__mipsInitJit(M)
 
 /* Generate slot offset for an argument relative to the frame pointer */

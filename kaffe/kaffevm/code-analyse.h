@@ -253,8 +253,8 @@ typedef struct codeinfo {
 #define	LOCALIN(L, T)			LOCAL_CHECKTYPE(L, T); \
 					LCL(L).used = 1
 
-struct _methods;
-bool analyzeMethod(struct _methods*, codeinfo**, errorInfo*);
+struct _jmethodID;
+bool analyzeMethod(struct _jmethodID*, codeinfo**, errorInfo*);
 void tidyAnalyzeMethod(codeinfo**);
 
 extern const uint8 insnLen[];

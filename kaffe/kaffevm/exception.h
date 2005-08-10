@@ -35,7 +35,7 @@ struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
 
-struct _methods;
+struct _jmethodID;
 struct _errorInfo;
 
 #define UNRESOLVABLE_CATCHTYPE	((Hjava_lang_Class*)-1)
@@ -75,7 +75,7 @@ typedef struct VmExceptHandler* JNIFrameAddress;
  */
 typedef struct VmExceptHandler {
 	struct VmExceptHandler*		prev;
-	struct _methods*		meth;
+	struct _jmethodID*		meth;
 	union
 	{
 		/*
@@ -101,7 +101,7 @@ typedef struct VmExceptHandler {
 	JTHREAD_JMPBUF		jbuf;
 } VmExceptHandler;
 
-#define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _methods*)1)
+#define VMEXCEPTHANDLER_KAFFEJNI_HANDLER ((struct _jmethodID*)1)
 
 void throwException(struct Hjava_lang_Throwable*); 
 void throwExternalException(struct Hjava_lang_Throwable*);

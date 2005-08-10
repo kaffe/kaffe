@@ -61,7 +61,7 @@ userProperty* userProperties = NULL;
  * @param obj the obj or 0 if the method is static
  * @param method_name the name of the method to be called
  * @param signature the signature of the method to be called
- * @param mb pointer to the struct _methods of the method to be called
+ * @param mb pointer to the struct _jmethodID of the method to be called
  * @param isStaticCall true if the call is static, otherwise false
  * @param argptr va_list of the arguments to be passed to the method
  *
@@ -110,7 +110,7 @@ do_execute_java_method_v(jvalue *retval, void* obj, const char* method_name, con
  * @param obj the obj or 0 if the method is static
  * @param method_name the name of the method to be called
  * @param signature the signature of the method to be called
- * @param mb pointer to the struct _methods of the method to be called
+ * @param mb pointer to the struct _jmethodID of the method to be called
  * @param isStaticCall true if the call is static, otherwise false
  * @param ... the arguments to be passed to the method
  *
@@ -290,7 +290,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
  * KaffeVM_callMethodA. Exceptions are not thrown but caught the JNI way. This is useful for internal VM
  * functions which are not exception-safe.
  *
- * @param meth the struct _methods of the method to be executed
+ * @param meth the struct _jmethodID of the method to be executed
  * @param func the code that's to be executed
  * @param obj  the object whose method is to be called (my be 0 iff method is static)
  * @param args the arguments to be passed to the method
@@ -313,7 +313,7 @@ KaffeVM_safeCallMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalu
  * KaffeVM_callMethodV. Exceptions are not thrown but caught the JNI way. This is useful for internal VM
  * functions which are not exception-safe.
  *
- * @param meth the struct _methods of the method to be executed
+ * @param meth the struct _jmethodID of the method to be executed
  * @param func the code that's to be executed
  * @param obj  the object whose method is to be called (my be 0 iff method is static)
  * @param args the arguments to be passed to the method
@@ -340,7 +340,7 @@ KaffeVM_safeCallMethodV(Method* meth, void* func, void* obj, va_list args, jvalu
  *
  * @throws OutOfMemoryError 
  *
- * @return struct _methods of the method being searched or 0 in case of an error
+ * @return struct _jmethodID of the method being searched or 0 in case of an error
  */
 Method*
 lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, errorInfo *einfo)
@@ -377,7 +377,7 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
  * @param sig signature of the method being searched
  * @param einfo struct errorInfo
  *
- * @return struct _methods of the method being searched or 0 in case of an error
+ * @return struct _jmethodID of the method being searched or 0 in case of an error
  */
 Method*
 lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)

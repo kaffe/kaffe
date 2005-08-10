@@ -49,16 +49,16 @@ typedef struct _localVariables {
 	localVariableEntry entry[1];
 } localVariables;
 
-struct _methods;
+struct _jmethodID;
 struct classFile;
 
-bool	addCode(struct _methods*, size_t, struct classFile*,
+bool	addCode(struct _jmethodID*, size_t, struct classFile*,
 		errorInfo *info);
-bool	addLineNumbers(struct _methods*, size_t, struct classFile*,
+bool	addLineNumbers(struct _jmethodID*, size_t, struct classFile*,
 		       errorInfo *info);
-bool	addLocalVariables(struct _methods*, size_t, struct classFile *,
+bool	addLocalVariables(struct _jmethodID*, size_t, struct classFile *,
 			  errorInfo *info);
-bool	addCheckedExceptions(struct _methods*, size_t,
+bool	addCheckedExceptions(struct _jmethodID*, size_t,
 			     struct classFile*, errorInfo *info);
 
 #endif

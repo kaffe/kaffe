@@ -58,7 +58,7 @@ extern void i386_do_fixup_trampoline(void);
 typedef struct _methodTrampoline {
 	unsigned char call;
 	int fixup PACKED;
-	struct _methods* meth PACKED;
+	struct _jmethodID* meth PACKED;
 	void** where PACKED;
 } methodTrampoline;
 

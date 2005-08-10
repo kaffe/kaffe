@@ -318,7 +318,7 @@ void initEngine(void)
 
 static inline void 
 setFrame(VmExceptHandler* eh,
-	 struct _methods* meth,
+	 struct _jmethodID* meth,
 	 struct Hjava_lang_Object* syncobj)
 {
 	assert(eh);
@@ -331,7 +331,7 @@ setFrame(VmExceptHandler* eh,
 
 void
 setupExceptionHandling(VmExceptHandler* eh,
-		       struct _methods* meth,
+		       struct _jmethodID* meth,
 		       struct Hjava_lang_Object* syncobj,
 		       threadData*	thread_data)
 {

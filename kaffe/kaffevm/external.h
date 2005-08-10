@@ -25,14 +25,14 @@
 #endif
 #define	NATIVELIBRARY	"libnative"
 
-struct _methods;
+struct _jmethodID;
 struct _errorInfo;
 
 void	initNative(void);
 int	loadNativeLibrary(const char*, struct Hjava_lang_ClassLoader*, char*, size_t);
 void	unloadNativeLibraries(struct Hjava_lang_ClassLoader*);
 void*	loadNativeLibrarySym(const char*);
-nativecode*	native(struct _methods*, struct _errorInfo*);
+nativecode*	native(struct _jmethodID*, struct _errorInfo*);
 void	addNativeFunc(char*, void*);
 char*	getLibraryPath(void);
 

@@ -1,5 +1,35 @@
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+        * kaffe/kaffevm/gtypes.h,
+        config/alpha/jit.h,
+        config/arm/jit.h,
+        config/i386/jit.h,
+        config/m68k/jit.h,
+        config/m68k/openbsd2/jit.h,
+        config/mips/jit.h,
+        config/powerpc/jit.h,
+        config/sparc/jit.h,
+        include/native.h,
+        kaffe/kaffevm/classMethod.h,
+        kaffe/kaffevm/code-analyse.h,
+        kaffe/kaffevm/code.h,
+        kaffe/kaffevm/exception.h,
+        kaffe/kaffevm/external.h,
+        kaffe/kaffevm/javacall.c,
+        kaffe/kaffevm/stackTrace.h,
+        kaffe/kaffevm/support.c,
+        kaffe/kaffevm/support.h,
+        kaffe/kaffevm/gcj/gcj.h,
+        kaffe/kaffevm/intrp/machine.c,
+        kaffe/kaffevm/intrp/machine.h,
+        kaffe/kaffevm/jit/machine.h:
+	Renamed struct _fields to struct _jfieldID and
+	struct _methods to struct _jmethodID to match the
+	convention in GNU Classpath from include/jni.h and
+	fix compiler warnings.
+
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/sparc/linux/md.h (sparcLinuxContextSwitch):
 	Added missing prototype to fix compiler warning.
 

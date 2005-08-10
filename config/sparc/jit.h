@@ -67,7 +67,7 @@ typedef struct _exceptionFrame {
 
 typedef struct _methodTrampoline {
 	unsigned code[3];
-	struct _methods *meth;
+	struct _jmethodID *meth;
 	void **where;
 } methodTrampoline;
 

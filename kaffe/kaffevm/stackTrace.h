@@ -13,7 +13,7 @@
 
 #include "stackTrace-impl.h"
 
-struct _methods;
+struct _jmethodID;
 
 /*
  * A backtrace is modelled as an array of stackTraceInfo structs,
@@ -24,10 +24,10 @@ struct _methods;
 typedef struct _stackTraceInfo {
 	uintp   pc;
 	uintp	fp;
-	struct _methods* meth;
+	struct _jmethodID* meth;
 } stackTraceInfo;
 
-#define ENDOFSTACK	((struct _methods*)-1)
+#define ENDOFSTACK	((struct _jmethodID*)-1)
 
 Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame*);
 void			printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);

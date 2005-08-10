@@ -40,7 +40,7 @@ extern nativeFunction* native_funcs;
 
 extern userProperty* userProperties;
 
-struct _methods;
+struct _jmethodID;
 struct _errorInfo;
 
 /* 64 should put us on the safe side */
@@ -115,8 +115,8 @@ struct Hjava_lang_ClassLoader;
 
 extern const char*		getEngine(void);
 extern void initEngine(void);
-extern void		do_execute_java_method(jvalue *retval, void*, const char*, const char*, struct _methods*, int, ...);
-extern void		do_execute_java_method_v(jvalue *retval, void*, const char*, const char*, struct _methods*, int, va_list);
+extern void		do_execute_java_method(jvalue *retval, void*, const char*, const char*, struct _jmethodID*, int, ...);
+extern void		do_execute_java_method_v(jvalue *retval, void*, const char*, const char*, struct _jmethodID*, int, va_list);
 extern void		do_execute_java_class_method(jvalue *retval, const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
 extern void		do_execute_java_class_method_v(jvalue *retval, const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, va_list);
 
@@ -124,12 +124,12 @@ extern struct Hjava_lang_Object* execute_java_constructor(const char*, struct Hj
 extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct Hjava_lang_ClassLoader*, struct Hjava_lang_Class*, const char*, va_list);
 extern jlong		currentTime(void);
 
-extern void	KaffeVM_callMethodA(struct _methods*, void*, void*, jvalue*, jvalue*, int);
-extern void	KaffeVM_callMethodV(struct _methods*, void*, void*, va_list, jvalue*);
-extern void     KaffeVM_safeCallMethodA(struct _methods*, void*, void*, jvalue*, jvalue*, int);
-extern void     KaffeVM_safeCallMethodV(struct _methods*, void*, void*, va_list, jvalue*);
-extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
-extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
+extern void	KaffeVM_callMethodA(struct _jmethodID*, void*, void*, jvalue*, jvalue*, int);
+extern void	KaffeVM_callMethodV(struct _jmethodID*, void*, void*, va_list, jvalue*);
+extern void     KaffeVM_safeCallMethodA(struct _jmethodID*, void*, void*, jvalue*, jvalue*, int);
+extern void     KaffeVM_safeCallMethodV(struct _jmethodID*, void*, void*, va_list, jvalue*);
+extern struct _jmethodID*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
+extern struct _jmethodID*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
 
 struct _strconst;
 extern void SignalError(const char *, const char *);

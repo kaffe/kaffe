@@ -18,14 +18,14 @@
 #include "stddef.h"
 #include <jni.h>
 
-struct _methods;
+struct _jmethodID;
 struct Hjava_lang_Class;
 struct Hjava_lang_ClassLoader;
 struct _strconst;
 
 #if !defined(__DEFINED_METHOD)
 #define	__DEFINED_METHOD
-typedef struct _methods Method;
+typedef struct _jmethodID Method;
 #endif
 #if !defined(__DEFINED_UTF8CONST)
 #define	__DEFINED_UTF8CONST

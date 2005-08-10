@@ -19,7 +19,7 @@
 
 struct Hjava_lang_Object;
 struct Hjava_lang_Class;
-struct _methods;
+struct _jmethodID;
 
 /* Collected JIT infos used to create DEC OSF/1 Procedure descriptor for
  * exception handling, or GCJ eh_table info.
@@ -60,7 +60,7 @@ extern alpha_jit_info_t alpha_jit_info;
 typedef struct _methodTrampoline {
 	unsigned code[2];
 	void *fixup;
-	struct _methods *meth;
+	struct _jmethodID *meth;
 	void **where;
 } methodTrampoline;
 

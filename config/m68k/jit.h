@@ -53,7 +53,7 @@ typedef struct _exceptionFrame {
 typedef struct _methodTrampoline {
         unsigned short call;
 	int fixup PACKED;
-	struct _methods* meth PACKED;
+	struct _jmethodID* meth PACKED;
 	void** where PACKED;
 } methodTrampoline;
 

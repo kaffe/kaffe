@@ -74,8 +74,8 @@ typedef struct {
 
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
-struct _methods;
-struct _fields;
+struct _jmethodID;
+struct _jfieldID;
 struct _errorInfo;
 
 /*

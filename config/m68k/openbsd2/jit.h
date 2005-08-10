@@ -79,7 +79,7 @@ typedef struct _exceptionFrame {
 typedef struct _methodTrampoline {
         unsigned short call;
 	int fixup;
-	struct _methods* meth;
+	struct _jmethodID* meth;
 	void** where;
 } methodTrampoline;
 

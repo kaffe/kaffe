@@ -142,8 +142,8 @@
 #define	SOFT_ADDREFERENCE_STATIC(_f, _t)
 #endif
 
-struct _methods;
-bool translate(struct _methods*, errorInfo*);
+struct _jmethodID;
+bool translate(struct _jmethodID*, errorInfo*);
 
 typedef struct _jitCodeHeader {
 	unsigned long flags;
