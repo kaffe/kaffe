@@ -1,3 +1,8 @@
+2005-08-10   Wolfgang Baer <WBaer@gmx.de>
+
+	* kaffe/scripts/jdb.in: Add some explanations to the output of the jdb
+	placeholder script.
+
 2005-08-10  Kurt Miller <truk@optonline.net>
 
 	* kaffe/kaffeh/support.c:

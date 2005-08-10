@@ -1,5 +1,9 @@
 #!/bin/sh
 
-# Placeholder script.
+# Placeholder script to fake a
+# JDK compatible JAVA_HOME directory.
 
-echo "place holder for tomcat"
+echo "This script is only a placeholder.
+echo "Some programs need a JDK rather than only a JRE to work."
+echo "They test for this tool to detect a JDK installation, but"
+echo "don't really need its functionality to work correctly."
