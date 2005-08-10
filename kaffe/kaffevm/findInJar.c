@@ -66,7 +66,7 @@ static int insertClasspath(const char* cp, int prepend);
 
 #if defined(HANDLE_MANIFEST_CLASSPATH)
 static int isEntryInClasspath(const char*);
-static uint8* getManifestMainAttribute(jarFile*, const char*);
+static char* getManifestMainAttribute(jarFile*, const char*);
 static void handleManifestClassPath (classpathEntry *);
 #endif
 
@@ -207,7 +207,7 @@ DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 		case CP_ZIPFILE:
 		{
 			jarEntry* entry;
-			char* data;
+			unsigned char* data;
 
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (ptr->u.jar == 0) {
@@ -253,8 +253,8 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 		case CP_DIR:
 		{
 			struct stat sbuf;
-			char* data;
-			
+			unsigned char* data;
+
 			buf = checkPtr(KMALLOC(strlen(ptr->path)
 			    + strlen(file_separator) + strlen(cname) + 1));
 			sprintf(buf, "%s%s%s",
@@ -622,13 +622,13 @@ isEntryInClasspath(const char *path)
 }
 
 
-static uint8*
+static char*
 getManifestMainAttribute(jarFile* file, const char* attrName)
 {
 	jarEntry* mf;
-	uint8* mfdata;
-	uint8* attrEntry;
-	uint8* ret;
+	char* mfdata;
+	char* attrEntry;
+	char* ret;
 	size_t i;
 	int posAttrValue;
 
@@ -638,7 +638,7 @@ getManifestMainAttribute(jarFile* file, const char* attrName)
 		return (NULL);
 
 	/* Read it */
-	mfdata = getDataJarFile(file, mf);
+	mfdata = (char*)getDataJarFile(file, mf);
 	if (mfdata == 0)
 		return (NULL);
 
