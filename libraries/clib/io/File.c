@@ -207,6 +207,7 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
   };
   struct dentry* dirlist;
   struct dentry* mentry;
+  struct dentry* lastentry;
   HArrayOfObject* array;
   int count;
   int i;
@@ -221,6 +222,7 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
   }
   
   dirlist = NULL;
+  lastentry = NULL;
   count = 0;
   /* XXX make part of jsyscall interface !? */
   while ((entry = readdir(dir)) != NULL) {
@@ -242,8 +244,14 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
       throwError(&info);
     }
     strcpy(mentry->name, entry->d_name);
-    mentry->next = dirlist;
-    dirlist = mentry;
+    mentry->next = NULL;
+    if (count == 0) {
+        dirlist = mentry;
+    }
+    else {
+        lastentry->next = mentry;
+    }
+    lastentry = mentry;
     count++;
   }
   /* XXX make part of jsyscall interface !? */

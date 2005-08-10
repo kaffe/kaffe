@@ -1,3 +1,10 @@
+2005-08-10  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/io/File.c (java_io_VMFile_list):
+	Keep the order of files as returned by readdir so that
+	the result may be similar to that of other VM's.
+	Suggested by Wolfgang Baer <WBaer@gmx.de>.
+
 2005-08-10   Wolfgang Baer <WBaer@gmx.de>
 
 	* kaffe/scripts/jdb.in: Add some explanations to the output of the jdb
