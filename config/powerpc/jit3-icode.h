@@ -293,8 +293,6 @@
 #if 0
 #define	HAVE_move_float_const_rangecheck(v)	__builtin_FP_values(v)
 #define	HAVE_move_double_const_rangecheck(v)	__builtin_FP_values(v)
-#define	HAVE_move_float_const		fmove_RxC
-#define	HAVE_move_double_const		fmovel_RxC
 #endif
 
 #define	HAVE_add_float			fadd_RRR

@@ -1,5 +1,16 @@
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/powerpc/jit3-icode.h:
+	(HAVE_move_float_const, HAVE_move_double_const): Removed.
+
+	* config/powerpc/jit3-powerpc.def (define_insn(move_float_const,
+	fmove_RxC)): Removed empty function to fix unused variable warnings.
+	(define_insn(move_double, fmovel_RxR)): Likewise.
+
+	Based on a patch by:  Andreas Tobler  <toa@pop.agri.ch>
+
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/intrp/machine.c (virtualMachine):
 	Fixed build with JVMPI.
 

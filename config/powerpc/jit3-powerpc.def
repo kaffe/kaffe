@@ -610,40 +610,6 @@ define_insn(move_float, fmove_RxR)
 	debug((DBOUT,"move_float %d, %d\n", w, r));
 }
 
-define_insn(move_float_const, fmove_RxC)
-{
-	float o = const_float(2);
-	int w = wreg_float(0);
-	int r = 0;
-	
-#if 1
-#else
-	if ( o == 0.0 ) {
-	    r = 0x8 | 0;
-	} else if (o == 1.0) {
-	    r = 0x8 | 1;
-	} else if (o == 2.0) {
-	    r = 0x8 | 2;
-	} else if (o == 3.0) {
-	    r = 0x8 | 3;
-	} else if (o == 4.0) {
-	    r = 0x8 | 4;
-	} else if (o == 5.0) {
-	    r = 0x8 | 5;
-	} else if (o == 0.5) {
-	    r = 0x8 | 6;
-	} else if (o == 10.0) {
-	    r = 0x8 | 7;
-	} else {
-	    KAFFEVM_ABORT();
-	}
-
-	op_fmov(w, r);
-
-#endif
-	debug((DBOUT,"move_float_const %d, %f(0x%x)\n", w, o, r));
-}
-
 define_insn(move_double, fmovel_RxR)
 {
 	int r = rreg_double(2);
@@ -652,41 +618,6 @@ define_insn(move_double, fmovel_RxR)
 	LOUT(ppc_op_fmr(w, r));
 
 	debug((DBOUT,"move_double %d, %d\n", w, r));
-}
-
-define_insn(move_double_const, fmovel_RxC)
-{
-	double o = const_double(2);
-	int w = wreg_double(0);
-
-	int r = 0;
-
-#if 1
-#else
-	if ( o == 0.0 ) {
-	    r = 0x8 | 0;
-	} else if (o == 1.0) {
-	    r = 0x8 | 1;
-	} else if (o == 2.0) {
-	    r = 0x8 | 2;
-	} else if (o == 3.0) {
-	    r = 0x8 | 3;
-	} else if (o == 4.0) {
-	    r = 0x8 | 4;
-	} else if (o == 5.0) {
-	    r = 0x8 | 5;
-	} else if (o == 0.5) {
-	    r = 0x8 | 6;
-	} else if (o == 10.0) {
-	    r = 0x8 | 7;
-	} else {
-	    KAFFEVM_ABORT();
-	}
-
-	op_fmovl(w, r);
-
-#endif
-	debug((DBOUT,"move_double_const %d, %f(0x%x)\n", w, o,r ));
 }
 
 
