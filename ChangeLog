@@ -1,3 +1,13 @@
+2005-08-10  Kurt Miller <truk@optonline.net>
+
+	* kaffe/kaffeh/support.c:
+	Add constant suffixes to constant values (L, LL, f).
+	Change CONSTANT_Long to print in decimal instead of hex.
+	Fix CONSTANT_Double on little endian and lp64 arches.
+	Allow private static final constants to be output.
+	Output #undef before any constant #define to fix cases
+	where multiple defines are output with same name 
+
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/powerpc/jit3-icode.h:

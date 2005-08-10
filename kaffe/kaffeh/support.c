@@ -451,28 +451,45 @@ constValueToString(Hjava_lang_Class* this, u2 idx,
 	/* Pull the constant value for this field out of the constant pool */
 	switch (CLASS_CONST_TAG(this, idx)) {
 	case CONSTANT_Integer:
-		sprintf(cval, "%d", (int)CLASS_CONST_DATA(this, idx));
+		sprintf(cval, "%dL", (jint)CLASS_CONST_DATA(this, idx));
 		break;
 	case CONSTANT_Float:
-		sprintf(cval, "%.7e", *(float*)&CLASS_CONST_DATA(this,idx));
+	{
+		sprintf(cval, "%.7Ef", *(jfloat*)&CLASS_CONST_DATA(this,idx));
 		break;
+	}
 	case CONSTANT_Long:
+	{
 #if SIZEOF_VOID_P == 8
-		sprintf(cval, "0x%016lx", CLASS_CONST_DATA(this,idx));
+		sprintf(cval, "%ldLL", (jlong)CLASS_CONST_DATA(this,idx));
 #else
+		union { jint i[2]; jlong l; } u;
 #if defined(WORDS_BIGENDIAN)
-		sprintf(cval, "0x%08x%08x", CLASS_CONST_DATA(this,idx), CLASS_CONST_DATA(this,idx+1));
+		u.i[0] = (jint)CLASS_CONST_DATA(this,idx);
+		u.i[1] = (jint)CLASS_CONST_DATA(this,idx+1);
 #else
-		sprintf(cval, "0x%08x%08x", CLASS_CONST_DATA(this,idx+1), CLASS_CONST_DATA(this,idx));
+		u.i[0] = (jint)CLASS_CONST_DATA(this,idx+1);
+		u.i[1] = (jint)CLASS_CONST_DATA(this,idx);
 #endif
+		sprintf(cval, "%lldLL", u.l);
 #endif
 		break;
+	}
 	case CONSTANT_Double:
 	{
-		union { jint i[2]; jdouble d; } u;
-		u.i[0] = CLASS_CONST_DATA(this,idx);
-		u.i[1] = CLASS_CONST_DATA(this,idx+1);
-		sprintf(cval, "%.16e", u.d);
+		union { jint i[2]; jlong l; jdouble d; } u;
+#if SIZEOF_VOID_P == 8
+		u.l = (jlong)CLASS_CONST_DATA(this,idx);
+#else
+#if defined(WORDS_BIGENDIAN)
+		u.i[0] = (jint)CLASS_CONST_DATA(this,idx);
+		u.i[1] = (jint)CLASS_CONST_DATA(this,idx+1);
+#else
+		u.i[0] = (jint)CLASS_CONST_DATA(this,idx+1);
+		u.i[1] = (jint)CLASS_CONST_DATA(this,idx);
+#endif
+#endif
+		sprintf(cval, "%.16E", u.d);
 		break;
 	}
 	case CONSTANT_String:
@@ -490,19 +507,19 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 {
 	assert(f != NULL);
 
-	if ((f->accflags & (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) == (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) {
+	if ((f->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
 		char cval[512];
 
 		constValueToString(this, idx, cval);
 
 		if (cval[0] != '\0') {
 			if (include != NULL) {
-				fprintf(include, "#define %s_%s %s\n",
-					className, f->name->data, cval);
+				fprintf(include, "#undef %s_%s\n#define %s_%s %s\n",
+					className, f->name->data, className, f->name->data, cval);
 			}
 			if (jni_include != NULL) {
-				fprintf(jni_include, "#define %s_%s %s\n",
-					className, f->name->data, cval);
+				fprintf(jni_include, "#undef %s_%s\n#define %s_%s %s\n",
+					className, f->name->data, className, f->name->data, cval);
 			}
 		}
 	}
