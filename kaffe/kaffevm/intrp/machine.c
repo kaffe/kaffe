@@ -143,7 +143,7 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, MET
 	if (methaccflags & ACC_STATIC)
 	  soft_enter_method(NULL, meth);
 	else
-	  soft_enter_method(argv[0].l, meth);
+	  soft_enter_method(((jvalue*)arg)[0].l, meth);
 #endif
 
 	if (methaccflags & ACC_NATIVE) {
