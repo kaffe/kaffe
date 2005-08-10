@@ -20,6 +20,9 @@
 #define	SP_OFFSET		0
 #define	FP_OFFSET		1
 
+struct _jthread;
+void sparcLinuxContextSwitch(struct _jthread* from, struct _jthread* to);
+
 #define	CONTEXT_SWITCH(F,T)	sparcLinuxContextSwitch(F, T)
 
 /**/
