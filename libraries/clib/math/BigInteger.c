@@ -598,6 +598,8 @@ jint
 Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 void

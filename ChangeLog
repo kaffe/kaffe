@@ -1,3 +1,9 @@
+2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * libraries/clib/math/BigInteger.c
+        (Java_java_math_BigInteger_assignString0): Add return value to fix
+        compiler warnings. 
+
 2005-08-10  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
