@@ -56,6 +56,11 @@ public class _DynFixedStub
   private static final long serialVersionUID = -1932029532964417188L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynFixedOperations.class;
+
+  /**
    * Create the DynFixed stub.
    */
   public _DynFixedStub()

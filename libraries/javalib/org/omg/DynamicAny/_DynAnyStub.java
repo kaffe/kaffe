@@ -59,6 +59,11 @@ public class _DynAnyStub
   private static final long serialVersionUID = -6521892777941121597L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynAnyOperations.class;
+
+  /**
    * Create the DynAny stub.
    */
   public _DynAnyStub()

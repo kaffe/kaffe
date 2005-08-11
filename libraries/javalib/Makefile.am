@@ -4745,6 +4745,8 @@ org_omg_Messaging_SRCS = \
 	org/omg/Messaging/SYNC_WITH_TRANSPORT.java \
 	org/omg/Messaging/SyncScopeHelper.java
 org_omg_PortableInterceptor_SRCS = \
+	org/omg/PortableInterceptor/Interceptor.java \
+	org/omg/PortableInterceptor/InterceptorOperations.java \
 	org/omg/PortableInterceptor/LOCATION_FORWARD.java \
 	org/omg/PortableInterceptor/SUCCESSFUL.java \
 	org/omg/PortableInterceptor/SYSTEM_EXCEPTION.java \

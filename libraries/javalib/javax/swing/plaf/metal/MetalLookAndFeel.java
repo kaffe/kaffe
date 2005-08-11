@@ -44,6 +44,8 @@ import java.awt.Insets;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIDefaults;
+import javax.swing.border.Border;
+import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.IconUIResource;
@@ -864,6 +866,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Tree.selectionBackground", new ColorUIResource(new Color(204, 204, 255)),
       "Tree.nonSelectionBackground", new ColorUIResource(Color.white),
       "Tree.selectionBorderColor", new ColorUIResource(new Color(102, 102, 153)),
+      "Tree.selectionBorder", new BorderUIResource.LineBorderUIResource(new Color(102, 102, 153)),
+      "Tree.nonSelectionBorder", new BorderUIResource.LineBorderUIResource(Color.white),
       "Tree.selectionForeground", new ColorUIResource(Color.black),
       "Tree.textBackground", new ColorUIResource(new Color(204, 204, 255)),
       "Tree.textForeground", new ColorUIResource(Color.black),

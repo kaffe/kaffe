@@ -56,10 +56,12 @@ import javax.swing.BorderFactory;
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.TableUI;
@@ -393,7 +395,7 @@ public class BasicTableUI
         }
       else if (evt.getKeyCode() == KeyEvent.VK_F2)
         {
-          // FIXME: Implement "start editing"
+          table.editCellAt(rowLead,colLead);
         }
       else if (evt.getKeyCode() == KeyEvent.VK_PAGE_UP)
         {
@@ -592,15 +594,15 @@ public class BasicTableUI
         (table.getCellRect(rowModel.getLeadSelectionIndex(), 
                            colModel.getLeadSelectionIndex(), false));
     }
-
+    
     public void keyReleased(KeyEvent e) 
     {
     }
-
+    
     public void keyTyped(KeyEvent e) 
     {
     }
-
+    
     /**
      * Returns the column index of the first visible column.
      *
@@ -718,6 +720,11 @@ public class BasicTableUI
     }
     public void mousePressed(MouseEvent e) 
     {
+      ListSelectionModel rowModel = table.getSelectionModel();
+      ListSelectionModel colModel = table.getColumnModel().getSelectionModel();
+      int rowLead = rowModel.getLeadSelectionIndex();
+      int colLead = colModel.getLeadSelectionIndex();
+
       begin = new Point(e.getX(), e.getY());
       curr = new Point(e.getX(), e.getY());
       //if control is pressed and the cell is already selected, deselect it
@@ -733,7 +740,12 @@ public class BasicTableUI
         }
       else
         updateSelection(e.isControlDown());
-      
+
+      // If we were editing, but the moved to another cell, stop editing
+      if (rowLead != rowModel.getLeadSelectionIndex() ||
+          colLead != colModel.getLeadSelectionIndex())
+        if (table.isEditing())
+          table.editingStopped(new ChangeEvent(e));
     }
     public void mouseReleased(MouseEvent e) 
     {
@@ -896,6 +908,8 @@ public class BasicTableUI
                       ((JComponent) comp).setBorder(cellBorder);
                   }
                 comp.paint(gfx);
+                if (comp instanceof JTextField)
+                  ((JTextField)comp).getCaret().paint(gfx);
                 gfx.translate(-x, -y);
               }
               y += height;
@@ -948,6 +962,5 @@ public class BasicTableUI
           }
         gfx.setColor(save);
       }
-
   }
 }

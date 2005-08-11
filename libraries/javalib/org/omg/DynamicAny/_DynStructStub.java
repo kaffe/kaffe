@@ -57,6 +57,11 @@ public class _DynStructStub
   private static final long serialVersionUID = -8415786200783826656L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynStructOperations.class;
+
+  /**
    * Create the DynStruct stub. To get the stub working,
    * you must later set the delegate with
    * {@link ObjectImpl#_set_delegate(Delegate)}.

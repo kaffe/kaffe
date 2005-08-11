@@ -55,6 +55,11 @@ public class _DynEnumStub
   private static final long serialVersionUID = 696844314172031949L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynEnumOperations.class;
+
+  /**
    * Create the DynEnum stub.
    */
   public _DynEnumStub()

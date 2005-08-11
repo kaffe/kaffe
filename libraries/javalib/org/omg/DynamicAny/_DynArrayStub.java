@@ -57,6 +57,11 @@ public class _DynArrayStub
   private static final long serialVersionUID = -6302474930370950228L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynArrayOperations.class;
+
+  /**
    * Create the DynArray stub.
    */
   public _DynArrayStub()

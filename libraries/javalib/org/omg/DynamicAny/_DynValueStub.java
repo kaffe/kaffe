@@ -57,6 +57,11 @@ public class _DynValueStub
   private static final long serialVersionUID = 5815313794012360824L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynValueOperations.class;
+
+  /**
    * Create the DynValue stub. To get the stub working,
    * you must later set the delegate with
    * {@link ObjectImpl#_set_delegate(Delegate)}.

@@ -57,6 +57,11 @@ public class _DynUnionStub
   private static final long serialVersionUID = -8921031953572009897L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynUnionOperations.class;
+
+  /**
    * Create the DynUnion stub. To get the stub working,
    * you must later set the delegate with
    * {@link ObjectImpl#_set_delegate(Delegate)}.

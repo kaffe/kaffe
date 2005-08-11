@@ -44,6 +44,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import javax.swing.border.Border;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -390,7 +391,7 @@ public class DefaultTreeCellRenderer
       this.selected = selected;
       this.hasFocus = hasFocus;
       setHorizontalAlignment(LEFT);
-      setOpaque(true);
+      setOpaque(false);
       setVerticalAlignment(TOP);
       setEnabled(true);
       super.setFont(UIManager.getLookAndFeelDefaults().getFont("Tree.font"));
@@ -399,13 +400,15 @@ public class DefaultTreeCellRenderer
 		{
 			super.setBackground(getBackgroundSelectionColor());
 			setForeground(getTextSelectionColor());
+      setBorder(UIManager.getLookAndFeelDefaults().getBorder("Tree.selectionBorder"));
 		}
 		else
 		{
 			super.setBackground(getBackgroundNonSelectionColor());
 			setForeground(getTextNonSelectionColor());
-		}		
-      
+      setBorder(UIManager.getLookAndFeelDefaults().getBorder("Tree.nonSelectionBorder"));
+		}
+
 		return this;
 	}
 	

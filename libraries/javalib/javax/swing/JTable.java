@@ -43,9 +43,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -69,6 +74,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.Caret;
 
 public class JTable extends JComponent
   implements TableModelListener, Scrollable, TableColumnModelListener,
@@ -351,6 +357,7 @@ public class JTable extends JComponent
    */
   protected transient Component editorComp;
 
+
   /**
    * Whether or not the table should automatically compute a matching
    * {@link TableColumnModel} and assign it to the {@link #columnModel}
@@ -555,7 +562,27 @@ public class JTable extends JComponent
    */
   protected JTableHeader tableHeader;
 
-  
+  /**
+   * The row of the cell being edited.
+   */
+  int rowBeingEdited = -1;
+
+  /**
+   * The column of the cell being edited.
+   */
+  int columnBeingEdited = -1;
+
+  /**
+   * The action listener for the editor's Timer.
+   */
+  Timer editorTimer = new EditorUpdateTimer();
+
+  /**
+   * Stores the old value of a cell before it was edited, in case
+   * editing is cancelled
+   */
+  Object oldCellValue;
+
   /**
    * Creates a new <code>JTable</code> instance.
    */
@@ -673,6 +700,51 @@ public class JTable extends JComponent
     this(new DefaultTableModel(data, columnNames));
   }
 
+  /**
+   * The timer that updates the editor component.
+   */
+  private class EditorUpdateTimer
+    extends Timer
+    implements ActionListener
+  {
+    /**
+     * Creates a new EditorUpdateTimer object with a default delay of 0.5 seconds.
+     */
+    public EditorUpdateTimer()
+    {
+      super(500, null);
+      addActionListener(this);
+    }
+
+    /**
+     * Lets the caret blink and repaints the table.
+     */
+    public void actionPerformed(ActionEvent ev)
+    {
+      Caret c = ((JTextField)JTable.this.editorComp).getCaret();
+      if (c != null)
+        c.setVisible(!c.isVisible());
+      JTable.this.repaint();
+    }
+
+    /**
+     * Updates the blink delay according to the current caret.
+     */
+    public void update()
+    {
+      stop();
+      Caret c = ((JTextField)JTable.this.editorComp).getCaret();
+      if (c != null)
+	{
+	  setDelay(c.getBlinkRate());
+	  if (((JTextField)JTable.this.editorComp).isEditable())
+	    start();
+	  else
+	    c.setVisible(false);
+	}
+    }
+  }
+
   public void addColumn(TableColumn column)
   {
     if (column.getHeaderValue() == null)
@@ -774,11 +846,40 @@ public class JTable extends JComponent
 
   public void editingCanceled (ChangeEvent event)
   {
+    if (rowBeingEdited > -1 && columnBeingEdited > -1)
+      {
+        if (getValueAt(rowBeingEdited, columnBeingEdited) instanceof JTextField)
+          {
+            remove ((Component)getValueAt(rowBeingEdited, columnBeingEdited));
+            setValueAt(oldCellValue, rowBeingEdited, columnBeingEdited);
+          }
+        rowBeingEdited = -1;
+        columnBeingEdited = -1;
+      }
+    editorTimer.stop();
+    editorComp = null;
+    cellEditor = null;
+    requestFocusInWindow(false);
     repaint();
   }
 
   public void editingStopped (ChangeEvent event)
   {
+    if (rowBeingEdited > -1 && columnBeingEdited > -1)
+      {
+        if (getValueAt(rowBeingEdited, columnBeingEdited) instanceof JTextField)
+          {
+            remove((Component)getValueAt(rowBeingEdited, columnBeingEdited));
+            setValueAt(((JTextField)editorComp).getText(), 
+                       rowBeingEdited, columnBeingEdited);
+          }
+        rowBeingEdited = -1;
+        columnBeingEdited = -1;
+      }
+    editorTimer.stop();
+    editorComp = null;
+    cellEditor = null;
+    requestFocusInWindow(false);
     repaint();
   }
 
@@ -980,7 +1081,7 @@ public class JTable extends JComponent
 
     if (editor == null)
       editor = getDefaultEditor(dataModel.getColumnClass(column));
-
+    
     return editor;
   }
 
@@ -1475,7 +1576,7 @@ public class JTable extends JComponent
    */ 
   public void setRowHeight(int r)
   {
-    if (rowHeight < 1)
+    if (r < 1)
       throw new IllegalArgumentException();
     
     rowHeight = r;
@@ -1490,7 +1591,7 @@ public class JTable extends JComponent
    * @param rh is the new rowHeight
    * @param row is the row to change the rowHeight of
    */
-  public void setRowHeight(int rh, int row)
+  public void setRowHeight(int row, int rh)
   {
      setRowHeight(rh);
      // FIXME: not implemented
@@ -2116,6 +2217,8 @@ public class JTable extends JComponent
 
   public void setValueAt(Object value, int row, int column)
   {
+    if (value instanceof Component)
+      add((Component)value);
     dataModel.setValueAt(value, row, convertColumnIndexToModel(column));
   }
 
@@ -2206,5 +2309,67 @@ public class JTable extends JComponent
         
         
       }
+  }
+
+  /**
+   * Programmatically starts editing the specified cell.
+   *
+   * @param row the row of the cell to edit.
+   * @param column the column of the cell to edit.
+   */
+  public boolean editCellAt (int row, int column)
+  {
+    oldCellValue = getValueAt(row, column);
+    setCellEditor(getCellEditor(row, column));
+    editorComp = prepareEditor(cellEditor, row, column);
+    editorComp.addKeyListener(new KeyAdapter() {
+        public void keyPressed(KeyEvent e) {
+          if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (JTable.this.cellEditor != null)
+              JTable.this.cellEditor.cancelCellEditing();
+          }
+        }
+      });
+    cellEditor.addCellEditorListener(this);
+    rowBeingEdited = row;
+    columnBeingEdited = column;
+    setValueAt(editorComp, row, column);
+    ((JTextField)editorComp).requestFocusInWindow(false);
+    editorTimer.start();
+    return true;
+  }
+
+  /**
+   * Programmatically starts editing the specified cell.
+   *
+   * @param row the row of the cell to edit.
+   * @param column the column of the cell to edit.
+   */
+  public boolean editCellAt (int row, int column, EventObject e)
+  {
+    return editCellAt(row, column);
+  }
+
+  /**
+   * Discards the editor object.
+   */
+  public void removeEditor()
+  {
+    editingStopped(new ChangeEvent(this));
+  }
+
+  /**
+   * Prepares the editor by querying for the value and selection state of the
+   * cell at (row, column).
+   *
+   * @param editor the TableCellEditor to set up
+   * @param row the row of the cell to edit
+   * @param column the column of the cell to edit
+   * @return the Component being edited
+   */
+  public Component prepareEditor (TableCellEditor editor, int row, int column)
+  {
+    return editor.getTableCellEditorComponent
+      (this, getValueAt(row, column), isCellSelected(row, column), row, column);
   }
 }

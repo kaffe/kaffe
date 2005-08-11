@@ -57,6 +57,11 @@ public class _DynSequenceStub
   private static final long serialVersionUID = 7191437435669107554L;
 
   /**
+   * The purpose and value of this field are not documented.
+   */
+  public static final Class _opsClass = DynSequenceOperations.class;
+
+  /**
    * Create the DynSequence stub. To get the stub working,
    * you must later set the delegate with
    * {@link ObjectImpl#_set_delegate(Delegate)}.

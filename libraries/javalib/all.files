@@ -4093,6 +4093,8 @@ org/omg/IOP/TaggedProfileHolder.java
 org/omg/IOP/TransactionService.java
 org/omg/Messaging/SYNC_WITH_TRANSPORT.java
 org/omg/Messaging/SyncScopeHelper.java
+org/omg/PortableInterceptor/Interceptor.java
+org/omg/PortableInterceptor/InterceptorOperations.java
 org/omg/PortableInterceptor/LOCATION_FORWARD.java
 org/omg/PortableInterceptor/ORBInitInfoPackage/DuplicateName.java
 org/omg/PortableInterceptor/ORBInitInfoPackage/DuplicateNameHelper.java

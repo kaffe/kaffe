@@ -761,7 +761,7 @@ public class Container extends Component
     super.paint(g);
     // Visit heavyweights as well, in case they were
     // erased when we cleared the background for this container.
-    visitChildren(g, GfxPaintVisitor.INSTANCE, false);
+    visitChildren(g, GfxPaintVisitor.INSTANCE, true);
   }
 
   /**
@@ -785,8 +785,8 @@ public class Container extends Component
   {
     if (getParent() == null)
       super.update(g);
-    
-    paint(g);
+    else
+      paint(g);
   }
 
   /**

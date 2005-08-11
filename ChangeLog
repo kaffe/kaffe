@@ -1,3 +1,169 @@
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-10  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JTree.java
+	(doExpandParents): Took out call to checkExpandParents.
+	(checkExpandParents): Helper method not needed. Caused problems since
+	fireTreeWillExpand was being called too many times. fireTreeWillExpand is
+	called from BasicTreeUI whenever a node is expanded.
+
+	2005-08-10  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/PortableInterceptor/Interceptor.java,
+        org/omg/PortableInterceptor/InterceptorOperations.java: New files.
+        * org/omg/DynamicAny/_DynAnyFactoryStub.java,
+        org/omg/DynamicAny/_DynAnyStub.java,
+        org/omg/DynamicAny/_DynArrayStub.java,
+        org/omg/DynamicAny/_DynEnumStub.java,
+        org/omg/DynamicAny/_DynFixedStub.java,
+        org/omg/DynamicAny/_DynStructStub.java,
+        org/omg/DynamicAny/_DynUnionStub.java,
+        org/omg/DynamicAny/_DynValueStub.java,
+        org/omg/DynamicAny/_DynSequenceStub.java: Added _opsClass field.
+
+	2005-08-10  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java:
+	Formatted entire class.
+
+	2005-08-10  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/plaf/basic/BasicTreeUI.java
+	(mouseClicked): Called fireTreeWillExpand and fireTreeWillCollapse when
+	appropriate.
+	(keyPressed): Likewise.
+
+	2005-08-10  Roman Kennke  <roman@kennke.org>
+
+	* java/awt/Container.java
+	(paint): Call visitChildren with lightweightOnly == true.
+	(update): Only call paint if we are not in a toplevel container.
+
+	2005-08-09  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JTable.java:
+	(editingCancelled): Implemented.
+	(editCellAt): Added a KeyListener to our editor to listen for
+	the ESCAPE key and cancel editing upon receiving it.
+
+	2005-08-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JTable.java
+	(setRowHeight): Fixed condition on when to throw exception.
+	(setRowHeight): Parameters were mixed up.
+
+	2005-08-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLabelUI.java
+	(paint): Added in painting code for label border.
+	* javax/swing/plaf/basic/BasicTreeUI.java
+	(paintControlIcons): Fixed location for control icons.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java:
+	Added defaults for selection and non-selection border for
+	tree cells.
+	* javax/swing/tree/DefaultTreeCellRenderer.java
+	(getTreeCellRendererComponent): Set borders for node. Also,
+	made node transparent (not opaque), So JLabel draws icon,
+	text and border appropriately.
+
+	2005-08-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLabelUI.java
+	(paint): Added in code to paint background rect according to
+	API. Also, formatting changes.
+	* javax/swing/plaf/basic/BasicTreeUI.java
+	(setCellRenderer): Fixed to changed renderer in JTree.
+	(uninstallDefaults): Line taken out because not needed.
+	(paintNode): Took out unneeded code because BasicLabelUI was fixed.
+	(paintRecursive): Fixed so lines are only drawn when parents have
+	children.	
+
+	2005-08-09  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/DefaultCellEditor.java:
+	(EditorDelegate.setValue): Implemented.
+	(EditorDelegate.getCellEditorValue): Implemented.
+	(EditorDelegate.isCellEditable): Implemented.
+	(EditorDelegate.shouldSelectCell): Implemented.
+	(EditorDelegate.stopCellEditing): Implemented.
+	(EditorDelegate.cancelCellEditing): Implemented.
+	(EditorDelegate.startCellEditing): Implemented.
+	(EditorDelegate.actionPerformed): Implemented.
+	(EditorDelegate.itemStateChanged): Implemented.
+	(EditorDelegate.fireEditingStopped): New implementation method.
+	(EditorDelegate.fireEditingCancelled): New implementation method.
+	(DefaultCellEditor): Implemented 3 constructors.
+	(getComponent): Implemented.
+	(getClickCountToStart): Implemented.
+	(setClickCountToStart): Implemented.
+	(getCellEditorValue): Implemented.
+	(isCellEditable): Implemented.
+	(shouldSelectCell): Implemented.
+	(cancelCellEditing): Implemented.
+	(getTableCellEditorComponent): Implemented.
+	* javax/swing/JTable.java:
+	(EditorUpdateTimer): New private class.
+	(editingStopped): Implemented.
+	(setValueAt): If the Object value is a Component, add it to the JTable
+	so it can obtain focus.
+	(editCellAt): Implemented.
+	(removeEditor): Implemented.
+	(prepareEditor): Implemented.
+	* javax/swing/plaf/basic/BasicTableUI.java:
+	(KeyHandler.keyPressed): Added F2 "start editing" key action.
+	(MouseHandler.mousePressed): Added check to see if a new cell was
+	selected and we need to stop editing.
+	(paint): If the cell is a JTextField, paint its Caret as well.
+	* javax/swing/table/DefaultTableCellRenderer.java:
+	(getTableCellRendererComponent): If a JTextField is passed in, return
+	one.  This is used for editing JTable cells.
+
+	2005-08-09  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/tree/DefaultTreeModel.java: Fix copyright
+	boilerplate formatting.
+
+	2005-08-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/tree/DefaultTreeModel.java:
+	Fixed formatting of class.
+
+	2005-08-09  Lillian Angel  <langel@redhat.com>
+
+	Fixes Bug #23255
+	* javax/swing/plaf/basic/BasicTreeUI.java:
+	Fixed entire class to use Objects as opposed to TreeNodes.
+	(getPathBounds): Changed root to Object
+	(getPathForRow): Likewise.
+	(getRowCount): Likewise.
+	(getPreferredSize): Changed root and nextNode to be of type
+	Object.
+	(isLeaf): Took out unnecessary code. 
+	(keyPressed): Changed all TreeNodes to be of type Object.
+	(getCellLocation): Likewise.
+	(paintNode): Likewise.
+	(paintRecursive): Likewise.
+	(getParent): Implemented.
+	(findNode): Helper Implemented.
+	(getNextVisibleNode): Changed return and parameter type to Object.
+	(getPreviousVisibleNode): Likewise.
+	(getNextNode): Likewise.
+	(getPreviousNode): Likewise.
+	(getNextSibling): Likewise.
+	(getPreviousSibling): Likewise.
+	(getPathToRoot): Likewise.
+	(getLevel): Likewise.
+	* javax/swing/tree/DefaultTreeModel.java
+	(getIndexOfChild): Implemented.
+
+	2005-08-09  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * org/omg/CORBA/package.html: Documentation update.
+        * org/omg/DynamicAny/package.html: New file.
+
 2005-08-10  Andreas Tobler  <a.tobler@schweiz.ch>
 
 	* config/powerpc/ppc_stack_frame.h (FPFRAME): Return an address and
