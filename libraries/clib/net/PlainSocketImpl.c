@@ -621,7 +621,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 {
 	struct sockaddr_in addr;
 	socklen_t alen = sizeof(addr);
-	int r, v;
+	int r = 0, v;
 	socklen_t vsize = sizeof(v);
 	unsigned int k;
 
