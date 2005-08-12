@@ -542,6 +542,14 @@ extern void HAVE_move_register_int (int toreg, int fromreg);
 extern void HAVE_move_register_ref (int toreg, int fromreg);
 #endif /* defined(HAVE_move_register_ref) */
 
+#if defined(HAVE_move_register_float)
+extern void HAVE_move_register_float (int toreg, int fromreg);
+#endif /* defined(HAVE_move_register_float) */
+
+#if defined(HAVE_move_register_double)
+extern void HAVE_move_register_double (int toreg, int fromreg);
+#endif /* defined(HAVE_move_register_double) */
+
 #if defined(HAVE_mul_double)
 extern void HAVE_mul_double (sequence* s);
 #endif /* defined(HAVE_mul_double) */

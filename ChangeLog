@@ -1,5 +1,10 @@
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
+       * kaffe/kaffevm/jit3/funcs.h: Add HAVE_move_register_float and
+       HAVE_move_register_double to fix compiler warnings.
+
+2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
+
         * libraries/clib/math/BigInteger.c
         (Java_java_math_BigInteger_assignString0): Add return value to fix
         compiler warnings. 
