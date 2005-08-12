@@ -1,4 +1,8 @@
-2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+2005-08-10  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* replace/getifaddrs.c: Added missing include for GNU/Linux 2.4.x
+
+2005-08-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 
@@ -29,18 +33,18 @@
 
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
-       * kaffe/kaffevm/jni/jni.c (Kaffe_DefineClass): Cast buf to match the
-       prototype of classFileInit.
+	* kaffe/kaffevm/jni/jni.c (Kaffe_DefineClass): Cast buf to match the
+        prototype of classFileInit.
 
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
-       * libraries/clib/net/PlainSocketImpl.c
-       (gnu_java_net_PlainSocketImpl_socketGetOption): Initialize r.
+        * libraries/clib/net/PlainSocketImpl.c
+        (gnu_java_net_PlainSocketImpl_socketGetOption): Initialize r.
 
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
-       * kaffe/kaffevm/jit3/funcs.h: Add HAVE_move_register_float and
-       HAVE_move_register_double to fix compiler warnings.
+        * kaffe/kaffevm/jit3/funcs.h: Add HAVE_move_register_float and
+        HAVE_move_register_double to fix compiler warnings.
 
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
