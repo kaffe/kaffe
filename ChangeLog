@@ -1,5 +1,10 @@
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
+       * kaffe/kaffevm/jni/jni.c (Kaffe_DefineClass): Cast buf to match the
+       prototype of classFileInit.
+
+2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
+
        * libraries/clib/net/PlainSocketImpl.c
        (gnu_java_net_PlainSocketImpl_socketGetOption): Initialize r.
 

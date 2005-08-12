@@ -99,7 +99,8 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 
 	loader = unveil(loader);
 
-	classFileInit(&hand, NULL, buf, (size_t)len, CP_BYTEARRAY);
+	classFileInit(&hand, NULL, (unsigned char*)buf, (size_t)len,
+		      CP_BYTEARRAY);
 
 	cls = newClass();
 	if (cls == 0) {
