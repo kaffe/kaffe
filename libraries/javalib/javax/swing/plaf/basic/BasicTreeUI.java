@@ -2620,7 +2620,8 @@ public class BasicTreeUI
       }
 
     if (!mod.isLeaf(startNode)
-        && tree.isExpanded(new TreePath(getPathToRoot(startNode, 0))))
+        && tree.isExpanded(new TreePath(getPathToRoot(startNode, 0))) 
+        && mod.getChildCount(startNode) > 0)
       {
         Object child = mod.getChild(startNode, 0);
         if (child != null)
@@ -2711,7 +2712,7 @@ public class BasicTreeUI
         int max = mod.getChildCount(curr);
         if (tree.isExpanded(new TreePath(getPathToRoot(curr, 0))))
           {
-            for (int i = 0; i < max; ++i)
+            for (int i = 0; i < max; i++)
               {
                 int indent = indentation + rightChildIndent;
                 if (!isRootVisible && depth == 0)
@@ -2783,7 +2784,7 @@ public class BasicTreeUI
             if (!node.equals(mod.getRoot()))
               ei.paintIcon(tree, g, indentation - rightChildIndent - 3, h);
 
-            for (int i = 0; i < max; ++i)
+            for (int i = 0; i < max; i++)
               {
                 int indent = indentation + rightChildIndent;
                 if (depth == 0 && !tree.isRootVisible())
@@ -2930,7 +2931,7 @@ public class BasicTreeUI
   Object getNextNode(Object curr)
   {
     TreeModel mod = tree.getModel();
-    if (mod.getChildCount(curr) != 0)
+    if (mod.getChildCount(curr) > 0)
       return mod.getChild(curr, 0);
 
     Object node = curr;
@@ -3013,7 +3014,7 @@ public class BasicTreeUI
 
     int index = mod.getIndexOfChild(parent, node) - 1;
 
-    if (index < 0)
+    if (index < 0 || index >= mod.getChildCount(parent))
       return null;
 
     return mod.getChild(parent, index);

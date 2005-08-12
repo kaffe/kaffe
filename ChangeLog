@@ -1,3 +1,32 @@
+2005-08-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-12  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getCellLocation): Added in a check to make sure the node has children.
+        Fixed loop to use post-increment.
+        (paintRecursive): Fixed loop to use post-increment.
+        (paintControlIcons): Likewise.
+        (getNextNode): Fixed check to make sure that node has children.
+        (getPreviousSibling): Added in check to make sure index is in correct
+        range.
+
+	2005-08-11  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicViewportUI.java
+        (paintSimple): This line was causing problems with the JTable viewport.
+        However, the scrollpane still needs to be fixed. It is still not
+        painting beyond the view's bounds.
+
+	2005-08-10  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (mouseClicked): Called fireTreeWillExpand and fireTreeWillCollapse when
+        appropriate.
+        (keyPressed): Likewise.
+
 2005-08-11  Andreas Tobler  <a.tobler@schweiz.ch>
 
        * kaffe/kaffevm/jni/jni.c (Kaffe_DefineClass): Cast buf to match the
