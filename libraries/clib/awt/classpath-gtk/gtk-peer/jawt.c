@@ -60,7 +60,7 @@ static void (JNICALL _Jv_JAWT_Lock) (JNIEnv*);
 static void (JNICALL _Jv_JAWT_Unlock) (JNIEnv*);
 
 JNIEXPORT jboolean JNICALL
-JAWT_GetAWT (JNIEnv* env, JAWT* awt)
+JAWT_GetAWT (JNIEnv* env UNUSED, JAWT* awt)
 {
   jint retrieved_version;
 
@@ -80,14 +80,14 @@ JAWT_GetAWT (JNIEnv* env, JAWT* awt)
 /* JAWT_DrawingSurface functions */
 
 static jint
-(JNICALL _Jv_Lock) (JAWT_DrawingSurface* surface)
+(JNICALL _Jv_Lock) (JAWT_DrawingSurface* surface UNUSED)
 {
   /* lock the drawing surface */
   return classpath_jawt_lock ();
 }
 
 static void
-(JNICALL _Jv_Unlock) (JAWT_DrawingSurface* surface)
+(JNICALL _Jv_Unlock) (JAWT_DrawingSurface* surface UNUSED)
 {
   classpath_jawt_unlock ();
 }
@@ -168,13 +168,13 @@ static void
 }
 
 static void
-(JNICALL _Jv_JAWT_Lock) (JNIEnv* env)
+(JNICALL _Jv_JAWT_Lock) (JNIEnv* env UNUSED)
 {
   classpath_jawt_lock ();
 }
 
 static void
-(JNICALL _Jv_JAWT_Unlock) (JNIEnv* env)
+(JNICALL _Jv_JAWT_Unlock) (JNIEnv* env UNUSED)
 {
   classpath_jawt_unlock ();
 }

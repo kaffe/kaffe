@@ -258,9 +258,8 @@ tDumpList ( jthread_t cur, jthread_t list )
 
 	dprintf("%4d: %c%c%c %c%c%c   %p [tid: %4ld, java: %p]  "
 		"stack: [%p..%p..%p]\n",
-		i, a1, a2, a3,
-		stat_act[t->active], stat_susp[t->suspendState], stat_block[t->blockState],
-		t, t->tid, t->data.jlThread,
+		i, a1, a2, a3, stat_act[t->active], stat_susp[t->suspendState],
+		stat_block[t->blockState], t, (long)t->tid, t->data.jlThread,
 		t->stackMin, t->stackCur, t->stackMax);
   }
 }
@@ -302,14 +301,14 @@ tDump (void)
  */
 static
 void
-dump_signal_handler ( UNUSED int sig )
+dump_signal_handler (int sig UNUSED)
 {
   tDump();
 }
 
 #ifdef KAFFE_VMDEBUG
 static
-void* tWatchdogRun (void* p)
+void* tWatchdogRun (void* p UNUSED)
 {
   jthread_t t;
   int life;
@@ -546,8 +545,8 @@ tSetupFirstNative(void)
  * alternative to scattered pthread_once() calls
  */
 void
-jthread_init(UNUSED int pre,
-        int maxpr, int UNUSED minpr,
+jthread_init(int pre UNUSED,
+        int maxpr, int minpr UNUSED,
 	Collector *thread_collector,
 	void (*destructor)(void *),
         void (*_onstop)(void) UNUSED,
@@ -579,7 +578,8 @@ jthread_init(UNUSED int pre,
 }
 
 jthread_t
-jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned int pri, void* jlThread)
+jthread_createfirst(size_t mainThreadStackSize, unsigned int pri UNUSED,
+		    void* jlThread)
 {
   jthread_t      nt;
   int            oldCancelType;
@@ -1292,7 +1292,7 @@ void KaffePThread_WaitForResume(int releaseMutex, unsigned int state)
  * SA_ONSTACK / signalstack() in effect
  */
 void
-suspend_signal_handler ( UNUSED int sig )
+suspend_signal_handler (int sig UNUSED)
 {
   volatile jthread_t   cur = jthread_current();
 
@@ -1334,7 +1334,7 @@ void KaffePThread_AckAndWaitForResume(volatile jthread_t cur, unsigned int state
  * call (i.e. to unblock a preceeding sigwait).
  */
 void
-resume_signal_handler ( UNUSED int sig )
+resume_signal_handler ( int sig UNUSED )
 {
   /* we don't do anything, here - all the action is in the suspend handler */
 }
@@ -1362,7 +1362,8 @@ jthread_suspendall (void)
   protectThreadList(cur);
 
   DBG( JTHREAD, dprintf("enter crit section[%d] from: %p [tid:%4ld, java:%p)\n",
-			critSection, cur, cur->tid, cur->data.jlThread));
+			critSection, cur, (unsigned long)cur->tid,
+			cur->data.jlThread));
 
   if ( ++critSection == 1 ){
 
@@ -1683,7 +1684,7 @@ DBG(JTHREADDETAIL, dprintf(" no\n"); );
  *
  * @param dummy unused pointer
  */
-void jthread_spinon(UNUSED void *dummy)
+void jthread_spinon(void *dummy UNUSED)
 {
   pthread_mutex_lock(&systemMutex);
 }
@@ -1694,7 +1695,7 @@ void jthread_spinon(UNUSED void *dummy)
  *
  * @param dummy unused pointer
  */
-void jthread_spinoff(UNUSED void *dummy)
+void jthread_spinoff(void *dummy UNUSED)
 {
   pthread_mutex_unlock(&systemMutex);
 }
@@ -1777,7 +1778,7 @@ void jthread_enable_stop(void)
  * 
  * @param tid the thread to stop.
  */
-void jthread_stop(UNUSED jthread_t tid)
+void jthread_stop(jthread_t tid UNUSED)
 {
 }
 
@@ -1786,7 +1787,7 @@ void jthread_stop(UNUSED jthread_t tid)
  *
  * @param tid the thread whose info is to be dumped.
  */
-void jthread_dumpthreadinfo(UNUSED jthread_t tid)
+void jthread_dumpthreadinfo(jthread_t tid UNUSED)
 {
 }
 
@@ -1855,26 +1856,26 @@ int jthread_get_status(jthread_t jt)
   return jt->status;
 }
 
-int jthread_has_run(jthread_t jt)
+int jthread_has_run(jthread_t jt UNUSED)
 {
   return 1;
 }
 
-void jthread_clear_run(UNUSED jthread_t jt)
+void jthread_clear_run(jthread_t jt UNUSED)
 {
 }
 
-void jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender)
-{
-	/* TODO */
-}
-
-void jthread_resume(UNUSED jthread_t jt, UNUSED void *suspender)
+void jthread_suspend(jthread_t jt UNUSED, void *suspender UNUSED)
 {
 	/* TODO */
 }
 
-jthread_t jthread_from_data(threadData *td, UNUSED void *suspender)
+void jthread_resume(jthread_t jt UNUSED, void *suspender UNUSED)
+{
+	/* TODO */
+}
+
+jthread_t jthread_from_data(threadData *td, void *suspender UNUSED)
 {
   jthread_t cur = jthread_current();
   jthread_t iterator;
@@ -1898,9 +1899,8 @@ jthread_t jthread_from_data(threadData *td, UNUSED void *suspender)
   return NULL;
 }
 
-jlong jthread_get_usage(UNUSED jthread_t jt)
+jlong jthread_get_usage(jthread_t jt UNUSED)
 {
 	/* TODO */
 	return 0;
 }
-

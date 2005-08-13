@@ -228,7 +228,7 @@ KaffeJNI_PopLocalFrame(JNIEnv* env UNUSED, jobject obj)
 } 
 
 jobject
-KaffeJNI_NewLocalRef(JNIEnv* env, jobject ref)
+KaffeJNI_NewLocalRef(JNIEnv *env UNUSED, jobject ref)
 {
   BEGIN_EXCEPTION_HANDLING(NULL);
 
@@ -242,7 +242,7 @@ KaffeJNI_NewLocalRef(JNIEnv* env, jobject ref)
   return ref;
 }
 
-jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env, jobject obj)
+jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env UNUSED, jobject obj)
 {
   jweak ref;
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -272,7 +272,7 @@ jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env, jobject obj)
   return ref;
 }
 
-void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env, jweak ref)
+void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env UNUSED, jweak ref)
 {
   jobject obj;
 

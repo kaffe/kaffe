@@ -590,7 +590,7 @@ dumpLocks(void)
 {
 }
 
-void KaffeLock_destroyLock(Collector *gcif, void *l)
+void KaffeLock_destroyLock(Collector *gcif UNUSED, void *l)
 {
   iLock *lock = (iLock *)l;
 

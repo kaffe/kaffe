@@ -224,7 +224,8 @@ Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 }
 
 void
-Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass UNUSED cls, jobject r1, jobject r2, jobject s1, jobject s2)
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls UNUSED, jobject r1,
+				  jobject r2, jobject s1, jobject s2)
 {
 	mpz_ptr res1;
 	mpz_ptr res2;
@@ -474,7 +475,8 @@ Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
 
 
 jint
-Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass UNUSED cls, jobject s1, jobject s2)
+Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls UNUSED, jobject s1,
+			       jobject s2)
 {
 	mpz_srcptr src1;
 	mpz_srcptr src2;
@@ -565,37 +567,41 @@ gmp_not_found(JNIEnv* env)
 
 /* We should put some dummies in here */
 void
-Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
+Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_init0(JNIEnv* env, jobject r)
+Java_java_math_BigInteger_init0(JNIEnv* env, jobject r UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r)
+Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
+Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r UNUSED,
+				      jlong v UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteArray magnitude)
+Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r UNUSED,
+				       jint sign UNUSED,
+				       jbyteArray magnitude UNUSED)
 {
 	gmp_not_found(env);
 }
 
 jint
-Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
+Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r UNUSED,
+					jstring val UNUSED, jint radix UNUSED)
 {
 	gmp_not_found(env);
 
@@ -603,121 +609,140 @@ Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jin
 }
 
 void
-Java_java_math_BigInteger_add0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_add0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_sub0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_sub0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_mul0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_mul0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_div0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_div0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls, jobject r1, jobject r2, jobject s1, jobject s2)
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls UNUSED,
+				  jobject r1 UNUSED, jobject r2 UNUSED,
+				  jobject s1 UNUSED, jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_abs0(JNIEnv* env, jobject r, jobject s)
+Java_java_math_BigInteger_abs0(JNIEnv* env, jobject r UNUSED, jobject s UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_neg0(JNIEnv* env, jobject r, jobject s)
+Java_java_math_BigInteger_neg0(JNIEnv* env, jobject r UNUSED, jobject s UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_pow0(JNIEnv* env, jobject r, jobject s, jint power)
+Java_java_math_BigInteger_pow0(JNIEnv* env, jobject r UNUSED, jobject s UNUSED,
+			       jint power UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_gcd0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_gcd0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_mod0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_mod0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2, jobject s3)
+Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r UNUSED,
+				  jobject s1 UNUSED, jobject s2 UNUSED,
+				  jobject s3 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_modinv0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_modinv0(JNIEnv* env, jobject r UNUSED,
+				  jobject s1 UNUSED, jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_and0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_and0(JNIEnv* env, jobject r UNUSED,
+			       jobject s1 UNUSED, jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_or0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_or0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			      jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_xor0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+Java_java_math_BigInteger_xor0(JNIEnv* env, jobject r UNUSED, jobject s1 UNUSED,
+			       jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_not0(JNIEnv* env, jobject r, jobject s)
+Java_java_math_BigInteger_not0(JNIEnv* env, jobject r UNUSED,  jobject s UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_setbit0(JNIEnv* env, jobject r, jobject s, jint n)
+Java_java_math_BigInteger_setbit0(JNIEnv* env, jobject r UNUSED,
+				  jobject s UNUSED,
+				  jint n UNUSED)
 {
 	gmp_not_found(env);
 }
 
 void
-Java_java_math_BigInteger_clrbit0(JNIEnv* env, jobject r, jobject s, jint n)
+Java_java_math_BigInteger_clrbit0(JNIEnv* env, jobject r UNUSED,
+				  jobject s UNUSED, jint n UNUSED)
 {
 	gmp_not_found(env);
 }
 
 jint
-Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
+Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s UNUSED)
 {
 	gmp_not_found(env);
 
@@ -725,7 +750,8 @@ Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
 }
 
 jint
-Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
+Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls UNUSED,
+			       jobject s1 UNUSED, jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 
@@ -733,7 +759,8 @@ Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
 }
 
 jstring
-Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
+Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s UNUSED,
+				    jint base UNUSED)
 {
 	gmp_not_found(env);
 
@@ -741,7 +768,7 @@ Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
 }
 
 jdouble
-Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s)
+Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s UNUSED)
 {
 	gmp_not_found(env);
 
@@ -749,7 +776,7 @@ Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s)
 }
 
 jint
-Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
+Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s UNUSED)
 {
 	gmp_not_found(env);
 
@@ -757,7 +784,8 @@ Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
 }
 
 jint
-Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s, jint prop)
+Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s UNUSED,
+					 jint prop UNUSED)
 {
 	gmp_not_found(env);
 
@@ -765,7 +793,7 @@ Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s, jint prop)
 }
 
 jint
-Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s)
+Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s UNUSED)
 {
 	gmp_not_found(env);
 
@@ -773,7 +801,8 @@ Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s)
 }
 
 jint
-Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
+Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1 UNUSED,
+				   jobject s2 UNUSED)
 {
 	gmp_not_found(env);
 

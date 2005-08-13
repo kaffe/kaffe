@@ -74,7 +74,7 @@ KaffeJNI_FatalError(JNIEnv* env UNUSED, const char* mess)
 }
 
 static jint
-Kaffe_GetVersion(JNIEnv* UNUSED env)
+Kaffe_GetVersion(JNIEnv* env UNUSED)
 {
        return Kaffe_JavaVMArgs.version;
 }
@@ -89,7 +89,8 @@ postError(JNIEnv* env, errorInfo* info)
 }
 
 static jclass
-Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* buf, jsize len)
+Kaffe_DefineClass(JNIEnv* env, const char *name UNUSED, jobject loader,
+		  const jbyte* buf, jsize len)
 {
 	Hjava_lang_Class* cls;
 	classFile hand;
@@ -117,7 +118,7 @@ Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* bu
 }
 
 static jclass
-Kaffe_FindClass(JNIEnv UNUSED *env, const char* name)
+Kaffe_FindClass(JNIEnv *env UNUSED, const char* name)
 {
 	stackTraceInfo          *trace;
 	Utf8Const* utf8;

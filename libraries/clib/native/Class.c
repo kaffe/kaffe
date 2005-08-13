@@ -290,7 +290,8 @@ java_lang_VMClass_isInstance(struct Hjava_lang_Class* this, struct Hjava_lang_Ob
 }
 
 jint
-java_lang_VMClass_getModifiers(struct Hjava_lang_Class* this, jboolean ignoreInnerClassAttribute)
+java_lang_VMClass_getModifiers(struct Hjava_lang_Class* this,
+			       jboolean ignoreInnerClassAttribute UNUSED)
 {
 #ifndef ACC_SUPER
 #define ACC_SUPER ACC_SYNCHRONISED

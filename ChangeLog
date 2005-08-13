@@ -1,3 +1,47 @@
+2005-08-12  Andreas Tobler  <a.tobler@schweiz.ch>
+
+       * libraries/clib/math/BigInteger.c: Mark unused variables UNUSED.
+
+       * libraries/clib/native/Class.c (java_lang_VMClass_getModifiers): Mark
+       ignoreInnerClassAttribute UNUSED.
+
+       * libraries/clib/awt/classpath-gtk/gtk-peer/jawt.c (JAWT_GetAWT): Mark
+       env UNUSED.
+       (JNICALL _Jv_Lock): Mark surface UNUSED.
+       (JNICALL _Jv_Unlock): Likewise.
+       (JNICALL _Jv_JAWT_Lock): Mark env UNUSED.
+       (JNICALL _Jv_JAWT_Unlock): Likewise.
+
+       * kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (tDumpList): Cast
+       t->tid to avoid compiler warning.
+       (dump_signal_handler): Reordered attribute.
+       (tWatchdogRun): Mark p UNUSED.
+       (jthread_init): Reordered attribute.
+       (jthread_createfirst): Likewise.
+       (suspend_signal_handler): Likewise.
+       (resume_signal_handler): Likewise.
+       (jthread_suspendall): Cast type to avoid warning.
+       (jthread_spinon): Reordered attribute.
+       (jthread_spinoff): Likewise.
+       (jthread_stop): Likewise.
+       (jthread_dumpthreadinfo): Likewise.
+       (jthread_has_run): Mark jt UNUSED.
+       (jthread_clear_run): Reordered attribute.
+       (jthread_suspend): Likewise.
+       (jthread_resume): Likewise.
+       (jthread_from_data): Likewise.
+       (jthread_get_usage): Likewise.
+
+       * kaffe/kaffevm/jni/jni.c (Kaffe_GetVersion): Reordered attribute.
+       (Kaffe_DefineClass): Mark *name UNUSED.
+       (Kaffe_FindClass): Reordered attribute.
+
+       * kaffe/kaffevm/jni/jni-refs.c (KaffeJNI_NewLocalRef): Mark *env UNUSED.
+       (KaffeJNI_NewWeakGlobalRef): Likewise.
+       (KaffeJNI_DeleteWeakGlobalRef): Likewise.
+
+       * kaffe/kaffevm/locks.c (KaffeLock_destroyLock): Mark *gcif UNUSED.
+
 2005-08-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Add -W and -Wextra to warning options.
