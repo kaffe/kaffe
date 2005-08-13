@@ -87,31 +87,29 @@ AX_CFLAGS_WARN_ALL
 # the following are covered by -Wall, but we list them separately, so
 # that it's easier to control.
 
-
-
-dnl AX_CFLAGS_GCC_OPTION([-Wno-import])
+# AX_CFLAGS_GCC_OPTION([-Wno-import])
 # AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
 # AX_CFLAGS_GCC_OPTION([-Wcomment])
 
-dnl AX_CFLAGS_GCC_OPTION([-Wformat])
-dnl AX_CFLAGS_GCC_OPTION([-Wformat-y2k])
-dnl AX_CFLAGS_GCC_OPTION([-Wno-format-extra-args])
-dnl AX_CFLAGS_GCC_OPTION([-Wno-format-zero-length])
-dnl AX_CFLAGS_GCC_OPTION([-Wformat-nonliteral])
-dnl AX_CFLAGS_GCC_OPTION([-Wformat-security])
+# AX_CFLAGS_GCC_OPTION([-Wformat])
+# AX_CFLAGS_GCC_OPTION([-Wformat-y2k])
+# AX_CFLAGS_GCC_OPTION([-Wno-format-extra-args])
+# AX_CFLAGS_GCC_OPTION([-Wno-format-zero-length])
+# AX_CFLAGS_GCC_OPTION([-Wformat-nonliteral])
+# AX_CFLAGS_GCC_OPTION([-Wformat-security])
 # -Wformat=2 includes -Wformat, -Wformat-nonliteral -Wformat-security, -Wformat-y2k
 # AX_CFLAGS_GCC_OPTION([-Wformat=2])
 
 # -Wnonnull is included in -Wformat
-dnl AX_CFLAGS_GCC_OPTION([-Wnonnull])
+# AX_CFLAGS_GCC_OPTION([-Wnonnull])
 
 # -Winit-self requires(-Wunitialized)
-dnl AX_CFLAGS_GCC_OPTION([-Winit-self])
+# AX_CFLAGS_GCC_OPTION([-Winit-self])
 
 # AX_CFLAGS_GCC_OPTION([-Wimplicit-function-declaration])
 # AX_CFLAGS_GCC_OPTION([-Wimplicit-int])
 # -Wimplicit includes -Wimplicit-int, -Wimplicit-function-declaration
-dnl AX_CFLAGS_GCC_OPTION([-Wimplicit])
+# AX_CFLAGS_GCC_OPTION([-Wimplicit])
 # AX_CFLAGS_GCC_OPTION([-Wmain])
 # AX_CFLAGS_GCC_OPTION([-Wmissing-braces])
 # AX_CFLAGS_GCC_OPTION([-Wparentheses])
@@ -127,7 +125,7 @@ dnl AX_CFLAGS_GCC_OPTION([-Wimplicit])
 # AX_CFLAGS_GCC_OPTION([-Wunused-variable])
 # AX_CFLAGS_GCC_OPTION([-Wunused-value])
 # -Wunused includes -Wunused-function, -Wunused-label, -Wunused-parameter, -Wunused-variable, -Wunused-value
-dnl AX_CFLAGS_GCC_OPTION([-Wunused])
+# AX_CFLAGS_GCC_OPTION([-Wunused])
 ## disable -Wuninitialized as it clashes with -O0
 ## leading to trouble for libtool, which
 ## misinterprets the compiler warnings for
@@ -137,16 +135,18 @@ dnl AX_CFLAGS_GCC_OPTION([-Wunused])
 # requires -fstrict-aliasing
 # AX_CFLAGS_GCC_OPTION([-Wstrict-aliasing])
 # includes all of the above
-dnl AX_CFLAGS_GCC_OPTION([-Wall])
+# AX_CFLAGS_GCC_OPTION([-Wall])
 
 # turn on all other gcc warnings for more fixing fun
 
-dnl AX_CFLAGS_GCC_OPTION([-pedantic])
-dnl AX_CFLAGS_GCC_OPTION([-ansi])
-# AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
+# AX_CFLAGS_GCC_OPTION([-pedantic])
+# AX_CFLAGS_GCC_OPTION([-ansi])
+
+AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
+AX_CFLAGS_GCC_OPTION([-Wextra])
 
 # AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
-dnl AX_CFLAGS_GCC_OPTION([-Wtraditional])
+# AX_CFLAGS_GCC_OPTION([-Wtraditional])
 # AX_CFLAGS_GCC_OPTION([-Wdeclaration-after-statement])
 # AX_CFLAGS_GCC_OPTION([-Wundef])
 # AX_CFLAGS_GCC_OPTION([-Wendif-labels])
@@ -165,13 +165,13 @@ dnl AX_CFLAGS_GCC_OPTION([-Wtraditional])
 # AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
 # AX_CFLAGS_GCC_OPTION([-Wmissing-noreturn])
 # AX_CFLAGS_GCC_OPTION([-Wmissing-format-attribute]) 
-dnl AX_CFLAGS_GCC_OPTION([-Wno-multichar])
-dnl AX_CFLAGS_GCC_OPTION([-Wno-deprecated-declarations])
+# AX_CFLAGS_GCC_OPTION([-Wno-multichar])
+# AX_CFLAGS_GCC_OPTION([-Wno-deprecated-declarations])
 # AX_CFLAGS_GCC_OPTION([-Wpacked])
-dnl AX_CFLAGS_GCC_OPTION([-Wpadded])
+# AX_CFLAGS_GCC_OPTION([-Wpadded])
 # AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
 # AX_CFLAGS_GCC_OPTION([-Wnested-externs])
-dnl AX_CFLAGS_GCC_OPTION([-Wunreachable-code])
+# AX_CFLAGS_GCC_OPTION([-Wunreachable-code])
 # AX_CFLAGS_GCC_OPTION([-Winvalid-pch])
 # AX_CFLAGS_GCC_OPTION([-Winline])
 # AX_CFLAGS_GCC_OPTION([-Wlong-long])
