@@ -4787,6 +4787,10 @@ org_omg_Messaging_SRCS = \
 	org/omg/Messaging/SYNC_WITH_TRANSPORT.java \
 	org/omg/Messaging/SyncScopeHelper.java
 org_omg_PortableInterceptor_SRCS = \
+	org/omg/PortableInterceptor/IORInfo.java \
+	org/omg/PortableInterceptor/IORInfoOperations.java \
+	org/omg/PortableInterceptor/IORInterceptor.java \
+	org/omg/PortableInterceptor/IORInterceptorOperations.java \
 	org/omg/PortableInterceptor/Interceptor.java \
 	org/omg/PortableInterceptor/InterceptorOperations.java \
 	org/omg/PortableInterceptor/LOCATION_FORWARD.java \

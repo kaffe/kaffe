@@ -418,6 +418,9 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void setBounds (int x, int y, int width, int height)
   {
+    int new_x = x;
+    int new_y = y;
+
     Component parent = awtComponent.getParent ();
 
     // Heavyweight components that are children of one or more
@@ -438,8 +441,8 @@ public class GtkComponentPeer extends GtkGenericPeer
 
 	i = ((Container) parent).getInsets ();
 
-	x += parent.getX () + i.left;
-	y += parent.getY () + i.top;
+	new_x += parent.getX () + i.left;
+	new_y += parent.getY () + i.top;
 
 	parent = parent.getParent ();
       }
@@ -448,18 +451,22 @@ public class GtkComponentPeer extends GtkGenericPeer
     // placing a heavyweight component in a Window.
     if (parent instanceof Window && !lightweightChild)
       {
-	Insets insets = ((Window) parent).getInsets ();
         GtkWindowPeer peer = (GtkWindowPeer) parent.getPeer ();
+        // important: we want the window peer's insets here, not the
+        // window's, since user sub-classes of Window can override
+        // getInset and we only want to correct for the frame borders,
+        // not for any user-defined inset values
+        Insets insets = peer.getInsets ();
+
         int menuBarHeight = 0;
         if (peer instanceof GtkFramePeer)
           menuBarHeight = ((GtkFramePeer) peer).getMenuBarHeight ();
 
-        // Convert from Java coordinates to GTK coordinates.
-        setNativeBounds (x - insets.left, y - insets.top + menuBarHeight,
-                         width, height);
+        new_x = x - insets.left;
+        new_y = y - insets.top + menuBarHeight;
       }
-    else
-      setNativeBounds (x, y, width, height);
+
+    setNativeBounds (new_x, new_y, width, height);
   }
 
   void setCursor ()
@@ -670,5 +677,10 @@ public class GtkComponentPeer extends GtkGenericPeer
   public void destroyBuffers ()
   {
     backBuffer.flush();
+  }
+  
+  public String toString ()
+  {
+    return "peer of " + awtComponent.toString();
   }
 }

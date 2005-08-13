@@ -228,19 +228,8 @@ public class GapContent
       throw new BadLocationException("the where argument cannot be greater"
           + " than the content length", where);
 
-    // check if the gap is big enough to hold the string
-    if ((gapEnd - gapStart) < strLen)
-      // make room for this string and some more
-      shiftEnd(strLen + DEFAULT_BUFSIZE);
+    replace(where, 0, str.toCharArray(), str.length());
 
-    // are we at the gap boundary?
-    if (where != gapStart)
-      shiftGap(where);
-
-    // now we can simple copy the string into the gap and adjust the
-    // gap boundaries
-    System.arraycopy(str.toCharArray(), 0, buffer, gapStart, strLen);
-    gapStart += strLen;
     return null;
   }
 
@@ -268,12 +257,8 @@ public class GapContent
       throw new BadLocationException("where + nitems cannot be greater"
           + " than the content length", where + nitems);
 
-    // check if we are at the gap boundary
-    if (where != gapStart)
-      shiftGap(where);
+    replace(where, nitems, null, 0);
 
-    // now we simply have to enlarge the gap
-    gapEnd += nitems;
     return null;
   }
 
@@ -419,40 +404,40 @@ public class GapContent
 
     // Update the positions between newGapEnd and (old) gapEnd. The marks
     // must be shifted by (gapEnd - newGapEnd).
-    int index1 = Collections.binarySearch(positions, new GapContentPosition(
-        gapEnd));
-    int index2 = Collections.binarySearch(positions, new GapContentPosition(
-        newGapEnd));
+    int index1 = Collections.binarySearch(positions,
+                                          new GapContentPosition(gapEnd));
+    int index2 = Collections.binarySearch(positions,
+                                          new GapContentPosition(newGapEnd));
     if (index1 > 0 && index2 > 0)
-    {
-      int i1 = Math.min(index1, index2);
-      int i2 = Math.max(index1, index2);
-      for (ListIterator i = positions.listIterator(i1); i.hasNext();)
       {
-        if (i.nextIndex() > i2)
-          break;
-
-        GapContentPosition p = (GapContentPosition) i.next();
-        p.mark += gapEnd - newGapEnd;
+        int i1 = Math.min(index1, index2);
+        int i2 = Math.max(index1, index2);
+        for (ListIterator i = positions.listIterator(i1); i.hasNext();)
+          {
+            if (i.nextIndex() > i2)
+              break;
+            
+            GapContentPosition p = (GapContentPosition) i.next();
+            p.mark += gapEnd - newGapEnd;
+          }
       }
 
-      if (newGapStart == gapStart)
-        return;
-      else if (newGapStart < gapStart)
+    if (newGapStart == gapStart)
+      return;
+    else if (newGapStart < gapStart)
       {
         System.arraycopy(buffer, newGapStart, buffer, newGapEnd, gapStart
-            - newGapStart);
+                         - newGapStart);
         gapStart = newGapStart;
         gapEnd = newGapEnd;
       }
-      else
+    else
       {
         System.arraycopy(buffer, gapEnd, buffer, gapStart, newGapStart
-            - gapStart);
+                         - gapStart);
         gapStart = newGapStart;
         gapEnd = newGapEnd;
       }
-    }
   }
 
   /**
@@ -473,7 +458,8 @@ public class GapContent
    * @param addItems the items to add at location
    * @param addSize the number of items to add
    */
-  protected void replace(int position, int rmSize, Object addItems, int addSize)
+  protected void replace(int position, int rmSize, Object addItems,
+                         int addSize)
   {
     // Remove content
     shiftGap(position);
@@ -484,7 +470,10 @@ public class GapContent
       shiftEnd(addSize);
 
     // Add new items to the buffer.
-    System.arraycopy(addItems, 0, buffer, gapStart, addSize);
-    gapStart += addSize;
+    if (addItems != null)
+      {
+        System.arraycopy(addItems, 0, buffer, gapStart, addSize);
+        gapStart += addSize;
+      }
   }
 }

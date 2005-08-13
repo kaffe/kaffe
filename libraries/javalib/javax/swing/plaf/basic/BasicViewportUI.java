@@ -161,17 +161,17 @@ public class BasicViewportUI extends ViewportUI
                            Rectangle portBounds)
   {
     Rectangle oldClip = g.getClipBounds();
-    g.setClip(oldClip.intersection(viewBounds));
+    g.setClip(new Rectangle(0, 0, portBounds.width, portBounds.height));
     g.translate (-pos.x, -pos.y);
     try
-      {   
+      {
         view.paint(g);
       } 
     finally 
       {
         g.translate (pos.x, pos.y);
         g.setClip (oldClip);
-      }        
+      }
   }
 
   private void paintBackingStore(Graphics g, 

@@ -86,6 +86,56 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_create
   gdk_threads_leave ();
 }
 
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkWidgetGetPreferredDimensions
+  (JNIEnv *env, jobject obj, jintArray jdims)
+{
+  void *ptr;
+  jint *dims;
+  GtkWidget *button;
+  GtkWidget *label;
+  GtkRequisition current_req;
+  GtkRequisition current_label_req;
+  GtkRequisition natural_req;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  button = gtk_bin_get_child (GTK_BIN (ptr));
+  label = gtk_bin_get_child (GTK_BIN (button));
+
+  dims = (*env)->GetIntArrayElements (env, jdims, 0);
+  dims[0] = dims[1] = 0;
+
+  /* Save the button's current size request. */
+  gtk_widget_size_request (GTK_WIDGET (button), &current_req);
+
+  /* Save the label's current size request. */
+  gtk_widget_size_request (GTK_WIDGET (label), &current_label_req);
+
+  /* Get the widget's "natural" size request. */
+  gtk_widget_set_size_request (GTK_WIDGET (button), -1, -1);
+  gtk_widget_set_size_request (GTK_WIDGET (label), -1, -1);
+
+  gtk_widget_size_request (GTK_WIDGET (button), &natural_req);
+
+  /* Reset the button's size request. */
+  gtk_widget_set_size_request (GTK_WIDGET (button),
+                               current_req.width, current_req.height);
+
+  /* Reset the label's size request. */
+  gtk_widget_set_size_request (GTK_WIDGET (label),
+                               current_label_req.width, current_label_req.height);
+
+  dims[0] = natural_req.width;
+  dims[1] = natural_req.height;
+
+  (*env)->ReleaseIntArrayElements (env, jdims, dims, 0);
+
+  gdk_threads_leave ();
+}
+
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkButtonPeer_connectSignals
   (JNIEnv *env, jobject obj)

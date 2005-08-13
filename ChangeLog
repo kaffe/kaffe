@@ -1,5 +1,153 @@
 2005-08-13  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-12  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkMenuBarPeer.java (addMenu(Menu)): New
+        method.
+        * gnu/java/awt/peer/gtk/GtkMenuPeer.java (addSeparator): Likewise.
+        * java/awt/peer/MenuBarPeer.java (addMenu): New method
+        declaration.
+        * java/awt/peer/MenuPeer.java (addSeparator): New method
+        declaration.
+
+	2005-08-12  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java (setBounds): Get
+        frame insets directly from peer rather than from Window.getInsets.
+        (toString): New method.
+
+	2005-08-12  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (gtkWidgetGetPreferredDimensions): New method.
+        * gnu/java/awt/peer/gtk/GtkLabelPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c
+        (gtkWidgetGetPreferredDimensions): New method.
+        * include/gnu_java_awt_peer_gtk_GtkLabelPeer.h: Regenerate.
+        * include/gnu_java_awt_peer_gtk_GtkButtonPeer.h: Likewise.
+
+	2005-08-12  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JTable.java:
+        (setValueAt): Do nothing if isCellEditable returns false.
+        (editCelLAt): Removed the Key Listener for the JTextField.  Listening
+        for ESCAPE should be handled by the JTable itself.  Note, this is not
+        implemented yet.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        (initComponentDefaults): Added several keybindings to JTable's
+        ancestorInputMap.  These are all implemented.
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (KeyHandler): Removed this class.  Note that most of the code from the
+        keyPressed method now resides in the actionPerformed method of the
+        BasicTableUI.TableAction class.
+        (convertModifiers): New private method to convert from new InputEvent
+        modifier masks to the old style.
+        (installKeyboardActions): Implemented.  Gets the key bindings from
+        the UIManager and registers them for the JTable.
+        (TableAction): New class.  This is where the actions corresponding to
+        key presses resides.
+        (installListeners): Removed installation of KeyListener.
+
+	2005-08-12  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getCellLocation): Added in a check to make sure the node has children.
+        Fixed loop to use post-increment.
+        (paintRecursive): Fixed loop to use post-increment.
+        (paintControlIcons): Likewise.
+        (getNextNode): Fixed check to make sure that node has children.
+        (getPreviousSibling): Added in check to make sure index is in correct
+        range.
+
+	2005-08-12  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/GapContent.java
+        (insertString): Use replace() to actually insert content.
+        (remove): Use replace() to actually remove content.
+        (shiftGap): Repaired misplaced curly brace in if block of
+        boudary check.
+        (replace): Check for null argument for addItems.
+
+	2005-08-12  Roman Kennke  <roman@kennke.org>
+
+        Reported by: Ingo Proetel  <proetel@aicas.com>
+        * java/net/URLClassLoader.java
+        (findClass): Added null check to avoid NullPointerException.
+
+	2005-08-12  Roman Kennke  <roman@kennke.org>
+
+        Reported by: Ingo Proetel  <proetel@aicas.com>
+        * java/util/logging/Logger.java
+        This applies to a couple of log() methods:
+        (log): Added check if the specified level is actually enabled,
+        otherwise ignore logging request.
+
+	2005-08-12  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicSplitPaneUI.java
+        * (getMinimumDividerLocation): Fixed to work similar to
+        getMaximumDividerLocation. Was not able to move divider
+        in both directions before.
+
+	2005-08-12  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Component.java
+        (reshape): Simplified repainting of parent.
+        (paint): Don't call peer.paint() here. The paint method is
+        exclusivly meant to be overridden by subclasses that wish to
+        perform custom painting and should do nothing by default.
+        (repaint): Use local variable in null pointer checks to avoid
+        NullPointerExceptions.
+        (imageUpdate): Slight formatting adjustments.
+        (dispatchEvent): Don't call peer.handleEvent() here, this must
+        be done in dispatchEventImpl().
+        (dispatchEventImpl): Dispatch PAINT and UPDATE events to the
+        peer.
+        * java/awt/Container.java
+        (paint): Don't call super.paint() here, this method does nothing
+        anyway. Visit only lightweight children.
+        (update): Instead of clearing the background only for top-level
+        containers, clear the background for all heavyweight containers.
+
+	2005-08-11  Tom Tromey  <tromey@redhat.com>
+
+        For PR classpath/23008:
+        * gnu/java/nio/charset/UTF_16Decoder.java (decodeLoop): Correctly
+        mask bytes when constructing characters.
+
+	2005-08-11  Audrius Meskauskas <AudriusA@Bioinformatics.org>
+
+        * org/omg/PortableInterceptor/IORInfoOperations.java,
+        org/omg/PortableInterceptor/IORInterceptor.java,
+        org/omg/PortableInterceptor/IORInterceptorOperations.java,
+        org/omg/PortableInterceptor/IORInfo.java: New files.
+
+	2005-08-11  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JTable
+        (rowAtPoint): Added in a check for null. Was getting NPE.
+        (columnAtPoint): Likewise.
+
+	2005-08-11  Lillian Angel <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicViewportUI.java
+        (paintSimple): Changed to paint the portBounds from (0,0).
+
+	2005-08-11  Tom Tromey  <tromey@redhat.com>
+
+        * java/awt/image/ConvolveOp.java (filter): Defer numBands check
+        until after null check.  PR classpath/22999.
+
+	2005-08-11  Tom Tromey  <tromey@redhat.com>
+
+        * java/util/Observable.java (addObserver): Throw
+        NullPointerException if necessary.  PR classpath/23279.
+
+2005-08-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/Makefile.am:
 	Only des end into classpath-qt dir if it is selected for buiding.
 

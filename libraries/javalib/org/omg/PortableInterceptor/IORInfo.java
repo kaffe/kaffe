@@ -1,5 +1,5 @@
-/* GtkLabelPeer.java -- Implements LabelPeer with GTK
-   Copyright (C) 1998, 1999, 2005  Free Software Foundation, Inc.
+/* IORInfo.java --
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,56 +36,21 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.awt.peer.gtk;
+package org.omg.PortableInterceptor;
 
-import java.awt.Label;
-import java.awt.peer.LabelPeer;
+import org.omg.CORBA.portable.IDLEntity;
 
-// A composite widget.  GtkLabels have transparent backgrounds.  An
-// AWT Label is opaque.  To compensate, a GtkLabelPeer is a GtkLabel
-// packed in a GtkEventBox.
-public class GtkLabelPeer extends GtkComponentPeer
-    implements LabelPeer
+import java.io.Serializable;
+
+/**
+ * Provides the server-side ORB service possibility to add components to the new
+ * IOR being created. Also, provides access to policies, applicable to the
+ * object, referenced by that IOR. The ORB passes an instance of IORInfo as a
+ * parameter to {@link IORInterceptor#establish_components}.
+ *
+ * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ */
+public interface IORInfo
+  extends IORInfoOperations, IDLEntity, org.omg.CORBA.Object, Serializable
 {
-  native void create (String text, float alignment);
-  native void gtkWidgetModifyFont (String name, int style, int size);
-  native void nativeSetAlignment (float alignment);
-
-  public native void setText(String text);
-  native void setNativeBounds (int x, int y, int width, int height);
-
-  // Because this is a composite widget, we need to retrieve the
-  // GtkLabel's preferred dimensions, not the enclosing GtkEventBox's.
-  native void gtkWidgetGetPreferredDimensions (int[] dim);
-
-  void create ()
-  {
-    Label label = (Label) awtComponent;
-    create (label.getText (), getGtkAlignment (label.getAlignment ()));
-  }
-
-  public GtkLabelPeer (Label l)
-  {
-    super (l);
-  }
-
-  public void setAlignment (int alignment)
-  {
-    nativeSetAlignment (getGtkAlignment (alignment));
-  }
-
-  float getGtkAlignment (int alignment)
-  {
-    switch (alignment)
-      {
-      case Label.LEFT:
-	return 0.0f;
-      case Label.CENTER:
-	return 0.5f;
-      case Label.RIGHT:
-	return 1.0f;
-      }
-
-    return 0.0f;
-  }
 }

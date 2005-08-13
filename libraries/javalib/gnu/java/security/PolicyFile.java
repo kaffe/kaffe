@@ -220,8 +220,8 @@ public final class PolicyFile extends Policy
                   logger.log (Component.POLICY, "java.security.policy={0}", s);
                   if (s != null)
                     {
-                      boolean only;
-                      if (only = s.startsWith ("="))
+                      boolean only = s.startsWith ("=");
+                      if (only)
                         s = s.substring (1);
                       policyFiles.clear ();
                       policyFiles.add (new URL (s));

@@ -910,20 +910,23 @@ public class JTable extends JComponent
    */
   public int columnAtPoint(Point point)
   {
-    int x0 = getLocation().x;
-    int ncols = getColumnCount();
-    Dimension gap = getIntercellSpacing();
-    TableColumnModel cols = getColumnModel();
-    int x = point.x;
-    
-    for (int i = 0; i < ncols; ++i)
+    if (point != null)
       {
-        int width = cols.getColumn(i).getWidth() + (gap == null ? 0 : gap.width);
-        if (0 <= x && x < width)
-          return i;
-        x -= width;  
+        int x0 = getLocation().x;
+        int ncols = getColumnCount();
+        Dimension gap = getIntercellSpacing();
+        TableColumnModel cols = getColumnModel();
+        int x = point.x;
+
+        for (int i = 0; i < ncols; ++i)
+          {
+            int width = cols.getColumn(i).getWidth()
+                        + (gap == null ? 0 : gap.width);
+            if (0 <= x && x < width)
+              return i;
+            x -= width;
+          }
       }
-    
     return -1;
   }
 
@@ -937,19 +940,21 @@ public class JTable extends JComponent
    */
   public int rowAtPoint(Point point)
   {
-    int y0 = getLocation().y;
-    int nrows = getRowCount();
-    Dimension gap = getIntercellSpacing();
-    int height = getRowHeight() + (gap == null ? 0 : gap.height);
-    int y = point.y;
-    
-    for (int i = 0; i < nrows; ++i)
+    if (point != null)
       {
-        if (0 <= y && y < height)
-          return i;
-        y -= height;
+        int y0 = getLocation().y;
+        int nrows = getRowCount();
+        Dimension gap = getIntercellSpacing();
+        int height = getRowHeight() + (gap == null ? 0 : gap.height);
+        int y = point.y;
+
+        for (int i = 0; i < nrows; ++i)
+          {
+            if (0 <= y && y < height)
+              return i;
+            y -= height;
+          }
       }
-      
     return -1;
   }
 
@@ -2217,6 +2222,9 @@ public class JTable extends JComponent
 
   public void setValueAt(Object value, int row, int column)
   {
+    if (!isCellEditable(row, column))
+      return;
+
     if (value instanceof Component)
       add((Component)value);
     dataModel.setValueAt(value, row, convertColumnIndexToModel(column));
@@ -2322,14 +2330,6 @@ public class JTable extends JComponent
     oldCellValue = getValueAt(row, column);
     setCellEditor(getCellEditor(row, column));
     editorComp = prepareEditor(cellEditor, row, column);
-    editorComp.addKeyListener(new KeyAdapter() {
-        public void keyPressed(KeyEvent e) {
-          if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            if (JTable.this.cellEditor != null)
-              JTable.this.cellEditor.cancelCellEditing();
-          }
-        }
-      });
     cellEditor.addCellEditorListener(this);
     rowBeingEdited = row;
     columnBeingEdited = column;

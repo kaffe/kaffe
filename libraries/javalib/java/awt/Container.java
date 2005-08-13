@@ -42,6 +42,7 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.peer.ComponentPeer;
 import java.awt.peer.ContainerPeer;
 import java.awt.peer.LightweightPeer;
 import java.beans.PropertyChangeListener;
@@ -757,11 +758,10 @@ public class Container extends Component
   {
     if (!isShowing())
       return;
-    // Paint self first.
-    super.paint(g);
+
     // Visit heavyweights as well, in case they were
     // erased when we cleared the background for this container.
-    visitChildren(g, GfxPaintVisitor.INSTANCE, true);
+    visitChildren(g, GfxPaintVisitor.INSTANCE, false);
   }
 
   /**
@@ -776,17 +776,26 @@ public class Container extends Component
    * @specnote The specification suggests that this method forwards the
    *           update() call to all its lightweight children. Tests show
    *           that this is not done either in the JDK. The exact behaviour
-   *           seems to be that top-level container call super.update()
-   *           (causing the background to be cleared), and all other containers
+   *           seems to be that the background is cleared in heavyweight
+   *           Containers, and all other containers
    *           directly call paint(), causing the (lightweight) children to
    *           be painted.
    */
   public void update(Graphics g)
   {
-    if (getParent() == null)
-      super.update(g);
-    else
-      paint(g);
+    // It seems that the JDK clears the background of containers like Panel
+    // and Window (within this method) but not of 'plain' Containers or
+    // JComponents. This could
+    // lead to the assumption that it only clears heavyweight containers.
+    // However that is not quite true. In a test with a custom Container
+    // that overrides isLightweight() to return false, the background is
+    // also not cleared. So we do a check on !(peer instanceof LightweightPeer)
+    // instead.
+    ComponentPeer p = peer;
+    if (p != null && !(p instanceof LightweightPeer))
+      g.clearRect(0, 0, getWidth(), getHeight());
+
+    paint(g);
   }
 
   /**

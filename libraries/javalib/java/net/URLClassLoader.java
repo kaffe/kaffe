@@ -900,7 +900,11 @@ public class URLClassLoader extends SecureClassLoader
         else
           result = defineClass(className, classData, 0, classData.length, source);
 
-        super.setSigners(result, resource.getCertificates());
+        // Avoid NullPointerExceptions.
+        Certificate[] resourceCertificates = resource.getCertificates();
+        if(resourceCertificates != null)
+          super.setSigners(result, resourceCertificates);
+        
         return result;
       }
     catch (IOException ioe)

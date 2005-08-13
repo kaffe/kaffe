@@ -46,6 +46,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.peer.ButtonPeer;
 
+// A composite widget.  GtkButtons have transparent backgrounds.  An
+// AWT Button is opaque.  To compensate, a GtkButtonPeer is a
+// GtkButton packed in a GtkEventBox.
 public class GtkButtonPeer extends GtkComponentPeer
     implements ButtonPeer
 {
@@ -60,6 +63,11 @@ public class GtkButtonPeer extends GtkComponentPeer
   native void gtkActivate ();
   native void gtkWidgetRequestFocus ();
   native void setNativeBounds (int x, int y, int width, int height);
+
+  // Because this is a composite widget, we need to retrieve the
+  // GtkButton's preferred dimensions, not the enclosing
+  // GtkEventBox's.
+  native void gtkWidgetGetPreferredDimensions (int[] dim);
 
   public GtkButtonPeer (Button b)
   {
