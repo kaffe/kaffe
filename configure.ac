@@ -1783,6 +1783,16 @@ AC_ARG_WITH([classpath-gtk-awt],
 
 AM_CONDITIONAL(COND_CLASSPATH_GTK_AWT, test x"$with_classpath_gtk_awt" != x"no")
 
+AC_ARG_WITH([classpath-qt-awt],
+            AS_HELP_STRING([--with-classpath-qt-awt],
+                           [enable build of GNU Classpath's Qt4-based AWT engine (not built by default)]),
+        [],
+        [with_classpath_qt_awt=no]
+)
+
+AM_CONDITIONAL(COND_CLASSPATH_QT_AWT, test x"$with_classpath_qt_awt" != x"no")
+
+
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_classpath_gtk_awt" = x"yes"; then
 
@@ -1822,6 +1832,15 @@ if test x"$enable_native_awt" = x"yes"; then
   	AC_SUBST(PANGOFT2_CFLAGS)
 
         AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-gtk/gtk-peer/libgtkpeer.la"
+   fi
+
+   if test x"$with_classpath_qt_awt" = x"yes"; then
+	PKG_CHECK_MODULES(QT, QtGui >= 4.0)
+	AC_SUBST(QT_CFLAGS)
+	AC_SUBST(QT_LIBS)
+	AC_CHECK_PROG(MOC, [moc], [moc])
+
+        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-qt/libqtpeer.la"
    fi
 fi
 
@@ -2319,6 +2338,7 @@ AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/gtk-peer/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/resource/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/classpath-qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/nano-X/Makefile])

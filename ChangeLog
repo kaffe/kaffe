@@ -1,3 +1,124 @@
+2005-08-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac,
+	libraries/clib/awt/classpath-qt/Makefile.am,
+	include/Makefile.am: Added build machinery for GNU Classpath
+	Qt4 based AWT peers.
+
+	Resynced with GNU Classpath.
+
+	2005-08-12  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/awt/peer/qt/QtButtonPeer.java: Replace uses of
+        toolkit.eventQueue.postEvent() with QtToolkit.eventQueue.postEvent().
+        * gnu/java/awt/peer/qt/QtCheckboxPeer.java: Likewise.
+        * gnu/java/awt/peer/qt/QtChoicePeer.java: Likewise.
+        * gnu/java/awt/peer/qt/QtComponentPeer.java: Likewise and for
+        guiThread.QApplicationPointer and graphicsEnv.getScreenDevices().
+        * gnu/java/awt/peer/qt/QtMenuItemPeer.java: Likewise.
+        * gnu/java/awt/peer/qt/QtMenuPeer.java: Likewise.
+        * gnu/java/awt/peer/qt/QtScrollbarPeer.java: Likewise.
+        * gnu/java/security/PolicyFile.javai (refresh): Assign only outside
+        if statement.
+
+	2005-08-11  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/qt/QtMenuComponentPeer.java,
+        gnu/java/awt/peer/qt/QtGraphics.java,
+        gnu/java/awt/peer/qt/QtTextFieldPeer.java,
+        gnu/java/awt/peer/qt/QtFramePeer.java,
+        gnu/java/awt/peer/qt/QtPanelPeer.java,
+        gnu/java/awt/peer/qt/QtToolkit.java,
+        gnu/java/awt/peer/qt/QtWindowPeer.java,
+        gnu/java/awt/peer/qt/QtButtonPeer.java,
+        gnu/java/awt/peer/qt/QtImageGraphics.java,
+        gnu/java/awt/peer/qt/QtContainerPeer.java,
+        gnu/java/awt/peer/qt/QtComponentPeer.java,
+        gnu/java/awt/peer/qt/QtListPeer.java,
+        gnu/java/awt/peer/qt/QtChoicePeer.java,
+        gnu/java/awt/peer/qt/QtScrollPanePeer.java,
+        gnu/java/awt/peer/qt/MainQtThread.java,
+        gnu/java/awt/peer/qt/QtImage.java,
+        gnu/java/awt/peer/qt/NativeWrapper.java,
+        gnu/java/awt/peer/qt/QtCheckboxPeer.java,
+        gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java,
+        gnu/java/awt/peer/qt/QtTextAreaPeer.java,
+        gnu/java/awt/peer/qt/QtDialogPeer.java,
+        gnu/java/awt/peer/qt/QPen.java,
+        gnu/java/awt/peer/qt/QtCanvasPeer.java,
+        gnu/java/awt/peer/qt/QtLabelPeer.java,
+        gnu/java/awt/peer/qt/QtGraphicsEnvironment.java,
+        gnu/java/awt/peer/qt/QtImageConsumer.java,
+        gnu/java/awt/peer/qt/QtScrollbarPeer.java,
+        gnu/java/awt/peer/qt/QtFontMetrics.java,
+        gnu/java/awt/peer/qt/QtMenuBarPeer.java,
+        gnu/java/awt/peer/qt/QtFontPeer.java,
+        gnu/java/awt/peer/qt/QMatrix.java,
+        gnu/java/awt/peer/qt/QtVolatileImage.java,
+        gnu/java/awt/peer/qt/QPainterPath.java,
+        gnu/java/awt/peer/qt/QtComponentGraphics.java,
+        gnu/java/awt/peer/qt/QtScreenDevice.java,
+        gnu/java/awt/peer/qt/QtMenuPeer.java,
+        gnu/java/awt/peer/qt/QtAudioClip.java,
+        gnu/java/awt/peer/qt/QtPopupMenuPeer.java,
+        gnu/java/awt/peer/qt/QtFileDialogPeer.java,
+        gnu/java/awt/peer/qt/QtMenuItemPeer.java,
+        * native/jni/qt-peer/qpen.cpp,
+        native/jni/qt-peer/keybindings.cpp,
+        native/jni/qt-peer/qtcomponentpeer.cpp,
+        native/jni/qt-peer/buttonevent.h,
+        native/jni/qt-peer/qtdialogpeer.cpp,
+        native/jni/qt-peer/qtmenubarpeer.cpp,
+        native/jni/qt-peer/mainqtthread.cpp,
+        native/jni/qt-peer/qtpanelpeer.cpp,
+        native/jni/qt-peer/qmatrix.cpp,
+        native/jni/qt-peer/qtmenucomponentpeer.cpp,
+        native/jni/qt-peer/qtgraphics.cpp,
+        native/jni/qt-peer/qttoolkit.cpp,
+        native/jni/qt-peer/qtbuttonpeer.cpp,
+        native/jni/qt-peer/keybindings.h,
+        native/jni/qt-peer/qtvolatileimage.cpp,
+        native/jni/qt-peer/qtcomponent.h,
+        native/jni/qt-peer/slotcallbacks.cpp,
+        native/jni/qt-peer/qtpopupmenupeer.cpp,
+        native/jni/qt-peer/qtmenuitempeer.cpp,
+        native/jni/qt-peer/qtchoicepeer.cpp,
+        native/jni/qt-peer/nativewrapper.cpp,
+        native/jni/qt-peer/qtscreendevice.cpp,
+        native/jni/qt-peer/qtfontpeer.cpp,
+        native/jni/qt-peer/qpainterpath.cpp,
+        native/jni/qt-peer/qtstrings.h,
+        native/jni/qt-peer/qttextfieldpeer.cpp,
+        native/jni/qt-peer/qtimage.cpp,
+        native/jni/qt-peer/componentevent.h,
+        native/jni/qt-peer/qtwindowpeer.cpp,
+        native/jni/qt-peer/qtframepeer.cpp,
+        native/jni/qt-peer/qtscrollpanepeer.cpp,
+        native/jni/qt-peer/qtfontmetrics.cpp,
+        native/jni/qt-peer/qtlistpeer.cpp,
+        native/jni/qt-peer/mainthreadinterface.h
+        native/jni/qt-peer/slotcallbacks.h
+        native/jni/qt-peer/qtfiledialogpeer.cpp,
+        native/jni/qt-peer/eventmethods.cpp,
+        native/jni/qt-peer/qtimage.h,
+        native/jni/qt-peer/qtstrings.cpp,
+        native/jni/qt-peer/nativewrapper.h
+        native/jni/qt-peer/qtaudioclip.cpp,
+        native/jni/qt-peer/qtfont.h,
+        native/jni/qt-peer/qtscrollbarpeer.cpp,
+        native/jni/qt-peer/containers.h,
+        native/jni/qt-peer/qtcheckboxpeer.cpp,
+        native/jni/qt-peer/mainthreadinterface.cpp,
+        native/jni/qt-peer/componentevent.cpp,
+        native/jni/qt-peer/qttextareapeer.cpp,
+        native/jni/qt-peer/qtcomponent.cpp,
+        native/jni/qt-peer/qtmenupeer.cpp,
+        native/jni/qt-peer/qtlabelpeer.cpp,
+        native/jni/qt-peer/slotcallbacks.moc
+        native/jni/qt-peer/qtcanvaspeer.cpp,
+        native/jni/qt-peer/qtgraphics.h,
+        New files.
+
 2005-08-10  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* replace/getifaddrs.c: Added missing include for GNU/Linux 2.4.x

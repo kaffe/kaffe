@@ -130,6 +130,8 @@ CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
 COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
+COND_CLASSPATH_QT_AWT_FALSE = @COND_CLASSPATH_QT_AWT_FALSE@
+COND_CLASSPATH_QT_AWT_TRUE = @COND_CLASSPATH_QT_AWT_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
 COND_GJDOC_TRUE = @COND_GJDOC_TRUE@
 COND_KAFFE_NANOX_AWT_FALSE = @COND_KAFFE_NANOX_AWT_FALSE@
@@ -280,9 +282,11 @@ PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 QASSISTANTCLIENT_LDADD = @QASSISTANTCLIENT_LDADD@
 QEMBED = @QEMBED@
+QT_CFLAGS = @QT_CFLAGS@
 QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
+QT_LIBS = @QT_LIBS@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 SECURITY_LIBS = @SECURITY_LIBS@
@@ -543,12 +547,55 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
+LIBQTPEER_JNI_HDRS = \
+        gnu_java_awt_peer_qt_MainQtThread.h \
+        gnu_java_awt_peer_qt_NativeWrapper.h \
+        gnu_java_awt_peer_qt_QMatrix.h \
+        gnu_java_awt_peer_qt_QPainterPath.h \
+        gnu_java_awt_peer_qt_QPen.h \
+        gnu_java_awt_peer_qt_QtAudioClip.h \
+        gnu_java_awt_peer_qt_QtButtonPeer.h \
+        gnu_java_awt_peer_qt_QtCanvasPeer.h \
+        gnu_java_awt_peer_qt_QtCheckboxPeer.h \
+        gnu_java_awt_peer_qt_QtChoicePeer.h \
+        gnu_java_awt_peer_qt_QtComponentGraphics.h \
+        gnu_java_awt_peer_qt_QtComponentPeer.h \
+        gnu_java_awt_peer_qt_QtContainerPeer.h \
+        gnu_java_awt_peer_qt_QtDialogPeer.h \
+        gnu_java_awt_peer_qt_QtFileDialogPeer.h \
+        gnu_java_awt_peer_qt_QtFontMetrics.h \
+        gnu_java_awt_peer_qt_QtFontPeer.h \
+        gnu_java_awt_peer_qt_QtFramePeer.h \
+        gnu_java_awt_peer_qt_QtGraphics.h \
+        gnu_java_awt_peer_qt_QtGraphicsEnvironment.h \
+        gnu_java_awt_peer_qt_QtImage.h \
+        gnu_java_awt_peer_qt_QtImageConsumer.h \
+        gnu_java_awt_peer_qt_QtImageGraphics.h \
+        gnu_java_awt_peer_qt_QtLabelPeer.h \
+        gnu_java_awt_peer_qt_QtListPeer.h \
+        gnu_java_awt_peer_qt_QtMenuBarPeer.h \
+        gnu_java_awt_peer_qt_QtMenuComponentPeer.h \
+        gnu_java_awt_peer_qt_QtMenuItemPeer.h \
+        gnu_java_awt_peer_qt_QtMenuPeer.h \
+        gnu_java_awt_peer_qt_QtPanelPeer.h \
+        gnu_java_awt_peer_qt_QtPopupMenuPeer.h \
+        gnu_java_awt_peer_qt_QtScreenDevice.h \
+        gnu_java_awt_peer_qt_QtScreenDeviceConfiguration.h \
+        gnu_java_awt_peer_qt_QtScrollPanePeer.h \
+        gnu_java_awt_peer_qt_QtScrollbarPeer.h \
+        gnu_java_awt_peer_qt_QtTextAreaPeer.h \
+        gnu_java_awt_peer_qt_QtTextFieldPeer.h \
+        gnu_java_awt_peer_qt_QtToolkit.h \
+        gnu_java_awt_peer_qt_QtVolatileImage.h \
+        gnu_java_awt_peer_qt_QtWindowPeer.h 
+
 
 # Only create headers for AWT, Sound and libxmlj if they are going to be built.
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
 @COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
+@COND_CLASSPATH_QT_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBQTPEER_JNI_HDRS = $(LIBQTPEER_JNI_HDRS)
 @COND_CLASSPATH_GTK_AWT_TRUE@JAWT_HDRS = \
 @COND_CLASSPATH_GTK_AWT_TRUE@	jawt.h \
 @COND_CLASSPATH_GTK_AWT_TRUE@	jawt_md.h
@@ -580,7 +627,8 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
 	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
 	$(MAYBE_LIBXMLJ_JNI_HDRS) \
-	$(MAYBE_LIBGTKPEER_JNI_HDRS)
+	$(MAYBE_LIBGTKPEER_JNI_HDRS) \
+	$(MAYBE_LIBQTPEER_JNI_HDRS)
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \

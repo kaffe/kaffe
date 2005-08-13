@@ -127,6 +127,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_awt_image_SRCS) \
 	$(gnu_java_awt_peer_SRCS) \
 	$(gnu_java_awt_peer_gtk_SRCS) \
+	$(gnu_java_awt_peer_qt_SRCS) \
 	$(gnu_java_beans_SRCS) \
 	$(gnu_java_beans_decoder_SRCS) \
 	$(gnu_java_beans_editors_SRCS) \
@@ -1244,6 +1245,47 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkToolkit.java \
 	gnu/java/awt/peer/gtk/GtkVolatileImage.java \
 	gnu/java/awt/peer/gtk/GtkWindowPeer.java
+gnu_java_awt_peer_qt_SRCS = \
+	gnu/java/awt/peer/qt/MainQtThread.java \
+	gnu/java/awt/peer/qt/NativeWrapper.java \
+	gnu/java/awt/peer/qt/QMatrix.java \
+	gnu/java/awt/peer/qt/QPainterPath.java \
+	gnu/java/awt/peer/qt/QPen.java \
+	gnu/java/awt/peer/qt/QtAudioClip.java \
+	gnu/java/awt/peer/qt/QtButtonPeer.java \
+	gnu/java/awt/peer/qt/QtCanvasPeer.java \
+	gnu/java/awt/peer/qt/QtCheckboxPeer.java \
+	gnu/java/awt/peer/qt/QtChoicePeer.java \
+	gnu/java/awt/peer/qt/QtComponentGraphics.java \
+	gnu/java/awt/peer/qt/QtComponentPeer.java \
+	gnu/java/awt/peer/qt/QtContainerPeer.java \
+	gnu/java/awt/peer/qt/QtDialogPeer.java \
+	gnu/java/awt/peer/qt/QtFileDialogPeer.java \
+	gnu/java/awt/peer/qt/QtFontMetrics.java \
+	gnu/java/awt/peer/qt/QtFontPeer.java \
+	gnu/java/awt/peer/qt/QtFramePeer.java \
+	gnu/java/awt/peer/qt/QtGraphics.java \
+	gnu/java/awt/peer/qt/QtGraphicsEnvironment.java \
+	gnu/java/awt/peer/qt/QtImage.java \
+	gnu/java/awt/peer/qt/QtImageConsumer.java \
+	gnu/java/awt/peer/qt/QtImageGraphics.java \
+	gnu/java/awt/peer/qt/QtLabelPeer.java \
+	gnu/java/awt/peer/qt/QtListPeer.java \
+	gnu/java/awt/peer/qt/QtMenuBarPeer.java \
+	gnu/java/awt/peer/qt/QtMenuComponentPeer.java \
+	gnu/java/awt/peer/qt/QtMenuItemPeer.java \
+	gnu/java/awt/peer/qt/QtMenuPeer.java \
+	gnu/java/awt/peer/qt/QtPanelPeer.java \
+	gnu/java/awt/peer/qt/QtPopupMenuPeer.java \
+	gnu/java/awt/peer/qt/QtScreenDevice.java \
+	gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java \
+	gnu/java/awt/peer/qt/QtScrollPanePeer.java \
+	gnu/java/awt/peer/qt/QtScrollbarPeer.java \
+	gnu/java/awt/peer/qt/QtTextAreaPeer.java \
+	gnu/java/awt/peer/qt/QtTextFieldPeer.java \
+	gnu/java/awt/peer/qt/QtToolkit.java \
+	gnu/java/awt/peer/qt/QtVolatileImage.java \
+	gnu/java/awt/peer/qt/QtWindowPeer.java
 gnu_java_beans_SRCS = \
 	gnu/java/beans/BeanInfoEmbryo.java \
 	gnu/java/beans/DummyAppletContext.java \

@@ -183,6 +183,48 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
+LIBQTPEER_JNI_HDRS = \
+        gnu_java_awt_peer_qt_MainQtThread.h \
+        gnu_java_awt_peer_qt_NativeWrapper.h \
+        gnu_java_awt_peer_qt_QMatrix.h \
+        gnu_java_awt_peer_qt_QPainterPath.h \
+        gnu_java_awt_peer_qt_QPen.h \
+        gnu_java_awt_peer_qt_QtAudioClip.h \
+        gnu_java_awt_peer_qt_QtButtonPeer.h \
+        gnu_java_awt_peer_qt_QtCanvasPeer.h \
+        gnu_java_awt_peer_qt_QtCheckboxPeer.h \
+        gnu_java_awt_peer_qt_QtChoicePeer.h \
+        gnu_java_awt_peer_qt_QtComponentGraphics.h \
+        gnu_java_awt_peer_qt_QtComponentPeer.h \
+        gnu_java_awt_peer_qt_QtContainerPeer.h \
+        gnu_java_awt_peer_qt_QtDialogPeer.h \
+        gnu_java_awt_peer_qt_QtFileDialogPeer.h \
+        gnu_java_awt_peer_qt_QtFontMetrics.h \
+        gnu_java_awt_peer_qt_QtFontPeer.h \
+        gnu_java_awt_peer_qt_QtFramePeer.h \
+        gnu_java_awt_peer_qt_QtGraphics.h \
+        gnu_java_awt_peer_qt_QtGraphicsEnvironment.h \
+        gnu_java_awt_peer_qt_QtImage.h \
+        gnu_java_awt_peer_qt_QtImageConsumer.h \
+        gnu_java_awt_peer_qt_QtImageGraphics.h \
+        gnu_java_awt_peer_qt_QtLabelPeer.h \
+        gnu_java_awt_peer_qt_QtListPeer.h \
+        gnu_java_awt_peer_qt_QtMenuBarPeer.h \
+        gnu_java_awt_peer_qt_QtMenuComponentPeer.h \
+        gnu_java_awt_peer_qt_QtMenuItemPeer.h \
+        gnu_java_awt_peer_qt_QtMenuPeer.h \
+        gnu_java_awt_peer_qt_QtPanelPeer.h \
+        gnu_java_awt_peer_qt_QtPopupMenuPeer.h \
+        gnu_java_awt_peer_qt_QtScreenDevice.h \
+        gnu_java_awt_peer_qt_QtScreenDeviceConfiguration.h \
+        gnu_java_awt_peer_qt_QtScrollPanePeer.h \
+        gnu_java_awt_peer_qt_QtScrollbarPeer.h \
+        gnu_java_awt_peer_qt_QtTextAreaPeer.h \
+        gnu_java_awt_peer_qt_QtTextFieldPeer.h \
+        gnu_java_awt_peer_qt_QtToolkit.h \
+        gnu_java_awt_peer_qt_QtVolatileImage.h \
+        gnu_java_awt_peer_qt_QtWindowPeer.h 
+
 # Only create headers for AWT, Sound and libxmlj if they are going to be built.
 
 if COND_LIBXMLJ
@@ -201,6 +243,10 @@ endif
 if COND_NATIVE_AWT
 if COND_CLASSPATH_GTK_AWT
   MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
+endif
+
+if COND_CLASSPATH_QT_AWT
+  MAYBE_LIBQTPEER_JNI_HDRS = $(LIBQTPEER_JNI_HDRS)
 endif
 endif
 
@@ -237,7 +283,8 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
 	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
 	$(MAYBE_LIBXMLJ_JNI_HDRS) \
-	$(MAYBE_LIBGTKPEER_JNI_HDRS)
+	$(MAYBE_LIBGTKPEER_JNI_HDRS) \
+	$(MAYBE_LIBQTPEER_JNI_HDRS)
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \
