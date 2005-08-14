@@ -501,8 +501,7 @@ public class ObjectInputStream extends InputStream
 						  flags, fields);
     assignNewHandle(osc);
 
-    if (callersClassLoader == null)
-      callersClassLoader = currentLoader();
+    ClassLoader callersClassLoader = currentLoader();
 	      
     for (int i = 0; i < field_count; i++)
       {
@@ -741,16 +740,34 @@ public class ObjectInputStream extends InputStream
   protected Class resolveClass(ObjectStreamClass osc)
     throws ClassNotFoundException, IOException
   {
-    if (callersClassLoader == null)
+    String name = osc.getName();
+    try
       {
-	callersClassLoader = currentLoader ();
-	if (DEBUG && dump)
-	  {
-	    dumpElementln ("CallersClassLoader = " + callersClassLoader);
-	  }
+        return Class.forName(name, true, currentLoader());
       }
-
-    return Class.forName(osc.getName(), true, callersClassLoader);
+    catch(ClassNotFoundException x)
+      {
+        if (name.equals("void"))
+          return Void.TYPE;
+        else if (name.equals("boolean"))
+          return Boolean.TYPE;
+        else if (name.equals("byte"))
+          return Byte.TYPE;
+        else if (name.equals("char"))
+          return Character.TYPE;
+        else if (name.equals("short"))
+          return Short.TYPE;
+        else if (name.equals("int"))
+          return Integer.TYPE;
+        else if (name.equals("long"))
+          return Long.TYPE;
+        else if (name.equals("float"))
+          return Float.TYPE;
+        else if (name.equals("double"))
+          return Double.TYPE;
+        else
+          throw x;
+      }
   }
 
   /**
@@ -1871,7 +1888,6 @@ public class ObjectInputStream extends InputStream
   private Hashtable classLookupTable;
   private GetField prereadFields;
 
-  private ClassLoader callersClassLoader;
   private static boolean dump;
 
   // The nesting depth for debugging output

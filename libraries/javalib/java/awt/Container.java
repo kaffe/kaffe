@@ -341,11 +341,11 @@ public class Container extends Component
           comp.parent.remove(comp);
         comp.parent = this;
 
-        // Notify the component that it has a new parent.
-        comp.addNotify();
-
         if (peer != null)
           {
+	    // Notify the component that it has a new parent.
+	    comp.addNotify();
+
             if (comp.isLightweight ())
 	      {
 		enableEvents (comp.eventMask);

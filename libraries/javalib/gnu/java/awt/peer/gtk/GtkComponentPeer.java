@@ -85,7 +85,7 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   boolean isInRepaint;
 
-  Timer repaintTimer = new Timer (true);
+  static final Timer repaintTimer = new Timer (true);
 
   /* this isEnabled differs from Component.isEnabled, in that it
      knows if a parent is disabled.  In that case Component.isEnabled 
