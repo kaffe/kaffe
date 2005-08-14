@@ -1,5 +1,14 @@
 2005-08-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/jni/HelloWorldApp.class: Removed.
+
+	* test/jni/Makefile.am: Compile HelloWorldApp.class on demand.
+	(EXTRA_DIST) Removed HelloWorldApp.class.
+
+	Reported by:  Andreas Tobler  <a.tobler@schweiz.ch>
+
+2005-08-14  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-08-13  Mark Wielaard  <mark@klomp.org>

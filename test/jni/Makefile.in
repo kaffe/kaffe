@@ -425,7 +425,10 @@ jniExecClass_LDADD = \
         $(LTLIBINTL) \
 	@LIBLTDL@
 
-jniExecClass_DEPENDENCIES = $(LIBKAFFEVM)
+jniExecClass_DEPENDENCIES = \
+	$(LIBKAFFEVM) \
+	HelloWorldApp.class
+
 jniReflect_SOURCES = jniReflect.c
 jniReflect_LDADD = \
 	$(DLOPEN_JAVA_LIBS) \
@@ -434,7 +437,10 @@ jniReflect_LDADD = \
         $(LTLIBINTL) \
 	@LIBLTDL@
 
-jniReflect_DEPENDENCIES = $(LIBKAFFEVM)
+jniReflect_DEPENDENCIES = \
+	$(LIBKAFFEVM) \
+	HelloWorldApp.class
+
 
 # Okay, the following is a bit convulted and hackish, and makes me feel dizzy.
 # But as I found no way to do it better, here it goes:
@@ -479,8 +485,7 @@ jniWeakTest_LDADD = \
 
 jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la
 EXTRA_DIST = \
-	JNIWeakTest.java \
-	HelloWorldApp.class
+	JNIWeakTest.java
 
 TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH="." ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; sed  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
@@ -834,6 +839,9 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-info-am
 
+
+HelloWorldApp.class: $(srcdir)/../regression/HelloWorldApp.java
+	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
 
 JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
 	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java

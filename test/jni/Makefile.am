@@ -30,6 +30,9 @@ LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 
+HelloWorldApp.class: $(srcdir)/../regression/HelloWorldApp.java
+	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
+
 jniBase_SOURCES= jniBase.c
 jniBase_LDADD= \
 	$(DLOPEN_JAVA_LIBS) \
@@ -46,7 +49,9 @@ jniExecClass_LDADD= \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
 	@LIBLTDL@
-jniExecClass_DEPENDENCIES= $(LIBKAFFEVM)
+jniExecClass_DEPENDENCIES= \
+	$(LIBKAFFEVM) \
+	HelloWorldApp.class
 
 jniReflect_SOURCES= jniReflect.c
 jniReflect_LDADD= \
@@ -55,7 +60,9 @@ jniReflect_LDADD= \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
 	@LIBLTDL@
-jniReflect_DEPENDENCIES= $(LIBKAFFEVM)
+jniReflect_DEPENDENCIES= \
+	$(LIBKAFFEVM) \
+	HelloWorldApp.class
 
 # Okay, the following is a bit convulted and hackish, and makes me feel dizzy.
 # But as I found no way to do it better, here it goes:
@@ -111,8 +118,7 @@ jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la
 jniWeakTest.o: JNIWeakTest.class
 
 EXTRA_DIST = \
-	JNIWeakTest.java \
-	HelloWorldApp.class
+	JNIWeakTest.java
 
 TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH="." ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; sed  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
