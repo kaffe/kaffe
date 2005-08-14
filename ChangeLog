@@ -1,5 +1,10 @@
 2005-08-12  Andreas Tobler  <a.tobler@schweiz.ch>
 
+       * config/powerpc/ppc_isa.h (REGISTER_SET): Kregs has 7 members,
+       initialize all of them. 
+
+2005-08-12  Andreas Tobler  <a.tobler@schweiz.ch>
+
        * libraries/clib/math/BigInteger.c: Mark unused variables UNUSED.
 
        * libraries/clib/native/Class.c (java_lang_VMClass_getModifiers): Mark

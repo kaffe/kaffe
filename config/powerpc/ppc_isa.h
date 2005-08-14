@@ -1344,71 +1344,71 @@ enum {
 	  PPC_SET_RS(rs) | \
 	  PPC_SET_UIMM(uimm)))
 
-#define REGISTER_SET \
-	{ /* r0 */	0, 0, Reserved,	0, 0, 0  }, \
-	{ /* r1 */	0, 0, Reserved,	0, 0, 1  }, \
-	{ /* r2 */	0, 0, Reserved,	0, 0, 2  }, \
-	{ /* r3 */	0, 0, Rint|Rref,	0, 0, 3  }, \
-	{ /* r4 */	0, 0, Rint|Rref,	0, 0, 4  }, \
-	{ /* r5 */	0, 0, Rint|Rref,	0, 0, 5  }, \
-	{ /* r6 */	0, 0, Rint|Rref,	0, 0, 6  }, \
-	{ /* r7 */	0, 0, Rint|Rref,	0, 0, 7  }, \
-	{ /* r8 */	0, 0, Rint|Rref,	0, 0, 8  }, \
-	{ /* r9 */	0, 0, Rint|Rref,	0, 0, 9  }, \
-	{ /* r10 */	0, 0, Rint|Rref,	0, 0, 10  }, \
-	{ /* r11 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 11  }, \
-	{ /* r12 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 12  }, \
-	{ /* r13 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 13  }, \
-	{ /* r14 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 14  }, \
-	{ /* r15 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 15  }, \
-	{ /* r16 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 16  }, \
-	{ /* r17 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 17  }, \
-	{ /* r18 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 18  }, \
-	{ /* r19 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 19  }, \
-	{ /* r20 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 20  }, \
-	{ /* r21 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 21  }, \
-	{ /* r22 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 22  }, \
-	{ /* r23 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 23  }, \
-	{ /* r24 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 24  }, \
-	{ /* r25 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 25  }, \
-	{ /* r26 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 26  }, \
-	{ /* r27 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 27  }, \
-	{ /* r28 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 28  }, \
-	{ /* r29 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 29  }, \
-	{ /* r30 */	0, 0, Rint|Rref,	Rglobal|Rnosaveoncall, 0, 30  }, \
-	{ /* r31 */	0, 0, Reserved,	0, 0, 31  }, \
-	{ /* fpr0 */	0, 0, Reserved,	0, 0, 32  }, \
-	{ /* fpr1 */	0, 0, Rfloat|Rdouble,	0, 0, 33  }, \
-	{ /* fpr2 */	0, 0, Rfloat|Rdouble,	0, 0, 34  }, \
-	{ /* fpr3 */	0, 0, Rfloat|Rdouble,	0, 0, 35  }, \
-	{ /* fpr4 */	0, 0, Rfloat|Rdouble,	0, 0, 36  }, \
-	{ /* fpr5 */	0, 0, Rfloat|Rdouble,	0, 0, 37  }, \
-	{ /* fpr6 */	0, 0, Rfloat|Rdouble,	0, 0, 38  }, \
-	{ /* fpr7 */	0, 0, Rfloat|Rdouble,	0, 0, 39  }, \
-	{ /* fpr8 */	0, 0, Rfloat|Rdouble,	0, 0, 40  }, \
-	{ /* fpr9 */	0, 0, Rfloat|Rdouble,	0, 0, 41  }, \
-	{ /* fpr10 */	0, 0, Rfloat|Rdouble,	0, 0, 42  }, \
-	{ /* fpr11 */	0, 0, Rfloat|Rdouble,	0, 0, 43  }, \
-	{ /* fpr12 */	0, 0, Rfloat|Rdouble,	0, 0, 44  }, \
-	{ /* fpr13 */	0, 0, Rfloat|Rdouble,	0, 0, 45  }, \
-	{ /* fpr14 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 46  }, \
-	{ /* fpr15 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 47  }, \
-	{ /* fpr16 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 48  }, \
-	{ /* fpr17 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 49  }, \
-	{ /* fpr18 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 50  }, \
-	{ /* fpr19 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 51  }, \
-	{ /* fpr20 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 52  }, \
-	{ /* fpr21 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 53  }, \
-	{ /* fpr22 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 54  }, \
-	{ /* fpr23 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 55  }, \
-	{ /* fpr24 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 56  }, \
-	{ /* fpr25 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 57  }, \
-	{ /* fpr26 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 58  }, \
-	{ /* fpr27 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 59  }, \
-	{ /* fpr28 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 60  }, \
-	{ /* fpr29 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 61  }, \
-	{ /* fpr30 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 62  }, \
-	{ /* fpr31 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 63  }, \
+#define REGISTER_SET							\
+  { /* r0 */	0, 0, Reserved,	        0, 0, 0, 0  },			\
+  { /* r1 */	0, 0, Reserved,	        0, 0, 1, 0  },			\
+  { /* r2 */	0, 0, Reserved,	        0, 0, 2, 0  },			\
+  { /* r3 */	0, 0, Rint|Rref,        0, 0, 3, 0  },			\
+  { /* r4 */	0, 0, Rint|Rref,        0, 0, 4, 0  },			\
+  { /* r5 */	0, 0, Rint|Rref,        0, 0, 5, 0  },			\
+  { /* r6 */	0, 0, Rint|Rref,        0, 0, 6, 0  },			\
+  { /* r7 */	0, 0, Rint|Rref,        0, 0, 7, 0  },			\
+  { /* r8 */	0, 0, Rint|Rref,        0, 0, 8, 0  },			\
+  { /* r9 */	0, 0, Rint|Rref,        0, 0, 9, 0  },			\
+  { /* r10 */	0, 0, Rint|Rref,        0, 0, 10, 0  },			\
+  { /* r11 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 11, 0  }, \
+  { /* r12 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 12, 0  }, \
+  { /* r13 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 13, 0  }, \
+  { /* r14 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 14, 0  }, \
+  { /* r15 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 15, 0  }, \
+  { /* r16 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 16, 0  }, \
+  { /* r17 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 17, 0  }, \
+  { /* r18 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 18, 0  }, \
+  { /* r19 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 19, 0  }, \
+  { /* r20 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 20, 0  }, \
+  { /* r21 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 21, 0  }, \
+  { /* r22 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 22, 0  }, \
+  { /* r23 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 23, 0  }, \
+  { /* r24 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 24, 0  }, \
+  { /* r25 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 25, 0  }, \
+  { /* r26 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 26, 0  }, \
+  { /* r27 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 27, 0  }, \
+  { /* r28 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 28, 0  }, \
+  { /* r29 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 29, 0  }, \
+  { /* r30 */	0, 0, Rint|Rref,        Rglobal|Rnosaveoncall, 0, 30, 0  }, \
+  { /* r31 */	0, 0, Reserved,	        0, 0, 31, 0  },			\
+  { /* fpr0 */	0, 0, Reserved,	        0, 0, 32, 0  },			\
+  { /* fpr1 */	0, 0, Rfloat|Rdouble,	0, 0, 33, 0  },			\
+  { /* fpr2 */	0, 0, Rfloat|Rdouble,	0, 0, 34, 0  },			\
+  { /* fpr3 */	0, 0, Rfloat|Rdouble,	0, 0, 35, 0  },			\
+  { /* fpr4 */	0, 0, Rfloat|Rdouble,	0, 0, 36, 0  },			\
+  { /* fpr5 */	0, 0, Rfloat|Rdouble,	0, 0, 37, 0  },			\
+  { /* fpr6 */	0, 0, Rfloat|Rdouble,	0, 0, 38, 0  },			\
+  { /* fpr7 */	0, 0, Rfloat|Rdouble,	0, 0, 39, 0  },			\
+  { /* fpr8 */	0, 0, Rfloat|Rdouble,	0, 0, 40, 0  },			\
+  { /* fpr9 */	0, 0, Rfloat|Rdouble,	0, 0, 41, 0  },			\
+  { /* fpr10 */	0, 0, Rfloat|Rdouble,	0, 0, 42, 0  },			\
+  { /* fpr11 */	0, 0, Rfloat|Rdouble,	0, 0, 43, 0  },			\
+  { /* fpr12 */	0, 0, Rfloat|Rdouble,	0, 0, 44, 0  },			\
+  { /* fpr13 */	0, 0, Rfloat|Rdouble,	0, 0, 45, 0  },			\
+  { /* fpr14 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 46, 0  },	\
+  { /* fpr15 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 47, 0  },	\
+  { /* fpr16 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 48, 0  },	\
+  { /* fpr17 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 49, 0  },	\
+  { /* fpr18 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 50, 0  },	\
+  { /* fpr19 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 51, 0  },	\
+  { /* fpr20 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 52, 0  },	\
+  { /* fpr21 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 53, 0  },	\
+  { /* fpr22 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 54, 0  },	\
+  { /* fpr23 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 55, 0  },	\
+  { /* fpr24 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 56, 0  },	\
+  { /* fpr25 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 57, 0  },	\
+  { /* fpr26 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 58, 0  },	\
+  { /* fpr27 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 59, 0  },	\
+  { /* fpr28 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 60, 0  },	\
+  { /* fpr29 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 61, 0  },	\
+  { /* fpr30 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 62, 0  },	\
+  { /* fpr31 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 63, 0  },	\
 
 #define NR_REGISTERS 64
 
