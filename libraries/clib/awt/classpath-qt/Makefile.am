@@ -24,10 +24,13 @@ libqtpeer_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION)
 
 libqtpeer_la_MOC = \
-	slotcallbacks.moc.cpp
+	slotcallbacks.moc.h
 
-slotcallbacks.moc.cpp: slotcallbacks.cpp
-	$(MOC) -o slotcallbacks.moc.cpp $(srcdir)/slotcallbacks.cpp
+slotcallbacks.moc.h: slotcallbacks.cpp
+	$(MOC) -o slotcallbacks.moc.h $(srcdir)/slotcallbacks.cpp
+
+nodist_libqtpeer_la_SOURCES = \
+	$(libqtpeer_la_MOC) 
 
 libqtpeer_la_SOURCES = \
         buttonevent.h \
@@ -82,8 +85,8 @@ libqtpeer_la_SOURCES = \
         qtvolatileimage.cpp \
         qtwindowpeer.cpp \
         slotcallbacks.cpp \
-        slotcallbacks.h
+        slotcallbacks.h 
 
-BUILT_SOURCES = $(libqtawt_la_MOC)
+BUILT_SOURCES = $(libqtpeer_la_MOC)
 
 CLEANFILES = so_locations $(BUILT_SOURCES)

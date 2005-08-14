@@ -165,7 +165,7 @@ public slots:
   }
 };
 
-#include "slotcallbacks.moc.cpp"
+#include "slotcallbacks.moc.h"
 
 void connectButton(QPushButton *button, JNIEnv *env, jobject buttonobj)
 {
