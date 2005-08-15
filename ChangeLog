@@ -1,3 +1,9 @@
+2005-08-15  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/kaffe/security/providers/SHA1PRNG.java
+	(<clinit>): Catch any remaining exception. This fixes a problem with
+	SecureRandomTest not finding /dev/urandom on some system.
+	
 2005-08-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/version.c (printShortVersion) Added version information

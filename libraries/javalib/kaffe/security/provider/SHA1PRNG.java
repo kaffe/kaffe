@@ -86,6 +86,13 @@ public class SHA1PRNG
 			catch(ClassNotFoundException e)
 			{
 			}
+			catch(NullPointerException e)
+			{
+				throw e;
+			}
+			catch(Exception e)
+			{
+			}
 		}
 		if( rand == null )
 		{
