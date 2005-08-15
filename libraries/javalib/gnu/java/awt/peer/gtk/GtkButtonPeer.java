@@ -42,6 +42,7 @@ import java.awt.AWTEvent;
 import java.awt.Button;
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.peer.ButtonPeer;
@@ -84,32 +85,11 @@ public class GtkButtonPeer extends GtkComponentPeer
     gtkSetLabel(label);
   }
 
-  public void handleEvent (AWTEvent e)
+  void postActionEvent (int mods)
   {
-    if (e.getID () == MouseEvent.MOUSE_RELEASED && isEnabled ())
-      {
-	MouseEvent me = (MouseEvent) e;
-	Point p = me.getPoint();
-	p.translate(((Component) me.getSource()).getX(),
-	            ((Component) me.getSource()).getY());
-	if (!me.isConsumed ()
-	    && (me.getModifiersEx () & MouseEvent.BUTTON1_DOWN_MASK) != 0
-	    && awtComponent.getBounds().contains(p))
-          postActionEvent (((Button) awtComponent).getActionCommand (), 
-                           me.getModifiersEx ());
-      }
-
-    if (e.getID () == KeyEvent.KEY_PRESSED)
-      {
-	KeyEvent ke = (KeyEvent) e;
-	if (!ke.isConsumed () && ke.getKeyCode () == KeyEvent.VK_SPACE)
-          {
-            postActionEvent (((Button) awtComponent).getActionCommand (),
-                             ke.getModifiersEx ());
-            gtkActivate ();
-          }
-      }
-
-    super.handleEvent (e);
+    q().postEvent (new ActionEvent (awtWidget,
+				    ActionEvent.ACTION_PERFORMED,
+				    ((Button) awtComponent).getActionCommand (),
+				    mods));
   }
 }

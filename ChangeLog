@@ -1,5 +1,46 @@
 2005-08-15  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-15  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/FlowLayout.java
+        (setAlignment): Removed check for illegal values. These values
+        are treated as LEFT alignment instead.
+        (layoutContainer): Treat unknown align values as LEFT in default
+        clause of if-else statement.
+
+	2005-08-15  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkButtonPeer.java (handleEvent): Remove
+        method.
+        (postActionEvent): New method.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c:
+        Rename state_to_awt_mods cp_gtk_state_to_awt_mods.
+        * native/jni/gtk-peer/gtkpeer.h: Declare cp_gtk_state_to_awt_mods.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (clicked_cb): New function.
+        (connectSignals): Connect clicked_cb callback to "clicked" signal.
+
+	2005-08-14  Casey Marshall  <csm@gnu.org>
+
+        * gnu/java/security/provider/DSAKeyPairGenerator.java
+        (initialize): set 'keysize' to 'modlen.'
+        (getDefaults): return 'true' for keysizes '768' and '1024.'
+
+	2005-08-14  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/ClasspathToolkit.java
+        (getScreenSize, getColorModel, getFontMetrics, getImage, createImage,
+         createImageProducer, registerImageIOSpis):
+        Remove redundant (overloaded) methods.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java
+        (registerImageIOSpis): Move registration to static initializer.
+        * javax/imageio/spi/IIORegistry.java:
+        Remove call to Toolkit registration method.
+
+2005-08-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Fixed jikes test on AIX.
 
 	Reported by:  Riccardo Mottola  <multix@gmail.com>

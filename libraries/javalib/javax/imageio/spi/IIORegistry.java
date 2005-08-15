@@ -39,7 +39,6 @@ exception statement from your version. */
 package javax.imageio.spi;
 
 import gnu.classpath.ServiceFactory;
-import gnu.java.awt.ClasspathToolkit;
 
 import java.awt.Toolkit;
 import java.util.HashMap;
@@ -82,8 +81,6 @@ public final class IIORegistry extends ServiceRegistry
     // XXX: Register built-in Spis here.
 
     Toolkit toolkit = Toolkit.getDefaultToolkit();
-    if (toolkit instanceof ClasspathToolkit)
-      ((ClasspathToolkit)toolkit).registerImageIOSpis(this);
     
     registerApplicationClasspathSpis();
   }

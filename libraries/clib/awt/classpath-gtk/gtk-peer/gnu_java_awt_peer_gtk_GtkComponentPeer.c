@@ -145,8 +145,8 @@ button_to_awt_mods (int button)
   return 0;
 }
 
-static jint
-state_to_awt_mods (guint state)
+jint
+cp_gtk_state_to_awt_mods (guint state)
 {
   jint result = 0;
 
@@ -946,7 +946,7 @@ component_button_press_cb (GtkWidget *widget __attribute__((unused)),
                                 postMouseEventID,
                                 AWT_MOUSE_PRESSED, 
                                 (jlong)event->time,
-                                state_to_awt_mods (event->state)
+                                cp_gtk_state_to_awt_mods (event->state)
                                 | button_to_awt_mods (event->button),
                                 (jint)event->x,
                                 (jint)event->y, 
@@ -974,7 +974,7 @@ component_button_release_cb (GtkWidget *widget __attribute__((unused)),
                                 postMouseEventID,
                                 AWT_MOUSE_RELEASED, 
                                 (jlong)event->time,
-                                state_to_awt_mods (event->state)
+                                cp_gtk_state_to_awt_mods (event->state)
                                 | button_to_awt_mods (event->button),
                                 (jint)event->x,
                                 (jint)event->y, 
@@ -999,7 +999,7 @@ component_button_release_cb (GtkWidget *widget __attribute__((unused)),
                                     postMouseEventID,
                                     AWT_MOUSE_CLICKED, 
                                     (jlong)event->time,
-                                    state_to_awt_mods (event->state)
+                                    cp_gtk_state_to_awt_mods (event->state)
                                     | button_to_awt_mods (event->button),
                                     (jint)event->x,
                                     (jint)event->y, 
@@ -1045,7 +1045,7 @@ component_motion_notify_cb (GtkWidget *widget __attribute__((unused)),
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postMouseEventID,
                                     AWT_MOUSE_MOVED,
                                     (jlong)event->time,
-                                    state_to_awt_mods (event->state),
+                                    cp_gtk_state_to_awt_mods (event->state),
                                     (jint)event->x,
                                     (jint)event->y,
                                     0,

@@ -163,8 +163,9 @@ union widget_union
   GtkWidget **widget;
 };
 
-/* Keycode helpers */
+/* Constant conversion helpers */
 guint cp_gtk_awt_keycode_to_keysym (jint keyCode, jint keyLocation);
+jint cp_gtk_state_to_awt_mods (guint state);
 
 /* Image helpers */
 GdkPixbuf *cp_gtk_image_get_pixbuf (JNIEnv *env, jobject obj);

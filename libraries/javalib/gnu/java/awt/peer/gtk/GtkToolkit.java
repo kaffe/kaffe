@@ -121,6 +121,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
       portableNativeSync = 0;   // false
 
     gtkInit(portableNativeSync);
+
+    // Register ImageIO SPIs
+    GdkPixbufDecoder.registerSpis( IIORegistry.getDefaultInstance() );
   }
 
   public GtkToolkit ()
@@ -639,11 +642,6 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   public RobotPeer createRobot (GraphicsDevice screen) throws AWTException
   {
     return new GdkRobotPeer (screen);
-  }
-
-  public void registerImageIOSpis(IIORegistry reg)
-  {
-    GdkPixbufDecoder.registerSpis(reg);
   }
 
   public native boolean nativeQueueEmpty();
