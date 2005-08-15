@@ -1,3 +1,14 @@
+2005-08-15  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* config/powerpc/atomic.h: Replaced by a wrapper for 32-bit
+  	or 64-bit atomic.h
+
+	* config/powerpc/bits/atomic.h: original atomic.h.
+
+	* config/powerpc/powerpc32/atomic.h,
+	config/powerpc/powerpc64/atomic.h: New files.
+	Taken from glibc 2.3.5 
+
 2005-08-15  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/regression/RefTest.java,
