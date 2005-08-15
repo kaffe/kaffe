@@ -40,6 +40,7 @@ printShortVersion(void)
 {
 	if (!versionfd)
 		versionfd = stderr;
+	fprintf(versionfd, "java full version \"kaffe-1.4.2\"\n\n");
 	fprintf(versionfd, "%s VM \"%s\"\n\n", PACKAGE, PACKAGE_VERSION);
 	fprintf(versionfd,
 		       _("Copyright (c) 1996-2005 Kaffe.org project contributors (please see\n"

@@ -1,5 +1,12 @@
 2005-08-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/version.c (printShortVersion) Added version information
+	for Fedora Core / JPackage.org scripts. That fixes ant on FC4.
+
+	Idea by: Robin Green  <greenrd@greenrd.org>
+
+2005-08-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/jni/HelloWorldApp.class: Removed.
 
 	* test/jni/Makefile.am: Compile HelloWorldApp.class on demand.
