@@ -25162,7 +25162,7 @@ echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6
 
 case $with_jikes in
 yes)
-	if test x"$JIKESPROG" == x"" ; then
+	if test x"$JIKESPROG" = x"" ; then
 	  if  test x$use_rt_jar = xtrue ; then
 	    { echo "$as_me:$LINENO: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&5
 echo "$as_me: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&2;}

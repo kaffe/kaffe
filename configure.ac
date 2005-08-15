@@ -756,7 +756,7 @@ AC_MSG_CHECKING([whether to use jikes])
 
 case $with_jikes in
 yes)
-	if test x"$JIKESPROG" == x"" ; then
+	if test x"$JIKESPROG" = x"" ; then
 	  if  test x$use_rt_jar = xtrue ; then
 	    AC_MSG_WARN([No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher.])
           else
