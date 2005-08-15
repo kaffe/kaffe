@@ -21,7 +21,7 @@ public class CLTestJLock extends ClassLoader
 
 	if (name.equals("CLTestConc_bis")) {
 	    try {
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 	    } catch (InterruptedException e) { }
 	}
 	if (name.startsWith("CLTestConc")) {

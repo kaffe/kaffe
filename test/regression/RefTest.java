@@ -106,7 +106,7 @@ public class RefTest
   static public void main(String args[]) throws Exception
   {
     WeakReference ref = buildRef(); 
-    Watchdog dog = new Watchdog(5000);
+    Watchdog dog = new Watchdog(10000);
 
     dog.start();
 
