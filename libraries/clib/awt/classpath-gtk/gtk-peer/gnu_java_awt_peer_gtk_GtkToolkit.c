@@ -41,8 +41,6 @@ exception statement from your version. */
 #include "gthread-jni.h"
 #include "jcl.h"
 
-#include <sys/time.h>
-
 #define RC_FILE ".classpath-gtkrc"
 
 /* From java.awt.SystemColor */
@@ -292,20 +290,6 @@ dpi_changed_cb (GtkSettings  *settings,
       PANGO_SCALE * 72.0 / (int_dpi / PANGO_SCALE);
 }
 
-static int
-within_human_latency_tolerance(struct timeval *init)
-{
-  struct timeval curr;
-  unsigned long milliseconds_elapsed;
-
-  gettimeofday(&curr, NULL);
-  
-  milliseconds_elapsed = (((curr.tv_sec * 1000) + (curr.tv_usec / 1000))
-			  - ((init->tv_sec * 1000) + (init->tv_usec / 1000)));
-  
-  return milliseconds_elapsed < 100;
-}
-
 #if GTK_MINOR_VERSION > 4
 static void
 glog_func (const gchar *log_domain,
@@ -332,69 +316,15 @@ glog_func (const gchar *log_domain,
 }
 #endif
 
-JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkToolkit_iterateNativeQueue
-(JNIEnv *env, 
- jobject self __attribute__((unused)),
- jobject lockedQueue,
- jboolean block)
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkMain
+(JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
 {
-  /* We're holding an EventQueue lock, and we're about to acquire the GDK
-   * lock before dropping the EventQueue lock. This can deadlock if someone
-   * holds the GDK lock and wants to acquire the EventQueue lock; however
-   * all callbacks from GTK happen with the GDK lock released, so this
-   * would only happen in an odd case such as some JNI helper code
-   * acquiring the GDK lock and calling back into
-   * EventQueue.getNextEvent().
-   */
-
-  struct timeval init;
-  gettimeofday(&init, NULL);
-
-  gdk_threads_enter ();
-  (*env)->MonitorExit (env, lockedQueue);
-
-  if (block)
-    {
-      
-      /* If we're blocking-when-empty, we want a do .. while loop. */
-      do 
-	gtk_main_iteration ();
-      while (within_human_latency_tolerance (&init) 
-	     && gtk_events_pending ());
-    }
-  else
-    {
-      /* If we're not blocking-when-empty, we want a while loop. */
-      while (within_human_latency_tolerance (&init) 
-	     && gtk_events_pending ())
-	gtk_main_iteration ();      
-    }
-  
-  (*env)->MonitorEnter (env, lockedQueue);
-  gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkToolkit_wakeNativeQueue
-  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
-{
-  g_main_context_wakeup (NULL);
-}
-
-JNIEXPORT jboolean JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkToolkit_nativeQueueEmpty
-  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
-{
-  jboolean empty = FALSE;
-
   gdk_threads_enter ();
 
-  empty = ! gtk_events_pending();
+  gtk_main ();
 
   gdk_threads_leave ();
-
-  return empty;
 }
 
 

@@ -81,7 +81,7 @@ public:
 
 #define I_KNOW_WHAT_IM_DOING
 #define PARENT QCheckBox
-#include "eventmethods.cpp"
+#include "eventmethods.h"
 };
 
 /**

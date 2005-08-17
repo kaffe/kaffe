@@ -39,6 +39,8 @@ package gnu.java.awt.peer.qt;
 
 import java.awt.Dimension;
 import java.awt.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.awt.peer.ListPeer;
 
 public class QtListPeer extends QtComponentPeer implements ListPeer
@@ -54,13 +56,55 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
   {
     super.setup();
     List o = (List)owner;
-    String[] items = o.getItems();
+    // Multiple selection
     setMultipleMode(o.isMultipleMode());
+    // Add initial list items.
+    String[] items = o.getItems();
     for (int i = 0; i < items.length; i++)
       add(items[i], i);
+
+    // Initial selections.
     int[] selected = o.getSelectedIndexes();
     for (int i = 0; i < selected.length; i++)
       select(selected[i]);
+
+    // If no initial selection, use 0.
+    if(selected.length == 0 && items.length > 0)
+      select( 0 );
+  }
+
+  private boolean ignoreNextSelect = false;
+
+  /**
+   * Called back when a row is selected. -1 if no row is selected.
+   */
+  private void fireChoice( int index )
+  {
+    ignoreNextSelect = true;
+    if( index == -1)
+      ((List)owner).deselect( ((List)owner).getSelectedIndex() );
+      else
+	{
+	  ((List)owner).select( index );
+	  ItemEvent e = new ItemEvent((List)owner, 
+				      ItemEvent.ITEM_STATE_CHANGED, 
+				      ""+index,
+				      ItemEvent.SELECTED);
+	  toolkit.eventQueue.postEvent(e);
+	}
+  }
+
+  /**
+   * Called back when an item is double-clicked.
+   */ 
+  private void itemDoubleClicked( int index, int modifiers )
+  {
+    ActionEvent e = new ActionEvent(owner,
+				    ActionEvent.ACTION_PERFORMED,
+				    ((List)owner).getItem( index ),
+				    System.currentTimeMillis(),
+				    modifiers);
+    toolkit.eventQueue.postEvent(e);
   }
 
   private native void select(int index, boolean selected);
@@ -85,8 +129,11 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
   public native void delItems(int start_index, int end_index);
 
   public void deselect(int index)
-  {
-    select(index, false);
+  {   
+    if( ignoreNextSelect == true )
+      ignoreNextSelect = false;
+    else 
+      select(index, false);
   }
 
   public native int[] getSelectedIndexes();
@@ -110,7 +157,10 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
 
   public void select(int index)
   {
-    select(index, true);
+    if( ignoreNextSelect == true )
+      ignoreNextSelect = false;
+    else 
+      select(index, true);
   }
 
   /**

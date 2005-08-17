@@ -119,6 +119,9 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_initImage
   painter->setRenderHint(QPainter::TextAntialiasing);
 }
 
+/**
+ * Deletes the QPainter
+ */
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_delete
 (JNIEnv *env, jobject obj)
 {
@@ -130,19 +133,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_delete
  	painter->end();
       delete painter;
     }
-}
-
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_dispose
-(JNIEnv *env, jobject obj)
-{
-//   GraphicsPainter *painter = (GraphicsPainter *)getPainter( env, obj );
-//   setNativePtr( env, obj, NULL );
-//   if( painter )
-//     {
-//       if( painter->isActive() )
-// 	painter->end();
-//       delete painter;
-//     }
 }
 
 ///////////////////////////////////////////////////////////
@@ -410,11 +400,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_setNativeComposite
       break;
     }
   painter->setCompositionMode( mode );
-}
-
-JNIEXPORT jobject JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_getFontMetrics
-(JNIEnv *env, jobject obj, jobject font)
-{
 }
 
 /**

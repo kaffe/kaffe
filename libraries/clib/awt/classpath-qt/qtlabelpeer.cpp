@@ -64,7 +64,7 @@ public:
 
 #define I_KNOW_WHAT_IM_DOING
 #define PARENT QLabel
-#include "eventmethods.cpp"
+#include "eventmethods.h"
 };
 
 class LabelTitle : public AWTEvent {
@@ -103,7 +103,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtLabelPeer_init
 (JNIEnv *env, jobject obj)
 {
   QWidget *parentWidget = (QWidget *) getParentWidget( env, obj );  
-  //  QLabel *label = new QLabel( parentWidget );
   QLabel *label = new MyLabel( env, obj, parentWidget );
   assert( label );
   setNativeObject( env, obj, label );

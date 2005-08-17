@@ -41,6 +41,7 @@ package gnu.java.awt.peer.gtk;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.peer.WindowPeer;
 
@@ -140,10 +141,6 @@ public class GtkWindowPeer extends GtkContainerPeer
     gtkWindowSetResizable (resizable);
   }
 
-  native void setBoundsCallback (Window window,
-				 int x, int y,
-				 int width, int height);
-
   protected void postInsetsChangedEvent (int top, int left,
 					 int bottom, int right)
   {
@@ -155,20 +152,20 @@ public class GtkWindowPeer extends GtkContainerPeer
 
   protected void postConfigureEvent (int x, int y, int width, int height)
   {
-    int frame_x = x - insets.left;
-    int frame_y = y - insets.top;
     int frame_width = width + insets.left + insets.right;
     int frame_height = height + insets.top + insets.bottom;
 
-    if (frame_x != awtComponent.getX()
-	|| frame_y != awtComponent.getY()
-	|| frame_width != awtComponent.getWidth()
+    if (frame_width != awtComponent.getWidth()
 	|| frame_height != awtComponent.getHeight())
-      {
-        setBoundsCallback ((Window) awtComponent,
-                           frame_x, frame_y, frame_width, frame_height);
+      awtComponent.setSize(frame_width, frame_height);
 
-        awtComponent.validate();
+    int frame_x = x - insets.left;
+    int frame_y = y - insets.top;
+
+    if (frame_x != awtComponent.getX()
+	|| frame_y != awtComponent.getY())
+      {
+        // awtComponent.setLocation(frame_x, frame_y);
       }
   }
 

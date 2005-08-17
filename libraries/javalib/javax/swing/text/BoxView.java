@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.swing.text;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
 
 // TODO: Implement this class.
@@ -83,5 +84,72 @@ public class BoxView
   {
     // TODO: Implement me.
     return 0F;
+  }
+
+  /**
+   * Returns <code>true</code> if the specified point lies before the
+   * given <code>Rectangle</code>, <code>false</code> otherwise.
+   *
+   * &quot;Before&quot; is typically defined as being to the left or above.
+   *
+   * @param x the X coordinate of the point
+   * @param y the Y coordinate of the point
+   * @param r the rectangle to test the point against
+   *
+   * @return <code>true</code> if the specified point lies before the
+   *         given <code>Rectangle</code>, <code>false</code> otherwise
+   */
+  protected boolean isBefore(int x, int y, Rectangle r)
+  {
+    // TODO: Implement this properly.
+    return false;
+  }
+
+  /**
+   * Returns <code>true</code> if the specified point lies after the
+   * given <code>Rectangle</code>, <code>false</code> otherwise.
+   *
+   * &quot;After&quot; is typically defined as being to the right or below.
+   *
+   * @param x the X coordinate of the point
+   * @param y the Y coordinate of the point
+   * @param r the rectangle to test the point against
+   *
+   * @return <code>true</code> if the specified point lies after the
+   *         given <code>Rectangle</code>, <code>false</code> otherwise
+   */
+  protected boolean isAfter(int x, int y, Rectangle r)
+  {
+    // TODO: Implement this properly.
+    return false;
+  }
+
+  /**
+   * Returns the child <code>View</code> at the specified location.
+   *
+   * @param x the X coordinate
+   * @param y the Y coordinate
+   * @param r the allocation of this <code>CompositeView</code>
+   *
+   * @return the child <code>View</code> at the specified location
+   */
+  protected View getViewAtPoint(int x, int y, Rectangle r)
+  {
+    // TODO: Implement this properly.
+    return null;
+  }
+
+  /**
+   * Computes the allocation for a child <code>View</code>. The parameter
+   * <code>a</code> stores the allocation of this <code>CompositeView</code>
+   * and is then adjusted to hold the allocation of the child view.
+   *
+   * @param index the index of the child <code>View</code>
+   * @param a the allocation of this <code>CompositeView</code> before the
+   *        call, the allocation of the child on exit
+   */
+  protected void childAllocation(int index, Rectangle a)
+  {
+    // TODO: Implement this properly.
   }
 }

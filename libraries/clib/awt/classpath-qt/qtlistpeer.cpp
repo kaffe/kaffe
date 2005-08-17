@@ -42,6 +42,7 @@ exception statement from your version. */
 #include "qtcomponent.h"
 #include "qtstrings.h"
 #include "mainthreadinterface.h"
+#include "slotcallbacks.h"
 
 class ListInsert : public AWTEvent {
   
@@ -119,6 +120,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtListPeer_init
   assert( list );
       
   setNativeObject( env, obj, list );
+  connectList(list, env, obj);
 }
 
 /*

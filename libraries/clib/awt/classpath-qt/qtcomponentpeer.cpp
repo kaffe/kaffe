@@ -82,7 +82,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtComponentPeer_callInit
       env->MonitorEnter( obj );
       p = getNativeObject(env, obj);
       env->MonitorExit( obj );
-    } while( p == NULL);
+    } while( p == NULL );
 }
 
 /*

@@ -52,7 +52,6 @@ public class GtkContainerPeer extends GtkComponentPeer
   implements ContainerPeer
 {
   Container c;
-  boolean isValidating;
 
   public GtkContainerPeer(Container c)
   {
@@ -62,7 +61,6 @@ public class GtkContainerPeer extends GtkComponentPeer
 
   public void beginValidate ()
   {
-    isValidating = true;
   }
 
   public void endValidate ()
@@ -90,8 +88,6 @@ public class GtkContainerPeer extends GtkComponentPeer
         if (!(awtComponent instanceof Window))
           setParentAndBounds ();
       }
-
-    isValidating = false;
   }
 
   public Insets getInsets() 

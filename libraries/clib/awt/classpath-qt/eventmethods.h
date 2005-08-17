@@ -36,6 +36,8 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 #ifdef I_KNOW_WHAT_IM_DOING
+
+bool draw;
   
 private:
   JavaVM* vm;
@@ -49,6 +51,7 @@ private:
     target = env->NewGlobalRef(obj);
     componentCls = (jclass)env->NewGlobalRef(env->GetObjectClass( target ));
     setMouseTracking( true );
+    draw = true;
   }
 
   void destroy()
@@ -208,26 +211,30 @@ protected:
 
   void paintEvent ( QPaintEvent * e )
   {
-    PARENT::paintEvent(e);
-    // Create a QPainter
-    GraphicsPainter painter( this );
+    PARENT::paintEvent( e );
+    if ( draw )
+      {
+	// Create a QPainter
+	GraphicsPainter painter( this );
+	
+	// Get the environment.
+	JNIEnv *env;
+	vm->GetEnv((void **)&env, JNI_VERSION_1_1);
 
-    // Get the environment.
-    JNIEnv *env;
-    vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+	// create a QtGraphics wrapper for the QPainter
+	jclass cls = env->FindClass( "gnu/java/awt/peer/qt/QtComponentGraphics" );
+	jmethodID mid = env->GetMethodID(cls, "<init>", "(JLgnu/java/awt/peer/qt/QtComponentPeer;)V");
+	jobject graphics = env->NewObject(cls, mid, (jlong)&painter, target);
 
-    // create a QtGraphics wrapper for the QPainter
-    jclass cls = env->FindClass( "gnu/java/awt/peer/qt/QtComponentGraphics" );
-    jmethodID mid = env->GetMethodID(cls, "<init>", "(JLgnu/java/awt/peer/qt/QtComponentPeer;)V");
-    jobject graphics = env->NewObject(cls, mid, (jlong)&painter, target);
-
-    // call QtComponentPeer.paintEvent()
-    jmethodID paintEventID = env->GetMethodID( componentCls,
-					      "paintEvent",
-					      "(Lgnu/java/awt/peer/qt/QtGraphics;)V" );
-    env->CallVoidMethod( target, paintEventID, graphics );
-    env->DeleteLocalRef( cls );
-    env->DeleteLocalRef( graphics );
+	// call QtComponentPeer.paintEvent()
+	jmethodID paintEventID = env->GetMethodID( componentCls,
+					      "paint",
+						   "(Ljava/awt/Graphics;)V" );
+	env->CallVoidMethod( target, paintEventID, graphics );
+	env->DeleteLocalRef( cls );
+	env->DeleteLocalRef( graphics );
+	painter.end();
+      }
   }
 
 #endif

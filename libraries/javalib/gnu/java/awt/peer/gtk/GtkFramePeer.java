@@ -44,6 +44,7 @@ import java.awt.Image;
 import java.awt.MenuBar;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
 import java.awt.event.PaintEvent;
 import java.awt.image.ColorModel;
 import java.awt.peer.FramePeer;
@@ -192,31 +193,25 @@ public class GtkFramePeer extends GtkWindowPeer
   
   protected void postConfigureEvent (int x, int y, int width, int height)
   {
-    int frame_x = x - insets.left;
-    // Since insets.top includes the MenuBar height, we need to add back
-    // the MenuBar height to the frame's y position.
-    // If no MenuBar exists in this frame, the MenuBar height will be 0.
-    int frame_y = y - insets.top + menuBarHeight;
     int frame_width = width + insets.left + insets.right;
-    // Ditto as above. Since insets.top already includes the MenuBar's height,
-    // we need to subtract the MenuBar's height from the top inset.
+    // Since insets.top already includes the MenuBar's height, we need
+    // to subtract the MenuBar's height from the top inset.
     int frame_height = height + insets.top + insets.bottom - menuBarHeight;
-    if (frame_x != awtComponent.getX()
-        || frame_y != awtComponent.getY()
-        || frame_width != awtComponent.getWidth()
+
+    if (frame_width != awtComponent.getWidth()
         || frame_height != awtComponent.getHeight())
+      awtComponent.setSize(frame_width, frame_height);
+
+    int frame_x = x - insets.left;
+    // Likewise, since insets.top includes the MenuBar height, we need
+    // to add back the MenuBar height to the frame's y position.  If
+    // no MenuBar exists in this frame, the MenuBar height will be 0.
+    int frame_y = y - insets.top + menuBarHeight;
+
+    if (frame_x != awtComponent.getX()
+        || frame_y != awtComponent.getY())
       {
-        if (frame_width != awtComponent.getWidth() && menuBar != null
-            && width > 0)
-          setMenuBarWidth (menuBar, width);
-
-        setBoundsCallback ((Window) awtComponent,
-                           frame_x,
-                           frame_y,
-                           frame_width,
-                           frame_height);
-
-        awtComponent.validate();
+        // awtComponent.setLocation(frame_x, frame_y);
       }
   }
 

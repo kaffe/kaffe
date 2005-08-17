@@ -37,12 +37,12 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.qt;
 
-import java.awt.Window;
+import java.awt.Component;
 import java.awt.peer.WindowPeer;
 
 public class QtWindowPeer extends QtContainerPeer implements WindowPeer
 {
-  public QtWindowPeer( QtToolkit kit, Window owner )
+  public QtWindowPeer( QtToolkit kit, Component owner )
   {
     super( kit, owner );
   }

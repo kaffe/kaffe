@@ -1733,17 +1733,7 @@ public class BasicTreeUI
                   if (e.isControlDown())
                     tree.setLeadSelectionPath(newPath);
                   else if (!mod.isLeaf(next) && e.isShiftDown())
-                    {
-                      BasicTreeUI.this.tree.expandPath(newPath);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillExpand(newPath);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeExpanded(newPath);
-                    }
+                    BasicTreeUI.this.tree.expandPath(newPath);
                 }
             }
           // UP, KP_UP
@@ -1761,17 +1751,7 @@ public class BasicTreeUI
                   if (e.isControlDown())
                     tree.setLeadSelectionPath(newPath);
                   else if (!mod.isLeaf(prev) && e.isShiftDown())
-                    {
-                      BasicTreeUI.this.tree.expandPath(newPath);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillExpand(newPath);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeExpanded(newPath);
-                    }
+                    BasicTreeUI.this.tree.expandPath(newPath);
                 }
             }
           // LEFT, KP_LEFT
@@ -1782,17 +1762,7 @@ public class BasicTreeUI
               Object p = getParent(mod.getRoot(), last);
 
               if (!mod.isLeaf(last) && BasicTreeUI.this.tree.isExpanded(path))
-                {
-                  BasicTreeUI.this.tree.collapsePath(path);
-                  try
-                    {
-                      BasicTreeUI.this.tree.fireTreeWillCollapse(path);
-                    }
-                  catch (ExpandVetoException ev)
-                    {
-                    }
-                  BasicTreeUI.this.tree.fireTreeCollapsed(path);
-                }
+                BasicTreeUI.this.tree.collapsePath(path);
               else if (p != null)
                 BasicTreeUI.this.selectPath(BasicTreeUI.this.tree,
                                             new TreePath(getPathToRoot(p, 0)));
@@ -1804,17 +1774,7 @@ public class BasicTreeUI
               TreePath path = new TreePath(getPathToRoot(last, 0));
 
               if (!mod.isLeaf(last) && BasicTreeUI.this.tree.isCollapsed(path))
-                {
-                  BasicTreeUI.this.tree.expandPath(path);
-                  try
-                    {
-                      BasicTreeUI.this.tree.fireTreeWillExpand(path);
-                    }
-                  catch (ExpandVetoException ev)
-                    {
-                    }
-                  BasicTreeUI.this.tree.fireTreeExpanded(path);
-                }
+                BasicTreeUI.this.tree.expandPath(path);
               else
                 {
                   Object next = BasicTreeUI.this.getNextVisibleNode(last);
@@ -1835,29 +1795,9 @@ public class BasicTreeUI
               if (!mod.isLeaf(last))
                 {
                   if (BasicTreeUI.this.tree.isExpanded(path))
-                    {
-                      BasicTreeUI.this.tree.collapsePath(path);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillCollapse(path);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeCollapsed(path);
-                    }
+                    BasicTreeUI.this.tree.collapsePath(path);
                   else
-                    {
-                      BasicTreeUI.this.tree.expandPath(path);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillExpand(path);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeExpanded(path);
-                    }
+                    BasicTreeUI.this.tree.expandPath(path);
                 }
             }
         }
@@ -2013,29 +1953,9 @@ public class BasicTreeUI
                   lastClicked = null;
                   BasicTreeUI.this.tree.getSelectionModel().clearSelection();
                   if (BasicTreeUI.this.tree.isExpanded(path))
-                    {
-                      BasicTreeUI.this.tree.collapsePath(path);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillCollapse(path);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeCollapsed(path);
-                    }
+                    BasicTreeUI.this.tree.collapsePath(path);
                   else
-                    {
-                      BasicTreeUI.this.tree.expandPath(path);
-                      try
-                        {
-                          BasicTreeUI.this.tree.fireTreeWillExpand(path);
-                        }
-                      catch (ExpandVetoException ev)
-                        {
-                        }
-                      BasicTreeUI.this.tree.fireTreeExpanded(path);
-                    }
+                    BasicTreeUI.this.tree.expandPath(path);
                 }
 
               BasicTreeUI.this.selectPath(BasicTreeUI.this.tree, path);
@@ -2620,8 +2540,8 @@ public class BasicTreeUI
       }
 
     if (!mod.isLeaf(startNode)
-        && tree.isExpanded(new TreePath(getPathToRoot(startNode, 0))) 
-        && mod.getChildCount(startNode) > 0)
+        && tree.isExpanded(new TreePath(getPathToRoot(startNode, 0)))
+        && !mod.isLeaf(startNode) && mod.getChildCount(startNode) > 0)
       {
         Object child = mod.getChild(startNode, 0);
         if (child != null)
@@ -2709,7 +2629,9 @@ public class BasicTreeUI
             y0 += halfHeight;
           }
 
-        int max = mod.getChildCount(curr);
+        int max = 0;
+        if (!mod.isLeaf(curr))
+          max = mod.getChildCount(curr);
         if (tree.isExpanded(new TreePath(getPathToRoot(curr, 0))))
           {
             for (int i = 0; i < max; i++)
@@ -2733,7 +2655,7 @@ public class BasicTreeUI
       }
 
     if (tree.isExpanded(new TreePath(getPathToRoot(curr, 0))))
-      if (y0 != heightOfLine && mod.getChildCount(curr) > 0)
+      if (y0 != heightOfLine && !mod.isLeaf(curr) && mod.getChildCount(curr) > 0)
         {
           g.setColor(getHashColor());
           g.drawLine(indentation + halfWidth, y0, indentation + halfWidth,
@@ -2778,7 +2700,9 @@ public class BasicTreeUI
         if (depth > 0 || tree.isRootVisible())
           descent += rowHeight;
 
-        int max = mod.getChildCount(node);
+        int max = 0;
+        if (!mod.isLeaf(node))
+          max = mod.getChildCount(node);
         if (tree.isExpanded(new TreePath(getPathToRoot(node, 0))))
           {
             if (!node.equals(mod.getRoot()))
@@ -2843,7 +2767,10 @@ public class BasicTreeUI
   private Object findNode(Object root, Object node)
   {
     TreeModel mod = tree.getModel();
-    for (int i = 0; i < mod.getChildCount(root); i++)
+    int size = 0;
+    if (!mod.isLeaf(root))
+      size = mod.getChildCount(root);
+    for (int i = 0; i < size; i++)
       {
         if (mod.getIndexOfChild(root, node) != -1)
           return root;
@@ -2931,7 +2858,7 @@ public class BasicTreeUI
   Object getNextNode(Object curr)
   {
     TreeModel mod = tree.getModel();
-    if (mod.getChildCount(curr) > 0)
+    if (!mod.isLeaf(curr) && mod.getChildCount(curr) > 0)
       return mod.getChild(curr, 0);
 
     Object node = curr;
@@ -2965,12 +2892,17 @@ public class BasicTreeUI
 
     if (sibling == null)
       return parent;
-
-    int size = mod.getChildCount(sibling);
+    
+    int size = 0;
+    if (!mod.isLeaf(sibling))
+      size = mod.getChildCount(sibling);
     while (size > 0)
       {
         sibling = mod.getChild(sibling, size - 1);
-        size = mod.getChildCount(sibling);
+        if (!mod.isLeaf(sibling))
+          size = mod.getChildCount(sibling);
+        else
+          size = 0;
       }
 
     return sibling;
@@ -2991,8 +2923,11 @@ public class BasicTreeUI
       return null;
 
     int index = mod.getIndexOfChild(parent, node) + 1;
-
-    if (index == 0 || index >= mod.getChildCount(parent))
+    
+    int size = 0;
+    if (!mod.isLeaf(parent))
+      size = mod.getChildCount(parent);
+    if (index == 0 || index >= size)
       return null;
 
     return mod.getChild(parent, index);
@@ -3013,8 +2948,11 @@ public class BasicTreeUI
       return null;
 
     int index = mod.getIndexOfChild(parent, node) - 1;
-
-    if (index < 0 || index >= mod.getChildCount(parent))
+    
+    int size = 0;
+    if (!mod.isLeaf(parent))
+      size = mod.getChildCount(parent);
+    if (index < 0 || index >= size)
       return null;
 
     return mod.getChild(parent, index);

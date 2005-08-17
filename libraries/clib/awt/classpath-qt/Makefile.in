@@ -86,8 +86,7 @@ nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libqtpeer_la_LIBADD =
 am_libqtpeer_la_OBJECTS = libqtpeer_la-componentevent.lo \
-	libqtpeer_la-eventmethods.lo libqtpeer_la-keybindings.lo \
-	libqtpeer_la-mainqtthread.lo \
+	libqtpeer_la-keybindings.lo libqtpeer_la-mainqtthread.lo \
 	libqtpeer_la-mainthreadinterface.lo \
 	libqtpeer_la-nativewrapper.lo libqtpeer_la-qmatrix.lo \
 	libqtpeer_la-qpainterpath.lo libqtpeer_la-qpen.lo \
@@ -95,6 +94,7 @@ am_libqtpeer_la_OBJECTS = libqtpeer_la-componentevent.lo \
 	libqtpeer_la-qtcanvaspeer.lo libqtpeer_la-qtcheckboxpeer.lo \
 	libqtpeer_la-qtchoicepeer.lo libqtpeer_la-qtcomponent.lo \
 	libqtpeer_la-qtcomponentpeer.lo libqtpeer_la-qtdialogpeer.lo \
+	libqtpeer_la-qtembeddedwindowpeer.lo \
 	libqtpeer_la-qtfiledialogpeer.lo libqtpeer_la-qtfontmetrics.lo \
 	libqtpeer_la-qtfontpeer.lo libqtpeer_la-qtframepeer.lo \
 	libqtpeer_la-qtgraphics.lo libqtpeer_la-qtimage.lo \
@@ -441,7 +441,7 @@ libqtpeer_la_SOURCES = \
         componentevent.cpp \
         componentevent.h \
         containers.h \
-        eventmethods.cpp \
+        eventmethods.h \
         keybindings.cpp \
         keybindings.h \
         mainqtthread.cpp \
@@ -461,6 +461,7 @@ libqtpeer_la_SOURCES = \
         qtcomponent.h \
         qtcomponentpeer.cpp \
         qtdialogpeer.cpp \
+	qtembeddedwindowpeer.cpp \
         qtfiledialogpeer.cpp \
         qtfont.h \
         qtfontmetrics.cpp \
@@ -564,7 +565,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-componentevent.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-eventmethods.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-keybindings.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-mainqtthread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-mainthreadinterface.Plo@am__quote@
@@ -580,6 +580,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtcomponent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtcomponentpeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtdialogpeer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtembeddedwindowpeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtfiledialogpeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtfontmetrics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libqtpeer_la-qtfontpeer.Plo@am__quote@
@@ -632,13 +633,6 @@ libqtpeer_la-componentevent.lo: componentevent.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='componentevent.cpp' object='libqtpeer_la-componentevent.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -c -o libqtpeer_la-componentevent.lo `test -f 'componentevent.cpp' || echo '$(srcdir)/'`componentevent.cpp
-
-libqtpeer_la-eventmethods.lo: eventmethods.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -MT libqtpeer_la-eventmethods.lo -MD -MP -MF "$(DEPDIR)/libqtpeer_la-eventmethods.Tpo" -c -o libqtpeer_la-eventmethods.lo `test -f 'eventmethods.cpp' || echo '$(srcdir)/'`eventmethods.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libqtpeer_la-eventmethods.Tpo" "$(DEPDIR)/libqtpeer_la-eventmethods.Plo"; else rm -f "$(DEPDIR)/libqtpeer_la-eventmethods.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='eventmethods.cpp' object='libqtpeer_la-eventmethods.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -c -o libqtpeer_la-eventmethods.lo `test -f 'eventmethods.cpp' || echo '$(srcdir)/'`eventmethods.cpp
 
 libqtpeer_la-keybindings.lo: keybindings.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -MT libqtpeer_la-keybindings.lo -MD -MP -MF "$(DEPDIR)/libqtpeer_la-keybindings.Tpo" -c -o libqtpeer_la-keybindings.lo `test -f 'keybindings.cpp' || echo '$(srcdir)/'`keybindings.cpp; \
@@ -744,6 +738,13 @@ libqtpeer_la-qtdialogpeer.lo: qtdialogpeer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='qtdialogpeer.cpp' object='libqtpeer_la-qtdialogpeer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -c -o libqtpeer_la-qtdialogpeer.lo `test -f 'qtdialogpeer.cpp' || echo '$(srcdir)/'`qtdialogpeer.cpp
+
+libqtpeer_la-qtembeddedwindowpeer.lo: qtembeddedwindowpeer.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -MT libqtpeer_la-qtembeddedwindowpeer.lo -MD -MP -MF "$(DEPDIR)/libqtpeer_la-qtembeddedwindowpeer.Tpo" -c -o libqtpeer_la-qtembeddedwindowpeer.lo `test -f 'qtembeddedwindowpeer.cpp' || echo '$(srcdir)/'`qtembeddedwindowpeer.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libqtpeer_la-qtembeddedwindowpeer.Tpo" "$(DEPDIR)/libqtpeer_la-qtembeddedwindowpeer.Plo"; else rm -f "$(DEPDIR)/libqtpeer_la-qtembeddedwindowpeer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='qtembeddedwindowpeer.cpp' object='libqtpeer_la-qtembeddedwindowpeer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -c -o libqtpeer_la-qtembeddedwindowpeer.lo `test -f 'qtembeddedwindowpeer.cpp' || echo '$(srcdir)/'`qtembeddedwindowpeer.cpp
 
 libqtpeer_la-qtfiledialogpeer.lo: qtfiledialogpeer.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libqtpeer_la_CXXFLAGS) $(CXXFLAGS) -MT libqtpeer_la-qtfiledialogpeer.lo -MD -MP -MF "$(DEPDIR)/libqtpeer_la-qtfiledialogpeer.Tpo" -c -o libqtpeer_la-qtfiledialogpeer.lo `test -f 'qtfiledialogpeer.cpp' || echo '$(srcdir)/'`qtfiledialogpeer.cpp; \

@@ -74,7 +74,7 @@ public class QtComponentGraphics extends QtGraphics
     r.setLocation(0, 0);
     initialClip = r;
     
-    currentAlpha = 1.0;
+    setAlpha( 1.0 );
     Color c = component.owner.getBackground();
     if(c == null)
       setBackground(Color.white);
@@ -86,9 +86,8 @@ public class QtComponentGraphics extends QtGraphics
       setColor( Color.black );
     else
       setColor( c );
-
     setup();
-    setClip( initialClip );
+    //    setClip( initialClip );
   }
 
   /**
@@ -101,6 +100,7 @@ public class QtComponentGraphics extends QtGraphics
 
   public Graphics create()
   {
+    System.out.println("Componentgraphics.create()");
     return new QtComponentGraphics( this );
   }
 

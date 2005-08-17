@@ -56,11 +56,14 @@ public:
 
 #define I_KNOW_WHAT_IM_DOING
 #define PARENT QWidget
-#include "eventmethods.cpp"
+#include "eventmethods.h"
 #undef I_KNOW_WHAT_IM_DOING
 #undef PARENT
 };
 
+/**
+ * Init
+ */
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtPanelPeer_init
 (JNIEnv *env, jobject obj)
 {

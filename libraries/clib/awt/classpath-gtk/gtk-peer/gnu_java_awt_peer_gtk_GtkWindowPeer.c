@@ -260,19 +260,11 @@ static jmethodID postConfigureEventID;
 static jmethodID postInsetsChangedEventID;
 static jmethodID windowGetWidthID;
 static jmethodID windowGetHeightID;
-static jmethodID setBoundsCallbackID;
 
 void
 cp_gtk_window_init_jni (void)
 {
-  jclass window;
   jclass gtkwindowpeer;
-
-  window = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(), "java/awt/Window");
-
-  setBoundsCallbackID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), window,
-                                                   "setBoundsCallback",
-                                                   "(IIII)V");
 
   gtkwindowpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
                                            "gnu/java/awt/peer/gtk/GtkWindowPeer");
@@ -1346,17 +1338,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_toFront (JNIEnv *env,
   gdk_flush ();
 
   gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkWindowPeer_setBoundsCallback
-  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
-   jobject window, jint x, jint y, jint width, jint height)
-{
-  /* Circumvent package-private access to call Window's
-     setBoundsCallback method. */
-  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), window, setBoundsCallbackID,
-			      x, y, width, height);
 }
 
 JNIEXPORT void JNICALL

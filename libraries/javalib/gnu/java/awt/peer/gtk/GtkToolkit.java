@@ -88,7 +88,6 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 {
   Hashtable containers = new Hashtable();
   static EventQueue q;
-  static Clipboard systemClipboard;
   static boolean useGraphics2dSet;
   static boolean useGraphics2d;
 
@@ -124,11 +123,18 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
     // Register ImageIO SPIs
     GdkPixbufDecoder.registerSpis( IIORegistry.getDefaultInstance() );
+
+    new Thread ("GTK main thread")
+    {
+      public void run ()
+      {
+	gtkMain ();
+      }
+    }.start ();
   }
 
   public GtkToolkit ()
   {
-    systemClipboard = new GtkClipboard ();
   }
 
   public native void beep();
@@ -398,7 +404,11 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public Clipboard getSystemClipboard() 
   {
-    return systemClipboard;
+    SecurityManager secman = System.getSecurityManager();
+    if (secman != null)
+      secman.checkSystemClipboardAccess();
+
+    return GtkClipboard.getInstance();
   }
 
   /**
@@ -644,8 +654,5 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return new GdkRobotPeer (screen);
   }
 
-  public native boolean nativeQueueEmpty();
-  public native void wakeNativeQueue();  
-  public native void iterateNativeQueue(EventQueue locked, boolean block);
-
+  public static native void gtkMain();
 } // class GtkToolkit

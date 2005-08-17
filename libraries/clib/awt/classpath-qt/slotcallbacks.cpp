@@ -40,7 +40,10 @@ exception statement from your version. */
 #include <QAbstractSlider>
 #include <QAction>
 #include <QComboBox>
+#include <QListWidget>
+#include <QLineEdit>
 #include <QPushButton>
+#include <QTextEdit>
 #include <gnu_java_awt_peer_qt_QtButtonPeer.h>
 #include "qtcomponent.h"
 #include "qtstrings.h"
@@ -67,6 +70,7 @@ private:
 
 public:
   QScrollBar *sb; // used only by the scrollbar method.
+  QListWidget *lw; // used only by the listitemclicked method
 
   SlotCallback(JNIEnv *env, jobject t)
   {  
@@ -82,7 +86,8 @@ public:
     env->DeleteGlobalRef(target);
   }
 
-public slots:
+  public slots:
+
   void buttonClicked()
   {
     JNIEnv *env;
@@ -91,7 +96,7 @@ public slots:
     fireEventID = env->GetMethodID( componentCls,
 				    "fireClick", 
 				    "(I)V" );
-    int modifiers = getKeyModifiers( QApplication::keyboardModifiers() );
+    int modifiers = getAEKeyModifiers( QApplication::keyboardModifiers() );
     env->CallVoidMethod( target, fireEventID, modifiers );
     env->DeleteLocalRef( componentCls );
   }
@@ -110,7 +115,8 @@ public slots:
       env->CallVoidMethod( target, fireEventID, JNI_FALSE );
     env->DeleteLocalRef( componentCls );
   }
-  
+
+  // Used for List and Choice
   void choiceActivated( int index )
   {
     JNIEnv *env;
@@ -120,6 +126,18 @@ public slots:
 				    "fireChoice", 
 				    "(I)V" );
     env->CallVoidMethod( target, fireEventID, (jint)index );
+    env->DeleteLocalRef( componentCls );
+  }
+
+  void textChanged()
+  {
+    JNIEnv *env;
+    vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+    componentCls = env->GetObjectClass( target );
+    fireEventID = env->GetMethodID( componentCls,
+				    "textChanged", 
+				    "()V" );
+    env->CallVoidMethod( target, fireEventID );
     env->DeleteLocalRef( componentCls );
   }
 
@@ -163,6 +181,20 @@ public slots:
     env->CallVoidMethod( target, fireEventID, (jint)type, (jint)index );
     env->DeleteLocalRef( componentCls );
   }
+
+  void listItemClicked( QListWidgetItem * item )
+  {
+    int index = lw->row( item );
+    JNIEnv *env;
+    vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+    componentCls = env->GetObjectClass( target );
+    fireEventID = env->GetMethodID( componentCls,
+				    "itemDoubleClicked", 
+				    "(II)V" );
+    int modifiers = getAEKeyModifiers( QApplication::keyboardModifiers() );
+    env->CallVoidMethod( target, fireEventID, index, modifiers );
+    env->DeleteLocalRef( componentCls );
+  }
 };
 
 #include "slotcallbacks.moc.h"
@@ -177,6 +209,16 @@ void connectChoice(QComboBox *choice, JNIEnv *env, jobject choiceobj)
 {
   SlotCallback *scb = new SlotCallback(env, choiceobj);
   QObject::connect( choice, SIGNAL( activated(int) ), scb, SLOT( choiceActivated(int) ) );
+}
+
+void connectList(QListWidget *list, JNIEnv *env, jobject listobj)
+{
+  SlotCallback *scb = new SlotCallback(env, listobj);
+  scb->lw = list;
+  QObject::connect( list, SIGNAL( currentRowChanged(int) ), 
+		    scb, SLOT( choiceActivated(int) ) );
+  QObject::connect( list, SIGNAL( itemDoubleClicked( QListWidgetItem * )), 
+		    scb, SLOT( listItemClicked( QListWidgetItem * )));
 }
 
 void connectAction(QAction *action, JNIEnv *env, jobject obj)
@@ -197,3 +239,18 @@ void connectScrollBar(QScrollBar *scroll, JNIEnv *env, jobject obj)
   scb->sb = scroll;
   QObject::connect( scroll, SIGNAL( actionTriggered(int) ), scb, SLOT( scrollBarAction(int) ) );
 }
+
+void connectTextEdit(QTextEdit *edit, JNIEnv *env, jobject obj)
+{
+  SlotCallback *scb = new SlotCallback(env, obj);
+  QObject::connect( edit, SIGNAL( textChanged() ), 
+		    scb, SLOT( textChanged() ) );
+}
+
+void connectLineEdit(QLineEdit *edit, JNIEnv *env, jobject obj)
+{
+  SlotCallback *scb = new SlotCallback(env, obj);
+  QObject::connect( edit, SIGNAL(textChanged( QString ) ), 
+		    scb, SLOT( textChanged() ) );
+}
+

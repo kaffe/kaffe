@@ -37,7 +37,7 @@ libqtpeer_la_SOURCES = \
         componentevent.cpp \
         componentevent.h \
         containers.h \
-        eventmethods.cpp \
+        eventmethods.h \
         keybindings.cpp \
         keybindings.h \
         mainqtthread.cpp \
@@ -57,6 +57,7 @@ libqtpeer_la_SOURCES = \
         qtcomponent.h \
         qtcomponentpeer.cpp \
         qtdialogpeer.cpp \
+	qtembeddedwindowpeer.cpp \
         qtfiledialogpeer.cpp \
         qtfont.h \
         qtfontmetrics.cpp \

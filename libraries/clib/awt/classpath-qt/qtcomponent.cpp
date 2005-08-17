@@ -49,10 +49,10 @@ exception statement from your version. */
  */
 void *getParentWidget( JNIEnv *env, jobject qtcomponentpeer )
 {
-  jclass componentCls = env->FindClass( COMPONENT_CLASS );
+  jclass componentCls = env->GetObjectClass( qtcomponentpeer );
   jfieldID ownerField = env->GetFieldID( componentCls,
 					 "owner", "Ljava/awt/Component;" );
-
+  assert( ownerField );
   jobject owner = env->GetObjectField( qtcomponentpeer, ownerField );
   if (owner == NULL)
     return NULL;

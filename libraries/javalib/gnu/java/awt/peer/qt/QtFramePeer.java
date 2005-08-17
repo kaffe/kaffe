@@ -61,11 +61,19 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
   {
     super.setup();
     setTitle( ((Frame)owner).getTitle() );
+    if( ((Frame)owner).getMenuBar() != null )
+      setMenuBar( ((Frame)owner).getMenuBar() );
   }
 
-  private native void setIcon(QtImage image);
+  private void setIcon(QtImage image)
+  {
+    // FIXME - Implement!
+  }
 
-  private native void setMaximizedBounds(int w, int h);
+  private void setMaximizedBounds(int w, int h)
+  {
+    // FIXME - Implement.
+  }
 
   private native void setMenu(QtMenuBarPeer mb);
 
@@ -86,14 +94,10 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
 
   public Insets getInsets()
   {
-    int mbHeight;
-    if( ((Frame)owner).getMenuBar() != null )
-      mbHeight = menuBarHeight();
-    else
-      mbHeight = 0;
+    int mbHeight = ( ((Frame)owner).getMenuBar() != null ) ? 
+      menuBarHeight() : 0;
 
-    // FIXME : more accurate?
-    return new Insets(0, 0, mbHeight, 0);
+    return new Insets(mbHeight, 0, 0, 0);
   }
 
   public void setIconImage(Image im)
@@ -110,14 +114,18 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
 
   public void setMenuBar(MenuBar mb)
   {
-    if( mb != null)
+    if( mb != null )
       {
 	QtMenuBarPeer mbpeer = (QtMenuBarPeer)mb.getPeer();
-	if( mbpeer != null)
+	if( mbpeer == null )
 	  {
-	    mbpeer.addMenus();
-	    setMenu( mbpeer );
+	    mb.addNotify();
+	    mbpeer = (QtMenuBarPeer)mb.getPeer();
+	    if( mbpeer == null )
+	      throw new IllegalStateException("No menu bar peer.");
 	  }
+	mbpeer.addMenus();
+	setMenu( mbpeer );
       } 
     else
       setMenu( null );

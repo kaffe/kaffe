@@ -133,7 +133,6 @@ public class QtToolkit extends ClasspathToolkit
   private static void initToolkit()
   {
     eventQueue = new EventQueue();
-
     System.loadLibrary("qtpeer");
 
     String theme = null;
@@ -465,7 +464,7 @@ public class QtToolkit extends ClasspathToolkit
 
   public boolean nativeQueueEmpty()
   {
-    return true;
+    return false;
   }
 
   public void wakeNativeQueue()

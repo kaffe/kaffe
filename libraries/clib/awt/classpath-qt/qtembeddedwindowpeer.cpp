@@ -1,4 +1,4 @@
-/* QtMenuBarPeer.java -- Qt peer for a menu bar.
+/* qtembeddedwindowpeer.cpp --
    Copyright (C)  2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -35,70 +35,79 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.java.awt.peer.qt;
+#include <assert.h>
+#include <QWidget>
+#include <QX11EmbedWidget>
+#include <gnu_java_awt_peer_qt_QtEmbeddedWindowPeer.h>
+#include "qtcomponent.h"
+#include "keybindings.h"
+#include "mainthreadinterface.h"
 
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.peer.MenuBarPeer;
-import java.util.Vector;
+/**
+ * Event wrapper for embedding.
+ */
+class EmbedEvent : public AWTEvent {
+  
+ private:
+  QX11EmbedWidget *widget;
+  WId id;
+  
+ public:
+  EmbedEvent(QX11EmbedWidget *w, WId i) : AWTEvent()
+  {
+    widget = w;
+    id = i;
+  }
 
-public class QtMenuBarPeer extends QtMenuComponentPeer implements MenuBarPeer
+  void runEvent()
+  {
+    widget->embedInto( id );
+  }
+};
+
+
+class MyEmbeddedPanel : public QX11EmbedWidget
 {
-  public QtMenuBarPeer( QtToolkit kit, MenuBar owner )
+public:
+  MyEmbeddedPanel(JNIEnv *env, jobject obj, QWidget *parent) : QX11EmbedWidget( parent )
   {
-    super( kit, owner );
+    setup(env, obj);
   }
+
+  ~MyEmbeddedPanel()
+  {
+    destroy();
+  }
+
+#define I_KNOW_WHAT_IM_DOING
+#define PARENT QX11EmbedWidget
+#include "eventmethods.h"
+#undef I_KNOW_WHAT_IM_DOING
+#undef PARENT
+};
+
+/**
+ * Init
+ */ 
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtEmbeddedWindowPeer_init
+(JNIEnv *env, jobject obj)
+{
+  QWidget *parentWidget = (QWidget *) getParentWidget( env, obj );  
+  QWidget *panel = new MyEmbeddedPanel( env, obj, parentWidget );
+  assert( panel );
   
-  protected native void init();
+  setNativeObject( env, obj, panel );
+}
+
+/**
+ * Embed the thing.
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtEmbeddedWindowPeer_embed
+(JNIEnv *env, jobject obj, jlong wid)
+{
+  MyEmbeddedPanel *panel = (MyEmbeddedPanel *)getNativeObject( env, obj );
+  assert( panel );
   
-  protected void setup()
-  {
-  }
-
-  /** 
-   * Recurses the menubar adding menus (and menu items), 
-   * called from the Frame peer.
-   */
-  void addMenus()
-  {
-    MenuBar o = (MenuBar)owner;
-    System.out.println("addMenus:"+o.getMenuCount());
-    int help = (o.getHelpMenu() != null) ? 1 : 0;
-    for (int i = 0; i < o.getMenuCount() - help; i++)
-      addMenu( o.getMenu(i) );
-     if(o.getHelpMenu() != null)
-       addHelpMenu( o.getHelpMenu() );
-  }
-
-  private native void addMenu( QtMenuPeer mp );
-
-  private native void addHelpMenu( QtMenuPeer mp );
-
-  private native void delMenu( QtMenuPeer mp );
-
-  // ************ Public methods *********************
-
-  public void addMenu( Menu m )
-  {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addMenu( (QtMenuPeer)m.getPeer() );
-  }
-
-  public void addHelpMenu( Menu m )
-  {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addHelpMenu( (QtMenuPeer)m.getPeer() );
-  }
-
-  public void delMenu( int index )
-  {
-    Menu m = ((MenuBar)owner).getMenu( index );
-    if(m != null)
-      delMenu( (QtMenuPeer)m.getPeer() );
-  }
+  mainThread->postEventToMain( new EmbedEvent( panel, (WId)wid ) );
 }
 

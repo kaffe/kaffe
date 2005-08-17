@@ -99,19 +99,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtWindowPeer_init
 }
 
 /*
- * Destructor
- */
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtWindowPeer_destroy
-(JNIEnv *env, jobject obj)
-{
-  QWidget *window = (QWidget *) getNativeObject( env, obj );
-  assert( window );
-
-  setNativeObject(env, obj, NULL);
-  delete window;
-}
-
-/*
  * Lower the window.
  */
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtWindowPeer_toBack

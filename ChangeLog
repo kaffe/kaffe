@@ -1,3 +1,329 @@
+2005-08-18  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-17  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JList.java:
+        (indexToLocation): Implemented.
+        (getLastVisibleIndex): If the last index in the list is showing and
+        there is extra room at the bottom, return the last index, not -1.
+
+	2005-08-17  Lillian Angel <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getCellLocation): Added in check if node is a leaf.
+        Shouldnt call getChildCount if a leaf. May cause NPE.
+        (paintRecursive): Likewise.
+        (paintControlIcons): Likewise.
+        (findNode): Likewise.
+        (getNextNode): Likewise.
+        (getPreviousNode): Likewise.
+        (getNextSibling): Likewise.
+        (getPreviousSibling): Likewise.
+
+	2005-08-17  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/tree/DefaultTreeCellRenderer.java
+        (paint): paints the background and border of cell.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        Reported by Ingo Proetel  <proetel@aicas.com>
+        * java/awt/image/DirectColorModel.java
+        (createCompatibleWritableRaster): Added argument check.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/FontMetrics.java
+        (charWidth(int)): Correctly map Unicode indices to char[] here.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * java/lang/Character.java
+        (toChars(int)): New JDK1.5 method.
+        (toChars(int, char[], int)): New JDK1.5 method.
+        (charCount): New JDK1.5 method.
+        (isSupplementaryCodePoint): New JDK1.5 method.
+        (isValidCodePoint): New JDK1.5 method.
+
+	2005-08-17  Lillian Angel  <langel@redhat.com>
+
+        * java/awt/FontMetrics.java
+        (charWidth): Reversed Roman's patch, was not compiling.
+        * javax/swing/tree/DefaultTreeCellRenderer.java
+        (getTreeCellRendererComponent): Set Opaque to true for
+        painting reasons.
+
+	2005-08-17  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/awt/peer/qt/QtFramePeer.java (setIcon): Mark non-native
+        and add FIXME.
+        (setMaximizedBounds): Likewise.
+        * include/gnu_java_awt_peer_qt_QtFramePeer.h: Regenerated.
+        * native/jni/qt-peer/.cvsignore: New file.
+        * native/jni/qt-peer/Makefile.am (libqtpeer_la_SOURCES):
+        Remove eventmethods.h.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicLabelUI.java
+        (paint): Don't paint the border here. If there is a border to
+        be painted, this is usually performed in JComponent.paint().
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/FontMetrics.java
+        (charWidth(int)): Correctly map Unicode indices to char[] here.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/Component.java
+        This applies to various variants of the repaint() methods:
+        (repaint): If the component is not showing, forward repaint
+        request to the parent.
+
+	2005-08-17  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicLabelUI.java
+        (paint): Don't fill the background here. If the label is opaque
+        then the background is filled in ComponentUI.update(), otherwise
+        it must not be touched.
+
+	2005-08-17  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java
+        (setComponentBounds): Don't post COMPONENT_RESIZED event.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (setBoundsCallbackID): Remove variable.
+        (cp_gtk_window_init_jni): Don't initialize setBoundsCallbackID.
+        (setBoundsCallback): Remove method.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+        (setMenuBarPeer): Check if menubar is NULL.
+        (setMenuBarWidth): Likewise.
+        * java/awt/Window.java (dispatchEventImpl): Validate upon
+        receiving a COMPONENT_RESIZED event.
+        (setBoundsCallback): Remove method.
+        * include/gnu_java_awt_peer_gtk_GtkWindowPeer.h: Regenerate.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java (setBoundsCallback):
+        Remove method declaration.
+        (postConfigureEvent): Separate handling of resizes and moves.
+        Call setSize and post COMPONENT_RESIZED event.
+        * gnu/java/awt/peer/gtk/GtkFramePeer.java (postConfigureEvent):
+        Separate handling of resizes and moves.  Call setSize.
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java
+        (setComponentBounds): Call setSize and post COMPONENT_RESIZED
+        event.
+        * gnu/java/awt/peer/gtk/GtkContainerPeer.java (isValidating):
+        Remove field.
+
+	2005-08-16  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/qt/QtButtonPeer.java
+        * gnu/java/awt/peer/qt/QtCheckboxPeer.java
+        * gnu/java/awt/peer/qt/QtChoicePeer.java
+        * gnu/java/awt/peer/qt/QtComponentGraphics.java
+        * gnu/java/awt/peer/qt/QtComponentPeer.java
+        * gnu/java/awt/peer/qt/QtContainerPeer.java
+        * gnu/java/awt/peer/qt/QtDialogPeer.java
+        * gnu/java/awt/peer/qt/QtFontPeer.java
+        * gnu/java/awt/peer/qt/QtFramePeer.java
+        * gnu/java/awt/peer/qt/QtGraphics.java
+        * gnu/java/awt/peer/qt/QtImage.java
+        * gnu/java/awt/peer/qt/QtImageGraphics.java
+        * gnu/java/awt/peer/qt/QtListPeer.java
+        * gnu/java/awt/peer/qt/QtMenuBarPeer.java
+        * gnu/java/awt/peer/qt/QtMenuItemPeer.java
+        * gnu/java/awt/peer/qt/QtMenuPeer.java
+        * gnu/java/awt/peer/qt/QtScrollbarPeer.java
+        * gnu/java/awt/peer/qt/QtTextAreaPeer.java
+        * gnu/java/awt/peer/qt/QtTextFieldPeer.java
+        * gnu/java/awt/peer/qt/QtToolkit.java
+        * gnu/java/awt/peer/qt/QtWindowPeer.java
+        * native/jni/qt-peer/keybindings.cpp
+        * native/jni/qt-peer/keybindings.h
+        * native/jni/qt-peer/qtbuttonpeer.cpp
+        * native/jni/qt-peer/qtcanvaspeer.cpp
+        * native/jni/qt-peer/qtcheckboxpeer.cpp
+        * native/jni/qt-peer/qtchoicepeer.cpp
+        * native/jni/qt-peer/qtcomponent.cpp
+        * native/jni/qt-peer/qtcomponentpeer.cpp
+        * native/jni/qt-peer/qtdialogpeer.cpp
+        * native/jni/qt-peer/qtframepeer.cpp
+        * native/jni/qt-peer/qtgraphics.cpp
+        * native/jni/qt-peer/qtimage.cpp
+        * native/jni/qt-peer/qtlabelpeer.cpp
+        * native/jni/qt-peer/qtlistpeer.cpp
+        * native/jni/qt-peer/qtmenupeer.cpp
+        * native/jni/qt-peer/qtpanelpeer.cpp
+        * native/jni/qt-peer/qtscrollbarpeer.cpp
+        * native/jni/qt-peer/qtscrollpanepeer.cpp
+        * native/jni/qt-peer/qttextareapeer.cpp
+        * native/jni/qt-peer/qttextfieldpeer.cpp
+        * native/jni/qt-peer/qtwindowpeer.cpp
+        * native/jni/qt-peer/slotcallbacks.cpp
+        * native/jni/qt-peer/slotcallbacks.h
+        Reindented, Transmogrified and Wielaardituded.
+        * gnu/java/awt/peer/qt/QtEmbeddedWindowPeer.java
+        * native/jni/qt-peer/eventmethods.h
+        * native/jni/qt-peer/qtembeddedwindowpeer.cpp
+        * native/jni/qt-peer/slotcallbacks.moc.h
+        New files
+        * native/jni/qt-peer/eventmethods.cpp
+        * native/jni/qt-peer/slotcallbacks.moc
+        Removed.
+
+	2005-08-16  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/text/PasswordView.java
+        (drawUnselectedText): Fixed so the password is drawn correctly
+        in the text box and no * characters are drawn before anything
+        was typed.
+
+	2005-08-16  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/java/awt/peer/gtk/GtkClipboard.java: Reimplemented.
+        * gnu/java/awt/peer/gtk/GtkClipboardNotifier.java: New class.
+        * gnu/java/awt/peer/gtk/GtkSelection.java: New class.
+        * gnu/java/awt/peer/gtk/GtkImage.java (GtkImage(Pointer)): New
+        constructor.
+        (createFromPixbuf): New private native method.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java (systemClipboard): Removed.
+        (getSystemClipboard): Do security check and return
+        GtkClipboard.getInstance().
+        * include/Makefile.am: Add gnu_java_awt_peer_gtk_GtkSelection.h.
+        * include/gnu_java_awt_peer_gtk_GtkClipboard.h: Regenerated.
+        * include/gnu_java_awt_peer_gtk_GtkImage.h: Regenerated.
+        * include/gnu_java_awt_peer_gtk_GtkSelection.h: New header file.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c:
+        Reimplemented.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+        (Java_gnu_java_awt_peer_gtk_GtkImage_createFromPixbuf): New
+
+	2005-08-16  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (ActionListenerProxy): Replaced type TableAction with parent type
+        ActionListener to avoid Semantic errors.
+
+	2005-08-16  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        (initComponentDefaults): Fixed typo.
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (installKeyboardActions): Replaced calls to registerKeyboardAction with
+        additions to an explicit InputMap-ActionMap pair and then set this
+        pair as the parent pair to the JTable's.  This matches the JDK where
+        the UI Input-Action pairs are the parents of the component's.
+        (ActionListenerProxy): New class.
+
+	2005-08-16  Mark Wielaard  <mark@klomp.org>
+
+        * examples/gnu/classpath/examples/datatransfer/Demo.java:
+        Document and implement ItemListener and FlavorListener.
+        (flavors): New field.
+        (details): New field.
+        (Demo): Add more space, add the flavors panel and flavor listener.
+        (createTextPanel): Smaller and wider.
+        (createFlavorsPanel): New private method.
+        (flavorsChanged): New public method.
+        (itemStateChanged): Likewise.
+        (ImageComponent.ImageComponent): Smaller default.
+        (ObjectComponent.ObjectComponent): Make wider.
+        (FlavorsComponent): New static class.
+        (FlavorDetailsComponent): Likewise.
+
+	2005-08-16  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Changed font for PasswordField because textbox was
+        being drawn at an awkward height.
+        * javax/swing/text/PasswordView.java
+        (getPreferredSpan): Implemented
+        (modelToView): likewise.
+        (viewToModel): partially implemented.
+
+	2005-08-16  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/awt/Component.java
+        (dispatchEventImpl): Always call peer.handleEvent().
+
+	2005-08-16  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/awt/Container.java
+        (addImpl, remove): Only repaint if the container is showing.
+
+	2005-08-16  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+        (Java_gnu_java_awt_peer_gtk_GtkToolkit_nativeQueueEmpty): Removed.
+
+	2005-08-15  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JPasswordField.java
+        (getText): Fixed the length of the string to retrieve.
+
+	2005-08-15  Sven de Marothy  <sven@physto.se>
+
+        * java/awt/TextComponent.java
+        (select): Fix typo.
+
+	2005-08-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JComponent.java:
+        (processKeyEvent): Added functionality for processing key events in
+        non-focused components using the WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+        field.
+        * javax/swing/plaf/basic/BasicTableUI.java:
+        (installKeyboardActions): Changed key bindings to be registered as
+        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT rather than as WHEN_FOCUSED.
+        (TableAction.actionPerformed): If the key action is anything besides
+        "start editing" then we stop editing if we are doing so.  Repaint the
+        table at the end of this method.
+
+	2005-08-15  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JPasswordField.java
+        (echoCharIsSet): Fixed this to work according to API.
+        (getText): Implemented
+        (getText): Implemented
+        (getPassword): Implemented
+        (paramString): Implemented
+
+	2005-08-15  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/ClasspathToolkit.java (nativeQueueEmpty): Remove
+        method.
+        (wakeNativeQueue): Likewise.
+        (iterateNativeQueue): Likewise.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java (static): Start GTK main
+        thread.
+        (nativeQueueEmpty): Remove method.
+        (wakeNativeQueue): Likewise.
+        (iterateNativeQueue): Likewise.
+        (gtkMain): New method.
+        * include/gnu_java_awt_peer_gtk_GtkToolkit.h: Regenerate.
+        * java/awt/EventQueue.java: Remove references to ClasspathToolkit.
+        * java/awt/Frame.java (fireDummyEvent): Remove method.
+        Remove calls to fireDummyEvent.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c
+        (dispose): Don't wake up main thread.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c: Remove
+        single-thread code.
+
+	2005-08-15  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JTree.java
+        (expandPath): called fireTreeWillExpand and fireTreeExpanded
+        since it is not required that the calling class fires these
+        events.
+        (collapsePath): Likewise.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (mouseClicked): Took out code that called fireTreeWillExpand/
+        fireTreeWillCollapse and fireTreeExpanded/fireTreeCollapsed.
+        (keyPressed): Likewise.
+
 2005-08-17  Andreas Tobler  <a.tobler@schweiz.ch>
 
 	* m4/acx_pthread.m4: Detect -pthreads first. Fixes

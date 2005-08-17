@@ -46,7 +46,6 @@ import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GraphicsDevice;
@@ -171,9 +170,4 @@ public abstract class ClasspathToolkit
    * @param w The embedded window with which to associate a peer.
    */
   public abstract EmbeddedWindowPeer createEmbeddedWindow (EmbeddedWindow w);
-
-  public abstract boolean nativeQueueEmpty();
-  public abstract void wakeNativeQueue();  
-  public abstract void iterateNativeQueue(EventQueue locked, boolean block);
 }
-

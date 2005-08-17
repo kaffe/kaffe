@@ -13,6 +13,7 @@
 int mapKeyCode(QKeyEvent *key);
 int getUnicode(QKeyEvent *key);
 int getKeyModifiers(Qt::KeyboardModifiers state);
+int getAEKeyModifiers(Qt::KeyboardModifiers state);
 int getMouseModifiers(QMouseEvent *event);
 
 #endif

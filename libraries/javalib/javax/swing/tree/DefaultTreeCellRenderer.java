@@ -41,7 +41,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.border.Border;
@@ -50,6 +52,7 @@ import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.UIResource;
 
 /**
@@ -119,7 +122,7 @@ public class DefaultTreeCellRenderer
 	 * borderSelectionColor
 	 */
 	protected Color borderSelectionColor;
-	
+    	
 
 	// -------------------------------------------------------------
 	// Initialization ---------------------------------------------
@@ -400,13 +403,14 @@ public class DefaultTreeCellRenderer
 		{
 			super.setBackground(getBackgroundSelectionColor());
 			setForeground(getTextSelectionColor());
-      setBorder(UIManager.getLookAndFeelDefaults().getBorder("Tree.selectionBorder"));
+            setBorderSelectionColor(UIManager.getLookAndFeelDefaults()
+                                    .getColor("Tree.selectionBorderColor"));
 		}
 		else
 		{
 			super.setBackground(getBackgroundNonSelectionColor());
 			setForeground(getTextNonSelectionColor());
-      setBorder(UIManager.getLookAndFeelDefaults().getBorder("Tree.nonSelectionBorder"));
+            setBorderSelectionColor(null);
 		}
 
 		return this;
@@ -421,19 +425,45 @@ public class DefaultTreeCellRenderer
 	{
 		return super.getFont();
 	}
-
+    
 	/**
-	 * paint
+	 * Paints the value. The background is filled based on selected.
 	 * 
 	 * @param g the graphics device.
 	 */
 	public void paint(Graphics g)
-	{
-		super.paint(g);
-	}
+    {
+      // paint background  
+      Rectangle vr = new Rectangle();
+      Rectangle ir = new Rectangle();
+      Rectangle tr = new Rectangle();
+      Insets insets = UIManager.getLookAndFeelDefaults()
+              .getBorder("Tree.selectionBorder").getBorderInsets(this);
+      FontMetrics fm = getToolkit().getFontMetrics(getFont());
+      SwingUtilities.layoutCompoundLabel(((JLabel) this), fm, getText(),
+                                         getIcon(), getVerticalAlignment(),
+                                         getHorizontalAlignment(),
+                                         getVerticalTextPosition(),
+                                         getHorizontalTextPosition(), vr, ir, tr,
+                                         getIconTextGap());
+      
+      g.setColor(super.getBackground());
+      g.fillRect(tr.x, tr.y, tr.width, tr.height - insets.top - 
+                 insets.bottom);
+      
+      // paint border
+      Color b = getBorderSelectionColor();
+      if (b != null)
+        {
+          g.setColor(b);
+          g.drawRect(tr.x, tr.y, tr.width, tr.height - insets.top - 
+                     insets.bottom);
+        }
+      super.paint(g);
+    }
 
 	/**
-	 * getPreferredSize
+	 * returns the preferred size of the cell.
 	 * 
 	 * @returns Dimension
 	 */

@@ -596,8 +596,7 @@ public class JList extends JComponent implements Accessible, Scrollable
    * @return location of the cell located at the specified index in the list.
    */
    public Point indexToLocation(int index){
-   	//FIXME: Need to implement.
-	return null;
+     return getCellBounds(index, index).getLocation();
    }
 
   /**
@@ -605,7 +604,7 @@ public class JList extends JComponent implements Accessible, Scrollable
    * {@link #visibleRect} property, depending on the {@link
    * #componentOrientation} property.
    *
-   * @return The index of the first visible list cell, or <code>-1</code>
+   * @return The index of the last visible list cell, or <code>-1</code>
    * if none is visible.
    */
   public int getLastVisibleIndex()
@@ -615,7 +614,10 @@ public class JList extends JComponent implements Accessible, Scrollable
     r.translate(0, (int) r.getHeight() - 1);
     if (or == ComponentOrientation.LEFT_TO_RIGHT)
       r.translate((int) r.getWidth() - 1, 0);
-    return getUI().locationToIndex(this, r.getLocation());      
+    if (getUI().locationToIndex(this, r.getLocation()) == -1
+        && indexToLocation(getModel().getSize() - 1).y < r.y)
+      return getModel().getSize() - 1;
+    return getUI().locationToIndex(this, r.getLocation());
   }
 
   /**

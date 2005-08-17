@@ -68,7 +68,7 @@ public class QtChoicePeer extends QtComponentPeer implements ChoicePeer
 				ItemEvent.ITEM_STATE_CHANGED, 
 				((Choice)owner).getItem(index), 
 				ItemEvent.SELECTED);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   // ************ Public methods *********************

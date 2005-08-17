@@ -123,7 +123,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
   {
     this.owner = owner;
     this.toolkit = kit;
-    qtApp = QtToolkit.guiThread.QApplicationPointer;
+    qtApp = toolkit.guiThread.QApplicationPointer;
     nativeObject = 0;
     callInit(); // Calls the init method FROM THE MAIN THREAD.
     setup();
@@ -145,9 +145,9 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
     settingUp = true;
     if (owner != null)
       {
-//  	if (owner.getBackground() != null)
-//  	  setBackground(owner.getBackground());
-//  	else
+  	if (owner instanceof javax.swing.JComponent)
+  	  setBackground(owner.getBackground());
+  	else
 	  owner.setBackground(getNativeBackground());
 	
 	if (owner.getForeground() != null)
@@ -163,15 +163,12 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 	  setFont(owner.getFont());
 
 	setEnabled( owner.isEnabled() );
-	setVisible( owner.isVisible() );
-	
-	Rectangle r = owner.getBounds();
-	setBounds( r.x, r.y, r.width, r.height );
-	if( drawableComponent() )
-	  backBuffer = new QtImage( r.width, r.height );
-	else 
-	  backBuffer = null;
+
+	backBuffer = null;
 	dirtyBackBuffer = true;
+	updateBounds();
+
+	setVisible( owner.isVisible() );
       }
     settingUp = false;
   }
@@ -193,6 +190,12 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 	    (this instanceof QtCanvasPeer));
   }
 
+  void updateBounds()
+  {
+    Rectangle r = owner.getBounds();
+    setBounds( r.x, r.y, r.width, r.height );
+  }
+
   // ************ Event methods *********************
 
   /**
@@ -204,7 +207,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
       {
 	WindowEvent e = new WindowEvent((Window)owner, 
 					WindowEvent.WINDOW_CLOSING);
-	QtToolkit.eventQueue.postEvent(e);
+	toolkit.eventQueue.postEvent(e);
       }
   }
 
@@ -214,19 +217,19 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				  MouseEvent.MOUSE_ENTERED,
 				  System.currentTimeMillis(),
 				  (modifiers & 0x2FF), x, y, 0, false);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void focusInEvent()
   {
     FocusEvent e = new FocusEvent(owner, FocusEvent.FOCUS_GAINED);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
    }
 
   protected void focusOutEvent()
   {
     FocusEvent e = new FocusEvent(owner, FocusEvent.FOCUS_LOST);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void keyPressEvent(int modifiers, int code, int unicode, int dummy)
@@ -238,7 +241,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 			      modifiers, code, (char)(unicode & 0xFFFF),
 			      KeyEvent.KEY_LOCATION_UNKNOWN);
     if (!manager.dispatchEvent (e))
-      QtToolkit.eventQueue.postEvent(e);
+      toolkit.eventQueue.postEvent(e);
   }
 
   protected void keyReleaseEvent(int modifiers, int code, int unicode, int dummy)
@@ -248,7 +251,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 			      System.currentTimeMillis(),
 			      modifiers, code, (char)(unicode & 0xFFFF),
 			      KeyEvent.KEY_LOCATION_UNKNOWN);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void leaveEvent(int modifiers, int x, int y, int dummy)
@@ -257,7 +260,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				  MouseEvent.MOUSE_EXITED,
 				  System.currentTimeMillis(),
 				  (modifiers & 0x2FF), x, y, 0, false);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   // FIXME: Coalesce press-release events into clicks.
@@ -277,7 +280,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				  System.currentTimeMillis(),
 				  (modifiers & 0x2FF), x, y, clickCount, 
 				  false, button);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void mouseMoveEvent( int modifiers, int x, int y, int clickCount)
@@ -303,15 +306,15 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				      timeStamp,
 				      (modifiers & 0x2FF), x, y, clickCount, 
 				      false, button);
-	QtToolkit.eventQueue.postEvent(e);
+	toolkit.eventQueue.postEvent(e);
       }
     lastMME = timeStamp;
   }
 
   protected void mousePressEvent( int modifiers, int x, int y, int clickCount)
   {
-    //  if( (eventMask & AWTEvent.MOUSE_EVENT_MASK) == 0 )
-    //      return;
+    if( (eventMask & AWTEvent.MOUSE_EVENT_MASK) == 0 )
+      return;
     int button = 0;
     if((modifiers & InputEvent.BUTTON1_DOWN_MASK) == 
        InputEvent.BUTTON1_DOWN_MASK) button = 1;
@@ -325,7 +328,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				  (modifiers & 0x2FF), x, y, clickCount, 
 				  ( button == POPUP_TRIGGER ), 
 				   button);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void mouseReleaseEvent( int modifiers, int x, int y, int clickCount)
@@ -345,30 +348,14 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 				  System.currentTimeMillis(),
 				  (modifiers & 0x2FF), x, y, clickCount, 
 				  false, button);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void moveEvent()
   {
     ComponentEvent e = new ComponentEvent(owner, 
 					  ComponentEvent.COMPONENT_MOVED);
-    QtToolkit.eventQueue.postEvent(e);
-  }
-
-  protected void paintEvent(QtGraphics g)
-  {
-    if (backBuffer != null)
-      {
-	if (dirtyBackBuffer)
-	  {
-	    backBuffer.clear();
-	    Graphics2D bbg = (Graphics2D)backBuffer.getGraphics();
-	    owner.paint(bbg); 
-	    bbg.dispose();
-	    dirtyBackBuffer = false;
-	  }
-	backBuffer.drawPixels(g, 0, 0, 0, 0, 0, false );
-      }
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void resizeEvent(int oldWidth, int oldHeight, 
@@ -376,11 +363,14 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
   {
     dirtyBackBuffer = true;
     if( drawableComponent() )
-      backBuffer = new QtImage(width, height);   
+      {
+	//	backBuffer.dispose();
+	backBuffer = new QtImage(width, height);
+      }
     owner.setSize(width, height);
     ComponentEvent e = new ComponentEvent(owner, 
 					  ComponentEvent.COMPONENT_RESIZED);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   protected void showEvent()
@@ -389,13 +379,13 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
       {
 	WindowEvent e = new WindowEvent((Window)owner, 
 					WindowEvent.WINDOW_OPENED);
-	QtToolkit.eventQueue.postEvent(e);
+	toolkit.eventQueue.postEvent(e);
       }
     else 
       {
 	ComponentEvent e = new ComponentEvent(owner, 
 					      ComponentEvent.COMPONENT_SHOWN);
-	QtToolkit.eventQueue.postEvent(e);
+	toolkit.eventQueue.postEvent(e);
       }
   }
 
@@ -403,7 +393,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
   {
     ComponentEvent e = new ComponentEvent(owner, 
 					  ComponentEvent.COMPONENT_HIDDEN);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   private native Dimension getMinimumSizeNative();
@@ -485,7 +475,6 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 
   public void flip(BufferCapabilities.FlipContents contents)
   {
-    // FIXME
   }
 
   public Image getBackBuffer()
@@ -510,14 +499,13 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 	Rectangle r = owner.getBounds();
 	backBuffer = new QtImage( r.width, r.height );
       }
-    dirtyBackBuffer = true;
     return backBuffer.getGraphics();
   }
 
   public GraphicsConfiguration getGraphicsConfiguration()
   {
     int id = whichScreen(); // get the ID of the screen the widget is on.
-    GraphicsDevice[] devs = QtToolkit.graphicsEnv.getScreenDevices();
+    GraphicsDevice[] devs = toolkit.graphicsEnv.getScreenDevices();
     return devs[id].getDefaultConfiguration();
   }
 
@@ -598,7 +586,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 
   public void setBounds(int x, int y, int width, int height)
   {
-    if(width > 0 && height > 0)
+    if(width > 0 && height > 0 && (drawableComponent() || backBuffer != null))
       backBuffer = new QtImage(width, height);   
     setBoundsNative(x, y, width, height);
   }
@@ -639,22 +627,35 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
       {
       case ComponentEvent.COMPONENT_SHOWN:
       case PaintEvent.PAINT:
-      case PaintEvent.UPDATE:
+      case PaintEvent.UPDATE:	
 	dirtyBackBuffer = true;
-	QtUpdate();	
+	QtUpdate();
         break;
       case KeyEvent.KEY_PRESSED:
-	// FIXME
 	break;
       case KeyEvent.KEY_RELEASED:
-	// FIXME
 	break;
       }
   }
-  
+
+  /**
+   * Paint() is called back from the native side in response to a native
+   * repaint event.
+   */  
   public void paint(Graphics g)
   {
-    // We don't need to do anything here.
+    if (backBuffer != null)
+      {
+	if (dirtyBackBuffer)
+	  {
+	    backBuffer.clear();
+	    Graphics2D bbg = (Graphics2D)backBuffer.getGraphics();
+	    owner.paint(bbg); 
+	    bbg.dispose();
+	    dirtyBackBuffer = false;
+	  }
+	backBuffer.drawPixels((QtGraphics)g, 0, 0, 0, 0, 0, false );
+      }
   }
 
   public boolean prepareImage(Image img,

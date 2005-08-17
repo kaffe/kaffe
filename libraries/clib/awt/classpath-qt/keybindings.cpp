@@ -501,6 +501,9 @@ int getUnicode(QKeyEvent *key)
   return (int)c.unicode();
 }
 
+/**
+ * Returns the key modifiers in KeyEvent format 
+ */
 int getKeyModifiers(Qt::KeyboardModifiers state)
 {
   int modifier = 0;
@@ -516,10 +519,31 @@ int getKeyModifiers(Qt::KeyboardModifiers state)
   return modifier;
 }
 
+/**
+ * Returns the key modifiers in ActionEvent format 
+ */
+int getAEKeyModifiers(Qt::KeyboardModifiers state)
+{
+  int modifier = 0;
+  if( state & Qt::ShiftModifier )
+    modifier |= SHIFT_MASK;
+  if( state & Qt::ControlModifier )
+    modifier |= CTRL_MASK;
+  if( state & Qt::AltModifier )
+    modifier |= ALT_MASK;
+  if( state & Qt::MetaModifier )
+    modifier |= META_MASK;
+
+  return modifier;
+}
+
+/**
+ * Returns the mouse modifiers in InputEvent format 
+ */
 int getMouseModifiers(QMouseEvent *e)
 {
   int modifier = 0;
-  int buttons = e->buttons();
+  int buttons = e->button();
   int state = e->modifiers();
 
   if( buttons & Qt::LeftButton )

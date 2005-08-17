@@ -143,7 +143,10 @@ public abstract class QtGraphics extends Graphics2D
   }
 
   public synchronized native void delete();
-  public synchronized native void dispose();
+
+  public void dispose()
+  {
+  }
 
   // ********************** etc *******************************
 
@@ -179,7 +182,7 @@ public abstract class QtGraphics extends Graphics2D
   private native void setFontNative(QtFontPeer font);
   private native QPainterPath getClipNative();
 
-  private void setAlpha(double alpha)
+  void setAlpha(double alpha)
   {
     currentAlpha = alpha;
     setAlphaNative(currentAlpha);

@@ -88,7 +88,7 @@ public class QtMenuPeer extends QtMenuComponentPeer implements MenuPeer
     ActionEvent e = new ActionEvent(owner,
 				    ActionEvent.ACTION_PERFORMED,
 				    ((Menu)owner).getActionCommand());
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
 
   private native void allowTearOff();

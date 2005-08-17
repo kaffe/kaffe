@@ -93,19 +93,14 @@ public class QtImageGraphics extends QtGraphics
   {
     super( g ); 
     parentImage = g.parentImage;
-    if( g.topParent == null )
-      topParent = g;
-    else
-      topParent = g.topParent;
-    topParent.owners.push( this );
+    if( parentImage instanceof QtImage )
+      ((QtImage)parentImage).painters.add( this );
   }
 
   public void dispose()
   {
-    while(!owners.empty())
-      ((QtImageGraphics)owners.pop()).delete();
+    delete();
   }
-
 
   /**
    * Create a copy of this context.

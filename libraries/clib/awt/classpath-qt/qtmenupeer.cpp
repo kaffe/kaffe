@@ -104,7 +104,7 @@ public:
 	*newAction = menu->addAction(action->text());
 	(*newAction)->setSeparator(action->isSeparator());
 	(*newAction)->setCheckable(action->isCheckable());
-	delete action;
+	//	delete action;
 	break;
       case ADDSEPA:
 	*newAction = menu->addSeparator();

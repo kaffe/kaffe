@@ -177,6 +177,7 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
 	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
 	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
+	gnu_java_awt_peer_gtk_GtkSelection.h \
 	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
 	gnu_java_awt_peer_gtk_GtkToolkit.h \
@@ -198,6 +199,7 @@ LIBQTPEER_JNI_HDRS = \
         gnu_java_awt_peer_qt_QtComponentPeer.h \
         gnu_java_awt_peer_qt_QtContainerPeer.h \
         gnu_java_awt_peer_qt_QtDialogPeer.h \
+	gnu_java_awt_peer_qt_QtEmbeddedWindowPeer.h \
         gnu_java_awt_peer_qt_QtFileDialogPeer.h \
         gnu_java_awt_peer_qt_QtFontMetrics.h \
         gnu_java_awt_peer_qt_QtFontPeer.h \

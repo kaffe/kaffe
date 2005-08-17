@@ -40,10 +40,30 @@ exception statement from your version. */
 #include <QTextEdit>
 #include <QTextCursor>
 #include <gnu_java_awt_peer_qt_QtTextAreaPeer.h>
+#include "mainthreadinterface.h"
+#include "componentevent.h"
+#include "slotcallbacks.h"
 #include "qtcomponent.h"
 #include "qtstrings.h"
 
-// FIXME: This stuff ain't thread safe.
+class TASetText : public AWTEvent {
+ private:
+  QTextEdit *area;
+  QString *text;
+
+ public:
+  TASetText(QTextEdit *w, QString *t) : AWTEvent()
+  {
+    area = w;
+    text = t;
+  }
+
+  void runEvent()
+  {
+    area->setPlainText( *text );
+    delete text;
+  }
+};
 
 /*
  * Construct a QTextEdit object
@@ -58,8 +78,10 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_init
   assert( editor );
 
   //  setLineWrapColumnOrWidth ( int w );
-
   setNativeObject( env, obj, editor );
+
+  // Connect TextChanged events.
+  connectTextEdit(editor, env, obj);
 }
 
 /*
@@ -124,24 +146,6 @@ JNIEXPORT jstring JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_getText
 }
 
 /*
- * Inserts text.
- */
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_insert
-(JNIEnv *env, jobject obj, jstring str, jint index)
-{
-  QTextEdit *editor = (QTextEdit *) getNativeObject( env, obj );
-  assert( editor );
-
-  QTextCursor curs = editor->textCursor();
-  int oldPos = curs.position();
-  curs.setPosition( index );
-  QString *qStr = getQString(env, str);
-  curs.insertText( *qStr );
-  delete qStr;
-  curs.setPosition( oldPos );
-}
-
-/*
  * Sets the editor text.
  */
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_setText
@@ -151,8 +155,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_setText
   assert( editor );
 
   QString *qStr = getQString(env, str);
-  editor->setPlainText( *qStr );
-  delete qStr;
+  mainThread->postEventToMain( new TASetText( editor, qStr ) );
 }
 
 /*
@@ -163,9 +166,11 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextAreaPeer_select
 {
   QTextEdit *editor = (QTextEdit *) getNativeObject( env, obj );
   assert( editor );
-  // FIXME
-//   QTextCursor curs = editor->textCursor();
-//   editor->setSelection ( 0, startpos, 0, endpos );
+
+  QTextCursor curs(editor->document());
+  curs.setPosition(startpos);
+  curs.setPosition(endpos, QTextCursor::KeepAnchor);
+  editor->setTextCursor( curs );
 }
 
 /*

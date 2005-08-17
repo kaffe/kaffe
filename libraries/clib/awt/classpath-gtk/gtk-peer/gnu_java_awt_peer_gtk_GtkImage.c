@@ -97,6 +97,19 @@ Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf
   return JNI_TRUE;
 }
 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkImage_createFromPixbuf
+(JNIEnv *env, jobject obj)
+{
+  int width, heigth;
+  GdkPixbuf *pixbuf = (GdkPixbuf *) getData (env, obj);
+  gdk_threads_enter ();
+  width =  gdk_pixbuf_get_width (pixbuf);
+  heigth = gdk_pixbuf_get_height (pixbuf);
+  gdk_threads_leave ();
+  setWidthHeight(env, obj, width, heigth);
+}
+
 /**
  * Returns a copy of the pixel data as a java array.
  */

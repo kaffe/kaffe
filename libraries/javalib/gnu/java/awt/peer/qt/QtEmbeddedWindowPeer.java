@@ -1,4 +1,4 @@
-/* QtMenuBarPeer.java -- Qt peer for a menu bar.
+/* QtEmbeddedWindowPeer.java -- embedded window peer
    Copyright (C)  2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,68 +37,25 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.qt;
 
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.peer.MenuBarPeer;
-import java.util.Vector;
+import java.awt.Component;
+import java.awt.peer.WindowPeer;
+import gnu.java.awt.peer.EmbeddedWindowPeer;
 
-public class QtMenuBarPeer extends QtMenuComponentPeer implements MenuBarPeer
+public class QtEmbeddedWindowPeer extends QtWindowPeer implements WindowPeer
 {
-  public QtMenuBarPeer( QtToolkit kit, MenuBar owner )
+  public QtEmbeddedWindowPeer( QtToolkit kit, Component owner )
   {
     super( kit, owner );
   }
   
   protected native void init();
-  
+
   protected void setup()
   {
+    super.setup();
   }
-
-  /** 
-   * Recurses the menubar adding menus (and menu items), 
-   * called from the Frame peer.
-   */
-  void addMenus()
-  {
-    MenuBar o = (MenuBar)owner;
-    System.out.println("addMenus:"+o.getMenuCount());
-    int help = (o.getHelpMenu() != null) ? 1 : 0;
-    for (int i = 0; i < o.getMenuCount() - help; i++)
-      addMenu( o.getMenu(i) );
-     if(o.getHelpMenu() != null)
-       addHelpMenu( o.getHelpMenu() );
-  }
-
-  private native void addMenu( QtMenuPeer mp );
-
-  private native void addHelpMenu( QtMenuPeer mp );
-
-  private native void delMenu( QtMenuPeer mp );
 
   // ************ Public methods *********************
 
-  public void addMenu( Menu m )
-  {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addMenu( (QtMenuPeer)m.getPeer() );
-  }
-
-  public void addHelpMenu( Menu m )
-  {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addHelpMenu( (QtMenuPeer)m.getPeer() );
-  }
-
-  public void delMenu( int index )
-  {
-    Menu m = ((MenuBar)owner).getMenu( index );
-    if(m != null)
-      delMenu( (QtMenuPeer)m.getPeer() );
-  }
+  public native void embed( long handle );
 }
-

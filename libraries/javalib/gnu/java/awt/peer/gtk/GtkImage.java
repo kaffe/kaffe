@@ -241,6 +241,25 @@ public class GtkImage extends Image
   }
 
   /**
+   * Package private constructor to create a GtkImage from a given
+   * PixBuf pointer.
+   */
+  GtkImage (Pointer pixbuf)
+  {
+    pixmap = pixbuf;
+    createFromPixbuf();
+    isLoaded = true;
+    observers = null;
+    offScreen = false;
+    props = new Hashtable();
+  }
+
+  /**
+   * Native helper function for constructor that takes a pixbuf Pointer.
+   */
+  private native void createFromPixbuf();
+
+  /**
    * Callback from the image consumer.
    */
   public void setImage(int width, int height, 

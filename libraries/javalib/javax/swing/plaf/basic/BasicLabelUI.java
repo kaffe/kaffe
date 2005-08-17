@@ -177,20 +177,9 @@ public class BasicLabelUI
 
     if (icon != null)
       icon.paintIcon(b, g, ir.x, ir.y);        
+
     if (text != null && !text.equals(""))
     {
-      g.setColor(b.getBackground());
-
-      if (b.isOpaque())
-        g.fillRect(vr.x, vr.y, vr.width, vr.height);
-      else
-      {
-        g.fillRect(tr.x, tr.y, tr.width, tr.height);
-        if (b.getBorder() != null)
-          b.getBorder().paintBorder(b, g, tr.x, tr.y, tr.width, tr.height);
-        b.setBorder(null);
-      }
-
       if (b.isEnabled())
         paintEnabledText(b, g, text, tr.x, tr.y + fm.getAscent());
       else

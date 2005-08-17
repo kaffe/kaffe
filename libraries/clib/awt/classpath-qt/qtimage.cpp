@@ -292,10 +292,9 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtImage_drawPixels
   assert( image );
   QPainter *painter = getPainter( env, graphics );
   assert( painter );
-
   if(composite == JNI_TRUE)
     painter->fillRect ( x, y, image->width(), image->height(), 
-			QColor(bg_red, bg_green, bg_blue ) );
+ 			QColor(bg_red, bg_green, bg_blue ) );
   painter->drawImage ( QPoint(x, y), *image );
 }
 
@@ -371,8 +370,13 @@ Java_gnu_java_awt_peer_qt_QtImage_drawPixelsScaledFlipped
   QRectF *dstRect = new QRectF((qreal)dstx, (qreal)dsty,
 			       (qreal)dstwidth, (qreal)dstheight);
   
-  QImage image = originalImage->mirrored ( (flipx == JNI_TRUE), 
-					   (flipy == JNI_TRUE) );
+  QImage image;
+  if( flipx == JNI_TRUE || flipy == JNI_TRUE)
+    image = originalImage->mirrored ( (flipx == JNI_TRUE), 
+				      (flipy == JNI_TRUE) );
+  else
+    image = *originalImage;
+
   if(composite == JNI_TRUE)
     painter->fillRect( *dstRect, QColor(bg_red, bg_green, bg_blue ) );
 

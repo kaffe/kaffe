@@ -40,6 +40,7 @@ package gnu.java.awt.peer.qt;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.TextArea;
+import java.awt.event.TextEvent;
 import java.awt.peer.TextAreaPeer;
 
 public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
@@ -54,14 +55,23 @@ public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
   protected void setup()
   {
     super.setup();
-//     setText(((TextArea)owner).getText());
-//     setEditable(((TextArea)owner).isEditable());
+    setText(((TextArea)owner).getText());
+    setEditable(((TextArea)owner).isEditable());
   }
 
   /**
    * Returns the start (start = true) or end (start = false) of the selection.
    */
   private native int getSelection(boolean start);
+
+  /**
+   * Called back on a text edit.
+   */
+  private void textChanged()
+  {  
+    TextEvent e = new TextEvent(owner, TextEvent.TEXT_VALUE_CHANGED);
+    toolkit.eventQueue.postEvent(e);
+  }
 
   // ************ Public methods *********************
 
@@ -78,6 +88,9 @@ public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
     return new Rectangle(0,0,0,0);
   }
 
+  /**
+   * Implemented, but who uses it?
+   */
   public native int getIndexAtPoint(int x, int y);
 
 //   public void reshape(int x, int y,
@@ -113,7 +126,12 @@ public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
 
   public native String getText();
 
-  public native void insert(String text, int pos);
+  public void insert(String text, int pos)
+  {
+    // Not very efficient, no.
+    String s = getText();
+    setText(s.substring(0, pos) + text + s.substring(pos));
+  }
 
   public void insertText(String text, int pos)
   {

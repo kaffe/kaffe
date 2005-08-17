@@ -84,7 +84,7 @@ public class QtCheckboxPeer extends QtComponentPeer implements CheckboxPeer
 				ItemEvent.ITEM_STATE_CHANGED, 
 				((Checkbox)owner).getLabel(),
 				sel);
-    QtToolkit.eventQueue.postEvent(e);
+    toolkit.eventQueue.postEvent(e);
   }
   
   // ************ Public methods *********************

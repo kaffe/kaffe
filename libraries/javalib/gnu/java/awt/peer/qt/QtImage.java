@@ -100,6 +100,7 @@ public class QtImage extends Image
 						       0x0000FF00,
 						       0x000000FF,
 						       0xFF000000);
+  Vector painters;
 
   /**
    * Clears the image to RGBA 0
@@ -245,7 +246,6 @@ public class QtImage extends Image
 	isLoaded = false;
 	return;
       }
-
     errorLoading = false;
     isLoaded = true;
   }
@@ -364,7 +364,11 @@ public class QtImage extends Image
     if (!isLoaded) 
       return null;
 
-    return new QtImageGraphics(this);
+    QtImageGraphics qig = new QtImageGraphics(this);
+    if( painters == null )
+      painters = new Vector();
+    painters.add( qig );
+    return qig;
   }
   
   /**
@@ -403,7 +407,12 @@ public class QtImage extends Image
   public void finalize()
   {
     if (isLoaded)
-      freeImage();
+      {
+	if( painters != null )
+	  for(int i = 0; i < painters.size(); i++)
+	    ((QtImageGraphics)painters.elementAt(i)).dispose();
+	freeImage();
+      }
   }
 
   public void dispose()
@@ -584,5 +593,11 @@ public class QtImage extends Image
 	return true;
       }
     return false;
+  }
+
+  public String toString()
+  {
+    return "QtImage [isLoaded="+isLoaded+", width="+width+", height="+height
+      +"]";
   }
 }

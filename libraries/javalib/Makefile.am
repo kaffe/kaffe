@@ -1220,6 +1220,7 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkCheckboxPeer.java \
 	gnu/java/awt/peer/gtk/GtkChoicePeer.java \
 	gnu/java/awt/peer/gtk/GtkClipboard.java \
+	gnu/java/awt/peer/gtk/GtkClipboardNotifier.java \
 	gnu/java/awt/peer/gtk/GtkComponentPeer.java \
 	gnu/java/awt/peer/gtk/GtkContainerPeer.java \
 	gnu/java/awt/peer/gtk/GtkDialogPeer.java \
@@ -1240,6 +1241,7 @@ gnu_java_awt_peer_gtk_SRCS = \
 	gnu/java/awt/peer/gtk/GtkPopupMenuPeer.java \
 	gnu/java/awt/peer/gtk/GtkScrollPanePeer.java \
 	gnu/java/awt/peer/gtk/GtkScrollbarPeer.java \
+	gnu/java/awt/peer/gtk/GtkSelection.java \
 	gnu/java/awt/peer/gtk/GtkTextAreaPeer.java \
 	gnu/java/awt/peer/gtk/GtkTextFieldPeer.java \
 	gnu/java/awt/peer/gtk/GtkToolkit.java \
@@ -1260,6 +1262,7 @@ gnu_java_awt_peer_qt_SRCS = \
 	gnu/java/awt/peer/qt/QtComponentPeer.java \
 	gnu/java/awt/peer/qt/QtContainerPeer.java \
 	gnu/java/awt/peer/qt/QtDialogPeer.java \
+	gnu/java/awt/peer/qt/QtEmbeddedWindowPeer.java \
 	gnu/java/awt/peer/qt/QtFileDialogPeer.java \
 	gnu/java/awt/peer/qt/QtFontMetrics.java \
 	gnu/java/awt/peer/qt/QtFontPeer.java \

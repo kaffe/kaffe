@@ -68,7 +68,7 @@ public:
 
 #define I_KNOW_WHAT_IM_DOING
 #define PARENT QMainWindow
-#include "eventmethods.cpp"
+#include "eventmethods.h"
 };
 
 /**
@@ -104,10 +104,10 @@ class FrameGetMenuHeightEvent : public AWTEvent {
   
 private:
   QMainWindow *frame;
-  int *value;
+  int **value;
   
 public:
-  FrameGetMenuHeightEvent(QMainWindow *w, int *v) : AWTEvent()
+  FrameGetMenuHeightEvent(QMainWindow *w, int **v) : AWTEvent()
   {
     frame = w;
     value = v;
@@ -117,13 +117,8 @@ public:
   {
     QMenuBar *mb = frame->menuBar();
     assert( mb );
-    int v;
-    if( mb->isVisible() )
-      v = mb->size().height();
-
-    if(v <= 0 || v >= 0xFFFFF )  // Work around for strange values.
-      v = MenuSizeDefault; 
-
+    int *v = (int *)malloc( sizeof( int ) );
+    *v = mb->sizeHint().height();
     *value = v;
   }
 };
@@ -139,11 +134,14 @@ QWidget *frameChildWidget( JNIEnv *env, jobject component )
 					   "getPeer",
 					   "()Ljava/awt/peer/ComponentPeer;" );
   assert(getPeerMID);
+
   jobject framepeerobj = env->CallObjectMethod( component, getPeerMID, 0);
+  if( framepeerobj == NULL )
+    return (QWidget *)NULL;
 
-  QMainWindow *window = (QMainWindow *)getNativeObject(env, framepeerobj);
-
-  return window->centralWidget();
+  MyWindow *window = (MyWindow *)getNativeObject(env, framepeerobj);
+  assert( window );
+  return window;
 }
 
 /*
@@ -158,7 +156,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_init
   QWidget *central = new QWidget( frame );
   assert( central );
 
-  frame->setCentralWidget( central );
   setNativeObject( env, obj, frame );
 }
 
@@ -171,13 +168,13 @@ JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_menuBarHeight
   QMainWindow *frame = (QMainWindow *) getNativeObject( env, obj );
   assert( frame );
 
-  int value = 0;
+  int *value = NULL;
   mainThread->postEventToMain( new FrameGetMenuHeightEvent( frame, &value ) );
 
-  while(value == 0); // (Busy) wait for the value to
+  while(value == NULL); // (Busy) wait for the value to
   // get set by the main thread.
 
-  return (jint)value;
+  return (jint)(*value);
 }
 
 /*

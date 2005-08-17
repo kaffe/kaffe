@@ -57,7 +57,7 @@ public:
 
 #define I_KNOW_WHAT_IM_DOING
 #define PARENT QWidget
-#include "eventmethods.cpp"
+#include "eventmethods.h"
 };
 
 /*

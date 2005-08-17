@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.applet.Applet;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
@@ -52,6 +53,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1811,12 +1813,52 @@ public abstract class JComponent extends Container implements Serializable
     super.processKeyEvent(e);
     processComponentKeyEvent(e);
 
-    // FIXME: this needs to be elaborated significantly, to do all the
-    // focus / ancestor / window searching for the various binding modes.
-    if (! e.isConsumed() &&
-        processKeyBinding(KeyStroke.getKeyStrokeForEvent(e), 
+    if (e.isConsumed())
+      return;
+
+    // Input maps are checked in this order:
+    // 1. The focused component's WHEN_FOCUSED map is checked.
+    // 2. The focused component's WHEN_ANCESTOR_OF_FOCUSED_COMPONENT map.
+    // 3. The WHEN_ANCESTOR_OF_FOCUSED_COMPONENT maps of the focused
+    //    component's parent, then its parent's parent, and so on.
+    //    Note: Input maps for disabled components are skipped.
+    // 4. The WHEN_IN_FOCUSED_WINDOW maps of all the enabled components in
+    //    the focused window are searched.
+    
+    if (processKeyBinding(KeyStroke.getKeyStrokeForEvent(e), 
                           e, WHEN_FOCUSED, e.getID() == KeyEvent.KEY_PRESSED))
+      // This is step 1 from above comment.
       e.consume();
+    else if (processKeyBinding(KeyStroke.getKeyStrokeForEvent(e),
+                               e, WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+                               e.getID() == KeyEvent.KEY_PRESSED))
+      // This is step 2 from above comment.
+      e.consume();
+    else
+      {
+        // This is step 3 from above comment.
+        Container current = this;
+        while ((current = current.getParent()) instanceof JComponent)
+          {
+            if (((JComponent)current).processKeyBinding
+                (KeyStroke.getKeyStrokeForEvent(e), e, 
+                 WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, 
+                 e.getID() == KeyEvent.KEY_PRESSED))
+              {
+                e.consume();
+                break;
+              }
+            if (current instanceof Window || current instanceof Applet
+                || current instanceof JInternalFrame)
+              break;
+          }
+        if (e.isConsumed())
+          return;
+        
+        // This is step 4 from above comment.
+        // FIXME: Implement.  Note, should use ComponentInputMaps rather
+        // than walking the entire containment hierarchy.
+      }
   }
 
   protected boolean processKeyBinding(KeyStroke ks,

@@ -42,6 +42,7 @@ import java.awt.Dialog;
 import java.awt.FileDialog;
 import java.awt.Graphics;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
 import java.awt.peer.FileDialogPeer;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -87,10 +88,10 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
       {
         int[] dims = new int[2];
         gtkWidgetGetPreferredDimensions (dims);
-        ((GtkFileDialogPeer) this).setBoundsCallback ((Window) awtComponent,
-                                                      awtComponent.getX (),
-                                                      awtComponent.getY (),
-                                                      dims[0], dims[1]);
+
+        if (dims[0] != awtComponent.getWidth()
+            || dims[1] != awtComponent.getHeight())
+          awtComponent.setSize(dims[0], dims[1]);
       }
     super.setComponentBounds ();
   }

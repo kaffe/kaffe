@@ -41,6 +41,7 @@ exception statement from your version. */
 #include <gnu_java_awt_peer_qt_QtTextFieldPeer.h>
 #include "qtcomponent.h"
 #include "qtstrings.h"
+#include "slotcallbacks.h"
 #include "mainthreadinterface.h"
 
 class TFEchoChar : public AWTEvent {
@@ -147,6 +148,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextFieldPeer_init
   assert( line );
   
   setNativeObject( env, obj, line );
+  connectLineEdit(line, env, obj);
 }
 
 

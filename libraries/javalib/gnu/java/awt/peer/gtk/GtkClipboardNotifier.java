@@ -1,5 +1,5 @@
-/* QtMenuBarPeer.java -- Qt peer for a menu bar.
-   Copyright (C)  2005  Free Software Foundation, Inc.
+/* GtkClipboardNotifier.java -- Helper for announcing GtkSelection changes.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,70 +35,78 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.java.awt.peer.qt;
 
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.peer.MenuBarPeer;
-import java.util.Vector;
+package gnu.java.awt.peer.gtk;
 
-public class QtMenuBarPeer extends QtMenuComponentPeer implements MenuBarPeer
+import java.awt.datatransfer.*;
+
+class GtkClipboardNotifier extends Thread
 {
-  public QtMenuBarPeer( QtToolkit kit, MenuBar owner )
-  {
-    super( kit, owner );
-  }
-  
-  protected native void init();
-  
-  protected void setup()
-  {
-  }
+  /** Whether or not to announce a GtkSelection change. */
+  private static boolean announceChange;
 
-  /** 
-   * Recurses the menubar adding menus (and menu items), 
-   * called from the Frame peer.
+  /**
+   * The one and only instance. All operations are synchronized on
+   * this.
    */
-  void addMenus()
+  private static GtkClipboardNotifier notifier = new GtkClipboardNotifier();
+
+  /**
+   * Creates a deamon thread that monitors this for change
+   * announcements.
+   */
+  private GtkClipboardNotifier()
   {
-    MenuBar o = (MenuBar)owner;
-    System.out.println("addMenus:"+o.getMenuCount());
-    int help = (o.getHelpMenu() != null) ? 1 : 0;
-    for (int i = 0; i < o.getMenuCount() - help; i++)
-      addMenu( o.getMenu(i) );
-     if(o.getHelpMenu() != null)
-       addHelpMenu( o.getHelpMenu() );
+    super("GtkClipBoardNotifier");
+    setDaemon(true);
+    start();
   }
 
-  private native void addMenu( QtMenuPeer mp );
-
-  private native void addHelpMenu( QtMenuPeer mp );
-
-  private native void delMenu( QtMenuPeer mp );
-
-  // ************ Public methods *********************
-
-  public void addMenu( Menu m )
+  /**
+   * Notifies that a new GtkSelection has to be announced.
+   */
+  static void announce()
   {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addMenu( (QtMenuPeer)m.getPeer() );
+    synchronized (notifier)
+      {
+	announceChange = true;
+	notifier.notifyAll();
+      }
   }
 
-  public void addHelpMenu( Menu m )
+  public void run()
   {
-    if (m.getPeer() == null)
-      m.addNotify();
-    ((QtMenuPeer)m.getPeer()).addItems();
-    addHelpMenu( (QtMenuPeer)m.getPeer() );
-  }
+    final GtkClipboard clipboard = GtkClipboard.getInstance();
+    while (true)
+      {
+	synchronized (this)
+	  {
+	    while (!announceChange)
+	      {
+		try
+		  {
+		    this.wait();
+		  }
+		catch (InterruptedException ie)
+		  {
+		    // ignore
+		  }
+	      }
+	    announceChange = false;
+	  }
 
-  public void delMenu( int index )
-  {
-    Menu m = ((MenuBar)owner).getMenu( index );
-    if(m != null)
-      delMenu( (QtMenuPeer)m.getPeer() );
+	// Do the actual announcement without the lock held.  We will
+	// notice a new change after this notification has finished.
+	try
+	  {
+	    clipboard.setContents(new GtkSelection(), null);
+	  }
+	catch (Throwable t)
+	  {
+	    // should never happen, but might if we have some faulty
+	    // listener.
+	    t.printStackTrace();
+	  }
+      }
   }
 }
-

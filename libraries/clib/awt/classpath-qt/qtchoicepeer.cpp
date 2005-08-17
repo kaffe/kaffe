@@ -89,7 +89,6 @@ class RemoveSelectEvent : public AWTEvent {
   }
 };
 
-
 /*
  * Constructs tha QComboBox object
  */

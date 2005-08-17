@@ -65,6 +65,7 @@ public class QtFontPeer extends ClasspathFontPeer
   public QtFontPeer (String name, int style, int size)
   {
     super(name, style, size);
+    System.out.println("New Font:"+name);
     init();
   }
 
