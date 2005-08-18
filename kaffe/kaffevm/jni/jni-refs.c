@@ -71,6 +71,7 @@ KaffeJNI_removeJNIref(jref obj)
 void
 KaffeJNI_DeleteGlobalRef(JNIEnv* env UNUSED, jref obj)
 {
+  jref obj_local;
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_GLOBALREF_FREE) )
 	{
@@ -82,17 +83,19 @@ KaffeJNI_DeleteGlobalRef(JNIEnv* env UNUSED, jref obj)
 	}
 #endif
 
-	obj = unveil(obj);
-	
-	gc_rm_ref(obj);
+	obj_local = unveil(obj);
+
+	gc_rm_ref(obj_local);
 }
 
 void
 KaffeJNI_DeleteLocalRef(JNIEnv* env UNUSED, jref obj)
 {
-        obj = unveil(obj);
+	jref obj_local;
 
-	REMOVE_REF(obj);
+	obj_local = unveil(obj);
+
+	REMOVE_REF(obj_local);
 }
 
 jboolean
@@ -109,11 +112,12 @@ KaffeJNI_IsSameObject(JNIEnv* env UNUSED, jobject obj1, jobject obj2)
 jref
 KaffeJNI_NewGlobalRef(JNIEnv* env, jref obj)
 {
+	jref obj_local;
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	obj = unveil(obj);
+	obj_local = unveil(obj);
 
-	if (!gc_add_ref(obj)) {
+	if (!gc_add_ref(obj_local)) {
 		errorInfo info;
 		postOutOfMemory(&info);
 		postError(env, &info);
@@ -124,13 +128,13 @@ KaffeJNI_NewGlobalRef(JNIEnv* env, jref obj)
 		JVMPI_Event ev;
 
 		ev.event_type = JVMPI_EVENT_JNI_GLOBALREF_ALLOC;
-		ev.u.jni_globalref_alloc.obj_id = obj;
-		ev.u.jni_globalref_alloc.ref_id = obj;
+		ev.u.jni_globalref_alloc.obj_id = obj_local;
+		ev.u.jni_globalref_alloc.ref_id = obj_local;
 		jvmpiPostEvent(&ev);
 	}
 #endif
 	END_EXCEPTION_HANDLING();
-	return obj;
+	return obj_local;
 }
 
 jint
@@ -187,10 +191,11 @@ KaffeJNI_PopLocalFrame(JNIEnv* env UNUSED, jobject obj)
   int localFrames;
   int i;
   jnirefs *table;
+  jobject obj_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  obj = unveil(obj);
+  obj_local = unveil(obj);
 
   table = thread_data->jnireferences;
   localFrames = table->localFrames;
@@ -209,50 +214,52 @@ KaffeJNI_PopLocalFrame(JNIEnv* env UNUSED, jobject obj)
       table = thread_data->jnireferences;
     }
   
-  if (obj != NULL)
+  if (obj_local != NULL)
     {
       for (i = 0; i < table->frameSize; i++)
-	if (table->objects[i] == obj)
+	if (table->objects[i] == obj_local)
 	  break;
       
       /* If the object is not already referenced, add a new reference to it.
        */
       if (i == table->frameSize)
-	ADD_REF(obj); 
+	ADD_REF(obj_local); 
     }
   
   END_EXCEPTION_HANDLING();
 
  popframe_end:
-  return obj;
+  return obj_local;
 } 
 
 jobject
 KaffeJNI_NewLocalRef(JNIEnv *env UNUSED, jobject ref)
 {
+  jobject ref_local;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  ref = unveil(ref);
+  ref_local = unveil(ref);
 
-  if (ref != NULL)
-    ADD_REF(ref);
+  if (ref_local != NULL)
+    ADD_REF(ref_local);
 
   END_EXCEPTION_HANDLING();
 
-  return ref;
+  return ref_local;
 }
 
 jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env UNUSED, jobject obj)
 {
   jweak ref;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  obj = unveil(obj);
+  obj_local = unveil(obj);
 
   ref = KGC_malloc(main_collector, KGC_ALLOC_VMWEAKREF, sizeof(jobject));
 
-  *((jobject *)ref) = obj;
-  KGC_addWeakRef(main_collector, ref, obj);
+  *((jobject *)ref) = obj_local;
+  KGC_addWeakRef(main_collector, ref, obj_local);
 
   ref = (jweak) ((uintp)ref | 1);
 
@@ -262,7 +269,7 @@ jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env UNUSED, jobject obj)
       JVMPI_Event ev;
       
       ev.event_type = JVMPI_EVENT_JNI_WEAK_GLOBALREF_ALLOC;
-      ev.u.jni_globalref_alloc.obj_id = obj;
+      ev.u.jni_globalref_alloc.obj_id = obj_local;
       ev.u.jni_globalref_alloc.ref_id = ref;
       jvmpiPostEvent(&ev);
     }

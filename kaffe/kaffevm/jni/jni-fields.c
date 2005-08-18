@@ -35,11 +35,12 @@ jobject
 KaffeJNI_GetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jobject nobj;
+  jobject obj_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  obj = unveil(obj);
-  nobj = GET_FIELD(jobject, obj, fld);
+  obj_local = unveil(obj);
+  nobj = GET_FIELD(jobject, obj_local, fld);
 
   ADD_REF(nobj);
   END_EXCEPTION_HANDLING();
@@ -50,11 +51,12 @@ jboolean
 KaffeJNI_GetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jboolean r;
+  jobject obj_local;
 
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jboolean, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jboolean, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -64,10 +66,11 @@ jbyte
 KaffeJNI_GetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jbyte r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jbyte, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jbyte, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -77,10 +80,11 @@ jchar
 KaffeJNI_GetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jchar r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jchar, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jchar, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -90,10 +94,11 @@ jshort
 KaffeJNI_GetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jshort r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jshort, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jshort, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -103,10 +108,11 @@ jint
 KaffeJNI_GetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jint r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jint, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jint, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -116,10 +122,11 @@ jlong
 KaffeJNI_GetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jlong r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jlong, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jlong, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -129,10 +136,11 @@ jfloat
 KaffeJNI_GetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jfloat r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jfloat, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jfloat, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -142,10 +150,11 @@ jdouble
 KaffeJNI_GetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
   jdouble r;
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING(0);
 
-  obj = unveil(obj);
-  r = GET_FIELD(jdouble, obj, fld);
+  obj_local = unveil(obj);
+  r = GET_FIELD(jdouble, obj_local, fld);
 
   END_EXCEPTION_HANDLING();
   return (r);
@@ -159,11 +168,13 @@ KaffeJNI_GetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 void
 KaffeJNI_SetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jobject val)
 {
+  jobject obj_local, val_local;
+
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  val = unveil(val);
-  SET_FIELD(jobject, obj, fld, val);
+  obj_local = unveil(obj);
+  val_local = unveil(val);
+  SET_FIELD(jobject, obj_local, fld, val_local);
 
   END_EXCEPTION_HANDLING();
 }
@@ -171,10 +182,11 @@ KaffeJNI_SetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jobject v
 void
 KaffeJNI_SetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jboolean val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jboolean, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jboolean, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -182,10 +194,11 @@ KaffeJNI_SetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jboolean
 void
 KaffeJNI_SetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jbyte val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jbyte, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jbyte, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -193,10 +206,11 @@ KaffeJNI_SetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jbyte val)
 void
 KaffeJNI_SetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jchar val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jchar, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jchar, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -204,10 +218,11 @@ KaffeJNI_SetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jchar val)
 void
 KaffeJNI_SetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jshort val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jshort, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jshort, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -215,10 +230,11 @@ KaffeJNI_SetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jshort val
 void
 KaffeJNI_SetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jint val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jint, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jint, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -226,10 +242,11 @@ KaffeJNI_SetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jint val)
 void
 KaffeJNI_SetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jlong val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jlong, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jlong, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -237,10 +254,11 @@ KaffeJNI_SetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jlong val)
 void
 KaffeJNI_SetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jfloat val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jfloat, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jfloat, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -248,10 +266,11 @@ KaffeJNI_SetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jfloat val
 void
 KaffeJNI_SetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld, jdouble val)
 {
+  jobject obj_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  obj = unveil(obj);
-  SET_FIELD(jdouble, obj, fld, val);
+  obj_local = unveil(obj);
+  SET_FIELD(jdouble, obj_local, fld, val);
 
   END_EXCEPTION_HANDLING();
 }
@@ -380,10 +399,11 @@ KaffeJNI_GetStaticDoubleField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fl
 void
 KaffeJNI_SetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld, jobject val)
 {
+  jobject val_local;
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  val = unveil(val);
-  SET_STATIC_FIELD(jobject, fld, val);
+  val_local = unveil(val);
+  SET_STATIC_FIELD(jobject, fld, val_local);
 
   END_EXCEPTION_HANDLING();
 }

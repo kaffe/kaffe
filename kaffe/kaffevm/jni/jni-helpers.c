@@ -60,21 +60,23 @@ void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env, jobject buffer)
   jfieldID address_field;
   void *address;
   jclass clazz;
+  jobject buffer_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  buffer = unveil(buffer);
+  buffer_local = unveil(buffer);
 
   clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
 
-  if (!(*env)->IsInstanceOf(env, buffer, clazz))
+  if (!(*env)->IsInstanceOf(env, buffer_local, clazz))
     address = NULL;
   else
     {
-      clazz = (*env)->GetObjectClass(env, buffer);
-      address_field = (*env)->GetFieldID(env, clazz, "address", "Lgnu/classpath/RawData;");
-      
-      address = (void *)((*env)->GetObjectField(env, buffer, address_field));
+      clazz = (*env)->GetObjectClass(env, buffer_local);
+      address_field = (*env)->GetFieldID(env, clazz, "address",
+					 "Lgnu/classpath/RawData;");
+      address = (void *)((*env)->GetObjectField(env, buffer_local,
+						address_field));
     }
 
   END_EXCEPTION_HANDLING();
@@ -87,20 +89,21 @@ jlong KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
   jmethodID capacity_method;
   jint capacity;
   jclass clazz;
+  jobject buffer_local;
 
   BEGIN_EXCEPTION_HANDLING(-1);
   
-  buffer = unveil(buffer);
+  buffer_local = unveil(buffer);
 
   clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
-  if (!(*env)->IsInstanceOf(env, buffer, clazz))
+  if (!(*env)->IsInstanceOf(env, buffer_local, clazz))
     capacity = -1;
   else
     {
-      clazz = (*env)->GetObjectClass(env, buffer);
+      clazz = (*env)->GetObjectClass(env, buffer_local);
       capacity_method = (*env)->GetMethodID(env, clazz, "capacity", "()I");
       
-      capacity = (*env)->CallIntMethod(env, buffer, capacity_method);
+      capacity = (*env)->CallIntMethod(env, buffer_local, capacity_method);
     }
 
   END_EXCEPTION_HANDLING();
@@ -112,31 +115,37 @@ jlong KaffeJNI_GetDirectBufferCapacity(JNIEnv *env UNUSED, jobject buffer)
 jmethodID
 KaffeJNI_FromReflectedMethod (JNIEnv *env UNUSED, jobject method)
 {
-	Hjava_lang_reflect_Method *realMethod = (Hjava_lang_reflect_Method *)unveil(method);
-	jmethodID id;
+  jobject method_local;
+  jmethodID id;
+  Hjava_lang_reflect_Method *realMethod;
 
-	BEGIN_EXCEPTION_HANDLING(NULL);
-	
+  BEGIN_EXCEPTION_HANDLING(NULL);
+  method_local = unveil(method);
+  realMethod = (Hjava_lang_reflect_Method *)method_local;
 
-	id = (jmethodID) &(unhand(realMethod)->clazz->methods[unhand(realMethod)->slot]);
+  id = (jmethodID) &(unhand(realMethod)->clazz->methods[unhand(realMethod)->slot]);
 
-	END_EXCEPTION_HANDLING();
+  END_EXCEPTION_HANDLING();
 
-	return id;
+  return id;
 }
 
 jfieldID
 KaffeJNI_FromReflectedField (JNIEnv *env UNUSED, jobject field)
 {
-	Hjava_lang_reflect_Field *realField = (Hjava_lang_reflect_Field *)unveil(field);
-	jfieldID id;
+  jobject field_local;
+  Hjava_lang_reflect_Field *realField;
+  jfieldID id;
 
-	BEGIN_EXCEPTION_HANDLING(NULL);
+  BEGIN_EXCEPTION_HANDLING(NULL);
+  field_local = unveil(field);
 
-	id = (jfieldID) &(unhand(realField)->clazz->fields[unhand(realField)->slot]);
-	END_EXCEPTION_HANDLING();
+  realField = (Hjava_lang_reflect_Field *)field_local;
 
-	return id;
+  id = (jfieldID) &(unhand(realField)->clazz->fields[unhand(realField)->slot]);
+  END_EXCEPTION_HANDLING();
+  
+  return id;
 }
 
 jobject
@@ -146,10 +155,12 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	Hjava_lang_Class *clazz;
 	Method *allMethods;
 	int i;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-
-	clazz = (Hjava_lang_Class *)unveil(cls);
+	
+	cls_local = unveil(cls);
+	clazz = (Hjava_lang_Class *)cls_local;
 	refMeth = NULL;
 	for (allMethods = CLASS_METHODS(clazz), i = 0;
 	     i < CLASS_NMETHODS(clazz); 
@@ -173,10 +184,12 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 	Hjava_lang_Class *clazz;
 	Field *allFields;
 	int i;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	clazz = (Hjava_lang_Class *)unveil(cls);
+	cls_local = unveil(cls);
+	clazz = (Hjava_lang_Class *)cls_local;
 	refField = NULL;
 	for (allFields = CLASS_FIELDS(clazz), i = 0;
 	     i < CLASS_NFIELDS(clazz);

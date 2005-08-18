@@ -95,10 +95,11 @@ Kaffe_DefineClass(JNIEnv* env, const char *name UNUSED, jobject loader,
 	Hjava_lang_Class* cls;
 	classFile hand;
 	errorInfo info;
+	jobject loader_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	loader = unveil(loader);
+	loader_local = unveil(loader); /* save clobbered reg.  */
 
 	classFileInit(&hand, NULL, (unsigned char*)buf, (size_t)len,
 		      CP_BYTEARRAY);
@@ -107,7 +108,7 @@ Kaffe_DefineClass(JNIEnv* env, const char *name UNUSED, jobject loader,
 	if (cls == 0) {
 		postOutOfMemory(&info);
 	} else {
-		cls = readClass(cls, &hand, loader, &info);
+		cls = readClass(cls, &hand, loader_local, &info);
 	}
 	if (cls == 0) {
 		postError(env, &info);
@@ -234,12 +235,12 @@ error_out:
 static jclass
 Kaffe_GetSuperClass(JNIEnv* env UNUSED, jclass cls)
 {
-	jclass clz;
+	jclass clz, cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
-	clz = ((Hjava_lang_Class*)cls)->superclass;
+	cls_local = unveil(cls); /* save clobbered reg.  */
+	clz = ((Hjava_lang_Class*)cls_local)->superclass;
 
 	END_EXCEPTION_HANDLING();
 	return (clz);
@@ -249,13 +250,15 @@ static jboolean
 Kaffe_IsAssignableFrom(JNIEnv* env UNUSED, jclass cls1, jclass cls2)
 {
 	jboolean r;
+	jclass cls1_local;
+	jclass cls2_local;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	cls1 = unveil(cls1);
-	cls2 = unveil(cls2);
-	
-	if (instanceof(cls2, cls1) != 0) {
+	cls1_local = unveil(cls1);
+	cls2_local = unveil(cls2);
+
+	if (instanceof(cls2_local, cls1_local) != 0) {
 		r = JNI_TRUE;
 	}
 	else {
@@ -268,15 +271,17 @@ Kaffe_IsAssignableFrom(JNIEnv* env UNUSED, jclass cls1, jclass cls2)
 static jint
 Kaffe_Throw(JNIEnv* env UNUSED, jobject obj)
 {
+	jobject obj_local;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if( obj )
 	{
-	        obj = unveil(obj);
+		obj_local = unveil(obj);
 
-		assert(((Hjava_lang_Object *)obj)->vtable);
-		
-		thread_data->exceptObj = (struct Hjava_lang_Throwable*)obj;
+		assert(((Hjava_lang_Object *)obj_local)->vtable);
+
+		thread_data->exceptObj =
+		  (struct Hjava_lang_Throwable*)obj_local;
 	}
 
 	END_EXCEPTION_HANDLING();
@@ -287,11 +292,12 @@ static jint
 Kaffe_ThrowNew(JNIEnv* env UNUSED, jclass cls, const char* mess)
 {
 	Hjava_lang_Object* eobj;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(0);
-	
-	cls = unveil(cls);
-	eobj = execute_java_constructor(NULL, NULL, cls,
+
+	cls_local = unveil(cls);
+	eobj = execute_java_constructor(NULL, NULL, cls_local,
 					"(Ljava/lang/String;)V",
 					checkPtr(stringC2Java(mess)));
 
@@ -392,11 +398,12 @@ Kaffe_AllocObject(JNIEnv* env UNUSED, jclass cls)
 {
 	jobject obj;
 	Hjava_lang_Class* clazz;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
-	clazz = (Hjava_lang_Class*)cls;
+	cls_local = unveil(cls);
+	clazz = (Hjava_lang_Class*)cls_local;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz)) {
 		throwException(InstantiationException(clazz->name->data));
@@ -415,11 +422,12 @@ Kaffe_NewObjectV(JNIEnv* env UNUSED, jclass cls, jmethodID meth, va_list args)
 	Hjava_lang_Class* clazz;
 	jvalue retval;
 	Method* m = (Method*)meth;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
-	clazz = (Hjava_lang_Class*)cls;
+	cls_local = unveil(cls);
+	clazz = (Hjava_lang_Class*)cls_local;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
 		throwException(InstantiationException(clazz->name->data));
@@ -438,13 +446,14 @@ Kaffe_NewObject(JNIEnv* env UNUSED, jclass cls, jmethodID meth, ...)
 {
 	jobject obj;
 	va_list args;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
+	cls_local = unveil(cls);
 
 	va_start(args, meth);
-	obj = Kaffe_NewObjectV(env, cls, meth, args);
+	obj = Kaffe_NewObjectV(env, cls_local, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
@@ -458,11 +467,12 @@ Kaffe_NewObjectA(JNIEnv* env UNUSED, jclass cls, jmethodID meth, jvalue* args)
 	Hjava_lang_Class* clazz;
 	jvalue retval;
 	Method* m = (Method*)meth;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
-	clazz = (Hjava_lang_Class*)cls;
+	cls_local = unveil(cls);
+	clazz = (Hjava_lang_Class*)cls_local;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
 		throwException(InstantiationException(clazz->name->data));
@@ -480,11 +490,12 @@ static jclass
 Kaffe_GetObjectClass(JNIEnv* env UNUSED, jobject obj)
 {
 	jclass cls;
+	jobject obj_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	obj = unveil(obj);
-	cls = ((Hjava_lang_Object*)obj)->vtable->class;
+	obj_local = unveil(obj);
+	cls = ((Hjava_lang_Object*)obj_local)->vtable->class;
 
 	END_EXCEPTION_HANDLING();
 	return (cls);
@@ -494,12 +505,15 @@ static jboolean
 Kaffe_IsInstanceOf(JNIEnv* env UNUSED, jobject obj, jclass cls)
 {
 	jboolean r;
+	jobject obj_local;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	obj = unveil(obj);
-	cls = unveil(cls);
-	if (soft_instanceof((Hjava_lang_Class*)cls, (Hjava_lang_Object*)obj) != 0) {
+	obj_local = unveil(obj);
+	cls_local = unveil(cls);
+	if (soft_instanceof((Hjava_lang_Class*)cls_local,
+			    (Hjava_lang_Object*)obj_local) != 0) {
 		r = JNI_TRUE;
 	}
 	else {
@@ -515,21 +529,24 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Method* meth;
 	errorInfo info;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-	cls = unveil(cls);
+	cls_local = unveil(cls);
 
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
+	meth = lookupClassMethod((Hjava_lang_Class*)cls_local, name, sig,
+				 &info);
 	if (meth == NULL) {
 		postError(env, &info);
-	} 
+	}
 	else if (METHOD_IS_STATIC(meth)) {
-		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), "%s", name);
+		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError),
+				     "%s", name);
 		postError(env, &info);
 		meth = NULL;
 	}
 	END_EXCEPTION_HANDLING();
-	
+
 	return ((jmethodID)meth);
 }
 
@@ -540,12 +557,14 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 	Field* fld;
 	errorInfo info;
 	Utf8Const* utf8;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
+	cls_local = unveil(cls);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
-	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, false, &info);
+	fld = lookupClassField((Hjava_lang_Class*)cls_local, utf8, false,
+			       &info);
 	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
@@ -559,11 +578,13 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 {
 	Method* meth;
 	errorInfo info;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-	
-	cls = unveil(cls);
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
+
+	cls_local = unveil(cls);
+	meth = lookupClassMethod((Hjava_lang_Class*)cls_local, name, sig,
+				 &info);
 	if (meth == NULL) {
 		postError(env, &info);
 	} else if (!METHOD_IS_STATIC(meth)) {
@@ -582,12 +603,13 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	Field* fld;
 	errorInfo info;
 	Utf8Const* utf8;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
-	cls = unveil(cls);
+	cls_local = unveil(cls);
 	utf8 = checkPtr(utf8ConstNew(name, -1));
-	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, true, &info);
+	fld = lookupClassField((Hjava_lang_Class*)cls_local, utf8, true, &info);
 	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
@@ -601,10 +623,11 @@ static jsize
 Kaffe_GetArrayLength(JNIEnv* env UNUSED, jarray arr)
 {
 	jsize len;
+	jarray arr_local;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	arr = unveil(arr);
-	len = obj_length((HArrayOfObject*)arr);
+	arr_local = unveil(arr);
+	len = obj_length((HArrayOfObject*)arr_local);
 
 	END_EXCEPTION_HANDLING();
 	return (len);
@@ -615,15 +638,15 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 {
 	Method* meth;
 	int nmeth;
-	int i;
-	int j;
+	int i, j;
+	jclass cls_local;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	cls = unveil(cls);
+	cls_local = unveil(cls);
 
-	meth = CLASS_METHODS((Hjava_lang_Class*)cls);
-	nmeth = CLASS_NMETHODS((Hjava_lang_Class*)cls);
+	meth = CLASS_METHODS((Hjava_lang_Class*)cls_local);
+	nmeth = CLASS_NMETHODS((Hjava_lang_Class*)cls_local);
 
 	for (j = 0; j < nmethods; j++) {
 		for (i = 0; i < nmeth; i++) {
@@ -656,11 +679,13 @@ Kaffe_UnregisterNatives(JNIEnv* env UNUSED, jclass cls UNUSED)
 static jint
 Kaffe_MonitorEnter(JNIEnv* env UNUSED, jobject obj)
 {
+	jobject obj_local;
+
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	/* We should never throw out of a JNI call */
-	obj = unveil(obj);
-	lockObject(obj);
+	obj_local = unveil(obj);
+	lockObject(obj_local);
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -669,10 +694,12 @@ Kaffe_MonitorEnter(JNIEnv* env UNUSED, jobject obj)
 static jint
 Kaffe_MonitorExit(JNIEnv* env UNUSED, jobject obj)
 {
+	jobject obj_local;
+
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	obj = unveil(obj);
-	unlockObject(obj);
+	obj_local = unveil(obj);
+	unlockObject(obj_local);
 
 	END_EXCEPTION_HANDLING();
 	return (0);
