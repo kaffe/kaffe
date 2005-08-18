@@ -1,3 +1,10 @@
+2005-08-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Use more extensive test for net/if.h, and include
+	necessary headers for HP-UX and OS X. Test taken from autoconf manual.
+
+	Reported by:  Riccardo Mottola  <riccardo@kaffe.org>
+
 2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
 	* kaffe/kaffe/kaffevm/access.c: proper system header include
 

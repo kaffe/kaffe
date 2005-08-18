@@ -1020,7 +1020,6 @@ malloc.h \
 memory.h \
 mips/cachectl.h \
 netdb.h \
-net/if.h \
 netinet/in.h \
 netinet/in_systm.h \
 netinet/tcp.h \
@@ -1056,6 +1055,23 @@ utime.h \
 wintypes.h \
 wtypes.h \
 zlib.h])
+
+# check net/if.h seperately, as it requrires other headers on OS X
+# and HP-UX 10.20
+AC_CHECK_HEADERS([net/if.h], [], [],
+[#include <stdio.h>
+#if STDC_HEADERS
+# include <stdlib.h>
+# include <stddef.h>
+#else
+# if HAVE_STDLIB_H
+#  include <stdlib.h>
+# endif
+#endif
+#if HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+])
 
 dnl GNU/Linux sigcontext headers
 AC_CHECK_HEADERS([asm/sigcontext.h])
