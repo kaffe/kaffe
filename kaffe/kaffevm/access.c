@@ -5,6 +5,9 @@
  * Copyright (c) 2002, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
+ * Copyright (c) 2005
+ *      The kaffe.org's developers. See ChangeLog for details.
+ *
  * This file is licensed under the terms of the GNU Public License.
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -13,7 +16,22 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+
 #include "config.h"
+
+/* include system headers */
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
 
 #include "gtypes.h"
 #include "exception.h"
@@ -23,6 +41,7 @@
 #include "classMethod.h"
 #include "lookup.h"
 #include "soft.h"
+
 
 const char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 {

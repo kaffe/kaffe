@@ -1,3 +1,6 @@
+2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
+	* kaffe/kaffe/kaffevm/access.c: proper system header include
+
 2005-08-18  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
