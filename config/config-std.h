@@ -4,6 +4,10 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2005
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -19,24 +23,7 @@
 
 #include "config.h"
 
-#if defined(HAVE_STRING_H)
-#include <string.h>
-#endif
-#if defined(HAVE_UNISTD_H)
-#include <unistd.h>
-#endif
-#if defined (HAVE_TIME_H)
-#include <time.h>
-#endif
-#if defined(HAVE_SYS_TIME_H)
-#include <sys/time.h>
-#endif
-#if defined(HAVE_SYS_TYPES_H)
-#include <sys/types.h>
-#endif
-#if defined(HAVE_SYS_RESOURCE_H)
-#include <sys/resource.h>
-#endif
+
 #if !defined (__CYGWIN__)
 #if !defined(HAVE_WINDOWS_H) && defined(HAVE_WINNT_H)
 #include <winnt.h>

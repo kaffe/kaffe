@@ -1,3 +1,9 @@
+2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
+
+	Rationalized includes by decentralizing them to the .c files
+	config/config-std.h
+	libraries/clib/native/TimeZone.c
+
 2005-08-18  Andreas Tobler  <a.tobler@schweiz.ch>
 
 	* kaffe/kaffevm/jni/jni.c: Fix clobbering warnings all over.
@@ -22,6 +28,7 @@
 	Reported by:  Riccardo Mottola  <riccardo@kaffe.org>
 
 2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
+
 	* kaffe/kaffe/kaffevm/access.c: proper system header include
 
 2005-08-18  Dalibor Topic  <robilad@kaffe.org>

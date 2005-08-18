@@ -17,6 +17,11 @@
  */
 #include "config.h"
 #include "config-std.h"
+
+#if defined (HAVE_TIME_H)
+#include <time.h>
+#endif
+
 #include <native.h>
 #include "java_util_VMTimeZone.h"
 
