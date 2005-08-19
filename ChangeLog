@@ -5,6 +5,13 @@
 
 2005-08-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Check for stropts.h
+
+	* replace/ifaddrs_bsd.c: Include stropts.h if available
+	for ioctl prototype.
+
+2005-08-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* replace/ifaddrs_bsd.c: Added missing includes.
 
 2005-08-19  Dalibor Topic  <robilad@kaffe.org>

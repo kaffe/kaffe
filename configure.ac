@@ -1031,6 +1031,7 @@ sigcontext.h \
 signal.h \
 stdlib.h \
 string.h \
+stropts.h \
 sys/cachectl.h \
 sys/filio.h \
 sys/ioctl.h \

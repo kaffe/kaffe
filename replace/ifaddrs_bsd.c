@@ -20,6 +20,10 @@
 #include <unistd.h>
 #endif
 
+#if defined(HAVE_STROPTS_H)
+#include <stropts.h>
+#endif
+
 #include "config-std.h"
 #include "config-net.h"
 #include "config-io.h"
