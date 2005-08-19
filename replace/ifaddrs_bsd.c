@@ -11,6 +11,15 @@
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
 #include "config.h"
+
+#if defined(HAVE_STRING_H)
+#include <string.h>
+#endif
+
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+
 #include "config-std.h"
 #include "config-net.h"
 #include "config-io.h"
