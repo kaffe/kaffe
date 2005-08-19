@@ -334,7 +334,7 @@ static jint jvmpiCreateSystemThread(char *name,
 	return( retval );
 }
 
-static jint jvmpiDisableEvent(jint event_type, void *arg)
+static jint jvmpiDisableEvent(jint event_type, void *arg UNUSED)
 {
 	jint retval;
 
@@ -358,7 +358,7 @@ static void jvmpiDisableGC(void)
 	gc_disableGC();
 }
 
-static jint jvmpiEnableEvent(jint event_type, void *arg)
+static jint jvmpiEnableEvent(jint event_type, void *arg UNUSED)
 {
 	jint retval = JVMPI_NOT_AVAILABLE;
 	

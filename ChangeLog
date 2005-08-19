@@ -1,5 +1,10 @@
 2005-08-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c 
+	(jvmpiDisableEvent, jvmpiEnableEvent): Mark unused parameters as UNUSED.
+
+2005-08-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/support.h: Added include for string.h for alpha-linux.
 
 2005-08-19  Riccardo Mottola  <riccardo@kaffe.org>
