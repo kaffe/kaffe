@@ -12,6 +12,13 @@
 #ifndef __support_h
 #define	__support_h
 
+
+#include "config.h"
+
+#if defined(HAVE_STRING_H)
+#include <string.h>
+#endif
+
 #include "config-std.h"
 #include "gtypes.h"
 #include <stdarg.h>
