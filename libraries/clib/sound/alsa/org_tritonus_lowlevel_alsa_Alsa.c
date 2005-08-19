@@ -32,7 +32,7 @@
  */
 JNIEXPORT jstring JNICALL
 Java_org_tritonus_lowlevel_alsa_Alsa_getStringError
-(JNIEnv *env, jclass cls, jint nErrnum)
+(JNIEnv *env, jclass cls UNUSED, jint nErrnum)
 {
 	jstring	strError;
 	const char*	err;

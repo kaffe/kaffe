@@ -855,7 +855,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaMixerElement_setCaptureVolumeRange
  */
 JNIEXPORT jstring JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaMixerElement_getChannelName
-(JNIEnv* env, jclass cls, jint nChannelType)
+(JNIEnv* env, jclass cls UNUSED, jint nChannelType)
 {
 	const char*		channelName;
 	jstring			channelNameObj;
@@ -876,7 +876,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaMixerElement_getChannelName
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaMixerElement_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

@@ -95,7 +95,7 @@ Java_org_tritonus_lowlevel_esd_EsdRecordingStream_close
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_esd_EsdRecordingStream_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

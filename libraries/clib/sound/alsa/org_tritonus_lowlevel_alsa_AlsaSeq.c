@@ -794,7 +794,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTempo
  */
 JNIEXPORT jint JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeq_getQueueTimer
-(JNIEnv* env, jobject obj, jint nQueue, jobject queueTimerObj)
+(JNIEnv* env, jobject obj, jint nQueue, jobject queueTimerObj UNUSED)
 {
 	snd_seq_t*		seq;
 	snd_seq_queue_timer_t*	pQueueTimer;
@@ -822,7 +822,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeq_getQueueTimer
  */
 JNIEXPORT jint JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTimer
-(JNIEnv* env, jobject obj, jint nQueue, jobject queueTimerObj)
+(JNIEnv* env, jobject obj, jint nQueue, jobject queueTimerObj UNUSED)
 {
 	snd_seq_t*		seq;
 	snd_seq_queue_timer_t*	pQueueTimer;
@@ -931,7 +931,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeq_unsubscribePort
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeq_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

@@ -39,7 +39,7 @@ getAlsaCtlCardInfoNativeHandle(JNIEnv *env, jobject obj);
  */
 JNIEXPORT jint JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_loadCard
-(JNIEnv *env, jclass cls, jint nCard)
+(JNIEnv *env UNUSED, jclass cls UNUSED, jint nCard)
 {
 	return snd_card_load(nCard);
 }
@@ -53,7 +53,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_loadCard
  */
 JNIEXPORT jintArray JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCards
-(JNIEnv *env, jclass cls)
+(JNIEnv *env, jclass cls UNUSED)
 {
 	int		anCards[32];
 	int		nCard = -1;
@@ -86,7 +86,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCards
  */
 JNIEXPORT jint JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCardIndex
-(JNIEnv *env, jclass cls, jstring strCardName)
+(JNIEnv *env, jclass cls UNUSED, jstring strCardName)
 {
 	int	nCard;
 	const char*	name = NULL;
@@ -109,7 +109,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCardIndex
  */
 JNIEXPORT jstring JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCardName
-(JNIEnv *env, jclass cls, jint nCard)
+(JNIEnv *env, jclass cls UNUSED, jint nCard)
 {
 	int	nReturn;
 	jstring	strName;
@@ -136,7 +136,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCardName
  */
 JNIEXPORT jstring JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_getCardLongName
-(JNIEnv *env, jclass cls, jint nCard)
+(JNIEnv *env, jclass cls UNUSED, jint nCard)
 {
 	int	nReturn;
 	jstring	strName;
@@ -275,7 +275,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_getPcmDevices
  */
 JNIEXPORT jint JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_getPcmInfo
-(JNIEnv *env, jobject obj, jintArray anValues, jobjectArray astrValues)
+(JNIEnv *env UNUSED, jobject obj UNUSED, jintArray anValues UNUSED, jobjectArray astrValues UNUSED)
 {
 	// TODO:
 	return -1;
@@ -290,7 +290,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaCtl_getPcmInfo
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaCtl_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

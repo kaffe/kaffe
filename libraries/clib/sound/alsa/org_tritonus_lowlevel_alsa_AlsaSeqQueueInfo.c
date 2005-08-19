@@ -270,7 +270,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo_setFlags
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

@@ -431,7 +431,8 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_getVar
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setCommon
-(JNIEnv* env, jobject obj, jint nType, jint nFlags, jint nTag, jint nQueue, jlong lTimestamp, jint nSourceClient, jint nSourcePort, jint nDestClient, jint nDestPort)
+(JNIEnv* env, jobject obj, jint nType, jint nFlags, jint nTag, jint nQueue, jlong lTimestamp, 
+jint nSourceClient UNUSED, jint nSourcePort, jint nDestClient, jint nDestPort)
 {
 	snd_seq_event_t*	handle;
 	int			nLengthFlags;
@@ -622,7 +623,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setVar
  */
 JNIEXPORT void JNICALL
 Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setTrace
-(JNIEnv* env, jclass cls, jboolean bTrace)
+(JNIEnv* env UNUSED, jclass cls UNUSED, jboolean bTrace)
 {
 	debug_flag = bTrace;
 	debug_file = stderr;

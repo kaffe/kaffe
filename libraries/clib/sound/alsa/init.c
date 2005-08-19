@@ -22,10 +22,6 @@
 
 #include <stdio.h>
 #include <dlfcn.h>
-#include "../common/debug.h"
-
-
-static void*	asound_dl_handle = NULL;
 
 
 /*
@@ -39,6 +35,12 @@ static void*	asound_dl_handle = NULL;
 /* commented out by Dalibor Topic <robilad@yahoo.com>
  * because gcc doesn't like it when building the library with
  * libtool support.
+ */
+/*
+ *
+ * #include "../common/debug.h"
+ *
+ * static void*	asound_dl_handle = NULL;
  */
 /*
 void _init(void)
