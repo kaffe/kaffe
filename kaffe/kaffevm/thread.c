@@ -13,6 +13,11 @@
  */
 
 #include "config.h"
+
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+
 #include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
