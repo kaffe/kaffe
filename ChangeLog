@@ -1,5 +1,9 @@
 2005-08-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-string.c: Added missing include.
+
+2005-08-19  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-08-18  Lillian Angel  <langel@redhat.com>
