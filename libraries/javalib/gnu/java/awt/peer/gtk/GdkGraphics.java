@@ -78,6 +78,7 @@ public class GdkGraphics extends Graphics
   static final int GDK_COPY = 0, GDK_XOR = 2;
 
   native void initState (GtkComponentPeer component);
+  native void initStateUnlocked (GtkComponentPeer component);
   native void initState (int width, int height);
   native void initFromImage (GtkImage image);
   native void copyState (GdkGraphics g);
@@ -126,6 +127,15 @@ public class GdkGraphics extends Graphics
   void initComponentGraphics ()
   {
     initState (component);
+    color = component.awtComponent.getForeground ();
+    Dimension d = component.awtComponent.getSize ();
+    clip = new Rectangle (0, 0, d.width, d.height);
+  }
+
+  // called back by native side: realize_cb
+  void initComponentGraphicsUnlocked ()
+  {
+    initStateUnlocked (component);
     color = component.awtComponent.getForeground ();
     Dimension d = component.awtComponent.getSize ();
     clip = new Rectangle (0, 0, d.width, d.height);

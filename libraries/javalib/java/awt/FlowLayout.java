@@ -269,6 +269,9 @@ public class FlowLayout implements LayoutManager, Serializable
    */
   public void setAlignment (int align)
   {
+    // The JDK accepts invalid values and treats them as
+    // LEFT during layout, so do we. The invalid value is even stored,
+    // getAlignment() returns the same invalid value.
     this.align = align;
   }
 

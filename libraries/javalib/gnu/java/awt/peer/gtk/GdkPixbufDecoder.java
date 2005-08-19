@@ -122,7 +122,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
     super (imagedata, imageoffset, imagelength);
   }
 
-  // called back by native side
+  // called back by native side: area_prepared_cb
   void areaPrepared (int width, int height)
   {
 
@@ -138,7 +138,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
       }
   }
   
-  // called back by native side
+  // called back by native side: area_updated_cb
   void areaUpdated (int x, int y, int width, int height, 
                     int pixels[], int scansize)
   {

@@ -1,4 +1,238 @@
-2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
+2005-08-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-18  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/DefaultCellEditor.java
+        (getTreeCellEditorComponent): Implemented.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (isEditing): Implemented.
+        (mouseClicked): Moved code to mousePressed
+        (mousePressed): Code moved here from mouseClicked and
+        added in code to stop editing.
+        (selectPath): Default is changed to CONTIGUOUS_TREE_SELECTION
+        * javax/swing/tree/DefaultTreeSelectionModel.java
+        (DefaultTreeSelectionModel): Default is changed to CONTIGUOUS_TREE_SELECTION.
+
+	2005-08-18  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicArrowButton.java:
+        Set default size to 12.
+        * javax/swing/plaf/basic/BasicScrollBarUI.java
+        (calculatePreferredSize): Don't restrict width and height to
+        a minimum of 20.
+
+	2005-08-18  Keith Seitz  <keiths@redhat.com>
+
+        * vm/reference/gnu/classpath/jdwp/VMIdManager.java: New file
+        with example implementation of ID-management for JDWP back-end.
+        * gnu/classpath/jdwp/id/JdwpIdFactory.java: Removed. Now part of
+        VMIdManager.
+
+	2005-08-18  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (setHashColor): Implemented.
+        (getRowForPath): Implemented.
+
+	2005-08-18  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/tree/DefaultTreeCellRenderer.java
+        (paint): Added check for null border.
+
+	2005-08-18  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/FlowLayout.java
+        (setAlignment): Added comment explaining why we don't check
+        for illegal values here.
+
+	2005-08-18  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/image/PixelGrabber.java
+        (startGrabbing): Replaced ImageConsumer.ABORTED with
+        ImageConsumer.IMAGEABORTED.
+
+	2005-08-18  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/image/PixelGrabber.java
+        (constructors): Check if the ImageProducer is null and throw
+        a NPE if that is the case.
+        (startGrabbing): When an exception is thrown in the grabber thread,
+        exit gracefully and notify the waiting threads.
+        (imageComplete): Only call ip.removeConsumer() if ip is not null.
+
+	2005-08-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/text/StringCharacterIterator.java
+        (StringCharacterIterator(String)): documented NullPointerException.
+
+	2005-08-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/multi/MultiButtonUI.java: new file,
+        * javax/swing/plaf/multi/MultiColorChooserUI.java: new file,
+        * javax/swing/plaf/multi/MultiComboBoxUI.java: new file,
+        * javax/swing/plaf/multi/MultiDesktopIconUI.java: new file,
+        * javax/swing/plaf/multi/MultiDesktopPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiFileChooserUI.java: new file,
+        * javax/swing/plaf/multi/MultiInternalFrameUI.java: new file,
+        * javax/swing/plaf/multi/MultiLabelUI.java: new file,
+        * javax/swing/plaf/multi/MultiListUI.java: new file,
+        * javax/swing/plaf/multi/MultiLookAndFeel.java: new file,
+        * javax/swing/plaf/multi/MultiMenuBarUI.java: new file,
+        * javax/swing/plaf/multi/MultiMenuItemUI.java: new file,
+        * javax/swing/plaf/multi/MultiOptionPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiPanelUI.java: new file,
+        * javax/swing/plaf/multi/MultiPopupMenuUI.java: new file,
+        * javax/swing/plaf/multi/MultiProgressBarUI.java: new file,
+        * javax/swing/plaf/multi/MultiRootPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiScrollBarUI.java: new file,
+        * javax/swing/plaf/multi/MultiScrollPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiSeparatorUI.java: new file,
+        * javax/swing/plaf/multi/MultiSliderUI.java: new file,
+        * javax/swing/plaf/multi/MultiSpinnerUI.java: new file,
+        * javax/swing/plaf/multi/MultiSplitPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiTabbedPaneUI.java: new file,
+        * javax/swing/plaf/multi/MultiTableHeaderUI.java: new file,
+        * javax/swing/plaf/multi/MultiTableUI.java: new file,
+        * javax/swing/plaf/multi/MultiTextUI.java: new file,
+        * javax/swing/plaf/multi/MultiToolBarUI.java: new file,
+        * javax/swing/plaf/multi/MultiToolTipUI.java: new file,
+        * javax/swing/plaf/multi/MultiTreeUI.java: new file,
+        * javax/swing/plaf/multi/MultiViewportUI.java: new file,
+        * javax/swing/plaf/multi/package.html: new file.
+
+	2005-08-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/util/Vector.java
+        (copyInto) fixed incorrect API description.
+
+	2005-08-17  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c: Remove
+        JamVM deadlock workarounds.
+
+	2005-08-17  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkFramePeer.java,
+        gnu_java_awt_peer_gtk_GtkFramePeer.c (postConfigureEvent): Prevent
+        callback calling back into peers.
+        (setBounds): Likewise.
+        (setMenuBarWidthUnlocked): New method.
+        * native/jni/gtk-peer/gtkpeer.h (cp_gtk_filedialog_init_jni):
+        Declare function.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+        (gtkInit): Call cp_gtk_filedialog_init_jni.
+        (loadSystemColors): Work around deadlock.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c
+        (textcomponent_changed_cb): Don't release GDK lock.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c
+        (item_activate_cb): Don't release GDK lock.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c
+        (item_highlighted_cb): Don't release GDK lock.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+        (component_button_press_cb): Don't release GDK lock.
+        (component_button_release_cb): Likewise.
+        (component_motion_notify_cb): Likewise.
+        (component_enter_notify_cb): Likewise.
+        (component_leave_notify_cb): Likewise.
+        (component_expose_cb): Likewise.
+        (component_focus_in_cb): Likewise.
+        (component_focus_out_cb): Likewise.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (block_expose_event_cb): Remove callback.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+        gnu_java_awt_peer_gtk_GtkWindowPeer.c (postConfigureEvent):
+        Prevent callback calling back into peers.
+        (setBounds): Likewise.
+        (nativeSetBoundsUnlocked): New method.
+        (setBoundsUnlocked): Likewise.
+        (nativeSetVisibleUnlocked): Likewise.
+        (setVisibleUnlocked): Likewise.
+        (window_delete_cb): Don't release GDK lock.
+        (window_destroy_cb): Likewise.
+        (window_show_cb): Likewise.
+        (window_active_state_change_cb): Likewise.
+        (window_focus_state_change_cb): Likewise.
+        (window_focus_in_cb): Likewise.
+        (window_focus_out_cb): Likewise.
+        (window_window_state_cb): Likewise.
+        (window_property_changed_cb): Likewise.
+        (realize_cb): Likewise.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java (mainThread): New
+        variable.
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+        gnu_java_awt_peer_gtk_GtkFileDialogPeer.c (setVisible): Prevent
+        callback calling back into peers.
+        (filename_filter_cb): Don't release GDK lock.
+        (handle_response_cb): Likewise.
+        (cp_gtk_filedialog_init_jni): New function.
+        * gnu/java/awt/peer/gtk/GtkCheckboxPeer.java (setState): Prevent
+        callback from calling back into peers.
+        (item_toggled_cb): Don't release GDK lock.
+        * gnu/java/awt/peer/gtk/GdkPixbufDecoder.java,
+        gnu_java_awt_peer_gtk_GdkPixbufDecoder.c (area_prepared_cb): Don't
+        release GDK lock.
+        (area_updated_cb): Likewise.
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+        gnu_java_awt_peer_gtk_GdkGraphics2D.c (initStateUnlocked): New
+        method.
+        (cairoSurfaceSetFilterUnlocked): Likewise.
+        (initComponentGraphics2DUnlocked): Likewise.
+        (setTexturePixelsUnlocked): Likewise.
+        (setGradientUnlocked): Likewise.
+        (cairoSetMatrixUnlocked): Likewise.
+        (cairoSetRGBAColorUnlocked): Likewise.
+        (cairoSetLineWidthUnlocked): Likewise.
+        (cairoSetLineCapUnlocked): Likewise.
+        (cairoSetLineJoinUnlocked): Likewise.
+        (cairoSetDashUnlocked): Likewise.
+        (cairoSetMiterLimitUnlocked): Likewise.
+        (setPaintUnlocked): Likewise.
+        (setTransformUnlocked): Likewise.
+        (setStrokeUnlocked): Likewise.
+        (setColorUnlocked): Likewise.
+        (setBackgroundUnlocked): Likewise.
+        (setRenderingHintsUnlocked): Likewise.
+        (setFontUnlocked): Likewise.
+        (realize_cb): Don't release GDK lock.  Call
+        initComponentGraphics2DUnlocked.
+        * gnu/java/awt/peer/gtk/GdkGraphics.java,
+        gnu_java_awt_peer_gtk_GdkGraphics.c (initStateUnlocked): New
+        method.
+        (initComponentGraphicsUnlocked): New method.
+        (realize_cb): Don't release GDK lock.  Call
+        initComponentGraphicsUnlocked.
+        * include/gnu_java_awt_peer_gtk_GdkGraphics.h: Regenerate.
+        * include/gnu_java_awt_peer_gtk_GdkGraphics2D.h: Likewise.
+        * include/gnu_java_awt_peer_gtk_GtkFramePeer.h: Likewise.
+        * include/gnu_java_awt_peer_gtk_GtkWindowPeer.h: Likewise.
+
+	2005-08-17  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/CompositeView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/FieldView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/GlyphView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/IconView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/PasswordView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/PlainView.java
+        (viewToModel): Changed to match API spec.
+        * javax/swing/text/View.java
+        (viewToModel): Changed to match API spec.
+
+2005-08-19  Riccardo Mottola  <riccardo@kaffe.org>
+
 	Added missing includes to:
 	kaffe/kaffevm/access.c
 	kaffe/kaffevm/file.c

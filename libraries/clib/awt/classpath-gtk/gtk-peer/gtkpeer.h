@@ -181,6 +181,7 @@ void cp_gtk_button_init_jni (void);
 void cp_gtk_checkbox_init_jni (void);
 void cp_gtk_choice_init_jni (void);
 void cp_gtk_component_init_jni (void);
+void cp_gtk_filedialog_init_jni (void);
 void cp_gtk_list_init_jni (void);
 void cp_gtk_menuitem_init_jni (void);
 void cp_gtk_scrollbar_init_jni (void);

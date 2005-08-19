@@ -297,8 +297,8 @@ public class BasicTreeUI
    */
   protected void setHashColor(Color color)
   {
-    // FIXME: not implemented
-
+    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+    defaults.put("Tree.hash", color);
   }
 
   /**
@@ -650,16 +650,24 @@ public class BasicTreeUI
    */
   public int getRowForPath(JTree tree, TreePath path)
   {
-    // FIXME: check visibility
-    // right now, just returns last element because
-    // expand/collapse is not implemented
-    return path.getPathCount() - 1;
+    int row = path.getPathCount();
+    if (tree.isVisible(path))
+      return row;
+    
+    path = path.getParentPath();
+    while (row > 0 && !tree.isVisible(path))
+      {
+        path = path.getParentPath();
+        row--;
+      }
+    return row;
   }
 
   /**
    * Returns the number of rows that are being displayed.
    * 
-   * @param tree is the current tree to return the number of rows for.
+   * @param tree
+   *          is the current tree to return the number of rows for.
    * @return the number of rows being displayed.
    */
   public int getRowCount(JTree tree)
@@ -720,8 +728,7 @@ public class BasicTreeUI
    */
   public boolean isEditing(JTree tree)
   {
-    // FIXME: not implemented
-    return false;
+    return getCellEditor() != null;
   }
 
   /**
@@ -1270,13 +1277,14 @@ public class BasicTreeUI
    */
   protected void ensureRowsAreVisible(int beginRow, int endRow)
   {
-    // FIXME: not implemented
+    //FIXME: not implemented
   }
 
   /**
    * Sets the preferred minimum size.
    * 
-   * @param newSize is the new preferred minimum size.
+   * @param newSize
+   *          is the new preferred minimum size.
    */
   public void setPreferredMinSize(Dimension newSize)
   {
@@ -1910,6 +1918,15 @@ public class BasicTreeUI
      */
     public void mouseClicked(MouseEvent e)
     {
+    }
+
+    /**
+     * Invoked when a mouse button has been pressed on a component.
+     * 
+     * @param e mouse event that occured
+     */
+    public void mousePressed(MouseEvent e)
+    {
       Point click = e.getPoint();
       int row = Math.round(click.y / BasicTreeUI.this.getRowHeight());
       TreePath path = BasicTreeUI.this.getClosestPathForLocation(tree, click.x,
@@ -1929,8 +1946,8 @@ public class BasicTreeUI
           if (bounds.contains(click.x, click.y))
             inBounds = true;
           else if (BasicTreeUI.this.hasControlIcons()
-                   && (click.x < (bounds.x - rightChildIndent + 5) && click.x > (bounds.x
-                                                                                 - rightChildIndent - 5)))
+                   && (click.x < (bounds.x - rightChildIndent + 5) 
+                       && click.x > (bounds.x - rightChildIndent - 5)))
             cntlClick = true;
 
           if ((inBounds || cntlClick) && BasicTreeUI.this.tree.isVisible(path))
@@ -1959,17 +1976,13 @@ public class BasicTreeUI
                 }
 
               BasicTreeUI.this.selectPath(BasicTreeUI.this.tree, path);
+              
+              // If editing, but the moved to another cell then stop editing
+              if (!path.equals(BasicTreeUI.this.tree.getLeadSelectionPath()))
+                if (BasicTreeUI.this.tree.isEditing())
+                  BasicTreeUI.this.tree.stopEditing();
             }
         }
-    }
-
-    /**
-     * Invoked when a mouse button has been pressed on a component.
-     * 
-     * @param e mouse event that occured
-     */
-    public void mousePressed(MouseEvent e)
-    {
     }
 
     /**
@@ -2971,22 +2984,24 @@ public class BasicTreeUI
       {
         if (tree.isPathSelected(path))
           tree.removeSelectionPath(path);
-        else if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.SINGLE_TREE_SELECTION)
+        else if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.
+            DISCONTIGUOUS_TREE_SELECTION)
           {
-            tree.getSelectionModel().clearSelection();
             tree.addSelectionPath(path);
             tree.setLeadSelectionPath(path);
           }
-        else if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.CONTIGUOUS_TREE_SELECTION)
+        else if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.
+            CONTIGUOUS_TREE_SELECTION)
           {
             // TODO
           }
         else
           {
-            tree.getSelectionModel().setSelectionMode(
-                                                      TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-            tree.addSelectionPath(path);
-            tree.setLeadSelectionPath(path);
+            tree.getSelectionModel().setSelectionMode(TreeSelectionModel.
+                                                      SINGLE_TREE_SELECTION);
+              tree.getSelectionModel().clearSelection();
+              tree.addSelectionPath(path);
+              tree.setLeadSelectionPath(path);
           }
       }
   }

@@ -250,9 +250,9 @@ public class PlainView extends View
    * @return the position in the document that corresponds to the screen
    *         coordinates <code>x, y</code>
    */
-  public int viewToModel(float x, float y, Shape a, Position.Bias b)
+  public int viewToModel(float x, float y, Shape a, Position.Bias[] b)
   {
-    // FIXME: Implement this properly.
+    // FIXME: not implemented
     return 0;
   }
 }

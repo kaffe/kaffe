@@ -90,6 +90,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   static EventQueue q;
   static boolean useGraphics2dSet;
   static boolean useGraphics2d;
+  static Thread mainThread;
 
   public static boolean useGraphics2D()
   {
@@ -124,13 +125,14 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     // Register ImageIO SPIs
     GdkPixbufDecoder.registerSpis( IIORegistry.getDefaultInstance() );
 
-    new Thread ("GTK main thread")
-    {
-      public void run ()
+    mainThread = new Thread ("GTK main thread")
       {
-	gtkMain ();
-      }
-    }.start ();
+        public void run ()
+        {
+          gtkMain ();
+        }
+      };
+    mainThread.start ();
   }
 
   public GtkToolkit ()

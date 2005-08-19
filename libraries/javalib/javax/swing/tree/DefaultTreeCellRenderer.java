@@ -437,8 +437,13 @@ public class DefaultTreeCellRenderer
       Rectangle vr = new Rectangle();
       Rectangle ir = new Rectangle();
       Rectangle tr = new Rectangle();
-      Insets insets = UIManager.getLookAndFeelDefaults()
-              .getBorder("Tree.selectionBorder").getBorderInsets(this);
+      
+      Insets insets = new Insets(0, 0, 0, 0);
+      Border border = UIManager.getLookAndFeelDefaults().getBorder
+            ("Tree.selectionBorder");
+      if (border != null) 
+        insets = border.getBorderInsets(this);
+      
       FontMetrics fm = getToolkit().getFontMetrics(getFont());
       SwingUtilities.layoutCompoundLabel(((JLabel) this), fm, getText(),
                                          getIcon(), getVerticalAlignment(),

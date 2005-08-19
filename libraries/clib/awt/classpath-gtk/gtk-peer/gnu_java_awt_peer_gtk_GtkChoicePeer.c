@@ -219,7 +219,8 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeGetSelected
   return index;
 }
 
-static void selection_changed_cb (GtkComboBox *combobox, jobject peer)
+static void
+selection_changed_cb (GtkComboBox *combobox, jobject peer)
 {
   jstring label;
   GtkTreeModel *model;
@@ -236,13 +237,9 @@ static void selection_changed_cb (GtkComboBox *combobox, jobject peer)
       gtk_tree_model_get (model, &iter, 0, &selected, -1);
       label = (*cp_gtk_gdk_env())->NewStringUTF (cp_gtk_gdk_env(), selected);
 
-      gdk_threads_leave ();
-
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                     postChoiceItemEventID,
                                     label,
                                     (jint) AWT_ITEM_SELECTED);
-
-      gdk_threads_enter ();
     }
 }

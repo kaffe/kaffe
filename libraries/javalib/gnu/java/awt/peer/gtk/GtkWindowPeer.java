@@ -60,6 +60,8 @@ public class GtkWindowPeer extends GtkContainerPeer
   private boolean hasBeenShown = false;
   private int oldState = Frame.NORMAL;
 
+  private boolean resizing = false;
+
   native void gtkWindowSetTitle (String title);
   native void gtkWindowSetResizable (boolean resizable);
   native void gtkWindowSetModal (boolean modal);
@@ -116,12 +118,27 @@ public class GtkWindowPeer extends GtkContainerPeer
   public native void toFront();
 
   native void nativeSetBounds (int x, int y, int width, int height);
+  native void nativeSetBoundsUnlocked (int x, int y, int width, int height);
 
   public void setBounds (int x, int y, int width, int height)
   {
+    // prevent window_configure_cb -> awtComponent.setSize ->
+    // peer.setBounds -> nativeSetBounds self-deadlock on GDK lock.
+    if (resizing && Thread.currentThread() == GtkToolkit.mainThread)
+      {
+        resizing = false;
+        return;
+      }
     nativeSetBounds (x, y,
 		     width - insets.left - insets.right,
 		     height - insets.top - insets.bottom);
+  }
+
+  public void setBoundsUnlocked (int x, int y, int width, int height)
+  {
+    nativeSetBoundsUnlocked (x, y,
+                             width - insets.left - insets.right,
+                             height - insets.top - insets.bottom);
   }
 
   public void setTitle (String title)
@@ -157,7 +174,10 @@ public class GtkWindowPeer extends GtkContainerPeer
 
     if (frame_width != awtComponent.getWidth()
 	|| frame_height != awtComponent.getHeight())
-      awtComponent.setSize(frame_width, frame_height);
+      {
+        resizing = true;
+        awtComponent.setSize(frame_width, frame_height);
+      }
 
     int frame_x = x - insets.left;
     int frame_y = y - insets.top;
@@ -180,6 +200,19 @@ public class GtkWindowPeer extends GtkContainerPeer
 		 awtComponent.getWidth(),
 		 awtComponent.getHeight());
     nativeSetVisible (b);
+  }
+
+  native void nativeSetVisibleUnlocked (boolean b);
+  public void setVisibleUnlocked (boolean b)
+  {
+    // Prevent the window manager from automatically placing this
+    // window when it is shown.
+    if (b)
+      setBoundsUnlocked (awtComponent.getX(),
+                         awtComponent.getY(),
+                         awtComponent.getWidth(),
+                         awtComponent.getHeight());
+    nativeSetVisibleUnlocked (b);
   }
 
   void postWindowEvent (int id, Window opposite, int newState)

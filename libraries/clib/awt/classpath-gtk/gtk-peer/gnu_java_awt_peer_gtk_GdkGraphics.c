@@ -41,7 +41,7 @@ exception statement from your version. */
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkx.h>
 
-static jmethodID initComponentGraphicsID;
+static jmethodID initComponentGraphicsUnlockedID;
 
 void
 cp_gtk_graphics_init_jni (void)
@@ -51,9 +51,10 @@ cp_gtk_graphics_init_jni (void)
   gdkgraphics = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
                                          "gnu/java/awt/peer/gtk/GdkGraphics");
 
-  initComponentGraphicsID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gdkgraphics,
-                                                       "initComponentGraphics",
-                                                       "()V");
+  initComponentGraphicsUnlockedID =
+    (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gdkgraphics,
+                                      "initComponentGraphicsUnlocked",
+                                      "()V");
 }
 
 struct state_table *cp_gtk_native_graphics_state_table;
@@ -175,18 +176,14 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initFromImage
   gdk_threads_leave ();
 }
 
-/* copy the native state of the peer (GtkWidget *) to the native state
-   of the graphics object */
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
+Java_gnu_java_awt_peer_gtk_GdkGraphics_initStateUnlocked
   (JNIEnv *env, jobject obj, jobject peer)
 {
   struct graphics *g = NULL;
   void *ptr = NULL;
   GtkWidget *widget = NULL;
   GdkColor color;
-
-  gdk_threads_enter ();
 
   g = (struct graphics *) g_malloc (sizeof (struct graphics));
   ptr = NSA_GET_PTR (env, peer);
@@ -204,7 +201,17 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_java_awt_peer_gtk_GtkComp
   color = widget->style->fg[GTK_STATE_NORMAL];
 
   NSA_SET_G_PTR (env, obj, g);
+}
 
+/* copy the native state of the peer (GtkWidget *) to the native state
+   of the graphics object */
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_java_awt_peer_gtk_GtkComponentPeer_2
+  (JNIEnv *env, jobject obj, jobject peer)
+{
+  gdk_threads_enter ();
+  Java_gnu_java_awt_peer_gtk_GdkGraphics_initStateUnlocked
+    (env, obj, peer);
   gdk_threads_leave ();
 }
 
@@ -666,11 +673,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_setClipRectangle
 static void
 realize_cb (GtkWidget *widget __attribute__ ((unused)), jobject jgraphics)
 {
-  gdk_threads_leave ();
-
-  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), jgraphics, initComponentGraphicsID);
+  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(),
+                                       jgraphics,
+                                       initComponentGraphicsUnlockedID);
 
   NSA_DEL_GLOBAL_G_REF (cp_gtk_gdk_env(), jgraphics);
-
-  gdk_threads_enter ();
 }

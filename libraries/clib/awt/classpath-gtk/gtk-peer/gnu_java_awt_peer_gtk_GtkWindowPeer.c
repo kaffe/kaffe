@@ -1044,16 +1044,12 @@ window_configure_cb (GtkWidget *widget __attribute__((unused)),
                      GdkEventConfigure *event,
                      jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postConfigureEventID,
                                 (jint) event->x,
                                 (jint) event->y,
                                 (jint) event->width,
                                 (jint) event->height);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }
@@ -1063,8 +1059,6 @@ key_press_cb (GtkWidget *widget __attribute__((unused)),
               GdkEventKey *event,
               jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postKeyEventID,
                                 (jint) AWT_KEY_PRESSED,
@@ -1073,8 +1067,6 @@ key_press_cb (GtkWidget *widget __attribute__((unused)),
                                 keysym_to_awt_keycode (event),
                                 keyevent_to_awt_keychar (event),
                                 keysym_to_awt_keylocation (event));
-
-  gdk_threads_enter ();
 
   /* FIXME: generation of key typed events needs to be moved
      to GtkComponentPeer.postKeyEvent.  If the key in a key
@@ -1090,8 +1082,6 @@ key_release_cb (GtkWidget *widget __attribute__((unused)),
                 GdkEventKey *event,
                 jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postKeyEventID,
                                 (jint) AWT_KEY_RELEASED,
@@ -1100,8 +1090,6 @@ key_release_cb (GtkWidget *widget __attribute__((unused)),
                                 keysym_to_awt_keycode (event),
                                 keyevent_to_awt_keychar (event),
                                 keysym_to_awt_keylocation (event));
-
-  gdk_threads_enter ();
 
   return TRUE;
 }
@@ -1213,9 +1201,19 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible
   (JNIEnv *env, jobject obj, jboolean visible)
 {
-  void *ptr;
-
   gdk_threads_enter ();
+
+  Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisibleUnlocked
+    (env, obj, visible);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisibleUnlocked
+  (JNIEnv *env, jobject obj, jboolean visible)
+{
+  void *ptr;
 
   ptr = NSA_GET_PTR (env, obj);
 
@@ -1225,8 +1223,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible
     gtk_widget_hide (GTK_WIDGET (ptr));
 
   XFlush (GDK_DISPLAY ());
-
-  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -1363,9 +1359,19 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBounds
   (JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height)
 {
-  void *ptr;
-
   gdk_threads_enter ();
+
+  Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBoundsUnlocked
+    (env, obj, x, y, width, height);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBoundsUnlocked
+  (JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height)
+{
+  void *ptr;
 
   ptr = NSA_GET_PTR (env, obj);
 
@@ -1395,8 +1401,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBounds
      by the program and the window's "resizable" property is true then
      the size request will not be honoured. */
   gtk_window_resize (GTK_WINDOW (ptr), width, height);
-
-  gdk_threads_leave ();
 }
 
 static void
@@ -1512,14 +1516,10 @@ window_delete_cb (GtkWidget *widget __attribute__((unused)),
 		  GdkEvent *event __attribute__((unused)),
 		  jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 			      postWindowEventID,
 			      (jint) AWT_WINDOW_CLOSING,
 			      (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 
   /* Prevents that the Window dissappears ("destroy"
      not being signalled). This is necessary because it
@@ -1533,28 +1533,20 @@ window_destroy_cb (GtkWidget *widget __attribute__((unused)),
 		   GdkEvent *event __attribute__((unused)),
 		   jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 			      postWindowEventID,
 			      (jint) AWT_WINDOW_CLOSED,
 			      (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 }
 
 static void
 window_show_cb (GtkWidget *widget __attribute__((unused)),
 		jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 			      postWindowEventID,
 			      (jint) AWT_WINDOW_OPENED,
 			      (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 }
 
 static void
@@ -1587,8 +1579,6 @@ window_focus_state_change_cb (GtkWidget *widget,
 			      GParamSpec *pspec __attribute__((unused)),
 			      jobject peer)
 {
-  gdk_threads_leave ();
-
   if (GTK_WINDOW (widget)->has_toplevel_focus)
     (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postWindowEventID,
@@ -1599,8 +1589,6 @@ window_focus_state_change_cb (GtkWidget *widget,
                                 postWindowEventID,
                                 (jint) AWT_WINDOW_DEACTIVATED,
                                 (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 }
 
 static gboolean
@@ -1608,14 +1596,10 @@ window_focus_in_cb (GtkWidget * widget  __attribute__((unused)),
 		    GdkEventFocus *event  __attribute__((unused)),
 		    jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                               postWindowEventID,
                               (jint) AWT_WINDOW_GAINED_FOCUS,
                               (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }
@@ -1625,14 +1609,10 @@ window_focus_out_cb (GtkWidget * widget __attribute__((unused)),
 		     GdkEventFocus *event __attribute__((unused)),
 		     jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                               postWindowEventID,
                               (jint) AWT_WINDOW_LOST_FOCUS,
                               (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }
@@ -1651,26 +1631,18 @@ window_window_state_cb (GtkWidget *widget,
       if (event->window_state.new_window_state & GDK_WINDOW_STATE_ICONIFIED)
 	{
 	  /* We've been iconified. */
-	  gdk_threads_leave ();
-
 	  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 				      postWindowEventID,
 				      (jint) AWT_WINDOW_ICONIFIED,
 				      (jobject) NULL, (jint) 0);
-
-	  gdk_threads_enter ();
 	}
       else
 	{
 	  /* We've been deiconified. */
-	  gdk_threads_leave ();
-
 	  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 				      postWindowEventID,
 				      (jint) AWT_WINDOW_DEICONIFIED,
 				      (jobject) NULL, (jint) 0);
-
-	  gdk_threads_enter ();
 	}
     }
 
@@ -1683,14 +1655,10 @@ window_window_state_cb (GtkWidget *widget,
 
   new_state |= window_get_new_state (widget);
 
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 			      postWindowEventID,
 			      (jint) AWT_WINDOW_STATE_CHANGED,
 			      (jobject) NULL, new_state);
-
-  gdk_threads_enter ();
 
   return TRUE;
 }
@@ -1757,16 +1725,12 @@ window_property_changed_cb (GtkWidget *widget __attribute__((unused)),
                            NULL,
                            gu_ex.gu_extents))
     {
-      gdk_threads_leave ();
-
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 				    postInsetsChangedEventID,
 				    (jint) extents[2],  /* top */
 				    (jint) extents[0],  /* left */
 				    (jint) extents[3],  /* bottom */
 				    (jint) extents[1]); /* right */
-
-      gdk_threads_enter ();
     }
   
 

@@ -526,5 +526,5 @@ public abstract class View implements SwingConstants
    * @return the position in the document that corresponds to the screen
    *         coordinates <code>x, y</code>
    */
-  public abstract int viewToModel(float x, float y, Shape a, Position.Bias b);
+  public abstract int viewToModel(float x, float y, Shape a, Position.Bias[] b);
 }

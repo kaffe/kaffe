@@ -68,9 +68,9 @@ static jstring imageTarget;
 static jstring filesTarget;
 
 static void
-cp_gtk_clipboard_owner_change (GtkClipboard *clipboard __attribute__((unused)),
-			       GdkEvent *event __attribute__((unused)),
-			       gpointer user_data __attribute__((unused)))
+cp_gtk_clipboard_owner_change_cb (GtkClipboard *clipboard __attribute__((unused)),
+                                  GdkEvent *event __attribute__((unused)),
+                                  gpointer user_data __attribute__((unused)))
 {
   /* These are only interesting when we are not the owner. Otherwise
      we will have the set and clear functions doing the updating. */
@@ -108,7 +108,7 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
   if (gdk_display_supports_selection_notification (display))
     {
       g_signal_connect (clipboard, "owner-change",
-			G_CALLBACK (cp_gtk_clipboard_owner_change), NULL);
+			G_CALLBACK (cp_gtk_clipboard_owner_change_cb), NULL);
       gdk_display_request_selection_notification (display,
 						  GDK_SELECTION_CLIPBOARD);
       can_cache = JNI_TRUE;

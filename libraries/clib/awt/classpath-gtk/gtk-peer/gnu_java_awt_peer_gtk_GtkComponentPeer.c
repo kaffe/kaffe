@@ -123,11 +123,11 @@ static gboolean component_expose_cb (GtkWidget *widget,
                                      GdkEventExpose *event,
                                      jobject peer);
 static gboolean component_focus_in_cb (GtkWidget *widget,
-                             GdkEventFocus *event,
-                             jobject peer);
+                                       GdkEventFocus *event,
+                                       jobject peer);
 static gboolean component_focus_out_cb (GtkWidget *widget,
-                              GdkEventFocus *event,
-                              jobject peer);
+                                        GdkEventFocus *event,
+                                        jobject peer);
 
 static jint
 button_to_awt_mods (int button)
@@ -602,11 +602,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetBackground
 
   bg = GTK_WIDGET (ptr)->style->bg[GTK_STATE_NORMAL];
 
-  gdk_threads_leave ();
-
   array = (*env)->NewIntArray (env, 3);
-
-  gdk_threads_enter ();
 
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
   /* convert color data from 16 bit values down to 8 bit values */
@@ -635,11 +631,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetForeground
 
   fg = GTK_WIDGET (ptr)->style->fg[GTK_STATE_NORMAL];
 
-  gdk_threads_leave ();
-
   array = (*env)->NewIntArray (env, 3);
-
-  gdk_threads_enter ();
 
   rgb = (*env)->GetIntArrayElements (env, array, NULL);
   /* convert color data from 16 bit values down to 8 bit values */
@@ -922,7 +914,7 @@ static int hasBeenDragged;
 static gboolean
 component_button_press_cb (GtkWidget *widget __attribute__((unused)),
                            GdkEventButton *event,
-             jobject peer)
+                           jobject peer)
 {
   /* Ignore double and triple click events. */
   if (event->type == GDK_2BUTTON_PRESS
@@ -940,8 +932,6 @@ component_button_press_cb (GtkWidget *widget __attribute__((unused)),
   button_window = event->window;
   button_number = event->button;
 
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postMouseEventID,
                                 AWT_MOUSE_PRESSED, 
@@ -954,8 +944,6 @@ component_button_press_cb (GtkWidget *widget __attribute__((unused)),
                                 (event->button == 3) ? JNI_TRUE :
                                 JNI_FALSE);
 
-  gdk_threads_enter ();
-
   hasBeenDragged = FALSE;
 
   return FALSE;
@@ -964,11 +952,9 @@ component_button_press_cb (GtkWidget *widget __attribute__((unused)),
 static gboolean
 component_button_release_cb (GtkWidget *widget __attribute__((unused)),
                              GdkEventButton *event,
-                        jobject peer)
+                             jobject peer)
 {
   int width, height;
-
-  gdk_threads_leave ();
 
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postMouseEventID,
@@ -981,8 +967,6 @@ component_button_release_cb (GtkWidget *widget __attribute__((unused)),
                                 click_count,
                                 JNI_FALSE);
 
-  gdk_threads_enter ();
-
   /* Generate an AWT click event only if the release occured in the
      window it was pressed in, and the mouse has not been dragged since
      the last time it was pressed. */
@@ -993,8 +977,6 @@ component_button_release_cb (GtkWidget *widget __attribute__((unused)),
       && event->x <= width 
       && event->y <= height)
     {
-      gdk_threads_leave ();
-
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                     postMouseEventID,
                                     AWT_MOUSE_CLICKED, 
@@ -1005,25 +987,21 @@ component_button_release_cb (GtkWidget *widget __attribute__((unused)),
                                     (jint)event->y, 
                                     click_count,
                                     JNI_FALSE);
-
-      gdk_threads_enter ();
     }
   return FALSE;
 }
-
+ 
 static gboolean
 component_motion_notify_cb (GtkWidget *widget __attribute__((unused)),
                             GdkEventMotion *event,
                             jobject peer)
- {
+{
   if (event->state & (GDK_BUTTON1_MASK
                       | GDK_BUTTON2_MASK
                       | GDK_BUTTON3_MASK
                       | GDK_BUTTON4_MASK
                       | GDK_BUTTON5_MASK))
     {
-      gdk_threads_leave ();
- 
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                     postMouseEventID,
                                     AWT_MOUSE_DRAGGED,
@@ -1033,15 +1011,11 @@ component_motion_notify_cb (GtkWidget *widget __attribute__((unused)),
                                     (jint)event->y,
                                     0,
                                     JNI_FALSE);
- 
-      gdk_threads_enter ();
- 
+
       hasBeenDragged = TRUE;
     }
   else
     {
-      gdk_threads_leave ();
- 
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postMouseEventID,
                                     AWT_MOUSE_MOVED,
                                     (jlong)event->time,
@@ -1050,8 +1024,6 @@ component_motion_notify_cb (GtkWidget *widget __attribute__((unused)),
                                     (jint)event->y,
                                     0,
                                     JNI_FALSE);
-
-      gdk_threads_enter ();
     }
   return FALSE;
 }
@@ -1065,8 +1037,6 @@ component_enter_notify_cb (GtkWidget *widget __attribute__((unused)),
      grab/ungrab and not to actually crossing boundaries */
   if (event->mode == GDK_CROSSING_NORMAL)
     {
-      gdk_threads_leave ();
- 
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer, postMouseEventID,
                                     AWT_MOUSE_ENTERED, 
                                     (jlong)event->time,
@@ -1075,8 +1045,6 @@ component_enter_notify_cb (GtkWidget *widget __attribute__((unused)),
                                     (jint)event->y, 
                                     0,
                                     JNI_FALSE);
- 
-      gdk_threads_enter ();
     }
   return FALSE;
 }
@@ -1090,8 +1058,6 @@ component_leave_notify_cb (GtkWidget *widget __attribute__((unused)),
      grab/ungrab and not to actually crossing boundaries */
   if (event->mode == GDK_CROSSING_NORMAL)
     {
-      gdk_threads_leave ();
-
       (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                     postMouseEventID,
                                     AWT_MOUSE_EXITED, 
@@ -1101,8 +1067,6 @@ component_leave_notify_cb (GtkWidget *widget __attribute__((unused)),
                                     (jint)event->y, 
                                     0,
                                     JNI_FALSE);
-
-      gdk_threads_enter ();
     }
   return FALSE;
 }
@@ -1112,16 +1076,12 @@ component_expose_cb (GtkWidget *widget __attribute__((unused)),
                      GdkEventExpose *event,
                      jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postExposeEventID,
                                 (jint)event->area.x,
                                 (jint)event->area.y,
                                 (jint)event->area.width,
                                 (jint)event->area.height);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }
@@ -1131,14 +1091,10 @@ component_focus_in_cb (GtkWidget *widget __attribute((unused)),
                        GdkEventFocus *event __attribute((unused)),
                        jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postFocusEventID,
                                 AWT_FOCUS_GAINED,
                                 JNI_FALSE);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }
@@ -1148,14 +1104,10 @@ component_focus_out_cb (GtkWidget *widget __attribute((unused)),
                         GdkEventFocus *event __attribute((unused)),
                         jobject peer)
 {
-  gdk_threads_leave ();
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postFocusEventID,
                                 AWT_FOCUS_LOST,
                                 JNI_FALSE);
-
-  gdk_threads_enter ();
 
   return FALSE;
 }

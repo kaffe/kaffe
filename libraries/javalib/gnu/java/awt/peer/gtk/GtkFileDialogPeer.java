@@ -62,6 +62,8 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
   public native void nativeSetDirectory(String directory);
   native void nativeSetFilenameFilter (FilenameFilter filter);
 
+  private boolean hiding = false;
+
   public void create()
   {
     create((GtkContainerPeer) awtComponent.getParent().getPeer());
@@ -156,6 +158,7 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
      GtkFileFilterInfo object and send it to this method, which will
      in turn call the filter's accept() method and give back the return
      value. */
+  // called back by native side: filename_filter_cb
   boolean filenameFilterCallback (String fullname) {
     String filename = fullname.substring(fullname.lastIndexOf(FS) + 1);
     String dirname = fullname.substring(0, fullname.lastIndexOf(FS));
@@ -169,19 +172,37 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
     return null;
   }
   
+  public void setVisible (boolean b)
+  {
+    // prevent handle_response_cb -> postItemEvent -> awtComponent.setState -> this.setState
+    // -> gtkToggleButtonSetActive self-deadlock on the GDK lock.
+    if (hiding && Thread.currentThread() == GtkToolkit.mainThread)
+      {
+        setVisibleUnlocked (b);
+        hiding = false;
+      }
+    else
+      super.setVisible (b);
+  }
+
+  // called back by native side: handle_response_cb
   void gtkHideFileDialog () 
   {
+    // hide calls back the peer's setVisible method, so locking is a
+    // problem.
+    hiding = true;
     ((Dialog) awtComponent).hide();
   }
   
+  // called back by native side: handle_response_cb
   void gtkDisposeFileDialog () 
   {
     ((Dialog) awtComponent).dispose();
   }
 
-  /* Callback to set the file and directory values when the user is finished
-   * with the dialog.
-   */
+  // Callback to set the file and directory values when the user is finished
+  // with the dialog.
+  // called back by native side: handle_response_cb
   void gtkSetFilename (String fileName)
   {
     FileDialog fd = (FileDialog) awtWidget;

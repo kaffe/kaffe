@@ -63,9 +63,6 @@ cp_gtk_button_init_jni (void)
                                                   "postActionEvent", "(I)V");
 }
 
-static void block_expose_event_cb (GtkWidget *widget,
-                                   jobject peer);
-
 static void clicked_cb (GtkButton *button,
 			jobject peer);
 
@@ -160,12 +157,6 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_connectSignals
   button = gtk_bin_get_child (GTK_BIN (ptr));
 
   /* Button signals */
-  g_signal_connect_after (G_OBJECT (button), "pressed",
-                          G_CALLBACK (block_expose_event_cb), *gref);
-
-  g_signal_connect_after (G_OBJECT (button), "released",
-                          G_CALLBACK (block_expose_event_cb), *gref);
-
   g_signal_connect (G_OBJECT (button), "clicked",
 		    G_CALLBACK (clicked_cb), *gref);
 
@@ -376,26 +367,6 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_setNativeBounds
     }
 
   gdk_threads_leave ();
-}
-
-static void
-block_expose_event_cb (GtkWidget *widget, jobject peer)
-{
-  gdk_threads_leave ();
-
-  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
-                                beginNativeRepaintID);
-
-  gdk_threads_enter ();
-
-  gdk_window_process_updates (widget->window, TRUE);
-
-  gdk_threads_leave ();
-
-  (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
-                              endNativeRepaintID);
-
-  gdk_threads_enter ();
 }
 
 static void

@@ -188,6 +188,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   cp_gtk_checkbox_init_jni ();
   cp_gtk_choice_init_jni ();
   cp_gtk_component_init_jni ();
+  cp_gtk_filedialog_init_jni ();
   cp_gtk_list_init_jni ();
   cp_gtk_menuitem_init_jni ();
   cp_gtk_scrollbar_init_jni ();
@@ -396,7 +397,11 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_loadSystemColors
   jint *colors;
   GtkStyle *style;
 
+  /* FIXME: this was deadlocking so assume it is thread-safe for now;
+     we need to replace this call with a .properties file anyway. */
+#if 0
   gdk_threads_enter ();
+#endif
 
   colors = (*env)->GetIntArrayElements (env, jcolors, NULL);
 
@@ -431,7 +436,9 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_loadSystemColors
 
   (*env)->ReleaseIntArrayElements(env, jcolors, colors, 0);
 
+#if 0
   gdk_threads_leave ();
+#endif
 }
 
 #undef CONVERT

@@ -130,14 +130,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_getPixels(JNIEnv *env, jobject obj)
   height = gdk_pixbuf_get_height (pixbuf);
   rowstride = gdk_pixbuf_get_rowstride (pixbuf);
 
-  /* Must release the GDK lock before allocating memory through the
-     JVM, since some JVMs use the same lock for allocations and
-     finalization.  Deadlock can occur on those JVMs. */
-  gdk_threads_leave ();
-
   result_array = (*env)->NewIntArray (env, (width * height));
-
-  gdk_threads_enter ();
 
   dst = result_array_iter = 
     (*env)->GetIntArrayElements (env, result_array, NULL);

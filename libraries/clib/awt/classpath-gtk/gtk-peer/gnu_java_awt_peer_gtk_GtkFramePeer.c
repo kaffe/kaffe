@@ -118,12 +118,22 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_getMenuBarHeight
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarWidth
+  (JNIEnv *env, jobject obj, jobject menubar, jint width)
+{
+  gdk_threads_enter ();
+
+  Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarWidthUnlocked
+    (env, obj, menubar, width);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarWidthUnlocked
   (JNIEnv *env, jobject obj __attribute__((unused)), jobject menubar, jint width)
 {
   GtkWidget *ptr;
   GtkRequisition natural_req;
-
-  gdk_threads_enter ();
 
   if (menubar)
     {
@@ -137,8 +147,6 @@ Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarWidth
       gtk_widget_set_size_request (GTK_WIDGET (ptr),
                                    width, natural_req.height);
     }
-
-  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL

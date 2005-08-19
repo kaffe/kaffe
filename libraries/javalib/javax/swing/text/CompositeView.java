@@ -244,7 +244,7 @@ public abstract class CompositeView
    * @return the position in the document that corresponds to the screen
    *         coordinates <code>x, y</code>
    */
-  public int viewToModel(float x, float y, Shape a, Position.Bias b)
+  public int viewToModel(float x, float y, Shape a, Position.Bias[] b)
   {
     Rectangle r = getInsideAllocation(a);
     View view = getViewAtPoint((int) x, (int) y, r);

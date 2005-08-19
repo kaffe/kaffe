@@ -239,7 +239,6 @@ public class PasswordView
    */
   public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias)
   {
-    // FIXME: not implemented
-    return super.viewToModel(fx, fy, a, bias[0]);
+    return super.viewToModel(fx, fy, a, bias);
   }
 }
