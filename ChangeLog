@@ -1,3 +1,8 @@
+2005-08-19  Riccardo Mottola  <riccardo@kaffe.org>
+
+	* kaffe/libraries/clib/nio/gnu_java_nio_VMSelector.c: Added includes
+	and guarded existing ones.
+
 2005-08-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* replace/ifaddrs_bsd.c: Added missing includes.
