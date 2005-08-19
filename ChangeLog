@@ -1,4 +1,17 @@
 2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
+	Added missing includes to:
+	kaffe/kaffevm/access.c
+	kaffe/kaffevm/file.c
+	kaffe/kaffevm/jni/jni-arrays.c
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	kaffe/kaffevm/verifier/verify-block.c
+	kaffe/kaffevm/verifier/verify.c
+	kaffe/kaffevm/verifier/verify2.c
+	kaffe/kaffevm/verifier/verify3a.c
+	libraries/clib/native/String.c
+	
+
+2005-08-18  Riccardo Mottola  <riccardo@kaffe.org>
 
 	Rationalized includes by decentralizing them to the .c files
 	config/config-std.h

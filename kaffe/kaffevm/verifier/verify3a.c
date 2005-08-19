@@ -12,6 +12,12 @@
  * verification of static constaints.
  */
 
+#include "config.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "baseClasses.h"
 #include "bytecode.h"
 #include "classMethod.h"

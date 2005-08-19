@@ -33,6 +33,10 @@
 #include <sys/resource.h>
 #endif
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "gtypes.h"
 #include "exception.h"
 #include "errors.h"

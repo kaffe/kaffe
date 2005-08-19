@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2005
  *      The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -13,6 +13,11 @@
  */
 
 #include "config.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "jni_i.h"
 #include "jni.h"
 #include "jni_funcs.h"

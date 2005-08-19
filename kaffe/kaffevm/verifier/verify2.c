@@ -1,7 +1,7 @@
 /*
  * verify2.c
  *
- * Copyright 2004
+ * Copyright 2004, 2005
  *   Kaffe.org contributors. See ChangeLog for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -14,6 +14,12 @@
  * so questions regarding pass 2 should be sent to:
  *     Rob Gonzalez <rob@kaffe.org>
  */
+
+#include "config.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "access.h"
 #include "baseClasses.h"

@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2005
  * 	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -19,6 +19,11 @@
  */
 #include "config.h"
 #include "config-std.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "gtypes.h"
 #include "errors.h"
 #include "file.h"

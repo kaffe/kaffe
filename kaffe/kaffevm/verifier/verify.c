@@ -1,7 +1,7 @@
 /*
  * verify.c
  *
- * Copyright 2004
+ * Copyright 2004, 2005
  *   Kaffe.org contributors. See ChangeLog for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -20,11 +20,16 @@
  * verify3().
  */
 
+#include "config.h"
+#include "config-std.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "baseClasses.h"
 #include "bytecode.h"
 #include "code.h"
-#include "config.h"
-#include "config-std.h"
 #include "constants.h"
 #include "classMethod.h"
 #include "debug.h"

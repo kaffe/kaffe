@@ -1,7 +1,8 @@
+
 /*
  * verify-block.c
  *
- * Copyright 2004
+ * Copyright 2004, 2005
  *   Kaffe.org contributors. See ChangeLog for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -9,6 +10,12 @@
  *
  * Code for handing of blocks in the verifier.
  */
+
+#include "config.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "bytecode.h"
 #include "baseClasses.h"

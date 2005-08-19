@@ -4,13 +4,21 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2005
+ *      Kaffe.org contributors.  See ChangeLog for details. 
+ *      All rights reserved.
+ 8
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
 
 #include "config.h"
 #include "config-std.h"
-#include "config-std.h"
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "stringSupport.h"
 #include "java_lang_String.h"
 
