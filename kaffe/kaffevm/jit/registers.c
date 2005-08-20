@@ -13,9 +13,9 @@
 #include "gtypes.h"
 #include "bytecode.h"
 #include "slots.h"
+#include "icode.h"
 #include "registers.h"
 #include "seq.h"
-#include "icode.h"
 #include "labels.h"
 #include "codeproto.h"
 #include "errors.h"
@@ -386,7 +386,7 @@ forceRegister(SlotInfo* slot, int reg, int type)
  * the slot is in a register, it is spilled.
  */
 int
-slowSlotOffset(SlotInfo* slot, int type, int use)
+slowSlotOffset(SlotInfo* slot, int type, int use UNUSED)
 {
 	/* If slot is in a register, clobber the register to force it back
 	 * into memory.

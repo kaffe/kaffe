@@ -2735,7 +2735,7 @@ returnarg_double(SlotInfo* src)
 /*									   */
 
 label*
-reference_label(int32 i, int32 n)
+reference_label(int32 i UNUSED, int32 n)
 {
 	label* l;
 
@@ -2801,7 +2801,7 @@ table_code_label(SlotInfo* dst)
 
 #if defined(HAVE_set_label)
 void
-set_label(int i, int n)
+set_label(int i UNUSED, int n)
 {
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {

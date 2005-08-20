@@ -125,7 +125,7 @@ struct {
 } jitStats;
 
 static void generateInsnSequence(codeinfo* codeInfo);
-static void checkCaughtExceptions(Method* meth, int pc);
+static void checkCaughtExceptions(Method* meth, unsigned int pc);
 
 void	endBlock(sequence*);
 void	startBlock(sequence*);
@@ -191,7 +191,7 @@ translate(Method* meth, errorInfo *einfo)
 	SlotInfo* mtable;
 
 	bytecode* base;
-	int len;
+	unsigned int len;
 	callInfo cinfo;
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
@@ -452,9 +452,9 @@ bool
 finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 {
 #if defined(CALLTARGET_ALIGNMENT)
-	int align = CALLTARGET_ALIGNMENT;
+	unsigned int align = CALLTARGET_ALIGNMENT;
 #else
-	int align = 0;
+	unsigned int align = 0;
 #endif
 #if defined(MD_JIT_EXCEPTION_INFO_LENGTH)
 	int exc_len = MD_JIT_EXCEPTION_INFO_LENGTH;
@@ -486,7 +486,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	jch->code_len = CODEPC;
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned long)jch->code_start % align != 0) {
-		int pad = (align - (unsigned long)jch->code_start % align);
+		unsigned int pad = (align - (unsigned long)jch->code_start % align);
 		
 		assert(pad <= align - ALIGNMENT_OF_SIZE(sizeof(jdouble)));
 		
@@ -536,7 +536,7 @@ getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo* code)
 void
 installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 {
-	int i;
+	unsigned int i;
 	jexceptionEntry* e;
 	jitCodeHeader *jch;
 	void *tramp;
@@ -702,7 +702,7 @@ startBlock(sequence* s)
  * Start a new basic sub-block.
  */
 void
-startSubBlock(sequence* s)
+startSubBlock(sequence* s UNUSED)
 {
 	int i;
 
@@ -721,7 +721,7 @@ startSubBlock(sequence* s)
  * Fixup after a function call.
  */
 void
-fixupFunctionCall(sequence* s)
+fixupFunctionCall(sequence* s UNUSED)
 {
 	int i;
 
@@ -892,9 +892,9 @@ cancelNoWriteback(void)
  */
 static
 void 
-checkCaughtExceptions(Method* meth, int pc)
+checkCaughtExceptions(Method* meth, unsigned int pc)
 {
-	int i;
+	unsigned int i;
 
 	willcatch.BADARRAYINDEX = false;
 	willcatch.NULLPOINTER = false;
@@ -947,7 +947,7 @@ static profiler_click_t click_divisor;
 static FILE *prof_output;
 
 static int
-profilerClassStat(Hjava_lang_Class *clazz, void *param)
+profilerClassStat(Hjava_lang_Class *clazz, void *param UNUSED)
 {
 	Method *meth;
 	int mindex;
