@@ -1,5 +1,13 @@
 2005-08-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/gc.h: Include config.h and limits.h.
+	(UNLIMITED_HEAP) Set to MAX_ULONG to fix signedness warnings.
+
+	* kaffe/kaffe/version.c (printShortVersion): Use
+	%lu for MAXHEAPSIZE.
+
+2005-08-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_heap_is_unlimited):
 	New static function.
 	(gc_heap_initialise, gc_heap_grow) Use gc_heap_is_unlimited.

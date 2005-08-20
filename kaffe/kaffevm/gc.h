@@ -12,12 +12,20 @@
 #ifndef __gc_h
 #define __gc_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
+#if defined(HAVE_LIMITS_H)
+#include <limits.h>
+#endif
+
 #include "gtypes.h"
 
 /*
  * Default values for initial and maximum heap size and heap increment.
  */
-#define UNLIMITED_HEAP  (-1)
+#define UNLIMITED_HEAP  (ULONG_MAX)
 #define	MIN_HEAPSIZE	(5*1024*1024)
 #define	MAX_HEAPSIZE	(UNLIMITED_HEAP)
 #define	ALLOC_HEAPSIZE	(1024*1024)
