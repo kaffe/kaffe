@@ -1,5 +1,10 @@
 2005-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h: (Hjava_lang_Class):
+	Made msize unsigned to fix compiler warning.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_block_alloc): 
 	Made min_nb unsigned to fix compiler warning.
 	

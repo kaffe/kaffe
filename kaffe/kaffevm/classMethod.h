@@ -118,7 +118,7 @@ struct Hjava_lang_Class {
 
 	/* Number of methods in the dtable. */
 	/* If CLASS_IS_PRIMITIVE, then the CLASS_PRIM_SIG. */
-	short			msize;
+	unsigned short			msize;
 
 	/* Pointer to array of Fields, on for each field.
 	   Static fields come first. */
