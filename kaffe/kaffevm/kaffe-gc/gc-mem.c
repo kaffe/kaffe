@@ -233,6 +233,13 @@ gc_heap_check(void)
 
 #endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 
+
+static inline bool
+gc_heap_is_unlimited(void)
+{
+  return gc_heap_limit != UNLIMITED_HEAP;
+}
+
 /*
  * Initialise allocator.
  */
@@ -257,7 +264,8 @@ gc_heap_initialise(void)
 	/*
 	 * Perform some sanity checks.
 	 */
-	if (gc_heap_initial_size > gc_heap_limit && gc_heap_limit != UNLIMITED_HEAP) {
+	if ((gc_heap_initial_size > gc_heap_limit) 
+	    && !gc_heap_is_unlimited()) {
 		dprintf(
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
 		    (int) (gc_heap_initial_size/1024), (int)(gc_heap_limit/1024));
@@ -1254,7 +1262,7 @@ gc_heap_grow(size_t sz)
 	if (gc_heap_total == gc_heap_limit) {
 		unlockStaticMutex(&gc_heap_lock);
 		return (NULL);
-	} else if (gc_heap_total + sz > gc_heap_limit && gc_heap_limit != UNLIMITED_HEAP) {
+	} else if (gc_heap_total + sz > gc_heap_limit && !gc_heap_is_unlimited()) {
 		/* take as much memory as we can */
 		sz = gc_heap_limit - gc_heap_total;
 		assert(sz % gc_pgsize == 0);
@@ -1275,7 +1283,7 @@ gc_heap_grow(size_t sz)
 	}
 
 	gc_heap_total += sz;
-	assert(gc_heap_total <= gc_heap_limit || gc_heap_limit == UNLIMITED_HEAP);
+	assert(gc_heap_total <= gc_heap_limit || gc_heap_is_unlimited());
 
 	/* Place block into the freelist for subsequent use */
 	DBG(GCDIAG, gc_set_magic_marker(blk));
