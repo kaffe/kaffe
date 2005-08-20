@@ -1131,7 +1131,7 @@ gc_block_alloc(size_t size)
 	    || heap_addr < gc_heap_base) {
 		char * old_blocks = gc_block_base;
 		int onb = gc_num_blocks;
-		int min_nb;	/* minimum size of array to hold heap_addr */
+		unsigned int min_nb;	/* minimum size of array to hold heap_addr */
 #if defined(KAFFE_STATS)
 		static timespent growtime;
 #endif
