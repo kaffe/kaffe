@@ -49,6 +49,7 @@
 #include "stats.h"
 #include "support.h"
 #include "native-wrapper.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * Define information about this engine.
