@@ -1,3 +1,8 @@
+2005-08-21  Dalibor Topic  <topic@clerks.kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c (destroyClass): 
+	Made idx unsigned to fix compiler warnings.
+
 2005-08-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/classMethod.h: (Hjava_lang_Class):

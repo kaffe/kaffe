@@ -62,7 +62,7 @@ static void
 destroyClass(Collector *collector, void* c)
 {
         int i;
-	int idx;
+	unsigned int idx;
 	Hjava_lang_Class* clazz = c;
 	constants* pool;
 
