@@ -4012,6 +4012,7 @@ javax_swing_table_SRCS = \
 	javax/swing/table/TableModel.java
 javax_swing_text_SRCS = \
 	javax/swing/text/AbstractDocument.java \
+	javax/swing/text/AbstractWriter.java \
 	javax/swing/text/AttributeSet.java \
 	javax/swing/text/BadLocationException.java \
 	javax/swing/text/BoxView.java \
@@ -4029,6 +4030,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/DocumentFilter.java \
 	javax/swing/text/EditorKit.java \
 	javax/swing/text/Element.java \
+	javax/swing/text/ElementIterator.java \
 	javax/swing/text/FieldView.java \
 	javax/swing/text/FlowView.java \
 	javax/swing/text/GapContent.java \

@@ -2515,7 +2515,7 @@ public class BasicTreeUI
       {
         String s = cell.toString();
         Font f = tree.getFont();
-        FontMetrics fm = tree.getToolkit().getFontMetrics(tree.getFont());
+        FontMetrics fm = tree.getToolkit().getFontMetrics(f);
 
         if (s != null)
           return new Rectangle(x, y,
