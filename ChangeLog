@@ -1,5 +1,10 @@
-2005-08-21  Dalibor Topic  <topic@clerks.kaffe.org>
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/Runtime.java: 
+	(loadLibrary) Add class loader to error message.
+	
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+	
 	* kaffe/kaffevm/gcFuncs.c (destroyClass): 
 	Made idx unsigned to fix compiler warnings.
 

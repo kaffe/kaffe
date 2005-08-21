@@ -763,7 +763,8 @@ public class Runtime
       }
     throw new UnsatisfiedLinkError("Native library `" + libname
       + "' not found (as file `" + filename 
-      + "') in gnu.classpath.boot.library.path and java.library.path `"
+      + "' in class loader " + loader
+      + ") in gnu.classpath.boot.library.path and java.library.path `"
       + Arrays.asList(libpath) + "'");
   }
 
