@@ -50,10 +50,12 @@ public class MainQtThread extends Thread
   long mainThreadInterface;
   String theme;
   private boolean running;
+  private boolean doublebuffer;
 
-  public MainQtThread( String theme )
+  public MainQtThread( String theme, boolean doublebuffer )
   {
     this.theme = theme;
+    this.doublebuffer = doublebuffer;
     running = false;
   }
 
@@ -65,7 +67,7 @@ public class MainQtThread extends Thread
   /**
    * Creates the QApplication
    */
-  public native long init(String theme);
+  public native long init(String theme, boolean doublebuffer);
 
   /**
    * Runs the QApplication (doesn't return.)
@@ -74,7 +76,7 @@ public class MainQtThread extends Thread
 
   public void run()
   {
-    QApplicationPointer = init(theme);
+    QApplicationPointer = init(theme, doublebuffer);
     running = true;
     exec(QApplicationPointer);
   }

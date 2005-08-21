@@ -122,14 +122,10 @@ JNIEXPORT jobject JNICALL Java_gnu_java_awt_peer_qt_QtComponentPeer_getMinimumSi
 {
   QWidget *widget = (QWidget *) getNativeObject( env, obj );
   assert( widget );
-  QSize *size = NULL;
 
-  AWTGetSizeEvent *e = new AWTGetSizeEvent( widget, &size, false );
-  mainThread->postEventToMain( e );
-  while(size == NULL);
-  return makeDimension(env, size);
-
-  delete size;
+  QSize s = widget->minimumSizeHint();
+  jobject q =  makeDimension(env, &s);
+  return q;
 }
 
 /*
@@ -141,15 +137,10 @@ JNIEXPORT jobject JNICALL Java_gnu_java_awt_peer_qt_QtComponentPeer_getPreferred
 {
   QWidget *widget = (QWidget *) getNativeObject( env, obj );
   assert( widget );
-  QSize *size = NULL;
-
-  AWTGetSizeEvent *e = new AWTGetSizeEvent( widget, &size, true );
-  mainThread->postEventToMain( e );
-  while(size == NULL);
-
-  return makeDimension(env, size);
-
-  delete size;
+  
+  QSize s = widget->sizeHint();
+  jobject q = makeDimension(env, &s);
+  return q;
 }
 
 /*
@@ -202,14 +193,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtComponentPeer_setBoundsNative
 {
   QWidget *widget = (QWidget *) getNativeObject( env, obj );
   assert( widget );
-
-  QRect g = widget->geometry();
-  if(g.x() != x || g.y() != y || 
-     g.width() != width || g.height() != height)
-    {
-      mainThread->postEventToMain
-	(new AWTResizeEvent( widget, x, y, width, height ) );
-    }
+  mainThread->postEventToMain
+    (new AWTResizeEvent( widget, x, y, width, height ) );
 }
 
 /*

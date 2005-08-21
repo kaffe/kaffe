@@ -101,7 +101,9 @@ AWTResizeEvent::AWTResizeEvent(QWidget *wid, int x0, int y0, int w0, int h0)
 
 void AWTResizeEvent::runEvent()
 {
-  widget->setGeometry( x, y, w, h );
+  QRect g = widget->geometry();
+  if(g.x() != x || g.y() != y || g.width() != w || g.height() != h)
+    widget->setGeometry( x, y, w, h );
 }
 
 AWTBackgroundEvent::AWTBackgroundEvent(QWidget *wid, bool fg, QColor *clr)

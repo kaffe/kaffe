@@ -186,7 +186,8 @@ protected:
   void moveEvent( QMoveEvent *e )
   {
     PARENT::moveEvent(e);
-    callVoidMethod("moveEvent");
+    callMouseMethod("moveEvent", e->pos().x(), e->pos().y(),
+		    e->oldPos().x(), e->oldPos().y());
   }
 
   void resizeEvent( QResizeEvent *e )
@@ -228,7 +229,7 @@ protected:
 
 	// call QtComponentPeer.paintEvent()
 	jmethodID paintEventID = env->GetMethodID( componentCls,
-					      "paint",
+						   "paint",
 						   "(Ljava/awt/Graphics;)V" );
 	env->CallVoidMethod( target, paintEventID, graphics );
 	env->DeleteLocalRef( cls );

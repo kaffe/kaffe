@@ -1281,6 +1281,7 @@ gnu_java_awt_peer_qt_SRCS = \
 	gnu/java/awt/peer/qt/QtMenuPeer.java \
 	gnu/java/awt/peer/qt/QtPanelPeer.java \
 	gnu/java/awt/peer/qt/QtPopupMenuPeer.java \
+	gnu/java/awt/peer/qt/QtRepaintThread.java \
 	gnu/java/awt/peer/qt/QtScreenDevice.java \
 	gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java \
 	gnu/java/awt/peer/qt/QtScrollPanePeer.java \

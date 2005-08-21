@@ -211,7 +211,6 @@ JNIEXPORT jobject JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_getClipBounds
 {
   QPainter *painter = getPainter( env, obj );
   assert( painter );
-
   qreal x, y, w, h;
   painter->clipPath().boundingRect().getRect(&x, &y, &w, &h);    
 

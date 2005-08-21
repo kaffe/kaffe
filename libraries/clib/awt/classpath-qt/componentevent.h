@@ -173,31 +173,4 @@ class AWTGetOriginEvent : public AWTEvent {
   }
 };
 
-class AWTGetSizeEvent : public AWTEvent {
-  
- private:
-  QWidget *widget;
-  bool preferred;
-
- public:
-
-  QSize **size;
-
-  AWTGetSizeEvent(QWidget *w, QSize **s, bool pref) : AWTEvent()
-    { 
-      widget = w; 
-      preferred = pref;
-      size = s;
-    }
-  void runEvent()
-  {
-    QSize s;
-    if( preferred )
-      s = widget->sizeHint();
-    else
-      s = widget->minimumSizeHint();
-    *size = new QSize( s.width(), s.height() );
-  }
-};
-
 #endif

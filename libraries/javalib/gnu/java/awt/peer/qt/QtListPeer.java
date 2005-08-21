@@ -165,8 +165,7 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
 
   /**
    * Sets multiple-selection mode.
-   * WONTFIX: QAbstractItemView::MultiSelection does not work as it should
-   * in Qt 4.0.0, Trolltech bug reporter says this will be fixed in 4.1.0.
+   * Note there's a bug in multiple selection in Qt 4.0.0, use 4.0.1.
    */
   public native void setMultipleMode(boolean multi);
 

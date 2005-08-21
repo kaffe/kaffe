@@ -50,6 +50,7 @@ MainThreadInterface::MainThreadInterface(QApplication *parent) : QObject( parent
  */
 bool MainThreadInterface::event ( QEvent * e )
 {
+  QObject::event( e );
   if( e->type() == QEvent::User)
     {
       AWTEvent *fe = (AWTEvent *)e;

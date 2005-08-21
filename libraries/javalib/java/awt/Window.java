@@ -746,7 +746,25 @@ public class Window extends Container implements Accessible
     if (activeWindow == this)
       return manager.getFocusOwner ();
     else
-      return windowFocusOwner;
+      return null;
+  }
+
+  /**
+   * Returns the child component of this window that would receive
+   * focus if this window were to become focused.  If the window
+   * already has the top-level focus, then this method returns the
+   * same component as getFocusOwner.  If no child component has
+   * requested focus within the window, then the initial focus owner
+   * is returned.  If this is a non-focusable window, this method
+   * returns null.
+   *
+   * @return the child component of this window that most recently had
+   * the focus, or <code>null</code>
+   * @since 1.4
+   */
+  public Component getMostRecentFocusOwner ()
+  {
+    return windowFocusOwner;
   }
 
   /**

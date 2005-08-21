@@ -73,6 +73,8 @@ import java.awt.event.WindowEvent; // 2/ 12
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.DebugGraphics;
+
 public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 {
 
@@ -111,14 +113,11 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
    */
   private QtImage backBuffer;
 
-  /**
-   * Stores if the backBuffer is dirty or not
-   */
-  private boolean dirtyBackBuffer;
-
   protected long qtApp;
 
   private boolean settingUp;
+
+  private boolean ignoreResize = false;
 
   QtComponentPeer( QtToolkit kit, Component owner )
   {
@@ -166,10 +165,10 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 	setEnabled( owner.isEnabled() );
 
 	backBuffer = null;
-	dirtyBackBuffer = true;
 	updateBounds();
 
 	setVisible( owner.isVisible() );
+	QtToolkit.repaintThread.queueComponent(this);
       }
     settingUp = false;
   }
@@ -352,25 +351,28 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
     toolkit.eventQueue.postEvent(e);
   }
 
-  protected void moveEvent()
+  protected void moveEvent(int x, int y, int oldx, int oldy)
   {
-    ComponentEvent e = new ComponentEvent(owner, 
-					  ComponentEvent.COMPONENT_MOVED);
-    toolkit.eventQueue.postEvent(e);
+    if( !ignoreResize )
+      {
+	// Since Component.setLocation calls back to setBounds, 
+	// we need to ignore that.
+	ignoreResize = true; 
+	owner.setLocation( x, y );
+	ignoreResize = false;
+      }
   }
 
   protected void resizeEvent(int oldWidth, int oldHeight, 
 			     int width, int height)
   {
-    dirtyBackBuffer = true;
-    if( drawableComponent() )
-      {
-	//	backBuffer.dispose();
-	backBuffer = new QtImage(width, height);
-      }
+    if(!(owner instanceof Window))
+      return;
+    ignoreResize = true;
     owner.setSize(width, height);
+    ignoreResize = false;
     ComponentEvent e = new ComponentEvent(owner, 
-					  ComponentEvent.COMPONENT_RESIZED);
+  					  ComponentEvent.COMPONENT_RESIZED);
     toolkit.eventQueue.postEvent(e);
   }
 
@@ -495,7 +497,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 
   public Graphics getGraphics()
   {
-    if( backBuffer == null)
+    if( backBuffer == null )
       { 
 	Rectangle r = owner.getBounds();
 	backBuffer = new QtImage( r.width, r.height );
@@ -512,7 +514,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 
   public native Point getLocationOnScreen();
 
-  public Dimension getMinimumSize()
+  public synchronized Dimension getMinimumSize()
   {
     Dimension d = getMinimumSizeNative();
     if(d == null)
@@ -520,12 +522,15 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
     return d;
   }
  
-  public Dimension getPreferredSize()
+  public synchronized Dimension getPreferredSize()
   {
-    Dimension d = getPreferredSizeNative();
-    if(d == null)
-      return owner.getSize();
-    return d;
+    synchronized(toolkit)
+      {
+	Dimension d = getPreferredSizeNative();
+	if(d == null)
+	  return owner.getSize();
+	return d;
+      }
   }
 
   public Toolkit getToolkit()
@@ -574,7 +579,6 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 		      int width,
 		      int height)
   {
-    dirtyBackBuffer = true;
     setBounds( x, y, width, height );
   }
 
@@ -587,9 +591,12 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
 
   public void setBounds(int x, int y, int width, int height)
   {
+    if( ignoreResize )
+      return;
     if(width > 0 && height > 0 && (drawableComponent() || backBuffer != null))
       backBuffer = new QtImage(width, height);   
     setBoundsNative(x, y, width, height);
+    QtToolkit.repaintThread.queueComponent(this);
   }
 
   public void setCursor(Cursor cursor)
@@ -629,8 +636,7 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
       case ComponentEvent.COMPONENT_SHOWN:
       case PaintEvent.PAINT:
       case PaintEvent.UPDATE:	
-	dirtyBackBuffer = true;
-	QtUpdate();
+	QtToolkit.repaintThread.queueComponent(this);
         break;
       case KeyEvent.KEY_PRESSED:
 	break;
@@ -640,22 +646,23 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
   }
 
   /**
-   * Paint() is called back from the native side in response to a native
+   * paint() is called back from the native side in response to a native
    * repaint event.
    */  
   public void paint(Graphics g)
   {
     if (backBuffer != null)
+      backBuffer.drawPixels((QtGraphics)g, 0, 0, 0, 0, 0, false );
+  }
+
+  public void paintBackBuffer()
+  {
+    if( backBuffer != null)
       {
-	if (dirtyBackBuffer)
-	  {
-	    backBuffer.clear();
-	    Graphics2D bbg = (Graphics2D)backBuffer.getGraphics();
-	    owner.paint(bbg); 
-	    bbg.dispose();
-	    dirtyBackBuffer = false;
-	  }
-	backBuffer.drawPixels((QtGraphics)g, 0, 0, 0, 0, 0, false );
+	backBuffer.clear();
+	Graphics2D bbg = (Graphics2D)backBuffer.getGraphics();
+	owner.paint(bbg); 
+	bbg.dispose();
       }
   }
 

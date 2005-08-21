@@ -829,6 +829,7 @@ gnu/java/awt/peer/qt/QtMenuItemPeer.java
 gnu/java/awt/peer/qt/QtMenuPeer.java
 gnu/java/awt/peer/qt/QtPanelPeer.java
 gnu/java/awt/peer/qt/QtPopupMenuPeer.java
+gnu/java/awt/peer/qt/QtRepaintThread.java
 gnu/java/awt/peer/qt/QtScreenDevice.java
 gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java
 gnu/java/awt/peer/qt/QtScrollPanePeer.java

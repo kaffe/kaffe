@@ -37,13 +37,16 @@ exception statement from your version. */
 
 #include <assert.h>
 #include <QApplication>
+#include <QIcon>
 #include <QMainWindow>
 #include <QMenuBar>
+#include <QPixmap>
 #include <QToolBar>
 #include <QThread>
 #include <gnu_java_awt_peer_qt_QtFramePeer.h>
 #include "qtcomponent.h"
 #include "qtstrings.h"
+#include "qtimage.h"
 #include "containers.h"
 #include "keybindings.h"
 #include "mainthreadinterface.h"
@@ -160,6 +163,32 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_init
 }
 
 /**
+ * Sets the icon image.
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_setIcon
+(JNIEnv *env, jobject obj, jobject image)
+{
+  QMainWindow *frame = (QMainWindow *) getNativeObject( env, obj );
+  assert( frame );
+
+  QIcon *i;
+  if( image == NULL )
+    {
+      // remove icon
+      i = new QIcon();
+    }
+  else
+    {
+      // set icon
+      QImage *img = getQtImage( env, image );
+      assert( img );
+      i = new QIcon( QPixmap::fromImage( *img ) );
+    }
+  frame->setWindowIcon( *i );
+  delete i;
+}
+
+/**
  * Returns the menu bar height for insets.
  */
 JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_menuBarHeight
@@ -197,4 +226,13 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_setMenu
   mainThread->postEventToMain( new FrameMenuEvent( frame, menubar ) );
 }
 
+/**
+ * Set the bounds of the maximized frame
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_setMaximizedBounds (JNIEnv *env, jobject obj, jint w, jint h)
+{
+  QMainWindow *frame = (QMainWindow *) getNativeObject( env, obj );
+  assert( frame );
+  // FIXME
+}
 

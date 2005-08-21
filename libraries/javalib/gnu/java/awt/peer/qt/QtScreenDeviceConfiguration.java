@@ -139,9 +139,9 @@ public class QtScreenDeviceConfiguration extends GraphicsConfiguration {
     return nTrans;
   }
 
-  public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency)
+  public VolatileImage createCompatibleVolatileImage(int width, int height, 
+						     int transparency)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return createCompatibleVolatileImage(width, height);
   }
 }

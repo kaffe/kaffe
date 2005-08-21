@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.qt;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Insets;
@@ -50,7 +51,7 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
 
   long frameObject;
 
-  public QtFramePeer( QtToolkit kit, Frame owner )
+  public QtFramePeer( QtToolkit kit, Component owner )
   {
     super( kit, owner );
   }
@@ -65,15 +66,9 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
       setMenuBar( ((Frame)owner).getMenuBar() );
   }
 
-  private void setIcon(QtImage image)
-  {
-    // FIXME - Implement!
-  }
+  private native void setIcon(QtImage image);
 
-  private void setMaximizedBounds(int w, int h)
-  {
-    // FIXME - Implement.
-  }
+  private native void setMaximizedBounds(int w, int h);
 
   private native void setMenu(QtMenuBarPeer mb);
 
@@ -103,8 +98,9 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
   public void setIconImage(Image im)
   {
     if (im instanceof QtImage)
-      setIcon ((QtImage)im);
-    // FIXME
+      setIcon( (QtImage)im );
+    else 
+      setIcon( new QtImage( im.getSource() ) );
   }
 
   public void setMaximizedBounds(Rectangle rect)

@@ -20,9 +20,6 @@ class AWTEvent : public QEvent {
 
 };
 
-#define AWT_INIT 0
-#define AWT_SETVISIBLE 1
-
 class MainThreadInterface : public QObject {
   
  private:

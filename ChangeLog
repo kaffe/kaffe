@@ -2,6 +2,38 @@
 
 	Resynced with GNU Classpath.
 
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Window.java (getMostRecentFocusOwner): New method.
+
+	2005-08-20  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/qt/MainQtThread.java
+        * gnu/java/awt/peer/qt/QtComponentGraphics.java
+        * gnu/java/awt/peer/qt/QtComponentPeer.java
+        * gnu/java/awt/peer/qt/QtEmbeddedWindowPeer.java
+        * gnu/java/awt/peer/qt/QtFramePeer.java
+        * gnu/java/awt/peer/qt/QtImage.java
+        * gnu/java/awt/peer/qt/QtListPeer.java
+        * gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java
+        * gnu/java/awt/peer/qt/QtToolkit.java
+        * native/jni/qt-peer/componentevent.cpp
+        * native/jni/qt-peer/componentevent.h
+        * native/jni/qt-peer/eventmethods.h
+        * native/jni/qt-peer/mainqtthread.cpp
+        * native/jni/qt-peer/mainthreadinterface.cpp
+        * native/jni/qt-peer/mainthreadinterface.h
+        * native/jni/qt-peer/qtcomponentpeer.cpp
+        * native/jni/qt-peer/qtframepeer.cpp
+        * native/jni/qt-peer/qtgraphics.cpp
+        Refactored.
+        * gnu/java/awt/peer/qt/QtRepaintThread.java:
+        New file.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-08-19  Tom Tromey  <tromey@redhat.com>
 
         * javax/swing/tree/DefaultTreeCellEditor.java: Removed erroneous

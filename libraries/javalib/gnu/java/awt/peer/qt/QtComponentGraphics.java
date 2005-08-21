@@ -87,7 +87,7 @@ public class QtComponentGraphics extends QtGraphics
     else
       setColor( c );
     setup();
-    //    setClip( initialClip );
+    setClip( initialClip );
   }
 
   /**

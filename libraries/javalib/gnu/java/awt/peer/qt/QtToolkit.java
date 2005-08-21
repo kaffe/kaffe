@@ -127,12 +127,14 @@ import gnu.java.awt.ClasspathToolkit;
 public class QtToolkit extends ClasspathToolkit
 {
   public static EventQueue eventQueue = null; // the native event queue
+  public static QtRepaintThread repaintThread = null; 
   public static MainQtThread guiThread = null;
   public static QtGraphicsEnvironment graphicsEnv = null;
 
   private static void initToolkit()
   {
     eventQueue = new EventQueue();
+    repaintThread = new QtRepaintThread();
     System.loadLibrary("qtpeer");
 
     String theme = null;
@@ -149,8 +151,23 @@ public class QtToolkit extends ClasspathToolkit
       {
       }
 
-    guiThread = new MainQtThread( theme );
+    boolean doublebuffer = true;
+    try 
+      {
+	String style = System.getProperty("qtoptions.nodoublebuffer");
+	if(style != null)
+	  doublebuffer = false;
+      } 
+    catch(SecurityException e)
+      {
+      }
+    catch(IllegalArgumentException e)
+      {
+      }
+
+    guiThread = new MainQtThread( theme, doublebuffer );
     guiThread.start();
+    repaintThread.start();
   }
 
   /**
@@ -450,28 +467,9 @@ public class QtToolkit extends ClasspathToolkit
     throw new UnsupportedOperationException();
   }
 
-  // REMOVE.
-  public void registerImageIOSpis(IIORegistry reg)
-  {
-  }
-
   public EmbeddedWindowPeer createEmbeddedWindow(EmbeddedWindow w)
   {
-    return null; // FIXME
-  }
-
-  // Yucky.
-
-  public boolean nativeQueueEmpty()
-  {
-    return false;
-  }
-
-  public void wakeNativeQueue()
-  {
-  }
-
-  public void iterateNativeQueue(EventQueue locked, boolean block)
-  {
+    //    return new QtEmbeddedWindowPeer( this, w );
+    return null;
   }
 }

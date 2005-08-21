@@ -408,9 +408,9 @@ public class QtImage extends Image
   {
     if (isLoaded)
       {
-	if( painters != null )
-	  for(int i = 0; i < painters.size(); i++)
-	    ((QtImageGraphics)painters.elementAt(i)).dispose();
+// 	if( painters != null )
+// 	  for(int i = 0; i < painters.size(); i++)
+// 	    ((QtImageGraphics)painters.elementAt(i)).dispose();
 	freeImage();
       }
   }
