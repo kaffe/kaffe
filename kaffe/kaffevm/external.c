@@ -12,13 +12,14 @@
  * of this file. 
  */
 
+#include "config.h"
+
 #if defined(HAVE_STDARG_H)
 #include <stdarg.h>
 #endif /* defined(HAVE_STDARG_H) */
 
 #include <stdio.h>
 
-#include "config.h"
 #include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -183,7 +184,7 @@ initNative(void)
 			return;
 		}
 	}
-	dprintf("Failed to locate native library \"%s\" in path:\n", NATIVELIBRARY);
+	dprintf("Failed to locate native library \"%s\" in path:\n", lib);
 	dprintf("\t%s\n", libraryPath);
 	dprintf("Aborting.\n");
 	fflush(stderr);

@@ -750,6 +750,9 @@
 /* Enable debugging symbol generation for jitted code */
 #undef KAFFE_XDEBUGGING
 
+/* Define to the extension used for shared libraries, say, ".so". */
+#undef LTDL_SHLIB_EXT
+
 /* Defined if we need a replacement for semaphores */
 #undef NEED_REPLACEMENT_SEMAPHORES
 

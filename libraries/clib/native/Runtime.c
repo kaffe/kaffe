@@ -30,7 +30,7 @@
 #endif
 
 #ifndef LIBRARYSUFFIX
-#define LIBRARYSUFFIX	""
+#define LIBRARYSUFFIX	LTDL_SHLIB_EXT
 #endif
 
 extern jboolean runFinalizerOnExit;

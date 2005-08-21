@@ -303,6 +303,8 @@ AC_SUBST(LIBLTDL)
 CCLD=${CCLD:-'$(CC)'}
 AC_SUBST(CCLD)
 
+AC_LTDL_SHLIBEXT
+
 # ===========================================================================
 # Configure gettext (needed for libiconv scripts)
 # ===========================================================================

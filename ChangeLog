@@ -1,5 +1,24 @@
 2005-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed Eclipse 3.1 startup.
+
+	* Makefile.am (BUILD_ENVIRONMENT) Adapted LD_LIBRARY_PATH to
+	make sure libraries are looked up in the right directory in 
+	regression test cases.
+
+	* configure.ac: Check for shared library extension name.
+
+	* kaffe/kaffevm/external.c: Include config.h.
+	(initNative): Print full library name.
+
+	* libraries/clib/native/Runtime.c (LIBRARYSUFFIX) Set to
+	LTDL_SHLIB_EXT. 
+
+	* test/jni/Makefile.am: (TESTS_ENVIRONMENT) Make sure the 
+	native libraries are looked up in the right directory.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Runtime.java: 
 	(loadLibrary) Add class loader to error message.
 	

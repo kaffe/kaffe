@@ -21658,6 +21658,28 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 CCLD=${CCLD:-'$(CC)'}
 
 
+
+echo "$as_me:$LINENO: checking which extension is used for loadable modules" >&5
+echo $ECHO_N "checking which extension is used for loadable modules... $ECHO_C" >&6
+if test "${libltdl_cv_shlibext+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+module=yes
+eval libltdl_cv_shlibext=$shrext_cmds
+
+fi
+echo "$as_me:$LINENO: result: $libltdl_cv_shlibext" >&5
+echo "${ECHO_T}$libltdl_cv_shlibext" >&6
+if test -n "$libltdl_cv_shlibext"; then
+
+cat >>confdefs.h <<_ACEOF
+#define LTDL_SHLIB_EXT "$libltdl_cv_shlibext"
+_ACEOF
+
+fi
+
+
 # ===========================================================================
 # Configure gettext (needed for libiconv scripts)
 # ===========================================================================
