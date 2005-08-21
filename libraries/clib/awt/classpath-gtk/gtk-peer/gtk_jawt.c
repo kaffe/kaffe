@@ -47,6 +47,8 @@ classpath_jawt_get_awt_version ()
   return CLASSPATH_JAWT_VERSION;
 }
 
+/* Does not require locking: meant to be called after the drawing
+   surface is locked. */
 Display*
 classpath_jawt_get_default_display (JNIEnv* env, jobject canvas)
 {
@@ -69,8 +71,6 @@ classpath_jawt_get_default_display (JNIEnv* env, jobject canvas)
 
   ptr = NSA_GET_PTR (env, peer);
 
-  gdk_threads_enter ();
-
   widget = GTK_WIDGET (ptr);
 
   /* widget should be realized before Canvas.paint is called. */
@@ -80,11 +80,11 @@ classpath_jawt_get_default_display (JNIEnv* env, jobject canvas)
 
   xdisplay = GDK_DISPLAY_XDISPLAY (display);
 
-  gdk_threads_leave ();
-
   return xdisplay;
 }
 
+/* Does not require locking: meant to be called after the drawing
+   surface is locked. */
 VisualID
 classpath_jawt_get_visualID (JNIEnv* env, jobject canvas)
 {
@@ -105,8 +105,6 @@ classpath_jawt_get_visualID (JNIEnv* env, jobject canvas)
 
   ptr = NSA_GET_PTR (env, peer);
 
-  gdk_threads_enter ();
-
   widget = GTK_WIDGET (ptr);
 
   g_assert (GTK_WIDGET_REALIZED (widget));
@@ -114,11 +112,11 @@ classpath_jawt_get_visualID (JNIEnv* env, jobject canvas)
   visual = gdk_x11_visual_get_xvisual (gtk_widget_get_visual (widget));
   g_assert (visual != NULL);
 
-  gdk_threads_leave ();
-
   return visual->visualid;
 }
 
+/* Does not require locking: meant to be called after the drawing
+   surface is locked. */
 Drawable
 classpath_jawt_get_drawable (JNIEnv* env, jobject canvas)
 {
@@ -139,32 +137,13 @@ classpath_jawt_get_drawable (JNIEnv* env, jobject canvas)
 
   ptr = NSA_GET_PTR (env, peer);
 
-  gdk_threads_enter ();
-
   widget = GTK_WIDGET (ptr);
 
   g_assert (GTK_WIDGET_REALIZED (widget));
 
   drawable = GDK_DRAWABLE_XID (widget->window);
 
-  gdk_threads_leave ();
-
   return drawable;
-}
-
-jint
-classpath_jawt_object_lock (jobject lock)
-{
-  JNIEnv *env = cp_gtk_gdk_env();
-  (*env)->MonitorEnter (env, lock);
-  return 0;
-}
-
-void
-classpath_jawt_object_unlock (jobject lock)
-{
-  JNIEnv *env = cp_gtk_gdk_env();
-  (*env)->MonitorExit (env, lock);
 }
 
 jint
@@ -178,20 +157,4 @@ void
 classpath_jawt_unlock ()
 {
   gdk_threads_leave ();
-}
-
-jobject
-classpath_jawt_create_lock ()
-{
-  JNIEnv *env = cp_gtk_gdk_env ();
-  jobject lock = (*env)->NewStringUTF (env, "jawt-lock");
-  NSA_SET_GLOBAL_REF (env, lock);
-  return lock;
-}
-
-void
-classpath_jawt_destroy_lock (jobject lock)
-{
-  JNIEnv *env = cp_gtk_gdk_env ();
-  NSA_DEL_GLOBAL_REF (env, lock);
 }

@@ -50,9 +50,12 @@ extern "C"
 
 struct _JAWT_X11DrawingSurfaceInfo
 {
-  Display* display;
   Drawable drawable;
+  Display* display;
   VisualID visualID;
+  Colormap colormapID;
+  int depth;
+  int (JNICALL *GetAWTColor)(struct _JAWT_DrawingSurface*, int, int, int);
 };
 
 typedef struct _JAWT_X11DrawingSurfaceInfo JAWT_X11DrawingSurfaceInfo;

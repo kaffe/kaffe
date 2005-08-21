@@ -2,6 +2,50 @@
 
 	Resynced with GNU Classpath.
 
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gtk_jawt.c
+        (classpath_jawt_get_default_display): Remove locking.
+        (classpath_jawt_get_visualID): Likewise.
+        (classpath_jawt_get_drawable): Likewise.
+        (classpath_jawt_object_lock): Remove function.
+        (classpath_jawt_object_unlock): Likewise.
+        (classpath_jawt_create_lock): Likewise.
+        (classpath_jawt_destroy_lock): Likewise.
+        * native/jni/classpath/classpath_jawt.h
+        (classpath_jawt_object_lock): Remove function.
+        (classpath_jawt_object_unlock): Likewise.
+        (classpath_jawt_create_lock): Likewise.
+        (classpath_jawt_destroy_lock): Likewise.
+        * native/jawt/jawt.c [!__GNUC__] (__attribute__): Define to
+        nothing.
+        (_Jv_Lock): Call classpath_jawt_lock.
+        (_Jv_Unlock): Call classpath_jawt_unlock.
+        (_Jv_GetDrawingSurfaceInfo): Move surface_info_x11 initialization
+        from ...
+        (_Jv_GetDrawingSurface): Remove surface_info_x11 initialization.
+        (_Jv_FreeDrawingSurface): Don't destroy target object.
+        * include/jawt_md.h (struct _JAWT_X11DrawingSurfaceInfo): Re-order
+        display field.  Add colour map, depth and GetAWTColor function
+        pointer fields.
+        * include/jawt.h (struct _JAWT_Rectangle): New structure.
+        (struct _JAWT_DrawingSurfaceInfo): Add drawing surface, bounds,
+        clip size and clipping rectangle fields.
+        (struct _JAWT_DrawingSurface): Add env field.  Rename lock field
+        target.  Re-order function pointer and lock fields.  Remove
+        surface_info field.
+        (struct _JAWT): Add GetComponent function pointer field.
+
+	2005-08-19  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * include/jawt.h: Import from libgcj.
+        * include/jawt_md.h: Likewise.
+        * native/jawt/jawt.c: Import from libgcj.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-08-19  Lillian Angel  <langel@redhat.com>
 
         * javax/swing/tree/DefaultTreeModel.java

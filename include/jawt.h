@@ -57,36 +57,44 @@ extern "C"
 #define JAWT_LOCK_BOUNDS_CHANGED 0x4
 #define JAWT_LOCK_SURFACE_CHANGED 0x8
 
+struct _JAWT_Rectangle
+{
+  jint x;
+  jint y;
+  jint width;
+  jint height;
+};
+
 struct _JAWT_DrawingSurfaceInfo
 {
   void* platformInfo;
+  struct _JAWT_DrawingSurface *ds;
+  struct _JAWT_Rectangle bounds;
+  jint clipSize;
+  struct _JAWT_Rectangle *clip;
 };
 
 struct _JAWT_DrawingSurface
 {
+  JNIEnv* env;
+  jobject target;
   jint (JNICALL* Lock) (struct _JAWT_DrawingSurface*);
-  void (JNICALL* Unlock) (struct _JAWT_DrawingSurface*);
-
   struct _JAWT_DrawingSurfaceInfo* (JNICALL* GetDrawingSurfaceInfo) (struct _JAWT_DrawingSurface*);
   void (JNICALL* FreeDrawingSurfaceInfo) (struct _JAWT_DrawingSurfaceInfo*);
-
-  struct _JAWT_DrawingSurfaceInfo* surface_info;
-
-  /* FIXME: also include bounding rectangle of drawing surface. */
-  /* FIXME: also include current clipping region. */
+  void (JNICALL* Unlock) (struct _JAWT_DrawingSurface*);
 };
 
 struct _JAWT
 {
-  void (JNICALL *Lock) (JNIEnv*);
-  void (JNICALL *Unlock) (JNIEnv*);
-
+  jint version;
   struct _JAWT_DrawingSurface* (JNICALL* GetDrawingSurface) (JNIEnv*, jobject);
   void (JNICALL* FreeDrawingSurface) (struct _JAWT_DrawingSurface*);
-
-  jint version;
+  void (JNICALL *Lock) (JNIEnv*);
+  void (JNICALL *Unlock) (JNIEnv*);
+  jobject (JNICALL *GetComponent)(JNIEnv*, void*);
 };
 
+typedef struct _JAWT_Rectangle JAWT_Rectangle;
 typedef struct _JAWT_DrawingSurfaceInfo JAWT_DrawingSurfaceInfo;
 typedef struct _JAWT_DrawingSurface JAWT_DrawingSurface;
 typedef struct _JAWT JAWT;
