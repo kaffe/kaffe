@@ -41,6 +41,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.TextArea;
 import java.awt.event.TextEvent;
+import java.awt.im.InputMethodRequests;
 import java.awt.peer.TextAreaPeer;
 
 public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
@@ -169,5 +170,11 @@ public class QtTextAreaPeer extends QtComponentPeer implements TextAreaPeer
   public native void setEditable(boolean editable);
 
   public native void setCaretPosition(int pos);
+
+  public InputMethodRequests getInputMethodRequests()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
 

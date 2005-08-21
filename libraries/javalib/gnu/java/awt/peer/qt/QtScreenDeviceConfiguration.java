@@ -138,4 +138,10 @@ public class QtScreenDeviceConfiguration extends GraphicsConfiguration {
     nTrans.scale( 72.0 / dpiX, 72.0 / dpiY );
     return nTrans;
   }
+
+  public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

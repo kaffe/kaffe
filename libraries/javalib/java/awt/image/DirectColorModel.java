@@ -348,7 +348,17 @@ public class DirectColorModel extends PackedColorModel
   {
     return getComponents(getPixelFromArray(pixel), components, offset);
   }
-  
+
+  /**
+   * Creates a <code>WriteableRaster</code> that has a <code>SampleModel</code>
+   * that is compatible with this <code>ColorModel</code>.
+   *
+   * @param w the width of the writeable raster to create
+   * @param h the height of the writeable raster to create
+   *
+   * @throws IllegalArgumentException if <code>w</code> or <code>h</code>
+   *         is less than or equal to zero
+   */
   public final WritableRaster createCompatibleWritableRaster(int w, int h)
   {
     SampleModel sm = createCompatibleSampleModel(w, h);

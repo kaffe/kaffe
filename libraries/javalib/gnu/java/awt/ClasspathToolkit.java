@@ -42,8 +42,10 @@ import gnu.java.awt.EmbeddedWindow;
 import gnu.java.awt.peer.ClasspathFontPeer;
 import gnu.java.awt.peer.EmbeddedWindowPeer;
 import gnu.java.awt.peer.ClasspathTextLayoutPeer;
+import gnu.java.security.action.SetAccessibleAction;
 
 import java.awt.AWTException;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
@@ -58,11 +60,14 @@ import java.awt.image.ImageProducer;
 import java.awt.peer.RobotPeer;
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Map;
+import java.security.AccessController;
 
 import javax.imageio.spi.IIORegistry;
 
@@ -129,7 +134,35 @@ public abstract class ClasspathToolkit
    */
   public Font getFont (String name, Map attrs) 
   {
-    return new Font (name, attrs);
+    Font f = null;
+
+    // Circumvent the package-privateness of the
+    // java.awt.Font.Font(String,Map) constructor.
+    try
+    {
+      Constructor fontConstructor = Component.class.getConstructor
+      (new Class[] { String.class, Map.class });
+      AccessController.doPrivileged
+      (new SetAccessibleAction(fontConstructor));
+      f = (Font) fontConstructor.newInstance(new Object[] { name, attrs });
+    }
+    catch (IllegalAccessException e)
+    {
+      // This should never happen.
+    }
+    catch (NoSuchMethodException e)
+    {
+      // This should never happen.
+    }
+    catch (InstantiationException e)
+      {
+        // This should never happen.
+      }
+    catch (InvocationTargetException e)
+      {
+        // This should never happen.
+      }
+    return f;
   }
 
   /**

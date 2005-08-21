@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.qt;
 
+import java.awt.Font;
 import java.awt.MenuComponent;
 import java.awt.peer.MenuComponentPeer;
 
@@ -73,5 +74,11 @@ public class QtMenuComponentPeer extends NativeWrapper
   // ************ Public methods *********************
 
   public native void dispose();
+
+  public void setFont(Font font)
+  {
+    // TODO Auto-generated method stub
+    
+  }
 
 }

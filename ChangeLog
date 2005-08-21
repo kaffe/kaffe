@@ -1,5 +1,83 @@
 2005-08-21  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-19  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/tree/DefaultTreeModel.java
+        (setAsksAllowsChildren): Removed comment, unneeded.
+        (setRoot): Formatting.
+        (getIndexOfChild): Formatting.
+        (reload): Added API documentation.
+        (reload): Likewise.
+        (valueForPathChanged): Implemented.
+        (insertNodeInto): Implemented.
+        (removeNodeFromParent): Implemented.
+        (nodeChanged): Implemented.
+        (nodesWereInserted): Implemented.
+        (nodesWereRemoved): Implemented.
+        (nodesChanged): Implemented.
+        (nodeStructureChanged): Added API documentation.
+        (getPathToRoot): Implemented.
+        (getPathToRoot): Implemented.
+        (fireTreeNodesChanged): Added API documentation.
+
+	2005-08-19  Roman Kennke  <roman@kennke.org>
+
+        * java/awt/image/DirectColorModel.java
+        (createCompatibleWritableRaster): Added API documentation.
+
+	2005-08-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Font.java (Font(String,Map)): Make package private.
+        * gnu/java/awt/ClasspathToolkit.java (getFont): Access
+        package-private Font.Font(String,Map) constructor using
+        reflection.
+
+	2005-08-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/GLightweightPeer.java,
+        gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+        gnu/java/awt/peer/gtk/GtkContainerPeer.java,
+        gnu/java/awt/peer/gtk/GtkFramePeer.java,
+        gnu/java/awt/peer/gtk/GtkMenuComponentPeer.java,
+        gnu/java/awt/peer/gtk/GtkTextAreaPeer.java,
+        gnu/java/awt/peer/gtk/GtkTextFieldPeer.java,
+        gnu/java/awt/peer/gtk/GtkToolkit.java,
+        gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+        gnu/java/awt/peer/qt/QtComponentPeer.java,
+        gnu/java/awt/peer/qt/QtContainerPeer.java,
+        gnu/java/awt/peer/qt/QtFramePeer.java,
+        gnu/java/awt/peer/qt/QtMenuComponentPeer.java,
+        gnu/java/awt/peer/qt/QtScreenDeviceConfiguration.java,
+        gnu/java/awt/peer/qt/QtTextAreaPeer.java,
+        gnu/java/awt/peer/qt/QtTextFieldPeer.java,
+        gnu/java/awt/peer/qt/QtWindowPeer.java,
+        java/awt/peer/ComponentPeer.java,
+        java/awt/peer/ContainerPeer.java, java/awt/peer/FramePeer.java,
+        java/awt/peer/MenuComponentPeer.java,
+        java/awt/peer/TextComponentPeer.java,
+        java/awt/peer/WindowPeer.java: Add new 1.5 methods.
+        * java/awt/Window.java (Window()): Initialize
+        graphicsConfiguration.
+        * java/awt/GraphicsConfiguration.java
+        (createCompatibleVolatileImage(int,int,int)): New method.
+        * java/awt/Font.java (Font(String,Map)): Add FIXME.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java
+        (getLocalGraphicsEnvironment): Call new constructor.
+        * gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java (getToolkit):
+        Remove method.
+        * gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java
+        (GdkGraphicsEnvironment(GtkToolkit)): Remove method.
+        (GdkGraphicsEnvironment()): New constructor.
+        (getToolkit): Remove method.
+        * gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java
+        (getToolkit): Remove method.
+        (createCompatibleVolatileImage): New method.
+        * gnu/java/awt/ClasspathToolkit.java (getFont): Add FIXME.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Fixed Eclipse 3.1 startup.
 
 	* Makefile.am (BUILD_ENVIRONMENT) Adapted LD_LIBRARY_PATH to

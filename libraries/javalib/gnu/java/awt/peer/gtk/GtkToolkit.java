@@ -643,7 +643,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public GraphicsEnvironment getLocalGraphicsEnvironment()
   {
-    return new GdkGraphicsEnvironment(this);
+    return new GdkGraphicsEnvironment();
   }
 
   public Font createFont(int format, InputStream stream)

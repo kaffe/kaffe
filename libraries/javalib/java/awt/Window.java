@@ -155,6 +155,9 @@ public class Window extends Container implements Accessible
             }
         }
       });
+    
+    GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    graphicsConfiguration = g.getDefaultScreenDevice().getDefaultConfiguration();
   }
 
   Window(GraphicsConfiguration gc)

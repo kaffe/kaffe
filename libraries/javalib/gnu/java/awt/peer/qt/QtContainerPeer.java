@@ -92,6 +92,24 @@ public class QtContainerPeer extends QtComponentPeer implements ContainerPeer
     // FIXME etc.
     return false;
   }
+
+  public boolean isRestackSupported()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public void cancelPendingPaint(int x, int y, int width, int height)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void restack()
+  {
+    // TODO Auto-generated method stub
+    
+  }
 }
 
 

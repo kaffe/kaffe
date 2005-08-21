@@ -149,4 +149,21 @@ public class GtkContainerPeer extends GtkComponentPeer
           comp.getPeer().setBackground(c);
       }
   }
+
+  public boolean isRestackSupported()
+  {
+      // FIXME: implement
+    return false;
+  }
+
+  public void cancelPendingPaint(int x, int y, int width, int height)
+  {
+    // FIXME: implement
+  }
+
+  public void restack()
+  {
+      //FIXME: implement
+    
+  }
 }

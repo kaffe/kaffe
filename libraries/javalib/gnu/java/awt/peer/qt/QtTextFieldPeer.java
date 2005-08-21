@@ -41,6 +41,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.TextField;
 import java.awt.event.TextEvent;
+import java.awt.im.InputMethodRequests;
 import java.awt.peer.TextFieldPeer;
 
 public class QtTextFieldPeer extends QtComponentPeer implements TextFieldPeer
@@ -149,5 +150,11 @@ public class QtTextFieldPeer extends QtComponentPeer implements TextFieldPeer
   public native void setEditable(boolean editable);
 
   public native void setText(String l);
+
+  public InputMethodRequests getInputMethodRequests()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
 

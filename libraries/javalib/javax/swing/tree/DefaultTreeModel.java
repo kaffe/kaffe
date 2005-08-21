@@ -138,7 +138,7 @@ public class DefaultTreeModel
    */
   public void setAsksAllowsChildren(boolean value)
   {
-    asksAllowsChildren = value; // TODO
+    asksAllowsChildren = value;
   }
 
   /**
@@ -150,13 +150,11 @@ public class DefaultTreeModel
   {
     // Sanity Check
     if (root == null)
-    {
-      throw new IllegalArgumentException("null root");
-    }
+      {
+        throw new IllegalArgumentException("null root");
+      }
     // Set new root
     this.root = root;
-
-    // TODO
   }
 
   /**
@@ -179,10 +177,10 @@ public class DefaultTreeModel
   public int getIndexOfChild(Object parent, Object child)
   {
     for (int i = 0; i < getChildCount(parent); i++)
-    {
-      if (getChild(parent, i).equals(child))
-	return i;
-    }
+      {
+        if (getChild(parent, i).equals(child))
+          return i;
+      }
     return -1;
   }
 
@@ -230,7 +228,9 @@ public class DefaultTreeModel
   }
 
   /**
-   * reload
+   * Invoke this method if you've modified the TreeNodes upon 
+   * which this model depends. The model will notify all of its 
+   * listeners that the model has changed.
    */
   public void reload()
   {
@@ -238,124 +238,186 @@ public class DefaultTreeModel
   }
 
   /**
-   * reload
+   * Invoke this method if you've modified the TreeNodes upon 
+   * which this model depends. The model will notify all of its 
+   * listeners that the model has changed.
    * 
-   * @param value0 TODO
+   * @param node - TODO
    */
-  public void reload(TreeNode value0)
+  public void reload(TreeNode node)
   {
     // TODO
   }
 
   /**
-   * valueForPathChanged
+   * Messaged when the user has altered the value for the item 
+   * identified by path to newValue. If newValue signifies a truly new 
+   * value the model should post a treeNodesChanged event.
    * 
-   * @param value0 TODO
-   * @param value1 TODO
+   * @param path - path to the node that the user has altered
+   * @param newValue - the new value from the TreeCellEditor
    */
-  public void valueForPathChanged(TreePath value0, Object value1)
+  public void valueForPathChanged(TreePath path, Object newValue)
+  {
+    if (!path.equals(newValue))
+      {
+        TreeModelEvent event = new TreeModelEvent(this, path);
+        TreeModelListener[] listeners = getTreeModelListeners();
+        
+        for (int i = listeners.length - 1; i >= 0; --i)
+          listeners[i].treeNodesChanged(event);
+      }
+  }
+
+  /**
+   * Invoked this to insert newChild at location index in parents children.
+   * This will then message nodesWereInserted to create the appropriate event. 
+   * This is the preferred way to add children as it will create the 
+   * appropriate event.
+   * 
+   * @param newChild is the node to add to the parent's children
+   * @param parent is the parent of the newChild
+   * @param index is the index of the newChild
+   */
+  public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent,
+                             int index)
+  {
+    parent.insert(newChild, index);
+    int[] childIndices = new int[1];
+    childIndices[0] = index;
+    nodesWereInserted(parent, childIndices);
+  }
+
+  /**
+   * Message this to remove node from its parent. This will message 
+   * nodesWereRemoved to create the appropriate event. This is the preferred 
+   * way to remove a node as it handles the event creation for you.
+   * 
+   * @param node to be removed
+   */
+  public void removeNodeFromParent(MutableTreeNode node)
+  {
+    TreeNode parent = node.getParent();
+    Object[] children = new Object[1];
+    children[0] = node;
+    int[] childIndices = new int[1];
+    childIndices[0] = getIndexOfChild(parent, node);
+    node.removeFromParent();
+    nodesWereRemoved(parent, childIndices, children);
+  }
+
+  /**
+   * Invoke this method after you've changed how node is to be represented
+   * in the tree.
+   * 
+   * @param node that was changed
+   */
+  public void nodeChanged(TreeNode node)
+  {
+    TreeNode parent = node.getParent();
+    int[] childIndices = new int[1];
+    childIndices[0] = getIndexOfChild(parent, node);
+    Object[] children = new Object[1];
+    children[0] = node;
+    fireTreeNodesChanged(this, getPathToRoot(parent), childIndices, children);
+  }
+
+  /**
+   * Invoke this method after you've inserted some TreeNodes 
+   * into node. childIndices should be the index of the new elements and must 
+   * be sorted in ascending order.
+   * 
+   * @param parent that had a child added to
+   * @param childIndices of the children added
+   */
+  public void nodesWereInserted(TreeNode parent, int[] childIndices)
+  {
+    Object[] children = new Object[childIndices.length];
+    for (int i = 0; i < children.length; i++)
+      children[i] = getChild(parent, childIndices[i]);
+    fireTreeNodesInserted(this, getPathToRoot(parent), childIndices, children);
+  }
+
+  /**
+   * Invoke this method after you've removed some TreeNodes from node. 
+   * childIndices should be the index of the removed elements and 
+   * must be sorted in ascending order. And removedChildren should be the 
+   * array of the children objects that were removed.
+   * 
+   * @param parent that had a child added to
+   * @param childIndices of the children added
+   * @param removeChildren are all the children removed from parent.
+   */
+  public void nodesWereRemoved(TreeNode parent, int[] childIndices, 
+                               Object[] removedChildren)
+  {
+    fireTreeNodesRemoved(this, getPathToRoot(parent), childIndices, 
+                         removedChildren);
+  }
+
+  /**
+   * Invoke this method after you've changed how the children identified by 
+   * childIndices are to be represented in the tree.
+   * 
+   * @param node that is the parent of the children that changed in a tree.
+   * @param childIndices are the child nodes that changed.
+   */
+  public void nodesChanged(TreeNode node, int[] childIndices)
+  {
+    Object[] children = new Object[childIndices.length];
+    for (int i = 0; i < children.length; i++)
+      children[i] = getChild(node, childIndices[i]);
+    fireTreeNodesChanged(this, getPathToRoot(node), childIndices, children);
+  }
+
+  /**
+   * Invoke this method if you've totally changed the children of node and 
+   * its childrens children. This will post a treeStructureChanged event.
+   * 
+   * @param node that had its children and grandchildren changed.
+   */
+  public void nodeStructureChanged(TreeNode node)
   {
     // TODO
   }
 
   /**
-   * insertNodeInto
+   * Builds the parents of node up to and including the root node, where 
+   * the original node is the last element in the returned array. The 
+   * length of the returned array gives the node's depth in the tree.
    * 
-   * @param value0 TODO
-   * @param value1 TODO
-   * @param value2 TODO
+   * @param node - the TreeNode to get the path for
+   * @return TreeNode[] - the path from node to the root
    */
-  public void insertNodeInto(MutableTreeNode value0, MutableTreeNode value1,
-      int value2)
+  public TreeNode[] getPathToRoot(TreeNode node)
   {
-    // TODO
+    return getPathToRoot(node, 0);
   }
 
   /**
-   * removeNodeFromParent
+   * Builds the parents of node up to and including the root node, where 
+   * the original node is the last element in the returned array. The 
+   * length of the returned array gives the node's depth in the tree.
    * 
-   * @param value0 TODO
+   * @param node - the TreeNode to get the path for
+   * @param depth - an int giving the number of steps already taken 
+   * towards the root (on recursive calls), used to size the returned array
+   * @return an array of TreeNodes giving the path from the root to the 
+   * specified node
    */
-  public void removeNodeFromParent(MutableTreeNode value0)
+  protected TreeNode[] getPathToRoot(TreeNode node, int depth)
   {
-    // TODO
-  }
+    if (node == null)
+      {
+        if (depth == 0)
+          return null;
+        
+        return new TreeNode[depth];
+      }
 
-  /**
-   * nodeChanged
-   * 
-   * @param value0 TODO
-   */
-  public void nodeChanged(TreeNode value0)
-  {
-    // TODO
-  }
-
-  /**
-   * nodesWereInserted
-   * 
-   * @param value0 TODO
-   * @param value1 TODO
-   */
-  public void nodesWereInserted(TreeNode value0, int[] value1)
-  {
-    // TODO
-  }
-
-  /**
-   * nodesWereRemoved
-   * 
-   * @param value0 TODO
-   * @param value1 TODO
-   * @param value2 TODO
-   */
-  public void nodesWereRemoved(TreeNode value0, int[] value1, Object[] value2)
-  {
-    // TODO
-  }
-
-  /**
-   * nodesChanged
-   * 
-   * @param value0 TODO
-   * @param value1 TODO
-   */
-  public void nodesChanged(TreeNode value0, int[] value1)
-  {
-    // TODO
-  }
-
-  /**
-   * nodeStructureChanged
-   * 
-   * @param value0 TODO
-   */
-  public void nodeStructureChanged(TreeNode value0)
-  {
-    // TODO
-  }
-
-  /**
-   * getPathToRoot
-   * 
-   * @param value0 TODO
-   * @return TreeNode[]
-   */
-  public TreeNode[] getPathToRoot(TreeNode value0)
-  {
-    return null; // TODO
-  }
-
-  /**
-   * getPathToRoot
-   * 
-   * @param value0 TODO
-   * @param value1 TODO
-   * @return TreeNode[]
-   */
-  protected TreeNode[] getPathToRoot(TreeNode value0, int value1)
-  {
-    return null; // TODO
+    TreeNode[] path = getPathToRoot(node.getParent(), depth + 1);
+    path[path.length - depth - 1] = node;
+    return path;
   }
 
   /**
@@ -392,7 +454,9 @@ public class DefaultTreeModel
   }
 
   /**
-   * fireTreeNodesChanged
+   * Notifies all listeners that have registered interest for notification 
+   * on this event type. The event instance is lazily created using the parameters 
+   * passed into the fire method.
    * 
    * @param source the node being changed
    * @param path the path to the root node

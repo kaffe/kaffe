@@ -65,4 +65,16 @@ public class QtWindowPeer extends QtContainerPeer implements WindowPeer
    */
   public native void setTitle(String title);
 
+  public void updateAlwaysOnTop()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public boolean requestWindowFocus()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

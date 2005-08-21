@@ -239,4 +239,14 @@ public class GtkWindowPeer extends GtkContainerPeer
     else
       q().postEvent (new WindowEvent ((Window) awtComponent, id, opposite));
   }
+  public void updateAlwaysOnTop()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+  public boolean requestWindowFocus()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

@@ -58,6 +58,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.peer.ComponentPeer;
+import java.awt.peer.ContainerPeer;
 import java.awt.image.ColorModel;
 import java.awt.image.VolatileImage;
 import java.awt.image.ImageObserver;
@@ -710,6 +711,36 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
     { 
       QtUpdateArea(x, y, w, h); 
     }
+  }
+
+  public Rectangle getBounds()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public void reparent(ContainerPeer parent)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void setBounds(int x, int y, int width, int height, int z)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public boolean isReparentSupported()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public void layout()
+  {
+    // TODO Auto-generated method stub
+    
   }
 
 }

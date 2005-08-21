@@ -70,6 +70,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.image.VolatileImage;
 import java.awt.peer.ComponentPeer;
+import java.awt.peer.ContainerPeer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -682,5 +683,32 @@ public class GtkComponentPeer extends GtkGenericPeer
   public String toString ()
   {
     return "peer of " + awtComponent.toString();
+  }
+  public Rectangle getBounds()
+  {
+      // FIXME: implement
+    return null;
+  }
+  public void reparent(ContainerPeer parent)
+  {
+    // FIXME: implement
+  
+  }
+  public void setBounds(int x, int y, int width, int height, int z)
+  {
+    // FIXME: implement
+      setBounds (x, y, width, height);
+   
+  }
+  public boolean isReparentSupported()
+  {
+    // FIXME: implement
+
+    return false;
+  }
+  public void layout()
+  {
+    // FIXME: implement
+ 
   }
 }
