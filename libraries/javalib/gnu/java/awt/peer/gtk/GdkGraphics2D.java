@@ -45,6 +45,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
@@ -867,6 +868,8 @@ public class GdkGraphics2D extends Graphics2D
 	    cairoSetDash(double_dashes, double_dashes.length,
 	                 (double) bs.getDashPhase());
 	  }
+	else
+	  cairoSetDash(new double[0], 0, 0.0);
       }
   }
 
@@ -889,6 +892,8 @@ public class GdkGraphics2D extends Graphics2D
 	    cairoSetDashUnlocked(double_dashes, double_dashes.length,
                                  (double) bs.getDashPhase());
 	  }
+	else
+	  cairoSetDashUnlocked(new double[0], 0, 0.0);
       }
   }
 
@@ -985,7 +990,13 @@ public class GdkGraphics2D extends Graphics2D
   public void setClip(Shape s)
   {
     clip = s;
-    if (s != null)
+    if (clip == null)
+      {
+	// Reset clipping.
+	Dimension d = component.awtComponent.getSize();
+	setClip(0, 0, d.width, d.height);
+      }
+    else
       {
 	cairoNewPath();
 	if (s instanceof Rectangle2D)

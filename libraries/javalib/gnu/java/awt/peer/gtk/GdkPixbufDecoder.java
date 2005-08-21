@@ -306,7 +306,7 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
   static String findFormatName(Object ext, boolean needWritable)
   {
     if (ext == null)
-      throw new IllegalArgumentException("extension is null");
+      return null;
 
     if (!(ext instanceof String))
       throw new IllegalArgumentException("extension is not a string");

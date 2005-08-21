@@ -349,7 +349,13 @@ public class GdkGraphics extends Graphics
 
   public void setClip (Shape clip)
   {
-    if (clip != null)
+    if (clip == null)
+      {
+	// Reset clipping.
+	Dimension d = component.awtComponent.getSize();
+	setClip(new Rectangle (0, 0, d.width, d.height));
+      }
+    else
       setClip(clip.getBounds());
   }
 

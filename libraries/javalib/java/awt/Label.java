@@ -215,12 +215,16 @@ getText()
 public synchronized void
 setText(String text)
 {
-  this.text = text;
-
-  if (peer != null)
+  if (this.text != text)
     {
-      LabelPeer lp = (LabelPeer) peer;
-      lp.setText (text);
+      this.text = text;
+
+      if (peer != null)
+	{
+	  LabelPeer lp = (LabelPeer) peer;
+	  lp.setText (text);
+	}
+      invalidate();
     }
 }
 

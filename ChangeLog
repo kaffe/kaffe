@@ -2,6 +2,46 @@
 
 	Resynced with GNU Classpath.
 
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics.java (setClip(Shape)): Clear
+        clip when clip == null.
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java (setClip(Shape)):
+        Likewise.
+
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Label.java (setText): Invalidate label.
+
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/image/AreaAveragingScaleFilter.java: Add checks for
+        consumer != null.
+        * java/awt/image/CropImageFilter.java: Likewise.
+        * java/awt/image/ImageFilter.java: Likewise.
+        * java/awt/image/RGBImageFilter.java: Likewise.
+        * java/awt/image/ReplicateScaleFilter.java: Likewise.
+
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkPixbufDecoder.java (findFormatName):
+        Just return null when ext == null.
+
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/AWTKeyStroke.java (getAWTKeyStroke): Include old-style
+        modifiers in returned AWTKeyStroke's modifier mask.
+
+	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java (setStroke): Clear
+        dashes if dashes is null.
+        (setStrokeUnlocked): Likewise.
+
+2005-08-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-08-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
         * java/awt/Window.java (getMostRecentFocusOwner): New method.
