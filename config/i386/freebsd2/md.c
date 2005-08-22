@@ -13,6 +13,10 @@
 #include "config.h"
 #include "config-std.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
 #if defined(HAVE_SYS_SYSCTL_H)
 #include <sys/sysctl.h>
 
