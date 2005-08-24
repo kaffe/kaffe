@@ -1,3 +1,11 @@
+2005-08-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* Makefile.am: (KAFFELIBRARYPATH) Fixed them again
+	to work without having GNU findutils.
+
+	Reported by:  Ito Kazumitsu <kaz@maczuka.gcd.org>,
+	              Andreas Tobler  <a.tobler@schweiz.ch>
+
 2005-08-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/i386/freebsd2/md.c: Include sys/types.h
