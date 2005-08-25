@@ -2,6 +2,288 @@
 
 	Resynced with GNU Classpath.
 
+	2005-08-25  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/ClasspathToolkit.java (getFont): Throw
+        RuntimeException in case of error.
+        * gnu/java/awt/EmbeddedWindow.java (addNotify): Likewise.
+
+	2005-08-24  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (beginNativeRepaintID): Remove variable.
+        (endNativeRepaintID): Likewise.
+        (cp_gtk_button_init_jni): Don't look up beginNativeRepaint and
+        endNativeRepaint methods.
+        * gnu/java/awt/peer/gtk/GtkFramePeer.java (resizing): Remove
+        field.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (resizing): Remove field.
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java (hiding): Remove
+        field.
+        (setVisible): Don't override.
+        * gnu/java/awt/peer/gtk/GtkChoicePeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c
+        (selectNative): New method.
+        (selectNativeUnlocked): Likewise.
+        (select): Call setNativeUnlocked if in the GTK main thread,
+        selectNative otherwise.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+        (gtkWidgetSetCursorUnlocked): New method.
+        (setCursor(Cursor)): Call gtkWidgetSetCursorUnlocked if in the GTK
+        main thread, gtkWidgetSetCursor otherwise.
+        (setVisibleNative): New method.
+        (setVisibleNativeUnlocked): Likewise.
+        (setVisible): Call setVisibleNativeUnlocked if in the GTK main
+        thread, setVisibleNative otherwise.
+        (hide): Call setVisible(false).
+        (show): Call setVisible(true).
+
+	2005-08-24  Tom Tromey  <tromey@redhat.com>
+
+        * java/text/SimpleDateFormat.java (compileFormat): Correctly
+        handle quoted single quotes.  PR classpath/23183.
+
+	2005-08-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalIconFactory.java
+        (InternalFrameCloseIcon): new private class,
+        (InternalFrameAltMaximizeIcon): likewise,
+        (InternalFrameMaximizeIcon): likewise,
+        (InternalFrameMinimizeIcon): likewise,
+        (getInternalFrameCloseIcon): implemented,
+        (getInternalFrameMaximizeIcon): implemented,
+        (getInternalFrameMinimizeIcon): implemented,
+        (getInternalFrameAltMaximizeIcon): implemented.
+
+	2005-08-24  Mark Wielaard  <mark@klomp.org>
+
+        * gnu/CORBA/ForwardRequestHelper.java: Update copyright boilerplate
+        address.
+        * javax/xml/namespace/QName.java: Likewise.
+        * org/omg/DynamicAny/_DynAnyFactoryStub.java: Likewise.
+        * org/omg/DynamicAny/_DynAnyStub.java: Likewise.
+        * org/omg/DynamicAny/_DynArrayStub.java: Likewise.
+        * org/omg/DynamicAny/_DynEnumStub.java: Likewise.
+        * org/omg/DynamicAny/_DynFixedStub.java: Likewise.
+        * org/omg/DynamicAny/_DynSequenceStub.java: Likewise.
+        * org/omg/DynamicAny/_DynStructStub.java: Likewise.
+        * org/omg/DynamicAny/_DynUnionStub.java: Likewise.
+        * org/omg/DynamicAny/_DynValueStub.java: Likewise.
+        * org/omg/PortableServer/ForwardRequest.java: Likewise.
+        * org/omg/PortableServer/CurrentHelper.java: Likewise.
+        * org/omg/PortableServer/ForwardRequestHelper.java: Likewise.
+        * org/omg/PortableServer/ServantActivatorHelper.java: Likewise.
+        * org/omg/PortableServer/ServantLocatorHelper.java: Likewise.
+        * org/omg/PortableServer/_ServantActivatorStub.java: Likewise.
+        * org/omg/PortableServer/_ServantLocatorStub.java: Likewise.
+
+	2005-08-24  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/DefaultCellEditor.java
+        (isCellEditable): Reversed last changes.
+
+	2005-08-24  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/DefaultCellEditor.java
+        (isCellEditable): If the event is null, the cell is still
+        editable.
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (getVisibleEditorRect): Use getPreferredSize to get the width
+        and height.
+        * javax/swing/tree/DefaultTreeCellEditor.java
+        (paint): Fixed to paint the JTextField with the background
+        and border at the correct location.
+        (DefaultTreeCellEditor): Changed to initialize realEditor.
+        (configureEditingComponent): Helper function implemented.
+        (getTreeCellEditorComponent): Fixed to use realEditor to get component.
+        (isCellEditable): Fixed to configure editing component.
+        (shouldSelectCell): Always returns true.
+        (stopCellEditing): Fixed to configure editing component if needed.
+        (cancelCellEditing): Fixed to configure editing component if needed.
+        (createTreeCellEditor): Fixed to initialize fields.
+
+	2005-08-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java
+        (installDefaults): just fetch border from UIDefaults,
+        * javax/swing/plaf/metal/MetalIconFactory.java
+        (InternalFrameDefaultMenuIcon): implemented,
+        (getInternalFrameDefaultMenuIcon): implemented,
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initComponentDefaults): add values for "InternalFrame.border" and
+        "InternalFrame.icon".
+
+	2005-08-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalBorders.java
+        (InternalFrameBorder): implemented.
+
+	2005-08-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicDesktopPaneUI.java
+        (installDefaults): set background color using "desktop" color,
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initSystemColorDefaults): removed "Desktop.background" color,
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initSystemColorDefaults): added "desktop" color.
+
+	2005-08-23  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (stopEditing): Implemented.
+        (cancelEditing): Implemented.
+        (startEditingAtPath): Implemented.
+        (getEditingPath): Implemented.
+        (createDefaultCellEditor): Implemented.
+        (updateCellEditor): Implemented.
+        (completeEditing): Implemented.
+        (completeEditing): Implemented.
+        (startEditing): Implemented.
+        (editingStopped): Implemented.
+        (editingCanceled): Implemented.
+        * javax/swing/tree/DefaultTreeCellEditor.java
+        (stopCellEditing): Stopped the timer.
+        (cancelCellEditing): Likewise.
+
+	2005-08-23  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/DefaultCellEditor.java
+        (getTreeCellEditorComponent): Implemented cases for JCheckBox
+        and JComboBox.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (BasicTreeUI): Moved lines to installUI where the renderer
+        and editor are created.
+        (installUI): Likewise.
+        * javax/swing/tree/DefaultTreeCellEditor.java
+        (getPreferredSize): Implemented.
+        (DefaultTreeCellEditor): Implemented.
+        (DefaultTreeCellEditor): Implemented.
+        (getTreeCellEditorComponent): Implemented.
+        (getCellEditorValue): Implemented.
+        (isCellEditable): Implemented.
+        (shouldSelectCell): Implemented.
+        (stopCellEditing): Implemented.
+        (cancelCellEditing): Implemented.
+        (valueChanged): Implemented.
+        (actionPerformed): Implemented.
+        (shouldStartEditingTimer): Implemented.
+        (startEditingTimer): Implemented.
+        (canEditImmediately): Implemented.
+        (inHitRegion): Implemented.
+        (determineOffset): Implemented.
+        (prepareForEditing): Implemented.
+        (createContainer): Implemented.
+        (createTreeCellEditor): Implemented.
+
+	2005-08-23  Tom Tromey  <tromey@redhat.com>
+
+        * java/text/SimpleDateFormat.java (compileFormat): Reformatted.
+
+	2005-08-23  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/23531
+        * java/sql/Date.java (toString): Not deprecated.
+        (valueOf): Likewise.
+        * java/sql/Time.java (toString): Not deprecated.
+        (valueOf): Likewise.
+
+	2005-08-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/UIManager.java:
+        (addAuxiliaryLookAndFeel): renamed field, added check for null
+        argument,
+        (removeAuxiliaryLookAndFeel): reimplemented,
+        (getAuxiliaryLookAndFeels): renamed field,
+        (installLookAndFeel): implemented by delegation.
+
+	2005-08-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/UIManager.java: added API docs all over.
+
+	2005-08-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/UIManager.java:
+        (look_and_feel): renamed currentLookAndFeel,
+        (currentUIDefaults): new field,
+        (get(Object)): access cached UIDefaults,
+        (get(Object, Locale)): likewise,
+        (getBoolean(Object)): likewise,
+        (getBoolean(Object, Locale)): likewise,
+        (getBorder(Object)): likewise,
+        (getBorder(Object, Locale)): likewise,
+        (getColor(Object)): likewise,
+        (getColor(Object, Locale)): likewise,
+        (getDefaults): return reference to UIDefaults from current look and
+        feel rather than recreating them every time,
+        (getDimension(Object)): access local defaults,
+        (getDimension(Object, Locale)): likewise,
+        (getFont(Object)): likewise,
+        (getFont(Object, Locale)): likewise,
+        (getIcon(Object)): likewise,
+        (getIcon(Object, Locale)): likewise,
+        (getInsets(Object)): likewise,
+        (getInsets(Object, Locale)): likewise,
+        (getInt(Object)): likewise,
+        (getInt(Object, Locale)): likewise,
+        (getLookAndFeel): renamed attribute,
+        (getLookAndFeelDefaults): return reference to UIDefaults from current
+        look and feel rather than recreating them every time,
+        (getString(Object)): access local defaults,
+        (getString(Object, Locale)): likewise,
+        (getUI(JComponent)): likewise,
+        (installLookAndFeel(String, String)): implemented by delegation,
+        (put(Object, Object)): update local defaults,
+        (setLookAndFeel): create and retain reference to UIDefaults.
+
+	2005-08-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/UIManager.java:
+        (addPropertyChangeListener): implemented,
+        (removePropertyChangeListener): likewise,
+        (getPropertyChangeListeners): likewise,
+        (setLookAndFeel): fire a property change event.
+
+	2005-08-23  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (BasicTreeUI): Moved these lines to installUI
+        because they were causing NullPointerExceptions.
+        (installUI): Added code from constructor.
+        * javax/swing/plaf/metal/MetalTreeUI.java
+        (createUI): Formatted code.
+
+	2005-08-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/event/SwingPropertyChangeSupport.java
+        (writeObject): removed empty method,
+        (readObject): likewise,
+        (getPropertyChangeListeners()): implemented,
+        (getPropertyChangeListeners(String)): likewise,
+        (hasListeners): return true if there are any general listeners,
+        added API docs all over.
+
+	2005-08-23  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/qt-peer/qttextfieldpeer.cpp
+        (Java_gnu_java_awt_peer_qt_QtTextFieldPeer_getCaretPosition): Renamed
+        from Java_gnu_java_awt_peer_qt_QtTextFieldPeer_getCaretPositionNative.
+
+        * gnu/java/awt/peer/qt/QtComponentPeer.java (getMinimumSizeNative):
+        Removed unused native method.
+        (getPreferredSizeNative): Likewise.
+
+	2005-08-23  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/EventQueue.java (getNextEvent): Don't check if this is
+        the dispatch thread.
+
+2005-08-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-08-23  Sven de Marothy  <sven@physto.se>
 
         * gnu/java/awt/peer/qt/QtAudioClip.java

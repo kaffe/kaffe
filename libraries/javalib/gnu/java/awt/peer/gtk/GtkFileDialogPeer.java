@@ -62,8 +62,6 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
   public native void nativeSetDirectory(String directory);
   native void nativeSetFilenameFilter (FilenameFilter filter);
 
-  private boolean hiding = false;
-
   public void create()
   {
     create((GtkContainerPeer) awtComponent.getParent().getPeer());
@@ -171,26 +169,13 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
     // GtkFileDialog will repaint by itself
     return null;
   }
-  
-  public void setVisible (boolean b)
-  {
-    // prevent handle_response_cb -> postItemEvent -> awtComponent.setState -> this.setState
-    // -> gtkToggleButtonSetActive self-deadlock on the GDK lock.
-    if (hiding && Thread.currentThread() == GtkToolkit.mainThread)
-      {
-        setVisibleUnlocked (b);
-        hiding = false;
-      }
-    else
-      super.setVisible (b);
-  }
 
   // called back by native side: handle_response_cb
+  // only called from the GTK thread
   void gtkHideFileDialog () 
   {
     // hide calls back the peer's setVisible method, so locking is a
     // problem.
-    hiding = true;
     ((Dialog) awtComponent).hide();
   }
   

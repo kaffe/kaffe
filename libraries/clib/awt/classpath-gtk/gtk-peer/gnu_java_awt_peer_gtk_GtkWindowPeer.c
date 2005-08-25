@@ -1198,34 +1198,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetModal
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible
-  (JNIEnv *env, jobject obj, jboolean visible)
-{
-  gdk_threads_enter ();
-
-  Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisibleUnlocked
-    (env, obj, visible);
-
-  gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisibleUnlocked
-  (JNIEnv *env, jobject obj, jboolean visible)
-{
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  if (visible)
-    gtk_widget_show (GTK_WIDGET (ptr));
-  else
-    gtk_widget_hide (GTK_WIDGET (ptr));
-
-  XFlush (GDK_DISPLAY ());
-}
-
-JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
   (JNIEnv *env, jobject obj)
 {

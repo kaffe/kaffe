@@ -62,8 +62,6 @@ public class GtkFramePeer extends GtkWindowPeer
   native void removeMenuBarPeer ();
   native void gtkFixedSetVisible (boolean visible);
 
-  private boolean resizing = false;
-
   int getMenuBarHeight ()
   {
     return menuBar == null ? 0 : getMenuBarHeight (menuBar);
@@ -123,13 +121,12 @@ public class GtkFramePeer extends GtkWindowPeer
   {
     // prevent window_configure_cb -> awtComponent.setSize ->
     // peer.setBounds -> nativeSetBounds self-deadlock on GDK lock.
-    if (resizing && Thread.currentThread() == GtkToolkit.mainThread)
+    if (Thread.currentThread() == GtkToolkit.mainThread)
       {
         int menuBarWidth = width - insets.left - insets.right;
         if (menuBar != null && menuBarWidth > 0)
           setMenuBarWidthUnlocked (menuBar, menuBarWidth);
 
-        resizing = false;
         return;
       }
 
@@ -215,10 +212,7 @@ public class GtkFramePeer extends GtkWindowPeer
 
     if (frame_width != awtComponent.getWidth()
         || frame_height != awtComponent.getHeight())
-      {
-        resizing = true;
-        awtComponent.setSize(frame_width, frame_height);
-      }
+      awtComponent.setSize(frame_width, frame_height);
 
     int frame_x = x - insets.left;
     // Likewise, since insets.top includes the MenuBar height, we need

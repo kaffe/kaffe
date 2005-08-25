@@ -402,7 +402,6 @@ public abstract class BasicLookAndFeel extends LookAndFeel
         "ctrl F10", "maximize",
         "ctrl alt shift F6","selectPreviousFrame"
       }),
-      "Desktop.background", new ColorUIResource(0, 92, 92),
       "DesktopIcon.border", new BorderUIResource.CompoundBorderUIResource(null,
                                                                           null),
       "EditorPane.background", new ColorUIResource(Color.white),

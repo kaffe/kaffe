@@ -185,12 +185,22 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor 
   (JNIEnv *env, jobject obj, jint type) 
 {
+  gdk_threads_enter ();
+
+  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursorUnlocked
+    (env, obj, type);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursorUnlocked
+  (JNIEnv *env, jobject obj, jint type) 
+{
   void *ptr;
   GtkWidget *widget;
   GdkCursorType gdk_cursor_type;
   GdkCursor *gdk_cursor;
-
-  gdk_threads_enter ();
 
   ptr = NSA_GET_PTR (env, obj);
 
@@ -244,8 +254,6 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursor
   gdk_cursor = gdk_cursor_new (gdk_cursor_type);
   gdk_window_set_cursor (widget->window, gdk_cursor);
   gdk_cursor_destroy (gdk_cursor);
-
-  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL
@@ -703,33 +711,29 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetForeground
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkComponentPeer_show
-  (JNIEnv *env, jobject obj)
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setVisibleNative
+  (JNIEnv *env, jobject obj, jboolean visible)
 {
-  void *ptr;
-
   gdk_threads_enter();
 
-  ptr = NSA_GET_PTR (env, obj);
-
-  gtk_widget_show (GTK_WIDGET (ptr));
+  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setVisibleNativeUnlocked
+    (env, obj, visible);
 
   gdk_threads_leave();
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkComponentPeer_hide
-  (JNIEnv *env, jobject obj)
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_setVisibleNativeUnlocked
+  (JNIEnv *env, jobject obj, jboolean visible)
 {
   void *ptr;
 
-  gdk_threads_enter();
-
   ptr = NSA_GET_PTR (env, obj);
 
-  gtk_widget_hide (GTK_WIDGET (ptr));
-
-  gdk_threads_leave();
+  if (visible)
+    gtk_widget_show (GTK_WIDGET (ptr));
+  else
+    gtk_widget_hide (GTK_WIDGET (ptr));
 }
 
 JNIEXPORT jboolean JNICALL 

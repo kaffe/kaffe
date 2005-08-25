@@ -100,6 +100,7 @@ public class GtkComponentPeer extends GtkGenericPeer
   native void gtkWidgetGetPreferredDimensions (int[] dim);
   native void gtkWidgetGetLocationOnScreen (int[] point);
   native void gtkWidgetSetCursor (int type);
+  native void gtkWidgetSetCursorUnlocked (int type);
   native void gtkWidgetSetBackground (int red, int green, int blue);
   native void gtkWidgetSetForeground (int red, int green, int blue);
   native void gtkWidgetSetSensitive (boolean sensitive);
@@ -477,7 +478,10 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void setCursor (Cursor cursor) 
   {
-    gtkWidgetSetCursor (cursor.getType ());
+    if (Thread.currentThread() == GtkToolkit.mainThread)
+      gtkWidgetSetCursorUnlocked (cursor.getType ());
+    else
+      gtkWidgetSetCursor (cursor.getType ());
   }
 
   public void setEnabled (boolean b)
@@ -510,16 +514,26 @@ public class GtkComponentPeer extends GtkGenericPeer
     return new Color (rgb[0], rgb[1], rgb[2]);
   }
 
+  public native void setVisibleNative (boolean b);
+  public native void setVisibleNativeUnlocked (boolean b);
+
   public void setVisible (boolean b)
   {
-    if (b)
-      show ();
+    if (Thread.currentThread() == GtkToolkit.mainThread)
+      setVisibleNativeUnlocked (b);
     else
-      hide ();
+      setVisibleNative (b);
   }
 
-  public native void hide ();
-  public native void show ();
+  public void hide ()
+  {
+    setVisible (false);
+  }
+
+  public void show ()
+  {
+    setVisible (true);
+  }
 
   protected void postMouseEvent(int id, long when, int mods, int x, int y, 
 				int clickCount, boolean popupTrigger) 

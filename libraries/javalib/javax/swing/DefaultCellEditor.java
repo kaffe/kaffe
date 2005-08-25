@@ -121,7 +121,7 @@ public class DefaultCellEditor
      */
     public boolean isCellEditable(EventObject event)
     {
-      if (!(event instanceof MouseEvent))
+      if (event == null || !(event instanceof MouseEvent))
         return true;
 
       //Todo: if the right number of clicks has occured, return true;
@@ -369,11 +369,19 @@ public class DefaultCellEditor
         delegate = new EditorDelegate();
         ((JTextField)editorComponent).addActionListener(delegate);
       }
-    else
+    else if (editorComponent instanceof JCheckBox)
       {
-        // TODO
+        ((JCheckBox)editorComponent).setText(value.toString());
+        delegate = new EditorDelegate();
+        ((JCheckBox)editorComponent).addActionListener(delegate);
       }
-    
+    else if (editorComponent instanceof JComboBox)
+      {
+        ((JComboBox)editorComponent).setSelectedItem(value.toString());
+        delegate = new EditorDelegate();
+        ((JComboBox)editorComponent).addActionListener(delegate);
+      }
+
     return editorComponent;
   } // getTreeCellEditorComponent()
 

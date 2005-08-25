@@ -245,10 +245,7 @@ public class BasicTreeUI
   public BasicTreeUI()
   {
     drawingCache = new Hashtable();
-    cellEditor = createDefaultCellEditor();
-    currentCellRenderer = createDefaultCellRenderer();
     nodeDimensions = createNodeDimensions();
-    rendererPane = createCellRendererPane();
     configureLayoutCache();
 
     propertyChangeListener = createPropertyChangeListener();
@@ -262,8 +259,6 @@ public class BasicTreeUI
     treeExpansionListener = createTreeExpansionListener();
     treeModelListener = createTreeModelListener();
 
-    createdRenderer = true;
-    createdCellEditor = true;
     editingRow = -1;
     lastSelectedRow = -1;
   }
@@ -741,8 +736,12 @@ public class BasicTreeUI
    */
   public boolean stopEditing(JTree tree)
   {
-    // FIXME: not implemented
-    return false;
+    if (isEditing(tree))
+      {
+        completeEditing();
+        return getCellEditor().stopCellEditing();
+      }
+    return true;
   }
 
   /**
@@ -752,7 +751,8 @@ public class BasicTreeUI
    */
   public void cancelEditing(JTree tree)
   {
-    // FIXME: not implemented
+    if (isEditing(tree))
+        completeEditing(false, true, false);
   }
 
   /**
@@ -764,7 +764,7 @@ public class BasicTreeUI
    */
   public void startEditingAtPath(JTree tree, TreePath path)
   {
-    // FIXME: not implemented
+    startEditing(path, null);
   }
 
   /**
@@ -775,8 +775,7 @@ public class BasicTreeUI
    */
   public TreePath getEditingPath(JTree tree)
   {
-    // FIXME: not implemented
-    return null;
+    return editingPath;
   }
 
   /**
@@ -953,8 +952,10 @@ public class BasicTreeUI
    */
   protected TreeCellEditor createDefaultCellEditor()
   {
-    return new DefaultTreeCellEditor(
-                                     tree,
+    if (currentCellRenderer != null)
+      return new DefaultTreeCellEditor(tree, (DefaultTreeCellRenderer) 
+                                       currentCellRenderer, cellEditor);
+    return new DefaultTreeCellEditor(tree,
                                      (DefaultTreeCellRenderer) createDefaultCellRenderer(),
                                      cellEditor);
   }
@@ -1085,12 +1086,13 @@ public class BasicTreeUI
 
   /**
    * Updates the cellEditor based on editability of the JTree that we're
-   * contained in. Ig the tree is editable but doesn't have a cellEditor, a
+   * contained in. If the tree is editable but doesn't have a cellEditor, a
    * basic one will be used.
    */
   protected void updateCellEditor()
   {
-    // FIXME: not implemented
+    if (tree.isEditable() && cellEditor == null)
+      cellEditor = createDefaultCellEditor();
   }
 
   /**
@@ -1203,6 +1205,14 @@ public class BasicTreeUI
     super.installUI(c);
     installDefaults((JTree) c);
     tree = (JTree) c;
+    
+    cellEditor = createDefaultCellEditor();
+    currentCellRenderer = createDefaultCellRenderer();
+    rendererPane = createCellRendererPane();
+    
+    createdRenderer = true;
+    createdCellEditor = true;
+    
     TreeModel mod = tree.getModel();
     setModel(mod);
     tree.setRootVisible(true);
@@ -1386,7 +1396,7 @@ public class BasicTreeUI
    */
   protected void completeEditing()
   {
-    // FIXME: not implemented
+    completeEditing(false, true, false);
   }
 
   /**
@@ -1402,7 +1412,19 @@ public class BasicTreeUI
   protected void completeEditing(boolean messageStop, boolean messageCancel,
                                  boolean messageTree)
   {
-    // FIXME: not implemented
+    if (messageStop)
+      {
+        getCellEditor().stopCellEditing();
+        stopEditingInCompleteEditing = true;
+      }
+    else if (messageCancel)
+      {
+        stopEditingInCompleteEditing = true;
+        getCellEditor().cancelCellEditing();
+      }
+    else if (messageTree)
+        tree.getModel().valueForPathChanged(tree.getLeadSelectionPath(),
+                                            editingPath);
   }
 
   /**
@@ -1415,7 +1437,36 @@ public class BasicTreeUI
    */
   protected boolean startEditing(TreePath path, MouseEvent event)
   {
-    // FIXME: not implemented
+    int x;
+    int y;
+    if (event == null)
+      {
+        Rectangle bounds = getPathBounds(tree, path);
+        x = bounds.x;
+        y = bounds.y;
+      }
+    else
+      {
+        x = event.getX();
+        y = event.getY();
+      }
+    
+    TreeCellEditor ed = getCellEditor();
+    if (ed == null)
+      updateCellEditor();
+    if(ed != null && ed.isCellEditable(event) && ed.shouldSelectCell(event))
+      {
+        editingPath = path;
+        editingRow = tree.getRowForPath(editingPath);
+        Object val = editingPath.getLastPathComponent();
+        boolean isLeaf = tree.getModel().isLeaf(val);
+        boolean expanded = tree.isExpanded(editingPath);
+        editingComponent = ed.getTreeCellEditorComponent(
+                     tree, val, true, expanded, isLeaf, editingRow);
+        cellEditor.addCellEditorListener(cellEditorListener);
+        stopEditingInCompleteEditing = false;
+        return true;
+      }
     return false;
   }
 
@@ -1635,6 +1686,11 @@ public class BasicTreeUI
      */
     public void editingStopped(ChangeEvent e)
     {
+      BasicTreeUI.this.editingPath = null;
+      BasicTreeUI.this.editingRow = -1;
+      BasicTreeUI.this.editingComponent = null;
+      BasicTreeUI.this.cellEditor = null;
+      BasicTreeUI.this.tree.repaint();
     }
 
     /**
@@ -1645,6 +1701,11 @@ public class BasicTreeUI
      */
     public void editingCanceled(ChangeEvent e)
     {
+      BasicTreeUI.this.editingPath = null;
+      BasicTreeUI.this.editingRow = -1;
+      BasicTreeUI.this.editingComponent = null;
+      BasicTreeUI.this.cellEditor = null;
+      BasicTreeUI.this.tree.repaint();
     }
   }// CellEditorHandler
 
@@ -2418,6 +2479,7 @@ public class BasicTreeUI
      */
     public void valueChanged(TreeSelectionEvent event)
     {
+      // FIXME: not implemented
     }
   }// TreeSelectionHandler
 

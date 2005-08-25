@@ -39,8 +39,6 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkButtonPeer.h"
 
-static jmethodID beginNativeRepaintID;
-static jmethodID endNativeRepaintID;
 static jmethodID postActionEventID;
 
 void
@@ -50,13 +48,6 @@ cp_gtk_button_init_jni (void)
 
   gtkbuttonpeer = (*cp_gtk_gdk_env())->FindClass (cp_gtk_gdk_env(),
                                            "gnu/java/awt/peer/gtk/GtkButtonPeer");
-
-  beginNativeRepaintID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkbuttonpeer,
-                                                    "beginNativeRepaint",
-                                                    "()V");
-
-  endNativeRepaintID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(), gtkbuttonpeer,
-                                                  "endNativeRepaint", "()V");
 
   postActionEventID = (*cp_gtk_gdk_env())->GetMethodID (cp_gtk_gdk_env(),
 							gtkbuttonpeer,

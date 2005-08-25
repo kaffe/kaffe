@@ -420,10 +420,6 @@ public class QtComponentPeer extends NativeWrapper implements ComponentPeer
     toolkit.eventQueue.postEvent(e);
   }
 
-  private native Dimension getMinimumSizeNative();
-
-  private native Dimension getPreferredSizeNative();
-
   // ************ Public methods *********************
 
   /** Classpath-specific method */

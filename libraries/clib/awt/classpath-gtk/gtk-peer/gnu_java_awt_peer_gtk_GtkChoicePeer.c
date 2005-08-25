@@ -187,18 +187,26 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeRemoveAll
 }
 
 JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkChoicePeer_select 
+Java_gnu_java_awt_peer_gtk_GtkChoicePeer_selectNative
+  (JNIEnv *env, jobject obj, jint index)
+{
+  gdk_threads_enter ();
+
+  Java_gnu_java_awt_peer_gtk_GtkChoicePeer_selectNativeUnlocked
+    (env, obj, index);
+
+  gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkChoicePeer_selectNativeUnlocked
   (JNIEnv *env, jobject obj, jint index)
 {
   void *ptr;
 
-  gdk_threads_enter ();
-
   ptr = NSA_GET_PTR (env, obj);
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (ptr), index);
-
-  gdk_threads_leave ();
 }
 
 JNIEXPORT jint JNICALL 

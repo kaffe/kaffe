@@ -45,7 +45,7 @@ import java.awt.Insets;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
-import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -53,7 +53,6 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
-import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.BasicBorders;
 
 /**
@@ -184,6 +183,101 @@ public class MetalBorders
       newInsets.top = borderInsets.top;
       return newInsets;
     }
+  }
+
+  /**
+   * A border used when painting {@link JInternalFrame} instances.
+   */
+  public static class InternalFrameBorder extends AbstractBorder
+    implements UIResource
+  {
+    /**
+     * Creates a new border instance.
+     */
+    public InternalFrameBorder()
+    {
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * 
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c)
+    {
+      return getBorderInsets(c, null);
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c, Insets newInsets)
+    {
+      if (newInsets == null)
+        newInsets = new Insets(5, 5, 5, 5);
+      else
+        {
+          newInsets.top = 5;
+          newInsets.left = 5;
+          newInsets.bottom = 5;
+          newInsets.right = 5;
+        }
+      return newInsets;  
+    }
+    
+    /**
+     * Paints the border for the specified component.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     * @param w  the width.
+     * @param h  the height.
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w, 
+        int h)
+    {
+        
+      JInternalFrame f = (JInternalFrame) c;
+      if (f.isSelected())
+        g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+      else
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
+      
+      // fill the border background
+      g.fillRect(x, y, w, 5);
+      g.fillRect(x, y, 5, h);
+      g.fillRect(x + w - 5, y, 5, h);
+      g.fillRect(x, y + h - 5, w, 5);
+      
+      // draw a dot in each corner
+      g.setColor(MetalLookAndFeel.getControl());
+      g.fillRect(x, y, 1, 1);
+      g.fillRect(x + w - 1, y, 1, 1);
+      g.fillRect(x + w - 1, y + h - 1, 1, 1);
+      g.fillRect(x, y + h - 1, 1, 1);
+      
+      // draw the lines
+      g.setColor(MetalLookAndFeel.getBlack());
+      g.drawLine(x + 14, y + 2, x + w - 15, y + 2);
+      g.drawLine(x + 14, y + h - 3, x + w - 15, y + h - 3);
+      g.drawLine(x + 2, y + 14, x + 2, y + h - 15);
+      g.drawLine(x + w - 3, y + 14, x + w - 3, y + h - 15);
+      
+      // draw the line highlights
+      g.setColor(MetalLookAndFeel.getControl());
+      g.drawLine(x + 15, y + 3, x + w - 14, y + 3);
+      g.drawLine(x + 15, y + h - 2, x + w - 14, y + h - 2);
+      g.drawLine(x + 3, y + 15, x + 3, y + h - 14);
+      g.drawLine(x + w - 2, y + 15, x + w - 2, y + h - 14);
+    }
+    
   }
 
   /**

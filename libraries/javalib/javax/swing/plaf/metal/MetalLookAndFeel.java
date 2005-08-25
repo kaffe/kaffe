@@ -789,6 +789,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "ProgressBar.background", new ColorUIResource(getControl()),
       "ScrollPane.border", new MetalBorders.ScrollPaneBorder(),
       "TabbedPane.background", new ColorUIResource(getControl()),
+      "InternalFrame.border", new MetalBorders.InternalFrameBorder(),
+      "InternalFrame.icon", MetalIconFactory.getInternalFrameDefaultMenuIcon(),
       "Label.background", new ColorUIResource(getControl()),
       "Label.font", getControlTextFont(),
       "Label.disabledForeground", new ColorUIResource(getControlDisabled()),
@@ -895,7 +897,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     super.initSystemColorDefaults(defaults);
     Object[] uiDefaults;
     uiDefaults = new Object[] {
-      "control", new ColorUIResource(getControl())
+      "control", new ColorUIResource(getControl()),
+      "desktop", new ColorUIResource(getDesktopColor())
     };
     defaults.putDefaults(uiDefaults);
   }

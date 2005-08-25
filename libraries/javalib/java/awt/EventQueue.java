@@ -76,7 +76,7 @@ public class EventQueue
   private EventDispatchThread dispatchThread = new EventDispatchThread(this);
   private boolean shutdown = false;
 
-  synchronized void setShutdown (boolean b) 
+  synchronized private void setShutdown (boolean b) 
   {
     shutdown = b;
   }
@@ -125,22 +125,19 @@ public class EventQueue
 
     while (next_in == next_out)
       {
-        if (isDispatchThread())
-          {
-            // We are not allowed to return null from this method, yet it
-            // is possible that we actually have run out of native events
-            // in the enclosing while() loop, and none of the native events
-            // happened to cause AWT events. We therefore ought to check
-            // the isShutdown() condition here, before risking a "native
-            // wait". If we check it before entering this function we may
-            // wait forever for events after the shutdown condition has
-            // arisen.
+        // We are not allowed to return null from this method, yet it
+        // is possible that we actually have run out of native events
+        // in the enclosing while() loop, and none of the native events
+        // happened to cause AWT events. We therefore ought to check
+        // the isShutdown() condition here, before risking a "native
+        // wait". If we check it before entering this function we may
+        // wait forever for events after the shutdown condition has
+        // arisen.
 
-            if (isShutdown())
-              throw new InterruptedException();
+        if (isShutdown())
+          throw new InterruptedException();
 
-	    wait();
-	  }
+        wait();
       }
 
     AWTEvent res = queue[next_out];
