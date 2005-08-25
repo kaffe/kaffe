@@ -1,3 +1,7 @@
+2005-08-25  Riccardo Mottola  <riccardo@kaffe.org>
+        
+        * kaffe/kaffe/kaffevm/thread.c : added sys includes for Darwin
+        
 2005-08-25  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
