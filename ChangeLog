@@ -1,3 +1,37 @@
+2005-08-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkSelection.java: Update for new FSF
+        address.
+
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * javax/swing/plaf/basic/BasicSplitPaneUI.java
+        (KEYBOARD_DIVIDER_MOVE_OFFSET): Initialize with 3.
+
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * javax/swing/ImageIcon.java (getIconHeight): Return -1 if image
+        is null.
+        (getIconWidth): Likewise.
+
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (window_get_frame_extents): If window is not decorated, guess 0,
+        0, 0, 0 inset values.
+
+	2005-08-21  Tom Tromey  <tromey@redhat.com>
+
+        * javax/swing/text/AbstractWriter.java (NEWLINE): Now 'final'.
+
+	2005-08-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * java/awt/Label.java (setText): Refine text inequality test.
+
 2005-08-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am.in:

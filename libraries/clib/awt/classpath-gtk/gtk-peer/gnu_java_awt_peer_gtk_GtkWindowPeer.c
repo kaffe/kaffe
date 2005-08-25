@@ -1412,10 +1412,20 @@ window_get_frame_extents (GtkWidget *window,
 
   /* Guess frame extents in case _NET_FRAME_EXTENTS is not
      supported. */
-  *top = 23;
-  *left = 6;
-  *bottom = 6;
-  *right = 6;
+  if (gtk_window_get_decorated (GTK_WINDOW (window)))
+    {
+      *top = 23;
+      *left = 6;
+      *bottom = 6;
+      *right = 6;
+    }
+  else
+    {
+      *top = 0;
+      *left = 0;
+      *bottom = 0;
+      *right = 0;
+    }
 
   /* Request that the window manager set window's
      _NET_FRAME_EXTENTS property. */

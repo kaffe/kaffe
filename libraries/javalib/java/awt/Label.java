@@ -215,7 +215,8 @@ getText()
 public synchronized void
 setText(String text)
 {
-  if (this.text != text)
+  if ((this.text == null && text != null)
+      || (this.text != null && ! this.text.equals(text)))
     {
       this.text = text;
 

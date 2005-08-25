@@ -302,11 +302,19 @@ public class ImageIcon
 
   public int getIconHeight()
   {
+    // Sun returns -1 if the image is not loaded.
+    if (image == null)
+      return -1;
+
     return image.getHeight(observer);
   }
 
   public int getIconWidth()
   {
+    // Sun returns -1 if the image is not loaded.
+    if (image == null)
+      return -1;
+
     return image.getWidth(observer);
   }
 

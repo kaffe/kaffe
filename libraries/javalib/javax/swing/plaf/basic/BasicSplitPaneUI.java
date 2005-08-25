@@ -870,7 +870,8 @@ public class BasicSplitPaneUI extends SplitPaneUI
   transient int lastDragLocation = -1;
 
   /** The distance the divider is moved when moved by keyboard actions. */
-  protected static int KEYBOARD_DIVIDER_MOVE_OFFSET;
+  // Sun defines this as 3
+  protected static int KEYBOARD_DIVIDER_MOVE_OFFSET = 3;
 
   /** The divider that divides this JSplitPane. */
   protected BasicSplitPaneDivider divider;
