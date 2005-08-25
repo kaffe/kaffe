@@ -45,9 +45,11 @@ SRCDIRS = com gnu java javax kaffe org
 installed_properties = \
 	logging.properties
 
+toolslib_DATA = \
+	tools.jar 
+
 jrelib_DATA = \
 	rt.jar \
-	tools.jar \
 	$(installed_properties)
 
 Klasses_jar_SRCS = \

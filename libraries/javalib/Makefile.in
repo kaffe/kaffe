@@ -103,9 +103,10 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(jrelibdir)"
+am__installdirs = "$(DESTDIR)$(jrelibdir)" "$(DESTDIR)$(toolslibdir)"
 jrelibDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(jrelib_DATA)
+toolslibDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(jrelib_DATA) $(toolslib_DATA)
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = . awt-implementations gmp-math
@@ -405,9 +406,11 @@ SRCDIRS = com gnu java javax kaffe org
 installed_properties = \
 	logging.properties
 
+toolslib_DATA = \
+	tools.jar 
+
 jrelib_DATA = \
 	rt.jar \
-	tools.jar \
 	$(installed_properties)
 
 Klasses_jar_SRCS = \
@@ -6433,6 +6436,23 @@ uninstall-jrelibDATA:
 	  echo " rm -f '$(DESTDIR)$(jrelibdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(jrelibdir)/$$f"; \
 	done
+install-toolslibDATA: $(toolslib_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(toolslibdir)" || $(mkdir_p) "$(DESTDIR)$(toolslibdir)"
+	@list='$(toolslib_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(toolslibDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(toolslibdir)/$$f'"; \
+	  $(toolslibDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(toolslibdir)/$$f"; \
+	done
+
+uninstall-toolslibDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(toolslib_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(toolslibdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(toolslibdir)/$$f"; \
+	done
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -6616,7 +6636,7 @@ check: check-recursive
 all-am: Makefile $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(jrelibdir)"; do \
+	for dir in "$(DESTDIR)$(jrelibdir)" "$(DESTDIR)$(toolslibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-recursive
@@ -6662,7 +6682,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-jrelibDATA
+install-data-am: install-jrelibDATA install-toolslibDATA
 
 install-exec-am:
 
@@ -6688,7 +6708,8 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-jrelibDATA
+uninstall-am: uninstall-info-am uninstall-jrelibDATA \
+	uninstall-toolslibDATA
 
 uninstall-info: uninstall-info-recursive
 
@@ -6699,12 +6720,13 @@ uninstall-info: uninstall-info-recursive
 	dvi dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-exec install-exec-am \
 	install-info install-info-am install-jrelibDATA install-man \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am uninstall-info-am \
-	uninstall-jrelibDATA
+	install-strip install-toolslibDATA installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive \
+	mostlyclean mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am uninstall-jrelibDATA \
+	uninstall-toolslibDATA
 
 
 dist-hook:

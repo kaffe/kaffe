@@ -1,5 +1,11 @@
 2005-08-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am.in:
+	(toolslib_DATA) Moved tools.jar over here to fix
+	ant and Maven warnings.
+
+2005-08-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am: (KAFFELIBRARYPATH) Fixed them again
 	to work without having GNU findutils.
 
