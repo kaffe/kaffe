@@ -1,3 +1,114 @@
+2005-08-25  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-08-23  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/peer/qt/QtAudioClip.java
+        * gnu/java/awt/peer/qt/QtComponentGraphics.java
+        * gnu/java/awt/peer/qt/QtComponentPeer.java
+        * gnu/java/awt/peer/qt/QtDialogPeer.java
+        * gnu/java/awt/peer/qt/QtFontPeer.java
+        * gnu/java/awt/peer/qt/QtFramePeer.java
+        * gnu/java/awt/peer/qt/QtGraphics.java
+        * gnu/java/awt/peer/qt/QtImage.java
+        * gnu/java/awt/peer/qt/QtImageGraphics.java
+        * gnu/java/awt/peer/qt/QtLabelPeer.java
+        * gnu/java/awt/peer/qt/QtMenuBarPeer.java
+        * gnu/java/awt/peer/qt/QtMenuComponentPeer.java
+        * gnu/java/awt/peer/qt/QtMenuPeer.java
+        * gnu/java/awt/peer/qt/QtPanelPeer.java
+        * gnu/java/awt/peer/qt/QtRepaintThread.java
+        * gnu/java/awt/peer/qt/QtToolkit.java
+        * gnu/java/awt/peer/qt/QtVolatileImage.java
+        * include/gnu_java_awt_peer_qt_QtComponentPeer.h
+        * include/gnu_java_awt_peer_qt_QtEmbeddedWindowPeer.h
+        * include/gnu_java_awt_peer_qt_QtGraphics.h
+        * include/gnu_java_awt_peer_qt_QtMenuPeer.h
+        * include/gnu_java_awt_peer_qt_QtVolatileImage.h
+        * native/jni/qt-peer/componentevent.cpp
+        * native/jni/qt-peer/componentevent.h
+        * native/jni/qt-peer/eventmethods.h
+        * native/jni/qt-peer/keybindings.cpp
+        * native/jni/qt-peer/keybindings.h
+        * native/jni/qt-peer/qtcomponentpeer.cpp
+        * native/jni/qt-peer/qtframepeer.cpp
+        * native/jni/qt-peer/qtgraphics.cpp
+        * native/jni/qt-peer/qtimage.h
+        * native/jni/qt-peer/qtlabelpeer.cpp
+        * native/jni/qt-peer/qtmenucomponentpeer.cpp
+        * native/jni/qt-peer/qtmenupeer.cpp
+        * native/jni/qt-peer/qtscrollpanepeer.cpp
+        * native/jni/qt-peer/qttextfieldpeer.cpp
+        * native/jni/qt-peer/qtvolatileimage.cpp
+        * native/jni/qt-peer/qtwindowpeer.cpp:
+        Reindented, minor fixes.
+        * gnu/java/awt/peer/qt/QtImageDirectGraphics.java
+        New file.
+
+	2005-08-22  Tom Tromey  <tromey@redhat.com>
+
+        * java/net/JarURLConnection.java (getJarEntry): Return null if no
+        entry specified.
+
+	2005-08-22  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Added in default border for Tree.
+        * javax/swing/tree/DefaultTreeCellRenderer.java:
+        Formatting entire class.
+        (getPreferredSize): Implemented.
+
+	2005-08-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/event/SwingPropertyChangeSupport.java: reformatted.
+
+	2005-08-22  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/ImageIcon.java: Add documentation.
+
+	2005-08-22  Tom Tromey  <tromey@redhat.com>
+
+        * javax/swing/text/LayoutQueue.java: New file.
+
+	2005-08-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/UIManager.java: fixed error message typo in static
+        initialization code.
+
+	2005-08-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/text/AbstractDocument.java: fixed minor API doc problems,
+        * javax/swing/text/Caret.java: likewise,
+        * javax/swing/text/CompositeView.java: likewise,
+        * javax/swing/text/DefaultCaret.java: likewise,
+        * javax/swing/text/DefaultEditorKit.java: likewise,
+        * javax/swing/text/DefaultStyledDocument.java: likewise,
+        * javax/swing/text/ElementIterator.java: likewise,
+        * javax/swing/text/GlyphView.java: likewise,
+        * javax/swing/text/IconView.java: likewise,
+        * javax/swing/text/View.java: likewise.
+
+	2005-08-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/SwingUtilities.java: fixed some minor API doc problems.
+
+	2005-08-22  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gtkpeer.h (cp_gtk_clipboard,
+        cp_gtk_stringTarget, cp_gtk_imageTarget, cp_gtk_filesTarget): New
+        extern variables.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkSelection.c: New file.
+        * native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Add
+        gnu_java_awt_peer_gtk_GtkSelection.c.
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c: Renames
+        clipboard to cp_gtk_clipboard, stringTarget to cp_gtk_stringTarget,
+        imageTarget to cp_gtk_imageTarget, filesTarget to cp_gtk_filesTarget,
+        cp_gtk_clipboard_owner_change_cb to clipboard_owner_change_cb,
+        cp_gtk_clipboard_get_func to clipboard_get_func,
+        cp_gtk_clipboard_clear_func to clipboard_clear_func, moved
+        GtkSelection native methods to new file.
+
 2005-08-25  Riccardo Mottola  <riccardo@kaffe.org>
         
         * kaffe/kaffe/kaffevm/thread.c : added sys includes for Darwin

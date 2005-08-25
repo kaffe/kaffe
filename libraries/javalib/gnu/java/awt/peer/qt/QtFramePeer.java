@@ -91,7 +91,6 @@ public class QtFramePeer extends QtWindowPeer implements FramePeer
   {
     int mbHeight = ( ((Frame)owner).getMenuBar() != null ) ? 
       menuBarHeight() : 0;
-
     return new Insets(mbHeight, 0, 0, 0);
   }
 

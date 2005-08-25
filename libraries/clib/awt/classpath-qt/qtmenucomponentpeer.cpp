@@ -50,7 +50,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtMenuComponentPeer_callInit
 {
   mainThread->postEventToMain( new AWTInitEvent( env, obj ) );
   // wait for the thing to be created.
-  while(getNativeObject(env, obj) == 0);
 }
 
 /*

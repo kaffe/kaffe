@@ -39,14 +39,18 @@ exception statement from your version. */
 #include "jcl.h"
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkClipboard.h"
-#include "gnu_java_awt_peer_gtk_GtkSelection.h"
 
 #define OBJECT_TARGET 1
 #define TEXT_TARGET   2
 #define IMAGE_TARGET  3
 #define URI_TARGET    4
 
-static GtkClipboard *clipboard;
+/* The clipboard and standard (string targets) shared with GtkSelection. */
+GtkClipboard *cp_gtk_clipboard;
+
+jstring cp_gtk_stringTarget;
+jstring cp_gtk_imageTarget;
+jstring cp_gtk_filesTarget;
 
 /* Simple id to keep track of the selection we are currently managing. */
 static int current_selection = 0;
@@ -63,14 +67,10 @@ static jmethodID provideTextID;
 static jmethodID provideImageID;
 static jmethodID provideURIsID;
 
-static jstring stringTarget;
-static jstring imageTarget;
-static jstring filesTarget;
-
 static void
-cp_gtk_clipboard_owner_change_cb (GtkClipboard *clipboard __attribute__((unused)),
-                                  GdkEvent *event __attribute__((unused)),
-                                  gpointer user_data __attribute__((unused)))
+clipboard_owner_change_cb (GtkClipboard *clipboard __attribute__((unused)),
+			   GdkEvent *event __attribute__((unused)),
+			   gpointer user_data __attribute__((unused)))
 {
   /* These are only interesting when we are not the owner. Otherwise
      we will have the set and clear functions doing the updating. */
@@ -97,18 +97,18 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
   if (setSystemContentsID == NULL)
     return JNI_FALSE;
 
-  stringTarget = (*env)->NewGlobalRef(env, string);
-  imageTarget = (*env)->NewGlobalRef(env, image);
-  filesTarget = (*env)->NewGlobalRef(env, files);
+  cp_gtk_stringTarget = (*env)->NewGlobalRef(env, string);
+  cp_gtk_imageTarget = (*env)->NewGlobalRef(env, image);
+  cp_gtk_filesTarget = (*env)->NewGlobalRef(env, files);
 
   gdk_threads_enter ();
-  clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  cp_gtk_clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
 
-  display = gtk_clipboard_get_display (clipboard);
+  display = gtk_clipboard_get_display (cp_gtk_clipboard);
   if (gdk_display_supports_selection_notification (display))
     {
-      g_signal_connect (clipboard, "owner-change",
-			G_CALLBACK (cp_gtk_clipboard_owner_change_cb), NULL);
+      g_signal_connect (cp_gtk_clipboard, "owner-change",
+			G_CALLBACK (clipboard_owner_change_cb), NULL);
       gdk_display_request_selection_notification (display,
 						  GDK_SELECTION_CLIPBOARD);
       can_cache = JNI_TRUE;
@@ -121,10 +121,10 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
 }
 
 static void
-cp_gtk_clipboard_get_func (GtkClipboard *clipboard __attribute__((unused)),
-			   GtkSelectionData *selection,
-			   guint info,
-			   gpointer user_data __attribute__((unused)))
+clipboard_get_func (GtkClipboard *clipboard __attribute__((unused)),
+		    GtkSelectionData *selection,
+		    guint info,
+		    gpointer user_data __attribute__((unused)))
 {
   JNIEnv *env = cp_gtk_gdk_env ();
   
@@ -249,8 +249,8 @@ cp_gtk_clipboard_get_func (GtkClipboard *clipboard __attribute__((unused)),
 }
 
 static void
-cp_gtk_clipboard_clear_func (GtkClipboard *clipboard __attribute__((unused)),
-			     gpointer user_data)
+clipboard_clear_func (GtkClipboard *clipboard __attribute__((unused)),
+		      gpointer user_data)
 {
   if (owner && (int) user_data == current_selection)
     {
@@ -327,9 +327,9 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
       /* Set the targets plus callback functions and ask for the clipboard
 	 to be stored when the application exists. */
       current_selection++;
-      if (gtk_clipboard_set_with_data (clipboard, targets, n,
-				       cp_gtk_clipboard_get_func,
-				       cp_gtk_clipboard_clear_func,
+      if (gtk_clipboard_set_with_data (cp_gtk_clipboard, targets, n,
+				       clipboard_get_func,
+				       clipboard_clear_func,
 				       (gpointer) current_selection))
 	{
 	  owner = 1;
@@ -365,7 +365,7 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
 	      if (provideURIsID == NULL)
 		return;
 	    }
-	  gtk_clipboard_set_can_store (clipboard, NULL, 0);
+	  gtk_clipboard_set_can_store (cp_gtk_clipboard, NULL, 0);
 	}
       else
 	{
@@ -380,395 +380,10 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
     }
   else if (owner)
     {
-      gtk_clipboard_clear (clipboard);
+      gtk_clipboard_clear (cp_gtk_clipboard);
       owner = 0;
     }
 
   gtk_target_list_unref (target_list);
   gdk_threads_leave ();
-}
-
-
-/* GtkSelection native methods. Put here for convenience since they
-   need access to the current clipboard. */
-
-static jmethodID mimeTypesAvailableID;
-
-/* Note this is actually just a GtkClipboardReceivedFunc, not a real
-   GtkClipboardTargetsReceivedFunc, see requestMimeTypes. */
-static void
-cp_gtk_clipboard_targets_received (GtkClipboard *clipboard
-				   __attribute__((unused)),
-				   GtkSelectionData *target_data,
-				   gpointer selection)
-{
-  GdkAtom *targets = NULL;
-  gint targets_len = 0;
-  gchar **target_strings = NULL;
-  jobjectArray strings = NULL;
-  int strings_len = 0;
-  gboolean include_text = FALSE;
-  gboolean include_image = FALSE;
-  gboolean include_uris = FALSE;
-  jobject selection_obj = (jobject) selection;
-  JNIEnv *env = cp_gtk_gdk_env ();
-
-  if (target_data != NULL && target_data->length > 0)
-    {
-      include_text = gtk_selection_data_targets_include_text (target_data);
-      include_image = gtk_selection_data_targets_include_image (target_data,
-								TRUE);
-      if (gtk_selection_data_get_targets (target_data, &targets, &targets_len))
-	{
-	  int i;
-	  GdkAtom uri_list_atom = gdk_atom_intern ("text/uri-list", FALSE);
-	  target_strings = g_new (gchar*, targets_len);
-	  if (target_strings != NULL)
-	    for (i = 0; i < targets_len; i++)
-	      {
-		gchar *name =  gdk_atom_name (targets[i]);
-		if (strchr (name, '/') != NULL)
-		  {
-		    target_strings[i] = name;
-		    strings_len++;
-		    if (! include_uris && targets[i] == uri_list_atom)
-		      include_uris = TRUE;
-		  }
-		else
-		  target_strings[i] = NULL;
-	      }
-	}
-
-      if (target_strings != NULL)
-	{
-	  int i = 0, j = 0;
-	  jclass stringClass;
-	  
-	  if (include_text)
-	    strings_len++;
-	  if (include_image)
-	    strings_len++;
-	  if (include_uris)
-	    strings_len++;
-	  
-	  stringClass = (*env)->FindClass (env, "java/lang/String");
-	  strings = (*env)->NewObjectArray (env, strings_len, stringClass,
-					    NULL);
-	  if (strings != NULL)
-	    {
-	      if (include_text)
-		(*env)->SetObjectArrayElement (env, strings, i++,
-					       stringTarget);
-	      if (include_image)
-		(*env)->SetObjectArrayElement (env, strings, i++,
-					       imageTarget);
-	      if (include_uris)
-		(*env)->SetObjectArrayElement (env, strings, i++,
-					       filesTarget);
-	      
-	      while(i < strings_len)
-		{
-		  if (target_strings[j] == NULL)
-		    j++;
-		  else
-		    {
-		      jstring string;
-		      string = (*env)->NewStringUTF (env,
-						     target_strings[j++]);
-		      if (string == NULL)
-			break;
-		      (*env)->SetObjectArrayElement (env, strings, i++,
-						     string);
-		    }
-		}
-	    }
-
-	  for (i = 0; i < targets_len; i++)
-	    g_free (target_strings[i]);
-	  g_free (target_strings);
-	}
-    }
-
-  (*env)->CallVoidMethod (env, selection_obj,
-			  mimeTypesAvailableID,
-			  strings);
-  (*env)->DeleteGlobalRef (env, selection_obj);
-}
-
-JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkSelection_requestMimeTypes
-(JNIEnv *env, jobject selection)
-{
-  jobject selection_obj;
-  selection_obj = (*env)->NewGlobalRef(env, selection);
-  if (selection_obj == NULL)
-    return;
-
-  if (mimeTypesAvailableID == NULL)
-    {
-      jclass gtk_selection_class;
-      gtk_selection_class = (*env)->GetObjectClass (env, selection_obj);
-      mimeTypesAvailableID = (*env)->GetMethodID (env, gtk_selection_class,
-						"mimeTypesAvailable",
-						"([Ljava/lang/String;)V");
-      if (mimeTypesAvailableID == NULL)
-	return;
-    }
-
-  /* We would have liked to call gtk_clipboard_request_targets ()
-     since that is more general. But the result of that, an array of
-     GdkAtoms, cannot be used with the
-     gtk_selection_data_targets_include_<x> functions (despite what
-     the name suggests). */
-  gdk_threads_enter ();
-  gtk_clipboard_request_contents (clipboard,
-				  gdk_atom_intern ("TARGETS", FALSE),
-				  cp_gtk_clipboard_targets_received,
-				  (gpointer) selection_obj);
-  gdk_threads_leave ();
-}
-
-
-static jmethodID textAvailableID;
-
-static void
-cp_gtk_clipboard_text_received (GtkClipboard *clipboard
-				__attribute__((unused)),
-				const gchar *text,
-				gpointer selection)
-{
-  jstring string;
-  jobject selection_obj = (jobject) selection;
-
-  JNIEnv *env = cp_gtk_gdk_env ();
-  if (text != NULL)
-    string = (*env)->NewStringUTF (env, text);
-  else
-    string = NULL;
-
-  (*env)->CallVoidMethod (env, selection_obj,
-                          textAvailableID,
-                          string);
-  (*env)->DeleteGlobalRef (env, selection_obj);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkSelection_requestText
-(JNIEnv *env, jobject selection)
-{
-  jobject selection_obj;
-  selection_obj = (*env)->NewGlobalRef(env, selection);
-  if (selection_obj == NULL)
-    return;
-
-  if (textAvailableID == NULL)
-    {
-      jclass gtk_selection_class;
-      gtk_selection_class = (*env)->GetObjectClass (env, selection_obj);
-      textAvailableID = (*env)->GetMethodID (env, gtk_selection_class,
-					     "textAvailable",
-					     "(Ljava/lang/String;)V");
-      if (textAvailableID == NULL)
-        return;
-    }
-
-  gdk_threads_enter ();
-  gtk_clipboard_request_text (clipboard,
-			      cp_gtk_clipboard_text_received,
-			      (gpointer) selection_obj);
-  gdk_threads_leave ();
-}
-
-static jmethodID imageAvailableID;
-
-static void
-cp_gtk_clipboard_image_received (GtkClipboard *clipboard
-				 __attribute__((unused)),
-				 GdkPixbuf *pixbuf,
-				 gpointer selection)
-{
-  jobject pointer = NULL;
-  jobject selection_obj = (jobject) selection;
-  JNIEnv *env = cp_gtk_gdk_env ();
-
-  if (pixbuf != NULL)
-    {
-      g_object_ref (pixbuf);
-      pointer = JCL_NewRawDataObject (env, (void *) pixbuf);
-    }
-
-  (*env)->CallVoidMethod (env, selection_obj,
-			  imageAvailableID,
-                          pointer);
-  (*env)->DeleteGlobalRef (env, selection_obj);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkSelection_requestImage (JNIEnv *env, jobject obj)
-{
-  jobject selection_obj;
-  selection_obj = (*env)->NewGlobalRef(env, obj);
-  if (selection_obj == NULL)
-    return;
-
-  if (imageAvailableID == NULL)
-    {
-      jclass gtk_selection_class;
-      gtk_selection_class = (*env)->GetObjectClass (env, selection_obj);
-      imageAvailableID = (*env)->GetMethodID (env, gtk_selection_class,
-					     "imageAvailable",
-					     "(Lgnu/classpath/Pointer;)V");
-      if (imageAvailableID == NULL)
-        return;
-    }
-
-  gdk_threads_enter ();
-  gtk_clipboard_request_image (clipboard,
-			       cp_gtk_clipboard_image_received,
-			       (gpointer) selection_obj);
-  gdk_threads_leave ();
-}
-
-static jmethodID urisAvailableID;
-
-static void
-cp_gtk_clipboard_uris_received (GtkClipboard *clipboard
-				__attribute__((unused)),
-				GtkSelectionData *uri_data,
-				gpointer selection)
-{
-  gchar **uris = NULL;
-  jobjectArray strings = NULL;
-  jobject selection_obj = (jobject) selection;
-  JNIEnv *env = cp_gtk_gdk_env ();
-
-  if (uri_data != NULL)
-    uris = gtk_selection_data_get_uris (uri_data);
-  
-  if (uris != NULL)
-    {
-      int len, i;
-      gchar **count = uris;
-      jclass stringClass = (*env)->FindClass (env, "java/lang/String");
-
-      len = 0;
-      while (count[len])
-	len++;
-
-      strings = (*env)->NewObjectArray (env, len, stringClass, NULL);
-      if (strings != NULL)
-	{
-	  for (i = 0; i < len; i++)
-	    {
-	      jstring string = (*env)->NewStringUTF (env, uris[i]);
-	      if (string == NULL)
-		break;
-	      (*env)->SetObjectArrayElement (env, strings, i, string);
-	    }
-	}
-      g_strfreev (uris);
-    }
-
-  (*env)->CallVoidMethod (env, selection_obj,
-                          urisAvailableID,
-                          strings);
-  (*env)->DeleteGlobalRef (env, selection_obj);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkSelection_requestURIs (JNIEnv *env, jobject obj)
-{
-  GdkAtom uri_atom;
-  jobject selection_obj;
-  selection_obj = (*env)->NewGlobalRef(env, obj);
-  if (selection_obj == NULL)
-    return;
-
-  if (urisAvailableID == NULL)
-    {
-      jclass gtk_selection_class;
-      gtk_selection_class = (*env)->GetObjectClass (env, selection_obj);
-      urisAvailableID = (*env)->GetMethodID (env, gtk_selection_class,
-					     "urisAvailable",
-                                             "([Ljava/lang/String;)V");
-      if (urisAvailableID == NULL)
-        return;
-    }
-
-  /* There is no real request_uris so we have to make one ourselves. */
-  gdk_threads_enter ();
-  uri_atom = gdk_atom_intern ("text/uri-list", FALSE);
-  gtk_clipboard_request_contents (clipboard,
-				  uri_atom,
-				  cp_gtk_clipboard_uris_received,
-				  (gpointer) selection_obj);
-  gdk_threads_leave ();
-}
-
-static jmethodID bytesAvailableID;
-
-static void
-cp_gtk_clipboard_bytes_received (GtkClipboard *clipboard
-				 __attribute__((unused)),
-				 GtkSelectionData *selection_data,
-				 gpointer selection)
-{
-  jbyteArray bytes = NULL;
-  jobject selection_obj = (jobject) selection;
-  JNIEnv *env = cp_gtk_gdk_env ();
-
-   if (selection_data != NULL && selection_data->length > 0)
-    {
-      bytes = (*env)->NewByteArray (env, selection_data->length);
-      if (bytes != NULL)
-	(*env)->SetByteArrayRegion(env, bytes, 0, selection_data->length,
-				   (jbyte *) selection_data->data);
-    }
-
-  (*env)->CallVoidMethod (env, selection_obj,
-                          bytesAvailableID,
-                          bytes);
-  (*env)->DeleteGlobalRef (env, selection_obj);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkSelection_requestBytes (JNIEnv *env,
-						      jobject obj,
-						      jstring target_string)
-{
-  int len;
-  const gchar *target_text;
-  GdkAtom target_atom;
-  jobject selection_obj;
-  selection_obj = (*env)->NewGlobalRef(env, obj);
-  if (selection_obj == NULL)
-    return;
-
-  if (bytesAvailableID == NULL)
-    {
-      jclass gtk_selection_class;
-      gtk_selection_class = (*env)->GetObjectClass (env, selection_obj);
-      bytesAvailableID = (*env)->GetMethodID (env, gtk_selection_class,
-					      "bytesAvailable",
-					      "([B)V");
-      if (bytesAvailableID == NULL)
-        return;
-    }
-
-  len = (*env)->GetStringUTFLength (env, target_string);
-  if (len == -1)
-    return;
-  target_text = (*env)->GetStringUTFChars (env, target_string, NULL);
-  if (target_text == NULL)
-    return;
-
-  gdk_threads_enter ();
-  target_atom = gdk_atom_intern (target_text, FALSE);
-  gtk_clipboard_request_contents (clipboard,
-                                  target_atom,
-                                  cp_gtk_clipboard_bytes_received,
-                                  (gpointer) selection_obj);
-  gdk_threads_leave ();
-
-  (*env)->ReleaseStringUTFChars (env, target_string, target_text);
 }

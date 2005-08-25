@@ -40,9 +40,32 @@ exception statement from your version. */
 #include <qstyle.h>
 #include <gnu_java_awt_peer_qt_QtWindowPeer.h>
 #include "qtcomponent.h"
+#include "keybindings.h"
 #include "qtstrings.h"
 #include "containers.h"
 #include "mainthreadinterface.h"
+
+/*
+ * Our QMainWindow subclass
+ */
+class MyWindow : public QWidget
+{
+public:
+  MyWindow(JNIEnv *env, jobject obj) : QWidget(0, (Qt::Window | Qt::FramelessWindowHint))
+  {
+    setup(env, obj);
+  }
+
+  ~MyWindow()
+  {
+    destroy();
+  }
+
+#define I_KNOW_WHAT_IM_DOING
+#define PARENT QWidget
+#include "eventmethods.h"
+};
+
 
 class RaiseLower : public AWTEvent {
   
@@ -92,7 +115,7 @@ class FrameTitleEvent : public AWTEvent {
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtWindowPeer_init
 (JNIEnv *env, jobject obj)
 {
-  QWidget *window = new QWidget(0, (Qt::Window | Qt::FramelessWindowHint) );
+  QWidget *window = new MyWindow(env, obj);
   assert( window );
   //  Qt::WStyle_StaysOnTop
   setNativeObject( env, obj, window );

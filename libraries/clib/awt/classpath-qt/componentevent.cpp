@@ -35,6 +35,9 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+#include <QWidget>
+#include <QPoint>
+
 #include "componentevent.h"
   
 AWTInitEvent::AWTInitEvent(JNIEnv *env, jobject obj) : AWTEvent()
@@ -48,12 +51,21 @@ void AWTInitEvent::runEvent()
   JNIEnv *env;
   vm->GetEnv((void **)&env, JNI_VERSION_1_1);
   jclass targetCls = env->GetObjectClass( target );
-  jmethodID initID = env->GetMethodID( targetCls,
+  // call init()
+  jmethodID mID = env->GetMethodID( targetCls,
 				       "init",
 				       "()V" );
+  env->CallVoidMethod( target, mID );
+
+  // call notify()
+  mID = env->GetMethodID( targetCls,
+			  "notify",
+			  "()V" );
+  assert(mID != NULL);
   env->MonitorEnter( target );
-  env->CallVoidMethod( target, initID );
+  env->CallVoidMethod( target, mID );
   env->MonitorExit( target );
+
   env->DeleteGlobalRef( target );
 }
 
@@ -132,4 +144,79 @@ void AWTBackgroundEvent::runEvent()
   widget->repaint();
   delete color;
 }
+
+AWTGetOriginEvent::AWTGetOriginEvent(QWidget *w, JNIEnv *env, jobject obj) : AWTEvent()
+{
+  widget = w;
+  env->GetJavaVM( &vm );
+  target = env->NewGlobalRef( obj );
+}
+
+void AWTGetOriginEvent::runEvent()
+{
+  JNIEnv *env;
+  vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+  jclass targetCls = env->GetObjectClass( target );
+
+  QPoint *p = new QPoint( widget->mapToGlobal( QPoint(0, 0) ) );
+  // call init()
+  jmethodID mID = env->GetMethodID( targetCls,
+				       "setLocation",
+				       "(II)V" );
+  env->CallVoidMethod( target, mID, p->x(), p->y() );
+  delete p;
+
+  // call notify()
+  mID = env->GetMethodID( targetCls,
+			  "notify",
+			  "()V" );
+  assert(mID != NULL);
+  env->MonitorEnter( target );
+  env->CallVoidMethod( target, mID );
+  env->MonitorExit( target );
+
+  env->DeleteGlobalRef( target );
+}
+
+GetSizeEvent::GetSizeEvent(QWidget *w, JNIEnv *env, jobject obj, bool p) : AWTEvent()
+{
+  widget = w;
+  env->GetJavaVM( &vm );
+  target = env->NewGlobalRef( obj );
+  pref = p;
+}
+
+void GetSizeEvent::runEvent()
+{
+  JNIEnv *env;
+  vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+  jclass targetCls = env->GetObjectClass( target );
+
+  QPoint *p = new QPoint( widget->mapToGlobal( QPoint(0, 0) ) );
+  QSize s;
+  if( pref )
+    s = widget->sizeHint();
+  else
+    s = widget->minimumSizeHint();
+
+  // call init()
+  jmethodID mID = env->GetMethodID( targetCls,
+				       "setSize",
+				       "(II)V" );
+  env->CallVoidMethod( target, mID, s.width(), s.height() );
+
+  // call notify()
+  mID = env->GetMethodID( targetCls,
+			  "notify",
+			  "()V" );
+  assert(mID != NULL);
+  env->MonitorEnter( target );
+  env->CallVoidMethod( target, mID );
+  env->MonitorExit( target );
+
+  env->DeleteGlobalRef( target );
+}
+
+
+
 

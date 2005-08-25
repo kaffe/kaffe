@@ -113,10 +113,29 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_initImage
 (JNIEnv *env, jobject obj, jobject image)
 {
   QImage *im = getQtImage( env, image );
+  assert( im );
   QPainter *painter = new GraphicsPainter( im );
   assert( painter );
   setNativePtr(env, obj, painter);
   painter->setRenderHint(QPainter::TextAntialiasing);
+  painter->setRenderHint(QPainter::Antialiasing);
+  painter->setRenderHint(QPainter::SmoothPixmapTransform);
+}
+
+/*
+ * Start of JNI methods 
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtGraphics_initVolatileImage
+(JNIEnv *env, jobject obj, jobject image)
+{
+  QPixmap *im = getQtVolatileImage( env, image );
+  assert( im );
+  QPainter *painter = new GraphicsPainter( im );
+  assert( painter );
+  setNativePtr(env, obj, painter);
+  painter->setRenderHint(QPainter::TextAntialiasing);
+  painter->setRenderHint(QPainter::Antialiasing);
+  painter->setRenderHint(QPainter::SmoothPixmapTransform);
 }
 
 /**

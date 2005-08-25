@@ -52,7 +52,17 @@ public class QtMenuComponentPeer extends NativeWrapper
     this.toolkit = kit;
     this.owner = owner;
     nativeObject = 0;
-    callInit();
+    synchronized(this) 
+      {
+	callInit(); // Calls the init method FROM THE MAIN THREAD.
+	try
+	  {	
+	    wait(); // Wait for the thing to be created.
+	  }
+	catch(InterruptedException e)
+	  {
+	  }
+      }
     setup();
   }
 

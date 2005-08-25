@@ -122,7 +122,7 @@ public interface Caret
    *
    * @param dot the new position to be set
    *
-   * @see {@link #moveDot(int)}
+   * @see #moveDot(int)
    */
   void setDot(int dot);
   
@@ -132,7 +132,7 @@ public interface Caret
    *
    * @param dot the location where to move the dot
    *
-   * @see {@link #setDot(int)}
+   * @see #setDot(int)
    */
   void moveDot(int dot);
   
@@ -151,7 +151,7 @@ public interface Caret
    *
    * @return the current visual position of this <code>Caret</code>
    *
-   * @see {@link #setMagicCaretPosition}
+   * @see #setMagicCaretPosition
    */
   Point getMagicCaretPosition();
 

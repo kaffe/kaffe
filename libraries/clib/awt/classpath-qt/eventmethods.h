@@ -176,11 +176,12 @@ protected:
   {
     PARENT::mouseReleaseEvent(e);
     int modifiers, x, y, clickCount;
-    clickCount = 0;
-    modifiers = getMouseModifiers(e);
+    modifiers = 0;
+
+    modifiers |= getReleaseModifiers( e );
     x = e->x();
     y = e->y();
-    callMouseMethod("mouseReleaseEvent", modifiers, x, y, clickCount);
+    callMouseMethod("mouseReleaseEvent", modifiers, x, y, 0);
   }
 
   void moveEvent( QMoveEvent *e )
@@ -217,15 +218,18 @@ protected:
       {
 	// Create a QPainter
 	GraphicsPainter painter( this );
-	
+	int x, y, w, h;
+	e->rect().getRect ( &x, &y, &w, &h );
+
 	// Get the environment.
 	JNIEnv *env;
 	vm->GetEnv((void **)&env, JNI_VERSION_1_1);
 
 	// create a QtGraphics wrapper for the QPainter
 	jclass cls = env->FindClass( "gnu/java/awt/peer/qt/QtComponentGraphics" );
-	jmethodID mid = env->GetMethodID(cls, "<init>", "(JLgnu/java/awt/peer/qt/QtComponentPeer;)V");
-	jobject graphics = env->NewObject(cls, mid, (jlong)&painter, target);
+	jmethodID mid = env->GetMethodID(cls, "<init>", "(JLgnu/java/awt/peer/qt/QtComponentPeer;IIII)V");
+	jobject graphics = env->NewObject(cls, mid, (jlong)&painter, target,
+					  (jint)x, (jint)y, (jint)w, (jint)h);
 
 	// call QtComponentPeer.paintEvent()
 	jmethodID paintEventID = env->GetMethodID( componentCls,

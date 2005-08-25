@@ -128,7 +128,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtScrollPanePeer_childResized
 {  
   QScrollArea *view = (QScrollArea *) getNativeObject( env, obj );
   assert( view );
-  printf("XXX: child size: %i %i\n", w, h);
 
   QWidget *child = view->viewport();
   assert( child );

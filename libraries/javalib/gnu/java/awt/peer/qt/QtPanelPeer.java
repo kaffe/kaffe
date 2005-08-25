@@ -39,9 +39,8 @@ package gnu.java.awt.peer.qt;
 
 import java.awt.Component;
 import java.awt.peer.PanelPeer;
-import java.awt.peer.LightweightPeer;
 
-public class QtPanelPeer extends QtContainerPeer implements PanelPeer, LightweightPeer
+public class QtPanelPeer extends QtContainerPeer implements PanelPeer
 {
   public QtPanelPeer( QtToolkit kit, Component owner )
   {

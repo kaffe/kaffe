@@ -54,6 +54,7 @@ import java.awt.image.VolatileImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.WeakHashMap;
 import java.util.Vector;
 
 /**
@@ -99,9 +100,25 @@ public class QtVolatileImage extends VolatileImage
   private native void createImage();
 
   /**
+   * HashMap of Graphics objects painting on this Image.
+   */
+  WeakHashMap painters;
+
+  /**
+   * Flags if this image is to be destroyed.
+   */
+  boolean killFlag;
+
+  /**
    * Frees the above.
    */
   private native void freeImage();
+
+  /**
+   * Blit a QImage 
+   */
+  public native void blit(QtImage i);
+  public native void blit(QtImage i, int x, int y, int w, int h);
 
   /**
    * Sets the image to scaled copy of src image. hints are rendering hints.
@@ -131,15 +148,15 @@ public class QtVolatileImage extends VolatileImage
   /**
    * Draws the image scaled flipped and optionally composited.
    */
-  private native void drawPixelsScaledFlipped (QtGraphics gc, 
-					       int bg_red, int bg_green, 
-					       int bg_blue, 
-					       boolean flipX, boolean flipY,
-					       int srcX, int srcY,
-					       int srcWidth, int srcHeight,
-					       int dstX, int dstY,
-					       int dstWidth, int dstHeight,
-					       boolean composite);
+  native void drawPixelsScaledFlipped (QtGraphics gc, 
+				       int bg_red, int bg_green, 
+				       int bg_blue, 
+				       boolean flipX, boolean flipY,
+				       int srcX, int srcY,
+				       int srcWidth, int srcHeight,
+				       int dstX, int dstY,
+				       int dstWidth, int dstHeight,
+				       boolean composite);
 
   /**
    * Constructs an empty QtVolatileImage.
@@ -164,6 +181,21 @@ public class QtVolatileImage extends VolatileImage
     props = new Hashtable();
 
     createScaledImage(src, hints);
+  }
+
+
+  public void finalize()
+  {
+    dispose();
+  }
+
+  public void dispose()
+  {
+    if( painters == null || painters.isEmpty() )
+      freeImage();
+    else
+      killFlag = true; // can't destroy image yet. 
+    // Do so when all painters are gone.
   }
 
   // java.awt.Image methods ////////////////////////////////////////////////
@@ -193,12 +225,28 @@ public class QtVolatileImage extends VolatileImage
 				 0, width);
   }
 
+  void putPainter(QtImageGraphics g)
+  {
+    if( painters == null )
+      painters = new WeakHashMap();
+    painters.put( g, "dummy" );
+  }
+
+  void removePainter(QtImageGraphics g)
+  {
+    painters.remove( g );
+    if( killFlag && painters.isEmpty() )
+      freeImage();
+  }
+
   /**
    * Creates a Graphics context for this image.
    */
   public Graphics getGraphics ()
   {
-    return new QtImageGraphics( this );
+    QtImageGraphics g = new QtImageGraphics( this );
+    putPainter( g );
+    return g;
   }
   
   /**
@@ -220,11 +268,6 @@ public class QtVolatileImage extends VolatileImage
   public void flush ()
   {
     // FIXME ?
-  }
-
-  public void finalize()
-  {
-    freeImage();
   }
 
   /**
@@ -354,7 +397,9 @@ public class QtVolatileImage extends VolatileImage
 
   public Graphics2D createGraphics()
   {
-    return new QtImageGraphics(this);
+    QtImageGraphics g = new QtImageGraphics(this);
+    putPainter( g );
+    return g;
   }
 
   public ImageCapabilities getCapabilities()

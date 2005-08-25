@@ -158,8 +158,8 @@ public abstract class QtGraphics extends Graphics2D
     setTransform( current );
   }
 
-  // NOTE: Image here must be a QImage or wrapper!
-  protected native void initImage(Image image);  
+  protected native void initImage(QtImage image);  
+  protected native void initVolatileImage(QtVolatileImage image);  
 
   // Creates a new native QPainter object on the same context.
   private native void cloneNativeContext( QtGraphics parent );
@@ -208,7 +208,9 @@ public abstract class QtGraphics extends Graphics2D
 
   public void setColor(Color c)
   {
-    this.color = c;
+    if( c == null )
+      c = Color.white;
+    this.color = c; 
     int alpha = (int)(c.getAlpha() * currentAlpha);
     setColor(c.getRed(), c.getGreen(), c.getBlue(), alpha);
   }
@@ -252,6 +254,8 @@ public abstract class QtGraphics extends Graphics2D
 
   public void setFont(Font font)
   {
+    if( font == null )
+      return;
     this.font = font;
     if(font.getPeer() != null && font.getPeer() instanceof QtFontPeer)
       setFontNative( (QtFontPeer)font.getPeer() );

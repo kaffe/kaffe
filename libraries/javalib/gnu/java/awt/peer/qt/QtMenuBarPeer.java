@@ -62,7 +62,6 @@ public class QtMenuBarPeer extends QtMenuComponentPeer implements MenuBarPeer
   void addMenus()
   {
     MenuBar o = (MenuBar)owner;
-    System.out.println("addMenus:"+o.getMenuCount());
     int help = (o.getHelpMenu() != null) ? 1 : 0;
     for (int i = 0; i < o.getMenuCount() - help; i++)
       addMenu( o.getMenu(i) );

@@ -156,6 +156,14 @@ JNIEnv *cp_gtk_gdk_env(void);
 extern double cp_gtk_dpi_conversion_factor;
 extern GtkWindowGroup *cp_gtk_global_window_group;
 
+/* Shared global clipboard for GtkClipboard and GtkSelection. */
+extern GtkClipboard *cp_gtk_clipboard;
+
+/* Standard target (strings) for GtkClipboard and GtkSelection. */
+extern jstring cp_gtk_stringTarget;
+extern jstring cp_gtk_imageTarget;
+extern jstring cp_gtk_filesTarget;
+
 /* Union used for type punning. */
 union widget_union
 {

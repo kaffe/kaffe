@@ -115,7 +115,7 @@ public class UIManager implements Serializable
     catch (Exception ex)
       {
         System.err.println("cannot initialize Look and Feel: " + defaultlaf);
-        System.err.println("errot: " + ex.getMessage());
+        System.err.println("error: " + ex.getMessage());
         System.err.println("falling back to Metal Look and Feel");
       }
   }

@@ -36,6 +36,7 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 #include <assert.h>
+#include <QPixmap>
 #include <QImage>
 #include <QColor>
 #include <QMatrix>
@@ -53,6 +54,13 @@ exception statement from your version. */
 #define SCALE_REPLICATE    8 
 #define SCALE_AREA_AVERAGING  16
 
+QPixmap *getQtVolatileImage( JNIEnv *env, jobject obj )
+{
+  jclass cls = env->GetObjectClass( obj );
+  jfieldID field = env->GetFieldID( cls, "nativeObject", "J" );
+  return (QPixmap *)env->GetLongField( obj, field );
+}
+
 static void setNativePtr( JNIEnv *env, jobject obj, void *value )
 {
   jlong longValue = (jlong) value; 
@@ -67,9 +75,9 @@ static void setNativePtr( JNIEnv *env, jobject obj, void *value )
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_clear
 (JNIEnv *env, jobject obj)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   assert( image );
-  image->fill(0);
+  image->fill();
 }
 
 /*
@@ -78,7 +86,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_clear
 JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_getPixels
 (JNIEnv *env, jobject obj)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   jintArray result_array;
   jint *result_array_ptr, *dst;
   int x, y;
@@ -86,6 +94,7 @@ JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_getPixels
   QRgb current;
 
   assert( image );
+  QImage im = image->toImage();
 
   result_array = env->NewIntArray (image->width() * image->height());
   dst = result_array_ptr = 
@@ -95,7 +104,7 @@ JNIEXPORT jintArray JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_getPixels
   for ( y = 0; y < image->height(); y++)
     for ( x = 0; x < image->width(); x++)
       {
-	current = image->pixel(x, y);
+	current = im.pixel(x, y);
 	pixel = 0;
 	pixel = (qAlpha(current) & 0xFF) << 24 | 
 	  (qRed(current) & 0xFF) << 16 |
@@ -128,8 +137,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_createImage
   assert (field != 0);
   height = env->GetIntField(obj, field);
   
-  QImage *image = new QImage ( width, height, 
-			       QImage::Format_ARGB32_Premultiplied );
+  QPixmap *image = new QPixmap ( width, height );
   setNativePtr(env, obj, image);
 }
 
@@ -139,10 +147,48 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_createImage
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_freeImage
 (JNIEnv *env, jobject obj)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   if ( image )
     delete image;
   setNativePtr(env, obj, NULL);
+}
+
+/*
+ * Blits a QImage
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_blit__Lgnu_java_awt_peer_qt_QtImage_2
+(JNIEnv *env, jobject obj, jobject i2)
+{
+  QPixmap *image = getQtVolatileImage(env, obj);
+  assert( image );
+
+  QImage *blit = getQtImage(env, i2);
+  assert( blit );
+
+  QPainter *p = new QPainter( image );
+  assert( p );
+  p->drawImage( 0, 0, *blit );
+
+  delete p;
+}
+
+/*
+ * Blits a QImage
+ */
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_blit__Lgnu_java_awt_peer_qt_QtImage_2IIII
+(JNIEnv *env, jobject obj, jobject i2, jint x, jint y, jint w, jint h)
+{
+  QPixmap *image = getQtVolatileImage(env, obj);
+  assert( image );
+
+  QImage *blit = getQtImage(env, i2);
+  assert( blit );
+
+  QPainter *p = new QPainter( image );
+  assert( p );
+  p->drawImage( x, y, *blit, x, y, w, h);
+
+  delete p;
 }
 
 /*
@@ -164,18 +210,19 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_createScaledIma
   assert (field != 0);
   h = env->GetIntField(obj, field);
 
-  QImage *image = getQtImage(env, src);
-  assert( image );
+  QPixmap *ip = getQtVolatileImage(env, src);
+  assert( ip );
+  QImage image = ip->toImage();
   QImage imageScaled;
 
   if (hints == SCALE_SMOOTH || hints == SCALE_AREA_AVERAGING)
-    imageScaled = image->scaled(w, h, 
-				Qt::IgnoreAspectRatio, 
-				Qt::SmoothTransformation);
+    imageScaled = image.scaled(w, h, 
+			       Qt::IgnoreAspectRatio, 
+			       Qt::SmoothTransformation);
   else
-    imageScaled = image->scaled(w, h, 
-				Qt::IgnoreAspectRatio, 
-				Qt::FastTransformation);
+    imageScaled = image.scaled(w, h, 
+			       Qt::IgnoreAspectRatio, 
+			       Qt::FastTransformation);
   QImage *scaledPtr = new QImage( imageScaled );
   
   // create new QtImage object
@@ -189,7 +236,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixels
 (JNIEnv *env, jobject obj, jobject graphics, jint bg_red, jint bg_green, 
  jint bg_blue, jint x, jint y, jboolean composite)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   assert( image );
   QPainter *painter = getPainter( env, graphics );
   assert( painter );
@@ -197,7 +244,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixels
   if(composite == JNI_TRUE)
     painter->fillRect ( x, y, image->width(), image->height(), 
 			QColor(bg_red, bg_green, bg_blue ) );
-  painter->drawImage ( QPoint(x, y), *image );
+  painter->drawPixmap ( QPoint(x, y), *image );
 }
 
 /*
@@ -208,7 +255,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
  jint bg_red, jint bg_green, jint bg_blue, 
  jint x, jint y, jint w, jint h, jboolean composite)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   assert( image );
   QPainter *painter = getPainter( env, graphics );
   assert( painter );
@@ -224,7 +271,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
   if(composite == JNI_TRUE)
     painter->fillRect( *dstRect, QColor(bg_red, bg_green, bg_blue ) );
 
-  painter->drawImage( *dstRect, *image, *srcRect);
+  painter->drawPixmap( *dstRect, *image, *srcRect);
 
   delete srcRect;
   delete dstRect;
@@ -236,7 +283,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsTransformed
 (JNIEnv *env, jobject obj, jobject graphics, jobject transform)
 {
-  QImage *originalImage = getQtImage(env, obj);
+  QPixmap *originalImage = getQtVolatileImage(env, obj);
   assert( originalImage );
   QPainter *painter = getPainter( env, graphics );
   assert( painter );
@@ -245,7 +292,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsTrans
 
   // FIXME : Add rendering hint support here.
   QPoint p = matrix->map( QPoint(0,0) );
-  QImage image = originalImage->transformed ( *matrix, Qt::FastTransformation );
+  QImage image = originalImage->toImage().transformed ( *matrix, Qt::FastTransformation );
   painter->drawImage(p, image);
 }
 
@@ -261,7 +308,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
  jint dstx, jint dsty, jint dstwidth, jint dstheight, 
  jboolean composite)
 {
-  QImage *originalImage = getQtImage(env, obj);
+  QPixmap *originalImage = getQtVolatileImage(env, obj);
   assert( originalImage );
   QPainter *painter = getPainter( env, graphics );
   assert( painter );
@@ -271,12 +318,17 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
   QRectF *dstRect = new QRectF((qreal)dstx, (qreal)dsty,
 			       (qreal)dstwidth, (qreal)dstheight);
   
-  QImage image = originalImage->mirrored ( (flipx == JNI_TRUE), 
-					   (flipy == JNI_TRUE) );
   if(composite == JNI_TRUE)
     painter->fillRect( *dstRect, QColor(bg_red, bg_green, bg_blue ) );
 
-  painter->drawImage( *dstRect, image, *srcRect);
+  if( flipx == JNI_TRUE || flipy == JNI_TRUE )
+    {
+      QImage im = originalImage->toImage().mirrored ( (flipx == JNI_TRUE), 
+						      (flipy == JNI_TRUE) );
+      painter->drawImage ( *dstRect, im, *srcRect);
+    }
+  else
+    painter->drawPixmap ( *dstRect, *originalImage, *srcRect);
 
   delete srcRect;
   delete dstRect;
@@ -288,10 +340,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_drawPixelsScale
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtVolatileImage_copyArea
 (JNIEnv *env, jobject obj , jint x, jint y, jint w, jint h, jint dx, jint dy)
 {
-  QImage *image = getQtImage(env, obj);
+  QPixmap *image = getQtVolatileImage(env, obj);
   assert( image );
-  QImage area = image->copy(x, y, w, h);
-  QPainter *p = new QPainter( image );
-  p->drawImage( x + dx, y + dy, area );
-  delete p;
+
+  // FIXME
 }

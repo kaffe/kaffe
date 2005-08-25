@@ -543,7 +543,7 @@ int getAEKeyModifiers(Qt::KeyboardModifiers state)
 int getMouseModifiers(QMouseEvent *e)
 {
   int modifier = 0;
-  int buttons = e->button();
+  int buttons = e->buttons();
   int state = e->modifiers();
 
   if( buttons & Qt::LeftButton )
@@ -551,6 +551,37 @@ int getMouseModifiers(QMouseEvent *e)
   if( buttons & Qt::MidButton )
     modifier |= BUTTON2_DOWN_MASK;
   if( buttons & Qt::RightButton )
+    modifier |= BUTTON3_DOWN_MASK;
+
+  if( state & Qt::ShiftModifier )
+    modifier |= SHIFT_DOWN_MASK;
+  if( state & Qt::ControlModifier )
+    modifier |= CTRL_DOWN_MASK;
+  if( state & Qt::AltModifier )
+    modifier |= ALT_DOWN_MASK;
+  if( state & Qt::MetaModifier )
+    modifier |= META_DOWN_MASK;
+
+  // FIXME: Alt Gr?
+  return modifier;
+}
+
+/**
+ * Returns the mouse modifiers in InputEvent format 
+ * We need a different method here because e->buttons() doesn't work for,
+ * mouseReleased events. (But strangely enough it does for pressed ones)
+ */
+int getReleaseModifiers(QMouseEvent *e)
+{
+  int modifier = 0;
+  int button = e->button();
+  int state = e->modifiers();
+
+  if( button & Qt::LeftButton )
+    modifier |= BUTTON1_DOWN_MASK;
+  if( button & Qt::MidButton )
+    modifier |= BUTTON2_DOWN_MASK;
+  if( button & Qt::RightButton )
     modifier |= BUTTON3_DOWN_MASK;
 
   if( state & Qt::ShiftModifier )

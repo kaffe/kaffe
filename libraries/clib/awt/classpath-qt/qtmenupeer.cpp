@@ -82,33 +82,57 @@ class MenuAction : public AWTEvent {
   QMenu *menu;
   QAction *action;
   int isMenu; // 0 to add a menu, 1 to add an item, 2 to add a seperator
-  QAction **newAction; // adding an action creates a new duplicate.
+  JavaVM *vm;
+  jobject menuPeer;
+  jobject itemPeer;
 
 public:
-  MenuAction(QMenu *m, QAction *a, QAction **na, bool ismenu) : AWTEvent()
+  MenuAction(JNIEnv *env, jobject mp, jobject ip, QMenu *m, QAction *a, 
+	     bool ismenu) : AWTEvent()
   {
     menu = m;
     action = a;
     isMenu = ismenu;
-    newAction = na;
+    env->GetJavaVM( &vm );
+    menuPeer = env->NewGlobalRef( mp );
+    if( ip != NULL )
+      itemPeer = env->NewGlobalRef( ip );
+    else
+      itemPeer = NULL;
   }
-
+  
   void runEvent()
   {
+    JNIEnv *env;
+    QAction *newAction; // adding an action creates a new duplicate.
+    vm->GetEnv((void **)&env, JNI_VERSION_1_1);
+
     switch(isMenu)
       {
       case ADDMENU:
-	*newAction = menu->addMenu( (QMenu *)action );
+	newAction = menu->addMenu( (QMenu *)action );
 	break;
       case ADDITEM:
-	*newAction = menu->addAction(action->text());
-	(*newAction)->setSeparator(action->isSeparator());
-	(*newAction)->setCheckable(action->isCheckable());
+	newAction = menu->addAction(action->text());
+	newAction->setSeparator(action->isSeparator());
+	newAction->setCheckable(action->isCheckable());
 	//	delete action;
 	break;
       case ADDSEPA:
-	*newAction = menu->addSeparator();
+	newAction = menu->addSeparator();
 	break;
+      }
+
+    jclass menuCls = env->GetObjectClass( menuPeer );
+    jmethodID mid = env->GetMethodID(menuCls, "add", "(J)V");
+    env->CallVoidMethod( menuPeer, mid, (jlong)newAction );
+
+    env->DeleteGlobalRef( menuPeer );
+    if( itemPeer != NULL )
+      {
+	setNativeObject( env, itemPeer, newAction );
+	connectAction(newAction, env, itemPeer);
+	env->DeleteGlobalRef( itemPeer );
       }
   }
 };
@@ -159,46 +183,34 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_allowTearOff
 /*
  * Inserts a seperator.
  */
-JNIEXPORT jlong JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertSeperator
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertSeperator
 (JNIEnv *env, jobject obj)
 {
   QMenu *menu = (QMenu *)getNativeObject( env, obj );
   assert( menu );
-  QAction *newAction = NULL;
-  MenuAction *ma = new MenuAction( menu, NULL, &newAction, ADDSEPA );
-
-  while (newAction == NULL);   // Wait for new action.
-
-  return (jlong)newAction;
+  mainThread->postEventToMain( new MenuAction( env, obj, NULL,
+					       menu, NULL, ADDSEPA ) );
 }
 
 /*
  * Inserts an item.
  */
-JNIEXPORT jlong JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertItem
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertItem
 (JNIEnv *env, jobject obj, jobject item)
 {
   QMenu *menu = (QMenu *)getNativeObject( env, obj );
   assert( menu );
+
   QAction *action = (QAction *)getNativeObject( env, item );
   assert( action );
 
-  QAction *newAction = NULL;
-  MenuAction *ma = new MenuAction( menu, action, &newAction, ADDITEM );
-  mainThread->postEventToMain( ma );
-
-  while (newAction == NULL);   // Wait for new action.
-
-  connectAction(newAction, env, item);
-  setNativeObject(env, item, newAction); // update the MenuItemPeer action.
-    
-  return (jlong)newAction;
+  mainThread->postEventToMain( new MenuAction( env, obj, item, menu, action, ADDITEM ));
 }
 
 /*
  * Inserts a sub-menu
  */
-JNIEXPORT jlong JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertMenu
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertMenu
 (JNIEnv *env, jobject obj, jobject menu)
 {
   assert( menu );
@@ -207,15 +219,7 @@ JNIEXPORT jlong JNICALL Java_gnu_java_awt_peer_qt_QtMenuPeer_insertMenu
   QMenu *insMenu = (QMenu *)getNativeObject(env, menu);
   assert( insMenu );
 
-  QAction *newAction = NULL;
-  MenuAction *ma = new MenuAction( thisMenu, (QAction *)insMenu, 
-				   &newAction, ADDMENU );
-  mainThread->postEventToMain( ma );
-
-  while (newAction == NULL);   // Wait for new action.
-
-  connectAction(newAction, env, menu);
-  return (jlong) newAction;
+  mainThread->postEventToMain( new MenuAction( env, obj, menu, thisMenu, (QAction *)insMenu, ADDMENU ) );
 }
 
 /*

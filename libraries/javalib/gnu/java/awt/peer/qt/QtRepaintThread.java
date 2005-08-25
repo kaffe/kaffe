@@ -52,11 +52,24 @@ public class QtRepaintThread extends Thread
   {
     public QtComponentPeer curr;
     public RepaintComponent next;
+    public boolean paintAll;
+    public int x, y, w, h;
 
     public RepaintComponent(QtComponentPeer p)
     {
       curr = p;
       next = null;
+      paintAll = true;
+    }
+
+    public RepaintComponent(QtComponentPeer p, int x, int y, int w, int h)
+    {
+      this(p);
+      paintAll = false;
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
     }
   }
   
@@ -76,23 +89,34 @@ public class QtRepaintThread extends Thread
 	  {
 	    busy = false;
 	    // Wait for a repaint
-	    sleep(1000);
+	    sleep(100);
+	    busy = true;
 	  }
 	catch (InterruptedException ie)
 	  {
-	    // peform the repaint. No interruptions please.
-	    busy = true;
 	    while( component != null )
 	      {
-		component.curr.paintBackBuffer(); // update the back-buffer.
-		component.curr.QtUpdate(); // trigger a native repaint event
+		try
+		  {
+		    if( component.paintAll )
+		      {
+			// update the back-buffer.
+			component.curr.paintBackBuffer(); 
+			component.curr.QtUpdate(); // trigger a native repaint event
+		      }
+		    else
+		      {
+			component.curr.paintBackBuffer(component.x, component.y,
+						       component.w, component.h);
+			component.curr.QtUpdateArea(component.x, component.y,
+						    component.w, component.h); 
+		      }
+		  }
+		catch (InterruptedException e)
+		  {
+		  }
 		component = component.next;
 	      }
-	  }
-	catch (Throwable x)
-	  {
-	    System.err.println("Exception in paint thread:");
-	    x.printStackTrace(System.err);
 	  }
       }
   }
@@ -110,7 +134,23 @@ public class QtRepaintThread extends Thread
 	while( r.next != null ) r = r.next;
 	r.next = new RepaintComponent(p);
       }
-    if( !busy )
-      interrupt();
+    interrupt();
+  }
+
+  /**
+   * Enqueue a component for repainting.
+   */
+  public synchronized void queueComponent(QtComponentPeer p, int x, int y, 
+					  int w, int h)
+  {
+    if( component == null )
+      component = new RepaintComponent(p, x, y, w, h);
+    else
+      {
+	RepaintComponent r = component;
+	while( r.next != null ) r = r.next;
+	r.next = new RepaintComponent(p, x, y, w, h);
+      }
+    interrupt();
   }
 }

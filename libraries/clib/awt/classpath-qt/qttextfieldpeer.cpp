@@ -279,7 +279,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtTextFieldPeer_setCaretPositio
 /*
  * Returns the caret position.
  */
-JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_qt_QtTextFieldPeer_getCaretPosition
+JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_qt_QtTextFieldPeer_getCaretPositionNative
 (JNIEnv *env, jobject obj)
 {
   QLineEdit *line = (QLineEdit *) getNativeObject( env, obj );

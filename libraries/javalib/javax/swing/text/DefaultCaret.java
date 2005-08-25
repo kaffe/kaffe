@@ -288,7 +288,7 @@ public class DefaultCaret extends Rectangle
    *
    * @return the current visual position of this <code>Caret</code>
    *
-   * @see {@link #setMagicCaretPosition}
+   * @see #setMagicCaretPosition
    */
   public Point getMagicCaretPosition()
   {
@@ -436,7 +436,7 @@ public class DefaultCaret extends Rectangle
    * Registers a {@link ChangeListener} that is notified whenever that state
    * of this <code>Caret</code> changes.
    *
-   * @param l the listener to register to this caret
+   * @param listener the listener to register to this caret
    */
   public void addChangeListener(ChangeListener listener)
   {
@@ -446,7 +446,7 @@ public class DefaultCaret extends Rectangle
   /**
    * Removes a {@link ChangeListener} from the list of registered listeners.
    *
-   * @param l the listener to remove
+   * @param listener the listener to remove
    */
   public void removeChangeListener(ChangeListener listener)
   {
@@ -528,7 +528,7 @@ public class DefaultCaret extends Rectangle
    *
    * @param dot the location where to move the dot
    *
-   * @see {@link #setDot(int)}
+   * @see #setDot(int)
    */
   public void moveDot(int dot)
   {
@@ -544,7 +544,7 @@ public class DefaultCaret extends Rectangle
    *
    * @param dot the new position to be set
    *
-   * @see {@link #moveDot(int)}
+   * @see #moveDot(int)
    */
   public void setDot(int dot)
   {

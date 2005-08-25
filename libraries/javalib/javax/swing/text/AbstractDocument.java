@@ -136,8 +136,8 @@ public abstract class AbstractDocument
    * @param doc the <code>Content</code> model to be used in this
    *        <code>Document<code>
    *
-   * @see {@link GapContent}
-   * @see {@link StringContent}
+   * @see GapContent
+   * @see StringContent
    */
   protected AbstractDocument(Content doc)
   {
@@ -152,8 +152,8 @@ public abstract class AbstractDocument
    *        <code>Document<code>
    * @param ctx the <code>AttributeContext</code> to use
    *
-   * @see {@link GapContent}
-   * @see {@link StringContent}
+   * @see GapContent
+   * @see StringContent
    */
   protected AbstractDocument(Content doc, AttributeContext ctx)
   {
@@ -193,7 +193,7 @@ public abstract class AbstractDocument
    *
    * @return the new branch <code>Element</code>
    *
-   * @see {@link BranchElement}
+   * @see BranchElement
    */
   protected Element createBranchElement(Element parent,
 					AttributeSet attributes)
@@ -213,7 +213,7 @@ public abstract class AbstractDocument
    *
    * @return the new branch <code>Element</code>
    *
-   * @see {@link LeafElement}
+   * @see LeafElement
    */
   protected Element createLeafElement(Element parent, AttributeSet attributes,
 				      int start, int end)
@@ -329,8 +329,8 @@ public abstract class AbstractDocument
    *
    * @return the {@link Content} model for this <code>Document</code>
    *
-   * @see {@link GapContent}
-   * @see {@link StringContent}
+   * @see GapContent
+   * @see StringContent
    */
   protected Content getContent()
   {
@@ -401,7 +401,7 @@ public abstract class AbstractDocument
   /**
    * Returns all registered listeners of a given listener type.
    *
-   * @return the type of the listeners to be queried
+   * @param listenerType the type of the listeners to be queried
    *
    * @return all registered listeners of the specified type
    */
@@ -800,7 +800,7 @@ public abstract class AbstractDocument
    * provide intelligent management of <code>AttributeSet</code>s, eliminating
    * costly duplication.
    *
-   * @see {@link StyleContext}
+   * @see StyleContext
    */
   public interface AttributeContext
   {
@@ -1134,7 +1134,7 @@ public abstract class AbstractDocument
     /**
      * Removes a set of attribute from this element.
      *
-     * @param the names of the attributes to be removed
+     * @param names the names of the attributes to be removed
      */
     public void removeAttributes(Enumeration names)
     {
@@ -1234,7 +1234,7 @@ public abstract class AbstractDocument
      *
      * @return the resolve parent of this element
      *
-     * @see {@link #setResolveParent(AttributeSet)}
+     * @see #setResolveParent(AttributeSet)
      */
     public AttributeSet getResolveParent()
     {
@@ -1563,7 +1563,7 @@ public abstract class AbstractDocument
      * @return the <code>Element</code> at the specified <code>Document</code>
      *         offset
      *
-     * @see {@link #getElementIndex(int)}
+     * @see #getElementIndex(int)
      */
     public Element positionToElement(int position)
     {

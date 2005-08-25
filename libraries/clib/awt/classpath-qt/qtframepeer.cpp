@@ -56,15 +56,15 @@ exception statement from your version. */
 /*
  * Our QMainWindow subclass
  */
-class MyWindow : public QMainWindow
+class MyFrame : public QMainWindow
 {
 public:
-  MyWindow(JNIEnv *env, jobject obj) : QMainWindow(0, Qt::Window )
+  MyFrame(JNIEnv *env, jobject obj) : QMainWindow(0, Qt::Window )
   {
     setup(env, obj);
   }
 
-  ~MyWindow()
+  ~MyFrame()
   {
     destroy();
   }
@@ -101,32 +101,6 @@ class FrameMenuEvent : public AWTEvent {
 };
 
 /**
- * Event wrapper for getting the menu bar height
- */
-class FrameGetMenuHeightEvent : public AWTEvent {
-  
-private:
-  QMainWindow *frame;
-  int **value;
-  
-public:
-  FrameGetMenuHeightEvent(QMainWindow *w, int **v) : AWTEvent()
-  {
-    frame = w;
-    value = v;
-  }
-
-  void runEvent()
-  {
-    QMenuBar *mb = frame->menuBar();
-    assert( mb );
-    int *v = (int *)malloc( sizeof( int ) );
-    *v = mb->sizeHint().height();
-    *value = v;
-  }
-};
-
-/**
  * Returns the child widget for the frame (the centralWidget in qt terms)
  */
 QWidget *frameChildWidget( JNIEnv *env, jobject component )
@@ -142,7 +116,7 @@ QWidget *frameChildWidget( JNIEnv *env, jobject component )
   if( framepeerobj == NULL )
     return (QWidget *)NULL;
 
-  MyWindow *window = (MyWindow *)getNativeObject(env, framepeerobj);
+  MyFrame *window = (MyFrame *)getNativeObject(env, framepeerobj);
   assert( window );
   return window;
 }
@@ -153,12 +127,9 @@ QWidget *frameChildWidget( JNIEnv *env, jobject component )
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_init
 (JNIEnv *env, jobject obj)
 {
-  MyWindow *frame = new MyWindow(env, obj);
+  MyFrame *frame = new MyFrame(env, obj);
   assert( frame );
-
-  QWidget *central = new QWidget( frame );
-  assert( central );
-
+  frame->addToolBarBreak ( Qt::BottomToolBarArea );
   setNativeObject( env, obj, frame );
 }
 
@@ -197,13 +168,9 @@ JNIEXPORT jint JNICALL Java_gnu_java_awt_peer_qt_QtFramePeer_menuBarHeight
   QMainWindow *frame = (QMainWindow *) getNativeObject( env, obj );
   assert( frame );
 
-  int *value = NULL;
-  mainThread->postEventToMain( new FrameGetMenuHeightEvent( frame, &value ) );
+  QMenuBar *mb = frame->menuBar();
 
-  while(value == NULL); // (Busy) wait for the value to
-  // get set by the main thread.
-
-  return (jint)(*value);
+  return ( mb != NULL ) ? mb->sizeHint().height() : 0 ;
 }
 
 /*

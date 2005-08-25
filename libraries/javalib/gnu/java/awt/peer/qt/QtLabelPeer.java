@@ -55,7 +55,7 @@ public class QtLabelPeer extends QtComponentPeer implements LabelPeer
     setText( ((Label)owner).getText() );
     setAlignment( ((Label)owner).getAlignment() );
   }
-  
+
   public native void setAlignment( int alignment );
 
   public native void setText( String label );

@@ -92,7 +92,7 @@ public abstract class CompositeView
    *
    * @param f the view factory to use for creating new child views
    *
-   * @see {@link #setParent}
+   * @see #setParent
    */
   protected void loadChildren(ViewFactory f)
   {
@@ -112,7 +112,7 @@ public abstract class CompositeView
    * In addition to setting the parent, this calls {@link #loadChildren}, if
    * this <code>View</code> does not already have its children initialized.
    *
-   * @param p the parent to set
+   * @param parent the parent to set
    */
   public void setParent(View parent)
   {
@@ -186,8 +186,8 @@ public abstract class CompositeView
    *
    * @param pos the position of the character in the model
    * @param a the area that is occupied by the view
-   * @param bias either {@link Position.Bias.Forward} or
-   *        {@link Position.Bias.Backward} depending on the preferred
+   * @param bias either {@link Position.Bias#Forward} or
+   *        {@link Position.Bias#Backward} depending on the preferred
    *        direction bias. If <code>null</code> this defaults to
    *        <code>Position.Bias.Forward</code>
    *
@@ -262,7 +262,7 @@ public abstract class CompositeView
    * {@link #getNextEastWestVisualPositionFrom}.
    *
    * @param pos the model position to start search from
-   * @param the bias for <code>pos</code>
+   * @param b the bias for <code>pos</code>
    * @param a the allocated region for this view
    * @param direction the direction from the current position, can be one of
    *        the following:
@@ -414,7 +414,7 @@ public abstract class CompositeView
    *
    * Also this translates from an immutable allocation to a mutable allocation
    * that is typically reused and further narrowed, like in
-   * {@link childAllocation}.
+   * {@link #childAllocation}.
    *
    * @param a the allocation given to this <code>CompositeView</code>
    *
@@ -450,8 +450,8 @@ public abstract class CompositeView
 
   /**
    * Sets the insets defined by attributes in <code>attributes</code>. This
-   * queries the attribute keys {@link StyleConstants#SpaveAbove},
-   * {@link StyleConstants#SpaveBelow}, {@link StyleConstants#LeftIndent} and
+   * queries the attribute keys {@link StyleConstants#SpaceAbove},
+   * {@link StyleConstants#SpaceBelow}, {@link StyleConstants#LeftIndent} and
    * {@link StyleConstants#RightIndent} and calls {@link #setInsets} to
    * actually set the insets on this <code>CompositeView</code>.
    *
@@ -542,7 +542,7 @@ public abstract class CompositeView
    * the arrow keys.
    *
    * @param pos the model position to start search from
-   * @param the bias for <code>pos</code>
+   * @param b the bias for <code>pos</code>
    * @param a the allocated region for this view
    * @param direction the direction from the current position, can be one of
    *        the following:
@@ -575,7 +575,7 @@ public abstract class CompositeView
    * the arrow keys.
    *
    * @param pos the model position to start search from
-   * @param the bias for <code>pos</code>
+   * @param b the bias for <code>pos</code>
    * @param a the allocated region for this view
    * @param direction the direction from the current position, can be one of
    *        the following:

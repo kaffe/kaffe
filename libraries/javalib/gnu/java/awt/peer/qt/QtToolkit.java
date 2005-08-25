@@ -212,11 +212,6 @@ public class QtToolkit extends ClasspathToolkit
     return new QtCanvasPeer( this, target );
   }
 
-  protected LightweightPeer createComponent(Component target)
-  {
-    return new QtPanelPeer( this, target );
-  }
-
   protected CheckboxPeer createCheckbox(Checkbox target)
   {
     return new QtCheckboxPeer( this, target );

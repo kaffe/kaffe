@@ -74,7 +74,7 @@ public class ElementIterator implements Cloneable
 
   /**
    * Create a new ElementIterator to iterate over the given document.
-   * @param document the Document over which we iterate
+   * @param root the Document over which we iterate
    */
   public ElementIterator(Element root)
   {

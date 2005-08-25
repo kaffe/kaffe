@@ -147,6 +147,5 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_qt_QtLabelPeer_setAlignment
       alignment |= Qt::AlignHCenter;
       break;
     }
-  
   mainThread->postEventToMain( new LabelTitle( label, NULL, alignment ) );
 }

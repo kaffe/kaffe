@@ -48,7 +48,7 @@ import javax.swing.event.DocumentEvent;
  * The default implementation of {@link StyledDocument}.
  *
  * The document is modeled as an {@link Element} tree, which has
- * a {@link SecionElement} as single root, which has one or more
+ * a {@link SectionElement} as single root, which has one or more
  * {@link AbstractDocument.BranchElement}s as paragraph nodes
  * and each paragraph node having one or more
  * {@link AbstractDocument.LeafElement}s as content nodes.
@@ -395,7 +395,7 @@ public class DefaultStyledDocument extends AbstractDocument
    *
    * @param offset the start offset of the fragment
    * @param length the length of the fragment
-   * @param attribute the text attributes to set
+   * @param attributes the text attributes to set
    * @param replace if <code>true</code>, the attributes of the current
    *     selection are overridden, otherwise they are merged
    */
@@ -471,7 +471,7 @@ public class DefaultStyledDocument extends AbstractDocument
    *
    * @param offset the beginning of the fragment
    * @param length the length of the fragment
-   * @param attribute the text attributes to set
+   * @param attributes the text attributes to set
    * @param replace if <code>true</code>, the attributes of the current
    *     selection are overridden, otherwise they are merged
    */

@@ -65,7 +65,6 @@ public class QtFontPeer extends ClasspathFontPeer
   public QtFontPeer (String name, int style, int size)
   {
     super(name, style, size);
-    System.out.println("New Font:"+name);
     init();
   }
 
@@ -80,6 +79,8 @@ public class QtFontPeer extends ClasspathFontPeer
     if(this.familyName == null)
       throw new IllegalArgumentException("null family name");
     if(this.familyName.equals("Helvetica"))
+      this.familyName = "sans serif";
+    if(this.familyName.equals("Dialog"))
       this.familyName = "sans serif";
     create(this.familyName, this.style, (int)this.size);
     metrics = new QtFontMetrics(this);

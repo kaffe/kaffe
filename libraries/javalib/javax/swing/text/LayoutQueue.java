@@ -1,5 +1,5 @@
-/* QtDialogPeer.java --
-   Copyright (C)  2005  Free Software Foundation, Inc.
+/* LayoutQueue.java --
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,41 +35,81 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.java.awt.peer.qt;
 
-import java.awt.Dialog;
-import java.awt.MenuBar;
-import java.awt.Rectangle;
-import java.awt.peer.DialogPeer;
+package javax.swing.text;
 
-public class QtDialogPeer extends QtWindowPeer implements DialogPeer
+import java.util.LinkedList;
+
+/**
+ * This is a queue which holds {@link Runnable} objects.  It is
+ * intended for deferring layout operations.
+ */
+public class LayoutQueue
 {
-  public QtDialogPeer( QtToolkit kit, Dialog owner )
+  // The default layout queue.
+  private static LayoutQueue defaultQueue = new LayoutQueue();
+
+  // The queue of tasks.
+  private LinkedList list = new LinkedList();
+
+  /**
+   * Create a new layout queue.
+   */
+  public LayoutQueue()
   {
-    super( kit, owner );
   }
 
-  protected native void init();
-
-  protected void setup()
+  /**
+   * Add a layout task to the queue.
+   */
+  public void addTask(Runnable task)
   {
-    super.setup();
-    setTitle( ((Dialog)owner).getTitle() );
-    setResizable( ((Dialog)owner).isResizable() );
-    setModal( ((Dialog)owner).isModal() );
+    synchronized (list)
+      {
+	list.addLast(task);
+	list.notify();
+      }
   }
 
-  native void setModal(boolean modal);
-
-  private native void setBoundsNative(int x, int y, int width, int height, boolean fixed);
-
-  // ************ Public methods *********************
-
-  public native void setResizable (boolean resizeable);
-
-  public void setBounds(int x, int y, int width, int height)
+  /**
+   * Called by a worker thread to retrieve the next layout task.  This
+   * will block until a new task is available.  This method will
+   * return null if the thread is interrupted while waiting.
+   */
+  protected Runnable waitForWork()
   {
-    setBoundsNative(x, y, width, height,
-		    !((Dialog)owner).isResizable());
+    synchronized (list)
+      {
+	while (list.size() == 0)
+	  {
+	    try
+	      {
+		list.wait();
+	      }
+	    catch (InterruptedException _)
+	      {
+		// This seemed like a good idea, but it has not been
+		// tested on the JDK.
+		return null;
+	      }
+	  }
+	return (Runnable) list.removeFirst();
+      }
+  }
+
+  /**
+   * Return the default layout queue.
+   */
+  public static synchronized LayoutQueue getDefaultQueue()
+  {
+    return defaultQueue;
+  }
+
+  /**
+   * Set the default layout queue.
+   */
+  public static synchronized void setDefaultQueue(LayoutQueue q)
+  {
+    defaultQueue = q;
   }
 }

@@ -38,9 +38,10 @@ exception statement from your version. */
 package gnu.java.awt.peer.qt;
 
 import java.applet.AudioClip;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.awt.Toolkit;
+import java.net.URL;
 
 /**
  * Implementation of the applet AudioClip interface on a Qt
@@ -62,6 +63,11 @@ public class QtAudioClip extends NativeWrapper implements AudioClip
     catch(IOException e)
       {
       }
+  }
+
+  public QtAudioClip(URL url)
+  {
+    
   }
 
   private native void loadClip(String filename);

@@ -64,7 +64,7 @@ public class DefaultEditorKit extends EditorKit
   /**
    * Creates a beep on the PC speaker.
    *
-   * @see {@link Toolkit#beep()}
+   * @see Toolkit#beep()
    */
   public static class BeepAction
     extends TextAction
@@ -91,9 +91,9 @@ public class DefaultEditorKit extends EditorKit
   /**
    * Copies the selected content into the system clipboard.
    *
-   * @see {@link Toolkit#getSystemClipboard()}
-   * @see {@link CutAction}
-   * @see {@link PasteAction}
+   * @see Toolkit#getSystemClipboard()
+   * @see CutAction
+   * @see PasteAction
    */
   public static class CopyAction 
     extends TextAction
@@ -124,9 +124,9 @@ public class DefaultEditorKit extends EditorKit
    * Copies the selected content into the system clipboard and deletes the
    * selection.
    *
-   * @see {@link Toolkit#getSystemClipboard()}
-   * @see {@link CopyAction}
-   * @see {@link PasteAction}
+   * @see Toolkit#getSystemClipboard()
+   * @see CopyAction
+   * @see PasteAction
    */
   public static class CutAction 
     extends TextAction
@@ -155,9 +155,9 @@ public class DefaultEditorKit extends EditorKit
   /**
    * Copies content from the system clipboard into the editor.
    *
-   * @see {@link Toolkit#getSystemClipboard()}
-   * @see {@link CopyAction}
-   * @see {@link CutAction}
+   * @see Toolkit#getSystemClipboard()
+   * @see CopyAction
+   * @see CutAction
    */
   public static class PasteAction 
     extends TextAction
@@ -330,14 +330,14 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one character
    * backwards.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String backwardAction = "caret-backward";
 
   /**
    * The name of the <code>Action</code> that creates a beep in the speaker.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String beepAction = "beep";
 
@@ -345,7 +345,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the <code>Document</code>.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String beginAction = "caret-begin";
 
@@ -353,7 +353,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current line.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String beginLineAction = "caret-begin-line";
 
@@ -361,7 +361,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current paragraph.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String beginParagraphAction = "caret-begin-paragraph";
 
@@ -369,7 +369,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current word.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String beginWordAction = "caret-begin-word";
 
@@ -377,7 +377,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that copies the selected content
    * into the system clipboard.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String copyAction = "copy-to-clipboard";
 
@@ -385,7 +385,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that copies the selected content
    * into the system clipboard and removes the selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String cutAction = "cut-to-clipboard";
 
@@ -393,7 +393,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that is performed by default if
    * a key is typed and there is no keymap entry.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String defaultKeyTypedAction = "default-typed";
 
@@ -401,7 +401,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that deletes the character that
    * follows the current caret position.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String deleteNextCharAction = "delete-next";
 
@@ -409,14 +409,14 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that deletes the character that
    * precedes the current caret position.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String deletePrevCharAction = "delete-previous";
 
   /**
    * The name of the <code>Action</code> that moves the caret one line down.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String downAction = "caret-down";
 
@@ -424,7 +424,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the <code>Document</code>.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String endAction = "caret-end";
 
@@ -432,7 +432,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current line.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String endLineAction = "caret-end-line";
 
@@ -446,7 +446,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current paragraph.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String endParagraphAction = "caret-end-paragraph";
 
@@ -454,7 +454,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current word.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String endWordAction = "caret-end-word";
 
@@ -462,28 +462,28 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one character
    * forward.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String forwardAction = "caret-forward";
 
   /**
    * The name of the <code>Action</code> that inserts a line break.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String insertBreakAction = "insert-break";
 
   /**
    * The name of the <code>Action</code> that inserts some content.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String insertContentAction = "insert-content";
 
   /**
    * The name of the <code>Action</code> that inserts a TAB.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String insertTabAction = "insert-tab";
 
@@ -491,21 +491,21 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the next word.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String nextWordAction = "caret-next-word";
 
   /**
    * The name of the <code>Action</code> that moves the caret one page down.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String pageDownAction = "page-down";
 
   /**
    * The name of the <code>Action</code> that moves the caret one page up.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String pageUpAction = "page-up";
 
@@ -513,7 +513,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that copies content from the system
    * clipboard into the document.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String pasteAction = "paste-from-clipboard";
 
@@ -521,7 +521,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the previous word.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String previousWordAction = "caret-previous-word";
 
@@ -529,14 +529,14 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that sets the editor in read only
    * mode.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String readOnlyAction = "set-read-only";
 
   /**
    * The name of the <code>Action</code> that selects the whole document.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectAllAction = "select-all";
 
@@ -544,7 +544,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one character
    * backwards, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionBackwardAction = "selection-backward";
 
@@ -552,7 +552,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the document, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionBeginAction = "selection-begin";
 
@@ -560,7 +560,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current line, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionBeginLineAction = "selection-begin-line";
 
@@ -568,7 +568,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current paragraph, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionBeginParagraphAction =
     "selection-begin-paragraph";
@@ -577,7 +577,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the current word, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionBeginWordAction = "selection-begin-word";
 
@@ -585,7 +585,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one line down,
    * possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionDownAction = "selection-down";
 
@@ -593,7 +593,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the document, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionEndAction = "selection-end";
 
@@ -601,7 +601,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current line, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionEndLineAction = "selection-end-line";
 
@@ -609,7 +609,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current paragraph, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionEndParagraphAction =
     "selection-end-paragraph";
@@ -618,7 +618,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the end
    * of the current word, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionEndWordAction = "selection-end-word";
 
@@ -626,7 +626,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one character
    * forwards, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionForwardAction = "selection-forward";
 
@@ -634,7 +634,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the next word, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionNextWordAction = "selection-next-word";
 
@@ -642,7 +642,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret to the beginning
    * of the previous word, possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionPreviousWordAction =
     "selection-previous-word";
@@ -651,7 +651,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that moves the caret one line up,
    * possibly extending the current selection.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectionUpAction = "selection-up";
 
@@ -659,7 +659,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that selects the line around the
    * caret.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectLineAction = "select-line";
 
@@ -667,7 +667,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that selects the paragraph around the
    * caret.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectParagraphAction = "select-paragraph";
 
@@ -675,14 +675,14 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that selects the word around the
    * caret.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String selectWordAction = "select-word";
 
   /**
    * The name of the <code>Action</code> that moves the caret one line up.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String upAction = "caret-up";
 
@@ -690,7 +690,7 @@ public class DefaultEditorKit extends EditorKit
    * The name of the <code>Action</code> that sets the editor in read-write
    * mode.
    *
-   * @see {@link #getActions()}
+   * @see #getActions()
    */
   public static final String writableAction = "set-writable";
 
@@ -825,7 +825,7 @@ public class DefaultEditorKit extends EditorKit
 
   /**
    * Creates the default {@link Document} that this <code>EditorKit</code>
-   * supports. This is a {@link DefaultDocument} in this case.
+   * supports. This is a {@link PlainDocument} in this case.
    *
    * @return the default {@link Document} that this <code>EditorKit</code>
    *         supports

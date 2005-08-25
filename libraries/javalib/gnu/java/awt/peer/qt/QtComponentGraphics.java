@@ -65,13 +65,13 @@ public class QtComponentGraphics extends QtGraphics
    *
    * @param ptr the pointer to the QPainter object.
    */
-  public QtComponentGraphics(long ptr, QtComponentPeer component)
+  public QtComponentGraphics(long ptr, QtComponentPeer component, 
+			     int x, int y, int w, int h)
   {
     nativeObject = ptr;
     peer = component;
 
-    Rectangle r = component.owner.getBounds();
-    r.setLocation(0, 0);
+    Rectangle r = new Rectangle(x, y, w, h);
     initialClip = r;
     
     setAlpha( 1.0 );
@@ -100,7 +100,6 @@ public class QtComponentGraphics extends QtGraphics
 
   public Graphics create()
   {
-    System.out.println("Componentgraphics.create()");
     return new QtComponentGraphics( this );
   }
 

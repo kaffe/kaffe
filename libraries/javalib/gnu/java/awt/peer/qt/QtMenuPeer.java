@@ -93,33 +93,35 @@ public class QtMenuPeer extends QtMenuComponentPeer implements MenuPeer
 
   private native void allowTearOff();
 
-  private native long insertSeperator();
+  private native void insertSeperator();
 
-  private native long insertItem(QtMenuItemPeer p);
+  private native void insertItem(QtMenuItemPeer p);
 
-  private native long insertMenu(QtMenuPeer menu);
+  private native void insertMenu(QtMenuPeer menu);
 
   private native void delItem(long ptr);
+
+  private void add(long ptr)
+  {
+    items.add(new Long(ptr));
+  }
 
   // ************ Public methods *********************
 
   public void addItem( MenuItem item )
   {
-    long ptr;
     if( item instanceof Menu || item instanceof PopupMenu)
-      ptr = insertMenu((QtMenuPeer)item.getPeer());
+      insertMenu((QtMenuPeer)item.getPeer());
     else 
       {
 	QtMenuItemPeer p = (QtMenuItemPeer)item.getPeer();
-	ptr = insertItem(p);
+	insertItem(p);
       }
-    items.add(new Long(ptr));
   }
   
   public void addSeparator()
   {
-    long ptr = insertSeperator();
-    items.add(new Long(ptr));
+    insertSeperator();
   }
 
   public void delItem( int index )

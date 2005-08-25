@@ -1,5 +1,5 @@
 /* SwingPropertyChangeSupport.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,7 +36,6 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 package javax.swing.event;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -49,207 +48,195 @@ import java.util.Hashtable;
 /**
  * SwingPropertyChangeSupport
  * @author Andrew Selkirk
-*/
-public final	class SwingPropertyChangeSupport
-				extends PropertyChangeSupport {
+ */
+public final class SwingPropertyChangeSupport
+    extends PropertyChangeSupport 
+{
 
   private static final long serialVersionUID = 7162625831330845068L;
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * listeners
+   */
+  private transient EventListenerList listeners;
 
-	/**
-	 * listeners
-	 */
-	private transient EventListenerList listeners;
+  /**
+   * propertyListeners
+   */
+  private Hashtable propertyListeners;
 
-	/**
-	 * propertyListeners
-	 */
-	private Hashtable propertyListeners;
+  /**
+   * source
+   */
+  private Object source;
 
-	/**
-	 * source
-	 */
-	private Object source;
+  /**
+   * Constructor SwingPropertyChangeSupport
+   * @param source TODO
+   */
+  public SwingPropertyChangeSupport(Object source) 
+  {
+    super(source);
+    this.source = source;
+    this.listeners = new EventListenerList();
+    this.propertyListeners = new Hashtable();
+  }
 
+  /**
+   * writeObject
+   * @param stream TODO
+   * @exception IOException TODO
+   */
+  private void writeObject(ObjectOutputStream stream) throws IOException 
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * readObject
+   * @param stream TODO
+   * @exception ClassNotFoundException TODO
+   * @exception IOException TODO
+   */
+  private void readObject(ObjectInputStream stream) 
+      throws ClassNotFoundException, IOException 
+  {
+    // TODO
+  }
 
-	/**
-	 * Constructor SwingPropertyChangeSupport
-	 * @param source TODO
-	 */
-	public SwingPropertyChangeSupport(Object source) {
-		super(source);
-		this.source = source;
-		this.listeners = new EventListenerList();
-		this.propertyListeners = new Hashtable();
-	} // SwingPropertyChangeSupport()
+  /**
+   * addPropertyChangeListener
+   * @param listener TODO
+   */
+  public synchronized void addPropertyChangeListener(PropertyChangeListener 
+          listener) 
+  {
+    listeners.add(PropertyChangeListener.class, listener);
+  } 
 
+  /**
+   * addPropertyChangeListener
+   * @param propertyName TODO
+   * @param listener TODO
+   */
+  public synchronized void addPropertyChangeListener(String propertyName, 
+          PropertyChangeListener listener) 
+  {
+    EventListenerList  list;
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+    // Get Listener list
+    list = (EventListenerList) propertyListeners.get(propertyName);
+    if (list == null) 
+      {
+        list = new EventListenerList();
+        propertyListeners.put(propertyName, list);
+      }
 
-	/**
-	 * writeObject
-	 * @param stream TODO
-	 * @exception IOException TODO
-	 */
-	private void writeObject(ObjectOutputStream stream) throws IOException {
-		// TODO
-	} // writeObject()
+    // Add Listeners
+    list.add(PropertyChangeListener.class, listener);
 
-	/**
-	 * readObject
-	 * @param stream TODO
-	 * @exception ClassNotFoundException TODO
-	 * @exception IOException TODO
-	 */
-	private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
-		// TODO
-	} // readObject()
+  }
 
-	/**
-	 * addPropertyChangeListener
-	 * @param listener TODO
-	 */
-	public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
-		listeners.add(PropertyChangeListener.class, listener);
-	} // addPropertyChangeListener()
+  /**
+   * removePropertyChangeListener
+   * @param listener TODO
+   */
+  public synchronized void removePropertyChangeListener(PropertyChangeListener 
+          listener) 
+  {
+    listeners.remove(PropertyChangeListener.class, listener);
+  }
 
-	/**
-	 * addPropertyChangeListener
-	 * @param propertyName TODO
-	 * @param listener TODO
-	 */
-	public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+  /**
+   * removePropertyChangeListener
+   * @param propertyName TODO
+   * @param listener TODO
+   */
+  public synchronized void removePropertyChangeListener(String propertyName, 
+          PropertyChangeListener listener) 
+  {
+    EventListenerList  list;
 
-		// Variables
-		EventListenerList	list;
+    list = (EventListenerList) propertyListeners.get(propertyName);
+    if (list == null)
+      return;
 
-		// Get Listener list
-		list = (EventListenerList) propertyListeners.get(propertyName);
-		if (list == null) {
-			list = new EventListenerList();
-			propertyListeners.put(propertyName, list);
-		} // if
+    // Remove Listeners
+    list.remove(PropertyChangeListener.class, listener);
 
-		// Add Listeners
-		list.add(PropertyChangeListener.class, listener);
+    // Clean up propertyListeners
+    if (list.getListenerCount() == 0) 
+      {
+        propertyListeners.remove(propertyName);
+      } 
 
-	} // addPropertyChangeListener()
+  } 
 
-	/**
-	 * removePropertyChangeListener
-	 * @param listener TODO
-	 */
-	public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
-		listeners.remove(PropertyChangeListener.class, listener);
-	} // removePropertyChangeListener()
+  /**
+   * firePropertyChange
+   * @param propertyName TODO
+   * @param oldValue TODO
+   * @param newValue TODO
+   */
+  public void firePropertyChange(String propertyName, Object oldValue, 
+          Object newValue) 
+  {
+    PropertyChangeEvent event;
+    event = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
+    firePropertyChange(event);
+  } 
 
-	/**
-	 * removePropertyChangeListener
-	 * @param propertyName TODO
-	 * @param listener TODO
-	 */
-	public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+  /**
+   * firePropertyChange
+   * @param event TODO
+   */
+  public void firePropertyChange(PropertyChangeEvent event) 
+  {
+    EventListenerList list;
+    EventListener[] listenerList;
+    int index;
+    PropertyChangeListener listener;
 
-		// Variables
-		EventListenerList	list;
+    // Check Values if they are equal
+    if (event.getOldValue() == null && event.getNewValue() == null ||
+        (event.getOldValue() != null && event.getNewValue() != null &&
+              event.getOldValue().equals(event.getNewValue()))) 
+      return;
 
-		// Get Listener list
-		list = (EventListenerList) propertyListeners.get(propertyName);
-		if (list == null) {
-			return;
-		} // if
+    // Process Main Listener List
+    listenerList = listeners.getListeners(PropertyChangeListener.class);
+    for (index = 0; index < listenerList.length; index++) 
+      {
+        listener = (PropertyChangeListener) listenerList[index];
+        listener.propertyChange(event);
+      } 
 
-		// Remove Listeners
-		list.remove(PropertyChangeListener.class, listener);
+    // Process Property Listener List
+    list = (EventListenerList) propertyListeners.get(event.getPropertyName());
+    if (list != null) 
+      {
+        listenerList = list.getListeners(PropertyChangeListener.class);
+        for (index = 0; index < listenerList.length; index++) 
+          {
+            listener = (PropertyChangeListener) listenerList[index];
+            listener.propertyChange(event);
+          } 
+      } 
 
-		// Clean up propertyListeners
-		if (list.getListenerCount() == 0) {
-			propertyListeners.remove(propertyName);
-		} // if
+  } 
 
-	} // removePropertyChangeListener()
+  /**
+   * hasListeners
+   * @param propertyName TODO
+   * @returns boolean
+   */
+  public synchronized boolean hasListeners(String propertyName) 
+  {
+    if (propertyListeners.get(propertyName) == null) 
+      {
+        return false;
+      } 
+    return true;
+  } 
 
-	/**
-	 * firePropertyChange
-	 * @param propertyName TODO
-	 * @param oldValue TODO
-	 * @param newValue TODO
-	 */
-	public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-
-		// Variables
-		PropertyChangeEvent	event;
-
-		// Create Property Change Event
-		event = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
-
-		// Fire Event
-		firePropertyChange(event);
-
-	} // firePropertyChange()
-
-	/**
-	 * firePropertyChange
-	 * @param event TODO
-	 */
-	public void firePropertyChange(PropertyChangeEvent event) {
-
-		// Variables
-		EventListenerList		list;
-		EventListener[]			listenerList;
-		int						index;
-		PropertyChangeListener	listener;
-
-		// Check Values if they are equal
-		if (event.getOldValue() == null && event.getNewValue() == null ||
-		    (event.getOldValue() != null && event.getNewValue() != null &&
-	            event.getOldValue().equals(event.getNewValue()))) {
-			return;
-		} // if
-
-		// Process Main Listener List
-		listenerList = listeners.getListeners(PropertyChangeListener.class);
-		for (index = 0; index < listenerList.length; index++) {
-			listener = (PropertyChangeListener) listenerList[index];
-			listener.propertyChange(event);
-		} // for
-
-		// Process Property Listener List
-		list = (EventListenerList) propertyListeners.get(event.getPropertyName());
-		if (list != null) {
-			listenerList = list.getListeners(PropertyChangeListener.class);
-			for (index = 0; index < listenerList.length; index++) {
-				listener = (PropertyChangeListener) listenerList[index];
-				listener.propertyChange(event);
-			} // for
-		} // if
-
-	} // firePropertyChange()
-
-	/**
-	 * hasListeners
-	 * @param propertyName TODO
-	 * @returns boolean
-	 */
-	public synchronized boolean hasListeners(String propertyName) {
-
-		// Get Listener list
-		if (propertyListeners.get(propertyName) == null) {
-			return false;
-		} // if
-
-		return true;
-
-	} // hasListeners()
-
-
-} // SwingPropertyChangeSupport
+}

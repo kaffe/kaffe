@@ -89,8 +89,8 @@ public class IconView
    *
    * @param pos the position of the character in the model
    * @param a the area that is occupied by the view
-   * @param bias either {@link Position.Bias.Forward} or
-   *        {@link Position.Bias.Backward} depending on the preferred
+   * @param b either {@link Position.Bias#Forward} or
+   *        {@link Position.Bias#Backward} depending on the preferred
    *        direction bias. If <code>null</code> this defaults to
    *        <code>Position.Bias.Forward</code>
    *

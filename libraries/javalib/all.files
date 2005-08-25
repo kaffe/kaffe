@@ -820,6 +820,7 @@ gnu/java/awt/peer/qt/QtGraphics.java
 gnu/java/awt/peer/qt/QtGraphicsEnvironment.java
 gnu/java/awt/peer/qt/QtImage.java
 gnu/java/awt/peer/qt/QtImageConsumer.java
+gnu/java/awt/peer/qt/QtImageDirectGraphics.java
 gnu/java/awt/peer/qt/QtImageGraphics.java
 gnu/java/awt/peer/qt/QtLabelPeer.java
 gnu/java/awt/peer/qt/QtListPeer.java
@@ -3444,6 +3445,7 @@ javax/swing/text/JTextComponent.java
 javax/swing/text/Keymap.java
 javax/swing/text/LabelView.java
 javax/swing/text/LayeredHighlighter.java
+javax/swing/text/LayoutQueue.java
 javax/swing/text/MutableAttributeSet.java
 javax/swing/text/NavigationFilter.java
 javax/swing/text/ParagraphView.java
