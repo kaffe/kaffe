@@ -102,7 +102,7 @@ class VMSystemProperties
       properties.setProperty("java.specification.version", "1.4");
       properties.setProperty("java.specification.vendor", "Sun Microsystems Inc.");
       properties.setProperty("java.specification.name", "Java Platform API Specification");
-      properties.setProperty("java.class.version", "46.0");
+      properties.setProperty("java.class.version", "48.0");
       properties.setProperty("gnu.classpath.vm.shortname", "Kaffe");
       properties.setProperty("java.library.path", "");
       properties.setProperty("java.ext.dirs", "");
