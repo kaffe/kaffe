@@ -1366,7 +1366,7 @@ public abstract class AbstractDocument
     {
       // FIXME: Should the method be removed?
       System.out.println(indent + "<" + element.getName() +">");
-      
+
       if (element.isLeaf())
 	{
 	  int start = element.getStartOffset();
@@ -1378,6 +1378,12 @@ public abstract class AbstractDocument
 	    }
 	  catch (BadLocationException e)
 	    {
+          AssertionError error =
+            new AssertionError("BadLocationException should not be "
+                               + "thrown here. start = " + start
+                               + ", end = " + end);
+          error.initCause(e);
+          throw error;
 	    }
 	  System.out.println(indent + "  ["
 			     + start + ","
@@ -1497,29 +1503,41 @@ public abstract class AbstractDocument
      */
     public int getElementIndex(int offset)
     {
+      // If we have no children, return -1.
+      if (getElementCount() == 0)
+        return - 1;
+
       // XXX: There is surely a better algorithm
       // as beginning from first element each time.
       for (int index = 0; index < children.length; ++index)
         {
-	  Element elem = children[index];
+          Element elem = children[index];
 
-	  if ((elem.getStartOffset() <= offset)
-	      && (offset < elem.getEndOffset()))
-	    return index;
+          if ((elem.getStartOffset() <= offset)
+               && (offset < elem.getEndOffset()))
+            return index;
         }
 
-      return 0;
+      // If offset is greater than the index of the last element, return
+      // the index of the last element.
+      return getElementCount() - 1;
     }
 
     /**
      * Returns the offset inside the document model that is after the last
      * character of this element.
+     * This is the end offset of the last child element. If this element
+     * has no children, this method throws a <code>NullPointerException</code>.
      *
      * @return the offset inside the document model that is after the last
      *         character of this element
+     *
+     * @throws NullPointerException if this branch element has no children
      */
     public int getEndOffset()
     {
+      if (getElementCount() == 0)
+        throw new NullPointerException("This BranchElement has no children.");
       return children[children.length - 1].getEndOffset();
     }
 
@@ -1535,12 +1553,18 @@ public abstract class AbstractDocument
     }
 
     /**
-     * Returns the start offset if this element inside the document model.
+     * Returns the start offset of this element inside the document model.
+     * This is the start offset of the first child element. If this element
+     * has no children, this method throws a <code>NullPointerException</code>.
      *
-     * @return the start offset if this element inside the document model
+     * @return the start offset of this element inside the document model
+     *
+     * @throws NullPointerException if this branch element has no children
      */
     public int getStartOffset()
     {
+      if (getElementCount() == 0)
+        throw new NullPointerException("This BranchElement has no children.");
       return children[0].getStartOffset();
     }
 
@@ -1631,6 +1655,11 @@ public abstract class AbstractDocument
     private DocumentEvent.EventType type;
 
     /**
+     * Maps <code>Element</code> to their change records.
+     */
+    Hashtable changes;
+
+    /**
      * Creates a new <code>DefaultDocumentEvent</code>.
      *
      * @param offset the starting offset of the change
@@ -1643,6 +1672,24 @@ public abstract class AbstractDocument
       this.offset = offset;
       this.length = length;
       this.type = type;
+      changes = new Hashtable();
+    }
+
+    /**
+     * Adds an UndoableEdit to this <code>DocumentEvent</code>. If this
+     * edit is an instance of {@link ElementEdit}, then this record can
+     * later be fetched by calling {@link #getChange}.
+     *
+     * @param edit the undoable edit to add
+     */
+    public boolean addEdit(UndoableEdit edit)
+    {
+      if (edit instanceof ElementChange)
+        {
+          ElementChange elEdit = (ElementChange) edit;
+          changes.put(elEdit.getElement(), elEdit);
+        }
+      return super.addEdit(edit);
     }
 
     /**
@@ -1693,9 +1740,9 @@ public abstract class AbstractDocument
      * @return the changes for <code>elem</code> or <code>null</code> if
      *         <code>elem</code> has not been changed
      */
-    public DocumentEvent.ElementChange getChange(Element elem)
+    public ElementChange getChange(Element elem)
     {
-      return null;
+      return (ElementChange) changes.get(elem);
     }
   }
 

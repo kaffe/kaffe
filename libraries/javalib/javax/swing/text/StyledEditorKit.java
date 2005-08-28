@@ -488,12 +488,15 @@ public class StyledEditorKit extends DefaultEditorKit
       else if (name.equals(AbstractDocument.ParagraphElementName))
 	view = new ParagraphView(element);
       else if (name.equals(AbstractDocument.SectionElementName))
-	view = new BoxView(element);
+	view = new BoxView(element, View.Y_AXIS);
       else if (name.equals(StyleConstants.ComponentElementName))
 	view = new ComponentView(element);
       else if (name.equals(StyleConstants.IconElementName))
 	view = new IconView(element);
-
+      else
+        throw new AssertionError("Unknown Element type: "
+                                 + element.getClass().getName() + " : "
+                                 + name);
       return view;
     }
   }

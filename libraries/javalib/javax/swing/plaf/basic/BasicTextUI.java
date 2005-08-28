@@ -150,6 +150,19 @@ public abstract class BasicTextUI extends TextUI
     }
 
     /**
+     * Indicates that the preferences of one of the child view has changed.
+     * This calls revalidate on the text component.
+     *
+     * @param view the child view which's preference has changed
+     * @param width <code>true</code> if the width preference has changed
+     * @param height <code>true</code> if the height preference has changed
+     */
+    public void preferenceChanged(View view, boolean width, boolean height)
+    {
+      textComponent.revalidate();
+    }
+
+    /**
      * Sets the real root view.
      *
      * @param v the root view to set
@@ -157,12 +170,39 @@ public abstract class BasicTextUI extends TextUI
     public void setView(View v)
     {
       if (view != null)
-	view.setParent(null);
+        view.setParent(null);
       
       if (v != null)
-	v.setParent(this);
+        v.setParent(null);
 
       view = v;
+    }
+
+    /**
+     * Returns the real root view, regardless of the index.
+     *
+     * @param index not used here
+     *
+     * @return the real root view, regardless of the index.
+     */
+    public View getView(int index)
+    {
+      return view;
+    }
+
+    /**
+     * Returns <code>1</code> since the RootView always contains one
+     * child, that is the real root of the View hierarchy.
+     *
+     * @return <code>1</code> since the RootView always contains one
+     *         child, that is the real root of the View hierarchy
+     */
+    public int getViewCount()
+    {
+      if (view != null)
+        return 1;
+      else
+        return 0;
     }
 
     /**
@@ -326,7 +366,7 @@ public abstract class BasicTextUI extends TextUI
     {
       Dimension size = textComponent.getSize();
       rootView.changedUpdate(ev, new Rectangle(0, 0, size.width, size.height),
-                             BasicTextUI.this);
+                             rootView.getViewFactory());
     }
     
     /**
@@ -338,7 +378,7 @@ public abstract class BasicTextUI extends TextUI
     {
       Dimension size = textComponent.getSize();
       rootView.insertUpdate(ev, new Rectangle(0, 0, size.width, size.height),
-                            BasicTextUI.this);
+                            rootView.getViewFactory());
       int caretPos = textComponent.getCaretPosition();
       if (caretPos >= ev.getOffset())
         textComponent.setCaretPosition(caretPos + ev.getLength());
@@ -353,7 +393,7 @@ public abstract class BasicTextUI extends TextUI
     {
       Dimension size = textComponent.getSize();
       rootView.removeUpdate(ev, new Rectangle(0, 0, size.width, size.height),
-                            BasicTextUI.this);
+                            rootView.getViewFactory());
       int caretPos = textComponent.getCaretPosition();
       if (caretPos >= ev.getOffset())
         textComponent.setCaretPosition(ev.getOffset());
@@ -979,6 +1019,7 @@ public abstract class BasicTextUI extends TextUI
   protected final void setView(View view)
   {
     rootView.setView(view);
+    view.setParent(rootView);
   }
 
   /**
@@ -999,6 +1040,7 @@ public abstract class BasicTextUI extends TextUI
     Element elem = doc.getDefaultRootElement();
     if (elem == null)
       return;
-    setView(factory.create(elem));
+    View view = factory.create(elem);
+    setView(view);
   }
 }

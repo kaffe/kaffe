@@ -305,14 +305,6 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "CheckBox.margin",new InsetsUIResource(2, 2, 2, 2),
       "CheckBox.textIconGap", new Integer(4),
       "CheckBox.textShiftOffset", new Integer(0),
-      "CheckBoxMenuItem.icon", 
-      new UIDefaults.LazyValue()
-      {
-        public Object createValue(UIDefaults def)
-        {
-          return BasicIconFactory.getCheckBoxIcon();
-        }
-      },
       "CheckBoxMenuItem.acceleratorFont", new FontUIResource("Dialog",
                                                              Font.PLAIN, 12),
       "CheckBoxMenuItem.acceleratorForeground",
@@ -328,7 +320,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       {
         public Object createValue(UIDefaults def)
         {
-          return BasicIconFactory.getMenuItemCheckIcon();
+          return BasicIconFactory.getCheckBoxMenuItemIcon();
         }
       },
       "CheckBoxMenuItem.font", new FontUIResource("Dialog", Font.PLAIN, 12),

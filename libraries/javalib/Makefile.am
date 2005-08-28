@@ -1274,6 +1274,7 @@ gnu_java_awt_peer_qt_SRCS = \
 	gnu/java/awt/peer/qt/QtGraphicsEnvironment.java \
 	gnu/java/awt/peer/qt/QtImage.java \
 	gnu/java/awt/peer/qt/QtImageConsumer.java \
+	gnu/java/awt/peer/qt/QtImageDirectGraphics.java \
 	gnu/java/awt/peer/qt/QtImageGraphics.java \
 	gnu/java/awt/peer/qt/QtLabelPeer.java \
 	gnu/java/awt/peer/qt/QtListPeer.java \
@@ -3949,6 +3950,7 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalComboBoxUI.java \
 	javax/swing/plaf/metal/MetalDesktopIconUI.java \
 	javax/swing/plaf/metal/MetalIconFactory.java \
+	javax/swing/plaf/metal/MetalInternalFrameTitlePane.java \
 	javax/swing/plaf/metal/MetalInternalFrameUI.java \
 	javax/swing/plaf/metal/MetalLabelUI.java \
 	javax/swing/plaf/metal/MetalLookAndFeel.java \
@@ -4045,6 +4047,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/Keymap.java \
 	javax/swing/text/LabelView.java \
 	javax/swing/text/LayeredHighlighter.java \
+	javax/swing/text/LayoutQueue.java \
 	javax/swing/text/MutableAttributeSet.java \
 	javax/swing/text/NavigationFilter.java \
 	javax/swing/text/ParagraphView.java \

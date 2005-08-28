@@ -1,5 +1,5 @@
 /* BasicIconFactory.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -44,13 +44,11 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.io.Serializable;
 
-import javax.swing.AbstractButton;
 import javax.swing.Icon;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.JCheckBoxMenuItem;
 
 /**
- * STUBBED
+ * Creates icons for the {@link BasicLookAndFeel}.
  */
 public class BasicIconFactory implements Serializable
 {
@@ -111,6 +109,56 @@ public class BasicIconFactory implements Serializable
     public void paintIcon(Component c, Graphics g, int x, int y)
     {
       // The icon is empty and needs no painting.
+    }
+  }
+
+  /**
+   * The icon used for {@link JCheckBoxMenuItem}s in the 
+   * {@link BasicLookAndFeel}. This icon has a size of 9x9 pixels.
+   */
+  static class CheckBoxMenuItemIcon
+    implements Icon
+  {
+    /**
+     * Returns the height of the icon in pixels.
+     *
+     * @return the height of the icon
+     */
+    public int getIconHeight()
+    {
+      return 9;
+    }
+
+    /**
+     * Returns the width of the icon in pixels.
+     *
+     * @return the height of the icon
+     */
+    public int getIconWidth()
+    {
+      return 9;
+    }
+
+    /**
+     * Paints the icon.
+     *
+     * @param c the component to be painted
+     * @param g the Graphics context to be painted with
+     * @param x the x position of the icon
+     * @param y the y position of the icon
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y)
+    {
+      JCheckBoxMenuItem item = (JCheckBoxMenuItem) c;
+      if (item.isSelected()) 
+        {
+          // paint the check...
+          g.setColor(Color.black);
+          g.drawLine(x + 1, y + 3, x + 1, y + 4);
+          g.drawLine(x + 2, y + 4, x + 2, y + 5);
+          for (int i = 0; i < 5; i++)
+            g.drawLine(x + 3 + i, y + 5 - i, x + 3 + i, y + 6 - i);    
+        }
     }
   }
 
@@ -253,9 +301,15 @@ public class BasicIconFactory implements Serializable
     return radioButtonIcon;
   }
 
+  /**
+   * Creates and returns an icon used when rendering {@link JCheckBoxMenuItem}
+   * components.
+   * 
+   * @return An icon.
+   */
   public static Icon getCheckBoxMenuItemIcon()
   {
-    return getCheckBoxIcon();
+    return new CheckBoxMenuItemIcon();
   }
   
   public static Icon getRadioButtonMenuItemIcon()

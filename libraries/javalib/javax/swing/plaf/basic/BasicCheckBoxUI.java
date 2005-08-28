@@ -58,13 +58,6 @@ public class BasicCheckBoxUI extends BasicRadioButtonUI
     return defaults.getIcon("CheckBox.icon");
   }
   
-  public void installUI(final JComponent c)  {
-    super.installUI(c);
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    ((AbstractButton) c).setIcon(defaults.getIcon("CheckBox.icon"));
-    ((AbstractButton) c).setSelectedIcon(defaults.getIcon("CheckBox.checkIcon"));
-  }
-
   // Overridden to change method access.
   public String getPropertyPrefix()
   {

@@ -98,13 +98,14 @@ public abstract class CompositeView
   {
     Element el = getElement();
     int count = el.getElementCount();
-    children = new View[count];
+    View[] newChildren = new View[count];
     for (int i = 0; i < count; ++i)
       {
         Element child = el.getElement(i);
         View view = f.create(child);
-        children[i] = view;
+        newChildren[i] = view;
       }
+    replace(0, getViewCount(), newChildren);
   }
 
   /**
@@ -117,7 +118,7 @@ public abstract class CompositeView
   public void setParent(View parent)
   {
     super.setParent(parent);
-    if ((children == null) || children.length == 0)
+    if (parent != null && ((children == null) || children.length == 0))
       loadChildren(getViewFactory());
   }
 
@@ -155,6 +156,17 @@ public abstract class CompositeView
    */
   public void replace(int offset, int length, View[] views)
   {
+    // Check for null views to add.
+    for (int i = 0; i < views.length; ++i)
+      if (views[i] == null)
+        throw new NullPointerException("Added views must not be null");
+
+    int endOffset = offset + length;
+
+    // First we set the parent of the removed children to null.
+    for (int i = offset; i < endOffset; ++i)
+      children[i].setParent(null);
+
     View[] newChildren = new View[children.length - length + views.length];
     System.arraycopy(children, 0, newChildren, 0, offset);
     System.arraycopy(views, 0, newChildren, offset, views.length);
@@ -162,6 +174,10 @@ public abstract class CompositeView
                      offset + views.length,
                      children.length - (offset + length));
     children = newChildren;
+
+    // Finally we set the parent of the added children to this.
+    for (int i = 0; i < views.length; ++i)
+      views[i].setParent(this);
   }
 
   /**
@@ -202,8 +218,23 @@ public abstract class CompositeView
     throws BadLocationException
   {
     int childIndex = getViewIndex(pos, bias);
-    View child = children[childIndex];
-    return child.modelToView(pos, a, bias);
+    if (childIndex != -1)
+      {
+        View child = getView(childIndex);
+        Shape result = child.modelToView(pos, a, bias);
+        if (result == null)
+          throw new AssertionError("" + child.getClass().getName()
+                                   + ".modelToView() must not return null");
+        return result;
+      }
+    else
+      {
+        // FIXME: Handle the case when we have no child view for the given
+        // position.
+        throw new AssertionError("No child views found where child views are "
+                                 + "expected. pos = " + pos + ", bias = "
+                                 + bias);
+      }
   }
 
   /**
@@ -354,7 +385,8 @@ public abstract class CompositeView
    *
    * @param x the X coordinate
    * @param y the Y coordinate
-   * @param r the allocation of this <code>CompositeView</code>
+   * @param r the inner allocation of this <code>BoxView</code> on entry,
+   *        the allocation of the found child on exit
    *
    * @return the child <code>View</code> at the specified location
    */

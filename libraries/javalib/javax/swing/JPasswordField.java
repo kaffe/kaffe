@@ -224,7 +224,7 @@ public class JPasswordField extends JTextField
       }
     catch (BadLocationException ble)
       {
-        return "";
+        throw new AssertionError("This should not happen");
       }
   }
 

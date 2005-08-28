@@ -1,5 +1,265 @@
 2005-08-27  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-08-26  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicCheckBoxUI.java
+        (installUI): removed,
+        * javax/swing/plaf/basic/BasicIconFactory.java
+        (CheckBoxMenuItemIcon): new support class,
+        (getCheckBoxMenuItemIcon): return instance of CheckBoxMenuItemIcon,
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefaults): changed value for 'CheckBoxMenuItem.checkIcon'
+        and removed entry for 'CheckBoxMenuItem.icon',
+        * javax/swing/plaf/basic/BasicMenuItemUI.java
+        (paintMenuItem): let icon handle selection status,
+        * javax/swing/plaf/metal/MetalIconFactory.java
+        (CheckBoxMenuItemIcon): new support class,
+        (getCheckBoxIcon): implemented,
+        (getCheckBoxMenuItemIcon): implemented,
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initComponentDefaults): added entry for 'CheckBoxMenuItem.checkIcon'.
+
+	2005-08-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+        (create): Only set overwrite confirmation if using GTK >= 2.8.
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (setVisibleNative): Call gdk_flush before releasing GDK lock.
+        (setVisibleNativeUnlocked): Don't call gdk_flush.
+
+	2005-08-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        PR classpath/21660:
+        * gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+        (AWT_FILEDIALOG_LOAD): New macro.
+        (AWT_FILEDIALOG_SAVE): Likewise.
+        (create(GtkContainerPeer,int)): Add mode parameter.  Create Save
+        dialog if mode is AWT_FILEDIALOG_SAVE.  Remove workaround for
+        http://bugzilla.gnome.org/show_bug.cgi?id=166852.
+        (create()): Add mode argument to create call.
+        * gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+        native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+        (setVisibleNative): Override method.
+        (setVisibleNativeUnlocked): Override method.  Call gdk_flush after
+        showing or hiding window.
+        * include/gnu_java_awt_peer_gtk_GtkFileDialogPeer.h: Regenerate.
+        * include/gnu_java_awt_peer_gtk_GtkWindowPeer.h: Regenerate.
+
+	2005-08-25  Mark Wielaard  <mark@klomp.org>
+
+        * timezones.pl (parseRule): Add dayoffset when $time represents
+        more then a day.
+        * java/util/TimeZone.java (timezones): Regenerate.
+
+	2005-08-25  Mark Wielaard  <mark@klomp.org>
+
+        Reported by Bastiaan Huisman <huisman@science.uva.nl>
+        * scripts/tzabbrevs: Change America/Buenos_Aires to
+        America/Argentina/Buenos_Aires for AGT link.
+        * timezones.pl (parseTime): Assume and return wall time.
+        Reindent output.
+        * java/util/TimeZone.java (timezones): Regenerate using tzdata2005l.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/JTextPane.java
+        (JTextPane()): Don't set the document to null here.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (RootView.preferenceChanged): Revalidate the text component.
+        (RootView.setParent): Set parent of views to null. The parent
+        of the added child view is set to the root view in the
+        BasicTextUI class.
+        (RootView.getView): Implemented new method.
+        (RootView.getViewCount): Implemented new method.
+        (RootView.changedUpdate): Use the correct ViewFactory here.
+        (RootView.insertUpdate): Use the correct ViewFactory here.
+        (RootView.removeUpdate): Use the correct ViewFactory here.
+        (setView): Set the view's parent to the root view.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/View.java
+        (View): Don't manage child views here.
+        (getContainer): Throw AssertionError if we have no parent. This
+        should not happen.
+        (append): Call replace to do the real action. Child views
+        are not managed in the View class itself.
+        (removeAll): Give replace an empty array instead of null.
+        Avoids NPEs in subclasses that don't handle the null case.
+        (preferenceChanged): Don't revalidate here. This is too
+        expensive and not necessary.
+        (updateChildren): Let replace do the actual action. We don't
+        manage child views in the View class.
+        (forwardUpdate): Don't access children directly.
+        (dump): Added package private methods useful for debugging.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/StyledEditorKit.java
+        (StyledViewFactory.create): Use new BoxView constructor. Throw
+        AssertionError if an unknown element type is encountered,
+        since this should not happen.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/GlyphView.java
+        (GlyphPainter): Implemented abstract inner class.
+        (DefaultGlyphPainter): Implemented concrete impl of
+        GlyphPainter.
+        (getGlyphPainter): Implemented new method.
+        (setGlyphPainter): Likewise.
+        (checkPainter): Likewise.
+        (paint): Likewise.
+        (getPreferredSpan): Likewise.
+        (modelToView): Likewise.
+        (getTabExpander): Likewise.
+        (getTabbedSpan): Likewise.
+        (getPartialSpan): Likewise.
+        (getBeginIndex): Likewise.
+        (getEndIndex): Likewise.
+        (getText): Likewise.
+        (getFont): Likewise.
+        (getForeground): Likewise.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/GapContent.java
+        (getString): Throw BadLocationException instead of letting
+        a StringIndexOutOfBoundsException bubble up.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/ParagraphView.java
+        (Row): Implemented inner class.
+        (ParagraphView(Element)): Implemented constructor.
+        (nextTabStop): Added dummy implementation for TabExpander
+        interface.
+        (createRow): Implemented new method.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/FlowView.java
+        (FlowStrategy): Implemented inner class.
+        (LogicalView): Likewise.
+        (FlowView(Element, int)): Implemented constructor.
+        (getFlowAxis): Implemented new method.
+        (getFlowSpan): Likewise.
+        (getFlowStart): Likewise.
+        (createRow): Added new abstract method.
+        (loadChildren): Implemented new method.
+        (layout): Implemented new method.
+        (insertUpdate): Implemented new method.
+        (removeUpdate): Implemented new method.
+        (changedUpdate): Implemented new method.
+        (getViewIndexAtPosition): Implemented new method.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/CompositeView.java
+        (loadChildren): Call replace to actually change the child
+        elements. This way subclasses can modify the child
+        management behaviour by simply overriding replace.
+        (setParent): Only call loadChildren if the parent to be set
+        is actually not null.
+        (replace): Check for null children. Set the parent of removed
+        children to null. Set the parent of the added children to
+        this.
+        (modelToView): Added some sanity checks.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/BoxView.java
+        (BoxView(Element, int)): Implemented.
+        (getAxis): Likewise.
+        (setAxis): Likewise.
+        (layoutChanged): Likewise.
+        (isLayoutValid): Likewise.
+        (paintChild): Likewise.
+        (replace): Likewise.
+        (paint): Likewise.
+        (getPreferredSpan): Likewise.
+        (getMaximumSpan): Likewise.
+        (baselineRequirements): Likewise.
+        (calculateMajorAxisRequirements): Likewise.
+        (calculateMinorAxisRequirements): Likewise.
+        (isBefore): Likewise.
+        (isAfter): Likewise.
+        (getViewAtPoint): Likewise.
+        (childAllocation): Likewise.
+        (layout): Likewise.
+        (layoutMajorAxis): Likewise.
+        (layoutMinorAxis): Likewise.
+        (isAllocationValid): Likewise.
+        (getWidth): Likewise.
+        (getHeight): Likewise.
+        (setSize): Likewise.
+        (validateLayout): Likewise.
+
+	2005-08-25  Roman Kennke  <roman@kennke.org>
+
+        * javax/swing/text/AbstractDocument.java
+        (AbstractElement.dumpElement): Throw AssertionError when
+        a BadLocationException is encountered.
+        (BranchElement.getElementIndex): Return -1 if there is no child
+        element. Return elementCount - 1 if the requested offset is after
+        the child elements of that element.
+        (BranchElement.getEndOffset): Throw NPE if this element has no
+        children.
+        (BranchElement.getStartOffset): Throw NPE if this element has
+        no children.
+        (DefaultDocumentEvent.addEdit): Implemented.
+        (DefaultDocumentEvent.getChange): Implemented.
+
+	2005-08-25  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JPasswordField.java
+        (setText): Changed to raise an AssertionError when a
+        BadLocationException is caught.
+
+	2005-08-25  Mark Wielaard  <mark@klomp.org>
+
+        * javax/xml/namespace/QName.java: Updated boilerplate address.
+        * gnu/xml/xpath/XPathParser.y: Likewise.
+        * gnu/xml/xpath/XPathParser.java: Regenerated.
+
+	2005-08-25  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/xml/datatype/DatatypeFactory.java: minor API doc fixes,
+        * javax/xml/parsers/DocumentBuilder.java: likewise,
+        * javax/xml/parsers/SAXParser.java: likewise,
+        * javax/xml/transform/Source.java: likewise.
+
+	2005-08-25  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/tree/DefaultTreeModel.java
+        (nodesWereRemoved): minor API doc fix.
+
+	2005-08-25  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+        (activeBGColor): removed,
+        (activeFGColor): removed,
+        (inactiveBGColor): removed,
+        (inactiveFGColor): removed,
+        (installDefaults): replaced removed fields above with correct ones,
+        (uninstallDefaults): likewise,
+        (setButtonIcons): implemented,
+        (paintComponent): replaced removed fields above with correct ones;
+        * javax/swing/plaf/metal/MetalInternalFrameTitlePane.java: implemented,
+        * javax/swing/plaf/metal/MetalInternalFrameUI.java
+        (createNorthPane): implemented,
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initComponentDefaults): added internal frame icons.
+
+2005-08-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/classpath/VMSystemProperties.java
 	Set java.class.version to 48.0 for Maven 2.
 

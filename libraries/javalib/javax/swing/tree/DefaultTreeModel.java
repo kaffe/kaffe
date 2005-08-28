@@ -346,7 +346,7 @@ public class DefaultTreeModel
    * 
    * @param parent that had a child added to
    * @param childIndices of the children added
-   * @param removeChildren are all the children removed from parent.
+   * @param removedChildren are all the children removed from parent.
    */
   public void nodesWereRemoved(TreeNode parent, int[] childIndices, 
                                Object[] removedChildren)

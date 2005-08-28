@@ -105,6 +105,9 @@ public class GtkWindowPeer extends GtkContainerPeer
   {
   }
 
+  public native void setVisibleNative (boolean b);
+  public native void setVisibleNativeUnlocked (boolean b);
+
   native void connectSignals ();
 
   public GtkWindowPeer (Window window)

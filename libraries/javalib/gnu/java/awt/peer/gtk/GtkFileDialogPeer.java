@@ -55,7 +55,7 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
   private String currentDirectory = null;
   private FilenameFilter filter;
 
-  native void create (GtkContainerPeer parent);
+  native void create (GtkContainerPeer parent, int mode);
   native void connectSignals ();
   native void nativeSetFile (String file);
   public native String nativeGetDirectory();
@@ -64,7 +64,8 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
 
   public void create()
   {
-    create((GtkContainerPeer) awtComponent.getParent().getPeer());
+    create((GtkContainerPeer) awtComponent.getParent().getPeer(),
+           ((FileDialog) awtComponent).getMode());
 
     FileDialog fd = (FileDialog) awtComponent;
 

@@ -38,10 +38,28 @@ exception statement from your version. */
 
 package javax.swing.text;
 
-// TODO: Implement this class.
-public class ParagraphView
-  extends FlowView
+/**
+ * A {@link FlowView} that flows it's children horizontally and boxes the rows
+ * vertically.
+ *
+ * @author Roman Kennke (roman@kennke.org)
+ */
+public class ParagraphView extends FlowView implements TabExpander
 {
+  /**
+   * A specialized horizontal <code>BoxView</code> that represents exactly
+   * one row in a <code>ParagraphView</code>.
+   */
+  class Row extends BoxView
+  {
+    /**
+     * Creates a new instance of <code>Row</code>.
+     */
+    Row(Element el)
+    {
+      super(el, X_AXIS);
+    }
+  }
 
   /**
    * Creates a new <code>ParagraphView</code> for the given
@@ -49,8 +67,23 @@ public class ParagraphView
    *
    * @param element the element that is rendered by this ParagraphView
    */
-    public ParagraphView(Element element)
+  public ParagraphView(Element element)
   {
-    super(element);
+    super(element, Y_AXIS);
+  }
+
+  public float nextTabStop(float x, int tabOffset)
+  {
+    throw new InternalError("Not implemented yet");
+  }
+
+  /**
+   * Creates a new view that represents a row within a flow.
+   *
+   * @return a view for a new row
+   */
+  protected View createRow()
+  {
+    return new Row(getElement());
   }
 }

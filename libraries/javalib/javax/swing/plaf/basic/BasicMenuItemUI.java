@@ -295,7 +295,7 @@ public class BasicMenuItemUI extends MenuItemUI
    * Returns preferred size for the given menu item.
    *
    * @param c menu item for which to get preferred size
-   * @param checkIcon chech icon displayed in the given menu item
+   * @param checkIcon check icon displayed in the given menu item
    * @param arrowIcon arrow icon displayed in the given menu item
    * @param defaultTextIconGap space between icon and text in the given menuItem
    *
@@ -533,12 +533,7 @@ public class BasicMenuItemUI extends MenuItemUI
 	SwingUtilities.layoutCompoundLabel(m, fm, null, checkIcon, vertAlign,
 	                                   horAlign, vertTextPos, horTextPos,
 	                                   vr, cr, tr, defaultTextIconGap);
-  if (m.isSelected())
-    checkIcon.paintIcon(m, g, cr.x, cr.y);
-  UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-  defaults.getBorder("CheckBox.border").paintBorder(m, g, cr.x, cr.y, 
-      cr.width, cr.height);
-
+        checkIcon.paintIcon(m, g, cr.x, cr.y);
 	// We need to calculate position of the menu text and position of
 	// user menu icon if there exists one relative to the check icon.
 	// So we need to adjust view rectangle s.t. its starting point is at
@@ -567,7 +562,6 @@ public class BasicMenuItemUI extends MenuItemUI
                                        defaultTextIconGap);
     if (i != null)
       i.paintIcon(c, g, ir.x, ir.y);
-
     paintText(g, m, tr, m.getText());
 
     // paint accelerator    

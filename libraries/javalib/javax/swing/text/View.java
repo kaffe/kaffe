@@ -62,11 +62,6 @@ public abstract class View implements SwingConstants
   private View parent;
 
   /**
-   * The child views.
-   */
-  View[] children;
-
-  /**
    * Creates a new <code>View</code> instance.
    *
    * @param elem an <code>Element</code> value
@@ -74,7 +69,6 @@ public abstract class View implements SwingConstants
   public View(Element elem)
   {
     elt = elem;
-    children = new View[0];
   }
 
   public abstract void paint(Graphics g, Shape s);
@@ -92,7 +86,10 @@ public abstract class View implements SwingConstants
   public Container getContainer()
   {
     View parent = getParent();
-    return parent != null ? parent.getContainer() : null;
+    if (parent == null)
+      throw new AssertionError("The parent of a View must not be null.");
+
+    return parent.getContainer();
   }
   
   public Document getDocument()
@@ -178,12 +175,13 @@ public abstract class View implements SwingConstants
   public void append(View view)
   {
     View[] array = { view };
-    replace(getViewCount(), 1, array);
+    int offset = getViewCount();
+    replace(offset, 0, array);
   }
 
   public void removeAll()
   {
-    replace(0, getViewCount(), null); 
+    replace(0, getViewCount(), new View[0]); 
   }
 
   public void remove(int index)
@@ -250,8 +248,6 @@ public abstract class View implements SwingConstants
   {
     if (parent != null)
       parent.preferenceChanged(this, width, height);
-    else
-      ((JComponent) getContainer()).revalidate();
   }
 
   public int getBreakWeight(int axis, float pos, float len)
@@ -351,7 +347,7 @@ public abstract class View implements SwingConstants
     Element el = getElement();
     DocumentEvent.ElementChange ec = ev.getChange(el);
     if (ec != null)
-        updateChildren(ec, ev, vf);
+      updateChildren(ec, ev, vf);
     forwardUpdate(ec, ev, shape, vf);
     updateLayout(ec, ev, shape);
   }
@@ -382,16 +378,12 @@ public abstract class View implements SwingConstants
   {
     Element[] added = ec.getChildrenAdded();
     Element[] removed = ec.getChildrenRemoved();
-    View[] newChildren = new View[children.length + added.length
-                                  - removed.length];
     int index = ec.getIndex();
-    System.arraycopy(children, 0, newChildren, 0, index);
-    System.arraycopy(children, index, added, 0, added.length);
-    int index2 = index + removed.length;
-    int len2 = children.length - index2;
-    System.arraycopy(children, index2, newChildren, index + added.length,
-                     len2);
-    children = newChildren;
+
+    View[] newChildren = new View[added.length];
+    for (int i = 0; i < added.length; ++i)
+      newChildren[i] = vf.create(added[i]);
+    replace(index, removed.length, newChildren);
 
     return true;
   }
@@ -412,9 +404,10 @@ public abstract class View implements SwingConstants
   protected void forwardUpdate(DocumentEvent.ElementChange ec,
                                DocumentEvent ev, Shape shape, ViewFactory vf)
   {
-    for (int i = 0; i < children.length; i++)
+    int count = getViewCount();
+    for (int i = 0; i < count; i++)
       {
-        View child = children[i];
+        View child = getView(i);
         forwardUpdateToView(child, ev, shape, vf);
       }
   }
@@ -527,4 +520,36 @@ public abstract class View implements SwingConstants
    *         coordinates <code>x, y</code>
    */
   public abstract int viewToModel(float x, float y, Shape a, Position.Bias[] b);
+
+
+  /**
+   * Dumps the complete View hierarchy. This method can be used for debugging
+   * purposes.
+   */
+  void dump()
+  {
+    // Climb up the hierarchy to the parent.
+    View parent = getParent();
+    if (parent != null)
+      parent.dump();
+    else
+      dump(0);
+  }
+
+  /**
+   * Dumps the view hierarchy below this View with the specified indentation
+   * level.
+   *
+   * @param indent the indentation level to be used for this view
+   */
+  void dump(int indent)
+  {
+    for (int i = 0; i < indent; ++i)
+      System.out.print('.');
+    System.out.println(this);
+
+    int count = getViewCount();
+    for (int i = 0; i < count; ++i)
+      getView(i).dump(indent + 1);
+  }
 }

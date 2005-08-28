@@ -40,6 +40,9 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkFileDialogPeer.h"
 
+#define AWT_FILEDIALOG_LOAD 0
+#define AWT_FILEDIALOG_SAVE 1
+
 static void handle_response_cb (GtkDialog *dialog,
                                 gint responseId,
                                 jobject peer_obj);
@@ -87,7 +90,7 @@ cp_gtk_filedialog_init_jni (void)
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_create 
-  (JNIEnv *env, jobject obj, jobject parent)
+  (JNIEnv *env, jobject obj, jobject parent, int mode)
 {
   void *parentp;
   gpointer widget;
@@ -99,19 +102,31 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_create
 
   parentp = NSA_GET_PTR(env, parent);
 
-  /* FIXME: we should be using the default gnome-vfs backend but it is
-     not currently thread-safe.  See:
-     http://bugzilla.gnome.org/show_bug.cgi?id=166852 */
-  widget = gtk_file_chooser_dialog_new_with_backend
-    ("Open File",
-     GTK_WINDOW(parentp),
-     GTK_FILE_CHOOSER_ACTION_OPEN,
-     "gtk+",
-     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-     GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-     NULL);
+  if (mode == AWT_FILEDIALOG_LOAD)
+    widget = gtk_file_chooser_dialog_new
+      ("Open File",
+       GTK_WINDOW(parentp),
+       GTK_FILE_CHOOSER_ACTION_OPEN,
+       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+       NULL);
+  else
+    {
+      widget = gtk_file_chooser_dialog_new
+        ("Save File",
+         GTK_WINDOW(parentp),
+         GTK_FILE_CHOOSER_ACTION_SAVE,
+         GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+         GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+         NULL);
+#if GTK_MINOR_VERSION >= 8
+      gtk_file_chooser_set_do_overwrite_confirmation
+        (GTK_FILE_CHOOSER (widget), TRUE);
+#endif
+    }
 
-  /* GtkFileSelect is not modal by default */
+
+  /* GtkFileChooserDialog is not modal by default */
   gtk_window_set_modal (GTK_WINDOW (widget), TRUE);
 
   /* We must add this window to the group so input in the others are

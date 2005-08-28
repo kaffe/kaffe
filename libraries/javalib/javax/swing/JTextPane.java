@@ -70,8 +70,7 @@ public class JTextPane
    */
   public JTextPane()
   {
-    setEditorKit(createDefaultEditorKit());
-    setDocument(null);
+    super();
   }
 
   /**

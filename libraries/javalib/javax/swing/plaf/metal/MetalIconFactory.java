@@ -44,6 +44,8 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JInternalFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -62,6 +64,77 @@ public class MetalIconFactory implements Serializable
   /** A constant representing "light". */
   public static final boolean LIGHT = true;
     
+  /**
+   * An icon displayed for {@link JCheckBoxMenuItem} components.
+   */
+  private static class CheckBoxMenuItemIcon implements Icon, Serializable 
+  {
+    /**
+     * Creates a new icon instance.
+     */
+    public CheckBoxMenuItemIcon() 
+    {
+    }
+      
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon (10 pixels).
+     */
+    public int getIconWidth() 
+    {
+      return 10;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon (10 pixels).
+     */
+    public int getIconHeight() 
+    {
+      return 10;
+    }
+    
+    /**
+     * Paints the icon.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      JCheckBoxMenuItem item = (JCheckBoxMenuItem) c;
+        
+      if (item.isArmed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
+      g.drawLine(x, y, x + 8, y);
+      g.drawLine(x, y + 1, x, y + 8);
+      g.drawLine(x + 2, y + 8, x + 8, y + 8);
+      g.drawLine(x + 8, y + 2, x + 8, y + 7);
+      
+      g.setColor(MetalLookAndFeel.getWhite());
+      g.drawLine(x + 1, y + 1, x + 7, y + 1);
+      g.drawLine(x + 1, y + 2, x + 1, y + 7);
+      g.drawLine(x + 1, y + 9, x + 9, y + 9);
+      g.drawLine(x + 9, y + 1, x + 9, y + 8);
+
+      // if the item is selected, we should draw a tick
+      if (item.isSelected())
+      {
+        g.setColor(MetalLookAndFeel.getBlack());
+        g.fillRect(x + 2, y + 2, 2, 5);
+        for (int i = 0; i < 6; i++)
+          g.drawLine(x + 8 - i, y + i, x + 9 - i, y + i);
+      }
+
+    }        
+  }
+
   /**
    * An icon representing a file (drawn as a piece of paper with the top-right
    * corner turned down).
@@ -1157,6 +1230,29 @@ public class MetalIconFactory implements Serializable
    */
   public MetalIconFactory() 
   {   
+  }
+
+  /**
+   * Returns an icon for use when rendering the {@link JCheckBox} component.
+   * 
+   * @return A check box icon.
+   * 
+   * @since 1.3
+   */
+  public static Icon getCheckBoxIcon() 
+  {
+    return new MetalCheckBoxIcon();
+  }
+  
+  /**
+   * Returns an icon for use when rendering the {@link JCheckBoxMenuItem} 
+   * component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getCheckBoxMenuItemIcon() 
+  {
+    return new CheckBoxMenuItemIcon();
   }
 
   /**
