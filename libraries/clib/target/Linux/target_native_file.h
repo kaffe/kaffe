@@ -138,18 +138,26 @@ extern "C" {
         \
         length=0; \
         \
-        if ((KFSTAT(filedescriptor,&__statBuffer)==0) && S_ISREG(__statBuffer.st_mode)) \
+        if (KFSTAT(filedescriptor,&__statBuffer)==0) \
         { \
-	  int klseek_result; \
-          klseek_result=(KLSEEK(filedescriptor,0,SEEK_CUR, &__n));	\
-          if (klseek_result == 0) \
+          if (S_ISREG(__statBuffer.st_mode)) \
           { \
-            length=TARGET_NATIVE_MATH_INT_INT32_TO_INT64(__statBuffer.st_size-__n); \
-            result=TARGET_NATIVE_OK; \
+            int klseek_result; \
+            klseek_result=(KLSEEK(filedescriptor,0,SEEK_CUR, &__n));	\
+            if (klseek_result == 0) \
+            { \
+              length=TARGET_NATIVE_MATH_INT_INT32_TO_INT64(__statBuffer.st_size-__n); \
+              result=TARGET_NATIVE_OK; \
+            } \
+            else \
+            { \
+              result=TARGET_NATIVE_ERROR; \
+            } \
           } \
           else \
           { \
-            result=TARGET_NATIVE_ERROR; \
+              length=TARGET_NATIVE_MATH_INT_INT32_TO_INT64(0); \
+              result=TARGET_NATIVE_OK; \
           } \
         } \
         else \

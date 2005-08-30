@@ -1,3 +1,9 @@
+2005-08-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/target/Linux/target_native_file.h
+	(TARGET_NATIVE_FILE_AVAILABLE): Return length=0 if fstat for the
+	file is successful but the file is not a regular file.
+
 2005-08-27  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
