@@ -421,7 +421,8 @@ void
 gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jint opt, struct Hjava_lang_Object* arg)
 {
 	struct Hjava_net_InetAddress* addrp;
-	int k, v, r;
+	int v, r;
+	unsigned int k;
 
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
@@ -480,7 +481,8 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 jint
 gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* obj, jint opt)
 {
-	int k, r = 0, v;
+	int r = 0, v;
+	unsigned int k;
 	socklen_t vsize = sizeof(v);
 	struct sockaddr_in addr;
 	socklen_t alen = sizeof(addr);

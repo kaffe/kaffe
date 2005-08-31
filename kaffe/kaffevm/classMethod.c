@@ -1932,7 +1932,7 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	constants* pool;
 	Utf8Const* utf8;
 	Field* fld;
-	int idx;
+	unsigned int idx;
 	int n;
 
 	/* No locking here, assume class is already locked. */
@@ -2301,7 +2301,8 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 static bool
 computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 {
-	int i, j, k;
+	int j, k;
+	unsigned int i;
 	int found_i;
 	bool rc = false;
 	Hjava_lang_Class** ifcs;

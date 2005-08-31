@@ -26,7 +26,7 @@ static hashtab_t	hashTable;	/* intern hash table */
 static iStaticLock	stringLock; /* mutex on all intern operations */
 
 /* Internal functions */
-static int		stringHashValue(void *ptr);
+static int		stringHashValue(const void *ptr);
 static int		stringCompare(const void *s1, const void *s2);
 
 /*
@@ -358,7 +358,7 @@ stringUninternString(Hjava_lang_String* string)
  * is getting written no matter who writes it (strings are immutable).
  */
 static int
-stringHashValue(void *ptr)
+stringHashValue(const void *ptr)
 {
 	Hjava_lang_String *string = (Hjava_lang_String*) ptr;
 	jint hash;

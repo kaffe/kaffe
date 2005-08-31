@@ -201,11 +201,11 @@ static pthread_mutex_t gai_mutex = PTHREAD_MUTEX_INITIALIZER;
 #ifdef __STDC__
 static int is_integer(const char *);
 static int is_address(const char *);
-static int itoa_length(int);
+static unsigned int itoa_length(int);
 #else
 static int is_integer();
 static int is_address();
-static int itoa_length();
+static unsigned int itoa_length();
 #endif
 
 /*
@@ -286,7 +286,7 @@ is_address(const char *s)
  * Calcurate length of the string `s', where `s' is set by
  * sprintf(s, "%d", n).
  */
-static int
+static unsigned int
 itoa_length(int n)
 {
     int result = 1;

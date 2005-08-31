@@ -1,3 +1,20 @@
+2005-08-31  Andreas Tobler  <a.tobler@schweiz.ch>
+
+       * kaffe/kaffevm/classMethod.c
+	(resolveStaticFields): Change index to unsigned.
+	(computeInterfaceImplementationIndex): Change i to unsigned.
+
+	* kaffe/kaffevm/string.c: Change argument type for stringHashValue to
+	avoid compiler warnings.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c
+	(gnu_java_net_PlainDatagramSocketImpl_socketSetOption): Changed k to
+	unsigned to avoid compiler warnings.
+	(gnu_java_net_PlainDatagramSocketImpl_socketGetOption): Likewise.
+
+	* replace/getaddrinfo.c: Change prototype for itoa_length to unsigned
+	int.
+
 2005-08-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/clib/target/Linux/target_native_file.h
