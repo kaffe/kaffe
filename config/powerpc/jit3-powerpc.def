@@ -26,11 +26,11 @@
  * debugging stuff.
  * XXX clean me.
  */
-#if 0
+#if 1
 #undef ppc_op_ctxt
 #define ppc_op_ctxt CODEPC
 #undef ppc_op_debug
-#define ppc_op_debug(args) my_op_debug args
+#define ppc_op_debug(args) (jit_debug ? (my_op_debug args) : 0)
 int my_op_debug(int ctxt, const char *fmt, ...)
 {
     va_list args;
@@ -45,7 +45,7 @@ int my_op_debug(int ctxt, const char *fmt, ...)
 }
 #define DBOUT stderr
 
-#define debug(x) fprintf x
+#define debug(x) (jit_debug ? (fprintf x) : 0 )
 #else
 #define debug(x)
 #endif
