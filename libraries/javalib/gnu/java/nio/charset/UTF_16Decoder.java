@@ -87,7 +87,7 @@ final class UTF_16Decoder extends CharsetDecoder
                 byteOrder == MAYBE_BIG_ENDIAN ||
                 byteOrder == MAYBE_LITTLE_ENDIAN)
               {
-                char c = (char) (((b1 & 0x00FF) << 8) | (b2 & 0x00FF));
+                char c = (char) (((b1 & 0xFF) << 8) | (b2 & 0xFF));
                 if (c == BYTE_ORDER_MARK)
                   {
                     if (byteOrder == MAYBE_LITTLE_ENDIAN)
@@ -118,9 +118,9 @@ final class UTF_16Decoder extends CharsetDecoder
               }
 
 	    // FIXME: Change so you only do a single comparison here.
-            char c = byteOrder == BIG_ENDIAN ?
-                 (char) (((b1 & 0x00FF) << 8) | (b2 & 0x00FF)) :
-                 (char) (((b2 & 0x00FF) << 8) | (b1 & 0X00FF));
+            char c = (byteOrder == BIG_ENDIAN
+		      ? (char) (((b1 & 0xFF) << 8) | (b2 & 0xFF))
+		      : (char) (((b2 & 0xFF) << 8) | (b1 & 0xFF)));
 
             if (0xD800 <= c && c <= 0xDFFF)
               {

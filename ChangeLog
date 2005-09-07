@@ -1,3 +1,8 @@
+2005-09-03  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/java/nio/charset/UTF_16Decoder.java:
+	Changed the byte mask 0x00FF to 0xFF, conforming to GNU Classpath.
+
 2005-09-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/powerpc/jit3-powerpc.def: Debugging is now enabled by default
