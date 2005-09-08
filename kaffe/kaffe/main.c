@@ -741,7 +741,7 @@ options(char** argv, int argc)
 			if (vmargs.classpath != NULL) {
 				strcat (newcpath, path_separator);
 				strcat (newcpath, vmargs.classpath);
-				free (vmargs.classpath);
+				free ((void*)vmargs.classpath);
 			}
 
 			/* set the new classpath */
