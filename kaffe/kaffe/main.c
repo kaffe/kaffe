@@ -13,6 +13,8 @@
  * of this file.
  */
 
+#include <stdlib.h>
+
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -59,14 +61,13 @@ extern int profFlag;
 #include "jni.h"
 
 KaffeVM_Arguments vmargs;
-JNIEnv* global_env;
 JavaVM* global_vm;
 static int isJar = 0;
 
 static int options(char**, int);
 static void usage(void);
 static size_t parseSize(char*);
-static int checkException(void);
+static int checkException(JNIEnv* env);
 static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
 #define	KAFFEHOME	"KAFFEHOME"
@@ -86,6 +87,7 @@ main(int argc, char* argv[])
 {
 	int farg;
 	const char* cp;
+	void* env;
 
 #if defined(MAIN_MD)
 	MAIN_MD;
@@ -165,20 +167,27 @@ main(int argc, char* argv[])
 	/* Get the class name to start with */
 	if (argv[farg] == 0) {
 		usage();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (strcmp(argv[farg] + strlen(argv[farg]) - strlen(".class"),
 		   ".class") == 0) {
 		fprintf(stderr,
 			"Please do not specify the .class extension\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	/* Initialise */
-	JNI_CreateJavaVM(&global_vm, &global_env, &vmargs);
+	if (JNI_CreateJavaVM(&global_vm, 
+			     &env, 
+			     &vmargs) 
+	    < 0)
+	  {
+	    fprintf(stderr, "Cannot create the Java VM\n");
+	    exit(EXIT_FAILURE);
+	  }
 
-	return main2(global_env, argv, farg, argc);
+	return main2(env, argv, farg, argc);
 }
 
 /*
@@ -241,34 +250,34 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	}
 	
 	mcls = (*env)->FindClass(env, exec);
-	if (checkException())
+	if (checkException(env))
 		goto exception_happened;
 	
 	/* ... and run main. */
 	mmth = (*env)->GetStaticMethodID(env,
 	    mcls, "main", "([Ljava/lang/String;)V");
-	if (checkException())
+	if (checkException(env))
 		goto exception_happened;
 
 	/* Build an array of strings as the arguments */
 	cls = (*env)->FindClass(env, "java/lang/String");
-	if (checkException())
+	if (checkException(env))
 		goto exception_happened;
 	args = (*env)->NewObjectArray(env, argc, cls, NULL);
-	if (checkException())
+	if (checkException(env))
 		goto exception_happened;
 	for (i = 0; i < argc; i++) {
 		str = (*env)->NewStringUTF(env, argv[farg+i]);
-		if (checkException())
+		if (checkException(env))
 			goto exception_happened;
 		(*env)->SetObjectArrayElement(env, args, i, str);
-		if (checkException())
+		if (checkException(env))
 			goto exception_happened;
 	}
 
 	/* Call method, check for errors and then exit */
 	(*env)->CallStaticVoidMethod(env, mcls, mmth, args);
-	if (checkException())
+	if (checkException(env))
 	  goto exception_happened;
 
 	ret_code = 0;
@@ -284,35 +293,35 @@ done:
 }
 
 static int
-checkException(void)
+checkException(JNIEnv* env)
 {
 	jobject e;
 	jclass eiic;
 
 	/* Display exception stack trace */
-	if ((e = (*global_env)->ExceptionOccurred(global_env)) == NULL)
+	if ((e = (*env)->ExceptionOccurred(env)) == NULL)
 		return (0);
-	(*global_env)->DeleteLocalRef(global_env, e);
-	(*global_env)->ExceptionDescribe(global_env);
-	(*global_env)->ExceptionClear(global_env);
+	(*env)->DeleteLocalRef(env, e);
+	(*env)->ExceptionDescribe(env);
+	(*env)->ExceptionClear(env);
 
 	/* Display inner exception in ExceptionInInitializerError case */
-	eiic = (*global_env)->FindClass(global_env, "java/lang/ExceptionInInitializerError");
-	if ((*global_env)->ExceptionOccurred(global_env) != NULL) {
-		(*global_env)->ExceptionClear(global_env);
+	eiic = (*env)->FindClass(env, "java/lang/ExceptionInInitializerError");
+	if ((*env)->ExceptionOccurred(env) != NULL) {
+		(*env)->ExceptionClear(env);
 		return (1);
 	}
-	if ((*global_env)->IsInstanceOf(global_env, e, eiic)) {
-		e = (*global_env)->CallObjectMethod(global_env, e,
-		    (*global_env)->GetMethodID(global_env, (*global_env)->GetObjectClass(global_env, e),
+	if ((*env)->IsInstanceOf(env, e, eiic)) {
+		e = (*env)->CallObjectMethod(env, e,
+		    (*env)->GetMethodID(env, (*env)->GetObjectClass(env, e),
 			"getException", "()Ljava/lang/Throwable;"));
-		if ((*global_env)->ExceptionOccurred(global_env) != NULL) {
-			(*global_env)->ExceptionClear(global_env);
+		if ((*env)->ExceptionOccurred(env) != NULL) {
+			(*env)->ExceptionClear(env);
 			return (1);
 		}
 		if (e != NULL) {
-			(*global_env)->Throw(global_env, e);
-			return (checkException());
+			(*env)->Throw(env, e);
+			return (checkException(env));
 		}
 	}
 	return (1);
@@ -386,7 +395,7 @@ setKaffeAWT(const char * propStr)
        	if ((newbootcpath = malloc(bootcpathlength)) == NULL) 
 	{
            	fprintf(stderr,  _("Error: out of memory.\n"));
-                exit(1);
+                exit(EXIT_FAILURE);
       	}
 
         /* Construct new boot classpath */
@@ -426,15 +435,15 @@ options(char** argv, int argc)
 
 		if (strcmp(argv[i], "-help") == 0) {
 			usage();
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		else if (strcmp(argv[i], "-version") == 0) {
 			printShortVersion();
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		else if (strcmp(argv[i], "-fullversion") == 0) {
 			printFullVersion();
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 #if defined(__ia64__)
 		else if (strcmp(argv[i], "-ia32") == 0) {
@@ -450,7 +459,7 @@ options(char** argv, int argc)
 				fprintf(stderr, 
 				    "Error: No path found for %s option.\n",
 				    argv[i - 1]);
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* set the new classpath */
@@ -465,7 +474,7 @@ options(char** argv, int argc)
 				fprintf(stderr, 
 				    "Error: No path found for %s option.\n",
 				    argv[i - 1]);
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			cpathlength = ((vmargs.classpath != NULL) ? strlen(vmargs.classpath) : 0)
@@ -476,7 +485,7 @@ options(char** argv, int argc)
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newcpath = malloc(cpathlength)) == NULL) {
 				fprintf(stderr,  _("Error: out of memory.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* Construct new classpath */
@@ -539,7 +548,7 @@ options(char** argv, int argc)
                         /* Get longer buffer FIXME:  free the old one */
                         if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
                                 fprintf(stderr,  _("Error: out of memory.\n"));
-                                exit(1);
+                                exit(EXIT_FAILURE);
                         }
 
                         /* Construct new boot classpath */
@@ -566,7 +575,7 @@ options(char** argv, int argc)
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
 				fprintf(stderr,  _("Error: out of memory.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* Construct new boot classpath */
@@ -591,7 +600,7 @@ options(char** argv, int argc)
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
 				fprintf(stderr,  _("Error: out of memory.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* Construct new boot classpath */
@@ -613,7 +622,7 @@ options(char** argv, int argc)
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
 				fprintf(stderr,  _("Error: out of memory.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* Construct new boot classpath */
@@ -628,7 +637,7 @@ options(char** argv, int argc)
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr, _("Error: No stack size found for -ss option.\n"));
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 				sz = parseSize(argv[i]);
 			} else {
@@ -647,7 +656,7 @@ options(char** argv, int argc)
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  _("Error: No heap size found for -mx option.\n"));
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 				if (strcmp(argv[i], "unlimited") == 0)
 					vmargs.maxHeapSize = UNLIMITED_HEAP;
@@ -666,7 +675,7 @@ options(char** argv, int argc)
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  _("Error: No heap size found for -ms option.\n"));
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 				vmargs.minHeapSize = parseSize(argv[i]);
 			} else {
@@ -678,7 +687,7 @@ options(char** argv, int argc)
 				i++;
 				if (argv[i] == 0) {
 					fprintf(stderr,  _("Error: No heap size found for -as option.\n"));
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 				vmargs.allocHeapSize = parseSize(argv[i]);
 			} else {
@@ -724,7 +733,7 @@ options(char** argv, int argc)
 			newcpath = (char *)malloc (cpathlength);
 			if (newcpath == NULL) {
 				fprintf(stderr,  _("Error: out of memory.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			strcpy (newcpath, argv[i+1]);
@@ -844,7 +853,7 @@ options(char** argv, int argc)
                                 fprintf(stderr, 
 					_("Error: -vmstats option requires a "
 					"second arg.\n"));
-                                exit(1);
+                                exit(EXIT_FAILURE);
                         }
                         statsSetMaskStr(argv[i]);
                 }
@@ -856,10 +865,10 @@ options(char** argv, int argc)
                                 fprintf(stderr, 
 					_("Error: -vmdebug option requires a "
 					"debug flag. Use `list' for a list.\n"));
-                                exit(1);
+                                exit(EXIT_FAILURE);
                         }
                         if (!dbgSetMaskStr(argv[i]))
-				exit(1);
+				exit(EXIT_FAILURE);
                 }
 #endif
                 else if (strcmp(argv[i], "-debug-fd") == 0) {
@@ -868,13 +877,13 @@ options(char** argv, int argc)
                         if (argv[i] == 0) { /* forgot second arg */
                                 fprintf(stderr, 
 					_("Error: -debug-fd an open descriptor.\n"));
-                                exit(1);
+                                exit(EXIT_FAILURE);
                         }
 			dbgSetDprintfFD(strtol(argv[i], &end, 10));
 			if (end != 0 && *end != '\0') {
 				fprintf(stderr,
 					_("Error: -debug-fd requires an integer.\n"));
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
                 }
 		else if (argv[i][1] ==  'D') {

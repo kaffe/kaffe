@@ -1,3 +1,17 @@
+2005-09-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffe/main.c: Include stdlib.h for exit.
+	Use EXIT_FAILURE and EXIT_SUCCESS everywhere.
+	(global_env) Removed global variable.
+	(checkException) Added JNIEnv* parameter, so that it no
+	longer needs to use global_env.
+	(main): New local variable env, declaredas void* to fix
+	type-punning warning. Check if JNI_CreateJavaVM failed, 
+	and exit with an error message.
+	(main2): Pass JNIEnv pointer env on to checkException
+	invocations. 
+	(checkException): Replaced use of global_env by env.
+
 2005-09-03  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/java/nio/charset/UTF_16Decoder.java:
