@@ -20,7 +20,7 @@ public class Adler32 implements Checksum {
 
   public Adler32()
   {
-    adler = 0;
+    adler = 1;
   }
 
   public void update(int b)
@@ -35,12 +35,12 @@ public class Adler32 implements Checksum {
 
   public void reset()
   {
-    adler = 0;
+    adler = 1;
   }
 
   public long getValue()
   {
-    return (adler);
+    return (adler & 0xFFFFFFFFL);
   }
 
   public native void update(byte[] buf, int from, int len);

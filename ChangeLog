@@ -1,3 +1,10 @@
+2005-09-09  Mark Wielaard  <mark@klomp.org>
+
+        * libraries/javalib/java/util/zip/Adler32.java
+        (Adler32): Set adler to 1.
+        (reset): Likewise.
+        (getValue): Return unsigned int value.
+
 2005-09-09  Kurt Miller <truk@optonline.net>
 
 	* configure.ac: Don't check for functions to set 
