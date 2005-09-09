@@ -39107,7 +39107,9 @@ _ACEOF
 
 
 # sched_get_priority_* functions are not implemented on OpenBSD <= 3.4
-# at least.
+# at least. setting pthread priorities on OpenBSD has unexpected results,
+# so don't enable setting them for OpenBSD.
+if test x"$Khost_os" != x"openbsd2" ; then
 
 for ac_func in sched_get_priority_max
 do
@@ -39312,7 +39314,7 @@ _ACEOF
 fi
 done
 
-cat >conftest.$ac_ext <<_ACEOF
+  cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
@@ -39323,7 +39325,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef SCHED_OTHER
 Found_SCHED_OTHER
 #endif
-  >
+    >
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
@@ -39337,6 +39339,7 @@ _ACEOF
 fi
 rm -f conftest*
 
+fi
 
 
 

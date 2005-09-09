@@ -1,3 +1,9 @@
+2005-09-09  Kurt Miller <truk@optonline.net>
+
+	* configure.ac: Don't check for functions to set 
+	priorities on OpenBSD, to avoid starvation on 
+	that platform.
+
 2005-09-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/jvmpi/jvmpi_kaffe.c (jvmpiFillMethodLoad):

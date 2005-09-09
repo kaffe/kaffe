@@ -1358,18 +1358,21 @@ AC_CHECK_FUNCS([munmap mincore msync madvise getpagesize sysconf])
 AM_ICONV
 
 # sched_get_priority_* functions are not implemented on OpenBSD <= 3.4
-# at least.
-AC_CHECK_FUNCS([sched_get_priority_max])
-AC_CHECK_FUNCS([sched_get_priority_min])
-AC_EGREP_HEADER(Found_SCHED_OTHER,
-  [
+# at least. setting pthread priorities on OpenBSD has unexpected results,
+# so don't enable setting them for OpenBSD.
+if test x"$Khost_os" != x"openbsd2" ; then
+  AC_CHECK_FUNCS([sched_get_priority_max])
+  AC_CHECK_FUNCS([sched_get_priority_min])
+  AC_EGREP_HEADER(Found_SCHED_OTHER,
+    [
 #include <sched.h>
 #ifdef SCHED_OTHER
 Found_SCHED_OTHER
 #endif
-  ],
-  [ AC_DEFINE(HAVE_SCHED_OTHER_IN_SCHED, 1, [Defined if SCHED_OTHER is in sched.h])
-])
+    ],
+    [ AC_DEFINE(HAVE_SCHED_OTHER_IN_SCHED, 1, [Defined if SCHED_OTHER is in sched.h])
+  ])
+fi
 
 dnl pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
 dnl pthread_yield is not implemented on any systems.
