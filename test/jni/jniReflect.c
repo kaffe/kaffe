@@ -29,7 +29,8 @@ int main(void)
 {
   JavaVMInitArgs vmargs;
   JavaVM *vm;
-  JNIEnv *env;
+  void *env;
+  JNIEnv *jni_env;
   JavaVMOption myoptions[2];
   jclass cls, refcls;
   jmethodID mainid, nameid;
@@ -60,53 +61,55 @@ int main(void)
       fprintf(stderr, " Cannot create the Java VM\n");
       return 1;
     }
+
+  jni_env = env;
   
-  cls = (*env)->FindClass(env, "HelloWorldApp");
-  if ((*env)->ExceptionOccurred(env))
+  cls = (*jni_env)->FindClass(jni_env, "HelloWorldApp");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "FindClass has failed\n");
       return 1;
     }
 
-  mainid = (*env)->GetStaticMethodID(env, cls, "main", "([Ljava/lang/String;)V");
-  if ((*env)->ExceptionOccurred(env))
+  mainid = (*jni_env)->GetStaticMethodID(jni_env, cls, "main", "([Ljava/lang/String;)V");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "GetStaticMethodID has failed\n");
       return 1;
     }
 
-  reflect = (*env)->ToReflectedMethod(env, cls, mainid, 1);
-  if (reflect == NULL || (*env)->ExceptionOccurred(env))
+  reflect = (*jni_env)->ToReflectedMethod(jni_env, cls, mainid, 1);
+  if (reflect == NULL || (*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "ToReflectedMethod has failed\n");
       return 1;
     }
 
-  refcls = (*env)->FindClass(env, "java/lang/reflect/Method");
-  if ((*env)->ExceptionOccurred(env))
+  refcls = (*jni_env)->FindClass(jni_env, "java/lang/reflect/Method");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "FindClass(java/lang/reflect/Method has failed\n");
       return 1;
     }
 
-  nameid = (*env)->GetMethodID(env, refcls, "getName", "()Ljava/lang/String;");
-  if ((*env)->ExceptionOccurred(env))
+  nameid = (*jni_env)->GetMethodID(jni_env, refcls, "getName", "()Ljava/lang/String;");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "GetMethodID has failed\n");
       return 1;
     }
 
-  name = (*env)->CallObjectMethod(env, reflect, nameid);
-  if ((*env)->ExceptionOccurred(env))
+  name = (*jni_env)->CallObjectMethod(jni_env, reflect, nameid);
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "getName() has failed\n");
       return 1;
     }
   
   isCopy = 0;
-  name_utf = (*env)->GetStringUTFChars(env, name, &isCopy);  
+  name_utf = (*jni_env)->GetStringUTFChars(jni_env, name, &isCopy);  
 
-  (*env)->ReleaseStringChars(env, name, name_utf);
+  (*jni_env)->ReleaseStringChars(jni_env, name, name_utf);
 
   (*vm)->DestroyJavaVM(vm);
 

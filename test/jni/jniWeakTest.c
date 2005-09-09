@@ -29,7 +29,8 @@ int main(void)
 {
   JavaVMInitArgs vmargs;
   JavaVM *vm;
-  JNIEnv *env;
+  void *env;
+  JNIEnv *jni_env;
   JavaVMOption myoptions[3];
   jclass cls, scls;
   jarray args;
@@ -58,38 +59,40 @@ int main(void)
       fprintf(stderr, " Cannot create the Java VM\n");
       return 1;
     }
+
+  jni_env = env;
   
-  cls = (*env)->FindClass(env, "JNIWeakTest");
-  if ((*env)->ExceptionOccurred(env))
+  cls = (*jni_env)->FindClass(jni_env, "JNIWeakTest");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
-	    (*env)->ExceptionDescribe(env);
+	    (*jni_env)->ExceptionDescribe(jni_env);
       fprintf(stderr, "FindClass has failed\n");
       return 1;
     }
 
-  mainid = (*env)->GetStaticMethodID(env, cls, "main", "([Ljava/lang/String;)V");
-  if ((*env)->ExceptionOccurred(env))
+  mainid = (*jni_env)->GetStaticMethodID(jni_env, cls, "main", "([Ljava/lang/String;)V");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "GetStaticMethodID has failed\n");
       return 1;
     }
 
-  scls = (*env)->FindClass(env, "java/lang/String");
-  if ((*env)->ExceptionOccurred(env))
+  scls = (*jni_env)->FindClass(jni_env, "java/lang/String");
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "FindClass(java/lang/String) has failed\n");
       return 1;
     }
 
-  args = (*env)->NewObjectArray(env, 0, scls, 0);
-  if ((*env)->ExceptionOccurred(env))
+  args = (*jni_env)->NewObjectArray(jni_env, 0, scls, 0);
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "NewObjectArray has failed\n");
       return 1;
     }
 
-  (*env)->CallStaticVoidMethod(env, cls, mainid, args);
-  if ((*env)->ExceptionOccurred(env))
+  (*jni_env)->CallStaticVoidMethod(jni_env, cls, mainid, args);
+  if ((*jni_env)->ExceptionOccurred(jni_env))
     {
       fprintf(stderr, "CallStaticMethod has failed\n");
       return 1;

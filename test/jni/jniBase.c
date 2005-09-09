@@ -30,7 +30,7 @@ int main(void)
 {
   JavaVMInitArgs vmargs;
   JavaVM *vm;
-  JNIEnv *env;
+  void *env;
   JavaVMOption myoptions[1];
 
   /* set up libtool/libltdl dlopen emulation */
@@ -49,7 +49,7 @@ int main(void)
   vmargs.nOptions = 1;
   vmargs.options = myoptions;
 
-  if (JNI_CreateJavaVM (&vm, (void **)&env, &vmargs) < 0)
+  if (JNI_CreateJavaVM (&vm, &env, &vmargs) < 0)
     {
       fprintf(stderr, " Cannot create the Java VM\n");
       return 1;
