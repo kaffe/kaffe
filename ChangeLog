@@ -1,5 +1,14 @@
 2005-09-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h (Hjava_lang_Class):
+	Made total_interface_len unsigned to fix compiler warning.
+
+	* kaffe/kaffevm/soft.c (instanceof_interface):
+	Made i unsigned since it's used as an array subscript.
+	Rewritten a loop to go from 0 to total_interface_len.
+
+2005-09-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/classMethod.c (processClass): 
 	Added missing cast to fix compiler warning.
 

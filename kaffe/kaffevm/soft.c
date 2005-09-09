@@ -301,7 +301,7 @@ inline
 jint
 instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
-	int i;
+	unsigned int i;
 	Hjava_lang_Class **impl_clazz;
 
 	if (oc->state < CSTATE_PREPARED || c->state < CSTATE_PREPARED || CLASS_IS_ARRAY(oc) || CLASS_IS_INTERFACE(oc))
@@ -310,7 +310,7 @@ instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	     * prepared the dumb way is the only way. Arrays and interface do not have
 	     * any implementors too so we have to go through the all list.
 	     */
-	    for (i = oc->total_interface_len - 1; i >= 0; i--) {
+	    for (i = 0; i < oc->total_interface_len; i++) {
 	      if (c == oc->interfaces[i]) {
 		return 1;
 	      }
