@@ -22,7 +22,19 @@
 #define	WSIZE		0x8000
 #define	WSIZEBITS	15
 
-#define GET_STREAM(THIS)        (*(z_stream**)&unhand(this)->strm)
+static inline 
+z_stream*
+getStream(struct Hjava_util_zip_Deflater* this)
+{
+  return *(z_stream**)&unhand(this)->strm;
+}
+
+static inline 
+void
+setStream(struct Hjava_util_zip_Deflater* this, z_stream* stream)
+{
+  *(z_stream**)&unhand(this)->strm = stream;
+}
 
 void
 java_util_zip_Deflater_setDictionary(struct Hjava_util_zip_Deflater* this, HArrayOfByte* buf, jint from, jint len)
@@ -30,11 +42,12 @@ java_util_zip_Deflater_setDictionary(struct Hjava_util_zip_Deflater* this, HArra
 	int r;
 	z_stream* dstream;
 
- 	dstream = GET_STREAM(this);
+ 	dstream = getStream(this);
 
 	// XXX What happens if out of bounds ? 
 	if (from >= 0 && len > 0 && from + len <= obj_length(buf)) {
-		r = deflateSetDictionary (dstream, &unhand_array(buf)->body[from], (unsigned)len);
+	        void* dictionary = &unhand_array(buf)->body[from];
+		r = deflateSetDictionary (dstream, dictionary, (unsigned)len);
 		if (r < 0) {
 			SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 		}
@@ -47,15 +60,17 @@ java_util_zip_Deflater_deflate(struct Hjava_util_zip_Deflater* this, HArrayOfByt
 	int r;
 	int ilen;
 	z_stream* dstream;
+	void* next_available_input = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
+	void* next_available_output = &unhand_array(buf)->body[off];
 
- 	dstream = GET_STREAM(this);
+ 	dstream = getStream(this);
 
 	ilen = unhand(this)->len;
 
-	dstream->next_in = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
+	dstream->next_in = next_available_input;
 	dstream->avail_in = ilen;
 
-	dstream->next_out = &unhand_array(buf)->body[off];
+	dstream->next_out = next_available_output;
 	dstream->avail_out = len;
 
 	r = deflate(dstream, unhand(this)->finish ? Z_FINISH : Z_NO_FLUSH);
@@ -90,25 +105,25 @@ DBG(	dprintf("Deflate: in %d left %d out %d status %d\n", ilen, dstream->avail_i
 jint
 java_util_zip_Deflater_getAdler(struct Hjava_util_zip_Deflater* this)
 {
-	return (GET_STREAM(this)->adler);
+	return (getStream(this)->adler);
 }
 
 jint
 java_util_zip_Deflater_getTotalIn(struct Hjava_util_zip_Deflater* this)
 {
-	return (GET_STREAM(this)->total_in);
+	return (getStream(this)->total_in);
 }
 
 jint
 java_util_zip_Deflater_getTotalOut(struct Hjava_util_zip_Deflater* this)
 {
-	return (GET_STREAM(this)->total_out);
+	return (getStream(this)->total_out);
 }
 
 void
 java_util_zip_Deflater_reset(struct Hjava_util_zip_Deflater* this)
 {
-	deflateReset(GET_STREAM(this));
+	deflateReset(getStream(this));
 
 	unhand(this)->finish = 0;
 	unhand(this)->finished = 0;
@@ -119,8 +134,8 @@ java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
 {
 	z_stream* dstream;
 
-	dstream = GET_STREAM(this);
-	GET_STREAM(this) = NULL;
+	dstream = getStream(this);
+	setStream(this, NULL);
 
 	deflateEnd(dstream);
 	KFREE(dstream);
@@ -172,7 +187,7 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jboolean val)
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "");
 	}
 
-	GET_STREAM(this) = dstream;
+	setStream(this, dstream);
 }
 
 #else

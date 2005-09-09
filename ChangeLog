@@ -1,5 +1,16 @@
 2005-09-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/zip/Deflater.c,
+	libraries/clib/zip/Inflater.c:
+	(GET_STREAM) Removed.
+	(getStream, setStream) New inline functions.
+	Replaced use of GET_STREAM by getStream or setStream.
+	Added local variables to avoid casts and fix warnings.
+
+	Reported by:  Andreas Tobler  <a.tobler@schweiz.ch>
+
+2005-09-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/jni/jniBase.c (main): Turned env into a void*. Added 
 	JNIEnv* jni_env. Set jni_env to env after VM is created. Use
 	jni_env in the rest of function.

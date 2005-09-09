@@ -23,7 +23,19 @@
 
 #define	MAXSTREAM	16
 
-#define	GET_STREAM(THIS)	(*(z_stream**)&unhand(this)->strm)
+static inline 
+z_stream*
+getStream(struct Hjava_util_zip_Inflater* this)
+{
+  return *(z_stream**)&unhand(this)->strm;
+}
+
+static inline 
+void
+setStream(struct Hjava_util_zip_Inflater* this, z_stream* stream)
+{
+  *(z_stream**)&unhand(this)->strm = stream;
+}
 
 void
 java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArrayOfByte* buf, jint from, jint len)
@@ -31,10 +43,11 @@ java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArra
 	int r;
 	z_stream* dstream;
 
-	dstream = GET_STREAM(this);
+	dstream = getStream(this);
 	// XXX What happens if out of bounds ? 
 	if (from >= 0 && len > 0 && from + len <= obj_length(buf)) {
-		r = inflateSetDictionary (dstream, &unhand_array(buf)->body[from], (unsigned)len);
+	        void* dictionary = &unhand_array(buf)->body[from];
+		r = inflateSetDictionary (dstream, dictionary, (unsigned)len);
 		if (r < 0) {
 			SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 		}
@@ -47,15 +60,17 @@ java_util_zip_Inflater_inflate0(struct Hjava_util_zip_Inflater* this, HArrayOfBy
 	int r;
 	int ilen;
 	z_stream* dstream;
+	void* next_available_input = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
+	void* next_available_output = &unhand_array(buf)->body[off];
 
-	dstream = GET_STREAM(this);
+	dstream = getStream(this);
 
 	ilen = unhand(this)->len;
 
-	dstream->next_in = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
+	dstream->next_in = next_available_input;
 	dstream->avail_in = ilen;
 
-	dstream->next_out = &unhand_array(buf)->body[off];
+	dstream->next_out = next_available_output;
 	dstream->avail_out = len;
 
 	r = inflate(dstream, Z_SYNC_FLUSH);
@@ -92,25 +107,25 @@ java_util_zip_Inflater_inflate0(struct Hjava_util_zip_Inflater* this, HArrayOfBy
 jint
 java_util_zip_Inflater_getAdler(struct Hjava_util_zip_Inflater* this)
 {
-	return (GET_STREAM(this)->adler);
+	return (getStream(this)->adler);
 }
 
 jint
 java_util_zip_Inflater_getTotalIn(struct Hjava_util_zip_Inflater* this)
 {
-	return (GET_STREAM(this)->total_in);
+	return (getStream(this)->total_in);
 }
 
 jint
 java_util_zip_Inflater_getTotalOut(struct Hjava_util_zip_Inflater* this)
 {
-	return (GET_STREAM(this)->total_out);
+	return (getStream(this)->total_out);
 }
 
 void
 java_util_zip_Inflater_reset(struct Hjava_util_zip_Inflater* this)
 {
-	inflateReset(GET_STREAM(this));
+	inflateReset(getStream(this));
 
 	unhand(this)->finished = 0;
 	unhand(this)->len = 0;
@@ -121,7 +136,7 @@ java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
 {
 	z_stream* dstream;
 
-	dstream = GET_STREAM(this);
+	dstream = getStream(this);
 	inflateEnd(dstream);
 	KFREE(dstream);
 }
@@ -171,7 +186,7 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
 	default:
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "");
 	}
-	GET_STREAM(this) = dstream;
+	setStream(this, dstream);
 }
 
 #else
