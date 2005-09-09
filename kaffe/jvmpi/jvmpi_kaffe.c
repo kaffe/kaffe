@@ -261,7 +261,7 @@ void jvmpiFillMethodLoad(JVMPI_Event *ev, Method *xmeth)
   if( xmeth->lines )
     {
       JVMPI_Lineno *jvmpi_lineno = NULL;
-      int lpc;
+      unsigned int lpc;
       
       jvmpi_lineno = alloca(sizeof(JVMPI_Lineno) *
 			    xmeth->lines->length);
@@ -426,7 +426,7 @@ static void jvmpiGetCallTrace(JVMPI_CallTrace *trace, jint depth)
 			if( meth->lines != NULL )
 			{
 				uintp linepc = 0;
-				int lpc2;
+				unsigned int lpc2;
 				
 				for( lpc2 = 0;
 				     lpc2 < meth->lines->length;

@@ -112,7 +112,7 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
       JVMPI_Event ev;
       
       ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
-      if( o == getCurrentThread()->vmThread )
+      if( o == (struct Hjava_lang_Object*) getCurrentThread()->vmThread )
 	{
 	  ev.u.monitor_wait.object = NULL;
 	}
@@ -131,7 +131,7 @@ DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
       JVMPI_Event ev;
       
       ev.event_type = JVMPI_EVENT_MONITOR_WAITED;
-      if( o == getCurrentThread()->vmThread )
+      if( o == (struct Hjava_lang_Object*) getCurrentThread()->vmThread )
 	{
 	  ev.u.monitor_wait.object = NULL;
 	}

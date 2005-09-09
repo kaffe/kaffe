@@ -1,5 +1,15 @@
 2005-09-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c (jvmpiFillMethodLoad):
+	Make lpc unsigned to fix compiler warnings.
+	(jvmpiGetCallTrace) Made lpc2 unsigned to fix compiler 
+	warnings.
+
+	* libraries/clib/native/Object.c (java_lang_VMObject_wait):
+	Added missing casts to upcast thread to object pointers.
+
+2005-09-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/classMethod.h (Hjava_lang_Class):
 	Made total_interface_len unsigned to fix compiler warning.
 
