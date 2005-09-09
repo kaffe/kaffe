@@ -241,7 +241,9 @@ retry:
 				success = false;
 				goto done;
 			}
-			KGC_addWeakRef(main_collector, class->superclass, &(class->superclass));
+			KGC_addWeakRef(main_collector, 
+				       class->superclass, 
+				       (void **)&(class->superclass));
 			if( !(class->accflags & ACC_INTERFACE) &&
 			    (class->superclass->accflags & ACC_INTERFACE)) {
 				postExceptionMessage(
