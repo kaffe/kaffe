@@ -95,7 +95,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
 
     switch(call->retsize) {
     case 2:
-      if ((CALL)->rettype == 'D')
+      if ((call)->rettype == 'D')
 	*(double*)res = f0d;
       else {	      
 	res[1] = d1;
@@ -103,7 +103,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
       }
       break;
     case 1:
-      if ((CALL)->rettype == 'F')
+      if ((call)->rettype == 'F')
 	*(float*)res = f0f;
       else
 	res[0] = d0;
