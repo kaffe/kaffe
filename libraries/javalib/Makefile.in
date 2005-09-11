@@ -427,6 +427,14 @@ Klasses_jar_SRCS = \
 	$(gnu_bytecode_SRCS) \
 	$(gnu_classpath_SRCS) \
 	$(gnu_classpath_debug_SRCS) \
+	$(gnu_classpath_jdwp_SRCS) \
+	$(gnu_classpath_jdwp_event_SRCS) \
+	$(gnu_classpath_jdwp_event_filters_SRCS) \
+	$(gnu_classpath_jdwp_exception_SRCS) \
+	$(gnu_classpath_jdwp_id_SRCS) \
+	$(gnu_classpath_jdwp_processor_SRCS) \
+	$(gnu_classpath_jdwp_transport_SRCS) \
+	$(gnu_classpath_jdwp_util_SRCS) \
 	$(gnu_classpath_tools_SRCS) \
 	$(gnu_classpath_tools_javap_SRCS) \
 	$(gnu_classpath_tools_native2ascii_SRCS) \
@@ -984,6 +992,108 @@ gnu_classpath_debug_SRCS = \
 	gnu/classpath/debug/Component.java \
 	gnu/classpath/debug/PreciseFilter.java \
 	gnu/classpath/debug/SystemLogger.java
+
+gnu_classpath_jdwp_SRCS = \
+	gnu/classpath/jdwp/Jdwp.java \
+	gnu/classpath/jdwp/JdwpConstants.java \
+	gnu/classpath/jdwp/VMFrame.java \
+	gnu/classpath/jdwp/VMIdManager.java \
+	gnu/classpath/jdwp/VMVirtualMachine.java
+
+gnu_classpath_jdwp_event_SRCS = \
+	gnu/classpath/jdwp/event/ClassPrepareEvent.java \
+	gnu/classpath/jdwp/event/Event.java \
+	gnu/classpath/jdwp/event/EventManager.java \
+	gnu/classpath/jdwp/event/EventRequest.java \
+	gnu/classpath/jdwp/event/ThreadEndEvent.java \
+	gnu/classpath/jdwp/event/ThreadStartEvent.java \
+	gnu/classpath/jdwp/event/VmDeathEvent.java \
+	gnu/classpath/jdwp/event/VmInitEvent.java
+
+gnu_classpath_jdwp_event_filters_SRCS = \
+	gnu/classpath/jdwp/event/filters/ClassExcludeFilter.java \
+	gnu/classpath/jdwp/event/filters/ClassMatchFilter.java \
+	gnu/classpath/jdwp/event/filters/ClassOnlyFilter.java \
+	gnu/classpath/jdwp/event/filters/ConditionalFilter.java \
+	gnu/classpath/jdwp/event/filters/CountFilter.java \
+	gnu/classpath/jdwp/event/filters/ExceptionOnlyFilter.java \
+	gnu/classpath/jdwp/event/filters/FieldOnlyFilter.java \
+	gnu/classpath/jdwp/event/filters/IEventFilter.java \
+	gnu/classpath/jdwp/event/filters/InstanceOnlyFilter.java \
+	gnu/classpath/jdwp/event/filters/LocationOnlyFilter.java \
+	gnu/classpath/jdwp/event/filters/StepFilter.java \
+	gnu/classpath/jdwp/event/filters/ThreadOnlyFilter.java
+
+gnu_classpath_jdwp_exception_SRCS = \
+	gnu/classpath/jdwp/exception/InvalidClassException.java \
+	gnu/classpath/jdwp/exception/InvalidClassLoaderException.java \
+	gnu/classpath/jdwp/exception/InvalidCountException.java \
+	gnu/classpath/jdwp/exception/InvalidEventTypeException.java \
+	gnu/classpath/jdwp/exception/InvalidFieldException.java \
+	gnu/classpath/jdwp/exception/InvalidLocationException.java \
+	gnu/classpath/jdwp/exception/InvalidMethodException.java \
+	gnu/classpath/jdwp/exception/InvalidObjectException.java \
+	gnu/classpath/jdwp/exception/InvalidStringException.java \
+	gnu/classpath/jdwp/exception/InvalidThreadException.java \
+	gnu/classpath/jdwp/exception/InvalidThreadGroupException.java \
+	gnu/classpath/jdwp/exception/JdwpException.java \
+	gnu/classpath/jdwp/exception/JdwpIllegalArgumentException.java \
+	gnu/classpath/jdwp/exception/JdwpInternalErrorException.java \
+	gnu/classpath/jdwp/exception/NotImplementedException.java \
+	gnu/classpath/jdwp/exception/VmDeadException.java
+
+gnu_classpath_jdwp_id_SRCS = \
+	gnu/classpath/jdwp/id/ArrayId.java \
+	gnu/classpath/jdwp/id/ArrayReferenceTypeId.java \
+	gnu/classpath/jdwp/id/ClassLoaderId.java \
+	gnu/classpath/jdwp/id/ClassObjectId.java \
+	gnu/classpath/jdwp/id/ClassReferenceTypeId.java \
+	gnu/classpath/jdwp/id/InterfaceReferenceTypeId.java \
+	gnu/classpath/jdwp/id/JdwpId.java \
+	gnu/classpath/jdwp/id/ObjectId.java \
+	gnu/classpath/jdwp/id/ReferenceTypeId.java \
+	gnu/classpath/jdwp/id/StringId.java \
+	gnu/classpath/jdwp/id/ThreadGroupId.java \
+	gnu/classpath/jdwp/id/ThreadId.java
+
+gnu_classpath_jdwp_processor_SRCS = \
+	gnu/classpath/jdwp/processor/ArrayReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/ArrayTypeCommandSet.java \
+	gnu/classpath/jdwp/processor/ClassLoaderReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/ClassObjectReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/ClassTypeCommandSet.java \
+	gnu/classpath/jdwp/processor/CommandSet.java \
+	gnu/classpath/jdwp/processor/EventRequestCommandSet.java \
+	gnu/classpath/jdwp/processor/FieldCommandSet.java \
+	gnu/classpath/jdwp/processor/InterfaceTypeCommandSet.java \
+	gnu/classpath/jdwp/processor/MethodCommandSet.java \
+	gnu/classpath/jdwp/processor/ObjectReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/PacketProcessor.java \
+	gnu/classpath/jdwp/processor/ReferenceTypeCommandSet.java \
+	gnu/classpath/jdwp/processor/StackFrameCommandSet.java \
+	gnu/classpath/jdwp/processor/StringReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/ThreadGroupReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/ThreadReferenceCommandSet.java \
+	gnu/classpath/jdwp/processor/VirtualMachineCommandSet.java
+
+gnu_classpath_jdwp_transport_SRCS = \
+	gnu/classpath/jdwp/transport/ITransport.java \
+	gnu/classpath/jdwp/transport/JdwpCommandPacket.java \
+	gnu/classpath/jdwp/transport/JdwpConnection.java \
+	gnu/classpath/jdwp/transport/JdwpPacket.java \
+	gnu/classpath/jdwp/transport/JdwpReplyPacket.java \
+	gnu/classpath/jdwp/transport/SocketTransport.java \
+	gnu/classpath/jdwp/transport/TransportException.java \
+	gnu/classpath/jdwp/transport/TransportFactory.java
+
+gnu_classpath_jdwp_util_SRCS = \
+	gnu/classpath/jdwp/util/JdwpString.java \
+	gnu/classpath/jdwp/util/LineTable.java \
+	gnu/classpath/jdwp/util/Location.java \
+	gnu/classpath/jdwp/util/MethodResult.java \
+	gnu/classpath/jdwp/util/Signature.java \
+	gnu/classpath/jdwp/util/Value.java \
+	gnu/classpath/jdwp/util/VariableTable.java
 
 gnu_classpath_tools_SRCS = \
 	gnu/classpath/tools/Util.java
