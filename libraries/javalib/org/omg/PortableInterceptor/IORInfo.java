@@ -50,7 +50,9 @@ import java.io.Serializable;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface IORInfo
-  extends IORInfoOperations, IDLEntity, org.omg.CORBA.Object, Serializable
+public interface IORInfo extends IORInfoOperations,
+  IDLEntity,
+  org.omg.CORBA.Object,
+  Serializable
 {
 }

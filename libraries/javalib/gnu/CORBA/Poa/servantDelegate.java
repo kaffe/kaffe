@@ -191,9 +191,6 @@ public class servantDelegate
       }
     catch (NoContext ex)
       {
-        // TODO remove from mature code, this is a debug statement.
-        // The message should not appear during tests.
-        System.out.println("Not ok with object id");
         return object.Id;
       }
   }

@@ -66,7 +66,7 @@ public class QtTextFieldPeer extends QtComponentPeer implements TextFieldPeer
   private void textChanged()
   {
     TextEvent e = new TextEvent(owner, TextEvent.TEXT_VALUE_CHANGED);
-    toolkit.eventQueue.postEvent(e);
+    QtToolkit.eventQueue.postEvent(e);
   }
 
   /**

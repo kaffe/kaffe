@@ -40,6 +40,7 @@ exception statement from your version. */
 #include "gnu_java_awt_peer_gtk_GtkToolkit.h"
 #include "gthread-jni.h"
 #include "jcl.h"
+#include <gdk/gdkx.h>
 
 #define RC_FILE ".classpath-gtkrc"
 
@@ -154,6 +155,10 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   gdk_threads_init();
 
   gtk_init (&argc, &argv);
+
+#if SYNCHRONIZE_GDK
+  XSynchronize (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), True);
+#endif
 
   gdk_rgb_init ();
   gtk_widget_set_default_colormap (gdk_rgb_get_cmap ());

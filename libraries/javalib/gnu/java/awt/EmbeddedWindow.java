@@ -98,11 +98,11 @@ public class EmbeddedWindow extends Frame
       }
     catch (IllegalAccessException e)
       {
-	// This should never happen.
+        throw new AssertionError (e);
       }
     catch (NoSuchFieldException e)
       {
-	// This should never happen.
+        throw new AssertionError (e);
       }
 
     super.addNotify();

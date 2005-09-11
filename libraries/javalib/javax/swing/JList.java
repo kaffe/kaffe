@@ -1032,20 +1032,41 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public Dimension getPreferredScrollableViewportSize()
   {
+    //If the layout orientation is not VERTICAL, then this will 
+    //return the value from getPreferredSize. The current ListUI is 
+    //expected to override getPreferredSize to return an appropriate value.
+    if (getLayoutOrientation() != VERTICAL)
+      return getPreferredSize();
+    
+    if (fixedCellHeight != -1 && fixedCellWidth != -1)
+      return new Dimension(fixedCellWidth, getModel().getSize() * 
+                           fixedCellHeight);
 
-    Dimension retVal = getPreferredSize();
-    if (getLayoutOrientation() == VERTICAL)
+    int prefWidth, prefHeight;
+    if (fixedCellWidth != -1)
+      prefWidth = fixedCellWidth;
+    else
       {
-        if (fixedCellHeight != -1)
-          {
-            if (fixedCellWidth != -1)
-              {
-                int size = getModel().getSize();
-                retVal = new Dimension(fixedCellWidth, size * fixedCellHeight);
-              } // TODO: add else clause (preferredSize is ok for now)
-          } // TODO: add else clause (preferredSize is ok for now)
+        prefWidth = 0;
+        int size = getModel().getSize();
+        for (int i = 0; i < size; i++)
+          if (getCellBounds(i, i).width > prefWidth)
+            prefWidth = getCellBounds(i, i).width;
       }
-    return retVal;
+    
+    if (getModel().getSize() == 0 && fixedCellWidth == -1)
+      return new Dimension(256, 16 * getVisibleRowCount());
+    else if (getModel().getSize() == 0)
+      return new Dimension (fixedCellWidth, 16 * getVisibleRowCount());
+    
+    if (fixedCellHeight != -1)
+      prefHeight = fixedCellHeight;
+    else
+      {
+        prefHeight = getVisibleRowCount() * getCellBounds
+          (getFirstVisibleIndex(), getFirstVisibleIndex()).height;
+      }
+    return new Dimension (prefWidth, prefHeight);
   }
 
   /**

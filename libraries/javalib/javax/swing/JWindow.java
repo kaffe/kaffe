@@ -60,6 +60,21 @@ import javax.accessibility.AccessibleContext;
  */
 public class JWindow extends Window implements Accessible, RootPaneContainer
 {
+  /**
+   * Provides accessibility support for <code>JWindow</code>.
+   */
+  protected class AccessibleJWindow extends Window.AccessibleAWTWindow
+  {
+    /**
+     * Creates a new instance of <code>AccessibleJWindow</code>.
+     */
+    public AccessibleJWindow()
+    {
+      super();
+      // Nothing to do here.
+    }
+  }
+
   private static final long serialVersionUID = 5420698392125238833L;
   
   protected JRootPane rootPane;
@@ -235,7 +250,9 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
 
   public AccessibleContext getAccessibleContext()
   {
-    return null;
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJWindow();
+    return accessibleContext;
   }
 
   protected String paramString()

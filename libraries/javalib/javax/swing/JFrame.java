@@ -50,17 +50,39 @@ import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 
+import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 
 /**
- * Unlike JComponent derivatives, JFrame inherits from
- * java.awt.Frame. But also lets a look-and-feel component to its work.
+ * A window that supports window decorations (titlebar and borders).
+ * This is an extension of {@link java.awt.Frame} that provides support
+ * for the Swing architecture. Most importantly it contains a {@link JRootPane}
+ * as it's only top-level child, that manages the content pane, the menu and
+ * a glass pane.
  *
+ * Also, unlike <code>java.awt.Frame</code>s, JFrames support the
+ * Swing Pluggable Look &amp; Feel architecture.
+ * 
  * @author Ronald Veldema (rveldema@cs.vu.nl)
  */
 public class JFrame extends Frame
-  implements WindowConstants, RootPaneContainer
+  implements WindowConstants, RootPaneContainer, Accessible
 {
+  /**
+   * Provides accessibility support for <code>JFrame</code>s.
+   */
+  protected class AccessibleJFrame extends Frame.AccessibleAWTFrame
+  {
+    /**
+     * Creates a new instance of <code>AccessibleJFrame</code>.
+     */
+    public AccessibleJFrame()
+    {
+      super();
+      // Nothing to do here.
+    }
+  }
+
   private static final long serialVersionUID = -3362141868504252139L;
   private static boolean defaultLookAndFeelDecorated;
   private int close_action = HIDE_ON_CLOSE;
@@ -269,6 +291,8 @@ public class JFrame extends Frame
 
   public AccessibleContext getAccessibleContext()
   {
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJFrame();
     return accessibleContext;
   }
 

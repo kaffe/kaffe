@@ -1,4 +1,4 @@
-/* primitiveDynAny.java --
+/* gnuDynAny.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,13 +38,14 @@ exception statement from your version. */
 
 package gnu.CORBA.DynAn;
 
-import gnu.CORBA.*;
 import gnu.CORBA.CDR.cdrBufOutput;
 import gnu.CORBA.OctetHolder;
 import gnu.CORBA.Unexpected;
 import gnu.CORBA.WCharHolder;
 import gnu.CORBA.WStringHolder;
+import gnu.CORBA.holderFactory;
 import gnu.CORBA.typeNamer;
+import gnu.CORBA.universalHolder;
 
 import org.omg.CORBA.Any;
 import org.omg.CORBA.AnyHolder;
@@ -65,7 +66,8 @@ import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.TypeCodeHolder;
 import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.ValueBaseHolder;
-import org.omg.CORBA.portable.*;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.Streamable;
 import org.omg.DynamicAny.DynAny;
 import org.omg.DynamicAny.DynAnyPackage.InvalidValue;
@@ -82,9 +84,7 @@ import java.util.Arrays;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuDynAny
-  extends abstractDynAny
-  implements DynAny, Serializable
+public class gnuDynAny extends abstractDynAny implements DynAny, Serializable
 {
   /**
    * Use serialVersionUID for interoperability.
@@ -102,8 +102,8 @@ public class gnuDynAny
    * @param a_holder
    */
   public gnuDynAny(Streamable aHolder, TypeCode oType, TypeCode aType,
-                   gnuDynAnyFactory aFactory, ORB anOrb
-                  )
+    gnuDynAnyFactory aFactory, ORB anOrb
+  )
   {
     super(oType, aType, aFactory, anOrb);
     holder = aHolder;
@@ -114,8 +114,7 @@ public class gnuDynAny
    *
    * @param from the source to assign from.
    */
-  public void assign(DynAny from)
-              throws TypeMismatch
+  public void assign(DynAny from) throws TypeMismatch
   {
     checkType(official_type, from.type());
 
@@ -141,8 +140,8 @@ public class gnuDynAny
           {
             other =
               new gnuDynAny((Streamable) (holder.getClass().newInstance()),
-                            official_type, final_type, factory, orb
-                           );
+                official_type, final_type, factory, orb
+              );
           }
         catch (Exception e)
           {
@@ -163,12 +162,11 @@ public class gnuDynAny
    *
    * @return <code>null</code>, always.
    */
-  public DynAny current_component()
-                           throws TypeMismatch
+  public DynAny current_component() throws TypeMismatch
   {
     throw new TypeMismatch("Not applicable for " +
-                           typeNamer.nameIt(final_type)
-                          );
+      typeNamer.nameIt(final_type)
+    );
   }
 
   /**
@@ -186,8 +184,7 @@ public class gnuDynAny
    * @throws TypeMismatch if the final_type of the passed Any is not the same as
    * the final_type, currently stored in this Any.
    */
-  public void from_any(Any an_any)
-                throws TypeMismatch, InvalidValue
+  public void from_any(Any an_any) throws TypeMismatch, InvalidValue
   {
     checkType(official_type, an_any.type());
 
@@ -240,8 +237,7 @@ public class gnuDynAny
   /**
    * Return the second (enclosed any) that is stored in the wrapped Any.
    */
-  public Any get_any()
-              throws TypeMismatch
+  public Any get_any() throws TypeMismatch
   {
     try
       {
@@ -256,8 +252,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public boolean get_boolean()
-                      throws TypeMismatch
+  public boolean get_boolean() throws TypeMismatch
   {
     try
       {
@@ -272,8 +267,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public char get_char()
-                throws TypeMismatch
+  public char get_char() throws TypeMismatch
   {
     try
       {
@@ -288,8 +282,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public double get_double()
-                    throws TypeMismatch
+  public double get_double() throws TypeMismatch
   {
     try
       {
@@ -304,8 +297,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public float get_float()
-                  throws TypeMismatch
+  public float get_float() throws TypeMismatch
   {
     try
       {
@@ -320,8 +312,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public int get_long()
-               throws TypeMismatch
+  public int get_long() throws TypeMismatch
   {
     try
       {
@@ -336,8 +327,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public long get_longlong()
-                    throws TypeMismatch
+  public long get_longlong() throws TypeMismatch
   {
     try
       {
@@ -352,8 +342,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public byte get_octet()
-                 throws TypeMismatch
+  public byte get_octet() throws TypeMismatch
   {
     try
       {
@@ -368,8 +357,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public Object get_reference()
-                       throws TypeMismatch
+  public Object get_reference() throws TypeMismatch
   {
     try
       {
@@ -384,8 +372,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public short get_short()
-                  throws TypeMismatch
+  public short get_short() throws TypeMismatch
   {
     try
       {
@@ -400,8 +387,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public String get_string()
-                    throws TypeMismatch
+  public String get_string() throws TypeMismatch
   {
     try
       {
@@ -416,8 +402,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public TypeCode get_typecode()
-                        throws TypeMismatch
+  public TypeCode get_typecode() throws TypeMismatch
   {
     try
       {
@@ -432,32 +417,28 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public int get_ulong()
-                throws TypeMismatch
+  public int get_ulong() throws TypeMismatch
   {
     check(TCKind.tk_ulong);
     return get_long();
   }
 
   /** {@inheritDoc} */
-  public long get_ulonglong()
-                     throws TypeMismatch
+  public long get_ulonglong() throws TypeMismatch
   {
     check(TCKind.tk_ulonglong);
     return get_longlong();
   }
 
   /** {@inheritDoc} */
-  public short get_ushort()
-                   throws TypeMismatch
+  public short get_ushort() throws TypeMismatch
   {
     check(TCKind.tk_ushort);
     return get_short();
   }
 
   /** {@inheritDoc} */
-  public Serializable get_val()
-                       throws TypeMismatch
+  public Serializable get_val() throws TypeMismatch
   {
     try
       {
@@ -472,8 +453,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public char get_wchar()
-                 throws TypeMismatch
+  public char get_wchar() throws TypeMismatch
   {
     try
       {
@@ -488,8 +468,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public String get_wstring()
-                     throws TypeMismatch
+  public String get_wstring() throws TypeMismatch
   {
     try
       {
@@ -504,8 +483,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_any(Any a_x)
-                  throws TypeMismatch, InvalidValue
+  public void insert_any(Any a_x) throws TypeMismatch, InvalidValue
   {
     try
       {
@@ -539,8 +517,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_boolean(boolean a_x)
-                      throws InvalidValue, TypeMismatch
+  public void insert_boolean(boolean a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -556,8 +533,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_char(char a_x)
-                   throws InvalidValue, TypeMismatch
+  public void insert_char(char a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -573,8 +549,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_double(double a_x)
-                     throws InvalidValue, TypeMismatch
+  public void insert_double(double a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -590,8 +565,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_float(float a_x)
-                    throws InvalidValue, TypeMismatch
+  public void insert_float(float a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -607,8 +581,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_long(int a_x)
-                   throws InvalidValue, TypeMismatch
+  public void insert_long(int a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -624,8 +597,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_longlong(long a_x)
-                       throws InvalidValue, TypeMismatch
+  public void insert_longlong(long a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -641,8 +613,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_octet(byte a_x)
-                    throws InvalidValue, TypeMismatch
+  public void insert_octet(byte a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -658,8 +629,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_reference(Object a_x)
-                        throws InvalidValue, TypeMismatch
+  public void insert_reference(Object a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -675,8 +645,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_short(short a_x)
-                    throws InvalidValue, TypeMismatch
+  public void insert_short(short a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -692,17 +661,17 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_string(String a_x)
-                     throws InvalidValue, TypeMismatch
+  public void insert_string(String a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
-        if (a_x != null && final_type.length() > 0 &&
-            a_x.length() > final_type.length()
-           )
+        if (a_x != null &&
+          final_type.length() > 0 &&
+          a_x.length() > final_type.length()
+        )
           throw new InvalidValue(a_x.length() + " exceeds bound, " +
-                                 final_type.length()
-                                );
+            final_type.length()
+          );
         ((StringHolder) holder).value = a_x;
         valueChanged();
       }
@@ -721,8 +690,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_typecode(TypeCode a_x)
-                       throws InvalidValue, TypeMismatch
+  public void insert_typecode(TypeCode a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -738,8 +706,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_ulong(int a_x)
-                    throws InvalidValue, TypeMismatch
+  public void insert_ulong(int a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -755,8 +722,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_ulonglong(long a_x)
-                        throws InvalidValue, TypeMismatch
+  public void insert_ulonglong(long a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -772,8 +738,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_ushort(short a_x)
-                     throws InvalidValue, TypeMismatch
+  public void insert_ushort(short a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -789,8 +754,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_val(Serializable a_x)
-                  throws InvalidValue, TypeMismatch
+  public void insert_val(Serializable a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -806,8 +770,7 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_wchar(char a_x)
-                    throws InvalidValue, TypeMismatch
+  public void insert_wchar(char a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
@@ -823,17 +786,17 @@ public class gnuDynAny
   }
 
   /** {@inheritDoc} */
-  public void insert_wstring(String a_x)
-                      throws InvalidValue, TypeMismatch
+  public void insert_wstring(String a_x) throws InvalidValue, TypeMismatch
   {
     try
       {
-        if (a_x != null && final_type.length() > 0 &&
-            a_x.length() > type().length()
-           )
+        if (a_x != null &&
+          final_type.length() > 0 &&
+          a_x.length() > type().length()
+        )
           throw new InvalidValue(a_x.length() + " exceeds bound, " +
-                                 final_type.length()
-                                );
+            final_type.length()
+          );
         ((WStringHolder) holder).value = a_x;
         valueChanged();
       }
@@ -913,8 +876,7 @@ public class gnuDynAny
    * Inserts Any, contained in the parameter, into Any, contained in this
    * DynAny.
    */
-  public void insert_dyn_any(DynAny d)
-                      throws TypeMismatch, InvalidValue
+  public void insert_dyn_any(DynAny d) throws TypeMismatch, InvalidValue
   {
     check(d.type().kind());
 
@@ -944,8 +906,8 @@ public class gnuDynAny
             holder._write(b2);
 
             return Arrays.equals(b1.buffer.toByteArray(),
-                                 b2.buffer.toByteArray()
-                                );
+              b2.buffer.toByteArray()
+            );
           }
         else
           return false;
@@ -953,8 +915,8 @@ public class gnuDynAny
     if (other == null)
       return false;
     else if (other.component_count() != component_count() ||
-             !official_type.equal(other.type())
-            )
+      !official_type.equal(other.type())
+    )
       return false;
     else
       return other.to_any().equal(to_any());
@@ -970,14 +932,12 @@ public class gnuDynAny
     return 0;
   }
 
-  public DynAny get_dyn_any()
-                     throws TypeMismatch, InvalidValue
+  public DynAny get_dyn_any() throws TypeMismatch, InvalidValue
   {
     return new gnuDynAny(holder, official_type, final_type, factory, orb);
   }
 
-  private void check(TCKind t)
-              throws TypeMismatch
+  private void check(TCKind t) throws TypeMismatch
   {
     if (t.value() != final_type.kind().value())
       throw new TypeMismatch(t.value() + "!=" + final_type.kind().value());

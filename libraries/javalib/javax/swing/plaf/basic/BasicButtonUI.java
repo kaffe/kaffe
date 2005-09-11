@@ -115,21 +115,21 @@ public class BasicButtonUI extends ButtonUI
    */
   protected String getPropertyPrefix()
   {
-    return "Button";
+    return "Button.";
   }
 
   protected void installDefaults(AbstractButton b)
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     String prefix = getPropertyPrefix();
-    focusColor = defaults.getColor(prefix + ".focus");
-    b.setForeground(defaults.getColor(prefix + ".foreground"));
-    b.setBackground(defaults.getColor(prefix + ".background"));
-    b.setMargin(defaults.getInsets(prefix + ".margin"));
-    b.setBorder(defaults.getBorder(prefix + ".border"));
-    b.setIconTextGap(defaults.getInt(prefix + ".textIconGap"));
+    focusColor = defaults.getColor(prefix + "focus");
+    b.setForeground(defaults.getColor(prefix + "foreground"));
+    b.setBackground(defaults.getColor(prefix + "background"));
+    b.setMargin(defaults.getInsets(prefix + "margin"));
+    b.setBorder(defaults.getBorder(prefix + "border"));
+    b.setIconTextGap(defaults.getInt(prefix + "textIconGap"));
     b.setInputMap(JComponent.WHEN_FOCUSED, 
-                  (InputMap) defaults.get(prefix + ".focusInputMap"));
+                  (InputMap) defaults.get(prefix + "focusInputMap"));
     b.setOpaque(true);
   }
 

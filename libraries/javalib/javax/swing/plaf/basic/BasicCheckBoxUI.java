@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.UIDefaults;
@@ -58,10 +57,14 @@ public class BasicCheckBoxUI extends BasicRadioButtonUI
     return defaults.getIcon("CheckBox.icon");
   }
   
-  // Overridden to change method access.
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "CheckBox."
+   */
   public String getPropertyPrefix()
   {
-    return super.getPropertyPrefix();
+    return "CheckBox.";
   }
 }
 

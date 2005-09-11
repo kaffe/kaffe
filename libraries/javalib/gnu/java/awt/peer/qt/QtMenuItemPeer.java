@@ -78,7 +78,7 @@ public class QtMenuItemPeer extends QtMenuComponentPeer
 				    ((MenuItem)owner).getActionCommand(),
 				    System.currentTimeMillis(),
 				    (modifiers & 0x2FF));
-    toolkit.eventQueue.postEvent(e);
+    QtToolkit.eventQueue.postEvent(e);
   }
 
   // ************ Public methods *********************

@@ -122,9 +122,6 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
     gtkInit(portableNativeSync);
 
-    // Register ImageIO SPIs
-    GdkPixbufDecoder.registerSpis( IIORegistry.getDefaultInstance() );
-
     mainThread = new Thread ("GTK main thread")
       {
         public void run ()
@@ -255,6 +252,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public Image createImage (String filename)
   {
+    if (filename.length() == 0)
+      return new GtkImage ();
+
     if (useGraphics2D())
       return bufferedImageOrError(GdkPixbufDecoder.createBufferedImage (filename));
     else
@@ -266,11 +266,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (useGraphics2D())
       return bufferedImageOrError(GdkPixbufDecoder.createBufferedImage (url));
     else
-      {
-        GdkPixbufDecoder d = new GdkPixbufDecoder (url);
-        GtkImage image = new GtkImage (d);
-        return image;        
-      }
+      return new GtkImage (url);
   }
 
   public Image createImage (ImageProducer producer) 
@@ -290,11 +286,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
                                                                         imagelength));
     else
       {
-        GdkPixbufDecoder d = new GdkPixbufDecoder (imagedata,
-                                                   imageoffset, 
-                                                   imagelength);
-        GtkImage image = new GtkImage (d);
-        return image;        
+        byte[] datacopy = new byte[imagelength];
+        System.arraycopy (imagedata, imageoffset, datacopy, 0, imagelength);
+        return new GtkImage (datacopy);
       }
   }
   
@@ -654,6 +648,11 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   public RobotPeer createRobot (GraphicsDevice screen) throws AWTException
   {
     return new GdkRobotPeer (screen);
+  }
+
+  public void registerImageIOSpis(IIORegistry reg)
+  {
+    GdkPixbufDecoder.registerSpis(reg);
   }
 
   public static native void gtkMain();

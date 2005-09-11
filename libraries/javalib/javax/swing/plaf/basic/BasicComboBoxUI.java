@@ -1022,7 +1022,6 @@ public class BasicComboBoxUI extends ComboBoxUI
     {
       hasFocus = false;
       comboBox.repaint();
-      popup.hide();
     }
   }
 

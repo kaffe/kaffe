@@ -673,7 +673,7 @@ public class JTable extends JComponent
     this.defaultEditorsByColumnClass = new Hashtable();
     createDefaultEditors();
 
-    this.autoResizeMode = AUTO_RESIZE_ALL_COLUMNS;
+    this.autoResizeMode = AUTO_RESIZE_SUBSEQUENT_COLUMNS;
     this.rowHeight = 16;
     this.rowMargin = 1;
     this.rowSelectionAllowed = true;

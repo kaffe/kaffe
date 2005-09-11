@@ -44,15 +44,14 @@ package org.omg.PortableInterceptor;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface IORInterceptorOperations
-  extends InterceptorOperations
+public interface IORInterceptorOperations extends InterceptorOperations
 {
   /**
-   * A server side ORB calls this method on all registered IORInterceptor's when
+       * A server side ORB calls this method on all registered IORInterceptor's when
    * creating the object reference (IOR). The interceptors have the possibility
    * to add additional tags to the IOR being created.
    *
-   * @param info the interface class providing methods to insert additional tags
+       * @param info the interface class providing methods to insert additional tags
    * into IOR being constructed. The same instan
    */
   public void establish_components(IORInfo info);

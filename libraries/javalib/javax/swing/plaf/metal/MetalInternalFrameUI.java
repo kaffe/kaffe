@@ -38,24 +38,24 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
-import java.util.HashMap;
-
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-
+/**
+ * A UI delegate for the {@link JInternalFrame} component under the 
+ * {@link MetalLookAndFeel}.
+ */
 public class MetalInternalFrameUI
   extends BasicInternalFrameUI
 {
 
-  /** The instances of MetalInternalFrameUI*/
-  private static HashMap instances;
-
   /**
-   * Constructs a new instance of MetalInternalFrameUI.
+   * Constructs a new instance of <code>MetalInternalFrameUI</code>.
+   * 
+   * @param frame  the frame.
    */
   public MetalInternalFrameUI(JInternalFrame frame)
   {
@@ -63,7 +63,7 @@ public class MetalInternalFrameUI
   }
 
   /**
-   * Returns an instance of MetalInternalFrameUI.
+   * Returns an instance of <code>MetalInternalFrameUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
@@ -71,23 +71,17 @@ public class MetalInternalFrameUI
    */
   public static ComponentUI createUI(JComponent component)
   {
-    if (instances == null)
-      instances = new HashMap();
-
-
-    Object o = instances.get(component);
-    MetalInternalFrameUI instance;
-    if (o == null)
-      {
-	instance = new MetalInternalFrameUI((JInternalFrame) component);
-	instances.put(component, instance);
-      }
-    else
-      instance = (MetalInternalFrameUI) o;
-
-    return instance;
+    return new MetalInternalFrameUI((JInternalFrame) component);
   }
   
+  /**
+   * Creates and returns the component that will be used for the north pane
+   * of the {@link JInternalFrame}.  
+   * 
+   * @param w  the internal frame.
+   * 
+   * @return A new instance of {@link MetalInternalFrameTitlePane}.
+   */
   protected JComponent createNorthPane(JInternalFrame w)
   {
     titlePane = new MetalInternalFrameTitlePane(w);

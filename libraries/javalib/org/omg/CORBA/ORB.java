@@ -479,16 +479,26 @@ public abstract class ORB
   }
 
   /**
-   * This should create the new policy with the specified type and initial
-   * state. The policies and methods for getting them are not implemented till
-   * v1.4 inclusive.
+   * <p>Creates the new policy of the specified type, having the given value.
+   * This method looks for the policy factory that was previously registered
+   * during ORB initialization by
+   * {@link org.omg.PortableInterceptor.ORBInitialiser}.
    *
+   * If the suitable factory is found, this factory creates the requested policy,
+   * otherwise the PolicyError is thrown.
+   * </p><p>
+   * The POA policies should be created by POA, not by this method.
+   * </p>
    * @param type the policy type.
-   * @param value the policy value.
+   * @param value the policy value, wrapped into Any.
    *
-   * @return never
+   * @throws PolicyError if the ORB fails to instantiate the policy object.
    *
-   * @throws NO_IMPLEMENT, always.
+   * @throws NO_IMPLEMENT always (in this class). Overridden in derived classes
+   * returned by ORB.init(..).
+   *
+   * @see org.omg.PortableInterceptor.ORBInitInfoOperations#register_policy_factory
+   * @see org.omg.PortableInterceptor.PolicyFactoryOperations
    */
   public Policy create_policy(int type, Any value)
                        throws PolicyError
@@ -885,6 +895,12 @@ public abstract class ORB
    * <td>Creates DynAny's.</td>
    * </tr>
    *
+   * <tr><td>PICurrent</td><td>{@link org.omg.PortableInterceptor.Current}</td>
+   * <td>Contains multiple slots where an interceptor can rememeber the
+   * request - specific values between subsequent
+   * calls of the interceptor methods.</td>
+   * </tr>
+   *
    * </table>
    *
    * @param name the object name.
@@ -946,16 +962,60 @@ public abstract class ORB
   }
 
   /**
-   * Find and return the CORBA object, addressed by the given
-   * IOR string representation. The object can (an usually is)
+   * <p>Find and return the CORBA object, addressed by the given
+   * string representation. The object can be (an usually is)
    * located on a remote computer, possibly running a different
    * (not necessary java) CORBA implementation. The returned
    * object is typically casted to the more specific reference
    * using the <code>narrow(Object)</code> method of its helper.
+   * </p><p>
+   * This function supports the following input formats:<br>
+   * 1. IOR reference (<b>ior:</b>nnnnn ..), usually computer generated.<br> 
+   * 2. <b>corbaloc:</b>[<b>iiop</b>][version.subversion<b>@</b>]<b>:</b>host[<b>:</b>port]<b>/</b><i>key</i>
+   * defines similar information as IOR reference, but is more human readable.
+   * This type of reference may also contain multiple addresses (see
+   * OMG documentation for complete format).<br>
+   * 3. <b>corbaloc:rir:/</b><i>name</i> defines internal reference on this
+   * ORB that is resolved using {@link #resolve_initial_references}, passing 
+   * the given <i>name</i> as parameter.<br>
+   * 4. <b>corbaname:rir:#</b><i>name</i> states that the given <i>name</i>
+   * must be resolved using the naming service, default for this ORB.<br>
+   * 5. <b>corbaname:</b>[<b>iiop</b>][version.subversion<b>@</b>]<b>:</b>host[<b>:</b>port]<b>#</b><i>name</i>
+   * states that the <i>name</i> must be resolved using the naming service
+   * that runs on the given host at the given port. The ORB expects to find 
+   * there the {@link org.omg.CosNaming.NamingContext} under the key 
+   * "NameService.<br>
+   * 
+   * <p>The default port is always 2809. The default iiop version is 1.0
+   * that now may not always be supported, so we would recommend to specify
+   * the version explicitly.</p>
+   * <p>
+   * The examples of the corbaloc and corbaname addresses:<br>
+   * corbaname:rir:#xobj - ask local naming service for "xobj".<br>
+   * corbaname:rir:/NameService#xobj - same (long form).<br>
+   * corbaname:iiop:1.2@localhost:900#xobj - same, assuming that the naming 
+   * service runs at port 900 on the local host and supports iiop 1.2.<br>
+   * corbaname:iiop:localhost#xobj - same, assuming that the naming 
+   * service runs at port 2809 on the local host and supports iiop 1.0.<br>
+   * corbaloc::gnu.xxx.yy/Prod/TradingService - the object exists on the
+   * host gnu.xxx.yy, port 2809 having the key "Prod/TradingService". Its ORB 
+   * supports iiop 1.0.<br>
+   * corbaloc::gnu.xxx.yy/Prod/TradingService:801 - the object exists on the
+   * host gnu.xxx.yy, port 801 having the key "Prod/TradingService". Its ORB 
+   * supports iiop 1.0 (iiop keyword ommitted).<br>
+   * corbaloc:iiop:1.1@gnu.xxx.yy/Prod/TradingService - the object exists on the
+   * host gnu.xxx.yy, port 801 having the key "Prod/TradingService". Its ORB 
+   * supports iiop 1.1.<br>
+   * corbaloc:rir:/NameService - the default naming service.
    *
    * @param IOR the object IOR representation string.
    *
    * @return the found CORBA object.
+   * 
+   * @throws BAD_PARAM if the string being parsed is invalid.
+   * @throws DATA_CONVERSION if the string being parsed contains unsupported
+   * prefix or protocol.
+   * 
    * @see object_to_string(org.omg.CORBA.Object)
    */
   public abstract Object string_to_object(String IOR);

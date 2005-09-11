@@ -421,6 +421,7 @@ Klasses_jar_SRCS = \
 	$(gnu_CORBA_GIOP_SRCS) \
 	$(gnu_CORBA_GIOP_v1_0_SRCS) \
 	$(gnu_CORBA_GIOP_v1_2_SRCS) \
+	$(gnu_CORBA_Interceptor_SRCS) \
 	$(gnu_CORBA_NamingService_SRCS) \
 	$(gnu_CORBA_Poa_SRCS) \
 	$(gnu_bytecode_SRCS) \
@@ -542,6 +543,7 @@ Klasses_jar_SRCS = \
 	$(gnu_xml_libxmlj_transform_SRCS) \
 	$(gnu_xml_libxmlj_util_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
+	$(gnu_xml_stream_SRCS) \
 	$(gnu_xml_transform_SRCS) \
 	$(gnu_xml_util_SRCS) \
 	$(gnu_xml_xpath_SRCS) \
@@ -649,6 +651,9 @@ Klasses_jar_SRCS = \
 	$(javax_xml_datatype_SRCS) \
 	$(javax_xml_namespace_SRCS) \
 	$(javax_xml_parsers_SRCS) \
+	$(javax_xml_stream_SRCS) \
+	$(javax_xml_stream_events_SRCS) \
+	$(javax_xml_stream_util_SRCS) \
 	$(javax_xml_transform_SRCS) \
 	$(javax_xml_transform_dom_SRCS) \
 	$(javax_xml_transform_sax_SRCS) \
@@ -858,6 +863,7 @@ gnu_CORBA_GIOP_SRCS = \
 	gnu/CORBA/GIOP/ReplyHeader.java \
 	gnu/CORBA/GIOP/RequestHeader.java \
 	gnu/CORBA/GIOP/ServiceContext.java \
+	gnu/CORBA/GIOP/contextSupportingHeader.java \
 	gnu/CORBA/GIOP/cxCodeSet.java
 
 gnu_CORBA_GIOP_v1_0_SRCS = \
@@ -869,9 +875,21 @@ gnu_CORBA_GIOP_v1_2_SRCS = \
 	gnu/CORBA/GIOP/v1_2/ReplyHeader.java \
 	gnu/CORBA/GIOP/v1_2/RequestHeader.java
 
+gnu_CORBA_Interceptor_SRCS = \
+	gnu/CORBA/Interceptor/ClientRequestInterceptors.java \
+	gnu/CORBA/Interceptor/ForwardRequestHolder.java \
+	gnu/CORBA/Interceptor/IORInterceptors.java \
+	gnu/CORBA/Interceptor/Registrator.java \
+	gnu/CORBA/Interceptor/ServerRequestInterceptors.java \
+	gnu/CORBA/Interceptor/gnuClientRequestInfo.java \
+	gnu/CORBA/Interceptor/gnuIcCurrent.java \
+	gnu/CORBA/Interceptor/gnuIorInfo.java \
+	gnu/CORBA/Interceptor/gnuServerRequestInfo.java
+
 gnu_CORBA_NamingService_SRCS = \
 	gnu/CORBA/NamingService/Binding_iterator_impl.java \
 	gnu/CORBA/NamingService/Ext.java \
+	gnu/CORBA/NamingService/NameParser.java \
 	gnu/CORBA/NamingService/NameValidator.java \
 	gnu/CORBA/NamingService/NamingMap.java \
 	gnu/CORBA/NamingService/NamingServiceTransient.java \
@@ -2366,6 +2384,35 @@ gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/WellFormednessFilter.java \
 	gnu/xml/pipeline/XIncludeFilter.java \
 	gnu/xml/pipeline/XsltFilter.java
+
+gnu_xml_stream_SRCS = \
+	gnu/xml/stream/AttributeImpl.java \
+	gnu/xml/stream/CharactersImpl.java \
+	gnu/xml/stream/CommentImpl.java \
+	gnu/xml/stream/DTDImpl.java \
+	gnu/xml/stream/EndDocumentImpl.java \
+	gnu/xml/stream/EndElementImpl.java \
+	gnu/xml/stream/EndEntityImpl.java \
+	gnu/xml/stream/EntityDeclarationImpl.java \
+	gnu/xml/stream/EntityReferenceImpl.java \
+	gnu/xml/stream/FilteredEventReader.java \
+	gnu/xml/stream/FilteredStreamReader.java \
+	gnu/xml/stream/LocationImpl.java \
+	gnu/xml/stream/NamespaceImpl.java \
+	gnu/xml/stream/NotationDeclarationImpl.java \
+	gnu/xml/stream/ProcessingInstructionImpl.java \
+	gnu/xml/stream/StartDocumentImpl.java \
+	gnu/xml/stream/StartElementImpl.java \
+	gnu/xml/stream/StartEntityImpl.java \
+	gnu/xml/stream/XMLEventAllocatorImpl.java \
+	gnu/xml/stream/XMLEventFactoryImpl.java \
+	gnu/xml/stream/XMLEventImpl.java \
+	gnu/xml/stream/XMLEventReaderImpl.java \
+	gnu/xml/stream/XMLEventWriterImpl.java \
+	gnu/xml/stream/XMLInputFactoryImpl.java \
+	gnu/xml/stream/XMLOutputFactoryImpl.java \
+	gnu/xml/stream/XMLStreamReaderImpl.java \
+	gnu/xml/stream/XMLStreamWriterImpl.java
 
 gnu_xml_transform_SRCS = \
 	gnu/xml/transform/AbstractNumberNode.java \
@@ -4541,6 +4588,7 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalRadioButtonUI.java \
 	javax/swing/plaf/metal/MetalRootPaneUI.java \
 	javax/swing/plaf/metal/MetalScrollBarUI.java \
+	javax/swing/plaf/metal/MetalScrollButton.java \
 	javax/swing/plaf/metal/MetalScrollPaneUI.java \
 	javax/swing/plaf/metal/MetalSeparatorUI.java \
 	javax/swing/plaf/metal/MetalSliderUI.java \
@@ -4553,7 +4601,8 @@ javax_swing_plaf_metal_SRCS = \
 	javax/swing/plaf/metal/MetalToolBarUI.java \
 	javax/swing/plaf/metal/MetalToolTipUI.java \
 	javax/swing/plaf/metal/MetalTreeUI.java \
-	javax/swing/plaf/metal/MetalUtils.java
+	javax/swing/plaf/metal/MetalUtils.java \
+	javax/swing/plaf/metal/OceanTheme.java
 
 javax_swing_plaf_multi_SRCS = \
 	javax/swing/plaf/multi/MultiButtonUI.java \
@@ -4658,6 +4707,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/ViewFactory.java
 
 javax_swing_text_html_SRCS = \
+	javax/swing/text/html/CSS.java \
 	javax/swing/text/html/HTML.java \
 	javax/swing/text/html/HTMLDocument.java \
 	javax/swing/text/html/HTMLEditorKit.java \
@@ -4756,6 +4806,49 @@ javax_xml_parsers_SRCS = \
 	javax/xml/parsers/ParserConfigurationException.java \
 	javax/xml/parsers/SAXParser.java \
 	javax/xml/parsers/SAXParserFactory.java
+
+javax_xml_stream_SRCS = \
+	javax/xml/stream/EventFilter.java \
+	javax/xml/stream/FactoryConfigurationError.java \
+	javax/xml/stream/Location.java \
+	javax/xml/stream/StreamFilter.java \
+	javax/xml/stream/XMLEventFactory.java \
+	javax/xml/stream/XMLEventReader.java \
+	javax/xml/stream/XMLEventWriter.java \
+	javax/xml/stream/XMLFilter.java \
+	javax/xml/stream/XMLInputFactory.java \
+	javax/xml/stream/XMLIterator.java \
+	javax/xml/stream/XMLOutputFactory.java \
+	javax/xml/stream/XMLReporter.java \
+	javax/xml/stream/XMLResolver.java \
+	javax/xml/stream/XMLStreamConstants.java \
+	javax/xml/stream/XMLStreamException.java \
+	javax/xml/stream/XMLStreamReader.java \
+	javax/xml/stream/XMLStreamWriter.java
+
+javax_xml_stream_events_SRCS = \
+	javax/xml/stream/events/Attribute.java \
+	javax/xml/stream/events/Characters.java \
+	javax/xml/stream/events/Comment.java \
+	javax/xml/stream/events/DTD.java \
+	javax/xml/stream/events/EndDocument.java \
+	javax/xml/stream/events/EndElement.java \
+	javax/xml/stream/events/EndEntity.java \
+	javax/xml/stream/events/EntityDeclaration.java \
+	javax/xml/stream/events/EntityReference.java \
+	javax/xml/stream/events/Namespace.java \
+	javax/xml/stream/events/NotationDeclaration.java \
+	javax/xml/stream/events/ProcessingInstruction.java \
+	javax/xml/stream/events/StartDocument.java \
+	javax/xml/stream/events/StartElement.java \
+	javax/xml/stream/events/StartEntity.java \
+	javax/xml/stream/events/XMLEvent.java
+
+javax_xml_stream_util_SRCS = \
+	javax/xml/stream/util/EventReaderDelegate.java \
+	javax/xml/stream/util/ReaderDelegate.java \
+	javax/xml/stream/util/XMLEventAllocator.java \
+	javax/xml/stream/util/XMLEventConsumer.java
 
 javax_xml_transform_SRCS = \
 	javax/xml/transform/ErrorListener.java \
@@ -5301,6 +5394,7 @@ org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/BindingIteratorHelper.java \
 	org/omg/CosNaming/BindingIteratorHolder.java \
 	org/omg/CosNaming/BindingIteratorOperations.java \
+	org/omg/CosNaming/BindingIteratorPOA.java \
 	org/omg/CosNaming/BindingListHelper.java \
 	org/omg/CosNaming/BindingListHolder.java \
 	org/omg/CosNaming/BindingType.java \
@@ -5317,9 +5411,11 @@ org_omg_CosNaming_SRCS = \
 	org/omg/CosNaming/NamingContextExtHelper.java \
 	org/omg/CosNaming/NamingContextExtHolder.java \
 	org/omg/CosNaming/NamingContextExtOperations.java \
+	org/omg/CosNaming/NamingContextExtPOA.java \
 	org/omg/CosNaming/NamingContextHelper.java \
 	org/omg/CosNaming/NamingContextHolder.java \
 	org/omg/CosNaming/NamingContextOperations.java \
+	org/omg/CosNaming/NamingContextPOA.java \
 	org/omg/CosNaming/_BindingIteratorImplBase.java \
 	org/omg/CosNaming/_BindingIteratorStub.java \
 	org/omg/CosNaming/_NamingContextExtImplBase.java \
@@ -5473,15 +5569,38 @@ org_omg_Messaging_SRCS = \
 	org/omg/Messaging/SyncScopeHelper.java
 
 org_omg_PortableInterceptor_SRCS = \
+	org/omg/PortableInterceptor/ClientRequestInfo.java \
+	org/omg/PortableInterceptor/ClientRequestInfoOperations.java \
+	org/omg/PortableInterceptor/ClientRequestInterceptor.java \
+	org/omg/PortableInterceptor/ClientRequestInterceptorOperations.java \
+	org/omg/PortableInterceptor/Current.java \
+	org/omg/PortableInterceptor/CurrentHelper.java \
+	org/omg/PortableInterceptor/CurrentOperations.java \
+	org/omg/PortableInterceptor/ForwardRequest.java \
+	org/omg/PortableInterceptor/ForwardRequestHelper.java \
 	org/omg/PortableInterceptor/IORInfo.java \
 	org/omg/PortableInterceptor/IORInfoOperations.java \
 	org/omg/PortableInterceptor/IORInterceptor.java \
 	org/omg/PortableInterceptor/IORInterceptorOperations.java \
 	org/omg/PortableInterceptor/Interceptor.java \
 	org/omg/PortableInterceptor/InterceptorOperations.java \
+	org/omg/PortableInterceptor/InvalidSlot.java \
+	org/omg/PortableInterceptor/InvalidSlotHelper.java \
 	org/omg/PortableInterceptor/LOCATION_FORWARD.java \
+	org/omg/PortableInterceptor/ORBInitInfo.java \
+	org/omg/PortableInterceptor/ORBInitInfoOperations.java \
+	org/omg/PortableInterceptor/ORBInitializer.java \
+	org/omg/PortableInterceptor/ORBInitializerOperations.java \
+	org/omg/PortableInterceptor/PolicyFactory.java \
+	org/omg/PortableInterceptor/PolicyFactoryOperations.java \
+	org/omg/PortableInterceptor/RequestInfo.java \
+	org/omg/PortableInterceptor/RequestInfoOperations.java \
 	org/omg/PortableInterceptor/SUCCESSFUL.java \
 	org/omg/PortableInterceptor/SYSTEM_EXCEPTION.java \
+	org/omg/PortableInterceptor/ServerRequestInfo.java \
+	org/omg/PortableInterceptor/ServerRequestInfoOperations.java \
+	org/omg/PortableInterceptor/ServerRequestInterceptor.java \
+	org/omg/PortableInterceptor/ServerRequestInterceptorOperations.java \
 	org/omg/PortableInterceptor/TRANSPORT_RETRY.java \
 	org/omg/PortableInterceptor/USER_EXCEPTION.java
 

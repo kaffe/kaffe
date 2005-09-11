@@ -44,15 +44,18 @@ import java.io.Serializable;
 
 /**
  * An ORB service implementation may need to add information describing the
- * server�s or object�s ORB service related capabilities to object references
+ * serverORB service related capabilities to object references
  * (IORs). This is supported through the IORInterceptor and {@link IORInfo}
  * interfaces. The IOR Interceptor is used to establish tagged components in the
  * profiles within a new IOR being created.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface IORInterceptor
-  extends IDLEntity, Interceptor, InterceptorOperations, IORInterceptorOperations,
-          org.omg.CORBA.Object, Serializable
+public interface IORInterceptor extends IDLEntity,
+  Interceptor,
+  InterceptorOperations,
+  IORInterceptorOperations,
+  org.omg.CORBA.Object,
+  Serializable
 {
 }

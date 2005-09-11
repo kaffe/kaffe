@@ -67,6 +67,8 @@ static jmethodID provideTextID;
 static jmethodID provideImageID;
 static jmethodID provideURIsID;
 
+/* Called when clipboard owner changes. Used to update available targets. */
+#if GTK_MINOR_VERSION > 4
 static void
 clipboard_owner_change_cb (GtkClipboard *clipboard __attribute__((unused)),
 			   GdkEvent *event __attribute__((unused)),
@@ -79,6 +81,7 @@ clipboard_owner_change_cb (GtkClipboard *clipboard __attribute__((unused)),
     (*env)->CallStaticVoidMethod (env, gtk_clipboard_class,
 				  setSystemContentsID);
 }
+#endif
 
 JNIEXPORT jboolean JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
@@ -105,6 +108,8 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
   cp_gtk_clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
 
   display = gtk_clipboard_get_display (cp_gtk_clipboard);
+  /* Check for support for clipboard owner changes. */
+#if GTK_MINOR_VERSION > 4
   if (gdk_display_supports_selection_notification (display))
     {
       g_signal_connect (cp_gtk_clipboard, "owner-change",
@@ -114,6 +119,7 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_initNativeState (JNIEnv *env,
       can_cache = JNI_TRUE;
     }
   else
+#endif
     can_cache = JNI_FALSE;
   gdk_threads_leave ();
 
@@ -180,6 +186,8 @@ clipboard_get_func (GtkClipboard *clipboard __attribute__((unused)),
       gtk_selection_data_set_text (selection, text, len);
       (*env)->ReleaseStringUTFChars (env, string, text);
     }
+  /* Images and URIs/Files support only available with gtk+2.6 or higher. */
+#if GTK_MINOR_VERSION > 4
   else if (info == IMAGE_TARGET)
     {
       jobject gtkimage;
@@ -246,6 +254,7 @@ clipboard_get_func (GtkClipboard *clipboard __attribute__((unused)),
 	free (list[i]);
       JCL_free (env, list);
     }
+#endif
 }
 
 static void
@@ -266,9 +275,13 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
 (JNIEnv *env,
  jobject instance,
  jobjectArray mime_array,
- jboolean add_text,
+#if GTK_MINOR_VERSION > 4
+ jboolean add_text, jboolean add_images, jboolean add_uris)
+#else
+ jboolean add_text __attribute__((unused)),
  jboolean add_images __attribute__((unused)),
  jboolean add_uris __attribute__((unused)))
+#endif
 {
   GtkTargetList *target_list;
   GList *list;
@@ -302,12 +315,20 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
     }
 
   /* Add extra targets that gtk+ can provide/translate for us. */
+#if GTK_MINOR_VERSION > 4
   if (add_text)
     gtk_target_list_add_text_targets (target_list, TEXT_TARGET);
   if (add_images)
     gtk_target_list_add_image_targets (target_list, IMAGE_TARGET, TRUE);
   if (add_uris)
     gtk_target_list_add_uri_targets (target_list, URI_TARGET);
+#else
+  if (add_text)
+    gtk_target_list_add (target_list,
+	                 gdk_atom_intern ("STRING", FALSE),
+	                 0, TEXT_TARGET);
+#endif
+
 
   /* Turn list into a target table. */
   n = g_list_length (target_list->list);
@@ -325,7 +346,7 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
 	}
 
       /* Set the targets plus callback functions and ask for the clipboard
-	 to be stored when the application exists. */
+	 to be stored when the application exists if supported. */
       current_selection++;
       if (gtk_clipboard_set_with_data (cp_gtk_clipboard, targets, n,
 				       clipboard_get_func,
@@ -365,7 +386,9 @@ Java_gnu_java_awt_peer_gtk_GtkClipboard_advertiseContent
 	      if (provideURIsID == NULL)
 		return;
 	    }
+#if GTK_MINOR_VERSION > 4
 	  gtk_clipboard_set_can_store (cp_gtk_clipboard, NULL, 0);
+#endif
 	}
       else
 	{

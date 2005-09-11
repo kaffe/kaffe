@@ -66,7 +66,7 @@ public class QtButtonPeer extends QtComponentPeer implements ButtonPeer
 				    ((Button)owner).getActionCommand(),
 				    System.currentTimeMillis(),
 				    modifiers);
-    toolkit.eventQueue.postEvent(e);
+    QtToolkit.eventQueue.postEvent(e);
   }
 
   // ************ Public methods *********************

@@ -46,12 +46,13 @@ import org.omg.CORBA.portable.IDLEntity;
  * intercept the normal flow of execution in creation of IOR, sending request,
  * receiving request and returning the reply.
  *
- * See {@link org.omg.PortableInterceptor} for more details about the possible
- * interceptors and how to register them within the ORB.
+ * See {@link ORBInitializer} for explanation, how the interceptors are
+ * registered within the ORB.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public interface Interceptor
-  extends InterceptorOperations, Object, IDLEntity
+public interface Interceptor extends InterceptorOperations,
+  Object,
+  IDLEntity
 {
 }

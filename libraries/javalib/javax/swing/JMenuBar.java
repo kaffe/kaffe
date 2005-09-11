@@ -253,7 +253,7 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    * This method returns a name to identify which look and feel class will be
    * the UI delegate for the menu bar.
    *
-   * @return The Look and Feel classID. "MenuItemUI"
+   * @return The Look and Feel classID. "MenuBarUI"
    */
   public String getUIClassID()
   {

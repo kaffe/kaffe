@@ -39,7 +39,6 @@ exception statement from your version. */
 
 package java.io;
 
-import gnu.classpath.Configuration;
 import gnu.java.io.ObjectIdentityWrapper;
 
 import java.lang.reflect.Array;
@@ -199,7 +198,6 @@ public class ObjectInputStream extends InputStream
 	      for (int i = 0; i < n_intf; i++)
 		{
 		  intfs[i] = this.realInputStream.readUTF();
-		  System.out.println(intfs[i]);
 		}
 	      
 	      boolean oldmode = setBlockDataMode(true);
@@ -219,6 +217,10 @@ public class ObjectInputStream extends InputStream
 		is_consumed = false;
 	      ObjectStreamClass superosc = (ObjectStreamClass)readObject();
 	      osc.setSuperclass(superosc);
+              osc.firstNonSerializableParentConstructor =
+                superosc.firstNonSerializableParentConstructor;
+              osc.fieldMapping = new ObjectStreamField[0];
+              osc.realClassIsSerializable = true;
 	      ret_val = osc;
 	      break;
 	    }
@@ -874,7 +876,7 @@ public class ObjectInputStream extends InputStream
       }
     else
       for (int i = 0; i < intfs.length; i++)
-	clss[i] = cl.loadClass(intfs[i]);
+	clss[i] = Class.forName(intfs[i], false, cl);
     try 
       {
 	return Proxy.getProxyClass(cl, clss);
@@ -1906,14 +1908,6 @@ public class ObjectInputStream extends InputStream
     for (int i = 0; i < depth; i++)
       System.out.print (" ");
     System.out.print (Thread.currentThread() + ": ");
-  }
-
-  static
-  {
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-	System.loadLibrary ("io");
-      }
   }
 
   // used to keep a prioritized list of object validators

@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.imageio.spi;
 
 import gnu.classpath.ServiceFactory;
+import gnu.java.awt.ClasspathToolkit;
 
 import java.awt.Toolkit;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public final class IIORegistry extends ServiceRegistry
   
   public static synchronized IIORegistry getDefaultInstance()
   {
+    // XXX: This leaks memory if a ThreadGroup isn't available anymore.
     ThreadGroup group = Thread.currentThread().getThreadGroup();
     IIORegistry registry = (IIORegistry) instances.get(group);
     
@@ -81,6 +83,8 @@ public final class IIORegistry extends ServiceRegistry
     // XXX: Register built-in Spis here.
 
     Toolkit toolkit = Toolkit.getDefaultToolkit();
+    if (toolkit instanceof ClasspathToolkit)
+      ((ClasspathToolkit)toolkit).registerImageIOSpis(this);
     
     registerApplicationClasspathSpis();
   }

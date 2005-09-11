@@ -67,7 +67,7 @@ public class QtScrollbarPeer extends QtComponentPeer implements ScrollbarPeer
     AdjustmentEvent e = new AdjustmentEvent((Scrollbar)owner,
 					    AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED,
 					    type, value);
-    toolkit.eventQueue.postEvent(e);
+    QtToolkit.eventQueue.postEvent(e);
   }
   
   // ************ Public methods *********************

@@ -90,7 +90,7 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
 				      ItemEvent.ITEM_STATE_CHANGED, 
 				      ""+index,
 				      ItemEvent.SELECTED);
-	  toolkit.eventQueue.postEvent(e);
+	  QtToolkit.eventQueue.postEvent(e);
 	}
   }
 
@@ -104,7 +104,7 @@ public class QtListPeer extends QtComponentPeer implements ListPeer
 				    ((List)owner).getItem( index ),
 				    System.currentTimeMillis(),
 				    modifiers);
-    toolkit.eventQueue.postEvent(e);
+    QtToolkit.eventQueue.postEvent(e);
   }
 
   private native void select(int index, boolean selected);

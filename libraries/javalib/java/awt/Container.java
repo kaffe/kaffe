@@ -1047,6 +1047,53 @@ public class Container extends Component
         return this;
       }
   }
+  
+  /**
+   * Finds the visible child component that contains the specified position.
+   * The top-most child is returned in the case where there is overlap.
+   * If the top-most child is transparent and has no MouseListeners attached,
+   * we discard it and return the next top-most component containing the
+   * specified position.
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @return null if the <code>this</code> does not contain the position,
+   * otherwise the top-most component (out of this container itself and 
+   * its descendants) meeting the criteria above.
+   */
+  public Component findComponentForMouseEventAt(int x, int y)
+  {
+    synchronized (getTreeLock())
+      {
+        if (!contains(x, y))
+          return null;
+
+        for (int i = 0; i < ncomponents; ++i)
+          {
+            // Ignore invisible children...
+            if (!component[i].isVisible())
+              continue;
+
+            int x2 = x - component[i].x;
+            int y2 = y - component[i].y;
+            // We don't do the contains() check right away because
+            // findComponentAt would redundantly do it first thing.
+            if (component[i] instanceof Container)
+              {
+                Container k = (Container) component[i];
+                Component r = k.findComponentForMouseEventAt(x2, y2);
+                if (r != null)
+                  return r;
+              }
+            else if (component[i].contains(x2, y2))
+              return component[i];
+          }
+
+        //don't return transparent components with no MouseListeners
+        if (this.getMouseListeners().length == 0)
+          return null;
+        return this;
+      }
+  }
 
   public Component findComponentAt(Point p)
   {
@@ -1955,6 +2002,30 @@ class LightweightDispatcher implements Serializable
     eventMask |= l;
   }
 
+  /**
+   * Returns the deepest visible descendent of parent that contains the 
+   * specified location and that is not transparent and MouseListener-less.
+   * @param parent the root component to begin the search
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @return null if <code>parent</code> doesn't contain the location, 
+   * parent if parent is not a container or has no child that contains the
+   * location, otherwise the appropriate component from the conditions
+   * above.
+   */
+  public static Component getDeepestComponentForMouseEventAt (
+                                                              Component parent, int x, int y)
+  {
+    if (parent == null || (! parent.contains(x, y)))
+      return null;
+
+    if (! (parent instanceof Container))
+      return parent;
+
+    Container c = (Container) parent;
+    return c.findComponentForMouseEventAt(x, y);
+  }
+  
   Component acquireComponentForMouseEvent(MouseEvent me)
   {
     int x = me.getX ();
@@ -1968,7 +2039,7 @@ class LightweightDispatcher implements Serializable
     while (candidate == null && parent != null)
       {
         candidate =
-          AWTUtilities.getDeepestComponentAt(parent, p.x, p.y);
+          getDeepestComponentForMouseEventAt(parent, p.x, p.y);
         if (candidate == null || (candidate.eventMask & me.getID()) == 0)
           {
             candidate = null;

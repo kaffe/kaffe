@@ -73,14 +73,16 @@ classpath_jawt_get_default_display (JNIEnv* env, jobject canvas)
 
   widget = GTK_WIDGET (ptr);
 
-  /* widget should be realized before Canvas.paint is called. */
-  g_assert (GTK_WIDGET_REALIZED (widget));
+  if (GTK_WIDGET_REALIZED (widget))
+    {
+      display = gtk_widget_get_display (widget);
 
-  display = gtk_widget_get_display (widget);
+      xdisplay = GDK_DISPLAY_XDISPLAY (display);
 
-  xdisplay = GDK_DISPLAY_XDISPLAY (display);
-
-  return xdisplay;
+      return xdisplay;
+    }
+  else
+    return NULL;
 }
 
 /* Does not require locking: meant to be called after the drawing
@@ -107,12 +109,15 @@ classpath_jawt_get_visualID (JNIEnv* env, jobject canvas)
 
   widget = GTK_WIDGET (ptr);
 
-  g_assert (GTK_WIDGET_REALIZED (widget));
+  if (GTK_WIDGET_REALIZED (widget))
+    {
+      visual = gdk_x11_visual_get_xvisual (gtk_widget_get_visual (widget));
+      g_assert (visual != NULL);
 
-  visual = gdk_x11_visual_get_xvisual (gtk_widget_get_visual (widget));
-  g_assert (visual != NULL);
-
-  return visual->visualid;
+      return visual->visualid;
+    }
+  else
+    return (VisualID) NULL;
 }
 
 /* Does not require locking: meant to be called after the drawing
@@ -139,11 +144,14 @@ classpath_jawt_get_drawable (JNIEnv* env, jobject canvas)
 
   widget = GTK_WIDGET (ptr);
 
-  g_assert (GTK_WIDGET_REALIZED (widget));
+  if (GTK_WIDGET_REALIZED (widget))
+    {
+      drawable = GDK_DRAWABLE_XID (widget->window);
 
-  drawable = GDK_DRAWABLE_XID (widget->window);
-
-  return drawable;
+      return drawable;
+    }
+  else
+    return (Drawable) NULL;
 }
 
 jint

@@ -42,12 +42,31 @@ exception statement from your version. -->
 <body>
 This package provides the support of <a href="http://www.CORBA.org">CORBA</a>;
 see <a href="#overview">overview</a> of the implemented functionality. 
+<p>
 CORBA a system that applications use to work over networks. CORBA messages 
 are binary, not text oriented. They practically cary no "data wrapping" 
 information like XML &lt;opening&gt; &lt;/closing&gt; tags. Hence CORBA 
-objects much easier exchange large amounts of binary data. CORBA can work
+objects easier exchange large amounts of binary data. CORBA can work
 in such data-intensive application areas as telecommunications or radio
-broadcasting.
+broadcasting. Java programs connect to CORBA objects without care
+about what platform they run on, where they exist in the network, or what 
+language they were written in. The remote CORBA objects appear to the 
+programmer as the ordinary Java objects and can be passed as
+parameters in both remote or local method invocations. 
+</p><p>
+The CORBA processing unit is divided into {@link org.omg.CORBA.Object}
+that is exposed to the client and the servant 
+({@link org.omg.PortableServer.Servant} where the method, invoked on 
+object, is finally delegated. It can be multiple objects per servant or
+multiple servants per object. The servant for particular object or
+even particular call can be dynamically chosen at run time using
+{@link org.omg.PortableServer.ServantManager}.
+</p><p>
+All stages of both local and remote invocations on CORBA objects can be
+monitored and modified using {@link org.omg.PortableInterceptor.Interceptor}.
+The interceptors can add an extra data to the CORBA message (these data
+can be later accessed by other interceptor on remote side).
+</p>
 <a name="overview">
 <h4>Overview of the currently implemented CORBA functionality</h4>
 The CORBA implementation in the Classpath project is now a working
@@ -89,6 +108,9 @@ see the {@link org.omg.PortableServer} package.</li>
 <li>We provide the implementation of the {@link org.omg.DynamicAny}
 package. ORB returns the working DynAnyFactory that produces working
 DynAny's as defined in OMG specification.</li>
+<li>The Portable Interceptor is also complete. See 
+{@link org.omg.PortableInterceptor} package for details how to register 
+and use CORBA interceptors.
 <li>All GNU Classpath classes in omg.org namespace are newly written using
  the OMG .pdf document (Version 3.0.3, formal/04-03-12).
 </li>

@@ -40,23 +40,38 @@ package gnu.CORBA.Poa;
 
 import gnu.CORBA.CDR.cdrBufOutput;
 import gnu.CORBA.GIOP.MessageHeader;
+import gnu.CORBA.GIOP.v1_2.ReplyHeader;
+import gnu.CORBA.GIOP.v1_2.RequestHeader;
+import gnu.CORBA.Interceptor.gnuClientRequestInfo;
+import gnu.CORBA.Interceptor.gnuServerRequestInfo;
+import gnu.CORBA.ObjectCreator;
 import gnu.CORBA.Unexpected;
 import gnu.CORBA.gnuAny;
 import gnu.CORBA.gnuRequest;
+import gnu.CORBA.recordTypeCode;
 import gnu.CORBA.streamReadyHolder;
 import gnu.CORBA.streamRequest;
 
 import org.omg.CORBA.ARG_OUT;
+import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_INV_ORDER;
 import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.Bounds;
 import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.ORB;
+import org.omg.CORBA.SystemException;
+import org.omg.CORBA.TCKind;
 import org.omg.CORBA.UnknownUserException;
+import org.omg.CORBA.UserException;
 import org.omg.CORBA.portable.ApplicationException;
+import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
+import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ResponseHandler;
+import org.omg.PortableInterceptor.ClientRequestInterceptorOperations;
+import org.omg.PortableInterceptor.ForwardRequest;
+import org.omg.PortableInterceptor.ServerRequestInterceptorOperations;
 import org.omg.PortableServer.CurrentOperations;
 import org.omg.PortableServer.CurrentPackage.NoContext;
 import org.omg.PortableServer.DynamicImplementation;
@@ -68,15 +83,13 @@ import org.omg.PortableServer.portable.Delegate;
 import java.io.IOException;
 
 /**
- * Directs the invocation to the locally available servant.
- * The POA servant does not longer implement the CORBA object and
- * cannot be substituted directly.
+ * Directs the invocation to the locally available servant. The POA servant does
+ * not longer implement the CORBA object and cannot be substituted directly.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class LocalRequest
-  extends gnuRequest
-  implements ResponseHandler, CurrentOperations
+public class LocalRequest extends gnuRequest implements ResponseHandler,
+  CurrentOperations
 {
   /**
    * Used by servant locator, if involved.
@@ -94,7 +107,7 @@ public class LocalRequest
   private static final MessageHeader header = new MessageHeader();
 
   /**
-   * True if the stream was obtained by invoking {@link #createExceptionReply()},
+       * True if the stream was obtained by invoking {@link #createExceptionReply()},
    * false otherwise.
    */
   boolean exceptionReply;
@@ -129,17 +142,19 @@ public class LocalRequest
 
     // Instantiate the cookie holder only if required.
     if (poa.servant_locator != null)
-      cookie = new CookieHolder();
+      {
+        cookie = new CookieHolder();
+      }
     object = local_object;
     prepareStream();
   }
 
   /**
-   * Make an invocation and return a stream from where the results
-   * can be read and throw ApplicationException, where applicable.
+   * Make an invocation and return a stream from where the results can be read
+   * and throw ApplicationException, where applicable.
    */
   org.omg.CORBA.portable.InputStream s_invoke(InvokeHandler handler)
-                                       throws ApplicationException
+    throws ApplicationException
   {
     try
       {
@@ -148,7 +163,9 @@ public class LocalRequest
         org.omg.CORBA.portable.InputStream input = v_invoke(handler);
 
         if (!exceptionReply)
-          return input;
+          {
+            return input;
+          }
         else
           {
             input.mark(500);
@@ -174,100 +191,341 @@ public class LocalRequest
   }
 
   /**
-   * Make an invocation and return a stream from where the results
-   * can be read.
+   * Make an invocation and return a stream from where the results can be read.
    *
    * @param the invoke handler (can be null, then it is obtained self
    * dependently).
    */
   public org.omg.CORBA.portable.InputStream v_invoke(InvokeHandler handler)
   {
-    if (handler == null)
-      handler = object.getHandler(operation(), cookie, false);
+    // Local request must be intercepted both by server and request
+    // interceptors.
+    boolean s_intercept = false;
+    ServerRequestInterceptorOperations s_interceptor = null;
+    gnuServerRequestInfo s_info = null;
 
-    cdrBufOutput request_part = new cdrBufOutput();
-
-    request_part.setOrb(orb());
-
-    if (m_args != null && m_args.count() > 0)
-      {
-        write_parameters(header, request_part);
-
-        if (m_parameter_buffer != null)
-          throw new BAD_INV_ORDER("Please either add parameters or " +
-                                  "write them into stream, but not both " +
-                                  "at once."
-                                 );
-      }
-
-    if (m_parameter_buffer != null)
-      {
-        write_parameter_buffer(header, request_part);
-      }
-
-    Servant servant;
-
-    if (handler instanceof Servant)
-      servant = (Servant) handler;
-    else
-      throw new BAD_OPERATION("Unexpected handler type " + handler);
-
-    org.omg.CORBA.portable.InputStream input =
-      request_part.create_input_stream();
-
-    // Ensure the servant (handler) has a delegate set.
-    servantDelegate sd = null;
-
-    Delegate d = null;
+    boolean c_intercept = false;
+    ClientRequestInterceptorOperations c_interceptor = null;
+    gnuClientRequestInfo c_info = null;
 
     try
       {
-        d = servant._get_delegate();
-      }
-    catch (Exception ex)
-      {
-        // In some cases exception is thrown if the delegate is not set.
-      }
-    if (d instanceof servantDelegate)
-      {
-        // If the delegate is already set, try to reuse the existing
-        // instance.
-        sd = (servantDelegate) d;
-        if (sd.object != object)
-          sd = new servantDelegate(servant, poa, Id);
-      }
-    else
-      sd = new servantDelegate(servant, poa, Id);
-    servant._set_delegate(sd);
-
-    try
-      {
-        ORB o = orb();
-        if (o instanceof ORB_1_4)
+        if (poa.m_orb.iServer != null || poa.m_orb.iClient != null)
           {
-            ((ORB_1_4) o).currents.put(Thread.currentThread(), this);
+            setORB(poa.m_orb);
+
+            // These two are only needed with interceptors.
+            m_rqh = new RequestHeader();
+            m_rqh.operation = m_operation;
+            m_rph = new ReplyHeader();
+
+            m_rqh.object_key = object.Id;
+            m_rph.request_id = m_rqh.request_id;
           }
 
-        handler._invoke(m_operation, input, this);
+        if (poa.m_orb.iClient != null)
+          {
+            c_interceptor = poa.m_orb.iClient;
+
+            c_info = new gnuClientRequestInfo(this);
+            c_intercept = true;
+
+            c_interceptor.send_request(c_info);
+
+            m_target = object;
+          }
+
+        if (poa.m_orb.iServer != null)
+          {
+            s_interceptor = poa.m_orb.iServer;
+
+            s_info = new gnuServerRequestInfo(object, m_rqh, m_rph);
+            s_info.m_request = this;
+
+            s_intercept = true;
+
+            s_interceptor.receive_request_service_contexts(s_info);
+          }
+
+        if (handler == null)
+          {
+            handler = object.getHandler(operation(), cookie, false);
+          }
+
+        cdrBufOutput request_part = new cdrBufOutput();
+
+        request_part.setOrb(orb());
+
+        if (m_args != null && m_args.count() > 0)
+          {
+            write_parameters(header, request_part);
+
+            if (m_parameter_buffer != null)
+              {
+                throw new BAD_INV_ORDER("Please either add parameters or " +
+                  "write them into stream, but not both " + "at once."
+                );
+              }
+          }
+
+        if (m_parameter_buffer != null)
+          {
+            write_parameter_buffer(header, request_part);
+          }
+
+        Servant servant;
+
+        if (handler instanceof Servant)
+          {
+            servant = (Servant) handler;
+          }
+        else
+          {
+            throw new BAD_OPERATION("Unexpected handler type " + handler);
+          }
+
+        org.omg.CORBA.portable.InputStream input =
+          request_part.create_input_stream();
+
+        // Ensure the servant (handler) has a delegate set.
+        servantDelegate sd = null;
+
+        Delegate d = null;
+
+        try
+          {
+            d = servant._get_delegate();
+          }
+        catch (Exception ex)
+          {
+            // In some cases exception is thrown if the delegate is not set.
+          }
+        if (d instanceof servantDelegate)
+          {
+            // If the delegate is already set, try to reuse the existing
+            // instance.
+            sd = (servantDelegate) d;
+            if (sd.object != object)
+              {
+                sd = new servantDelegate(servant, poa, Id);
+              }
+          }
+        else
+          {
+            sd = new servantDelegate(servant, poa, Id);
+          }
+        servant._set_delegate(sd);
+
+        try
+          {
+            ORB o = orb();
+            if (o instanceof ORB_1_4)
+              {
+                ((ORB_1_4) o).currents.put(Thread.currentThread(), this);
+              }
+
+            try
+              {
+                if (s_intercept)
+                  {
+                    s_interceptor.receive_request(s_info);
+                  }
+                handler._invoke(m_operation, input, this);
+
+                // Handler is casted into i_handler.
+                if ((s_intercept || c_intercept) && isExceptionReply())
+                  {
+                    s_info.m_reply_header.reply_status =
+                      ReplyHeader.USER_EXCEPTION;
+                    m_rph.reply_status = ReplyHeader.USER_EXCEPTION;
+
+                    // Make Any, holding the user exception.
+                    Any a = new gnuAny();
+                    OutputStream buf = getBuffer();
+                    InputStream in = buf.create_input_stream();
+                    String uex_idl = "unknown";
+                    try
+                      {
+                        in.mark(Integer.MAX_VALUE);
+                        uex_idl = in.read_string();
+                        m_exception_id = uex_idl;
+                        in.reset();
+                      }
+                    catch (IOException e)
+                      {
+                        throw new Unexpected(e);
+                      }
+
+                    try
+                      {
+                        UserException exception =
+                          ObjectCreator.readUserException(uex_idl, in);
+
+                        m_environment.exception(exception);
+                        ObjectCreator.insertWithHelper(a, exception);
+                      }
+                    catch (Exception e)
+                      {
+                        // Failed due any reason, insert without
+                        // helper.
+                        a.insert_Streamable(new streamReadyHolder(
+                            buf.create_input_stream()
+                          )
+                        );
+
+                        recordTypeCode r =
+                          new recordTypeCode(TCKind.tk_except);
+                        r.setId(uex_idl);
+                        r.setName(ObjectCreator.getDefaultName(uex_idl));
+                      }
+
+                    s_info.m_usr_exception = a;
+                    c_info.m_wrapped_exception = a;
+                    s_interceptor.send_exception(s_info);
+                    c_interceptor.receive_exception(c_info);
+                  }
+                else
+                  {
+                    if (s_intercept)
+                      {
+                        s_info.m_reply_header.reply_status =
+                          ReplyHeader.NO_EXCEPTION;
+                        s_interceptor.send_reply(s_info);
+                      }
+                    if (c_intercept)
+                      {
+                        m_rph.reply_status = ReplyHeader.NO_EXCEPTION;
+                        c_interceptor.receive_reply(c_info);
+                      }
+                  }
+              }
+            catch (SystemException sys_ex)
+              {
+                if (s_intercept)
+                  {
+                    s_info.m_reply_header.reply_status =
+                      ReplyHeader.SYSTEM_EXCEPTION;
+                    s_info.m_sys_exception = sys_ex;
+                    s_interceptor.send_exception(s_info);
+                  }
+
+                if (c_intercept)
+                  {
+                    m_rph.reply_status = ReplyHeader.SYSTEM_EXCEPTION;
+
+                    Any a = new gnuAny();
+                    if (ObjectCreator.insertSysException(a, sys_ex))
+                      {
+                        c_info.m_wrapped_exception = a;
+                      }
+                    c_interceptor.receive_exception(c_info);
+                  }
+
+                throw sys_ex;
+              }
+          }
+        finally
+          {
+            ORB o = orb();
+            if (o instanceof ORB_1_4)
+              {
+                ((ORB_1_4) o).currents.remove(Thread.currentThread());
+              }
+          }
+
+        if (poa.servant_locator != null)
+          {
+            poa.servant_locator.postinvoke(object.Id, poa, operation(),
+              cookie.value, object.getServant()
+            );
+          }
+        return buffer.create_input_stream();
       }
-    finally
+
+    catch (ForwardRequest fex)
       {
-        ORB o = orb();
-        if (o instanceof ORB_1_4)
-          ((ORB_1_4) o).currents.remove(Thread.currentThread());
+        // May be thrown by interceptor.
+        if (s_intercept)
+          {
+            Forwarding:
+            while (true)
+              {
+                s_info.m_reply_header.reply_status =
+                  ReplyHeader.LOCATION_FORWARD;
+                s_info.m_forward_reference = fex.forward;
+                try
+                  {
+                    s_interceptor.send_other(s_info);
+                    break Forwarding;
+                  }
+                catch (ForwardRequest fex2)
+                  {
+                    s_info.m_forward_reference = fex2.forward;
+                    fex.forward = s_info.m_forward_reference;
+                  }
+              }
+          }
+
+        if (c_intercept)
+          {
+            this.m_rph.reply_status = ReplyHeader.LOCATION_FORWARD;
+            this.m_forwarding_target = fex.forward;
+            try
+              {
+                c_interceptor.receive_other(c_info);
+              }
+            catch (ForwardRequest fex2)
+              {
+                fex.forward = fex2.forward;
+              }
+          }
+        throw new gnuForwardRequest(fex.forward);
       }
+    catch (gnuForwardRequest fex)
+      {
+        // May be thrown during activation.
+        // May be thrown during activation.
+        if (s_intercept)
+          {
+            Forwarding:
+            while (true)
+              {
+                s_info.m_reply_header.reply_status =
+                  ReplyHeader.LOCATION_FORWARD;
+                s_info.m_forward_reference = fex.forward_reference;
+                try
+                  {
+                    s_interceptor.send_other(s_info);
+                    break Forwarding;
+                  }
+                catch (ForwardRequest fex2)
+                  {
+                    s_info.m_forward_reference = fex2.forward;
+                    fex.forward_reference = (ObjectImpl) fex2.forward;
+                  }
+              }
+          }
 
-    if (poa.servant_locator != null)
-      poa.servant_locator.postinvoke(object.Id, poa, operation(), cookie.value,
-                                     object.getServant()
-                                    );
-
-    return buffer.create_input_stream();
+        if (c_intercept)
+          {
+            this.m_rph.reply_status = ReplyHeader.LOCATION_FORWARD;
+            this.m_forwarding_target = fex.forward_reference;
+            try
+              {
+                c_interceptor.receive_other(c_info);
+              }
+            catch (ForwardRequest fex2)
+              {
+                fex.forward_reference = (ObjectImpl) fex2.forward;
+              }
+          }
+        throw fex;
+      }
   }
 
   /**
-   * Make an invocation and store the result in the fields of this
-   * Request. Used with DII only.
+   * Make an invocation and store the result in the fields of this Request. Used
+   * with DII only.
    */
   public void invoke()
   {
@@ -277,7 +535,9 @@ public class LocalRequest
       {
         DynamicImplementation dyn = ((dynImpHandler) handler).servant;
         if (serverRequest == null)
-          serverRequest = new LocalServerRequest(this);
+          {
+            serverRequest = new LocalServerRequest(this);
+          }
         try
           {
             poa.m_orb.currents.put(Thread.currentThread(), this);
@@ -304,25 +564,27 @@ public class LocalRequest
 
             // Read returned parameters, if set.
             if (m_args != null)
-              for (int i = 0; i < m_args.count(); i++)
-                {
-                  try
-                    {
-                      arg = m_args.item(i);
+              {
+                for (int i = 0; i < m_args.count(); i++)
+                  {
+                    try
+                      {
+                        arg = m_args.item(i);
 
-                      // Both ARG_INOUT and ARG_OUT have this binary flag set.
-                      if ((arg.flags() & ARG_OUT.value) != 0)
-                        {
-                          arg.value().read_value(input, arg.value().type());
-                        }
-                    }
-                  catch (Bounds ex)
-                    {
-                      Unexpected.error(ex);
-                    }
-                }
+                        // Both ARG_INOUT and ARG_OUT have this binary flag set.
+                        if ((arg.flags() & ARG_OUT.value) != 0)
+                          {
+                            arg.value().read_value(input, arg.value().type());
+                          }
+                      }
+                    catch (Bounds ex)
+                      {
+                        Unexpected.error(ex);
+                      }
+                  }
+              }
           }
-        else // User exception reply
+        else// User exception reply
           {
             // Prepare an Any that will hold the exception.
             gnuAny exc = new gnuAny();
@@ -336,10 +598,9 @@ public class LocalRequest
   }
 
   /**
-   * Get an output stream for providing details about the exception.
-   * Before returning the stream, the handler automatically writes
-   * the message header and the reply about exception header,
-   * but not the message header.
+   * Get an output stream for providing details about the exception. Before
+   * returning the stream, the handler automatically writes the message header
+   * and the reply about exception header, but not the message header.
    *
    * @return the stream to write exception details into.
    */
@@ -353,8 +614,8 @@ public class LocalRequest
   /**
    * Get an output stream for writing a regular reply (not an exception).
    *
-   * Before returning the stream, the handler automatically writes
-   * the regular reply header, but not the message header.
+   * Before returning the stream, the handler automatically writes the regular
+   * reply header, but not the message header.
    *
    * @return the output stream for writing a regular reply.
    */
@@ -366,12 +627,12 @@ public class LocalRequest
   }
 
   /**
-   * Get the buffer, normally containing the written reply.
-   * The reply includes the reply header (or the exception header)
-   * but does not include the message header.
+   * Get the buffer, normally containing the written reply. The reply includes
+   * the reply header (or the exception header) but does not include the message
+   * header.
    *
-   * The stream buffer can also be empty if no data have been written
-   * into streams, returned by {@link #createReply()} or
+   * The stream buffer can also be empty if no data have been written into
+   * streams, returned by {@link #createReply()} or
    * {@link #createExceptionReply()}.
    *
    * @return the CDR output stream, containing the written output.
@@ -382,9 +643,8 @@ public class LocalRequest
   }
 
   /**
-   * True if the stream was obtained by invoking
-   * {@link #createExceptionReply()}, false otherwise
-   * (usually no-exception reply).
+   * True if the stream was obtained by invoking {@link #createExceptionReply()},
+   * false otherwise (usually no-exception reply).
    */
   boolean isExceptionReply()
   {
@@ -401,8 +661,8 @@ public class LocalRequest
   }
 
   /**
-   * Get the parameter stream, where the invocation arguments should
-   * be written if they are written into the stream directly.
+   * Get the parameter stream, where the invocation arguments should be written
+   * if they are written into the stream directly.
    */
   public streamRequest getParameterStream()
   {
@@ -412,14 +672,12 @@ public class LocalRequest
     return m_parameter_buffer;
   }
 
-  public byte[] get_object_id()
-                       throws NoContext
+  public byte[] get_object_id() throws NoContext
   {
     return Id;
   }
 
-  public POA get_POA()
-              throws NoContext
+  public POA get_POA() throws NoContext
   {
     return poa;
   }

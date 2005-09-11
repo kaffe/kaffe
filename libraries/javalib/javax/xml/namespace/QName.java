@@ -80,13 +80,13 @@ public class QName
     this.prefix = prefix;
     
     StringBuffer buf = new StringBuffer();
-    if (namespaceURI != null && namespaceURI.length() > 0)
+    if (namespaceURI.length() > 0)
       {
         buf.append('{');
         buf.append(namespaceURI);
         buf.append('}');
       }
-    if (prefix != null && prefix.length() > 0)
+    if (prefix.length() > 0)
       {
         buf.append(prefix);
         buf.append(':');

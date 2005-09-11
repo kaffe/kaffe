@@ -424,6 +424,7 @@ public class GtkComponentPeer extends GtkGenericPeer
     int new_y = y;
 
     Component parent = awtComponent.getParent ();
+    Component next_parent;
 
     // Heavyweight components that are children of one or more
     // lightweight containers have to be handled specially.  Because
@@ -441,12 +442,22 @@ public class GtkComponentPeer extends GtkGenericPeer
       {
 	lightweightChild = true;
 
+        next_parent = parent.getParent ();
+
 	i = ((Container) parent).getInsets ();
 
-	new_x += parent.getX () + i.left;
-	new_y += parent.getY () + i.top;
+        if (next_parent instanceof Window)
+          {
+            new_x += i.left;
+            new_y += i.top;
+          }
+        else
+          {
+            new_x += parent.getX () + i.left;
+            new_y += parent.getY () + i.top;
+          }
 
-	parent = parent.getParent ();
+	parent = next_parent;
       }
 
     // We only need to convert from Java to GTK coordinates if we're

@@ -60,8 +60,8 @@ public interface IORInfoOperations
    * Internet profile where host and port are stored by default.
    */
   void add_ior_component_to_profile(TaggedComponent tagged_component,
-                                    int profile_id
-                                   );
+    int profile_id
+  );
 
   /**
    * Adds a service-specific component to the IOR profile being constructed.
@@ -73,7 +73,7 @@ public interface IORInfoOperations
   void add_ior_component(TaggedComponent tagged_component);
 
   /**
-   * Get the server side policy for an IOR being constructed. The method returns
+       * Get the server side policy for an IOR being constructed. The method returns
    * policies applying for POA where the object, represented by this IOR, is
    * connected.
    *

@@ -348,8 +348,6 @@ public class Window extends Container implements Accessible
 
   public boolean isDisplayable()
   {
-    if (super.isDisplayable())
-      return true;
     return peer != null;
   }
 

@@ -42,13 +42,10 @@ import gnu.CORBA.Unexpected;
 
 import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_PARAM;
-import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.MARSHAL;
-import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
-import org.omg.CORBA.TypeCodePackage.*;
 import org.omg.CORBA.VM_TRUNCATABLE;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.ValueFactory;
@@ -69,9 +66,8 @@ import java.io.Serializable;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuDynValue
-  extends abstractRecord
-  implements DynValue, Serializable
+public class gnuDynValue extends abstractRecord implements DynValue,
+  Serializable
 {
   /**
    * Use serialVersionUID for interoperability.
@@ -86,9 +82,9 @@ public class gnuDynValue
   /**
    * Create an instance.
    */
-  public gnuDynValue(TypeCode oType, TypeCode aType, gnuDynAnyFactory aFactory,
-                     ORB anOrb
-                    )
+  public gnuDynValue(TypeCode oType, TypeCode aType,
+    gnuDynAnyFactory aFactory, ORB anOrb
+  )
   {
     super(oType, aType, aFactory, anOrb);
 
@@ -116,6 +112,7 @@ public class gnuDynValue
                 // Add members of ancestor in front of the curren members.
                 DynValue anc = (DynValue) ancestor;
                 anc.set_to_value();
+
                 NameDynAnyPair[] aar = anc.get_members_as_dyn_any();
                 inheritFields(aar);
               }
@@ -128,9 +125,8 @@ public class gnuDynValue
               }
             else
               throw new BAD_PARAM("The parent of " + final_type.id() + ", " +
-                                  parent.id() +
-                                  ", is not structure nor value."
-                                 );
+                parent.id() + ", is not structure nor value."
+              );
           }
       }
     catch (Exception e)
@@ -168,8 +164,7 @@ public class gnuDynValue
   }
 
   /** @inheritDoc */
-  public TCKind current_member_kind()
-                             throws TypeMismatch, InvalidValue
+  public TCKind current_member_kind() throws TypeMismatch, InvalidValue
   {
     if (isNull)
       throw new TypeMismatch(ISNULL);
@@ -179,8 +174,7 @@ public class gnuDynValue
   ;
 
   /** @inheritDoc */
-  public String current_member_name()
-                             throws TypeMismatch, InvalidValue
+  public String current_member_name() throws TypeMismatch, InvalidValue
   {
     if (isNull)
       throw new TypeMismatch(ISNULL);
@@ -190,8 +184,7 @@ public class gnuDynValue
   ;
 
   /** @inheritDoc */
-  public NameDynAnyPair[] get_members_as_dyn_any()
-                                          throws InvalidValue
+  public NameDynAnyPair[] get_members_as_dyn_any() throws InvalidValue
   {
     if (isNull)
       throw new InvalidValue(ISNULL);
@@ -200,8 +193,7 @@ public class gnuDynValue
   ;
 
   /** @inheritDoc */
-  public NameValuePair[] get_members()
-                              throws InvalidValue
+  public NameValuePair[] get_members() throws InvalidValue
   {
     if (isNull)
       throw new InvalidValue(ISNULL);
@@ -212,7 +204,7 @@ public class gnuDynValue
 
   /** @inheritDoc */
   public void set_members_as_dyn_any(NameDynAnyPair[] value)
-                              throws TypeMismatch, InvalidValue
+    throws TypeMismatch, InvalidValue
   {
     super.set_members_as_dyn_any(value);
     isNull = false;
@@ -221,7 +213,7 @@ public class gnuDynValue
 
   /** @inheritDoc */
   public void set_members(NameValuePair[] value)
-                   throws TypeMismatch, InvalidValue
+    throws TypeMismatch, InvalidValue
   {
     super.set_members(value);
     isNull = false;
@@ -252,8 +244,8 @@ public class gnuDynValue
    * Create a new instance.
    */
   protected abstractRecord newInstance(TypeCode oType, TypeCode aType,
-                                       gnuDynAnyFactory aFactory, ORB anOrb
-                                      )
+    gnuDynAnyFactory aFactory, ORB anOrb
+  )
   {
     gnuDynValue v = new gnuDynValue(oType, aType, aFactory, anOrb);
     if (isNull)
@@ -283,8 +275,7 @@ public class gnuDynValue
   /**
    * Get the focused component, throwing exception if the current value is null.
    */
-  protected DynAny focused()
-                    throws InvalidValue, TypeMismatch
+  protected DynAny focused() throws InvalidValue, TypeMismatch
   {
     if (isNull)
       throw new TypeMismatch(ISNULL);
@@ -311,8 +302,8 @@ public class gnuDynValue
               ((org.omg.CORBA_2_3.ORB) orb).lookup_value_factory(official_type.id());
             if (factory == null)
               throw new MARSHAL("Factory for " + official_type.id() +
-                                " not registered."
-                               );
+                " not registered."
+              );
 
             OutputStream out = orb.create_output_stream();
 
@@ -337,8 +328,7 @@ public class gnuDynValue
   }
 
   /** @inheritDoc */
-  public void assign(DynAny from)
-              throws TypeMismatch
+  public void assign(DynAny from) throws TypeMismatch
   {
     checkType(official_type, from.type());
 
@@ -376,16 +366,13 @@ public class gnuDynValue
   }
 
   /** {@inheritDoc} */
-  public Serializable get_val()
-                       throws TypeMismatch, InvalidValue
+  public Serializable get_val() throws TypeMismatch, InvalidValue
   {
     return to_any().extract_Value();
   }
 
-
   /** {@inheritDoc} */
-  public void insert_val(Serializable a_x)
-                  throws InvalidValue, TypeMismatch
+  public void insert_val(Serializable a_x) throws InvalidValue, TypeMismatch
   {
     Any a = to_any();
     a.insert_Value(a_x);

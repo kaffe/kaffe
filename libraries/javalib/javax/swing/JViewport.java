@@ -49,6 +49,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.Serializable;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -95,8 +98,34 @@ import javax.swing.plaf.ViewportUI;
  * the underlying child at position <code>(-VX,-VY)</code></p>
  *
  */
-public class JViewport extends JComponent
+public class JViewport extends JComponent implements Accessible
 {
+  /**
+   * Provides accessibility support for <code>JViewport</code>.
+   *
+   * @author Roman Kennke (roman@kennke.org)
+   */
+  protected class AccessibleJViewport extends AccessibleJComponent
+  {
+    /**
+     * Creates a new instance of <code>AccessibleJViewport</code>.
+     */
+    public AccessibleJViewport()
+    {
+      // Nothing to do here.
+    }
+
+    /**
+     * Returns the accessible role of <code>JViewport</code>, which is
+     * {@link AccessibleRole#VIEWPORT}.
+     *
+     * @return the accessible role of <code>JViewport</code>
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.VIEWPORT;
+    }
+  }
 
   /**
    * A {@link java.awt.event.ComponentListener} that listens for
@@ -188,6 +217,11 @@ public class JViewport extends JComponent
    * The ViewListener instance.
    */
   ViewListener viewListener;
+
+  /**
+   * The accessible context of this <code>JViewport</code>.
+   */
+  AccessibleContext accessibleContext;
 
   public JViewport()
   {
@@ -527,5 +561,18 @@ public class JViewport extends JComponent
              -viewBounds.x + portBounds.width)
       setViewPosition (new Point(contentRect.x - 
                                  (portBounds.width - contentRect.width), pos.y));
+  }
+
+  /**
+   * Returns the accessible context for this <code>JViewport</code>. This
+   * will be an instance of {@link AccessibleJViewport}.
+   *
+   * @return the accessible context for this <code>JViewport</code>
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJViewport();
+    return accessibleContext;
   }
 }

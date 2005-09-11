@@ -13,6 +13,7 @@ package java.util.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import kaffe.util.UTF8;
 import kaffe.util.zip.SwitchInflater;

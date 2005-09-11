@@ -433,49 +433,6 @@ public class Proxy implements Serializable
       return hash;
     }
 
-    // A more comprehensive comparison of two arrays,
-    //   ignore array element order, and
-    //   ignore redundant elements
-    private static boolean sameTypes(Class arr1[], Class arr2[]) {
-      if (arr1.length == 1 && arr2.length == 1) {
-        return arr1[0] == arr2[0];
-      }
-        
-      // total occurrance of elements of arr1 in arr2
-      int total_occ_of_arr1_in_arr2 = 0;
-    each_type:
-      for (int i = arr1.length; --i >= 0; ) 
-      {
-        Class t = arr1[i];
-        for (int j = i; --j >= 0; ) 
-        {
-          if (t == arr1[j]) 
-          { //found duplicate type
-            continue each_type;  
-          }
-        }
-            
-        // count c(a unique element of arr1)'s 
-        //   occurrences in arr2
-        int occ_in_arr2 = 0;
-        for (int j = arr2.length; --j >= 0; ) 
-        {
-          if (t == arr2[j]) 
-          {
-            ++occ_in_arr2;
-          }
-        }
-        if (occ_in_arr2 == 0) 
-        { // t does not occur in arr2
-          return false;
-        }
-        
-        total_occ_of_arr1_in_arr2 += occ_in_arr2;
-      }
-      // now, each element of arr2 must have been visited
-      return total_occ_of_arr1_in_arr2 == arr2.length;
-    }
-
     /**
      * Calculates equality.
      *
@@ -487,7 +444,10 @@ public class Proxy implements Serializable
       ProxyType pt = (ProxyType) other;
       if (loader != pt.loader || interfaces.length != pt.interfaces.length)
         return false;
-	  return sameTypes(interfaces, pt.interfaces);
+      for (int i = 0; i < interfaces.length; i++)
+        if (interfaces[i] != pt.interfaces[i])
+          return false;
+      return true;
     }
   } // class ProxyType
 
@@ -657,7 +617,7 @@ public class Proxy implements Serializable
      * The package this class is in <b>including the trailing dot</b>
      * or an empty string for the unnamed (aka default) package.
      */
-    String pack;
+    String pack = "";
 
     /**
      * The interfaces this class implements.  Non-null, but possibly empty.

@@ -51,6 +51,12 @@ public class PlainView extends View
 {
   Color selectedColor;
   Color unselectedColor;
+
+  /**
+   * The color that is used to draw disabled text fields.
+   */
+  Color disabledColor;
+
   Font font;
   
   protected FontMetrics metrics;
@@ -145,7 +151,12 @@ public class PlainView extends View
   protected int drawUnselectedText(Graphics g, int x, int y, int p0, int p1)
     throws BadLocationException
   {
-    g.setColor(unselectedColor);
+    JTextComponent textComponent = (JTextComponent) getContainer();
+    if (textComponent.isEnabled())
+      g.setColor(unselectedColor);
+    else
+      g.setColor(disabledColor);
+
     Segment segment = new Segment();
     getDocument().getText(p0, p1 - p0, segment);
     return Utilities.drawTabbedText(segment, x, y, g, this, segment.offset);
@@ -161,7 +172,8 @@ public class PlainView extends View
     g.setFont(textComponent.getFont());
     selectedColor = textComponent.getSelectedTextColor();
     unselectedColor = textComponent.getForeground();
-    
+    disabledColor = textComponent.getDisabledTextColor();
+
     Rectangle rect = s.getBounds();
 
     // FIXME: Text may be scrolled.

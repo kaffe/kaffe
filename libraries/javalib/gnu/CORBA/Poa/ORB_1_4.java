@@ -1,4 +1,4 @@
-/* poaORB.java --
+/* ORB_1_4.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -39,12 +39,29 @@ exception statement from your version. */
 package gnu.CORBA.Poa;
 
 import gnu.CORBA.Functional_ORB;
+import gnu.CORBA.IOR;
+import gnu.CORBA.Connected_objects.cObject;
 import gnu.CORBA.DynAn.gnuDynAnyFactory;
+import gnu.CORBA.Interceptor.ClientRequestInterceptors;
+import gnu.CORBA.Interceptor.IORInterceptors;
+import gnu.CORBA.Interceptor.Registrator;
+import gnu.CORBA.Interceptor.ServerRequestInterceptors;
+import gnu.CORBA.Interceptor.gnuIcCurrent;
+import gnu.CORBA.Interceptor.gnuIorInfo;
 
+import org.omg.CORBA.Any;
+import org.omg.CORBA.BAD_OPERATION;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
+import org.omg.CORBA.Policy;
+import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.portable.ObjectImpl;
+import org.omg.PortableInterceptor.PolicyFactory;
+import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.InvalidPolicy;
+
+import java.applet.Applet;
+import java.util.Properties;
 
 /**
  * The ORB, supporting POAs that are the feature of jdk 1.4.
@@ -60,10 +77,15 @@ public class ORB_1_4
   public final gnuPOA rootPOA;
 
   /**
-   * Maps the active threads to the invocation data ("Current's").
+   * Maps the active threads to the invocation data ("POA Current's").
    */
   public gnuPoaCurrent currents = new gnuPoaCurrent();
-  
+
+  /**
+   * Maps the active threads to the interceptor data ("Interceptor Current's").
+   */
+  public gnuIcCurrent ic_current = new gnuIcCurrent(this);
+
   /**
    * Creates dynamic anys.
    */
@@ -91,11 +113,12 @@ public class ORB_1_4
     initial_references.put("RootPOAManager", rootPOA.the_POAManager());
     initial_references.put("POACurrent", currents);
     initial_references.put("DynAnyFactory", factory);
+    initial_references.put("PICurrent", ic_current);
   }
 
   /**
-   * If the super method detects that the object is not connected to
-   * this ORB, try to find and activate the object.
+   * If the super method detects that the object is not connected to this ORB,
+   * try to find and activate the object.
    */
   public String object_to_string(org.omg.CORBA.Object forObject)
   {
@@ -110,14 +133,12 @@ public class ORB_1_4
             activeObjectMap.Obj exists = rootPOA.findObject(forObject);
             if (exists == null)
               throw new OBJECT_NOT_EXIST(forObject == null ? "null"
-                                         : forObject.toString()
-                                        );
+                : forObject.toString());
             else if (exists.poa instanceof gnuPOA)
               ((gnuPOA) exists.poa).connect_to_orb(exists.key, forObject);
             else
               exists.poa.create_reference_with_id(exists.key,
-                                                  ((ObjectImpl) exists.object)._ids() [ 0 ]
-                                                 );
+                ((ObjectImpl) exists.object)._ids()[0]);
           }
         catch (Exception bex)
           {
@@ -140,4 +161,96 @@ public class ORB_1_4
 
     super.destroy();
   }
+
+  /**
+   * Do interceptor registration.
+   *
+   * @param properties the properties, between those names the agreed prefix
+   * "org.omg.PortableInterceptor.ORBInitializerClass." is searched.
+   *
+   * @param args the string array, passed to the ORB.init
+   */
+  protected void registerInterceptors(Properties properties, String[] args)
+  {
+    Registrator registrator = new Registrator(this, properties, args);
+
+    policyFactories = registrator.m_policyFactories;
+
+    registrator.pre_init();
+    initial_references.putAll(registrator.getRegisteredReferences());
+    registrator.post_init();
+
+    if (registrator.hasIorInterceptors())
+      iIor = new IORInterceptors(registrator);
+
+    if (registrator.hasServerRequestInterceptors())
+      iServer = new ServerRequestInterceptors(registrator);
+
+    if (registrator.hasClientRequestInterceptors())
+      iClient = new ClientRequestInterceptors(registrator);
+
+    policyFactories = registrator.m_policyFactories;
+  }
+
+  /**
+   * Create IOR and allow registered interceptors to add additional components.
+   */
+  protected IOR createIOR(cObject ref)
+    throws BAD_OPERATION
+  {
+    IOR ior = super.createIOR(ref);
+    if (iIor != null)
+      {
+        activeObjectMap.Obj obj = rootPOA.findIorKey(ior.key);
+
+        POA poa;
+
+        // Null means that the object was connected to the ORB directly.
+        if (obj == null)
+          poa = rootPOA;
+        else
+          poa = obj.poa;
+
+        gnuIorInfo info = new gnuIorInfo(this, poa, ior);
+
+        // This may modify the ior.
+        iIor.establish_components(info);
+      }
+    return ior;
+  }
+
+  /**
+   * Create policy using the previously registered factory.
+   */
+  public Policy create_policy(int type, Any value)
+    throws PolicyError
+  {
+    Integer policy = new Integer(type);
+
+    PolicyFactory forge = (PolicyFactory) policyFactories.get(policy);
+    if (forge == null)
+      throw new PolicyError("No factory registered for policy " + type,
+        (short) type);
+    else
+      return forge.create_policy(type, value);
+  }
+
+  /**
+   * Set the parameters and then register interceptors.
+   */
+  protected void set_parameters(Applet app, Properties props)
+  {
+    super.set_parameters(app, props);
+    registerInterceptors(props, new String[0]);
+  }
+
+  /**
+   * Set the parameters and then register interceptors.
+   */
+  protected void set_parameters(String[] para, Properties props)
+  {
+    super.set_parameters(para, props);
+    registerInterceptors(props, para);
+  }
+
 }

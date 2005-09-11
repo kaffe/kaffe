@@ -418,8 +418,13 @@ public class DefaultTreeCellRenderer
       {
         super.setBackground(getBackgroundSelectionColor());
         setForeground(getTextSelectionColor());
-        setBorderSelectionColor(UIManager.getLookAndFeelDefaults().getColor(
-                                                                            "Tree.selectionBorderColor"));
+        
+        if (tree.getLeadSelectionPath() == null || 
+            (tree.getLeadSelectionPath().getLastPathComponent()).equals(val))
+          setBorderSelectionColor(UIManager.getLookAndFeelDefaults().
+                                  getColor("Tree.selectionBorderColor"));
+        else
+          setBorderSelectionColor(null);
       }
     else
       {

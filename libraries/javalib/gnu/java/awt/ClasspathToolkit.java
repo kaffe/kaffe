@@ -1,5 +1,5 @@
 /* ClasspathToolkit.java -- Abstract superclass for Classpath toolkits.
-   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -139,28 +139,28 @@ public abstract class ClasspathToolkit
     // Circumvent the package-privateness of the
     // java.awt.Font.Font(String,Map) constructor.
     try
-    {
-      Constructor fontConstructor = Component.class.getConstructor
-      (new Class[] { String.class, Map.class });
-      AccessController.doPrivileged
-      (new SetAccessibleAction(fontConstructor));
-      f = (Font) fontConstructor.newInstance(new Object[] { name, attrs });
-    }
+      {
+        Constructor fontConstructor = Font.class.getDeclaredConstructor
+          (new Class[] { String.class, Map.class });
+        AccessController.doPrivileged
+          (new SetAccessibleAction(fontConstructor));
+        f = (Font) fontConstructor.newInstance(new Object[] { name, attrs });
+      }
     catch (IllegalAccessException e)
-    {
-      // This should never happen.
-    }
+      {
+        throw new AssertionError(e);
+      }
     catch (NoSuchMethodException e)
-    {
-      // This should never happen.
-    }
+      {
+        throw new AssertionError(e);
+      }
     catch (InstantiationException e)
       {
-        // This should never happen.
+        throw new AssertionError(e);
       }
     catch (InvocationTargetException e)
       {
-        // This should never happen.
+        throw new AssertionError(e);
       }
     return f;
   }
@@ -203,4 +203,11 @@ public abstract class ClasspathToolkit
    * @param w The embedded window with which to associate a peer.
    */
   public abstract EmbeddedWindowPeer createEmbeddedWindow (EmbeddedWindow w);
+
+  /**
+   * Used to register ImageIO SPIs provided by the toolkit.
+   */
+   public void registerImageIOSpis(IIORegistry reg)
+   {
+   }
 }

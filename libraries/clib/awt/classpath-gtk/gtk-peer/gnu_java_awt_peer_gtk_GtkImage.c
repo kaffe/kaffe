@@ -97,6 +97,54 @@ Java_gnu_java_awt_peer_gtk_GtkImage_loadPixbuf
   return JNI_TRUE;
 }
 
+/*
+ * Creates the image from an array of java bytes.
+ */
+JNIEXPORT jboolean JNICALL
+Java_gnu_java_awt_peer_gtk_GtkImage_loadImageFromData
+  (JNIEnv *env, jobject obj, jbyteArray data)
+{
+  jbyte *src;
+  GdkPixbuf* pixbuf;
+  GdkPixbufLoader* loader;
+  int len;
+  int width;
+  int height;
+
+  gdk_threads_enter ();
+
+  src = (*env)->GetByteArrayElements (env, data, NULL);
+  len = (*env)->GetArrayLength (env, data);
+
+  loader = gdk_pixbuf_loader_new ();
+
+  gdk_pixbuf_loader_write (loader, (guchar *)src, len, NULL);
+  gdk_pixbuf_loader_close (loader, NULL);
+
+  (*env)->ReleaseByteArrayElements (env, data, src, 0);
+
+  pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+
+  if (pixbuf == NULL)
+    {
+      createRawData (env, obj, NULL);
+
+      gdk_threads_leave ();
+
+      return JNI_FALSE;
+    }
+
+  width =  gdk_pixbuf_get_width (pixbuf);
+  height = gdk_pixbuf_get_height (pixbuf);
+
+  createRawData (env, obj, pixbuf);
+  setWidthHeight(env, obj, width, height);
+
+  gdk_threads_leave ();
+
+  return JNI_TRUE;
+}
+
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkImage_createFromPixbuf
 (JNIEnv *env, jobject obj)
@@ -314,6 +362,12 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaled
 
   gdk_threads_enter ();
   
+  if (width <= 0 || height <= 0)
+    {
+      gdk_threads_leave ();
+      return;
+    }
+
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     
@@ -375,7 +429,12 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped 
 (JNIEnv *env, jobject obj, jobject gc_obj,
  jint bg_red, jint bg_green, jint bg_blue, 
+#if GTK_MINOR_VERSION > 4
  jboolean flipx, jboolean flipy,
+#else
+ jboolean flipx __attribute__((unused)),
+ jboolean flipy __attribute__((unused)),
+#endif
  jint srcx, jint srcy, jint srcwidth, jint srcheight, 
  jint dstx, jint dsty, jint dstwidth, jint dstheight, 
  jboolean composite)
@@ -387,6 +446,13 @@ Java_gnu_java_awt_peer_gtk_GtkImage_drawPixelsScaledFlipped
 
   gdk_threads_enter ();
   
+  if (srcwidth <= 0 || srcheight <= 0
+      || dstwidth <= 0 || dstheight <= 0)
+    {
+      gdk_threads_leave ();
+      return;
+    }
+
   bgColor = ((bg_red & 0xFF) << 16) |
     ((bg_green & 0xFF) << 8) | (bg_blue & 0xFF);
     

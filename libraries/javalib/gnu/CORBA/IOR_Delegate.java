@@ -55,6 +55,7 @@ import org.omg.CORBA.portable.ApplicationException;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.RemarshalException;
+import org.omg.PortableInterceptor.ForwardRequest;
 
 import java.io.IOException;
 
@@ -69,12 +70,11 @@ import java.net.Socket;
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public class IOR_Delegate
-  extends Simple_delegate
+public class IOR_Delegate extends Simple_delegate
 {
   /**
-   * True if the current IOR does not map into the local servant.
-   * If false, the IOR is either local or should be checked.
+   * True if the current IOR does not map into the local servant. If false, the
+   * IOR is either local or should be checked.
    */
   boolean remote_ior;
 
@@ -105,9 +105,8 @@ public class IOR_Delegate
    * @return the created request.
    */
   public Request create_request(org.omg.CORBA.Object target, Context context,
-                                String operation, NVList parameters,
-                                NamedValue returns
-                               )
+    String operation, NVList parameters, NamedValue returns
+  )
   {
     gnuRequest request = getRequestInstance(target);
 
@@ -135,10 +134,9 @@ public class IOR_Delegate
    * @return the created request.
    */
   public Request create_request(org.omg.CORBA.Object target, Context context,
-                                String operation, NVList parameters,
-                                NamedValue returns, ExceptionList exceptions,
-                                ContextList ctx_list
-                               )
+    String operation, NVList parameters, NamedValue returns,
+    ExceptionList exceptions, ContextList ctx_list
+  )
   {
     gnuRequest request = getRequestInstance(target);
 
@@ -166,134 +164,207 @@ public class IOR_Delegate
 
   /**
    * Invoke operation on the given object, als handling temproray and permanent
-   * redirections. The ReplyHeader.LOCATION_FORWARD will cause to resend
-   * the request to the new direction. The ReplyHeader.LOCATION_FORWARD_PERM
-   * will cause additionally to remember the new location by this delegate,
-   * so subsequent calls will be immediately delivered to the new target.
+   * redirections. The ReplyHeader.LOCATION_FORWARD will cause to resend the
+   * request to the new direction. The ReplyHeader.LOCATION_FORWARD_PERM will
+   * cause additionally to remember the new location by this delegate, so
+   * subsequent calls will be immediately delivered to the new target.
    *
    * @param target the target object.
    * @param output the output stream, previously returned by
    * {@link #request(org.omg.CORBA.Object, String, boolean)}.
    *
-   * @return the input stream, to read the response from or null for a
-   * one-way request.
+   * @return the input stream, to read the response from or null for a one-way
+   * request.
    *
    * @throws SystemException if the SystemException has been thrown on the
-   * remote side (the exact type and the minor code matches the data of
-   * the remote exception that has been thrown).
+   * remote side (the exact type and the minor code matches the data of the
+   * remote exception that has been thrown).
    *
    * @throws org.omg.CORBA.portable.ApplicationException as specified.
    * @throws org.omg.CORBA.portable.RemarshalException as specified.
    */
   public InputStream invoke(org.omg.CORBA.Object target, OutputStream output)
-                     throws ApplicationException, RemarshalException
+    throws ApplicationException, RemarshalException
   {
     streamRequest request = (streamRequest) output;
-    if (request.response_expected)
+    Forwardings:
+    while (true)
       {
-        binaryReply response = request.request.submit();
-
-        // Read reply header.
-        ReplyHeader rh = response.header.create_reply_header();
-        cdrBufInput input = response.getStream();
-        input.setOrb(orb);
-        rh.read(input);
-
-        boolean moved_permanently = false;
-
-        switch (rh.reply_status)
+        try
           {
-            case ReplyHeader.NO_EXCEPTION :
-              if (response.header.version.since_inclusive(1, 2))
-                input.align(8);
-              return input;
+            if (request.response_expected)
+              {
+                binaryReply response = request.request.submit();
 
-            case ReplyHeader.SYSTEM_EXCEPTION :
-              if (response.header.version.since_inclusive(1, 2))
-                input.align(8);
-              throw ObjectCreator.readSystemException(input);
+                // Read reply header.
+                ReplyHeader rh = response.header.create_reply_header();
+                cdrBufInput input = response.getStream();
+                input.setOrb(orb);
+                rh.read(input);
+                request.request.m_rph = rh;
 
-            case ReplyHeader.USER_EXCEPTION :
-              if (response.header.version.since_inclusive(1, 2))
-                input.align(8);
-              input.mark(2000);
+                boolean moved_permanently = false;
 
-              String uxId = input.read_string();
-              input.reset();
+                switch (rh.reply_status)
+                  {
+                    case ReplyHeader.NO_EXCEPTION :
+                      if (request.request.m_interceptor != null)
+                        request.request.m_interceptor.
+                          receive_reply(request.request.m_info);
+                      if (response.header.version.since_inclusive(1, 2))
+                        input.align(8);
+                      return input;
 
-              throw new ApplicationException(uxId, input);
+                    case ReplyHeader.SYSTEM_EXCEPTION :
+                      if (response.header.version.since_inclusive(1, 2))
+                        input.align(8);
+                      showException(request, input);
 
-            case ReplyHeader.LOCATION_FORWARD_PERM :
-              moved_permanently = true;
+                      throw ObjectCreator.readSystemException(input);
 
-            case ReplyHeader.LOCATION_FORWARD :
-              if (response.header.version.since_inclusive(1, 2))
-                input.align(8);
+                    case ReplyHeader.USER_EXCEPTION :
+                      if (response.header.version.since_inclusive(1, 2))
+                        input.align(8);
+                      showException(request, input);
 
-              IOR forwarded = new IOR();
-              try
-                {
-                  forwarded._read_no_endian(input);
-                }
-              catch (IOException ex)
-                {
-                  MARSHAL t =
-                    new MARSHAL("Cant read forwarding info", 5102,
-                                CompletionStatus.COMPLETED_NO
-                               );
-                  t.initCause(ex);
-                  throw t;
-                }
+                      throw new ApplicationException(request.
+                        request.m_exception_id, input
+                      );
 
-              gnuRequest prev = request.request;
-              gnuRequest r = getRequestInstance(target);
+                    case ReplyHeader.LOCATION_FORWARD_PERM :
+                      moved_permanently = true;
 
-              r.m_args = prev.m_args;
-              r.m_context = prev.m_context;
-              r.m_context_list = prev.m_context_list;
-              r.m_environment = prev.m_environment;
-              r.m_exceptions = prev.m_exceptions;
-              r.m_operation = prev.m_operation;
-              r.m_parameter_buffer = prev.m_parameter_buffer;
-              r.m_parameter_buffer.request = r;
-              r.m_result = prev.m_result;
-              r.m_target = prev.m_target;
-              r.oneWay = prev.oneWay;
-              r.setIor(forwarded);
+                    case ReplyHeader.LOCATION_FORWARD :
+                      if (response.header.version.since_inclusive(1, 2))
+                        input.align(8);
 
-              IOR_contructed_object it =
-                new IOR_contructed_object(orb, forwarded);
+                      IOR forwarded = new IOR();
+                      try
+                        {
+                          forwarded._read_no_endian(input);
+                        }
+                      catch (IOException ex)
+                        {
+                          MARSHAL t =
+                            new MARSHAL("Cant read forwarding info", 5102,
+                              CompletionStatus.COMPLETED_NO
+                            );
+                          t.initCause(ex);
+                          throw t;
+                        }
 
-              r.m_target = it;
+                      gnuRequest prev = request.request;
+                      gnuRequest r = getRequestInstance(target);
 
-              request.request = r;
+                      r.m_interceptor = prev.m_interceptor;
+                      r.m_slots = prev.m_slots;
 
-              IOR prev_ior = getIor();
+                      r.m_args = prev.m_args;
+                      r.m_context = prev.m_context;
+                      r.m_context_list = prev.m_context_list;
+                      r.m_environment = prev.m_environment;
+                      r.m_exceptions = prev.m_exceptions;
+                      r.m_operation = prev.m_operation;
+                      r.m_parameter_buffer = prev.m_parameter_buffer;
+                      r.m_parameter_buffer.request = r;
+                      r.m_result = prev.m_result;
+                      r.m_target = prev.m_target;
+                      r.oneWay = prev.oneWay;
+                      r.m_forward_ior = forwarded;
 
-              setIor(forwarded);
+                      if (r.m_interceptor != null)
+                        r.m_interceptor.receive_other(r.m_info);
 
-              try
-                {
-                  return invoke(it, request);
-                }
-              finally
-                {
-                  if (!moved_permanently)
-                    setIor(prev_ior);
-                }
+                      r.setIor(forwarded);
 
-            default :
-              throw new MARSHAL("Unknow reply status: " + rh.reply_status,
-                                8000 + rh.reply_status,
-                                CompletionStatus.COMPLETED_NO
-                               );
+                      IOR_contructed_object it =
+                        new IOR_contructed_object(orb, forwarded);
+
+                      r.m_target = it;
+
+                      request.request = r;
+
+                      IOR prev_ior = getIor();
+
+                      setIor(forwarded);
+
+                      try
+                        {
+                          return invoke(it, request);
+                        }
+                      finally
+                        {
+                          if (!moved_permanently)
+                            setIor(prev_ior);
+                        }
+
+                    default :
+                      throw new MARSHAL("Unknow reply status: " +
+                        rh.reply_status, 8000 + rh.reply_status,
+                        CompletionStatus.COMPLETED_NO
+                      );
+                  }
+              }
+            else
+              {
+                request.request.send_oneway();
+                return null;
+              }
+          }
+        catch (ForwardRequest forwarded)
+          {
+            ForwardRequest fw = forwarded;
+            Forwarding2:
+            while (true)
+              {
+                try
+                  {
+                    gnuRequest prev = request.request;
+                    gnuRequest r = getRequestInstance(target);
+
+                    r.m_interceptor = prev.m_interceptor;
+                    r.m_args = prev.m_args;
+                    r.m_context = prev.m_context;
+                    r.m_context_list = prev.m_context_list;
+                    r.m_environment = prev.m_environment;
+                    r.m_exceptions = prev.m_exceptions;
+                    r.m_operation = prev.m_operation;
+                    r.m_parameter_buffer = prev.m_parameter_buffer;
+                    r.m_parameter_buffer.request = r;
+                    r.m_result = prev.m_result;
+                    r.m_target = prev.m_target;
+                    r.oneWay = prev.oneWay;
+
+                    r.m_forwarding_target = fw.forward;
+
+                    if (r.m_interceptor != null)
+                      r.m_interceptor.receive_other(r.m_info);
+
+                    r.m_target = fw.forward;
+                    request.request = r;
+                    break Forwarding2;
+                  }
+                catch (ForwardRequest e)
+                  {
+                    forwarded = e;
+                  }
+              }
           }
       }
-    else
-      {
-        request.request.send_oneway();
-        return null;
-      }
+  }
+
+  /**
+   * Show exception to interceptor.
+   */
+  void showException(streamRequest request, cdrBufInput input)
+    throws ForwardRequest
+  {
+    input.mark(2048);
+    request.request.m_exception_id = input.read_string();
+    input.reset();
+
+    if (request.request.m_interceptor != null)
+      request.request.m_interceptor.receive_exception(request.request.m_info);
   }
 
   /**
@@ -328,8 +399,8 @@ public class IOR_Delegate
    * @return the stream where the method arguments should be written.
    */
   public OutputStream request(org.omg.CORBA.Object target, String operation,
-                              boolean response_expected
-                             )
+    boolean response_expected
+  )
   {
     gnuRequest request = getRequestInstance(target);
 
@@ -337,18 +408,19 @@ public class IOR_Delegate
     request.set_target(target);
     request.setOperation(operation);
 
-    request.getParameterStream().response_expected = response_expected;
+    streamRequest out = request.getParameterStream();
+    out.response_expected = response_expected;
     request.setORB(orb);
 
-    return request.getParameterStream();
+    return out;
   }
 
   /**
-   * If there is an opened cache socket to access this object, close
-   * that socket.
+   * If there is an opened cache socket to access this object, close that
+   * socket.
    *
-   * @param target The target is not used, this delegate requires a
-   * single instance per object.
+   * @param target The target is not used, this delegate requires a single
+   * instance per object.
    */
   public void release(org.omg.CORBA.Object target)
   {
@@ -369,8 +441,8 @@ public class IOR_Delegate
   }
 
   /**
-   * Reset the remote_ior flag, forcing to check if the object is local
-   * on the next getRequestInstance call.
+   * Reset the remote_ior flag, forcing to check if the object is local on the
+   * next getRequestInstance call.
    */
   public void setIor(IOR an_ior)
   {

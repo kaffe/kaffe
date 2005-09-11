@@ -43,11 +43,14 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.io.Serializable;
 
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSlider;
 import javax.swing.plaf.UIResource;
 
@@ -132,6 +135,382 @@ public class MetalIconFactory implements Serializable
           g.drawLine(x + 8 - i, y + i, x + 9 - i, y + i);
       }
 
+    }        
+  }
+
+  /**
+   * An icon used for the "detail view" button on a {@link JFileChooser} under
+   * the {@link MetalLookAndFeel}.
+   * 
+   * @see MetalIconFactory#getFileChooserDetailViewIcon()
+   */
+  private static class FileChooserDetailViewIcon 
+      implements Icon, Serializable {
+    
+    /**
+     * Creates a new icon.
+     */
+    public FileChooserDetailViewIcon() 
+    {
+    }
+      
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      Color savedColor = g.getColor();
+      g.setColor(MetalLookAndFeel.getBlack());
+
+      // file 1 outline
+      g.drawLine(x + 2, y + 2, x + 5, y + 2);
+      g.drawLine(x + 6, y + 3, x + 6, y + 7);
+      g.drawLine(x + 2, y + 7, x + 6, y + 7);
+      g.drawLine(x + 2, y + 2, x + 2, y + 7);
+      
+      // file 2 outline
+      g.drawLine(x + 2, y + 10, x + 5, y + 10);
+      g.drawLine(x + 6, y + 11, x + 6, y + 15);
+      g.drawLine(x + 2, y + 15, x + 6, y + 15);
+      g.drawLine(x + 2, y + 10, x + 2, y + 15);
+
+      // detail lines
+      g.drawLine(x + 8, y + 5, x + 15, y + 5);
+      g.drawLine(x + 8, y + 13, x + 15, y + 13);
+      
+      // fill files
+      g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 3, y + 3, 3, 4);
+      g.fillRect(x + 3, y + 11, 3, 4);
+      
+      // highlight files
+      g.setColor(MetalLookAndFeel.getPrimaryControlHighlight());
+      g.drawLine(x + 4, y + 4, x + 4, y + 5);
+      g.drawLine(x + 4, y + 12, x + 4, y + 13);
+      
+      g.setColor(savedColor);
+    }        
+  }
+
+  /**
+   * An icon used for the "home folder" button on a {@link JFileChooser} under
+   * the {@link MetalLookAndFeel}.
+   * 
+   * @see MetalIconFactory#getFileChooserHomeFolderIcon()
+   */
+  private static class FileChooserHomeFolderIcon 
+      implements Icon, Serializable {
+        
+    /**
+     * Creates a new icon.
+     */
+    public FileChooserHomeFolderIcon() 
+    {
+    }
+
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {   
+      Color savedColor = g.getColor();
+      g.setColor(MetalLookAndFeel.getBlack());
+      
+      // roof
+      g.drawLine(x + 1, y + 8, x + 8, y + 1);
+      g.drawLine(x + 8, y + 1, x + 15, y + 8);
+      
+      // base of house
+      g.drawLine(x + 3, y + 6, x + 3, y + 15);
+      g.drawLine(x + 3, y + 15, x + 13, y + 15);
+      g.drawLine(x + 13, y + 6, x + 13, y + 15);
+      
+      // door frame
+      g.drawLine(x + 6, y + 9, x + 6, y + 15);
+      g.drawLine(x + 6, y + 9, x + 10, y + 9);
+      g.drawLine(x + 10, y + 9, x + 10, y + 15);
+      
+      // chimney
+      g.drawLine(x + 11, y + 2, x + 11, y + 4);
+      g.drawLine(x + 12, y + 2, x + 12, y + 5);
+      
+      g.setColor(MetalLookAndFeel.getControlDarkShadow());
+      
+      // roof paint
+      int xx = x + 8;
+      for (int i = 0; i < 4; i++)
+        g.drawLine(xx - i, y + 2 + i, xx + i, y + 2 + i);
+      g.fillRect(x + 4, y + 6, 9, 2);
+      
+      // door knob
+      g.drawLine(x + 9, y + 12, x + 9, y + 12);
+      
+      // house paint
+      g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.drawLine(x + 4, y + 8, x + 12, y + 8);
+      g.fillRect(x + 4, y + 9, 2, 6);
+      g.fillRect(x + 11, y + 9, 2, 6);
+      
+      g.setColor(savedColor);
+    }        
+  }
+    
+  /**
+   * An icon used for the "list view" button on a {@link JFileChooser} under
+   * the {@link MetalLookAndFeel}.
+   * 
+   * @see MetalIconFactory#getFileChooserListViewIcon()
+   */
+  private static class FileChooserListViewIcon implements Icon, Serializable 
+  {
+    /**
+     * Creates a new icon.
+     */
+    public FileChooserListViewIcon() 
+    {
+    }
+    
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      Color savedColor = g.getColor();
+      g.setColor(MetalLookAndFeel.getBlack());
+
+      // file 1 outline
+      g.drawLine(x + 2, y + 2, x + 5, y + 2);
+      g.drawLine(x + 6, y + 3, x + 6, y + 7);
+      g.drawLine(x + 2, y + 7, x + 6, y + 7);
+      g.drawLine(x + 2, y + 2, x + 2, y + 7);
+      
+      // file 2 outline
+      g.drawLine(x + 2, y + 10, x + 5, y + 10);
+      g.drawLine(x + 6, y + 11, x + 6, y + 15);
+      g.drawLine(x + 2, y + 15, x + 6, y + 15);
+      g.drawLine(x + 2, y + 10, x + 2, y + 15);
+      
+      // file 3 outline
+      g.drawLine(x + 10, y + 2, x + 13, y + 2);
+      g.drawLine(x + 14, y + 3, x + 14, y + 7);
+      g.drawLine(x + 10, y + 7, x + 14, y + 7);
+      g.drawLine(x + 10, y + 2, x + 10, y + 7);
+      
+      // file 4 outline
+      g.drawLine(x + 10, y + 10, x + 13, y + 10);
+      g.drawLine(x + 14, y + 11, x + 14, y + 15);
+      g.drawLine(x + 10, y + 15, x + 14, y + 15);
+      g.drawLine(x + 10, y + 10, x + 10, y + 15);
+      
+      g.drawLine(x + 8, y + 5, x + 8, y + 5);
+      g.drawLine(x + 8, y + 13, x + 8, y + 13);
+      g.drawLine(x + 16, y + 5, x + 16, y + 5);
+      g.drawLine(x + 16, y + 13, x + 16, y + 13);
+      
+      // fill files
+      g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 3, y + 3, 3, 4);
+      g.fillRect(x + 3, y + 11, 3, 4);
+      g.fillRect(x + 11, y + 3, 3, 4);
+      g.fillRect(x + 11, y + 11, 3, 4);
+      
+      // highlight files
+      g.setColor(MetalLookAndFeel.getPrimaryControlHighlight());
+      g.drawLine(x + 4, y + 4, x + 4, y + 5);
+      g.drawLine(x + 4, y + 12, x + 4, y + 13);
+      g.drawLine(x + 12, y + 4, x + 12, y + 5);
+      g.drawLine(x + 12, y + 12, x + 12, y + 13);
+
+      g.setColor(savedColor);
+    }        
+  }
+    
+  /**
+   * An icon used for the "new folder" button on a {@link JFileChooser} under
+   * the {@link MetalLookAndFeel}.
+   * 
+   * @see MetalIconFactory#getFileChooserNewFolderIcon()
+   */
+  private static class FileChooserNewFolderIcon 
+      implements Icon, Serializable 
+  {
+    /** 
+     * Creates a new icon.
+     */
+    public FileChooserNewFolderIcon() 
+    {
+    }
+    
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 18;
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {      
+      Color savedColor = g.getColor();
+      g.setColor(MetalLookAndFeel.getBlack());
+      
+      g.drawLine(x + 2, y + 5, x + 9, y + 5);
+      g.drawLine(x + 10, y + 6, x + 15, y + 6);
+      g.drawLine(x + 15, y + 5, x + 15, y + 14);
+      g.drawLine(x + 2, y + 14, x + 15, y + 14);
+      g.drawLine(x + 1, y + 6, x + 1, y + 14);
+      
+      g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+      g.drawLine(x + 11, y + 3, x + 15, y + 3);
+      g.drawLine(x + 10, y + 4, x + 15, y + 4);
+      
+      g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 3, y + 7, 7, 7);
+      g.fillRect(x + 10, y + 8, 5, 6);
+      g.drawLine(x + 10, y + 5, x + 14, y + 5);
+      
+      g.setColor(MetalLookAndFeel.getPrimaryControlHighlight());
+      g.drawLine(x + 10, y + 7, x + 14, y + 7);
+      g.drawLine(x + 2, y + 6, x + 9, y + 6);
+      g.drawLine(x + 2, y + 6, x + 2, y + 13);
+      g.setColor(savedColor);
+    }        
+  }
+
+  /**
+   * An icon used for the "up folder" button on a {@link JFileChooser} under
+   * the {@link MetalLookAndFeel}.
+   * 
+   * @see MetalIconFactory#getFileChooserNewFolderIcon()
+   */
+  private static class FileChooserUpFolderIcon 
+    extends FileChooserNewFolderIcon
+    implements Icon, Serializable 
+  {
+    /**
+     * Creates a new icon.
+     */
+    public FileChooserUpFolderIcon() 
+    {
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      Color savedColor = g.getColor();
+
+      // draw the folder
+      super.paintIcon(c, g, x, y);
+      
+      // now draw the up arrow
+      g.setColor(MetalLookAndFeel.getBlack());
+      g.drawLine(x + 8, y + 9, x + 8, y + 16);
+      int xx = x + 8;
+      for (int i = 0; i < 4; i++)
+        g.drawLine(xx - i, y + 9 + i, xx + i, y + 9 + i);
+      g.setColor(savedColor);
     }        
   }
 
@@ -284,7 +663,68 @@ public class MetalIconFactory implements Serializable
     }
         
   }
-   
+
+  /**
+   * An icon used by the {@link MetalInternalFrameUI} class when the frame
+   * is displayed as a palette.
+   * 
+   * @since 1.3
+   */
+  public static class PaletteCloseIcon implements Icon, Serializable 
+  {
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 7;
+    }
+    
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight() 
+    {
+      return 7;
+    }
+    
+    /**
+     * Paints the icon using colors from the {@link MetalLookAndFeel}.
+     * 
+     * @param c  the component (ignored).
+     * @param g  the graphics device.
+     * @param x  the x-coordinate for the top-left of the icon.
+     * @param y  the y-coordinate for the top-left of the icon.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      Color savedColor = g.getColor();
+      AbstractButton button = (AbstractButton) c;
+      if (button.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
+      g.fillRect(x + 2, y + 2, 3, 3);
+      g.drawLine(x + 1, y, x + 1, y + 2);
+      g.drawLine(x, y + 1, x + 2, y + 1);
+      g.drawLine(x + 5, y, x + 5, y + 2);
+      g.drawLine(x + 4, y + 1, x + 6, y + 1);
+      g.drawLine(x + 1, y + 4, x + 1, y + 6);
+      g.drawLine(x, y + 5, x + 2, y + 5);
+      g.drawLine(x + 5, y + 4, x + 5, y + 6);
+      g.drawLine(x + 4, y + 5, x + 6, y + 5);
+      g.setColor(MetalLookAndFeel.getControlHighlight());
+      g.drawLine(x + 2, y + 6, x + 3, y + 5);
+      g.drawLine(x + 5, y + 3, x + 6, y + 2);
+      g.drawLine(x + 6, y + 6, x + 6, y + 6);
+      g.setColor(savedColor);
+    }        
+  }
+  
   /**
    * An {@link Icon} implementation for {@link JCheckBox}es in the
    * Metal Look &amp; Feel.
@@ -294,19 +734,6 @@ public class MetalIconFactory implements Serializable
   static class RadioButtonIcon
     implements Icon, UIResource, Serializable
   {
-    /**
-     * Draws the check in the RadioButton.
-     *
-     * @param c the component to draw on
-     * @param g the Graphics context to draw with
-     */
-    protected void drawCheck(Component c, Graphics g)
-    {
-      g.setColor(MetalLookAndFeel.getBlack());
-      g.fillRect(4, 3, 4, 6);
-      g.drawLine(3, 4, 3, 7);
-      g.drawLine(8, 4, 8, 7);
-    }
 
     /**
      * Returns the width of the icon in pixels.
@@ -329,60 +756,167 @@ public class MetalIconFactory implements Serializable
     }
 
     /**
-     * Paints the icon. This first paints the border of the RadioButton and
-     * if the CheckBox is selected it calls {@link #drawCheck} to draw
-     * the check.
+     * Paints the icon, taking into account whether or not the component is
+     * enabled, selected and/or armed.
      *
-     * @param c the Component to draw on (gets casted to JCheckBox)
+     * @param c the Component to draw on (must be an instance of 
+     *          {@link JRadioButton})
      * @param g the Graphics context to draw with
      * @param x the X position
      * @param y the Y position
      */
-    public void paintIcon(Component c, Graphics g, int x, int y)
+    public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      Color dark = MetalLookAndFeel.getControlDarkShadow();
-      Color light = MetalLookAndFeel.getWhite();
-      g.translate(x, y);
+      Color savedColor = g.getColor();
+      JRadioButton b = (JRadioButton) c;
+      
+      // draw outer circle
+      if (b.isEnabled())
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
+      else
+        g.setColor(MetalLookAndFeel.getControlDisabled());
+      g.drawLine(x + 2, y + 1, x + 3, y + 1);
+      g.drawLine(x + 4, y, x + 7, y);
+      g.drawLine(x + 8, y + 1, x + 9, y + 1);
+      g.drawLine(x + 10, y + 2, x + 10, y + 3);
+      g.drawLine(x + 11, y + 4, x + 11, y + 7);
+      g.drawLine(x + 10, y + 8, x + 10, y + 9);
+      g.drawLine(x + 8, y + 10, x + 9, y + 10);
+      g.drawLine(x + 4, y + 11, x + 7, y + 11);
+      g.drawLine(x + 2, y + 10, x + 3, y + 10);
+      g.drawLine(x + 1, y + 9, x + 1, y + 8);
+      g.drawLine(x, y + 7, x, y + 4);
+      g.drawLine(x + 1, y + 2, x + 1, y + 3);
 
-      // The light 'circle'
-      g.setColor(light);
-      g.drawLine(4, 1, 10, 1);
-      g.drawLine(2, 2, 3, 2);
-      g.drawLine(8, 2, 11, 2);
-      g.drawLine(2, 3, 2, 3);
-      g.drawLine(11, 2, 11, 9);
-      g.drawLine(1, 4, 1, 7);
-      g.drawLine(12, 4, 12, 7);
-      g.drawLine(2, 8, 2, 11);
-      g.drawLine(11, 8, 11, 9);
-      g.drawLine(10, 10, 10, 10);
-      g.drawLine(2, 11, 9, 11);
-      g.drawLine(4, 12, 7, 12);
+      if (b.getModel().isArmed())
+        {
+          g.setColor(MetalLookAndFeel.getControlShadow());
+          g.drawLine(x + 4, y + 1, x + 7, y + 1);
+          g.drawLine(x + 4, y + 10, x + 7, y + 10);
+          g.drawLine(x + 1, y + 4, x + 1, y + 7);
+          g.drawLine(x + 10, y + 4, x + 10, y + 7);
+          g.fillRect(x + 2, y + 2, 8, 8);
+        }
+      else 
+        {
+          // only draw inner highlight if not filled
+          if (b.isEnabled())
+            {
+              g.setColor(MetalLookAndFeel.getWhite());
+          
+              g.drawLine(x + 2, y + 8, x + 2, y + 9);
+              g.drawLine(x + 1, y + 4, x + 1, y + 7);
+              g.drawLine(x + 2, y + 2, x + 2, y + 3);
+              g.drawLine(x + 3, y + 2, x + 3, y + 2);
+              g.drawLine(x + 4, y + 1, x + 7, y + 1);
+              g.drawLine(x + 8, y + 2, x + 9, y + 2);
+            }
+        }
 
-      // The dark 'circle'
-      g.setColor(dark);
-      g.drawLine(4, 0, 7, 0);
-      g.drawLine(2, 1, 3, 1);
-      g.drawLine(8, 1, 9, 1);
-      g.drawLine(1, 2, 1, 3);
-      g.drawLine(10, 2, 10, 3);
-      g.drawLine(0, 4, 0, 7);
-      g.drawLine(11, 4, 11, 7);
-      g.drawLine(1, 8, 1, 9);
-      g.drawLine(10, 8, 10, 9);
-      g.drawLine(2, 10, 3, 10);
-      g.drawLine(8, 10, 9, 10);
-      g.drawLine(4, 11, 7, 11);
-
-      JRadioButton rb = (JRadioButton) c;
-      if (rb.isSelected())
-        drawCheck(c, g);
-
-      g.translate(-x, -y);
-    }
+      // draw outer highlight
+      if (b.isEnabled())
+        {
+          g.setColor(MetalLookAndFeel.getWhite());
+          
+          // outer
+          g.drawLine(x + 10, y + 1, x + 10, y + 1);
+          g.drawLine(x + 11, y + 2, x + 11, y + 3);
+          g.drawLine(x + 12, y + 4, x + 12, y + 7);
+          g.drawLine(x + 11, y + 8, x + 11, y + 9);
+          g.drawLine(x + 10, y + 10, x + 10, y + 10);
+          g.drawLine(x + 8, y + 11, x + 9, y + 11);
+          g.drawLine(x + 4, y + 12, x + 7, y + 12);
+          g.drawLine(x + 2, y + 11, x + 3, y + 11);
+        }
+      
+      if (b.isSelected())
+        {
+          g.setColor(MetalLookAndFeel.getBlack());
+          g.drawLine(x + 4, y + 3, x + 7, y + 3);
+          g.fillRect(x + 3, y + 4, 6, 4);
+          g.drawLine(x + 4, y + 8, x + 7, y + 8);
+        }
+      g.setColor(savedColor);
+    }        
   }
 
+  /**
+   * An icon displayed for {@link JRadioButtonMenuItem} components.
+   */
+  private static class RadioButtonMenuItemIcon 
+      implements Icon, Serializable 
+  {
     /**
+     * Creates a new icon instance.
+     */
+    public RadioButtonMenuItemIcon() 
+    {  
+    }
+
+    /**
+     * Returns the width of the icon, in pixels.
+     * 
+     * @return The width of the icon.
+     */
+    public int getIconWidth() 
+    {
+      return 10;
+    }
+
+    /**
+     * Returns the height of the icon, in pixels.
+     * 
+     * @return The height of the icon.
+     */
+    public int getIconHeight()   
+    {
+      return 10;
+    }
+
+    /**
+     * Paints the icon.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     */
+    public void paintIcon(Component c, Graphics g, int x, int y) 
+    {
+      Color savedColor = g.getColor();
+      JRadioButtonMenuItem item = (JRadioButtonMenuItem) c;
+      g.setColor(MetalLookAndFeel.getBlack());
+      g.drawLine(x + 2, y, x + 6, y);
+      g.drawLine(x + 7, y + 1, x + 7, y + 1);
+      g.drawLine(x + 8, y + 2, x + 8, y + 6);
+      g.drawLine(x + 7, y + 7, x + 7, y + 7);
+      g.drawLine(x + 2, y + 8, x + 6, y + 8);
+      g.drawLine(x + 1, y + 7, x + 1, y + 7);
+      g.drawLine(x, y + 2, x, y + 6);
+      g.drawLine(x + 1, y + 1, x + 1, y + 1);
+      
+      if (item.isSelected())
+        {
+          g.drawLine(x + 3, y + 2, x + 5, y + 2);
+          g.fillRect(x + 2, y + 3, 5, 3);
+          g.drawLine(x + 3, y + 6, x + 5, y + 6);
+        }
+
+      // highlight
+      g.setColor(MetalLookAndFeel.getControlHighlight());
+      g.drawLine(x + 3, y + 1, x + 6, y + 1);
+      g.drawLine(x + 8, y + 1, x + 8, y + 1);
+      g.drawLine(x + 9, y + 2, x + 9, y + 7);
+      g.drawLine(x + 8, y + 8, x + 8, y + 8);
+      g.drawLine(x + 2, y + 9, x + 7, y + 9);
+      g.drawLine(x + 1, y + 8, x + 1, y + 8);
+      g.drawLine(x + 1, y + 3, x + 1, y + 6);
+      g.drawLine(x + 2, y + 2, x + 2, y + 2);
+      g.setColor(savedColor);
+    }        
+  }
+
+  /**
    * The icon used to display the thumb control on a horizontally oriented
    * {@link JSlider} component.
    */
@@ -428,13 +962,19 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
+      boolean enabled = false;
       boolean focus = false;
-      if (c != null) 
-        focus = c.hasFocus();    
-      // TODO: pick up the colors from the look and feel
+      if (c != null)
+        {
+          enabled = c.isEnabled();
+          focus = c.hasFocus();    
+        }
       
       // draw the outline
-      g.setColor(Color.black);
+      if (enabled) 
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
       g.drawLine(x + 1, y, x + 13, y);
       g.drawLine(x + 14, y + 1, x + 14, y + 7);
       g.drawLine(x + 14, y + 8, x + 7, y + 15);
@@ -442,8 +982,11 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x, y + 7, x, y + 1);
       
       // fill the icon
-      g.setColor(focus ? new Color(153, 153, 204) : new Color(204, 204, 204));  // medium
-      g.fillRect(x + 2, y + 2, 12, 7);
+      if (focus)
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else
+        g.setColor(MetalLookAndFeel.getControl());
+      g.fillRect(x + 1, y + 2, 13, 7);
       g.drawLine(x + 2, y + 9, x + 12, y + 9);
       g.drawLine(x + 3, y + 10, x + 11, y + 10);
       g.drawLine(x + 4, y + 11, x + 10, y + 11);
@@ -451,33 +994,42 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 6, y + 13, x + 8, y + 13);
       g.drawLine(x + 7, y + 14, x + 7, y + 14);
       
-      // draw highlights
-      g.setColor(focus ? new Color(204, 204, 255) : new Color(255, 255, 255));  // light
-      g.drawLine(x + 1, y + 1, x + 13, y + 1);
-      g.drawLine(x + 1, y + 2, x + 1, y + 8);
-      g.drawLine(x + 2, y + 2, x + 2, y + 2);
-      g.drawLine(x + 6, y + 2, x + 6, y + 2);
-      g.drawLine(x + 10, y + 2, x + 10, y + 2);
+      // if the slider is enabled, draw dots and highlights
+      if (c.isEnabled())
+        {
+          if (focus)
+            g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+          else
+            g.setColor(MetalLookAndFeel.getBlack());
+          g.drawLine(x + 3, y + 3, x + 3, y + 3);
+          g.drawLine(x + 7, y + 3, x + 7, y + 3);
+          g.drawLine(x + 11, y + 3, x + 11, y + 3);
 
-      g.drawLine(x + 4, y + 4, x + 4, y + 4);
-      g.drawLine(x + 8, y + 4, x + 8, y + 4);
+          g.drawLine(x + 5, y + 5, x + 5, y + 5);
+          g.drawLine(x + 9, y + 5, x + 9, y + 5);
 
-      g.drawLine(x + 2, y + 6, x + 2, y + 6);
-      g.drawLine(x + 6, y + 6, x + 6, y + 6);
-      g.drawLine(x + 10, y + 6, x + 10, y + 6);
+          g.drawLine(x + 3, y + 7, x + 3, y + 7);
+          g.drawLine(x + 7, y + 7, x + 7, y + 7);
+          g.drawLine(x + 11, y + 7, x + 11, y + 7);
 
-      // draw dots
-      g.setColor(focus ? new Color(102, 102, 153) : Color.black);                 // dark
-      g.drawLine(x + 3, y + 3, x + 3, y + 3);
-      g.drawLine(x + 7, y + 3, x + 7, y + 3);
-      g.drawLine(x + 11, y + 3, x + 11, y + 3);
+          // draw highlights
+          if (focus)
+            g.setColor(MetalLookAndFeel.getPrimaryControl());
+          else
+            g.setColor(MetalLookAndFeel.getWhite());
+          g.drawLine(x + 1, y + 1, x + 13, y + 1);
+          g.drawLine(x + 1, y + 2, x + 1, y + 8);
+          g.drawLine(x + 2, y + 2, x + 2, y + 2);
+          g.drawLine(x + 6, y + 2, x + 6, y + 2);
+          g.drawLine(x + 10, y + 2, x + 10, y + 2);
+          
+          g.drawLine(x + 4, y + 4, x + 4, y + 4);
+          g.drawLine(x + 8, y + 4, x + 8, y + 4);
 
-      g.drawLine(x + 5, y + 5, x + 5, y + 5);
-      g.drawLine(x + 9, y + 5, x + 9, y + 5);
-
-      g.drawLine(x + 3, y + 7, x + 3, y + 7);
-      g.drawLine(x + 7, y + 7, x + 7, y + 7);
-      g.drawLine(x + 11, y + 7, x + 11, y + 7);
+          g.drawLine(x + 2, y + 6, x + 2, y + 6);
+          g.drawLine(x + 6, y + 6, x + 6, y + 6);
+          g.drawLine(x + 10, y + 6, x + 10, y + 6);
+        }
 
     }        
   }
@@ -968,13 +1520,19 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
+      boolean enabled = false;
       boolean focus = false;
-      if (c != null) 
-        focus = c.hasFocus();    
-      // TODO: pick up the colors from the look and feel
+      if (c != null)
+        {
+          enabled = c.isEnabled();
+          focus = c.hasFocus();    
+        }
       
       // draw the outline
-      g.setColor(Color.black);
+      if (enabled) 
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getControlDarkShadow());
       g.drawLine(x + 1, y, x + 7, y);
       g.drawLine(x + 8, y, x + 15, y + 7);
       g.drawLine(x + 14, y + 8, x + 8, y + 14);
@@ -982,8 +1540,11 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x, y + 13, x, y + 1);
       
       // fill the icon
-      g.setColor(focus ? new Color(153, 153, 204) : new Color(204, 204, 204));  // medium
-      g.fillRect(x + 2, y + 2, 7, 12);
+      if (focus)
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else
+        g.setColor(MetalLookAndFeel.getControl());
+      g.fillRect(x + 2, y + 1, 7, 13);
       g.drawLine(x + 9, y + 2, x + 9, y + 12);
       g.drawLine(x + 10, y + 3, x + 10, y + 11);
       g.drawLine(x + 11, y + 4, x + 11, y + 10);
@@ -991,36 +1552,46 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 13, y + 6, x + 13, y + 8);
       g.drawLine(x + 14, y + 7, x + 14, y + 7);
       
-      // draw highlights
-      g.setColor(focus ? new Color(204, 204, 255) : new Color(255, 255, 255));  // light
-      g.drawLine(x + 1, y + 1, x + 8, y + 1);
-      g.drawLine(x + 1, y + 2, x + 1, y + 13);
-      g.drawLine(x + 2, y + 2, x + 2, y + 2);
-      g.drawLine(x + 2, y + 6, x + 2, y + 6);
-      g.drawLine(x + 2, y + 10, x + 2, y + 10);
+      // if the slider is enabled, draw dots and highlights
+      if (enabled)
+        {
+          if (focus)
+            g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+          else
+            g.setColor(MetalLookAndFeel.getBlack());
+          g.drawLine(x + 3, y + 3, x + 3, y + 3);
+          g.drawLine(x + 3, y + 7, x + 3, y + 7);
+          g.drawLine(x + 3, y + 11, x + 3, y + 11);
 
-      g.drawLine(x + 4, y + 4, x + 4, y + 4);
-      g.drawLine(x + 4, y + 8, x + 4, y + 8);
+          g.drawLine(x + 5, y + 5, x + 5, y + 5);
+          g.drawLine(x + 5, y + 9, x + 5, y + 9);
 
-      g.drawLine(x + 6, y + 2, x + 6, y + 2);
-      g.drawLine(x + 6, y + 6, x + 6, y + 6);
-      g.drawLine(x + 6, y + 10, x + 6, y + 10);
+          g.drawLine(x + 7, y + 3, x + 7, y + 3);
+          g.drawLine(x + 7, y + 7, x + 7, y + 7);
+          g.drawLine(x + 7, y + 11, x + 7, y + 11);
 
-      // draw dots
-      g.setColor(focus ? new Color(102, 102, 153) : Color.black);                 // dark
-      g.drawLine(x + 3, y + 3, x + 3, y + 3);
-      g.drawLine(x + 3, y + 7, x + 3, y + 7);
-      g.drawLine(x + 3, y + 11, x + 3, y + 11);
+          // draw highlights
+          if (focus)
+            g.setColor(MetalLookAndFeel.getPrimaryControl());
+          else
+            g.setColor(MetalLookAndFeel.getWhite());
+          g.drawLine(x + 1, y + 1, x + 8, y + 1);
+          g.drawLine(x + 1, y + 2, x + 1, y + 13);
+          g.drawLine(x + 2, y + 2, x + 2, y + 2);
+          g.drawLine(x + 2, y + 6, x + 2, y + 6);
+          g.drawLine(x + 2, y + 10, x + 2, y + 10);
 
-      g.drawLine(x + 5, y + 5, x + 5, y + 5);
-      g.drawLine(x + 5, y + 9, x + 5, y + 9);
+          g.drawLine(x + 4, y + 4, x + 4, y + 4);
+          g.drawLine(x + 4, y + 8, x + 4, y + 8);
 
-      g.drawLine(x + 7, y + 3, x + 7, y + 3);
-      g.drawLine(x + 7, y + 7, x + 7, y + 7);
-      g.drawLine(x + 7, y + 11, x + 7, y + 11);
+          g.drawLine(x + 6, y + 2, x + 6, y + 2);
+          g.drawLine(x + 6, y + 6, x + 6, y + 6);
+          g.drawLine(x + 6, y + 10, x + 6, y + 10);
+        
+        }
     }        
   }
-  
+    
   /**
    * A tree control icon.  This icon can be in one of two states: expanded and
    * collapsed.
@@ -1256,6 +1827,55 @@ public class MetalIconFactory implements Serializable
   }
 
   /**
+   * Returns an icon for use by the {@link JFileChooser} component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getFileChooserDetailViewIcon() 
+  {
+    return new FileChooserDetailViewIcon();
+  }
+    
+  /**
+   * Returns an icon for use by the {@link JFileChooser} component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getFileChooserHomeFolderIcon() 
+  {
+    return new FileChooserHomeFolderIcon();        
+  }
+    
+  /**
+   * Returns an icon for use by the {@link JFileChooser} component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getFileChooserListViewIcon() 
+  {
+    return new FileChooserListViewIcon();
+  }
+    
+  /**
+   * Returns an icon for use by the {@link JFileChooser} component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getFileChooserNewFolderIcon() 
+  {
+    return new FileChooserNewFolderIcon();
+  }
+    
+  /**
+   * Returns an icon for use by the {@link JFileChooser} component.
+   * 
+   * @return An icon.
+   */
+  public static Icon getFileChooserUpFolderIcon() 
+  {
+    return new FileChooserUpFolderIcon();
+  }
+  /**
    * Returns an icon for RadioButtons in the Metal L&amp;F.
    *
    * @return an icon for RadioButtons in the Metal L&amp;F
@@ -1265,6 +1885,16 @@ public class MetalIconFactory implements Serializable
     if (radioButtonIcon == null)
       radioButtonIcon = new RadioButtonIcon();
     return radioButtonIcon;
+  }
+
+  /**
+   * Creates a new instance of the icon used in a {@link JRadioButtonMenuItem}.
+   * 
+   * @return A new icon instance.
+   */
+  public static Icon getRadioButtonMenuItemIcon() 
+  {
+    return new RadioButtonMenuItemIcon();
   }
 
   /**

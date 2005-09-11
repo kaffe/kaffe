@@ -233,19 +233,19 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     {
       if (block)
         {
-	  // Only need to check it if it's block scrolling
-	  // We only block scroll if the click occurs
-	  // in the track.
-	  if (! trackListener.shouldScroll(direction))
-	    {
-	      trackHighlight = NO_HIGHLIGHT;
-	      scrollbar.repaint();
-	      return;
-	    }
-	  scrollByBlock(direction);
+          // Only need to check it if it's block scrolling
+          // We only block scroll if the click occurs
+          // in the track.
+          if (!trackListener.shouldScroll(direction))
+            {
+              trackHighlight = NO_HIGHLIGHT;
+              scrollbar.repaint();
+              return;
+            }
+          scrollByBlock(direction);
         }
       else
-	scrollByUnit(direction);
+        scrollByUnit(direction);
     }
   }
 
@@ -873,7 +873,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	trackRect = new Rectangle();
 	thumbRect = new Rectangle();
 
-	scrollTimer = new Timer(200, null);
+	scrollTimer = new Timer(50, null);
 	scrollTimer.setRepeats(true);
 
 	installComponents();

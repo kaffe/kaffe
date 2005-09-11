@@ -103,7 +103,7 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
    */
   protected String getPropertyPrefix()
   {
-    return "RadioButton";
+    return "RadioButton.";
   }
 
   /**
@@ -117,7 +117,7 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
   public Icon getDefaultIcon()
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    return defaults.getIcon(getPropertyPrefix() + ".icon");
+    return defaults.getIcon(getPropertyPrefix() + "icon");
   }
 
   /**

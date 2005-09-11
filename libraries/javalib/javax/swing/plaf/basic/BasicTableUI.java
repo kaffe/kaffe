@@ -206,14 +206,44 @@ public class BasicTableUI
     return new MouseInputHandler();
   }
 
+  /**
+   * Return the maximum size of the table. The maximum height is the row 
+    * height times the number of rows. The maximum width is the sum of 
+    * the maximum widths of each column.
+    * 
+    *  @param comp the component whose maximum size is being queried,
+    *  this is ignored.
+    *  @return a Dimension object representing the maximum size of the table,
+    *  or null if the table has no elements.
+   */
   public Dimension getMaximumSize(JComponent comp) 
   {
-    return getPreferredSize(comp);
+    int maxTotalColumnWidth = 0;
+    for (int i = 0; i < table.getColumnCount(); i++)
+      maxTotalColumnWidth += table.getColumnModel().getColumn(i).getMaxWidth();
+    if (maxTotalColumnWidth == 0 || table.getRowCount() == 0)
+      return null;
+    return new Dimension(maxTotalColumnWidth, table.getRowCount()*table.getRowHeight());
   }
 
+  /**
+   * Return the minimum size of the table. The minimum height is the row 
+    * height times the number of rows. The minimum width is the sum of 
+    * the minimum widths of each column.
+    * 
+    *  @param comp the component whose minimum size is being queried,
+    *  this is ignored.
+    *  @return a Dimension object representing the minimum size of the table,
+    *  or null if the table has no elements.
+   */
   public Dimension getMinimumSize(JComponent comp) 
   {
-    return getPreferredSize(comp);
+    int minTotalColumnWidth = 0;
+    for (int i = 0; i < table.getColumnCount(); i++)
+      minTotalColumnWidth += table.getColumnModel().getColumn(i).getMinWidth();
+    if (minTotalColumnWidth == 0 || table.getRowCount() == 0)
+      return null;
+    return new Dimension(minTotalColumnWidth, table.getRowCount()*table.getRowHeight());
   }
 
   public Dimension getPreferredSize(JComponent comp) 
@@ -355,7 +385,7 @@ public class BasicTableUI
     {
       ListSelectionModel rowModel = table.getSelectionModel();
       ListSelectionModel colModel = table.getColumnModel().getSelectionModel();
-      
+
       int rowLead = rowModel.getLeadSelectionIndex();
       int rowMax = table.getModel().getRowCount() - 1;
       

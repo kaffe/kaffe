@@ -53,14 +53,34 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 
 /**
- * Unlike JComponent derivatives, JDialog inherits from java.awt.Dialog. But
- * also lets a look-and-feel component to its work.
+ * A dialog window. This is an extension of {@link java.awt.Dialog} that
+ * provides support for the Swing architecture. Most importantly it contains a
+ * {@link JRootPane} as it's only top-level child, that manages the content
+ * pane, the menu and a glass pane.
  *
- * @author Ronald Veldema (rveldema_AT_cs.vu.nl)
+ * Also, unlike <code>java.awt.Dialog</code>s, JDialogs support the
+ * Swing Pluggable Look &amp; Feel architecture.
+ * 
+ * @author Ronald Veldema (rveldema@cs.vu.nl)
  */
 public class JDialog extends Dialog implements Accessible, WindowConstants,
                                                RootPaneContainer
 {
+  /**
+   * Provides accessibility support for <code>JDialog</code>s.
+   */
+  protected class AccessibleJDialog extends Dialog.AccessibleAWTDialog
+  {
+    /**
+     * Creates a new instance of <code>AccessibleJDialog</code>.
+     */
+    public AccessibleJDialog()
+    {
+      super();
+      // Nothing to do here.
+    }
+  }
+
   private static final long serialVersionUID = -864070866424508218L;
 
   /** DOCUMENT ME! */
@@ -583,6 +603,8 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
    */
   public AccessibleContext getAccessibleContext()
   {
-    return null;
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJDialog();
+    return accessibleContext;
   }
 }

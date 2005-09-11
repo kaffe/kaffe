@@ -121,10 +121,9 @@ public class DefaultCellEditor
      */
     public boolean isCellEditable(EventObject event)
     {
-      if (event == null || !(event instanceof MouseEvent))
+      if (event == null || !(event instanceof MouseEvent) ||
+          (((MouseEvent) event).getClickCount() >= getClickCountToStart()))
         return true;
-
-      //Todo: if the right number of clicks has occured, return true;
       return false;
     } // isCellEditable()
 
@@ -232,7 +231,7 @@ public class DefaultCellEditor
   public DefaultCellEditor(JTextField textfield)
   {
     editorComponent = textfield;
-    clickCountToStart = 2;
+    clickCountToStart = 3;
   } // DefaultCellEditor()
 
   /**

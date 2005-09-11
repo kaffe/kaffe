@@ -556,58 +556,70 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     this.visible = visible;
     if (old != isVisible())
       {
-	firePropertyChange("visible", old, isVisible());
-	if (visible)
-	  {
-	    firePopupMenuWillBecomeVisible();
-	    Container rootContainer = (Container) SwingUtilities.getRoot(invoker);
+        firePropertyChange("visible", old, isVisible());
+        if (visible)
+          {
+            firePopupMenuWillBecomeVisible();
+            Container rootContainer = (Container) SwingUtilities.getRoot(invoker);
+            Dimension screenSize = getToolkit().getScreenSize();
+            
+            boolean fit = true;
+            Dimension size;
 
-	    boolean fit = true;
-	    Dimension size;
+            // Determine the size of the popup menu
+            if (this.getSize().width == 0 && this.getSize().width == 0)
+              size = this.getPreferredSize();
+            else
+              size = this.getSize();
 
-	    // Determine the size of the popup menu
-	    if (this.getSize().width == 0 && this.getSize().width == 0)
-	      size = this.getPreferredSize();
-	    else
-	      size = this.getSize();
+            if ((size.width > (rootContainer.getWidth() - popupLocation.x))
+                || (size.height > (rootContainer.getHeight() - popupLocation.y)))
+              fit = false;
+            if (lightWeightPopupEnabled && fit)
+              popup = new LightWeightPopup(this);
+            else
+              {
+                if (fit)
+                  popup = new MediumWeightPopup(this);
+                else
+                  popup = new HeavyWeightPopup(this);
+              }
+            if (popup instanceof LightWeightPopup
+                || popup instanceof MediumWeightPopup)
+              {
+                JLayeredPane layeredPane;
+                layeredPane = SwingUtilities.getRootPane(invoker).getLayeredPane();
+                Point p = new Point(popupLocation.x, popupLocation.y);
+                SwingUtilities.convertPointFromScreen(p, layeredPane);          
+                
+                if (size.width + popupLocation.x > screenSize.width)
+                  popupLocation.x -= size.width;
+                if (size.height + popupLocation.y > screenSize.height)
+                  popupLocation.y -= size.height;
+                
+                popup.show(p.x, p.y, size.width, size.height);
+              }
+            else
+              {
+                // Subtract insets of the top-level container if popup menu's
+                // top-left corner is inside it.
+                Insets insets = rootContainer.getInsets();
 
-	    if ((size.width > (rootContainer.getWidth() - popupLocation.x))
-	        || (size.height > (rootContainer.getHeight() - popupLocation.y)))
-	      fit = false;
-	    if (lightWeightPopupEnabled && fit)
-	      popup = new LightWeightPopup(this);
-	    else
-	      {
-		if (fit)
-		  popup = new MediumWeightPopup(this);
-		else
-		  popup = new HeavyWeightPopup(this);
-	      }
-	    if (popup instanceof LightWeightPopup
-	        || popup instanceof MediumWeightPopup)
-	      {
-		JLayeredPane layeredPane;
-		layeredPane = SwingUtilities.getRootPane(invoker)
-		                            .getLayeredPane();
-		Point p = new Point(popupLocation.x, popupLocation.y);
-		SwingUtilities.convertPointFromScreen(p, layeredPane);
-		popup.show(p.x, p.y, size.width, size.height);  
-	      }
-	    else
-	      {
-		// Subtract insets of the top-level container if popup menu's
-		// top-left corner is inside it.
-		Insets insets = rootContainer.getInsets();
-		popup.show(popupLocation.x - insets.left,
-		           popupLocation.y - insets.top, size.width,
-		           size.height);
-	      }
-	  }
-	else
-	  {
-	    firePopupMenuWillBecomeInvisible();
-	    popup.hide();
-	  }
+                if (size.width + popupLocation.x > screenSize.width)
+                  popupLocation.x -= size.width;
+                if (size.height + popupLocation.y > screenSize.height)
+                  popupLocation.y -= size.height;
+                  
+                popup.show(popupLocation.x - insets.left, 
+                           popupLocation.y - insets.top,
+                           size.width, size.height);
+              }
+          }
+        else
+          {
+            firePopupMenuWillBecomeInvisible();
+            popup.hide();
+          }
       }
   }
 
@@ -1004,7 +1016,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    * HeavyWeightPopup is JWindow that is used to display JPopupMenu menu item's
    * on the screen
    */
-  private class HeavyWeightPopup extends JWindow implements Popup
+  private class HeavyWeightPopup extends JDialog implements Popup
   {
     /**
      * Creates a new HeavyWeightPopup object.
@@ -1014,6 +1026,8 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     public HeavyWeightPopup(Container c)
     {
       this.setContentPane(c);
+      this.setUndecorated(true);
+      this.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
     }
 
     /**

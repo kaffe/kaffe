@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -342,10 +343,10 @@ public abstract class BasicTextUI extends TextUI
     public void propertyChange(PropertyChangeEvent event)
     {
       if (event.getPropertyName().equals("document"))
-	{
+        {
           // Document changed.
-	  modelChanged();
-	}
+	      modelChanged();
+        }
     }
   }
 
@@ -423,6 +424,18 @@ public abstract class BasicTextUI extends TextUI
 
   /** The DocumentEvent handler. */
   DocumentHandler documentHandler = new DocumentHandler();
+
+  /**
+   * The standard background color. This is the color which is used to paint
+   * text in enabled text components.
+   */
+  Color background;
+
+  /**
+   * The inactive background color. This is the color which is used to paint
+   * text in disabled text components.
+   */
+  Color inactiveBackground;
 
   /**
    * Creates a new <code>BasicTextUI</code> instance.
@@ -507,13 +520,18 @@ public abstract class BasicTextUI extends TextUI
 
     String prefix = getPropertyPrefix();
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    textComponent.setBackground(defaults.getColor(prefix + ".background"));
-    textComponent.setForeground(defaults.getColor(prefix + ".foreground"));
     textComponent.setMargin(defaults.getInsets(prefix + ".margin"));
     textComponent.setBorder(defaults.getBorder(prefix + ".border"));
     textComponent.setFont(defaults.getFont(prefix + ".font"));
 
     caret.setBlinkRate(defaults.getInt(prefix + ".caretBlinkRate"));
+
+    // Fetch the colors for enabled/disabled text components.
+    background = defaults.getColor(prefix + ".background");
+    inactiveBackground = defaults.getColor(prefix + ".inactiveBackground");
+    textComponent.setForeground(defaults.getColor(prefix + ".foreground"));
+    textComponent.setDisabledTextColor
+                         (defaults.getColor(prefix + ".inactiveForeground"));
   }
 
   /**
@@ -797,6 +815,11 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void paintBackground(Graphics g)
   {
+    if (textComponent.isEditable())
+      textComponent.setBackground(background);
+    else
+      textComponent.setBackground(inactiveBackground);
+
     g.setColor(textComponent.getBackground());
     g.fillRect(0, 0, textComponent.getWidth(), textComponent.getHeight());
   }

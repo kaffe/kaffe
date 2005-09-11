@@ -59,21 +59,19 @@ import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.InvokeHandler;
 import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.CORBA.portable.OutputStream;
-import org.omg.CORBA_2_3.portable.Delegate;
+import org.omg.CORBA.portable.RemarshalException;
 import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
 
 import java.util.Arrays;
 
 /**
- * A local delegate, transferring all object requests to the locally
- * available servant. This class is involved in handling the method
- * invocations on the local object, obtained by
- * POA.create_reference_with_id.
+ * A local delegate, transferring all object requests to the locally available
+ * servant. This class is involved in handling the method invocations on the
+ * local object, obtained by POA.create_reference_with_id.
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class LocalDelegate
-  extends org.omg.CORBA_2_3.portable.Delegate
+public class LocalDelegate extends org.omg.CORBA_2_3.portable.Delegate
 {
   /**
    * The same servant as an invocation handler.
@@ -84,8 +82,8 @@ public class LocalDelegate
   final byte[] Id;
 
   /**
-   * Create a local delegate, forwarding requests to the
-   * servant that must also be an invocation handler.
+   * Create a local delegate, forwarding requests to the servant that must also
+   * be an invocation handler.
    */
   public LocalDelegate(gnuServantObject an_object, gnuPOA a_poa, byte[] an_id)
   {
@@ -109,8 +107,8 @@ public class LocalDelegate
   }
 
   public boolean is_equivalent(org.omg.CORBA.Object target,
-                               org.omg.CORBA.Object other
-                              )
+    org.omg.CORBA.Object other
+  )
   {
     if (target == other)
       return true;
@@ -159,10 +157,10 @@ public class LocalDelegate
 
   /**
    * Check if this object could be named by the given repository id.
+   *
    * @param idl_id the repository id to check.
    *
-   * @return true if it is one of the possible repository ids of this
-   * object.
+   * @return true if it is one of the possible repository ids of this object.
    */
   public boolean is_a(org.omg.CORBA.Object a_servant, String idl_id)
   {
@@ -187,10 +185,9 @@ public class LocalDelegate
    * Create request for using with DII.
    */
   public Request create_request(org.omg.CORBA.Object target, Context context,
-                                String method, NVList parameters,
-                                NamedValue returns, ExceptionList exceptions,
-                                ContextList ctx_list
-                               )
+    String method, NVList parameters, NamedValue returns,
+    ExceptionList exceptions, ContextList ctx_list
+  )
   {
     operation = method;
 
@@ -207,9 +204,8 @@ public class LocalDelegate
    * Create request for using with DII.
    */
   public Request create_request(org.omg.CORBA.Object target, Context context,
-                                String method, NVList parameters,
-                                NamedValue returns
-                               )
+    String method, NVList parameters, NamedValue returns
+  )
   {
     operation = method;
 
@@ -237,10 +233,11 @@ public class LocalDelegate
    *
    * @return the stream where the method arguments should be written.
    */
-  public org.omg.CORBA.portable.OutputStream request(org.omg.CORBA.Object target,
-                                                     String method,
-                                                     boolean response_expected
-                                                    )
+  public org.omg.CORBA.portable.OutputStream request(
+    org.omg.CORBA.Object target,
+    String method,
+    boolean response_expected
+  )
   {
     operation = method;
 
@@ -285,74 +282,97 @@ public class LocalDelegate
    * Make an invocation.
    *
    * @param target not in use.
-   * @param output the stream request that should be returned by {@link #request}
-   * in this method.
-   * @throws ApplicationException if the use exception is thrown by
-   * the servant method.
+   * @param output the stream request that should be returned by
+   * {@link #m_request} in this method.
+   * @throws ApplicationException if the use exception is thrown by the servant
+   * method.
    */
   public InputStream invoke(org.omg.CORBA.Object target, OutputStream output)
-                     throws ApplicationException
+    throws ApplicationException
   {
-    streamRequest sr = (streamRequest) output;
-
-    LocalRequest lr = (LocalRequest) sr.request;
-    InvokeHandler handler = lr.object.getHandler(lr.operation(), lr.cookie, false);
-
-    if (handler instanceof dynImpHandler)
+    try
       {
-        // The local request known how to handle it, but the different
-        // method must be called.
-        lr.invoke();
+        streamRequest sr = (streamRequest) output;
 
-        // The encapsulation will inherit orb, endian, charsets, etc.
-        cdrOutput buf = sr.createEncapsulation();
+        LocalRequest lr = (LocalRequest) sr.request;
+        InvokeHandler handler =
+          lr.object.getHandler(lr.operation(), lr.cookie, false);
 
-        // Write all request parameters to the buffer stream.
-        if (lr.env().exception() != null)
+        if (handler instanceof dynImpHandler)
           {
+            // The local request known how to handle it, but the different
+            // method must be called.
+            lr.invoke();
+
+            // The encapsulation will inherit orb, endian, charsets, etc.
+            cdrOutput buf = sr.createEncapsulation();
+
+            // Write all request parameters to the buffer stream.
+            if (lr.env().exception() != null)
+              {
+                try
+                  {
+                    UnknownUserException uex =
+                      (UnknownUserException) lr.env().exception();
+                    throw new ApplicationException(uex.except.type().id(),
+                      uex.except.create_input_stream()
+                    );
+                  }
+                catch (BadKind ex)
+                  {
+                    InternalError ierr = new InternalError();
+                    ierr.initCause(ex);
+                    throw ierr;
+                  }
+              }
+            if (lr.return_value() != null)
+              lr.return_value().write_value(buf);
+
+            NamedValue a;
             try
               {
-                UnknownUserException uex =
-                  (UnknownUserException) lr.env().exception();
-                throw new ApplicationException(uex.except.type().id(),
-                                               uex.except.create_input_stream()
-                                              );
+                for (int i = 0; i < lr.arguments().count(); i++)
+                  {
+                    a = lr.arguments().item(i);
+                    if (a.flags() == ARG_INOUT.value ||
+                      a.flags() == ARG_INOUT.value
+                    )
+                      {
+                        a.value().write_value(buf);
+                      }
+                  }
               }
-            catch (BadKind ex)
+            catch (Bounds ex)
               {
                 InternalError ierr = new InternalError();
                 ierr.initCause(ex);
                 throw ierr;
               }
-          }
-        if (lr.return_value() != null)
-          lr.return_value().write_value(buf);
 
-        NamedValue a;
+            return buf.create_input_stream();
+          }
+        else
+          {
+            LocalRequest lrq = (LocalRequest) sr.request;
+            return lrq.s_invoke(handler);
+          }
+      }
+    catch (gnuForwardRequest f)
+      {
         try
           {
-            for (int i = 0; i < lr.arguments().count(); i++)
-              {
-                a = lr.arguments().item(i);
-                if (a.flags() == ARG_INOUT.value ||
-                    a.flags() == ARG_INOUT.value
-                   )
-                  {
-                    a.value().write_value(buf);
-                  }
-              }
+            return ((ObjectImpl) f.forward_reference)._invoke(f.forward_reference._request(
+                operation,
+                true
+              )
+            );
           }
-        catch (Bounds ex)
+        catch (RemarshalException e)
           {
-            InternalError ierr = new InternalError();
-            ierr.initCause(ex);
-            throw ierr;
+            // Never thrown in this place by Classpath implementation.
+            throw new NO_IMPLEMENT();
           }
-
-        return buf.create_input_stream();
       }
-    else
-      return ((LocalRequest) sr.request).s_invoke(handler);
   }
 
   public void releaseReply(org.omg.CORBA.Object target, InputStream input)

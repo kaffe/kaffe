@@ -116,6 +116,8 @@ public class GdkGraphics extends Graphics
   {
     this.component = component;
     font = component.awtComponent.getFont ();
+    if (font == null)
+      font = new Font ("Dialog", Font.PLAIN, 12);
     color = Color.black;
 
     if (component.isRealized ())

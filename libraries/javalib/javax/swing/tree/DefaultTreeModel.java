@@ -253,21 +253,38 @@ public class DefaultTreeModel
    * Messaged when the user has altered the value for the item 
    * identified by path to newValue. If newValue signifies a truly new 
    * value the model should post a treeNodesChanged event.
+   * This sets the user object of the TreeNode identified by 
+   * path and posts a node changed. If you use custom user objects 
+   * in the TreeModel you're going to need to subclass this and set 
+   * the user object of the changed node to something meaningful.
    * 
    * @param path - path to the node that the user has altered
    * @param newValue - the new value from the TreeCellEditor
    */
   public void valueForPathChanged(TreePath path, Object newValue)
   {
-    if (!path.equals(newValue))
+    Object node = path.getLastPathComponent();
+    if (node instanceof MutableTreeNode)
       {
-        TreeModelEvent event = new TreeModelEvent(this, path);
-        TreeModelListener[] listeners = getTreeModelListeners();
+        ((MutableTreeNode) node).setUserObject(newValue);
+        int[] ci = null;
+        Object[] c = null; 
+        Object[] parentPath = path.getPath();
+        if (path.getPathCount() > 1)
+          {
+            Object parent = ((TreeNode) node).getParent();
+            ci = new int[1];
+            ci[0] = getIndexOfChild(parent, node);
+            node = newValue;
+            path = path.getParentPath().pathByAddingChild(node);
+            c = new Object[1];
+            c[0] = node;
+            parentPath = path.getParentPath().getPath();
+          }
         
-        for (int i = listeners.length - 1; i >= 0; --i)
-          listeners[i].treeNodesChanged(event);
+        fireTreeNodesChanged(this, parentPath, ci, c);
       }
-  }
+    }
 
   /**
    * Invoked this to insert newChild at location index in parents children.
@@ -319,7 +336,7 @@ public class DefaultTreeModel
     childIndices[0] = getIndexOfChild(parent, node);
     Object[] children = new Object[1];
     children[0] = node;
-    fireTreeNodesChanged(this, getPathToRoot(parent), childIndices, children);
+    fireTreeNodesChanged(this, getPathToRoot(node), childIndices, children);
   }
 
   /**
@@ -468,6 +485,7 @@ public class DefaultTreeModel
   {
     TreeModelEvent event = new TreeModelEvent(source, path, childIndices,
         children);
+
     TreeModelListener[] listeners = getTreeModelListeners();
 
     for (int i = listeners.length - 1; i >= 0; --i)

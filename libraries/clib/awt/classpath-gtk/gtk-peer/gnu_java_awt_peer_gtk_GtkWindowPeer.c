@@ -294,9 +294,10 @@ cp_gtk_window_init_jni (void)
 }
 
 /* Get the first keyval in the keymap for this event's keycode.  The
-   first keyval corresponds roughly to Java's notion of a virtual
-   key.  Returns the uppercase version of the first keyval. */
-static guint
+   first keyval corresponds roughly to Java's notion of a virtual key.
+   Returns the uppercase version of the first keyval or -1 if no
+   keyval was found for the given hardware keycode. */
+static gint
 get_first_keyval_from_keymap (GdkEventKey *event)
 {
   guint keyval;
@@ -309,10 +310,8 @@ get_first_keyval_from_keymap (GdkEventKey *event)
                                            &keyvals,
                                            &n_entries))
     {
-      g_warning ("No keyval found for hardware keycode %d\n",
-                 event->hardware_keycode);
-      /* Try to recover by using the keyval in the event structure. */
-      keyvals = &(event->keyval);
+      /* No keyval found for hardware keycode */
+      return -1;
     }
   keyval = keyvals[0];
   g_free (keyvals);
@@ -320,16 +319,22 @@ get_first_keyval_from_keymap (GdkEventKey *event)
   return gdk_keyval_to_upper (keyval);
 }
 
+/* Return the AWT key code for the given keysym or -1 if no keyval was
+   found for the given hardware keycode. */
 #ifdef __GNUC__
 __inline
 #endif
 static jint
 keysym_to_awt_keycode (GdkEventKey *event)
 {
-  guint ukeyval;
+  gint ukeyval;
   guint state;
 
   ukeyval = get_first_keyval_from_keymap (event);
+
+  if (ukeyval < 0)
+    return -1;
+
   state = event->state;
 
   /* VK_A through VK_Z */
@@ -728,12 +733,17 @@ keysym_to_awt_keycode (GdkEventKey *event)
     }
 }
 
+/* Return the AWT key location code for the given keysym or -1 if no
+   keyval was found for the given hardware keycode. */
 static jint
 keysym_to_awt_keylocation (GdkEventKey *event)
 {
-  guint ukeyval;
+  gint ukeyval;
 
   ukeyval = get_first_keyval_from_keymap (event);
+
+  if (ukeyval < 0)
+    return -1;
 
   /* VK_A through VK_Z */
   if (ukeyval >= GDK_A && ukeyval <= GDK_Z)
@@ -1018,9 +1028,6 @@ static gboolean window_delete_cb (GtkWidget *widget, GdkEvent *event,
 static void window_destroy_cb (GtkWidget *widget, GdkEvent *event,
 			       jobject peer);
 static void window_show_cb (GtkWidget *widget, jobject peer);
-static void window_active_state_change_cb (GtkWidget *widget,
-                                           GParamSpec *pspec,
-                                           jobject peer);
 static void window_focus_state_change_cb (GtkWidget *widget,
                                           GParamSpec *pspec,
                                           jobject peer);
@@ -1033,7 +1040,6 @@ static gboolean window_focus_out_cb (GtkWidget * widget,
 static gboolean window_window_state_cb (GtkWidget *widget,
 					GdkEvent *event,
 					jobject peer);
-static jint window_get_new_state (GtkWidget *widget);
 static gboolean window_property_changed_cb (GtkWidget *widget,
 					    GdkEventProperty *event,
 					    jobject peer);
@@ -1059,14 +1065,25 @@ key_press_cb (GtkWidget *widget __attribute__((unused)),
               GdkEventKey *event,
               jobject peer)
 {
+  jint keycode;
+  jint keylocation;
+
+  keycode = keysym_to_awt_keycode (event);
+  keylocation = keysym_to_awt_keylocation (event);
+
+  /* Return immediately if an error occurs translating a hardware
+     keycode to a keyval. */
+  if (keycode < 0 || keylocation < 0)
+    return TRUE;
+
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postKeyEventID,
                                 (jint) AWT_KEY_PRESSED,
                                 (jlong) event->time,
                                 keyevent_state_to_awt_mods (event),
-                                keysym_to_awt_keycode (event),
+                                keycode,
                                 keyevent_to_awt_keychar (event),
-                                keysym_to_awt_keylocation (event));
+                                keylocation);
 
   /* FIXME: generation of key typed events needs to be moved
      to GtkComponentPeer.postKeyEvent.  If the key in a key
@@ -1082,14 +1099,25 @@ key_release_cb (GtkWidget *widget __attribute__((unused)),
                 GdkEventKey *event,
                 jobject peer)
 {
+  jint keycode;
+  jint keylocation;
+
+  keycode = keysym_to_awt_keycode (event);
+  keylocation = keysym_to_awt_keylocation (event);
+
+  /* Return immediately if an error occurs translating a hardware
+     keycode to a keyval. */
+  if (keycode < 0 || keylocation < 0)
+    return TRUE;
+
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
                                 postKeyEventID,
                                 (jint) AWT_KEY_RELEASED,
                                 (jlong) event->time,
                                 keyevent_state_to_awt_mods (event),
-                                keysym_to_awt_keycode (event),
+                                keycode,
                                 keyevent_to_awt_keychar (event),
-                                keysym_to_awt_keylocation (event));
+                                keylocation);
 
   return TRUE;
 }
@@ -1245,9 +1273,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
 
   g_signal_connect (G_OBJECT (ptr), "show",
 		    G_CALLBACK (window_show_cb), *gref);
-
-  g_signal_connect (G_OBJECT (ptr), "notify::is-active",
-  		    G_CALLBACK (window_active_state_change_cb), *gref);
 
   g_signal_connect (G_OBJECT (ptr), "notify::has-toplevel-focus",
   		    G_CALLBACK (window_focus_state_change_cb), *gref);
@@ -1560,31 +1585,6 @@ window_show_cb (GtkWidget *widget __attribute__((unused)),
 }
 
 static void
-window_active_state_change_cb (GtkWidget *widget __attribute__((unused)),
-			       GParamSpec *pspec __attribute__((unused)),
-			       jobject peer __attribute__((unused)))
-{
-  /* FIXME: not sure if this is needed or not. */
-  /* Remove the unused attributes if you fix the below.  */
-#if 0
-  gdk_threads_leave ();
-
-  if (GTK_WINDOW (widget)->is_active)
-    (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
-                                postWindowEventID,
-                                (jint) AWT_WINDOW_GAINED_FOCUS,
-                                (jobject) NULL, (jint) 0);
-  else
-    (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
-                                postWindowEventID,
-                                (jint) AWT_WINDOW_DEACTIVATED,
-                                (jobject) NULL, (jint) 0);
-
-  gdk_threads_enter ();
-#endif
-}
-
-static void
 window_focus_state_change_cb (GtkWidget *widget,
 			      GParamSpec *pspec __attribute__((unused)),
 			      jobject peer)
@@ -1628,7 +1628,7 @@ window_focus_out_cb (GtkWidget * widget __attribute__((unused)),
 }
 
 static gboolean
-window_window_state_cb (GtkWidget *widget,
+window_window_state_cb (GtkWidget *widget __attribute__((unused)),
 			GdkEvent *event,
 			jobject peer)
 {
@@ -1663,55 +1663,12 @@ window_window_state_cb (GtkWidget *widget,
   if (event->window_state.new_window_state & GDK_WINDOW_STATE_ICONIFIED)
     new_state |= AWT_FRAME_STATE_ICONIFIED;
 
-  new_state |= window_get_new_state (widget);
-
   (*cp_gtk_gdk_env())->CallVoidMethod (cp_gtk_gdk_env(), peer,
 			      postWindowEventID,
 			      (jint) AWT_WINDOW_STATE_CHANGED,
 			      (jobject) NULL, new_state);
 
   return TRUE;
-}
-
-static jint
-window_get_new_state (GtkWidget *widget)
-{
-  GdkDisplay *display = gtk_widget_get_display(widget);
-  jint new_state = AWT_FRAME_STATE_NORMAL;
-  Atom type;
-  gint format;
-  gulong atom_count;
-  gulong bytes_after;
-  Atom *atom_list = NULL;
-  union atom_list_union alu;
-  gulong i;
-
-  alu.atom_list = &atom_list;
-  XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), 
-		      GDK_WINDOW_XID (widget->window),
-		      gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE"),
-		      0, G_MAXLONG, False, XA_ATOM, &type, &format, &atom_count,
-		      &bytes_after, alu.gu_extents);
-
-  if (type != None)
-    {
-      Atom maxvert = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE_MAXIMIZED_VERT");
-      Atom maxhorz	= gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE_MAXIMIZED_HORZ");
-
-      i = 0;
-      while (i < atom_count)
-        {
-	  if (atom_list[i] == maxhorz)
-	    new_state |= AWT_FRAME_STATE_MAXIMIZED_HORIZ;
-          else if (atom_list[i] == maxvert)
-	    new_state |= AWT_FRAME_STATE_MAXIMIZED_VERT;
-
-          ++i;
-        }
-
-      XFree (atom_list);
-    }
-  return new_state;
 }
 
 static gboolean

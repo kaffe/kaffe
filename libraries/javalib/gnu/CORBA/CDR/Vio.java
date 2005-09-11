@@ -46,7 +46,7 @@ import org.omg.CORBA.DataOutputStream;
 import org.omg.CORBA.MARSHAL;
 import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.StringSeqHelper;
-import org.omg.CORBA.portable.*;
+import org.omg.CORBA.portable.BoxedValueHelper;
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.Streamable;
@@ -317,8 +317,8 @@ public abstract class Vio
    * @throws MARSHAL if the reading has failed due any reason.
    */
   public static Object read(InputStream input, Object value_instance,
-                            Object helper
-                           )
+    Object helper
+  )
   {
     try
       {
@@ -399,8 +399,8 @@ public abstract class Vio
    * @return the value that was read.
    */
   private static Object read_instance(InputStream input, Object value,
-                                      int value_tag, Object helper
-                                     )
+    int value_tag, Object helper
+  )
   {
     try
       {
@@ -507,8 +507,8 @@ public abstract class Vio
 
       // Stating the interfaces that the USER should use.
       throw new MARSHAL("The " + value.getClass().getName() +
-                        " must implement either StreamableValue or CustomValue."
-                       );
+        " must implement either StreamableValue or CustomValue."
+      );
 
     // The negative end of state marker is expected from OMG standard.
     // If the chunking is used, this marker is already extracted.
@@ -562,8 +562,8 @@ public abstract class Vio
    * @throws MARSHAL if the writing failed due any reason.
    */
   public static void write(OutputStream output, Serializable value,
-                           Class substitute
-                          )
+    Class substitute
+  )
   {
     // Write null if this is a null value.
     if (value == null)
@@ -598,8 +598,8 @@ public abstract class Vio
    * not null.
    */
   public static void write(OutputStream output, Serializable value,
-                           Object helper
-                          )
+    Object helper
+  )
   {
     if (value == null)
       output.write_long(vt_NULL);
@@ -627,8 +627,8 @@ public abstract class Vio
    * if the value should be written unsing other methods.
    */
   private static void write_instance(OutputStream output, Serializable value,
-                                     String id, Object helper
-                                    )
+    String id, Object helper
+  )
   {
     // This implementation always writes a single repository id.
     // It never writes multiple repository ids and currently does not use
@@ -684,12 +684,11 @@ public abstract class Vio
             // for the global boxed value type itself.
             Method write =
               helperClass.getMethod("write",
-                                    new Class[]
-                                    {
-                                      org.omg.CORBA.portable.OutputStream.class,
-                                      value.getClass()
-                                    }
-                                   );
+                new Class[]
+                {
+                  org.omg.CORBA.portable.OutputStream.class, value.getClass()
+                }
+              );
             write.invoke(null, new Object[] { outObj, value });
             ok = true;
           }
@@ -701,9 +700,8 @@ public abstract class Vio
         // Stating the interfaces that the USER should use.
         if (!ok)
           throw new MARSHAL("The " + value.getClass().getName() +
-                            " must implement either StreamableValue" +
-                            " or CustomValue."
-                           );
+            " must implement either StreamableValue" + " or CustomValue."
+          );
       }
 
     if (USE_CHUNKING)
@@ -731,8 +729,7 @@ public abstract class Vio
    *
    * @throws NO_IMPLEMENT, always.
    */
-  static void incorrect_plug_in(Throwable ex)
-                         throws NO_IMPLEMENT
+  static void incorrect_plug_in(Throwable ex) throws NO_IMPLEMENT
   {
     NO_IMPLEMENT no = new NO_IMPLEMENT("Incorrect CORBA plug-in");
     no.initCause(ex);
@@ -749,10 +746,11 @@ public abstract class Vio
   private static final void checkTag(int value_tag)
   {
     if ((value_tag < 0x7fffff00 || value_tag > 0x7fffffff) &&
-        value_tag != vt_NULL && value_tag != vt_INDIRECTION
-       )
+      value_tag != vt_NULL &&
+      value_tag != vt_INDIRECTION
+    )
       throw new MARSHAL("Invalid value record, unsupported header tag: " +
-                        value_tag
-                       );
+        value_tag
+      );
   }
 }

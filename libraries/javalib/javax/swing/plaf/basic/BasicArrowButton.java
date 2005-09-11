@@ -46,6 +46,7 @@ import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -113,23 +114,29 @@ public class BasicArrowButton extends JButton implements SwingConstants
       public void paintBorder(Component c, Graphics g, int x, int y, int w,
                               int h)
       {
-	Color saved = g.getColor();
-	g.setColor(highlight);
+        Color saved = g.getColor();
+        AbstractButton b = (AbstractButton) c;
+        if (b.getModel().isPressed())
+          {
+            g.setColor(darkShadow);
+            g.drawRect(x, y, x + w - 1, y + h - 1);
+          }
+        else
+          {
+            g.setColor(highlight);
+            g.drawLine(x + 1, y + 1, x + w - 3, y + 1);
+            g.drawLine(x + 1, y + 1, x + 1, y + h - 2);
 
-	g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
-	g.drawLine(x + 1, y + 1, x + 1, y + h - 1);
+            g.setColor(shadow);
+            g.drawLine(x + 1, y + h - 2, x + w - 1, y + h - 2);
+            g.drawLine(x + w - 2, y + 1, x + w - 2, y + h - 2);
 
-	g.setColor(shadow);
+            g.setColor(darkShadow);
+            g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
+            g.drawLine(x + w - 1, y, x + w - 1, y + h - 1);
 
-	g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
-	g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
-
-	g.setColor(darkShadow);
-
-	g.drawLine(x, y + h, x + w, y + h);
-	g.drawLine(x + w, y, x + w, y + h);
-
-	g.setColor(saved);
+            g.setColor(saved);
+          }
       }
     };
 
@@ -213,6 +220,16 @@ public class BasicArrowButton extends JButton implements SwingConstants
     paintTriangle(g, x, y, defaultSize, direction, isEnabled());
   }
 
+  /** The preferred size for the button. */
+  private static final Dimension PREFERRED_SIZE = new Dimension(16, 16);
+
+  /** The minimum size for the button. */
+  private static final Dimension MINIMUM_SIZE = new Dimension(5, 5);
+
+  /** The maximum size for the button. */
+  private static final Dimension MAXIMUM_SIZE 
+    = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+  
   /**
    * This method returns the preferred size of the arrow button.
    *
@@ -220,11 +237,7 @@ public class BasicArrowButton extends JButton implements SwingConstants
    */
   public Dimension getPreferredSize()
   {
-    Insets insets = getInsets();
-    int w = defaultSize + insets.left + insets.right;
-    int h = defaultSize + insets.top + insets.bottom;
-
-    return new Dimension(w, h);
+    return PREFERRED_SIZE;
   }
 
   /**
@@ -234,7 +247,7 @@ public class BasicArrowButton extends JButton implements SwingConstants
    */
   public Dimension getMinimumSize()
   {
-    return getPreferredSize();
+    return MINIMUM_SIZE;
   }
 
   /**
@@ -244,7 +257,7 @@ public class BasicArrowButton extends JButton implements SwingConstants
    */
   public Dimension getMaximumSize()
   {
-    return getPreferredSize();
+    return MAXIMUM_SIZE;
   }
 
   /**

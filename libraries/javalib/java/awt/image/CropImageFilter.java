@@ -133,7 +133,7 @@ public class CropImageFilter extends ImageFilter
 	    }
 	    
 	    if (consumer != null)
-	      consumer.setPixels(bounds.x, bounds.y,
+	      consumer.setPixels(0, 0,
 				 bounds.width, bounds.height,
 				 model, cropped, 0, bounds.width);
 	}
@@ -174,7 +174,7 @@ public class CropImageFilter extends ImageFilter
 	    }
 	    
 	    if (consumer != null)
-	      consumer.setPixels(bounds.x, bounds.y,
+	      consumer.setPixels(0, 0,
 				 bounds.width, bounds.height,
 				 model, cropped, 0, bounds.width);
 	}

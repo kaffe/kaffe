@@ -230,21 +230,28 @@ public class ImageIcon
   }
  
   /**
-   * Creates an ImageIcon from the given file with as initial
-   * description the file name.
+   * Constructs an ImageIcon given a filename.  The icon's description
+   * is initially set to the filename itself.  A filename of "" means
+   * create a blank icon.
+   *
+   * @param filename name of file to load or "" for a blank icon
    */
-  public ImageIcon(String file)
+  public ImageIcon(String filename)
   {
-    this(file, file);
+    this(filename, filename);
   }
 
   /**
-   * Creates an ImageIcon from the given file and sets the given
-   * description.
+   * Constructs an ImageIcon from the given filename, setting its
+   * description to the given description.  A filename of "" means
+   * create a blank icon.
+   *
+   * @param filename name of file to load or "" for a blank icon
+   * @param description human-readable description of this icon
    */
-  public ImageIcon(String file, String description)
+  public ImageIcon(String filename, String description)
   {
-    this(Toolkit.getDefaultToolkit().getImage(file), description);
+    this(Toolkit.getDefaultToolkit().getImage(filename), description);
   }
 
   /**

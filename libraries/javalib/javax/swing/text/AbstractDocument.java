@@ -1684,9 +1684,11 @@ public abstract class AbstractDocument
      */
     public boolean addEdit(UndoableEdit edit)
     {
-      if (edit instanceof ElementChange)
+      // XXX - Fully qualify ElementChange to work around gcj bug #2499.
+      if (edit instanceof DocumentEvent.ElementChange)
         {
-          ElementChange elEdit = (ElementChange) edit;
+          DocumentEvent.ElementChange elEdit =
+            (DocumentEvent.ElementChange) edit;
           changes.put(elEdit.getElement(), elEdit);
         }
       return super.addEdit(edit);
@@ -1740,9 +1742,10 @@ public abstract class AbstractDocument
      * @return the changes for <code>elem</code> or <code>null</code> if
      *         <code>elem</code> has not been changed
      */
-    public ElementChange getChange(Element elem)
+    public DocumentEvent.ElementChange getChange(Element elem)
     {
-      return (ElementChange) changes.get(elem);
+      // XXX - Fully qualify ElementChange to work around gcj bug #2499.
+      return (DocumentEvent.ElementChange) changes.get(elem);
     }
   }
 
@@ -1861,16 +1864,30 @@ public abstract class AbstractDocument
                        int end)
     {
       super(parent, attributes);
-      try
 	{
-	  startPos = parent.getDocument().createPosition(start);
-	  endPos = parent.getDocument().createPosition(end);
-	}
-      catch (BadLocationException ex)
-	{
-	  throw new AssertionError("BadLocationException must not be thrown "
-				   + "here. start=" + start + ", end=" + end
-				   + ", length=" + getLength());
+	  try
+	    {
+	      if (parent != null)
+		{
+		  startPos = parent.getDocument().createPosition(start);
+		  endPos = parent.getDocument().createPosition(end);
+		}
+	      else
+		{
+		  startPos = createPosition(start);
+		  endPos = createPosition(end);
+		}
+	    }
+	  catch (BadLocationException ex)
+	    {
+	      AssertionError as;
+	      as = new AssertionError("BadLocationException thrown "
+				      + "here. start=" + start
+				      + ", end=" + end
+				      + ", length=" + getLength());
+	      as.initCause(ex);
+	      throw as;
+	    }
 	}
     }
 

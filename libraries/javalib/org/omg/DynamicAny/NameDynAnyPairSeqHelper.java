@@ -93,7 +93,7 @@ public abstract class NameDynAnyPairSeqHelper
    * Extract the NameDynAnyPairSeq from given Any.
    * This method uses the NameDynAnyPairSeqHolder.
    *
-     * @throws BAD_OPERATION if the passed Any does not contain NameDynAnyPairSeq.
+   * @throws BAD_OPERATION if the passed Any does not contain NameDynAnyPairSeq.
    */
   public static NameDynAnyPair[] extract(Any any)
   {

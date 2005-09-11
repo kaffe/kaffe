@@ -64,8 +64,11 @@ clipboard_targets_received (GtkClipboard *clipboard
   if (target_data != NULL && target_data->length > 0)
     {
       include_text = gtk_selection_data_targets_include_text (target_data);
+
+#if GTK_MINOR_VERSION > 4
       include_image = gtk_selection_data_targets_include_image (target_data,
 								TRUE);
+#endif
       if (gtk_selection_data_get_targets (target_data, &targets, &targets_len))
 	{
 	  int i;
@@ -270,11 +273,15 @@ Java_gnu_java_awt_peer_gtk_GtkSelection_requestImage (JNIEnv *env, jobject obj)
         return;
     }
 
+#if GTK_MINOR_VERSION > 4
   gdk_threads_enter ();
   gtk_clipboard_request_image (cp_gtk_clipboard,
 			       clipboard_image_received,
 			       (gpointer) selection_obj);
   gdk_threads_leave ();
+#else
+  clipboard_image_received (cp_gtk_clipboard, NULL, (gpointer) selection_obj);
+#endif
 }
 
 static jmethodID urisAvailableID;
@@ -290,9 +297,14 @@ clipboard_uris_received (GtkClipboard *clipboard
   jobject selection_obj = (jobject) selection;
   JNIEnv *env = cp_gtk_gdk_env ();
 
+#if GTK_MINOR_VERSION > 4
   if (uri_data != NULL)
     uris = gtk_selection_data_get_uris (uri_data);
-  
+#else
+  if (uri_data != NULL)
+    uris = NULL;
+#endif
+
   if (uris != NULL)
     {
       int len, i;
@@ -326,7 +338,9 @@ clipboard_uris_received (GtkClipboard *clipboard
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkSelection_requestURIs (JNIEnv *env, jobject obj)
 {
+#if GTK_MINOR_VERSION > 4
   GdkAtom uri_atom;
+#endif
   jobject selection_obj;
   selection_obj = (*env)->NewGlobalRef(env, obj);
   if (selection_obj == NULL)
@@ -343,6 +357,7 @@ Java_gnu_java_awt_peer_gtk_GtkSelection_requestURIs (JNIEnv *env, jobject obj)
         return;
     }
 
+#if GTK_MINOR_VERSION > 4
   /* There is no real request_uris so we have to make one ourselves. */
   gdk_threads_enter ();
   uri_atom = gdk_atom_intern ("text/uri-list", FALSE);
@@ -351,6 +366,9 @@ Java_gnu_java_awt_peer_gtk_GtkSelection_requestURIs (JNIEnv *env, jobject obj)
 				  clipboard_uris_received,
 				  (gpointer) selection_obj);
   gdk_threads_leave ();
+#else
+  clipboard_uris_received (cp_gtk_clipboard, NULL, (gpointer) selection_obj);
+#endif
 }
 
 static jmethodID bytesAvailableID;

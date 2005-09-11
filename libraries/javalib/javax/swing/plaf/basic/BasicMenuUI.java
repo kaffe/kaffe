@@ -189,9 +189,14 @@ public class BasicMenuUI extends BasicMenuItemUI
     return c.getPreferredSize();
   }
 
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "Menu"
+   */
   protected String getPropertyPrefix()
   {
-    return null;
+    return "Menu";
   }
 
   /**
