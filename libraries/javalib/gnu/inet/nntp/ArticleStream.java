@@ -38,6 +38,7 @@
 
 package gnu.inet.nntp;
 
+import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -52,9 +53,95 @@ public final class ArticleStream
   implements PendingData
 {
 
+  private static final int LF = 0x0a;
+  private static final int DOT = 0x2e;
+
+  boolean eol;
+  boolean eof;
+
   ArticleStream(InputStream in)
   {
-    super(in);
+    super(in.markSupported() ? in : new BufferedInputStream(in));
+    eol = true;
+    eof = false;
+  }
+
+  public int read()
+    throws IOException
+  {
+    if (eof)
+      {
+        return -1;
+      }
+    int c = in.read();
+    // Check for LF
+    if (c == LF)
+      {
+        eol = true;
+      }
+    else if (eol)
+      {
+        if (c == DOT)
+          {
+            in.mark(1);
+            int d = in.read();
+            if (d == DOT)
+              {
+                // Not resetting here means that 2 dots are collapsed into 1
+              }
+            else if (d == LF)
+              {
+                // Check for LF
+                eof = true;
+                return -1;
+              }
+            else
+              {
+                in.reset();
+              }
+          }
+        eol = false;
+      }
+    return c;
+  }
+
+  public int read(byte[] b)
+    throws IOException
+  {
+    return read(b, 0, b.length);
+  }
+
+  public int read(byte[] b, int off, int len)
+    throws IOException
+  {
+    if (eof)
+      {
+        return -1;
+      }
+    int l = in.read(b, off, len);
+    if (l > 0)
+      {
+        if (eol)
+          {
+            if (b[off] == DOT && l > 1)
+              {
+                if (b[off + 1] == DOT)
+                  {
+                    // Truncate b
+                    System.arraycopy(b, off + 1, b, off, l - off);
+                    l--;
+                  }
+                else if (b[off + 1] == LF)
+                  {
+                    // EOF
+                    eof = true;
+                    return -1;
+                  }
+              }
+          }
+        eol = (b[(off + l) - 1] == LF);
+      }
+    return l;
   }
 
   /**
@@ -63,7 +150,7 @@ public final class ArticleStream
   public void readToEOF()
     throws IOException
   {
-    if (in.available() == 0)
+    if (available() == 0)
       {
         return;
       }
@@ -71,7 +158,7 @@ public final class ArticleStream
     int ret = 0;
     while (ret != -1)
       {
-        ret = in.read(buf);
+        ret = read(buf);
       }
   }
 

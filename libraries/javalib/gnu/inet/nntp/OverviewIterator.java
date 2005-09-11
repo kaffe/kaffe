@@ -39,6 +39,7 @@
 package gnu.inet.nntp;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.NoSuchElementException;
 
 /**
@@ -78,24 +79,41 @@ public class OverviewIterator
   {
     String line = nextLine();
 
-    // Parse line
-    int start = 0, end;
-    end = line.indexOf('\t', start);
-    int articleNumber = Integer.parseInt(line.substring(start, end));
-    start = end + 1;
-    Overview overview = new Overview(articleNumber);
-    end = line.indexOf('\t', start);
-    while(end > -1)
+    try
       {
-        String entry = line.substring(start, end);
-        overview.add(entry);
-        start = end + 1;
+        // Parse line
+        int start = 0, end;
         end = line.indexOf('\t', start);
+        int articleNumber = Integer.parseInt(line.substring(start, end));
+        start = end + 1;
+        Overview overview = new Overview(articleNumber);
+        end = line.indexOf('\t', start);
+        while(end > -1)
+          {
+            String entry = line.substring(start, end);
+            overview.add(entry);
+            start = end + 1;
+            end = line.indexOf('\t', start);
+          }
+        String entry = line.substring(start);
+        overview.add(entry);
+        
+        return overview;
       }
-    String entry = line.substring(start);
-    overview.add(entry);
-
-    return overview;
+    catch (StringIndexOutOfBoundsException e)
+      {
+        ProtocolException e2 =
+          new ProtocolException("Invalid overview line: " + line);
+        e2.initCause(e);
+        throw e2;
+      }
+    catch (NumberFormatException e)
+      {
+        ProtocolException e2 =
+          new ProtocolException("Invalid overview line: " + line);
+        e2.initCause(e);
+        throw e2;
+      }
   }
 
 }

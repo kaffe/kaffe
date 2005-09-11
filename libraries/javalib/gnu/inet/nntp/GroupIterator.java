@@ -39,6 +39,7 @@
 package gnu.inet.nntp;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.NoSuchElementException;
 
 /**
@@ -81,19 +82,32 @@ public class GroupIterator
     String line = nextLine();
 
     // Parse line
-    int start = 0, end;
-    end = line.indexOf(' ', start);
-    String name = line.substring(start, end);
-    start = end + 1;
-    end = line.indexOf(' ', start);
-    int last = Integer.parseInt(line.substring(start, end));
-    start = end + 1;
-    end = line.indexOf(' ', start);
-    int first = Integer.parseInt(line.substring(start, end));
-    start = end + 1;
-    boolean canPost = CAN_POST.equals(line.substring(start));
+    try
+      {
+        int start = 0, end;
+        end = line.indexOf(' ', start);
+        if (end == -1)
+          return new Group(line, -1, -1, false);
 
-    return new Group(name, last, first, canPost);
+        String name = line.substring(start, end);
+        start = end + 1;
+        end = line.indexOf(' ', start);
+        int last = Integer.parseInt(line.substring(start, end));
+        start = end + 1;
+        end = line.indexOf(' ', start);
+        int first = Integer.parseInt(line.substring(start, end));
+        start = end + 1;
+        boolean canPost = CAN_POST.equals(line.substring(start));
+
+        return new Group(name, last, first, canPost);
+      }
+    catch (StringIndexOutOfBoundsException e)
+      {
+        ProtocolException e2 =
+          new ProtocolException("Invalid group line: " + line);
+        e2.initCause(e);
+        throw e2;
+      }
   }
 
 }

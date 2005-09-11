@@ -1,5 +1,19 @@
 2005-09-11  Dalibor Topic  <robilad@kaffe.org>
 
+	Reynced with GNU inetlib.
+
+	2005-09-04  Chris Burdess  <dog@gnu.org>
+
+        * Makefile.am,
+        Makefile.in,
+        source/gnu/inet/imap/IMAPConnection.java,
+        source/gnu/inet/imap/IMAPConstants.java,
+        source/gnu/inet/imap/MessageSetTokenizer.java,
+        source/gnu/inet/imap/UIDPlusHandler.java,
+        source/gnu/inet/imap/package.html: UIDPLUS IMAP extension.
+
+2005-09-11  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-09-10  David Gilbert  <david.gilbert@object-refinery.com>

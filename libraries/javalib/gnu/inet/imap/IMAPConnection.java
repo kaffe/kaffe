@@ -1,6 +1,6 @@
 /*
  * IMAPConnection.java
- * Copyright (C) 2003,2004 The Free Software Foundation
+ * Copyright (C) 2003,2004,2005 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -1233,6 +1233,23 @@ public class IMAPConnection
   public boolean append(String mailbox, String[] flags, byte[] content)
     throws IOException
   {
+    return append(mailbox, flags, content, null);
+  }
+  
+  /**
+   * Append a message to the specified mailbox.
+   * This method returns an OutputStream to which the message should be
+   * written and then closed.
+   * @param mailbox the mailbox name
+   * @param flags optional list of flags to specify for the message
+   * @param content the message body(including headers)
+   * @param uidplus handler for any APPENDUID information in the response
+   * @return true if successful, false if error in flags/text
+   */
+  public boolean append(String mailbox, String[] flags, byte[] content,
+                        UIDPlusHandler uidplus)
+    throws IOException
+  {
     String tag = newTag();
     StringBuffer buffer = new StringBuffer(APPEND)
       .append(' ')
@@ -1273,6 +1290,10 @@ public class IMAPConnection
             processAlerts(response);
             if (id == OK)
               {
+                if (uidplus != null)
+                  {
+                    processUIDPlus(response.getResponseCode(), uidplus);
+                  }
                 return true;
               }
             else if (id == NO)
@@ -1291,6 +1312,43 @@ public class IMAPConnection
         else
           {
             throw new IMAPException(id, response.getText());
+          }
+      }
+  }
+
+  void processUIDPlus(List code, UIDPlusHandler uidplus)
+  {
+    int len = code.size();
+    for (int i = 0; i < len; i++)
+      {
+        Object item = code.get(i);
+        if (item instanceof String)
+          {
+            if ("APPENDUID".equals(item) && i < len - 2)
+              {
+                long uidvalidity = Long.parseLong((String) code.get(i + 1));
+                long uid = Long.parseLong((String) code.get(i + 2));
+                uidplus.appenduid(uidvalidity, uid);
+              }
+            else if ("COPYUID".equals(item) && i < len - 3)
+              {
+                long uidvalidity =
+                  Long.parseLong((String) code.get(i + 1));
+                MessageSetTokenizer oldUIDs =
+                  new MessageSetTokenizer((String) code.get(i + 2));
+                MessageSetTokenizer newUIDs =
+                  new MessageSetTokenizer((String) code.get(i + 3));
+                while (oldUIDs.hasNext())
+                  {
+                    long oldUID = ((Long) oldUIDs.next()).longValue();
+                    long newUID = ((Long) newUIDs.next()).longValue();
+                    uidplus.copyuid(uidvalidity, oldUID, newUID);
+                  }
+              }
+          }
+        else
+          {
+            processUIDPlus((List) item, uidplus);
           }
       }
   }
@@ -1803,6 +1861,18 @@ public class IMAPConnection
   public boolean copy(int[] messages, String mailbox)
     throws IOException
   {
+    return copy(messages, mailbox, null);
+  }
+  
+  /**
+   * Copies the specified messages to the end of the destination mailbox.
+   * @param messages the message numbers
+   * @param mailbox the destination mailbox
+   * @param uidplus UIDPLUS callback for COPYUID information
+   */
+  public boolean copy(int[] messages, String mailbox, UIDPlusHandler uidplus)
+    throws IOException
+  {
     if (messages == null || messages.length < 1)
       {
         return true;
@@ -1818,7 +1888,41 @@ public class IMAPConnection
         buffer.append(messages[i]);
       }
     buffer.append(' ').append(quote(UTF7imap.encode(mailbox)));
-    return invokeSimpleCommand(buffer.toString());
+    String tag = newTag();
+    sendCommand(tag, buffer.toString());
+    while (true)
+      {
+        IMAPResponse response = readResponse();
+        String id = response.getID();
+        if (tag.equals(response.getTag()))
+          {
+            processAlerts(response);
+            if (id == OK)
+              {
+                if (uidplus != null)
+                  {
+                    processUIDPlus(response.getResponseCode(), uidplus);
+                  }
+                return true;
+              }
+            else if (id == NO)
+              {
+                return false;
+              }
+            else
+              {
+                throw new IMAPException(id, response.getText());
+              }
+          }
+        else if (response.isUntagged())
+          {
+            asyncResponses.add(response);
+          }
+        else
+          {
+            throw new IMAPException(id, response.getText());
+          }
+      }
   }
 
   /**
@@ -2328,6 +2432,63 @@ public class IMAPConnection
             else
               {
                 asyncResponses.add(response);
+              }
+          }
+        else
+          {
+            throw new IMAPException(id, response.getText());
+          }
+      }
+  }
+
+  /**
+   * Expunges the specified range of messages.
+   * See RFC 2359 for details.
+   * @param start the UID of the first message to expunge
+   * @param end the UID of the last message to expunge
+   */
+  public int[] uidExpunge(long start, long end)
+    throws IOException
+  {
+    String tag = newTag();
+    StringBuffer cmd = new StringBuffer(UID_EXPUNGE);
+    cmd.append(' ');
+    cmd.append(start);
+    cmd.append(':');
+    cmd.append(end);
+    sendCommand(tag, cmd.toString());
+    List numbers = new ArrayList();
+    while (true)
+      {
+        IMAPResponse response = readResponse();
+        String id = response.getID();
+        if (response.isUntagged())
+          {
+            if (id == EXPUNGE)
+              {
+                numbers.add(new Integer(response.getCount()));
+              }
+            else
+              {
+                asyncResponses.add(response);
+              }
+          }
+        else if (tag.equals(response.getTag()))
+          {
+            processAlerts(response);
+            if (id == OK)
+              {
+                int len = numbers.size();
+                int[] mn = new int[len];
+                for (int i = 0; i < len; i++)
+                  {
+                    mn[i] = ((Integer) numbers.get(i)).intValue();
+                  }
+                return mn;
+              }
+            else
+              {
+                throw new IMAPException(id, response.getText());
               }
           }
         else

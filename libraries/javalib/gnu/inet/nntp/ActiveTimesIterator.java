@@ -39,6 +39,7 @@
 package gnu.inet.nntp;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -96,7 +97,17 @@ public class ActiveTimesIterator
       }
     catch (ParseException e)
       {
-        throw new IOException(e.getMessage());
+        ProtocolException e2 =
+          new ProtocolException("Invalid active time line: " + line);
+        e2.initCause(e);
+        throw e2;
+      }
+    catch (StringIndexOutOfBoundsException e)
+      {
+        ProtocolException e2 =
+          new ProtocolException("Invalid active time line: " + line);
+        e2.initCause(e);
+        throw e2;
       }
   }
 

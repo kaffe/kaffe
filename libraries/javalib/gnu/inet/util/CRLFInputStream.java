@@ -146,7 +146,7 @@ public class CRLFInputStream
     throws IOException
   {
     doReset = false;
-    int lm1 = len - 1;
+    int lm1 = (off + len) - 1;
     for (int i = off; i < len; i++)
       {
         if (b[i] == CR)

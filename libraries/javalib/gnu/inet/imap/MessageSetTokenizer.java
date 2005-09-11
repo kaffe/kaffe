@@ -1,6 +1,6 @@
 /*
- * ArticleNumberIterator.java
- * Copyright (C) 2003 The Free Software Foundation
+ * MessageSetTokenizer.java
+ * Copyright (C) 2005 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -16,8 +16,8 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
  * conditions of the GNU General Public License cover the whole
@@ -36,61 +36,67 @@
  * exception statement from your version.
  */
 
-package gnu.inet.nntp;
+package gnu.inet.imap;
 
-import java.io.IOException;
-import java.net.ProtocolException;
-import java.util.NoSuchElementException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
- * An iterator over a listing of article numbers.
+ * Tokenizer for an IMAP UID message-set.
+ * This iterates over the UIDs specified in the set.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class ArticleNumberIterator
-  extends LineIterator
+class MessageSetTokenizer
+  implements Iterator
 {
 
-  ArticleNumberIterator(NNTPConnection connection)
+  private Iterator iterator;
+
+  MessageSetTokenizer(String spec)
   {
-    super(connection);
+    LinkedList acc = new LinkedList();
+    for (int ci = spec.indexOf(','); ci != -1; ci = spec.indexOf(','))
+      {
+        addToken(acc, spec.substring(0, ci));
+        spec = spec.substring(ci + 1);
+      }
+    addToken(acc, spec);
+    iterator = acc.iterator();
   }
 
-  /**
-   * Returns the next article number.
-   */
+  private void addToken(LinkedList acc, String token)
+  {
+    int ci = token.indexOf(':');
+    if (ci == -1)
+      {
+        acc.add(new Long(token));
+      }
+    else
+      {
+        long start = Long.parseLong(token.substring(0, ci));
+        long end = Long.parseLong(token.substring(ci + 1));
+        while (start <= end)
+          {
+            acc.add(new Long(start++));
+          }
+      }
+  }
+
+  public boolean hasNext()
+  {
+    return iterator.hasNext();
+  }
+
   public Object next()
   {
-    try
-      {
-        return new Integer(nextArticleNumber());
-      }
-    catch (IOException e)
-      {
-        throw new NoSuchElementException("I/O error: " + e.getMessage());
-      }
+    return iterator.next();
   }
 
-  /**
-   * Returns the next article number.
-   */
-  public int nextArticleNumber()
-    throws IOException
+  public void remove()
   {
-    String line = nextLine();
-
-    try
-      {
-        return Integer.parseInt(line.trim());
-      }
-    catch (NumberFormatException e)
-      {
-        ProtocolException e2 =
-          new ProtocolException("Invalid article number: " + line);
-        e2.initCause(e);
-        throw e2;
-      }
+    iterator.remove();
   }
-
+  
 }
 

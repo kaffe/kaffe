@@ -1,6 +1,6 @@
 /*
- * ArticleNumberIterator.java
- * Copyright (C) 2003 The Free Software Foundation
+ * UIDPlusHandler.java
+ * Copyright (C) 2005 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -16,8 +16,8 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * 
  * Linking this library statically or dynamically with other modules is
  * making a combined work based on this library.  Thus, the terms and
  * conditions of the GNU General Public License cover the whole
@@ -36,61 +36,38 @@
  * exception statement from your version.
  */
 
-package gnu.inet.nntp;
-
-import java.io.IOException;
-import java.net.ProtocolException;
-import java.util.NoSuchElementException;
+package gnu.inet.imap;
 
 /**
- * An iterator over a listing of article numbers.
+ * Callback interface for receiving APPENDUID and COPYUID responses.
+ * See RFC 2359 for details.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class ArticleNumberIterator
-  extends LineIterator
+public interface UIDPlusHandler
 {
 
-  ArticleNumberIterator(NNTPConnection connection)
-  {
-    super(connection);
-  }
+  /**
+   * Notification of an APPENDUID response.
+   * Called on a successful APPEND to a server that supports the UIDPLUS
+   * extension.
+   * @param uidvalidity the UIDVALIDITY of the destination mailbox
+   * @param uid the UID assigned to the appended message.
+   */
+  void appenduid(long uidvalidity, long uid);
 
   /**
-   * Returns the next article number.
+   * Notification of a COPYUID response.
+   * Called on a successful COPY to a server that supports the UIDPLUS
+   * extension.
+   * If more than one message is copied, this method will be called multiple
+   * times, once for each message copied.
+   * @param uidvalidity the UIDVALIDITY of the destination mailbox
+   * @param oldUID the UID of the message in the source mailbox
+   * @param newUID the UID of the corresponding message in the target
+   * mailbox
    */
-  public Object next()
-  {
-    try
-      {
-        return new Integer(nextArticleNumber());
-      }
-    catch (IOException e)
-      {
-        throw new NoSuchElementException("I/O error: " + e.getMessage());
-      }
-  }
-
-  /**
-   * Returns the next article number.
-   */
-  public int nextArticleNumber()
-    throws IOException
-  {
-    String line = nextLine();
-
-    try
-      {
-        return Integer.parseInt(line.trim());
-      }
-    catch (NumberFormatException e)
-      {
-        ProtocolException e2 =
-          new ProtocolException("Invalid article number: " + line);
-        e2.initCause(e);
-        throw e2;
-      }
-  }
-
+  void copyuid(long uidvalidity, long oldUID, long newUID);
+  
 }
 

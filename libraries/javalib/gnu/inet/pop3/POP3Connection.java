@@ -40,6 +40,7 @@ package gnu.inet.pop3;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -770,6 +771,10 @@ public class POP3Connection
     throws IOException
   {
     response = in.readLine();
+    if (response == null)
+      {
+        throw new EOFException("unexpected EOF");
+      }
     logger.log(POP3_TRACE, "< " + response);
     if (response.indexOf(_OK) == 0)
       {

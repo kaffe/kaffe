@@ -51,6 +51,9 @@ public final class PostStream
   extends FilterOutputStream
 {
 
+  private static final int LF = 0x0a;
+  private static final int DOT = 0x2e;
+
   NNTPConnection connection;
   boolean isTakethis;
   byte last;
@@ -66,6 +69,10 @@ public final class PostStream
     throws IOException
   {
     super.write(c);
+    if (c == DOT && last == LF)
+      {
+        super.write(c); // double up initial dot
+      }
     last = (byte) c;
   }
 
@@ -78,10 +85,31 @@ public final class PostStream
   public void write(byte[] bytes, int pos, int len)
     throws IOException
   {
-    super.write(bytes, pos, len);
-    if(len > 0)
+    int end = pos + len;
+    for (int i = pos; i < end; i++)
       {
-        last = bytes[pos + len - 1];
+        byte c = bytes[i];
+        if (c == DOT && last == LF)
+          {
+            // Double dot
+            if (i > pos)
+              {
+                // Write everything up to i
+                int l = i - pos;
+                super.write(bytes, pos, l);
+                pos += l;
+                len -= l;
+              }
+            else
+              {
+                super.write(DOT);
+              }
+          }
+        last = c;
+      }
+    if (len > 0)
+      {
+        super.write(bytes, pos, len);
       }
   }
   

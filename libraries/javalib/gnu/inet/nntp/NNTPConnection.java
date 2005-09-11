@@ -66,7 +66,6 @@ import javax.security.sasl.SaslException;
 import gnu.inet.util.CRLFInputStream;
 import gnu.inet.util.CRLFOutputStream;
 import gnu.inet.util.LineInputStream;
-import gnu.inet.util.MessageInputStream;
 import gnu.inet.util.SaslCallbackHandler;
 import gnu.inet.util.SaslInputStream;
 import gnu.inet.util.SaslOutputStream;
@@ -380,8 +379,7 @@ public class NNTPConnection
       case HEAD_FOLLOWS:
       case BODY_FOLLOWS:
         ArticleResponse aresponse = (ArticleResponse) response;
-        ArticleStream astream =
-          new ArticleStream(new MessageInputStream(in));
+        ArticleStream astream = new ArticleStream(in);
         pendingData = astream;
         aresponse.in = astream;
         return aresponse;

@@ -1,6 +1,6 @@
 /*
  * IMAPConstants.java
- * Copyright (C) 2003,2004 The Free Software Foundation
+ * Copyright (C) 2003,2004,2005 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -81,6 +81,7 @@ public interface IMAPConstants
   public static final String SETQUOTA = "SETQUOTA";
   public static final String GETQUOTA = "GETQUOTA";
   public static final String GETQUOTAROOT = "GETQUOTAROOT";
+  public static final String UID_EXPUNGE = "UID EXPUNGE";
 
   // Server responses
   public static final String OK = "OK";
@@ -102,6 +103,8 @@ public interface IMAPConstants
   public static final String ACL = "ACL";
   public static final String QUOTA = "QUOTA";
   public static final String QUOTAROOT = "QUOTAROOT";
+  public static final String APPENDUID = "APPENDUID";
+  public static final String COPYUID = "COPYUID";
 
   // Select responses
   public static final String FLAGS = "FLAGS";
