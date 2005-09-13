@@ -441,7 +441,7 @@ public class AlsaMidiIn
 			long	lTimestamp = m_event.getTimestamp();
 			if ((m_event.getFlags() & AlsaSeq.SND_SEQ_TIME_STAMP_MASK) == AlsaSeq.SND_SEQ_TIME_STAMP_REAL)
 			{
-				// ns -> µs
+				// ns -> micros
 				lTimestamp /= 1000;
 			}
 			MidiEvent	event = new MidiEvent(message, lTimestamp);
