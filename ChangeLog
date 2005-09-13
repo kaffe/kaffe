@@ -1,5 +1,13 @@
 2005-09-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/javap.in,
+	kaffe/scripts/native2ascii.in,
+	kaffe/scripts/rmic.in,
+	kaffe/scripts/serialver.in:
+	Updated to reflect moved tools.jar location.
+
+2005-09-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile:
 	Updated information for gcj, javac, kjc and added information for
 	gcjx.
