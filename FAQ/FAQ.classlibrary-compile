@@ -72,17 +72,41 @@ miscompiled Klasses.jar file.
 
 The recommended version of jikes is 1.22 or higher.
 
+* gcjx
+
+gcjx is the next generation of gcj. It is being developed in the 
+gcjx-branch of the gcc CVS. In order to check it out and build it
+see 
+	http://gcc.gnu.org/cvs.html
+
+As there are no releases of gcjx, you need to get it from CVS.
+You can check out the gcjx source code from the gcc CVS using:
+
+	cvs -d :ext:anoncvs@savannah.gnu.org:/cvsroot/gcc  \
+	-qz9 co -P -rgcjx-branch gcc 
+
+Then 
+	cd gcc/gcjx ; configure && make && make install
+
+In order to compile kaffe's class library, you need to set JAVAC_FLAGS
+to "-bootclasspath /full/path/to/builddir/libraries/javalib/lib/",
+with "/full/path/to/builddir" replaced by the full path to the directory
+where you are building the Kaffe source code.
+
+It works with gcjx from 2005-09-13, and should continue to work with 
+later versions.
+
 * kjc
 
-The included compiler, kjc, also works. kjc is part of the Kopi project:
+kjc works as well. kjc is part of the Kopi project:
 
   http://www.dms.at/kopi/kjc.html
 
 * javac 
 
-Sun's javac compiler from JDK 1.3 and JDK 1.4 works as well. You have
+Sun's javac compiler from JDK 1.3 - JDK 1.5 works as well. You have
 to add "-bootclasspath lib/" to your JAVAC_FLAGS to avoid build
-problems due to Sun's javac linking Sun's class libraries with kaffe's.
+problems due to Sun's javac confusing Sun's class libraries with kaffe's.
 
 No known older version of Sun's javac compiler (up through JDK 1.2)
 will compile Kaffe's classes, due to bugs that Sun has yet to fix.
@@ -90,7 +114,7 @@ will compile Kaffe's classes, due to bugs that Sun has yet to fix.
 What compilers are known not to work?
 -------------------------------------
 
-FSF's gcj doesn't work up to version 3.3.
+FSF's gcj doesn't work up to version 4.0.1
 
 In order to compile the class library with gcj to bytecodes instead of
 native code, you need to pass it the "-C" flag. Unfortunately, gcj has
