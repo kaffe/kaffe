@@ -165,7 +165,7 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
       char *opt = options[i].optionString;
 
       if (!strcmp(opt, "vfprintf"))
-	args->vfprintf = (jint (*)(FILE*,const char *,va_list))options[i].extraInfo;
+	args->jni_vfprintf = (jint (*)(FILE*,const char *,va_list))options[i].extraInfo;
       else if (!strcmp(opt, "exit"))
 	args->exit = (void (*)(jint))options[i].extraInfo;
       else if (!strcmp(opt, "abort"))

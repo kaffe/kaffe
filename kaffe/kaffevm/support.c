@@ -586,7 +586,7 @@ kprintf(FILE* out, const char* mess, ...)
 	va_list argptr;
 
 	va_start(argptr, mess);
-	Kaffe_JavaVMArgs.vfprintf(out, mess, argptr);
+	Kaffe_JavaVMArgs.jni_vfprintf(out, mess, argptr);
 	va_end(argptr);
 }
 

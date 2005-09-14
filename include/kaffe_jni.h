@@ -13,7 +13,7 @@ typedef struct KaffeVM_Arguments {
         jint            verifyMode;
         const char*     classpath;
         const char*     bootClasspath;
-        jint            (*vfprintf)(FILE*, const char*, va_list);
+        jint            (*jni_vfprintf)(FILE*, const char*, va_list);
         void            (*exit)(jint);
         void            (*abort)(void);
         jint            enableClassGC;
