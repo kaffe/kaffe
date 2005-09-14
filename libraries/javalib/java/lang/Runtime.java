@@ -760,6 +760,26 @@ public class Runtime
 	for (int i = 0; i < libpath.length; i++)
 	  if (loadLib(libpath[i] + filename, loader) != 0)
 	    return;
+
+	// OK. That did not work. Let's be creative and try different
+	// prefix-suffix combinations.
+	// NB: Yes, this is a wasteful implementation.
+
+	String [] prefixes = {"lib",
+			      "cyg", 
+			      "" };
+	String [] suffixes = {".so",
+			      ".dll", 
+			      ".la",
+			      ".a",
+			      ".dylib", 
+			      ".jnilib",
+			      ".dll.a"};
+	for (int j = 0; j < prefixes.length; j++)
+	    for (int k = 0; k < suffixes.length; k++)
+		for (int i = 0; i < libpath.length; i++)
+		    if (loadLib(libpath[i] + prefixes[j] + libname + suffixes[k], loader) != 0)
+			return;
       }
     throw new UnsatisfiedLinkError("Native library `" + libname
       + "' not found (as file `" + filename 

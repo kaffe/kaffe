@@ -1,5 +1,15 @@
 2005-09-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/java/java/lang/Runtime.java
+	(loadLibrary) Try multiple different 
+	prefixes and suffixes if library can't be loaded
+	using the mapped name. This takes care of 
+	Cygwin DLLs, Libtool modules and hopefully
+	will work for dylibs, jnilibs and similar
+	DSO variants as well.
+
+2005-09-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/javap.in,
 	kaffe/scripts/native2ascii.in,
 	kaffe/scripts/rmic.in,
