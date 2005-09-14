@@ -25,7 +25,15 @@ TRAMPOLINE_FUNCTION()
      .text
      .align 4
      .globl C_FUNC_NAME(i386_do_fixup_trampoline)
+/* Cygwin does not like the PIC declaration for some reason */
+#if defined(__CYGWIN__)
+     .def C_FUNC_NAME(i386_do_fixup_trampoline)
+     .scl 3
+     .type 32
+     .endef
+#else
      .type C_FUNC_NAME(i386_do_fixup_trampoline), @function
+#endif
 
      C_FUNC_NAME(i386_do_fixup_trampoline) :
         popl	%eax
