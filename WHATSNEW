@@ -1,12 +1,19 @@
 What's New in CVS
 ------------------------------------------------------
 
+* Many cleanups, warning fixes and bug fixes.
+* Moved tools.jar to the location where Maven 1 expects it,
+  so that Maven 1 builds now work.
+* Updated to GNU Classpath 0.18
+* Fixed native library loading for Cygwin. 
+  Kaffe now builds and runs on Win32 again.
 * Merged java.lang.Class from GNU Classpath.
 * Kaffe's home-grown system class loader was replaced by
   GNU classpath's system class loader. This improves support
   for the Java Extension Mechanism and the Java security
   model.
 * Force double precision on x86 FPU for Linux OS.
+* Fixes for regression tests on sparc.
 * JIT3/PowerPC operational on Darwin/OSX (real applications 
 does not work yet though).
 * JVMPI cleaned up. Kaffe now works with JMP (http://www.khelekore.org/jmp/)
