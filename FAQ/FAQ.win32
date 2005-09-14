@@ -1,12 +1,74 @@
 FAQ for Cygnus Win32
 ====================
 
-I don't in general to get into debugging installations of Cygnus's Win32
-environment.  However a few problems come up often:
+Author: Dalibor Topic <robilad@kaffe.org>
 
-Failure to create temporary files during configuration
-------------------------------------------------------
+Preparation
+===========
 
-Often the configuration doesn't work correctly and reports the failure
-to create odd files, usually with names like 921345.  This means you don't
-have the expected temp. directory.  Make sure you have created 'c:\tmp'.
+You need the latest Cygwin. Since there are no Cygwin releases,
+only a steady stream of updates and improvements, it is safe
+to say that you need the latest. You can get Cygwin from 
+
+	http://www.cygwin.com
+
+You also need Jikes to build the class library. I'd recommend 
+the latest version, at time of writing that is 1.22. You can get 
+jikes from
+
+	http://jikes.sf.net
+
+You also need to apply one or two patches to jikes, in order to
+fix some Cygwin specific bugs in it. See
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1202863&group_id=128803&atid=712760
+http://sourceforge.net/tracker/index.php?func=detail&aid=1202185&group_id=128803&atid=712760
+
+for details.
+
+There is a Kaffe port to mingw32, and it would be great if someone 
+volunteered to merge it into the main tree. For more information, see
+http://www.kaffe.org/pipermail/kaffe/2003-January/092896.html
+http://kaffe.org/pipermail/kaffe/2004-April/097829.html
+
+Configuration
+=============
+
+I tried various configuration options, and eventually settled for
+
+	../kaffe/configure --with-gc=kaffe-gc --disable-native-awt \
+	--with-staticvm --with-staticbin --with-threads=unix-jthreads \
+	--enable-pure-java-math
+
+--with-gc=kaffe-gc sets the gc to kaffe's gc. it's the default, anyway, 
+but I've had configure scripts do odd things on cygwin, so I set it 
+manually to work around whatever made me set it manually. You may not 
+need to set it explicitely.
+
+--disable-native-awt disables the AWT build. I was not interested in 
+building graphical applications for Cygwin/XFree86 and enabling it means 
+dealing with X11 headers, Gtk+, ... which I didn't have a need for.
+If someone makes the Qt4 peers work with Qt4-win32, please send you patches,
+screenshots and success stories to the Kaffe mailing list kaffe@kafe.org.
+
+--with-staticvm --with-staticbin was the combination that works for me, 
+without linking problems. I preferred to avoid the linkage constraints on 
+DLLs, though patches that make it all work without the need for 
+static binaries would be appreciated. Send them to the mailing list,
+as well.
+
+--with-threads=unix-jthreads sets the threading model to jthreads, 
+since the default pthreads seem to spend a few seconds getting stuck 
+somewhere deep in windows/cygwin libraries, and eventually produce a 
+warning message from Cygwin that only confuses the test scripts.
+
+--enable-pure-java-math If you are not using crypto and don't have 
+gmp installed.
+
+Status
+======
+
+With this setup, and after a round or two of make && make check, I get 63 
+passes out of 148 regression tests with jit3. There probably are various 
+issues that the compiler warnings should be able to help interested 
+developers fix. As usual, I'd appreciate patches. 
