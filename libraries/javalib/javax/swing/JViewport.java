@@ -282,9 +282,14 @@ public class JViewport extends JComponent implements Accessible
     viewSize = newSize;
     Component view = getView();
     if (view != null)
-      view.setSize(viewSize);
+      {
+        if (newSize != view.getSize())
+          {
+            view.setSize(viewSize);
+            fireStateChanged();
+          }
+      }
     isViewSizeSet = true;
-    fireStateChanged();
   }
 
   /**
@@ -314,6 +319,7 @@ public class JViewport extends JComponent implements Accessible
       {
         Point q = new Point(-p.x, -p.y);
         view.setLocation(q);
+        isViewSizeSet = false;
         fireStateChanged();
       }
   }

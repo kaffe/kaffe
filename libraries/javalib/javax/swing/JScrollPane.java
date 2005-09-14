@@ -228,10 +228,10 @@ public class JScrollPane
       remove(c);
   }
 
-  private void addNonNull(Component c)
+  private void addNonNull(Component c, Object constraints)
   {
     if (c != null)
-      add(c);
+      add(c, constraints);
   }
 
   public void setComponentOrientation(ComponentOrientation co)
@@ -250,7 +250,7 @@ public class JScrollPane
     JViewport old = columnHeader;
     removeNonNull(old);
     columnHeader = h;
-    addNonNull(h);
+    addNonNull(h, JScrollPane.COLUMN_HEADER);
     firePropertyChange("columnHeader", old, h);
     sync();
   }
@@ -294,25 +294,25 @@ public class JScrollPane
       {
         removeNonNull(lowerRight);
         lowerRight = c;
-        addNonNull(c);
+        addNonNull(c, JScrollPane.LOWER_RIGHT_CORNER);
       }
     else if (key == UPPER_RIGHT_CORNER)
       {
         removeNonNull(upperRight);
         upperRight = c;
-        addNonNull(c);
+        addNonNull(c, JScrollPane.UPPER_RIGHT_CORNER);
       }
     else if (key == LOWER_LEFT_CORNER)
       {
         removeNonNull(lowerLeft);
         lowerLeft = c;
-        addNonNull(c);
+        addNonNull(c, JScrollPane.LOWER_LEFT_CORNER);
       }
     else if (key == UPPER_LEFT_CORNER)
       {
         removeNonNull(upperLeft);
         upperLeft = c;
-        addNonNull(c);
+        addNonNull(c, JScrollPane.UPPER_LEFT_CORNER);
       }
     else
       throw new IllegalArgumentException("unknown corner " + key);
@@ -327,7 +327,7 @@ public class JScrollPane
     JScrollBar old = horizontalScrollBar;
     removeNonNull(old);
     horizontalScrollBar = h;
-    addNonNull(h);
+    addNonNull(h, JScrollPane.HORIZONTAL_SCROLLBAR);
     firePropertyChange("horizontalScrollBar", old, h);
     sync();
 
@@ -379,7 +379,7 @@ public class JScrollPane
     JViewport old = rowHeader;
     removeNonNull(old);
     rowHeader = v;
-    addNonNull(v);
+    addNonNull(v, JScrollPane.ROW_HEADER);
     firePropertyChange("rowHeader", old, v);
     sync();
   }
@@ -400,7 +400,7 @@ public class JScrollPane
     JScrollBar old = verticalScrollBar;
     removeNonNull(old);
     verticalScrollBar = v;
-    addNonNull(v);
+    addNonNull(v, JScrollPane.VERTICAL_SCROLLBAR);
     firePropertyChange("verticalScrollBar", old, v);
     sync();
 
@@ -457,7 +457,7 @@ public class JScrollPane
     viewport = v;
     if (v != null)
       v.addChangeListener(scrollListener);
-    addNonNull(v);
+    addNonNull(v, JScrollPane.VIEWPORT);
     revalidate();
     repaint();
     firePropertyChange("viewport", old, v);

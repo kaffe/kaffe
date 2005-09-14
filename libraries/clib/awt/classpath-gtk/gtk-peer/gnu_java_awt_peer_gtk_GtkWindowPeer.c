@@ -952,29 +952,29 @@ keyevent_state_to_awt_mods (GdkEventKey *event)
 
       if (event->keyval == GDK_Shift_L
           || event->keyval == GDK_Shift_R)
-        result |= AWT_SHIFT_DOWN_MASK;
+        result |= AWT_SHIFT_DOWN_MASK | AWT_SHIFT_MASK;
       else
         {
           if (state & GDK_SHIFT_MASK)
-            result |= AWT_SHIFT_DOWN_MASK;
+            result |= AWT_SHIFT_DOWN_MASK | AWT_SHIFT_MASK;
         }
 
       if (event->keyval == GDK_Control_L
           || event->keyval == GDK_Control_R)
-        result |= AWT_CTRL_DOWN_MASK;
+        result |= AWT_CTRL_DOWN_MASK | AWT_CTRL_MASK;
       else
         {
           if (state & GDK_CONTROL_MASK)
-            result |= AWT_CTRL_DOWN_MASK;
+            result |= AWT_CTRL_DOWN_MASK | AWT_CTRL_MASK;
         }
 
       if (event->keyval == GDK_Alt_L
           || event->keyval == GDK_Alt_R)
-        result |= AWT_ALT_DOWN_MASK;
+        result |= AWT_ALT_DOWN_MASK | AWT_ALT_MASK;
       else
         {
           if (state & GDK_MOD1_MASK)
-            result |= AWT_ALT_DOWN_MASK;
+            result |= AWT_ALT_DOWN_MASK | AWT_ALT_MASK;
         }
     }
   else if (event->type == GDK_KEY_RELEASE)
@@ -985,20 +985,20 @@ keyevent_state_to_awt_mods (GdkEventKey *event)
           && event->keyval != GDK_Shift_R)
         {
           if (state & GDK_SHIFT_MASK)
-            result |= AWT_SHIFT_DOWN_MASK;
+            result |= AWT_SHIFT_DOWN_MASK | AWT_SHIFT_MASK;
         }
       if (event->keyval != GDK_Control_L
           && event->keyval != GDK_Control_R)
         {
           if (state & GDK_CONTROL_MASK)
-            result |= AWT_CTRL_DOWN_MASK;
+            result |= AWT_CTRL_DOWN_MASK | AWT_CTRL_MASK;
         }
 
       if (event->keyval != GDK_Alt_L
           && event->keyval != GDK_Alt_R)
         {
           if (state & GDK_MOD1_MASK)
-            result |= AWT_ALT_DOWN_MASK;
+            result |= AWT_ALT_DOWN_MASK | AWT_ALT_MASK;
         }
     }
 

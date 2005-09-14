@@ -1060,7 +1060,7 @@ public class Container extends Component
    * otherwise the top-most component (out of this container itself and 
    * its descendants) meeting the criteria above.
    */
-  public Component findComponentForMouseEventAt(int x, int y)
+  Component findComponentForMouseEventAt(int x, int y)
   {
     synchronized (getTreeLock())
       {
@@ -2013,7 +2013,7 @@ class LightweightDispatcher implements Serializable
    * location, otherwise the appropriate component from the conditions
    * above.
    */
-  public static Component getDeepestComponentForMouseEventAt (
+  Component getDeepestComponentForMouseEventAt (
                                                               Component parent, int x, int y)
   {
     if (parent == null || (! parent.contains(x, y)))

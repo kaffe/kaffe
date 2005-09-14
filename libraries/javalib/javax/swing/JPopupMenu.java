@@ -590,13 +590,15 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
                 JLayeredPane layeredPane;
                 layeredPane = SwingUtilities.getRootPane(invoker).getLayeredPane();
                 Point p = new Point(popupLocation.x, popupLocation.y);
-                SwingUtilities.convertPointFromScreen(p, layeredPane);          
+                
+                if (layeredPane.isShowing())
+                  SwingUtilities.convertPointFromScreen(p, layeredPane);          
                 
                 if (size.width + popupLocation.x > screenSize.width)
                   popupLocation.x -= size.width;
                 if (size.height + popupLocation.y > screenSize.height)
                   popupLocation.y -= size.height;
-                
+
                 popup.show(p.x, p.y, size.width, size.height);
               }
             else
@@ -669,11 +671,14 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public void show(Component component, int x, int y)
   {
-    setInvoker(component);
-    Point p = new Point(x, y);
-    SwingUtilities.convertPointToScreen(p, component);
-    setLocation(p.x, p.y);
-    setVisible(true);
+    if (component.isShowing())
+      {
+        setInvoker(component);
+        Point p = new Point(x, y);
+        SwingUtilities.convertPointToScreen(p, component);
+        setLocation(p.x, p.y);
+        setVisible(true);
+      }
   }
 
   /**

@@ -513,6 +513,8 @@ public class DefaultTreeCellEditor
     // Cell may not be currently editable, but may need to start timer.
     if (shouldStartEditingTimer(event))
       startEditingTimer();
+    else if (timer.isRunning())
+      timer.stop();
     return false;
   }
 

@@ -1,3 +1,247 @@
+2005-09-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-09-12  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/ThreadLocal.java: Organized imports.
+	* java/lang/Double.java: Organized imports.
+
+	2005-09-12  Casey Marshall  <csm@gnu.org>
+
+	PR 23819
+	* javax/security/auth/Subject.java (SecureSet.<init>): rename
+	input paremeter to 'inElements.'
+	(SecureSet.contains): return 'elements.contains,' not
+	'elements.remove.'
+
+	PR 23822
+	* javax/security/auth/SubjectDomainCombiner.java
+	(combine): don't access 'subject' if null.
+
+	2005-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* examples/gnu/classpath/examples/swing/Demo.java
+	(mkDesktopWorld): add palette style frame,
+	* javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+	(closeIcon): new field,
+	(installListeners): call createPropertyChangeListener() to create the 
+	new listener to allow for overriding,
+	(installDefaults): set the font in the title, read closeIcon from 
+	defaults,
+	(uninstallDefaults): clear closeIcon,
+	(setButtonIcons): set icon for closeButton,
+	(paintComponent): set font for title,
+	* javax/swing/plaf/metal/MetalInternalFrameTitlePane.java
+	(MetalInternalFrameTitlePanePropertyChangeHandler): new support class,
+	(MetalTitlePaneLayout): likewise,
+	(paletteTitleHeight): initialise from defaults elsewhere,
+	(title): new private field,
+	(installDefaults): initialise various defaults,
+	(uninstallDefaults): clear defaults,
+	(addSubComponents): add sub-components used in this look and feel,
+	(createLayout): return new instance of MetalTitlePaneLayout,
+	(paintPalette): renders the title pane using the palette style,
+	(paintComponent): call paintPalette() if the internal frame uses the
+	palette style, otherwise handle painting without calling superclass 
+	anymore,
+	(setPalette): update the icon visibility,
+	(createPropertyChangeListener): return a new change handler,
+	* javax/swing/plaf/metal/MetalInternalFrameUI.java
+	(IS_PALETTE): new static field,
+	(installUI): check IS_PALETTE property,
+	(createNorthPane): removed empty border,
+	(setPalette): update border as appropriate,
+	(paletteListener): new private field,
+	(installListeners): install a listener to handle changes in the 
+	IS_PALETTE property,
+	(uninstallListeners): clear the listener from installListeners(),
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): added defaults for 'DesktopIcon.border',
+	'InternalFrame.paletteBorder', 'InternalFrame.paletteCloseIcon', and
+	'InternalFrame.paletteTitleHeight'.
+	
+
+	2005-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JComponent.java
+	(putClientProperty): fire property change event.
+
+	2005-09-12  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JScrollPane.java:
+	(addNonNull): Changed from adding to container with no constraints to
+	adding to container with the appropriate ScrollPaneConstant as a 
+	constraint.  This avoids IllegalArgumentExceptions in ScrollPaneLayout.
+	(setColumnHeader): Added constraint to addNonNull call.
+	(setCorner): Likewise.
+	(setHorizontalScrollBar): Likewise.
+	(setRowHeader): Likewise.
+	(setVerticalScrollBar): Likewise.
+	(setViewport): Likewise.
+	* javax/swing/JViewport.java:
+	(setViewSize): Don't set the size or fireStateChanged unless the new 
+	size is different from the old size.
+	(setView): Reset isViewSizeSet to false.
+	* javax/swing/ScrollPaneLayout:
+	(addSingletonComponent): Implemented and documented.
+	(addLayoutComponent): Throw an IllegalArgumentException if key is 
+	not one of the appropriate ScrollPaneConstants constants.  Added docs.
+	(setVerticalScrollBarPolicy): Likewise.
+	(setHorizontalScrollBarPolicy): Likewise.
+	(getCorner): Added docs.
+
+	2005-09-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JCheckBox.java
+	(AccessibleJCheckBox): New inner class.
+	(getAccessibleContext): Implemented this method.
+	* javax/swing/JLayeredPane.java
+	(AccessibleJLayeredPane): New inner class.
+	(getAccessibleContext): Implemented this method.
+
+	2005-09-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTable.java
+	(getCellRect): Don't include cell gap in cell rectangle
+	calculation. It's already included in TableColumnModel.getWidth().
+	(createDefaultColumnsFromModel): Initialize table header values.
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(paint): Don't include cell gap in cell rectangle
+	calculation. It's already included in TableColumnModel.getWidth().
+
+	2005-09-12  Tom Tromey  <tromey@redhat.com>
+
+	* org/ietf/jgss/GSSException.java (BAD_BINDINGS, BAD_MECH,
+	BAD_NAME, BAD_NAMETYPE, CONTEXT_EXPIRED, CREDENTIALS_EXPIRED,
+	DEFECTIVE_CREDENTIAL, DEFECTIVE_TOKEN, DUPLICATE_TOKEN, FAILURE,
+	NO_CONTEXT, NO_CRED, OLD_TOKEN): Use values from JDK, not RFC.
+
+	2005-09-12  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/tree/DefaultTreeCellEditor.java
+	(isCellEditable): Stopped the timer if it is started and
+	should not be restarted. This is a fix for the 'click-pause-
+	click' method to start editing.
+
+	2005-09-12  Lillian Angel  <langel@redhat.com>
+
+	* gnu/java/awt/AWTUtilities.java
+	(convertPoint): Added a check to determine if source and
+	destination components are showing.
+	* javax/swing/JPopupMenu.java
+	(setVisible): Added check to determine if component is showing.
+	(show): Likewise.
+	* javax/swing/MenuSelectionManager.java
+	(componentForPoint): Added check to determine if component is showing.
+	* javax/swing/ToolTipManager.java
+	(showTip): Added check to determine if component is showing.
+	* javax/swing/plaf/basic/BasicToolBarUI.java
+	(mousePressed): Added check to determine if component is showing.
+
+	2005-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalIconFactory.java
+	(InternalFrameCloseIcon.paintIcon): change colors according to button
+	state,
+	(InternalFrameAltMaximizeIcon.paintIcon): likewise,
+	(InternalFrameMaximizeIcon.paintIcon): likewise,
+	(InternalFrameMinimizeIcon.paintIcon): likewise.
+
+	2005-09-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalBorders.java
+	(TableHeaderBorder): New inner class.
+	(TextFieldBorder.paintBorder): Only paint the active border
+	if the text field is enabled _and_ editable.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Added default to use the new
+	TableHeaderBorder for table headers.
+
+	2005-09-12  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/awt/Container.java:
+	(findComponentForMouseEventAt): Reduced visibility to package-private.
+	(getDeepestComponentForMouseEventAt): Reduced visibility to 
+	package-private and removed static modifier.
+
+	2005-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalBorders.java
+	(desktopIconBorder): new private field,
+	(DesktopIconBorder): new support class,
+	(getDesktopIconBorder): implemented,
+	(InternalFrameBorder.paintBorder): change color of line highlights if
+	the internal frame is selected.
+	
+	2005-09-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/dom/DomDocument.java: Implementation of xml:id W3C
+	Recommendation.
+
+	2005-09-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTable.java
+	(TableColumnPropertyChangeHandler): New inner class. Handles
+	changes of column widths.
+	(JTable(TableModel, TableColumnModel, ListSelectionModel)):
+	Check if column model == null and if so, create a default model.
+	(initializeLocalVars): Changed to use createDefaultColumnsFromModel
+	instead of createColumnsFromModel.
+	(addColumn): Add property change handler to new column.
+	(createColumnsFromModel): Removed redundant private method.
+	Use the public createDefaultColumnsFromModel instead.
+	(tableChanged): Use createDefaultColumnsFromModel instead of
+	createColumnsFromModel.
+	(setModel): Use createDefaultColumnsFromModel instead of
+	createColumnsFromModel.
+	(doLayout): When handling AUTO_RESIZE_OFF, then adjust the
+	size of the resizing column to it's (new) preferred size.
+	(createDefaultColumnsFromModel): Added assertion to make sure
+	that the column model is not null. Add property change handler
+	to new columns.
+	* javax/swing/table/TableColumn.java
+	(setWidth): Fire property change with name 'width' instead
+	of using the (obsolete) constant field COLUMN_WIDTH_PROPERTY.
+	(setPreferredWidth): Make this property a bound property.
+
+	2005-09-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	PR swing/22922
+	* java/awt/event/InputEvent.java (modifiersEx): New field.
+	(InputEvent): Assume modifiers parameter contains both new- and
+	old-style masks.
+	(isShiftDown): Check modifiers for old-style shift mask and
+	modifiersEx for new-style shift mask.
+	(isControlDown): Likewise for control mask.
+	(isMetaDown): Likewise for meta mask.
+	(isAltDown): Likewise for alt mask.
+	(isAltGraphDown): Likewise for alt-graph mask.
+	(getModifiers): Return value of modifiers field.
+	(getModifiersEx): Return value of modifiersEx field.
+	* java/awt/event/MouseEvent.java
+	(MouseEvent(Component,int,long,int,int,int,int,boolean,int)):
+	Clear button new-style mask for mouse released events.
+	(paramString): Remove old-style modifier handling.
+	(readObject): Extend modifiers and assign to modifiersEx.
+	* java/awt/event/KeyEvent.java (readObject): Extend modifiers and
+	assign to modifiersEx.
+	* native/jni/gtk-peer/gtkpeer.h: Define macros for new-style mouse
+	masks.  Define macros for old-style key masks.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c:
+	Remove macros for old-style key masks.
+	(button_to_awt_mods): Always return bitwise OR of new- and
+	old-style modifiers.
+	(cp_gtk_state_to_awt_mods): Likewise.
+	(state_to_awt_mods_with_button_states): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(keyevent_state_to_awt_mods): Likewise.
+
+	2005-09-11  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/nio/channels/FileChannelImpl.java (finalize): Check whether
+	fd != -1 before calling close().
+
 2005-09-14  David Walluck <walluck@mandrake.org>
 
 	* kaffe/include/kaffe_jni.h: (vfprintf)

@@ -55,6 +55,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicBorders;
+import javax.swing.text.JTextComponent;
 
 
 /**
@@ -68,6 +69,9 @@ public class MetalBorders
 
   /** The shared instance for getButtonBorder(). */
   private static Border buttonBorder;
+
+  /** The shared instance for getDesktopIconBorder(). */
+  private static Border desktopIconBorder;
 
   /** The shared instance for getRolloverButtonBorder(). */
   private static Border toolbarButtonBorder;
@@ -188,6 +192,70 @@ public class MetalBorders
       newInsets.top = borderInsets.top;
       return newInsets;
     }
+  }
+
+  /**
+   * A border used when painting {@link JInternalFrame} instances.
+   */
+  static class DesktopIconBorder extends AbstractBorder
+    implements UIResource
+  {
+    /**
+     * Creates a new border instance.
+     */
+    public DesktopIconBorder()
+    {
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * 
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c)
+    {
+      return getBorderInsets(c, null);
+    }
+    
+    /**
+     * Returns the border insets.
+     * 
+     * @param c  the component (ignored).
+     * @return The border insets.
+     */
+    public Insets getBorderInsets(Component c, Insets newInsets)
+    {
+      if (newInsets == null)
+        newInsets = new Insets(3, 3, 2, 3);
+      else
+        {
+          newInsets.top = 3;
+          newInsets.left = 3;
+          newInsets.bottom = 2;
+          newInsets.right = 3;
+        }
+      return newInsets;  
+    }
+    
+    /**
+     * Paints the border for the specified component.
+     * 
+     * @param c  the component.
+     * @param g  the graphics device.
+     * @param x  the x-coordinate.
+     * @param y  the y-coordinate.
+     * @param w  the width.
+     * @param h  the height.
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w, 
+        int h)
+    {
+      g.setColor(MetalLookAndFeel.getControlDarkShadow());      
+      g.drawRect(x, y, w - 1, h - 1); 
+    }
+    
   }
 
   /**
@@ -368,8 +436,9 @@ public class MetalBorders
      */
     public void paintBorder(Component c, Graphics g, int x, int y, int w, 
         int h)
-    {        
-      if (c.isEnabled())
+    {
+      JTextComponent tc = (JTextComponent) c;
+      if (tc.isEnabled() && tc.isEditable())
         super.paintBorder(c, g, x, y, w, h);
       else
         {
@@ -468,7 +537,10 @@ public class MetalBorders
       g.drawLine(x + w - 3, y + 14, x + w - 3, y + h - 15);
       
       // draw the line highlights
-      g.setColor(MetalLookAndFeel.getControl());
+      if (f.isSelected())
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else 
+        g.setColor(MetalLookAndFeel.getControlShadow());
       g.drawLine(x + 15, y + 3, x + w - 14, y + 3);
       g.drawLine(x + 15, y + h - 2, x + w - 14, y + h - 2);
       g.drawLine(x + 3, y + 15, x + 3, y + h - 14);
@@ -852,6 +924,64 @@ public class MetalBorders
   }
 
   /**
+   * A border for table header cells.
+   *
+   * @since 1.3
+   */
+  public static class TableHeaderBorder extends AbstractBorder
+  {
+    /**
+     * The insets of this border.
+     */
+    // TODO: According to tests that I have done, this is really the border
+    // that should be returned by getBorderInsets(). However, the name
+    // is very distracting. Is there any deeper meaning in it?
+    protected Insets editorBorderInsets;
+
+    /**
+     * Creates a new instance of <code>TableHeaderBorder</code>.
+     */
+    public TableHeaderBorder()
+    {
+      editorBorderInsets = new Insets(1, 1, 1, 1);
+    }
+
+    /**
+     * Return the insets of this border.
+     *
+     * @return the insets of this border
+     */
+    public Insets getBorderInsets(Component c)
+    {
+      return editorBorderInsets;
+    }
+
+    /**
+     * Paints the border.
+     *
+     * @param c the component for which to paint the border
+     * @param g the graphics context to use
+     * @param x the x cooridinate of the border rectangle
+     * @param y the y cooridinate of the border rectangle
+     * @param w the width of the border rectangle
+     * @param h the height of the border rectangle
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w, int h)
+    {
+      Color dark = MetalLookAndFeel.getControlDarkShadow();
+      Color light = MetalLookAndFeel.getWhite();
+      Color old = g.getColor();
+      g.setColor(light);
+      g.drawLine(x, y, x + w - 2, y);
+      g.drawLine(x, y, x, y + h - 2);
+      g.setColor(dark);
+      g.drawLine(x + w - 1, y, x + w - 1, y + h - 1);
+      g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
+      g.setColor(old);
+    }
+  }
+
+  /**
    * Returns a border for Swing buttons in the Metal Look &amp; Feel.
    *
    * @return a border for Swing buttons in the Metal Look &amp; Feel
@@ -866,6 +996,21 @@ public class MetalBorders
             (outer, inner);
       }
     return buttonBorder;
+  }
+  
+  /**
+   * Returns a border instance that is used with a {@link JInternalFrame} when
+   * it is in the iconified state.
+   * 
+   * @return A border.
+   * 
+   * @since 1.3
+   */
+  public static Border getDesktopIconBorder()
+  {
+    if (desktopIconBorder == null)
+      desktopIconBorder = new DesktopIconBorder();
+    return desktopIconBorder;      
   }
 
   /**

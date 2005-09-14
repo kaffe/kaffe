@@ -522,6 +522,9 @@ public class BasicInternalFrameTitlePane extends JComponent
   /** The icon displayed in the iconify button. */
   protected Icon iconIcon = BasicIconFactory.createEmptyFrameIcon();
 
+  /** The icon displayed in the close button. */
+  protected Icon closeIcon;
+  
   /** The JInternalFrame that this TitlePane is used in. */
   protected JInternalFrame frame;
 
@@ -645,7 +648,7 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   protected void installListeners()
   {
-    propertyChangeListener = new PropertyChangeHandler();
+    propertyChangeListener = createPropertyChangeListener();
     frame.addPropertyChangeListener(propertyChangeListener);
   }
 
@@ -663,14 +666,16 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   protected void installDefaults()
   {
-    // FIXME: move icons to defaults.
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
 
-    setFont(defaults.getFont("InternalFrame.titleFont"));
+    title.setFont(defaults.getFont("InternalFrame.titleFont"));
     selectedTextColor = defaults.getColor("InternalFrame.activeTitleForeground");
     selectedTitleColor = defaults.getColor("InternalFrame.activeTitleBackground");
     notSelectedTextColor = defaults.getColor("InternalFrame.inactiveTitleForeground");
     notSelectedTitleColor = defaults.getColor("InternalFrame.inactiveTitleBackground");
+  
+    // FIXME: move other icons to here too.
+    closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
   }
 
   /**
@@ -683,6 +688,8 @@ public class BasicInternalFrameTitlePane extends JComponent
     selectedTitleColor = null;
     notSelectedTextColor = null;
     notSelectedTitleColor = null;
+    
+    closeIcon = null;
   }
 
   /**
@@ -706,10 +713,10 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   protected void setButtonIcons()
   {
-    Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
-    if (icon != null)
-      closeButton.setIcon(icon);
-    icon = UIManager.getIcon("InternalFrame.iconifyIcon");
+    if (closeIcon != null)
+      closeButton.setIcon(closeIcon);
+    // FIXME: fetch these icons in the installDefaults() method
+    Icon icon = UIManager.getIcon("InternalFrame.iconifyIcon");
     if (icon != null)
       iconButton.setIcon(icon);
     icon = UIManager.getIcon("InternalFrame.maximizeIcon");
@@ -816,11 +823,12 @@ public class BasicInternalFrameTitlePane extends JComponent
   public void paintComponent(Graphics g)
   {
     paintTitleBackground(g);
-    Font f = g.getFont();
-    FontMetrics fm = g.getFontMetrics(f);
     if (frame.getTitle() != null && title != null)
       {
 	Color saved = g.getColor();
+        Font f = title.getFont();
+        g.setFont(f);
+        FontMetrics fm = g.getFontMetrics(f);
 	if (frame.isSelected())
 	  g.setColor(selectedTextColor);
 	else

@@ -1030,12 +1030,8 @@ public class BasicTableUI
                 gfx.translate(-x, -y);
               }
               y += height;
-              if (gap != null)
-                y += gap.height;
           }
         x += width;
-        if (gap != null)
-          x += gap.width;
       }
 
     // tighten up the x and y max bounds
@@ -1053,10 +1049,8 @@ public class BasicTableUI
         boolean paintedLine = false;
         for (int c = 0; c < ncols && x < xmax; ++c)
           {
-            x += cols.getColumn(c).getWidth();;
-            if (gap != null)
-              x += gap.width;
-            gfx.drawLine(x, y0, x, ymax);
+            x += cols.getColumn(c).getWidth();
+            gfx.drawLine(x - gap.width, y0, x - gap.width, ymax);
             paintedLine = true;
           }
         gfx.setColor(save);
@@ -1072,8 +1066,6 @@ public class BasicTableUI
         for (int r = 0; r < nrows && y < ymax; ++r)
           {
             y += height;
-            if (gap != null)
-              y += gap.height;
             gfx.drawLine(x0, y, xmax, y);
             paintedLine = true;
           }

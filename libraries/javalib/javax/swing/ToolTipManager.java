@@ -526,13 +526,14 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener
       }
     else
       {
-	SwingUtilities.convertPointToScreen(p, currentComponent);
-	tooltipWindow = new JWindow();
-	tooltipWindow.getContentPane().add(currentTip);
-	tooltipWindow.setFocusable(false);
-	tooltipWindow.pack();
-	tooltipWindow.setBounds(p.x, p.y, dims.width, dims.height);
-	tooltipWindow.show();
+        if (currentComponent.isShowing())
+          SwingUtilities.convertPointToScreen(p, currentComponent);
+    	tooltipWindow = new JWindow();
+    	tooltipWindow.getContentPane().add(currentTip);
+    	tooltipWindow.setFocusable(false);
+    	tooltipWindow.pack();
+    	tooltipWindow.setBounds(p.x, p.y, dims.width, dims.height);
+    	tooltipWindow.show();
       }
     currentTip.setVisible(true);
   }

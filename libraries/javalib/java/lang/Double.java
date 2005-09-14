@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.lang;
 
-import gnu.classpath.Configuration;
 
 /**
  * Instances of class <code>Double</code> represent primitive

@@ -46,6 +46,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 
 /**
  * A container that adds depth to the usual <code>Container</code> semantics.
@@ -116,6 +118,30 @@ import javax.accessibility.Accessible;
  */
 public class JLayeredPane extends JComponent implements Accessible
 {
+  
+  /**
+   * Provides accessibility support for <code>JLayeredPane</code>.
+   */
+  protected class AccessibleJLayeredPane extends AccessibleJComponent
+  {
+    /**
+     * Creates a new instance of <code>AccessibleJLayeredPane</code>.
+     */
+    public AccessibleJLayeredPane()
+    {
+      // Nothing to do here.
+    }
+
+    /**
+     * Returns the accessble role of <code>JLayeredPane</code>,
+     * {@link AccessibleRole#LAYERED_PANE}. 
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.LAYERED_PANE;
+    }
+  }
+
   private static final long serialVersionUID = 5534920399324590459L;
   
   public static final String LAYER_PROPERTY = "layeredContainerLayer";
@@ -641,5 +667,17 @@ public class JLayeredPane extends JComponent implements Accessible
   public static void putLayer(JComponent component, int layer)
   {
     getLayeredPaneAbove(component).setLayer(component, layer);
+  }
+
+  /**
+   * Returns the accessible context for this <code>JLayeredPane</code>.
+   *
+   * @return the accessible context for this <code>JLayeredPane</code>
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJLayeredPane();
+    return accessibleContext;
   }
 }

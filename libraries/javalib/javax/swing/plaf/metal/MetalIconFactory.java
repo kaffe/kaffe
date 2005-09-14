@@ -1076,25 +1076,53 @@ public class MetalIconFactory implements Serializable
     /**
      * Paints the icon.
      * 
-     * @param c  the component.
+     * @param c  the component (an {@link JInternalFrame} is expected).
      * @param g  the graphics device.
      * @param x  the x-coordinate.
      * @param y  the y-coordinate.
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      // draw the gray areas first
-      g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+      Color savedColor = g.getColor();
+      AbstractButton b = (AbstractButton) c;
+      
+      // fill the interior
+      if (b.getModel().isPressed())
+        // FIXME: also need to take into account whether the internal frame is
+        // selected
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else
+        g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 2, y + 2, 10, 10);
+      
+      // draw the outline box and the cross
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        {
+          // FIXME: also need to take into account whether the internal frame is
+          // selected
+          boolean selected = true;
+          if (selected)
+            g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+          else
+            g.setColor(MetalLookAndFeel.getControlDarkShadow());
+        }
       g.drawLine(x + 1, y + 1, x + 13, y + 1);
       g.drawLine(x + 1, y + 2, x + 1, y + 12);
       g.drawLine(x + 1, y + 13, x + 13, y + 13);
       g.drawLine(x + 13, y + 2, x + 13, y + 12);
+      g.drawLine(x + 2, y + 12, x + 2, y + 12);
+      g.drawLine(x + 12, y + 2, x + 12, y + 2);
       
       g.fillRect(x + 4, y + 4, 2, 2);
-      g.fillRect(x + 4, y + 9, 2, 2);
-      g.fillRect(x + 9, y + 4, 2, 2);
-      g.fillRect(x + 9, y + 9, 2, 2);
-      g.fillRect(x + 5, y + 5, 5, 5);
+      g.fillRect(x + 5, y + 5, 4, 4);
+      g.drawLine(x + 9, y + 4, x + 10, y + 4);
+      g.drawLine(x + 9, y + 4, x + 9, y + 5);
+      g.drawLine(x + 4, y + 9, x + 4, y + 10);
+      g.drawLine(x + 4, y + 9, x + 5, y + 9);
+      g.drawLine(x + 9, y + 8, x + 9, y + 10);
+      g.drawLine(x + 8, y + 9, x + 10, y + 9);
       
       g.setColor(MetalLookAndFeel.getBlack());
       g.drawLine(x, y, x + 13, y);
@@ -1110,12 +1138,16 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 1, y + 14, x + 14, y + 14);
       g.drawLine(x + 14, y + 1, x + 14, y + 14);
       
-      g.drawLine(x + 5, y + 10, x + 5, y + 10);
-      g.drawLine(x + 6, y + 9, x + 7, y + 9);
-      g.drawLine(x + 10, y + 5, x + 10, y + 5);
-      g.drawLine(x + 9, y + 6, x + 9, y + 7);
-      g.drawLine(x + 10, y + 10, x + 11, y + 10);
-      g.drawLine(x + 10, y + 11, x + 10, y + 11);
+      if (!b.getModel().isPressed())
+        {
+          g.drawLine(x + 5, y + 10, x + 5, y + 10);
+          g.drawLine(x + 6, y + 9, x + 7, y + 9);
+          g.drawLine(x + 10, y + 5, x + 10, y + 5);
+          g.drawLine(x + 9, y + 6, x + 9, y + 7);
+          g.drawLine(x + 10, y + 10, x + 11, y + 10);
+          g.drawLine(x + 10, y + 11, x + 10, y + 11);
+        }
+      g.setColor(savedColor);
     }        
   }
 
@@ -1239,14 +1271,23 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      Color color = MetalLookAndFeel.getControlDarkShadow();
-      if (c instanceof JInternalFrame)
-        {
-          JInternalFrame f = (JInternalFrame) c;
-          if (f.isSelected())
-            color = MetalLookAndFeel.getPrimaryControlShadow();
-        }
-      g.setColor(color);
+      Color savedColor = g.getColor();
+
+      AbstractButton b = (AbstractButton) c;
+
+      // fill the small box interior
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else
+        g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 2, y + 6, 7, 7);
+      
+      
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+        
       g.drawLine(x + 12, y + 1, x + 13, y + 1);
       g.drawLine(x + 11, y + 2, x + 12, y + 2);
       g.drawLine(x + 10, y + 3, x + 11, y + 3);
@@ -1278,10 +1319,16 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 13, y + 6, x + 13, y + 6);
       g.drawLine(x + 8, y + 7, x + 13, y + 7);
       g.drawLine(x + 6, y + 5, x + 6, y + 5);
-      g.drawLine(x + 2, y + 6, x + 6, y + 6);
-      g.drawLine(x + 2, y + 6, x + 2, y + 11);
       g.drawLine(x + 10, y + 8, x + 10, y + 13);
       g.drawLine(x + 1, y + 14, x + 10, y + 14);
+      
+      if (!b.getModel().isPressed())
+        {
+          g.drawLine(x + 2, y + 6, x + 6, y + 6);
+          g.drawLine(x + 2, y + 6, x + 2, y + 11);
+        }
+      
+      g.setColor(savedColor);
     }        
   }
   
@@ -1330,14 +1377,22 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      Color color = MetalLookAndFeel.getControlDarkShadow();
-      if (c instanceof JInternalFrame)
-        {
-          JInternalFrame f = (JInternalFrame) c;
-          if (f.isSelected())
-            color = MetalLookAndFeel.getPrimaryControlShadow();
-        }
-      g.setColor(color);
+      Color savedColor = g.getColor();
+      
+      AbstractButton b = (AbstractButton) c;
+      
+      // fill the interior
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+      else
+        g.setColor(MetalLookAndFeel.getPrimaryControl());
+      g.fillRect(x + 2, y + 6, 7, 7);
+
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+          
       g.drawLine(x + 9, y + 1, x + 10, y + 1);
       g.fillRect(x + 11, y + 1, 3, 3);
       g.fillRect(x + 12, y + 4, 2, 2);
@@ -1372,9 +1427,12 @@ public class MetalIconFactory implements Serializable
       
       // draw white
       g.setColor(MetalLookAndFeel.getWhite());
-      g.drawLine(x + 2, y + 6, x + 5, y + 6);
-      g.drawLine(x + 2, y + 7, x + 2, y + 9);
-      g.drawLine(x + 4, y + 11, x + 7, y + 8);
+      if (!b.getModel().isPressed())
+        {
+          g.drawLine(x + 2, y + 6, x + 5, y + 6);
+          g.drawLine(x + 2, y + 7, x + 2, y + 9);
+          g.drawLine(x + 4, y + 11, x + 7, y + 8);
+        }
       
       g.drawLine(x + 1, y + 14, x + 10, y + 14);
       g.drawLine(x + 10, y + 5, x + 10, y + 13);
@@ -1383,6 +1441,7 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 11, y + 4, x + 11, y + 5);
       g.drawLine(x + 13, y + 6, x + 14, y + 6);
       g.drawLine(x + 14, y + 1, x + 14, y + 5);
+      g.setColor(savedColor);
     }        
   }
 
@@ -1430,14 +1489,17 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      Color color = MetalLookAndFeel.getControlDarkShadow();
-      if (c instanceof JInternalFrame)
-        {
-          JInternalFrame f = (JInternalFrame) c;
-          if (f.isSelected())
-            color = MetalLookAndFeel.getPrimaryControlShadow();
-        }
-      g.setColor(color);
+      Color savedColor = g.getColor();
+      
+      AbstractButton b = (AbstractButton) c;
+      
+      if (b.getModel().isPressed())
+        g.setColor(MetalLookAndFeel.getBlack());
+      else
+        // FIXME: here the color depends on whether or not the internal frame 
+        // is selected 
+        g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
+      
       g.drawLine(x + 12, y + 1, x + 13, y + 1);
       g.drawLine(x + 11, y + 2, x + 12, y + 2);
       g.drawLine(x + 10, y + 3, x + 11, y + 3);
@@ -1468,10 +1530,21 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 11, y + 4, x + 13, y + 2);
       g.drawLine(x + 13, y + 6, x + 13, y + 6);
       g.drawLine(x + 8, y + 7, x + 13, y + 7);
-      g.drawLine(x + 2, y + 9, x + 4, y + 9);
-      g.drawLine(x + 2, y + 10, x + 2, y + 11);
       g.drawLine(x + 7, y + 9, x + 7, y + 13);
       g.drawLine(x + 1, y + 14, x + 7, y + 14);
+
+      if (b.getModel().isPressed())
+        {
+          g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
+          g.fillRect(x + 2, y + 9, 3, 3);
+        }
+      else
+        {
+          g.drawLine(x + 2, y + 9, x + 4, y + 9);
+          g.drawLine(x + 2, y + 10, x + 2, y + 11);
+        }
+
+      g.setColor(savedColor);
     }        
   }
 
@@ -1875,6 +1948,7 @@ public class MetalIconFactory implements Serializable
   {
     return new FileChooserUpFolderIcon();
   }
+
   /**
    * Returns an icon for RadioButtons in the Metal L&amp;F.
    *

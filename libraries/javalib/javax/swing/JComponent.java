@@ -452,7 +452,9 @@ public abstract class JComponent extends Container implements Serializable
   /**
    * Add a client property <code>value</code> to this component, associated
    * with <code>key</code>. If there is an existing client property
-   * associated with <code>key</code>, it will be replaced.
+   * associated with <code>key</code>, it will be replaced.  A
+   * {@link PropertyChangeEvent} is sent to registered listeners (with the
+   * name of the property being <code>key.toString()</code>).
    *
    * @param key The key of the client property association to add
    * @param value The value of the client property association to add
@@ -463,10 +465,13 @@ public abstract class JComponent extends Container implements Serializable
    */
   public final void putClientProperty(Object key, Object value)
   {
+    Hashtable t = getClientProperties();
+    Object old = t.get(key);
     if (value != null)
-      getClientProperties().put(key, value);
+      t.put(key, value);
     else
-      getClientProperties().remove(key);
+      t.remove(key);
+    firePropertyChange(key.toString(), old, value);
   }
 
   /**

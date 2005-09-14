@@ -1,5 +1,5 @@
 /* GSSException.java -- a general exception in GSS.
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -79,6 +79,9 @@ import java.util.ResourceBundle;
  * the caller, this class performs the mapping from their numeric values
  * to textual representations.  All Java GSS-API methods are declared
  * throwing this exception.
+ *
+ * @specnote Some of the constant values defined in this class were
+ * chosen to be compatible with J2SE 1.4, and not with RFC 2853.
  */
 public class GSSException extends Exception
 {
@@ -90,28 +93,25 @@ public class GSSException extends Exception
   // Constants and fields.
   // -------------------------------------------------------------------------
 
-  // These values do not jive with the "Constant Field Values" in the J2SE
-  // 1.4.1, but do follow RFC 2853. I trust the IETF, but not Sun.
-
   /**
    * Channel bindings mismatch error.
    */
-  public static final int BAD_BINDINGS = 4;
+  public static final int BAD_BINDINGS = 1;
 
   /**
    * Unsupported mechanism requested error.
    */
-  public static final int BAD_MECH = 1;
+  public static final int BAD_MECH = 2;
 
   /**
    * Invalid name provided error.
    */
-  public static final int BAD_NAME = 2;
+  public static final int BAD_NAME = 3;
 
   /**
    * Name of unsupported type provided error.
    */
-  public static final int BAD_NAMETYPE = 3;
+  public static final int BAD_NAMETYPE = 4;
 
   /**
    * Invalid status code error - this is the default status value.
@@ -126,37 +126,37 @@ public class GSSException extends Exception
   /**
    * Specified security context expired error.
    */
-  public static final int CONTEXT_EXPIRED = 12;
+  public static final int CONTEXT_EXPIRED = 7;
 
   /**
    * Expired credentials detected error.
    */
-  public static final int CREDENTIALS_EXPIRED = 11;
+  public static final int CREDENTIALS_EXPIRED = 8;
 
   /**
    * Defective credential error.
    */
-  public static final int DEFECTIVE_CREDENTIAL = 10;
+  public static final int DEFECTIVE_CREDENTIAL = 9;
 
   /**
    * Defective token error.
    */
-  public static final int DEFECTIVE_TOKEN = 9;
+  public static final int DEFECTIVE_TOKEN = 10;
 
   /**
    * General failure, unspecified at GSS-API level.
    */
-  public static final int FAILURE = 13;
+  public static final int FAILURE = 11;
 
   /**
    * Invalid security context error.
    */
-  public static final int NO_CONTEXT = 8;
+  public static final int NO_CONTEXT = 12;
 
   /**
    * Invalid credentials error.
    */
-  public static final int NO_CRED = 7;
+  public static final int NO_CRED = 13;
 
   /**
    * Unsupported QOP value error.
@@ -189,7 +189,7 @@ public class GSSException extends Exception
    * indicate supplementary status values.  The MessageProp object is used
    * for that purpose.
    */
-  public static final int DUPLICATE_TOKEN = 20;
+  public static final int DUPLICATE_TOKEN = 19;
 
   /**
    * The token's validity period has expired.  This is a fatal error code
@@ -197,7 +197,7 @@ public class GSSException extends Exception
    * indicate supplementary status values.  The MessageProp object is used
    * for that purpose.
    */
-  public static final int OLD_TOKEN = 19;
+  public static final int OLD_TOKEN = 20;
 
   /**
    * A later token has already been processed.  This is a fatal error code

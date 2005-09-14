@@ -1030,13 +1030,15 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
         }
 
       origin = new Point(0, 0);
-      SwingUtilities.convertPointToScreen(ssd, toolBar);
+      if (toolBar.isShowing())
+        SwingUtilities.convertPointToScreen(ssd, toolBar);
 
       if (! (SwingUtilities.getAncestorOfClass(Window.class, toolBar) instanceof UIResource))
 	// Need to know who keeps the toolBar if it gets dragged back into it.
 	origParent = toolBar.getParent();
-
-      SwingUtilities.convertPointToScreen(origin, toolBar);
+      
+      if (toolBar.isShowing())
+        SwingUtilities.convertPointToScreen(origin, toolBar);
 
       isDragging = true;
 

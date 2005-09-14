@@ -824,6 +824,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "DesktopIcon.background", getControl(),
       "DesktopIcon.foreground", getControlTextColor(),
       "DesktopIcon.width", new Integer(160),
+      "DesktopIcon.border", MetalBorders.getDesktopIconBorder(),
 
       "EditorPane.background", getWindowBackground(),
       "EditorPane.caretForeground", getUserTextColor(),
@@ -860,6 +861,9 @@ public class MetalLookAndFeel extends BasicLookAndFeel
         MetalIconFactory.getInternalFrameMaximizeIcon(16),
       "InternalFrame.iconifyIcon", 
         MetalIconFactory.getInternalFrameMinimizeIcon(16),
+      "InternalFrame.paletteBorder", new MetalBorders.PaletteBorder(),
+      "InternalFrame.paletteCloseIcon", new MetalIconFactory.PaletteCloseIcon(),
+      "InternalFrame.paletteTitleHeight", new Integer(11),
 
       "Label.background", getControl(),
       "Label.disabledForeground", getInactiveSystemTextColor(),
@@ -1047,6 +1051,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Table.gridColor", getControlShadow(),
 
       "TableHeader.background", getControl(),
+      "TableHeader.cellBorder", new MetalBorders.TableHeaderBorder(),
       "TableHeader.foreground", getControlTextColor(),
 
       "TextArea.background", getWindowBackground(),
