@@ -1,5 +1,11 @@
 2005-09-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: (--with-kaffe-qt-awt) Invoke AC_PATH_X
+	before invoking the Qt checks to make sure $x_libraries is
+	not set to NONE. Fixes -LNONE linking problems.
+
+2005-09-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/VMRuntime.c:
 	New file. Taken from CACAO, and improved the
 	availableProcessors implementation. 

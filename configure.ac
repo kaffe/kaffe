@@ -1753,6 +1753,7 @@ AM_CONDITIONAL(COND_KAFFE_QT_AWT, test x"$with_kaffe_qt_awt" != x"no")
 
 if test x"$enable_native_awt" = x"yes"; then
    if test x"$with_kaffe_qt_awt" = x"yes"; then
+        AC_PATH_X
 	gw_CHECK_QT
 
         AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/qt/libqtawt.la"
