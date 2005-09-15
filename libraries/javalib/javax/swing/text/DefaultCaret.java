@@ -60,10 +60,8 @@ import javax.swing.event.EventListenerList;
 public class DefaultCaret extends Rectangle
   implements Caret, FocusListener, MouseListener, MouseMotionListener
 {
-  /**
-   * The serial version UID for DefaultCaret.
-   */
-  private static final long serialVersionUID = 228155774675466193L;
+  /** The serialization UID (compatible with JDK1.5). */
+  private static final long serialVersionUID = 4325555698756477346L;
 
   /**
    * The <code>ChangeEvent</code> that is fired by {@link #fireStateChanged()}.

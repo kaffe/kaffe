@@ -62,19 +62,15 @@ import org.omg.CORBA.StringHolder;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.TypeCode;
 import org.omg.CORBA.TypeCodeHolder;
-import org.omg.CORBA.TypeCodePackage.BadKind;
 import org.omg.CORBA.ValueBaseHolder;
 import org.omg.CORBA.portable.BoxedValueHelper;
 import org.omg.CORBA.portable.Streamable;
 
-import java.io.IOException;
 import java.io.Serializable;
-
 import java.lang.reflect.Field;
-
 import java.math.BigDecimal;
-
 import java.util.Arrays;
+import java.util.zip.Adler32;
 
 /**
  * The implementation of {@link Any}.
@@ -206,6 +202,28 @@ public class gnuAny
     byte[] bb = b.buffer.toByteArray();
 
     return Arrays.equals(ba, bb);
+  }
+  
+  /**
+   * Get the content - dependent hashcode.
+   */
+  public int hashCode()
+  {
+    if (has == null)
+      return type().kind().value();
+    else
+      {
+        Adler32 adler = new Adler32();
+
+        cdrBufOutput a = new cdrBufOutput();
+        a.setOrb(orb);
+        write_value(a);
+        
+        adler.update(a.buffer.toByteArray());
+        adler.update(type().kind().value());
+        
+        return (int) adler.getValue() & Integer.MAX_VALUE;
+      }
   }
 
   /**

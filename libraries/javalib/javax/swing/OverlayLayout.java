@@ -48,144 +48,139 @@ import java.io.Serializable;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class OverlayLayout
-  implements LayoutManager2, Serializable
+public class OverlayLayout implements LayoutManager2, Serializable
 {
   private static final long serialVersionUID = 18082829169631543L;
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * target
+   */
+  private Container target;
 
-	/**
-	 * target
-	 */
-	private Container target;
+  /**
+   * xChildren
+   */
+  private SizeRequirements[] xChildren;
 
-	/**
-	 * xChildren
-	 */
-	private SizeRequirements[] xChildren;
+  /**
+   * yChildren
+   */
+  private SizeRequirements[] yChildren;
 
-	/**
-	 * yChildren
-	 */
-	private SizeRequirements[] yChildren;
+  /**
+   * xTotal
+   */
+  private SizeRequirements xTotal;
 
-	/**
-	 * xTotal
-	 */
-	private SizeRequirements xTotal;
+  /**
+   * yTotal
+   */
+  private SizeRequirements yTotal;
 
-	/**
-	 * yTotal
-	 */
-	private SizeRequirements yTotal;
+  /**
+   * Constructor OverlayLayout
+   * @param target TODO
+   */
+  public OverlayLayout(Container target)
+  {
+    // TODO
+  }
 
+  /**
+   * invalidateLayout
+   * @param target TODO
+   */
+  public void invalidateLayout(Container target)
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * addLayoutComponent
+   * @param string TODO
+   * @param component TODO
+   */
+  public void addLayoutComponent(String string, Component component)
+  {
+    // TODO
+  }
 
-	/**
-	 * Constructor OverlayLayout
-	 * @param target TODO
-	 */
-	public OverlayLayout(Container target) {
-		// TODO
-	} // OverlayLayout()
+  /**
+   * addLayoutComponent
+   * @param component TODO
+   * @param constraints TODO
+   */
+  public void addLayoutComponent(Component component, Object constraints)
+  {
+    // TODO
+  }
 
+  /**
+   * removeLayoutComponent
+   * @param component TODO
+   */
+  public void removeLayoutComponent(Component component)
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * preferredLayoutSize
+   * @param target TODO
+   * @returns Dimension
+   */
+  public Dimension preferredLayoutSize(Container target)
+  {
+    return null; // TODO
+  }
 
-	/**
-	 * invalidateLayout
-	 * @param target TODO
-	 */
-	public void invalidateLayout(Container target) {
-		// TODO
-	} // invalidateLayout()
+  /**
+   * minimumLayoutSize
+   * @param target TODO
+   * @returns Dimension
+   */
+  public Dimension minimumLayoutSize(Container target)
+  {
+    return null; // TODO
+  }
 
-	/**
-	 * addLayoutComponent
-	 * @param string TODO
-	 * @param component TODO
-	 */
-	public void addLayoutComponent(String string, Component component) {
-		// TODO
-	} // addLayoutComponent()
+  /**
+   * maximumLayoutSize
+   * @param target TODO
+   * @returns Dimension
+   */
+  public Dimension maximumLayoutSize(Container target)
+  {
+    return null; // TODO
+  }
 
-	/**
-	 * addLayoutComponent
-	 * @param component TODO
-	 * @param constraints TODO
-	 */
-	public void addLayoutComponent(Component component, Object constraints) {
-		// TODO
-	} // addLayoutComponent()
+  /**
+   * getLayoutAlignmentX
+   * @param target TODO
+   * @returns float
+   */
+  public float getLayoutAlignmentX(Container target)
+  {
+    return (float) 0.0; // TODO
+  }
 
-	/**
-	 * removeLayoutComponent
-	 * @param component TODO
-	 */
-	public void removeLayoutComponent(Component component) {
-		// TODO
-	} // removeLayoutComponent()
+  /**
+   * getLayoutAlignmentY
+   * @param target TODO
+   * @returns float
+   */
+  public float getLayoutAlignmentY(Container target)
+  {
+    return (float) 0.0; // TODO
+  }
 
-	/**
-	 * preferredLayoutSize
-	 * @param target TODO
-	 * @returns Dimension
-	 */
-	public Dimension preferredLayoutSize(Container target) {
-		return null; // TODO
-	} // preferredLayoutSize()
+  /**
+   * layoutContainer
+   * @param target TODO
+   */
+  public void layoutContainer(Container target)
+  {
+    // TODO
+  }
 
-	/**
-	 * minimumLayoutSize
-	 * @param target TODO
-	 * @returns Dimension
-	 */
-	public Dimension minimumLayoutSize(Container target) {
-		return null; // TODO
-	} // minimumLayoutSize()
-
-	/**
-	 * maximumLayoutSize
-	 * @param target TODO
-	 * @returns Dimension
-	 */
-	public Dimension maximumLayoutSize(Container target) {
-		return null; // TODO
-	} // maximumLayoutSize()
-
-	/**
-	 * getLayoutAlignmentX
-	 * @param target TODO
-	 * @returns float
-	 */
-	public float getLayoutAlignmentX(Container target) {
-		return (float) 0.0; // TODO
-	} // getLayoutAlignmentX()
-
-	/**
-	 * getLayoutAlignmentY
-	 * @param target TODO
-	 * @returns float
-	 */
-	public float getLayoutAlignmentY(Container target) {
-		return (float) 0.0; // TODO
-	} // getLayoutAlignmentY()
-
-	/**
-	 * layoutContainer
-	 * @param target TODO
-	 */
-	public void layoutContainer(Container target) {
-		// TODO
-	} // layoutContainer()
-
-
-} // OverlayLayout
+}

@@ -59,7 +59,7 @@ public abstract class VisibilityHelper
 
   /**
    * Insert the Visibility into the given Any.
-   * Uses {@link Any.insert_short}.
+   * Uses {@link Any#insert_short}.
    */
   public static void insert(Any any, short that)
   {
@@ -68,7 +68,7 @@ public abstract class VisibilityHelper
 
   /**
    * Extract the Visibility from the given Any.
-   * Uses {@link Any.extract_short}.
+   * Uses {@link Any#extract_short}.
    */
   public static short extract(Any any)
   {
@@ -103,7 +103,7 @@ public abstract class VisibilityHelper
   /**
    * Read the visibility value (as short) from the CDR intput stream.
    *
-   * Uses {@link InputStream.read_short()}.
+   * Uses {@link InputStream#read_short()}.
    *
    * @param istream a stream to read from.
    */
@@ -115,7 +115,7 @@ public abstract class VisibilityHelper
   /**
    * Write the visibility value (as short) to the CDR output stream.
    *
-   * USes {@link OutputStream.write_short(short)}.
+   * USes {@link OutputStream#write_short(short)}.
    *
    * @param ostream a stream to write into.
    * @param value a value to write.

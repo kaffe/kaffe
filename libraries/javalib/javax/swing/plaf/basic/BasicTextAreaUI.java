@@ -40,6 +40,7 @@ package javax.swing.plaf.basic;
 
 
 import javax.swing.JComponent;
+import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.Element;
 import javax.swing.text.PlainView;
@@ -61,6 +62,11 @@ public class BasicTextAreaUI extends BasicTextUI
     return new PlainView(elem);
   }
 
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "TextArea"
+   */
   protected String getPropertyPrefix()
   {
     return "TextArea";

@@ -41,7 +41,9 @@ package java.lang;
 import gnu.classpath.VMStackWalker;
 
 import java.io.InputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -738,7 +740,7 @@ public final class Class implements Serializable
    * @param list List of methods to search
    * @param name Name of method
    * @param args Method parameter types
-   * @see #getMethod()
+   * @see #getMethod(String, Class[])
    */
   private static Method matchMethod(Method[] list, String name, Class[] args)
   {
@@ -846,7 +848,7 @@ public final class Class implements Serializable
    * public and final, but not an interface.
    *
    * @return the modifiers of this class
-   * @see Modifer
+   * @see Modifier
    * @since 1.1
    */
   public int getModifiers()

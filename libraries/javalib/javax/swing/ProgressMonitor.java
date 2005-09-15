@@ -44,185 +44,184 @@ import java.awt.Component;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class ProgressMonitor {
+public class ProgressMonitor
+{
+  /**
+   * parentComponent
+   */
+  private Component component;
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * note
+   */
+  private String note;
 
-	/**
-	 * parentComponent
-	 */
-	private Component component;
+  /**
+   * message
+   */
+  private Object message;
 
-	/**
-	 * note
-	 */
-	private String note;
+  /**
+   * millisToDecideToPopup
+   */
+  private int millisToDecideToPopup;
 
-	/**
-	 * message
-	 */
-	private Object message;
+  /**
+   * millisToPopup
+   */
+  private int millisToPopup;
 
-	/**
-	 * millisToDecideToPopup
-	 */
-	private int millisToDecideToPopup;
+  /**
+   * min
+   */
+  private int minimum;
 
-	/**
-	 * millisToPopup
-	 */
-	private int millisToPopup;
+  /**
+   * max
+   */
+  private int maximum;
 
-	/**
-	 * min
-	 */
-	private int minimum;
+  /**
+   * Constructor ProgressMonitor
+   * @param component TODO
+   * @param message TODO
+   * @param note TODO
+   * @param minimum TODO
+   * @param maximum TODO
+   */
+  public ProgressMonitor(Component component, Object message,
+                         String note, int minimum, int maximum)
+  {
 
-	/**
-	 * max
-	 */
-	private int maximum;
+    // Set data.
+    this.component = component;
+    this.message = message;
+    this.note = note;
+    this.minimum = minimum;
+    this.maximum = maximum;
 
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * close
+   */
+  public void close()
+  {
+    // TODO
+  }
 
-	/**
-	 * Constructor ProgressMonitor
-	 * @param component TODO
-	 * @param message TODO
-	 * @param note TODO
-	 * @param minimum TODO
-	 * @param maximum TODO
-	 */
-	public ProgressMonitor(Component component, Object message,
-			String note, int minimum, int maximum) {
-			
-		// Set Data
-		this.component = component;
-		this.message = message;
-		this.note = note;
-		this.minimum = minimum;
-		this.maximum = maximum;
+  /**
+   * setProgress
+   * @param progress TODO
+   */
+  public void setProgress(int progress)
+  {
+    // TODO
+  }
 
-		// TODO
-	} // ProgressMonitor()
+  /**
+   * getMinimum
+   * @returns int
+   */
+  public int getMinimum()
+  {
+    return minimum; // TODO
+  }
 
+  /**
+   * setMinimum
+   * @param minimum TODO
+   */
+  public void setMinimum(int minimum)
+  {
+    this.minimum = minimum;
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * getMaximum
+   * @returns int
+   */
+  public int getMaximum()
+  {
+    return maximum; // TODO
+  }
 
-	/**
-	 * close
-	 */
-	public void close() {
-		// TODO
-	} // close()
+  /**
+   * setMaximum
+   * @param maximum TODO
+   */
+  public void setMaximum(int maximum)
+  {
+    this.maximum = maximum;
+    // TODO
+  }
 
-	/**
-	 * setProgress
-	 * @param progress TODO
-	 */
-	public void setProgress(int progress) {
-		// TODO
-	} // setProgress()
+  /**
+   * isCanceled
+   * @returns boolean
+   */
+  public boolean isCanceled()
+  {
+    return false; // TODO
+  }
 
-	/**
-	 * getMinimum
-	 * @returns int
-	 */
-	public int getMinimum() {
-		return minimum; // TODO
-	} // getMinimum()
+  /**
+   * getMillisToDecideToPopup
+   * @returns int
+   */
+  public int getMillisToDecideToPopup()
+  {
+    return millisToDecideToPopup; // TODO
+  }
 
-	/**
-	 * setMinimum
-	 * @param minimum TODO
-	 */
-	public void setMinimum(int minimum) {
-		this.minimum = minimum;
-		// TODO
-	} // setMinimum()
+  /**
+   * setMillisToDecideToPopup
+   * @param time TODO
+   */
+  public void setMillisToDecideToPopup(int time)
+  {
+    millisToDecideToPopup = time;
+    // TODO
+  }
 
-	/**
-	 * getMaximum
-	 * @returns int
-	 */
-	public int getMaximum() {
-		return maximum; // TODO
-	} // getMaximum()
+  /**
+   * getMillisToPopup
+   * @returns int
+   */
+  public int getMillisToPopup()
+  {
+    return millisToPopup; // TODO
+  }
 
-	/**
-	 * setMaximum
-	 * @param maximum TODO
-	 */
-	public void setMaximum(int maximum) {
-		this.maximum = maximum;
-		// TODO
-	} // setMaximum()
+  /**
+   * setMillisToPopup
+   * @param time TODO
+   */
+  public void setMillisToPopup(int time)
+  {
+    millisToPopup = time;
+    // TODO
+  }
 
-	/**
-	 * isCanceled
-	 * @returns boolean
-	 */
-	public boolean isCanceled() {
-		return false; // TODO
-	} // isCanceled()
+  /**
+   * getNote
+   * @returns String
+   */
+  public String getNote()
+  {
+    return note; // TODO
+  }
 
-	/**
-	 * getMillisToDecideToPopup
-	 * @returns int
-	 */
-	public int getMillisToDecideToPopup() {
-		return millisToDecideToPopup; // TODO
-	} // getMillisToDecideToPopup()
+  /**
+   * setNote
+   * @param note TODO
+   */
+  public void setNote(String note)
+  {
+    this.note = note;
+    // TODO
+  }
 
-	/**
-	 * setMillisToDecideToPopup
-	 * @param time TODO
-	 */
-	public void setMillisToDecideToPopup(int time) {
-		millisToDecideToPopup = time;
-		// TODO
-	} // setMillisToDecideToPopup()
-
-	/**
-	 * getMillisToPopup
-	 * @returns int
-	 */
-	public int getMillisToPopup() {
-		return millisToPopup; // TODO
-	} // getMillisToPopup()
-
-	/**
-	 * setMillisToPopup
-	 * @param time TODO
-	 */
-	public void setMillisToPopup(int time) {
-		millisToPopup = time;
-		// TODO
-	} // setMillisToPopup()
-
-	/**
-	 * getNote
-	 * @returns String
-	 */
-	public String getNote() {
-		return note; // TODO
-	} // getNote()
-
-	/**
-	 * setNote
-	 * @param note TODO
-	 */
-	public void setNote(String note) {
-		this.note = note;
-		// TODO
-	} // setNote()
-
-
-} // ProgressMonitor
+}

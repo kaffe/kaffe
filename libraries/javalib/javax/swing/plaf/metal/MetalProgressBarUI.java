@@ -38,17 +38,17 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.util.HashMap;
+
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
 public class MetalProgressBarUI
   extends BasicProgressBarUI
-{
-
-  // FIXME: maybe replace by a Map of instances when this becomes stateful
-  /** The shared UI instance for MetalProgressBarUIs */
-  private static MetalProgressBarUI instance = null;
+{  
+  /** The UI instances for MetalTreeUIs */
+  private static HashMap instances = null;
 
   /**
    * Constructs a new instance of MetalProgressBarUI.
@@ -67,8 +67,19 @@ public class MetalProgressBarUI
    */
   public static ComponentUI createUI(JComponent component)
   {
-    if (instance == null)
-      instance = new MetalProgressBarUI();
+    if (instances == null)
+      instances = new HashMap();
+
+    Object o = instances.get(component);
+    MetalProgressBarUI instance;
+    if (o == null)
+      {
+        instance = new MetalProgressBarUI();
+        instances.put(component, instance);
+      }
+    else
+      instance = (MetalProgressBarUI) o;
+
     return instance;
   }
 }

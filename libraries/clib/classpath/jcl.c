@@ -1,5 +1,5 @@
 /* jcl.c
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -193,7 +193,7 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 {
   if (rawDataClass == NULL)
     {
-#ifdef POINTERS_ARE_64BIT
+#if SIZEOF_VOID_P == 8
       rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer64");
       if (rawDataClass == NULL)
 	{
@@ -253,7 +253,7 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 	}
     }
 
-#ifdef POINTERS_ARE_64BIT
+#if SIZEOF_VOID_P == 8
   return (*env)->NewObject (env, rawDataClass, rawData_mid, (jlong) data);
 #else
   return (*env)->NewObject (env, rawDataClass, rawData_mid, (jint) data);
@@ -263,7 +263,7 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 JNIEXPORT void * JNICALL
 JCL_GetRawData (JNIEnv * env, jobject rawdata)
 {
-#ifdef POINTERS_ARE_64BIT
+#if SIZEOF_VOID_P == 8
   return (void *) (*env)->GetLongField (env, rawdata, rawData_fid);
 #else
   return (void *) (*env)->GetIntField (env, rawdata, rawData_fid);

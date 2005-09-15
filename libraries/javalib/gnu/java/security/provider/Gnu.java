@@ -46,7 +46,7 @@ public final class Gnu extends Provider
 {
   public Gnu()
   {
-    super("GNU", 1.0, "GNU provider v1.0 implementing SHA-1, MD5, DSA, RSA, X.509 Certificates and CRLs, PKIX certificate path validators, Collection cert stores");
+    super("GNU", 1.0, "GNU provider v1.0 implementing SHA-1, MD5, DSA, RSA, X.509 Certificates and CRLs, PKIX certificate path validators, Collection cert stores, Diffie-Hellman key agreement");
 
     AccessController.doPrivileged (new PrivilegedAction()
     {
@@ -160,6 +160,14 @@ public final class Gnu extends Provider
 
         // CertStore
         put("CertStore.Collection", CollectionCertStoreImpl.class.getName());
+
+        // KeyAgreement
+        put("KeyAgreement.DiffieHellman", gnu.javax.crypto.DiffieHellmanImpl.class.getName());
+        put("Alg.Alias.KeyAgreement.DH", "DiffieHellman");
+
+        // Cipher
+        put("Cipher.RSAES-PKCS1-v1_5", gnu.javax.crypto.RSACipherImpl.class.getName());
+        put("Alg.Alias.Cipher.RSA", "RSAES-PKCS1-v1_5");
 
         return null;
       }

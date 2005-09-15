@@ -116,7 +116,17 @@ public class SizeRequirements implements Serializable
    */
   public String toString()
   {
-    return null; // TODO
+    StringBuilder b = new StringBuilder();
+    b.append("<[");
+    b.append(minimum);
+    b.append(',');
+    b.append(preferred);
+    b.append(',');
+    b.append(maximum);
+    b.append("]@");
+    b.append(alignment);
+    b.append('>');
+    return b.toString();
   }
 
   /**
@@ -271,7 +281,8 @@ public class SizeRequirements implements Serializable
                                                SizeRequirements[] children,
                                                int[] offsets, int[] spans)
   {
-    calculateTiledPositions(allocated, total, children, offsets, spans, true);
+    calculateAlignedPositions(allocated, total, children, offsets, spans,
+                              true);
   }
 
   /**
@@ -306,7 +317,12 @@ public class SizeRequirements implements Serializable
                                                int[] offset, int[] spans,
                                                boolean forward)
   {
-    // TODO
+    // TODO: Implement this correctly.
+    for (int i = 0; i < children.length; ++i)
+      {
+        // This is only a hack to make things work a little.
+        spans[i] = Math.min(allocated, children[i].maximum);
+      }
   }
 
   /**

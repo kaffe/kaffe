@@ -48,113 +48,107 @@ import java.io.InputStream;
  * @author	Andrew Selkirk
  * @version	1.0
  */
-public class ProgressMonitorInputStream extends FilterInputStream {
+public class ProgressMonitorInputStream extends FilterInputStream
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * monitor
+   */
+  private ProgressMonitor monitor;
 
-	/**
-	 * monitor
-	 */
-	private ProgressMonitor monitor;
+  /**
+   * nread
+   */
+  private int nread;
 
-	/**
-	 * nread
-	 */
-	private int nread;
+  /**
+   * size
+   */
+  private int size;
 
-	/**
-	 * size
-	 */
-	private int size;
+  /**
+   * Constructor ProgressMonitorInputStream
+   * @param component TODO
+   * @param message TODO
+   * @param stream TODO
+   */
+  public ProgressMonitorInputStream(Component component, Object message,
+                                    InputStream stream)
+  {
+    super(stream);
+    // TODO
+  }
 
+  /**
+   * reset
+   * @exception IOException TODO
+   */
+  public synchronized void reset() throws IOException
+  {
+    // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * read
+   * @exception IOException TODO
+   * @returns int
+   */
+  public int read() throws IOException
+  {
+    return 0; // TODO
+  }
 
-	/**
-	 * Constructor ProgressMonitorInputStream
-	 * @param component TODO
-	 * @param message TODO
-	 * @param stream TODO
-	 */
-	public ProgressMonitorInputStream(Component component, Object message,
-			InputStream stream) {
-		super(stream);
-		// TODO
-	} // ProgressMonitorInputStream()
+  /**
+   * read
+   * @param data TODO
+   * @exception IOException TODO
+   * @returns int
+   */
+  public int read(byte[] data) throws IOException
+  {
+    return 0; // TODO
+  }
 
+  /**
+   * read
+   * @param data TODO
+   * @param offset TODO
+   * @param length TODO
+   * @exception IOException TODO
+   * @returns int
+   */
+  public int read(byte[] data, int offset, int length) throws IOException
+  {
+    return 0; // TODO
+  }
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * skip
+   * @param length TODO
+   * @exception IOException TODO
+   * @returns long
+   */
+  public long skip(long length) throws IOException
+  {
+    return 0; // TODO
+  }
 
-	/**
-	 * reset
-	 * @exception IOException TODO
-	 */
-	public synchronized void reset() throws IOException {
-		// TODO
-	} // reset()
+  /**
+   * close
+   * @exception IOException TODO
+   */
+  public void close() throws IOException
+  {
+    // TODO
+  }
 
-	/**
-	 * read
-	 * @exception IOException TODO
-	 * @returns int
-	 */
-	public int read() throws IOException {
-		return 0; // TODO
-	} // read()
+  /**
+   * getProgressMonitor
+   * @returns ProgressMonitor
+   */
+  public ProgressMonitor getProgressMonitor()
+  {
+    return null; // TODO
+  }
 
-	/**
-	 * read
-	 * @param data TODO
-	 * @exception IOException TODO
-	 * @returns int
-	 */
-	public int read(byte[] data) throws IOException {
-		return 0; // TODO
-	} // read()
-
-	/**
-	 * read
-	 * @param data TODO
-	 * @param offset TODO
-	 * @param length TODO
-	 * @exception IOException TODO
-	 * @returns int
-	 */
-	public int read(byte[] data, int offset, int length) throws IOException {
-		return 0; // TODO
-	} // read()
-
-	/**
-	 * skip
-	 * @param length TODO
-	 * @exception IOException TODO
-	 * @returns long
-	 */
-	public long skip(long length) throws IOException {
-		return 0; // TODO
-	} // skip()
-
-	/**
-	 * close
-	 * @exception IOException TODO
-	 */
-	public void close() throws IOException {
-		// TODO
-	} // close()
-
-	/**
-	 * getProgressMonitor
-	 * @returns ProgressMonitor
-	 */
-	public ProgressMonitor getProgressMonitor() {
-		return null; // TODO
-	} // getProgressMonitor()
-
-
-} // ProgressMonitorInputStream
+}

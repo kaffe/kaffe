@@ -41,6 +41,7 @@ package javax.swing.plaf.basic;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JComponent;
+import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.Element;
 import javax.swing.text.FieldView;
@@ -63,6 +64,11 @@ public class BasicTextFieldUI extends BasicTextUI
     return new BasicTextFieldUI();
   }
 
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "TextField"
+   */
   protected String getPropertyPrefix()
   {
     return "TextField";

@@ -174,6 +174,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_text_SRCS) \
 	$(gnu_java_util_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
+	$(gnu_javax_crypto_SRCS) \
 	$(gnu_javax_rmi_SRCS) \
 	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(gnu_javax_swing_text_html_parser_SRCS) \
@@ -606,6 +607,7 @@ gnu_bytecode_SRCS = \
 	gnu/bytecode/ZipLoader.java \
 	gnu/bytecode/dump.java
 gnu_classpath_SRCS = \
+	gnu/classpath/ByteArray.java \
 	gnu/classpath/Pointer.java \
 	gnu/classpath/Pointer32.java \
 	gnu/classpath/Pointer64.java \
@@ -1767,6 +1769,10 @@ gnu_java_util_prefs_SRCS = \
 	gnu/java/util/prefs/MemoryBasedPreferences.java \
 	gnu/java/util/prefs/NodeReader.java \
 	gnu/java/util/prefs/NodeWriter.java
+gnu_javax_crypto_SRCS = \
+	gnu/javax/crypto/DiffieHellmanImpl.java \
+	gnu/javax/crypto/GnuDHPrivateKey.java \
+	gnu/javax/crypto/RSACipherImpl.java
 gnu_javax_rmi_SRCS = \
 	gnu/javax/rmi/PortableServer.java
 gnu_javax_rmi_CORBA_SRCS = \

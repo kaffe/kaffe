@@ -1,5 +1,5 @@
-/* BasicTextPaneUI.java -- 
-   Copyright (C) 2004  Free Software Foundation, Inc.
+/* GnuDHPrivateKey.java -- a Diffie-Hellman private key.
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -15,8 +15,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA.
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
 
 Linking this library statically or dynamically with other modules is
 making a combined work based on this library.  Thus, the terms and
@@ -36,39 +36,55 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.swing.plaf.basic;
+package gnu.javax.crypto;
 
-import javax.swing.JComponent;
-import javax.swing.UIDefaults;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.text.Element;
-import javax.swing.text.PlainView;
-import javax.swing.text.View;
+import java.math.BigInteger;
 
-public class BasicTextPaneUI extends BasicEditorPaneUI
+import javax.crypto.interfaces.DHKey;
+import javax.crypto.interfaces.DHPrivateKey;
+import javax.crypto.spec.DHParameterSpec;
+
+/**
+ * A Diffie-Hellman private key.
+ *
+ * @author Casey Marshall (csm@gnu.org)
+ */
+public class GnuDHPrivateKey implements DHPrivateKey
 {
-  public BasicTextPaneUI()
+
+  private final BigInteger x;
+  private final DHParameterSpec params;
+
+  public GnuDHPrivateKey (final BigInteger x, final DHParameterSpec params)
   {
-    // Do nothing here.
+    x.getClass ();
+    params.getClass ();
+    this.x = x;
+    this.params = params;
   }
 
-  public static ComponentUI createUI(JComponent comp)
+  public DHParameterSpec getParams()
   {
-    return new BasicTextPaneUI();
+    return params;
   }
 
-  public View create(Element elem)
+  public String getAlgorithm()
   {
-    return new PlainView(elem);
+    return "DiffieHellman";
   }
 
-  /**
-   * Returns the prefix for entries in the {@link UIDefaults} table.
-   *
-   * @return "TextPane"
-   */
-  protected String getPropertyPrefix()
+  public String getFormat ()
   {
-    return "TextPane";
+    return "NONE";
+  }
+
+  public byte[] getEncoded ()
+  {
+    return null;
+  }
+
+  public BigInteger getX ()
+  {
+    return x;
   }
 }

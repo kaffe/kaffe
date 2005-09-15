@@ -356,6 +356,6 @@ public abstract class FileSystemView
     // traversable. (No files are listed when you traverse the directory)
     // My best guess is that as long as it's a directory, the file is
     // traversable.
-    return new Boolean(f.isDirectory());
+    return Boolean.valueOf(f.isDirectory());
   }
 }

@@ -195,4 +195,89 @@ public class Utilities
 
     return maxWidth;
   }
+
+  /**
+   * Provides a facility to map screen coordinates into a model location. For a
+   * given text fragment and start location within this fragment, this method
+   * determines the model location so that the resulting fragment fits best
+   * into the span <code>[x0, x]</code>.
+   *
+   * The parameter <code>round</code> controls which model location is returned
+   * if the view coordinates are on a character: If <code>round</code> is
+   * <code>true</code>, then the result is rounded up to the next character, so
+   * that the resulting fragment is the smallest fragment that is larger than
+   * the specified span. If <code>round</code> is <code>false</code>, then the
+   * resulting fragment is the largest fragment that is smaller than the
+   * specified span.
+   *
+   * @param s the text segment
+   * @param fm the font metrics to use
+   * @param x0 the starting screen location
+   * @param x the target screen location at which the requested fragment should
+   *        end
+   * @param te the tab expander to use; if this is <code>null</code>, TABs are
+   *        expanded to one space character
+   * @param p0 the starting model location
+   * @param round if <code>true</code> round up to the next location, otherwise
+   *        round down to the current location
+   *
+   * @return the model location, so that the resulting fragment fits within the
+   *         specified span
+   */
+  public static final int getTabbedTextOffset(Segment s, FontMetrics fm, int x0,
+                                              int x, TabExpander te, int p0,
+                                              boolean round)
+  {
+    // At the end of the for loop, this holds the requested model location
+    int pos;
+    int currentX = x0;
+    for (pos = p0; pos < s.getEndIndex(); pos++)
+      {
+        char nextChar = s.array[pos];
+        if (nextChar != '\n')
+          currentX += fm.charWidth(nextChar);
+        else
+          {
+            if (te == null)
+              currentX += fm.charWidth(' ');
+            else
+              currentX = (int) te.nextTabStop(currentX, pos);
+          }
+        if (currentX >= x)
+          {
+            if (! round)
+              pos--;
+            break;
+          }
+      }
+    return pos;
+  }
+
+  /**
+   * Provides a facility to map screen coordinates into a model location. For a
+   * given text fragment and start location within this fragment, this method
+   * determines the model location so that the resulting fragment fits best
+   * into the span <code>[x0, x]</code>.
+   *
+   * This method rounds up to the next location, so that the resulting fragment
+   * will be the smallest fragment of the text, that is greater than the
+   * specified span.
+   *
+   * @param s the text segment
+   * @param fm the font metrics to use
+   * @param x0 the starting screen location
+   * @param x the target screen location at which the requested fragment should
+   *        end
+   * @param te the tab expander to use; if this is <code>null</code>, TABs are
+   *        expanded to one space character
+   * @param p0 the starting model location
+   *
+   * @return the model location, so that the resulting fragment fits within the
+   *         specified span
+   */
+  public static final int getTabbedTextOffset(Segment s, FontMetrics fm, int x0,
+                                              int x, TabExpander te, int p0)
+  {
+    return getTabbedTextOffset(s, fm, x0, x, te, p0, true);
+  }
 }

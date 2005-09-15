@@ -1,5 +1,5 @@
 /* java.lang.Character -- Wrapper class for char, and Unicode subsets
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2002, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -1480,28 +1480,28 @@ public final class Character implements Serializable, Comparable
 
 
   /**
-   * Minimum high surrrogate code in UTF-16 encoding.
+   * Minimum high surrogate code in UTF-16 encoding.
    *
    * @since 1.5
    */
   public static final char MIN_HIGH_SURROGATE = '\ud800';
 
   /**
-   * Maximum high surrrogate code in UTF-16 encoding.
+   * Maximum high surrogate code in UTF-16 encoding.
    *
    * @since 1.5
    */
   public static final char MAX_HIGH_SURROGATE = '\udbff';
  
   /**
-   * Minimum low surrrogate code in UTF-16 encoding.
+   * Minimum low surrogate code in UTF-16 encoding.
    *
    * @since 1.5
    */
   public static final char MIN_LOW_SURROGATE = '\udc00';
 
   /**
-   * Maximum low surrrogate code in UTF-16 encoding.
+   * Maximum low surrogate code in UTF-16 encoding.
    *
    * @since 1.5
    */
@@ -2370,7 +2370,7 @@ public final class Character implements Serializable, Comparable
    * Return number of 16-bit characters required to represent the given
    * code point.
    *
-   * @param codePoint a uncode code point
+   * @param codePoint a unicode code point
    *
    * @return 2 if codePoint >= 0x10000, 1 otherwise.
    *

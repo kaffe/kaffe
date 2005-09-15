@@ -1,5 +1,5 @@
 /* JOptionPane.java
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -858,7 +858,7 @@ public class JOptionPane extends JComponent implements Accessible
    */
   public static int showConfirmDialog(Component parentComponent, Object message)
   {
-    JOptionPane pane = new JOptionPane(message);
+    JOptionPane pane = new JOptionPane(message, QUESTION_MESSAGE);
     JDialog dialog = pane.createDialog(parentComponent, "Select an Option");
 
     dialog.pack();

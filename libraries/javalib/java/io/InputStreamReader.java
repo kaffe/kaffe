@@ -38,16 +38,14 @@ exception statement from your version. */
 
 package java.io;
 
-import java.nio.charset.UnsupportedCharsetException;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.CoderResult;
-import java.nio.charset.CodingErrorAction;
+import gnu.java.nio.charset.EncodingHelper;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.CharBuffer;
-import java.nio.ByteBuffer;
-import gnu.java.nio.charset.EncodingHelper;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 
 /**
  * This class reads characters from a byte input stream.   The characters

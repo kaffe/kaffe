@@ -65,11 +65,10 @@ import javax.swing.undo.UndoableEdit;
  * @author original author unknown
  * @author Roman Kennke (roman@kennke.org)
  */
-public abstract class AbstractDocument
-  implements Document, Serializable
+public abstract class AbstractDocument implements Document, Serializable
 {
-  /** The serial version UID for this class as of JDK1.4. */
-  private static final long serialVersionUID = -116069779446114664L;
+  /** The serialization UID (compatible with JDK1.5). */
+  private static final long serialVersionUID = 6842927725919637215L;
 
   /**
    * Standard error message to indicate a bad location.
@@ -332,7 +331,7 @@ public abstract class AbstractDocument
    * @see GapContent
    * @see StringContent
    */
-  protected Content getContent()
+  protected final Content getContent()
   {
     return content;
   }
@@ -970,8 +969,8 @@ public abstract class AbstractDocument
   public abstract class AbstractElement
     implements Element, MutableAttributeSet, TreeNode, Serializable
   {
-    /** The serial version UID for AbstractElement. */
-    private static final long serialVersionUID = 1265312733007397733L;
+    /** The serialization UID (compatible with JDK1.5). */
+    private static final long serialVersionUID = 1712240033321461704L;
 
     /** The number of characters that this Element spans. */
     int count;
@@ -1355,49 +1354,6 @@ public abstract class AbstractDocument
     public abstract int getStartOffset();
 
     /**
-     * Prints diagnostic information to the specified stream.
-     *
-     * @param stream the stream to dump to
-     * @param indent the indentation level
-     * @param element the element to be dumped
-     */
-    private void dumpElement(PrintStream stream, String indent,
-                             Element element)
-    {
-      // FIXME: Should the method be removed?
-      System.out.println(indent + "<" + element.getName() +">");
-
-      if (element.isLeaf())
-	{
-	  int start = element.getStartOffset();
-	  int end = element.getEndOffset();
-	  String text = "";
-	  try
-	    {
-	      text = getContent().getString(start, end - start);
-	    }
-	  catch (BadLocationException e)
-	    {
-          AssertionError error =
-            new AssertionError("BadLocationException should not be "
-                               + "thrown here. start = " + start
-                               + ", end = " + end);
-          error.initCause(e);
-          throw error;
-	    }
-	  System.out.println(indent + "  ["
-			     + start + ","
-			     + end + "]["
-			     + text + "]");
-	}
-      else
-	{
-	  for (int i = 0; i < element.getElementCount(); ++i)
-	    dumpElement(stream, indent + "  ", element.getElement(i));
-	}
-    }
-
-    /**
      * Prints diagnostic output to the specified stream.
      *
      * @param stream the stream to write to
@@ -1405,10 +1361,65 @@ public abstract class AbstractDocument
      */
     public void dump(PrintStream stream, int indent)
     {
-      String indentStr = "";
+      StringBuffer b = new StringBuffer();
       for (int i = 0; i < indent; ++i)
-	indentStr += "  ";
-      dumpElement(stream, indentStr, this);
+        b.append(' ');
+      b.append('<');
+      b.append(getName());
+      // Dump attributes if there are any.
+      if (getAttributeCount() > 0)
+        {
+          b.append('\n');
+          Enumeration attNames = getAttributeNames();
+          while (attNames.hasMoreElements())
+            {
+              for (int i = 0; i < indent + 2; ++i)
+                b.append(' ');
+              Object attName = attNames.nextElement();
+              b.append(attName);
+              b.append('=');
+              Object attribute = getAttribute(attName);
+              b.append(attribute);
+              b.append('\n');
+            }
+        }
+      b.append(">\n");
+
+      // Dump element content for leaf elements.
+      if (isLeaf())
+        {
+          for (int i = 0; i < indent + 2; ++i)
+            b.append(' ');
+          int start = getStartOffset();
+          int end = getEndOffset();
+          b.append('[');
+          b.append(start);
+          b.append(',');
+          b.append(end);
+          b.append("][");
+          try
+            {
+              b.append(getDocument().getText(start, end - start));
+            }
+          catch (BadLocationException ex)
+            {
+              AssertionError err = new AssertionError("BadLocationException "
+                                                      + "must not be thrown "
+                                                      + "here.");
+              err.initCause(ex);
+            }
+          b.append("]\n");
+        }
+      stream.print(b.toString());
+
+      // Dump child elements if any.
+      int count = getElementCount();
+      for (int i = 0; i < count; ++i)
+        {
+          Element el = getElement(i);
+          if (el instanceof AbstractElement)
+            ((AbstractElement) el).dump(stream, indent + 2);
+        }
     }
   }
 
@@ -1418,8 +1429,8 @@ public abstract class AbstractDocument
    */
   public class BranchElement extends AbstractElement
   {
-    /** The serial version UID for BranchElement. */
-    private static final long serialVersionUID = -8595176318868717313L;
+    /** The serialization UID (compatible with JDK1.5). */
+    private static final long serialVersionUID = -6037216547466333183L;
 
     /** The child elements of this BranchElement. */
     private Element[] children = new Element[0];
@@ -1642,8 +1653,8 @@ public abstract class AbstractDocument
   public class DefaultDocumentEvent extends CompoundEdit
     implements DocumentEvent
   {
-    /** The serial version UID of DefaultDocumentEvent. */
-    private static final long serialVersionUID = -7406103236022413522L;
+    /** The serialization UID (compatible with JDK1.5). */
+    private static final long serialVersionUID = 5230037221564563284L;
 
     /** The starting offset of the change. */
     private int offset;
@@ -1843,8 +1854,8 @@ public abstract class AbstractDocument
    */
   public class LeafElement extends AbstractElement
   {
-    /** The serial version UID of LeafElement. */
-    private static final long serialVersionUID = 5115368706941283802L;
+    /** The serialization UID (compatible with JDK1.5). */
+    private static final long serialVersionUID = -8906306331347768017L;
 
     /** Manages the start offset of this element. */
     Position startPos;

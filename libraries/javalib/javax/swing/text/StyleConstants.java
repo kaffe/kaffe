@@ -109,7 +109,7 @@ public class StyleConstants
     if (a.isDefined(Background))
       return (Color) a.getAttribute(Background);
     else
-      return Color.BLACK;
+      return Color.WHITE;
   } 
   
   public static int getBidiLevel(AttributeSet a)

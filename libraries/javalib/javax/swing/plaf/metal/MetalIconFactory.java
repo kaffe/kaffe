@@ -670,7 +670,8 @@ public class MetalIconFactory implements Serializable
    * 
    * @since 1.3
    */
-  public static class PaletteCloseIcon implements Icon, Serializable 
+  public static class PaletteCloseIcon 
+    implements Icon, Serializable, UIResource
   {
     /**
      * Returns the width of the icon, in pixels.

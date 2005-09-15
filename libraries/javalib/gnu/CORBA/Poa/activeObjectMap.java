@@ -142,17 +142,6 @@ public class activeObjectMap
     {
       deactivated = state;
     }
-
-    public boolean equals(java.lang.Object other)
-    {
-      if (other instanceof Obj)
-        {
-          Obj o = (Obj) other;
-          return o.object.equals(object);
-        }
-      else
-        return false;
-    }
   }
 
   /**

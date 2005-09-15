@@ -277,7 +277,7 @@ public class BasicFileChooserUI extends FileChooserUI
      */
     public Boolean isHidden(File f)
     {
-      return new Boolean(filechooser.getFileSystemView().isHiddenFile(f));
+      return Boolean.valueOf(filechooser.getFileSystemView().isHiddenFile(f));
     }
   }
 

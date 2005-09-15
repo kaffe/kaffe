@@ -41,7 +41,9 @@ package javax.swing.text;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Vector;
 
 import javax.swing.undo.UndoableEdit;
 
@@ -114,7 +116,9 @@ public class GapContent
     public int getOffset()
     {
       // Check precondition.
-      assert(mark <= gapStart || mark > gapEnd);
+      assert mark <= gapStart || mark > gapEnd : "mark: " + mark
+                                               + ", gapStart: " + gapStart
+                                               + ", gapEnd: " + gapEnd;
 
       if (mark <= gapStart)
         return mark;
@@ -130,7 +134,7 @@ public class GapContent
    * This is the default buffer size and the amount of bytes that a buffer is
    * extended if it is full.
    */
-  static final int DEFAULT_BUFSIZE = 64;
+  static final int DEFAULT_BUFSIZE = 10;
 
   /**
    * The text buffer.
@@ -169,9 +173,9 @@ public class GapContent
   public GapContent(int size)
   {
     buffer = (char[]) allocateArray(size);
-    gapStart = 0;
-    gapEnd = size - 1;
-    buffer[size - 1] = '\n';
+    gapStart = 1;
+    gapEnd = size;
+    buffer[0] = '\n';
     positions = new ArrayList();
   }
 
@@ -389,7 +393,19 @@ public class GapContent
    */
   protected void shiftEnd(int newSize)
   {
-    int delta = (gapEnd - gapStart) - newSize;
+    assert newSize > (gapEnd - gapStart) : "The new gap size must be greater "
+                                           + "than the old gap size";
+
+    int delta = newSize - gapEnd + gapStart;
+    // Update the marks after the gapEnd.
+    Vector v = getPositionsInRange(null, gapEnd, buffer.length - gapEnd);
+    for (Iterator i = v.iterator(); i.hasNext();)
+    {
+      GapContentPosition p = (GapContentPosition) i.next();
+      p.mark += delta;
+    }
+
+    // Copy the data around.
     char[] newBuf = (char[]) allocateArray(length() + newSize);
     System.arraycopy(buffer, 0, newBuf, 0, gapStart);
     System.arraycopy(buffer, gapEnd, newBuf, gapStart + newSize, buffer.length
@@ -397,18 +413,6 @@ public class GapContent
     gapEnd = gapStart + newSize;
     buffer = newBuf;
 
-    // Update the marks after the gapEnd.
-    int index = Collections.binarySearch(positions, new GapContentPosition(
-        gapEnd));
-    if (index < 0)
-    {
-      index = -(index + 1);
-    }
-    for (ListIterator i = positions.listIterator(index); i.hasNext();)
-    {
-      GapContentPosition p = (GapContentPosition) i.next();
-      p.mark += delta;
-    }
   }
 
   /**
@@ -421,30 +425,19 @@ public class GapContent
     if (newGapStart == gapStart)
       return;
 
-    int newGapEnd = newGapStart + (gapEnd - gapStart);
-
-    // Update the positions between newGapEnd and (old) gapEnd. The marks
-    // must be shifted by (gapEnd - newGapEnd).
-    int index1 = Collections.binarySearch(positions,
-                                          new GapContentPosition(gapEnd));
-    int index2 = Collections.binarySearch(positions,
-                                          new GapContentPosition(newGapEnd));
-    if (index1 > 0 && index2 > 0)
-      {
-        int i1 = Math.min(index1, index2);
-        int i2 = Math.max(index1, index2);
-        for (ListIterator i = positions.listIterator(i1); i.hasNext();)
-          {
-            if (i.nextIndex() > i2)
-              break;
-            
-            GapContentPosition p = (GapContentPosition) i.next();
-            p.mark += gapEnd - newGapEnd;
-          }
-      }
+    int newGapEnd = newGapStart + gapEnd - gapStart;
 
     if (newGapStart < gapStart)
       {
+        // Update the positions between newGapStart and (old) gapStart. The marks
+        // must be shifted by (gapEnd - gapStart).
+        Vector v = getPositionsInRange(null, newGapStart + 1,
+                                       gapStart - newGapStart + 1);
+        for (Iterator i = v.iterator(); i.hasNext();)
+          {
+            GapContentPosition p = (GapContentPosition) i.next();
+            p.mark += gapEnd - gapStart;
+          }
         System.arraycopy(buffer, newGapStart, buffer, newGapEnd, gapStart
                          - newGapStart);
         gapStart = newGapStart;
@@ -452,11 +445,68 @@ public class GapContent
       }
     else
       {
+        // Update the positions between newGapEnd and (old) gapEnd. The marks
+        // must be shifted by (gapEnd - gapStart).
+        Vector v = getPositionsInRange(null, gapEnd,
+                                       newGapEnd - gapEnd);
+        for (Iterator i = v.iterator(); i.hasNext();)
+          {
+            GapContentPosition p = (GapContentPosition) i.next();
+            p.mark -= gapEnd - gapStart;
+          }
         System.arraycopy(buffer, gapEnd, buffer, gapStart, newGapStart
                          - gapStart);
         gapStart = newGapStart;
         gapEnd = newGapEnd;
       }
+  }
+
+  /**
+   * Shifts the gap start downwards. This does not affect the content of the
+   * buffer. This only updates the gap start and all the marks that are between
+   * the old gap start and the new gap start. They all are squeezed to the start
+   * of the gap, because their location has been removed.
+   *
+   * @param newGapStart the new gap start
+   */
+  protected void shiftGapStartDown(int newGapStart)
+  {
+    if (newGapStart == gapStart)
+      return;
+
+    assert newGapStart < gapStart : "The new gap start must be less than the "
+                                    + "old gap start.";
+    Vector v = getPositionsInRange(null, newGapStart, gapStart - newGapStart);
+    for (Iterator i = v.iterator(); i.hasNext();)
+      {
+        GapContentPosition p = (GapContentPosition) i.next();
+        p.mark = gapStart;
+      }
+    gapStart = newGapStart;
+  }
+
+  /**
+   * Shifts the gap end upwards. This does not affect the content of the
+   * buffer. This only updates the gap end and all the marks that are between
+   * the old gap end and the new end start. They all are squeezed to the end
+   * of the gap, because their location has been removed.
+   *
+   * @param newGapEnd the new gap start
+   */
+  protected void shiftGapEndUp(int newGapEnd)
+  {
+    if (newGapEnd == gapEnd)
+      return;
+
+    assert newGapEnd > gapEnd : "The new gap end must be greater than the "
+                                + "old gap end.";
+    Vector v = getPositionsInRange(null, gapEnd, newGapEnd - gapEnd);
+    for (Iterator i = v.iterator(); i.hasNext();)
+      {
+        GapContentPosition p = (GapContentPosition) i.next();
+        p.mark = newGapEnd + 1;
+      }
+    gapEnd = newGapEnd;
   }
 
   /**
@@ -482,11 +532,11 @@ public class GapContent
   {
     // Remove content
     shiftGap(position);
-    gapEnd += rmSize;
+    shiftGapEndUp(gapEnd + rmSize);
 
     // If gap is too small, enlarge the gap.
-    if ((gapEnd - gapStart) < addSize)
-      shiftEnd(addSize);
+    if ((gapEnd - gapStart) <= addSize)
+      shiftEnd((addSize - gapEnd + gapStart + 1) * 2 + gapEnd + DEFAULT_BUFSIZE);
 
     // Add new items to the buffer.
     if (addItems != null)
@@ -494,5 +544,65 @@ public class GapContent
         System.arraycopy(addItems, 0, buffer, gapStart, addSize);
         gapStart += addSize;
       }
+  }
+
+  /**
+   * Returns the start index of the gap within the buffer array.
+   *
+   * @return the start index of the gap within the buffer array
+   */
+  protected final int getGapStart()
+  {
+    return gapStart;
+  }
+
+  /**
+   * Returns the end index of the gap within the buffer array.
+   *
+   * @return the end index of the gap within the buffer array
+   */
+  protected final int getGapEnd()
+  {
+    return gapEnd;
+  }
+
+  /**
+   * Returns all <code>Position</code>s that are in the range specified by
+   * <code>offset</code> and </code>length</code> within the buffer array.
+   *
+   * @param v the vector to use; if <code>null</code>, a new Vector is allocated
+   * @param offset the start offset of the range to search
+   * @param length the length of the range to search
+   *
+   * @return the positions within the specified range
+   */
+  protected Vector getPositionsInRange(Vector v, int offset, int length)
+  {
+    Vector res = v;
+    if (res == null)
+      res = new Vector();
+    else
+      res.clear();
+
+    int endOffset = offset + length;
+
+    int index1 = Collections.binarySearch(positions,
+                                          new GapContentPosition(offset));
+    int index2 = Collections.binarySearch(positions,
+                                          new GapContentPosition(endOffset));
+    if (index1 < 0)
+      index1 = -(index1 + 1);
+    if (index2 < 0)
+      index2 = -(index2 + 1);
+    for (ListIterator i = positions.listIterator(index1); i.hasNext();)
+      {
+        if (i.nextIndex() > index2)
+          break;
+        
+        GapContentPosition p = (GapContentPosition) i.next();
+        if (p.mark >= offset && p.mark <= endOffset)
+          res.add(p);
+      }
+    return res;
   }
 }

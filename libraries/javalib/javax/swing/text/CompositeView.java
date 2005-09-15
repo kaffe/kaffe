@@ -314,6 +314,7 @@ public abstract class CompositeView
    */
   public int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a,
                                        int direction, Position.Bias[] biasRet)
+    throws BadLocationException
   {
     int retVal = -1;
     switch (direction)
@@ -594,6 +595,7 @@ public abstract class CompositeView
   protected int getNextNorthSouthVisualPositionFrom(int pos, Position.Bias b,
                                                     Shape a, int direction,
                                                     Position.Bias[] biasRet)
+    throws BadLocationException
   {
     // FIXME: Implement this correctly.
     return pos;
@@ -627,6 +629,7 @@ public abstract class CompositeView
   protected int getNextEastWestVisualPositionFrom(int pos, Position.Bias b,
                                                   Shape a, int direction,
                                                   Position.Bias[] biasRet)
+    throws BadLocationException
   {
     // FIXME: Implement this correctly.
     return pos;

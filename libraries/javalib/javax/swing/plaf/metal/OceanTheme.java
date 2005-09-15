@@ -41,6 +41,7 @@ import javax.swing.plaf.ColorUIResource;
 
 /**
  * A modern theme for the Metal Look &amp; Feel.
+ * @since 1.5
  *
  * @author Roman Kennke (roman@kennke.org)
  */

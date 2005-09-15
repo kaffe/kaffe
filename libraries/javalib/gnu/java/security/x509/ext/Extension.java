@@ -232,7 +232,7 @@ public class Extension
   {
     List ext = new ArrayList (3);
     ext.add (new DERValue (DER.OBJECT_IDENTIFIER, oid));
-    ext.add (new DERValue (DER.BOOLEAN, new Boolean (critical)));
+    ext.add (new DERValue (DER.BOOLEAN, Boolean.valueOf (critical)));
     ext.add (new DERValue (DER.OCTET_STRING, value.getEncoded()));
     return new DERValue (DER.CONSTRUCTED|DER.SEQUENCE, ext);
   }

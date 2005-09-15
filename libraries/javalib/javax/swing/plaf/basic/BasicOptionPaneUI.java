@@ -941,10 +941,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
       {
       case JOptionPane.YES_NO_OPTION:
 	return new Object[] { YES_STRING, NO_STRING };
+      case JOptionPane.DEFAULT_OPTION:
       case JOptionPane.YES_NO_CANCEL_OPTION:
 	return new Object[] { YES_STRING, NO_STRING, CANCEL_STRING };
       case JOptionPane.OK_CANCEL_OPTION:
-      case JOptionPane.DEFAULT_OPTION:
 	return new Object[] { OK_STRING, CANCEL_STRING };
       }
     return null;

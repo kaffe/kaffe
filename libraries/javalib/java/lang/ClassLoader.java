@@ -892,7 +892,7 @@ public abstract class ClassLoader
    *
    * @param name the (system specific) name of the requested library
    * @return the full pathname to the requested library, or null
-   * @see Runtime#loadLibrary()
+   * @see Runtime#loadLibrary(String)
    * @since 1.2
    */
   protected String findLibrary(String name)
@@ -922,7 +922,7 @@ public abstract class ClassLoader
    *
    * @param name the package (and subpackages) to affect
    * @param enabled true to set the default to enabled
-   * @see #setDefaultAssertionStatus(String, boolean)
+   * @see #setDefaultAssertionStatus(boolean)
    * @see #setClassAssertionStatus(String, boolean)
    * @see #clearAssertionStatus()
    * @since 1.4
@@ -943,7 +943,7 @@ public abstract class ClassLoader
    * @param name the class to affect
    * @param enabled true to set the default to enabled
    * @throws NullPointerException if name is null
-   * @see #setDefaultAssertionStatus(String, boolean)
+   * @see #setDefaultAssertionStatus(boolean)
    * @see #setPackageAssertionStatus(String, boolean)
    * @see #clearAssertionStatus()
    * @since 1.4

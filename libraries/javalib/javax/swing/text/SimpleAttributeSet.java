@@ -45,6 +45,9 @@ import java.util.Hashtable;
 public class SimpleAttributeSet
   implements MutableAttributeSet, Serializable, Cloneable
 {
+  /** The serialization UID (compatible with JDK1.5). */
+  private static final long serialVersionUID = 8267656273837665219L;
+
   public static final AttributeSet EMPTY = new SimpleAttributeSet();
 
   Hashtable tab;
@@ -89,7 +92,7 @@ public class SimpleAttributeSet
     return tab.containsKey(name) 
       && tab.get(name).equals(value);
   }
-    
+
   public boolean containsAttributes(AttributeSet attributes)
   {
     Enumeration e = attributes.getAttributeNames();
@@ -110,9 +113,9 @@ public class SimpleAttributeSet
 
   public boolean equals(Object obj)
   {
-    return (obj != null) 
-      && (obj instanceof SimpleAttributeSet)
-      && ((SimpleAttributeSet)obj).tab.equals(this.tab);
+    return 
+      (obj instanceof AttributeSet)
+      && this.isEqual((AttributeSet) obj);
   }
 
   public Object getAttribute(Object name)
@@ -160,7 +163,9 @@ public class SimpleAttributeSet
         
   public boolean isEqual(AttributeSet attr)
   {
-    return this.equals(attr);
+    return attr != null 
+      && attr.containsAttributes(this)
+      && this.containsAttributes(attr);
   }
     
   public void removeAttribute(Object name)

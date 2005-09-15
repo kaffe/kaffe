@@ -57,9 +57,15 @@ import javax.swing.event.EventListenerList;
 public class StyleContext 
     implements Serializable, AbstractDocument.AttributeContext
 {
+  /** The serialization UID (compatible with JDK1.5). */
+  private static final long serialVersionUID = 8042858831190784241L;
+
   public class NamedStyle
     implements Serializable, Style
   {
+    /** The serialization UID (compatible with JDK1.5). */
+    private static final long serialVersionUID = -6690628971806226374L;
+
     protected ChangeEvent changeEvent;
     protected EventListenerList listenerList;
       
@@ -288,7 +294,7 @@ public class StyleContext
     public boolean equals(Object obj)
     {
       return 
-        (obj instanceof SmallAttributeSet)
+        (obj instanceof AttributeSet)
         && this.isEqual((AttributeSet)obj);
     }
  

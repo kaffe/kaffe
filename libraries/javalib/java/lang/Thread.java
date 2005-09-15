@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.lang;
 
+import java.security.Permission;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -704,7 +705,7 @@ public class Thread implements Runnable
    *
    * @return the context class loader
    * @throws SecurityException when permission is denied
-   * @see setContextClassLoader(ClassLoader)
+   * @see #setContextClassLoader(ClassLoader)
    * @since 1.2
    */
   public synchronized ClassLoader getContextClassLoader()
@@ -726,7 +727,7 @@ public class Thread implements Runnable
    *
    * @param classloader the new context class loader
    * @throws SecurityException when permission is denied
-   * @see getContextClassLoader()
+   * @see #getContextClassLoader()
    * @since 1.2
    */
   public synchronized void setContextClassLoader(ClassLoader classloader)

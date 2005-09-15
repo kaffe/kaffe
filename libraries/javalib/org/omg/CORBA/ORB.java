@@ -89,7 +89,7 @@ import java.util.Properties;
  * </td></tr>
  * <tr><td>org.omg.CORBA.ORBInitRef</td><td>Specifies the
  * initial reference, accessible by name with the method
- * {@link resolve_initial_references(String)}.
+ * {@link #resolve_initial_references(String)}.
  * </table>
  * The command line accepts the same properties as a keys. When specifying
  * in the command line, the prefix org.omg.CORBA can be omitted,
@@ -100,8 +100,8 @@ import java.util.Properties;
 public abstract class ORB
 {
   /**
-  * By default, {@link init(String[], Properties)} and
-  * {@link init(Applet, Properties} return
+  * By default, {@link #init(String[], Properties)} and
+  * {@link #iinit(Applet, Properties)} return
   * the built-in fully functional ORB is returned. If the
   * <code>props</code> contains the property org.omg.CORBA.ORBClass,
   * the value of this property is used as a class name to instantiate
@@ -172,7 +172,7 @@ public abstract class ORB
 
   /**
    * Create an instance of the CORBA {@link Any} with the type, intialised
-   * to {@link TCKind#tc_null}
+   * to {@link TCKind#tk_null}
    */
   public abstract Any create_any();
 
@@ -394,7 +394,7 @@ public abstract class ORB
    *
    * @return the named value.
    */
-  public abstract NamedValue create_named_value(String s, Any any, int flags);
+  public abstract NamedValue create_named_value(String name, Any any, int flags);
 
   /**
    * Send multiple prepared requests one way, do not caring about the answer.
@@ -466,7 +466,7 @@ public abstract class ORB
    * However this method is oficially documented as not implemented at least
    * till v1.4 inclusive.
    *
-   * @param peration_definition the operation definition, must be
+   * @param operation_definition the operation definition, must be
    * CORBA <code>OperationDef</code>.
    *
    * @return never
@@ -482,7 +482,7 @@ public abstract class ORB
    * <p>Creates the new policy of the specified type, having the given value.
    * This method looks for the policy factory that was previously registered
    * during ORB initialization by
-   * {@link org.omg.PortableInterceptor.ORBInitialiser}.
+   * {@link org.omg.PortableInterceptor#ORBInitialiser}.
    *
    * If the suitable factory is found, this factory creates the requested policy,
    * otherwise the PolicyError is thrown.
@@ -532,7 +532,7 @@ public abstract class ORB
    *
    * The TypeCode object is initialized with the given id, name, and members.
    * @param id the Id of this type.
-   * @param the name of this type.
+   * @param name the name of this type.
    * @param members the member list.
    *
    * @return the typecode.
@@ -548,7 +548,7 @@ public abstract class ORB
    * and members.
    *
    * @param id the Id of this type.
-   * @param the name of this type.
+   * @param name the name of this type.
    * @param discriminator the union discriminator.
    * @param members the member list.
    *
@@ -741,7 +741,7 @@ public abstract class ORB
    * @return the default context of this ORB.
    *
    * @throws NO_IMPLEMENT for the Singleton ORB, returned by
-   * the parameterless {@link init()}.
+   * the parameterless {@link #init()}.
    */
   public Context get_default_context()
   {
@@ -751,7 +751,7 @@ public abstract class ORB
   /**
    * Return thg typecode, representing the given primitive object type.
    *
-   * @param the kind of the primitive typecode.
+   * @param tcKind the kind of the primitive typecode.
    *
    * @return the typecode of the primitve typecode.
    */
@@ -817,7 +817,7 @@ public abstract class ORB
    * By default the built-in fully functional ORB is returned. The ORB class
    * is found as described in the header of this class.
    *
-   * @param the parameters, passed to the applications
+   * @param args the parameters, passed to the applications
    * <code>main(String[] args)</code> method, may be <code>null</code>.
    * The parameter -org.omg.CORBA.ORBClass <class name>
    * if present, defines the used ORB implementation class. If this
@@ -856,7 +856,7 @@ public abstract class ORB
    *
    * @return a list of services.
    *
-   * @see resolve_initial_references(String)
+   * @see #resolve_initial_references(String)
    */
   public abstract String[] list_initial_services();
 
@@ -919,9 +919,9 @@ public abstract class ORB
    * (key) inside the server, the communication protocol version,
    * supported charsets and so on.
    *
-   * @param the CORBA object
+   * @param forObject the CORBA object
    * @return the object IOR representation.
-   * @see string_to_object(String)
+   * @see #string_to_object(String)
    */
   public abstract String object_to_string(Object forObject);
 
@@ -1016,7 +1016,7 @@ public abstract class ORB
    * @throws DATA_CONVERSION if the string being parsed contains unsupported
    * prefix or protocol.
    * 
-   * @see object_to_string(org.omg.CORBA.Object)
+   * @see #object_to_string(org.omg.CORBA.Object)
    */
   public abstract Object string_to_object(String IOR);
 
@@ -1056,7 +1056,7 @@ public abstract class ORB
    * application.
    *
    * @param props application specific properties that were passed
-   * as a second parameter in {@link init(String[], Properties)}).
+   * as a second parameter in {@link #init(String[], Properties)}).
    * Can be <code>null</code>.
    */
   protected abstract void set_parameters(String[] para, Properties props);

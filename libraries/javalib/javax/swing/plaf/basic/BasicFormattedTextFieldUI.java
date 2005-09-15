@@ -1,5 +1,5 @@
 /* BasicFormattedTextFieldUI.java
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.swing.plaf.basic;
 
 import javax.swing.JComponent;
+import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
 
 /**
@@ -55,6 +56,11 @@ public class BasicFormattedTextFieldUI extends BasicTextFieldUI
     return new BasicFormattedTextFieldUI();
   }
 
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "FormattedTextField"
+   */
   protected String getPropertyPrefix()
   {
     return "FormattedTextField";

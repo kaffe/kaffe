@@ -43,7 +43,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
-import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 

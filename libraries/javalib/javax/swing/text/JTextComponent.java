@@ -303,9 +303,7 @@ public abstract class JTextComponent extends JComponent
   /**
    * The timer that lets the caret blink.
    */
-  private class CaretBlinkTimer
-    extends Timer
-    implements ActionListener
+  private class CaretBlinkTimer extends Timer implements ActionListener
   {
     /**
      * Creates a new CaretBlinkTimer object with a default delay of 1 second.
@@ -604,8 +602,7 @@ public abstract class JTextComponent extends JComponent
     }
   }
 
-  class DefaultTransferHandler
-    extends TransferHandler
+  class DefaultTransferHandler extends TransferHandler
   {
     public boolean canImport(JComponent component, DataFlavor[] flavors)
     {
@@ -1105,7 +1102,8 @@ public abstract class JTextComponent extends JComponent
    */
   protected String paramString()
   {
-    return "JTextComponent";
+    // TODO: Do something useful here.
+    return super.paramString();
   }
 
   /**

@@ -208,6 +208,8 @@ public class JTextArea extends JTextComponent
 	      /* This shouldn't happen in theory -- but, if it does...  */
 	      throw new RuntimeException("Unexpected exception occurred.", exception);
 	  }
+      if (toAppend != null && toAppend.length() > 0)
+        invalidate();
   }
 
   /**
@@ -312,8 +314,12 @@ public class JTextArea extends JTextComponent
   {
     if (columns < 0)
       throw new IllegalArgumentException();
-
-    this.columns = columns;
+    
+    if (columns != this.columns)
+      {
+        this.columns = columns;
+        invalidate();
+      }
   }
 
   /**
@@ -337,8 +343,12 @@ public class JTextArea extends JTextComponent
   {
     if (rows < 0)
       throw new IllegalArgumentException();
-
-    this.rows = rows;
+   
+    if (rows != this.rows)
+      {
+        this.rows = rows;
+        invalidate();
+      }
   }
 
   /**

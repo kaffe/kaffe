@@ -80,23 +80,27 @@ public class RepaintManager
    * swing paint thread, which revalidates all invalid components and
    * repaints any damage in the swing scene.</p>
    */
-
   protected class RepaintWorker
     implements Runnable
   {
+
     boolean live;
+
     public RepaintWorker()
     {
       live = false;
     }
+
     public synchronized void setLive(boolean b) 
     {
       live = b;
     }
+
     public synchronized boolean isLive()
     {
       return live;
     }
+
     public void run()
     {
       RepaintManager rm = RepaintManager.globalManager;
@@ -104,9 +108,9 @@ public class RepaintManager
       rm.validateInvalidComponents();
       rm.paintDirtyRegions();
     }
+
   }
 
-  
   /** 
    * A table storing the dirty regions of components.  The keys of this
    * table are components, the values are rectangles. Each component maps

@@ -66,8 +66,7 @@ public class DefaultEditorKit extends EditorKit
    *
    * @see Toolkit#beep()
    */
-  public static class BeepAction
-    extends TextAction
+  public static class BeepAction extends TextAction
   {
     /**
      * Creates a new <code>BeepAction</code>.
@@ -95,8 +94,7 @@ public class DefaultEditorKit extends EditorKit
    * @see CutAction
    * @see PasteAction
    */
-  public static class CopyAction 
-    extends TextAction
+  public static class CopyAction extends TextAction
   {
 
     /**
@@ -128,8 +126,7 @@ public class DefaultEditorKit extends EditorKit
    * @see CopyAction
    * @see PasteAction
    */
-  public static class CutAction 
-    extends TextAction
+  public static class CutAction extends TextAction
   {
 
     /**
@@ -159,8 +156,7 @@ public class DefaultEditorKit extends EditorKit
    * @see CopyAction
    * @see CutAction
    */
-  public static class PasteAction 
-    extends TextAction
+  public static class PasteAction extends TextAction
   {
 
     /**
@@ -243,8 +239,7 @@ public class DefaultEditorKit extends EditorKit
    * of the text component. This is typically triggered by hitting
    * ENTER on the keyboard.
    */
-  public static class InsertBreakAction 
-    extends TextAction
+  public static class InsertBreakAction extends TextAction
   {
 
     /**
@@ -273,8 +268,7 @@ public class DefaultEditorKit extends EditorKit
    */
   // FIXME: Figure out what this Action is supposed to do. Obviously text
   // that is entered by the user is inserted through DefaultKeyTypedAction.
-  public static class InsertContentAction 
-    extends TextAction
+  public static class InsertContentAction extends TextAction
   {
 
     /**
@@ -298,8 +292,7 @@ public class DefaultEditorKit extends EditorKit
   /**
    * Inserts a TAB character into the text editor.
    */
-  public static class InsertTabAction 
-    extends TextAction
+  public static class InsertTabAction extends TextAction
   {
 
     /**

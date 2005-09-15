@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.swing.plaf.basic;
 
 import javax.swing.JComponent;
+import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.Element;
 import javax.swing.text.PasswordView;
@@ -60,6 +61,11 @@ public class BasicPasswordFieldUI extends BasicTextFieldUI
     return new BasicPasswordFieldUI();
   }
 
+  /**
+   * Returns the prefix for entries in the {@link UIDefaults} table.
+   *
+   * @return "PasswordField"
+   */
   protected String getPropertyPrefix()
   {
     return "PasswordField";

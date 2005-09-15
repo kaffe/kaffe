@@ -221,7 +221,6 @@ public class BoxView
   protected void paintChild(Graphics g, Rectangle alloc, int index)
   {
     View child = getView(index);
-    childAllocation(index, alloc);
     child.paint(g, alloc);
   }
 
@@ -306,12 +305,8 @@ public class BoxView
     int count = getViewCount();
     for (int i = 0; i < count; ++i)
       {
-        // TODO: Figure out if the parameter to paintChild is meant to
-        // be the child allocation or the allocation of this BoxView.
-        // I assume the second option here.
-        // We pass this method a copy of the inside rectangle here because
-        // it modifies the actual values.
         copy.setBounds(inside);
+        childAllocation(i, copy);
         paintChild(g, copy, i);
       }
   }

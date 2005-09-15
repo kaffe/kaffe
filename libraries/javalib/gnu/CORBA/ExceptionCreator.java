@@ -138,8 +138,8 @@ public class ExceptionCreator
    * @param idl the exception idl name.
    * @param input the stream to read from.
    *
-   * @return the loaded exception.
-   * @return null if the helper class cannot be found.
+   * @return the loaded exception, or <code>null</code> if the helper class 
+   *         cannot be found.
    */
   public static UserException readUserException(String idl, InputStream input)
   {
@@ -187,7 +187,7 @@ public class ExceptionCreator
   }
 
   /**
-   * Converts teh given IDL name to class name.
+   * Converts the given IDL name to class name.
    *
    * @param IDL the idl name.
    *

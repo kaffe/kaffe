@@ -551,14 +551,37 @@ public class JComboBox extends JComponent implements ItemSelectable,
     return -1;
   }
 
+  /**
+   * Returns an object that is used as the display value when calculating the 
+   * preferred size for the combo box.  This value is, of course, never 
+   * displayed anywhere.
+   * 
+   * @return The prototype display value (possibly <code>null</code>).
+   * 
+   * @since 1.4
+   * @see #setPrototypeDisplayValue(Object)
+   */
   public Object getPrototypeDisplayValue()
   {
     return prototypeDisplayValue;
   }
 
-  public void setPrototypeDisplayValue(Object newPrototypeDisplayValue)
+  /**
+   * Sets the object that is assumed to be the displayed item when calculating
+   * the preferred size for the combo box.  A {@link PropertyChangeEvent} (with
+   * the name <code>prototypeDisplayValue</code>) is sent to all registered 
+   * listeners. 
+   * 
+   * @param value  the new value (<code>null</code> permitted).
+   * 
+   * @since 1.4
+   * @see #getPrototypeDisplayValue()
+   */
+  public void setPrototypeDisplayValue(Object value)
   {
-    prototypeDisplayValue = newPrototypeDisplayValue;
+    Object oldValue = prototypeDisplayValue;
+    prototypeDisplayValue = value;
+    firePropertyChange("prototypeDisplayValue", oldValue, value);
   }
 
   /**

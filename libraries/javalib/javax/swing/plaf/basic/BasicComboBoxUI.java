@@ -75,6 +75,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 
 /**
  * UI Delegate for JComboBox
@@ -158,7 +159,6 @@ public class BasicComboBoxUI extends ComboBoxUI
   private Color shadow;
   private Color darkShadow;
   private Color highlight;
-  private Color lightHighlight;
 
   /* Size of the largest item in the comboBox
    * This is package-private to avoid an accessor method.
@@ -245,16 +245,19 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
 
-    comboBox.setBackground(defaults.getColor("ComboBox.background"));
-    comboBox.setFont(defaults.getFont("ComboBox.font"));
-    comboBox.setForeground(defaults.getColor("ComboBox.foreground"));
+    if (comboBox.getFont() instanceof UIResource)
+      comboBox.setFont(defaults.getFont("ComboBox.font"));
+    
+    if (comboBox.getForeground() instanceof UIResource)
+      comboBox.setForeground(defaults.getColor("ComboBox.foreground"));
 
-    // Set default color that should be used to to render selected item
-    // of the combo box.
-    shadow = defaults.getColor("Button.shadow");
-    darkShadow = defaults.getColor("Button.darkShadow");
-    lightHighlight = defaults.getColor("Button.light");
-    highlight = defaults.getColor("Button.highlight");
+    if (comboBox.getBackground() instanceof UIResource)
+      comboBox.setBackground(defaults.getColor("ComboBox.background"));
+
+    // fetch the button color scheme
+    shadow = defaults.getColor("ComboBox.buttonShadow");
+    darkShadow = defaults.getColor("ComboBox.buttonDarkShadow");
+    highlight = defaults.getColor("ComboBox.buttonHighlight");
   }
 
   /**
@@ -291,15 +294,17 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   protected void uninstallDefaults()
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+    if (comboBox.getFont() instanceof UIResource)
+      comboBox.setFont(null);
 
-    comboBox.setBackground(null);
-    comboBox.setFont(null);
-    comboBox.setForeground(null);
+    if (comboBox.getForeground() instanceof UIResource)
+      comboBox.setForeground(null);
+    
+    if (comboBox.getBackground() instanceof UIResource)
+      comboBox.setBackground(null);
 
     shadow = null;
     darkShadow = null;
-    lightHighlight = null;
     highlight = null;
   }
 

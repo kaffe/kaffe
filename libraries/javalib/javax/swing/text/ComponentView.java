@@ -1,5 +1,5 @@
 /* ComponentView.java -- 
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,32 +41,82 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Shape;
 
+/**
+ * A {@link View} implementation that is able to render arbitrary
+ * {@link Components}. This uses the attribute
+ * {@link StyleConstants#ComponentAttribute} to determine the
+ * <code>Component</code> that should be rendered. This <code>Component</code>
+ * becomes a direct child of the <code>JTextComponent</code> that contains
+ * this <code>ComponentView</code>, so this view must not be shared between
+ * multiple <code>JTextComponent</code>s.
+ *
+ * @author original author unknown
+ * @author Roman Kennke (roman@kennke.org)
+ */
 public class ComponentView extends View
 {
-    public ComponentView(Element elem)
-    {
-	super(elem);
-    }
- 
-    protected  Component createComponent()
-    {
-	return null;
-    }
-    
-    public float getAlignment(int axis)
-    {
-	return 0;
-    }
+  /**
+   * Creates a new instance of <code>ComponentView</code> for the specified
+   * <code>Element</code>.
+   *
+   * @param elem the element that this <code>View</code> is rendering
+   */
+  public ComponentView(Element elem)
+  {
+    super(elem);
+  }
 
-    public final Component getComponent()
-    {
-	return null;
-    }
-    
-    public float getMaximumSpan(int axis)
-    {
-	return 0;
-    }
+  /**
+   * Creates the <code>Component</code> that this <code>View</code> is
+   * rendering. The <code>Component</code> is determined using
+   * the {@link StyleConstants#ComponentAttribute} of the associated
+   * <code>Element</code>.
+   *
+   * @return the component that is rendered
+   */
+  protected  Component createComponent()
+  {
+    return StyleConstants.getComponent(getElement().getAttributes());
+  }
+
+  /**
+   * Returns the alignment of this <code>View</code> along the specified axis.
+   *
+   * @param axis either {@link View#X_AXIS} or {@link View#Y_AXIS}
+   *
+   * @return the alignment of this <code>View</code> along the specified axis
+   */
+  public float getAlignment(int axis)
+  {
+    return 0;
+  }
+
+  /**
+   * Returns the <code>Component</code> that is rendered by this
+   * <code>ComponentView</code>.
+   *
+   * @return the <code>Component</code> that is rendered by this
+   *         <code>ComponentView</code>
+   */
+  public final Component getComponent()
+  {
+    return null;
+  }
+
+  /**
+   * Returns the maximum span of this <code>View</code> along the specified
+   * axis.
+   *
+   * This will return {@link Component#getMaximumSize()} for the specified
+   * axis.
+   *
+   * @return the maximum span of this <code>View</code> along the specified
+   *         axis
+   */
+  public float getMaximumSpan(int axis)
+  {
+    return 0;
+  }
 
     public float getMinimumSpan(int axis)
     {
