@@ -1,5 +1,14 @@
 2005-09-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/VMRuntime.c:
+	New file. Taken from CACAO, and improved the
+	availableProcessors implementation. 
+	Licensed under the GPL.
+
+	* THIRDPARTY: Updated to reflect CACAO code.
+
+2005-09-15  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-09-14  Roman Kennke  <kennke@aicas.com>

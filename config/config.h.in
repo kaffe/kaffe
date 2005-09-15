@@ -186,6 +186,9 @@
 /* Define to 1 if you have the `getwd' function. */
 #undef HAVE_GETWD
 
+/* Define to 1 if you have the `get_nprocs_conf' function. */
+#undef HAVE_GET_NPROCS_CONF
+
 /* Do we have the right version of libungif */
 #undef HAVE_GIF_LIB_H
 
@@ -316,6 +319,9 @@
 
 /* Define to 1 if you have the `localtime' function. */
 #undef HAVE_LOCALTIME
+
+/* Define to 1 if you have the <mach/mach.h> header file. */
+#undef HAVE_MACH_MACH_H
 
 /* Define to 1 if you have the <mach-o/rld.h> header file. */
 #undef HAVE_MACH_O_RLD_H
@@ -636,6 +642,9 @@
 
 /* Define to 1 if you have the <sys/sysctl.h> header file. */
 #undef HAVE_SYS_SYSCTL_H
+
+/* Define to 1 if you have the <sys/sysinfo.h> header file. */
+#undef HAVE_SYS_SYSINFO_H
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #undef HAVE_SYS_TIME_H

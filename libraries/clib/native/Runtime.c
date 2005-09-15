@@ -35,11 +35,6 @@
 
 extern jboolean runFinalizerOnExit;
 
-/** TODO
- *
- * availableProcessors
- */
-
 /*
  * Exit this VM
  */

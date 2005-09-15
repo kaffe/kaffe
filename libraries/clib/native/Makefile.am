@@ -30,6 +30,7 @@ LANG_SRCS = \
 		ClassLoader.c \
 		Object.c \
 		Runtime.c \
+		VMRuntime.c \
 		String.c \
 		System.c \
 		Thread.c \

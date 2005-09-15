@@ -1017,6 +1017,7 @@ iconv.h \
 jpeglib.h \
 kernel/OS.h \
 limits.h \
+mach/mach.h \
 mach-o/rld.h \
 malloc.h \
 memory.h \
@@ -1041,16 +1042,16 @@ sys/mman.h \
 sys/param.h \
 sys/poll.h \
 sys/select.h \
+sys/signal.h \
 sys/socket.h \
+sys/sockio.h \
 sys/stat.h \
+sys/sysctl.h \
+sys/sysinfo.h \
 sys/time.h \
 sys/types.h \
 sys/utsname.h \
-sys/sysctl.h \
-sys/param.h \
-sys/signal.h \
 sys/ucontext.h \
-sys/sockio.h \
 syslog.h \
 time.h \
 unistd.h \
@@ -1352,7 +1353,7 @@ AC_CHECK_FUNCS([select socket getsockname getpagesize fstat])
 AC_CHECK_FUNCS([memcpy memmove])
 AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
-AC_CHECK_FUNCS([localtime])
+AC_CHECK_FUNCS([localtime get_nprocs_conf])
 AC_CHECK_FUNCS([munmap mincore msync madvise getpagesize sysconf])
 
 AM_ICONV

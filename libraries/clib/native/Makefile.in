@@ -97,9 +97,10 @@ am__objects_1 = libnative_la-gnu_classpath_VMStackWalker.lo \
 	libnative_la-java_lang_VMProcess.lo \
 	libnative_la-java_lang_VMSystem.lo libnative_la-Class.lo \
 	libnative_la-ClassLoader.lo libnative_la-Object.lo \
-	libnative_la-Runtime.lo libnative_la-String.lo \
-	libnative_la-System.lo libnative_la-Thread.lo \
-	libnative_la-Throwable.lo libnative_la-ZipFile.lo
+	libnative_la-Runtime.lo libnative_la-VMRuntime.lo \
+	libnative_la-String.lo libnative_la-System.lo \
+	libnative_la-Thread.lo libnative_la-Throwable.lo \
+	libnative_la-ZipFile.lo
 am__objects_2 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
 am__objects_3 = libnative_la-AccessController.lo
@@ -426,6 +427,7 @@ LANG_SRCS = \
 		ClassLoader.c \
 		Object.c \
 		Runtime.c \
+		VMRuntime.c \
 		String.c \
 		System.c \
 		Thread.c \
@@ -563,6 +565,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Throwable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-TimeZone.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-VMRuntime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ZipFile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
@@ -670,6 +673,13 @@ libnative_la-Runtime.lo: Runtime.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Runtime.c' object='libnative_la-Runtime.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-Runtime.lo `test -f 'Runtime.c' || echo '$(srcdir)/'`Runtime.c
+
+libnative_la-VMRuntime.lo: VMRuntime.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-VMRuntime.lo -MD -MP -MF "$(DEPDIR)/libnative_la-VMRuntime.Tpo" -c -o libnative_la-VMRuntime.lo `test -f 'VMRuntime.c' || echo '$(srcdir)/'`VMRuntime.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-VMRuntime.Tpo" "$(DEPDIR)/libnative_la-VMRuntime.Plo"; else rm -f "$(DEPDIR)/libnative_la-VMRuntime.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='VMRuntime.c' object='libnative_la-VMRuntime.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-VMRuntime.lo `test -f 'VMRuntime.c' || echo '$(srcdir)/'`VMRuntime.c
 
 libnative_la-String.lo: String.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-String.lo -MD -MP -MF "$(DEPDIR)/libnative_la-String.Tpo" -c -o libnative_la-String.lo `test -f 'String.c' || echo '$(srcdir)/'`String.c; \
