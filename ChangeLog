@@ -1,3 +1,9 @@
+2005-09-16  David Walluck <walluck@mandrake.org>
+
+	* libraries/clib/awt/qt/toolkit.h,
+	libraries/clib/awt/qt/fnt.cc:
+	Fixed loss of precision warnings on x86_64-linux.
+
 2005-09-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: (--with-classpath-gtk-awt): Check for pango

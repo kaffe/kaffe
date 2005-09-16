@@ -563,7 +563,7 @@ static inline int getFreeSourceIdx ( Toolkit* X, void* wnd ) {
    */
   for ( i = (unsigned long)wnd, n=0; n < X->nWindows; i++, n++ ) {
 	i %= X->nWindows;
-	if ( (int)(X->windows[i].w) <= 0 ) {
+	if ( (long)(X->windows[i].w) <= 0 ) {
 	  X->srcIdx = i;
 	  X->lastWindow = wnd;
 

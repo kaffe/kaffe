@@ -187,7 +187,7 @@ Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
   if ( off  + len > n ) 
     len = n - off;
   QByteArray a;
-  a.setRawData((const char*)((int)jb + off), len);
+  a.setRawData((const char*)((long)jb + off), len);
   w = fm.width(QString(a),len);
   env->ReleaseByteArrayElements( jBytes, jb, JNI_ABORT);
   DBG(AWT_FNT, qqDebug("fntBytesWidth %s %d\n",jb + off, w));
