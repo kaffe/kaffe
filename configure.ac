@@ -1841,6 +1841,10 @@ if test x"$enable_native_awt" = x"yes"; then
         AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
                      [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
                      [${X_LIBS}])
+    	PKG_CHECK_MODULES(PANGOFT2, pangoft2)
+  	AC_SUBST(PANGOFT2_LIBS)
+  	AC_SUBST(PANGOFT2_CFLAGS)
+
 	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
@@ -1848,12 +1852,9 @@ if test x"$enable_native_awt" = x"yes"; then
 	if test "x${enable_gtk_cairo}" = xyes
   	then
 		PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
-    		PKG_CHECK_MODULES(PANGOFT2, pangoft2)
   	fi
   	AC_SUBST(CAIRO_LIBS)
   	AC_SUBST(CAIRO_CFLAGS)
-  	AC_SUBST(PANGOFT2_LIBS)
-  	AC_SUBST(PANGOFT2_CFLAGS)
 
         AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-gtk/gtk-peer/libgtkpeer.la"
    fi
