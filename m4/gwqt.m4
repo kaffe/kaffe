@@ -4,8 +4,27 @@ AC_DEFUN([gw_CHECK_QT],
 AC_REQUIRE([AC_PROG_CXX])
 AC_REQUIRE([AC_PATH_X])
 
+AC_ARG_WITH([qt-libraries],
+  [  --with-qt-libraries=DIR Qt library installation directory (default = $QTDIR/lib)],
+  [QTLIBDIR=$withval]
+)
+
+if test x"$QTLIBDIR" = x"" ; then
+  QTLIBDIR=$QTDIR/lib
+fi
+
+AC_ARG_WITH([qt-binaries],
+  [  --with-qt-binaries=DIR  Qt binary installation directory (default = $QTDIR/bin)],
+  [QTBINDIR=$withval]
+)
+
+if test x"$QTBINDIR" = x"" ; then
+  QTBINDIR=$QTDIR/bin
+fi
+
+
 AC_MSG_CHECKING([QTDIR])
-AC_ARG_WITH([qtdir], [  --with-qtdir=DIR        Qt installation directory [default=$QTDIR]], QTDIR=$withval)
+AC_ARG_WITH([qtdir], [  --with-qtdir=DIR        Qt installation directory (default=$QTDIR)], QTDIR=$withval)
 # Check that QTDIR is defined or that --with-qtdir given
 if test x"$QTDIR" = x ; then
     QT_SEARCH="/usr/lib/qt31 /usr/local/qt31 /usr/lib/qt3 /usr/local/qt3 /usr/lib/qt2 /usr/local/qt2 /usr/lib/qt /usr/local/qt /usr/share/qt  /usr/share/qt3"
@@ -41,13 +60,13 @@ esac
 AC_MSG_RESULT([$QT_VER ($QT_MAJOR)])
 
 # Check that moc is in path
-AC_PATH_PROG(MOC, moc,,[$PATH:$QTDIR/bin])
+AC_PATH_PROG(MOC, moc,,[$QTBINDIR:$PATH])
 if test x$MOC = x ; then
         AC_MSG_ERROR([*** moc must be in path])
 fi
 
 # uic is the Qt user interface compiler
-AC_PATH_PROG(UIC, uic,,[$PATH:$QTDIR/bin])
+AC_PATH_PROG(UIC, uic,,[$QTBINDIR:$PATH])
 #if test x$UIC = x ; then
 #        AC_MSG_ERROR([*** uic must be in path])
 #fi
@@ -66,19 +85,19 @@ QT_IS_EMBEDDED="no"
 case "${host}" in
     *-cygwin)
 	AC_DEFINE_UNQUOTED(WIN32, "", Defined if on Win32 platform)
-        if test -f "$QTDIR/lib/qt.lib" ; then
+        if test -f "$QTLIBDIR/qt.lib" ; then
             QT_LIB="qt.lib"
             QT_IS_STATIC="yes"
             QT_IS_MT="no"
-        elif test -f "$QTDIR/lib/qt-mt.lib" ; then
+        elif test -f "$QTLIBDIR/qt-mt.lib" ; then
             QT_LIB="qt-mt.lib" 
             QT_IS_STATIC="yes"
             QT_IS_MT="yes"
-        elif test -f "$QTDIR/lib/qt$QT_VER.lib" ; then
+        elif test -f "$QTLIBDIR/qt$QT_VER.lib" ; then
             QT_LIB="qt$QT_VER.lib"
             QT_IS_STATIC="no"
             QT_IS_MT="no"
-        elif test -f "$QTDIR/lib/qt-mt$QT_VER.lib" ; then
+        elif test -f "$QTLIBDIR/qt-mt$QT_VER.lib" ; then
             QT_LIB="qt-mt$QT_VER.lib"
             QT_IS_STATIC="no"
             QT_IS_MT="yes"
@@ -86,30 +105,30 @@ case "${host}" in
         ;;
 
     *)
-        QT_IS_STATIC=`ls $QTDIR/lib/*.a 2> /dev/null`
+        QT_IS_STATIC=`ls $QTLIBDIR/*.a 2> /dev/null`
         if test "x$QT_IS_STATIC" = x; then
             QT_IS_STATIC="no"
         else
             QT_IS_STATIC="yes"
         fi
         if test x$QT_IS_STATIC = xno ; then
-            QT_IS_DYNAMIC=`ls $QTDIR/lib/*.so 2> /dev/null` 
+            QT_IS_DYNAMIC=`ls $QTLIBDIR/*.so 2> /dev/null` 
             if test "x$QT_IS_DYNAMIC" = x;  then
                 AC_MSG_ERROR([*** Couldn't find any Qt libraries])
             fi
         fi
 
-        if test "x`ls $QTDIR/lib/libqt-mt.* 2> /dev/null`" != x ; then
+        if test "x`ls $QTLIBDIR/libqt-mt.* 2> /dev/null`" != x ; then
             QT_LIB="-lqt-mt"
             QT_IS_MT="yes"
-        elif test "x`ls $QTDIR/lib/libqt.* 2> /dev/null`" != x ; then
+        elif test "x`ls $QTLIBDIR/libqt.* 2> /dev/null`" != x ; then
             QT_LIB="-lqt"
             QT_IS_MT="no"
-        elif test "x`ls $QTDIR/lib/libqte-mt.* 2> /dev/null`" != x ; then
+        elif test "x`ls $QTLIBDIR/libqte-mt.* 2> /dev/null`" != x ; then
             QT_LIB="-lqte-mt"
             QT_IS_MT="yes"
             QT_IS_EMBEDDED="yes"
-        elif test "x`ls $QTDIR/lib/libqte.* 2> /dev/null`" != x ; then
+        elif test "x`ls $QTLIBDIR/libqte.* 2> /dev/null`" != x ; then
             QT_LIB="-lqte"
             QT_IS_MT="no"
             QT_IS_EMBEDDED="yes"
@@ -129,7 +148,7 @@ if test x$QT_IS_EMBEDDED = xyes ; then
 
 	# test for Qtopia
 	AC_MSG_CHECKING([Qtopia])
-	if test "x`ls $QTDIR/lib/libqpe.* 2> /dev/null`" != x ; then
+	if test "x`ls $QTLIBDIR/libqpe.* 2> /dev/null`" != x ; then
 		QT_CXXFLAGS="$QT_CXXFLAGS -DQPE"
 		QT_LIB="-lqpe -lqtopia -lm $QT_LIB"
 		AC_MSG_RESULT([found])
@@ -210,7 +229,7 @@ if test x"$QT_IS_MT" = "xyes" ; then
         QT_CXXFLAGS="$QT_CXXFLAGS -D_REENTRANT -DQT_THREAD_SUPPORT"
 fi
 
-QT_LDADD="-L$QTDIR/lib $QT_LIBS"
+QT_LDADD="-L$QTLIBDIR $QT_LIBS"
 
 if test x$QT_IS_STATIC = xyes ; then
     OLDLIBS="$LIBS"

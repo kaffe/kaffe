@@ -1,3 +1,11 @@
+2005-09-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* m4/gwqt.m4: (--with-qt-libraries, --with-qt-binaries)
+	Added new options. Check for qt binaries like moc in 
+	$QTBINDIR first, before checking in $PATH.
+
+	Reported by:  David Walluck <walluck@mandrake.org>
+
 2005-09-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: (--with-kaffe-qt-awt) Invoke AC_PATH_X
