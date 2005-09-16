@@ -1088,15 +1088,15 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "TitledBorder.titleColor", getSystemTextColor(),
 
       "ToggleButton.background", getControl(),
-      "ToggleButton.border", MetalBorders.getButtonBorder(),
+      "ToggleButton.border", MetalBorders.getToggleButtonBorder(),
       "ToggleButton.darkShadow", getControlDarkShadow(),
       "ToggleButton.disabledText", getInactiveControlTextColor(),
-      "ToggleButton.focus", new ColorUIResource(getFocusColor()),
+      "ToggleButton.focus", getFocusColor(),
       "ToggleButton.font", getControlTextFont(),
       "ToggleButton.foreground", getControlTextColor(),
       "ToggleButton.highlight", getControlHighlight(),
       "ToggleButton.light", getControlHighlight(),
-      "ToggleButton.margin", new Insets(2, 14, 2, 14),
+      "ToggleButton.margin", new InsetsUIResource(2, 14, 2, 14),
       "ToggleButton.select", getControlShadow(),
       "ToggleButton.shadow", getControlShadow(),
 

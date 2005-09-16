@@ -844,7 +844,8 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   protected Dimension getDefaultSize()
   {
-    return new Dimension(6, 17);
+    // FIXME: Not implemented properly.
+    return new Dimension(100, 20);
   }
 
   /**
@@ -853,7 +854,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    *
    * @return dimensions of the largest item in the combo box.
    */
-  protected Dimension getLargestItemSize()
+  private Dimension getLargestItemSize()
   {
     ComboBoxModel model = comboBox.getModel();
     int numItems = model.getSize();
@@ -939,7 +940,7 @@ public class BasicComboBoxUI extends ComboBoxUI
       Dimension d = new Dimension(0, 0);
 
       if (largestItemSize == null)
-	largestItemSize = getLargestItemSize();
+        largestItemSize = getLargestItemSize();
 
       // add size for the area that will display selected item
       d.width += largestItemSize.getWidth();
@@ -962,7 +963,26 @@ public class BasicComboBoxUI extends ComboBoxUI
 
     public Dimension minimumLayoutSize(Container parent)
     {
-      return preferredLayoutSize(parent);
+      Dimension minSize = getDefaultSize();
+      ComboBoxModel model = comboBox.getModel();
+      int numItems = model.getSize();
+
+      if (numItems == 0)
+          return minSize;
+
+      ListCellRenderer renderer = comboBox.getRenderer();
+
+      for (int i = 0; i < numItems; i++)
+        {
+      Object item = model.getElementAt(i);
+      String s = item.toString();
+      Component comp = renderer.getListCellRendererComponent(listBox, item,
+                                                             -1, false, false);
+
+      if (comp.getPreferredSize().width < minSize.width)
+        minSize =  comp.getMinimumSize();
+        }
+      return minSize;
     }
 
     /**
@@ -1105,25 +1125,17 @@ public class BasicComboBoxUI extends ComboBoxUI
      */
     public void intervalAdded(ListDataEvent e)
     {
-      // must determine if the size of the combo box should change
-      int start = e.getIndex0();
-      int end = e.getIndex1();
-
       ComboBoxModel model = comboBox.getModel();
       ListCellRenderer renderer = comboBox.getRenderer();
 
       if (largestItemSize == null)
-	largestItemSize = new Dimension(0, 0);
+        largestItemSize = getLargestItemSize();
+      if (largestItemSize.width < getDefaultSize().width)
+        largestItemSize.width = getDefaultSize().width;
+      if (largestItemSize.height < getDefaultSize().height)
+        largestItemSize.height = getDefaultSize().height;
 
-      for (int i = start; i < end; i++)
-        {
-	  Object item = model.getElementAt(i);
-	  Component comp = renderer.getListCellRendererComponent(new JList(),
-	                                                         item, -1,
-	                                                         false, false);
-	  if (comp.getPreferredSize().getWidth() > largestItemSize.getWidth())
-	    largestItemSize = comp.getPreferredSize();
-        }
+      comboBox.repaint();
     }
 
     /**

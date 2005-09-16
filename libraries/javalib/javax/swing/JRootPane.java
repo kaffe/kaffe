@@ -42,6 +42,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.IllegalComponentStateException;
 import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.io.Serializable;
@@ -404,14 +405,25 @@ public class JRootPane extends JComponent implements Accessible
   }
 
   /**
-   * DOCUMENT ME!
+   * Sets the JRootPane's content pane.  The content pane should typically be
+   * opaque for painting to work properly.  This method also 
+   * removes the old content pane from the layered pane.
    *
-   * @param p DOCUMENT ME!
+   * @param p the Container that will be the content pane
+   * @throws IllegalComponentStateException if p is null
    */
   public void setContentPane(Container p)
   {
-    contentPane = p;
-    getLayeredPane().add(contentPane, JLayeredPane.FRAME_CONTENT_LAYER);
+    if (p == null)
+      throw new IllegalComponentStateException ("cannot " +
+            "have a null content pane");
+    else
+      {
+        if (contentPane != null && contentPane.getParent() == layeredPane)
+          layeredPane.remove(contentPane);
+        contentPane = p;
+        getLayeredPane().add(contentPane, JLayeredPane.FRAME_CONTENT_LAYER);
+      }
   }
 
   /**

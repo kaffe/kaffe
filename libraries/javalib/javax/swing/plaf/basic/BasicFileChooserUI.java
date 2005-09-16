@@ -945,7 +945,7 @@ public class BasicFileChooserUI extends FileChooserUI
   File currDir = null;
 
   JPanel bottomPanel;
-
+  
   /** DOCUMENT ME! */
   JPanel closePanel;
 
@@ -992,46 +992,6 @@ public class BasicFileChooserUI extends FileChooserUI
       setIcon(filechooser.getIcon(file));
       setBackground(isSelected ? selected : Color.WHITE);
       setForeground(Color.BLACK);
-
-      return this;
-    }
-  }
-
-  /**
-   * DOCUMENT ME!
-   */
-  public class CBLabelRenderer extends JLabel implements ListCellRenderer
-  {
-    /**
-     * Creates a new CBLabelRenderer object.
-     */
-    public CBLabelRenderer()
-    {
-      super();
-      setOpaque(true);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param list DOCUMENT ME!
-     * @param value DOCUMENT ME!
-     * @param index DOCUMENT ME!
-     * @param isSelected DOCUMENT ME!
-     * @param cellHasFocus DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public Component getListCellRendererComponent(JList list, Object value,
-                                                  int index,
-                                                  boolean isSelected,
-                                                  boolean cellHasFocus)
-    {
-      setHorizontalAlignment(SwingConstants.LEFT);
-      setIcon(directoryIcon);
-      setText(value.toString());
-      setForeground(Color.BLACK);
-      setBackground(Color.WHITE);
 
       return this;
     }
@@ -1210,7 +1170,7 @@ public class BasicFileChooserUI extends FileChooserUI
     JLabel look = new JLabel("Look In:");
 
     parents = new JComboBox();
-    parents.setRenderer(new CBLabelRenderer());
+    parents.setRenderer(new BasicComboBoxRenderer());
     boxEntries();
     look.setLabelFor(parents);
     JPanel parentsPanel = new JPanel();
@@ -1242,9 +1202,9 @@ public class BasicFileChooserUI extends FileChooserUI
     buttonPanel.add(detailsViewButton);
 
     JPanel topPanel = new JPanel();
-    topPanel.setLayout(new java.awt.FlowLayout());
+    parentsPanel.add(buttonPanel);
+    topPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
     topPanel.add(parentsPanel);
-    topPanel.add(buttonPanel);
 
     accessoryPanel = new JPanel();
     if (filechooser.getAccessory() != null)

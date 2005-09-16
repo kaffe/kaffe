@@ -840,7 +840,7 @@ public class SwingUtilities
         iconR.width = icon.getIconWidth();
         iconR.height = icon.getIconHeight();
       }
-    if (text == null)
+    if (text == null || text.equals(""))
       {
         textIconGap = 0;
 	textR.width = 0;

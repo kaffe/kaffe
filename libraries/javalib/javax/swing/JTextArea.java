@@ -209,7 +209,7 @@ public class JTextArea extends JTextComponent
 	      throw new RuntimeException("Unexpected exception occurred.", exception);
 	  }
       if (toAppend != null && toAppend.length() > 0)
-        invalidate();
+        revalidate();
   }
 
   /**
@@ -318,7 +318,7 @@ public class JTextArea extends JTextComponent
     if (columns != this.columns)
       {
         this.columns = columns;
-        invalidate();
+        revalidate();
       }
   }
 
@@ -347,7 +347,7 @@ public class JTextArea extends JTextComponent
     if (rows != this.rows)
       {
         this.rows = rows;
-        invalidate();
+        revalidate();
       }
   }
 

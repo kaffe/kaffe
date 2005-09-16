@@ -1,5 +1,183 @@
 2005-09-16  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-09-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalIconFactory.java
+        (RadioButtonIcon.paintIcon): change color of selection indicator
+        according to component state.
+
+	2005-09-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalCheckBoxIcon.java
+        (drawCheck): change color according to component state.
+
+	2005-09-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalBorders.java
+        (ButtonBorder.paintBorder): draw a different border for a disabled
+        button.
+
+	2005-09-15  Anthony Green  <green@redhat.com>
+
+        * java/awt/Color.java (RGBtoHSB): Don't use integer division when
+        calculating saturation.
+        * java/awt/Rectangle.java (equals): Explain why hashCode() isn't
+        required.
+        * java/awt/Point.java (equals): Ditto.
+
+	2005-09-15  Tom Tromey  <tromey@redhat.com>
+
+        * javax/swing/text/html/parser/DTD.java (FILE_VERSION): Now
+        final.
+
+	2005-09-15  Tom Tromey  <tromey@redhat.com>
+
+        * javax/naming/Name.java: Extends Comparable.
+
+	2005-09-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * java/awt/Component.java:
+        (isDisplayable): Don't check the parent's displayability, only return
+        true if peer is non-null and false if peer is null.
+
+	2005-09-15  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/SwingUtilities.java
+        (layoutCompoundLabel): check for empty text string,
+        * javax/swing/plaf/basic/BasicButtonUI.java
+        (paint): check isBorderPainted() when calculating view rect,
+        * javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+        (CloseAction): new constructor,
+        (IconifyAction): new constructor,
+        (MaximizeAction): new constructor,
+        (MoveAction): new constructor,
+        (RestoreAction): new constructor,
+        (SizeAction): new constructor,
+        (TitlePaneLayout.layoutContainer): calculate button widths from icon
+        widths,
+        (installDefaults): initialise icon fields,
+        (uninstallDefaults): clear icon fields,
+        (createButtons): set button text to null,
+        (setButtonIcons): use icon fields.
+
+	2005-09-15  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxRenderer.java
+        (getListCellRendererComponent): Added code in to check if string
+        is larger than comboBox. If it is, the string is truncated and
+        '...' is drawn at the end of it.
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (getDefaultSize): Initially too small, still not fully implemented.
+        (getLargestItemSize): Made private, not in API.
+        (minimumLayoutSize): Implemented properly.
+        (intervalAdded): ComboBox should not be resized with every new
+        component. This is fixed.
+
+	2005-09-15  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/EnumConstantNotPresentException.java: New file.
+
+	2005-09-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java:
+        Reformatted file.
+
+	2005-09-15  Lillian Angel  <langel@redhat.com>
+
+        Fixes Bug #23678
+        * javax/swing/plaf/basic/BasicFileChooserUI.java
+        (CBLabelRenderer): Removed. Not in API, and it is really
+        redundant to have.
+        (installComponents): Changed the renderer set for the combo box.
+        Also, added the buttonPanel to the parentsPanel, so they are
+        always painted correctly. Set the FlowLayout to LEFT
+        instead of default being CENTER.
+
+	2005-09-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JRootPane.java:
+        (setContentPane): Remove the old content pane first.  Throw
+        IllegalComponentStateException if the parameter is null.  Added docs.
+
+	2005-09-15  Tom Tromey  <tromey@redhat.com>
+
+        Workaround for PR classpath/23863:
+        * native/fdlibm/mprec.h (MAX_BIGNUM_WDS): Define as 128 on
+        non-Pack_32 platforms.
+
+	2005-09-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * java/awt/Component.java:
+        (isDisplayable): Return true if peer != null.
+        * java/awt/Window.java:
+        (isDisplayable): Removed this method. Now inherits from Component.
+
+	2005-09-15  Anthony Green  <green@redhat.com>
+
+        * java/io/PushbackInputStream.java (available, read, skip): Handle
+        closed stream operations gracefully.
+
+	2005-09-15  Anthony Green  <green@redhat.com>
+
+        * java/nio/charset/Charset.java: close() each stream we open.
+        * java/net/URLStreamHandler.java: Remove redundant null pointer
+        check.
+        * java/security/Identity.java (equals, identityEquals): Don't use
+        `==' to compare uninterned Strings.  Use String.equals().
+        * java/lang/Class.java (pd): Mark this field as transient for
+       FindBugs won't complain (although not strictly necessary).
+
+	2005-09-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JTextArea.java:
+        (append): Changed invalidate call to revalidate call.
+        (setRows): Likewise.
+        (setColumns): Likewise.
+
+	2005-09-15  Lillian Angel  <langel@redhat.com>
+
+        Fixes #23873
+        * javax/swing/plaf/basic/BasicOptionPaneUI.java
+        (createMessageArea): Changed orientation of message from EAST to
+        CENTER. Also, fixed empty border values to make message more centered.
+        * javax/swing/JOptionPane.java
+        (showConfirmDialog): Added check for pane.getValue, since clicking on
+        'x' of window does not have an initialized value. Was causing a
+        ClassCastException.
+        (showConfirmDialog): Likewise.
+        (showConfirmDialog): Likewise.
+        (showConfirmDialog): Likewise.
+
+	2005-09-15  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicButtonUI.java
+        (installDefaults): set font,
+        (uninstallDefaults): clear font,
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initComponentDefaults): update ToggleButton defaults,
+        * javax/swing/plaf/metal/MetalToggleButtonUI.java
+        (instance): removed field,
+        (createUI): just return new instance every time,
+        (MetalToggleButtonUI): look up defaults directly,
+        (getFocusColor): return value from field initialised in constructor,
+        (getSelectColor): likewise,
+        (getDisabledTextColor): likewise,
+        (installDefaults): override to make public,
+        (paintButtonPressed): implemented,
+        (paintText): implemented,
+        (paintFocus): implemented.
+
+	2005-09-15  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalBorders.java
+        (toggleButtonBorder): new private field,
+        (ToggleButtonBorder): new class,
+        (getToggleButtonBorder): new method.
+
+2005-09-16  Dalibor Topic  <robilad@kaffe.org>
+
 	FAQ/FAQ.classlibrary-compile: Added information on using
 	for ecj to compile the class library.
 

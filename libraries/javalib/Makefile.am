@@ -2643,6 +2643,7 @@ java_lang_SRCS = \
 	java/lang/Comparable.java \
 	java/lang/Compiler.java \
 	java/lang/Double.java \
+	java/lang/EnumConstantNotPresentException.java \
 	java/lang/Error.java \
 	java/lang/Exception.java \
 	java/lang/ExceptionInInitializerError.java \

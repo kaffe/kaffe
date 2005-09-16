@@ -832,7 +832,10 @@ public class MetalIconFactory implements Serializable
       
       if (b.isSelected())
         {
-          g.setColor(MetalLookAndFeel.getBlack());
+          if (b.isEnabled())
+            g.setColor(MetalLookAndFeel.getBlack());
+          else
+            g.setColor(MetalLookAndFeel.getControlDisabled());
           g.drawLine(x + 4, y + 3, x + 7, y + 3);
           g.fillRect(x + 3, y + 4, 6, 4);
           g.drawLine(x + 4, y + 8, x + 7, y + 8);

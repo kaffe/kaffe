@@ -863,8 +863,10 @@ public class JOptionPane extends JComponent implements Accessible
 
     dialog.pack();
     dialog.show();
-
-    return ((Integer) pane.getValue()).intValue();
+    
+    if (pane.getValue() instanceof Integer)
+      return ((Integer) pane.getValue()).intValue();
+    return -1;
   }
 
   /**
@@ -889,7 +891,9 @@ public class JOptionPane extends JComponent implements Accessible
     dialog.pack();
     dialog.show();
 
-    return ((Integer) pane.getValue()).intValue();
+    if (pane.getValue() instanceof Integer)
+      return ((Integer) pane.getValue()).intValue();
+    return -1;
   }
 
   /**
@@ -915,7 +919,9 @@ public class JOptionPane extends JComponent implements Accessible
     dialog.pack();
     dialog.show();
 
-    return ((Integer) pane.getValue()).intValue();
+    if (pane.getValue() instanceof Integer)
+      return ((Integer) pane.getValue()).intValue();
+    return -1;
   }
 
   /**
@@ -943,7 +949,9 @@ public class JOptionPane extends JComponent implements Accessible
     dialog.pack();
     dialog.show();
 
-    return ((Integer) pane.getValue()).intValue();
+    if (pane.getValue() instanceof Integer)
+      return ((Integer) pane.getValue()).intValue();
+    return -1;
   }
 
   /**

@@ -81,8 +81,9 @@ public class DTD
 {
   /**
    * The version of the persistent data format.
+   * @specnote This was made <code>final</code> in 1.5.
    */
-  public static int FILE_VERSION = 1;
+  public static final int FILE_VERSION = 1;
 
   /**
    * The table of existing available DTDs.

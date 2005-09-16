@@ -40,12 +40,14 @@ package javax.swing.plaf.basic;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.io.Serializable;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -100,7 +102,28 @@ public class BasicComboBoxRenderer extends JLabel implements ListCellRenderer,
                                                 boolean cellHasFocus)
   {
     String s = value.toString();
-    setText(s);
+    
+    // String maybe larger than comboBox.
+    FontMetrics fm = getToolkit().getFontMetrics(list.getFont());
+    int strWidth = SwingUtilities.computeStringWidth(fm, s);
+    int cbWidth = getSize().width;
+    if (cbWidth != 0 && strWidth > cbWidth)
+      {
+        char[] str = s.toCharArray();
+        int currWidth = 0;
+        int i = 0;
+        String postStr = "... ";
+        cbWidth -= SwingUtilities.computeStringWidth(fm, postStr);
+        while (i < str.length && currWidth < cbWidth)
+          {
+            ++i;
+            currWidth = SwingUtilities.computeStringWidth(fm, new String(str, 0, i));
+          }
+        setText(new String(str, 0, i)  + postStr);
+      }
+    else   
+      setText(s);
+    
     setOpaque(true);
 
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();

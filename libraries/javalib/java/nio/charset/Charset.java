@@ -302,6 +302,7 @@ public abstract class Charset implements Comparable
 			 Thread.currentThread().getContextClassLoader())).newInstance());
                     set.add(p);
                   }
+		rdr.close();
                }
 
             providers = new CharsetProvider[set.size()];

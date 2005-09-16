@@ -346,11 +346,6 @@ public class Window extends Container implements Accessible
     super.hide();
   }
 
-  public boolean isDisplayable()
-  {
-    return peer != null;
-  }
-
   /**
    * Destroys any resources associated with this window.  This includes
    * all components in the window and all owned top-level windows.

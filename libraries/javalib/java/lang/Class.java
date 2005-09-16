@@ -101,7 +101,7 @@ public final class Class implements Serializable
   /** The class signers. */
   private Object[] signers = null;
   /** The class protection domain. */
-  private final ProtectionDomain pd;
+  private final transient ProtectionDomain pd;
 
   /* We use an inner class, so that Class doesn't have a static initializer */
   private static final class StaticData

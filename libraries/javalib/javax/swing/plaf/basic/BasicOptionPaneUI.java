@@ -860,10 +860,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
     addIcon(messageArea);
 
     JPanel rightSide = new JPanel();
-    rightSide.setBorder(BorderFactory.createEmptyBorder(0, 11, 17, 0));
+    rightSide.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     rightSide.setLayout(new GridBagLayout());
     GridBagConstraints con = createConstraints();
-
+    
     addMessageComponents(rightSide, con, getMessage(),
                          getMaxCharactersPerLineCount(), false);
 
@@ -886,7 +886,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	  }
       }
 
-    messageArea.add(rightSide, BorderLayout.EAST);
+    messageArea.add(rightSide, BorderLayout.CENTER);
 
     return messageArea;
   }

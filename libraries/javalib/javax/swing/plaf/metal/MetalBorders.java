@@ -50,6 +50,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
@@ -69,6 +70,9 @@ public class MetalBorders
 
   /** The shared instance for getButtonBorder(). */
   private static Border buttonBorder;
+
+  /** The shared instance for getToggleButtonBorder(). */
+  private static Border toggleButtonBorder;
 
   /** The shared instance for getDesktopIconBorder(). */
   private static Border desktopIconBorder;
@@ -126,38 +130,47 @@ public class MetalBorders
       Color light = MetalLookAndFeel.getWhite();
       Color middle = MetalLookAndFeel.getControl();
 
-      // draw dark border
-      g.setColor(darkShadow);
-      g.drawRect(x, y, w - 2, h - 2);
+      if (c.isEnabled())
+      {
+        // draw dark border
+        g.setColor(darkShadow);
+        g.drawRect(x, y, w - 2, h - 2);
 
-      if (!bmodel.isPressed())
-        {
-          // draw light border
-          g.setColor(light);
-          g.drawRect(x + 1, y + 1, w - 2, h - 2);
+        if (!bmodel.isPressed())
+          {
+            // draw light border
+            g.setColor(light);
+            g.drawRect(x + 1, y + 1, w - 2, h - 2);
 
-          // draw crossing pixels of both borders
-          g.setColor(middle);
-          g.drawRect(x + 1, y + h - 2, 0, 0);
-          g.drawRect(x + w - 2, y + 1, 0, 0);
-        }
-      else
-        {
-          // draw light border
-          g.setColor(light);
-          g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
-          g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
+            // draw crossing pixels of both borders
+            g.setColor(middle);
+            g.drawRect(x + 1, y + h - 2, 0, 0);
+            g.drawRect(x + w - 2, y + 1, 0, 0);
+          }
+        else
+          {
+            // draw light border
+            g.setColor(light);
+            g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
+            g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
 
-          // draw shadow border
-          g.setColor(middle);
-          g.drawLine(x + 1, y + 1, x + w - 2, y + 1);
-          g.drawLine(x + 1, y + 1, x + 1, y + h - 2);
-
-          // draw crossing pixels of both borders
-          g.setColor(shadow);
-          g.drawRect(x + 1, y + h - 2, 0, 0);
-          g.drawRect(x + w - 2, y + 1, 0, 0);
-        }
+            // draw shadow border
+            g.setColor(middle);
+            g.drawLine(x + 1, y + 1, x + w - 2, y + 1);
+            g.drawLine(x + 1, y + 1, x + 1, y + h - 2);
+ 
+            // draw crossing pixels of both borders
+            g.setColor(shadow);
+            g.drawRect(x + 1, y + h - 2, 0, 0);
+            g.drawRect(x + w - 2, y + 1, 0, 0);
+          }
+      }
+      else 
+      {
+        // draw disabled border
+        g.setColor(MetalLookAndFeel.getControlDisabled());
+        g.drawRect(x, y, w - 2, h - 2);          
+      }
     }
 
     /**
@@ -924,6 +937,98 @@ public class MetalBorders
   }
 
   /**
+   * A border used for {@link JToggleButton} components.
+   * 
+   * @since 1.3
+   */
+  public static class ToggleButtonBorder
+    extends ButtonBorder 
+  {
+    /**
+     * Creates a new border instance.
+     */
+    public ToggleButtonBorder()
+    {
+    }
+    
+    /**
+     * Paints the toggle button border.
+     *
+     * @param c the component for which we paint the border
+     * @param g the Graphics context to use
+     * @param x the X coordinate of the upper left corner of c
+     * @param y the Y coordinate of the upper left corner of c
+     * @param w the width of c
+     * @param h the height of c
+     */
+    public void paintBorder(Component c, Graphics g, int x, int y, int w,
+                            int h)
+    {
+      ButtonModel bmodel = null;
+      
+      if (c instanceof AbstractButton)
+        bmodel = ((AbstractButton) c).getModel();
+
+      Color darkShadow = MetalLookAndFeel.getControlDarkShadow();
+      Color shadow = MetalLookAndFeel.getControlShadow();
+      Color light = MetalLookAndFeel.getWhite();
+      Color middle = MetalLookAndFeel.getControl();
+
+      if (c.isEnabled())
+        {
+          // draw dark border
+          g.setColor(darkShadow);
+          g.drawRect(x, y, w - 2, h - 2);
+
+          if (!bmodel.isArmed())
+            {
+              // draw light border
+              g.setColor(light);
+              g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
+              g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
+              if (bmodel.isSelected())
+                g.setColor(middle);
+              g.drawLine(x + 1, y + 1, x + w - 3, y + 1);
+              g.drawLine(x + 1, y + 1, x + 1, y + h - 3);
+
+              // draw crossing pixels of both borders
+              g.setColor(shadow);
+              g.drawLine(x + 1, y + h - 2, x + 1, y + h - 2);
+              g.drawLine(x + w - 2, y + 1, x + w - 2, y + 1);
+            }
+          else
+            {
+              // draw light border
+              g.setColor(light);
+              g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
+              g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
+
+              // draw shadow border
+              g.setColor(shadow);
+              g.drawLine(x + 1, y + 1, x + w - 2, y + 1);
+              g.drawLine(x + 1, y + 1, x + 1, y + h - 2);
+ 
+              // draw crossing pixels of both borders
+              g.setColor(shadow);
+              g.drawLine(x + 1, y + h - 2, x + 1, y + h - 2);
+              g.drawLine(x + w - 2, y + 1, x + w - 2, y + 1);
+              
+            }
+          // draw corners
+          g.setColor(middle);
+          g.drawLine(x, y + h - 1, x, y + h - 1);
+          g.drawLine(x + w - 1, y, x + w - 1, y);
+        }
+      else 
+        {
+          // draw disabled border
+          g.setColor(MetalLookAndFeel.getControlDisabled());
+          g.drawRect(x, y, w - 2, h - 2);          
+        }
+    }
+  }
+
+  /**
    * A border for table header cells.
    *
    * @since 1.3
@@ -998,6 +1103,25 @@ public class MetalBorders
     return buttonBorder;
   }
   
+  /**
+   * Returns a border for use with {@link JToggleButton} components.
+   *
+   * @return A border.
+   * 
+   * @since 1.3
+   */
+  public static Border getToggleButtonBorder()
+  {
+    if (toggleButtonBorder == null)
+      {
+        Border outer = new ToggleButtonBorder();
+        Border inner = getMarginBorder();
+        toggleButtonBorder = new BorderUIResource.CompoundBorderUIResource
+            (outer, inner);
+      }
+    return toggleButtonBorder;
+  }
+
   /**
    * Returns a border instance that is used with a {@link JInternalFrame} when
    * it is in the iconified state.

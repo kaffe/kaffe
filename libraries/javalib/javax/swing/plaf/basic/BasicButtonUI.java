@@ -55,6 +55,7 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.ButtonUI;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 
 public class BasicButtonUI extends ButtonUI
 {
@@ -122,6 +123,7 @@ public class BasicButtonUI extends ButtonUI
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     String prefix = getPropertyPrefix();
+    b.setFont(defaults.getFont(prefix + "font"));
     focusColor = defaults.getColor(prefix + "focus");
     b.setForeground(defaults.getColor(prefix + "foreground"));
     b.setBackground(defaults.getColor(prefix + "background"));
@@ -135,6 +137,8 @@ public class BasicButtonUI extends ButtonUI
 
   protected void uninstallDefaults(AbstractButton b)
   {
+    if (b.getFont() instanceof UIResource)
+      b.setFont(null);
     b.setForeground(null);
     b.setBackground(null);
     b.setBorder(null);
@@ -264,7 +268,10 @@ public class BasicButtonUI extends ButtonUI
 
     g.setFont(f);
 
-    SwingUtilities.calculateInnerArea(b, vr);
+    if (b.isBorderPainted())
+      SwingUtilities.calculateInnerArea(b, vr);
+    else
+      vr = SwingUtilities.getLocalBounds(b);
     String text = SwingUtilities.layoutCompoundLabel(c, g.getFontMetrics(f), 
                                                      b.getText(),
                                                      currentIcon(b),

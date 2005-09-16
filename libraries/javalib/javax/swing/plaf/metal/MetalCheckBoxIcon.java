@@ -38,10 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-
 import java.io.Serializable;
 
 import javax.swing.Icon;
@@ -79,7 +77,10 @@ public class MetalCheckBoxIcon
    */
   protected void drawCheck(Component c, Graphics g, int x, int y)
   {
-    g.setColor(Color.BLACK);
+    if (c.isEnabled())
+      g.setColor(MetalLookAndFeel.getBlack());
+    else
+      g.setColor(MetalLookAndFeel.getControlDisabled());
     g.drawLine(3 + x, 5 + y, 3 + x, 9 + y);
     g.drawLine(4 + x, 5 + y, 4 + x, 9 + y);
     g.drawLine(5 + x, 7 + y, 9 + x, 3 + y);

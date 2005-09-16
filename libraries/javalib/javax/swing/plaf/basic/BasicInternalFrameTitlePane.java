@@ -84,6 +84,14 @@ public class BasicInternalFrameTitlePane extends JComponent
   public class CloseAction extends AbstractAction
   {
     /**
+     * Creates a new action.
+     */
+    public CloseAction()
+    {
+      super("Close");
+    }
+    
+    /**
      * This method is called when something closes the JInternalFrame.
      *
      * @param e The ActionEvent.
@@ -112,6 +120,14 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   public class IconifyAction extends AbstractAction
   {
+    /**
+     * Creates a new action.
+     */
+    public IconifyAction()
+    {
+      super("Minimize");
+    }
+
     /**
      * This method is called when the user wants to iconify the
      * JInternalFrame.
@@ -143,6 +159,13 @@ public class BasicInternalFrameTitlePane extends JComponent
   public class MaximizeAction extends AbstractAction
   {
     /**
+     * Creates a new action.
+     */
+    public MaximizeAction()
+    {
+      super("Maximize");
+    }
+    /**
      * This method is called when the user wants to maximize the
      * JInternalFrame.
      *
@@ -173,6 +196,13 @@ public class BasicInternalFrameTitlePane extends JComponent
   public class MoveAction extends AbstractAction
   {
     /**
+     * Creates a new action.
+     */
+    public MoveAction()
+    {
+      super("Move");
+    }
+    /**
      * This method is called when the user wants to drag the JInternalFrame.
      *
      * @param e The ActionEvent.
@@ -193,6 +223,13 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   public class RestoreAction extends AbstractAction
   {
+    /**
+     * Creates a new action.
+     */
+    public RestoreAction()
+    {
+      super("Restore");
+    }
     /**
      * This method is called when the user wants to restore the
      * JInternalFrame.
@@ -223,6 +260,13 @@ public class BasicInternalFrameTitlePane extends JComponent
    */
   public class SizeAction extends AbstractAction
   {
+    /**
+     * Creates a new action.
+     */
+    public SizeAction()
+    {
+      super("Size");
+    }
     /**
      * This method is called when the user wants to resize the JInternalFrame.
      *
@@ -377,24 +421,26 @@ public class BasicInternalFrameTitlePane extends JComponent
 
       int loc = width + insets.left - 1;
       int top = insets.top + 1;
-      int buttonWidth = height - 2;
       int buttonHeight = height - 4;
       if (closeButton.isVisible())
         {
-	  loc -= buttonWidth + 2;
-	  closeButton.setBounds(loc, top, buttonWidth, buttonHeight);
+          int buttonWidth = closeIcon.getIconWidth();
+          loc -= buttonWidth + 2;
+          closeButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
 
       if (maxButton.isVisible())
         {
-	  loc -= buttonWidth + 2;
-	  maxButton.setBounds(loc, top, buttonWidth, buttonHeight);
+          int buttonWidth = maxIcon.getIconWidth();
+          loc -= buttonWidth + 2;
+          maxButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
 
       if (iconButton.isVisible())
         {
-	  loc -= buttonWidth + 2;
-	  iconButton.setBounds(loc, top, buttonWidth, buttonHeight);
+          int buttonWidth = iconIcon.getIconWidth();
+          loc -= buttonWidth + 2;
+          iconButton.setBounds(loc, top, buttonWidth, buttonHeight);
         }
 
       if (title != null)
@@ -466,6 +512,7 @@ public class BasicInternalFrameTitlePane extends JComponent
       // These buttons cannot be given focus.
       return false;
     }
+
   }
 
   /** The action command for the Close action. */
@@ -674,8 +721,9 @@ public class BasicInternalFrameTitlePane extends JComponent
     notSelectedTextColor = defaults.getColor("InternalFrame.inactiveTitleForeground");
     notSelectedTitleColor = defaults.getColor("InternalFrame.inactiveTitleBackground");
   
-    // FIXME: move other icons to here too.
     closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
+    iconIcon = UIManager.getIcon("InternalFrame.iconifyIcon");
+    maxIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
   }
 
   /**
@@ -690,6 +738,8 @@ public class BasicInternalFrameTitlePane extends JComponent
     notSelectedTitleColor = null;
     
     closeIcon = null;
+    iconIcon = null;
+    maxIcon = null;
   }
 
   /**
@@ -698,12 +748,15 @@ public class BasicInternalFrameTitlePane extends JComponent
   protected void createButtons()
   {
     closeButton = new PaneButton(closeAction);
+    closeButton.setText(null);
     if (!frame.isClosable())
       closeButton.setVisible(false);
     iconButton = new PaneButton(iconifyAction);
+    iconButton.setText(null);
     if (!frame.isIconifiable())
       iconButton.setVisible(false);
     maxButton = new PaneButton(maximizeAction);
+    maxButton.setText(null);
     if (!frame.isMaximizable())
       maxButton.setVisible(false);
   }
@@ -715,13 +768,10 @@ public class BasicInternalFrameTitlePane extends JComponent
   {
     if (closeIcon != null)
       closeButton.setIcon(closeIcon);
-    // FIXME: fetch these icons in the installDefaults() method
-    Icon icon = UIManager.getIcon("InternalFrame.iconifyIcon");
-    if (icon != null)
-      iconButton.setIcon(icon);
-    icon = UIManager.getIcon("InternalFrame.maximizeIcon");
-    if (icon != null)
-      maxButton.setIcon(icon);
+    if (iconIcon != null)
+      iconButton.setIcon(iconIcon);
+    if (maxIcon != null)
+      maxButton.setIcon(maxIcon);
   }
 
   /**

@@ -511,7 +511,7 @@ public abstract class URLStreamHandler
     int size = protocol.length() + authority.length() + file.length() + 24;
     StringBuffer sb = new StringBuffer(size);
 
-    if (protocol != null && protocol.length() > 0)
+    if (protocol.length() > 0)
       {
 	sb.append(protocol);
 	sb.append(":");
