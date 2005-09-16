@@ -1,3 +1,62 @@
+2005-09-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/ClassLoader.c 
+	(java_lang_VMClassLoader_loadClass): Allow classes from
+	gnu.classpath.tools to be loaded.
+
+	* libraries/javalib/Makefile.am.in:
+	(JAR_CMD2) Put rmic classes into rt.jar for ant.
+	(JAR_CMD_TOOLS) Add asm classes to tools.jar as well.
+
+	* libraries/javalib/all.files: Regenerated.
+
+	* libraries/javalib/gnu/classpath/VMSystemProperties.java:
+	Preset build.rmic propert to kaffe.
+
+	* libraries/javalib/org/objectweb/asm153/Attribute.java,
+	libraries/javalib/org/objectweb/asm153/ByteVector.java,
+	libraries/javalib/org/objectweb/asm153/ClassReader.java,
+	libraries/javalib/org/objectweb/asm153/ClassVisitor.java,
+	libraries/javalib/org/objectweb/asm153/ClassWriter.java,
+	libraries/javalib/org/objectweb/asm153/CodeVisitor.java,
+	libraries/javalib/org/objectweb/asm153/CodeWriter.java,
+	libraries/javalib/org/objectweb/asm153/Constants.java,
+	libraries/javalib/org/objectweb/asm153/Edge.java,
+	libraries/javalib/org/objectweb/asm153/Item.java,
+	libraries/javalib/org/objectweb/asm153/Label.java,
+	libraries/javalib/org/objectweb/asm153/Type.java:
+	New files. Taken from BSD-without-advertising-clause
+	licensed ASM project from ObjectWeb. Renamed package asm to
+	asm153 to make sure that the package name won't conflict with
+	normal programs using their own copies of asm.
+
+	* THIRDPARTY: Added information about the ASM project.
+ 
+	Resynced with GNU classpath tools.
+
+	2005-08-02  Archit Shah  <archit.shah@alum.mit.edu>
+
+        * src/gnu/classpath/tools/rmi/rmic/RMIC.java: Centralize calls to
+        System.exit and make handling of error conditions more uniform.
+
+	2005-07-05  Archit Shah  <archit.shah@alum.mit.edu>
+
+        Rewrite rmic to use ASM library:
+        * src/gnu/classpath/tools/rmi/rmic/Compile_gcj.java,
+        src/gnu/classpath/tools/rmi/rmic/Compile_jikes.java,
+        src/gnu/classpath/tools/rmi/rmic/Compile_kjc.java,
+        src/gnu/classpath/tools/rmi/rmic/Compiler.java,
+        src/gnu/classpath/tools/rmi/rmic/CompilerProcess.java,
+        src/gnu/classpath/tools/rmi/rmic/TabbedWriter.java: Removed.
+        * src/gnu/classpath/tools/rmi/rmic/RMIC.java: Rewrote.
+        * src/gnu/classpath/tools/rmi/rmic/Variables.java: New file.
+
+	2005-06-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * src/gnu/classpath/tools/Util.java
+        (Util): Really search in the default classpath if searching in the
+        current directory fails.	
+
 2005-09-16  David Walluck <walluck@mandrake.org>
 
 	* libraries/clib/awt/qt/toolkit.h,

@@ -116,6 +116,7 @@ class VMSystemProperties
        */
       properties.setProperty("kaffe.compiler", "jikes");
       properties.setProperty("build.compiler", "jikes");
+      properties.setProperty("build.rmic", "kaffe");
 
       // Invoke native methods to get the values of the other properties
 

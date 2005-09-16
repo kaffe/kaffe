@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with
  * GNU Classpath; see the file COPYING. If not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 package gnu.classpath.tools;
 
@@ -63,9 +63,9 @@ public class Util
     else
       {
         is = findFile(filename);
-        if (is == null)
+	if (is == null)
 	  {
-	    String path = getSearchPath();
+            String path = getSearchPath();
             is = findClass(filename, path);
 	  }
       }

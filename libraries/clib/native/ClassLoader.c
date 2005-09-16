@@ -185,7 +185,10 @@ java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)
 
 	if (foundSlash ||
 	    !strncmp (name, "kaffe/lang/", 11) ||
-	    !strncmp (name, "gnu/classpath/", 14)) {
+	    (!strncmp (name, "gnu/classpath/", 14)
+             && strncmp (name, 
+                         "gnu/classpath/tools/", 
+                         strlen("gnu/classpath/tools/")))) {
 		struct Hjava_lang_Throwable *throwable;
 
 		throwable = (struct Hjava_lang_Throwable *)execute_java_constructor(JAVA_LANG(ClassNotFoundException),

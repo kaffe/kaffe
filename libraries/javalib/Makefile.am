@@ -329,6 +329,7 @@ Klasses_jar_SRCS = \
 	$(org_metastatic_jessie_pki_io_SRCS) \
 	$(org_metastatic_jessie_pki_provider_SRCS) \
 	$(org_metastatic_jessie_provider_SRCS) \
+	$(org_objectweb_asm153_SRCS) \
 	$(org_omg_CORBA_SRCS) \
 	$(org_omg_CORBA_DynAnyPackage_SRCS) \
 	$(org_omg_CORBA_ORBPackage_SRCS) \
@@ -723,14 +724,9 @@ gnu_classpath_tools_javap_SRCS = \
 gnu_classpath_tools_native2ascii_SRCS = \
 	gnu/classpath/tools/native2ascii/Native2ASCII.java
 gnu_classpath_tools_rmi_rmic_SRCS = \
-	gnu/classpath/tools/rmi/rmic/Compile_gcj.java \
-	gnu/classpath/tools/rmi/rmic/Compile_jikes.java \
-	gnu/classpath/tools/rmi/rmic/Compile_kjc.java \
-	gnu/classpath/tools/rmi/rmic/Compiler.java \
-	gnu/classpath/tools/rmi/rmic/CompilerProcess.java \
 	gnu/classpath/tools/rmi/rmic/RMIC.java \
 	gnu/classpath/tools/rmi/rmic/RMICException.java \
-	gnu/classpath/tools/rmi/rmic/TabbedWriter.java
+	gnu/classpath/tools/rmi/rmic/Variables.java
 gnu_classpath_tools_serialver_SRCS = \
 	gnu/classpath/tools/serialver/SerialVer.java
 gnu_crypto_SRCS = \
@@ -4645,6 +4641,19 @@ org_metastatic_jessie_provider_SRCS = \
 	org/metastatic/jessie/provider/X509KeyManagerFactory.java \
 	org/metastatic/jessie/provider/X509TrustManagerFactory.java \
 	org/metastatic/jessie/provider/XMLSessionContext.java
+org_objectweb_asm153_SRCS = \
+	org/objectweb/asm153/Attribute.java \
+	org/objectweb/asm153/ByteVector.java \
+	org/objectweb/asm153/ClassReader.java \
+	org/objectweb/asm153/ClassVisitor.java \
+	org/objectweb/asm153/ClassWriter.java \
+	org/objectweb/asm153/CodeVisitor.java \
+	org/objectweb/asm153/CodeWriter.java \
+	org/objectweb/asm153/Constants.java \
+	org/objectweb/asm153/Edge.java \
+	org/objectweb/asm153/Item.java \
+	org/objectweb/asm153/Label.java \
+	org/objectweb/asm153/Type.java
 org_omg_CORBA_SRCS = \
 	org/omg/CORBA/ARG_IN.java \
 	org/omg/CORBA/ARG_INOUT.java \
@@ -5933,12 +5942,12 @@ rebuildLib = ./rebuildLib
 .PHONY: compile-classes classes
 
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
-JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools)
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools/ gnu/classpath/tools/rmi/rmic/)
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
 JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_icons))
-JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools)
+JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools org/objectweb)
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR

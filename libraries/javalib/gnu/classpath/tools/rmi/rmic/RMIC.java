@@ -1,5 +1,5 @@
 /* RMIC.java --
-   Copyright (c) 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004
+   Copyright (c) 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -16,46 +16,79 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU Classpath; see the file COPYING.  If not, write to the
-Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA. */
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 package gnu.classpath.tools.rmi.rmic;
 
 import gnu.java.rmi.server.RMIHashes;
-
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.rmi.MarshalException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.UnexpectedException;
+import java.rmi.UnmarshalException;
+import java.rmi.server.Operation;
+import java.rmi.server.RemoteCall;
+import java.rmi.server.RemoteObject;
+import java.rmi.server.RemoteRef;
+import java.rmi.server.RemoteStub;
+import java.rmi.server.Skeleton;
+import java.rmi.server.SkeletonMismatchException;
+import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-
+import java.util.StringTokenizer;
+import org.objectweb.asm153.ClassVisitor;
+import org.objectweb.asm153.ClassWriter;
+import org.objectweb.asm153.CodeVisitor;
+import org.objectweb.asm153.Constants;
+import org.objectweb.asm153.Label;
+import org.objectweb.asm153.Type;
 
 public class RMIC
 {
   private String[] args;
   private int next;
-  private Exception exception;
+  private List errors = new ArrayList();
   private boolean keep = false;
   private boolean need11Stubs = true;
   private boolean need12Stubs = true;
   private boolean compile = true;
   private boolean verbose;
   private String destination;
-  private PrintWriter out;
-  private TabbedWriter ctrl;
+  private String classpath;
+  private ClassLoader loader;
+  private int errorCount = 0;
+
   private Class clazz;
   private String classname;
+  private String classInternalName;
   private String fullclassname;
   private MethodRef[] remotemethods;
   private String stubname;
   private String skelname;
-  private int errorCount = 0;
-  private Class mRemoteInterface;
+  private List mRemoteInterfaces;
+
+  private static class C
+    implements Constants
+  {
+  }
 
   public RMIC(String[] a)
   {
@@ -64,65 +97,85 @@ public class RMIC
 
   public static void main(String[] args)
   {
-    RMIC r = new RMIC(args);
-    if (r.run() == false)
-      {
-	Exception e = r.getException();
-	if (e != null)
-	  e.printStackTrace();
-	else
-	  System.exit(1);
-      }
+    if (rmic(args))
+      System.exit(0);
+    else
+      System.exit(1);
   }
 
-  public boolean run()
+  /**
+   * @return true if compilation was successful
+   */
+  public static boolean rmic(String[] args)
   {
-    parseOptions();
+    RMIC r = new RMIC(args);
+    return r.run();
+  }
+
+  /**
+   * @return true if run was successful
+   */
+  private boolean run()
+  {
+    boolean done = parseOptions();
+    if (done)
+      return errorCount == 0;
+
     if (next >= args.length)
-      error("no class names found");
+      {
+        usage();
+        return false;
+      }
+
     for (int i = next; i < args.length; i++)
       {
 	try
 	  {
-	    if (verbose)
+            if (verbose)
 	      System.out.println("[Processing class " + args[i] + ".class]");
 	    processClass(args[i].replace(File.separatorChar, '.'));
 	  }
-	catch (Exception e)
-	  {
-	    exception = e;
-	    return (false);
-	  }
+        catch (IOException e)
+          {
+            errors.add(e);
+          }
+        catch (RMICException e)
+          {
+            errors.add(e);
+          }
       }
-    return (true);
+    if (errors.size() > 0)
+      {
+        for (Iterator it = errors.iterator(); it.hasNext(); )
+          {
+            Exception ex = (Exception) it.next();
+            logError(ex);
+          }
+      }
+
+    return errorCount == 0;
   }
 
-  private boolean processClass(String classname) throws Exception
+  private void processClass(String cls) throws IOException, RMICException
   {
-    errorCount = 0;
-    analyzeClass(classname);
-    if (errorCount > 0)
-      System.exit(1);
+    // reset class specific vars
+    clazz = null;
+    classname = null;
+    classInternalName = null;
+    fullclassname = null;
+    remotemethods = null;
+    stubname = null;
+    skelname = null;
+    mRemoteInterfaces = new ArrayList();
+
+    analyzeClass(cls);
     generateStub();
     if (need11Stubs)
       generateSkel();
-    if (compile)
-      {
-	compile(stubname.replace('.', File.separatorChar) + ".java");
-	if (need11Stubs)
-	  compile(skelname.replace('.', File.separatorChar) + ".java");
-      }
-    if (! keep)
-      {
-	(new File(stubname.replace('.', File.separatorChar) + ".java")).delete();
-	if (need11Stubs)
-	  (new File(skelname.replace('.', File.separatorChar) + ".java"))
-	  .delete();
-      }
-    return (true);
   }
 
-  private void analyzeClass(String cname) throws Exception
+  private void analyzeClass(String cname)
+    throws RMICException
   {
     if (verbose)
       System.out.println("[analyze class " + cname + "]");
@@ -133,759 +186,1419 @@ public class RMIC
       classname = cname;
     fullclassname = cname;
 
-    HashSet rmeths = new HashSet();
     findClass();
-
-    // get the remote interface
-    mRemoteInterface = getRemoteInterface(clazz);
-    if (mRemoteInterface == null)
-      return;
-    if (verbose)
-      System.out.println("[implements " + mRemoteInterface.getName() + "]");
-
-    // check if the methods of the remote interface declare RemoteExceptions
-    Method[] meths = mRemoteInterface.getDeclaredMethods();
-    for (int i = 0; i < meths.length; i++)
-      {
-	Class[] exceptions = meths[i].getExceptionTypes();
-	int index = 0;
-	for (; index < exceptions.length; index++)
-	  {
-	    if (exceptions[index].equals(RemoteException.class))
-	      break;
-	  }
-	if (index < exceptions.length)
-	  rmeths.add(meths[i]);
-	else
-	  logError("Method " + meths[i]
-	           + " does not throw a java.rmi.RemoteException");
-      }
-
-    // Convert into a MethodRef array and sort them
-    remotemethods = new MethodRef[rmeths.size()];
-    int c = 0;
-    for (Iterator i = rmeths.iterator(); i.hasNext();)
-      remotemethods[c++] = new MethodRef((Method) i.next());
-    Arrays.sort(remotemethods);
+    findRemoteMethods();
   }
 
+  /**
+   * @deprecated
+   */
   public Exception getException()
   {
-    return (exception);
+    return errors.size() == 0 ? null : (Exception) errors.get(0);
   }
 
-  private void findClass() throws ClassNotFoundException
+  private void findClass()
+    throws RMICException
   {
-    clazz =
-      Class.forName(fullclassname, true, ClassLoader.getSystemClassLoader());
+    ClassLoader cl = (loader == null
+                      ? ClassLoader.getSystemClassLoader()
+                      : loader);
+    try
+      {
+        clazz = Class.forName(fullclassname, false, cl);
+      }
+    catch (ClassNotFoundException cnfe)
+      {
+        throw new RMICException
+          ("Class " + fullclassname + " not found in classpath", cnfe);
+      }
+
+    if (! Remote.class.isAssignableFrom(clazz))
+      {
+        throw new RMICException
+          ("Class " + clazz.getName()
+           + " does not implement a remote interface.");
+      }
   }
 
-  private void generateStub() throws IOException
+  private static Type[] typeArray(Class[] cls)
+  {
+    Type[] t = new Type[cls.length];
+    for (int i = 0; i < cls.length; i++)
+      {
+        t[i] = Type.getType(cls[i]);
+      }
+
+    return t;
+  }
+
+  private static String[] internalNameArray(Type[] t)
+  {
+    String[] s = new String[t.length];
+    for (int i = 0; i < t.length; i++)
+      {
+        s[i] = t[i].getInternalName();
+      }
+
+    return s;
+  }
+
+  private static String[] internalNameArray(Class[] c)
+  {
+    return internalNameArray(typeArray(c));
+  }
+
+  private static final String forName = "class$";
+
+  private static Object param(Method m, int argIndex)
+  {
+    List l = new ArrayList();
+    l.add(m);
+    l.add(new Integer(argIndex));
+    return l;
+  }
+
+  private static void generateClassForNamer(ClassVisitor cls)
+  {
+    CodeVisitor cv =
+      cls.visitMethod
+      (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_SYNTHETIC, forName,
+       Type.getMethodDescriptor
+       (Type.getType(Class.class), new Type[] { Type.getType(String.class) }),
+       null, null);
+
+    Label start = new Label();
+    cv.visitLabel(start);
+    cv.visitVarInsn(C.ALOAD, 0);
+    cv.visitMethodInsn
+      (C.INVOKESTATIC,
+       Type.getInternalName(Class.class),
+       "forName",
+       Type.getMethodDescriptor
+       (Type.getType(Class.class), new Type[] { Type.getType(String.class) }));
+    cv.visitInsn(C.ARETURN);
+
+    Label handler = new Label();
+    cv.visitLabel(handler);
+    cv.visitVarInsn(C.ASTORE, 1);
+    cv.visitTypeInsn(C.NEW, typeArg(NoClassDefFoundError.class));
+    cv.visitInsn(C.DUP);
+    cv.visitVarInsn(C.ALOAD, 1);
+    cv.visitMethodInsn
+      (C.INVOKEVIRTUAL,
+       Type.getInternalName(ClassNotFoundException.class),
+       "getMessage",
+       Type.getMethodDescriptor(Type.getType(String.class), new Type[] {}));
+    cv.visitMethodInsn
+      (C.INVOKESPECIAL,
+       Type.getInternalName(NoClassDefFoundError.class),
+       "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] { Type.getType(String.class) }));
+    cv.visitInsn(C.ATHROW);
+    cv.visitTryCatchBlock
+      (start, handler, handler,
+       Type.getInternalName(ClassNotFoundException.class));
+    cv.visitMaxs(-1, -1);
+  }
+
+  private void generateClassConstant(CodeVisitor cv, Class cls) {
+    if (cls.isPrimitive())
+      {
+        Class boxCls;
+        if (cls.equals(Boolean.TYPE))
+          boxCls = Boolean.class;
+        else if (cls.equals(Character.TYPE))
+          boxCls = Character.class;
+        else if (cls.equals(Byte.TYPE))
+          boxCls = Byte.class;
+        else if (cls.equals(Short.TYPE))
+          boxCls = Short.class;
+        else if (cls.equals(Integer.TYPE))
+          boxCls = Integer.class;
+        else if (cls.equals(Long.TYPE))
+          boxCls = Long.class;
+        else if (cls.equals(Float.TYPE))
+          boxCls = Float.class;
+        else if (cls.equals(Double.TYPE))
+          boxCls = Double.class;
+        else if (cls.equals(Void.TYPE))
+          boxCls = Void.class;
+        else
+          throw new IllegalArgumentException("unknown primitive type " + cls);
+
+        cv.visitFieldInsn
+          (C.GETSTATIC, Type.getInternalName(boxCls), "TYPE",
+           Type.getDescriptor(Class.class));
+        return;
+      }
+    cv.visitLdcInsn(cls.getName());
+    cv.visitMethodInsn
+      (C.INVOKESTATIC, classInternalName, forName,
+       Type.getMethodDescriptor
+       (Type.getType(Class.class),
+        new Type[] { Type.getType(String.class) }));
+  }
+
+  private void generateClassArray(CodeVisitor code, Class[] classes)
+  {
+    code.visitLdcInsn(new Integer(classes.length));
+    code.visitTypeInsn(C.ANEWARRAY, typeArg(Class.class));
+    for (int i = 0; i < classes.length; i++)
+      {
+        code.visitInsn(C.DUP);
+        code.visitLdcInsn(new Integer(i));
+        generateClassConstant(code, classes[i]);
+        code.visitInsn(C.AASTORE);
+      }
+  }
+
+  private void fillOperationArray(CodeVisitor clinit)
+  {
+    // Operations array
+    clinit.visitLdcInsn(new Integer(remotemethods.length));
+    clinit.visitTypeInsn(C.ANEWARRAY, typeArg(Operation.class));
+    clinit.visitFieldInsn
+      (C.PUTSTATIC, classInternalName, "operations",
+       Type.getDescriptor(Operation[].class));
+
+    for (int i = 0; i < remotemethods.length; i++)
+      {
+        Method m = remotemethods[i].meth;
+
+        StringBuffer desc = new StringBuffer();
+        desc.append(getPrettyName(m.getReturnType()) + " ");
+        desc.append(m.getName() + "(");
+
+        // signature
+        Class[] sig = m.getParameterTypes();
+        for (int j = 0; j < sig.length; j++)
+          {
+            desc.append(getPrettyName(sig[j]));
+            if (j + 1 < sig.length)
+                desc.append(", ");
+          }
+
+        // push operations array
+        clinit.visitFieldInsn
+          (C.GETSTATIC, classInternalName, "operations",
+           Type.getDescriptor(Operation[].class));
+
+        // push array index
+        clinit.visitLdcInsn(new Integer(i));
+
+        // instantiate operation and leave a copy on the stack
+        clinit.visitTypeInsn(C.NEW, typeArg(Operation.class));
+        clinit.visitInsn(C.DUP);
+        clinit.visitLdcInsn(desc.toString());
+        clinit.visitMethodInsn
+          (C.INVOKESPECIAL,
+           Type.getInternalName(Operation.class),
+           "<init>",
+           Type.getMethodDescriptor
+           (Type.VOID_TYPE, new Type[] { Type.getType(String.class) }));
+
+        // store in operations array
+        clinit.visitInsn(C.AASTORE);
+      }
+  }
+
+  private void generateStaticMethodObjs(CodeVisitor clinit)
+  {
+    for (int i = 0; i < remotemethods.length; i++)
+      {
+        Method m = remotemethods[i].meth;
+
+        /*
+         * $method_<i>m.getName()</i>_<i>i</i> =
+         *   <i>m.getDeclaringClass()</i>.class.getMethod
+         *     (m.getName(), m.getParameterType())
+         */
+        String methodVar = "$method_" + m.getName() + "_" + i;
+        generateClassConstant(clinit, m.getDeclaringClass());
+        clinit.visitLdcInsn(m.getName());
+        generateClassArray(clinit, m.getParameterTypes());
+        clinit.visitMethodInsn
+          (C.INVOKEVIRTUAL,
+           Type.getInternalName(Class.class),
+           "getMethod",
+           Type.getMethodDescriptor
+           (Type.getType(Method.class),
+            new Type[] { Type.getType(String.class),
+                         Type.getType(Class[].class) }));
+
+        clinit.visitFieldInsn
+          (C.PUTSTATIC, classInternalName, methodVar,
+           Type.getDescriptor(Method.class));
+      }
+  }
+
+  private void generateStub()
+    throws IOException
   {
     stubname = fullclassname + "_Stub";
     String stubclassname = classname + "_Stub";
-    ctrl =
-      new TabbedWriter(new FileWriter((destination == null ? ""
-                                                           : destination
-                                                           + File.separator)
-                                      + stubname.replace('.',
-                                                         File.separatorChar)
-                                      + ".java"));
-    out = new PrintWriter(ctrl);
+    File file = new File((destination == null ? "." : destination)
+                         + File.separator
+                         + stubname.replace('.', File.separatorChar)
+                         + ".class");
 
     if (verbose)
-      System.out.println("[Generating class " + stubname + ".java]");
+      System.out.println("[Generating class " + stubname + "]");
 
-    out.println("// Stub class generated by rmic - DO NOT EDIT!");
-    out.println();
-    if (fullclassname != classname)
-      {
-	String pname =
-	  fullclassname.substring(0, fullclassname.lastIndexOf('.'));
-	out.println("package " + pname + ";");
-	out.println();
-      }
+    final ClassWriter stub = new ClassWriter(true);
+    classInternalName = stubname.replace('.', '/');
+    final String superInternalName =
+      Type.getType(RemoteStub.class).getInternalName();
 
-    out.print("public final class " + stubclassname);
-    ctrl.indent();
-    out.println("extends java.rmi.server.RemoteStub");
+    String[] remoteInternalNames =
+      internalNameArray((Class[]) mRemoteInterfaces.toArray(new Class[] {}));
+    stub.visit
+      (C.V1_2, C.ACC_PUBLIC + C.ACC_FINAL, classInternalName,
+       superInternalName, remoteInternalNames, null);
 
-    // Output interfaces we implement
-    out.print("implements ");
-    /* Scan implemented interfaces, and only print remote interfaces. */
-    Class[] ifaces = clazz.getInterfaces();
-    Set remoteIfaces = new HashSet();
-    for (int i = 0; i < ifaces.length; i++)
-      {
-	Class iface = ifaces[i];
-	if (java.rmi.Remote.class.isAssignableFrom(iface))
-	  remoteIfaces.add(iface);
-      }
-    Iterator iter = remoteIfaces.iterator();
-    while (iter.hasNext())
-      {
-	/* Print remote interface. */
-	Class iface = (Class) iter.next();
-	out.print(iface.getName());
-
-	/* Print ", " if more remote interfaces follow. */
-	if (iter.hasNext())
-	  out.print(", ");
-      }
-    ctrl.unindent();
-    out.print("{");
-    ctrl.indent();
-
-    // UID
     if (need12Stubs)
       {
-	out.println("private static final long serialVersionUID = 2L;");
-	out.println();
+        stub.visitField
+          (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_FINAL, "serialVersionUID",
+           Type.LONG_TYPE.getDescriptor(), new Long(2L), null);
       }
 
-    // InterfaceHash - don't know how to calculate this - XXX
     if (need11Stubs)
       {
-	out.println("private static final long interfaceHash = "
-	            + RMIHashes.getInterfaceHash(clazz) + "L;");
-	out.println();
-	if (need12Stubs)
-	  {
-	    out.println("private static boolean useNewInvoke;");
-	    out.println();
-	  }
+        stub.visitField
+          (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_FINAL,
+           "interfaceHash", Type.LONG_TYPE.getDescriptor(),
+           new Long(RMIHashes.getInterfaceHash(clazz)), null);
 
-	// Operation table
-	out.print("private static final java.rmi.server.Operation[] operations = {");
+        if (need12Stubs)
+          {
+            stub.visitField
+              (C.ACC_PRIVATE + C.ACC_STATIC, "useNewInvoke",
+               Type.BOOLEAN_TYPE.getDescriptor(), null, null);
+          }
 
-	ctrl.indent();
-	for (int i = 0; i < remotemethods.length; i++)
-	  {
-	    Method m = remotemethods[i].meth;
-	    out.print("new java.rmi.server.Operation(\"");
-	    out.print(getPrettyName(m.getReturnType()) + " ");
-	    out.print(m.getName() + "(");
-	    // Output signature
-	    Class[] sig = m.getParameterTypes();
-	    for (int j = 0; j < sig.length; j++)
-	      {
-		out.print(getPrettyName(sig[j]));
-		if (j + 1 < sig.length)
-		  out.print(", ");
-	      }
-	    out.print(")\")");
-	    if (i + 1 < remotemethods.length)
-	      out.println(",");
-	  }
-	ctrl.unindent();
-	out.println("};");
-	out.println();
+        stub.visitField
+          (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_FINAL,
+           "operations", Type.getDescriptor(Operation[].class), null, null);
       }
 
     // Set of method references.
     if (need12Stubs)
       {
-	for (int i = 0; i < remotemethods.length; i++)
-	  {
-	    Method m = remotemethods[i].meth;
-	    out.println("private static java.lang.reflect.Method $method_"
-	                + m.getName() + "_" + i + ";");
-	  }
-
-	// Initialize the methods references.
-	out.println();
-	out.print("static {");
-	ctrl.indent();
-
-	out.print("try {");
-	ctrl.indent();
-
-	if (need11Stubs)
-	  {
-	    out.println("java.rmi.server.RemoteRef.class.getMethod(\"invoke\", new java.lang.Class[] { java.rmi.Remote.class, java.lang.reflect.Method.class, java.lang.Object[].class, long.class });");
-	    out.println("useNewInvoke = true;");
-	  }
-
-	for (int i = 0; i < remotemethods.length; i++)
-	  {
-	    Method m = remotemethods[i].meth;
-	    out.print("$method_" + m.getName() + "_" + i + " = ");
-	    out.print(mRemoteInterface.getName() + ".class.getMethod(\""
-	              + m.getName() + "\"");
-	    out.print(", new java.lang.Class[] {");
-	    // Output signature
-	    Class[] sig = m.getParameterTypes();
-	    for (int j = 0; j < sig.length; j++)
-	      {
-		out.print(getPrettyName(sig[j]) + ".class");
-		if (j + 1 < sig.length)
-		  out.print(", ");
-	      }
-	    out.println("});");
-	  }
-	ctrl.unindent();
-	out.println("}");
-	out.print("catch (java.lang.NoSuchMethodException e) {");
-	ctrl.indent();
-	if (need11Stubs)
-	  out.print("useNewInvoke = false;");
-	else
-	  out.print("throw new java.lang.NoSuchMethodError(\"stub class initialization failed\");");
-
-	ctrl.unindent();
-	out.print("}");
-
-	ctrl.unindent();
-	out.println("}");
-	out.println();
+        for (int i = 0; i < remotemethods.length; i++)
+          {
+            Method m = remotemethods[i].meth;
+            String slotName = "$method_" + m.getName() + "_" + i;
+            stub.visitField
+              (C.ACC_PRIVATE + C.ACC_STATIC, slotName,
+               Type.getDescriptor(Method.class), null, null);
+          }
       }
 
-    // Constructors
+    CodeVisitor clinit = stub.visitMethod
+      (C.ACC_STATIC, "<clinit>",
+       Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}), null, null);
+
     if (need11Stubs)
       {
-	out.print("public " + stubclassname + "() {");
-	ctrl.indent();
-	out.print("super();");
-	ctrl.unindent();
-	out.println("}");
+        fillOperationArray(clinit);
+        if (! need12Stubs)
+          clinit.visitInsn(C.RETURN);
       }
 
     if (need12Stubs)
       {
-	out.print("public " + stubclassname
-	          + "(java.rmi.server.RemoteRef ref) {");
-	ctrl.indent();
-	out.print("super(ref);");
-	ctrl.unindent();
-	out.println("}");
+        // begin of try
+        Label begin = new Label();
+
+        // beginning of catch
+        Label handler = new Label();
+        clinit.visitLabel(begin);
+
+        // Initialize the methods references.
+        if (need11Stubs)
+          {
+            /*
+             * RemoteRef.class.getMethod("invoke", new Class[] {
+             *   Remote.class, Method.class, Object[].class, long.class })
+             */
+            generateClassConstant(clinit, RemoteRef.class);
+            clinit.visitLdcInsn("invoke");
+            generateClassArray
+              (clinit, new Class[] { Remote.class, Method.class,
+                                     Object[].class, long.class });
+            clinit.visitMethodInsn
+              (C.INVOKEVIRTUAL,
+               Type.getInternalName(Class.class),
+               "getMethod",
+               Type.getMethodDescriptor
+               (Type.getType(Method.class),
+                new Type[] { Type.getType(String.class),
+                             Type.getType(Class[].class) }));
+
+            // useNewInvoke = true
+            clinit.visitInsn(C.ICONST_1);
+            clinit.visitFieldInsn
+              (C.PUTSTATIC, classInternalName, "useNewInvoke",
+               Type.BOOLEAN_TYPE.getDescriptor());
+          }
+
+        generateStaticMethodObjs(clinit);
+
+        // jump past handler
+        clinit.visitInsn(C.RETURN);
+        clinit.visitLabel(handler);
+        if (need11Stubs)
+          {
+            // useNewInvoke = false
+            clinit.visitInsn(C.ICONST_0);
+            clinit.visitFieldInsn
+              (C.PUTSTATIC, classInternalName, "useNewInvoke",
+               Type.BOOLEAN_TYPE.getDescriptor());
+            clinit.visitInsn(C.RETURN);
+          }
+        else
+          {
+            // throw NoSuchMethodError
+            clinit.visitTypeInsn(C.NEW, typeArg(NoSuchMethodError.class));
+            clinit.visitInsn(C.DUP);
+            clinit.visitLdcInsn("stub class initialization failed");
+            clinit.visitMethodInsn
+              (C.INVOKESPECIAL,
+               Type.getInternalName(NoSuchMethodError.class),
+               "<init>",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type[] { Type.getType(String.class) }));
+            clinit.visitInsn(C.ATHROW);
+          }
+
+        clinit.visitTryCatchBlock
+          (begin, handler, handler,
+           Type.getInternalName(NoSuchMethodException.class));
+
       }
+
+    clinit.visitMaxs(-1, -1);
+
+    generateClassForNamer(stub);
+
+    // Constructors
+    if (need11Stubs)
+      {
+        // no arg public constructor
+        CodeVisitor code = stub.visitMethod
+          (C.ACC_PUBLIC, "<init>",
+           Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}),
+           null, null);
+        code.visitVarInsn(C.ALOAD, 0);
+        code.visitMethodInsn
+          (C.INVOKESPECIAL, superInternalName, "<init>",
+           Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}));
+        code.visitInsn(C.RETURN);
+
+        code.visitMaxs(-1, -1);
+      }
+
+    // public RemoteRef constructor
+    CodeVisitor constructor = stub.visitMethod
+      (C.ACC_PUBLIC, "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] {Type.getType(RemoteRef.class)}),
+       null, null);
+    constructor.visitVarInsn(C.ALOAD, 0);
+    constructor.visitVarInsn(C.ALOAD, 1);
+    constructor.visitMethodInsn
+      (C.INVOKESPECIAL, superInternalName, "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] {Type.getType(RemoteRef.class)}));
+    constructor.visitInsn(C.RETURN);
+    constructor.visitMaxs(-1, -1);
 
     // Method implementations
     for (int i = 0; i < remotemethods.length; i++)
       {
-	Method m = remotemethods[i].meth;
-	Class[] sig = m.getParameterTypes();
-	Class returntype = m.getReturnType();
-	Class[] except = sortExceptions(m.getExceptionTypes());
+        Method m = remotemethods[i].meth;
+        Class[] sig = m.getParameterTypes();
+        Class returntype = m.getReturnType();
+        Class[] except = sortExceptions
+          ((Class[]) remotemethods[i].exceptions.toArray(new Class[0]));
 
-	out.println();
-	out.print("public " + getPrettyName(returntype) + " " + m.getName()
-	          + "(");
-	for (int j = 0; j < sig.length; j++)
-	  {
-	    out.print(getPrettyName(sig[j]));
-	    out.print(" $param_" + j);
-	    if (j + 1 < sig.length)
-	      out.print(", ");
-	  }
-	out.print(") ");
-	out.print("throws ");
-	for (int j = 0; j < except.length; j++)
-	  {
-	    out.print(getPrettyName(except[j]));
-	    if (j + 1 < except.length)
-	      out.print(", ");
-	  }
-	out.print(" {");
-	ctrl.indent();
+        CodeVisitor code = stub.visitMethod
+          (C.ACC_PUBLIC,
+           m.getName(),
+           Type.getMethodDescriptor(Type.getType(returntype), typeArray(sig)),
+           internalNameArray(typeArray(except)),
+           null);
 
-	out.print("try {");
-	ctrl.indent();
+        final Variables var = new Variables();
 
-	if (need12Stubs)
-	  {
-	    if (need11Stubs)
-	      {
-		out.print("if (useNewInvoke) {");
-		ctrl.indent();
-	      }
-	    if (returntype != Void.TYPE)
-	      out.print("java.lang.Object $result = ");
-	    out.print("ref.invoke(this, $method_" + m.getName() + "_" + i
-	              + ", ");
-	    if (sig.length == 0)
-	      out.print("null, ");
-	    else
-	      {
-		out.print("new java.lang.Object[] {");
-		for (int j = 0; j < sig.length; j++)
-		  {
-		    if (sig[j] == Boolean.TYPE)
-		      out.print("new java.lang.Boolean($param_" + j + ")");
-		    else if (sig[j] == Byte.TYPE)
-		      out.print("new java.lang.Byte($param_" + j + ")");
-		    else if (sig[j] == Character.TYPE)
-		      out.print("new java.lang.Character($param_" + j + ")");
-		    else if (sig[j] == Short.TYPE)
-		      out.print("new java.lang.Short($param_" + j + ")");
-		    else if (sig[j] == Integer.TYPE)
-		      out.print("new java.lang.Integer($param_" + j + ")");
-		    else if (sig[j] == Long.TYPE)
-		      out.print("new java.lang.Long($param_" + j + ")");
-		    else if (sig[j] == Float.TYPE)
-		      out.print("new java.lang.Float($param_" + j + ")");
-		    else if (sig[j] == Double.TYPE)
-		      out.print("new java.lang.Double($param_" + j + ")");
-		    else
-		      out.print("$param_" + j);
-		    if (j + 1 < sig.length)
-		      out.print(", ");
-		  }
-		out.print("}, ");
-	      }
-	    out.print(Long.toString(remotemethods[i].hash) + "L");
-	    out.print(");");
+        // this and parameters are the declared vars
+        var.declare("this");
+        for (int j = 0; j < sig.length; j++)
+          var.declare(param(m, j), size(sig[j]));
 
-	    if (returntype != Void.TYPE)
-	      {
-		out.println();
-		out.print("return (");
-		if (returntype == Boolean.TYPE)
-		  out.print("((java.lang.Boolean)$result).booleanValue()");
-		else if (returntype == Byte.TYPE)
-		  out.print("((java.lang.Byte)$result).byteValue()");
-		else if (returntype == Character.TYPE)
-		  out.print("((java.lang.Character)$result).charValue()");
-		else if (returntype == Short.TYPE)
-		  out.print("((java.lang.Short)$result).shortValue()");
-		else if (returntype == Integer.TYPE)
-		  out.print("((java.lang.Integer)$result).intValue()");
-		else if (returntype == Long.TYPE)
-		  out.print("((java.lang.Long)$result).longValue()");
-		else if (returntype == Float.TYPE)
-		  out.print("((java.lang.Float)$result).floatValue()");
-		else if (returntype == Double.TYPE)
-		  out.print("((java.lang.Double)$result).doubleValue()");
-		else
-		  out.print("(" + getPrettyName(returntype) + ")$result");
-		out.print(");");
-	      }
+        Label methodTryBegin = new Label();
+        code.visitLabel(methodTryBegin);
 
-	    if (need11Stubs)
-	      {
-		ctrl.unindent();
-		out.println("}");
-		out.print("else {");
-		ctrl.indent();
-	      }
-	  }
+        if (need12Stubs)
+          {
+            Label oldInvoke = new Label();
+            if (need11Stubs)
+              {
+                // if not useNewInvoke jump to old invoke
+                code.visitFieldInsn
+                  (C.GETSTATIC, classInternalName, "useNewInvoke",
+                   Type.getDescriptor(boolean.class));
+                code.visitJumpInsn(C.IFEQ, oldInvoke);
+              }
 
-	if (need11Stubs)
-	  {
-	    out.println("java.rmi.server.RemoteCall call = ref.newCall((java.rmi.server.RemoteObject)this, operations, "
-	                + i + ", interfaceHash);");
-	    out.print("try {");
-	    ctrl.indent();
-	    out.print("java.io.ObjectOutput out = call.getOutputStream();");
-	    for (int j = 0; j < sig.length; j++)
-	      {
-		out.println();
-		if (sig[j] == Boolean.TYPE)
-		  out.print("out.writeBoolean(");
-		else if (sig[j] == Byte.TYPE)
-		  out.print("out.writeByte(");
-		else if (sig[j] == Character.TYPE)
-		  out.print("out.writeChar(");
-		else if (sig[j] == Short.TYPE)
-		  out.print("out.writeShort(");
-		else if (sig[j] == Integer.TYPE)
-		  out.print("out.writeInt(");
-		else if (sig[j] == Long.TYPE)
-		  out.print("out.writeLong(");
-		else if (sig[j] == Float.TYPE)
-		  out.print("out.writeFloat(");
-		else if (sig[j] == Double.TYPE)
-		  out.print("out.writeDouble(");
-		else
-		  out.print("out.writeObject(");
-		out.print("$param_" + j + ");");
-	      }
-	    ctrl.unindent();
-	    out.println("}");
-	    out.print("catch (java.io.IOException e) {");
-	    ctrl.indent();
-	    out.print("throw new java.rmi.MarshalException(\"error marshalling arguments\", e);");
-	    ctrl.unindent();
-	    out.println("}");
-	    out.println("ref.invoke(call);");
-	    if (returntype != Void.TYPE)
-	      out.println(getPrettyName(returntype) + " $result;");
-	    out.print("try {");
-	    ctrl.indent();
-	    out.print("java.io.ObjectInput in = call.getInputStream();");
-	    boolean needcastcheck = false;
-	    if (returntype != Void.TYPE)
-	      {
-		out.println();
-		out.print("$result = ");
-		if (returntype == Boolean.TYPE)
-		  out.print("in.readBoolean();");
-		else if (returntype == Byte.TYPE)
-		  out.print("in.readByte();");
-		else if (returntype == Character.TYPE)
-		  out.print("in.readChar();");
-		else if (returntype == Short.TYPE)
-		  out.print("in.readShort();");
-		else if (returntype == Integer.TYPE)
-		  out.print("in.readInt();");
-		else if (returntype == Long.TYPE)
-		  out.print("in.readLong();");
-		else if (returntype == Float.TYPE)
-		  out.print("in.readFloat();");
-		else if (returntype == Double.TYPE)
-		  out.print("in.readDouble();");
-		else
-		  {
-		    if (returntype != Object.class)
-		      out.print("(" + getPrettyName(returntype) + ")");
-		    else
-		      needcastcheck = true;
-		    out.print("in.readObject();");
-		  }
-		out.println();
-		out.print("return ($result);");
-	      }
-	    ctrl.unindent();
-	    out.println("}");
-	    out.print("catch (java.io.IOException e) {");
-	    ctrl.indent();
-	    out.print("throw new java.rmi.UnmarshalException(\"error unmarshalling return\", e);");
-	    ctrl.unindent();
-	    out.println("}");
-	    if (needcastcheck)
-	      {
-		out.print("catch (java.lang.ClassNotFoundException e) {");
-		ctrl.indent();
-		out.print("throw new java.rmi.UnmarshalException(\"error unmarshalling return\", e);");
-		ctrl.unindent();
-		out.println("}");
-	      }
-	    out.print("finally {");
-	    ctrl.indent();
-	    out.print("ref.done(call);");
-	    ctrl.unindent();
-	    out.print("}");
+            // this.ref
+            code.visitVarInsn(C.ALOAD, var.get("this"));
+            code.visitFieldInsn
+              (C.GETFIELD, Type.getInternalName(RemoteObject.class),
+               "ref", Type.getDescriptor(RemoteRef.class));
 
-	    if (need12Stubs && need11Stubs)
-	      {
-		ctrl.unindent();
-		out.print("}");
-	      }
-	  }
+            // "this" is first arg to invoke
+            code.visitVarInsn(C.ALOAD, var.get("this"));
 
-	ctrl.unindent();
-	out.print("}");
+            // method object is second arg to invoke
+            String methName = "$method_" + m.getName() + "_" + i;
+            code.visitFieldInsn
+              (C.GETSTATIC, classInternalName, methName,
+               Type.getDescriptor(Method.class));
 
-	boolean needgeneral = true;
-	for (int j = 0; j < except.length; j++)
-	  {
-	    out.println();
-	    out.print("catch (" + getPrettyName(except[j]) + " e) {");
-	    ctrl.indent();
-	    out.print("throw e;");
-	    ctrl.unindent();
-	    out.print("}");
-	    if (except[j] == Exception.class)
-	      needgeneral = false;
-	  }
-	if (needgeneral)
-	  {
-	    out.println();
-	    out.print("catch (java.lang.Exception e) {");
-	    ctrl.indent();
-	    out.print("throw new java.rmi.UnexpectedException(\"undeclared checked exception\", e);");
-	    ctrl.unindent();
-	    out.print("}");
-	  }
+            // args to remote method are third arg to invoke
+            if (sig.length == 0)
+              code.visitInsn(C.ACONST_NULL);
+            else
+              {
+                // create arg Object[] (with boxed primitives) and push it
+                code.visitLdcInsn(new Integer(sig.length));
+                code.visitTypeInsn(C.ANEWARRAY, typeArg(Object.class));
 
-	ctrl.unindent();
-	out.print("}");
-	out.println();
+                var.allocate("argArray");
+                code.visitVarInsn(C.ASTORE, var.get("argArray"));
+
+                for (int j = 0; j < sig.length; j++)
+                  {
+                    int size = size(sig[j]);
+                    int insn = loadOpcode(sig[j]);
+                    Class box = sig[j].isPrimitive() ? box(sig[j]) : null;
+
+                    code.visitVarInsn(C.ALOAD, var.get("argArray"));
+                    code.visitLdcInsn(new Integer(j));
+
+                    // put argument on stack
+                    if (box != null)
+                      {
+                        code.visitTypeInsn(C.NEW, typeArg(box));
+                        code.visitInsn(C.DUP);
+                        code.visitVarInsn(insn, var.get(param(m, j)));
+                        code.visitMethodInsn
+                          (C.INVOKESPECIAL,
+                           Type.getInternalName(box),
+                           "<init>",
+                           Type.getMethodDescriptor
+                           (Type.VOID_TYPE,
+                            new Type[] { Type.getType(sig[j]) }));
+                      }
+                    else
+                      code.visitVarInsn(insn, var.get(param(m, j)));
+
+                    code.visitInsn(C.AASTORE);
+                  }
+
+                code.visitVarInsn(C.ALOAD, var.deallocate("argArray"));
+              }
+
+            // push remote operation opcode
+            code.visitLdcInsn(new Long(remotemethods[i].hash));
+            code.visitMethodInsn
+              (C.INVOKEINTERFACE,
+               Type.getInternalName(RemoteRef.class),
+               "invoke",
+               Type.getMethodDescriptor
+               (Type.getType(Object.class),
+                new Type[] { Type.getType(Remote.class),
+                             Type.getType(Method.class),
+                             Type.getType(Object[].class),
+                             Type.LONG_TYPE }));
+
+            if (! returntype.equals(Void.TYPE))
+              {
+                int retcode = returnOpcode(returntype);
+                Class boxCls =
+                  returntype.isPrimitive() ? box(returntype) : null;
+                code.visitTypeInsn
+                  (C.CHECKCAST, typeArg(boxCls == null ? returntype : boxCls));
+                if (returntype.isPrimitive())
+                  {
+                    // unbox
+                    code.visitMethodInsn
+                      (C.INVOKEVIRTUAL,
+                       Type.getType(boxCls).getInternalName(),
+                       unboxMethod(returntype),
+                       Type.getMethodDescriptor
+                       (Type.getType(returntype), new Type[] {}));
+                  }
+
+                code.visitInsn(retcode);
+              }
+            else
+              code.visitInsn(C.RETURN);
+
+
+            if (need11Stubs)
+              code.visitLabel(oldInvoke);
+          }
+
+        if (need11Stubs)
+          {
+
+            // this.ref.newCall(this, operations, index, interfaceHash)
+            code.visitVarInsn(C.ALOAD, var.get("this"));
+            code.visitFieldInsn
+              (C.GETFIELD,
+               Type.getInternalName(RemoteObject.class),
+               "ref",
+               Type.getDescriptor(RemoteRef.class));
+
+            // "this" is first arg to newCall
+            code.visitVarInsn(C.ALOAD, var.get("this"));
+
+            // operations is second arg to newCall
+            code.visitFieldInsn
+              (C.GETSTATIC, classInternalName, "operations",
+               Type.getDescriptor(Operation[].class));
+
+            // method index is third arg
+            code.visitLdcInsn(new Integer(i));
+
+            // interface hash is fourth arg
+            code.visitFieldInsn
+              (C.GETSTATIC, classInternalName, "interfaceHash",
+               Type.LONG_TYPE.getDescriptor());
+
+            code.visitMethodInsn
+              (C.INVOKEINTERFACE,
+               Type.getInternalName(RemoteRef.class),
+               "newCall",
+               Type.getMethodDescriptor
+               (Type.getType(RemoteCall.class),
+                new Type[] { Type.getType(RemoteObject.class),
+                             Type.getType(Operation[].class),
+                             Type.INT_TYPE,
+                             Type.LONG_TYPE }));
+
+            // store call object on stack and leave copy on stack
+            var.allocate("call");
+            code.visitInsn(C.DUP);
+            code.visitVarInsn(C.ASTORE, var.get("call"));
+
+            Label beginArgumentTryBlock = new Label();
+            code.visitLabel(beginArgumentTryBlock);
+
+            // ObjectOutput out = call.getOutputStream();
+            code.visitMethodInsn
+              (C.INVOKEINTERFACE,
+               Type.getInternalName(RemoteCall.class),
+               "getOutputStream",
+               Type.getMethodDescriptor
+               (Type.getType(ObjectOutput.class), new Type[] {}));
+
+            for (int j = 0; j < sig.length; j++)
+              {
+                // dup the ObjectOutput
+                code.visitInsn(C.DUP);
+
+                // get j'th arg to remote method
+                code.visitVarInsn(loadOpcode(sig[j]), var.get(param(m, j)));
+
+                Class argCls =
+                  sig[j].isPrimitive() ? sig[j] : Object.class;
+
+                // out.writeFoo
+                code.visitMethodInsn
+                  (C.INVOKEINTERFACE,
+                   Type.getInternalName(ObjectOutput.class),
+                   writeMethod(sig[j]),
+                   Type.getMethodDescriptor
+                   (Type.VOID_TYPE,
+                    new Type[] { Type.getType(argCls) }));
+              }
+
+            // pop ObjectOutput
+            code.visitInsn(C.POP);
+
+            Label iohandler = new Label();
+            Label endArgumentTryBlock = new Label();
+            code.visitJumpInsn(C.GOTO, endArgumentTryBlock);
+            code.visitLabel(iohandler);
+
+            // throw new MarshalException(msg, ioexception);
+            code.visitVarInsn(C.ASTORE, var.allocate("exception"));
+            code.visitTypeInsn(C.NEW, typeArg(MarshalException.class));
+            code.visitInsn(C.DUP);
+            code.visitLdcInsn("error marshalling arguments");
+            code.visitVarInsn(C.ALOAD, var.deallocate("exception"));
+            code.visitMethodInsn
+              (C.INVOKESPECIAL,
+               Type.getInternalName(MarshalException.class),
+               "<init>",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type[] { Type.getType(String.class),
+                             Type.getType(Exception.class) }));
+            code.visitInsn(C.ATHROW);
+
+            code.visitLabel(endArgumentTryBlock);
+            code.visitTryCatchBlock
+              (beginArgumentTryBlock, iohandler, iohandler,
+               Type.getInternalName(IOException.class));
+
+            // this.ref.invoke(call)
+            code.visitVarInsn(C.ALOAD, var.get("this"));
+            code.visitFieldInsn
+              (C.GETFIELD, Type.getInternalName(RemoteObject.class),
+               "ref", Type.getDescriptor(RemoteRef.class));
+            code.visitVarInsn(C.ALOAD, var.get("call"));
+            code.visitMethodInsn
+              (C.INVOKEINTERFACE,
+               Type.getInternalName(RemoteRef.class),
+               "invoke",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type[] { Type.getType(RemoteCall.class) }));
+
+            // handle return value
+            boolean needcastcheck = false;
+
+            Label beginReturnTryCatch = new Label();
+            code.visitLabel(beginReturnTryCatch);
+
+            int returncode = returnOpcode(returntype);
+
+            if (! returntype.equals(Void.TYPE))
+              {
+                // call.getInputStream()
+                code.visitVarInsn(C.ALOAD, var.get("call"));
+                code.visitMethodInsn
+                  (C.INVOKEINTERFACE,
+                   Type.getInternalName(RemoteCall.class),
+                   "getInputStream",
+                   Type.getMethodDescriptor
+                   (Type.getType(ObjectInput.class), new Type[] {}));
+
+                Class readCls =
+                  returntype.isPrimitive() ? returntype : Object.class;
+                code.visitMethodInsn
+                  (C.INVOKEINTERFACE,
+                   Type.getInternalName(ObjectInput.class),
+                   readMethod(returntype),
+                   Type.getMethodDescriptor
+                   (Type.getType(readCls), new Type[] {}));
+
+                boolean castresult = false;
+
+                if (! returntype.isPrimitive())
+                  {
+                    if (! returntype.equals(Object.class))
+                      castresult = true;
+                    else
+                      needcastcheck = true;
+                  }
+
+                if (castresult)
+                  code.visitTypeInsn(C.CHECKCAST, typeArg(returntype));
+
+                // leave result on stack for return
+              }
+
+            // this.ref.done(call)
+            code.visitVarInsn(C.ALOAD, var.get("this"));
+            code.visitFieldInsn
+              (C.GETFIELD,
+               Type.getInternalName(RemoteObject.class),
+               "ref",
+               Type.getDescriptor(RemoteRef.class));
+            code.visitVarInsn(C.ALOAD, var.deallocate("call"));
+            code.visitMethodInsn
+              (C.INVOKEINTERFACE,
+               Type.getInternalName(RemoteRef.class),
+               "done",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type[] { Type.getType(RemoteCall.class) }));
+
+            // return; or return result;
+            code.visitInsn(returncode);
+
+            // exception handler
+            Label handler = new Label();
+            code.visitLabel(handler);
+            code.visitVarInsn(C.ASTORE, var.allocate("exception"));
+
+            // throw new UnmarshalException(msg, e)
+            code.visitTypeInsn(C.NEW, typeArg(UnmarshalException.class));
+            code.visitInsn(C.DUP);
+            code.visitLdcInsn("error unmarshalling return");
+            code.visitVarInsn(C.ALOAD, var.deallocate("exception"));
+            code.visitMethodInsn
+              (C.INVOKESPECIAL,
+               Type.getInternalName(UnmarshalException.class),
+               "<init>",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type[] { Type.getType(String.class),
+                             Type.getType(Exception.class) }));
+            code.visitInsn(C.ATHROW);
+
+            Label endReturnTryCatch = new Label();
+
+            // catch IOException
+            code.visitTryCatchBlock
+              (beginReturnTryCatch, handler, handler,
+               Type.getInternalName(IOException.class));
+
+            if (needcastcheck)
+              {
+                // catch ClassNotFoundException
+                code.visitTryCatchBlock
+                  (beginReturnTryCatch, handler, handler,
+                   Type.getInternalName(ClassNotFoundException.class));
+              }
+          }
+
+        Label rethrowHandler = new Label();
+        code.visitLabel(rethrowHandler);
+        // rethrow declared exceptions
+        code.visitInsn(C.ATHROW);
+
+        boolean needgeneral = true;
+        for (int j = 0; j < except.length; j++)
+          {
+            if (except[j] == Exception.class)
+              needgeneral = false;
+          }
+
+        for (int j = 0; j < except.length; j++)
+          {
+            code.visitTryCatchBlock
+              (methodTryBegin, rethrowHandler, rethrowHandler,
+               Type.getInternalName(except[j]));
+          }
+
+        if (needgeneral)
+          {
+            // rethrow unchecked exceptions
+            code.visitTryCatchBlock
+              (methodTryBegin, rethrowHandler, rethrowHandler,
+               Type.getInternalName(RuntimeException.class));
+
+            Label generalHandler = new Label();
+            code.visitLabel(generalHandler);
+            String msg = "undeclared checked exception";
+
+            // throw new java.rmi.UnexpectedException(msg, e)
+            code.visitVarInsn(C.ASTORE, var.allocate("exception"));
+            code.visitTypeInsn(C.NEW, typeArg(UnexpectedException.class));
+            code.visitInsn(C.DUP);
+            code.visitLdcInsn(msg);
+            code.visitVarInsn(C.ALOAD, var.deallocate("exception"));
+            code.visitMethodInsn
+              (C.INVOKESPECIAL,
+               Type.getInternalName(UnexpectedException.class),
+               "<init>",
+               Type.getMethodDescriptor
+               (Type.VOID_TYPE,
+                new Type [] { Type.getType(String.class),
+                              Type.getType(Exception.class) }));
+            code.visitInsn(C.ATHROW);
+
+            code.visitTryCatchBlock
+              (methodTryBegin, rethrowHandler, generalHandler,
+               Type.getInternalName(Exception.class));
+          }
+
+        code.visitMaxs(-1, -1);
       }
 
-    ctrl.unindent();
-    out.println("}");
-
-    out.close();
+    stub.visitEnd();
+    byte[] classData = stub.toByteArray();
+    if (file.exists())
+      file.delete();
+    if (file.getParentFile() != null)
+      file.getParentFile().mkdirs();
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.write(classData);
+    fos.flush();
+    fos.close();
   }
 
   private void generateSkel() throws IOException
   {
     skelname = fullclassname + "_Skel";
     String skelclassname = classname + "_Skel";
-    ctrl =
-      new TabbedWriter(new FileWriter((destination == null ? ""
-                                                           : destination
-                                                           + File.separator)
-                                      + skelname.replace('.',
-                                                         File.separatorChar)
-                                      + ".java"));
-    out = new PrintWriter(ctrl);
-
+    File file = new File(destination == null ? "" : destination
+                         + File.separator
+                         + skelname.replace('.', File.separatorChar)
+                         + ".class");
     if (verbose)
-      System.out.println("[Generating class " + skelname + ".java]");
+      System.out.println("[Generating class " + skelname + "]");
 
-    out.println("// Skel class generated by rmic - DO NOT EDIT!");
-    out.println();
-    if (fullclassname != classname)
-      {
-	String pname =
-	  fullclassname.substring(0, fullclassname.lastIndexOf('.'));
-	out.println("package " + pname + ";");
-	out.println();
-      }
+    final ClassWriter skel = new ClassWriter(true);
+    classInternalName = skelname.replace('.', '/');
+    skel.visit
+      (C.V1_1, C.ACC_PUBLIC + C.ACC_FINAL,
+       classInternalName, Type.getInternalName(Object.class),
+       new String[] { Type.getType(Skeleton.class).getInternalName() }, null);
 
-    out.print("public final class " + skelclassname);
-    ctrl.indent();
+    skel.visitField
+      (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_FINAL, "interfaceHash",
+       Type.LONG_TYPE.getDescriptor(),
+       new Long(RMIHashes.getInterfaceHash(clazz)),
+       null);
 
-    // Output interfaces we implement
-    out.print("implements java.rmi.server.Skeleton");
+    skel.visitField
+      (C.ACC_PRIVATE + C.ACC_STATIC + C.ACC_FINAL, "operations",
+       Type.getDescriptor(Operation[].class), null, null);
 
-    ctrl.unindent();
-    out.print("{");
-    ctrl.indent();
+    CodeVisitor clinit = skel.visitMethod
+      (C.ACC_STATIC, "<clinit>",
+       Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}), null, null);
 
-    // Interface hash - don't know how to calculate this - XXX
-    out.println("private static final long interfaceHash = "
-                + RMIHashes.getInterfaceHash(clazz) + "L;");
-    out.println();
+    fillOperationArray(clinit);
+    clinit.visitInsn(C.RETURN);
 
-    // Operation table
-    out.print("private static final java.rmi.server.Operation[] operations = {");
+    clinit.visitMaxs(-1, -1);
 
-    ctrl.indent();
+    // no arg public constructor
+    CodeVisitor init = skel.visitMethod
+      (C.ACC_PUBLIC, "<init>",
+       Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}), null, null);
+    init.visitVarInsn(C.ALOAD, 0);
+    init.visitMethodInsn
+      (C.INVOKESPECIAL, Type.getInternalName(Object.class), "<init>",
+       Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}));
+    init.visitInsn(C.RETURN);
+    init.visitMaxs(-1, -1);
+
+    /*
+     * public Operation[] getOperations()
+     * returns a clone of the operations array
+     */
+    CodeVisitor getOp = skel.visitMethod
+      (C.ACC_PUBLIC, "getOperations",
+       Type.getMethodDescriptor
+       (Type.getType(Operation[].class), new Type[] {}),
+       null, null);
+    getOp.visitFieldInsn
+      (C.GETSTATIC, classInternalName, "operations",
+       Type.getDescriptor(Operation[].class));
+    getOp.visitMethodInsn
+      (C.INVOKEVIRTUAL, Type.getInternalName(Object.class),
+       "clone", Type.getMethodDescriptor(Type.getType(Object.class),
+                                         new Type[] {}));
+    getOp.visitTypeInsn(C.CHECKCAST, typeArg(Operation[].class));
+    getOp.visitInsn(C.ARETURN);
+    getOp.visitMaxs(-1, -1);
+
+    // public void dispatch(Remote, RemoteCall, int opnum, long hash)
+    CodeVisitor dispatch = skel.visitMethod
+      (C.ACC_PUBLIC,
+       "dispatch",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE,
+        new Type[] { Type.getType(Remote.class),
+                     Type.getType(RemoteCall.class),
+                     Type.INT_TYPE, Type.LONG_TYPE }),
+       new String[] { Type.getInternalName(Exception.class) },
+       null);
+
+    Variables var = new Variables();
+    var.declare("this");
+    var.declare("remoteobj");
+    var.declare("remotecall");
+    var.declare("opnum");
+    var.declareWide("hash");
+
+    /*
+     * if opnum >= 0
+     * XXX it is unclear why there is handling of negative opnums
+     */
+    dispatch.visitVarInsn(C.ILOAD, var.get("opnum"));
+    Label nonNegativeOpnum = new Label();
+    Label opnumSet = new Label();
+    dispatch.visitJumpInsn(C.IFGE, nonNegativeOpnum);
+
     for (int i = 0; i < remotemethods.length; i++)
       {
-	Method m = remotemethods[i].meth;
-	out.print("new java.rmi.server.Operation(\"");
-	out.print(getPrettyName(m.getReturnType()) + " ");
-	out.print(m.getName() + "(");
-	// Output signature
-	Class[] sig = m.getParameterTypes();
-	for (int j = 0; j < sig.length; j++)
-	  {
-	    out.print(getPrettyName(sig[j]));
-	    if (j + 1 < sig.length)
-	      out.print(", ");
-	  }
-	out.print("\")");
-	if (i + 1 < remotemethods.length)
-	  out.println(",");
+        // assign opnum if hash matches supplied hash
+        dispatch.visitVarInsn(C.LLOAD, var.get("hash"));
+        dispatch.visitLdcInsn(new Long(remotemethods[i].hash));
+        Label notIt = new Label();
+        dispatch.visitInsn(C.LCMP);
+        dispatch.visitJumpInsn(C.IFNE, notIt);
+
+        // opnum = <opnum>
+        dispatch.visitLdcInsn(new Integer(i));
+        dispatch.visitVarInsn(C.ISTORE, var.get("opnum"));
+        dispatch.visitJumpInsn(C.GOTO, opnumSet);
+        dispatch.visitLabel(notIt);
       }
-    ctrl.unindent();
-    out.println("};");
 
-    out.println();
+    // throw new SkeletonMismatchException
+    Label mismatch = new Label();
+    dispatch.visitJumpInsn(C.GOTO, mismatch);
 
-    // getOperations method
-    out.print("public java.rmi.server.Operation[] getOperations() {");
-    ctrl.indent();
-    out.print("return ((java.rmi.server.Operation[]) operations.clone());");
-    ctrl.unindent();
-    out.println("}");
+    dispatch.visitLabel(nonNegativeOpnum);
 
-    out.println();
+    // if opnum is already set, check that the hash matches the interface
+    dispatch.visitVarInsn(C.LLOAD, var.get("hash"));
+    dispatch.visitFieldInsn
+      (C.GETSTATIC, classInternalName,
+       "interfaceHash", Type.LONG_TYPE.getDescriptor());
+    dispatch.visitInsn(C.LCMP);
+    dispatch.visitJumpInsn(C.IFEQ, opnumSet);
 
-    // Dispatch method
-    out.print("public void dispatch(java.rmi.Remote obj, java.rmi.server.RemoteCall call, int opnum, long hash) throws java.lang.Exception {");
-    ctrl.indent();
+    dispatch.visitLabel(mismatch);
+    dispatch.visitTypeInsn
+      (C.NEW, typeArg(SkeletonMismatchException.class));
+    dispatch.visitInsn(C.DUP);
+    dispatch.visitLdcInsn("interface hash mismatch");
+    dispatch.visitMethodInsn
+      (C.INVOKESPECIAL,
+       Type.getInternalName(SkeletonMismatchException.class),
+       "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] { Type.getType(String.class) }));
+    dispatch.visitInsn(C.ATHROW);
 
-    out.print("if (opnum < 0) {");
-    ctrl.indent();
+    // opnum has been set
+    dispatch.visitLabel(opnumSet);
 
-    for (int i = 0; i < remotemethods.length; i++)
-      {
-	out.print("if (hash == " + Long.toString(remotemethods[i].hash)
-	          + "L) {");
-	ctrl.indent();
-	out.print("opnum = " + i + ";");
-	ctrl.unindent();
-	out.println("}");
-	out.print("else ");
-      }
-    out.print("{");
-    ctrl.indent();
-    out.print("throw new java.rmi.server.SkeletonMismatchException(\"interface hash mismatch\");");
-    ctrl.unindent();
-    out.print("}");
+    dispatch.visitVarInsn(C.ALOAD, var.get("remoteobj"));
+    dispatch.visitTypeInsn(C.CHECKCAST, typeArg(clazz));
+    dispatch.visitVarInsn(C.ASTORE, var.get("remoteobj"));
 
-    ctrl.unindent();
-    out.println("}");
-    out.print("else if (hash != interfaceHash) {");
-    ctrl.indent();
-    out.print("throw new java.rmi.server.SkeletonMismatchException(\"interface hash mismatch\");");
-    ctrl.unindent();
-    out.println("}");
+    Label deflt = new Label();
+    Label[] methLabels = new Label[remotemethods.length];
+    for (int i = 0; i < methLabels.length; i++)
+      methLabels[i] = new Label();
 
-    out.println();
-
-    out.println(fullclassname + " server = (" + fullclassname + ")obj;");
-    out.println("switch (opnum) {");
+    // switch on opnum
+    dispatch.visitVarInsn(C.ILOAD, var.get("opnum"));
+    dispatch.visitTableSwitchInsn
+      (0, remotemethods.length - 1, deflt, methLabels);
 
     // Method dispatch
     for (int i = 0; i < remotemethods.length; i++)
       {
-	Method m = remotemethods[i].meth;
-	out.println("case " + i + ":");
-	out.print("{");
-	ctrl.indent();
-
-	Class[] sig = m.getParameterTypes();
-	for (int j = 0; j < sig.length; j++)
-	  {
-	    out.print(getPrettyName(sig[j]));
-	    out.println(" $param_" + j + ";");
-	  }
-
-	out.print("try {");
-	boolean needcastcheck = false;
-	ctrl.indent();
-	out.println("java.io.ObjectInput in = call.getInputStream();");
-	for (int j = 0; j < sig.length; j++)
-	  {
-	    out.print("$param_" + j + " = ");
-	    if (sig[j] == Boolean.TYPE)
-	      out.print("in.readBoolean();");
-	    else if (sig[j] == Byte.TYPE)
-	      out.print("in.readByte();");
-	    else if (sig[j] == Character.TYPE)
-	      out.print("in.readChar();");
-	    else if (sig[j] == Short.TYPE)
-	      out.print("in.readShort();");
-	    else if (sig[j] == Integer.TYPE)
-	      out.print("in.readInt();");
-	    else if (sig[j] == Long.TYPE)
-	      out.print("in.readLong();");
-	    else if (sig[j] == Float.TYPE)
-	      out.print("in.readFloat();");
-	    else if (sig[j] == Double.TYPE)
-	      out.print("in.readDouble();");
-	    else
-	      {
-		if (sig[j] != Object.class)
-		  {
-		    out.print("(" + getPrettyName(sig[j]) + ")");
-		    needcastcheck = true;
-		  }
-		out.print("in.readObject();");
-	      }
-	    out.println();
-	  }
-	ctrl.unindent();
-	out.println("}");
-	out.print("catch (java.io.IOException e) {");
-	ctrl.indent();
-	out.print("throw new java.rmi.UnmarshalException(\"error unmarshalling arguments\", e);");
-	ctrl.unindent();
-	out.println("}");
-	if (needcastcheck)
-	  {
-	    out.print("catch (java.lang.ClassCastException e) {");
-	    ctrl.indent();
-	    out.print("throw new java.rmi.UnmarshalException(\"error unmarshalling arguments\", e);");
-	    ctrl.unindent();
-	    out.println("}");
-	  }
-	out.print("finally {");
-	ctrl.indent();
-	out.print("call.releaseInputStream();");
-	ctrl.unindent();
-	out.println("}");
-
-	Class returntype = m.getReturnType();
-	if (returntype != Void.TYPE)
-	  out.print(getPrettyName(returntype) + " $result = ");
-	out.print("server." + m.getName() + "(");
-	for (int j = 0; j < sig.length; j++)
-	  {
-	    out.print("$param_" + j);
-	    if (j + 1 < sig.length)
-	      out.print(", ");
-	  }
-	out.println(");");
-
-	out.print("try {");
-	ctrl.indent();
-	out.print("java.io.ObjectOutput out = call.getResultStream(true);");
-	if (returntype != Void.TYPE)
-	  {
-	    out.println();
-	    if (returntype == Boolean.TYPE)
-	      out.print("out.writeBoolean($result);");
-	    else if (returntype == Byte.TYPE)
-	      out.print("out.writeByte($result);");
-	    else if (returntype == Character.TYPE)
-	      out.print("out.writeChar($result);");
-	    else if (returntype == Short.TYPE)
-	      out.print("out.writeShort($result);");
-	    else if (returntype == Integer.TYPE)
-	      out.print("out.writeInt($result);");
-	    else if (returntype == Long.TYPE)
-	      out.print("out.writeLong($result);");
-	    else if (returntype == Float.TYPE)
-	      out.print("out.writeFloat($result);");
-	    else if (returntype == Double.TYPE)
-	      out.print("out.writeDouble($result);");
-	    else
-	      out.print("out.writeObject($result);");
-	  }
-	ctrl.unindent();
-	out.println("}");
-	out.print("catch (java.io.IOException e) {");
-	ctrl.indent();
-	out.print("throw new java.rmi.MarshalException(\"error marshalling return\", e);");
-	ctrl.unindent();
-	out.println("}");
-	out.print("break;");
-
-	ctrl.unindent();
-	out.println("}");
-	out.println();
+        dispatch.visitLabel(methLabels[i]);
+        Method m = remotemethods[i].meth;
+        generateMethodSkel(dispatch, m, var);
       }
 
-    out.print("default:");
-    ctrl.indent();
-    out.print("throw new java.rmi.UnmarshalException(\"invalid method number\");");
-    ctrl.unindent();
-    out.print("}");
+    dispatch.visitLabel(deflt);
+    dispatch.visitTypeInsn(C.NEW, typeArg(UnmarshalException.class));
+    dispatch.visitInsn(C.DUP);
+    dispatch.visitLdcInsn("invalid method number");
+    dispatch.visitMethodInsn
+      (C.INVOKESPECIAL,
+       Type.getInternalName(UnmarshalException.class),
+       "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] { Type.getType(String.class) }));
+    dispatch.visitInsn(C.ATHROW);
 
-    ctrl.unindent();
-    out.print("}");
+    dispatch.visitMaxs(-1, -1);
 
-    ctrl.unindent();
-    out.println("}");
-
-    out.close();
+    skel.visitEnd();
+    byte[] classData = skel.toByteArray();
+    if (file.exists())
+      file.delete();
+    if (file.getParentFile() != null)
+      file.getParentFile().mkdirs();
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.write(classData);
+    fos.flush();
+    fos.close();
   }
 
-  private void compile(String name) throws Exception
+  private void generateMethodSkel(CodeVisitor cv, Method m, Variables var)
   {
-    Compiler comp = Compiler.getInstance();
-    if (verbose)
-      System.out.println("[Compiling class " + name + "]");
-    comp.setDestination(destination);
-    comp.compile(name);
-  }
+    Class[] sig = m.getParameterTypes();
 
-  private static String getPrettyName(Class cls)
-  {
-    StringBuffer str = new StringBuffer();
-    for (int count = 0;; count++)
+    Label readArgs = new Label();
+    cv.visitLabel(readArgs);
+
+    boolean needcastcheck = false;
+
+    // ObjectInput in = call.getInputStream();
+    cv.visitVarInsn(C.ALOAD, var.get("remotecall"));
+    cv.visitMethodInsn
+      (C.INVOKEINTERFACE,
+       Type.getInternalName(RemoteCall.class), "getInputStream",
+       Type.getMethodDescriptor
+       (Type.getType(ObjectInput.class), new Type[] {}));
+    cv.visitVarInsn(C.ASTORE, var.allocate("objectinput"));
+
+    for (int i = 0; i < sig.length; i++)
       {
-	if (! cls.isArray())
-	  {
-	    str.append(cls.getName());
-	    for (; count > 0; count--)
-	      str.append("[]");
-	    return (str.toString());
-	  }
-	cls = cls.getComponentType();
+        // dup input stream
+        cv.visitVarInsn(C.ALOAD, var.get("objectinput"));
+
+        Class readCls = sig[i].isPrimitive() ? sig[i] : Object.class;
+
+        // in.readFoo()
+        cv.visitMethodInsn
+          (C.INVOKEINTERFACE,
+           Type.getInternalName(ObjectInput.class),
+           readMethod(sig[i]),
+           Type.getMethodDescriptor
+           (Type.getType(readCls), new Type [] {}));
+
+        if (! sig[i].isPrimitive() && ! sig[i].equals(Object.class))
+          {
+            needcastcheck = true;
+            cv.visitTypeInsn(C.CHECKCAST, typeArg(sig[i]));
+          }
+
+        // store arg in variable
+        cv.visitVarInsn
+          (storeOpcode(sig[i]), var.allocate(param(m, i), size(sig[i])));
       }
+
+    var.deallocate("objectinput");
+
+    Label doCall = new Label();
+    Label closeInput = new Label();
+
+    cv.visitJumpInsn(C.JSR, closeInput);
+    cv.visitJumpInsn(C.GOTO, doCall);
+
+    // throw new UnmarshalException
+    Label handler = new Label();
+    cv.visitLabel(handler);
+    cv.visitVarInsn(C.ASTORE, var.allocate("exception"));
+    cv.visitTypeInsn(C.NEW, typeArg(UnmarshalException.class));
+    cv.visitInsn(C.DUP);
+    cv.visitLdcInsn("error unmarshalling arguments");
+    cv.visitVarInsn(C.ALOAD, var.deallocate("exception"));
+    cv.visitMethodInsn
+      (C.INVOKESPECIAL,
+       Type.getInternalName(UnmarshalException.class),
+       "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] { Type.getType(String.class),
+                                     Type.getType(Exception.class) }));
+    cv.visitVarInsn(C.ASTORE, var.allocate("toThrow"));
+    cv.visitJumpInsn(C.JSR, closeInput);
+    cv.visitVarInsn(C.ALOAD, var.get("toThrow"));
+    cv.visitInsn(C.ATHROW);
+
+    cv.visitTryCatchBlock
+      (readArgs, handler, handler, Type.getInternalName(IOException.class));
+    if (needcastcheck)
+      {
+        cv.visitTryCatchBlock
+          (readArgs, handler, handler,
+           Type.getInternalName(ClassCastException.class));
+      }
+
+    // finally block
+    cv.visitLabel(closeInput);
+    cv.visitVarInsn(C.ASTORE, var.allocate("retAddress"));
+    cv.visitVarInsn(C.ALOAD, var.get("remotecall"));
+    cv.visitMethodInsn
+      (C.INVOKEINTERFACE,
+       Type.getInternalName(RemoteCall.class),
+       "releaseInputStream",
+       Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {}));
+    cv.visitVarInsn(C.RET, var.deallocate("retAddress"));
+    var.deallocate("toThrow");
+
+    // do the call using args stored as variables
+    cv.visitLabel(doCall);
+    cv.visitVarInsn(C.ALOAD, var.get("remoteobj"));
+    for (int i = 0; i < sig.length; i++)
+      cv.visitVarInsn(loadOpcode(sig[i]), var.deallocate(param(m, i)));
+    cv.visitMethodInsn
+      (C.INVOKEVIRTUAL, Type.getInternalName(clazz), m.getName(),
+       Type.getMethodDescriptor(m));
+
+    Class returntype = m.getReturnType();
+    if (! returntype.equals(Void.TYPE))
+      {
+        cv.visitVarInsn
+          (storeOpcode(returntype), var.allocate("result", size(returntype)));
+      }
+
+    // write result to result stream
+    Label writeResult = new Label();
+    cv.visitLabel(writeResult);
+    cv.visitVarInsn(C.ALOAD, var.get("remotecall"));
+    cv.visitInsn(C.ICONST_1);
+    cv.visitMethodInsn
+      (C.INVOKEINTERFACE,
+       Type.getInternalName(RemoteCall.class),
+       "getResultStream",
+       Type.getMethodDescriptor
+       (Type.getType(ObjectOutput.class),
+        new Type[] { Type.BOOLEAN_TYPE }));
+
+    if (! returntype.equals(Void.TYPE))
+      {
+        // out.writeFoo(result)
+        cv.visitVarInsn(loadOpcode(returntype), var.deallocate("result"));
+        Class writeCls = returntype.isPrimitive() ? returntype : Object.class;
+        cv.visitMethodInsn
+          (C.INVOKEINTERFACE,
+           Type.getInternalName(ObjectOutput.class),
+           writeMethod(returntype),
+           Type.getMethodDescriptor
+           (Type.VOID_TYPE, new Type[] { Type.getType(writeCls) }));
+      }
+
+    cv.visitInsn(C.RETURN);
+
+    // throw new MarshalException
+    Label marshalHandler = new Label();
+    cv.visitLabel(marshalHandler);
+    cv.visitVarInsn(C.ASTORE, var.allocate("exception"));
+    cv.visitTypeInsn(C.NEW, typeArg(MarshalException.class));
+    cv.visitInsn(C.DUP);
+    cv.visitLdcInsn("error marshalling return");
+    cv.visitVarInsn(C.ALOAD, var.deallocate("exception"));
+    cv.visitMethodInsn
+      (C.INVOKESPECIAL,
+       Type.getInternalName(MarshalException.class),
+       "<init>",
+       Type.getMethodDescriptor
+       (Type.VOID_TYPE, new Type[] { Type.getType(String.class),
+                                     Type.getType(Exception.class) }));
+    cv.visitInsn(C.ATHROW);
+    cv.visitTryCatchBlock
+      (writeResult, marshalHandler, marshalHandler,
+       Type.getInternalName(IOException.class));
   }
 
-/**
- * Sort exceptions so the most general go last.
- */
+  private static String typeArg(Class cls)
+  {
+    if (cls.isArray())
+      return Type.getDescriptor(cls);
+
+    return Type.getInternalName(cls);
+  }
+
+  private static String readMethod(Class cls)
+  {
+    if (cls.equals(Void.TYPE))
+      throw new IllegalArgumentException("can not read void");
+
+    String method;
+    if (cls.equals(Boolean.TYPE))
+      method = "readBoolean";
+    else if (cls.equals(Byte.TYPE))
+      method = "readByte";
+    else if (cls.equals(Character.TYPE))
+      method = "readChar";
+    else if (cls.equals(Short.TYPE))
+      method = "readShort";
+    else if (cls.equals(Integer.TYPE))
+      method = "readInt";
+    else if (cls.equals(Long.TYPE))
+      method = "readLong";
+    else if (cls.equals(Float.TYPE))
+      method = "readFloat";
+    else if (cls.equals(Double.TYPE))
+      method = "readDouble";
+    else
+      method = "readObject";
+
+    return method;
+  }
+
+  private static String writeMethod(Class cls)
+  {
+    if (cls.equals(Void.TYPE))
+      throw new IllegalArgumentException("can not read void");
+
+    String method;
+    if (cls.equals(Boolean.TYPE))
+      method = "writeBoolean";
+    else if (cls.equals(Byte.TYPE))
+      method = "writeByte";
+    else if (cls.equals(Character.TYPE))
+      method = "writeChar";
+    else if (cls.equals(Short.TYPE))
+      method = "writeShort";
+    else if (cls.equals(Integer.TYPE))
+      method = "writeInt";
+    else if (cls.equals(Long.TYPE))
+      method = "writeLong";
+    else if (cls.equals(Float.TYPE))
+      method = "writeFloat";
+    else if (cls.equals(Double.TYPE))
+      method = "writeDouble";
+    else
+      method = "writeObject";
+
+    return method;
+  }
+
+  private static int returnOpcode(Class cls)
+  {
+    int returncode;
+    if (cls.equals(Boolean.TYPE))
+      returncode = C.IRETURN;
+    else if (cls.equals(Byte.TYPE))
+      returncode = C.IRETURN;
+    else if (cls.equals(Character.TYPE))
+      returncode = C.IRETURN;
+    else if (cls.equals(Short.TYPE))
+      returncode = C.IRETURN;
+    else if (cls.equals(Integer.TYPE))
+      returncode = C.IRETURN;
+    else if (cls.equals(Long.TYPE))
+      returncode = C.LRETURN;
+    else if (cls.equals(Float.TYPE))
+      returncode = C.FRETURN;
+    else if (cls.equals(Double.TYPE))
+      returncode = C.DRETURN;
+    else if (cls.equals(Void.TYPE))
+      returncode = C.RETURN;
+    else
+      returncode = C.ARETURN;
+
+    return returncode;
+  }
+
+  private static int loadOpcode(Class cls)
+  {
+    if (cls.equals(Void.TYPE))
+      throw new IllegalArgumentException("can not load void");
+
+    int loadcode;
+    if (cls.equals(Boolean.TYPE))
+      loadcode = C.ILOAD;
+    else if (cls.equals(Byte.TYPE))
+      loadcode = C.ILOAD;
+    else if (cls.equals(Character.TYPE))
+      loadcode = C.ILOAD;
+    else if (cls.equals(Short.TYPE))
+      loadcode = C.ILOAD;
+    else if (cls.equals(Integer.TYPE))
+      loadcode = C.ILOAD;
+    else if (cls.equals(Long.TYPE))
+      loadcode = C.LLOAD;
+    else if (cls.equals(Float.TYPE))
+      loadcode = C.FLOAD;
+    else if (cls.equals(Double.TYPE))
+      loadcode = C.DLOAD;
+    else
+      loadcode = C.ALOAD;
+
+    return loadcode;
+  }
+
+  private static int storeOpcode(Class cls)
+  {
+    if (cls.equals(Void.TYPE))
+      throw new IllegalArgumentException("can not load void");
+
+    int storecode;
+    if (cls.equals(Boolean.TYPE))
+      storecode = C.ISTORE;
+    else if (cls.equals(Byte.TYPE))
+      storecode = C.ISTORE;
+    else if (cls.equals(Character.TYPE))
+      storecode = C.ISTORE;
+    else if (cls.equals(Short.TYPE))
+      storecode = C.ISTORE;
+    else if (cls.equals(Integer.TYPE))
+      storecode = C.ISTORE;
+    else if (cls.equals(Long.TYPE))
+      storecode = C.LSTORE;
+    else if (cls.equals(Float.TYPE))
+      storecode = C.FSTORE;
+    else if (cls.equals(Double.TYPE))
+      storecode = C.DSTORE;
+    else
+      storecode = C.ASTORE;
+
+    return storecode;
+  }
+
+  private static String unboxMethod(Class primitive)
+  {
+    if (! primitive.isPrimitive())
+      throw new IllegalArgumentException("can not unbox nonprimitive");
+
+    String method;
+    if (primitive.equals(Boolean.TYPE))
+      method = "booleanValue";
+    else if (primitive.equals(Byte.TYPE))
+      method = "byteValue";
+    else if (primitive.equals(Character.TYPE))
+      method = "charValue";
+    else if (primitive.equals(Short.TYPE))
+      method = "shortValue";
+    else if (primitive.equals(Integer.TYPE))
+      method = "intValue";
+    else if (primitive.equals(Long.TYPE))
+      method = "longValue";
+    else if (primitive.equals(Float.TYPE))
+      method = "floatValue";
+    else if (primitive.equals(Double.TYPE))
+      method = "doubleValue";
+    else
+      throw new IllegalStateException("unknown primitive class " + primitive);
+
+    return method;
+  }
+
+  public static Class box(Class cls)
+  {
+    if (! cls.isPrimitive())
+      throw new IllegalArgumentException("can only box primitive");
+
+    Class box;
+    if (cls.equals(Boolean.TYPE))
+      box = Boolean.class;
+    else if (cls.equals(Byte.TYPE))
+      box = Byte.class;
+    else if (cls.equals(Character.TYPE))
+      box = Character.class;
+    else if (cls.equals(Short.TYPE))
+      box = Short.class;
+    else if (cls.equals(Integer.TYPE))
+      box = Integer.class;
+    else if (cls.equals(Long.TYPE))
+      box = Long.class;
+    else if (cls.equals(Float.TYPE))
+      box = Float.class;
+    else if (cls.equals(Double.TYPE))
+      box = Double.class;
+    else
+      throw new IllegalStateException("unknown primitive type " + cls);
+
+    return box;
+  }
+
+  private static int size(Class cls) {
+    if (cls.equals(Long.TYPE) || cls.equals(Double.TYPE))
+      return 2;
+    else
+      return 1;
+  }
+
+  /**
+   * Sort exceptions so the most general go last.
+   */
   private Class[] sortExceptions(Class[] except)
   {
     for (int i = 0; i < except.length; i++)
@@ -903,10 +1616,12 @@ public class RMIC
     return (except);
   }
 
-/**
- * Process the options until we find the first argument.
- */
-  private void parseOptions()
+  /**
+   * Process the options until we find the first argument.
+   *
+   * @return true if further processing should stop
+   */
+  private boolean parseOptions()
   {
     for (;;)
       {
@@ -952,9 +1667,33 @@ public class RMIC
 	else if (arg.equals("-nocompile"))
 	  compile = false;
 	else if (arg.equals("-classpath"))
-	  next++;
+          {
+            classpath = args[next];
+            next++;
+            StringTokenizer st =
+              new StringTokenizer(classpath, File.pathSeparator);
+            URL[] u = new URL[st.countTokens()];
+            for (int i = 0; i < u.length; i++)
+              {
+                String path = st.nextToken();
+                File f = new File(path);
+                try
+                  {
+                    u[i] = f.toURL();
+                  }
+                catch (java.net.MalformedURLException mue)
+                  {
+                    logError("malformed classpath component " + path);
+                    return true;
+                  }
+              }
+            loader = new URLClassLoader(u);
+          }
 	else if (arg.equals("-help"))
-	  usage();
+          {
+            usage();
+            return true;
+          }
 	else if (arg.equals("-version"))
 	  {
 	    System.out.println("rmic (" + System.getProperty("java.vm.name")
@@ -963,7 +1702,7 @@ public class RMIC
 	    System.out.println("Copyright 2002 Free Software Foundation, Inc.");
 	    System.out.println("This is free software; see the source for copying conditions.  There is NO");
 	    System.out.println("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
-	    System.exit(0);
+            return true;
 	  }
 	else if (arg.equals("-d"))
 	  {
@@ -971,90 +1710,235 @@ public class RMIC
 	    next++;
 	  }
 	else if (arg.charAt(1) == 'J')
-	  {
-	  }
-	else
-	  error("unrecognized option `" + arg + "'");
+          /* ignoring -J flags that are supposed to be passed to the
+             underlying Java interpreter */
+          continue;
+        else
+          {
+            logError("unrecognized option '" + arg + "'");
+            return true;
+          }
       }
+
+    return false;
   }
 
-/**
- * Looks for the java.rmi.Remote interface that that is implemented by theClazz.
- * @param theClazz the class to look in
- * @return the Remote interface of theClazz or null if theClazz does not implement a Remote interface
- */
-  private Class getRemoteInterface(Class theClazz)
+  private void findRemoteMethods()
+    throws RMICException
   {
-    Class[] interfaces = theClazz.getInterfaces();
-    for (int i = 0; i < interfaces.length; i++)
+    List rmeths = new ArrayList();
+    for (Class cur = clazz; cur != null; cur = cur.getSuperclass())
       {
-	if (java.rmi.Remote.class.isAssignableFrom(interfaces[i]))
-	  return interfaces[i];
+        Class[] interfaces = cur.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++)
+          {
+            if (java.rmi.Remote.class.isAssignableFrom(interfaces[i]))
+              {
+                Class remoteInterface = interfaces[i];
+                if (verbose)
+                  System.out.println
+                    ("[implements " + remoteInterface.getName() + "]");
+
+                // check if the methods declare RemoteExceptions
+                Method[] meths = remoteInterface.getMethods();
+                for (int j = 0; j < meths.length; j++)
+                  {
+                    Method m = meths[j];
+                    Class[] exs = m.getExceptionTypes();
+
+                    boolean throwsRemote = false;
+                    for (int k = 0; k < exs.length; k++)
+                      {
+                        if (exs[k].isAssignableFrom(RemoteException.class))
+                          throwsRemote = true;
+                      }
+
+                    if (! throwsRemote)
+                      {
+                        throw new RMICException
+                          ("Method " + m + " in interface " + remoteInterface
+                           + " does not throw a RemoteException");
+                      }
+
+                    rmeths.add(m);
+                  }
+
+                mRemoteInterfaces.add(remoteInterface);
+              }
+          }
       }
-    logError("Class " + theClazz.getName()
-             + " is not a remote object. It does not implement an interface that is a java.rmi.Remote-interface.");
-    return null;
+
+    // intersect exceptions for doubly inherited methods
+    boolean[] skip = new boolean[rmeths.size()];
+    for (int i = 0; i < skip.length; i++)
+      skip[i] = false;
+    List methrefs = new ArrayList();
+    for (int i = 0; i < rmeths.size(); i++)
+      {
+        if (skip[i]) continue;
+        Method current = (Method) rmeths.get(i);
+        MethodRef ref = new MethodRef(current);
+        for (int j = i+1; j < rmeths.size(); j++)
+          {
+            Method other = (Method) rmeths.get(j);
+            if (ref.isMatch(other))
+              {
+                ref.intersectExceptions(other);
+                skip[j] = true;
+              }
+          }
+        methrefs.add(ref);
+      }
+
+    // Convert into a MethodRef array and sort them
+    remotemethods = (MethodRef[])
+      methrefs.toArray(new MethodRef[methrefs.size()]);
+    Arrays.sort(remotemethods);
   }
 
-/**
- * Prints an error to System.err and increases the error count.
- * @param theError
- */
+  /**
+   * Prints an error to System.err and increases the error count.
+   */
+  private void logError(Exception theError)
+  {
+    logError(theError.getMessage());
+    if (verbose)
+      theError.printStackTrace(System.err);
+  }
+
+  /**
+   * Prints an error to System.err and increases the error count.
+   */
   private void logError(String theError)
   {
     errorCount++;
-    System.err.println("error:" + theError);
-  }
-
-  private static void error(String message)
-  {
-    System.err.println("rmic: " + message);
-    System.err.println("Try `rmic --help' for more information.");
-    System.exit(1);
+    System.err.println("error: " + theError);
   }
 
   private static void usage()
   {
     System.out.println("Usage: rmic [OPTION]... CLASS...\n" + "\n"
-                       + "	-keep 			Don't delete any intermediate files\n"
-                       + "	-keepgenerated 		Same as -keep\n"
+                       + "	-keep *			Don't delete any intermediate files\n"
+                       + "	-keepgenerated *	Same as -keep\n"
                        + "	-v1.1			Java 1.1 style stubs only\n"
                        + "	-vcompat		Java 1.1 & Java 1.2 stubs\n"
                        + "	-v1.2			Java 1.2 style stubs only\n"
                        + "	-g *			Generated debugging information\n"
                        + "	-depend *		Recompile out-of-date files\n"
                        + "	-nowarn	*		Suppress warning messages\n"
-                       + "	-nocompile		Don't compile the generated files\n"
+                       + "	-nocompile *		Don't compile the generated files\n"
                        + "	-verbose 		Output what's going on\n"
-                       + "	-classpath <path> *	Use given path as classpath\n"
+                       + "	-classpath <path> 	Use given path as classpath\n"
                        + "	-d <directory> 		Specify where to place generated classes\n"
                        + "	-J<flag> *		Pass flag to Java\n"
                        + "	-help			Print this help, then exit\n"
                        + "	-version		Print version number, then exit\n" + "\n"
                        + "  * Option currently ignored\n"
                        + "Long options can be used with `--option' form as well.");
-    System.exit(0);
   }
 
-  static class MethodRef
+  private static String getPrettyName(Class cls)
+  {
+    StringBuffer str = new StringBuffer();
+    for (int count = 0;; count++)
+      {
+	if (! cls.isArray())
+	  {
+	    str.append(cls.getName());
+	    for (; count > 0; count--)
+	      str.append("[]");
+	    return (str.toString());
+	  }
+	cls = cls.getComponentType();
+      }
+  }
+
+  private static class MethodRef
     implements Comparable
   {
     Method meth;
-    String sig;
     long hash;
+    List exceptions;
+    private String sig;
 
-    MethodRef(Method m)
-    {
+    MethodRef(Method m) {
       meth = m;
-      // We match on the name - but what about overloading? - XXX
-      sig = m.getName();
+      sig = Type.getMethodDescriptor(meth);
       hash = RMIHashes.getMethodHash(m);
+      // add exceptions removing subclasses
+      exceptions = removeSubclasses(m.getExceptionTypes());
     }
 
-    public int compareTo(Object obj)
-    {
+    public int compareTo(Object obj) {
       MethodRef that = (MethodRef) obj;
-      return (this.sig.compareTo(that.sig));
+      int name = this.meth.getName().compareTo(that.meth.getName());
+      if (name == 0) {
+        return this.sig.compareTo(that.sig);
+      }
+      return name;
+    }
+
+    public boolean isMatch(Method m)
+    {
+      if (!meth.getName().equals(m.getName()))
+        return false;
+
+      Class[] params1 = meth.getParameterTypes();
+      Class[] params2 = m.getParameterTypes();
+      if (params1.length != params2.length)
+        return false;
+
+      for (int i = 0; i < params1.length; i++)
+        if (!params1[i].equals(params2[i])) return false;
+
+      return true;
+    }
+
+    private static List removeSubclasses(Class[] classes)
+    {
+      List list = new ArrayList();
+      for (int i = 0; i < classes.length; i++)
+        {
+          Class candidate = classes[i];
+          boolean add = true;
+          for (int j = 0; j < classes.length; j++)
+            {
+              if (classes[j].equals(candidate))
+                continue;
+              else if (classes[j].isAssignableFrom(candidate))
+                add = false;
+            }
+          if (add) list.add(candidate);
+        }
+
+      return list;
+    }
+
+    public void intersectExceptions(Method m)
+    {
+      List incoming = removeSubclasses(m.getExceptionTypes());
+
+      List updated = new ArrayList();
+
+      for (int i = 0; i < exceptions.size(); i++)
+        {
+          Class outer = (Class) exceptions.get(i);
+          boolean addOuter = false;
+          for (int j = 0; j < incoming.size(); j++)
+            {
+              Class inner = (Class) incoming.get(j);
+
+              if (inner.equals(outer) || inner.isAssignableFrom(outer))
+                addOuter = true;
+              else if (outer.isAssignableFrom(inner))
+                updated.add(inner);
+            }
+
+          if (addOuter)
+            updated.add(outer);
+        }
+
+      exceptions = updated;
     }
   }
 }
