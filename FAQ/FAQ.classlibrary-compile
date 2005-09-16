@@ -93,8 +93,22 @@ to "-bootclasspath /full/path/to/builddir/libraries/javalib/lib/",
 with "/full/path/to/builddir" replaced by the full path to the directory
 where you are building the Kaffe source code.
 
-It works with gcjx from 2005-09-13, and should continue to work with 
+It works with gcjx from 2005-09-15, and should continue to work with 
 later versions.
+
+* ecj
+
+The eclipse compiler works as well. ecj is part of the eclipse project:
+
+  http://www.eclipse.org
+
+In order to compile kaffe's class library, you need to set JAVAC_FLAGS
+to "-source 1.4 -bootclasspath /full/path/to/builddir/libraries/javalib/lib/",
+with "/full/path/to/builddir" replaced by the full path to the directory
+where you are building the Kaffe source code.
+
+It works with ecj 0.548, pre-3.1.0 milestone-6, and should work with later 
+versions as well.
 
 * kjc
 
@@ -105,8 +119,9 @@ kjc works as well. kjc is part of the Kopi project:
 * javac 
 
 Sun's javac compiler from JDK 1.3 - JDK 1.5 works as well. You have
-to add "-bootclasspath lib/" to your JAVAC_FLAGS to avoid build
-problems due to Sun's javac confusing Sun's class libraries with kaffe's.
+to add "-bootclasspath /full/path/to/builddir/libraries/javalib/lib/" 
+to your JAVAC_FLAGS to avoid build problems due to Sun's javac 
+confusing Sun's class libraries with kaffe's.
 
 No known older version of Sun's javac compiler (up through JDK 1.2)
 will compile Kaffe's classes, due to bugs that Sun has yet to fix.
