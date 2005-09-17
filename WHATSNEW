@@ -19,6 +19,7 @@ does not work yet though).
 * JVMPI cleaned up. Kaffe now works with JMP (http://www.khelekore.org/jmp/)
 * Xlib-AWT fixed on Darwin.
 * Runtime/VMProcess merged from GNU Classpath.
+* Merged in antlr 2.7.5 for gjdoc.
 
 What's New in Kaffe 1.1.5
 ------------------------------------------------------

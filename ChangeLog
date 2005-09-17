@@ -1,5 +1,9 @@
 2005-09-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Added information about antlr.
+
+2005-09-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: (--with-gjdoc) Don't check for antlr any more.
 	* m4/ac_prog_antlr.m4: Removed.
 	* tools/gjdoc/javalib/antlr/ANTLRException.java
