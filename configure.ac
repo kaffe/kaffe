@@ -2080,21 +2080,11 @@ dnl =========================================================================
 dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH([antlr-jar],
-            AS_HELP_STRING([--with-antlr-jar=file],
-                           [Use ANTLR from the specified jar file. ANTLR is required for gjdoc]),
-  [ ANTLR_JAR=$withval ],
-  [ ANTLR_JAR="$ANTLR_JAR" ])
-
 AC_ARG_ENABLE([gjdoc],
 		AS_HELP_STRING([--enable-gjdoc],
 				[Enable building of gjdoc]),
 		[],
 		[enable_gjdoc=no])
-
-if test x"$enable_gjdoc" = x"yes" ; then
-	AC_PROG_ANTLR(2,7,1)
-fi
 
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 

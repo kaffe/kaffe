@@ -1,3 +1,43 @@
+2005-09-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: (--with-gjdoc) Don't check for antlr any more.
+	* m4/ac_prog_antlr.m4: Removed.
+	* tools/gjdoc/javalib/antlr/ANTLRException.java
+	tools/gjdoc/javalib/antlr/ANTLRHashString.java
+	tools/gjdoc/javalib/antlr/ANTLRStringBuffer.java
+	tools/gjdoc/javalib/antlr/ASTFactory.java
+	tools/gjdoc/javalib/antlr/ASTNULLType.java
+	tools/gjdoc/javalib/antlr/ASTPair.java
+	tools/gjdoc/javalib/antlr/BaseAST.java
+	tools/gjdoc/javalib/antlr/ByteBuffer.java
+	tools/gjdoc/javalib/antlr/CharBuffer.java
+	tools/gjdoc/javalib/antlr/CharFormatter.java
+	tools/gjdoc/javalib/antlr/CharQueue.java
+	tools/gjdoc/javalib/antlr/CharScanner.java
+	tools/gjdoc/javalib/antlr/CharStreamException.java
+	tools/gjdoc/javalib/antlr/CharStreamIOException.java
+	tools/gjdoc/javalib/antlr/CommonAST.java
+	tools/gjdoc/javalib/antlr/CommonToken.java
+	tools/gjdoc/javalib/antlr/DefaultFileLineFormatter.java
+	tools/gjdoc/javalib/antlr/FileLineFormatter.java
+	tools/gjdoc/javalib/antlr/InputBuffer.java
+	tools/gjdoc/javalib/antlr/LLkParser.java
+	tools/gjdoc/javalib/antlr/LexerSharedInputState.java
+	tools/gjdoc/javalib/antlr/MismatchedCharException.java
+	tools/gjdoc/javalib/antlr/MismatchedTokenException.java
+	tools/gjdoc/javalib/antlr/NoViableAltException.java
+	tools/gjdoc/javalib/antlr/NoViableAltForCharException.java
+	tools/gjdoc/javalib/antlr/Parser.java
+	tools/gjdoc/javalib/antlr/ParserSharedInputState.java
+	tools/gjdoc/javalib/antlr/RecognitionException.java
+	tools/gjdoc/javalib/antlr/SemanticException.java:
+	New files. Taken from antlr 2.7.5. Public domain.
+
+	* tools/gjdoc/javalib/Makefile.am: Added antlr_SRCS.
+
+	* THIRDPARTY: Added notice for antlr files. Removed notice
+	for m4/ac_prog_antlr.m4 since it has been removed.
+
 2005-09-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/awt/qt/fnt.cc: 

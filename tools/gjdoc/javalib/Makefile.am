@@ -8,10 +8,75 @@
 # of this file.
 
 CLASSFILE = gjdoc.jar
-SRCDIRS = com gnu
+SRCDIRS = antlr com gnu
 
 toolslib_DATA = $(CLASSFILE)
 
+antlr_SRCS = \
+	antlr/collections/impl/ASTArray.java \
+	antlr/collections/impl/BitSet.java \
+	antlr/collections/impl/Vector.java \
+	antlr/collections/impl/IntRange.java \
+	antlr/collections/impl/VectorEnumerator.java \
+	antlr/collections/impl/ASTEnumerator.java \
+	antlr/collections/AST.java \
+	antlr/collections/ASTEnumeration.java \
+	antlr/collections/Enumerator.java \
+	antlr/ANTLRException.java \
+	antlr/ANTLRHashString.java \
+	antlr/ASTFactory.java \
+	antlr/ASTPair.java \
+	antlr/ByteBuffer.java \
+	antlr/CharBuffer.java \
+	antlr/CharScanner.java \
+	antlr/CharStreamException.java \
+	antlr/CharStreamIOException.java \
+	antlr/CommonToken.java \
+	antlr/InputBuffer.java \
+	antlr/LexerSharedInputState.java \
+	antlr/LLkParser.java \
+	antlr/MismatchedCharException.java \
+	antlr/MismatchedTokenException.java \
+	antlr/NoViableAltException.java \
+	antlr/NoViableAltForCharException.java \
+	antlr/ParserSharedInputState.java \
+	antlr/RecognitionException.java \
+	antlr/SemanticException.java \
+	antlr/Token.java \
+	antlr/TokenBuffer.java \
+	antlr/TokenStream.java \
+	antlr/TokenStreamException.java \
+	antlr/TokenStreamIOException.java \
+	antlr/TokenStreamRecognitionException.java \
+	antlr/CharFormatter.java \
+	antlr/CharQueue.java \
+	antlr/ANTLRStringBuffer.java \
+	antlr/CommonAST.java \
+	antlr/Parser.java \
+	antlr/TokenQueue.java \
+	antlr/FileLineFormatter.java \
+	antlr/BaseAST.java \
+	antlr/debug/MessageListener.java \
+	antlr/debug/ParserListener.java \
+	antlr/debug/ParserMatchListener.java \
+	antlr/debug/ParserTokenListener.java \
+	antlr/debug/SemanticPredicateListener.java \
+	antlr/debug/SyntacticPredicateListener.java \
+	antlr/debug/TraceListener.java \
+	antlr/debug/ListenerBase.java \
+	antlr/debug/TraceEvent.java \
+	antlr/debug/SyntacticPredicateEvent.java \
+	antlr/debug/SemanticPredicateEvent.java \
+	antlr/debug/ParserTokenEvent.java \
+	antlr/debug/ParserMatchEvent.java \
+	antlr/debug/MessageEvent.java \
+	antlr/debug/Event.java \
+	antlr/debug/GuessingEvent.java \
+	antlr/DefaultFileLineFormatter.java \
+	antlr/StringUtils.java \
+	antlr/TreeParser.java \
+	antlr/ASTNULLType.java \
+	antlr/TreeParserSharedInputState.java 
 
 gjdoc_jar_SRCS = \
 	com/sun/javadoc/ClassDoc.java \
@@ -247,6 +312,7 @@ gjdoc_ressources = \
 	java.lang-classes-1.5.txt
 
 EXTRA_DIST = \
+	$(antlr_SRCS) \
 	$(gjdoc_jar_SRCS) \
 	$(gjdoc_ressources)
 
@@ -268,11 +334,11 @@ Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar):$(ANTLR_JAR) BOOTCLASSPATH=$(top_srcdir)/libraries/javalib/rt.jar:$(ANTLR_JAR) $(SHELL) $(rebuildLib) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
+	BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
