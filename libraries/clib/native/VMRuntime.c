@@ -57,7 +57,9 @@
  * Method:    availableProcessors
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_java_lang_VMRuntime_availableProcessors(JNIEnv *env, jclass clazz)
+JNIEXPORT jint JNICALL
+Java_java_lang_VMRuntime_availableProcessors(JNIEnv *env UNUSED,
+					     jclass clazz UNUSED)
 {
 #if defined(HAVE_GET_NPROCS_CONF)
 	return get_nprocs_conf();
