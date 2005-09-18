@@ -1,3 +1,9 @@
+2005-09-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: (--disable-boehm-gc-configuration)
+	New option to disable configure for boehm.gc, which leads to
+	problems on platforms on which boehm-gc was not ported to.
+
 2005-09-18  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* kaffe/scripts/native2ascii.in: Removed -cp option because environment

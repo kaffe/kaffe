@@ -1186,7 +1186,16 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 
 	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
 fi
-AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
+
+AC_ARG_ENABLE([boehm-gc-configuration],
+               AS_HELP_STRING([--disable-boehm-gc-configuration],
+			      [Don't run boehm-gc configure script. Boehm gc does not work on all platforms. Default is to run it.]),
+               [],
+               [enable_boehm_gc_configuration=yes])
+
+if test x"$enable_boehm_gc_configuration" = x"yes" ; then
+  AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
+fi
 
 AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)
 
