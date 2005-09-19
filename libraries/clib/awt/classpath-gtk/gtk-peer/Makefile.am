@@ -3,7 +3,7 @@ native_LTLIBRARIES = libgtkpeer.la libjawt.la
 # Gtk/Cairo JNI sources.
 if GTK_CAIRO
 gtk_cairo_c_source_files = \
-	gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	gnu_java_awt_peer_gtk_GdkGraphics2D.c 
 endif
 
 libgtkpeer_la_SOURCES = \
@@ -48,7 +48,8 @@ libgtkpeer_la_SOURCES = \
 	gthread-jni.c \
 	gthread-jni.h \
 	gtk_jawt.c \
-	gtkpeer.h
+	gtkpeer.h \
+	gtkcairopeer.h
 
 libgtkpeer_la_CFLAGS = \
 	$(CFLAGS_PG)

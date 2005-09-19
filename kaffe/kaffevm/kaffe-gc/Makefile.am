@@ -26,10 +26,11 @@ libkaffegc_la_LDFLAGS = \
 
 libkaffegc_la_SOURCES= \
 	gc-incremental.c \
+	gc-incremental.h \
 	gc-mem.c \
-	gc-refs.c
+	gc-mem.h \
+	gc-refs.c \
+	gc-refs.h 
 
 libkaffegc_la_DEPENDENCIES = \
         $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la
-
-noinst_HEADERS= gc-mem.h gc-incremental.h gc-refs.h

@@ -267,6 +267,8 @@ EXTRA_DIST = \
 	mips/callKaffeException.h \
 	mips/common.h \
 	mips/irix5/config.frag \
+	mips/irix5/jit-md.h \
+	mips/irix5/jit3-md.h \
 	mips/irix5/md.c \
 	mips/irix5/md.h \
 	mips/jit.h \
@@ -303,6 +305,7 @@ EXTRA_DIST = \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \
 	powerpc/aix/md.h \
+	powerpc/bits/atomic.h \
 	powerpc/common.h \
 	powerpc/darwin/config.frag \
 	powerpc/darwin/md.c \
@@ -312,6 +315,7 @@ EXTRA_DIST = \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
 	powerpc/linux/sigcontextinfo.h \
+	powerpc/linux/jit3-md.h \
 	powerpc/machten/config.frag \
 	powerpc/machten/md.c \
 	powerpc/machten/md.h \
@@ -319,10 +323,13 @@ EXTRA_DIST = \
 	powerpc/netbsd1/md.c \
 	powerpc/netbsd1/md.h \
 	powerpc/netbsd1/jit3-md.h \
+	powerpc/powerpc32/atomic.h \
+	powerpc/powerpc64/atomic.h \
 	powerpc/callmethod_ppc.h \
 	powerpc/jit.h \
 	powerpc/jit3-icode.h \
 	powerpc/jit3-powerpc.def \
+	powerpc/jit-labels.h \
 	powerpc/ppc_isa.defs \
 	powerpc/ppc_isa.h \
 	powerpc/ppc_macros.h \

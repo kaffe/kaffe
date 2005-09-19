@@ -113,7 +113,7 @@ am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.c \
 	gnu_java_awt_peer_gtk_GtkToolkit.c \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.c gthread-jni.c \
-	gthread-jni.h gtk_jawt.c gtkpeer.h
+	gthread-jni.h gtk_jawt.c gtkpeer.h gtkcairopeer.h
 @GTK_CAIRO_TRUE@am__objects_1 = libgtkpeer_la-gnu_java_awt_peer_gtk_GdkGraphics2D.lo
 am_libgtkpeer_la_OBJECTS = $(am__objects_1) \
 	libgtkpeer_la-gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.lo \
@@ -456,7 +456,7 @@ native_LTLIBRARIES = libgtkpeer.la libjawt.la
 
 # Gtk/Cairo JNI sources.
 @GTK_CAIRO_TRUE@gtk_cairo_c_source_files = \
-@GTK_CAIRO_TRUE@	gnu_java_awt_peer_gtk_GdkGraphics2D.c
+@GTK_CAIRO_TRUE@	gnu_java_awt_peer_gtk_GdkGraphics2D.c 
 
 libgtkpeer_la_SOURCES = \
 	$(gtk_cairo_c_source_files) \
@@ -500,7 +500,8 @@ libgtkpeer_la_SOURCES = \
 	gthread-jni.c \
 	gthread-jni.h \
 	gtk_jawt.c \
-	gtkpeer.h
+	gtkpeer.h \
+	gtkcairopeer.h
 
 libgtkpeer_la_CFLAGS = \
 	$(CFLAGS_PG)

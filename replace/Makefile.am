@@ -26,7 +26,7 @@ libreplace_la_SOURCES = \
 	inet_ntop.c \
 	memset.c \
 	repsemaphore.h \
-	semaphores.c
+	semaphores.c \
 	ifaddrs.h
 
 libreplace_la_LIBADD = \

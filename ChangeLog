@@ -1,5 +1,18 @@
 2005-09-18  Dalibor Topic  <robilad@kaffe.org>
 
+	Makefile.am,
+	config/Makefile.am,
+	kaffe/kaffevm/boehm-gc/Makefile.am,
+	kaffe/kaffevm/kaffe-gc/Makefile.am,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am,
+	libraries/clib/awt/nano-X/Makefile.am,
+	replace/Makefile.am,
+	test/regression/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am:
+	Added missing files from pre1 tarball to makefiles.
+
+2005-09-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/io/AudioPlayer.c:
 	Removed.
 

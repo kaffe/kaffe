@@ -31,6 +31,8 @@ libnanoxawt_la_LDFLAGS = \
 libnanoxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS)
 
 libnanoxawt_la_SOURCES = \
+	awt_const.h  \
+	keymap.h \
 	event.c \
 	handler.c \
 	color.c \

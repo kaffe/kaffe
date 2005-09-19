@@ -317,7 +317,8 @@ EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(JASMIN_TESTS_DIST) \
 	CatchLimits.j \
 	$(BCEL_TESTS_DIST) \
-	TestGnuCrypto.java
+	TestGnuCrypto.java \
+	$(TEST_INTERRUPTING_IO)
 
 CLEANFILES = \
 	*.class \

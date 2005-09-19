@@ -247,6 +247,7 @@ gjdoc_jar_SRCS = \
 ## Do not delete the previous blank line; update-class-list depends on it
 
 gjdoc_ressources = \
+	dtd/gjdoc-alphaindex.dtd \
         dtd/dbcentx.mod \
         dtd/gjdoc.dtd \
         dtd/ent/iso-amsa.ent \
@@ -314,7 +315,9 @@ gjdoc_ressources = \
 EXTRA_DIST = \
 	$(antlr_SRCS) \
 	$(gjdoc_jar_SRCS) \
-	$(gjdoc_ressources)
+	$(gjdoc_ressources) \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html \
+	gnu/classpath/tools/gjdoc/expr/java-expression.g
 
 JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))

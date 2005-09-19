@@ -391,7 +391,8 @@ libreplace_la_SOURCES = \
 	inet_ntop.c \
 	memset.c \
 	repsemaphore.h \
-	semaphores.c
+	semaphores.c \
+	ifaddrs.h
 
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
@@ -656,7 +657,6 @@ uninstall-am: uninstall-info-am
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-info-am
 
-	ifaddrs.h
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

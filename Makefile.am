@@ -55,6 +55,7 @@ EXTRA_DIST = \
 	ChangeLog.14 \
 	ChangeLog.15 \
 	ChangeLog.16 \
+	ChangeLog.17 \
 	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
@@ -68,6 +69,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.awt \
 	FAQ/FAQ.benchmarking \
 	FAQ/FAQ.bignum \
+	FAQ/FAQ.charsets \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
 	FAQ/FAQ.code-layout \
@@ -120,6 +122,10 @@ EXTRA_DIST = \
 	binreloc/prefix.h \
 	binreloc/README \
 	binreloc/test.c \
+	developers/boehm-with-kaffe.patch \
+	developers/build_mathnamespace \
+	developers/check-classpath-unmerged \
+	developers/math_symbols \
 	developers/check-classpath-merge-status \
 	developers/FullTest.sh \
 	developers/GCJ.note.1 \
@@ -145,7 +151,20 @@ EXTRA_DIST = \
 	developers/sp_offset.c \
 	developers/unicode.pl \
 	developers/update-class-list \
-	developers/utf8munge.pl
+	developers/utf8munge.pl \
+	docs/html/fdl.html \
+	docs/html/index.html \
+	docs/html/port-kaffe.html \
+	docs/src/docbook/port-kaffe/jit-icode.c \
+	docs/src/docbook/port-kaffe/fdl.xml \
+	docs/src/docbook/port-kaffe/port-kaffe.xml \
+	scripts/GCCWarning.pm \
+	scripts/JikesWarning.pm \
+	scripts/LogWarning.pm \
+	scripts/Registry.pm \
+	scripts/sort-warnings.pl \
+	scripts/SparseWarning.pm \
+	scripts/WarningDescription.pm
 
 CLEANFILES = BUILD_ENVIRONMENT
 
