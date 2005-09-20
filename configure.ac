@@ -1715,6 +1715,10 @@ if test x"$enable_native_awt" = x"yes"; then
 	if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
 	   AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of libungif])
 	   AC_CHECK_LIBRARY(ungif,DGifOpen,GIF_LIBS)
+           # If libungif can not be found, check for libgif
+	   if test x"$ac_cv_lib_ungif_DGifOpen" != x"yes"; then
+	     AC_CHECK_LIBRARY(gif,DGifOpen,GIF_LIBS)
+           fi
         fi
 
 	LIBS=$OLIBS

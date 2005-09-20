@@ -1,5 +1,12 @@
 2005-09-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Check for libgif if libungif is not found.
+	It's a different name for the library, apparently.
+
+	Reported by:  Riccardo Mottola  <riccardo@kaffe.org>
+
+2005-09-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile:
 	Added information on how to obtain Kaffe's patched kjc's
 	source code.

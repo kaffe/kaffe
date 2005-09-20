@@ -275,6 +275,9 @@
 /* Define to 1 if you have the `gcc' library (-lgcc). */
 #undef HAVE_LIBGCC
 
+/* Define to 1 if you have the `gif' library (-lgif). */
+#undef HAVE_LIBGIF
+
 /* Define to 1 if you have the `jpeg' library (-ljpeg). */
 #undef HAVE_LIBJPEG
 
