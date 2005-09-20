@@ -1,4 +1,9 @@
-2005-09-18  Dalibor Topic  <robilad@kaffe.org>
+2005-09-19  Wolfgang Baer <WBaer@gmx.de>
+
+	* kaffe/scripts/jdb.in, 
+	THIRDPARTY: Fixed typos.
+
+2005-09-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* Makefile.am: (EXTRA_DIST) Removed the docs files again
 	to avoid pushing GNU FDL licensed documentation into Debian.
