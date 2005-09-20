@@ -116,6 +116,13 @@ kjc works as well. kjc is part of the Kopi project:
 
   http://www.dms.at/kopi/kjc.html
 
+Kaffe used to ship a patched version of kjc 2.1B. That version is still
+available in source code form from the kjc module in kaffe's CVS. See
+
+   http://www.kaffe.org/anoncvs.shtml 
+
+for details on how to check it out.
+
 * javac 
 
 Sun's javac compiler from JDK 1.3 - JDK 1.5 works as well. You have
