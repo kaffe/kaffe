@@ -1,3 +1,16 @@
+2005-09-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* README, 
+	RELEASE-NOTES, 
+	WHATSNEW,
+	configure.ac,
+	libraries/javalib/gnu/classpath/VMSystemProperties.java:
+	Updated for 1.1.6.
+
+	* libraries/clib/awt/classpath-qt/Makefile.am:
+	Removed qtembeddedwindowpeer.cpp since QtX11Embed widgets 
+	dont exist on OS X.
+
 2005-09-19  Wolfgang Baer <WBaer@gmx.de>
 
 	* kaffe/scripts/jdb.in, 

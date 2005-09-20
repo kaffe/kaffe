@@ -57,7 +57,6 @@ libqtpeer_la_SOURCES = \
         qtcomponent.h \
         qtcomponentpeer.cpp \
         qtdialogpeer.cpp \
-	qtembeddedwindowpeer.cpp \
         qtfiledialogpeer.cpp \
         qtfont.h \
         qtfontmetrics.cpp \
@@ -87,6 +86,8 @@ libqtpeer_la_SOURCES = \
         qtwindowpeer.cpp \
         slotcallbacks.cpp \
         slotcallbacks.h 
+
+# 	qtembeddedwindowpeer.cpp 
 
 BUILT_SOURCES = $(libqtpeer_la_MOC)
 

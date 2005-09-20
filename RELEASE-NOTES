@@ -1,20 +1,16 @@
-Release Notes for 1.1.5
+Release Notes for 1.1.6
 =======================
 
-Release 1.1.5 of Kaffe is a "development" release.
+Release 1.1.6 of Kaffe is a "development" release.
 
 It has been tested, but not as thoroughly as a
 production release would be. It contains major 
-improvements over 1.1.4, which was released one 
-year ago. I anticipate that most people will have 
+improvements over 1.1.5, which was released six 
+months ago. I anticipate that most people will have 
 less trouble with this release, and more fun.
 
 Please check the WHATSNEW file to see what has
 been added in this release.
-
-Even though this is not a production release, it
-contains a large number of improvements over 1.0.7, 
-which was released over two years ago.
 
 Bug reports, comments and patches are always
 welcome -- send them to the team at kaffe@kaffe.org.
@@ -149,20 +145,10 @@ The following platforms have been tested for this release:
 
   arch	|   os	   | engine | threads |  gc   | passed
 ======================================================
-  alpha	| linux    | intrp  | pthread | kaffe | 011/147
-  i386  | linux    | intrp  | pthread | kaffe | 147/147
-  i386  | linux    | jit    | pthread | kaffe | 147/147
   i386  | linux    | jit3   | pthread | kaffe | 147/147
-  i386  | freebsd5 | jit3   | pthread | kaffe | 147/147
-  i386  | darwin7  | intrp  | pthread | kaffe | 011/147
   i386  | linux    | jit3   | jthread | kaffe | 147/147
-  ia64	| hpux	   | intrp  | pthread | kaffe | 011/147
-  ia64	| linux	   | intrp  | pthread | kaffe | 139/147
 powerpc | linux    | intrp  | pthread | kaffe | 147/147
 powerpc | linux    | intrp  | jthread | kaffe | 147/147
-powerpc | darwin6  | intrp  | pthread | kaffe | 146/147
-powerpc | darwin7  | intrp  | pthread | kaffe | 147/147
-x86-64  | linux    | intrp  | pthread | kaffe | 145/147
 
 
 Have fun!
