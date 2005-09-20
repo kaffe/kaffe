@@ -152,12 +152,6 @@ EXTRA_DIST = \
 	developers/unicode.pl \
 	developers/update-class-list \
 	developers/utf8munge.pl \
-	docs/html/fdl.html \
-	docs/html/index.html \
-	docs/html/port-kaffe.html \
-	docs/src/docbook/port-kaffe/jit-icode.c \
-	docs/src/docbook/port-kaffe/fdl.xml \
-	docs/src/docbook/port-kaffe/port-kaffe.xml \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \
 	scripts/LogWarning.pm \
