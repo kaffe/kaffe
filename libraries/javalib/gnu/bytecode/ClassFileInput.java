@@ -209,9 +209,9 @@ public class ClassFileInput extends DataInputStream
 	Method method = attr.getMethod();
 	if (attr.parameter_scope == null)
 	  attr.parameter_scope = method.pushScope();
-	if (attr.parameter_scope.end == null)
-	  attr.parameter_scope.end = new Label(code.PC);
 	Scope scope = attr.parameter_scope;
+	if (scope.end == null)
+	  scope.end = new Label(code.PC);
 	ConstantPool constants = method.getConstants();
         int count = readUnsignedShort();
 	int prev_start = scope.start.position;

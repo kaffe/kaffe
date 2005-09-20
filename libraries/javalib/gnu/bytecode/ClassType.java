@@ -179,7 +179,7 @@ public class ClassType extends ObjectType
    * @return the interfaces this class is declared to implement
    * (not those inherited from its superclass/superinterfaces).
    */
-  public ClassType[] getInterfaces()
+  public synchronized ClassType[] getInterfaces()
   {
     if (interfaces == null
 	&& (flags & EXISTING_CLASS) != 0 && getReflectClass() != null)
@@ -416,6 +416,20 @@ public class ClassType extends ObjectType
     Method meth = addMethod(name, flags);
     meth.setSignature(signature);
     return meth;
+  }
+
+  /** Add a method to this ClassType.
+    * If an existing method matches, return that.  Otherwise, create
+    * a new one. */
+  public Method getMethod (java.lang.reflect.Method method)
+  {
+    String name = method.getName();
+    Class[] parameterClasses = method.getParameterTypes();
+    Type[] parameterTypes = new Type[parameterClasses.length];
+    for (int i = parameterClasses.length;  --i >= 0; )
+      parameterTypes[i] = Type.make(parameterClasses[i]);
+    return addMethod(name, method.getModifiers(),
+                     parameterTypes, Type.make(method.getReturnType()));
   }
 
   public final synchronized Method getDeclaredMethods()

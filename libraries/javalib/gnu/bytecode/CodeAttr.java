@@ -501,7 +501,7 @@ public class CodeAttr extends Attribute implements AttrContainer
     Scope scope = new Scope ();
     if (locals == null)
       locals = new LocalVarsAttr(getMethod());
-    locals.enterScope(scope);
+    enterScope(scope);
     if (locals.parameter_scope == null) 
       locals.parameter_scope = scope;
     return scope;
@@ -1947,18 +1947,14 @@ public class CodeAttr extends Attribute implements AttrContainer
 
   public void emitTryStart(boolean has_finally, Type result_type)
   {
-    TryState try_state = new TryState(this);
     if (result_type != null && result_type.isVoid())
       result_type = null;
+    Variable[] savedStack = null;
     if (result_type != null || SP > 0)
-      {
-	pushScope();
-	if (result_type != null)
-	  try_state.saved_result = addLocal(result_type);
-      }
+      pushScope();
     if (SP > 0)
       {
-	Variable[] savedStack = new Variable[SP];
+	savedStack = new Variable[SP];
 	int i = 0;
 	while (SP > 0)
 	  {
@@ -1966,8 +1962,11 @@ public class CodeAttr extends Attribute implements AttrContainer
 	    emitStore(var);
 	    savedStack[i++] = var;
 	  }
-	try_state.savedStack = savedStack;
       }
+    TryState try_state = new TryState(this);
+    try_state.savedStack = savedStack;
+    if (result_type != null)
+      try_state.saved_result = addLocal(result_type);
     if (has_finally)
       try_state.finally_subr = new Label();
   }

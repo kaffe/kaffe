@@ -19,7 +19,7 @@ public abstract class Type {
   /** The type used to implement types not natively understood by the JVM.
 
    * Usually, the identity function.  However, a language might handle
-   * union types or template types or type expression scalculated at
+   * union types or template types or type expressions calculated at
    * run time.  In that case return the type used at the JVM level,
    * and known at compile time.
    */

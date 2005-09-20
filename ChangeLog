@@ -1,5 +1,16 @@
 2005-09-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/bytecode/ClassFileInput.java,
+	libraries/javalib/gnu/bytecode/ClassType.java,
+	libraries/javalib/gnu/bytecode/CodeAttr.java,
+	libraries/javalib/gnu/bytecode/Method.java,
+	libraries/javalib/gnu/bytecode/ObjectType.java,
+	libraries/javalib/gnu/bytecode/Type.java,
+	libraries/javalib/gnu/bytecode/Variable.java:
+	Updated to latest version from Kawa.
+
+2005-09-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Check for libgif if libungif is not found.
 	It's a different name for the library, apparently.
 
