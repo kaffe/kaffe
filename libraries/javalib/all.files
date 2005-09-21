@@ -3424,6 +3424,7 @@ javax/swing/plaf/metal/MetalBorders.java
 javax/swing/plaf/metal/MetalButtonUI.java
 javax/swing/plaf/metal/MetalCheckBoxIcon.java
 javax/swing/plaf/metal/MetalCheckBoxUI.java
+javax/swing/plaf/metal/MetalComboBoxEditor.java
 javax/swing/plaf/metal/MetalComboBoxIcon.java
 javax/swing/plaf/metal/MetalComboBoxUI.java
 javax/swing/plaf/metal/MetalDesktopIconUI.java

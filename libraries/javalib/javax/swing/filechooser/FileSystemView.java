@@ -143,7 +143,7 @@ public abstract class FileSystemView
     for (int i = 0; i < files.length; i++)
       if (! files[i].isHidden())
 	trim.add(files[i]);
-    File[] value = (File[]) trim.toArray(new File[0]);
+    File[] value = (File[]) trim.toArray(new File[trim.size()]);
     return value;
   }
 

@@ -362,7 +362,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
         "HOME",  "homePassThrough",
         "END",  "endPassThrough"
       }),
-      "ComboBox.background", new ColorUIResource(light),
+      "ComboBox.background", new ColorUIResource(Color.white),
       "ComboBox.buttonBackground", new ColorUIResource(light),
       "ComboBox.buttonDarkShadow", new ColorUIResource(shadow),
       "ComboBox.buttonHighlight", new ColorUIResource(highLight),
@@ -371,7 +371,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "ComboBox.disabledForeground", new ColorUIResource(Color.gray),
       "ComboBox.font", new FontUIResource("SansSerif", Font.PLAIN, 12),
       "ComboBox.foreground", new ColorUIResource(Color.black),
-      "ComboBox.selectionBackground", new ColorUIResource(Color.black),
+      "ComboBox.selectionBackground", new ColorUIResource(0, 0, 128),
       "ComboBox.selectionForeground", new ColorUIResource(Color.white),
       "Desktop.ancestorInputMap", new UIDefaults.LazyInputMap(new Object[] {
         "KP_LEFT", "left",
@@ -528,7 +528,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "Label.disabledShadow", new ColorUIResource(shadow),
       "Label.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "Label.foreground", new ColorUIResource(darkShadow),
-      "List.background", new ColorUIResource(light),
+      "List.background", new ColorUIResource(Color.white),
       "List.border", new BasicBorders.MarginBorder(),
       "List.focusInputMap", new UIDefaults.LazyInputMap(new Object[] {
         "PAGE_UP", "scrollUp",
@@ -550,8 +550,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
         "shift PAGE_UP","scrollUpExtendSelection",
         "KP_DOWN", "selectNextRow"
       }),
-      "List.foreground", new ColorUIResource(darkShadow),
-      "List.selectionBackground", new ColorUIResource(Color.black),
+      "List.foreground", new ColorUIResource(Color.black),
+      "List.selectionBackground", new ColorUIResource(0, 0, 128),
       "List.selectionForeground", new ColorUIResource(Color.white),
       "List.focusCellHighlightBorder",
       new BorderUIResource.

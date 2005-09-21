@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
@@ -69,6 +70,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
@@ -78,7 +80,7 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
 
 /**
- * UI Delegate for JComboBox
+ * A UI delegate for the {@link JComboBox} component.
  *
  * @author Olga Rodimina
  * @author Robert Schuster
@@ -86,52 +88,54 @@ import javax.swing.plaf.UIResource;
 public class BasicComboBoxUI extends ComboBoxUI
 {
   /**
-   * This arrow button that is displayed in the rigth side of JComboBox. This
-   * button is used to hide and show combo box's list of items
+   * The arrow button that is displayed in the right side of JComboBox. This
+   * button is used to hide and show combo box's list of items.
    */
   protected JButton arrowButton;
 
   /**
-   * The combo box for which this UI delegate is for
+   * The combo box represented by this UI delegate.
    */
   protected JComboBox comboBox;
 
   /**
-   * Component that is responsible for displaying/editting  selected item of
-   * the combo box. By default JTextField is used as an editor for the
-   * JComboBox
+   * The component that is responsible for displaying/editing the selected 
+   * item of the combo box. 
+   * 
+   * @see BasicComboBoxEditor#getEditorComponent()
    */
   protected Component editor;
 
   /**
-   * Listener listening to focus events occuring in the JComboBox
+   * A listener listening to focus events occurring in the {@link JComboBox}.
    */
   protected FocusListener focusListener;
 
   /**
-   * tells whether JComboBox currently has focus
+   * A flag indicating whether JComboBox currently has the focus.
    */
   protected boolean hasFocus;
 
   /**
-   * Listener listening to item events fired by the JComboBox
+   * A listener listening to item events fired by the {@link JComboBox}.
    */
   protected ItemListener itemListener;
 
   /**
-   * KeyListener listening to key events that occur while JComboBox has focus
+   * A listener listening to key events that occur while {@link JComboBox} has
+   * the focus.
    */
   protected KeyListener keyListener;
 
   /**
-   * MouseListener listening to mouse events occuring in the combo box
+   * A listener listening to mouse events occuring in the {@link JComboBox}.
    */
   private MouseListener mouseListener;
 
   /**
    * List used when rendering selected item of the combo box. The selection
-   * and foreground colors for combo box renderer  are configured from this
-   * list
+   * and foreground colors for combo box renderer are configured from this
+   * list.
    */
   protected JList listBox;
 
@@ -141,7 +145,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected ListDataListener listDataListener;
 
   /**
-   * Popup list containing combo box's menu items
+   * Popup list containing the combo box's menu items.
    */
   protected ComboPopup popup;
   protected KeyListener popupKeyListener;
@@ -163,19 +167,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   /* Size of the largest item in the comboBox
    * This is package-private to avoid an accessor method.
    */
-  Dimension largestItemSize;
-
-  // It seems that JComboBox doesn't have a border set explicitely. So we just
-  // paint the border everytime combo box is displayed. 
-
-  /* border insets for this JComboBox
-   * This is package-private to avoid an accessor method. */
-  static final Insets borderInsets = new Insets(2, 2, 2, 2);
-
-  // Width of the arrow button  
-  // This is package-private to avoid an accessor method.
-  // FIXME: has wrong name for a constant.
-  static final int arrowButtonWidth = 15;
+  Dimension displaySize;
 
   // FIXME: This fields aren't used anywhere at this moment.
   protected Dimension cachedMinimumSize;
@@ -183,19 +175,19 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected boolean isMinimumSizeDirty;
 
   /**
-   * Creates a new BasicComboBoxUI object.
+   * Creates a new <code>BasicComboBoxUI</code> object.
    */
   public BasicComboBoxUI()
   {
   }
 
   /**
-   * Factory method to create a BasicComboBoxUI for the given {@link
-   * JComponent}, which should be a {@link JComboBox}.
+   * A factory method to create a UI delegate for the given 
+   * {@link JComponent}, which should be a {@link JComboBox}.
    *
    * @param c The {@link JComponent} a UI is being created for.
    *
-   * @return A BasicComboBoxUI for the {@link JComponent}.
+   * @return A UI delegate for the {@link JComponent}.
    */
   public static ComponentUI createUI(JComponent c)
   {
@@ -203,9 +195,11 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method installs the UI for the given JComponent.
+   * Installs the UI for the given {@link JComponent}.
    *
-   * @param c The JComponent to install a UI for.
+   * @param c  the JComponent to install a UI for.
+   * 
+   * @see #uninstallUI(JComponent)
    */
   public void installUI(JComponent c)
   {
@@ -224,9 +218,11 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method uninstalls the UI.
+   * Uninstalls the UI for the given {@link JComponent}.
    *
    * @param c The JComponent that is having this UI removed.
+   * 
+   * @see #installUI(JComponent)
    */
   public void uninstallUI(JComponent c)
   {
@@ -238,8 +234,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method installs the defaults that are defined in  the Basic look and
-   * feel for this {@link JComboBox}.
+   * Installs the defaults that are defined in the {@link BasicLookAndFeel} 
+   * for this {@link JComboBox}.
+   * 
+   * @see #uninstallDefaults()
    */
   protected void installDefaults()
   {
@@ -261,7 +259,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method creates and installs the listeners for this UI.
+   * Creates and installs the listeners for this UI.
+   * 
+   * @see #uninstallListeners()
    */
   protected void installListeners()
   {
@@ -279,18 +279,18 @@ public class BasicComboBoxUI extends ComboBoxUI
     comboBox.addKeyListener(keyListener);
 
     mouseListener = createMouseListener();
-    comboBox.addMouseListener(mouseListener);
+    arrowButton.addMouseListener(mouseListener);
 
     // install listeners that listen to combo box model
     listDataListener = createListDataListener();
     comboBox.getModel().addListDataListener(listDataListener);
-
-    configureArrowButton();
   }
 
   /**
-   * This method uninstalls the defaults and sets any objects created during
-   * install to null
+   * Uninstalls the defaults and sets any objects created during
+   * install to <code>null</code>.
+   * 
+   * @see #installDefaults()
    */
   protected void uninstallDefaults()
   {
@@ -310,6 +310,8 @@ public class BasicComboBoxUI extends ComboBoxUI
 
   /**
    * Detaches all the listeners we attached in {@link #installListeners}.
+   * 
+   * @see #installListeners()
    */
   protected void uninstallListeners()
   {
@@ -325,17 +327,15 @@ public class BasicComboBoxUI extends ComboBoxUI
     comboBox.removeKeyListener(keyListener);
     keyListener = null;
 
-    comboBox.removeMouseListener(mouseListener);
+    arrowButton.removeMouseListener(mouseListener);
     mouseListener = null;
 
     comboBox.getModel().removeListDataListener(listDataListener);
     listDataListener = null;
-
-    unconfigureArrowButton();
   }
 
   /**
-   * This method creates popup that will contain list of combo box's items
+   * Creates the popup that will contain list of combo box's items.
    *
    * @return popup containing list of combo box's items
    */
@@ -345,7 +345,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * Creates KeyListener to listen to key events.
+   * Creates a {@link KeyListener} to listen to key events.
    *
    * @return KeyListener that listens to key events.
    */
@@ -355,8 +355,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method create MouseListener that will listen to mouse event occuring
-   * in combo box.
+   * Creates a {@link MouseListener} that will listen to mouse events occurring
+   * in the combo box.
    *
    * @return the MouseListener
    */
@@ -366,10 +366,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method create FocusListener that will listen to changes in this
+   * Creates the {@link FocusListener} that will listen to changes in this
    * JComboBox's focus.
    *
-   * @return theFocusListener
+   * @return the FocusListener.
    */
   protected FocusListener createFocusListener()
   {
@@ -377,9 +377,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method create ListDataListener to listen to ComboBox's  data model
+   * Creates a {@link ListDataListener} to listen to the combo box's data model.
    *
-   * @return ListDataListener
+   * @return The new listener.
    */
   protected ListDataListener createListDataListener()
   {
@@ -387,10 +387,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method creates ItemListener that will listen to to the changes in
+   * Creates an {@link ItemListener} that will listen to the changes in
    * the JComboBox's selection.
    *
-   * @return the ItemListener
+   * @return The ItemListener
    */
   protected ItemListener createItemListener()
   {
@@ -398,10 +398,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method creates PropertyChangeListener to listen to  the changes in
+   * Creates a {@link PropertyChangeListener} to listen to the changes in
    * the JComboBox's bound properties.
    *
-   * @return the PropertyChangeListener
+   * @return The PropertyChangeListener
    */
   protected PropertyChangeListener createPropertyChangeListener()
   {
@@ -409,9 +409,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method returns layout manager for the combo box.
+   * Creates and returns a layout manager for the combo box.  Subclasses can 
+   * override this method to provide a different layout.
    *
-   * @return layout manager for the combo box
+   * @return a layout manager for the combo box.
    */
   protected LayoutManager createLayoutManager()
   {
@@ -419,10 +420,10 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method creates component that will be responsible for rendering the
+   * Creates a component that will be responsible for rendering the
    * selected component in the combo box.
    *
-   * @return render for the combo box
+   * @return A renderer for the combo box.
    */
   protected ListCellRenderer createRenderer()
   {
@@ -430,12 +431,12 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * Creates component that will be responsible for displaying/editting
-   * selected item in the combo box. This editor is used only when combo box
-   * is editable.
+   * Creates the component that will be responsible for displaying/editing
+   * the selected item in the combo box. This editor is used only when combo 
+   * box is editable.
    *
-   * @return component that will be responsible for  displaying/editting
-   *         selected item in the combo box.
+   * @return A new component that will be responsible for displaying/editing
+   *         the selected item in the combo box.
    */
   protected ComboBoxEditor createEditor()
   {
@@ -443,8 +444,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method installs components for this JComboBox. ArrowButton, main
-   * part of combo box (upper part) and  popup list of items are created and
+   * Installs the components for this JComboBox. ArrowButton, main
+   * part of combo box (upper part) and popup list of items are created and
    * configured here.
    */
   protected void installComponents()
@@ -457,14 +458,6 @@ public class BasicComboBoxUI extends ComboBoxUI
     // Set list that will be used by BasicComboBoxRender 
     // in order to determine the right colors when rendering
     listBox = new JList();
-
-    Color background = arrowButton.getBackground();
-    listBox.setBackground(background);
-    listBox.setSelectionBackground(background.darker());
-
-    Color foreground = arrowButton.getForeground();
-    listBox.setForeground(foreground);
-    listBox.setSelectionForeground(foreground);
 
     // set editor and renderer for the combo box. Editor is used
     // only if combo box becomes editable, otherwise renderer is used
@@ -481,7 +474,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method uninstalls components from this JComboBox
+   * Uninstalls components from this {@link JComboBox}.
+   * 
+   * @see #installComponents()
    */
   protected void uninstallComponents()
   {
@@ -500,7 +495,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method adds editor to the combo box
+   * Adds the current editor to the combo box.
    */
   public void addEditor()
   {
@@ -508,7 +503,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method removes editor from the combo box
+   * Removes the current editor from the combo box.
    */
   public void removeEditor()
   {
@@ -516,15 +511,16 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method configures editor for this combo box.
+   * Configures the editor for this combo box.
    */
   protected void configureEditor()
   {
+    editor.setFont(comboBox.getFont());
     // FIXME: Need to implement. Set font and add listeners.
   }
 
   /**
-   * This method removes all the listeners for the editor.
+   * Unconfigures the editor for this combo nox.  This method is not implemented.
    */
   protected void unconfigureEditor()
   {
@@ -532,28 +528,31 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method adds listeners to the arrow button part of the combo box.
+   * Configures the arrow button.
+   * 
+   * @see #configureArrowButton()
    */
   public void configureArrowButton()
   {
-    arrowButton.addMouseListener(mouseListener);
+    arrowButton.setEnabled(comboBox.isEnabled());
+    arrowButton.setFont(comboBox.getFont());
   }
 
   /**
-   * This method removes listeners from the arrow button part of the combo
-   * box.
+   * Unconfigures the arrow button.
+   * 
+   * @see #configureArrowButton()
    */
   public void unconfigureArrowButton()
   {
-    arrowButton.removeMouseListener(mouseListener);
   }
 
   /**
-   * This method create arrow button for this JComboBox. Arrow button is
-   * responsible for displaying / hiding drop down list of items  when it is
-   * clicked.
+   * Creates an arrow button for this {@link JComboBox}.  The arrow button is
+   * displayed at the right end of the combo box and is used to display/hide
+   * the drop down list of items.
    *
-   * @return JButton arrow button for this JComboBox.
+   * @return A new button.
    */
   protected JButton createArrowButton()
   {
@@ -561,13 +560,13 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method checks if popup part of the combo box is visible on the
-   * screen
+   * Returns <code>true</code> if the popup is visible, and <code>false</code>
+   * otherwise.
    *
    * @param c The JComboBox to check
    *
-   * @return true if popup part of the JComboBox is visible and false
-   *         otherwise.
+   * @return <code>true</code> if popup part of the JComboBox is visible and 
+   *         <code>false</code> otherwise.
    */
   public boolean isPopupVisible(JComboBox c)
   {
@@ -575,7 +574,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * Displays/Hides JComboBox's list of items on the screen.
+   * Displays/hides the {@link JComboBox}'s list of items on the screen.
    *
    * @param c The combo box, for which list of items should be
    *        displayed/hidden
@@ -598,7 +597,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public boolean isFocusTraversable(JComboBox c)
   {
-    if (comboBox.isEditable())
+    if (!comboBox.isEditable())
       return true;
 
     return false;
@@ -612,56 +611,29 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public void paint(Graphics g, JComponent c)
   {
-    if (c instanceof JComboBox)
-      {
-	JComboBox cb = (JComboBox) c;
-
-	paintBorder(g, comboBox.getBounds(), hasFocus);
-
-	Rectangle rect = rectangleForCurrentValue();
-	paintCurrentValueBackground(g, rect, hasFocus);
-	paintCurrentValue(g, rect, hasFocus);
-      }
-  }
-
-  private void paintBorder(Graphics g, Rectangle bounds, boolean hasFocus)
-  {
-    int x = 0;
-    int y = 0;
-    int width = bounds.width;
-    int height = bounds.height;
-
-    Color oldColor = g.getColor();
-
-    if (! arrowButton.getModel().isPressed())
-      BasicGraphicsUtils.drawEtchedRect(g, x, y, width, height, Color.gray,
-                                        Color.white, Color.gray, Color.white);
-    else
-      {
-	g.setColor(darkShadow);
-	g.drawRect(x, y, width, height);
-	g.setColor(shadow);
-	g.drawRect(x + 1, y + 1, width - 3, height - 3);
-      }
-    g.setColor(oldColor);
+    Rectangle rect = rectangleForCurrentValue();
+    paintCurrentValueBackground(g, rect, hasFocus);
+    paintCurrentValue(g, rect, hasFocus);
   }
 
   /**
-   * Returns preferred size for the given menu item.
+   * Returns preferred size for the combo box.
    *
    * @param c comboBox for which to get preferred size
    *
-   * @return $Dimension$ preferred size for the given combo box
+   * @return The preferred size for the given combo box
    */
   public Dimension getPreferredSize(JComponent c)
   {
-    // return null to indicate that combo box's layout will determin its
-    // preferred size
-    return null;
+    Dimension d = getDisplaySize();
+    Dimension arrowDim = arrowButton.getPreferredSize();
+    Dimension result = new Dimension(d.width + arrowDim.width, 
+            Math.max(d.height, arrowDim.height));
+    return result;
   }
 
   /**
-   * This method returns the minimum size for this {@link JComboBox} for this
+   * Returns the minimum size for this {@link JComboBox} for this
    * look and feel.
    *
    * @param c The {@link JComponent} to find the minimum size for.
@@ -670,11 +642,14 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public Dimension getMinimumSize(JComponent c)
   {
-    return null;
+    return getPreferredSize(c);
   }
 
+  /** The value returned by the getMaximumSize() method. */
+  private static final Dimension MAXIMUM_SIZE = new Dimension(32767, 32767);
+  
   /**
-   * This method returns the maximum size for this {@link JComboBox} for this
+   * Returns the maximum size for this {@link JComboBox} for this
    * look and feel.
    *
    * @param c The {@link JComponent} to find the maximum size for
@@ -683,7 +658,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public Dimension getMaximumSize(JComponent c)
   {
-    return null;
+    return MAXIMUM_SIZE;
   }
 
   public int getAccessibleChildrenCount(JComponent c)
@@ -712,7 +687,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method selects next possible item relative to the current selection
+   * Selects next possible item relative to the current selection
    * to be next selected item in the combo box.
    */
   protected void selectNextPossibleValue()
@@ -723,7 +698,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method selects previous item relative to current selection to be
+   * Selects previous item relative to current selection to be
    * next selected item.
    */
   protected void selectPreviousPossibleValue()
@@ -734,8 +709,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method displays combo box popup if the popup is not currently shown
-   * on the screen and hides it if it is  currently shown
+   * Displays combo box popup if the popup is not currently shown
+   * on the screen and hides it if it is currently shown
    */
   protected void toggleOpenClose()
   {
@@ -743,34 +718,23 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method returns bounds in which comboBox's selected Item will be
-   * displayed
+   * Returns the bounds in which comboBox's selected item will be
+   * displayed.
    *
    * @return rectangle bounds in which comboBox's selected Item will be
    *         displayed
    */
   protected Rectangle rectangleForCurrentValue()
   {
-    Rectangle cbBounds = comboBox.getBounds();
-
-    // Subtract width or the arrow button and border insets	    
-    Rectangle rectForCurrentValue = new Rectangle(cbBounds.x
-                                                  + borderInsets.left,
-                                                  cbBounds.y
-                                                  + borderInsets.top,
-                                                  cbBounds.width
-                                                  - arrowButtonWidth
-                                                  - borderInsets.left
-                                                  - borderInsets.right,
-                                                  cbBounds.height
-                                                  - borderInsets.top
-                                                  - borderInsets.bottom);
-
+    Rectangle cbBounds = SwingUtilities.getLocalBounds(comboBox);
+    Rectangle abBounds = arrowButton.getBounds();   
+    Rectangle rectForCurrentValue = new Rectangle(cbBounds.x, cbBounds.y,
+      cbBounds.width - abBounds.width, cbBounds.height);
     return rectForCurrentValue;
   }
 
   /**
-   * This method returns insets of the current border.
+   * Returns the insets of the current border.
    *
    * @return Insets representing space between combo box and its border
    */
@@ -780,7 +744,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method paints currently selected value in the main part of the combo
+   * Paints currently selected value in the main part of the combo
    * box (part without popup).
    *
    * @param g graphics context
@@ -799,28 +763,29 @@ public class BasicComboBoxUI extends ComboBoxUI
 	 * If there is currently no selected item we will take an empty
 	 * String as replacement.
 	 */
-	Component comp = comboBox.getRenderer()
-	                             .getListCellRendererComponent(listBox,
-	                                                           (currentValue != null ? currentValue : ""),
-	                                                           -1,
-	                                                           isPressed,
-	                                                           hasFocus);
-	if (! comboBox.isEnabled())
-	      comp.setEnabled(false);
-
-	g.translate(borderInsets.left, borderInsets.top);
-	    comp.setBounds(0, 0, bounds.width, bounds.height);
-	    comp.paint(g);
-	    g.translate(-borderInsets.left, -borderInsets.top);
-	    
-	comboBox.revalidate();
+        Component comp = comboBox.getRenderer().getListCellRendererComponent(
+                listBox, (currentValue != null ? currentValue : ""), -1,
+                isPressed, hasFocus);
+        if (! comboBox.isEnabled())
+          {
+            comp.setBackground(UIManager.getLookAndFeelDefaults().getColor(
+                "ComboBox.disabledBackground"));
+            comp.setForeground(UIManager.getLookAndFeelDefaults().getColor(
+                "ComboBox.disabledForeground"));
+            comp.setEnabled(false);
+          }
+        comp.setBounds(0, 0, bounds.width, bounds.height);
+        comp.setFont(comboBox.getFont());
+        comp.paint(g);
+        
+        comboBox.revalidate();
       }
     else
       comboBox.getEditor().setItem(comboBox.getSelectedItem());
   }
 
   /**
-   * This method paints background of part of the combo box, where currently
+   * Paints the background of part of the combo box, where currently
    * selected value is displayed. If the combo box has focus this method
    * should also paint focus rectangle around the combo box.
    *
@@ -854,7 +819,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    *
    * @return dimensions of the largest item in the combo box.
    */
-  private Dimension getLargestItemSize()
+  protected Dimension getDisplaySize()
   {
     ComboBoxModel model = comboBox.getModel();
     int numItems = model.getSize();
@@ -863,8 +828,8 @@ public class BasicComboBoxUI extends ComboBoxUI
     // return its default size
     if (numItems == 0)
       {
-	largestItemSize = getDefaultSize();
-	return largestItemSize;
+	displaySize = getDefaultSize();
+	return displaySize;
       }
 
     Dimension size = new Dimension(0, 0);
@@ -873,23 +838,29 @@ public class BasicComboBoxUI extends ComboBoxUI
     // size of the largest item in the combo box. 
     ListCellRenderer renderer = comboBox.getRenderer();
 
+    // FIXME: use the JComboBox.getPrototypeDisplayValue() if there is
+    // one
     for (int i = 0; i < numItems; i++)
       {
-	Object item = model.getElementAt(i);
-	String s = item.toString();
-	Component comp = renderer.getListCellRendererComponent(listBox, item,
-	                                                       -1, false, false);
+        Object item = model.getElementAt(i);
+        String s = item.toString();
+        Component comp = renderer.getListCellRendererComponent(listBox, item,
+            -1, false, false);
 
-	if (comp.getPreferredSize().getWidth() > size.getWidth())
-	  size = comp.getPreferredSize();
+        Dimension compSize = comp.getPreferredSize();
+        if (compSize.width > size.width)
+          size.width = compSize.width;
+        if (compSize.height > size.height)
+          size.height = compSize.height;
+        
       }
 
-    largestItemSize = size;
-    return largestItemSize;
+    displaySize = size;
+    return displaySize;
   }
 
   /**
-   * This method installs the keyboard actions for the JComboBox as specified
+   * Installs the keyboard actions for the {@link JComboBox} as specified
    * by the look and feel.
    */
   protected void installKeyboardActions()
@@ -898,7 +869,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This method uninstalls the keyboard actions for the JComboBox there were
+   * Uninstalls the keyboard actions for the {@link JComboBox} there were
    * installed by in {@link #installListeners}.
    */
   protected void uninstallKeyboardActions()
@@ -907,9 +878,12 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This class is Layout Manager for this combo box.
+   * A {@link LayoutManager} used to position the sub-components of the
+   * {@link JComboBox}.
+   * 
+   * @see BasicComboBoxUI#createLayoutManager()
    */
-  public class ComboBoxLayoutManager extends Object implements LayoutManager
+  public class ComboBoxLayoutManager implements LayoutManager
   {
     /**
      * Creates a new ComboBoxLayoutManager object.
@@ -918,11 +892,24 @@ public class BasicComboBoxUI extends ComboBoxUI
     {
     }
 
+    /**
+     * Adds a component to the layout.  This method does nothing, since the
+     * layout manager doesn't need to track the components.
+     * 
+     * @param name  the name to associate the component with (ignored).
+     * @param comp  the component (ignored).
+     */
     public void addLayoutComponent(String name, Component comp)
     {
       // Do nothing
     }
 
+    /**
+     * Removes a component from the layout.  This method does nothing, since
+     * the layout manager doesn't need to track the components.
+     * 
+     * @param comp  the component.
+     */
     public void removeLayoutComponent(Component comp)
     {
       // Do nothing
@@ -931,62 +918,30 @@ public class BasicComboBoxUI extends ComboBoxUI
     /**
      * Returns preferred layout size of the JComboBox.
      *
-     * @param parent Container for which preferred size should be calculated
+     * @param parent  the Container for which the preferred size should be 
+     *                calculated.
      *
-     * @return preferred size for the given container
+     * @return The preferred size for the given container
      */
     public Dimension preferredLayoutSize(Container parent)
     {
-      Dimension d = new Dimension(0, 0);
-
-      if (largestItemSize == null)
-        largestItemSize = getLargestItemSize();
-
-      // add size for the area that will display selected item
-      d.width += largestItemSize.getWidth();
-      d.height += largestItemSize.getHeight();
-
-      // add size of the arrow button
-      d.width += arrowButtonWidth;
-
-      // add width and height of the border
-      d.width += borderInsets.left + borderInsets.right;
-      d.height += borderInsets.left + borderInsets.right;
-
-      // Add combo box's insets 	
-      Insets insets = parent.getInsets();
-      d.width += insets.left + insets.right;
-      d.width += insets.left + insets.right;
-
-      return d;
-    }
-
-    public Dimension minimumLayoutSize(Container parent)
-    {
-      Dimension minSize = getDefaultSize();
-      ComboBoxModel model = comboBox.getModel();
-      int numItems = model.getSize();
-
-      if (numItems == 0)
-          return minSize;
-
-      ListCellRenderer renderer = comboBox.getRenderer();
-
-      for (int i = 0; i < numItems; i++)
-        {
-      Object item = model.getElementAt(i);
-      String s = item.toString();
-      Component comp = renderer.getListCellRendererComponent(listBox, item,
-                                                             -1, false, false);
-
-      if (comp.getPreferredSize().width < minSize.width)
-        minSize =  comp.getMinimumSize();
-        }
-      return minSize;
+      return getPreferredSize((JComponent) parent);
     }
 
     /**
-     * This method layouts out the components in the container.  It puts arrow
+     * Returns the minimum layout size.
+     * 
+     * @param parent  the container.
+     * 
+     * @return The minimum size.
+     */
+    public Dimension minimumLayoutSize(Container parent)
+    {
+      return preferredLayoutSize(parent);
+    }
+
+    /**
+     * Arranges the components in the container.  It puts arrow
      * button right end part of the comboBox. If the comboBox is editable
      * then editor is placed to the left of arrow  button, starting from the
      * beginning.
@@ -997,21 +952,20 @@ public class BasicComboBoxUI extends ComboBoxUI
     {
       // Position editor component to the left of arrow button if combo box is 
       // editable
-      int editorWidth = comboBox.getBounds().width - arrowButtonWidth - 2;
+      Dimension arrowPrefSize = arrowButton.getPreferredSize();
+      int editorWidth = comboBox.getBounds().width - arrowPrefSize.width;
 
       if (comboBox.isEditable())
-	editor.setBounds(borderInsets.left, borderInsets.top, editorWidth,
-	                 comboBox.getBounds().height - borderInsets.left
-	                 - borderInsets.top);
-
-      arrowButton.setBounds(editorWidth, 2, arrowButtonWidth,
-                            comboBox.getBounds().height - 4);
+        editor.setBounds(0, 0, editorWidth, comboBox.getBounds().height);
+      
+      arrowButton.setBounds(editorWidth, 0, arrowPrefSize.width,
+                            comboBox.getBounds().height);
       comboBox.revalidate();
     }
   }
 
   /**
-   * This class handles focus changes occuring in the combo box. This class is
+   * Handles focus changes occuring in the combo box. This class is
    * responsible for repainting combo box whenever focus is gained or lost
    * and also for hiding popup list of items whenever combo box loses its
    * focus.
@@ -1026,8 +980,8 @@ public class BasicComboBoxUI extends ComboBoxUI
     }
 
     /**
-     * This mehtod is invoked when combo box gains focus. It repaints main
-     * part of combo box  accordingally.
+     * Invoked when combo box gains focus. It repaints main
+     * part of combo box accordingly.
      *
      * @param e the FocusEvent
      */
@@ -1038,8 +992,8 @@ public class BasicComboBoxUI extends ComboBoxUI
     }
 
     /**
-     * This method is invoked when combo box loses focus It repaint main part
-     * of combo box accordingally and  hides popup list of items.
+     * Invoked when the combo box loses focus.  It repaints the main part
+     * of the combo box accordingly and hides the popup list of items.
      *
      * @param e the FocusEvent
      */
@@ -1051,8 +1005,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This class handles ItemEvent fired by the JComboBox when its selected
-   * item changes.
+   * Handles {@link ItemEvent}s fired by the {@link JComboBox} when its 
+   * selected item changes.
    */
   public class ItemHandler extends Object implements ItemListener
   {
@@ -1064,7 +1018,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     }
 
     /**
-     * This method is invoked when selected item becomes deselected or when
+     * Invoked when selected item becomes deselected or when
      * new item becomes selected.
      *
      * @param e the ItemEvent representing item's state change.
@@ -1084,9 +1038,8 @@ public class BasicComboBoxUI extends ComboBoxUI
     {
     }
 
-    /*
-     * This method is invoked whenever key is pressed while JComboBox is in
-     * focus.
+    /**
+     * Invoked whenever key is pressed while JComboBox is in focus.
      */
     public void keyPressed(KeyEvent e)
     {
@@ -1096,7 +1049,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * This class handles to the changes occuring in the JComboBox's data model
+   * Handles the changes occurring in the JComboBox's data model.
    */
   public class ListDataHandler extends Object implements ListDataListener
   {
@@ -1108,7 +1061,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     }
 
     /**
-     * This method is invoked content's of JComboBox's data model  are changed
+     * Invoked if the content's of JComboBox's data model are changed.
      *
      * @param e ListDataEvent describing the change.
      */
@@ -1118,8 +1071,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     }
 
     /**
-     * This method is invoked when items were added to the JComboBox's data
-     * model.
+     * Invoked when items are added to the JComboBox's data model.
      *
      * @param e ListDataEvent describing the change.
      */
@@ -1128,18 +1080,18 @@ public class BasicComboBoxUI extends ComboBoxUI
       ComboBoxModel model = comboBox.getModel();
       ListCellRenderer renderer = comboBox.getRenderer();
 
-      if (largestItemSize == null)
-        largestItemSize = getLargestItemSize();
-      if (largestItemSize.width < getDefaultSize().width)
-        largestItemSize.width = getDefaultSize().width;
-      if (largestItemSize.height < getDefaultSize().height)
-        largestItemSize.height = getDefaultSize().height;
+      if (displaySize == null)
+        displaySize = getDisplaySize();
+      if (displaySize.width < getDefaultSize().width)
+        displaySize.width = getDefaultSize().width;
+      if (displaySize.height < getDefaultSize().height)
+        displaySize.height = getDefaultSize().height;
 
       comboBox.repaint();
     }
 
     /**
-     * This method is invoked when items were removed from the JComboBox's
+     * Invoked when items are removed from the JComboBox's
      * data model.
      *
      * @param e ListDataEvent describing the change.
@@ -1147,23 +1099,28 @@ public class BasicComboBoxUI extends ComboBoxUI
     public void intervalRemoved(ListDataEvent e)
     {
       // recalculate display size of the JComboBox.
-      largestItemSize = getLargestItemSize();
+      displaySize = getDisplaySize();
       comboBox.repaint();
     }
   }
 
   /**
-   * This class handles PropertyChangeEvents fired by JComboBox.
+   * Handles {@link PropertyChangeEvent}s fired by the {@link JComboBox}.
    */
   public class PropertyChangeHandler extends Object
     implements PropertyChangeListener
   {
+    /**
+     * Creates a new instance.
+     */
     public PropertyChangeHandler()
     {
     }
 
     /**
-     * This method is invoked whenever bound property of JComboBox changes.
+     * Invoked whenever bound property of JComboBox changes.
+     * 
+     * @param e  the event.
      */
     public void propertyChange(PropertyChangeEvent e)
     {
@@ -1201,59 +1158,35 @@ public class BasicComboBoxUI extends ComboBoxUI
 	  if ((ComboBoxModel) e.getNewValue() != null)
 	    comboBox.getModel().addListDataListener(listDataListener);
         }
+      else if (e.getPropertyName().equals("font"))
+        {
+          Font font = (Font) e.getNewValue();
+          editor.setFont(font);
+          listBox.setFont(font);
+          comboBox.revalidate();
+          comboBox.repaint();
+        }
 
       // FIXME: Need to handle changes in other bound properties.	
     }
   }
 
   /**
-   * MouseHandler listens to mouse events occuring in the combo box. This
-   * class is responsible for repainting this JComboBox whenever the mouse is
-   * being pressed or released over it.
+   * A handler for mouse events occurring in the combo box.  An instance of 
+   * this class is returned by the <code>createMouseListener()</code> method.
    */
   private class MouseHandler extends MouseAdapter
   {
     /**
-     * This method is invoked when mouse is pressed over the combo box. It
-     * repaints the combo box accordinglly
+     * Invoked when mouse is pressed over the combo box. It toggles the 
+     * visibility of the popup list.
      *
-     * @param e the MouseEvent
+     * @param e  the event
      */
     public void mousePressed(MouseEvent e)
     {
       if (comboBox.isEnabled())
-        {
-	  if (e.getSource() instanceof JComboBox)
-	    {
-	      arrowButton.getModel().setPressed(true);
-	      arrowButton.getModel().setArmed(true);
-	    }
-
-	  comboBox.repaint();
-
-	  if (e.getSource() instanceof BasicArrowButton)
-	    toggleOpenClose();
-        }
-    }
-
-    /**
-     * This method is invoked when mouse is released over the combo box. It
-     * repaints the combo box accordinglly
-     *
-     * @param e the MouseEvent
-     */
-    public void mouseReleased(MouseEvent e)
-    {
-      if (comboBox.isEnabled())
-        {
-	  if (e.getSource() instanceof JComboBox)
-	    {
-	      arrowButton.getModel().setPressed(false);
-	      arrowButton.getModel().setArmed(false);
-	    }
-
-	  comboBox.repaint();
-        }
+        toggleOpenClose();
     }
   }
 }

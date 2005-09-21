@@ -221,4 +221,16 @@ public final class Boolean implements Serializable
       return false;
     return "true".equalsIgnoreCase(System.getProperty(name));
   }
+
+  /**
+   * If the String argument is "true", ignoring case, return true.
+   * Otherwise, return false.
+   *
+   * @param b String to parse
+   * @since 1.5
+   */
+  public static boolean parseBoolean(String b)
+  {
+    return "true".equalsIgnoreCase(b) ? true : false;
+  }
 }

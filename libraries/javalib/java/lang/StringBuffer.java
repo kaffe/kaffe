@@ -252,7 +252,6 @@ public final class StringBuffer implements Serializable, CharSequence
    * @param index the index of the character to get, starting at 0
    * @return the character at the specified index
    * @throws IndexOutOfBoundsException if index is negative or &gt;= length()
-   *         (while unspecified, this is a StringIndexOutOfBoundsException)
    */
   public synchronized char charAt(int index)
   {
@@ -269,22 +268,11 @@ public final class StringBuffer implements Serializable, CharSequence
    * @param index the index of the codepoint to get, starting at 0
    * @return the codepoint at the specified index
    * @throws IndexOutOfBoundsException if index is negative or &gt;= length()
-   *         (while unspecified, this is a StringIndexOutOfBoundsException)
    * @since 1.5
    */
   public synchronized int codePointAt(int index)
   {
-    if (index < 0 || index >= count)
-      throw new StringIndexOutOfBoundsException(index);
-    char base = value[index];
-    if (base < Character.MIN_HIGH_SURROGATE
-	|| base > Character.MAX_HIGH_SURROGATE
-	|| index == count
-	|| value[index + 1] < Character.MIN_LOW_SURROGATE
-	|| value[index + 1] > Character.MAX_LOW_SURROGATE)
-      return base;
-    return (((base - Character.MIN_HIGH_SURROGATE) << 10)
-	    + (value[index + 1] - Character.MIN_LOW_SURROGATE));
+    return Character.codePointAt(value, index, count);
   }
 
   /**
@@ -294,23 +282,15 @@ public final class StringBuffer implements Serializable, CharSequence
    * @param index the index just past the codepoint to get, starting at 0
    * @return the codepoint at the specified index
    * @throws IndexOutOfBoundsException if index is negative or &gt;= length()
-   *         (while unspecified, this is a StringIndexOutOfBoundsException)
    * @since 1.5
    */
   public synchronized int codePointBefore(int index)
   {
-    --index;
-    if (index < 0 || index >= count)
-      throw new StringIndexOutOfBoundsException(index);
-    char base = value[index];
-    if (base < Character.MIN_LOW_SURROGATE
-	|| base > Character.MAX_LOW_SURROGATE
-	|| index == 0
-	|| value[index - 1] < Character.MIN_HIGH_SURROGATE
-	|| value[index - 1] > Character.MAX_HIGH_SURROGATE)
-      return base;
-    return (((value[index - 1] - Character.MIN_HIGH_SURROGATE) << 10)
-	    + (base - Character.MIN_LOW_SURROGATE));
+    // Character.codePointBefore() doesn't perform this check.  We
+    // could use the CharSequence overload, but this is just as easy.
+    if (index >= count)
+      throw new IndexOutOfBoundsException();
+    return Character.codePointBefore(value, index, 1);
   }
 
   /**
@@ -1093,6 +1073,9 @@ public final class StringBuffer implements Serializable, CharSequence
    */
   public synchronized int codePointCount(int start, int end)
   {
+    if (start < 0 || end >= count || start > end)
+      throw new StringIndexOutOfBoundsException();
+
     int count = 0;
     while (start < end)
       {

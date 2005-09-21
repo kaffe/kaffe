@@ -72,24 +72,25 @@ public class Timer
 
           queueEvent();
 
-          while (running)
-            {
-              try
-                {
-                  sleep(delay);
-                }
-              catch (InterruptedException e)
-                {
-                  return;
-                }
-              queueEvent();
+          if (repeats)
+            while (running)
+              {
+                try
+                  {
+                    sleep(delay);
+                  }
+                catch (InterruptedException e)
+                  {
+                    return;
+                  }
+                queueEvent();
 
-              if (logTimers)
-                System.out.println("javax.swing.Timer -> clocktick");
+                if (logTimers)
+                  System.out.println("javax.swing.Timer -> clocktick");
 
-              if ( ! repeats)
-                break;
-            }
+                if ( ! repeats)
+                  break;
+              }
           running = false;
         }
       catch (Exception e)

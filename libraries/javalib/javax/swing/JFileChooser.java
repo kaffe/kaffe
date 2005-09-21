@@ -715,7 +715,7 @@ public class JFileChooser extends JComponent implements Accessible
    */
   public FileFilter[] getChoosableFileFilters()
   {
-    return (FileFilter[]) choosableFilters.toArray(new FileFilter[0]);
+    return (FileFilter[]) choosableFilters.toArray(new FileFilter[choosableFilters.size()]);
   }
 
   /**

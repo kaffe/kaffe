@@ -359,21 +359,26 @@ public boolean equalsIgnoreCase (String that) {
 	ByteBuffer bbuf = cse.encode(CharBuffer.wrap(value, offset, count));
 	if(bbuf.hasArray())
 	  return bbuf.array();
-
+	
 	// Doubt this will happen. But just in case.
 	byte[] bytes = new byte[bbuf.remaining()];
 	bbuf.get(bytes);
 	return bytes;
-
-      } catch(IllegalCharsetNameException e){
-	  throw new UnsupportedEncodingException("Encoding: "+enc+
-						 " not found.");
-      } catch(UnsupportedCharsetException e){
-	  throw new UnsupportedEncodingException("Encoding: "+enc+
-						 " not found.");
-      } catch(CharacterCodingException e){
-	  // XXX - Ignore coding exceptions? They shouldn't really happen.
-	  return null;
+      } 
+    catch(IllegalCharsetNameException e)
+      {
+	throw new UnsupportedEncodingException("Encoding: " + enc
+					       + " not found.");
+      } 
+    catch(UnsupportedCharsetException e)
+      {
+	throw new UnsupportedEncodingException("Encoding: " + enc
+					       + " not found.");
+      } 
+    catch(CharacterCodingException e)
+      {
+	// This shouldn't ever happen.
+	throw (InternalError) new InternalError().initCause(e);
       }	  
   }
 

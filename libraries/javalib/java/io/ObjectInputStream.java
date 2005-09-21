@@ -167,7 +167,7 @@ public class ObjectInputStream extends InputStream
     * Handles a content block within the stream, which begins with a marker
     * byte indicating its type.
     *
-    * @param byte the byte marker.
+    * @param marker the byte marker.
     * @return an object which represents the parsed content.
     * @throws ClassNotFoundException if the class of an object being
     *                                read in cannot be found.

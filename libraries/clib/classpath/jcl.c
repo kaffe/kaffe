@@ -193,6 +193,7 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 {
   if (rawDataClass == NULL)
     {
+      jclass tmp;
 #if SIZEOF_VOID_P == 8
       rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer64");
       if (rawDataClass == NULL)
@@ -243,14 +244,15 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 	}
 
 #endif
-      (*env)->DeleteLocalRef(env, rawDataClass);
-      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
-      if (rawDataClass == NULL)
+      tmp = (*env)->NewGlobalRef (env, rawDataClass);
+      if (tmp == NULL)
 	{
 	  JCL_ThrowException (env, "java/lang/InternalError",
 			      "unable to create an internal global ref");
 	  return NULL;
 	}
+      (*env)->DeleteLocalRef(env, rawDataClass);
+      rawDataClass = tmp;
     }
 
 #if SIZEOF_VOID_P == 8

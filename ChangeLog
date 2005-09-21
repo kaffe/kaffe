@@ -1,5 +1,348 @@
 2005-09-20  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-09-18  Tom Tromey  <tromey@redhat.com>
+
+        * java/util/Timer.java (TaskQueue.purge): New method.
+        (Timer(String)): New constructor.
+        (Timer(String,boolean)): Likewise.
+        (purge): New method.
+
+	2005-09-18  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Short.java (valueOf): New method.
+        * java/lang/Double.java (valueOf): New method.
+        * java/lang/Float.java (valueOf): New method.
+
+	2005-09-18  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Long.java (reverse): Correctly handle sign extension.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (installComponents): remove listBox color settings,
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefaults): corrected ComboBox and ListBox defaults.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxRenderer.java
+        (BasicComboBoxRenderer): set no focus border,
+        (getListCellRendererComponent): set background color if cell has focus,
+        removed border switching code.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (borderInsets): deleted,
+        (arrowButtonWidth): deleted,
+        (configureEditor): set font,
+        (isFocusTraversable): set to true for non-editable combobox,
+        (paint): deleted border painting code,
+        (paintBorder): deleted,
+        (getPreferredSize): returns a value, not null,
+        (getMinimumSize): likewise,
+        (getMaximumSize): likewise,
+        (rectangleForCurrentValue): reimplemented,
+        (paintCurrentValue): no longer adjusts for border insets,
+        (getDisplaySize): update maximum width and height independently,
+        (ComboBoxLayoutManager): removed redundant 'extends Object',
+        (ComboBoxLayoutManager.preferredLayoutSize): call getPreferredSize(),
+        (ComboBoxLayoutManager.minimumLayoutSize): delegate to
+        preferredLayoutSize(),
+        (ComboBoxLayoutManager.layoutContainer): use arrow button preferred
+        size in layout,
+        (PropertyChangeHandler.propertyChange): added 'font' handling.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (installListeners): add listener to arrowButton instead of comboBox,
+        deleted call to configureArrowButton(),
+        (uninstallListeners): remove listener from arrowButton instead of
+        comboBox, and deleted call to unconfigureArrowButton(),
+        (configureArrowButton): set font and enabled state, deleted
+        addMouseListener() call,
+        (unconfigureArrowButton): deleted removeMouseListener() call,
+        (MouseHandler.mousePressed): just toggle display status of popup,
+        (MouseHandler.mouseReleased): deleted.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (largestItemSize): renamed displaySize,
+        (getLargestItemSize): renamed getDisplaySize and changed to protected,
+        (ComboBoxLayoutManager.preferredLayoutSize): updated for renamed field
+        and method,
+        (ListDataHandler.intervalAdded): likewise,
+        (ListDataHandler.intervalRemoved): likewise.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java:
+        Updated API docs all over.
+
+	2005-09-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * java/text/RuleBasedCollator.java:
+        Fixed spelling error in comment.
+
+	2005-09-17  Anthony Green  <green@redhat.com>
+
+        * java/security/Security.java (getProviders): Pre-allocate the
+        target array for Collection.toArray call.
+        * gnu/java/security/PolicyFile.java (parse): Ditto.
+        * javax/swing/filechooser/FileSystemView.java: Ditto.
+        * javax/swing/JFileChooser.java (getChoosableFileFilters): Ditto.
+
+	2005-09-17  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/22963:
+        * java/nio/charset/Charset.java (forName): Javadoc fix.
+        (providers2): Use ServiceFactory.
+
+	2005-09-17  Mark Wielaard  <mark@klomp.org>
+
+        * org/ietf/jgss/GSSException.java (BAD_BINDINGS, BAD_MECH,
+        BAD_NAME, BAD_NAMETYPE, CONTEXT_EXPIRED, CREDENTIALS_EXPIRED,
+        DEFECTIVE_CREDENTIAL, DEFECTIVE_TOKEN, DUPLICATE_TOKEN, FAILURE,
+        NO_CONTEXT, NO_CRED, OLD_TOKEN): Document official RFC values.
+
+	2005-09-17  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Short.java (SIZE): New constant.
+        (MIN_CACHE, MAX_CACHE): Likewise.
+        (shortCache): New field.
+        (reverseBytes): New method.
+        * java/lang/Long.java (SIZE): New constant.
+        (valueOf): New method.
+        (bitCount): New method.
+        (rotateLeft): New method.
+        (rotateRight): New method.
+        (highestOneBit): New method.
+        (numberOfLeadingZeros): New method.
+        (lowestOneBit): New method.
+        (numberOfTrailingZeros): New method.
+        (signum): New method.
+        (reverseBytes): New method.
+        (reverse): New method.
+        * java/lang/Float.java (SIZE): New constant.
+        * java/lang/Double.java (SIZE): New constant.
+        * java/lang/Character.java (SIZE): New constant.
+        (MAX_CACHE): Likewise.
+        (charCache): New field.
+        (valueOf): New method.
+        (reverseBytes): Likewise.
+        * java/lang/Byte.java (SIZE): New constant.
+        (byteCache): New field.
+        (valueOf): New method.
+        * java/lang/Boolean.java (parseBoolean): New method.
+
+	2005-09-17  Mark Wielaard  <mark@klomp.org>
+
+        Reported by David Lichteblau <david@lichteblau.com>
+        * native/jni/classpath/jcl.c (JCL_NewRawDataObject): Create
+        NewGlobalRef before calling DeleteLocalRef.
+
+	2005-09-17  Mark Wielaard  <mark@klomp.org>
+
+        * javax/swing/plaf/basic/BasicMenuItemUI.java: Reindent boilerplate.
+
+	2005-09-17  Tom Tromey  <tromey@redhat.com>
+
+        * java/util/prefs/Preferences.java (systemNodeForPackage):
+        Javadoc fix.
+        (userNodeForPackage): Likewise.
+        * java/util/logging/LoggingPermission.java (serialVersionUID):
+        New field.
+        * java/io/ObjectInputStream.java (parseContent): Javadoc fix.
+
+	2005-09-16  Anthony Green  <green@redhat.com>
+
+        PR libgcj/20198
+        * java/net/URLClassLoader.java (FileURLLoader.getResource): File
+        resources should all have canonicalized names.
+
+	2005-09-16  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JTree.java
+        (AccessibleJTreeNode): Fixed documentation.
+        (addAccessibleSelection): Likewise, still needs to
+        be implemented.
+        (addFocusListener): Implemented.
+        (addPropertyChangeListener): Implemented.
+        (clearAccessibleSelection): Implemented.
+        (contains): Implemented.
+        (doAccessibleAction): Fixed documentation, still
+        needs to be implemented.
+        (getAccessibleAction): Likewise.
+        (getAccessibleActionCount): Likewise.
+        (getAccessibleActionDescription): Implemented.
+        (getAccessibleAt): Implemented.
+        (getAccessibleChild): Implemented.
+        (getAccessibleChildrenCount): Implemented.
+        (getAccessibleComponent): Fixed documentation.
+        (getAccessibleContext): Implemented.
+        (getAccessibleDescription): Implemented.
+        (getAccessibleIndexInParent): Implemented.
+        (getAccessibleName): Implemented.
+        (getAccessibleParent): Fixed documentation.
+        (getAccessibleRole): Likewise.
+        (getAccessibleSelection): Likewise, still needs to
+        be implemented.
+        (getAccessibleSelection): Likewise.
+        (getAccessibleSelectionCount): Implemented.
+        (getAccessibleStateSet): Implemented.
+        (getAccessibleText): Fixed documentation.
+        (getAccessibleValue): Likewise.
+        (getBackground): Implemented.
+        (getBounds): Implemented.
+        (getCursor): Fixed documentation, still needs to be
+        implemented.
+        (getFont): Implemented.
+        (getFontMetrics): Implemented.
+        (getForeground): Implemented.
+        (getLocale): Implemented.
+        (getLocation): Implemented.
+        (getLocationInJTree): Implemented.
+        (getLocationOnScreen): Implemented.
+        (getSize): Implemented.
+        (isAccessibleChildSelected): Implemented.
+        (isEnabled): Implemented.
+        (isFocusTraversable): Implemented.
+        (isShowing): Implemented.
+        (isVisible): Implemented.
+        (removeAccessibleSelection): Fixed documentation, need to
+        fix current implementation.
+        (removeFocusListener): Implemented.
+        (removePropertyChangeListener): Implemented.
+        (requestFocus): Implemented.
+        (selectAllAccessibleSelection): Need to implement. Added FIXME.
+        (setAccessibleDescription): Implemented.
+        (setAccessibleName): Implemented.
+        (setBackground): Implemented.
+        (setBounds): Implemented.
+        (setCursor): Fixed documentation, still need to implement.
+        (setEnabled): Implemented.
+        (setFont): Implemented.
+        (setForeground): Implemented.
+        (setLocation): Implemented.
+        (setSize): Implemented.
+        (setVisible): Implemented.
+        (AccessibleJTree): Fixed documentation, still need
+        to implement.
+        (addAccessibleSelection): Implemented.
+        (clearAccessibleSelection): Implemented.
+        (fireVisibleDataPropertyChange): Implemented.
+        (getAccessibleAt): Fixed documentation, need to implement.
+        (getAccessibleChild): Implemented.
+        (getAccessibleChildrenCount): Implemented.
+        (getAccessibleIndexInParent): Fixed documentation.
+        (getAccessibleRole): Likewise.
+        (getAccessibleSelection): Likewise, still need to implement.
+        (getAccessibleSelection): Likewise.
+        (getAccessibleSelectionCount): Implemented.
+        (isAccessibleChildSelected): Implemented.
+        (removeAccessibleSelection): Implemented.
+        (selectAllAccessibleSelection): Implemented.
+        (treeCollapsed): Implemented.
+        (treeExpanded): Implemented.
+        (treeNodesChanged): Implemented.
+        (treeNodesInserted): Implemented.
+        (treeNodesRemoved): Implemented.
+        (treeStructureChanged): Implemented.
+        (valueChanged): Implemented.
+        (TreeModelListener): Fixed documentation.
+
+	2005-09-16  Tom Tromey  <tromey@redhat.com>
+
+        * java/io/PrintWriter.java (PrintWriter): New constructors.
+
+	2005-09-16  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/22689:
+        * java/io/PrintWriter.java (closed): New field.
+        (checkError): Only flush if stream not closed.
+        (close): Set 'closed'.
+
+	2005-09-16  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Character.java (MIN_SURROGATE, MAX_SURROGATE): New
+        constants.
+        (isHighSurrogate): New method.
+        (isLowSurrogate): Likewise.
+        (isSurrogatePair): Likewise.
+        (toCodePoint): Likewise.
+        (codePointAt): Likewise.
+        (codePointBefore): Likewise.
+        * java/lang/StringBuffer.java (codePointCount): Check bounds.
+        (codePointAt): Rewrote.
+        (codePointBefore): Likewise.
+        * java/lang/String.java (codePointAt): New method.
+        (codePointBefore): Likewise.
+        (codePointCount): Likewise.
+        (contentEquals): New overload.
+
+	2005-09-16  Robert Schuster  <robertschuster@fsfe.org>
+
+        * javax/swing/ProgressMonitor: Implemented the former stubbed
+        class and added documentation.
+        (close): Implemented and added documentation.
+        (setProgress): Dito.
+        (isCanceled): Dito.
+        (setMinimum): Added documentation.
+        (getMinimum): Dito.
+        (setMaximum): Dito.
+        (getMaximum): Dito.
+        (setNote): Dito.
+        (getMillisToDecideToPopup): Dito.
+        (setMillisToDecideToPopup): Dito.
+        (getMillisToPopup): Dito.
+        (setMillisToPopup): Dito.
+        (getNote): Dito.
+        * javax/swing/ProgressMonitorInputStream: Implemented stub
+        methods.
+        (close): Implemented.
+        (read): Dito.
+        (reset): Dito.
+        (skip): Dito.
+        (getProgressMonitor): Dito.
+
+	2005-09-16  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/23882:
+        * java/text/StringCharacterIterator.java (StringCharacterIterator):
+        Javadoc fix.
+        (hashCode): New method.
+        * java/text/ParsePosition.java (hashCode): New method
+
+	2005-09-16    Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+        * javax/swing/Timer.java (Waker.run): Do not enter loop on
+        repeats = false (fixes #23918).
+
+	2005-09-16  Andrew Haley  <aph@redhat.com>
+
+        * java/io/ObjectStreamClass.java (findAccessibleMethod): Allow
+        protected readResolve().  Rewrite accessibility check.
+
+	2005-09-16  Anthony Green  <green@redhat.com>
+
+        * java/lang/String.java (getBytes): Throw an InternalError instead
+        of silently returning null.
+
+	2005-09-16  Lillian Angel  <langel@redhat.com>
+
+        Fixes Bug #22610
+        * java/awt/Container.java
+        (remove): Removed component listeners from the component
+        being removed. This was a problem if that same component
+        that was removed was added to a new component.
+
+2005-09-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am.in: Replaced gnu/bytecode usage
 	by gnu/bytecodecvssnap.
 

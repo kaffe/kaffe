@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.awt;
 
+import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
@@ -419,6 +420,10 @@ public class Container extends Component
       {
         Component r = component[index];
 
+        ComponentListener[] list = r.getComponentListeners();
+        for (int j = 0; j < list.length; j++)
+              r.removeComponentListener(list[j]);
+        
         r.removeNotify();
 
         System.arraycopy(component, index + 1, component, index,

@@ -1,5 +1,5 @@
 /* ProgressMonitorInputStream.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,14 +39,18 @@ exception statement from your version. */
 package javax.swing;
 
 import java.awt.Component;
+
 import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.IOException;
 
 /**
  * ProgressMonitorInputStream
  * @author	Andrew Selkirk
- * @version	1.0
+ * @author  Robert Schuster (robertschuster@fsfe.org)
+ * @status updated to 1.2
+ * @since 1.2
  */
 public class ProgressMonitorInputStream extends FilterInputStream
 {
@@ -57,14 +61,9 @@ public class ProgressMonitorInputStream extends FilterInputStream
   private ProgressMonitor monitor;
 
   /**
-   * nread
+   * read
    */
-  private int nread;
-
-  /**
-   * size
-   */
-  private int size;
+  private int read;
 
   /**
    * Constructor ProgressMonitorInputStream
@@ -76,16 +75,34 @@ public class ProgressMonitorInputStream extends FilterInputStream
                                     InputStream stream)
   {
     super(stream);
-    // TODO
+
+    int max = 0;
+	
+    try
+      {
+        max = stream.available();
+      }
+    catch ( IOException ioe )
+      {
+        // Behave like the JDK here.
+      }
+
+    monitor = new ProgressMonitor(
+      component, message, null, 0, max );
   }
 
   /**
    * reset
    * @exception IOException TODO
    */
-  public synchronized void reset() throws IOException
+  public void reset() throws IOException
   {
-    // TODO
+    super.reset();
+
+    checkMonitorCanceled();
+
+    // TODO: The docs says the monitor should be resetted. But to which
+    // value? (mark is not overridden)
   }
 
   /**
@@ -95,7 +112,13 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public int read() throws IOException
   {
-    return 0; // TODO
+    int t = super.read();
+
+    monitor.setProgress(++read);
+
+    checkMonitorCanceled();
+
+    return t;
   }
 
   /**
@@ -106,7 +129,21 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public int read(byte[] data) throws IOException
   {
-    return 0; // TODO
+    int t = super.read(data);
+
+    if ( t > 0 )
+      {
+        read += t;
+        monitor.setProgress(read);
+
+        checkMonitorCanceled();
+      }
+    else
+      {
+        monitor.close();
+      }
+
+    return t;
   }
 
   /**
@@ -119,7 +156,21 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public int read(byte[] data, int offset, int length) throws IOException
   {
-    return 0; // TODO
+    int t = super.read(data, offset, length);
+
+    if ( t > 0 )
+      {
+        read += t;
+        monitor.setProgress(read);
+
+        checkMonitorCanceled();
+      }
+    else
+      {
+        monitor.close();
+      }
+
+    return t;
   }
 
   /**
@@ -130,7 +181,18 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public long skip(long length) throws IOException
   {
-    return 0; // TODO
+    long t = super.skip(length);
+
+    // 'read' may overflow here in rare situations.
+    assert ( (long) read + t <= (long) Integer.MAX_VALUE );
+
+    read += (int) t;
+
+    monitor.setProgress(read);
+
+    checkMonitorCanceled();
+
+    return t;
   }
 
   /**
@@ -139,7 +201,8 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public void close() throws IOException
   {
-    // TODO
+    super.close();
+    monitor.close();
   }
 
   /**
@@ -148,7 +211,15 @@ public class ProgressMonitorInputStream extends FilterInputStream
    */
   public ProgressMonitor getProgressMonitor()
   {
-    return null; // TODO
+    return monitor;
+  }
+
+  private void checkMonitorCanceled() throws InterruptedIOException
+  {
+    if ( monitor.isCanceled() )
+      {
+        throw new InterruptedIOException("ProgressMonitor was canceled");
+      }
   }
 
 }

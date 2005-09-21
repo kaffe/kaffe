@@ -95,21 +95,25 @@ public class GSSException extends Exception
 
   /**
    * Channel bindings mismatch error.
+   * @specnote Should be 4 according to RFC 2853.
    */
   public static final int BAD_BINDINGS = 1;
 
   /**
    * Unsupported mechanism requested error.
+   * @specnote Should be 1 according to RFC 2853.
    */
   public static final int BAD_MECH = 2;
 
   /**
    * Invalid name provided error.
+   * @specnote Should be 2 according to RFC 2853.
    */
   public static final int BAD_NAME = 3;
 
   /**
    * Name of unsupported type provided error.
+   * @specnote Should be 3 according to RFC 2853.
    */
   public static final int BAD_NAMETYPE = 4;
 
@@ -125,36 +129,43 @@ public class GSSException extends Exception
 
   /**
    * Specified security context expired error.
+   * @specnote Should be 12 according to RFC 2853.
    */
   public static final int CONTEXT_EXPIRED = 7;
 
   /**
    * Expired credentials detected error.
+   * @specnote Should be 11 according to RFC 2853.
    */
   public static final int CREDENTIALS_EXPIRED = 8;
 
   /**
    * Defective credential error.
+   * @specnote Should be 10 according to RFC 2853.
    */
   public static final int DEFECTIVE_CREDENTIAL = 9;
 
   /**
    * Defective token error.
+   * @specnote Should be 9 according to RFC 2853.
    */
   public static final int DEFECTIVE_TOKEN = 10;
 
   /**
    * General failure, unspecified at GSS-API level.
+   * @specnote Should be 13 according to RFC 2853.
    */
   public static final int FAILURE = 11;
 
   /**
    * Invalid security context error.
+   * @specnote Should be 8 according to RFC 2853.
    */
   public static final int NO_CONTEXT = 12;
 
   /**
    * Invalid credentials error.
+   * @specnote Should be 7 according to RFC 2853.
    */
   public static final int NO_CRED = 13;
 
@@ -188,6 +199,7 @@ public class GSSException extends Exception
    * code that may occur during context establishment.  It is not used to
    * indicate supplementary status values.  The MessageProp object is used
    * for that purpose.
+   * @specnote Should be 20 according to RFC 2853.
    */
   public static final int DUPLICATE_TOKEN = 19;
 
@@ -196,6 +208,7 @@ public class GSSException extends Exception
    * that may occur during context establishment.  It is not used to
    * indicate supplementary status values.  The MessageProp object is used
    * for that purpose.
+   * @specnote Should be 19 according to RFC 2853.
    */
   public static final int OLD_TOKEN = 20;
 
