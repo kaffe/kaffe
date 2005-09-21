@@ -30,11 +30,18 @@ DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
+if ENABLE_BINRELOC
+BINRELOC_SOURCES=\
+	../../binreloc/prefix.c \
+	../../binreloc/prefix.h
+endif
+
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \
 	sigs.c \
-	support.c
+	support.c \
+	$(BINRELOC_SOURCES)
 
 nodist_kaffeh_SOURCES = $(GEN_SRCS)
 

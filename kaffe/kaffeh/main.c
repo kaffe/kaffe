@@ -18,6 +18,21 @@
 #include "kaffeh-support.h"
 #include "utf8const.h"
 #include "debug.h"
+#include "system.h"
+
+#if defined(HAVE_GETTEXT)
+#include <libintl.h>
+#define _(T) gettext(T)
+#else
+#define _(T) (T)
+#endif
+#if defined(HAVE_LC_MESSAGES)
+#include <locale.h>
+#endif
+
+#ifdef ENABLE_BINRELOC
+#include "prefix.h"
+#endif
 
 #define	BUFSZ	1024
 #define	PATHSZ	1024
@@ -214,6 +229,26 @@ options(int argc, char** argv)
 {
 	int i;
 
+
+	char * bootclasspath = NULL;
+	char * classpath = NULL;
+
+	bootclasspath = malloc(1);
+	if (bootclasspath == NULL) 
+	  {
+	    fprintf(stderr,  _("Error: out of memory.\n"));
+	    exit(EXIT_FAILURE);
+	  }
+	*bootclasspath = '\0';
+
+	classpath = malloc(1);
+	if (classpath == NULL) 
+	  {
+	    fprintf(stderr,  _("Error: out of memory.\n"));
+	    exit(EXIT_FAILURE);
+	  }
+	*classpath = '\0';
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] != '-') {
 			break;
@@ -243,12 +278,54 @@ options(int argc, char** argv)
 		}
 #endif /*KAFFE_VMDEBUG*/
 		else if (strcmp(argv[i], "-classpath") == 0) {
-			i++;
-			strcpy(realClassPath, argv[i]);
+		  char * newcp;
+		  size_t cplen;
+
+		  i++;
+
+		  cplen = strlen(classpath)
+		    + strlen(argv[i])
+		    + strlen(path_separator)
+		    + 1;
+
+		  newcp = malloc(cplen);
+		  if (newcp == NULL)
+		    {
+		      fprintf(stderr,  _("Error: out of memory.\n"));
+		      exit(EXIT_FAILURE);
+		    }
+		  
+		  strcpy(newcp, classpath);
+		  strcat(newcp, path_separator);
+		  strcat(newcp, argv[i]);
+
+		  free(classpath);
+		  classpath = newcp;
 		}
 		else if (strcmp(argv[i], "-bootclasspath") == 0) {
-			i++;
-			strcpy(realClassPath, argv[i]);
+		  char * newcp;
+		  size_t cplen;
+
+		  i++;
+
+		  cplen = strlen(bootclasspath)
+		    + strlen(argv[i])
+		    + strlen(path_separator)
+		    + 1;
+
+		  newcp = malloc(cplen);
+		  if (newcp == NULL)
+		    {
+		      fprintf(stderr,  _("Error: out of memory.\n"));
+		      exit(EXIT_FAILURE);
+		    }
+		  
+		  strcpy(newcp, bootclasspath);
+		  strcat(newcp, path_separator);
+		  strcat(newcp, argv[i]);
+
+		  free(bootclasspath);
+		  bootclasspath = newcp;
 		}
 		else if (strcmp(argv[i], "-o") == 0) {
 			i++;
@@ -262,6 +339,28 @@ options(int argc, char** argv)
 			dprintf("Unknown flag: %s\n", argv[i]);
 		}
 	}
+
+
+	if (strlen(bootclasspath) > 0) 
+	  {
+	    strcpy(realClassPath, bootclasspath);
+	  } 
+	else 
+	  {
+
+#if defined(ENABLE_BINRELOC)
+	    strcpy(realClassPath, BR_PREFIX("/jre/lib/rt.jar"));
+#endif
+	  }
+
+	free(bootclasspath);
+
+	if (strlen(classpath) > 0)
+	  {
+	    strcat(realClassPath, classpath);
+	  }
+
+	free(classpath);
 
 	/* Return first no-flag argument */
 	return (i);

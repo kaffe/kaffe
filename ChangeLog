@@ -1,3 +1,19 @@
+2005-09-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffeh/Makefile.am:
+	(BINRELOC_SOURCES) Added.
+	(kaffeh_SOURCES) Added BINRELOC_SOURCES.
+
+	* kaffe/kaffeh/main.c: Include system.h for path_separator.
+	Include prefix.h is binreloc is available. Include headers for
+	gettext.
+	(options) Handle -classpath and -bootclasspath options.
+	Use a default bootclasspath if no bootclasspath is given.
+
+	Fixes build of libreadline-java 0.8.0.
+
+	Reported by:  Joshua Nichols  <joshua.nichols@gmail.com>
+
 2005-09-21  Santiago Gala <sgala@apache.org>
 
 	* libraries/javalib/java/security/VMAccessController.java:
