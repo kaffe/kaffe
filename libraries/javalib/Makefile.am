@@ -63,7 +63,7 @@ Klasses_jar_SRCS = \
 	$(gnu_CORBA_Interceptor_SRCS) \
 	$(gnu_CORBA_NamingService_SRCS) \
 	$(gnu_CORBA_Poa_SRCS) \
-	$(gnu_bytecode_SRCS) \
+	$(gnu_bytecodecvssnap_SRCS) \
 	$(gnu_classpath_SRCS) \
 	$(gnu_classpath_debug_SRCS) \
 	$(gnu_classpath_jdwp_SRCS) \
@@ -562,51 +562,51 @@ gnu_CORBA_Poa_SRCS = \
 	gnu/CORBA/Poa/policySets.java \
 	gnu/CORBA/Poa/servantDelegate.java \
 	gnu/CORBA/Poa/vPolicy.java
-gnu_bytecode_SRCS = \
-	gnu/bytecode/Access.java \
-	gnu/bytecode/ArrayClassLoader.java \
-	gnu/bytecode/ArrayType.java \
-	gnu/bytecode/AttrContainer.java \
-	gnu/bytecode/Attribute.java \
-	gnu/bytecode/ClassFileInput.java \
-	gnu/bytecode/ClassType.java \
-	gnu/bytecode/ClassTypeWriter.java \
-	gnu/bytecode/CodeAttr.java \
-	gnu/bytecode/ConstantPool.java \
-	gnu/bytecode/ConstantValueAttr.java \
-	gnu/bytecode/CpoolClass.java \
-	gnu/bytecode/CpoolEntry.java \
-	gnu/bytecode/CpoolFloat.java \
-	gnu/bytecode/CpoolNameAndType.java \
-	gnu/bytecode/CpoolRef.java \
-	gnu/bytecode/CpoolString.java \
-	gnu/bytecode/CpoolUtf8.java \
-	gnu/bytecode/CpoolValue1.java \
-	gnu/bytecode/CpoolValue2.java \
-	gnu/bytecode/ExceptionsAttr.java \
-	gnu/bytecode/Field.java \
-	gnu/bytecode/Filter.java \
-	gnu/bytecode/IfState.java \
-	gnu/bytecode/InnerClassesAttr.java \
-	gnu/bytecode/Label.java \
-	gnu/bytecode/LineNumbersAttr.java \
-	gnu/bytecode/LocalVarsAttr.java \
-	gnu/bytecode/Location.java \
-	gnu/bytecode/Method.java \
-	gnu/bytecode/MiscAttr.java \
-	gnu/bytecode/ObjectType.java \
-	gnu/bytecode/PrimType.java \
-	gnu/bytecode/Scope.java \
-	gnu/bytecode/SourceDebugExtAttr.java \
-	gnu/bytecode/SourceFileAttr.java \
-	gnu/bytecode/SwitchState.java \
-	gnu/bytecode/TryState.java \
-	gnu/bytecode/Type.java \
-	gnu/bytecode/VarEnumerator.java \
-	gnu/bytecode/Variable.java \
-	gnu/bytecode/ZipArchive.java \
-	gnu/bytecode/ZipLoader.java \
-	gnu/bytecode/dump.java
+gnu_bytecodecvssnap_SRCS = \
+	gnu/bytecodecvssnap/Access.java \
+	gnu/bytecodecvssnap/ArrayClassLoader.java \
+	gnu/bytecodecvssnap/ArrayType.java \
+	gnu/bytecodecvssnap/AttrContainer.java \
+	gnu/bytecodecvssnap/Attribute.java \
+	gnu/bytecodecvssnap/ClassFileInput.java \
+	gnu/bytecodecvssnap/ClassType.java \
+	gnu/bytecodecvssnap/ClassTypeWriter.java \
+	gnu/bytecodecvssnap/CodeAttr.java \
+	gnu/bytecodecvssnap/ConstantPool.java \
+	gnu/bytecodecvssnap/ConstantValueAttr.java \
+	gnu/bytecodecvssnap/CpoolClass.java \
+	gnu/bytecodecvssnap/CpoolEntry.java \
+	gnu/bytecodecvssnap/CpoolFloat.java \
+	gnu/bytecodecvssnap/CpoolNameAndType.java \
+	gnu/bytecodecvssnap/CpoolRef.java \
+	gnu/bytecodecvssnap/CpoolString.java \
+	gnu/bytecodecvssnap/CpoolUtf8.java \
+	gnu/bytecodecvssnap/CpoolValue1.java \
+	gnu/bytecodecvssnap/CpoolValue2.java \
+	gnu/bytecodecvssnap/ExceptionsAttr.java \
+	gnu/bytecodecvssnap/Field.java \
+	gnu/bytecodecvssnap/Filter.java \
+	gnu/bytecodecvssnap/IfState.java \
+	gnu/bytecodecvssnap/InnerClassesAttr.java \
+	gnu/bytecodecvssnap/Label.java \
+	gnu/bytecodecvssnap/LineNumbersAttr.java \
+	gnu/bytecodecvssnap/LocalVarsAttr.java \
+	gnu/bytecodecvssnap/Location.java \
+	gnu/bytecodecvssnap/Method.java \
+	gnu/bytecodecvssnap/MiscAttr.java \
+	gnu/bytecodecvssnap/ObjectType.java \
+	gnu/bytecodecvssnap/PrimType.java \
+	gnu/bytecodecvssnap/Scope.java \
+	gnu/bytecodecvssnap/SourceDebugExtAttr.java \
+	gnu/bytecodecvssnap/SourceFileAttr.java \
+	gnu/bytecodecvssnap/SwitchState.java \
+	gnu/bytecodecvssnap/TryState.java \
+	gnu/bytecodecvssnap/Type.java \
+	gnu/bytecodecvssnap/VarEnumerator.java \
+	gnu/bytecodecvssnap/Variable.java \
+	gnu/bytecodecvssnap/ZipArchive.java \
+	gnu/bytecodecvssnap/ZipLoader.java \
+	gnu/bytecodecvssnap/dump.java
 gnu_classpath_SRCS = \
 	gnu/classpath/ByteArray.java \
 	gnu/classpath/Pointer.java \
@@ -5943,12 +5943,12 @@ rebuildLib = ./rebuildLib
 .PHONY: compile-classes classes
 
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
-JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools/ gnu/classpath/tools/rmi/rmic/)
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecodecvssnap/*.class -x gnu/classpath/tools/ gnu/classpath/tools/rmi/rmic/)
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
 JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_icons))
-JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools org/objectweb)
+JAR_CMD_TOOLS = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecodecvssnap gnu/classpath/tools org/objectweb)
 
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
@@ -5956,13 +5956,13 @@ jar-classes: rt.jar
 rt.jar: $(PATH_TO_RT_JAR)
 	cp $< $@
 
-compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS)
+compile-tools-classes $(LIBDIR)/stamp: $(rebuildLib) $(gnu_bytecodecvssnap_SRCS) $(gnu_classpath_tools_javap_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
-	$(SHELL) $(rebuildLib) $(gnu_bytecode_SRCS) $(gnu_classpath_tools_javap_SRCS) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java
+	$(SHELL) $(rebuildLib) $(gnu_bytecodecvssnap_SRCS) $(gnu_classpath_tools_javap_SRCS) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java
 	echo timestamp > $(LIBDIR)/stamp
 
-tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
+tools.jar: $(LIBDIR)/stamp $(gnu_bytecodecvssnap_SRCS)
 	rm -f tools.jar
 	$(JAR_CMD_TOOLS)
 	mv $@.new $@
@@ -5989,7 +5989,7 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD6)
 	mv $@.new $@
 
-# Put gnu.bytecode into tools.jar to avoid problems
+# Put gnu.bytecodecvssnap into tools.jar to avoid problems
 # with applications using their own version of it.
 tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
 	rm -f tools.jar

@@ -1,5 +1,115 @@
 2005-09-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am.in: Replaced gnu/bytecode usage
+	by gnu/bytecodecvssnap.
+
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/bytecode/Access.java,
+	libraries/javalib/gnu/bytecode/ArrayClassLoader.java,
+	libraries/javalib/gnu/bytecode/ArrayType.java,
+	libraries/javalib/gnu/bytecode/AttrContainer.java,
+	libraries/javalib/gnu/bytecode/Attribute.java,
+	libraries/javalib/gnu/bytecode/ClassFileInput.java,
+	libraries/javalib/gnu/bytecode/ClassType.java,
+	libraries/javalib/gnu/bytecode/ClassTypeWriter.java,
+	libraries/javalib/gnu/bytecode/CodeAttr.java,
+	libraries/javalib/gnu/bytecode/ConstantPool.java,
+	libraries/javalib/gnu/bytecode/ConstantValueAttr.java,
+	libraries/javalib/gnu/bytecode/CpoolClass.java,
+	libraries/javalib/gnu/bytecode/CpoolEntry.java,
+	libraries/javalib/gnu/bytecode/CpoolFloat.java,
+	libraries/javalib/gnu/bytecode/CpoolNameAndType.java,
+	libraries/javalib/gnu/bytecode/CpoolRef.java,
+	libraries/javalib/gnu/bytecode/CpoolString.java,
+	libraries/javalib/gnu/bytecode/CpoolUtf8.java,
+	libraries/javalib/gnu/bytecode/CpoolValue1.java,
+	libraries/javalib/gnu/bytecode/CpoolValue2.java,
+	libraries/javalib/gnu/bytecode/ExceptionsAttr.java,
+	libraries/javalib/gnu/bytecode/Field.java,
+	libraries/javalib/gnu/bytecode/Filter.java,
+	libraries/javalib/gnu/bytecode/IfState.java,
+	libraries/javalib/gnu/bytecode/InnerClassesAttr.java,
+	libraries/javalib/gnu/bytecode/Label.java,
+	libraries/javalib/gnu/bytecode/LineNumbersAttr.java,
+	libraries/javalib/gnu/bytecode/LocalVarsAttr.java,
+	libraries/javalib/gnu/bytecode/Location.java,
+	libraries/javalib/gnu/bytecode/Method.java,
+	libraries/javalib/gnu/bytecode/MiscAttr.java,
+	libraries/javalib/gnu/bytecode/ObjectType.java,
+	libraries/javalib/gnu/bytecode/PrimType.java,
+	libraries/javalib/gnu/bytecode/Scope.java,
+	libraries/javalib/gnu/bytecode/SourceDebugExtAttr.java,
+	libraries/javalib/gnu/bytecode/SourceFileAttr.java,
+	libraries/javalib/gnu/bytecode/SwitchState.java,
+	libraries/javalib/gnu/bytecode/TryState.java,
+	libraries/javalib/gnu/bytecode/Type.java,
+	libraries/javalib/gnu/bytecode/VarEnumerator.java,
+	libraries/javalib/gnu/bytecode/Variable.java,
+	libraries/javalib/gnu/bytecode/ZipArchive.java,
+	libraries/javalib/gnu/bytecode/ZipLoader.java,
+	libraries/javalib/gnu/bytecode/dump.java,
+	libraries/javalib/gnu/bytecode/package.html:
+	Moved over to libraries/javalib/gnu/bytecodecvs.
+
+	* libraries/javalib/gnu/bytecodecvssnap/Access.java,
+	libraries/javalib/gnu/bytecodecvssnap/ArrayClassLoader.java,
+	libraries/javalib/gnu/bytecodecvssnap/ArrayType.java,
+	libraries/javalib/gnu/bytecodecvssnap/AttrContainer.java,
+	libraries/javalib/gnu/bytecodecvssnap/Attribute.java,
+	libraries/javalib/gnu/bytecodecvssnap/ClassFileInput.java,
+	libraries/javalib/gnu/bytecodecvssnap/ClassType.java,
+	libraries/javalib/gnu/bytecodecvssnap/ClassTypeWriter.java,
+	libraries/javalib/gnu/bytecodecvssnap/CodeAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/ConstantPool.java,
+	libraries/javalib/gnu/bytecodecvssnap/ConstantValueAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolClass.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolEntry.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolFloat.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolNameAndType.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolRef.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolString.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolUtf8.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolValue1.java,
+	libraries/javalib/gnu/bytecodecvssnap/CpoolValue2.java,
+	libraries/javalib/gnu/bytecodecvssnap/ExceptionsAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/Field.java,
+	libraries/javalib/gnu/bytecodecvssnap/Filter.java,
+	libraries/javalib/gnu/bytecodecvssnap/IfState.java,
+	libraries/javalib/gnu/bytecodecvssnap/InnerClassesAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/Label.java,
+	libraries/javalib/gnu/bytecodecvssnap/LineNumbersAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/LocalVarsAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/Location.java,
+	libraries/javalib/gnu/bytecodecvssnap/Method.java,
+	libraries/javalib/gnu/bytecodecvssnap/MiscAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/ObjectType.java,
+	libraries/javalib/gnu/bytecodecvssnap/PrimType.java,
+	libraries/javalib/gnu/bytecodecvssnap/Scope.java,
+	libraries/javalib/gnu/bytecodecvssnap/SourceDebugExtAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/SourceFileAttr.java,
+	libraries/javalib/gnu/bytecodecvssnap/SwitchState.java,
+	libraries/javalib/gnu/bytecodecvssnap/TryState.java,
+	libraries/javalib/gnu/bytecodecvssnap/Type.java,
+	libraries/javalib/gnu/bytecodecvssnap/VarEnumerator.java,
+	libraries/javalib/gnu/bytecodecvssnap/Variable.java,
+	libraries/javalib/gnu/bytecodecvssnap/ZipArchive.java,
+	libraries/javalib/gnu/bytecodecvssnap/ZipLoader.java,
+	libraries/javalib/gnu/bytecodecvssnap/dump.java,
+	libraries/javalib/gnu/bytecodecvssnap/package.html:
+	Moved over here from gnu.bytecode to avoid conflicts with code
+	using gnu.bytecode, like Nice. 
+
+	Reported by:  Daniel Bonniot  <Daniel.Bonniot@inria.fr>
+
+	* libraries/javalib/gnu/classpath/tools/javap/GnuByteCodeJavap.java:
+	Import classes from gnu.bytecodecvssnap rather than from gnu.bytecode.
+
+2005-09-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/bytecode/ClassFileInput.java,
 	libraries/javalib/gnu/bytecode/ClassType.java,
 	libraries/javalib/gnu/bytecode/CodeAttr.java,

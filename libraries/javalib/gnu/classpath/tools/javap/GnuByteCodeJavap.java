@@ -19,21 +19,21 @@
  02110-1301 USA. */
 package gnu.classpath.tools.javap;
 
-import gnu.bytecode.Access;
-import gnu.bytecode.Attribute;
-import gnu.bytecode.ClassFileInput;
-import gnu.bytecode.ClassType;
-import gnu.bytecode.ClassTypeWriter;
-import gnu.bytecode.CodeAttr;
-import gnu.bytecode.Field;
-import gnu.bytecode.InnerClassesAttr;
-import gnu.bytecode.LineNumbersAttr;
-import gnu.bytecode.LocalVarsAttr;
-import gnu.bytecode.Method;
-import gnu.bytecode.SourceFileAttr;
-import gnu.bytecode.Type;
-import gnu.bytecode.VarEnumerator;
-import gnu.bytecode.Variable;
+import gnu.bytecodecvssnap.Access;
+import gnu.bytecodecvssnap.Attribute;
+import gnu.bytecodecvssnap.ClassFileInput;
+import gnu.bytecodecvssnap.ClassType;
+import gnu.bytecodecvssnap.ClassTypeWriter;
+import gnu.bytecodecvssnap.CodeAttr;
+import gnu.bytecodecvssnap.Field;
+import gnu.bytecodecvssnap.InnerClassesAttr;
+import gnu.bytecodecvssnap.LineNumbersAttr;
+import gnu.bytecodecvssnap.LocalVarsAttr;
+import gnu.bytecodecvssnap.Method;
+import gnu.bytecodecvssnap.SourceFileAttr;
+import gnu.bytecodecvssnap.Type;
+import gnu.bytecodecvssnap.VarEnumerator;
+import gnu.bytecodecvssnap.Variable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
