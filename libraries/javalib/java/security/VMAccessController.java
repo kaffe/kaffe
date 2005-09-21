@@ -108,6 +108,8 @@ final class VMAccessController
     LinkedList stack = (LinkedList) contexts.get();
     if (stack == null)
       {
+         if (DEBUG)
+           debug("no stack... creating ");
         stack = new LinkedList();
         contexts.set(stack);
       }
@@ -133,7 +135,8 @@ final class VMAccessController
         stack.removeFirst();
         if (stack.isEmpty())
           contexts.set(null);
-      }
+      } else if (DEBUG)
+        debug("no stack during pop?????");
   }
 
   /**
@@ -186,6 +189,7 @@ final class VMAccessController
         if (DEBUG)
           {
             debug(">>> checking " + clazz + "." + method);
+	    // subject to getClassLoader RuntimePermission
             debug(">>> loader = " + clazz.getClassLoader());
           }
 
@@ -198,14 +202,16 @@ final class VMAccessController
             && method.equals ("doPrivileged"))
           {
             // If there was a call to doPrivileged with a supplied context,
-            // return that context.
+            // return that context. If using JAAS doAs*, it should be 
+	    // a context with a SubjectDomainCombiner
             LinkedList l = (LinkedList) contexts.get();
             if (l != null)
               context = (AccessControlContext) l.getFirst();
             privileged = 1;
           }
 
-        ProtectionDomain domain = clazz.getProtectionDomain();
+        // subject to getProtectionDomain RuntimePermission
+	ProtectionDomain domain = clazz.getProtectionDomain();
 
         if (domain == null)
           continue;
@@ -226,10 +232,12 @@ final class VMAccessController
       domains.toArray(new ProtectionDomain[domains.size()]);
 
     // Intersect the derived protection domain with the context supplied
-    // to doPrivileged.
+    // to doPrivileged. We use the DomainCombiner fron the popped contest
+    // to avoid that SubjectDomainCombiners with Subject information
+    // get lost here.
     if (context != null)
       context = new AccessControlContext(result, context,
-                                         IntersectingDomainCombiner.SINGLETON);
+                                         context.getDomainCombiner());
     // No context was supplied. Return the derived one.
     else
       context = new AccessControlContext(result);

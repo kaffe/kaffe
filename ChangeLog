@@ -1,3 +1,12 @@
+2005-09-21  Santiago Gala <sgala@apache.org>
+
+	* libraries/javalib/java/security/VMAccessController.java:
+	Use given combiner in pushed AccessControlContext.
+
+	Fixes tomcat 5 startup with security manager enabled.
+
+	Reported by:  Wolfgang Baer <WBaer@gmx.de>
+
 2005-09-21  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
