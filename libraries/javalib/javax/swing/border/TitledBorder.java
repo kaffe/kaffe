@@ -46,6 +46,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.UIManager;
 
@@ -607,7 +610,8 @@ public class TitledBorder
     case TOP:
     case DEFAULT_POSITION:
     default:
-      textY = y + mes.borderSpacing.top + mes.borderInsets.top - mes.textAscent;
+      textY = y + mes.borderSpacing.top + mes.borderInsets.top - mes.textAscent
+              + mes.lineHeight;
       break;
 
     case BELOW_TOP:
@@ -1000,6 +1004,16 @@ public class TitledBorder
     
     m.textAscent = fmet.getAscent();
     m.textDescent = fmet.getDescent();
+
+    FontRenderContext frc = new FontRenderContext(new AffineTransform(), false,
+                                                  false);
+    LineMetrics lmet = m.font.getLineMetrics(m.trimmedText, 0,
+                                             m.trimmedText.length(), frc);
+    m.lineHeight = (int) lmet.getStrikethroughOffset();
+    // Fallback in case that LineMetrics is not available/working.
+    if (m.lineHeight == 0)
+      m.lineHeight = (int) (0.3333 * (double) m.textAscent);
+
     if (m.trimmedText != null)
       m.textWidth = fmet.stringWidth(m.trimmedText) + 3;
 
@@ -1072,6 +1086,11 @@ public class TitledBorder
      */
     int textDescent;
 
+    /**
+     * The number of pixels between the base line and the height where
+     * a strike-through would be drawn.
+     */
+    int lineHeight;
 
     /**
      * The title text after removing leading and trailing white space

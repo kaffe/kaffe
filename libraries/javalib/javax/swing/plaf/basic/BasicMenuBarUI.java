@@ -50,6 +50,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.MenuElement;
 import javax.swing.UIDefaults;
@@ -326,7 +327,11 @@ public class BasicMenuBarUI extends MenuBarUI
       MenuElement[] me = menuBar.getSubElements();
       
       for (int i = 0; i < me.length; i++)
-        menuBar.getMenu(i).setSelected(false);
+        {
+          JMenu menu = menuBar.getMenu(i);
+          if (menu != null)
+            menu.setSelected(false);
+        }
     }
     
     /**

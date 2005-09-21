@@ -40,6 +40,7 @@ package javax.swing;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -161,8 +162,8 @@ public class JLayeredPane extends JComponent implements Accessible
   {
     layers = new TreeMap ();
     componentToLayer = new Hashtable ();
+    setLayout(null);
   }
-
 
   /** 
    * Looks up the layer a child component is currently assigned to.
@@ -572,26 +573,14 @@ public class JLayeredPane extends JComponent implements Accessible
    *
    * @param index the index of the child component to remove.
    */
-  public void remove (int index)
+  public void remove(int index)
   {
-    Component c = getComponent (index);
-    int layer = getLayer (c);
-    decrLayer (new Integer(layer));
-    componentToLayer.remove (c);
-    super.remove (index);
+    Component c = getComponent(index);
+    int layer = getLayer(c);
+    decrLayer(new Integer(layer));
+    componentToLayer.remove(c);
+    super.remove(index);
     revalidate();
-    repaint();
-  }
-
-  /**
-   * Removes a child from this container. The child is specified directly.
-   * After removal, the child no longer occupies a layer.
-   *
-   * @param comp the child to remove.
-   */
-  public void remove (Component comp)
-  {
-    remove (getIndexOf (comp));
   }
 
   /**
@@ -679,5 +668,22 @@ public class JLayeredPane extends JComponent implements Accessible
     if (accessibleContext == null)
       accessibleContext = new AccessibleJLayeredPane();
     return accessibleContext;
+  }
+
+  /**
+   * This method is overridden order to provide a reasonable painting
+   * mechanism for <code>JLayeredPane</code>. This is necessary since
+   * <code>JLayeredPane</code>'s do not have an own UI delegate.
+   *
+   * Basically this method clears the background for the
+   * <code>JLayeredPane</code> and then calls <code>super.paint(g)</code>.
+   *
+   * @param g the graphics context to use
+   */
+  public void paint(Graphics g)
+  {
+    g.setColor(getBackground());
+    g.fillRect(0, 0, getWidth(), getHeight());
+    super.paint(g);
   }
 }

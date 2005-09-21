@@ -101,6 +101,8 @@ public class Window extends Container implements Accessible
 
   protected class AccessibleAWTWindow extends AccessibleAWTContainer
   {
+    private static final long serialVersionUID = 4215068635060671780L;
+
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.WINDOW;

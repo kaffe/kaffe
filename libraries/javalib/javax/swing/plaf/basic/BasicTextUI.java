@@ -74,7 +74,6 @@ import javax.swing.text.Element;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Keymap;
-import javax.swing.text.PlainView;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
@@ -242,7 +241,7 @@ public abstract class BasicTextUI extends TextUI
     public void paint(Graphics g, Shape s)
     {
       if (view != null)
-	view.paint(g, s);
+        view.paint(g, s);
     }
 
 
@@ -333,7 +332,7 @@ public abstract class BasicTextUI extends TextUI
   /**
    * Receives notifications when properties of the text component change.
    */
-  class UpdateHandler implements PropertyChangeListener
+  class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * Notifies when a property of the text component changes.
@@ -347,6 +346,8 @@ public abstract class BasicTextUI extends TextUI
           // Document changed.
 	      modelChanged();
         }
+
+      BasicTextUI.this.propertyChange(event);
     }
   }
 
@@ -369,7 +370,7 @@ public abstract class BasicTextUI extends TextUI
       rootView.changedUpdate(ev, new Rectangle(0, 0, size.width, size.height),
                              rootView.getViewFactory());
     }
-    
+
     /**
      * Notification about a document insert event.
      *
@@ -420,7 +421,7 @@ public abstract class BasicTextUI extends TextUI
   /**
    * Receives notification when the model changes.
    */
-  UpdateHandler updateHandler = new UpdateHandler();
+  PropertyChangeHandler updateHandler = new PropertyChangeHandler();
 
   /** The DocumentEvent handler. */
   DocumentHandler documentHandler = new DocumentHandler();
@@ -815,13 +816,10 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void paintBackground(Graphics g)
   {
-    if (textComponent.isEditable())
-      textComponent.setBackground(background);
-    else
-      textComponent.setBackground(inactiveBackground);
-
-    g.setColor(textComponent.getBackground());
-    g.fillRect(0, 0, textComponent.getWidth(), textComponent.getHeight());
+    // This method does nothing. All the background filling is done by the
+    // ComponentUI update method. However, the method is called by paint
+    // to provide a way for subclasses to draw something different (e.g. background
+    // images etc) on the background.
   }
 
   /**
@@ -1065,5 +1063,18 @@ public abstract class BasicTextUI extends TextUI
       return;
     View view = factory.create(elem);
     setView(view);
+  }
+
+  /**
+   * Receives notification whenever one of the text component's bound
+   * properties changes. This default implementation does nothing.
+   * It is a hook that enables subclasses to react to property changes
+   * on the text component.
+   *
+   * @param ev the property change event
+   */
+  protected void propertyChange(PropertyChangeEvent ev)
+  {
+    // The default implementation does nothing.
   }
 }

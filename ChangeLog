@@ -1,3 +1,361 @@
+2005-09-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-09-21  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/ToolTipManager.java
+        (showTip): Added code to move currentPoint to a new place.
+        (getGoodPoint): Removed, not needed.
+
+	2005-09-21  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/metal/MetalFileChooserUI.java: new file (partial
+        implementation).
+
+	2005-09-20  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/JPopupMenu.java
+        (setVisible): If HeavyWeightPopup, setLightWeightPopupEnabled
+        is false.
+        * javax/swing/ToolTipManager.java
+        (showTip): Change so toolTips on lightWeightPopups are
+        added different than those on heavyWeightPopups.
+        (canToolTipFit): Removed. This is not needed/used.
+
+	2005-09-20  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/ToolTipManager.java
+        (mouseMoved): Removed unneeded code. If the mouse
+        moves into another component, then mouseEntered would
+        do the same thing. Otherwise, it is not needed.
+        (showTip): Fixed so that the containerPanel is an
+        instance of Panel. Made code more efficent.
+        Tooltips were causing weird problems with the
+        JMenus.
+        (getGoodPoint): Fixed to return a better location.
+        * javax/swing/plaf/basic/BasicMenuBarUI.java
+        (mouseClicked): Fixed to prevent a NPE.
+
+	2005-09-20  Tom Tromey  <tromey@redhat.com>
+
+        PR classpath/22906:
+        * gnu/java/net/protocol/jar/Connection.java (get): Added useCaches
+        argument.
+        (connect): Updated.
+
+	2005-09-20  Tom Tromey  <tromey@redhat.com>
+
+        * javax/print/DocFlavor.java (serialVersionUID): Fixed typo.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/text/DefaultEditorKit.java:
+        (write): Partially Implemented and made slight correction to API docs.
+        * javax/swing/text/html/HTMLEditorKit.java:
+        (createDefaultDocument): Override parent method because we need to
+        return an HTMLDocument not a DefaultStyledDocument.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        Fixes PR #23900.
+        * javax/swing/JLayeredPane.java
+        (remove(int)): Removed repaint() call. This is unnecessary because
+        already triggered by Container.remove().
+        (remove(Component)): Removed this superfluous method. It's not
+        in the specs and the functionality is already in Container.
+        (paint): New method. Overridden in order to provide reasonable
+        painting for JLayeredPanes.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (UpdateHandler): Renamed to PropertyChangeHandler. This name is
+        closer to the purpose of this class.
+        (PropertyChangeHandler.propertyChange): Delegate property change
+        to propertyChange hook method in the enclosing BasicTextUI.
+        (propertyChange): New protected method. This serves as a hook
+        for subclasses to handle property changes in the text component.
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (properyChange): Handle editable property here and adjust background
+        accordingly.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/text/DefaultStyledDocument.java
+        (getParagraphElement): If the position argument is out of the
+        document's bounds, then the closest paragraph element must be
+        returned. This is fixed.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/JTable.java
+        (resizeAndRepaint): New protected method.
+
+	2005-09-20  Tom Tromey  <tromey@redhat.com>
+
+        * javax/xml/namespace/QName.java: Now Serializable.
+        (serialVersionUID): New field.
+        (qName, hashCode): Now transient.
+        (QName): Don't compute qName here.
+        (equals): Now final.
+        (hashCode): Simplified.
+        (toString): Compute qName here.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/metal/MetalBorders.java
+        (getTextFieldBorder): This method must return an BorderUIResource
+        instance. Fixed.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/basic/BasicButtonUI.java
+        (installDefaults): Handle the rollover UIDefaults property.
+        (paintText): Correctly paint disabled button label text.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefaults): Fix some text component border defaults.
+        * javax/swing/plaf/basic/BasicTextPaneUI.java
+        (installUI): New method. This sets up some style attributes
+        for the JTextPane.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/metal/MetalLookAndFeel.java
+        (initComponentDefault): Added and fixed some UI defaults.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/metal/MetalBorders.java
+        (ButtonBorder.paintBorder): Fetch correct color for disabled
+        button border.
+        (getTextFieldBorder): Correctly initialize text field border. This
+        should be a compound border with a MarginBorder and TextFieldBorder
+        instead of a plain TextFieldBorder.
+        (getTextBorder): New method.
+
+	2005-09-20  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/text/DefaultStyledDocument.java
+        (setParagraphAttributes): Implemented this method.
+        (insertUpdate): Fixed attribute comparison to avoid NPE.
+
+	2005-09-20  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        PR awt/23951
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+        (isRealized): Leave GDK critical region when exiting early.
+
+	2005-09-19  Tom Tromey  <tromey@redhat.com>
+
+        * java/awt/PopupMenu.java (AccessibleAWTPopupMenu.serialVersionUID):
+        New field.
+        * java/awt/TextField.java (AccessibleAWTTextField.serialVersionUID):
+        New field.
+        * java/awt/TextArea.java (AccessibleAWTTextArea.serialVersionUID):
+        New field.
+        * java/awt/Menu.java (AccessibleAWTMenu.serialVersionUID): New field.
+        * java/awt/CheckboxMenuItem.java (AccessibleAWTCheckboxMenuItem.serialVersionUID):
+        New field.
+        * java/awt/TextComponent.java (AccessibleAWTTextComponent.serialVersionUID):
+        New field.
+        * java/awt/MenuItem.java (AccessibleAWTMenuItem.serialVersionUID):
+        New field.
+        * java/awt/Frame.java (AccessibleAWTFrame.serialVersionUID): New
+        field.
+        * java/awt/Dialog.java (AccessibleAWTDialog.serialVersionUID): New
+        field.
+        * java/awt/Button.java (AccessibleAWTButton.serialVersionUID): New
+        field.
+        * java/awt/Window.java (AccessibleAWTWindow.serialVersionUID): New
+        field.
+        * java/awt/ScrollPane.java (AccessibleAWTScrollPane.serialVersionUID):
+        New field.
+        * java/awt/List.java (AccessibleAWTList.serialVersionUID): New field.
+        (AccessibleAWTListChild.serialVersionUID): Likewise.
+        (AccessibleAWTListChild.parent): Moved earlier.
+        (AccessibleAWTListChild.indexInParent): Renamed.
+
+	2005-09-19  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/filechooser/FileView.java:
+        Reformatted and added API doc comments.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JRootPane.java:
+        (createGlassPane): Don't set the layout manager to BorderLayout.  Leave
+        it as JPanel's default FlowLayout.
+
+	2005-09-19  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/ToolTipManager.java:
+        Changed tooltip to be JDialog (no entry in taskbar),
+        instead of JWindow.
+        (actionPerformed): No need to start timer here.
+        (mouseEntered): No need to call showTip here, it is called
+        when the timer fires.
+        (showTip): Shouldn't show tip if it is already visible or
+        the current component is not showing.
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (getRowForPath): Re-implemented.
+        (mousePressed): Call getRowForPath instead, also
+        added a check in for leaf icons.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JLayeredPane.java:
+        (<init>): Set layout manager to null.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java:
+        (GlassPaneDispatcher.handleEvent): Added check for mouseEventTarget
+        being null to avoid NPE.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/JRootPane.java:
+        (RootLayout.layoutContainer): Added comment about how the
+        components should be sized.  Fixed size of glassPane which fills the
+        entire viewable region, including overtop the menuBar.  Used bounds
+        minus insets for containerSize, as indicated in comment, rather than
+        getSize().  Used setBounds instead of setSize for layeredPane because
+        its relation to the other components' sizes is more obvious that way.
+
+	2005-09-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+        * javax/swing/plaf/basic/BasicInternalFrameUI.java:
+        (GlassPaneDispatcher.handleEvent): Replaced call to SwingUtilities'
+        convertMouseEvent (with identical source and desination) with a simple
+        cast.  If acquireComponentForMouseEvent reveals we're going to
+        re-dispatch this event to ourselves (and loop infinitely), return. Also
+        replaced contentPane by glassPane as the source argument to
+        SwingUtilities.convertMouseEvent since the glassPane is the real source.
+
+	2005-09-19  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicArrowButton.java
+        (paintTriangle): minor correction to highlight on triangle for disabled
+        buttons.
+
+	2005-09-19  Tom Tromey  <tromey@redhat.com>
+
+        * javax/print/DocFlavor.java (BYTE_ARRAY.serialVersionUID): New field.
+        (INPUT_STREAM.serialVersionUID): Likewise.
+
+	2005-09-19  Tom Tromey  <tromey@redhat.com>
+
+        * java/text/DateFormat.java (serialVersionUID): New field.
+
+	2005-19-19  Lillian Angel  <langel@redhat.com>
+
+        * javax/swing/plaf/basic/BasicTreeUI.java
+        (selectPath): Changed so DISCONTIGUOUS_TREE_SELECTION is the
+        default.
+        * javax/swing/JTree.java
+        (AccessibleJTreeNode): Initialized all fields.
+        (addAccessibleSelection): Implemented.
+        (clearAccessibleSelection): Implemented.
+        (doAccessibleAction): Implemented.
+        (getAccessibleAction): Implemented.
+        (getAccessibleActionCount): Implemented.
+        (getAccessibleActionDescription): Implemented.
+        (getAccesssibleChild): Remove mod variable, made global.
+        (getAccessibleComponent): Changed to return this, since this
+        class implements AccessibleComponent.
+        (getAccessibleSelection): Likewise.
+        (getAccessibleSelection): Implemented.
+        (getAccessibleSelectionCount): Implemented.
+        (getAccessibleStateSet): Remove mod variable, made global.
+        (getCursor): Implemented.
+        (isAccessibleChildSelected): Remove mod variable, made global.
+        (removeAccessibleSelection): Implemented.
+        (selectAllAccessibleSelection): Implemented.
+        (setCursor): Implemented.
+        (AccessibleJTree): Nothing to do.
+        (getAccessibleAt): Implemented.
+        (getAccessibleSelection): Implemented.
+        (getAccessibleSelection): Implemented.
+
+	2005-09-19  Tom Tromey  <tromey@redhat.com>
+
+        * javax/xml/xpath/XPathFunctionException.java (serialVersionUID): New
+        field.
+        * javax/xml/xpath/XPathFactoryConfigurationException.java
+        (serialVersionUID): New field.
+        * javax/xml/xpath/XPathExpressionException.java (serialVersionUID): New
+        field.
+        * javax/xml/xpath/XPathException.java (serialVersionUID): New field.
+        * javax/xml/transform/TransformerConfigurationException.java (locator):
+        Removed.
+        (TransformerConfigurationException): Pass locator to super constructor.
+        (serialVersionUID): New field.
+        * javax/xml/transform/TransformerFactoryConfigurationError.java
+        (serialVersionUID): New field.
+        * javax/xml/transform/TransformerException.java (containedException):
+        Renamed field.
+        (serialVersionUID): New field.
+
+	2005-09-19  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (UpdateHandler.propertyChange): Handle changes of the editable
+        property.
+        (paintBackground): Moved implementation to
+        UpdateHandler.propertyChange. This method itself should not fill
+        the background.
+
+	2005-09-19  Roman Kennke  <kennke@aicas.com>
+
+        * javax/swing/border/TitledBorder.java
+        (paintBorder): Correctly set the Y offset for the border title.
+        (getMeasurements): Determine the correct Y offset for the border
+        title.
+
+	2005-09-19  Robert Schuster  <robertschuster@fsfe.org>
+
+        * java/awt/Checkbox.java:
+        (Checkbox): Properly set as selected checkbox in corresponding
+        checkbox group.
+        (paramString): Removed checkbox group information.
+        * java/awt/Component.java:
+        (paramString): Removed redundant "=".
+
+	2005-09-19  David Gilbert  <david.gilbert@object-refinery.com>
+
+        * javax/swing/plaf/basic/BasicComboBoxUI.java
+        (installComponents): call configureArrowButton after creating button,
+        (configureEditor): set the selected item,
+        (configureArrowButton): set a zero margin,
+        (getPreferredSize): delegate to getMinimumSize(),
+        (getMinimumSize): now uses code that was in getPreferredSize(),
+        (getDefaultSize): reduce default height,
+        (ComboBoxLayoutManager.layoutComponent): use comboBox height as button
+        width,
+        (PropertyChangeHandler.propertyChange): set font on arrow button,
+        * javax/swing/plaf/metal/MetalComboBoxUI.java
+        (instances): deleted field,
+        (MetalComboBoxLayoutManager): new class,
+        (MetalPropertyChangeListener): new class,
+        (MetalComboPopup): new class,
+        (createUI): just return new instance,
+        (createEditor): implemented,
+        (createPopup): implemented,
+        (createArrowButton): implemented,
+        (createPropertyChangeListener): implemented,
+        (paint): implemented,
+        (editablePropertyChanged): implemented,
+        (createLayoutManager): implemented,
+        (removeListeners): implemented,
+        (getMinimumSize): implemented.
+
+	2005-09-19  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+        (Java_gnu_java_awt_peer_gtk_GdkFontPeer_dispose): Fix double
+        unreferencing pfont->font. Unref pfont->layout instead.
+
 2005-09-20  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

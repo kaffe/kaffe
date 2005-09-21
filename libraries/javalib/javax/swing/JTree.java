@@ -111,7 +111,11 @@ public class JTree
       private JTree tree;
       private TreePath tp;
       private Accessible acc;
-      private AccessibleStateSet states = new AccessibleStateSet();
+      private AccessibleStateSet states;
+      private Vector selectionList;
+      private Vector actionList;
+      private TreeModel mod;
+      private Cursor cursor;
       
       /**
        * Constructs an AccessibleJTreeNode
@@ -122,20 +126,54 @@ public class JTree
        */
       public AccessibleJTreeNode(JTree t, TreePath p, Accessible ap)
       {
+        states = new AccessibleStateSet();
+        selectionList = new Vector();
+        actionList = new Vector();
+        mod = tree.getModel();
+        cursor = JTree.this.getCursor();
+                
         tree = t;
         tp = p;
         acc = ap;
+        
+        // Add all the children of this path that may already be
+        // selected to the selection list.
+        TreePath[] selected = tree.getSelectionPaths();
+        for (int i = 0; i < selected.length; i++)
+          {
+            TreePath sel = selected[i];
+            if ((sel.getParentPath()).equals(tp))
+              selectionList.add(sel);
+          }
+        
+        // Add all the actions available for a node to 
+        // the action list.
+        actionList.add("EXPAND");
+        actionList.add("COLLAPSE");
+        actionList.add("EDIT");
+        actionList.add("SELECT");
+        actionList.add("DESELECT");
       }      
       
       /**
        * Adds the specified selected item in the object to the object's
        * selection.
        * 
-       * @param i - the i-th element in the TreePath to add to the selection
+       * @param i - the i-th child of this node.
        */
       public void addAccessibleSelection(int i)
       {
-        // FIXME: not implemented properly.
+        if (mod != null)
+          {
+            Object child = mod.getChild(tp.getLastPathComponent(), i);
+            if (child != null)
+              {
+                if (!states.contains(AccessibleState.MULTISELECTABLE))
+                  clearAccessibleSelection();
+                selectionList.add(child);                  
+                tree.addSelectionPath(tp.pathByAddingChild(child));
+              }
+          }
       }
       
       /**
@@ -165,7 +203,7 @@ public class JTree
        */
       public void clearAccessibleSelection()
       {
-        // Nothing to do here.
+        selectionList.clear();
       }
       
       /**
@@ -189,8 +227,22 @@ public class JTree
        */
       public boolean doAccessibleAction(int i)
       {
-        // FIXME: Not implemented fully.
-        return false;
+        if (i >= actionList.size() || i < 0)
+          return false;
+        
+        if (actionList.get(i).equals("EXPAND"))
+          tree.expandPath(tp);
+        else if (actionList.get(i).equals("COLLAPSE"))
+          tree.collapsePath(tp);
+        else if (actionList.get(i).equals("SELECT"))
+          tree.addSelectionPath(tp);
+        else if (actionList.get(i).equals("DESELECT"))
+          tree.removeSelectionPath(tp);
+        else if (actionList.get(i).equals("EDIT"))
+          tree.startEditingAtPath(tp);
+        else
+          return false;
+        return true;
       }
       
       /**
@@ -200,8 +252,7 @@ public class JTree
        */
       public AccessibleAction getAccessibleAction()
       {
-        // FIXME: Not implemented fully.
-        return super.getAccessibleAction();
+        return this;
       }
       
       /**
@@ -211,8 +262,7 @@ public class JTree
        */
       public int getAccessibleActionCount()
       {
-        // FIXME: Not implemented fully.
-        return 0;
+        return actionList.size();
       }
       
       /**
@@ -223,6 +273,8 @@ public class JTree
        */
       public String getAccessibleActionDescription(int i)
       {
+        if (i < 0 || i >= actionList.size())
+          return (actionList.get(i)).toString();
         return super.getAccessibleDescription();
       }
       
@@ -249,7 +301,6 @@ public class JTree
        */
       public Accessible getAccessibleChild(int i)
       {
-        TreeModel mod = tree.getModel();
         if (mod != null)
           {
             Object child = mod.getChild(tp.getLastPathComponent(), i);
@@ -280,7 +331,7 @@ public class JTree
        */
       public AccessibleComponent getAccessibleComponent()
       {
-        return super.getAccessibleComponent();
+        return this;
       }
       
       /**
@@ -357,8 +408,7 @@ public class JTree
        */
       public AccessibleSelection getAccessibleSelection()
       {
-        // FIXME: Not implemented fully.
-        return super.getAccessibleSelection();
+        return this;
       }
       
       /**
@@ -369,10 +419,10 @@ public class JTree
        */
       public Accessible getAccessibleSelection(int i)
       {
-        // FIXME: Not implemented properly.
-        return new AccessibleJTreeNode(tree, tree.
-                                       getSelectionModel().
-                                       getSelectionPaths()[i], acc);
+        if (i > 0 && i < getAccessibleSelectionCount())
+            return new AccessibleJTreeNode(tree, 
+                  tp.pathByAddingChild(selectionList.get(i)), acc);
+        return null;
       }
       
       /**
@@ -382,7 +432,7 @@ public class JTree
        */
       public int getAccessibleSelectionCount()
       {
-        return AccessibleJTree.this.getAccessibleSelectionCount();
+        return selectionList.size();
       }
       
       /**
@@ -392,7 +442,6 @@ public class JTree
        */
       public AccessibleStateSet getAccessibleStateSet()
       {
-        TreeModel mod = tree.getModel();
         if (isVisible())
           states.add(AccessibleState.VISIBLE);
         if (tree.isCollapsed(tp))
@@ -469,8 +518,7 @@ public class JTree
        */
       public Cursor getCursor()
       {
-        // FIXME: Not implemented fully.
-        return null;
+        return cursor;
       }
       
       /**
@@ -568,9 +616,10 @@ public class JTree
        */
       public boolean isAccessibleChildSelected(int i)
       {
-        TreeModel mod = tree.getModel();
         Object child = mod.getChild(tp.getLastPathComponent(), i);
-        return tree.isPathSelected(tp.pathByAddingChild(child));
+        if (child != null)
+          return tree.isPathSelected(tp.pathByAddingChild(child));
+        return false;
       }
       
       /**
@@ -622,12 +671,20 @@ public class JTree
        */
       public void removeAccessibleSelection(int i)
       {
-        // FIXME: Not implemented properly.
-        TreePath[] elements = tree.getSelectionPaths();
-        Object[] newElements = new Object[i];
-        for (int j = 0; j < i; j++)
-          newElements[j] = elements[j];
-        tree.removeSelectionPath(new TreePath(newElements));
+        if (mod != null)
+          {
+            Object child = mod.getChild(tp.getLastPathComponent(), i);
+            if (child != null)
+              {
+                if (!states.contains(AccessibleState.MULTISELECTABLE))
+                  clearAccessibleSelection();
+                if (selectionList.contains(child))
+                  {
+                    selectionList.remove(child);                  
+                    tree.removeSelectionPath(tp.pathByAddingChild(child));
+                  }
+              }
+          }
       }
       
       /**
@@ -665,7 +722,24 @@ public class JTree
        */
       public void selectAllAccessibleSelection()
       {
-        // FIXME: Not implemented fully.
+        Object parent = tp.getLastPathComponent();
+        if (mod != null)
+          {
+            for (int i = 0; i < mod.getChildCount(parent); i++)
+              {
+                Object child = mod.getChild(parent, i);
+                if (child != null)
+                  {
+                    if (!states.contains(AccessibleState.MULTISELECTABLE))
+                      clearAccessibleSelection();
+                    if (selectionList.contains(child))
+                      {
+                        selectionList.add(child);
+                        tree.addSelectionPath(tp.pathByAddingChild(child));
+                      }
+                  }
+              }
+          }
       }
       
       /**
@@ -715,7 +789,7 @@ public class JTree
        */
       public void setCursor(Cursor c)
       {
-        // FIXME: Not implemented fully.
+        cursor = c;
       }
       
       /**
@@ -784,7 +858,7 @@ public class JTree
      */
     public AccessibleJTree()
     {
-      // FIXME: Not implemented fully.
+      // Nothing to do here.
     }
     
     /**
@@ -822,7 +896,9 @@ public class JTree
      */
     public Accessible getAccessibleAt(Point p)
     {
-      // FIXME: Not implemented fully.
+      TreePath tp = getClosestPathForLocation(p.x, p.y);
+      if (tp != null)
+        return new AccessibleJTreeNode(JTree.this, tp, null);
       return null;
     }
     
@@ -873,11 +949,14 @@ public class JTree
     /**
      * Get the AccessibleSelection associated with this object.
      * 
-     * @param the accessible selection of the tree
+     * @return the accessible selection of the tree
      */
     public AccessibleSelection getAccessibleSelection()
     {
-      // FIXME: Not implemented fully.
+      TreeModel mod = getModel();
+      if (mod != null)
+        return (new AccessibleJTreeNode(JTree.this, 
+                  new TreePath(mod.getRoot()), null)).getAccessibleSelection();
       return null;
     }
     
@@ -888,7 +967,10 @@ public class JTree
      */
     public Accessible getAccessibleSelection(int i)
     {
-      // FIXME: Not implemented fully.
+      TreeModel mod = getModel();
+      if (mod != null)
+        return (new AccessibleJTreeNode(JTree.this, 
+                  new TreePath(mod.getRoot()), null)).getAccessibleSelection(i);
       return null;
     }
     

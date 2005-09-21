@@ -592,6 +592,8 @@ paramString()
   
   protected class AccessibleAWTScrollPane extends AccessibleAWTContainer
   {
+    private static final long serialVersionUID = 6100703663886637L;
+
     public AccessibleRole getAccessibleRole()
     {
       return AccessibleRole.SCROLL_PANE;

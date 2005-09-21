@@ -899,6 +899,10 @@ public class DefaultStyledDocument extends AbstractDocument
 
   /**
    * Returns the paragraph element for the specified position.
+   * If the position is outside the bounds of the document's root element,
+   * then the closest element is returned. That is the last paragraph if
+   * <code>position >= endIndex</code> or the first paragraph if
+   * <code>position < startIndex</code>.
    *
    * @param position the position for which to query the paragraph element
    *
@@ -907,7 +911,16 @@ public class DefaultStyledDocument extends AbstractDocument
   public Element getParagraphElement(int position)
   {
     BranchElement root = (BranchElement) getDefaultRootElement();
+    int start = root.getStartOffset();
+    int end = root.getEndOffset();
+    if (position >= end)
+      position = end - 1;
+    else if (position < start)
+      position = start;
+
     Element par = root.positionToElement(position);
+
+    assert par != null : "The paragraph element must not be null";
     return par;
   }
 
@@ -1025,11 +1038,19 @@ public class DefaultStyledDocument extends AbstractDocument
    *     selection are overridden, otherwise they are merged
    */
   public void setParagraphAttributes(int offset, int length,
-				     AttributeSet attributes,
-				     boolean replace)
+                                     AttributeSet attributes,
+                                     boolean replace)
   {
-    // FIXME: Implement me.
-    throw new Error("not implemented");
+    int index = offset;
+    while (index < offset + length)
+      {
+        AbstractElement par = (AbstractElement) getParagraphElement(index);
+        AttributeContext ctx = getAttributeContext();
+        if (replace)
+          par.removeAttributes(par);
+        par.addAttributes(attributes);
+        index = par.getElementCount();
+      }
   }
 
   /**
@@ -1081,7 +1102,7 @@ public class DefaultStyledDocument extends AbstractDocument
             // joined with the previous element.
             else if (specs.size() == 0)
               {
-                if (attr.isEqual(prev.getAttributes()))
+                if (prev.getAttributes().isEqual(attr))
                     spec.setDirection(ElementSpec.JoinPreviousDirection);
               }
 

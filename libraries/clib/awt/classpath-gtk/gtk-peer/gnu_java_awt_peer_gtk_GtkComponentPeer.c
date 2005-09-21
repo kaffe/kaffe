@@ -762,7 +762,10 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_isRealized
   ptr = NSA_GET_PTR (env, obj);
 
   if (ptr == NULL)
-    return FALSE;
+    {
+      gdk_threads_leave ();
+      return FALSE;
+    }
 
   ret_val = GTK_WIDGET_REALIZED (GTK_WIDGET (ptr));
 

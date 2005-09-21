@@ -43,6 +43,7 @@ import java.io.Reader;
 import java.io.Serializable;
 
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyledEditorKit;
 
@@ -78,7 +79,7 @@ public class HTMLEditorKit
                               )
                         throws IOException;
   }
-
+  
   /**
    * The "hook" that receives all information about the HTML document
    * structure while parsing it. The methods are invoked by parser
@@ -247,4 +248,15 @@ public class HTMLEditorKit
    * The "ident paragraph right" action.
    */
   public static final String PARA_INDENT_RIGHT = "html-para-indent-right";
+  
+  /**
+   * Create a text storage model for this type of editor.
+   * 
+   * @return the model
+   */
+  public Document createDefaultDocument()
+  {
+    HTMLDocument document = new HTMLDocument();
+    return document;
+  }
 }

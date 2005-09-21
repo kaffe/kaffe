@@ -582,7 +582,10 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
                 if (fit)
                   popup = new MediumWeightPopup(this);
                 else
-                  popup = new HeavyWeightPopup(this);
+                  {
+                    popup = new HeavyWeightPopup(this);
+                    setLightWeightPopupEnabled(false);
+                  }
               }
             if (popup instanceof LightWeightPopup
                 || popup instanceof MediumWeightPopup)

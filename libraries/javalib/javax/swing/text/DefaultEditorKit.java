@@ -947,15 +947,23 @@ public class DefaultEditorKit extends EditorKit
    * @param offset the beginning offset from where to write
    * @param len the length of the fragment to write
    *
-   * @throws BadLocationException if <code>offset</code> or
-   *         <code>offset + len</code>is an invalid location inside
-   *         <code>document</code>
+   * @throws BadLocationException if <code>offset</code> is an 
+   * invalid location inside <code>document</code>.
    * @throws IOException if something goes wrong while writing to
    *        <code>out</code>
    */
   public void write(Writer out, Document document, int offset, int len)
-    throws BadLocationException, IOException
+      throws BadLocationException, IOException
   {
-    // TODO: Implement this properly.
+    // Throw a BLE if offset is invalid
+    if (offset < 0 || offset > document.getLength())
+      throw new BadLocationException("Tried to write to invalid location",
+                                     offset);
+
+    // If they gave an overly large len, just adjust it
+    if (offset + len > document.getLength())
+      len = document.getLength() - offset;
+
+    out.write(document.getText(offset, len));
   }
 }

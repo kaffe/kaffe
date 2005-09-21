@@ -835,6 +835,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "EditorPane.selectionForeground", getHighlightedTextColor(),
       
       "FormattedTextField.background", getWindowBackground(),
+      "FormattedTextField.border",
+      new BorderUIResource(MetalBorders.getTextFieldBorder()),
       "FormattedTextField.caretForeground", getUserTextColor(),
       "FormattedTextField.font", new FontUIResource("Dialog", Font.PLAIN, 12),
       "FormattedTextField.foreground",  getUserTextColor(),
@@ -926,6 +928,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Panel.foreground", getUserTextColor(),
 
       "PasswordField.background", getWindowBackground(),
+      "PasswordField.border",
+      new BorderUIResource(MetalBorders.getTextFieldBorder()),
       "PasswordField.caretForeground", getUserTextColor(),
       "PasswordField.foreground", getUserTextColor(),
       "PasswordField.inactiveBackground", getControl(),
@@ -1048,7 +1052,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Table.foreground", getControlTextColor(),
       "Table.focusCellHighlightBorder", getControlShadow(),
       "Table.focusCellBackground", getWindowBackground(),
-      "Table.gridColor", getControlShadow(),
+      "Table.gridColor", getControlDarkShadow(),
 
       "TableHeader.background", getControl(),
       "TableHeader.cellBorder", new MetalBorders.TableHeaderBorder(),
@@ -1063,7 +1067,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "TextArea.selectionForeground", getHighlightedTextColor(),
 
       "TextField.background", getWindowBackground(),
-      "TextField.border", MetalBorders.getTextFieldBorder(),
+      "TextField.border",
+      new BorderUIResource(MetalBorders.getTextFieldBorder()),
       "TextField.caretForeground", getUserTextColor(),
       "TextField.darkShadow", getControlDarkShadow(),
       "TextField.font", new FontUIResource("Dialog", Font.PLAIN, 12),

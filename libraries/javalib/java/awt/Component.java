@@ -4240,9 +4240,9 @@ public abstract class Component
     if (isDoubleBuffered())
       param.append(",doublebuffered");
     if (parent == null)
-      param.append(",parent==null");
+      param.append(",parent=null");
     else
-      param.append(",parent==").append(parent.getName());
+      param.append(",parent=").append(parent.getName());
     return param.toString();
   }
 

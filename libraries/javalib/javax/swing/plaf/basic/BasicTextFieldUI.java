@@ -79,8 +79,21 @@ public class BasicTextFieldUI extends BasicTextUI
     super.installUI(c);
   }
 
+  /**
+   * Receives notification whenever one of the text component's bound
+   * properties changes. Here we check for the editable and enabled
+   * properties and adjust the background color accordingly.
+   *
+   * @param event the property change event
+   */
   protected void propertyChange(PropertyChangeEvent event)
   {
-    // Does nothing by default.
+    if (event.getPropertyName().equals("editable"))
+      {
+        if (textComponent.isEditable())
+          textComponent.setBackground(background);
+        else 
+          textComponent.setBackground(inactiveBackground);
+      }
   }
 }

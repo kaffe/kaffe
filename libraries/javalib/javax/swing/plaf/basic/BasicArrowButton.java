@@ -322,8 +322,8 @@ public class BasicArrowButton extends JButton implements SwingConstants
 	break;
       case SOUTH:
 	x1 = xPoints[1];
-	y1 = yPoints[1] + 1;
-	x2 = xPoints[2] - 1;
+	y1 = yPoints[1];
+	x2 = xPoints[2];
 	y2 = yPoints[2];
 	break;
       case LEFT:

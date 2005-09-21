@@ -132,6 +132,7 @@ public class BasicButtonUI extends ButtonUI
     b.setIconTextGap(defaults.getInt(prefix + "textIconGap"));
     b.setInputMap(JComponent.WHEN_FOCUSED, 
                   (InputMap) defaults.get(prefix + "focusInputMap"));
+    b.setRolloverEnabled(defaults.getBoolean(prefix + "rollover"));
     b.setOpaque(true);
   }
 
@@ -408,15 +409,15 @@ public class BasicButtonUI extends ButtonUI
 
     if (b.isEnabled())
       {
-	g.setColor(b.getForeground());
-	g.drawString(text, textRect.x, textRect.y + fm.getAscent());
+        g.setColor(b.getForeground());
+        g.drawString(text, textRect.x, textRect.y + fm.getAscent());
       }
     else
       {
-	g.setColor(b.getBackground().brighter());
-	g.drawString(text, textRect.x, textRect.y + fm.getAscent());
-	g.setColor(b.getBackground().darker());
-	g.drawString(text, textRect.x + 1, textRect.y + fm.getAscent() + 1);
+        UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+        String prefix = getPropertyPrefix();
+        g.setColor(defaults.getColor(prefix + "disabledText"));
+        g.drawString(text, textRect.x, textRect.y + fm.getAscent());
       }
   } 
 }

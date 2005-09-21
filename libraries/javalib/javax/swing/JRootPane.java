@@ -164,9 +164,17 @@ public class JRootPane extends JComponent implements Accessible
     public void layoutContainer(Container c)
     {
       Dimension menuBarSize;
-      Dimension containerSize = c.getSize(null);
+      int containerWidth = c.getBounds().width - getInsets().left
+                           - getInsets().right;
+      int containerHeight = c.getBounds().height - getInsets().top
+                            - getInsets().bottom;
       Dimension contentPaneSize = getContentPane().getPreferredSize();
 
+      // 1. the glassPane fills entire viewable region (bounds - insets).
+      // 2. the layeredPane filles entire viewable region.
+      // 3. the menuBar is positioned at the upper edge of layeredPane.
+      // 4. the contentPane fills viewable region minus menuBar, if present.
+      
       /*
        if size of top-level window wasn't set then just set
        contentPane and menuBar to its preferred sizes.
@@ -189,7 +197,7 @@ public class JRootPane extends JComponent implements Accessible
        +-------------------------------+
 
       */
-      if (containerSize.width == 0 && containerSize.height == 0)
+      if (containerWidth == 0 && containerHeight == 0)
         {
           if (menuBar != null)
             {
@@ -197,12 +205,12 @@ public class JRootPane extends JComponent implements Accessible
               menuBarSize = menuBar.getPreferredSize();
               maxWidth = Math.max(menuBarSize.width, contentPaneSize.width);
               menuBar.setBounds(0, 0, maxWidth, menuBarSize.height);
-              glassPane.setBounds(0, menuBarSize.height, maxWidth,
-                                  contentPaneSize.height);
+              glassPane.setBounds(0, 0, maxWidth, menuBarSize.height
+                                                  + contentPaneSize.height);
               contentPane.setBounds(0, menuBarSize.height, maxWidth,
                                     contentPaneSize.height);
-              layeredPane.setSize(maxWidth,
-                                  menuBarSize.height + contentPaneSize.height);
+              layeredPane.setBounds(0, 0, maxWidth, menuBarSize.height
+                                                    + contentPaneSize.height);
             }
           else
             {
@@ -210,7 +218,8 @@ public class JRootPane extends JComponent implements Accessible
                                   contentPaneSize.height);
               contentPane.setBounds(0, 0, contentPaneSize.width,
                                     contentPaneSize.height);
-              layeredPane.setSize(contentPaneSize.width, contentPaneSize.height);
+              layeredPane.setBounds(0, 0, contentPaneSize.width,
+                                    contentPaneSize.height);
             }
         }
       else
@@ -218,25 +227,19 @@ public class JRootPane extends JComponent implements Accessible
           if (menuBar != null)
             {
               menuBarSize = menuBar.getPreferredSize();
-              if (menuBarSize.height > containerSize.height)
-                menuBarSize.height = containerSize.height;
-              menuBar.setBounds(0, 0, containerSize.width, menuBarSize.height);
-              int remainingHeight = containerSize.height - menuBarSize.height;
-              glassPane.setBounds(0, menuBarSize.height, containerSize.width,
-                                  containerSize.height - menuBarSize.height);
-              contentPane.setBounds(0, menuBarSize.height,
-                                    containerSize.width,
-                                    (containerSize.height - menuBarSize.height));
+              if (menuBarSize.height > containerHeight)
+                menuBarSize.height = containerHeight;
+              menuBar.setBounds(0, 0, containerWidth, menuBarSize.height);
+              glassPane.setBounds(0, 0, containerWidth, containerHeight);
+              contentPane.setBounds(0, menuBarSize.height, containerWidth,
+                                    (containerHeight - menuBarSize.height));
             }
           else
             {
-              glassPane.setBounds(0, 0, containerSize.width,
-                                  containerSize.height);
-              contentPane.setBounds(0, 0, containerSize.width,
-                                    containerSize.height);
+              glassPane.setBounds(0, 0, containerWidth, containerHeight);
+              contentPane.setBounds(0, 0, containerWidth, containerHeight);
             }
-
-          layeredPane.setSize(containerSize.width, containerSize.height);
+          layeredPane.setBounds(0, 0, containerWidth, containerHeight);
         }
     }
 
@@ -537,7 +540,6 @@ public class JRootPane extends JComponent implements Accessible
   {
     JPanel p = new JPanel();
     p.setName(this.getName() + ".glassPane");
-    p.setLayout(new BorderLayout());
     p.setVisible(false);
     p.setOpaque(false);
     return p;

@@ -452,7 +452,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     // create and install arrow button
     arrowButton = createArrowButton();
-
+    configureArrowButton();
     comboBox.add(arrowButton);
 
     // Set list that will be used by BasicComboBoxRender 
@@ -516,6 +516,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected void configureEditor()
   {
     editor.setFont(comboBox.getFont());
+    comboBox.getEditor().setItem(comboBox.getSelectedItem());
     // FIXME: Need to implement. Set font and add listeners.
   }
 
@@ -536,6 +537,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     arrowButton.setEnabled(comboBox.isEnabled());
     arrowButton.setFont(comboBox.getFont());
+    arrowButton.setMargin(new Insets(0, 0, 0, 0));
   }
 
   /**
@@ -625,11 +627,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public Dimension getPreferredSize(JComponent c)
   {
-    Dimension d = getDisplaySize();
-    Dimension arrowDim = arrowButton.getPreferredSize();
-    Dimension result = new Dimension(d.width + arrowDim.width, 
-            Math.max(d.height, arrowDim.height));
-    return result;
+    return getMinimumSize(c);
   }
 
   /**
@@ -642,7 +640,11 @@ public class BasicComboBoxUI extends ComboBoxUI
    */
   public Dimension getMinimumSize(JComponent c)
   {
-    return getPreferredSize(c);
+    Dimension d = getDisplaySize();
+    Dimension arrowDim = arrowButton.getPreferredSize();
+    Dimension result = new Dimension(d.width + arrowDim.width, 
+            Math.max(d.height, arrowDim.height));
+    return result;
   }
 
   /** The value returned by the getMaximumSize() method. */
@@ -810,7 +812,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected Dimension getDefaultSize()
   {
     // FIXME: Not implemented properly.
-    return new Dimension(100, 20);
+    return new Dimension(100, 5);
   }
 
   /**
@@ -852,9 +854,7 @@ public class BasicComboBoxUI extends ComboBoxUI
           size.width = compSize.width;
         if (compSize.height > size.height)
           size.height = compSize.height;
-        
       }
-
     displaySize = size;
     return displaySize;
   }
@@ -952,14 +952,13 @@ public class BasicComboBoxUI extends ComboBoxUI
     {
       // Position editor component to the left of arrow button if combo box is 
       // editable
-      Dimension arrowPrefSize = arrowButton.getPreferredSize();
-      int editorWidth = comboBox.getBounds().width - arrowPrefSize.width;
+      int arrowSize = comboBox.getHeight();
+      int editorWidth = comboBox.getBounds().width - arrowSize;
 
       if (comboBox.isEditable())
         editor.setBounds(0, 0, editorWidth, comboBox.getBounds().height);
       
-      arrowButton.setBounds(editorWidth, 0, arrowPrefSize.width,
-                            comboBox.getBounds().height);
+      arrowButton.setBounds(editorWidth, 0, arrowSize, arrowSize);
       comboBox.revalidate();
     }
   }
@@ -1163,6 +1162,7 @@ public class BasicComboBoxUI extends ComboBoxUI
           Font font = (Font) e.getNewValue();
           editor.setFont(font);
           listBox.setFont(font);
+          arrowButton.setFont(font);
           comboBox.revalidate();
           comboBox.repaint();
         }

@@ -2402,4 +2402,13 @@ public class JTable extends JComponent
     return editor.getTableCellEditorComponent
       (this, getValueAt(row, column), isCellSelected(row, column), row, column);
   }
+
+  /**
+   * This revalidates the <code>JTable</code> and queues a repaint.
+   */
+  protected void resizeAndRepaint()
+  {
+    revalidate();
+    repaint();
+  }
 }

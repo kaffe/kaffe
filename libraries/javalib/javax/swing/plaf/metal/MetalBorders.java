@@ -44,6 +44,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonModel;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -82,6 +83,11 @@ public class MetalBorders
 
   /** The shared instance for getTextFieldBorder(). */
   private static Border textFieldBorder;
+
+  /**
+   * The shared instance for getTextBorder().
+   */
+  private static Border textBorder;
 
   /**
    * A MarginBorder that gets shared by multiple components.
@@ -166,11 +172,11 @@ public class MetalBorders
           }
       }
       else 
-      {
-        // draw disabled border
-        g.setColor(MetalLookAndFeel.getControlDisabled());
-        g.drawRect(x, y, w - 2, h - 2);          
-      }
+        {
+          // draw disabled border
+          g.setColor(MetalLookAndFeel.getInactiveControlTextColor());
+          g.drawRect(x, y, w - 2, h - 2);          
+        }
     }
 
     /**
@@ -1147,8 +1153,33 @@ public class MetalBorders
   public static Border getTextFieldBorder()
   {
     if (textFieldBorder == null)
-      textFieldBorder = new TextFieldBorder();
+      {
+        Border inner = getMarginBorder();
+        Border outer = new TextFieldBorder();
+        textFieldBorder =
+          new BorderUIResource.CompoundBorderUIResource(outer, inner);
+      }
     return textFieldBorder;
+  }
+
+  /**
+   * Returns the border that is used for text components (except text fields,
+   * which use {@link #getTextFieldBorder}.
+   *
+   * @return the border that is used for text components
+   *
+   * @since 1.3
+   */
+  public static Border getTextBorder()
+  {
+    if (textBorder == null)
+      {
+        Border inner = getMarginBorder();
+        Border outer = new Flush3DBorder();
+        textBorder =
+          new BorderUIResource.CompoundBorderUIResource(outer, inner);
+      }
+    return textBorder;
   }
 
   /**

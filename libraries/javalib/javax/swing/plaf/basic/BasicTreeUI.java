@@ -678,15 +678,13 @@ public class BasicTreeUI
    */
   public int getRowForPath(JTree tree, TreePath path)
   {
-    int row = path.getPathCount();
-    if (tree.isVisible(path))
-      return row;
-
-    path = path.getParentPath();
-    while (row > 0 && !tree.isVisible(path))
+    int row = 0;
+    Object dest = path.getLastPathComponent();
+    Object curr = treeModel.getRoot();
+    while (curr != null && !curr.equals(dest))
       {
-        path = path.getParentPath();
-        row--;
+        ++row;
+        curr = getNextVisibleNode(curr);
       }
     return row;
   }
@@ -1616,6 +1614,7 @@ public class BasicTreeUI
       {
         editingPath = path;
         editingRow = tree.getRowForPath(editingPath);
+
         Object val = editingPath.getLastPathComponent();
         cellEditor.addCellEditorListener(cellEditorListener);
         stopEditingInCompleteEditing = false;
@@ -1674,6 +1673,7 @@ public class BasicTreeUI
   {
     boolean cntlClick = false;
     int row = getRowForPath(tree, path);
+    
     if (!isLeaf(row))
       {
         if (bounds == null)
@@ -2305,25 +2305,24 @@ public class BasicTreeUI
     public void mousePressed(MouseEvent e)
     {
       Point click = e.getPoint();
-      int row = Math.round(click.y / getRowHeight());
       TreePath path = getClosestPathForLocation(tree, click.x, click.y);
 
       if (path != null)
         {
           bounds = getPathBounds(tree, path);
+          int row = getRowForPath(tree, path);
           boolean cntlClick = isLocationInExpandControl(path, click.x, click.y);
           
-          if (tree.isExpanded(path) && expandedIcon != null)
+          if (isLeaf(row))
             {
-              bounds.x -= expandedIcon.getIconWidth() - 4;
+              bounds.x -= rightChildIndent - 4;
+              bounds.width += rightChildIndent + 4;
+            }
+          else if (tree.isExpanded(path) && expandedIcon != null)
               bounds.width += expandedIcon.getIconWidth() + 4;
-            }
           else if (collapsedIcon != null)
-            {
-              bounds.x -= collapsedIcon.getIconWidth() - 4;
               bounds.width += collapsedIcon.getIconWidth() + 4;
-            }
-          
+
           boolean inBounds = bounds.contains(click.x, click.y);
           if ((inBounds || cntlClick) && tree.isVisible(path))
             {
@@ -2332,7 +2331,11 @@ public class BasicTreeUI
                   toggleExpandState(path);
               
               if (cntlClick)
-                handleExpandControlClick(path, click.x, click.y);
+                {
+                  handleExpandControlClick(path, click.x, click.y);
+                  if (cellEditor != null)
+                    cellEditor.cancelCellEditing();
+                }
               else if (tree.isEditable())
                 startEditing(path, e);
             }
@@ -3519,22 +3522,24 @@ public class BasicTreeUI
   {
     if (path != null)
       {
-        if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION)
+        if (tree.getSelectionModel().getSelectionMode() == 
+                          TreeSelectionModel.SINGLE_TREE_SELECTION)
           {
+            tree.getSelectionModel().clearSelection();
             tree.addSelectionPath(path);
             tree.setLeadSelectionPath(path);
           }
-        else if (tree.getSelectionModel().getSelectionMode() == TreeSelectionModel.CONTIGUOUS_TREE_SELECTION)
+        else if (tree.getSelectionModel().getSelectionMode() == 
+                  TreeSelectionModel.CONTIGUOUS_TREE_SELECTION)
           {
             // TODO
           }
         else
           {
-            tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-            tree.getSelectionModel().clearSelection();
             tree.addSelectionPath(path);
             tree.setLeadSelectionPath(path);
+            tree.getSelectionModel().setSelectionMode
+                      (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
           }
       }
   }
