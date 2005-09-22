@@ -73,4 +73,8 @@ typedef struct { char c; void *p; } alignmentof_voidp_helper;
 #define ALIGNMENTOF_VOIDP (offsetof(alignmentof_voidp_helper, p))
 #endif
 
+#ifndef ALIGNMENTOF_VOIDP_IN_STACK
+#define ALIGNMENTOF_VOIDP_IN_STACK ALIGNMENTOF_VOIDP
+#endif
+
 #endif /* __defs_h */

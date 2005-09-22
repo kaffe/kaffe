@@ -1,3 +1,15 @@
+2005-09-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(KaffeGC_WalkMemory): Use a specific alignment for stack.
+
+	* include/defs.h
+	(ALIGNMENTOF_VOIDP_IN_STACK): New macro.
+
+	* config/x86_64/common.h
+	(ALIGNMENTOF_VOIDP_IN_STACK): It is explicitly defined
+	for amd64.
+
 2005-09-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffeh/Makefile.am:

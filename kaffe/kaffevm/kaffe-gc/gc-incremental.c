@@ -340,7 +340,9 @@ DBG(GCWALK,
 	record_marked(1, size);
 
 	if (size > 0) {
-		for (mem = ((const int8*)base) + (size & (uintp)-ALIGNMENTOF_VOIDP) - sizeof(void*);
+		uintp alignment = ALIGNMENTOF_VOIDP_IN_STACK;
+
+		for (mem = ((const int8*)base) + (size & -alignment) - sizeof(void*);
 		     (const void*)mem >= base;
 		     mem -= ALIGNMENTOF_VOIDP) {
 			const void *p = *(void * const *)mem;
