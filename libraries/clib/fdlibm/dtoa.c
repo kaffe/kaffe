@@ -35,12 +35,12 @@ _DEFUN (quorem,
 	_Jv_Bigint * b _AND _Jv_Bigint * S)
 {
   int n;
-  long borrow, y;
-  unsigned long carry, q, ys;
-  unsigned long *bx, *bxe, *sx, *sxe;
+  int borrow, y;
+  unsigned int carry, q, ys;
+  unsigned int *bx, *bxe, *sx, *sxe;
 #ifdef Pack_32
-  long z;
-  unsigned long si, zs;
+  int z;
+  unsigned int si, zs;
 #endif
 
   n = S->_wds;
@@ -145,7 +145,7 @@ void
 print (_Jv_Bigint * b)
 {
   int i, wds;
-  unsigned long *x, y;
+  unsigned int *x, y;
   wds = b->_wds;
   x = b->_x+wds;
   i = 0;
@@ -249,10 +249,10 @@ _DEFUN (_dtoa_r,
     k_check, leftright, m2, m5, s2, s5, try_quick;
   int ilim = 0, ilim1 = 0, spec_case = 0;
   union double_union d, d2, eps;
-  long L;
+  int L;
 #ifndef Sudden_Underflow
   int denorm;
-  unsigned long x;
+  unsigned int x;
 #endif
   _Jv_Bigint *b, *b1, *delta, *mlo = NULL, *mhi, *S;
   double ds;
@@ -441,8 +441,8 @@ _DEFUN (_dtoa_r,
     default:
       break;
     }
-  j = sizeof (unsigned long);
-  for (ptr->_result_k = 0; (int) (sizeof (_Jv_Bigint) - sizeof (unsigned long)) + j <= i;
+  j = sizeof (unsigned int);
+  for (ptr->_result_k = 0; (int) (sizeof (_Jv_Bigint) - sizeof (unsigned int)) + j <= i;
        j <<= 1)
     ptr->_result_k++;
   ptr->_result = Balloc (ptr, ptr->_result_k);

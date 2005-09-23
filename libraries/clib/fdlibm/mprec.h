@@ -261,9 +261,7 @@ extern double rnd_prod(double, double), rnd_quot(double, double);
  */
 
 #ifndef Pack_32
-#if SIZEOF_VOID_P != 8
 #define Pack_32
-#endif
 #endif
 #endif
 
@@ -280,7 +278,7 @@ struct _Jv_Bigint
 {
   struct _Jv_Bigint *_next;
   int _k, _maxwds, _sign, _wds;
-  unsigned long _x[MAX_BIGNUM_WDS];
+  unsigned int _x[MAX_BIGNUM_WDS];
 };
 
 
@@ -354,19 +352,19 @@ double		_EXFUN(b2d,(_Jv_Bigint *a , int *e));
 _Jv_Bigint *	_EXFUN(Balloc,(struct _Jv_reent *p, int k));
 void 		_EXFUN(Bfree,(struct _Jv_reent *p, _Jv_Bigint *v));
 _Jv_Bigint *	_EXFUN(multadd,(struct _Jv_reent *p, _Jv_Bigint *, int, int));
-_Jv_Bigint *	_EXFUN(s2b,(struct _Jv_reent *, const char*, int, int, unsigned long));
+_Jv_Bigint *	_EXFUN(s2b,(struct _Jv_reent *, const char*, int, int, unsigned int));
 _Jv_Bigint *	_EXFUN(i2b,(struct _Jv_reent *,int));
 _Jv_Bigint *	_EXFUN(mult, (struct _Jv_reent *, _Jv_Bigint *, _Jv_Bigint *));
 _Jv_Bigint *	_EXFUN(pow5mult, (struct _Jv_reent *, _Jv_Bigint *, int k));
-int 		_EXFUN(hi0bits,(unsigned long));
-int 		_EXFUN(lo0bits,(unsigned long *));
+int 		_EXFUN(hi0bits,(unsigned int));
+int 		_EXFUN(lo0bits,(unsigned int *));
 _Jv_Bigint *    _EXFUN(d2b,(struct _Jv_reent *p, double d, int *e, int *bits));
 _Jv_Bigint *    _EXFUN(lshift,(struct _Jv_reent *p, _Jv_Bigint *b, int k));
 _Jv_Bigint *    _EXFUN(diff,(struct _Jv_reent *p, _Jv_Bigint *a, _Jv_Bigint *b));
 int             _EXFUN(cmp,(_Jv_Bigint *a, _Jv_Bigint *b));
 
 double		_EXFUN(ratio,(_Jv_Bigint *a, _Jv_Bigint *b));
-#define Bcopy(x,y) memcpy((char *)&x->_sign, (char *)&y->_sign, y->_wds*sizeof(long) + 2*sizeof(int))
+#define Bcopy(x,y) memcpy((char *)&x->_sign, (char *)&y->_sign, y->_wds*sizeof(int) + 2*sizeof(int))
 
 #if defined(_DOUBLE_IS_32BITS) && defined(__v800)
 #define n_bigtens 2

@@ -111,11 +111,11 @@ _DEFUN (_strtod_r, (ptr, s00, se),
   int bb2, bb5, bbe, bd2, bd5, bbbits, bs2, c, dsign, e1, esign, i, j,
     k, nd, nd0, nf, nz, nz0, sign;
   int digits = 0;  /* Number of digits found in fraction part. */
-  long e;
+  int e;
   _CONST char *s, *s0, *s1;
   double aadj, aadj1, adj;
-  long L;
-  unsigned long y, z;
+  int L;
+  unsigned int y, z;
   union double_union rv, rv0;
 
   _Jv_Bigint *bb = NULL, *bb1, *bd = NULL, *bd0, *bs = NULL, *delta = NULL;

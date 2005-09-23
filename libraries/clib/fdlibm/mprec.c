@@ -120,7 +120,7 @@ _DEFUN (Balloc, (ptr, k), struct _Jv_reent *ptr _AND int k)
 void
 _DEFUN (Bfree, (ptr, v), struct _Jv_reent *ptr _AND _Jv_Bigint * v)
 {
-  long i;
+  int i;
 
   i = v - ptr->_freelist;
 
@@ -139,9 +139,9 @@ _DEFUN (multadd, (ptr, b, m, a),
 	int a)
 {
   int i, wds;
-  unsigned long *x, y;
+  unsigned int *x, y;
 #ifdef Pack_32
-  unsigned long xi, z;
+  unsigned int xi, z;
 #endif
   _Jv_Bigint *b1;
 
@@ -184,11 +184,11 @@ _DEFUN (s2b, (ptr, s, nd0, nd, y9),
 	_CONST char *s _AND
 	int nd0 _AND
 	int nd _AND
-	unsigned long y9)
+	unsigned int y9)
 {
   _Jv_Bigint *b;
   int i, k;
-  long x, y;
+  int x, y;
 
   x = (nd + 8) / 9;
   for (k = 0, y = 1; x > y; y <<= 1, k++);
@@ -220,7 +220,7 @@ _DEFUN (s2b, (ptr, s, nd0, nd, y9),
 
 int
 _DEFUN (hi0bits,
-	(x), register unsigned long x)
+	(x), register unsigned int x)
 {
   register int k = 0;
 
@@ -254,10 +254,10 @@ _DEFUN (hi0bits,
 }
 
 int
-_DEFUN (lo0bits, (y), unsigned long *y)
+_DEFUN (lo0bits, (y), unsigned int *y)
 {
   register int k;
-  register unsigned long x = *y;
+  register unsigned int x = *y;
 
   if (x & 7)
     {
@@ -319,10 +319,10 @@ _DEFUN (mult, (ptr, a, b), struct _Jv_reent * ptr _AND _Jv_Bigint * a _AND _Jv_B
 {
   _Jv_Bigint *c;
   int k, wa, wb, wc;
-  unsigned long carry, y, z;
-  unsigned long *x, *xa, *xae, *xb, *xbe, *xc, *xc0;
+  unsigned int carry, y, z;
+  unsigned int *x, *xa, *xae, *xb, *xbe, *xc, *xc0;
 #ifdef Pack_32
-  unsigned long z2;
+  unsigned int z2;
 #endif
 
   if (a->_wds < b->_wds)
@@ -450,7 +450,7 @@ _DEFUN (lshift, (ptr, b, k), struct _Jv_reent * ptr _AND _Jv_Bigint * b _AND int
 {
   int i, k1, n, n1;
   _Jv_Bigint *b1;
-  unsigned long *x, *x1, *xe, z;
+  unsigned int *x, *x1, *xe, z;
 
 #ifdef Pack_32
   n = k >> 5;
@@ -508,7 +508,7 @@ _DEFUN (lshift, (ptr, b, k), struct _Jv_reent * ptr _AND _Jv_Bigint * b _AND int
 int
 _DEFUN (cmp, (a, b), _Jv_Bigint * a _AND _Jv_Bigint * b)
 {
-  unsigned long *xa, *xa0, *xb, *xb0;
+  unsigned int *xa, *xa0, *xb, *xb0;
   int i, j;
 
   i = a->_wds;
@@ -541,10 +541,10 @@ _DEFUN (diff, (ptr, a, b), struct _Jv_reent * ptr _AND
 {
   _Jv_Bigint *c;
   int i, wa, wb;
-  long borrow, y;		/* We need signed shifts here. */
-  unsigned long *xa, *xae, *xb, *xbe, *xc;
+  int borrow, y;		/* We need signed shifts here. */
+  unsigned int *xa, *xae, *xb, *xbe, *xc;
 #ifdef Pack_32
-  long z;
+  int z;
 #endif
 
   i = cmp (a, b);
@@ -623,7 +623,7 @@ double
 _DEFUN (ulp, (_x), double _x)
 {
   union double_union x, a;
-  register long L;
+  register int L;
 
   x.d = _x;
 
@@ -669,11 +669,11 @@ double
 _DEFUN (b2d, (a, e),
 	_Jv_Bigint * a _AND int *e)
 {
-  unsigned long *xa, *xa0, w, y, z;
+  unsigned int *xa, *xa0, w, y, z;
   int k;
   union double_union d;
 #ifdef VAX
-  unsigned long d0, d1;
+  unsigned int d0, d1;
 #else
 #define d0 word0(d)
 #define d1 word1(d)
@@ -754,9 +754,9 @@ _DEFUN (d2b,
   union double_union d;
   _Jv_Bigint *b;
   int de, i, k;
-  unsigned long *x, y, z;
+  unsigned int *x, y, z;
 #ifdef VAX
-  unsigned long d0, d1;
+  unsigned int d0, d1;
   d.d = _d;
   d0 = word0 (d) >> 16 | word0 (d) << 16;
   d1 = word1 (d) >> 16 | word1 (d) << 16;

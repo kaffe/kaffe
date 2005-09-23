@@ -1,3 +1,10 @@
+2005-09-23  Gwenole Beauchesne  <gbeauchesne@mandriva.com>
+
+	* libraries/clib/fdlibm/: Such an ancient code assumed "long" as a
+	32-bit word value, thus changing its occurrences to "int".
+
+	Fixes DoublePrint test on 64-bit platforms.
+
 2005-09-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
