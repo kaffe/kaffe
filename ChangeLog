@@ -1,3 +1,13 @@
+2005-09-24  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(gc_block_alloc): Handle heap growing backward. Fixed initialization
+	of the block array.
+	(gc_heap_grow): If blocks are prepended update gc_first_block and not
+	gc_last_block.
+	(gc_first_block): New pointer to hold the first block in the primitive block
+	list.
+
 2005-09-23  Gwenole Beauchesne  <gbeauchesne@mandriva.com>
 
 	* libraries/clib/fdlibm/: Such an ancient code assumed "long" as a

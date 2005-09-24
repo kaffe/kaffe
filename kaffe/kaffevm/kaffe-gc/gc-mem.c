@@ -40,6 +40,7 @@
 #endif
 
 static gc_block *gc_last_block;
+static gc_block *gc_first_block;
 static gc_block *gc_reserve_pages;
 static iStaticLock	gc_heap_lock;
 
@@ -1181,8 +1182,22 @@ gc_block_alloc(size_t size)
 			memcpy(gc_block_base, old_blocks, onb * sizeof(gc_block));
 			free(old_blocks);
 		}
-
 		DBG(GCSYSALLOC, dprintf("old block_base = %p, new block_base = %p\n", old_blocks, gc_block_base));
+		if (heap_addr < gc_heap_base) {
+		  int32 i, j, oldBase;
+		  gc_block *b = (gc_block *) gc_block_base;
+
+		  oldBase = (gc_heap_base - heap_addr) >> gc_pgbits;
+
+		  for (i=(onb-1),j=(oldBase+onb-1); i >= 0; i--,j--)
+		  	memcpy(&b[j], &b[i], sizeof(gc_block));
+
+		  memset((gc_block *)gc_block_base, 0,
+		         (gc_num_blocks - onb) * sizeof(gc_block));
+		} else {
+		  memset(((gc_block *)gc_block_base) + onb, 0,
+		         (gc_num_blocks - onb) * sizeof(gc_block));
+		}
 		/* If the array's address has changed, we have to fix
 		   up the pointers in the gc_blocks, as well as all
 		   external pointers to the gc_blocks.  We can only
@@ -1206,9 +1221,6 @@ gc_block_alloc(size_t size)
 				R(gc_freeobj, b[i].free);
 			  }
 
-			memset(b + onb, 0,
-			       (gc_num_blocks - onb) * sizeof(gc_block));
-
 			for (i = 0; i<=KGC_PRIM_LIST_COUNT; i++)
 				R(gc_block, gc_prim_freelist[i]);
 
@@ -1217,6 +1229,7 @@ gc_block_alloc(size_t size)
 
 			R(gc_block, gc_reserve_pages);
 			R(gc_block, gc_last_block);
+			R(gc_block, gc_first_block);
 #undef R
 		}
 		KTHREAD(spinoff)(NULL);
@@ -1225,6 +1238,9 @@ gc_block_alloc(size_t size)
 	gc_num_live_pages += size_pg;
 	last_addr = MAX(last_addr, heap_addr + size);
 	gc_heap_range = last_addr - gc_heap_base;
+	if (gc_heap_base > heap_addr)
+	  gc_heap_base = heap_addr;
+
 	DBG(GCSYSALLOC, dprintf("%ld unused bytes in heap addr range\n",
 				(long) (gc_heap_range - gc_heap_total)));
 #if defined(KAFFE_VMDEBUG)
@@ -1291,8 +1307,15 @@ gc_heap_grow(size_t sz)
 
 	/* maintain list of primitive blocks */
 	if (gc_last_block) {
-		gc_last_block->pnext = blk;
-		blk->pprev = gc_last_block;
+		if (gc_last_block < blk) {
+			gc_last_block->pnext = blk;
+			blk->pprev = gc_last_block;
+		} else {
+			assert(gc_first_block->pprev == NULL);
+			gc_first_block->pprev = blk;
+			blk->pnext = gc_first_block;
+			gc_first_block = blk;
+		}
 	}
 	
 	gc_last_block = blk;
