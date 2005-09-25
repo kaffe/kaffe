@@ -15,7 +15,7 @@
 /*
  * Define various array types
  */
-typedef struct { Hjava_lang_Object base; jsize length; union { double align; jbyte body[1]; } data[1]; } HArrayOfBoolean;
+typedef struct { Hjava_lang_Object base; jsize length; union { double align; jboolean body[1]; } data[1]; } HArrayOfBoolean;
 typedef struct { Hjava_lang_Object base; jsize length; union { double align; jbyte body[1]; } data[1]; } HArrayOfByte;
 typedef struct { Hjava_lang_Object base; jsize length; union { double align; jchar body[1]; } data[1]; } HArrayOfChar;
 typedef struct { Hjava_lang_Object base; jsize length; union { double align; jdouble body[1]; } data[1]; } HArrayOfDouble;

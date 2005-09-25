@@ -1,3 +1,20 @@
+2005-09-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Bumped version number.
+	Simplified gmp tests.
+
+	* include/Arrays.h: HArrayOfBoolean fixed type of
+	data.
+
+	* kaffe/kaffevm/support.c: (bitCount) Make lpc unsigned.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c 
+	(restore_fds_and_exit),
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	(jthread_exit_when_done): Removed bad NONRETURNING tag.
+
+	
+	
 2005-09-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c

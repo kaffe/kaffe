@@ -611,7 +611,8 @@ leaveUnsafeRegion(void)
 /* XXX Ick */
 int bitCount(int bits)
 {
-	int lpc, retval = 0;
+	unsigned int lpc;
+	int retval = 0;
 
 	for( lpc = 0; lpc < (sizeof(int) * 8); lpc++ )
 	{

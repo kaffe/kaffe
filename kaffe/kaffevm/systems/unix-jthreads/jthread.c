@@ -2703,7 +2703,7 @@ restore_fds(void)
     	}
 }
 
-static void NONRETURNING
+static void
 restore_fds_and_exit()
 {
 	restore_fds();

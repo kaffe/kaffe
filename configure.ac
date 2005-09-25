@@ -1,4 +1,4 @@
-AC_INIT([Kaffe Virtual Machine],[1.1.6],[kaffe@kaffe.org],[kaffe])
+AC_INIT([Kaffe Virtual Machine],[1.1.6+cvs],[kaffe@kaffe.org],[kaffe])
 
 AC_PREREQ(2.59)
 
@@ -1991,14 +1991,11 @@ dnl  Use native implementation
 esac],
 [
 dnl  If nothing is set, use native implementation if GNU MP can be found.
-        if test "$ac_cv_lib_gmp_mpz_get_d" = no; then
-                if test "$ac_cv_lib_gmp___gmpz_get_d" = no; then
+        if test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"; then
+                if test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"; then
 			AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])
 		fi
 	fi
-	AC_CHECK_HEADERS([gmp.h],
-			 [pure_java_math=false],
-			 [AC_MSG_ERROR([Found GNU MP library, but can't find gmp.h.  Install the gmp development package, or pass --enable-pure-java-math to  configure.])])
 ]
 )
 

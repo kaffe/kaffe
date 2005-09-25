@@ -370,7 +370,7 @@ void jthread_clear_run(jthread_t jt);
 int jthread_has_run(jthread_t jt);
 
 /* let main thread loop until all threads finish, for tests */
-void 	jthread_exit_when_done(void) NONRETURNING;
+void 	jthread_exit_when_done(void);
 
 static inline
 bool jthread_attach_current_thread(UNUSED bool isDaemon)
