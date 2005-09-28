@@ -16,6 +16,10 @@ AM_CPPFLAGS = \
 	      $(ENGINE_DEFS) \
 	      -I$(top_builddir)/include
 
+if COND_DIRECT_THREADING
+    AM_CPPFLAGS += -DDIRECT_THREADING
+endif
+
 noinst_LTLIBRARIES = libengine.la
 
 libengine_la_LDFLAGS = \

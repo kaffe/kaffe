@@ -1,3 +1,12 @@
+2005-09-28  Rafal Lewczuk <rafal.lewczuk@gmail.com>
+
+	* kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit/machine.h,
+	kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/verifier/verify.c:
+	Simple direct threading interpreter implementation.
+
 2005-09-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* RELEASE-NOTES: Changed the number of tests from 147 to 148.

@@ -18,6 +18,7 @@ define_insn(NOP)
          */
 	trace_jcode ("nop\n");
 }
+define_insn_fini
 
 define_insn(ACONST_NULL)
 {
@@ -29,6 +30,7 @@ define_insn(ACONST_NULL)
 	push(1);
 	move_ref_const(stack(0), NULL);
 }
+define_insn_fini
 
 define_insn(ICONST_M1)
 define_insn_alias(ICONST_0)
@@ -46,6 +48,7 @@ define_insn_alias(ICONST_5)
 	push(1);
 	move_int_const(stack(0), getopcode() - ICONST_0);
 }
+define_insn_fini
 
 define_insn(LCONST_0)
 define_insn_alias(LCONST_1)
@@ -58,6 +61,7 @@ define_insn_alias(LCONST_1)
 	push(2);
 	move_long_const(stack_long(0), getopcode() - LCONST_0);
 }
+define_insn_fini
 
 define_insn(FCONST_0)
 define_insn_alias(FCONST_1)
@@ -71,6 +75,7 @@ define_insn_alias(FCONST_2)
 	push(1);
 	move_float_const(stack(0), (jfloat)(getopcode() - FCONST_0));
 }
+define_insn_fini
 
 define_insn(DCONST_0)
 define_insn_alias(DCONST_1)
@@ -83,6 +88,7 @@ define_insn_alias(DCONST_1)
 	push(2);
 	move_double_const(stack_double(0), (jdouble)(getopcode() - DCONST_0));
 }
+define_insn_fini
 
 define_insn(BIPUSH)
 {
@@ -97,6 +103,7 @@ define_insn(BIPUSH)
 	push(1);
 	move_int_const(stack(0), low);
 }
+define_insn_fini
 
 define_insn(SIPUSH)
 {
@@ -111,6 +118,7 @@ define_insn(SIPUSH)
 	push(1);
 	move_int_const(stack(0), low);
 }
+define_insn_fini
 
 define_insn(LDC1)
 {
@@ -150,6 +158,7 @@ define_insn(LDC1)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 define_insn(LDC2)
 {
@@ -189,6 +198,7 @@ define_insn(LDC2)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 define_insn(LDC2W)
 {
@@ -214,6 +224,7 @@ define_insn(LDC2W)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 define_insn(ILOAD)
 {
@@ -229,6 +240,7 @@ define_insn(ILOAD)
 	push(1);
 	move_int(stack(0), local(idx));
 }
+define_insn_fini
 
 define_insn(LLOAD)
 {
@@ -244,6 +256,7 @@ define_insn(LLOAD)
 	push(2);
 	move_long(stack_long(0), local_long(idx));
 }
+define_insn_fini
 
 define_insn(FLOAD)
 {
@@ -259,6 +272,7 @@ define_insn(FLOAD)
 	push(1);
 	move_float(stack(0), local_float(idx));
 }
+define_insn_fini
 
 define_insn(DLOAD)
 {
@@ -274,6 +288,7 @@ define_insn(DLOAD)
 	push(2);
 	move_double(stack_double(0), local_double(idx));
 }
+define_insn_fini
 
 define_insn(ALOAD)
 {
@@ -289,6 +304,7 @@ define_insn(ALOAD)
 	push(1);
 	move_ref(stack(0), local(idx));
 }
+define_insn_fini
 
 define_insn(ILOAD_0)
 define_insn_alias(ILOAD_1)
@@ -305,6 +321,7 @@ define_insn_alias(ILOAD_3)
 	push(1);
 	move_int(stack(0), local(getopcode() - ILOAD_0));
 }
+define_insn_fini
 
 define_insn(LLOAD_0)
 define_insn_alias(LLOAD_1)
@@ -321,6 +338,7 @@ define_insn_alias(LLOAD_3)
 	push(2);
 	move_long(stack_long(0), local_long(getopcode() - LLOAD_0));
 }
+define_insn_fini
 
 define_insn(FLOAD_0)
 define_insn_alias(FLOAD_1)
@@ -337,6 +355,7 @@ define_insn_alias(FLOAD_3)
 	push(1);
 	move_float(stack(0), local_float(getopcode() - FLOAD_0));
 }
+define_insn_fini
 
 define_insn(DLOAD_0)
 define_insn_alias(DLOAD_1)
@@ -353,6 +372,7 @@ define_insn_alias(DLOAD_3)
 	push(2);
 	move_double(stack_double(0), local_double(getopcode() - DLOAD_0));
 }
+define_insn_fini
 
 define_insn(ALOAD_0)
 define_insn_alias(ALOAD_1)
@@ -369,6 +389,7 @@ define_insn_alias(ALOAD_3)
 	push(1);
 	move_ref(stack(0), local(getopcode() - ALOAD_0));
 }
+define_insn_fini
 
 define_insn(IALOAD)
 {
@@ -388,6 +409,7 @@ define_insn(IALOAD)
 	load_offset_scaled_int(stack(1), rstack(1), rstack(0), object_array_offset);
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LALOAD)
 {
@@ -406,6 +428,7 @@ define_insn(LALOAD)
 
 	load_offset_scaled_long(stack_long(0), stack(1), stack(0), object_array_offset);
 }
+define_insn_fini
 
 define_insn(FALOAD)
 {
@@ -426,6 +449,7 @@ define_insn(FALOAD)
 
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DALOAD)
 {
@@ -444,6 +468,7 @@ define_insn(DALOAD)
 
 	load_offset_scaled_double(stack_double(0), stack(1), stack(0), object_array_offset);
 }
+define_insn_fini
 
 define_insn(AALOAD)
 {
@@ -463,6 +488,7 @@ define_insn(AALOAD)
 	load_offset_scaled_ref(stack(1), rstack(1), rstack(0), object_array_offset);
 	pop(1);
 }
+define_insn_fini
 
 define_insn(BALOAD)
 {
@@ -482,6 +508,7 @@ define_insn(BALOAD)
 	load_offset_scaled_byte(stack(1), rstack(1), rstack(0), object_array_offset);
 	pop(1);
 }
+define_insn_fini
 
 define_insn(CALOAD)
 {
@@ -501,6 +528,7 @@ define_insn(CALOAD)
 	load_offset_scaled_char(stack(1), rstack(1), rstack(0), object_array_offset);
 	pop(1);
 }
+define_insn_fini
 
 define_insn(SALOAD)
 {
@@ -520,6 +548,7 @@ define_insn(SALOAD)
 	load_offset_scaled_short(stack(1), rstack(1), rstack(0), object_array_offset);
 	pop(1);
 }
+define_insn_fini
 
 define_insn(ISTORE)
 {
@@ -535,6 +564,7 @@ define_insn(ISTORE)
 	move_int(local(idx), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LSTORE)
 {
@@ -550,6 +580,7 @@ define_insn(LSTORE)
 	move_long(local_long(idx), stack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FSTORE)
 {
@@ -565,6 +596,7 @@ define_insn(FSTORE)
 	move_float(local_float(idx), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DSTORE)
 {
@@ -580,6 +612,7 @@ define_insn(DSTORE)
 	move_double(local_double(idx), stack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(ASTORE)
 {
@@ -595,6 +628,7 @@ define_insn(ASTORE)
 	move_ref(local(idx), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(ISTORE_0)
 define_insn_alias(ISTORE_1)
@@ -611,6 +645,7 @@ define_insn_alias(ISTORE_3)
 	move_int(local(getopcode() - ISTORE_0), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LSTORE_0)
 define_insn_alias(LSTORE_1)
@@ -627,6 +662,7 @@ define_insn_alias(LSTORE_3)
 	move_long(local_long(getopcode() - LSTORE_0), stack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FSTORE_0)
 define_insn_alias(FSTORE_1)
@@ -643,6 +679,7 @@ define_insn_alias(FSTORE_3)
 	move_float(local_float(getopcode() - FSTORE_0), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DSTORE_0)
 define_insn_alias(DSTORE_1)
@@ -659,6 +696,7 @@ define_insn_alias(DSTORE_3)
 	move_double(local_double(getopcode() - DSTORE_0), stack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(ASTORE_0)
 define_insn_alias(ASTORE_1)
@@ -675,6 +713,7 @@ define_insn_alias(ASTORE_3)
 	move_ref(local(getopcode() - ASTORE_0), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(IASTORE)
 {
@@ -695,6 +734,7 @@ define_insn(IASTORE)
 	store_offset_scaled_int(rstack(2), rstack(1), object_array_offset, rstack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(LASTORE)
 {
@@ -715,6 +755,7 @@ define_insn(LASTORE)
 	store_offset_scaled_long(stack(3), stack(2), object_array_offset, stack_long(0));
 	pop(4);
 }
+define_insn_fini
 
 define_insn(FASTORE)
 {
@@ -735,6 +776,7 @@ define_insn(FASTORE)
 	store_offset_scaled_float(stack(2), stack(1), object_array_offset, stack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(DASTORE)
 {
@@ -756,6 +798,7 @@ define_insn(DASTORE)
 
 	pop(4);
 }
+define_insn_fini
 
 define_insn(AASTORE)
 {
@@ -780,6 +823,7 @@ define_insn(AASTORE)
 	store_offset_scaled_ref(rstack(2), rstack(1), object_array_offset, rstack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(BASTORE)
 {
@@ -800,6 +844,7 @@ define_insn(BASTORE)
 	store_offset_scaled_byte(rstack(2), rstack(1), object_array_offset, rstack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(CASTORE)
 {
@@ -820,6 +865,7 @@ define_insn(CASTORE)
 	store_offset_scaled_char(rstack(2), rstack(1), object_array_offset, rstack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(SASTORE)
 {
@@ -840,6 +886,7 @@ define_insn(SASTORE)
 	store_offset_scaled_short(rstack(2), rstack(1), object_array_offset, rstack(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(POP)
 {
@@ -850,6 +897,7 @@ define_insn(POP)
 
 	pop(1);
 }
+define_insn_fini
 
 define_insn(POP2)
 {
@@ -860,6 +908,7 @@ define_insn(POP2)
 
 	pop(2);
 }
+define_insn_fini
 
 define_insn(DUP)
 {
@@ -868,6 +917,7 @@ define_insn(DUP)
 	push(1);
 	move_any(stack(0), stack(1));
 }
+define_insn_fini
 
 define_insn(DUP_X1)
 {
@@ -878,6 +928,7 @@ define_insn(DUP_X1)
 	move_any(stack(1), stack(2));
 	move_any(stack(2), stack(0));
 }
+define_insn_fini
 
 define_insn(DUP_X2)
 {
@@ -889,6 +940,7 @@ define_insn(DUP_X2)
 	move_any(stack(2), stack(3));
 	move_any(stack(3), stack(0));
 }
+define_insn_fini
 
 define_insn(DUP2)
 {
@@ -898,6 +950,7 @@ define_insn(DUP2)
 	move_any(stack(0), stack(2));
 	move_any(stack(1), stack(3));
 }
+define_insn_fini
 
 define_insn(DUP2_X1)
 {
@@ -910,6 +963,7 @@ define_insn(DUP2_X1)
 	move_any(stack(3), stack(0));
 	move_any(stack(4), stack(1));
 }
+define_insn_fini
 
 define_insn(DUP2_X2)
 {
@@ -923,6 +977,7 @@ define_insn(DUP2_X2)
 	move_any(stack(4), stack(0));
 	move_any(stack(5), stack(1));
 }
+define_insn_fini
 
 define_insn(SWAP)
 {
@@ -933,6 +988,7 @@ define_insn(SWAP)
 
 	swap_any(stack(0), stack(1));
 }
+define_insn_fini
 
 define_insn(IADD)
 {
@@ -947,6 +1003,7 @@ define_insn(IADD)
 	add_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LADD)
 {
@@ -964,6 +1021,7 @@ define_insn(LADD)
 	add_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FADD)
 {
@@ -978,6 +1036,7 @@ define_insn(FADD)
 	add_float(stack_float(1), rstack_float(1), rstack_float(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DADD)
 {
@@ -992,6 +1051,7 @@ define_insn(DADD)
 	add_double(stack_double(2), rstack_double(2), rstack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(ISUB)
 {
@@ -1006,6 +1066,7 @@ define_insn(ISUB)
 	sub_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LSUB)
 {
@@ -1023,6 +1084,7 @@ define_insn(LSUB)
 	sub_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FSUB)
 {
@@ -1037,6 +1099,7 @@ define_insn(FSUB)
 	sub_float(stack_float(1), rstack_float(1), rstack_float(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DSUB)
 {
@@ -1051,6 +1114,7 @@ define_insn(DSUB)
 	sub_double(stack_double(2), rstack_double(2), rstack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IMUL)
 {
@@ -1065,6 +1129,7 @@ define_insn(IMUL)
 	mul_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LMUL)
 {
@@ -1082,6 +1147,7 @@ define_insn(LMUL)
 	mul_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FMUL)
 {
@@ -1096,6 +1162,7 @@ define_insn(FMUL)
 	mul_float(stack_float(1), rstack_float(1), rstack_float(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DMUL)
 {
@@ -1110,6 +1177,7 @@ define_insn(DMUL)
 	mul_double(stack_double(2), rstack_double(2), rstack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IDIV)
 {
@@ -1126,6 +1194,7 @@ define_insn(IDIV)
 	div_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LDIV)
 {
@@ -1145,6 +1214,7 @@ define_insn(LDIV)
 	div_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FDIV)
 {
@@ -1159,6 +1229,7 @@ define_insn(FDIV)
 	div_float(stack_float(1), rstack_float(1), rstack_float(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DDIV)
 {
@@ -1173,6 +1244,7 @@ define_insn(DDIV)
 	div_double(stack_double(2), rstack_double(2), rstack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IREM)
 {
@@ -1189,6 +1261,7 @@ define_insn(IREM)
 	rem_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LREM)
 {
@@ -1208,6 +1281,7 @@ define_insn(LREM)
 	rem_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(FREM)
 {
@@ -1222,6 +1296,7 @@ define_insn(FREM)
 	rem_float(stack_float(1), rstack_float(1), rstack_float(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DREM)
 {
@@ -1236,6 +1311,7 @@ define_insn(DREM)
 	rem_double(stack_double(2), rstack_double(2), rstack_double(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(INEG)
 {
@@ -1245,6 +1321,7 @@ define_insn(INEG)
 
 	neg_int(stack(0), rstack(0));
 }
+define_insn_fini
 
 define_insn(LNEG)
 {
@@ -1256,6 +1333,7 @@ define_insn(LNEG)
 
 	neg_long(stack_long(0), rstack_long(0));
 }
+define_insn_fini
 
 define_insn(FNEG)
 {
@@ -1265,6 +1343,7 @@ define_insn(FNEG)
 
 	neg_float(stack_float(0), rstack_float(0));
 }
+define_insn_fini
 
 define_insn(DNEG)
 {
@@ -1274,6 +1353,7 @@ define_insn(DNEG)
 
 	neg_double(stack_double(0), rstack_double(0));
 }
+define_insn_fini
 
 define_insn(ISHL)
 {
@@ -1288,6 +1368,7 @@ define_insn(ISHL)
 	lshl_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LSHL)
 {
@@ -1305,6 +1386,7 @@ define_insn(LSHL)
 	lshl_long(stack_long(1), stack_long(1), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(ISHR)
 {
@@ -1319,6 +1401,7 @@ define_insn(ISHR)
 	ashr_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LSHR)
 {
@@ -1336,6 +1419,7 @@ define_insn(LSHR)
 	ashr_long(stack_long(1), stack_long(1), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(IUSHR)
 {
@@ -1350,6 +1434,7 @@ define_insn(IUSHR)
 	lshr_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LUSHR)
 {
@@ -1367,6 +1452,7 @@ define_insn(LUSHR)
 	lshr_long(stack_long(1), stack_long(1), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(IAND)
 {
@@ -1381,6 +1467,7 @@ define_insn(IAND)
 	and_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LAND)
 {
@@ -1398,6 +1485,7 @@ define_insn(LAND)
 	and_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IOR)
 {
@@ -1412,6 +1500,7 @@ define_insn(IOR)
 	or_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LOR)
 {
@@ -1429,6 +1518,7 @@ define_insn(LOR)
 	or_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IXOR)
 {
@@ -1443,6 +1533,7 @@ define_insn(IXOR)
 	xor_int(stack(1), rstack(1), rstack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(LXOR)
 {
@@ -1460,6 +1551,7 @@ define_insn(LXOR)
 	xor_long(stack_long(2), rstack_long(2), rstack_long(0));
 	pop(2);
 }
+define_insn_fini
 
 define_insn(IINC)
 {
@@ -1473,6 +1565,7 @@ define_insn(IINC)
 
 	add_int_const(local(idx), local(idx), low);
 }
+define_insn_fini
 
 define_insn(I2L)
 {
@@ -1483,6 +1576,7 @@ define_insn(I2L)
 	push(1);
 	cvt_int_long(stack_long(0), stack(1));
 }
+define_insn_fini
 
 define_insn(I2F)
 {
@@ -1492,6 +1586,7 @@ define_insn(I2F)
 
 	cvt_int_float(stack(0), stack(0));
 }
+define_insn_fini
 
 define_insn(I2D)
 {
@@ -1502,6 +1597,7 @@ define_insn(I2D)
 	push(1);
 	cvt_int_double(stack_double(0), stack(1));
 }
+define_insn_fini
 
 define_insn(L2I)
 {
@@ -1512,6 +1608,7 @@ define_insn(L2I)
 	cvt_long_int(stack(1), stack_long(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(L2F)
 {
@@ -1522,6 +1619,7 @@ define_insn(L2F)
 	cvt_long_float(stack(1), stack_long(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(L2D)
 {
@@ -1531,6 +1629,7 @@ define_insn(L2D)
 
 	cvt_long_double(stack_double(0), stack_long(0));
 }
+define_insn_fini
 
 define_insn(F2I)
 {
@@ -1540,6 +1639,7 @@ define_insn(F2I)
 
 	cvt_float_int(stack(0), stack(0));
 }
+define_insn_fini
 
 define_insn(F2L)
 {
@@ -1550,6 +1650,7 @@ define_insn(F2L)
 	push(1);
 	cvt_float_long(stack_long(0), stack(1));
 }
+define_insn_fini
 
 define_insn(F2D)
 {
@@ -1560,6 +1661,7 @@ define_insn(F2D)
 	push(1);
 	cvt_float_double(stack_double(0), stack(1));
 }
+define_insn_fini
 
 define_insn(D2I)
 {
@@ -1570,6 +1672,7 @@ define_insn(D2I)
 	cvt_double_int(stack(1), stack_double(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(D2L)
 {
@@ -1579,6 +1682,7 @@ define_insn(D2L)
 
 	cvt_double_long(stack_long(0), stack_double(0));
 }
+define_insn_fini
 
 define_insn(D2F)
 {
@@ -1589,6 +1693,7 @@ define_insn(D2F)
 	cvt_double_float(stack(1), stack_double(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(INT2BYTE)
 {
@@ -1598,6 +1703,7 @@ define_insn(INT2BYTE)
 
 	cvt_int_byte(stack(0), rstack(0));
 }
+define_insn_fini
 
 define_insn(INT2CHAR)
 {
@@ -1607,6 +1713,7 @@ define_insn(INT2CHAR)
 
 	cvt_int_char(stack(0), rstack(0));
 }
+define_insn_fini
 
 define_insn(INT2SHORT)
 {
@@ -1616,6 +1723,7 @@ define_insn(INT2SHORT)
 
 	cvt_int_short(stack(0), rstack(0));
 }
+define_insn_fini
 
 define_insn(LCMP)
 {
@@ -1633,6 +1741,7 @@ define_insn(LCMP)
 	lcmp(stack(3), rstack_long(0), rstack_long(2));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(FCMPL)
 {
@@ -1647,6 +1756,7 @@ define_insn(FCMPL)
 	cmpl_float(stack(1), stack(1), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(FCMPG)
 {
@@ -1661,6 +1771,7 @@ define_insn(FCMPG)
 	cmpg_float(stack(1), stack(1), stack(0));
 	pop(1);
 }
+define_insn_fini
 
 define_insn(DCMPL)
 {
@@ -1675,6 +1786,7 @@ define_insn(DCMPL)
 	cmpl_double(stack(3), stack_double(2), stack_double(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(DCMPG)
 {
@@ -1689,6 +1801,7 @@ define_insn(DCMPG)
 	cmpg_double(stack(3), stack_double(2), stack_double(0));
 	pop(3);
 }
+define_insn_fini
 
 define_insn(IFEQ)
 {
@@ -1706,6 +1819,7 @@ define_insn(IFEQ)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFNE)
 {
@@ -1723,6 +1837,7 @@ define_insn(IFNE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFLT)
 {
@@ -1740,6 +1855,7 @@ define_insn(IFLT)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFGE)
 {
@@ -1757,6 +1873,7 @@ define_insn(IFGE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFGT)
 {
@@ -1774,6 +1891,7 @@ define_insn(IFGT)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFLE)
 {
@@ -1791,6 +1909,7 @@ define_insn(IFLE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPEQ)
 {
@@ -1810,6 +1929,7 @@ define_insn(IF_ICMPEQ)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPNE)
 {
@@ -1829,6 +1949,7 @@ define_insn(IF_ICMPNE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPLT)
 {
@@ -1848,6 +1969,7 @@ define_insn(IF_ICMPLT)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPGE)
 {
@@ -1867,6 +1989,7 @@ define_insn(IF_ICMPGE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPGT)
 {
@@ -1886,6 +2009,7 @@ define_insn(IF_ICMPGT)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ICMPLE)
 {
@@ -1905,6 +2029,7 @@ define_insn(IF_ICMPLE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ACMPEQ)
 {
@@ -1924,6 +2049,7 @@ define_insn(IF_ACMPEQ)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IF_ACMPNE)
 {
@@ -1943,6 +2069,7 @@ define_insn(IF_ACMPNE)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(GOTO)
 {
@@ -1955,12 +2082,10 @@ define_insn(GOTO)
 	branch_a(reference_code_label(pc+idx));
 	end_sync();
 }
+define_insn_fini
 
 define_insn(JSR)
 {
-	/*
-	 * ... -> ..., ret-addr
-	 */
 	check_pcidx (0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
@@ -1972,6 +2097,7 @@ define_insn(JSR)
 	branch_a(reference_code_label(pc+idx));
 	end_sync();
 }
+define_insn_fini
 
 define_insn(RET)
 {
@@ -1986,6 +2112,7 @@ define_insn(RET)
 	branch_indirect(stored_code_label(local(idx)));
 	end_sync();
 }
+define_insn_fini
 
 define_insn(TABLESWITCH)
 {
@@ -2042,6 +2169,7 @@ define_insn(TABLESWITCH)
 #endif
 	adjustpc((4 - (pc % 4)) + 12 + (high - low + 1) * 4);
 }
+define_insn_fini
 
 define_insn(LOOKUPSWITCH)
 {
@@ -2107,6 +2235,7 @@ define_insn(LOOKUPSWITCH)
 #endif
 	adjustpc((4 - (pc % 4)) + (idx + 1) * 8);
 }
+define_insn_fini
 
 define_insn(IRETURN)
 {
@@ -2119,6 +2248,7 @@ define_insn(IRETURN)
 	returnarg_int(rstack(0));
 	ret();
 }
+define_insn_fini
 
 define_insn(LRETURN)
 {
@@ -2131,6 +2261,7 @@ define_insn(LRETURN)
 	returnarg_long(rstack_long(0));
 	ret();
 }
+define_insn_fini
 
 define_insn(FRETURN)
 {
@@ -2143,6 +2274,7 @@ define_insn(FRETURN)
 	returnarg_float(rstack_float(0));
 	ret();
 }
+define_insn_fini
 
 define_insn(DRETURN)
 {
@@ -2155,6 +2287,7 @@ define_insn(DRETURN)
 	returnarg_double(rstack_double(0));
 	ret();
 }
+define_insn_fini
 
 define_insn(ARETURN)
 {
@@ -2167,6 +2300,7 @@ define_insn(ARETURN)
 	returnarg_ref(rstack_ref(0));
 	ret();
 }
+define_insn_fini
 
 define_insn(RETURN)
 {
@@ -2176,6 +2310,7 @@ define_insn(RETURN)
 	exit_method();
 	ret();
 }
+define_insn_fini
 
 /*
  * This macro initialises the static data associated with a class.
@@ -2334,6 +2469,7 @@ define_insn(GETSTATIC)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 #undef FIELD_IS_CONSTANT
 
 define_insn(PUTSTATIC)
@@ -2442,6 +2578,7 @@ define_insn(PUTSTATIC)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 define_insn(GETFIELD)
 {
@@ -2529,6 +2666,7 @@ define_insn(GETFIELD)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 define_insn(PUTFIELD)
 {
@@ -2639,6 +2777,7 @@ define_insn(PUTFIELD)
 		KAFFEVM_ABORT();
 	}
 }
+define_insn_fini
 
 #define	METHOD_RETURN_VALUE()					\
 do {								\
@@ -2803,6 +2942,7 @@ define_insn(INVOKEVIRTUAL)
 		}
 	}
 }
+define_insn_fini
 
 define_insn(INVOKESPECIAL)
 {
@@ -2901,6 +3041,7 @@ define_insn(INVOKESPECIAL)
 		}
 	}
 }
+define_insn_fini
 
 define_insn(INVOKESTATIC)
 {
@@ -2971,6 +3112,7 @@ define_insn(INVOKESTATIC)
 		}
 	}
 }
+define_insn_fini
 
 define_insn(INVOKEINTERFACE)
 {
@@ -3058,6 +3200,7 @@ define_insn(INVOKEINTERFACE)
 		METHOD_RETURN_VALUE();
 	}
 }
+define_insn_fini
 
 define_insn(NEW)
 {
@@ -3078,6 +3221,7 @@ define_insn(NEW)
 		softcall_new(stack(0), class_object());
 	}
 }
+define_insn_fini
 
 define_insn(NEWARRAY)
 {
@@ -3092,6 +3236,7 @@ define_insn(NEWARRAY)
 
 	softcall_newarray(stack(0), stack(0), low);
 }
+define_insn_fini
 
 define_insn(ANEWARRAY)
 {
@@ -3112,6 +3257,7 @@ define_insn(ANEWARRAY)
 		softcall_anewarray(stack(0), stack(0), class_object());
 	}
 }
+define_insn_fini
 
 define_insn(ARRAYLENGTH)
 {
@@ -3126,6 +3272,7 @@ define_insn(ARRAYLENGTH)
 
 	load_offset_int(stack(0), rstack(0), object_array_length);
 }
+define_insn_fini
 
 define_insn(ATHROW)
 {
@@ -3140,6 +3287,7 @@ define_insn(ATHROW)
 
 	softcall_athrow(rstack(0));
 }
+define_insn_fini
 
 define_insn(CHECKCAST)
 {
@@ -3160,6 +3308,7 @@ define_insn(CHECKCAST)
 		softcall_checkcast(stack(0), rstack(0), class_object());
 	}
 }
+define_insn_fini
 
 define_insn(INSTANCEOF)
 {
@@ -3180,6 +3329,7 @@ define_insn(INSTANCEOF)
 		softcall_instanceof(stack(0), rstack(0), class_object());
 	}
 }
+define_insn_fini
 
 define_insn(MONITORENTER)
 {
@@ -3198,6 +3348,7 @@ define_insn(MONITORENTER)
 
 	end_func_sync();
 }
+define_insn_fini
 
 define_insn(MONITOREXIT)
 {
@@ -3216,6 +3367,7 @@ define_insn(MONITOREXIT)
 
 	end_func_sync();
 }
+define_insn_fini
 
 define_insn(WIDE)
 {
@@ -3383,6 +3535,7 @@ define_insn(WIDE)
 	}
 	}
 }
+define_insn_fini
 
 define_insn(MULTIANEWARRAY)
 {
@@ -3405,6 +3558,7 @@ define_insn(MULTIANEWARRAY)
 	/* NB: softcall does the necessary stack adjustments */
 	softcall_multianewarray(stack(low-1), low, stack(0), class_object());
 }
+define_insn_fini
 
 define_insn(IFNULL)
 {
@@ -3422,6 +3576,7 @@ define_insn(IFNULL)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(IFNONNULL)
 {
@@ -3440,6 +3595,7 @@ define_insn(IFNONNULL)
 
 	end_sync();
 }
+define_insn_fini
 
 define_insn(GOTO_W)
 {
@@ -3454,6 +3610,7 @@ define_insn(GOTO_W)
 	branch_a(reference_code_label(pc+idx));
 	end_sync();
 }
+define_insn_fini
 
 define_insn(JSR_W)
 {
@@ -3473,6 +3630,7 @@ define_insn(JSR_W)
 	branch_a(reference_code_label(pc+idx));
 	end_sync();
 }
+define_insn_fini
 
 define_insn(BREAKPOINT)
 {
@@ -3480,6 +3638,7 @@ define_insn(BREAKPOINT)
 
 	softcall_breakpoint();
 }
+define_insn_fini
 
 /*
  * Local variables:

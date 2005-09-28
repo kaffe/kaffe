@@ -54,15 +54,6 @@
  */
 const char* engine_name = "Interpreter";
 
-#define	define_insn(code)	break;					\
-				case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
-#define	define_insn_alias(code)	case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
-#define	define_wide_insn(code)	break;					\
-				case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
-
 #define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
       cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
       softcall_nullpointer();                                 \
@@ -88,6 +79,51 @@ const char* engine_name = "Interpreter";
 #define check_div(x,obj,y)
 #define check_div_long(x,obj,y)
 
+#ifdef DIRECT_THREADING
+
+#define	define_insn(code)	INSN_LBL_##code: \
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+#define	define_insn_alias(code)	INSN_LBL_##code: \
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+#define	define_wide_insn(code)	break;					\
+				case code:				\
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+
+#define define_insn_fini { \
+		pc = npc; \
+		assert(npc < (uintp)(meth->c.bcode.codelen)); \
+		vmExcept_setPC(mjbuf, pc); \
+		npc = pc + insnLen[code[pc]]; \
+		goto *insn_handlers[code[pc]]; \
+	}
+	
+#define INTRP_SW_HEAD() goto *insn_handlers[code[pc]];
+
+#define INTRP_SW_PROLOG() \
+INSN_LBL_INVALID: { \
+	CHDBG(dprintf("Unknown bytecode %d\n", code[pc]); ); \
+		throwException(NEW_LANG_EXCEPTION(VerifyError)); \
+		goto *insn_handlers[code[npc]]; }
+
+
+#else
+#define	define_insn(code)	case code:				\
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+#define	define_insn_alias(code)	case code:				\
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+#define	define_wide_insn(code)	break;					\
+				case code:				\
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
+#define define_insn_fini		break;
+
+#define INTRP_SW_HEAD() switch(code[pc])
+
+#define INTRP_SW_PROLOG() \
+		default: \
+			CHDBG(dprintf("Unknown bytecode %d\n", code[pc]); ); \
+			throwException(NEW_LANG_EXCEPTION(VerifyError)); \
+			break
+#endif
 
 #if defined(KAFFE_PROFILER)
 int profFlag;			 /* flag to control profiling */
@@ -266,6 +302,80 @@ RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(met
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, threadData *thread_data) {
 	bytecode *code = (bytecode*)meth->c.bcode.code;
 
+#ifdef DIRECT_THREADING
+
+#define IH(name) &&INSN_LBL_##name
+#define IH_INVALID &&INSN_LBL_INVALID
+
+static const void *insn_handlers[] = {                                                  	/* opcodes */
+    IH(NOP),		IH(ACONST_NULL),	IH(ICONST_M1), 		IH(ICONST_0),		/* 0-3 */
+    IH(ICONST_1),	IH(ICONST_2),		IH(ICONST_3),		IH(ICONST_4),		/* 4-7 */
+    IH(ICONST_5),	IH(LCONST_0),		IH(LCONST_1),		IH(FCONST_0),		/* 8-11 */
+    IH(FCONST_1),	IH(FCONST_2),		IH(DCONST_0),		IH(DCONST_1),		/* 12-15 */
+    IH(BIPUSH),		IH(SIPUSH),		IH(LDC1),		IH(LDC2),		/* 16-19 */
+    IH(LDC2W),		IH(ILOAD),		IH(LLOAD),		IH(FLOAD),		/* 20-23 */
+    IH(DLOAD),		IH(ALOAD),		IH(ILOAD_0),		IH(ILOAD_1),		/* 24-27 */
+    IH(ILOAD_2),	IH(ILOAD_3),		IH(LLOAD_0),		IH(LLOAD_1),		/* 28-31 */
+    IH(LLOAD_2),	IH(LLOAD_3),		IH(FLOAD_0),		IH(FLOAD_1),		/* 32-35 */
+    IH(FLOAD_2),	IH(FLOAD_3),		IH(DLOAD_0),		IH(DLOAD_1),		/* 36-39 */
+    IH(DLOAD_2),	IH(DLOAD_3),		IH(ALOAD_0),		IH(ALOAD_1),		/* 40-43 */
+    IH(ALOAD_2),	IH(ALOAD_3),		IH(IALOAD),		IH(LALOAD),		/* 44-47 */
+    IH(FALOAD),		IH(DALOAD),		IH(AALOAD),		IH(BALOAD),		/* 48-51 */
+    IH(CALOAD),		IH(SALOAD),		IH(ISTORE),		IH(LSTORE),		/* 52-55 */
+    IH(FSTORE),		IH(DSTORE),		IH(ASTORE),		IH(ISTORE_0),		/* 56-59 */
+    IH(ISTORE_1),	IH(ISTORE_2),		IH(ISTORE_3),		IH(LSTORE_0),		/* 60-63 */
+    IH(LSTORE_1),	IH(LSTORE_2),		IH(LSTORE_3),		IH(FSTORE_0),		/* 64-67 */
+    IH(FSTORE_1),	IH(FSTORE_2),		IH(FSTORE_3),		IH(DSTORE_0),   	/* 68-71 */
+    IH(DSTORE_1),	IH(DSTORE_2),		IH(DSTORE_3),		IH(ASTORE_0),   	/* 72-75 */
+    IH(ASTORE_1),	IH(ASTORE_2),		IH(ASTORE_3),		IH(IASTORE),		/* 76-79 */
+    IH(LASTORE),	IH(FASTORE),		IH(DASTORE),		IH(AASTORE),		/* 80-83 */
+    IH(BASTORE),	IH(CASTORE),		IH(SASTORE),		IH(POP),		/* 84-87 */
+    IH(POP2),		IH(DUP),		IH(DUP_X1),		IH(DUP_X2),		/* 88-91 */
+    IH(DUP2),		IH(DUP2_X1),		IH(DUP2_X2),		IH(SWAP),		/* 92-95 */
+    IH(IADD),		IH(LADD),		IH(FADD),		IH(DADD),		/* 96-99 */
+    IH(ISUB),		IH(LSUB),		IH(FSUB),		IH(DSUB),		/* 100-103 */
+    IH(IMUL),		IH(LMUL),		IH(FMUL),		IH(DMUL),		/* 104-107 */
+    IH(IDIV),		IH(LDIV),		IH(FDIV),		IH(DDIV),		/* 108-111 */
+    IH(IREM),		IH(LREM),		IH(FREM),		IH(DREM),		/* 112-115 */
+    IH(INEG),		IH(LNEG),		IH(FNEG),		IH(DNEG),		/* 116-119 */
+    IH(ISHL),		IH(LSHL),		IH(ISHR),		IH(LSHR),		/* 120-123 */
+    IH(IUSHR),		IH(LUSHR),		IH(IAND),		IH(LAND),		/* 124-127 */
+    IH(IOR),		IH(LOR),		IH(IXOR),		IH(LXOR),		/* 128-131 */
+    IH(IINC),		IH(I2L),		IH(I2F),		IH(I2D),		/* 132-135 */
+    IH(L2I),		IH(L2F),		IH(L2D),		IH(F2I),		/* 136-139 */
+    IH(F2L),		IH(F2D),		IH(D2I),		IH(D2L),		/* 140-143 */
+    IH(D2F),		IH(INT2BYTE),		IH(INT2CHAR),		IH(INT2SHORT),		/* 144-147 */
+    IH(LCMP),		IH(FCMPL),		IH(FCMPG),		IH(DCMPL),		/* 148-151 */
+    IH(DCMPG),		IH(IFEQ),		IH(IFNE),		IH(IFLT),		/* 152-155 */
+    IH(IFGE),		IH(IFGT),		IH(IFLE),		IH(IF_ICMPEQ),		/* 156-159 */
+    IH(IF_ICMPNE),	IH(IF_ICMPLT),		IH(IF_ICMPGE),		IH(IF_ICMPGT),		/* 160-163 */
+    IH(IF_ICMPLE),	IH(IF_ACMPEQ),		IH(IF_ACMPNE),		IH(GOTO),		/* 164-167 */
+    IH(JSR),		IH(RET),		IH(TABLESWITCH),	IH(LOOKUPSWITCH), 	/* 168-171 */
+    IH(IRETURN),	IH(LRETURN),		IH(FRETURN),		IH(DRETURN),		/* 172-175 */
+    IH(ARETURN),	IH(RETURN),		IH(GETSTATIC),		IH(PUTSTATIC),		/* 176-179 */
+    IH(GETFIELD),	IH(PUTFIELD),		IH(INVOKEVIRTUAL),	IH(INVOKESPECIAL), 	/* 180-183 */
+    IH(INVOKESTATIC),	IH(INVOKEINTERFACE),	IH_INVALID,		IH(NEW),		/* 184-187 */
+    IH(NEWARRAY),	IH(ANEWARRAY),		IH(ARRAYLENGTH),	IH(ATHROW),		/* 188-191 */
+    IH(CHECKCAST),	IH(INSTANCEOF),		IH(MONITORENTER),	IH(MONITOREXIT),	/* 192-195 */
+    IH(WIDE),		IH(MULTIANEWARRAY),	IH(IFNULL),		IH(IFNONNULL),		/* 196-199 */
+    IH(GOTO_W),		IH(JSR_W),		IH(BREAKPOINT),		IH_INVALID,		/* 200-203 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 204-207 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 208-211 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 212-215 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 216-219 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 220-223 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 224-227 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 228-231 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 232-235 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 236-239 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 240-243 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 244-247 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID,		/* 248-251 */
+    IH_INVALID,		IH_INVALID,		IH_INVALID,		IH_INVALID		/* 252-255 */
+};
+#undef IH
+#endif
+
 	/* Misc machine variables */
 	jvalue tmpl;
 	slots tmp[1];
@@ -287,17 +397,14 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 	for (;;) {
 		register uintp pc = npc;
 
-		assert(npc < meth->c.bcode.codelen);
+		assert(npc < (uintp)(meth->c.bcode.codelen));
 		vmExcept_setPC(mjbuf, pc);
 		npc = pc + insnLen[code[pc]];
 
-		switch (code[pc]) {
-		default:
-			CHDBG(dprintf("Unknown bytecode %d\n", code[pc]); );
-			throwException(NEW_LANG_EXCEPTION(VerifyError));
-			break;
+		INTRP_SW_HEAD() {
+		    INTRP_SW_PROLOG();
 #include "kaffe.def"
-		}
+		} // INTRP_SW_HEAD()
 	}
  end:
 	return;

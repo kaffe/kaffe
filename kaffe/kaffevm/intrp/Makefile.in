@@ -44,6 +44,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@COND_DIRECT_THREADING_TRUE@am__append_1 = -DDIRECT_THREADING
 subdir = kaffe/kaffevm/intrp
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -122,6 +123,8 @@ COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
 COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
 COND_CLASSPATH_QT_AWT_FALSE = @COND_CLASSPATH_QT_AWT_FALSE@
 COND_CLASSPATH_QT_AWT_TRUE = @COND_CLASSPATH_QT_AWT_TRUE@
+COND_DIRECT_THREADING_FALSE = @COND_DIRECT_THREADING_FALSE@
+COND_DIRECT_THREADING_TRUE = @COND_DIRECT_THREADING_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
 COND_GJDOC_TRUE = @COND_GJDOC_TRUE@
 COND_KAFFE_NANOX_AWT_FALSE = @COND_KAFFE_NANOX_AWT_FALSE@
@@ -371,14 +374,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-AM_CPPFLAGS = \
-	      -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
-	      -I$(top_srcdir)/kaffe/kaffevm/jni \
-	      -I.. \
-	      -I$(srcdir)/.. \
-	      $(ENGINE_DEFS) \
-	      -I$(top_builddir)/include
-
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I$(top_srcdir)/kaffe/kaffevm/jni -I.. -I$(srcdir)/.. \
+	$(ENGINE_DEFS) -I$(top_builddir)/include $(am__append_1)
 noinst_LTLIBRARIES = libengine.la
 libengine_la_LDFLAGS = \
 	$(KVMLIBFLAGS)

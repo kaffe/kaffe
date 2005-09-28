@@ -23,6 +23,7 @@
 #define	define_insn_alias(code)	case code :
 #define	define_wide_insn(code)	break;					\
 				case code :
+#define define_insn_fini
 
 /* Stack */
 #define	push(_i)		stackno -= (_i)

@@ -2167,6 +2167,17 @@ AC_ARG_ENABLE([classpath-load-library],
               [INIT_LOAD_LIBRARY="true"])
 AC_SUBST(INIT_LOAD_LIBRARY)
 
+dnl -----------------------------------------------------------
+dnl Enable direct threading 
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([direct-threading],
+		AS_HELP_STRING([--disable-direct-threading],
+				[Use switched interpreter instead of direct-threading]),
+		[],
+		[enable_direct_threading=yes])
+
+AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
+
 
 dnl =========================================================================
 dnl Configure Binreloc support
