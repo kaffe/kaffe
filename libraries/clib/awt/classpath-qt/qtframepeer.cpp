@@ -44,6 +44,7 @@ exception statement from your version. */
 #include <QToolBar>
 #include <QThread>
 #include <gnu_java_awt_peer_qt_QtFramePeer.h>
+#include <stdlib.h>
 #include "qtcomponent.h"
 #include "qtstrings.h"
 #include "qtimage.h"

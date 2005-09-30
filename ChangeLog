@@ -1,3 +1,17 @@
+2005-09-30  Jim Huang  <jserv@kaffe.org>
+
+	* configure.ac: Improve Nano-X detection.
+
+	* libraries/clib/awt/classpath-qt/componentevent.cpp,
+	libraries/clib/awt/classpath-qt/mainqtthread.cpp,
+	libraries/clib/awt/classpath-qt/qtframepeer.cpp:
+	Add regular includes.
+
+	* libraries/javalib/Makefile.am.in: Fixlet to Nano-X AWT.
+
+	* po/zh_CN.po,
+	po/zh_TW.po: Fix typo.
+
 2005-09-30  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/scripts/javadoc.in,

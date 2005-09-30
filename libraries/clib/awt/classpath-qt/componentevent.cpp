@@ -38,6 +38,7 @@ exception statement from your version. */
 #include <assert.h>
 #include <QWidget>
 #include <QPoint>
+#include <assert.h>
 
 #include "componentevent.h"
   

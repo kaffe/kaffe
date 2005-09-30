@@ -249,7 +249,7 @@ msgstr "\t-Xkaffe-qt-awt\t\t 使用 Kaffe 的 Qt2/3/Embedded AWT backend\n"
 #: kaffe/kaffe/main.c:991
 #, c-format
 msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
+msgstr "\t-Xkaffe-nanox-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
 
 #: kaffe/kaffe/main.c:994
 #, c-format

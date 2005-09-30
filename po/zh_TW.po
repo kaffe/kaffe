@@ -249,7 +249,7 @@ msgstr "\t-Xkaffe-qt-awt\t\t 使用 Kaffe 的 Qt2/3/Embedded AWT backend\n"
 #: kaffe/kaffe/main.c:991
 #, c-format
 msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
+msgstr "\t-Xkaffe-nanox-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
 
 #: kaffe/kaffe/main.c:994
 #, c-format
@@ -270,8 +270,8 @@ msgstr ""
 "\t-Xms <空間> \t\t 指定初始 heap 空間\n"
 "\t-cp <路徑> \t\t 設定 classpath\n"
 
+#: kaffe/kaffe/version.c:45
 #: kaffe/kaffe/version.c:46
-#, fuzzy, c-format
 msgid ""
 "Copyright (c) 1996-2005 Kaffe.org project contributors (please see\n"
 "  the source code for a full list of contributors).  All rights reserved.\n"
@@ -285,7 +285,7 @@ msgid ""
 "with ABSOLUTELY NO WARRANTY.\n"
 "\n"
 msgstr ""
-"版權所有 (c) 1996-2004 Kaffe.org 計畫貢獻者 (請參閱原始程式碼以取得\n"
+"版權所有 (c) 1996-2005 Kaffe.org 計畫貢獻者 (請參閱原始程式碼以取得\n"
 "所有貢獻者列表)，保留所有權利。\n"
 "部份版權歸屬 (c) 1996-2002 Transvirtual Technologies, Inc.\n"
 "\n"
@@ -303,7 +303,7 @@ msgstr "執行引擎： %s   版本： %s   Java版本： %s\n"
 #: kaffe/kaffe/version.c:58
 #, fuzzy, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: unlimited\n"
-msgstr "預設 Heap 空間： (最小) %d Mb   (最大) %d Mb\n"
+msgstr "預設 Heap 空間： (最小) %d Mb   (最大) 無限制\n"
 
 #: kaffe/kaffe/version.c:61
 #, fuzzy, c-format

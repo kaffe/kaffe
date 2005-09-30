@@ -41,6 +41,7 @@ exception statement from your version. */
 #include <QThread>
 #include <gnu_java_awt_peer_qt_MainQtThread.h>
 #include "mainthreadinterface.h"
+#include <stdlib.h>
 
 MainThreadInterface *mainThread;
 QApplication *qApplication;

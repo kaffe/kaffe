@@ -49,9 +49,9 @@ Java_java_awt_Toolkit_fntInitFont( JNIEnv* envP, jclass clazz, jstring jSpec, ji
 			fontid = GrCreateFont((char *)spec, size, NULL);
 		}
 	}
-#endif
+#else
 	fontid = GrCreateFont(GR_FONT_SYSTEM_VAR, 0, NULL);
-	
+#endif	
 	return (void*)fontid;
 }
 

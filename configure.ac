@@ -1801,7 +1801,53 @@ if test x"$enable_native_awt" = x"yes"; then
 		[ NANOXLIB=$withval ],
 		[ NANOXLIB="/usr/lib"])
 		
+	dnl Verify if valid or not
+	real_NANOXINC="`cd ${NANOXINC} 2>/dev/null && pwd`"
+	if test -z "${real_NANOXINC}"; then
+		dnl  The given directory can't be found
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR([No Nano-X include directory found: ${real_NANOXINC}, please check --with-nanox-include option])
+	fi
+	if test ! -f "${real_NANOXINC}/nano-X.h"; then
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR([No nano-X.h found in directory ${real_NANOXINC}])
+	fi
+	NANOXINC=${real_NANOXINC}
 	NANOX_CFLAGS="-I${NANOXINC}"
+	real_NANOXLIB="`cd ${NANOXLIB} 2>/dev/null && pwd`"
+	if test -z "${real_NANOXLIB}"; then
+		dnl  The given directory can't be found
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR([No Nano-X library directory found: ${real_NANOXLIB}, please check --with-nanox-library option])
+	fi
+	FOUND_NANOX_LIB="no"
+	if test -f "${real_NANOXLIB}/libnano-X.a"; then
+		AC_MSG_RESULT(static-linked libnano-X.a found)
+		FOUND_NANOX_LIB="yes"
+	fi
+	if test -f "${real_NANOXLIB}/libnano-X.so"; then
+		AC_MSG_RESULT(dynamic-linked libnano-X.a found)
+		FOUND_NANOX_LIB="yes"
+	fi
+	if test x"${FOUND_NANOX_LIB}" = x"no"; then
+		AC_MSG_RESULT([No Nano-X library libnano-X.a or libnano-X.so found in directory ${real_NANOXLIB}])
+		guess_NANOXLIB=`echo ${NANOXINC} | sed -e 's/include/lib/g'`
+		if test -f "${guess_NANOXLIB}/libnano-X.a"; then
+			AC_MSG_RESULT(static-linked libnano-X.a found)
+			FOUND_NANOX_LIB="yes"
+		fi
+		if test -f "${guess_NANOXLIB}/libnano-X.so"; then
+			AC_MSG_RESULT(dynamic-linked libnano-X.a found)
+			FOUND_NANOX_LIB="yes"
+		fi
+		if test x"${FOUND_NANOX_LIB}" = x"no"; then
+			AC_MSG_ERROR([No Nano-X library libnano-X.a or libnano-X.so found in directory ${guess_NANOXLIB}])
+		fi
+		NANOXLIB=${guess_NANOXLIB}
+	else
+		NANOXLIB=${real_NANOXLIB}
+	fi
+	
         AWT_LIBS="-L${NANOXLIB} -lnano-X -lmwengine -lmwdrivers -lmwfonts"
 	AWT_LIBS="$CTLIBS $AWT_LIBS"
 	AC_SUBST(NANOX_CFLAGS)
