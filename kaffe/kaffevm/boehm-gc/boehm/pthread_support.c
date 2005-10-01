@@ -607,10 +607,12 @@ void GC_delete_gc_thread(pthread_t id, GC_thread gc_id)
     register GC_thread p = GC_threads[hv];
     register GC_thread prev = 0;
 
-    while (p != gc_id) {
+    while (p != gc_id && p != 0) {
         prev = p;
         p = p -> next;
     }
+    if (p == 0)
+      return;
     if (prev == 0) {
         GC_threads[hv] = p -> next;
     } else {

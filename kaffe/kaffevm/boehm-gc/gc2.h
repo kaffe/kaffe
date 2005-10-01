@@ -24,9 +24,10 @@ typedef struct _gcMark {
 } gcMark;
 
 typedef struct {
-	uint32 magic;
-	uint8 memtype;
-	size_t memsize;
+  uint32 magic;
+  uint8 memtype;
+  uint8 needFinal;
+  size_t memsize;
 } MemDescriptor;
 
 #define SIZEOF_DESC (((sizeof(MemDescriptor) + ALIGNMENTOF_VOIDP - 1) / ALIGNMENTOF_VOIDP) * ALIGNMENTOF_VOIDP)

@@ -21,5 +21,6 @@ bool KaffeGC_rmRef(struct _Collector *collector, const void* mem);
 bool KaffeGC_addWeakRef(struct _Collector *collector, void *mem, void **obj);
 bool KaffeGC_rmWeakRef(struct _Collector *collector, void *mem, void **obj);
 void KaffeGC_clearWeakRef(struct _Collector *collector, void *mem);
+void KaffeGC_initRefs();
 
 #endif /* __gcrefs_h */

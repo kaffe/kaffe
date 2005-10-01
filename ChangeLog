@@ -1,3 +1,15 @@
+2005-10-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/gc-refs.c,
+	kaffe/kaffevm/boehm-gc/gc-refs.h,
+	kaffe/kaffevm/boehm-gc/gc2.c,
+	kaffe/kaffevm/boehm-gc/gc2.h:
+	Fixed Boehm-GC adaptation layer.
+	
+	* kaffe/kaffevm/boehm-gc/boehm/pthread_support.c
+	(pthread_join)
+	In some case a thread may be detached just after the UNLOCK().
+
 2005-10-01  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/javalib/gnu/java/net/PlainSocketImpl.java (getOption):

@@ -142,8 +142,13 @@ finalizeObject(void* ob, UNUSED void* descriptor)
 
   assert(desc->magic == MAGIC_GC);
   
-  if (f->final != KGC_OBJECT_NORMAL && f->final != NULL)
-    f->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
+  if (f->final != KGC_OBJECT_NORMAL && f->final != NULL && desc->needFinal)
+    {    
+      f->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
+      desc->needFinal = false;
+      GC_REGISTER_FINALIZER_NO_ORDER(ob, finalizeObject, 0, 0, 0);
+      return;
+    }
 
   KaffeGC_clearWeakRef(&boehm_gc.collector, ALIGN_FORWARD(ob));
 
@@ -289,6 +294,7 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
     }
     desc->memtype = type;
     desc->memsize = sz;
+    desc->needFinal = true;
 
     return ALIGN_FORWARD(new_ptr);
   }
@@ -320,6 +326,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
   desc.memtype = type;
   desc.memsize = sz;
   desc.magic = MAGIC_GC;
+  desc.needFinal = true;
   // Allocate memory
   if (gcFunctions[type].final == KGC_OBJECT_FIXED)
     {
@@ -334,7 +341,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
   // Attach finalizer
   if (mem != 0) {
     clearAndAddDescriptor(mem, &desc);
-	  
+
     if ( gcFunctions[type].final != KGC_OBJECT_FIXED
 	 && (gcFunctions[type].final != KGC_OBJECT_NORMAL
 	     || gcFunctions[type].destroy != NULL)) {
@@ -585,6 +592,8 @@ Collector* createGC(void)
   initStaticLock(&gcman_lock);
   initStaticLock(&gcmanend_lock);
   initStaticLock(&finman_lock);
+
+  KaffeGC_initRefs();
 
   return (&boehm_gc.collector);
 }
