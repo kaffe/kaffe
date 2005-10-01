@@ -24,6 +24,7 @@
 #include "stats.h"
 
 #if defined(KAFFE_STATS)
+#include <sys/resource.h>
 
 timespent fulljit;
 counter jitmem;
