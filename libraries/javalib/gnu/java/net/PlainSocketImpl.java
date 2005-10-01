@@ -4,6 +4,9 @@
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2005
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *    
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -232,8 +235,8 @@ public Object getOption(int option) throws SocketException {
 	case SO_SNDBUF:
 	case SO_RCVBUF:
 	case SO_LINGER:
-	case SO_REUSEADDR:
 		return new Integer(socketGetOption(option));
+	case SO_REUSEADDR:
 	case TCP_NODELAY:
 		return new Boolean(socketGetOption(option) != 0);
 	case SO_TIMEOUT:

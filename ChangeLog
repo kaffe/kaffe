@@ -1,8 +1,17 @@
 2005-10-01  Jim Huang  <jserv@kaffe.org>
 
+	* libraries/javalib/gnu/java/net/PlainSocketImpl.java (getOption):
+	Fixlet. When you use getOption(int) in order to ask it for
+	SO_REUSEADDR, you get an Integer back which is either 0 or 1. It 
+	should be a Boolean instead, as getReuseAddress() executed on a 
+	socket expects this.
+	Patched by:  Nico R.  <n-roeser@gmx.net>
+
+2005-10-01  Jim Huang  <jserv@kaffe.org>
+
 	* kaffe/kaffevm/stats.c: Fixlet to compilation error when
 	--with-stats enabled.
-	Reported by Pietro Ferrari <pietro.ferrari@gmail.com>.
+	Reported by:  Pietro Ferrari  <pietro.ferrari@gmail.com>.
 
 2005-09-30  Jim Huang  <jserv@kaffe.org>
 
@@ -53,8 +62,6 @@
 	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
 	(jthread_exit_when_done): Removed bad NONRETURNING tag.
 
-	
-	
 2005-09-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c
