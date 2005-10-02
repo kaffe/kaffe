@@ -15,6 +15,11 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+
 #include "jni_md.h"
 #if !defined(KAFFEH)
 #include "jthread.h"
@@ -24,7 +29,6 @@
 #include "stats.h"
 
 #if defined(KAFFE_STATS)
-#include <sys/resource.h>
 
 timespent fulljit;
 counter jitmem;
