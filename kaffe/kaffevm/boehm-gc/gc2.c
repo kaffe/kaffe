@@ -53,6 +53,8 @@ static volatile int gcDisabled = 0;
 static Hjava_lang_Thread* finalman;
 static Hjava_lang_Thread* garbageman;
 
+static ssize_t KGC_max_heap_size;
+
 #define GCSTACKSIZE             (1024*1024)
 #define FINALIZERSTACKSIZE      (128*1024)
 
@@ -283,7 +285,9 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
 
   if (mem == NULL)
     return KGC_malloc(gcif, sz, type);
-    
+
+  assert(sz > 0);
+  
   new_ptr = GC_realloc ( ALIGN_BACKWARD(mem), (size_t)SYSTEM_SIZE(sz));
   if (new_ptr) {
     MemDescriptor *desc = (MemDescriptor *)new_ptr;
@@ -322,6 +326,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
 
   assert(gcFunctions[type].description != NULL);
   assert(sz != 0);
+  assert(sz > 0);
 
   desc.memtype = type;
   desc.memsize = sz;
@@ -434,7 +439,7 @@ KaffeGC_HeapFree(Collector *gcif UNUSED)
 static uintp
 KaffeGC_HeapLimit(Collector *gcif UNUSED)
 {
-  return 0;
+  return KGC_max_heap_size;
 }
 
 static uintp
@@ -515,7 +520,12 @@ KaffeGC_Init(Collector *collector UNUSED)
   GC_finalize_on_demand = 1;
   GC_set_warn_proc(KaffeGC_warnproc);
   GC_init();
-  GC_set_max_heap_size((size_t)Kaffe_JavaVMArgs.maxHeapSize);
+  if (Kaffe_JavaVMArgs.maxHeapSize == UNLIMITED_HEAP)
+    GC_set_max_heap_size(0);
+  else
+    GC_set_max_heap_size((size_t)Kaffe_JavaVMArgs.maxHeapSize);
+
+  KGC_max_heap_size = Kaffe_JavaVMArgs.maxHeapSize;
 
   if (GC_get_heap_size() < (size_t)Kaffe_JavaVMArgs.minHeapSize)
     GC_expand_hp( Kaffe_JavaVMArgs.minHeapSize - GC_get_heap_size());

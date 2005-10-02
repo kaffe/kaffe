@@ -1,3 +1,25 @@
+2005-10-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gc.h
+	(KGC_MAX_MALLOC_TYPE): Alias for SIZE_MAX.
+
+	* kaffe/kaffevm/object.c
+	(newArrayChecked): Check for integer overflows before summing
+	some maybe big values.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c
+	(KaffeGC_realloc, KaffeGC_malloc): Added more assertion safeguards.
+	(KaffeGC_init): Initialized the max heap size correctly.
+	(KGC_max_heap_size): New static global variable.
+	(KaffeGC_HeapLimit): It now returns a valid value now.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(gcMalloc): Added more assertion safeguards.
+
+	* libraries/clib/native/Runtime.c
+	(maxMemory): Check if the heap is unlimited using the good
+	constant.
+	
 2005-10-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/stats.c: Added guards for sys/resource.h include.

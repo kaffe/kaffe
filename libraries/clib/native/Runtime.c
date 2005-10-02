@@ -61,7 +61,7 @@ java_lang_VMRuntime_maxMemory(void)
 {
 	jlong max = KGC_getHeapLimit(main_collector);
 
-	if (max <= 0) {
+	if (max == UNLIMITED_HEAP) {
 		return 0x7fffffffffffffffLL;
 	}
 	else {

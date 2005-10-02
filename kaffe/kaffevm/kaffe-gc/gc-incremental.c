@@ -1067,6 +1067,7 @@ gcMalloc(Collector* gcif, size_t size, gc_alloc_type_t fidx)
 	assert(gc_init != 0);
 	assert(gcFunctions[fidx].description != NULL);
 	assert(size != 0);
+	assert(size > 0);
 
 	size += sizeof(gc_unit);
 

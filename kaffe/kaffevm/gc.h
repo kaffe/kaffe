@@ -30,6 +30,12 @@
 #define	MAX_HEAPSIZE	(UNLIMITED_HEAP)
 #define	ALLOC_HEAPSIZE	(1024*1024)
 
+/*
+ * This macro sets the maximal value you can allocate in one chunk of memory. The type
+ * signed so we substract one bit.
+ */
+#define KGC_MAX_MALLOC_TYPE SIZE_MAX
+
 /* 
  * We do not support incremental collection as this time.
  */
