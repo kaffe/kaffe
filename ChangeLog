@@ -1,3 +1,13 @@
+2005-10-02  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac,
+	kaffe/scripts/compat/Makefile.am
+	Removed appletviewer and javadoc compatilibility scripts.
+
+	*kaffe/scripts/compat/appletviewer.in,
+	kaffe/scripts/compat/javadoc.in:
+	Removed. Same scripts exist in normal scripts directory already.
+
 2005-10-02  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/gc.h

@@ -46,8 +46,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts/compat
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/appletviewer.in $(srcdir)/java.in $(srcdir)/javac.in \
-	$(srcdir)/javadoc.in
+	$(srcdir)/java.in $(srcdir)/javac.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -73,7 +72,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = java javac appletviewer javadoc
+CONFIG_CLEAN_FILES = java javac
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -366,7 +365,7 @@ with_engine = @with_engine@
 @SUN_COMPAT_FALSE@jrebin_SCRIPTS = 
 @SUN_COMPAT_TRUE@jrebin_SCRIPTS = java
 @SUN_COMPAT_FALSE@bin_SCRIPTS = 
-@SUN_COMPAT_TRUE@bin_SCRIPTS = appletviewer javac javadoc
+@SUN_COMPAT_TRUE@bin_SCRIPTS = javac
 all: all-am
 
 .SUFFIXES:
@@ -402,10 +401,6 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 java: $(top_builddir)/config.status $(srcdir)/java.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javac: $(top_builddir)/config.status $(srcdir)/javac.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-appletviewer: $(top_builddir)/config.status $(srcdir)/appletviewer.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)

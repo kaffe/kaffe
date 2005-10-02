@@ -270,8 +270,8 @@ msgstr ""
 "\t-Xms <空間> \t\t 指定初始 heap 空間\n"
 "\t-cp <路徑> \t\t 設定 classpath\n"
 
-#: kaffe/kaffe/version.c:45
 #: kaffe/kaffe/version.c:46
+#, c-format
 msgid ""
 "Copyright (c) 1996-2005 Kaffe.org project contributors (please see\n"
 "  the source code for a full list of contributors).  All rights reserved.\n"

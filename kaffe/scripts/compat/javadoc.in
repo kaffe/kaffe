@@ -1,7 +1,0 @@
-#! /bin/sh
-# Script to run javadoc
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ -Xmx512M -cp @libdir@/gjdoc.jar $JAVA_OPTS gnu.classpath.tools.gjdoc.Main  ${1+"$@"}
-exit $?
-
