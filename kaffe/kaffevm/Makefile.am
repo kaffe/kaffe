@@ -78,11 +78,6 @@ libkaffevm_la_GEN_SRCS = \
 nodist_libkaffevm_la_SOURCES = \
 	$(libkaffevm_la_GEN_SRCS)
 
-if ENABLE_BINRELOC
-BINRELOC_SOURCES=\
-	../../binreloc/prefix.c
-endif
-
 libkaffevm_la_SOURCES = \
 	access.c \
 	baseClasses.c \
@@ -120,7 +115,7 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	reflect.c \
 	reference.c \
-	$(BINRELOC_SOURCES)
+	binreloc.c
 
 noinst_HEADERS = \
 	access.h \
@@ -161,7 +156,7 @@ noinst_HEADERS = \
 	utf8const.h \
 	reflect.h \
 	reference.h \
-	../../binreloc/prefix.h
+	binreloc.h
 
 md.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

@@ -92,14 +92,6 @@ am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la $(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la
-am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
-	classPool.c methodCache.c code-analyse.c code.c constants.c \
-	debug.c exception.c external.c file.c findInJar.c fp.c gc.c \
-	hashtab.c inflate.c itypes.c jar.c ksem.c locks.c lookup.c \
-	object.c readClass.c soft.c stackTrace.c stats.c string.c \
-	stringParsing.c support.c javacall.c thread.c utf8const.c \
-	gcFuncs.c reflect.c reference.c ../../binreloc/prefix.c
-@ENABLE_BINRELOC_TRUE@am__objects_1 = libkaffevm_la-prefix.lo
 am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-baseClasses.lo libkaffevm_la-classMethod.lo \
 	libkaffevm_la-classPool.lo libkaffevm_la-methodCache.lo \
@@ -118,9 +110,9 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-support.lo libkaffevm_la-javacall.lo \
 	libkaffevm_la-thread.lo libkaffevm_la-utf8const.lo \
 	libkaffevm_la-gcFuncs.lo libkaffevm_la-reflect.lo \
-	libkaffevm_la-reference.lo $(am__objects_1)
-am__objects_2 = libkaffevm_la-md.lo
-nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
+	libkaffevm_la-reference.lo libkaffevm_la-binreloc.lo
+am__objects_1 = libkaffevm_la-md.lo
+nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
@@ -134,7 +126,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libkaffevm_la_SOURCES) $(nodist_libkaffevm_la_SOURCES)
-DIST_SOURCES = $(am__libkaffevm_la_SOURCES_DIST)
+DIST_SOURCES = $(libkaffevm_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -160,6 +152,7 @@ AWK = @AWK@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
+BINRELOC_LIBS = @BINRELOC_LIBS@
 BOEHMGC_SPECIFIC_FLAGS = @BOEHMGC_SPECIFIC_FLAGS@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
 CAIRO_LIBS = @CAIRO_LIBS@
@@ -484,9 +477,6 @@ libkaffevm_la_GEN_SRCS = \
 nodist_libkaffevm_la_SOURCES = \
 	$(libkaffevm_la_GEN_SRCS)
 
-@ENABLE_BINRELOC_TRUE@BINRELOC_SOURCES = \
-@ENABLE_BINRELOC_TRUE@	../../binreloc/prefix.c
-
 libkaffevm_la_SOURCES = \
 	access.c \
 	baseClasses.c \
@@ -524,7 +514,7 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	reflect.c \
 	reference.c \
-	$(BINRELOC_SOURCES)
+	binreloc.c
 
 noinst_HEADERS = \
 	access.h \
@@ -565,7 +555,7 @@ noinst_HEADERS = \
 	utf8const.h \
 	reflect.h \
 	reference.h \
-	../../binreloc/prefix.h
+	binreloc.h
 
 CLEANFILES = so_locations
 DISTCLEANFILES = md.c stamp-h01
@@ -640,6 +630,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-baseClasses.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-binreloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-classMethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-classPool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-code-analyse.Plo@am__quote@
@@ -664,7 +655,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-md.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-methodCache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-object.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-prefix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-readClass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-reference.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-reflect.Plo@am__quote@
@@ -950,12 +940,12 @@ libkaffevm_la-reference.lo: reference.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-reference.lo `test -f 'reference.c' || echo '$(srcdir)/'`reference.c
 
-libkaffevm_la-prefix.lo: ../../binreloc/prefix.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-prefix.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-prefix.Tpo" -c -o libkaffevm_la-prefix.lo `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-prefix.Tpo" "$(DEPDIR)/libkaffevm_la-prefix.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-prefix.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='libkaffevm_la-prefix.lo' libtool=yes @AMDEPBACKSLASH@
+libkaffevm_la-binreloc.lo: binreloc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-binreloc.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-binreloc.Tpo" -c -o libkaffevm_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-binreloc.Tpo" "$(DEPDIR)/libkaffevm_la-binreloc.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-binreloc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='libkaffevm_la-binreloc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-prefix.lo `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
 
 libkaffevm_la-md.lo: md.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-md.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-md.Tpo" -c -o libkaffevm_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c; \
@@ -1107,7 +1097,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../binreloc $(distdir)/systems/win32
+	$(mkdir_p) $(distdir)/systems/win32
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

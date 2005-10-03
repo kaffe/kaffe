@@ -31,7 +31,7 @@
 #endif
 
 #ifdef ENABLE_BINRELOC
-#include "prefix.h"
+#include "binreloc.h"
 #endif
 
 #define	BUFSZ	1024
@@ -80,6 +80,10 @@ main(int argc, char* argv[])
 	char* nm;
 	int i, j, first = 1;
 	int farg;
+
+#if defined(ENABLE_BINRELOC)
+	br_init(NULL);
+#endif
 
 	/* Process arguments */
 	farg = options(argc, argv);
@@ -349,7 +353,13 @@ options(int argc, char** argv)
 	  {
 
 #if defined(ENABLE_BINRELOC)
-	    strcpy(realClassPath, BR_PREFIX("/jre/lib/rt.jar"));
+            char *prefixPath = br_find_prefix(NULL);
+	    char *rtJarPath = br_build_path(prefixPath, "jre/lib/rt.jar");
+
+	    strcpy(realClassPath, rtJarPath);
+
+	    free(rtJarPath);
+	    free(prefixPath);
 #endif
 	  }
 

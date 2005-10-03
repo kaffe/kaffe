@@ -36,7 +36,9 @@
 #include "access.h"
 #include "gcj/gcj.h"
 #include "defs.h"
-#include "prefix.h"
+#if defined(ENABLE_BINRELOC)
+#include "binreloc.h"
+#endif
 
 #ifdef __riscos__
 #include <unixlib/local.h>
@@ -794,8 +796,9 @@ discoverClassHome(void)
 
       char* p;
       const char* referenceName = "rt.jar";
+      char *exeFilename = br_find_exe(NULL);
 
-      strcpy(discoveredClassHome, SELFPATH);
+      strcpy(discoveredClassHome, exeFilename);
 
       while ((p = strrchr(discoveredClassHome, file_separator[0]))) {
          if (p + 1 + strlen(referenceName) 
@@ -803,16 +806,19 @@ discoverClassHome(void)
             strcpy(p + 1, referenceName);
             if (0 == access(discoveredClassHome, R_OK)) {
                *p = '\0';                    
+	       free(exeFilename);
                return discoveredClassHome;
             }
          }
          *p = '\0';                    
       }
+      free(exeFilename);
    }
    else {
       fprintf(stderr, "WARNING: file_separator not a single character, unable to discover lib directory\n");
    }
 #endif
+
    
    return NULL;
 }

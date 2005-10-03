@@ -51,7 +51,7 @@
 #endif
 
 #ifdef ENABLE_BINRELOC
-#include "prefix.h"
+#include "binreloc.h"
 #endif
 
 #if defined(KAFFE_PROFILER)
@@ -91,6 +91,10 @@ main(int argc, char* argv[])
 
 #if defined(MAIN_MD)
 	MAIN_MD;
+#endif
+
+#if defined(ENABLE_BINRELOC)
+	br_init(NULL);
 #endif
 
 #if defined(HAVE_LC_MESSAGES)
@@ -374,7 +378,7 @@ setKaffeAWT(const char * propStr)
 	unsigned int      bootcpathlength;
 	const char *prefix = 
 #if defined(ENABLE_BINRELOC)
-		LIBDIR
+		br_find_lib_dir(NULL)
 #else /* !defined(ENABLE_BINRELOC) */
 	        DEFAULT_KAFFEHOME
 #endif /* defined(ENABLE_BINRELOC) */
@@ -412,6 +416,10 @@ setKaffeAWT(const char * propStr)
 
         /* select Xlib backend */
         prop = setUserProperty(backend_property);
+
+#if defined(ENABLE_BINRELOC)
+	free(prefix);
+#endif
 
 	return prop;
 }
@@ -530,7 +538,7 @@ options(char** argv, int argc)
                         unsigned int      bootcpathlength;
 			const char *prefix =
 #if defined(ENABLE_BINRELOC)
-				LIBDIR
+				br_find_lib_dir(NULL)
 #else /* !defined(ENABLE_BINRELOC) */
 				DEFAULT_KAFFEHOME
 #endif /* defined(ENABLE_BINRELOC) */

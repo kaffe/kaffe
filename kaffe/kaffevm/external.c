@@ -47,7 +47,7 @@
 #endif
 #include "jni_i.h"
 #ifdef ENABLE_BINRELOC
-#include "prefix.h"
+#include "binreloc.h"
 #endif
 
 #ifdef __riscos__
@@ -78,27 +78,16 @@ static char *libraryPath = NULL;
 
 #ifdef ENABLE_BINRELOC
 static
-const char *discoverLibraryHome(void)
+char *discoverLibraryHome(void)
 {
-  static char libraryHome[MAXPATHLEN];
   char *entryPoint;
 
-  strcpy(libraryHome, SELFPATH);
-  
-  if (strlen(file_separator) != 1)
-    {
-      fprintf(stderr, "WARNING: Impossible to auto-discover the home of native libraries\n");
-      return NULL;
-    }
-
-  entryPoint = strrchr(libraryHome, file_separator[0]);
+  entryPoint = br_find_exe_dir(NULL);
   if (entryPoint == NULL)
     // Abnormal. We may return ".".
     return ".";
 
-  *entryPoint = 0;
-  
-  return libraryHome;
+  return entryPoint;
 }
 #endif
 

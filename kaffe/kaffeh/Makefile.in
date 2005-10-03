@@ -78,17 +78,13 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am__kaffeh_SOURCES_DIST = main.c mem.c sigs.c support.c \
-	../../binreloc/prefix.c ../../binreloc/prefix.h
-@ENABLE_BINRELOC_TRUE@am__objects_1 = kaffeh-prefix.$(OBJEXT)
 am_kaffeh_OBJECTS = kaffeh-main.$(OBJEXT) kaffeh-mem.$(OBJEXT) \
-	kaffeh-sigs.$(OBJEXT) kaffeh-support.$(OBJEXT) \
-	$(am__objects_1)
-am__objects_2 = kaffeh-constants.$(OBJEXT) kaffeh-debug.$(OBJEXT) \
+	kaffeh-sigs.$(OBJEXT) kaffeh-support.$(OBJEXT)
+am__objects_1 = kaffeh-constants.$(OBJEXT) kaffeh-debug.$(OBJEXT) \
 	kaffeh-file.$(OBJEXT) kaffeh-inflate.$(OBJEXT) \
 	kaffeh-jar.$(OBJEXT) kaffeh-readClass.$(OBJEXT) \
-	kaffeh-utf8const.$(OBJEXT)
-nodist_kaffeh_OBJECTS = $(am__objects_2)
+	kaffeh-utf8const.$(OBJEXT) kaffeh-binreloc.$(OBJEXT)
+nodist_kaffeh_OBJECTS = $(am__objects_1)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 kaffeh_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
@@ -102,7 +98,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
-DIST_SOURCES = $(am__kaffeh_SOURCES_DIST)
+DIST_SOURCES = $(kaffeh_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -122,6 +118,7 @@ AWK = @AWK@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
+BINRELOC_LIBS = @BINRELOC_LIBS@
 BOEHMGC_SPECIFIC_FLAGS = @BOEHMGC_SPECIFIC_FLAGS@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
 CAIRO_LIBS = @CAIRO_LIBS@
@@ -404,22 +401,18 @@ GEN_SRCS = \
 	inflate.c \
 	jar.c \
 	readClass.c \
-	utf8const.c
+	utf8const.c \
+	binreloc.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
-@ENABLE_BINRELOC_TRUE@BINRELOC_SOURCES = \
-@ENABLE_BINRELOC_TRUE@	../../binreloc/prefix.c \
-@ENABLE_BINRELOC_TRUE@	../../binreloc/prefix.h
-
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \
 	sigs.c \
-	support.c \
-	$(BINRELOC_SOURCES)
+	support.c
 
 nodist_kaffeh_SOURCES = $(GEN_SRCS)
 noinst_HEADERS = \
@@ -499,6 +492,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-binreloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-constants.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-file.Po@am__quote@
@@ -506,7 +500,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-jar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-prefix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-readClass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-sigs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-support.Po@am__quote@
@@ -588,20 +581,6 @@ kaffeh-support.obj: support.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='support.c' object='kaffeh-support.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-support.obj `if test -f 'support.c'; then $(CYGPATH_W) 'support.c'; else $(CYGPATH_W) '$(srcdir)/support.c'; fi`
-
-kaffeh-prefix.o: ../../binreloc/prefix.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-prefix.o -MD -MP -MF "$(DEPDIR)/kaffeh-prefix.Tpo" -c -o kaffeh-prefix.o `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-prefix.Tpo" "$(DEPDIR)/kaffeh-prefix.Po"; else rm -f "$(DEPDIR)/kaffeh-prefix.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='kaffeh-prefix.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-prefix.o `test -f '../../binreloc/prefix.c' || echo '$(srcdir)/'`../../binreloc/prefix.c
-
-kaffeh-prefix.obj: ../../binreloc/prefix.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-prefix.obj -MD -MP -MF "$(DEPDIR)/kaffeh-prefix.Tpo" -c -o kaffeh-prefix.obj `if test -f '../../binreloc/prefix.c'; then $(CYGPATH_W) '../../binreloc/prefix.c'; else $(CYGPATH_W) '$(srcdir)/../../binreloc/prefix.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-prefix.Tpo" "$(DEPDIR)/kaffeh-prefix.Po"; else rm -f "$(DEPDIR)/kaffeh-prefix.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../../binreloc/prefix.c' object='kaffeh-prefix.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-prefix.obj `if test -f '../../binreloc/prefix.c'; then $(CYGPATH_W) '../../binreloc/prefix.c'; else $(CYGPATH_W) '$(srcdir)/../../binreloc/prefix.c'; fi`
 
 kaffeh-constants.o: constants.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-constants.o -MD -MP -MF "$(DEPDIR)/kaffeh-constants.Tpo" -c -o kaffeh-constants.o `test -f 'constants.c' || echo '$(srcdir)/'`constants.c; \
@@ -700,6 +679,20 @@ kaffeh-utf8const.obj: utf8const.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utf8const.c' object='kaffeh-utf8const.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-utf8const.obj `if test -f 'utf8const.c'; then $(CYGPATH_W) 'utf8const.c'; else $(CYGPATH_W) '$(srcdir)/utf8const.c'; fi`
+
+kaffeh-binreloc.o: binreloc.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-binreloc.o -MD -MP -MF "$(DEPDIR)/kaffeh-binreloc.Tpo" -c -o kaffeh-binreloc.o `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-binreloc.Tpo" "$(DEPDIR)/kaffeh-binreloc.Po"; else rm -f "$(DEPDIR)/kaffeh-binreloc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='kaffeh-binreloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-binreloc.o `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
+
+kaffeh-binreloc.obj: binreloc.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-binreloc.obj -MD -MP -MF "$(DEPDIR)/kaffeh-binreloc.Tpo" -c -o kaffeh-binreloc.obj `if test -f 'binreloc.c'; then $(CYGPATH_W) 'binreloc.c'; else $(CYGPATH_W) '$(srcdir)/binreloc.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-binreloc.Tpo" "$(DEPDIR)/kaffeh-binreloc.Po"; else rm -f "$(DEPDIR)/kaffeh-binreloc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='kaffeh-binreloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-binreloc.obj `if test -f 'binreloc.c'; then $(CYGPATH_W) 'binreloc.c'; else $(CYGPATH_W) '$(srcdir)/binreloc.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
