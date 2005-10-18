@@ -1,3 +1,14 @@
+2005-10-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/scripts/Makefile.am:
+	Only install the javadoc wrapper script if gjdoc is being built.
+	Simplified conditionals.
+
+	Reported by:  Petteri Raety  <betelgeuse@gentoo.org>
+
+	* kaffe/scripts/compat/Makefile.am: 
+	Simplified conditionals.
+
 2005-10-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* m4/binreloc.m4: Updated file.

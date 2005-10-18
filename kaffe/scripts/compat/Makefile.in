@@ -363,9 +363,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@SUN_COMPAT_FALSE@jrebin_SCRIPTS = 
 @SUN_COMPAT_TRUE@jrebin_SCRIPTS = java
-@SUN_COMPAT_FALSE@bin_SCRIPTS = 
 @SUN_COMPAT_TRUE@bin_SCRIPTS = javac
 all: all-am
 

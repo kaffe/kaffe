@@ -16,17 +16,19 @@ SCRIPTFILES_SUN=\
 
 if SUN_COMPAT
 SUBDIRS = compat
-SCRIPTFILES_COMPAT=
-else
+endif
+
+if COND_GJDOC
+KAFFE_JAVADOC = javadoc
+endif
+
 if COND_NATIVE_AWT
 KAFFE_APPLETVIEWER = appletviewer
-else
-# If no native AWT backends are enabled, the appletviewer
-# must be absent.
-KAFFE_APPLETVIEWER =
 endif
-SCRIPTFILES_COMPAT= $(KAFFE_APPLETVIEWER) javac javadoc
-endif
+
+SCRIPTFILES_COMPAT= \
+	$(KAFFE_APPLETVIEWER) \
+	$(KAFFE_JAVADOC) 
 
 if ENABLE_XPROF
 SCRIPTFILES_XPROF=kaffexprof nm2as.awk

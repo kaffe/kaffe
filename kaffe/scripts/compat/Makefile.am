@@ -9,9 +9,6 @@
 if SUN_COMPAT
 jrebin_SCRIPTS = java
 bin_SCRIPTS = javac
-else
-jrebin_SCRIPTS=
-bin_SCRIPTS=
 endif
 
 install-exec-local:
