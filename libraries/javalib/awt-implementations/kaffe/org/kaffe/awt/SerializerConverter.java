@@ -10,7 +10,7 @@
  * @author P. Mehlitz
  */
 
-package kaffe.awt;
+package org.kaffe.awt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

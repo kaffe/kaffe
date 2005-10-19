@@ -10,7 +10,7 @@
  *
  */
 
-package kaffe.util.log;
+package org.kaffe.util.log;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ import java.awt.Insets;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
-import kaffe.util.DoubleLinkedObject;
+import org.kaffe.util.DoubleLinkedObject;
 
 public class SimpleLogViewer
   extends Frame

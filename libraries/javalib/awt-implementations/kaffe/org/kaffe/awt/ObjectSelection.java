@@ -1,4 +1,4 @@
-package kaffe.awt;
+package org.kaffe.awt;
 
 import java.awt.datatransfer.DataFlavor;
 

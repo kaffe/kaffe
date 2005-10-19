@@ -8,7 +8,7 @@
  * of this file. 
  */
 
-package kaffe.util.log;
+package org.kaffe.util.log;
 
 
 public interface LogClient

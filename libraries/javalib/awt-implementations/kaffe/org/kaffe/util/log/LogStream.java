@@ -10,12 +10,12 @@
  *
  */
 
-package kaffe.util.log;
+package org.kaffe.util.log;
 
 import java.io.OutputStream;
 import java.util.Vector;
 
-import kaffe.util.DoubleLinkedObject;
+import org.kaffe.util.DoubleLinkedObject;
 
 public class LogStream
   extends OutputStream

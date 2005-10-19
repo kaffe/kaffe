@@ -12,7 +12,7 @@
  * to easily embed applets in their own containers
  */
 
-package kaffe.applet;
+package org.kaffe.applet;
 
 import java.applet.Applet;
 import java.applet.AppletContext;

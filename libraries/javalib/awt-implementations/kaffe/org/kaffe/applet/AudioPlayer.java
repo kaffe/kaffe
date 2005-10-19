@@ -1,4 +1,4 @@
-package kaffe.applet;
+package org.kaffe.applet;
 
 import java.applet.AudioClip;
 import java.net.URL;

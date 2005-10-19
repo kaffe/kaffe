@@ -11,7 +11,7 @@
  * @author P.Mehlitz
  */
  
-package kaffe.awt;
+package org.kaffe.awt;
 
 public interface OpaqueComponent {
 }

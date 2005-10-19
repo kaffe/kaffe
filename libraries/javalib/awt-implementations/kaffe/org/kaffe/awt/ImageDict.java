@@ -8,7 +8,7 @@
  * @author J.Mehlitz
  */
 
-package kaffe.awt;
+package org.kaffe.awt;
 
 import java.awt.Component;
 import java.awt.Image;

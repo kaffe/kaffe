@@ -1,4 +1,4 @@
-package kaffe.applet;
+package org.kaffe.applet;
 
 /**
  * Copyright (c) 1998

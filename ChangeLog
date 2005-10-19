@@ -1,5 +1,10 @@
 2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/kaffe: Moved
+	directories to libraries/javalib/awt-implementations/kaffe/org/kaffe.
+
+2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/external/classpath: Imported classpath tree.
 
 2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
