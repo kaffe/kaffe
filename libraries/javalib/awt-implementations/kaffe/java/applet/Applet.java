@@ -95,7 +95,7 @@ public boolean isActive() {
 }
 
 final public static AudioClip newAudioClip( URL url) {
-	return new kaffe.applet.AudioPlayer(url);
+	return new org.kaffe.applet.AudioPlayer(url);
 }
 
 public void play( URL url){

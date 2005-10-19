@@ -1,3 +1,81 @@
+2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu, libraries/javalib/com, libraries/javalib/org,
+	libraries/javalib/java, libraries/javalib/javax: Removed.
+
+	* libraries/javalib/vmspecific: New directory to hold files specific
+	to kaffe.
+
+	* Makefile.am, Makefile.in, configure, configure.ac,
+	developers/autogen.sh, developers/resync-classpath.sh,
+	include/Makefile.am, include/Makefile.in, kaffe/kaffe/main.c,
+	kaffe/kaffevm/baseClasses.c, kaffe/kaffevm/baseClasses.h,
+	kaffe/kaffevm/external.h, kaffe/scripts/kaffe.in,
+	libraries/clib/io/Makefile.am, libraries/clib/io/Makefile.in,
+	libraries/clib/management/Classpath.c,
+	libraries/clib/management/Debug.c,
+	libraries/clib/management/JIT.c,
+	libraries/clib/management/XProfiler.c,
+	libraries/clib/math/BigInteger.c,
+	libraries/clib/native/ClassLoader.c,
+	libraries/clib/native/Makefile.am,
+	libraries/clib/native/Makefile.in,
+	libraries/clib/native/ZipFile.c,
+	libraries/clib/net/Makefile.am,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/net/NetworkInterface.c,
+	libraries/clib/nio/Makefile.am,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/security/digest.c,
+	libraries/clib/security/java.security,
+	libraries/clib/zip/Adler32.c,
+	libraries/clib/zip/Deflater.c,
+	libraries/clib/zip/Inflater.c,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.am.in,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/awt-implementations/kaffe/Makefile.in,
+	libraries/javalib/awt-implementations/kaffe/java/applet/Applet.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Button.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/DefKeyFilter.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Image.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageLoader.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ImageNativeProducer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeClipboard.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeSelection.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Scrollbar.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Toolkit.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/image/MemoryImageSource.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/image/PixelGrabber.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/image/RGBImageFilter.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/Button.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/CheckboxMenuItem.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/MenuBar.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/MenuItem.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/NativeComponent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/NativeContainer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/NativeGraphics.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/win32/Toolkit.java,
+	libraries/javalib/gmp-math/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.in,
+	libraries/javalib/gmp-math/java/math/BigInteger.java,
+	test/internal/Makefile.am,
+	test/internal/Makefile.in,
+	test/regression/KaffeInternal.java,
+	test/regression/NetworkInterfaceTest.java,
+	test/regression/SecureRandomTest.java,
+	test/regression/TestScript.in,
+	tools/Makefile.am,
+	tools/Makefile.in,
+	tools/gjdoc/javalib/Makefile.am,
+	tools/gjdoc/javalib/Makefile.in: Adapted to use the classpath tree.
+	
+	* tools/javatools: Moved java source files from gnu/classpath/tools to
+	this tree.
+
 2005-10-18  Eric Anholt  <eta@lclark.edu>
 
 	* config/x86_64/freebsd2/md.c: Added missing includes to fix 

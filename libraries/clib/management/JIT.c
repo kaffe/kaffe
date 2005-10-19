@@ -13,7 +13,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "gtypes.h"
-#include "kaffe_management_JIT.h"
+#include "org_kaffe_management_JIT.h"
 #include "classMethod.h"
 #include "lookup.h"
 #include "support.h"
@@ -39,7 +39,7 @@
  * Translate a method given class, method name, and signature
  */
 void
-Java_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclass UNUSED, 
+Java_org_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclass UNUSED, 
 	jstring _cname, jstring _mname, 
 	jstring _signature, jobject loader)	
 	/* JNI? what's that? */
@@ -90,7 +90,7 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclass UN
  * Flush the dcache 
  */
 void
-Java_kaffe_management_JIT_flushCache(JNIEnv *env UNUSED, jclass clazz UNUSED)
+Java_org_kaffe_management_JIT_flushCache(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(TRANSLATOR) 
 #if defined(FULL_CACHE_FLUSH)

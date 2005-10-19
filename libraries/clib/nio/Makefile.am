@@ -11,19 +11,19 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/libraries/clib/classpath
 
-native_LTLIBRARIES = libnio.la
+native_LTLIBRARIES = libjavanio.la
 
-libnio_la_CFLAGS = \
+libjavanio_la_CFLAGS = \
 	$(CFLAGS_PG)
 
-libnio_la_LDFLAGS = \
+libjavanio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
-libnio_la_SOURCES = \
+libjavanio_la_SOURCES = \
 	java_nio_MappedByteBufferImpl.c \
 	java_nio_VMDirectByteBuffer.c \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
@@ -31,12 +31,12 @@ libnio_la_SOURCES = \
 	gnu_java_nio_VMSelector.c \
 	gnu_java_nio_channels_FileChannelImpl.c 
 
-libnio_la_DEPENDENCIES = \
+libjavanio_la_DEPENDENCIES = \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
-libnio_la_LIBADD = \
+libjavanio_la_LIBADD = \
         $(LTLIBICONV) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(libnio_la_DEPENDENCIES)
+	$(libjavanio_la_DEPENDENCIES)
 
 CLEANFILES = so_locations

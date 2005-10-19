@@ -3,7 +3,7 @@ package java.awt;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * class Button - 

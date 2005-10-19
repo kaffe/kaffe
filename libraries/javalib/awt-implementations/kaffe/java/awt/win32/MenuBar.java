@@ -9,7 +9,7 @@ import java.awt.Toolkit;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * class MenuBar -

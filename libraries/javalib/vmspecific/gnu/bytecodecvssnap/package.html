@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>The gnu.bytecode package</title>
+  </head>
+
+  <body><p>
+Contains classes to generate, read,
+write, and print Java bytecode (<code>.class</code>) files.
+<p>
+It is used by
+<a href="../kawa/">Kawa</a>
+to compile Scheme into bytecodes;  it should be useful
+for other languages that need to be compiled into Java bytecodes.
+(An interesting exercise would be an interactive Java expression evaluator.)
+The classes here are relatively low-level.  If you want to use them
+to generate bytecode from a high-level language, it is better to
+use the <a href="../gnu/expr/">gnu.expr</a> package, which works
+at the expression level, and handles all the code-generation for you.
+<p>
+Javadoc generated
+<a href="../kawa/api/Package-gnu.bytecode.html">documentation</a>
+of the class is available online.
+<p>
+The most important class is <code>ClassType</code>.
+This contains information
+about a single class.  Note that the difference between <code>ClassType</code>
+and <code>java.lang.Class</code> is that the latter only represents existing
+classes that have been loaded into the Java VM;  in contrast,
+<code>ClassType</code> can be used to build new classes
+incrementally and on the fly.
+<p>
+A <code>ClassType</code> has a list of <code>Field</code> objects;
+new ones can be added using
+the various <code>addField</code> methods.  A <code>ClassType</code>
+manages a <code>ConstantPool</code>.
+A <code>ClassType</code> also has a list of <code>Method</code> objects;
+new ones can be created by the various <code>addMethod</code> objects.
+<p>
+A <code>Method</code> contains many methods you can use to generate bytecode.
+See Kawa for examples.
+<p>
+Once you have finished generating a <code>ClassType</code>, you
+can write it to a <code>.class</code> file with
+the <code>writeToFile</code> method.  You can also make a
+byte array suitable for <code>ClassLoader.defineClass</code> using the
+<code>writeToArray</code>
+method.  This is used by Kawa to compile and immediately load a class.
+<p>
+You can also print out the contains of a <code>ClassType</code> in
+human-readable
+form using the class <code>ClassTypeWriter</code>.  This prints a fair bit of
+information of the generated class, including
+dis-assembling the code of the methods.
+<p>
+You can also build a <code>ClassType</code> by reading it from an
+existing <code>.class</code>
+file by using a <code>ClassFileInput</code> class.  This reads the constant
+pool, the fields, methods, superclass, and interfaces.
+The <code>gnu.bytecode.dump</code> class has a <code>main</code> method
+that prints out the information in a named class file.
+
+<h2>Zip archive manager</h2>
+
+To build, extract, list, or print a zip file, you can
+use <code>ZipArchive</code> as an application:
+<pre>
+java gnu.bytecode.ZipArchive [txpq] <var>archive</var> [<var>file</var> ...]
+</pre>
+See the comments for
+<a href="../kawa/api/gnu.bytecode.ZipArchive.html#main"
+><code>ZipArchive.main</code></a>.
+<code>ZipArchive</code> does not do compression or uncompressions, and
+it is reported that that some programs do not like the archives it creates.
+It is probably best suited for listing and extracting from classes.zip-like
+archives.  (This class has been partially re-written to use java.util.zip.
+It may get dropped in the future.)
+
+<h2>Class file dumper</h2>
+To print out the contents of a class file foo.class, you can use
+the class <code>dump</code> as an application:
+<pre>
+java gnu.bytecode.dump foo.class
+</pre>
+This will print out the constant pool, fields, methods, superclass,
+and implemented interfaces of class <code>foo</code>.
+It is useful for printing out detailed information about the constant
+pool, which <code>javap</code> does not do.
+
+<h2>License</h2>
+
+See the file <a href="../../COPYING">COPYING</a>.
+
+<h2>Author</h2>
+
+<a href="http://www.bothner.com/~per">Per Bothner</a>
+<tt>&lt;<a href="mailto:per@bothner.com">per@bothner.com</a>&gt;</tt>
+
+<h2>How to get it</h2>
+The <code>gnu.bytecode</code> package is currently distributed as part of
+<a href="../kawa/">Kawa</a>, though it can be used independent
+of the rest of Kawa.
+
+<h2>Bugs and patches</h2>
+Send them to <a href="mailto:per@bothner.com">per@bothner.com</a>,
+or to the <a href="mailto:kawa@sourceware.cygnus.com">Kawa mailing list</a>.
+</body>
+</html>

@@ -10,4 +10,4 @@ if COND_GJDOC
 MAYBE_GJDOC=gjdoc
 endif
 
-SUBDIRS = $(MAYBE_GJDOC)
+SUBDIRS = $(MAYBE_GJDOC) javatools

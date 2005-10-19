@@ -25,7 +25,7 @@
 
 static Hjava_util_zip_ZipEntry* makeZipEntry(jarEntry*);
 
-struct Hkaffe_util_Ptr*
+struct Horg_kaffe_util_Ptr*
 java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 {
 	jarFile* zip;
@@ -34,23 +34,23 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 	str = checkPtr(stringJava2C(fname));
 	zip = openJarFile(str);
 	gc_free(str);
-	return ((struct Hkaffe_util_Ptr*)zip);
+	return ((struct Horg_kaffe_util_Ptr*)zip);
 }
 
 void
-java_util_zip_ZipFile_closeZipFile0(struct Hkaffe_util_Ptr* zip)
+java_util_zip_ZipFile_closeZipFile0(struct Horg_kaffe_util_Ptr* zip)
 {
 	closeJarFile((jarFile*)zip);
 }
 
 jint
-java_util_zip_ZipFile_getZipFileSize0(struct Hkaffe_util_Ptr* zip)
+java_util_zip_ZipFile_getZipFileSize0(struct Horg_kaffe_util_Ptr* zip)
 {
 	return ((jarFile*)zip)->count;
 }
 
 struct Hjava_util_zip_ZipEntry*
-java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_String* zname)
+java_util_zip_ZipFile_getZipEntry0(struct Horg_kaffe_util_Ptr* zip, Hjava_lang_String* zname)
 {
 	jarEntry* entry;
 	char* str;
@@ -67,7 +67,7 @@ java_util_zip_ZipFile_getZipEntry0(struct Hkaffe_util_Ptr* zip, Hjava_lang_Strin
 }
 
 HArrayOfByte*
-java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util_zip_ZipEntry* zentry)
+java_util_zip_ZipFile_getZipData0(struct Horg_kaffe_util_Ptr* zip, struct Hjava_util_zip_ZipEntry* zentry)
 {
 	jarEntry entry;
 	HArrayOfByte* array;
@@ -102,7 +102,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 }
 
 Hjava_util_Vector*
-java_util_zip_ZipFile_getZipEntries0(struct Hkaffe_util_Ptr* zip)
+java_util_zip_ZipFile_getZipEntries0(struct Horg_kaffe_util_Ptr* zip)
 {
 	Hjava_util_Vector* vec;
 	jarFile* zfile;

@@ -55,9 +55,8 @@ host_triplet = @host@
 @COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@am__append_6 = libraries/clib/awt/classpath-gtk
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
-	$(srcdir)/project.xml.in $(top_srcdir)/configure \
-	$(top_srcdir)/libraries/javalib/gnu/classpath/Configuration.java.in \
-	ABOUT-NLS AUTHORS ChangeLog INSTALL TODO scripts/compile \
+	$(srcdir)/project.xml.in $(top_srcdir)/configure ABOUT-NLS \
+	AUTHORS ChangeLog INSTALL TODO scripts/compile \
 	scripts/config.guess scripts/config.rpath scripts/config.sub \
 	scripts/depcomp scripts/install-sh scripts/ltmain.sh \
 	scripts/missing scripts/mkinstalldirs
@@ -89,8 +88,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = project.xml project.properties \
-	libraries/javalib/gnu/classpath/Configuration.java
+CONFIG_CLEAN_FILES = project.xml project.properties
 SCRIPTS = $(noinst_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
@@ -608,8 +606,6 @@ project.xml: $(top_builddir)/config.status $(srcdir)/project.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 project.properties: $(top_builddir)/config.status $(srcdir)/project.properties.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-libraries/javalib/gnu/classpath/Configuration.java: $(top_builddir)/config.status $(top_srcdir)/libraries/javalib/gnu/classpath/Configuration.java.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -756,7 +752,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/libraries/javalib/gnu/classpath $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time $(distdir)/tools/gjdoc/javalib
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time $(distdir)/tools/gjdoc/javalib
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -1006,7 +1002,7 @@ BUILD_ENVIRONMENT: Makefile
 		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
 
 BUILD_ENVIRONMENT-make: Makefile
-	echo BOOTCLASSPATH=\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(DNSJAVA_JAR)\''$(PATHSEP)'\'\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo BOOTCLASSPATH=\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip\''$(PATHSEP)'\'$(DNSJAVA_JAR)\''$(PATHSEP)'\'\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo CLASSPATH=.\''$(PATHSEP)'\'\$${GNU_CRYPTO_JAR}\''$(PATHSEP)'\'\$${JAVAX_SECURITY_JAR}\''$(PATHSEP)'\'$(BCEL_JAR)\''$(PATHSEP)'\'$(GNU_CRYPTO_JAR)\''$(PATHSEP)'\'$(JAVAX_SECURITY_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}$(top_builddir)/libraries/clib/native/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/nio/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/zip/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/management/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/security/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/classpath/.libs\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new; \

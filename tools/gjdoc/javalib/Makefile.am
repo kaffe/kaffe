@@ -333,7 +333,8 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+real_builddir = $(shell cd $(top_builddir) && pwd)
+Klasses_jar = $(real_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
@@ -341,7 +342,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
+	BOOTCLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

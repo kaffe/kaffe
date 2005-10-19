@@ -682,7 +682,8 @@ JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources
 JAR_CMD3 = ($(ZIP) -q -DX -r $(CURDIR)/$@.new version.properties)
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_srcdir)/libraries/javalib/rt.jar
+real_builddir = $(shell cd $(top_builddir) && pwd)
+Klasses_jar = $(real_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 all: all-am
 
 .SUFFIXES:
@@ -880,7 +881,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	echo $(SHELL) $(rebuildLib)
-	BOOTCLASSPATH=$(top_builddir)/libraries/javalib/rt.jar $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
+	BOOTCLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
 	echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes

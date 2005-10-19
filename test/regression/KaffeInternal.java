@@ -1,5 +1,5 @@
 
-import kaffe.lang.PackageHelper;
+import org.kaffe.lang.PackageHelper;
 import gnu.classpath.SystemProperties;
 
 /**
@@ -30,6 +30,6 @@ class KaffeInternal
 }
 
 /* Expected Output:
-java.lang.NoClassDefFoundError: kaffe/lang/PackageHelper
+java.lang.NoClassDefFoundError: org/kaffe/lang/PackageHelper
 java.lang.NoClassDefFoundError: gnu/classpath/SystemProperties
 */

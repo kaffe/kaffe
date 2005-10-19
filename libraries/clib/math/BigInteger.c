@@ -47,7 +47,7 @@ bi_free(void *ptr, size_t UNUSED size)
 void
 Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
 {
-	number = (*env)->GetFieldID(env, cls, "number", "kaffe.util.Ptr");
+	number = (*env)->GetFieldID(env, cls, "number", "org.kaffe.util.Ptr");
 	mp_set_memory_functions (bi_alloc, bi_realloc, bi_free);
 }
 
@@ -561,7 +561,7 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 static void
 gmp_not_found(JNIEnv* env) 
 {
-	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
+	jclass sd = (*env)->FindClass(env, "org.kaffe.util.SupportDisabled");
 	(*env)->ThrowNew(env, sd, "GNU gmp was not found by Kaffe configure script");
 }
 

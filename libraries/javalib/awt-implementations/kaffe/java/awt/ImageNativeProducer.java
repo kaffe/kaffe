@@ -10,7 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Vector;
 
-import kaffe.io.AccessibleBAOStream;
+import org.kaffe.io.AccessibleBAOStream;
 import gnu.classpath.Pointer;
 
 /**

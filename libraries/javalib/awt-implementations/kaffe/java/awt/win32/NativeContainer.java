@@ -12,7 +12,7 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * NativeContainer - abstract root of all native containers

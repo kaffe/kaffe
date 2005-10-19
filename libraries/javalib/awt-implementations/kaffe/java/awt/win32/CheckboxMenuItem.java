@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * class CheckboxMenuItem -

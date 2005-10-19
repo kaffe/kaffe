@@ -63,7 +63,7 @@ class SecureRandomTest
 	int lpc, hist;
 	byte data[];
 
-	Security.addProvider(new kaffe.security.provider.Kaffe());
+	Security.addProvider(new org.kaffe.security.provider.Kaffe());
 	
 	/*
 	 * Make sure the SecureRandom's produce different sequences after
@@ -71,7 +71,7 @@ class SecureRandomTest
 	 */
 	history = new byte[HISTORY_SIZE][];
 	/*
-	 * Now that we have added new kaffe.security.provider.Kaffe()
+	 * Now that we have added new org.kaffe.security.provider.Kaffe()
 	 * to the list of security providers, we may well explicitly
 	 * request Kaffe's SHA1PRNG to be used.
 	 * Otherwise, in some poor environment, GNU classpath's default

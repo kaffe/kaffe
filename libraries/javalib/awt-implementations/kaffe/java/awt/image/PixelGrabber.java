@@ -4,7 +4,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 
-import kaffe.awt.JavaColorModel;
+import org.kaffe.awt.JavaColorModel;
 
 public class PixelGrabber
   implements ImageConsumer

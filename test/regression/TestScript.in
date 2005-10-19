@@ -16,7 +16,7 @@ export KAFFEHOME
 : ${JAVA=$KAFFEHOME/bin/kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 : ${JASMIN=@JASMIN@}
 # If you want to use jikes as default compiler for the regression tests uncomment the line below.
-test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn -bootclasspath @top_builddir@/libraries/javalib/rt.jar"}
+test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn -bootclasspath @top_builddir@/libraries/javalib/external/classpath/lib/glibj.zip"}
 : ${JAVAC=${JIKES-"$JAVA -ss 512k -noverify at.dms.kjc.Main"}" -classpath \".${PATHSEP}@GNU_CRYPTO_JAR@${PATHSEP}@JAVAX_SECURITY_JAR@${PATHSEP}${SRCDIR}${PATHSEP}compile_time${PATHSEP}${CLASSPATH}\""}
 : ${TIMEOUT=300}
 : ${HARDTIMEOUT=5}

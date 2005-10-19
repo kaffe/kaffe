@@ -1,0 +1,29 @@
+Extension-Name: GNUJAXP
+Implementation-Title: GNU JAXP
+Implementation-URL: http://www.gnu.org/software/classpathx/jaxp
+Implementation-Vendor: Free Software Foundation
+Implementation-Version: 1.1
+Main-Class: gnu.xml.util.DoParse
+
+Name: gnu/xml/aelfred2/
+Implementation-Title: AElfred2
+
+Name: gnu/xml/dom/
+Implementation-Title: DOM2
+
+Name: org/w3c/dom
+Specification-Title: Document Object Model (DOM)
+Specification-Vendor: www.w3c.org
+Specification-Version: Level 2
+
+Name: org/xml/sax/
+Implementation-URL: http://sax.sourceforge.net
+Specification-Title: Simple API for XML (SAX) core
+Specification-Vendor: sax.sourceforge.net
+Specification-Version: 2.0
+
+Name: javax/xml/
+Specification-Title: Java API for XML Parsing (JAXP)
+Specification-Vendor: Sun Microsystems
+Specification-Version: 1.1
+

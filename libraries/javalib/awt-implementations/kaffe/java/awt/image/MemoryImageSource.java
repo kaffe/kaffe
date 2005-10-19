@@ -15,7 +15,7 @@ package java.awt.image;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import kaffe.awt.JavaColorModel;
+import org.kaffe.awt.JavaColorModel;
 
 public class MemoryImageSource
   implements ImageProducer

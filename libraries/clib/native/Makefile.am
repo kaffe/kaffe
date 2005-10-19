@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-native_LTLIBRARIES = libnative.la
+native_LTLIBRARIES = libjavalang.la
 
 AM_CPPFLAGS = \
         $(CLASSPATH_INCLUDES) \
@@ -55,27 +55,27 @@ TEST_SRCS = \
 UTIL_SRCS = \
 		TimeZone.c
 
-libnative_la_CFLAGS = \
+libjavalang_la_CFLAGS = \
 	$(CFLAGS_PG)
 
-libnative_la_LDFLAGS = \
+libjavalang_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
-libnative_la_DEPENDENCIES = \
+libjavalang_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \
 	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
         $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
-libnative_la_LIBADD = \
+libjavalang_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(M_LIBS) \
-	$(libnative_la_DEPENDENCIES)
+	$(libjavalang_la_DEPENDENCIES)
 
-libnative_la_SOURCES = \
+libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
 	$(SECURITY_SRCS) \

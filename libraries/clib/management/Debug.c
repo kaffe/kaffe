@@ -2,11 +2,11 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
-#include "kaffe_management_Debug.h"
+#include "org_kaffe_management_Debug.h"
 #include "debug.h"
 
 void
-Java_kaffe_management_Debug_enable
+Java_org_kaffe_management_Debug_enable
 	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
 	const char *real_list = (*env)->GetStringUTFChars(env, list, NULL);
@@ -20,21 +20,21 @@ Java_kaffe_management_Debug_enable
 }
 
 void
-Java_kaffe_management_Debug_setVerboseGC
+Java_org_kaffe_management_Debug_setVerboseGC
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
 	Kaffe_JavaVMArgs.enableVerboseGC = level;
 }
 
 void
-Java_kaffe_management_Debug_setVerboseJIT
+Java_org_kaffe_management_Debug_setVerboseJIT
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jboolean on)
 {
 	Kaffe_JavaVMArgs.enableVerboseJIT = on;
 }
 
 void
-Java_kaffe_management_Debug_setTracing
+Java_org_kaffe_management_Debug_setTracing
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
 	Kaffe_JavaVMArgs.enableVerboseCall = level;
@@ -42,7 +42,7 @@ Java_kaffe_management_Debug_setTracing
 
 #ifdef KAFFE_STATS
 void
-Java_kaffe_management_Debug_enableStats
+Java_org_kaffe_management_Debug_enableStats
 	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
 	static char *curStats;	/* kaffe expects this string to be
@@ -59,7 +59,7 @@ Java_kaffe_management_Debug_enableStats
 }
 #else
 void
-Java_kaffe_management_Debug_enableStats
+Java_org_kaffe_management_Debug_enableStats
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jobject list UNUSED)
 {
 	fputs("Kaffe is not configured for stats\n", stderr);

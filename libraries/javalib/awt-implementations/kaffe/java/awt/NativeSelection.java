@@ -17,9 +17,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.ByteArrayInputStream;
 
-import kaffe.awt.FlavorConverter;
-import kaffe.awt.ObjectSelection;
-import kaffe.awt.SerializerConverter;
+import org.kaffe.awt.FlavorConverter;
+import org.kaffe.awt.ObjectSelection;
+import org.kaffe.awt.SerializerConverter;
 
 class NativeSelection
   implements Transferable

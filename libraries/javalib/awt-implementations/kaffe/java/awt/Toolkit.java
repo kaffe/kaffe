@@ -18,9 +18,9 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
 
-import kaffe.awt.DoNothingPeer;
-import kaffe.util.log.LogClient;
-import kaffe.util.log.LogStream;
+import org.kaffe.awt.DoNothingPeer;
+import org.kaffe.util.log.LogClient;
+import org.kaffe.util.log.LogStream;
 
 /**
  * Toolkit - used to be an abstract factory for peers, but since we don't have

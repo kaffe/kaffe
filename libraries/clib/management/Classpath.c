@@ -14,13 +14,13 @@
 #include "gtypes.h"
 #include "support.h"
 #include "stringSupport.h"
-#include "kaffe_management_Classpath.h"
+#include "org_kaffe_management_Classpath.h"
 
 /*
  * Add a JAR/ZIP to the classpath.
  */
 void
-kaffe_management_Classpath_add0(struct Hjava_lang_String* str)
+org_kaffe_management_Classpath_add0(struct Hjava_lang_String* str)
 {
 	char *s;
 
@@ -33,7 +33,7 @@ kaffe_management_Classpath_add0(struct Hjava_lang_String* str)
  * Prepend a JAR/ZIP to the classpath.
  */
 void
-kaffe_management_Classpath_prepend0(struct Hjava_lang_String* str)
+org_kaffe_management_Classpath_prepend0(struct Hjava_lang_String* str)
 {
 	char *s;
 

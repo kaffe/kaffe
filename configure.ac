@@ -486,18 +486,18 @@ dnl =========================================================================
 dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE([debug],
-	      AS_HELP_STRING([--disable-debug],
+AC_ARG_ENABLE([vmdebug],
+	      AS_HELP_STRING([--disable-vmdebug],
 			     [Disable run-time debugging machinery. It is enabled by default.]),
 			     [],
-	[enable_debug="yes"])
-case "$enable_debug" in
+	[enable_vmdebug="yes"])
+case "$enable_vmdebug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
 
 AC_MSG_CHECKING([whether to enable run-time debugging machinery])
-AC_MSG_RESULT($enable_debug)
+AC_MSG_RESULT($enable_vmdebug)
 
 dnl =========================================================================
 dnl Allow user to specify a bcel.jar file for class file testing.
@@ -2145,10 +2145,10 @@ AC_ARG_ENABLE([gjdoc],
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 
 JAVA_LIBS=" \
-\$(top_builddir)/libraries/clib/native/libnative.la \
-\$(top_builddir)/libraries/clib/net/libnet.la \
-\$(top_builddir)/libraries/clib/io/libio.la \
-\$(top_builddir)/libraries/clib/nio/libnio.la \
+\$(top_builddir)/libraries/clib/native/libjavalang.la \
+\$(top_builddir)/libraries/clib/net/libjavanet.la \
+\$(top_builddir)/libraries/clib/io/libjavaio.la \
+\$(top_builddir)/libraries/clib/nio/libjavanio.la \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
@@ -2365,6 +2365,20 @@ dnl -----------------------------------------------------------
 CLASSPATH_INCLUDES="-I\$(top_srcdir)/libraries/clib/target/Linux -I\$(top_srcdir)/libraries/clib/target/generic"
 AC_SUBST(CLASSPATH_INCLUDES)
 
+dnl -------------------------
+dnl Update args for classpath
+dnl -------------------------
+old_configure_args="$ac_configure_args"
+ac_configure_args="$ac_configure_args --disable-jni-core"
+ac_configure_args="$ac_configure_args --disable-examples"
+ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
+ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
+real_srcdir=`cd $srcdir; pwd`
+vmdir=${real_srcdir}/libraries/javalib/vmspecific
+ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
+
+AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
+
 AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])
 AC_CONFIG_FILES([Makefile])
@@ -2396,7 +2410,6 @@ AC_CONFIG_FILES([kaffe/man/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/bat/Makefile])
 AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
-AC_CONFIG_FILES([libraries/javalib/gnu/classpath/Configuration.java])
 AC_CONFIG_FILES([libraries/javalib/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
@@ -2460,6 +2473,8 @@ AC_CONFIG_FILES([tools/Makefile])
 AC_CONFIG_FILES([tools/gjdoc/javalib/version.properties])
 AC_CONFIG_FILES([tools/gjdoc/Makefile])
 AC_CONFIG_FILES([tools/gjdoc/javalib/Makefile])
+AC_CONFIG_FILES([tools/javatools/Makefile])
+AC_CONFIG_FILES([tools/javatools/javalib/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])
 AC_CONFIG_FILES([test/regression/Makefile])

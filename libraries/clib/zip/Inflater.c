@@ -194,7 +194,7 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
 static void 
 supportDisabled (void)
 {
-	SignalError ("kaffe.util.SupportDisabled",
+	SignalError ("org.kaffe.util.SupportDisabled",
 		     "libz was not found by Kaffe configure script");
 }
 

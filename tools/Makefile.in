@@ -81,7 +81,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = gjdoc
+DIST_SUBDIRS = gjdoc javatools
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -367,7 +367,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 @COND_GJDOC_TRUE@MAYBE_GJDOC = gjdoc
-SUBDIRS = $(MAYBE_GJDOC)
+SUBDIRS = $(MAYBE_GJDOC) javatools
 all: all-recursive
 
 .SUFFIXES:

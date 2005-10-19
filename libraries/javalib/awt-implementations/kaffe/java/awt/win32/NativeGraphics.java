@@ -14,7 +14,7 @@ import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * NativeGraphics - concrete, hidden implementation of abstract Graphics

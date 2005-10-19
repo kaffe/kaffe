@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.util.Random;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 public class BigInteger extends Number implements Comparable {
 

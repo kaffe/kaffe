@@ -44,7 +44,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
 
-LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
+LIBNATIVE = $(top_builddir)/libraries/clib/native/libjavalang.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
 
@@ -87,7 +87,7 @@ JAVA_CLASSES = \
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 ##CPATH = $(top_builddir)/libraries/javalib/rt.jar
-CPATH = .:$(top_builddir)/libraries/javalib/rt.jar
+CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
 ConstMethods.class: $(srcdir)/ConstMethods.java
 	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ConstMethods.java

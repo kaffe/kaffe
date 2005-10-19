@@ -245,7 +245,7 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 
 	/* Executable is a JAR?  Use the JAR launcher */
 	if (isJar != 0) {
-		exec = "kaffe.jar.ExecJar";
+		exec = "org.kaffe.jar.ExecJar";
 	}
 	else {
 		exec = argv[farg];

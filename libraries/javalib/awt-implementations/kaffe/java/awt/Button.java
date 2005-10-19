@@ -6,8 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import kaffe.awt.ImageDict;
-import kaffe.awt.ImageSpec;
+import org.kaffe.awt.ImageDict;
+import org.kaffe.awt.ImageSpec;
 
 /**
  * class Button -

@@ -2,7 +2,7 @@ package java.awt;
 
 import java.awt.event.KeyEvent;
 
-import kaffe.awt.KeyHook;
+import org.kaffe.awt.KeyHook;
 
 class DefKeyFilter
   implements KeyHook

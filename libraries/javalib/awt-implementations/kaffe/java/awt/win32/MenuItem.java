@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.EventListener;
 import java.util.Vector;
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * class MenuItem -

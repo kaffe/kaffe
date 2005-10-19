@@ -16,18 +16,18 @@
 #include "config.h"
 #include "gtypes.h"
 #include "../../../kaffe/xprof/xprofiler.h"
-#include "kaffe_management_XProfiler.h"
+#include "org_kaffe_management_XProfiler.h"
 #include "stringSupport.h"
 #include <native.h>
 
-void Java_kaffe_management_XProfiler_on(JNIEnv *env UNUSED, jclass clazz UNUSED)
+void Java_org_kaffe_management_XProfiler_on(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(KAFFE_XPROFILER)
 	xProfilingOn();
 #endif
 }
 
-void Java_kaffe_management_XProfiler_off(JNIEnv *env UNUSED, jclass clazz UNUSED)
+void Java_org_kaffe_management_XProfiler_off(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(KAFFE_XPROFILER)
 	xProfilingOff();
@@ -35,7 +35,7 @@ void Java_kaffe_management_XProfiler_off(JNIEnv *env UNUSED, jclass clazz UNUSED
 }
 
 #if defined(KAFFE_XPROFILER)
-void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
+void Java_org_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
 					   jstring _stage_name)
 {
 	char *stage_name = stringJava2C(_stage_name);
@@ -44,7 +44,7 @@ void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUS
 	gc_free(stage_name);
 }
 #else
-void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
+void Java_org_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
 					   jstring _stage_name UNUSED)
 {
 }

@@ -26,16 +26,16 @@
 #include "fp.h"
 #include "sha-1.h"
 #include <native.h>
-#include "kaffe_security_provider_MD2.h"
-#include "kaffe_security_provider_MD4.h"
-#include "kaffe_security_provider_MD5.h"
-#include "kaffe_security_provider_SHA.h"
+#include "org_kaffe_security_provider_MD2.h"
+#include "org_kaffe_security_provider_MD4.h"
+#include "org_kaffe_security_provider_MD5.h"
+#include "org_kaffe_security_provider_SHA.h"
 
 #if (!defined(HAVE_MD2INIT) || !defined(HAVE_MD4INIT)) && !defined(HAVE_LIBMD)
 static void 
 supportDisabled (JNIEnv* env)
 {
-	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
+	jclass sd = (*env)->FindClass(env, "org.kaffe.util.SupportDisabled");
 	(*env)->ThrowNew(env, sd,
 			 "libmd was not found by Kaffe configure script");
 }
@@ -48,7 +48,7 @@ supportDisabled (JNIEnv* env)
 #include <md2.h>
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
+Java_org_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jfieldID	contextField = (*env)->GetFieldID(env,
@@ -71,7 +71,7 @@ Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -106,7 +106,7 @@ Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -147,20 +147,20 @@ Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
 #else
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this UNUSED)
+Java_org_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this UNUSED,
+Java_org_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this UNUSED,
 	jbyteArray buf UNUSED, jint off UNUSED, jint len UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this UNUSED,
+Java_org_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this UNUSED,
 	jbyteArray buf UNUSED, jint off UNUSED)
 {
 	supportDisabled(env);
@@ -176,7 +176,7 @@ Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this UNUSED,
 #include <md4.h>
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
+Java_org_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jfieldID	contextField = (*env)->GetFieldID(env,
@@ -199,7 +199,7 @@ Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -234,7 +234,7 @@ Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -275,20 +275,20 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 #else
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this UNUSED)
+Java_org_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this UNUSED,
+Java_org_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this UNUSED,
 	jbyteArray buf UNUSED, jint off UNUSED, jint len UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this UNUSED,
+Java_org_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this UNUSED,
 	jbyteArray buf UNUSED, jint off UNUSED)
 {
 	supportDisabled(env);
@@ -314,7 +314,7 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this UNUSED,
 #endif	/* defined(HAVE_MD5INIT) || defined(HAVE_LIBMD) */
 
 void JNICALL
-Java_kaffe_security_provider_MD5_Init(JNIEnv *env, jobject this)
+Java_org_kaffe_security_provider_MD5_Init(JNIEnv *env, jobject this)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jfieldID	contextField = (*env)->GetFieldID(env,
@@ -337,7 +337,7 @@ Java_kaffe_security_provider_MD5_Init(JNIEnv *env, jobject this)
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -372,7 +372,7 @@ Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD5_Final(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_MD5_Final(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -413,7 +413,7 @@ Java_kaffe_security_provider_MD5_Final(JNIEnv *env, jobject this,
 /**************************** SHA ***********************************/
 
 void JNICALL
-Java_kaffe_security_provider_SHA_Init(JNIEnv *env, jobject this)
+Java_org_kaffe_security_provider_SHA_Init(JNIEnv *env, jobject this)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
 	const jfieldID	contextField = (*env)->GetFieldID(env,
@@ -436,7 +436,7 @@ Java_kaffe_security_provider_SHA_Init(JNIEnv *env, jobject this)
 }
 
 void JNICALL
-Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off, jint len)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);
@@ -471,7 +471,7 @@ Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 }
 
 void JNICALL
-Java_kaffe_security_provider_SHA_Final(JNIEnv *env, jobject this,
+Java_org_kaffe_security_provider_SHA_Final(JNIEnv *env, jobject this,
 	jbyteArray buf, jint off)
 {
 	const jclass	class = (*env)->GetObjectClass(env, this);

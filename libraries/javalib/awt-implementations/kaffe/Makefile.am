@@ -27,9 +27,9 @@ kaffeawt_jar_SRCS = \
 	$(java_awt_image_renderable_SRCS) \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_print_SRCS) \
-	$(kaffe_applet_SRCS) \
-	$(kaffe_awt_SRCS) \
-        $(kaffe_util_log_SRCS)
+	$(org_kaffe_applet_SRCS) \
+	$(org_kaffe_awt_SRCS) \
+        $(org_kaffe_util_log_SRCS)
 java_applet_SRCS = \
 	java/applet/AppletContext.java \
 	java/applet/Applet.java \
@@ -383,29 +383,29 @@ java_awt_print_SRCS = \
 	java/awt/print/PrinterGraphics.java \
 	java/awt/print/PrinterIOException.java \
 	java/awt/print/PrinterJob.java
-kaffe_applet_SRCS = \
-	kaffe/applet/AppletTag.java \
-	kaffe/applet/AppletViewer.java \
-	kaffe/applet/AudioPlayer.java
-kaffe_awt_SRCS = \
-	kaffe/awt/DoNothingPeer.java \
-	kaffe/awt/ExportTransferable.java \
-	kaffe/awt/FlavorConverter.java \
-	kaffe/awt/FocusHook.java \
-	kaffe/awt/HookInstaller.java \
-	kaffe/awt/ImageClass.java \
-	kaffe/awt/ImageDict.java \
-	kaffe/awt/ImageSpec.java \
-	kaffe/awt/JavaColorModel.java \
-	kaffe/awt/KeyHook.java \
-	kaffe/awt/MouseHook.java \
-	kaffe/awt/ObjectSelection.java \
-	kaffe/awt/OpaqueComponent.java \
-	kaffe/awt/SerializerConverter.java
-kaffe_util_log_SRCS = \
-        kaffe/util/log/LogClient.java \
-        kaffe/util/log/LogStream.java \
-        kaffe/util/log/SimpleLogViewer.java
+org_kaffe_applet_SRCS = \
+	org/kaffe/applet/AppletTag.java \
+	org/kaffe/applet/AppletViewer.java \
+	org/kaffe/applet/AudioPlayer.java
+org_kaffe_awt_SRCS = \
+	org/kaffe/awt/DoNothingPeer.java \
+	org/kaffe/awt/ExportTransferable.java \
+	org/kaffe/awt/FlavorConverter.java \
+	org/kaffe/awt/FocusHook.java \
+	org/kaffe/awt/HookInstaller.java \
+	org/kaffe/awt/ImageClass.java \
+	org/kaffe/awt/ImageDict.java \
+	org/kaffe/awt/ImageSpec.java \
+	org/kaffe/awt/JavaColorModel.java \
+	org/kaffe/awt/KeyHook.java \
+	org/kaffe/awt/MouseHook.java \
+	org/kaffe/awt/ObjectSelection.java \
+	org/kaffe/awt/OpaqueComponent.java \
+	org/kaffe/awt/SerializerConverter.java
+org_kaffe_util_log_SRCS = \
+        org/kaffe/util/log/LogClient.java \
+        org/kaffe/util/log/LogStream.java \
+        org/kaffe/util/log/SimpleLogViewer.java
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
@@ -424,7 +424,7 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_builddir)/libraries/javalib/rt.jar
+Klasses_jar = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
@@ -439,3 +439,5 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(kaffeawt_jar_SRCS)
 jar-classes $(CLASSFILE): $(LIBDIR)/stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
+
+export JIKES top_builddir LIBDIR srcdir

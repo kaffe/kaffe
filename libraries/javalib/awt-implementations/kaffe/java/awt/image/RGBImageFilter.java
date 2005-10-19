@@ -10,7 +10,7 @@
 
 package java.awt.image;
 
-import kaffe.awt.JavaColorModel;
+import org.kaffe.awt.JavaColorModel;
 
 abstract public class RGBImageFilter
   extends ImageFilter

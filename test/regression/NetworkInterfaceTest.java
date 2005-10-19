@@ -70,7 +70,7 @@ public class NetworkInterfaceTest
 	    e.printStackTrace();
 	    System.exit(77);
 	}
-	catch(kaffe.util.NotImplemented e)
+	catch(org.kaffe.util.NotImplemented e)
 	{
 	    e.printStackTrace();
 	    System.exit(77);

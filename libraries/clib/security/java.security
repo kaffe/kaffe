@@ -4,6 +4,6 @@
 
 security.provider.1=gnu.crypto.jce.GnuCrypto
 security.provider.2=org.metastatic.jessie.provider.Jessie
-security.provider.3=kaffe.security.provider.Kaffe
+security.provider.3=org.kaffe.security.provider.Kaffe
 security.provider.4=gnu.java.security.provider.Gnu
 

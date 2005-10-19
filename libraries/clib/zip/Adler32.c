@@ -42,7 +42,7 @@ java_util_zip_Adler32_update1(struct Hjava_util_zip_Adler32* this, jint val)
 static void 
 supportDisabled (void)
 {
-	SignalError ("kaffe.util.SupportDisabled",
+	SignalError ("org.kaffe.util.SupportDisabled",
 		     "libz was not found by Kaffe configure script");
 }
 

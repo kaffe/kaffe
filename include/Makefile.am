@@ -10,7 +10,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-KLASSES_JAR = $(top_builddir)/libraries/javalib/rt.jar
+KLASSES_JAR = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+
 
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
@@ -18,9 +19,9 @@ EXTRA_DIST = distclean-hack \
 # INSTALL_ means: these headers get installed,
 # NOINSTALL_ means: they don't get installed.
 # _DERIVED_ means: these headers are derived (using
-# kaffeh, from rt.jar). 
+# kaffeh, from glibj.zip). 
 # _JNI_DERIVED_ means: these headers are derived using kaffeh
-# from rt.jar *and* the -jni option is
+# from glibj.zip *and* the -jni option is
 # set, resulting in JNI-ish method names.
 #
 # So if your class uses JNI to call its native methods
@@ -86,7 +87,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_Inflater.h \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
-	kaffe_management_Classpath.h \
+	org_kaffe_management_Classpath.h \
 	gnu_java_nio_VMSelector.h \
 	gnu_classpath_VMStackWalker.h
 
@@ -274,14 +275,14 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_io_VMObjectStreamClass.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
-	kaffe_lang_UNIXProcess.h \
-	kaffe_management_JIT.h \
-	kaffe_management_Debug.h \
-	kaffe_management_XProfiler.h \
-	kaffe_security_provider_MD2.h \
-	kaffe_security_provider_MD4.h \
-	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h \
+	org_kaffe_lang_UNIXProcess.h \
+	org_kaffe_management_JIT.h \
+	org_kaffe_management_Debug.h \
+	org_kaffe_management_XProfiler.h \
+	org_kaffe_security_provider_MD2.h \
+	org_kaffe_security_provider_MD4.h \
+	org_kaffe_security_provider_MD5.h \
+	org_kaffe_security_provider_SHA.h \
 	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
 	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
 	$(MAYBE_LIBXMLJ_JNI_HDRS) \
@@ -380,8 +381,8 @@ rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
 ## but if it does not change, do not touch it
 	@set -e; for f in $(HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/rt.jar -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/rt.jar -o stamp-h1$$f $$class; \
+	  echo "$(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip -o $$f $$class"; \
+	  $(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip -o stamp-h1$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
 	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h1$$f; \

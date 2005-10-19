@@ -89,8 +89,6 @@ fi
 
 fi
 
-( cd libraries/javalib && ../../developers/update-class-list )
-
 # Delete old files to make sure we regenerate things
 # automake things
 rm -f depcomp missing config.guess config.sub install-sh
@@ -102,6 +100,16 @@ rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
  rm -f ltmain.sh missing aclocal.m4 config.sub COPYING.LIB
  rm -f ltdl.c Makefile.am mkinstalldirs config.guess configure
  rm -f ltdl.h Makefile.in README
+)
+
+(
+ cd libraries/javalib
+ sh ../../developers/update-vm-list
+)
+
+(
+ cd libraries/javalib/external/classpath
+ ./autogen.sh
 )
 
 # autoconf things

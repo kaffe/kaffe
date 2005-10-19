@@ -384,7 +384,7 @@ EXTRA_DIST = \
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/rt.jar
+Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 all: all-am
 
 .SUFFIXES:
@@ -587,6 +587,8 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gmpjavamath_jar_SRCS)
 jar-classes $(CLASSFILE): $(LIBDIR)/stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
+
+export JIKES srcdir top_builddir LIBDIR
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

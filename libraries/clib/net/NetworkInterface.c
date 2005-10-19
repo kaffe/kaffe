@@ -49,7 +49,7 @@ detectInterfaces(void)
 	case ENOSYS:
 	  postExceptionMessage(
 			       &einfo,
-			       "kaffe.util.NotImplemented",
+			       "org.kaffe.util.NotImplemented",
 			       "OS doesn't support getifaddrs()");
 	  break;
 	default:

@@ -120,7 +120,7 @@ static Hjava_lang_Class** stateCompleteClass[] = {
 #define	SERIALCLASS  "java/io/Serializable"
 #define	CLONECLASS   "java/lang/Cloneable"
 #define	LOADERCLASS  "java/lang/ClassLoader"
-#define PTRCLASS     "kaffe/util/Ptr"
+#define PTRCLASS     "org/kaffe/util/Ptr"
 
 /* Initialisation prototypes */
 void initClasspath(void);

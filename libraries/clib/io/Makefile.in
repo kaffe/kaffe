@@ -81,11 +81,12 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libio_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
-am_libio_la_OBJECTS = libio_la-File.lo \
-	libio_la-java_io_VMObjectInputStream.lo \
-	libio_la-java_io_VMObjectStreamClass.lo
-libio_la_OBJECTS = $(am_libio_la_OBJECTS)
+libjavaio_la_DEPENDENCIES =  \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+am_libjavaio_la_OBJECTS = libjavaio_la-File.lo \
+	libjavaio_la-java_io_VMObjectInputStream.lo \
+	libjavaio_la-java_io_VMObjectStreamClass.lo
+libjavaio_la_OBJECTS = $(am_libjavaio_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -96,8 +97,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libio_la_SOURCES)
-DIST_SOURCES = $(libio_la_SOURCES)
+SOURCES = $(libjavaio_la_SOURCES)
+DIST_SOURCES = $(libjavaio_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -389,19 +390,19 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/libraries/clib/classpath
 
-native_LTLIBRARIES = libio.la
-libio_la_CFLAGS = \
+native_LTLIBRARIES = libjavaio.la
+libjavaio_la_CFLAGS = \
 	$(CFLAGS_PG)
 
-libio_la_LDFLAGS = \
+libjavaio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
-libio_la_SOURCES = \
+libjavaio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libjavaio_la_SOURCES = \
 	File.c \
 	java_io_VMObjectInputStream.c \
 	java_io_VMObjectStreamClass.c
@@ -467,8 +468,8 @@ clean-nativeLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libio.la: $(libio_la_OBJECTS) $(libio_la_DEPENDENCIES) 
-	$(LINK) -rpath $(nativedir) $(libio_la_LDFLAGS) $(libio_la_OBJECTS) $(libio_la_LIBADD) $(LIBS)
+libjavaio.la: $(libjavaio_la_OBJECTS) $(libjavaio_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativedir) $(libjavaio_la_LDFLAGS) $(libjavaio_la_OBJECTS) $(libjavaio_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -476,9 +477,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_la-File.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_la-java_io_VMObjectInputStream.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_la-java_io_VMObjectStreamClass.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavaio_la-File.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavaio_la-java_io_VMObjectInputStream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavaio_la-java_io_VMObjectStreamClass.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -501,26 +502,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libio_la-File.lo: File.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -MT libio_la-File.lo -MD -MP -MF "$(DEPDIR)/libio_la-File.Tpo" -c -o libio_la-File.lo `test -f 'File.c' || echo '$(srcdir)/'`File.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libio_la-File.Tpo" "$(DEPDIR)/libio_la-File.Plo"; else rm -f "$(DEPDIR)/libio_la-File.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='File.c' object='libio_la-File.lo' libtool=yes @AMDEPBACKSLASH@
+libjavaio_la-File.lo: File.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -MT libjavaio_la-File.lo -MD -MP -MF "$(DEPDIR)/libjavaio_la-File.Tpo" -c -o libjavaio_la-File.lo `test -f 'File.c' || echo '$(srcdir)/'`File.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavaio_la-File.Tpo" "$(DEPDIR)/libjavaio_la-File.Plo"; else rm -f "$(DEPDIR)/libjavaio_la-File.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='File.c' object='libjavaio_la-File.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -c -o libio_la-File.lo `test -f 'File.c' || echo '$(srcdir)/'`File.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -c -o libjavaio_la-File.lo `test -f 'File.c' || echo '$(srcdir)/'`File.c
 
-libio_la-java_io_VMObjectInputStream.lo: java_io_VMObjectInputStream.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -MT libio_la-java_io_VMObjectInputStream.lo -MD -MP -MF "$(DEPDIR)/libio_la-java_io_VMObjectInputStream.Tpo" -c -o libio_la-java_io_VMObjectInputStream.lo `test -f 'java_io_VMObjectInputStream.c' || echo '$(srcdir)/'`java_io_VMObjectInputStream.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libio_la-java_io_VMObjectInputStream.Tpo" "$(DEPDIR)/libio_la-java_io_VMObjectInputStream.Plo"; else rm -f "$(DEPDIR)/libio_la-java_io_VMObjectInputStream.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_io_VMObjectInputStream.c' object='libio_la-java_io_VMObjectInputStream.lo' libtool=yes @AMDEPBACKSLASH@
+libjavaio_la-java_io_VMObjectInputStream.lo: java_io_VMObjectInputStream.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -MT libjavaio_la-java_io_VMObjectInputStream.lo -MD -MP -MF "$(DEPDIR)/libjavaio_la-java_io_VMObjectInputStream.Tpo" -c -o libjavaio_la-java_io_VMObjectInputStream.lo `test -f 'java_io_VMObjectInputStream.c' || echo '$(srcdir)/'`java_io_VMObjectInputStream.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavaio_la-java_io_VMObjectInputStream.Tpo" "$(DEPDIR)/libjavaio_la-java_io_VMObjectInputStream.Plo"; else rm -f "$(DEPDIR)/libjavaio_la-java_io_VMObjectInputStream.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_io_VMObjectInputStream.c' object='libjavaio_la-java_io_VMObjectInputStream.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -c -o libio_la-java_io_VMObjectInputStream.lo `test -f 'java_io_VMObjectInputStream.c' || echo '$(srcdir)/'`java_io_VMObjectInputStream.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -c -o libjavaio_la-java_io_VMObjectInputStream.lo `test -f 'java_io_VMObjectInputStream.c' || echo '$(srcdir)/'`java_io_VMObjectInputStream.c
 
-libio_la-java_io_VMObjectStreamClass.lo: java_io_VMObjectStreamClass.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -MT libio_la-java_io_VMObjectStreamClass.lo -MD -MP -MF "$(DEPDIR)/libio_la-java_io_VMObjectStreamClass.Tpo" -c -o libio_la-java_io_VMObjectStreamClass.lo `test -f 'java_io_VMObjectStreamClass.c' || echo '$(srcdir)/'`java_io_VMObjectStreamClass.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libio_la-java_io_VMObjectStreamClass.Tpo" "$(DEPDIR)/libio_la-java_io_VMObjectStreamClass.Plo"; else rm -f "$(DEPDIR)/libio_la-java_io_VMObjectStreamClass.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_io_VMObjectStreamClass.c' object='libio_la-java_io_VMObjectStreamClass.lo' libtool=yes @AMDEPBACKSLASH@
+libjavaio_la-java_io_VMObjectStreamClass.lo: java_io_VMObjectStreamClass.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -MT libjavaio_la-java_io_VMObjectStreamClass.lo -MD -MP -MF "$(DEPDIR)/libjavaio_la-java_io_VMObjectStreamClass.Tpo" -c -o libjavaio_la-java_io_VMObjectStreamClass.lo `test -f 'java_io_VMObjectStreamClass.c' || echo '$(srcdir)/'`java_io_VMObjectStreamClass.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavaio_la-java_io_VMObjectStreamClass.Tpo" "$(DEPDIR)/libjavaio_la-java_io_VMObjectStreamClass.Plo"; else rm -f "$(DEPDIR)/libjavaio_la-java_io_VMObjectStreamClass.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_io_VMObjectStreamClass.c' object='libjavaio_la-java_io_VMObjectStreamClass.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libio_la_CFLAGS) $(CFLAGS) -c -o libio_la-java_io_VMObjectStreamClass.lo `test -f 'java_io_VMObjectStreamClass.c' || echo '$(srcdir)/'`java_io_VMObjectStreamClass.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavaio_la_CFLAGS) $(CFLAGS) -c -o libjavaio_la-java_io_VMObjectStreamClass.lo `test -f 'java_io_VMObjectStreamClass.c' || echo '$(srcdir)/'`java_io_VMObjectStreamClass.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

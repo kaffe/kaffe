@@ -11,7 +11,7 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
-import kaffe.util.Ptr;
+import org.kaffe.util.Ptr;
 
 /**
  * NativeComponent - abstract root of all native widgets

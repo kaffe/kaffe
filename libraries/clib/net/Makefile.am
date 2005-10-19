@@ -6,30 +6,30 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-native_LTLIBRARIES = libnet.la
+native_LTLIBRARIES = libjavanet.la
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni
 
-libnet_la_CFLAGS = \
+libjavanet_la_CFLAGS = \
 	$(CFLAGS_PG)
 
-libnet_la_LDFLAGS = \
+libjavanet_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
-libnet_la_LIBADD = \
+libjavanet_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(NET_LIBS)  \
 	$(top_builddir)/replace/libreplace.la \
 	$(LTLIBINTL)
 
-libnet_la_SOURCES = \
+libjavanet_la_SOURCES = \
 	InetAddressImpl.c \
 	NetworkInterface.c \
 	PlainDatagramSocketImpl.c \

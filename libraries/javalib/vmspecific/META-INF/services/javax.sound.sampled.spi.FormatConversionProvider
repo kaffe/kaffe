@@ -1,0 +1,11 @@
+# configuration file for the tritonus library
+#
+
+org.tritonus.sampled.convert.UlawFormatConversionProvider
+org.tritonus.sampled.convert.AlawFormatConversionProvider
+org.tritonus.sampled.convert.PCM2PCMConversionProvider
+#org.tritonus.sampled.convert.SmartFormatConversionProvider
+org.tritonus.sampled.convert.SampleRateConversionProvider
+
+# end
+#

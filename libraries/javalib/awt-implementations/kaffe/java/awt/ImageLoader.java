@@ -7,7 +7,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.IndexColorModel;
 import java.util.Hashtable;
 
-import kaffe.awt.JavaColorModel;
+import org.kaffe.awt.JavaColorModel;
 
 /**
  * Copyright (c) 1998

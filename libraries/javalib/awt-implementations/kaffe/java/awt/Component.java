@@ -26,7 +26,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
 
-import kaffe.awt.DoNothingPeer;
+import org.kaffe.awt.DoNothingPeer;
 
 /**
  * Component - abstract root of all widgets

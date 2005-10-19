@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import gnu.classpath.Pointer;
-import kaffe.util.VectorSnapshot;
+import org.kaffe.util.VectorSnapshot;
 
 public class Image
 {

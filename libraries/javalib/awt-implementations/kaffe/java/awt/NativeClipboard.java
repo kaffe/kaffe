@@ -16,7 +16,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 
-import kaffe.awt.ExportTransferable;
+import org.kaffe.awt.ExportTransferable;
 import gnu.classpath.Pointer;
 
 class NativeClipboard

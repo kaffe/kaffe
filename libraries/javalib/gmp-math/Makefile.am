@@ -35,7 +35,7 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/rt.jar
+Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
@@ -50,3 +50,5 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gmpjavamath_jar_SRCS)
 jar-classes $(CLASSFILE): $(LIBDIR)/stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
+
+export JIKES srcdir top_builddir LIBDIR

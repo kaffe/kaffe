@@ -11,21 +11,21 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/libraries/clib/classpath
 
-native_LTLIBRARIES = libio.la
+native_LTLIBRARIES = libjavaio.la
 
-libio_la_CFLAGS = \
+libjavaio_la_CFLAGS = \
 	$(CFLAGS_PG)
 
-libio_la_LDFLAGS = \
+libjavaio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libjavaio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
-libio_la_SOURCES = \
+libjavaio_la_SOURCES = \
 	File.c \
 	java_io_VMObjectInputStream.c \
 	java_io_VMObjectStreamClass.c
