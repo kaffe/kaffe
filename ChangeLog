@@ -1,5 +1,9 @@
 2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/external/classpath: Imported classpath tree.
+
+2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/gnu, libraries/javalib/com, libraries/javalib/org,
 	libraries/javalib/java, libraries/javalib/javax: Removed.
 
