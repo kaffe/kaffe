@@ -1,5 +1,10 @@
 2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* developers/update-vm-list: New script adapted from update-class-list
+	to add the vmspecific classes to libraries/javalib/Makefile.am
+
+2005-10-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/kaffe: Moved
 	directories to libraries/javalib/awt-implementations/kaffe/org/kaffe.
 
