@@ -1,3 +1,9 @@
+2005-10-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* test/jni/Makefile.am: Fixed rt.jar path (glibj.zip now).
+
+	* test/jni/Makefile.in: Regenerated.
+
 2005-10-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/external/classpath/gnu/java/nio/charset/UTF_16Decoder.java,

@@ -472,7 +472,7 @@ libjniweaklib_la_LDFLAGS = \
 JAVA_CLASSES = \
 	JNIWeakTest.class
 
-CPATH = .:$(top_builddir)/libraries/javalib/rt.jar
+CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 jniWeakTest_SOURCES = jniWeakTest.c
 jniWeakTest_LDADD = \
 	-dlopen $(top_builddir)/test/jni/libjniweaklib.la \
