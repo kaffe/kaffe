@@ -1,3 +1,10 @@
+2005-10-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/clib/nio/gnu_java_nio_charset_iconv_IconvDecoder.c
+	(Java_gnu_java_nio_charset_iconv_IconvDecoder_decode):
+	Do not check errno == EINVAL because it is a normal case
+	(Proposed patch for GCC Bugzilla Bug 24467).
+
 2005-10-20  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/jni/Makefile.am: Fixed rt.jar path (glibj.zip now).
