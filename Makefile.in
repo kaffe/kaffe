@@ -532,6 +532,7 @@ EXTRA_DIST = \
 	developers/sp_offset.c \
 	developers/unicode.pl \
 	developers/update-class-list \
+	developers/update-vm-list \
 	developers/utf8munge.pl \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \

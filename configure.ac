@@ -720,27 +720,27 @@ AC_ARG_WITH([gc],
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
 dnl -----------------------------------------------------------------------
-AC_ARG_WITH([rt_jar],
-	    AS_HELP_STRING([--with-rt-jar=ABS.PATH],
+AC_ARG_WITH([glibj_zip],
+	    AS_HELP_STRING([--with-glibj-zip=ABS.PATH],
 			   [use precompiled kaffe class library]))
 
-case "$with_rt_jar" in
+case "$with_glibj_zip" in
 "")
-	use_rt_jar=false
+	use_glibj_zip=false
 	;;
 "no" )
-	use_rt_jar=false
+	use_glibj_zip=false
 	;;
 "yes")
-	AC_MSG_ERROR([Please suply an absolute path to a precompiled rt.jar from this version of kaffe])
+	AC_MSG_ERROR([Please suply an absolute path to a precompiled glibj.zip from this version of kaffe])
 	;;
 *)
-	use_rt_jar=true
-	PATH_TO_RT_JAR=$with_rt_jar
+	use_glibj_zip=true
+	PATH_TO_RT_JAR=$with_glibj_zip
 	;;
 esac;
 
-AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_rt_jar = xtrue)
+AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_glibj_zip = xtrue)
 AC_SUBST(PATH_TO_RT_JAR)
 
 dnl =========================================================================
@@ -759,7 +759,7 @@ AC_MSG_CHECKING([whether to use jikes])
 case $with_jikes in
 yes)
 	if test x"$JIKESPROG" = x"" ; then
-	  if  test x$use_rt_jar = xtrue ; then
+	  if  test x$use_glibj_zip = xtrue ; then
 	    AC_MSG_WARN([No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher.])
           else
 	    AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
@@ -770,7 +770,7 @@ yes)
 	;;
 no)
 	use_jikes="no"
-	  if  test x$use_rt_jar = xtrue ; then
+	  if  test x$use_glibj_zip = xtrue ; then
 	    AC_MSG_WARN([You have to use jikes 1.21 or higher to build kaffe's regression tests, or to pass a different external java compiler to configure script.])
           else
 	    AC_MSG_ERROR([You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script.])
@@ -2376,6 +2376,10 @@ ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
 real_srcdir=`cd $srcdir; pwd`
 vmdir=${real_srcdir}/libraries/javalib/vmspecific
 ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
+
+if  test x$use_glibj_zip = xtrue ; then
+	ac_configure_args="$ac_configure_args --with-glibj=none";
+fi
 
 AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
 

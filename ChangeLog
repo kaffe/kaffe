@@ -1,3 +1,21 @@
+2005-10-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Renamed with-rt-jar to with-glib-zip. Do not build
+	java library if the user specifies --with-glibj-zip.
+
+	* developers/autogen.sh: Fixed autogeneration order for classpath.
+
+	* developers/update-vm-list: Fixed script for generating
+	Makefile.am from Makefile.am.in.
+
+	* libraries/javalib/Makefile.am.in: Brought back support for
+	precompiler glibj.zip.
+	
+	* Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	configure: Regenerated.
+	
 2005-10-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/clib/nio/gnu_java_nio_charset_iconv_IconvDecoder.c

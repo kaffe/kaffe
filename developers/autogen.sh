@@ -107,11 +107,6 @@ rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
  sh ../../developers/update-vm-list
 )
 
-(
- cd libraries/javalib/external/classpath
- ./autogen.sh
-)
-
 # autoconf things
 rm -f aclocal.m4 configure
 rm -f config/config.h.in
@@ -139,6 +134,12 @@ autoconf # -Wall
  autoreconf -i # -Wall
  touch config-h.in
 ) 	 
+
+(
+ cd libraries/javalib/external/classpath
+
+ sh ./autogen.sh
+)
 
 (
   cd kaffe/kaffevm/boehm-gc/boehm

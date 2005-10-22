@@ -19,12 +19,30 @@ else
 MAYBE_GMP_JAVA_MATH=gmp-math
 endif
 
-SUBDIRS= external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
+noinst_DATA= stamp-glibj
+
+if USE_PRECOMPILED_RT_JAR
+stamp-glibj:
+	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)
+	@cp $(PATH_TO_RT_JAR) external/classpath/lib/glibj.zip
+	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
+	@touch stamp-glibj
+
+MAYBE_GLIBJ_ZIP= glibj.zip
+
+glibj.zip: stamp-glibj
+else
+stamp-libj:
+	@touch stamp-glibj
+endif
+
+SUBDIRS= . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 
 jrelib_DATA= \
-	     logging.properties
+	     logging.properties \
+	     $(MAYBE_GLIBJ_ZIP)
 
 export JIKES
 
 EXTRA_DIST= \
-	    Makefile.am.in
+	    Makefile.am.in \

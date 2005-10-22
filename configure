@@ -1145,7 +1145,8 @@ Optional Packages:
                           [default=unix-pthreads]
   --with-gc=GC            Force use given execution engine (kaffe-gc or
                           boehm-gc)
-  --with-rt-jar=ABS.PATH  use precompiled kaffe class library
+  --with-glibj-zip=ABS.PATH
+                          use precompiled kaffe class library
   --with-jikes<=JIKES>    Define to use jikes compiler [default=yes]. If
                           yes, use jikes +Pno-switchcheck +Pno-shadow +E
   --with-libffi           Use libffi for sysdepCallMethod
@@ -5973,7 +5974,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5976 "configure"' > conftest.$ac_ext
+  echo '#line 5977 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7330,7 +7331,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:7333:" \
+echo "$as_me:7334:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -8432,11 +8433,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8435: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8436: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8439: \$? = $ac_status" >&5
+   echo "$as_me:8440: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8694,11 +8695,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8697: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8698: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8701: \$? = $ac_status" >&5
+   echo "$as_me:8702: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8756,11 +8757,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8759: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8760: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8763: \$? = $ac_status" >&5
+   echo "$as_me:8764: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10996,7 +10997,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10999 "configure"
+#line 11000 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11094,7 +11095,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11097 "configure"
+#line 11098 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13346,11 +13347,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13349: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13350: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13353: \$? = $ac_status" >&5
+   echo "$as_me:13354: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13408,11 +13409,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13411: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13412: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13415: \$? = $ac_status" >&5
+   echo "$as_me:13416: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14777,7 +14778,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 14780 "configure"
+#line 14781 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14875,7 +14876,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 14878 "configure"
+#line 14879 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15760,11 +15761,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15763: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15764: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15767: \$? = $ac_status" >&5
+   echo "$as_me:15768: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15822,11 +15823,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15825: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15826: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15829: \$? = $ac_status" >&5
+   echo "$as_me:15830: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17948,11 +17949,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17951: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17952: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17955: \$? = $ac_status" >&5
+   echo "$as_me:17956: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18210,11 +18211,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18213: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18214: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18217: \$? = $ac_status" >&5
+   echo "$as_me:18218: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18272,11 +18273,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18275: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18276: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18279: \$? = $ac_status" >&5
+   echo "$as_me:18280: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -20512,7 +20513,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 20515 "configure"
+#line 20516 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -20610,7 +20611,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 20613 "configure"
+#line 20614 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -25106,33 +25107,33 @@ if test "${with_gc+set}" = set; then
 fi;
 
 
-# Check whether --with-rt_jar or --without-rt_jar was given.
-if test "${with_rt_jar+set}" = set; then
-  withval="$with_rt_jar"
+# Check whether --with-glibj_zip or --without-glibj_zip was given.
+if test "${with_glibj_zip+set}" = set; then
+  withval="$with_glibj_zip"
 
 fi;
 
-case "$with_rt_jar" in
+case "$with_glibj_zip" in
 "")
-	use_rt_jar=false
+	use_glibj_zip=false
 	;;
 "no" )
-	use_rt_jar=false
+	use_glibj_zip=false
 	;;
 "yes")
-	{ { echo "$as_me:$LINENO: error: Please suply an absolute path to a precompiled rt.jar from this version of kaffe" >&5
-echo "$as_me: error: Please suply an absolute path to a precompiled rt.jar from this version of kaffe" >&2;}
+	{ { echo "$as_me:$LINENO: error: Please suply an absolute path to a precompiled glibj.zip from this version of kaffe" >&5
+echo "$as_me: error: Please suply an absolute path to a precompiled glibj.zip from this version of kaffe" >&2;}
    { (exit 1); exit 1; }; }
 	;;
 *)
-	use_rt_jar=true
-	PATH_TO_RT_JAR=$with_rt_jar
+	use_glibj_zip=true
+	PATH_TO_RT_JAR=$with_glibj_zip
 	;;
 esac;
 
 
 
-if test x$use_rt_jar = xtrue; then
+if test x$use_glibj_zip = xtrue; then
   USE_PRECOMPILED_RT_JAR_TRUE=
   USE_PRECOMPILED_RT_JAR_FALSE='#'
 else
@@ -25193,7 +25194,7 @@ echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6
 case $with_jikes in
 yes)
 	if test x"$JIKESPROG" = x"" ; then
-	  if  test x$use_rt_jar = xtrue ; then
+	  if  test x$use_glibj_zip = xtrue ; then
 	    { echo "$as_me:$LINENO: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&5
 echo "$as_me: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&2;}
           else
@@ -25207,7 +25208,7 @@ echo "$as_me: error: No jikes compiler found. It is required to build Kaffe's cl
 	;;
 no)
 	use_jikes="no"
-	  if  test x$use_rt_jar = xtrue ; then
+	  if  test x$use_glibj_zip = xtrue ; then
 	    { echo "$as_me:$LINENO: WARNING: You have to use jikes 1.21 or higher to build kaffe's regression tests, or to pass a different external java compiler to configure script." >&5
 echo "$as_me: WARNING: You have to use jikes 1.21 or higher to build kaffe's regression tests, or to pass a different external java compiler to configure script." >&2;}
           else
@@ -51831,6 +51832,10 @@ ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
 real_srcdir=`cd $srcdir; pwd`
 vmdir=${real_srcdir}/libraries/javalib/vmspecific
 ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
+
+if  test x$use_glibj_zip = xtrue ; then
+	ac_configure_args="$ac_configure_args --with-glibj=none";
+fi
 
 
 
