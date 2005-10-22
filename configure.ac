@@ -2369,6 +2369,15 @@ dnl -------------------------
 dnl Update args for classpath
 dnl -------------------------
 old_configure_args="$ac_configure_args"
+
+# Preset the compiler to jikes, since GNU Classpath's default is gcj.
+# Unfortunately, many gcj versions are incapable of compiling GNU 
+# Classpath, while many versions of jikes seem to make it through. :/
+# This should be preset to gcjx, once gcjx is merged in.
+if test x"$with_jikes" = x"yes"; then
+  ac_configure_args="$ac_configure_args --with-jikes"
+fi
+
 ac_configure_args="$ac_configure_args --disable-jni-core"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
