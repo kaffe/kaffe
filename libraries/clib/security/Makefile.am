@@ -19,7 +19,7 @@ SECURITY_SRCS =	\
 	sha-1.c \
 	sha-1.h 
 
-security_DATA = java.security
+security_DATA = Kaffe.security
 
 EXTRA_DIST = \
 	$(security_DATA)

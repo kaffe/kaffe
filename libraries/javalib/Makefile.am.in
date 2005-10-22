@@ -19,8 +19,6 @@ else
 MAYBE_GMP_JAVA_MATH=gmp-math
 endif
 
-noinst_DATA= stamp-glibj
-
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)

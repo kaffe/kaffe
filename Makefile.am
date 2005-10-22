@@ -115,13 +115,6 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
-	binreloc/ChangeLog \
-	binreloc/libtest.c \
-	binreloc/Makefile \
-	binreloc/prefix.c \
-	binreloc/prefix.h \
-	binreloc/README \
-	binreloc/test.c \
 	developers/boehm-with-kaffe.patch \
 	developers/build_mathnamespace \
 	developers/check-classpath-unmerged \

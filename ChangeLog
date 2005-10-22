@@ -1,3 +1,13 @@
+2005-10-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* Makefile.am: (EXTRA_DIST) Removed binreloc files.
+
+	* libraries/clib/security/Makefile.am:
+	(security_DATA) Moved java.security to Kaffe.security.
+
+	* libraries/javalib/Makefile.am.in:
+	(noinst_DATA) Removed.
+
 2005-10-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Renamed with-rt-jar to with-glib-zip. Do not build

@@ -1,5 +1,5 @@
 /* ltdl.c -- system independent dlopen wrapper
-   Copyright (C) 1998, 1999, 2000, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -20,8 +20,8 @@ Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301  USA
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307  USA
 
 */
 
@@ -385,13 +385,11 @@ memcpy (dest, src, size)
      const lt_ptr src;
      size_t size;
 {
-  const char *	s = src;
-  char *	d = dest;
-  size_t	i = 0;
+  size_t i = 0;
 
   for (i = 0; i < size; ++i)
     {
-      d[i] = s[i];
+      dest[i] = src[i];
     }
 
   return dest;
@@ -411,21 +409,17 @@ memmove (dest, src, size)
      const lt_ptr src;
      size_t size;
 {
-  const char *	s = src;
-  char *	d = dest;
-  size_t	i;
+  size_t i;
 
-  if (d < s)
+  if (dest < src)
     for (i = 0; i < size; ++i)
       {
-	d[i] = s[i];
+	dest[i] = src[i];
       }
-  else if (d > s && size > 0)
-    for (i = size -1; ; --i)
+  else if (dest > src)
+    for (i = size -1; i >= 0; --i)
       {
-	d[i] = s[i];
-	if (i == 0)
-	  break;
+	dest[i] = src[i];
       }
 
   return dest;
@@ -457,9 +451,7 @@ opendir (path)
   DIR *entry;
 
   assert(path != (char *) NULL);
-  /* allow space for: path + '\\' '\\' '*' '.' '*' + '\0' */
-  (void) strncpy (file_specification, path, LT_FILENAME_MAX-6);
-  file_specification[LT_FILENAME_MAX-6] = LT_EOS_CHAR;
+  (void) strncpy(file_specification,path,LT_FILENAME_MAX-1);
   (void) strcat(file_specification,"\\");
   entry = LT_DLMALLOC (DIR,sizeof(DIR));
   if (entry != (DIR *) 0)
@@ -500,7 +492,6 @@ static struct dirent *readdir(entry)
   entry->firsttime = FALSE;
   (void) strncpy(entry->file_info.d_name,entry->Win32FindData.cFileName,
     LT_FILENAME_MAX-1);
-  entry->file_info.d_name[LT_FILENAME_MAX - 1] = LT_EOS_CHAR;
   entry->file_info.d_namlen = strlen(entry->file_info.d_name);
   return(&entry->file_info);
 }
@@ -1061,17 +1052,6 @@ lt_estrdup (str)
 #  include <sys/dl.h>
 #endif
 
-#ifdef RTLD_GLOBAL
-#  define LT_GLOBAL		RTLD_GLOBAL
-#else
-#  ifdef DL_GLOBAL
-#    define LT_GLOBAL		DL_GLOBAL
-#  endif
-#endif /* !RTLD_GLOBAL */
-#ifndef LT_GLOBAL
-#  define LT_GLOBAL		0
-#endif /* !LT_GLOBAL */
-
 /* We may have to define LT_LAZY_OR_NOW in the command line if we
    find out it does not work in some platform. */
 #ifndef LT_LAZY_OR_NOW
@@ -1107,7 +1087,7 @@ sys_dl_open (loader_data, filename)
      lt_user_data loader_data;
      const char *filename;
 {
-  lt_module   module   = dlopen (filename, LT_GLOBAL | LT_LAZY_OR_NOW);
+  lt_module   module   = dlopen (filename, LT_LAZY_OR_NOW);
 
   if (!module)
     {
@@ -2999,9 +2979,6 @@ trim (dest, str)
   char *tmp;
 
   LT_DLFREE (*dest);
-
-  if (!end)
-    return 1;
 
   if (len > 3 && str[0] == '\'')
     {
