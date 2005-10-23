@@ -2378,7 +2378,7 @@ if test x"$with_jikes" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-jikes"
 fi
 
-ac_configure_args="$ac_configure_args --disable-jni-core"
+ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"

@@ -1,3 +1,10 @@
+2005-10-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Really disable the production of core JNI
+	libraries in GNU Classpath.
+
+	* configure: Regenerated.
+
 2005-10-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Use jikes by default to build
