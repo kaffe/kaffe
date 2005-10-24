@@ -217,10 +217,6 @@ else
 RUN_PO=
 endif
 
-if COND_LIBXMLJ
-DIRECTORIES_AFTER_RTJAR += libraries/clib/libxmlj
-endif
-
 if COND_SOUND_ALSA
 DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
 else 

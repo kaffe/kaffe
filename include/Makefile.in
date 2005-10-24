@@ -66,7 +66,6 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
 	$(top_srcdir)/m4/sockaddrin6.m4 \
@@ -133,8 +132,6 @@ COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
 COND_KAFFE_QT_AWT_TRUE = @COND_KAFFE_QT_AWT_TRUE@
 COND_KAFFE_X_AWT_FALSE = @COND_KAFFE_X_AWT_FALSE@
 COND_KAFFE_X_AWT_TRUE = @COND_KAFFE_X_AWT_TRUE@
-COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
-COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
 COND_NATIVE_AWT_FALSE = @COND_NATIVE_AWT_FALSE@
 COND_NATIVE_AWT_TRUE = @COND_NATIVE_AWT_TRUE@
 COND_NATIVE_SOUND_FALSE = @COND_NATIVE_SOUND_FALSE@
@@ -293,12 +290,6 @@ USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
-XML2_CONFIG = @XML2_CONFIG@
-XML_CFLAGS = @XML_CFLAGS@
-XML_LIBS = @XML_LIBS@
-XSLT_CFLAGS = @XSLT_CFLAGS@
-XSLT_CONFIG = @XSLT_CONFIG@
-XSLT_LIBS = @XSLT_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -471,31 +462,8 @@ LIBTRITONUSESD_JNI_HDRS = \
 	org_tritonus_lowlevel_esd_EsdSample.h \
 	org_tritonus_lowlevel_esd_EsdStream.h
 
-LIBXMLJ_JNI_HDRS = \
-	gnu_xml_libxmlj_dom_GnomeAttr.h \
-	gnu_xml_libxmlj_dom_GnomeDocument.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
-	gnu_xml_libxmlj_dom_GnomeElement.h \
-	gnu_xml_libxmlj_dom_GnomeEntity.h \
-	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
-	gnu_xml_libxmlj_dom_GnomeNode.h \
-	gnu_xml_libxmlj_dom_GnomeNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeNotation.h \
-	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
-	gnu_xml_libxmlj_dom_GnomeTypeInfo.h \
-	gnu_xml_libxmlj_dom_GnomeXPathExpression.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNSResolver.h \
-	gnu_xml_libxmlj_dom_GnomeXPathResult.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
-	gnu_xml_libxmlj_transform_GnomeTransformer.h \
-	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
 
-
-# Only create headers for Sound and libxmlj if they are going to be built.
-@COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
+# Only create headers for sound if they are going to be built.
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
 NOINSTALL_JNI_DERIVED_HDRS = \
@@ -523,10 +491,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	org_kaffe_security_provider_MD5.h \
 	org_kaffe_security_provider_SHA.h \
 	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
-	$(MAYBE_LIBXMLJ_JNI_HDRS) \
-	$(MAYBE_LIBGTKPEER_JNI_HDRS) \
-	$(MAYBE_LIBQTPEER_JNI_HDRS)
+	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) 
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \
@@ -591,7 +556,6 @@ DISTCLEANFILES = \
 	stamp-h1all \
 	stamp-libtritonusalsa \
 	stamp-libtritonusesd \
-	stamp-libxmlj \
 	stamp-libgtkpeer
 
 all: all-am

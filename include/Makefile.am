@@ -125,33 +125,7 @@ LIBTRITONUSESD_JNI_HDRS = \
 	org_tritonus_lowlevel_esd_EsdStream.h
 
 
-LIBXMLJ_JNI_HDRS = \
-	gnu_xml_libxmlj_dom_GnomeAttr.h \
-	gnu_xml_libxmlj_dom_GnomeDocument.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
-	gnu_xml_libxmlj_dom_GnomeElement.h \
-	gnu_xml_libxmlj_dom_GnomeEntity.h \
-	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
-	gnu_xml_libxmlj_dom_GnomeNode.h \
-	gnu_xml_libxmlj_dom_GnomeNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeNotation.h \
-	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
-	gnu_xml_libxmlj_dom_GnomeTypeInfo.h \
-	gnu_xml_libxmlj_dom_GnomeXPathExpression.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeXPathNSResolver.h \
-	gnu_xml_libxmlj_dom_GnomeXPathResult.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
-	gnu_xml_libxmlj_transform_GnomeTransformer.h \
-	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
-
-# Only create headers for Sound and libxmlj if they are going to be built.
-
-if COND_LIBXMLJ
-  MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
-endif
+# Only create headers for sound if they are going to be built.
 
 if COND_NATIVE_SOUND
 if COND_SOUND_ALSA
@@ -187,10 +161,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	org_kaffe_security_provider_MD5.h \
 	org_kaffe_security_provider_SHA.h \
 	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) \
-	$(MAYBE_LIBXMLJ_JNI_HDRS) \
-	$(MAYBE_LIBGTKPEER_JNI_HDRS) \
-	$(MAYBE_LIBQTPEER_JNI_HDRS)
+	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) 
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \
@@ -320,7 +291,6 @@ DISTCLEANFILES = \
 	stamp-h1all \
 	stamp-libtritonusalsa \
 	stamp-libtritonusesd \
-	stamp-libxmlj \
 	stamp-libgtkpeer
 
 dist-hook:

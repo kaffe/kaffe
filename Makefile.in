@@ -47,10 +47,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COND_LIBXMLJ_TRUE@am__append_1 = libraries/clib/libxmlj
-@COND_SOUND_ALSA_TRUE@am__append_2 = libraries/clib/sound
-@COND_SOUND_ALSA_FALSE@@COND_SOUND_ESD_TRUE@am__append_3 = libraries/clib/sound
-@COND_KAFFE_X_AWT_TRUE@@COND_NATIVE_AWT_TRUE@am__append_4 = libraries/clib/awt/X
+@COND_SOUND_ALSA_TRUE@am__append_1 = libraries/clib/sound
+@COND_SOUND_ALSA_FALSE@@COND_SOUND_ESD_TRUE@am__append_2 = libraries/clib/sound
+@COND_KAFFE_X_AWT_TRUE@@COND_NATIVE_AWT_TRUE@am__append_3 = libraries/clib/awt/X
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure ABOUT-NLS \
@@ -73,7 +72,6 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
 	$(top_srcdir)/m4/sockaddrin6.m4 \
@@ -145,8 +143,6 @@ COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
 COND_KAFFE_QT_AWT_TRUE = @COND_KAFFE_QT_AWT_TRUE@
 COND_KAFFE_X_AWT_FALSE = @COND_KAFFE_X_AWT_FALSE@
 COND_KAFFE_X_AWT_TRUE = @COND_KAFFE_X_AWT_TRUE@
-COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
-COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
 COND_NATIVE_AWT_FALSE = @COND_NATIVE_AWT_FALSE@
 COND_NATIVE_AWT_TRUE = @COND_NATIVE_AWT_TRUE@
 COND_NATIVE_SOUND_FALSE = @COND_NATIVE_SOUND_FALSE@
@@ -305,12 +301,6 @@ USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
-XML2_CONFIG = @XML2_CONFIG@
-XML_CFLAGS = @XML_CFLAGS@
-XML_LIBS = @XML_LIBS@
-XSLT_CFLAGS = @XSLT_CFLAGS@
-XSLT_CONFIG = @XSLT_CONFIG@
-XSLT_LIBS = @XSLT_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -530,7 +520,7 @@ DIRECTORIES_BEFORE_RTJAR = \
 # things we need to compile after we have compiled rt.jar 
 #
 DIRECTORIES_AFTER_RTJAR = tools test $(RUN_PO) $(am__append_1) \
-	$(am__append_2) $(am__append_3) $(am__append_4)
+	$(am__append_2) $(am__append_3)
 @MAY_RUN_PO_FALSE@RUN_PO = 
 @MAY_RUN_PO_TRUE@RUN_PO = po
 all: all-recursive

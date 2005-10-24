@@ -9,10 +9,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-if COND_LIBXMLJ
-  MAYBE_LIBXMLJ_DIR = libxmlj
-endif
-
 if COND_NATIVE_AWT
   MAYBE_NATIVE_AWT_DIR = awt
 endif

@@ -1,5 +1,38 @@
 2005-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	Removed Kaffe's copy of GNU Classpath's libxmlj, since it
+	already exists in the merged in classpath tree.
+
+	* Makefile.am: Removed handling of libxmlj.
+
+	* configure.ac: (--enable-libxmlj) Removed. Removed output of
+	libxmlj Makefile.
+
+	* include/Makefile.am: (LIBXMLJ_JNI_HDRS, MAYBE_LIBXMLJ_JNI_HDRS,
+	stamp-libxmlj) Removed.
+
+	* libraries/clib/Makefile.am: (MAYBE_LIBXMLJ_DIR) Removed.
+
+	* libraries/clib/libxmlj/Makefile.am,
+	libraries/clib/libxmlj/Makefile.in,
+	libraries/clib/libxmlj/xmlj_dom.c,
+	libraries/clib/libxmlj/xmlj_dom.h,
+	libraries/clib/libxmlj/xmlj_error.c,
+	libraries/clib/libxmlj/xmlj_error.h,
+	libraries/clib/libxmlj/xmlj_io.c,
+	libraries/clib/libxmlj/xmlj_io.h,
+	libraries/clib/libxmlj/xmlj_node.c,
+	libraries/clib/libxmlj/xmlj_node.h,
+	libraries/clib/libxmlj/xmlj_sax.c,
+	libraries/clib/libxmlj/xmlj_sax.h,
+	libraries/clib/libxmlj/xmlj_transform.c,
+	libraries/clib/libxmlj/xmlj_util.c,
+	libraries/clib/libxmlj/xmlj_util.h,
+	libraries/clib/libxmlj/xmlj_xpath.c:
+	Removed.
+
+2005-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	Removed Kaffe's copy of GNU Classpath's AWT peers, since they
 	already exist in the merged in classpath tree.
 

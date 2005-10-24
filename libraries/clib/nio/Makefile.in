@@ -61,7 +61,6 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
 	$(top_srcdir)/m4/sockaddrin6.m4 \
@@ -144,8 +143,6 @@ COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
 COND_KAFFE_QT_AWT_TRUE = @COND_KAFFE_QT_AWT_TRUE@
 COND_KAFFE_X_AWT_FALSE = @COND_KAFFE_X_AWT_FALSE@
 COND_KAFFE_X_AWT_TRUE = @COND_KAFFE_X_AWT_TRUE@
-COND_LIBXMLJ_FALSE = @COND_LIBXMLJ_FALSE@
-COND_LIBXMLJ_TRUE = @COND_LIBXMLJ_TRUE@
 COND_NATIVE_AWT_FALSE = @COND_NATIVE_AWT_FALSE@
 COND_NATIVE_AWT_TRUE = @COND_NATIVE_AWT_TRUE@
 COND_NATIVE_SOUND_FALSE = @COND_NATIVE_SOUND_FALSE@
@@ -304,12 +301,6 @@ USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
-XML2_CONFIG = @XML2_CONFIG@
-XML_CFLAGS = @XML_CFLAGS@
-XML_LIBS = @XML_LIBS@
-XSLT_CFLAGS = @XSLT_CFLAGS@
-XSLT_CONFIG = @XSLT_CONFIG@
-XSLT_LIBS = @XSLT_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@

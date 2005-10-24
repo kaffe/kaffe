@@ -2020,30 +2020,6 @@ fi
 
 AC_SUBST(PROFILE)
 
-dnl -----------------------------------------------------------------------
-dnl                    Support for libxmlj
-dnl -----------------------------------------------------------------------
-AC_ARG_ENABLE([libxmlj],
-            AS_HELP_STRING([--enable-libxmlj],
-                           [Enable building of libxmlj]))
-
-if test x"$enable_libxmlj" = x"yes" ; then
-  if test x"$with_threads" = x"unix-pthreads" ; then
-    AM_PATH_XML2([2.6.8],[CFLAGS="${CFLAGS}"] [CPPFLAGS="${CPPFLAGS}"] [LIBS="${XML_LIBS} ${LIBS}"] ,
-      AC_MSG_ERROR([unable to locate libxml.]))
-    AM_PATH_XSLT([1.1.11],[CFLAGS="${XSLT_CFLAGS} ${CFLAGS}"] [CPPFLAGS="${XSLT_CFLAGS} ${CPPFLAGS}"] 
-[LIBS="${XSLT_LIBS} ${LIBS}"] ,
-      AC_MSG_ERROR([unable to locate libxslt.]))
-    LIBXMLJ_LIB="\$(top_builddir)/libraries/clib/libxmlj/libxmlj.la"
-  else
-    AC_MSG_ERROR([Not building libxmlj - only available with pthreads.])
-    enable_libxmlj="no"
-    LIBXMLJ_LIB=""
-  fi
-fi
-
-AM_CONDITIONAL([COND_LIBXMLJ], [test x"$enable_libxmlj" = x"yes"])
-
 dnl =========================================================================
 dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
@@ -2077,7 +2053,6 @@ AC_SUBST(DLOPEN_JAVA_LIBS)
 OPT_JAVA_LIBS=" \
 $ALSA_LIB \
 $ESD_LIB \
-$LIBXMLJ_LIB \
 $AWT_LIB \
 "
 
@@ -2347,7 +2322,6 @@ AC_CONFIG_FILES([libraries/clib/classpath/Makefile])
 AC_CONFIG_FILES([libraries/clib/fdlibm/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])
 AC_CONFIG_FILES([libraries/clib/io/Makefile])
-AC_CONFIG_FILES([libraries/clib/libxmlj/Makefile])
 AC_CONFIG_FILES([libraries/clib/nio/Makefile])
 AC_CONFIG_FILES([libraries/clib/net/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
