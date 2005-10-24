@@ -1641,23 +1641,6 @@ if test $ac_cv_scalb_second_parameter_type_is_int = yes; then
   AC_DEFINE(_SCALB_INT, 1, [Is second parameter of scalb an int])
 fi
 
-dnl ------------------------------------------------------------
-dnl determine whether to enable the cairo GTK Graphics2D backend
-dnl ------------------------------------------------------------
-AC_ARG_ENABLE([gtk-cairo],
-              [AS_HELP_STRING(--enable-gtk-cairo,build the cairo Graphics2D implementation on GTK [default=no])],
-              [case "${enableval}" in
-                yes) GTK_CAIRO_ENABLED=true ;;
-                no) GTK_CAIRO_ENABLED=false ;;
-                *) GTK_CAIRO_ENABLED=true ;;
-              esac],
-              [GTK_CAIRO_ENABLED=false])
-AC_SUBST(GTK_CAIRO_ENABLED)
-if test "x${GTK_CAIRO_ENABLED}" = xtrue; then
-  AC_DEFINE(GTK_CAIRO, 1, [defined if cairo support was built in])
-fi
-AM_CONDITIONAL(GTK_CAIRO, test "x${GTK_CAIRO_ENABLED}" = xtrue)
-
 dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
 dnl -------------------------------------------------------------------------
@@ -1854,77 +1837,6 @@ if test x"$enable_native_awt" = x"yes"; then
 	AC_SUBST(AWT_LIBS)
 			
 	AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/nano-X/libnanoxawt.la"
-   fi
-fi
-
-AC_ARG_WITH([classpath-gtk-awt],
-            AS_HELP_STRING([--without-classpath-gtk-awt],
-                           [disable build of GNU Classpath's Gtk+-based AWT engine (built by default)]),
-        [],
-        [with_classpath_gtk_awt=yes]
-)
-
-AM_CONDITIONAL(COND_CLASSPATH_GTK_AWT, test x"$with_classpath_gtk_awt" != x"no")
-
-AC_ARG_WITH([classpath-qt-awt],
-            AS_HELP_STRING([--with-classpath-qt-awt],
-                           [enable build of GNU Classpath's Qt4-based AWT engine (not built by default)]),
-        [],
-        [with_classpath_qt_awt=no]
-)
-
-AM_CONDITIONAL(COND_CLASSPATH_QT_AWT, test x"$with_classpath_qt_awt" != x"no")
-
-
-if test x"$enable_native_awt" = x"yes"; then
-   if test x"$with_classpath_gtk_awt" = x"yes"; then
-
-	dnl -----------------------------------------------------------------------
-	dnl                    Classpath Gtk peer support
-	dnl -----------------------------------------------------------------------
-
-	if test x"$with_threads" != x"unix-pthreads"; then
-                AC_MSG_ERROR([Configuration --with-classpath-gtk-awt not supported - only available with pthreads])
-	fi
-	
-	dnl Check for AWT related gthread/gtk.
-	dnl for some obscure reason, it doesn't work without AC_PATH_X
-	dnl with Kaffe's configure acript, but it works without it with
-	dnl classpath's script. m4 is bizarre.
-	AC_PATH_X
-	AC_PATH_XTRA
-	if test "$no_x" = yes; then
-          AC_MSG_ERROR([GTK+ peers requested but no X library available])
-        fi
-        dnl We explicitly want the XTest Extension for Robot support.
-        AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
-                     [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
-                     [${X_LIBS}])
-    	PKG_CHECK_MODULES(PANGOFT2, pangoft2)
-  	AC_SUBST(PANGOFT2_LIBS)
-  	AC_SUBST(PANGOFT2_CFLAGS)
-
-	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
-	AC_SUBST(GTK_CFLAGS)
-	AC_SUBST(GTK_LIBS)
-
-	if test "x${enable_gtk_cairo}" = xyes
-  	then
-		PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
-  	fi
-  	AC_SUBST(CAIRO_LIBS)
-  	AC_SUBST(CAIRO_CFLAGS)
-
-        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-gtk/gtk-peer/libgtkpeer.la"
-   fi
-
-   if test x"$with_classpath_qt_awt" = x"yes"; then
-	PKG_CHECK_MODULES(QT, QtGui >= 4.0)
-	AC_SUBST(QT_CFLAGS)
-	AC_SUBST(QT_LIBS)
-	AC_CHECK_PROG(MOC, [moc], [moc])
-
-        AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/classpath-qt/libqtpeer.la"
    fi
 fi
 
@@ -2443,10 +2355,6 @@ AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])
 AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
-AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/Makefile])
-AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/gtk-peer/Makefile])
-AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/resource/Makefile])
-AC_CONFIG_FILES([libraries/clib/awt/classpath-qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/nano-X/Makefile])

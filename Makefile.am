@@ -14,19 +14,11 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-# binreloc seems a bit painful to integrate, it may be unnecessary
-# if we get turn the shared native libraries into convenience
-# libraries.
-#if ENABLE_BINRELOC
-#MAYBE_BINRELOC_DIR = binreloc
-#endif
-
 SUBDIRS = \
 	. \
 	libraries/javalib \
 	config \
 	libltdl \
-	$(MAYBE_BINRELOC_DIR) \
 	kaffe/kaffeh \
 	include  \
 	replace \
@@ -240,12 +232,6 @@ endif
 if COND_NATIVE_AWT
 if COND_KAFFE_X_AWT
 DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/X
-endif
-if COND_KAFFE_QT_AWT
-DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/qt
-endif
-if COND_CLASSPATH_GTK_AWT
-DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/classpath-gtk
 endif
 endif
 

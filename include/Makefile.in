@@ -49,7 +49,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = include
-DIST_COMMON = $(am__include_HEADERS_DIST) $(noinst_HEADERS) \
+DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
 	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -67,9 +67,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -80,8 +80,6 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
-am__include_HEADERS_DIST = config-int.h jni.h jni_md.h jni_cpp.h \
-	jvmpi.h kaffe_jni.h jawt.h jawt_md.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -116,8 +114,6 @@ BCEL_JAR = @BCEL_JAR@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 BOEHMGC_SPECIFIC_FLAGS = @BOEHMGC_SPECIFIC_FLAGS@
-CAIRO_CFLAGS = @CAIRO_CFLAGS@
-CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCAS = @CCAS@
 CCASFLAGS = @CCASFLAGS@
@@ -127,10 +123,6 @@ CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
-COND_CLASSPATH_GTK_AWT_FALSE = @COND_CLASSPATH_GTK_AWT_FALSE@
-COND_CLASSPATH_GTK_AWT_TRUE = @COND_CLASSPATH_GTK_AWT_TRUE@
-COND_CLASSPATH_QT_AWT_FALSE = @COND_CLASSPATH_QT_AWT_FALSE@
-COND_CLASSPATH_QT_AWT_TRUE = @COND_CLASSPATH_QT_AWT_TRUE@
 COND_DIRECT_THREADING_FALSE = @COND_DIRECT_THREADING_FALSE@
 COND_DIRECT_THREADING_TRUE = @COND_DIRECT_THREADING_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
@@ -189,11 +181,6 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GMSGFMT = @GMSGFMT@
-GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
-GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
-GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
-GTK_CFLAGS = @GTK_CFLAGS@
-GTK_LIBS = @GTK_LIBS@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
@@ -270,12 +257,9 @@ PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PANGOFT2_CFLAGS = @PANGOFT2_CFLAGS@
-PANGOFT2_LIBS = @PANGOFT2_LIBS@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
-PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PROFILE = @PROFILE@
 PTHREAD_CC = @PTHREAD_CC@
@@ -283,11 +267,9 @@ PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 QASSISTANTCLIENT_LDADD = @QASSISTANTCLIENT_LDADD@
 QEMBED = @QEMBED@
-QT_CFLAGS = @QT_CFLAGS@
 QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
-QT_LIBS = @QT_LIBS@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 SECURITY_LIBS = @SECURITY_LIBS@
@@ -511,98 +493,11 @@ LIBXMLJ_JNI_HDRS = \
 	gnu_xml_libxmlj_transform_GnomeTransformer.h \
 	gnu_xml_libxmlj_transform_GnomeTransformerFactory.h
 
-LIBGTKPEER_JNI_HDRS = \
-	gnu_java_awt_peer_gtk_GdkFontPeer.h \
-	gnu_java_awt_peer_gtk_GdkGraphics.h \
-	gnu_java_awt_peer_gtk_GdkGraphics2D.h \
-	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \
-	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
-	gnu_java_awt_peer_gtk_GdkRobotPeer.h \
-	gnu_java_awt_peer_gtk_GdkTextLayout.h \
-	gnu_java_awt_peer_gtk_GtkButtonPeer.h \
-	gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
-	gnu_java_awt_peer_gtk_GtkChoicePeer.h \
-	gnu_java_awt_peer_gtk_GtkClipboard.h \
-	gnu_java_awt_peer_gtk_GtkComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.h \
-	gnu_java_awt_peer_gtk_GtkFileDialogPeer.h \
-	gnu_java_awt_peer_gtk_GtkFramePeer.h \
-	gnu_java_awt_peer_gtk_GtkGenericPeer.h \
-	gnu_java_awt_peer_gtk_GtkImage.h \
-	gnu_java_awt_peer_gtk_GtkLabelPeer.h \
-	gnu_java_awt_peer_gtk_GtkListPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuBarPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuComponentPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuItemPeer.h \
-	gnu_java_awt_peer_gtk_GtkMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkPanelPeer.h \
-	gnu_java_awt_peer_gtk_GtkPopupMenuPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollbarPeer.h \
-	gnu_java_awt_peer_gtk_GtkScrollPanePeer.h \
-	gnu_java_awt_peer_gtk_GtkSelection.h \
-	gnu_java_awt_peer_gtk_GtkTextAreaPeer.h \
-	gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
-	gnu_java_awt_peer_gtk_GtkToolkit.h \
-	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
-	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
-LIBQTPEER_JNI_HDRS = \
-        gnu_java_awt_peer_qt_MainQtThread.h \
-        gnu_java_awt_peer_qt_NativeWrapper.h \
-        gnu_java_awt_peer_qt_QMatrix.h \
-        gnu_java_awt_peer_qt_QPainterPath.h \
-        gnu_java_awt_peer_qt_QPen.h \
-        gnu_java_awt_peer_qt_QtAudioClip.h \
-        gnu_java_awt_peer_qt_QtButtonPeer.h \
-        gnu_java_awt_peer_qt_QtCanvasPeer.h \
-        gnu_java_awt_peer_qt_QtCheckboxPeer.h \
-        gnu_java_awt_peer_qt_QtChoicePeer.h \
-        gnu_java_awt_peer_qt_QtComponentGraphics.h \
-        gnu_java_awt_peer_qt_QtComponentPeer.h \
-        gnu_java_awt_peer_qt_QtContainerPeer.h \
-        gnu_java_awt_peer_qt_QtDialogPeer.h \
-	gnu_java_awt_peer_qt_QtEmbeddedWindowPeer.h \
-        gnu_java_awt_peer_qt_QtFileDialogPeer.h \
-        gnu_java_awt_peer_qt_QtFontMetrics.h \
-        gnu_java_awt_peer_qt_QtFontPeer.h \
-        gnu_java_awt_peer_qt_QtFramePeer.h \
-        gnu_java_awt_peer_qt_QtGraphics.h \
-        gnu_java_awt_peer_qt_QtGraphicsEnvironment.h \
-        gnu_java_awt_peer_qt_QtImage.h \
-        gnu_java_awt_peer_qt_QtImageConsumer.h \
-        gnu_java_awt_peer_qt_QtImageGraphics.h \
-        gnu_java_awt_peer_qt_QtLabelPeer.h \
-        gnu_java_awt_peer_qt_QtListPeer.h \
-        gnu_java_awt_peer_qt_QtMenuBarPeer.h \
-        gnu_java_awt_peer_qt_QtMenuComponentPeer.h \
-        gnu_java_awt_peer_qt_QtMenuItemPeer.h \
-        gnu_java_awt_peer_qt_QtMenuPeer.h \
-        gnu_java_awt_peer_qt_QtPanelPeer.h \
-        gnu_java_awt_peer_qt_QtPopupMenuPeer.h \
-        gnu_java_awt_peer_qt_QtScreenDevice.h \
-        gnu_java_awt_peer_qt_QtScreenDeviceConfiguration.h \
-        gnu_java_awt_peer_qt_QtScrollPanePeer.h \
-        gnu_java_awt_peer_qt_QtScrollbarPeer.h \
-        gnu_java_awt_peer_qt_QtTextAreaPeer.h \
-        gnu_java_awt_peer_qt_QtTextFieldPeer.h \
-        gnu_java_awt_peer_qt_QtToolkit.h \
-        gnu_java_awt_peer_qt_QtVolatileImage.h \
-        gnu_java_awt_peer_qt_QtWindowPeer.h 
-
-
-# Only create headers for AWT, Sound and libxmlj if they are going to be built.
+# Only create headers for Sound and libxmlj if they are going to be built.
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_JNI_HDRS = $(LIBXMLJ_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
 @COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
-@COND_CLASSPATH_GTK_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBGTKPEER_JNI_HDRS = $(LIBGTKPEER_JNI_HDRS)
-@COND_CLASSPATH_QT_AWT_TRUE@@COND_NATIVE_AWT_TRUE@MAYBE_LIBQTPEER_JNI_HDRS = $(LIBQTPEER_JNI_HDRS)
-@COND_CLASSPATH_GTK_AWT_TRUE@JAWT_HDRS = \
-@COND_CLASSPATH_GTK_AWT_TRUE@	jawt.h \
-@COND_CLASSPATH_GTK_AWT_TRUE@	jawt_md.h
-
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_VMDouble.h \
