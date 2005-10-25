@@ -261,7 +261,7 @@ KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntInitFontMetrics )
   return fs;
 }
 
-KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics 
+KAFFE_FONT_FUNC_DECL( void, Java_java_awt_Toolkit_fntFreeFontMetrics )
 {
 }
 
@@ -296,7 +296,7 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetLeading )
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAdvance )
 {
-  return UNVEIl_FS(fs)->max_bounds.width;
+  return UNVEIL_FS(fs)->max_bounds.width;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetMaxAscent )
@@ -332,7 +332,7 @@ KAFFE_FONT_FUNC_DECL( jobject, Java_java_awt_Toolkit_fntGetWidths )
 #else  
   XFontStruct *xfs = UNVEIL_FS(fs);
   register  int i, j;
-  const int n = 256;
+  int n = 256;
 #endif  
 
   widths = (*env)->NewIntArray( env, 256);

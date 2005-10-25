@@ -1738,6 +1738,20 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
+AC_ARG_ENABLE([xawt-xi18n],
+	AS_HELP_STRING([--disable-xawt-xi18n],
+		[disable build of Xi18n support of Xlib AWT backend (enabled by default)]),
+	[],
+	[enable_xawt-i18n=yes]
+)
+
+XI18N_CFLAGS=
+if test x"$enable_xawt-i18n" = xyes; then
+	XI18N_CFLAGS="-DKAFFE_I18N"  
+fi
+AC_SUBST(XI18N_CFLAGS)
+
+
 AC_ARG_WITH([kaffe-qt-awt],
             AS_HELP_STRING([--with-kaffe-qt-awt],
                            [enable build of Kaffe's Qt2/3/embedded-based AWT engine (not built by default)]),

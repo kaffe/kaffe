@@ -1,3 +1,20 @@
+2005-10-25  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/clib/awt/X/Makefile.am: Add XI18N_CFLAGS.
+
+	* libraries/clib/awt/X/fnt.c
+	(Java_java_awt_Toolkit_fntFreeFontMetrics): Fixlet to wrong prototype.
+	(Java_java_awt_Toolkit_fntGetMaxAdvance): Fix typo.
+
+	* libraries/clib/awt/X/toolkit.h: Remove hard-coded KAFFE_I18N macro.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am: Fixlet to
+	kaffeawt.jar generation.
+
+	* configure.ac: Introduced new option --disable-xawt-xi18n to turn off
+	Xi18n handling in Xlib-based AWT backend (enabled by
+	default).
+
 2005-10-24  Dalibor Topic  <robilad@kaffe.org>
 
 	Removed Kaffe's copy of GNU Classpath's libxmlj, since it
@@ -453,7 +470,8 @@
 	tools/gjdoc/javalib/Makefile.in: Regenerated.
 
 2005-10-02  Riccardo Mottola <riccardo@kaffe.org>
-	* kaffe/kaffe/kafevm/stat.c :
+
+	* kaffe/kaffe/kafevm/stat.c:
 	added missing include to sys/time.h properly guarded (for darwin)
 
 2005-10-02  Dalibor Topic  <robilad@kaffe.org>
@@ -462,7 +480,7 @@
 	kaffe/scripts/compat/Makefile.am
 	Removed appletviewer and javadoc compatilibility scripts.
 
-	*kaffe/scripts/compat/appletviewer.in,
+	* kaffe/scripts/compat/appletviewer.in,
 	kaffe/scripts/compat/javadoc.in:
 	Removed. Same scripts exist in normal scripts directory already.
 

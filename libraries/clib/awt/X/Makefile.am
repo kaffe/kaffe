@@ -15,7 +15,8 @@ AM_CPPFLAGS = \
 
 libxawt_la_CFLAGS = \
 	$(CFLAGS_PG) \
-	$(X_CFLAGS)
+	$(X_CFLAGS) \
+	$(XI18N_CFLAGS)
 
 libxawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \

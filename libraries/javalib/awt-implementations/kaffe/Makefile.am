@@ -8,7 +8,7 @@
 # of this file.
 
 CLASSFILE = kaffeawt.jar
-SRCDIRS = kaffe java
+SRCDIRS = kaffe java org
 
 jrelib_DATA = $(CLASSFILE)
 

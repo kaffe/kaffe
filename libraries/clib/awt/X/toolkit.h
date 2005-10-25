@@ -50,8 +50,6 @@
 #include <fcntl.h>
 #endif
 
-#define KAFFE_I18N	1 /* make Kaffe to be able to support i18n */
-
 /*******************************************************************************
  * color conversion structures
  */
