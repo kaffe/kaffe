@@ -19,6 +19,7 @@
 #include "debug.h"
 
 #include <stdarg.h>
+#include <string.h>
 
 /**
  * These variables track the pool of constpool objects allocated by the jitter.
@@ -44,7 +45,7 @@ KaffeJIT3_newConstant(int type, ...)
 	assert(type > CP_min);
 	assert(type < CP_max);
 
-	bzero(&val, sizeof(val));
+	memset(&val, '\0', sizeof(val));
 	va_start(arg, type);
 	switch (type) {
 	case CPint:

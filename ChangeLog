@@ -1,3 +1,8 @@
+2005-10-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/constpool.c: Replaced bzero by memset to
+	fix warning on sparc-solaris9. 
+
 2005-10-25  Jim Huang  <jserv@kaffe.org>
 
 	* libraries/clib/awt/X/Makefile.am: Add XI18N_CFLAGS.
