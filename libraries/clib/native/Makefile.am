@@ -13,10 +13,11 @@ native_LTLIBRARIES = libjavalang.la
 
 AM_CPPFLAGS = \
         $(CLASSPATH_INCLUDES) \
-	-I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/jvmpi \
+	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-        -I$(top_srcdir)/libraries/clib/classpath \
-        -I$(top_srcdir)/libraries/clib/fdlibm
+        -I$(top_srcdir)/libraries/clib/fdlibm \
+	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath
 
 LANG_SRCS = \
 		gnu_classpath_VMStackWalker.c \
@@ -67,11 +68,11 @@ libjavalang_la_LDFLAGS = \
 
 libjavalang_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \
-	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la \
-        $(top_builddir)/libraries/clib/classpath/libclasspath.la
+	$(top_builddir)/libraries/clib/fdlibm/libfdlibm.la
 
 libjavalang_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la \
 	$(M_LIBS) \
 	$(libjavalang_la_DEPENDENCIES)
 

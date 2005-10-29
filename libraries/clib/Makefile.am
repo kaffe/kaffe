@@ -19,7 +19,6 @@ endif
 
 SUBDIRS = \
 	target \
-	classpath \
 	fdlibm \
 	native \
 	io \
@@ -29,6 +28,5 @@ SUBDIRS = \
 	math \
 	security \
 	management \
-	$(MAYBE_LIBXMLJ_DIR) \
 	$(MAYBE_NATIVE_AWT_DIR) \
 	$(MAYBE_NATIVE_SOUND_DIR)

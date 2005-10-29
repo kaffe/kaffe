@@ -9,7 +9,7 @@
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_srcdir)/libraries/clib/classpath
+	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath
 
 native_LTLIBRARIES = libjavaio.la
 
@@ -23,7 +23,9 @@ libjavaio_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libjavaio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libjavaio_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la
 
 libjavaio_la_SOURCES = \
 	File.c \

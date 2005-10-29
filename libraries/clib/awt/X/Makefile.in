@@ -84,8 +84,8 @@ nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libxawt_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(am__DEPENDENCIES_1) \
-	$(top_builddir)/libraries/clib/classpath/libclasspath.la
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la \
+	$(am__DEPENDENCIES_1)
 am_libxawt_la_OBJECTS = libxawt_la-tlk.lo libxawt_la-wnd.lo \
 	libxawt_la-evt.lo libxawt_la-gra.lo libxawt_la-fnt.lo \
 	libxawt_la-clr.lo libxawt_la-img.lo libxawt_la-imggif.lo \
@@ -371,7 +371,7 @@ native_LTLIBRARIES = libxawt.la
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_srcdir)/libraries/clib/classpath
+	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath
 
 libxawt_la_CFLAGS = \
 	$(CFLAGS_PG) \
@@ -386,8 +386,9 @@ libxawt_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libxawt_la_LIBADD = \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la $(AWT_LIBS) \
-	$(top_builddir)/libraries/clib/classpath/libclasspath.la
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la \
+	$(AWT_LIBS)
 
 libxawt_la_SOURCES = \
 	tlk.c \

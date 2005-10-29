@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 	$(CLASSPATH_INCLUDES) \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_srcdir)/libraries/clib/classpath
+	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath
 
 native_LTLIBRARIES = libjavanio.la
 
@@ -31,12 +31,9 @@ libjavanio_la_SOURCES = \
 	gnu_java_nio_VMSelector.c \
 	gnu_java_nio_channels_FileChannelImpl.c 
 
-libjavanio_la_DEPENDENCIES = \
-        $(top_builddir)/libraries/clib/classpath/libclasspath.la
-
 libjavanio_la_LIBADD = \
         $(LTLIBICONV) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(libjavanio_la_DEPENDENCIES)
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la
 
 CLEANFILES = so_locations

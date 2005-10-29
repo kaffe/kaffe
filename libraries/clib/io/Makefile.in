@@ -81,7 +81,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libjavaio_la_DEPENDENCIES =  \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la
 am_libjavaio_la_OBJECTS = libjavaio_la-File.lo \
 	libjavaio_la-java_io_VMObjectInputStream.lo \
 	libjavaio_la-java_io_VMObjectStreamClass.lo
@@ -364,7 +365,7 @@ with_engine = @with_engine@
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_srcdir)/libraries/clib/classpath
+	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath
 
 native_LTLIBRARIES = libjavaio.la
 libjavaio_la_CFLAGS = \
@@ -377,7 +378,10 @@ libjavaio_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libjavaio_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libjavaio_la_LIBADD = \
+	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la
+
 libjavaio_la_SOURCES = \
 	File.c \
 	java_io_VMObjectInputStream.c \

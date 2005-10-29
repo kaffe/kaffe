@@ -1,3 +1,31 @@
+2005-10-28  Dalibor Topic  <robilad@kaffe.org>
+
+        * Makefile.am: (KAFFELIBRARYPATH) Removed classpath directory.
+
+        * configure.ac: Removed libraries/clib/classpath/Makefile from
+	list of files to output.
+
+        * libraries/clib/Makefile.am:
+	Removed classpath subdirectory.
+
+        * libraries/clib/awt/X/Makefile.am,
+        libraries/clib/io/Makefile.am,
+        libraries/clib/native/Makefile.am,
+        libraries/clib/nio/Makefile.am:
+	(*_LDADD) Use libclasspath.la from GNU Classpath.
+
+        * libraries/clib/classpath/.cvsignore,
+        libraries/clib/classpath/Makefile.am,
+        libraries/clib/classpath/Makefile.in,
+        libraries/clib/classpath/classpath_jawt.h,
+        libraries/clib/classpath/jcl.c,
+        libraries/clib/classpath/jcl.h,
+        libraries/clib/classpath/jnilink.c,
+        libraries/clib/classpath/jnilink.h,
+        libraries/clib/classpath/native_state.c,
+        libraries/clib/classpath/native_state.h:
+	Removed.
+
 2005-10-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/scripts/compat/javac.in: Use glibj.zip instead of rt.jar
