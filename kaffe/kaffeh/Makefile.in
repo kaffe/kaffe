@@ -85,7 +85,8 @@ am__objects_1 = kaffeh-constants.$(OBJEXT) kaffeh-debug.$(OBJEXT) \
 	kaffeh-utf8const.$(OBJEXT) kaffeh-binreloc.$(OBJEXT)
 nodist_kaffeh_OBJECTS = $(am__objects_1)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
-kaffeh_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -384,6 +385,7 @@ DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
+kaffeh_LDADD = $(LTLIBINTL)
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \

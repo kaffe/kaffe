@@ -31,6 +31,8 @@ DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
+kaffeh_LDADD= $(LTLIBINTL)
+
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \
