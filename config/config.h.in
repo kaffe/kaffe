@@ -756,6 +756,9 @@
 /* additional directories to search for native jni libraries */
 #undef JNI_LIBRARY_PATH
 
+/* Defined on NetBSD because sigwait needs the handle not to be registered */
+#undef KAFFE_BUGGY_NETBSD_SIGWAIT
+
 /* Full path to the directory containing kaffe's locales */
 #undef KAFFE_LOCALEDIR
 

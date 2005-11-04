@@ -700,6 +700,10 @@ if test x$with_threads = xunix-pthreads ; then
 
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
 	CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+
+	if test "x$Khost_os" = "xnetbsd1"; then
+		AC_DEFINE(KAFFE_BUGGY_NETBSD_SIGWAIT, 1, [Defined on NetBSD because sigwait needs the handle not to be registered])
+	fi
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
 fi

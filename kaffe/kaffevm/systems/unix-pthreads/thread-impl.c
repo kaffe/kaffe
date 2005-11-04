@@ -415,7 +415,7 @@ tInitSignalHandlers (void)
   saResume.sa_flags = 0; /* Note that we do not want restart here. */
   saResume.sa_handler = resume_signal_handler;
   saResume.sa_mask = saSuspend.sa_mask;
-#ifndef KAFFE_BOEHM_GC
+#if !defined(KAFFE_BOEHM_GC) && !defined(KAFFE_BUGGY_NETBSD_SIGWAIT)
   sigaction( sigResume, &saResume, NULL);
 #endif
 
@@ -1275,7 +1275,12 @@ void KaffePThread_WaitForResume(int releaseMutex, unsigned int state)
 
   /* freeze until we get a subsequent sigResume */
   while( cur->suspendState == SS_SUSPENDED )
-    sigwait( &suspendSet, &s);
+    {
+      sigwait( &suspendSet, &s);
+      /* Post something even if it is not the right thread. */
+      if (cur->suspendState == SS_SUSPENDED)
+        repsem_post(&critSem);
+    }
   
   DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur));
 
@@ -1497,13 +1502,17 @@ jthread_unsuspendall (void)
 	      if ((t->blockState & (BS_SYSCALL|BS_CV|BS_CV_TO|BS_MUTEX)) == 0)
 		{
 		  DBG (JTHREADDETAIL, dprintf("  sending sigResume\n"));
-		  status = pthread_kill( t->tid, sigResume);
-		  if ( status )
+		  do
 		    {
-		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status));
-		    }		  
-		  /* ack wait workaround, see jthread_suspendall remarks */
-		  repsem_wait( &critSem);
+		      status = pthread_kill( t->tid, sigResume);
+		      if ( status )
+			{
+			  DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status));
+			}		  
+		      /* ack wait workaround, see jthread_suspendall remarks */
+		      repsem_wait( &critSem);
+		    }
+		  while (t->suspendState == SS_PENDING_RESUME);
 		}
 	      else
 		{
