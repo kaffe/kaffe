@@ -590,5 +590,5 @@ lib/copy-vmresources.sh
 examples/Makefile
 examples/Makefile.jawt])
 AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])
-AC_CONFIG_COMMANDS([copy-vmmresources],[chmod 755 lib/copy-vmmetainf.sh])
+AC_CONFIG_COMMANDS([copy-vmresources],[chmod 755 lib/copy-vmresources.sh])
 AC_OUTPUT

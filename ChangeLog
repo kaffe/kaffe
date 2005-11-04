@@ -1,5 +1,18 @@
 2005-11-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/boehm/configure,
+	libltdl/Makefile.in,
+	libltdl/aclocal.m4,
+	libltdl/configure,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/external/classpath/configure: Regenerated.
+
+	* libraries/javalib/external/classpath/configure.ac: Imported the
+	fixlet for copy-vmresources.sh generation.
+
+2005-11-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac: Check whether we are on NetBSD to activate the 
 	bug circumvention.
 
