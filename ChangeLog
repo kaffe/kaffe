@@ -1,5 +1,40 @@
 2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* include/jsyscall.h
+	(sockShutdown): New syscall to support.
+	(KSOCKSHUTDOWN): New macro.
+
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	(jthreadedSocketShutdown): Added support for shutdown.
+
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	(jthreadedSocketShutdown): Added support for shutdown.
+	(selectHelper): New function which protect calls to select.
+	(waitForTimeout, waitForWritable): Use selectHelper now.
+	(waitForRW): New function.
+	(jthreadedAccept): Use waitForRW and not waitForTimeout.
+
+	* libraries/clib/net/PlainSocketImpl.c
+	(getFileFromSocket): New function to retrieve safely a fd from a
+	socket object.
+	(releaseFileToSocket): Release the fd.
+	(socketCreate, socketConnect, socketBind,
+	socketListen, socketAccept, socketAvailable,
+	socketSetOption, socketGetOption, socketRead,
+	socketWrite, waitForConnection): Use the new facility to
+	get the fd.
+	(socketClose): Shutdown the socket and if possible close the fd.
+
+	* libraries/javalib/vmspecific/gnu/java/net/PlainSocketImpl.java
+	(fdUsed): New field.
+	(available, close, getInputStream, socketGetOption, 
+	socketSetOption, socketAccept, socketAvailable,
+	socketBind, socketClose, socketConnect, socketCreate,
+	socketListen, socketRead, socketWrite, waitForConnection,
+	setBlocking): Removed synchronization.
+	
+2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/clib/native/java_lang_VMProcess.c
 	(nativeSpawn): Fixed eclipse startup by using the true kaffe
 	internal functions.

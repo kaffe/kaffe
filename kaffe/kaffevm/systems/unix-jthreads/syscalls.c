@@ -37,6 +37,19 @@ jthreadedClose(int fd)
 }
 
 static int
+jthreadedSocketShutdown(int fd)
+{
+        int rc = 0;
+
+	jthread_spinon(0);
+	if (shutdown(fd, 2) == -1)
+	  rc = errno;
+	jthread_spinoff(0);
+
+	return rc;
+}
+
+static int
 jthreadedListen(int fd, int l)
 {
 	int rc = 0;
@@ -424,6 +437,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedGetSockName, 
         jthreadedGetPeerName, 
         jthreadedClose,
+	jthreadedSocketShutdown,
         jthreadedGetHostByName,
         jthreadedGetHostByAddr,
         jthreadedSelect,	

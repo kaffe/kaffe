@@ -84,6 +84,7 @@ typedef struct SystemCallInterface {
 	int	(*_getsockname)(int, struct sockaddr *, socklen_t *);
 	int	(*_getpeername)(int, struct sockaddr *, socklen_t *);
 	int	(*_sockclose)(int);
+        int     (*_sockShutdown)(int);
 	int	(*_gethostbyname)(const char *, struct hostent **);
 	int	(*_gethostbyaddr)(const char *, size_t, int, struct hostent **);
 
@@ -257,6 +258,8 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define KPIPECREATE(A,B)   (*Kaffe_SystemCallInterface._pipecreate)(A,B)
 #define KPIPEREAD(A,B,C,D,E) (*Kaffe_SystemCallInterface._piperead)(A,B,C,D,E)
 #define KPIPEWRITE(A,B,C,D,E) (*Kaffe_SystemCallInterface._pipewrite)(A,B,C,D,E)
+
+#define KSOCKSHUTDOWN(A) (*Kaffe_SystemCallInterface._sockShutdown)(A)
 
 #define KAFFE_MMAP_READ 0
 #define KAFFE_MMAP_WRITE 1

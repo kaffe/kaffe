@@ -27,6 +27,7 @@
 #include "object.h"
 #include "itypes.h"
 #include "exception.h"
+#include "locks.h"
 
 #include "dummyin6.h"
 
@@ -131,6 +132,51 @@ ip62str(struct in6_addr *addr)
 #endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 #endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
 
+/**
+ * This is a helper functions to obtain safely a file descriptor which represents
+ * the socket.
+ *
+ * @param this A valid socket implementation.
+ * @return A valid file descriptor if available.
+ */
+static int
+getFileFromSocket(struct Hgnu_java_net_PlainSocketImpl* this)
+{
+  int fd;
+
+  lockObject((struct Hjava_lang_Object *)this);
+  fd = (int)unhand(this)->native_fd;
+  if (fd < 0)
+    {
+      unlockObject((struct Hjava_lang_Object *)this);
+      SignalError("java.net.SocketException", "fd invalid");
+    }
+  unhand(this)->fdUsed++;
+  unlockObject((struct Hjava_lang_Object*)this);
+  
+  return fd;
+}
+
+/**
+ * This is a helper functions to return safely a file descriptor to
+ * the socket.
+ *
+ * @param this A valid socket implementation.
+ */
+static void
+releaseFileToSocket(struct Hgnu_java_net_PlainSocketImpl* this)
+{
+  lockObject((struct Hjava_lang_Object*)this);
+  unhand(this)->fdUsed--;
+
+  if (unhand(this)->fdUsed == 0)
+    {
+      KSOCKCLOSE(unhand(this)->native_fd);
+      unhand(this)->native_fd = -1;
+    }
+  unlockObject((struct Hjava_lang_Object*)this);
+}
+
 /*
  * Create a stream or datagram socket.
  */
@@ -163,7 +209,7 @@ gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* 
 		    this, stream ? "stream" : "datagram", fd);
 	    );
 
-	unhand(this)->native_fd = fd;
+	unhand(this)->fdUsed++;
 	unhand(this)->native_fd = fd;
 }
 
@@ -216,13 +262,15 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		    this, ip2str(addr.addr4.sin_addr.s_addr), dport, timeout);
 	    );
 
-	fd = (int)unhand(this)->native_fd;
+	fd = getFileFromSocket(this);
 	r = KCONNECT(fd, (struct sockaddr*)&addr, alen, timeout);
 	if (r == EINTR) {
+	        releaseFileToSocket(this);
 		SignalError("java.io.InterruptedIOException", 
 			    "Connect was interrupted");
 	}
 	if (r == ETIMEDOUT) {
+	        releaseFileToSocket(this);
 	        SignalError("java.net.SocketTimeoutException",
 			    "Connect timed out");
 	}
@@ -231,12 +279,14 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 		return;
 	}
 	if (r) {
+	        releaseFileToSocket(this);
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
 	r = KGETSOCKNAME(fd, (struct sockaddr*)&addr, &alen);
+	releaseFileToSocket(this);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
@@ -312,7 +362,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
-	fd = (int)unhand(this)->native_fd;
+	fd = getFileFromSocket(this);
 
 	/* Allow rebinding to socket - ignore errors */
 	(void)KSETSOCKOPT(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
@@ -324,9 +374,11 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	case EADDRNOTAVAIL:
 	case EADDRINUSE:
 	case EACCES:
+	        releaseFileToSocket(this);
 		SignalError("java.net.BindException", SYS_ERROR(r));
 		break;
 	default:
+	        releaseFileToSocket(this);
 		SignalError("java.net.SocketException", SYS_ERROR(r));
 		break;
 	}
@@ -336,6 +388,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	if (lport == 0) {
 		alen = sizeof(addr);
 		r = KGETSOCKNAME(fd, (struct sockaddr*)&addr, &alen);
+		releaseFileToSocket(this);
 		if (r) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
@@ -363,7 +416,8 @@ gnu_java_net_PlainSocketImpl_socketListen(struct Hgnu_java_net_PlainSocketImpl* 
 	    dprintf("socketListen(%p, count=%d)\n", this, count);
 	    );
 
-	r = KLISTEN((int)unhand(this)->native_fd, count);
+	r = KLISTEN(getFileFromSocket(this), count);
+	releaseFileToSocket(this);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
@@ -375,6 +429,7 @@ gnu_java_net_PlainSocketImpl_socketListen(struct Hgnu_java_net_PlainSocketImpl* 
 void
 gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* this, struct Hjava_net_SocketImpl* sock)
 {
+        int fd;
 	int r;
 	int rc, rc1;
 	socklen_t alen;
@@ -383,6 +438,8 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	struct Hgnu_java_net_PlainSocketImpl* accepted_socket =
 	  (struct Hgnu_java_net_PlainSocketImpl *)sock;
 	jvalue jv;
+
+	fd = getFileFromSocket(this);
 
 	remote_addr = NULL;
 	memset(&addr, 0, sizeof(addr));
@@ -406,8 +463,13 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 
 	alen = sizeof(addr);
 	do {
-	        rc = KACCEPT(unhand(this)->native_fd,
+	        rc = KACCEPT(fd,
 			     (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
+		releaseFileToSocket(this);
+		if (unhand(this)->native_fd < 0)
+		  {
+		    SignalError("java.net.SocketException", "Socket was closed");
+		  }
 	} while (rc == EINTR);
 	if (rc == ETIMEDOUT) {
 	  	DBG(NATIVENET,
@@ -428,6 +490,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	}
 
 	unhand(accepted_socket)->native_fd = r;
+	unhand(accepted_socket)->fdUsed++;
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
@@ -501,12 +564,13 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p)\n", this);
 	    );
-	fd = (int)unhand(this)->native_fd;
+	fd = getFileFromSocket(this);
 
 #if defined(HAVE_IOCTL) && defined(FIONREAD)
 	/* XXX make part of system call interface to protect errno */
 	r = ioctl(fd, FIONREAD, &len);
 	if (r < 0) {
+	        releaseFileToSocket(this);
 		SignalError("java.io.IOException", SYS_ERROR(errno));
 	}
 #else /* !(defined(HAVE_IOCTL) && defined(FIONREAD)) */
@@ -533,6 +597,7 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 	    dprintf("socketAvailable(%p) -> %d\n", this, len);
 	    );
 
+	releaseFileToSocket(this);
 	return (len);
 }
 
@@ -549,8 +614,16 @@ gnu_java_net_PlainSocketImpl_socketClose(struct Hgnu_java_net_PlainSocketImpl* t
 	    );
 
 	if (unhand(this)->native_fd != -1) {
-		r = KSOCKCLOSE((int)unhand(this)->native_fd);
-		unhand(this)->native_fd = -1;
+	        r = KSOCKSHUTDOWN((int)unhand(this)->native_fd);
+		lockObject((struct Hjava_lang_Object*)this);
+		unhand(this)->fdUsed--;
+		if (unhand(this)->fdUsed == 0 && r == 0)
+		  {
+		    r = KSOCKCLOSE((int)unhand(this)->native_fd);
+		    unhand(this)->native_fd = -1;
+		  }
+		unlockObject((struct Hjava_lang_Object*)this);
+
 		if (r) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
@@ -564,6 +637,7 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 {
 	int r, v;
 	unsigned int k;
+	int fd;
 
 	DBG(NATIVENET,
 	    const char *optstr = "UNKNOWN";
@@ -573,6 +647,7 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 	    dprintf("socketSetOption(%p, %s, arg=%p)\n", this, optstr, arg);
 	    );
 
+
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
@@ -580,6 +655,8 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 			char *optdata;
 			int optlen;
 			
+			fd = getFileFromSocket(this);
+
 			v = unhand((struct Hjava_lang_Integer*)arg)->value;
 			if( socketOptions[k].copt == SO_LINGER )
 			{
@@ -593,16 +670,16 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 				optdata = (char *)&v;
 				optlen = sizeof(v);
 			}
-			r = KSETSOCKOPT((int)unhand(this)->native_fd,
+			r = KSETSOCKOPT(fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				optdata, optlen);
+			releaseFileToSocket(this);
 			if (r) {
 				SignalError("java.net.SocketException", SYS_ERROR(r));
 			}
 			return;
 		}
 	}
-
 	/* Do harder cases */
 	switch(opt) {
 	case java_net_SocketOptions_SO_BINDADDR:
@@ -624,6 +701,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	int r = 0, v;
 	socklen_t vsize = sizeof(v);
 	unsigned int k;
+	int fd;
 
 	DBG(NATIVENET,
 	    const char *optstr = "UNKNOWN";
@@ -636,9 +714,11 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
-			r = KGETSOCKOPT((int)unhand(this)->native_fd,
+		        fd = getFileFromSocket(this);
+			r = KGETSOCKOPT(fd,
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, &vsize);
+			releaseFileToSocket(this);
 			if (r) {
 				SignalError("java.net.SocketException", SYS_ERROR(r));
 			}
@@ -652,8 +732,10 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	/* Do harder cases */
 	switch(opt) {
 	case java_net_SocketOptions_SO_BINDADDR:
-		r = KGETSOCKNAME((int)unhand(this)->native_fd,
+	        fd = getFileFromSocket(this);
+		r = KGETSOCKNAME(fd,
 			(struct sockaddr*)&addr, &alen);
+		releaseFileToSocket(this);
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
 		}
@@ -683,18 +765,17 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 		    this, buf, offset, len);
 	    );
 
-	fd = (int)unhand(this)->native_fd;
-	if (fd < 0) {
-		SignalError("java.io.IOException", "fd invalid"); 
-	}
+	fd = getFileFromSocket(this);
 
 	total_read = 0;
 	r = 0;
 	do {
-		rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], (unsigned)len, unhand(this)->timeout, &r);
+	         rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], (unsigned)len, unhand(this)->timeout, &r);
 
 		 if (rc == ETIMEDOUT) {
 		         struct Hjava_io_InterruptedIOException* except;
+
+			 releaseFileToSocket(this);
 
 			 except = (struct Hjava_io_InterruptedIOException *)
 			   execute_java_constructor(
@@ -705,14 +786,21 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 	      
 			 throwException((struct Hjava_lang_Throwable*)except);
 		 } else if (rc != EINTR && rc != 0) {
-		   SignalError("java.io.IOException", SYS_ERROR(rc));
+		   releaseFileToSocket(this);
+		   if (unhand(this)->native_fd < 0)
+		     SignalError("java.net.SocketException", "Socket was closed");
+
+		   SignalError("java.net.IOException", SYS_ERROR(rc));
 		 } else if (rc == 0 && r == 0 && len > 0) {
+		   releaseFileToSocket(this);
 		   return (-1);
 		 }
 		 offset += r;
 		 len -= r;
 		 total_read += r;
 	} while (rc == EINTR);
+
+	releaseFileToSocket(this);
 	return (total_read);
 }
 
@@ -728,20 +816,23 @@ gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* t
 		    this, buf, offset, len);
 	    );
 
-	fd = (int)unhand(this)->native_fd;
-	if (fd >= 0) {
-		while (len > 0) {
-			r = KSOCKWRITE(fd,
-			    &unhand_array(buf)->body[offset], (unsigned)len, &nw);
-			if (r) {
-				SignalError("java.io.IOException", SYS_ERROR(r));
-			}
-			offset += nw;
-			len -= nw;
-		}
-	} else {
-		SignalError("java.io.IOException", "fd invalid"); 
+	fd = getFileFromSocket(this);
+
+	while (len > 0) {
+	  r = KSOCKWRITE(fd,
+			 &unhand_array(buf)->body[offset], (unsigned)len, &nw);
+	  if (r) {
+	    releaseFileToSocket(this);
+	    if (unhand(this)->native_fd < 0)
+	      {
+		SignalError("java.net.SocketException", "Socket was closed");
+	      }
+	    SignalError("java.net.SocketException", SYS_ERROR(r));
+	  }
+	  offset += nw;
+	  len -= nw;
 	}
+	releaseFileToSocket(this);
 }
 
 void
@@ -758,14 +849,17 @@ void
 gnu_java_net_PlainSocketImpl_waitForConnection(struct Hgnu_java_net_PlainSocketImpl* this)
 {
 	fd_set w;
-	int fd = (int)unhand(this)->native_fd;
+	int fd = getFileFromSocket(this);
 	int o, r;
 	struct timeval tv;
 	struct timeval *ptv = NULL;
 	
 	if (!unhand(this)->blocking) {
 		if (!unhand(this)->connecting)
-			return;
+		  {
+		    releaseFileToSocket(this);
+		    return;
+		  }
 		
 		FD_ZERO(&w);
 		FD_SET(fd, &w);
@@ -775,6 +869,8 @@ gnu_java_net_PlainSocketImpl_waitForConnection(struct Hgnu_java_net_PlainSocketI
 	}
 
 	r = KSELECT(fd+1, NULL, &w, NULL, ptv, &o);
+	releaseFileToSocket(this);
+
 	if (r == EINTR) {
 		SignalError("java.io.InterruptedIOException", SYS_ERROR(r));
 	}

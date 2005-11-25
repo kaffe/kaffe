@@ -38,6 +38,8 @@ private boolean closed;
 private boolean blocking;
 private boolean connecting;
 private int native_fd;
+private int fdUsed;
+
   /**
    * Indicates whether a channel initiated whatever operation
    * is being invoked on this socket.
@@ -85,7 +87,7 @@ protected void accept(SocketImpl s) throws IOException {
 	socketAccept(s);
 }
 
-protected synchronized int available() throws IOException {
+protected int available() throws IOException {
 	return closed ? 0 : socketAvailable();
 }
 
@@ -93,7 +95,7 @@ protected void bind(InetAddress address, int lport) throws IOException {
 	socketBind(address, lport);
 }
 
-protected synchronized void close() throws IOException {
+protected void close() throws IOException {
 	if( !closed )
 		socketClose();
 	closed = true;
@@ -134,14 +136,14 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-protected synchronized InputStream getInputStream() throws IOException {
+protected InputStream getInputStream() throws IOException {
 	if (in == null) {
 		in = new SocketInputStream(this); 
 	}
 	return (in);
 }
 
-protected synchronized OutputStream getOutputStream() throws IOException {
+protected OutputStream getOutputStream() throws IOException {
 	if (out == null) {
 		out = new SocketOutputStream(this);
 	}
@@ -285,19 +287,19 @@ protected void sendUrgentData(int data) throws IOException {
 
 public synchronized native void socketSetOption(int option, Object data) throws SocketException;
 public synchronized native int socketGetOption(int option) throws SocketException;
-protected synchronized native void socketAccept(SocketImpl sock);
-protected synchronized native int  socketAvailable();
-protected synchronized native void socketBind(InetAddress addr, int port);
-protected synchronized native void socketClose();
-protected synchronized native void socketConnect(InetAddress addr, int port, int timeout);
-protected synchronized native void socketCreate(boolean stream);
-protected synchronized native void socketListen(int count);
-protected synchronized native int socketRead(byte[] buf, int offset, int len) throws IOException;
-protected synchronized native void socketWrite(byte[] buf, int offset, int len) throws IOException;
+protected native void socketAccept(SocketImpl sock);
+protected native int  socketAvailable();
+protected native void socketBind(InetAddress addr, int port);
+protected native void socketClose();
+protected native void socketConnect(InetAddress addr, int port, int timeout);
+protected native void socketCreate(boolean stream);
+protected native void socketListen(int count);
+protected native int socketRead(byte[] buf, int offset, int len) throws IOException;
+protected native void socketWrite(byte[] buf, int offset, int len) throws IOException;
 
 // This function are principally for the NIO implementation of sockets.
-protected synchronized native void waitForConnection() throws IOException;
-protected synchronized native void setBlocking(boolean blocking);
+protected native void waitForConnection() throws IOException;
+protected native void setBlocking(boolean blocking);
 
 /* Taken from GNU Classpath. */
 

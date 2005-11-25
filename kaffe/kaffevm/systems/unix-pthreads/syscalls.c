@@ -59,64 +59,65 @@
 		r = 0;					\
 	}
 
-static 
-int
-waitForTimeout(int fd, int timeout){
-	fd_set rset;
-	struct timeval tv;
-	int ret;
+static int selectHelper(int n, fd_set *readfds, fd_set *writefds, fd_set *errfds, int timeout)
+{
+  struct timeval tv;
+  int ret;
 
-	FD_ZERO(&rset);
-	FD_SET(fd,&rset);
-	tv.tv_sec = timeout / 1000;
-	tv.tv_usec = (timeout % 1000) * 1000;
+  jthread_current()->interrupting = 0;
+  if (timeout == NOTIMEOUT)
+    {
+      ret = select(n, readfds, writefds, errfds, NULL);
+    }
+  else
+    {      
+      tv.tv_sec = timeout / 1000;
+      tv.tv_usec = (timeout % 1000) * 1000;
+      ret = select(n, readfds, writefds, errfds, &tv);
+    }
 
-	jthread_current()->interrupting = 0;
-	if (timeout == NOTIMEOUT) 
-		ret = select(fd+1,&rset,NULL,NULL,NULL);
-	else	
-		ret = select(fd+1,&rset,NULL,NULL,&tv);
-
-	if (ret == 0) 
-		errno = ETIMEDOUT;
-	else if (ret == -1)
-	{
-		errno = EINTR;
-		jthread_current()->interrupting = 1;
-	}
-
-	return (ret);
+  if (ret == 0)
+    errno = ETIMEDOUT;
+  else if (ret == -1)
+    {
+      errno = EINTR;
+      jthread_current()->interrupting = 1;
+    }
+  
+  return ret;
 }
 
-/* These two functions would need to be merged some time later.
- */
-static
-int waitForWritable(int fd, int timeout)
+static int
+waitForTimeout(int fd, int timeout)
 {
-	fd_set wset;
-	struct timeval tv;
-	int ret;
+  fd_set rset;
+  
+  FD_ZERO(&rset);
+  FD_SET(fd,&rset);
+  
+  return selectHelper(fd+1, &rset, NULL, NULL, timeout);
+}
 
-	FD_ZERO(&wset);
-        FD_SET(fd,&wset);
-        tv.tv_sec = timeout / 1000;
-	tv.tv_usec = (timeout % 1000) * 1000;
+static int
+waitForRW(int fd, int timeout)
+{
+  fd_set rwset;
+  
+  FD_ZERO(&rwset);
+  FD_SET(fd,&rwset);
+  
+  return selectHelper(fd+1, &rwset, &rwset, NULL, timeout);
+}
 
-	jthread_current()->interrupting = 0;
-        if (timeout == NOTIMEOUT)
-		ret = select(fd+1,NULL,&wset,NULL,NULL);
-	else
-		ret = select(fd+1,NULL,&wset,NULL,&tv);
-
-	if (ret == 0)
-		errno = ETIMEDOUT;
-	else if (ret == -1)
-	{
-		errno = EINTR;
-		jthread_current()->interrupting = 1;
-	}
-
-	return (ret);
+static int
+waitForWritable(int fd, int timeout)
+{
+  fd_set wset;
+  
+  FD_ZERO(&wset);
+  FD_SET(fd,&wset);
+  
+  return selectHelper(fd+1, NULL, &wset, NULL, timeout);
 }
 
 static
@@ -171,6 +172,17 @@ jthreadedClose(int fd)
 		rc = errno;
 	}
 	return (rc);
+}
+
+static int
+jthreadedSocketShutdown(int fd)
+{
+       int rc = 0;
+  
+       if (shutdown(fd, 2) == -1)
+	 rc = errno;
+
+       return rc;
 }
 
 static int
@@ -472,7 +484,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, socklen_t* len,
 {
 	/* absolute time at which time out is reached */
 	int r=-1, ret;	
-	ret = waitForTimeout(fd,timeout);
+	ret = waitForRW(fd,timeout);
 
 	/* If result is 0, we had a timeout. 
 	 * If it's not, let's try to accept.
@@ -591,12 +603,6 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 	jthread_set_blocking(fd, 0);
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
-		r = recvfrom(fd, buf, len, flags, from, fromlen);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
-					|| errno == EAGAIN)) {
-			break;
-		}
-		IGNORE_EINTR(r)
 		if (timeout != NOTIMEOUT) {
 		        poll_timeout = deadline - currentTime();
 			if (poll_timeout > 0)
@@ -605,6 +611,8 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 			waitForTimeout(fd, NOTIMEOUT);
 		}
 		BREAK_IF_LATE(deadline, timeout)
+
+		r = recvfrom(fd, buf, len, flags, from, fromlen);
 	}
 	jthread_set_blocking(fd, blocking);
 	SET_RETURN_OUT(r, out, r)
@@ -900,6 +908,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedGetSockName, 
         jthreadedGetPeerName, 
         jthreadedClose,
+	jthreadedSocketShutdown,
         jthreadedGetHostByName,
         jthreadedGetHostByAddr,
         jthreadedSelect,	
