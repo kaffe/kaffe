@@ -1,5 +1,10 @@
 2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/drops-l4threads/syscalls.c
+	(drops_sockshutdown): New function.
+
+2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* include/jsyscall.h
 	(sockShutdown): New syscall to support.
 	(KSOCKSHUTDOWN): New macro.

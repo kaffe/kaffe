@@ -287,6 +287,16 @@ static int drops_sockclose(int fd) {
   return nReturn;
 }
 
+static int drops_sockshutdown(int fd)
+{
+  int nReturn = shutdown(fd, 2);
+
+  if (nReturn < 0)
+    nReturn = errno;
+
+  return nReturn;
+}
+
 static int drops_gethostbyname(const char *name UNUSED,
                                struct hostent ** out2 UNUSED)
 {
@@ -397,6 +407,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	drops_getsockname, 
 	drops_getpeername,
 	drops_sockclose,
+	drops_sockshutdown,
 	drops_gethostbyname,
 	drops_gethostbyaddr,
 	drops_select,	
