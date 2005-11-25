@@ -47,6 +47,7 @@ exception statement from your version. */
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include "jsyscall.h"
 
 #include "target_native.h"
 #include "target_native_misc.h"
@@ -137,7 +138,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
 				      jobjectArray cmdArray,
 				      jobjectArray envArray, jobject dirFile)
 {
-  int fds[3][2] = { {-1, -1}, {-1, -1}, {-1, -1} };
+  int fds[4];
   jobject streams[3] = { NULL, NULL, NULL };
   jobject dirString = NULL;
   char **newEnviron = NULL;
@@ -151,6 +152,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   jmethodID method;
   jclass clazz;
   int i;
+  int err;
 
   /* Check for null */
   if (cmdArray == NULL)
@@ -217,88 +219,13 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
       strings[num_strings++] = dir;
     }
 
-  /* Create inter-process pipes */
-  for (i = 0; i < 3; i++)
-    {
-      if (pipe (fds[i]) == -1)
-	{
-	  TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,
-					     sizeof (errbuf), "pipe: %s",
-					     strerror (errno));
-	  goto system_error;
-	}
-    }
-
-  /* Set close-on-exec flag for parent's ends of pipes */
-  (void) fcntl (fds[0][1], F_SETFD, 1);
-  (void) fcntl (fds[1][0], F_SETFD, 1);
-  (void) fcntl (fds[2][0], F_SETFD, 1);
-
-  /* Fork into parent and child processes */
-  if ((pid = fork ()) == (pid_t) - 1)
+  err = KFORKEXEC(strings, NULL, fds, &pid, strings[0]);
+  if (err != 0)
     {
       TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,
-					 sizeof (errbuf), "fork: %s",
-					 strerror (errno));
+					 sizeof (errbuf), "pipe: %s",
+					 strerror (err));
       goto system_error;
-    }
-
-  /* Child becomes the new process */
-  if (pid == 0)
-    {
-      char *const path = strings[0];
-
-      /* Move file descriptors to standard locations */
-      if (fds[0][0] != 0)
-	{
-	  if (dup2 (fds[0][0], 0) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[0][0]);
-	}
-      if (fds[1][1] != 1)
-	{
-	  if (dup2 (fds[1][1], 1) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[1][1]);
-	}
-      if (fds[2][1] != 2)
-	{
-	  if (dup2 (fds[2][1], 2) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[2][1]);
-	}
-
-      /* Change into destination directory */
-      if (dir != NULL && chdir (dir) == -1)
-	{
-	  fprintf (stderr, "%s: %s", dir, strerror (errno));
-	  exit (127);
-	}
-
-      /* Make argv[0] last component of executable pathname */
-      /* XXX should use "file.separator" property here XXX */
-      for (i = strlen (path); i > 0 && path[i - 1] != '/'; i--);
-      strings[0] = path + i;
-
-      /* Set new environment */
-      if (newEnviron != NULL)
-	environ = newEnviron;
-
-      /* Execute new program (this will close the parent end of the pipes) */
-      execvp (path, strings);
-
-      /* Failed */
-      fprintf (stderr, "%s: %s", path, strerror (errno));
-      exit (127);
     }
 
   /* Create Input/OutputStream objects around parent file descriptors */
@@ -311,7 +238,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   for (i = 0; i < 3; i++)
     {
       /* Mode is WRITE (2) for in and READ (1) for out and err. */
-      const int fd = fds[i][i == 0];
+      const int fd = fds[i];
       const int mode = (i == 0) ? 2 : 1;
       jclass sclazz;
       jmethodID smethod;
@@ -340,6 +267,12 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
     }
   (*env)->DeleteLocalRef (env, clazz);
 
+  {
+    char c;
+
+    write(fds[3], &c, 1);
+  }
+
   /* Invoke VMProcess.setProcessInfo() to update VMProcess object */
   method = (*env)->GetMethodID (env,
 				(*env)->GetObjectClass (env, this),
@@ -354,32 +287,11 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   (*env)->DeleteLocalRef (env, clazz);
 
 done:
-  /*
-   * We get here in both the success and failure cases in the
-   * parent process. Our goal is to clean up the mess we created.
-   */
 
-  /* Close child's ends of pipes */
   for (i = 0; i < 3; i++)
     {
-      const int fd = fds[i][i != 0];
-
-      if (fd != -1)
-	close (fd);
-    }
-
-  /*
-   * Close parent's ends of pipes if Input/OutputStreams never got created.
-   * This can only happen in a failure case. If a Stream object
-   * was created for a file descriptor, we don't close it because it
-   * will get closed when the Stream object is finalized.
-   */
-  for (i = 0; i < 3; i++)
-    {
-      const int fd = fds[i][i == 0];
-
-      if (fd != -1 && streams[i] == NULL)
-	close (fd);
+      if (fds[i] != -1 && streams[i] == NULL)
+	close(fds[i]);
     }
 
   /* Free C strings */

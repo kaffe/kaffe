@@ -1,3 +1,9 @@
+2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/native/java_lang_VMProcess.c
+	(nativeSpawn): Fixed eclipse startup by using the true kaffe
+	internal functions.
+
 2005-11-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/boehm-gc/boehm/configure,
